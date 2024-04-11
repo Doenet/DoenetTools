@@ -28,7 +28,8 @@ import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import RouterLogo from "../RouterLogo";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
-import { FaMoon, FaRobot, FaSun } from "react-icons/fa";
+import { FaMoon, FaSun } from "react-icons/fa";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import axios from "axios";
 
 export async function loader() {
@@ -196,6 +197,18 @@ export function SiteHeader(props) {
             </GridItem>
             <GridItem area="rightHeader">
               <Flex columnGap="10px">
+                <Link
+                  borderRadius="lg"
+                  p="4px 5px 0px 5px"
+                  mt="4px"
+                  h="32px"
+                  bg="#EDF2F7"
+                  href="https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4"
+                  isExternal
+                  data-test="Documentation Link"
+                >
+                  Documentation <ExternalLinkIcon mx="2px" />
+                </Link>
                 <Link href="mailto:info@doenet.org">
                   <Tooltip label="mailto:info@doenet.org">
                     <IconButton

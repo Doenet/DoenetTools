@@ -1678,17 +1678,6 @@ export function PortfolioActivityEditor() {
                       margin={0} //Only need when there is an outline
                       justifyContent="flex-end"
                     >
-                      <Link
-                        borderRadius="lg"
-                        p="4px 5px 0px 5px"
-                        h="32px"
-                        bg="#EDF2F7"
-                        href="https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4"
-                        isExternal
-                        data-test="Documentation Link"
-                      >
-                        Documentation <ExternalLinkIcon mx="2px" />
-                      </Link>
                     </HStack>
 
                     <Box
