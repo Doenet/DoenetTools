@@ -258,8 +258,6 @@ export function Library() {
       matchingSubsection.activities = activities.map((activityInfo) => {
         let label = activityInfo[6];
 
-        console.log(label);
-
         // some of the problems start with a number followed by a colon or the string "Problem XX:",
         // instead of a number followed by a period, strip that off first, so it doesn't mess up the
         // search for another colon later in the string
@@ -332,7 +330,10 @@ export function Library() {
               <br />
               <br />
               Consider searching the{" "}
-              <Link href="/Community" textDecoration="underline">
+              <Link
+                href={"/Community?q=" + searchStr}
+                textDecoration="underline"
+              >
                 community contributed activities
               </Link>
               .
