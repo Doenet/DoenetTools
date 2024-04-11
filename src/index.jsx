@@ -18,6 +18,10 @@ import {
 } from "./Tools/_framework/Paths/Community";
 import { loader as adminLoader, Admin } from "./Tools/_framework/Paths/Admin";
 import {
+  loader as libraryLoader,
+  Library,
+} from "./Tools/_framework/Paths/Library";
+import {
   loader as siteLoader,
   SiteHeader,
 } from "./Tools/_framework/Paths/SiteHeader";
@@ -171,6 +175,21 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "/library",
+        loader: libraryLoader,
+        // sharing an action with the community page is somewhat intentional
+        // as it shows cards and admins have the same actions that they can perform
+        // on cards as they can on the community page
+        // TODO - determine if this is an okay way to share functionality across
+        // pages or a bad idea
+        action: communityAction,
+        element: (
+          <ChakraProvider theme={theme}>
+            <Library />
+          </ChakraProvider>
+        ),
+      },
+      {
         path: "community",
         loader: communityLoader,
         action: communityAction,
@@ -237,7 +256,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "portfolioviewer/:doenetId",
+        path: "portfolioviewer/:doenetId/:pageId?",
         loader: portfolioActivityViewerLoader,
         action: portfolioActivityViewerAction,
         errorElement: (
