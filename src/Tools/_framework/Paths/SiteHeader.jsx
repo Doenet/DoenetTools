@@ -2,11 +2,16 @@ import React, { useRef } from "react";
 import {
   Button,
   Center,
+  Flex,
   Grid,
   GridItem,
-  Text,
-  useColorMode,
+  IconButton,
   HStack,
+  Image,
+  Link,
+  Text,
+  Tooltip,
+  useColorMode,
   Menu,
   MenuButton,
   MenuList,
@@ -15,13 +20,16 @@ import {
   VStack,
   ButtonGroup,
 } from "@chakra-ui/react";
+import { HiOutlineMail } from "react-icons/hi";
+import { BsGithub, BsDiscord } from "react-icons/bs";
 import { Outlet, useLoaderData, useLocation, useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import RouterLogo from "../RouterLogo";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
-import { FaMoon, FaRobot, FaSun } from "react-icons/fa";
+import { FaMoon, FaSun } from "react-icons/fa";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import axios from "axios";
 
 export async function loader() {
@@ -161,6 +169,9 @@ export function SiteHeader(props) {
                 <NavLinkTab to="/" dataTest="Home">
                   Home
                 </NavLinkTab>
+                <NavLinkTab to="library" dataTest="Library">
+                  Library
+                </NavLinkTab>
                 <NavLinkTab to="community" dataTest="Community">
                   Community
                 </NavLinkTab>
@@ -185,36 +196,83 @@ export function SiteHeader(props) {
               </HStack>
             </GridItem>
             <GridItem area="rightHeader">
-              {signedIn ? (
-                <Center h="40px" mr="10px">
-                  <Menu>
-                    <MenuButton>
-                      <Avatar size="sm" name={`${firstName} ${lastName}`} />
-                    </MenuButton>
-                    <MenuList>
-                      <VStack mb="20px">
-                        <Avatar size="xl" name={`${firstName} ${lastName}`} />
-                        <Text>
-                          {firstName} {lastName}
-                        </Text>
-                        <Text>{email}</Text>
-                        <ButtonGroup size="sm" isAttached variant="outline">
-                          <Button
-                            leftIcon={<FaSun />}
-                            onClick={toggleColorMode}
-                            isDisabled={colorMode == "light"}
-                          >
-                            Light
-                          </Button>
-                          <Button
-                            leftIcon={<FaMoon />}
-                            onClick={toggleColorMode}
-                            isDisabled={colorMode == "dark"}
-                            // cursor="not-allowed"
-                          >
-                            Dark
-                          </Button>
-                          {/* <Button
+              <Flex columnGap="10px">
+                <Link
+                  borderRadius="lg"
+                  p="4px 5px 0px 5px"
+                  mt="4px"
+                  h="32px"
+                  bg="#EDF2F7"
+                  href="https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4"
+                  isExternal
+                  data-test="Documentation Link"
+                >
+                  Documentation <ExternalLinkIcon mx="2px" />
+                </Link>
+                <Link href="mailto:info@doenet.org">
+                  <Tooltip label="mailto:info@doenet.org">
+                    <IconButton
+                      mt="5px"
+                      colorScheme="blue"
+                      size="sm"
+                      fontSize="16pt"
+                      icon={<HiOutlineMail />}
+                    />
+                  </Tooltip>
+                </Link>
+
+                <Link href="https://github.com/Doenet/">
+                  <Tooltip label="Doenet Github">
+                    <IconButton
+                      mt="5px"
+                      colorScheme="blue"
+                      size="sm"
+                      fontSize="16pt"
+                      icon={<BsGithub />}
+                    />
+                  </Tooltip>
+                </Link>
+                <Link href="https://discord.gg/PUduwtKJ5h">
+                  <Tooltip label="Doenet Discord">
+                    <IconButton
+                      mt="5px"
+                      colorScheme="blue"
+                      size="sm"
+                      fontSize="16pt"
+                      icon={<BsDiscord />}
+                    />
+                  </Tooltip>
+                </Link>
+                {signedIn ? (
+                  <Center h="40px" mr="10px">
+                    <Menu>
+                      <MenuButton>
+                        <Avatar size="sm" name={`${firstName} ${lastName}`} />
+                      </MenuButton>
+                      <MenuList>
+                        <VStack mb="20px">
+                          <Avatar size="xl" name={`${firstName} ${lastName}`} />
+                          <Text>
+                            {firstName} {lastName}
+                          </Text>
+                          <Text>{email}</Text>
+                          <ButtonGroup size="sm" isAttached variant="outline">
+                            <Button
+                              leftIcon={<FaSun />}
+                              onClick={toggleColorMode}
+                              isDisabled={colorMode == "light"}
+                            >
+                              Light
+                            </Button>
+                            <Button
+                              leftIcon={<FaMoon />}
+                              onClick={toggleColorMode}
+                              isDisabled={colorMode == "dark"}
+                              // cursor="not-allowed"
+                            >
+                              Dark
+                            </Button>
+                            {/* <Button
                             leftIcon={<FaRobot />}
                             onClick={() => setColorMode("system")}
                             // isDisabled={colorMode == ""}
@@ -222,35 +280,36 @@ export function SiteHeader(props) {
                           >
                             Auto
                           </Button> */}
-                        </ButtonGroup>
-                      </VStack>
-                      <MenuItem as="a" href="/signout">
-                        Sign Out
-                      </MenuItem>
-                    </MenuList>
-                  </Menu>
-                </Center>
-              ) : (
-                <Center h="40px" mr="10px">
-                  <Button
-                    data-test="Nav to signin"
-                    size="sm"
-                    // variant="ghost"
-                    variant="outline"
-                    onClick={() => {
-                      navigateTo.current = "/signin";
-                      setRecoilPageToolView({
-                        page: "signin",
-                        tool: "",
-                        view: "",
-                        params: {},
-                      });
-                    }}
-                  >
-                    Sign In
-                  </Button>
-                </Center>
-              )}
+                          </ButtonGroup>
+                        </VStack>
+                        <MenuItem as="a" href="/signout">
+                          Sign Out
+                        </MenuItem>
+                      </MenuList>
+                    </Menu>
+                  </Center>
+                ) : (
+                  <Center h="40px" mr="10px">
+                    <Button
+                      data-test="Nav to signin"
+                      size="sm"
+                      // variant="ghost"
+                      variant="outline"
+                      onClick={() => {
+                        navigateTo.current = "/signin";
+                        setRecoilPageToolView({
+                          page: "signin",
+                          tool: "",
+                          view: "",
+                          params: {},
+                        });
+                      }}
+                    >
+                      Sign In
+                    </Button>
+                  </Center>
+                )}
+              </Flex>
             </GridItem>
           </Grid>
         </GridItem>
