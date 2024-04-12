@@ -144,7 +144,7 @@ export function Home() {
 
   const heroTextAndActions = () => {
     return (
-      <Box pr="20px" pl="20px" pt="50px" width="">
+      <Box pr="20px" pl="20px">
         <Text color="white" fontSize={["40px", "5vw"]} fontWeight="700">
           Interactive activities to engage your students
         </Text>
@@ -227,13 +227,13 @@ export function Home() {
         </Show>
         <Show below="sm">
           <SimpleGrid columns={[1, 1, 2, 2, 2]} spacing="10px">
-            {heroTextAndActions()}
             <Suspense fallback={"Loading..."}>
               {/* Does this lazy loading do anything? */}
               <Box ml="30px">
                 <HomeIntroVideo />
               </Box>
             </Suspense>
+            {heroTextAndActions()}
           </SimpleGrid>
         </Show>
       </Flex>

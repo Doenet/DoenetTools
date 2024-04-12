@@ -12,7 +12,7 @@ const HPVideo = styled.video`
     height: 500px;
   }
   @media (max-width: 450px) {
-    height: 250px;
+    height: 150px;
   }
 `;
 
@@ -32,11 +32,11 @@ export default function HomeIntroVideo() {
   }, []);
 
   return (
-    <Box overflow="hidden" width={["350px", "40vw", "40vw", "40vw"]}>
+    <Box overflow="hidden" width={["350px", "30vw", "30vw", "30vw"]}>
       <Box
-        marginLeft={["-50px", "-300px", "-300px", "-300px"]}
+        marginLeft={["-100px", "-300px", "-300px", "-300px"]}
         overflow="hidden"
-        width={["350px", "100vw", "100vw", "100vw"]}
+        width={["500px", "100vw", "100vw", "100vw"]}
       >
         <HPVideo
           // height='420px'
