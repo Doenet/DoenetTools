@@ -108,7 +108,7 @@ export function Subsection({ label, activities }) {
             <Box key={activity.doenetId + label}>
               <Link
                 key={activity.label}
-                href={`https://dev.doenet.org/portfolioviewer/${activity.doenetId}`}
+                href={`https://www.doenet.org/portfolioviewer/${activity.doenetId}`}
               >
                 {activity.label}
               </Link>

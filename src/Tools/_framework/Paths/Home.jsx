@@ -176,7 +176,7 @@ export function Home() {
                 Enhance your classroom with great OER resources from Doenet and
                 learn how we make it easy to create your own.
               </Text>
-              <Link href="/community">
+              <Link href="/library">
                 <Button
                   mt="20px"
                   p="10px"
@@ -208,7 +208,7 @@ export function Home() {
               <HomeIntroVideo />
               <Link
                 color={textColor}
-                href="https://www.doenet.org/portfolioviewer/_PQ52rNxexS153g3HSx383"
+                href="https://www.doenet.org/portfolioviewer/_IDTeopxcrVV2EzMEA4Cg9"
               >
                 How to Make this Animation
               </Link>
