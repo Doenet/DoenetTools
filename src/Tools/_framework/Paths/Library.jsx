@@ -23,7 +23,7 @@ export async function loader() {
     responseType: "text",
     transformResponse: [(data) => data],
   });
-  let webworkTaxonomy = axios.get(`/webwork_taxonomy_algebra.csv`, {
+  let webworkTaxonomy = axios.get(`/webwork_taxonomy.csv`, {
     responseType: "text",
     transformResponse: [(data) => data],
   });
@@ -41,6 +41,24 @@ export async function loader() {
   }).data;
 
   //console.log(libraryContent);
+
+  // no good dirty hack, didn't make the original code handle the letter prefixes, for now
+  // transform the trig section labels like T1a into 101a, and make Probability P1a into 201a
+  // TODO - ignoring the probability stuff, we have very little in those sections
+  libraryContent = libraryContent.map((row) => {
+    if (row[2]) {
+      row[2] = row[2].replace("T", "10");
+      //row[2] = row[2].replace("P", "20");
+    }
+    return row;
+  });
+  webworkTaxonomy = webworkTaxonomy.map((row) => {
+    if (row[1]) {
+      row[1] = row[1].replace("T", "10");
+      //row[1] = row[1].replace("P", "20");
+    }
+    return row;
+  });
 
   return {
     libraryContent,
@@ -135,7 +153,7 @@ export function Section({ section, searchStr }) {
     >
       <Box
         style={{
-          backgroundColor: "#2f76d9",
+          backgroundColor: section.color,
           color: "white",
           borderRadius: "5px",
           padding: "10px",
@@ -199,10 +217,18 @@ export function Library() {
       let { numPart, alphaPart } = parseSectionKey(String(sectionInfo[1]));
       let label = sectionInfo[0];
       // If we hit a section that hasn't been added yet
-      let sectionDetails = sections.find((a) => a.sectionNumber == numPart);
+      let sectionDetails = sections.find((a) => {
+        // this is using a sparse array for now, so we need to skip nulls
+        return a && a.sectionNumber == numPart;
+      });
       if (!sectionDetails) {
-        sectionDetails = { sectionNumber: numPart, label, subsections: [] };
-        sections.push(sectionDetails);
+        sectionDetails = {
+          sectionNumber: numPart,
+          label,
+          color: numPart > 100 ? "#c80808" : "#2f76d9",
+          subsections: [],
+        };
+        sections[numPart - 1] = sectionDetails;
       }
       if (alphaPart) {
         sectionDetails.subsections.push({
