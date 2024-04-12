@@ -455,21 +455,24 @@ export function Home() {
               immediate feedback students receive even before an instructor can
               come by their group.
             </Text>
-            <Text fontSize="20px" marginTop="10px">
-              Open-ended response
-            </Text>
-            <Text fontSize="18px" marginLeft="10px">
-              Try our open-ended response example! (
-              <Link
-                rel="noreferrer"
-                target="_blank"
-                textDecoration={"underline"}
-                href="https://www.doenet.org/public?tool=editor&doenetId=_4hcncjV6Ffabz5lhD47aL"
-              >
-                See source
-              </Link>
-              )
-            </Text>
+
+            <Show above="sm">
+              <Text fontSize="20px" marginTop="10px">
+                Open-ended response
+              </Text>
+              <Text fontSize="18px" marginLeft="10px">
+                Try our open-ended response example! (
+                <Link
+                  rel="noreferrer"
+                  target="_blank"
+                  textDecoration={"underline"}
+                  href="https://www.doenet.org/public?tool=editor&doenetId=_4hcncjV6Ffabz5lhD47aL"
+                >
+                  See source
+                </Link>
+                )
+              </Text>
+            </Show>
           </Text>
 
           <Show above="sm">
