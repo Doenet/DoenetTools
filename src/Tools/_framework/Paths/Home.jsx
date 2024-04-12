@@ -23,6 +23,7 @@ import {
   GridItem,
   HStack,
   Show,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
@@ -163,18 +164,21 @@ export function Home() {
         bg={blackColor}
         py="30px"
       >
-        <Grid
-          gridTemplateAreas={`"Description Video"
-        `}
-          // gridTemplateRows={"120px auto"}
-          gridTemplateColumns={"60vw auto"}
-        >
-          <GridItem area="Description" margin="10vh 0 0 10vh">
-            <Text color="white" fontSize={"5vw"} fontWeight="700">
+        <SimpleGrid columns={[1, 2, 2, 2, 2]} spacing="10px">
+          <Box pr="20px" pl="20px" pt="50px">
+            <Text
+              color="white"
+              fontSize={["30px", "30px", "30px", "40px", "60px"]}
+              fontWeight="700"
+            >
               Interactive activities to engage your students
             </Text>
             <Flex textAlign="left" flexDirection="column" gap={4} mt="70px">
-              <Text color="white" fontSize={"2vw"} fontWeight="700">
+              <Text
+                color="white"
+                fontSize={["20px", null, null, "24px", "24px"]}
+                fontWeight="700"
+              >
                 Enhance your classroom with great OER resources from Doenet and
                 learn how we make it easy to create your own.
               </Text>
@@ -183,9 +187,10 @@ export function Home() {
                   mt="20px"
                   p="10px"
                   colorScheme="blue"
-                  w={["180px", "200px", "260px", "300px"]}
-                  h={["20px", "30px", "40px", "50px", "60px"]}
-                  fontSize={["10px", "14px", "18px", "22px", "26px"]}
+                  // these are out of order because on phones we chane the number of columns
+                  w={["260px", "200px", "260px", "300px"]}
+                  h={["40px", "40px", "40px", "50px", "60px"]}
+                  fontSize={["18px", "18px", "18px", "22px", "26px"]}
                 >
                   Explore Activities
                 </Button>
@@ -195,30 +200,23 @@ export function Home() {
                   mt="20px"
                   p="10px"
                   colorScheme="blue"
-                  w={["180px", "200px", "260px", "300px"]}
-                  h={["20px", "30px", "40px", "50px", "60px"]}
-                  fontSize={["10px", "14px", "18px", "22px", "26px"]}
+                  w={["260px", "200px", "260px", "300px"]}
+                  h={["40px", "40px", "40px", "50px", "60px"]}
+                  fontSize={["18px", "18px", "18px", "22px", "26px"]}
                 >
                   Learn to Make Your Own
                 </Button>
               </Link>
             </Flex>
-          </GridItem>
-          <Show above="sm">
-            <GridItem area="Video" p="40px">
-              <Suspense fallback={"Loading..."}>
-                {/* Does this lazy loading do anything? */}
-                <HomeIntroVideo />
-                <Link
-                  color={textColor}
-                  href="https://www.doenet.org/portfolioviewer/_IDTeopxcrVV2EzMEA4Cg9"
-                >
-                  How to Make this Animation
-                </Link>
-              </Suspense>
-            </GridItem>
-          </Show>
-        </Grid>
+          </Box>
+
+          <Suspense fallback={"Loading..."}>
+            {/* Does this lazy loading do anything? */}
+            <Box ml="30px">
+              <HomeIntroVideo />
+            </Box>
+          </Suspense>
+        </SimpleGrid>
       </Flex>
       <Center w="100%" bg={grayColor} pl="10px" pr="10px">
         <VStack maxWidth="900px" w="100%" spacing={4} marginBottom={"30px"}>
