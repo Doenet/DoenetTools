@@ -34,7 +34,7 @@ export default function HomeIntroVideo() {
   return (
     <Box overflow="hidden" width={["350px", "30vw", "30vw", "30vw"]}>
       <Box
-        marginLeft={["-100px", "-300px", "-300px", "-300px"]}
+        marginLeft={["-70px", "-300px", "-300px", "-300px"]}
         overflow="hidden"
         width={["500px", "100vw", "100vw", "100vw"]}
       >
