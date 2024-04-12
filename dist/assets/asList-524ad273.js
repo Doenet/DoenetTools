@@ -1,0 +1,1 @@
+import{ao as n,bl as o,j as s,a as d}from"./index-a1cd8b25.js";const h=n.memo(function(a){let{name:c,id:e,SVs:r,children:t}=o(a);if(r.hidden)return null;if(t.length===0)return s(n.Fragment,{},e);let i=t.slice(1).reduce((l,m)=>[...l,", ",m],[t[0]]);return d(n.Fragment,{children:[s("a",{name:e}),i]},e)});export{h as default};
