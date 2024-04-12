@@ -168,7 +168,7 @@ export function Home() {
           <Box pr="20px" pl="20px" pt="50px">
             <Text
               color="white"
-              fontSize={["30px", "30px", "30px", "40px", "60px"]}
+              fontSize={["40px", "40px", "40px", "40px", "60px"]}
               fontWeight="700"
             >
               Interactive activities to engage your students

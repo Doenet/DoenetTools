@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
-import { Box, Link } from "@chakra-ui/react";
+import { Box, Link, Show } from "@chakra-ui/react";
 
 const HPVideo = styled.video`
   width: 1200px;
@@ -12,7 +12,7 @@ const HPVideo = styled.video`
     height: 500px;
   }
   @media (max-width: 450px) {
-    height: 400px;
+    height: 250px;
   }
 `;
 
@@ -52,12 +52,14 @@ export default function HomeIntroVideo() {
         >
           <source src="/planet_orbits_smooth.webm" type="video/webm" />
         </HPVideo>
-        <Link
-          color={"white"}
-          href="https://www.doenet.org/portfolioviewer/_IDTeopxcrVV2EzMEA4Cg9"
-        >
-          How to Make this Animation
-        </Link>
+        <Show above="sm">
+          <Link
+            color={"white"}
+            href="https://www.doenet.org/portfolioviewer/_IDTeopxcrVV2EzMEA4Cg9"
+          >
+            How to Make this Animation
+          </Link>
+        </Show>
       </Box>
     </Box>
   );
