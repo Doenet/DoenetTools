@@ -256,7 +256,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "portfolioviewer/:doenetId/:pageId?",
+        path: "portfolioviewer/:doenetId",
         loader: portfolioActivityViewerLoader,
         action: portfolioActivityViewerAction,
         errorElement: (
