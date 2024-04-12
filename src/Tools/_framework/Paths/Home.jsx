@@ -149,8 +149,9 @@ export function Home() {
           fontWeight="700"
           color={"#0f0f0f"}
         >
-          Join us at the 3rd annual Doenet Workshop May 20 - May 24, 2024.{" "}
-          <Link href="#workshop" textDecoration={"underline"}>
+          Join us for our first Doenet Digital Math Interactives Workshop on
+          June 13, 2024.{" "}
+          <Link href="#workshop2" textDecoration={"underline"}>
             More Info
           </Link>
         </Text>
@@ -283,6 +284,62 @@ export function Home() {
               // fontSize="60px"
               fontWeight="700"
               color={blackColor}
+              id="workshop2"
+            >
+              Digital Math Interactives Workshop
+            </Text>
+          </HStack>
+          <Text
+            pt="24px"
+            fontSize={"18px"}
+            // fontSize="20px"
+            fontWeight="500"
+            color={blackColor}
+          >
+            High-school and middle-school math and science teachers are invited
+            to attend the first in a series of free, one-day{" "}
+            <Link
+              href="https://forms.gle/CfiLXtMUY81c2YJh6"
+              textDecoration="underline"
+            >
+              educational technology workshops
+            </Link>
+            . It will be held on June 13, 2024 at the University of Minnesota,
+            Twin Cities Campus, from 9:00a.m. - 3:00p.m.
+            <br />
+            <br />
+            During the workshop, participants will learn to use and create
+            digital interactive activities that can be shared in the classroom
+            using the Doenet online application.
+            <br />
+            <br />
+            To register for the current workshop or receive information about
+            upcoming workshops, please fill out this{" "}
+            <Link
+              href="https://forms.gle/CfiLXtMUY81c2YJh6"
+              textDecoration="underline"
+            >
+              registration form
+            </Link>
+            .
+          </Text>
+        </VStack>
+      </Center>
+
+      <Center w="100%" bg={grayColor}>
+        <VStack
+          maxWidth="900px"
+          w="100%"
+          spacing={4}
+          marginTop="40px"
+          marginBottom="40px"
+        >
+          <HStack>
+            <Text
+              fontSize={["12px", "20px", "30px", "40px", "60px"]}
+              // fontSize="60px"
+              fontWeight="700"
+              color={blackColor}
             >
               Drop-In Office Hours
             </Text>
@@ -324,7 +381,8 @@ export function Home() {
           </Text>
         </VStack>
       </Center>
-      <Center w="100%" bg={grayColor} paddingTop="40px">
+
+      <Center w="100%" bg={"white"} paddingTop="40px">
         <HStack maxWidth="750px" w="100%" spacing={4}>
           <Text
             fontSize={["12px", "20px", "30px", "40px", "60px"]}
@@ -351,7 +409,7 @@ export function Home() {
       <Flex
         justifyContent="center"
         alignItems="center"
-        bg={grayColor}
+        bg={"white"}
         p="60px 10px"
       >
         <Carousel title="Doenet Team Favorites" data={favorites} />
