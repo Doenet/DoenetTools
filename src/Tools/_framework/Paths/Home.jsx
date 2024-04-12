@@ -142,6 +142,47 @@ export function Home() {
     return null;
   }
 
+  const heroTextAndActions = () => {
+    return (
+      <Box pr="20px" pl="20px" pt="50px" width="">
+        <Text color="white" fontSize={["40px", "5vw"]} fontWeight="700">
+          Interactive activities to engage your students
+        </Text>
+        <Flex textAlign="left" flexDirection="column" gap={4} mt="70px">
+          <Text color="white" fontSize={["24px", "2vw"]} fontWeight="700">
+            Enhance your classroom with great OER resources from Doenet and
+            learn how we make it easy to create your own.
+          </Text>
+          <Link href="/library">
+            <Button
+              mt="20px"
+              p="10px"
+              colorScheme="blue"
+              // these are out of order because on phones we chane the number of columns
+              w={["260px", "200px", "260px", "300px"]}
+              h={["40px", "40px", "40px", "50px", "60px"]}
+              fontSize={["18px", "18px", "18px", "22px", "26px"]}
+            >
+              Explore Activities
+            </Button>
+          </Link>
+          <Link href="https://www.doenet.org/portfolioviewer/_7OlapeBhtcfQaa5f7sOCH">
+            <Button
+              mt="20px"
+              p="10px"
+              colorScheme="blue"
+              w={["260px", "200px", "260px", "300px"]}
+              h={["40px", "40px", "40px", "50px", "60px"]}
+              fontSize={["18px", "18px", "18px", "22px", "26px"]}
+            >
+              Learn to Make Your Own
+            </Button>
+          </Link>
+        </Flex>
+      </Box>
+    );
+  };
+
   return (
     <>
       <Center w="100%" bg={"#fefa78"} pl="10px" pr="10px">
@@ -164,59 +205,37 @@ export function Home() {
         bg={blackColor}
         py="30px"
       >
-        <SimpleGrid columns={[1, 2, 2, 2, 2]} spacing="10px">
-          <Box pr="20px" pl="20px" pt="50px">
-            <Text
-              color="white"
-              fontSize={["40px", "40px", "40px", "40px", "60px"]}
-              fontWeight="700"
-            >
-              Interactive activities to engage your students
-            </Text>
-            <Flex textAlign="left" flexDirection="column" gap={4} mt="70px">
-              <Text
-                color="white"
-                fontSize={["20px", null, null, "24px", "24px"]}
-                fontWeight="700"
-              >
-                Enhance your classroom with great OER resources from Doenet and
-                learn how we make it easy to create your own.
-              </Text>
-              <Link href="/library">
-                <Button
-                  mt="20px"
-                  p="10px"
-                  colorScheme="blue"
-                  // these are out of order because on phones we chane the number of columns
-                  w={["260px", "200px", "260px", "300px"]}
-                  h={["40px", "40px", "40px", "50px", "60px"]}
-                  fontSize={["18px", "18px", "18px", "22px", "26px"]}
-                >
-                  Explore Activities
-                </Button>
-              </Link>
-              <Link href="https://www.doenet.org/portfolioviewer/_7OlapeBhtcfQaa5f7sOCH">
-                <Button
-                  mt="20px"
-                  p="10px"
-                  colorScheme="blue"
-                  w={["260px", "200px", "260px", "300px"]}
-                  h={["40px", "40px", "40px", "50px", "60px"]}
-                  fontSize={["18px", "18px", "18px", "22px", "26px"]}
-                >
-                  Learn to Make Your Own
-                </Button>
-              </Link>
-            </Flex>
-          </Box>
-
-          <Suspense fallback={"Loading..."}>
-            {/* Does this lazy loading do anything? */}
-            <Box ml="30px">
-              <HomeIntroVideo />
-            </Box>
-          </Suspense>
-        </SimpleGrid>
+        <Show above="sm">
+          <Grid
+            gridTemplateAreas={`"Description Video"
+        `}
+            // gridTemplateRows={"120px auto"}
+            gridTemplateColumns={"60vw auto"}
+          >
+            <GridItem area="Description" margin="10vh 0 0 10vh">
+              {heroTextAndActions()}
+            </GridItem>
+            <GridItem area="Video" p="40px">
+              <Suspense fallback={"Loading..."}>
+                {/* Does this lazy loading do anything? */}
+                <Box ml="30px">
+                  <HomeIntroVideo />
+                </Box>
+              </Suspense>
+            </GridItem>
+          </Grid>
+        </Show>
+        <Show below="sm">
+          <SimpleGrid columns={[1, 1, 2, 2, 2]} spacing="10px">
+            {heroTextAndActions()}
+            <Suspense fallback={"Loading..."}>
+              {/* Does this lazy loading do anything? */}
+              <Box ml="30px">
+                <HomeIntroVideo />
+              </Box>
+            </Suspense>
+          </SimpleGrid>
+        </Show>
       </Flex>
       <Center w="100%" bg={grayColor} pl="10px" pr="10px">
         <VStack maxWidth="900px" w="100%" spacing={4} marginBottom={"30px"}>
