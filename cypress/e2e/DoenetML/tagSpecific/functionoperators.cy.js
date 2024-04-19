@@ -3140,6 +3140,50 @@ describe("Function Operator Tag Tests", function () {
     });
   });
 
+  it("derivatives of interpolated function that is not a function", () => {
+    cy.window().then(async (win) => {
+      win.postMessage(
+        {
+          doenetML: `
+  <text>a</text>
+  <graph>
+    <function through='(3,4) (3,5)' name="f" />
+    <derivative name="df">$f</derivative>
+  </graph>
+
+  <math name="m1">f(3) = $$f(3)</math>
+  <math name="m2">f'(3) = $$df(3)</math>
+
+
+  `,
+        },
+        "*",
+      );
+    });
+
+    cy.get(cesc("#\\/_text1")).should("have.text", "a"); // to wait until loaded
+
+    cy.get(cesc("#\\/m1") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "f(3)=NaN");
+    cy.get(cesc("#\\/m2") + " .mjx-mrow")
+      .eq(0)
+      .should("have.text", "f′(3)=NaN");
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let f = createFunctionFromDefinition(
+        stateVariables["/f"].stateValues.fDefinitions[0],
+      );
+      let df = createFunctionFromDefinition(
+        stateVariables["/df"].stateValues.fDefinitions[0],
+      );
+      expect(f(3)).eqls(NaN);
+      expect(df(3)).eqls(NaN);
+    });
+  });
+
   it("derivatives of interpolated function 2", () => {
     cy.window().then(async (win) => {
       win.postMessage(
