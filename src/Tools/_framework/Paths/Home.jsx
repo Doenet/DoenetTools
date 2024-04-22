@@ -22,6 +22,8 @@ import {
   Grid,
   GridItem,
   HStack,
+  Show,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
@@ -140,9 +142,50 @@ export function Home() {
     return null;
   }
 
+  const heroTextAndActions = () => {
+    return (
+      <Box pr="20px" pl="20px">
+        <Text color="white" fontSize={["40px", "5vw"]} fontWeight="700">
+          Interactive activities to engage your students
+        </Text>
+        <Flex textAlign="left" flexDirection="column" gap={4} mt="70px">
+          <Text color="white" fontSize={["24px", "2vw"]} fontWeight="700">
+            Enhance your classroom with great OER resources from Doenet and
+            learn how we make it easy to create your own.
+          </Text>
+          <Link href="/library">
+            <Button
+              mt="20px"
+              p="10px"
+              colorScheme="blue"
+              // these are out of order because on phones we chane the number of columns
+              w={["260px", "200px", "260px", "300px"]}
+              h={["40px", "40px", "40px", "50px", "60px"]}
+              fontSize={["18px", "18px", "18px", "22px", "26px"]}
+            >
+              Explore Activities
+            </Button>
+          </Link>
+          <Link href="https://www.doenet.org/portfolioviewer/_7OlapeBhtcfQaa5f7sOCH">
+            <Button
+              mt="20px"
+              p="10px"
+              colorScheme="blue"
+              w={["260px", "200px", "260px", "300px"]}
+              h={["40px", "40px", "40px", "50px", "60px"]}
+              fontSize={["18px", "18px", "18px", "22px", "26px"]}
+            >
+              Learn to Make Your Own
+            </Button>
+          </Link>
+        </Flex>
+      </Box>
+    );
+  };
+
   return (
     <>
-      <Center w="100%" bg={"#fefa78"}>
+      <Center w="100%" bg={"#fefa78"} pl="10px" pr="10px">
         <Text
           fontSize={["18px", "18px", "18px", "24px"]}
           // fontSize="60px"
@@ -162,67 +205,44 @@ export function Home() {
         bg={blackColor}
         py="30px"
       >
-        <Grid
-          gridTemplateAreas={`"Description Video"
+        <Show above="sm">
+          <Grid
+            gridTemplateAreas={`"Description Video"
         `}
-          // gridTemplateRows={"120px auto"}
-          gridTemplateColumns={"60vw auto"}
-        >
-          <GridItem area="Description" margin="10vh 0 0 10vh">
-            <Text color="white" fontSize={"5vw"} fontWeight="700">
-              Interactive activities to engage your students
-            </Text>
-            <Flex textAlign="left" flexDirection="column" gap={4} mt="70px">
-              <Text color="white" fontSize={"2vw"} fontWeight="700">
-                Enhance your classroom with great OER resources from Doenet and
-                learn how we make it easy to create your own.
-              </Text>
-              <Link href="/library">
-                <Button
-                  mt="20px"
-                  p="10px"
-                  colorScheme="blue"
-                  w={["180px", "200px", "260px", "300px"]}
-                  h={["20px", "30px", "40px", "50px", "60px"]}
-                  fontSize={["10px", "14px", "18px", "22px", "26px"]}
-                >
-                  Explore Activities
-                </Button>
-              </Link>
-              <Link href="https://www.doenet.org/portfolioviewer/_7OlapeBhtcfQaa5f7sOCH">
-                <Button
-                  mt="20px"
-                  p="10px"
-                  colorScheme="blue"
-                  w={["180px", "200px", "260px", "300px"]}
-                  h={["20px", "30px", "40px", "50px", "60px"]}
-                  fontSize={["10px", "14px", "18px", "22px", "26px"]}
-                >
-                  Learn to Make Your Own
-                </Button>
-              </Link>
-            </Flex>
-          </GridItem>
-          <GridItem area="Video" p="40px">
+            // gridTemplateRows={"120px auto"}
+            gridTemplateColumns={"60vw auto"}
+          >
+            <GridItem area="Description" margin="10vh 0 0 10vh">
+              {heroTextAndActions()}
+            </GridItem>
+            <GridItem area="Video" p="40px">
+              <Suspense fallback={"Loading..."}>
+                {/* Does this lazy loading do anything? */}
+                <Box ml="30px">
+                  <HomeIntroVideo />
+                </Box>
+              </Suspense>
+            </GridItem>
+          </Grid>
+        </Show>
+        <Show below="sm">
+          <SimpleGrid columns={[1, 1, 2, 2, 2]} spacing="10px">
             <Suspense fallback={"Loading..."}>
               {/* Does this lazy loading do anything? */}
-              <HomeIntroVideo />
-              <Link
-                color={textColor}
-                href="https://www.doenet.org/portfolioviewer/_IDTeopxcrVV2EzMEA4Cg9"
-              >
-                How to Make this Animation
-              </Link>
+              <Box ml="30px">
+                <HomeIntroVideo />
+              </Box>
             </Suspense>
-          </GridItem>
-        </Grid>
+            {heroTextAndActions()}
+          </SimpleGrid>
+        </Show>
       </Flex>
-      <Center w="100%" bg={grayColor}>
+      <Center w="100%" bg={grayColor} pl="10px" pr="10px">
         <VStack maxWidth="900px" w="100%" spacing={4} marginBottom={"30px"}>
           <HStack>
             <Box
-              w={["60px", "80px", "100px", "160px", "200px"]}
-              h={["60px", "80px", "100px", "160px", "200px"]}
+              w={["90px", "90px", "100px", "160px", "200px"]}
+              h={["90px", "90px", "100px", "160px", "200px"]}
               mr="20px"
               id="workshop"
             >
@@ -230,7 +250,7 @@ export function Home() {
             </Box>
 
             <Text
-              fontSize={["12px", "20px", "30px", "40px", "60px"]}
+              fontSize={["30px", "30px", "30px", "40px", "60px"]}
               // fontSize="60px"
               fontWeight="700"
               color={blackColor}
@@ -270,7 +290,7 @@ export function Home() {
         </VStack>
       </Center>
 
-      <Center w="100%" bg={"white"}>
+      <Center w="100%" bg={"white"} pl="10px" pr="10px">
         <VStack
           maxWidth="900px"
           w="100%"
@@ -280,7 +300,7 @@ export function Home() {
         >
           <HStack>
             <Text
-              fontSize={["12px", "20px", "30px", "40px", "60px"]}
+              fontSize={["30px", "30px", "30px", "40px", "60px"]}
               // fontSize="60px"
               fontWeight="700"
               color={blackColor}
@@ -326,7 +346,7 @@ export function Home() {
         </VStack>
       </Center>
 
-      <Center w="100%" bg={grayColor}>
+      <Center w="100%" bg={grayColor} pl="10px" pr="10px">
         <VStack
           maxWidth="900px"
           w="100%"
@@ -336,7 +356,7 @@ export function Home() {
         >
           <HStack>
             <Text
-              fontSize={["12px", "20px", "30px", "40px", "60px"]}
+              fontSize={["30px", "30px", "30px", "40px", "60px"]}
               // fontSize="60px"
               fontWeight="700"
               color={blackColor}
@@ -382,10 +402,10 @@ export function Home() {
         </VStack>
       </Center>
 
-      <Center w="100%" bg={"white"} paddingTop="40px">
+      <Center w="100%" bg={"white"} paddingTop="40px" pl="10px" pr="10px">
         <HStack maxWidth="750px" w="100%" spacing={4}>
           <Text
-            fontSize={["12px", "20px", "30px", "40px", "60px"]}
+            fontSize={["30px", "30px", "30px", "40px", "60px"]}
             // fontSize="60px"
             fontWeight="700"
             color={blackColor}
@@ -394,8 +414,7 @@ export function Home() {
           </Text>
           <Text
             pt="24px"
-            fontSize={["8px", "10px", "12px", "18px", "24px"]}
-            // fontSize="20px"
+            fontSize={["20px", null, null, "24px", "24px"]}
             fontWeight="700"
             color={blackColor}
           >
@@ -415,98 +434,105 @@ export function Home() {
         <Carousel title="Doenet Team Favorites" data={favorites} />
       </Flex>
 
-      <Center w="100%" bg={blueColor} paddingTop="40px">
-        <HStack maxWidth="750px" w="100%" spacing={4}>
-          <Text
-            fontSize={["12px", "20px", "30px", "40px", "60px"]}
-            // fontSize="60px"
-            fontWeight="700"
-            color={blackColor}
-          >
-            Learn
-          </Text>
+      <Center w="100%" bg={blueColor} pl="10px" pr="10px">
+        <VStack
+          maxWidth="900px"
+          w="100%"
+          spacing={4}
+          marginTop="40px"
+          marginBottom="40px"
+        >
+          <HStack maxWidth="750px" w="100%" spacing={4}>
+            <Text
+              fontSize={["30px", "30px", "30px", "40px", "60px"]}
+              // fontSize="60px"
+              fontWeight="700"
+              color={blackColor}
+            >
+              Learn
+            </Text>
+            <Text
+              pt="24px"
+              fontSize={["20px", null, null, "24px", "24px"]}
+              // fontSize="20px"
+              fontWeight="700"
+              color={blackColor}
+            >
+              Designed for the In-Person Classroom
+            </Text>
+          </HStack>
           <Text
             pt="24px"
-            fontSize={["8px", "10px", "12px", "18px", "24px"]}
+            fontSize={"18px"}
             // fontSize="20px"
-            fontWeight="700"
+            fontWeight="500"
             color={blackColor}
           >
-            Designed for the In-Person Classroom
-          </Text>
-        </HStack>
-      </Center>
-      <Flex justifyContent="center" alignItems="center" bg={blueColor}>
-        <Flex
-          flexDirection="column"
-          justifyContent="center"
-          textAlign="left"
-          p="20px"
-          gap="20px"
-        >
-          <Flex
-            flexDirection="column"
-            justifyContent="center"
-            textAlign="left"
-            gap={1}
-          >
-            <Text fontSize="16px">Immediate feedback in class</Text>
-            <Text fontSize="12px" marginLeft="10px">
+            <Text fontSize="20px">Immediate feedback in class</Text>
+            <Text fontSize="18px" marginLeft="10px">
               One benefit of using Doenet during in-class activities is the
               immediate feedback students receive even before an instructor can
               come by their group.
             </Text>
-            <Text fontSize="16px" marginTop="10px">
-              Open-ended response
-            </Text>
-            <Text fontSize="12px" marginLeft="10px">
-              Try our open-ended response example! ({" "}
-              <a
-                rel="noreferrer"
-                target="_blank"
-                href="https://www.doenet.org/public?tool=editor&doenetId=_4hcncjV6Ffabz5lhD47aL"
-              >
-                See source
-              </a>
-              )
-            </Text>
-          </Flex>
 
-          <Flex
-            bg={whiteColor}
-            py="10px"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <DoenetML
-              key={`HPpageViewer`}
-              doenetML={doenetML}
-              flags={{
-                showCorrectness: true,
-                solutionDisplayMode: "button",
-                showFeedback: true,
-                showHints: true,
-                autoSubmit: false,
-                allowLoadState: false,
-                allowSaveState: false,
-                allowLocalState: false,
-                allowSaveSubmissions: false,
-                allowSaveEvents: false,
-              }}
-              // activityId={doenetId}
-              attemptNumber={1}
-              generatedVariantCallback={variantCallback} //TODO:Replace
-              requestedVariantIndex={variantInfo.index}
-              // setIsInErrorState={setIsInErrorState}
-              addBottomPadding={false}
-              linkSettings={{
-                viewURL: "/portfolioviewer",
-                editURL: "/publiceditor",
-              }}
-            />
-          </Flex>
-        </Flex>
-      </Flex>
+            <Show above="sm">
+              <Text fontSize="20px" marginTop="10px">
+                Open-ended response
+              </Text>
+              <Text fontSize="18px" marginLeft="10px">
+                Try our open-ended response example! (
+                <Link
+                  rel="noreferrer"
+                  target="_blank"
+                  textDecoration={"underline"}
+                  href="https://www.doenet.org/public?tool=editor&doenetId=_4hcncjV6Ffabz5lhD47aL"
+                >
+                  See source
+                </Link>
+                )
+              </Text>
+            </Show>
+          </Text>
+
+          <Show above="sm">
+            <Flex
+              bg={whiteColor}
+              //py="10px"
+              justifyContent="center"
+              alignItems="center"
+              width={["350px", "450px", "650px", "850px"]}
+              overflow="clip"
+            >
+              <DoenetML
+                key={`HPpageViewer`}
+                doenetML={doenetML}
+                flags={{
+                  showCorrectness: true,
+                  solutionDisplayMode: "button",
+                  showFeedback: true,
+                  showHints: true,
+                  autoSubmit: false,
+                  allowLoadState: false,
+                  allowSaveState: false,
+                  allowLocalState: false,
+                  allowSaveSubmissions: false,
+                  allowSaveEvents: false,
+                }}
+                // activityId={doenetId}
+                attemptNumber={1}
+                generatedVariantCallback={variantCallback} //TODO:Replace
+                requestedVariantIndex={variantInfo.index}
+                // setIsInErrorState={setIsInErrorState}
+                addBottomPadding={false}
+                linkSettings={{
+                  viewURL: "/portfolioviewer",
+                  editURL: "/publiceditor",
+                }}
+              />
+            </Flex>
+          </Show>
+        </VStack>
+      </Center>
       <Center
         width="100%"
         bg={blackColor}
