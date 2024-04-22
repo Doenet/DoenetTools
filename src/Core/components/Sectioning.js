@@ -170,6 +170,10 @@ export class Exercise extends Problem {
   static componentType = "exercise";
 }
 
+export class Question extends Problem {
+  static componentType = "question";
+}
+
 export class Activity extends Problem {
   static componentType = "activity";
 }
