@@ -43,6 +43,7 @@ if ($success) {
   AND cc.isPublic = 1
   AND cc.isDeleted = 0
   AND cc.isBanned = 0
+  AND cc.type = 'activity'
   LIMIT 100
   ";
   

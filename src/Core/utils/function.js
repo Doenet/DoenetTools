@@ -1161,7 +1161,8 @@ export function returnReturnDerivativesOfInterpolatedFunction({
   variables,
 }) {
   if (!xs) {
-    return () => NaN;
+    // return a function that returns a function that returns NaN!
+    return () => () => NaN;
   }
 
   let variable1Trans = variables[0].subscripts_to_strings().tree;
