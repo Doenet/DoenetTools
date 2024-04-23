@@ -30,14 +30,11 @@ class Base_Model {
     public static function queryFetchAssoc($conn, $query) {
         $result = Base_Model::runQuery($conn, $query);
         if ($result->num_rows > 0) {
-            $data = [];
+            $rows = [];
             while($row = $result->fetch_assoc()){ 
-                $data['rows'] = $row;
-                foreach($row as $key => $value){
-                    $data[$key][] = $value;
-                }
+                $rows[] = $row;
             }
-            return $data;
+            return $rows;
         } else {
             return [];
         }
@@ -51,21 +48,19 @@ class Base_Model {
      * If more than one row is returned, throws an exception.
      */
     public static function queryOneRowOrError($conn, $query) {
-        $data = Base_Model::queryFetchAssoc($conn, $query);
-        
-        if (count($data['rows']) == 1) {
-            return $data;
-        } else if (count($data['rows']) == 0) {
+        $rows = Base_Model::queryFetchAssoc($conn, $query);
+
+        if (count($rows) == 1) {
+            return $rows[0];
+        } else if (count($rows) == 0) {
             return null;
         } else {
-
             throw new Exception("Unexpected error, only expected one row from this query.");
             error_log("Unexpected error, only expected one row from this query." . 
-                      "\n " . $conn->error .
-                      "\n" . $query);
+            "\n" . $query);
+
         }
     }
-
 
     /**
      * Validate that a list of keys are present in a given associative array.
