@@ -52,15 +52,15 @@ export default function HomeIntroVideo() {
         >
           <source src="/planet_orbits_smooth.webm" type="video/webm" />
         </HPVideo>
-        <Show above="sm">
-          <Link
-            color={"white"}
-            href="https://www.doenet.org/portfolioviewer/_IDTeopxcrVV2EzMEA4Cg9"
-          >
-            How to Make this Animation
-          </Link>
-        </Show>
       </Box>
+      <Show above="sm">
+        <Link
+          color={"white"}
+          href="https://www.doenet.org/portfolioviewer/_IDTeopxcrVV2EzMEA4Cg9"
+        >
+          How to Make this Animation
+        </Link>
+      </Show>
     </Box>
   );
 }
