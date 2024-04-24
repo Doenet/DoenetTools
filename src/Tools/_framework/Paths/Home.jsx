@@ -255,7 +255,7 @@ export function Home() {
               fontWeight="700"
               color={blackColor}
             >
-              Doenet Workshop 2024
+              Doenet Higher Ed Workshop 2024
             </Text>
           </HStack>
           <Text
@@ -309,6 +309,14 @@ export function Home() {
               Digital Math Interactives Workshop
             </Text>
           </HStack>
+          <Text
+            fontSize={["25px", "25px", "25px", "30px", "40px"]}
+            // fontSize="60px"
+            fontWeight="700"
+            color={blackColor}
+          >
+            For Middle and High School Teachers
+          </Text>
           <Text
             pt="24px"
             fontSize={"18px"}
