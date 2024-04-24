@@ -314,7 +314,6 @@ export function Home() {
             // fontSize="60px"
             fontWeight="700"
             color={blackColor}
-            id="workshop2"
           >
             For Middle and High School Teachers
           </Text>
