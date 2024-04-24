@@ -246,7 +246,7 @@ export function SiteHeader(props) {
                 {signedIn ? (
                   <Center h="40px" mr="10px">
                     <Menu>
-                      <MenuButton>
+                      <MenuButton data-test="AvatarMenuButton">
                         <Avatar size="sm" name={`${firstName} ${lastName}`} />
                       </MenuButton>
                       <MenuList>
@@ -282,7 +282,11 @@ export function SiteHeader(props) {
                           </Button> */}
                           </ButtonGroup>
                         </VStack>
-                        <MenuItem as="a" href="/signout">
+                        <MenuItem
+                          as="a"
+                          href="/signout"
+                          data-test="AvatarMenuSignOut"
+                        >
                           Sign Out
                         </MenuItem>
                       </MenuList>

@@ -47,7 +47,7 @@ class Base_Model {
      * 
      * If more than one row is returned, throws an exception.
      */
-    public static function queryExpectingOneRow($conn, $query) {
+    public static function queryOneRowOrError($conn, $query) {
         $rows = Base_Model::queryFetchAssoc($conn, $query);
 
         if (count($rows) == 1) {
@@ -56,6 +56,9 @@ class Base_Model {
             return null;
         } else {
             throw new Exception("Unexpected error, only expected one row from this query.");
+            error_log("Unexpected error, only expected one row from this query." . 
+            "\n" . $query);
+
         }
     }
 
