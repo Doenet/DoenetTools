@@ -68,7 +68,10 @@ export default function SignIn(props) {
   });
 
   //If already signed in go to course
-  if (document.cookie.indexOf("email") !== -1) {
+  if (
+    Object.keys(jwt).includes("JWT_JS") ||
+    document.cookie.indexOf("email") !== -1
+  ) {
     axios
       .get("/api/loadProfile.php", { params: {} })
       .then((resp) => {
