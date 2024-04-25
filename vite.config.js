@@ -11,9 +11,10 @@ export default defineConfig((env) => ({
   server: {
     port: 8000,
     proxy: {
-      '/cyapi': 'http://apache',
-      '/media': 'http://apache',
+      "/cyapi": "http://apache",
+      "/media": "http://apache",
       "/api": "http://host.docker.internal:3000",
+      //"/api": "http://apache",
     },
   },
   resolve: {
