@@ -49,26 +49,14 @@ export async function loader({ params }) {
       `/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`,
     );
 
-    const { data: activityML } = await axios.get(
-      `/media/${data.json.assignedCid}.doenet`,
-    );
-
-    //Find the first page's doenetML
-    const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
-    const pageIds = activityML.match(regex);
-
-    let firstPage = findFirstPageIdInContent(data.json.content);
-
-    const { data: doenetML } = await axios.get(`/media/${pageIds[1]}.doenet`);
-
     return {
       success: true,
       doenetId: params.doenetId,
-      doenetML,
+      doenetML: data.content,
       signedIn,
       label: data.label,
       contributors: data.contributors,
-      pageDoenetId: firstPage,
+      pageDoenetId: params.doenetId,
     };
   } catch (e) {
     return { success: false, message: e.response.data.message };

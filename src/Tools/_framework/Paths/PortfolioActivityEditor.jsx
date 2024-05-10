@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { redirect, useLoaderData } from "react-router";
 import CodeMirror from "../CodeMirror";
 
-import { DoenetML } from "../../../Viewer/DoenetML";
+// import { DoenetML } from "../../../Viewer/DoenetML";
+import { DoenetML } from "@doenet/doenetml";
 import Papa from "papaparse";
 
 import { useSetRecoilState } from "recoil";

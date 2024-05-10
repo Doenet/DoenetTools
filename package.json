@@ -1,6 +1,7 @@
 {
   "name": "doenet_tools",
   "version": "1.0.1",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "preview": "view preview",
@@ -36,6 +37,7 @@
     "@codemirror/highlight": "^0.19.6",
     "@codemirror/lang-xml": "^0.19.2",
     "@codemirror/language": "^0.19.7",
+    "@doenet/doenetml": "^0.7.0-alpha1",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@fontsource/jost": "^4.5.13",
@@ -79,7 +81,7 @@
     "react-datetime": "^3.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
-    "react-icons": "^4.8.0",
+    "react-icons": "4.8.0",
     "react-is": "^18.2.0",
     "react-mathquill": "^1.0.3",
     "react-measure": "^2.5.2",
@@ -108,7 +110,7 @@
     "@testing-library/react": "^11.2.7",
     "@types/react": "^18.0.5",
     "@types/react-dom": "^18.0.11",
-    "@vitejs/plugin-react": "^3.1.0",
+    "@vitejs/plugin-react": "^4.2.0",
     "@web/test-runner": "^0.12.19",
     "chai": "^4.2.0",
     "esbuild": "^0.14.54",
@@ -124,8 +126,9 @@
     "rollup": "^2.71.1",
     "rollup-plugin-polyfill-node": "^0.12.0",
     "rollup-plugin-terser": "^7.0.2",
-    "vite": "^4.2.1",
-    "vite-plugin-mpa": "^1.1.4"
+    "vite": "^5.0.0",
+    "vite-plugin-mpa": "^1.1.4",
+    "vite-plugin-static-copy": "^1.0.4"
   },
   "optionalDependencies": {
     "@esbuild/linux-arm64": "^0.17.19",
