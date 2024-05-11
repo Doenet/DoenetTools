@@ -819,12 +819,12 @@ export function GeneralActivityControls({
     learningOutcomesInit = [""];
   }
 
-  // TODO: if saveDataToServer is unsuccessful, then doenetmlVersionId from the server
-  // will not match doenetmlVersionId on the client and the client will not be notified.
+  // TODO: if saveDataToServer is unsuccessful, then doenetmlVersion from the server
+  // will not match doenetmlVersion on the client and the client will not be notified.
   // (And same for other variables using this pattern)
   // It appears this file is using optimistic UI without a recourse
   // should the optimism be unmerited.
-  let doenetmlVersionIdInit = activityData.doenetmlVersion.versionId;
+  let doenetmlVersionInit = activityData.doenetmlVersion;
 
   let [labelValue, setLabel] = useState(label);
   let lastAcceptedLabelValue = useRef(label);
@@ -833,9 +833,7 @@ export function GeneralActivityControls({
   let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
   let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
   const { compileActivity, updateAssignItem } = useCourse(courseId);
-  let [doenetmlVersionId, setDoenetmlVersionId] = useState(
-    doenetmlVersionIdInit,
-  );
+  let [doenetmlVersion, setDoenetmlVersion] = useState(doenetmlVersionInit);
 
   function saveDataToServer({
     nextLearningOutcomes,
@@ -866,7 +864,7 @@ export function GeneralActivityControls({
     lastAcceptedLabelValue.current = labelToSubmit;
     let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
 
-    let doenetmlVersionIdToSubmit = doenetmlVersionId;
+    let doenetmlVersionIdToSubmit = doenetmlVersion.versionId;
     if (nextDoenetmlVersionId) {
       doenetmlVersionIdToSubmit = nextDoenetmlVersionId;
     }
@@ -1180,14 +1178,17 @@ export function GeneralActivityControls({
         <FormControl>
           <FormLabel mt="16px">DoenetML version</FormLabel>
           <Select
-            value={doenetmlVersionId}
+            value={doenetmlVersion.versionId}
             onChange={(e) => {
               // TODO: do we worry about this pattern?
-              // If saveDataToServer is unsuccessful, the client doenetmlVersionId
+              // If saveDataToServer is unsuccessful, the client doenetmlVersion
               // will no match what's on the server.
-              // (See TODO from near where doenetmlVersionId is defined)
+              // (See TODO from near where doenetmlVersion is defined)
               let nextDoenetmlVersionId = e.target.value;
-              setDoenetmlVersionId(nextDoenetmlVersionId);
+              let nextDoenetmlVersion = allDoenetmlVersions.find(
+                (v) => v.versionId == nextDoenetmlVersionId,
+              );
+              setDoenetmlVersion(nextDoenetmlVersion);
               saveDataToServer({ nextDoenetmlVersionId });
             }}
           >
@@ -1198,6 +1199,13 @@ export function GeneralActivityControls({
             ))}
           </Select>
         </FormControl>
+        {doenetmlVersion.deprecated && (
+          <p>
+            <strong>Warning</strong>: DoenetML version{" "}
+            {doenetmlVersion.displayedVersion} is deprecated.{" "}
+            {doenetmlVersion.deprecationMessage}
+          </p>
+        )}
         <input type="hidden" name="imagePath" value={imagePath} />
         <input type="hidden" name="_action" value="update general" />
       </Form>
@@ -1730,7 +1738,18 @@ export function PortfolioActivityEditor() {
                       bg="doenet.lightBlue"
                       margin={0} //Only need when there is an outline
                       justifyContent="flex-end"
-                    ></HStack>
+                    >
+                      {activityData.doenetmlVersion.deprecated && (
+                        <Box style={{ backgroundColor: "lightcoral" }}>
+                          We need an appropriate way to warn, probably in the
+                          warnings, below, that DoenetML version{" "}
+                          {activityData.doenetmlVersion.displayedVersion} is
+                          deprecated.{" "}
+                          {activityData.doenetmlVersion.deprecationMessage}{" "}
+                          Include a link to how to upgrade.
+                        </Box>
+                      )}
+                    </HStack>
 
                     <Box
                       top="50px"
