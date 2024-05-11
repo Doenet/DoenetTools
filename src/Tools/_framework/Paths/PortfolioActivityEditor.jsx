@@ -107,7 +107,7 @@ export async function action({ params, request }) {
         public: formObj.public,
         doenetId: params.doenetId,
         learningOutcomes,
-        doenetmlVersion: formObj.doenetmlVersion,
+        doenetmlVersionId: formObj.doenetmlVersionId,
       },
     );
     return {
@@ -116,7 +116,7 @@ export async function action({ params, request }) {
       public: formObj.public,
       doenetId: params.doenetId,
       learningOutcomes,
-      doenetmlVersion: formObj.doenetmlVersion,
+      doenetmlVersionId: formObj.doenetmlVersionId,
     };
   }
   if (formObj._action == "update description") {
@@ -814,10 +814,33 @@ export function GeneralActivityControls({
   let [imagePath, setImagePath] = useState(dataImagePath);
   let [alerts, setAlerts] = useState([]);
 
+  let learningOutcomesInit = activityData.learningOutcomes;
+  if (learningOutcomesInit == null) {
+    learningOutcomesInit = [""];
+  }
+
+  // TODO: if saveDataToServer is unsuccessful, then doenetmlVersionId from the server
+  // will not match doenetmlVersionId on the client and the client will not be notified.
+  // (And same for other variables using this pattern)
+  // It appears this file is using optimistic UI without a recourse
+  // should the optimism be unmerited.
+  let doenetmlVersionIdInit = activityData.doenetmlVersion.versionId;
+
+  let [labelValue, setLabel] = useState(label);
+  let lastAcceptedLabelValue = useRef(label);
+  let [labelIsInvalid, setLabelIsInvalid] = useState(false);
+
+  let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
+  let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
+  const { compileActivity, updateAssignItem } = useCourse(courseId);
+  let [doenetmlVersionId, setDoenetmlVersionId] = useState(
+    doenetmlVersionIdInit,
+  );
+
   function saveDataToServer({
     nextLearningOutcomes,
     nextIsPublic,
-    nextDoenetmlVersion,
+    nextDoenetmlVersionId,
   } = {}) {
     let learningOutcomesToSubmit = learningOutcomes;
     if (nextLearningOutcomes) {
@@ -843,9 +866,9 @@ export function GeneralActivityControls({
     lastAcceptedLabelValue.current = labelToSubmit;
     let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
 
-    let doenetmlVersionToSubmit = doenetmlVersion;
-    if (nextDoenetmlVersion) {
-      doenetmlVersionToSubmit = nextDoenetmlVersion;
+    let doenetmlVersionIdToSubmit = doenetmlVersionId;
+    if (nextDoenetmlVersionId) {
+      doenetmlVersionIdToSubmit = nextDoenetmlVersionId;
     }
 
     fetcher.submit(
@@ -856,7 +879,7 @@ export function GeneralActivityControls({
         public: isPublicToSubmit,
         learningOutcomes: serializedLearningOutcomes,
         doenetId,
-        doenetmlVersion: doenetmlVersionToSubmit,
+        doenetmlVersionId: doenetmlVersionIdToSubmit,
       },
       { method: "post" },
     );
@@ -953,22 +976,6 @@ export function GeneralActivityControls({
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
-  let learningOutcomesInit = activityData.learningOutcomes;
-  if (learningOutcomesInit == null) {
-    learningOutcomesInit = [""];
-  }
-
-  let doenetmlVersionInit = activityData.doenetmlVersion;
-
-  let [labelValue, setLabel] = useState(label);
-  let lastAcceptedLabelValue = useRef(label);
-  let [labelIsInvalid, setLabelIsInvalid] = useState(false);
-
-  let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
-  let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
-  const { compileActivity, updateAssignItem } = useCourse(courseId);
-  let [doenetmlVersion, setDoenetmlVersion] = useState(doenetmlVersionInit);
 
   //TODO: Cypress is opening the drawer so fast
   //the activitieData is out of date
@@ -1173,11 +1180,15 @@ export function GeneralActivityControls({
         <FormControl>
           <FormLabel mt="16px">DoenetML version</FormLabel>
           <Select
-            value={doenetmlVersion}
+            value={doenetmlVersionId}
             onChange={(e) => {
-              let nextDoenetmlVersion = e.target.value;
-              setDoenetmlVersion(nextDoenetmlVersion);
-              saveDataToServer({ nextDoenetmlVersion });
+              // TODO: do we worry about this pattern?
+              // If saveDataToServer is unsuccessful, the client doenetmlVersionId
+              // will no match what's on the server.
+              // (See TODO from near where doenetmlVersionId is defined)
+              let nextDoenetmlVersionId = e.target.value;
+              setDoenetmlVersionId(nextDoenetmlVersionId);
+              saveDataToServer({ nextDoenetmlVersionId });
             }}
           >
             {allDoenetmlVersions.map((version) => (
