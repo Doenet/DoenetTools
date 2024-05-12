@@ -5,9 +5,6 @@ import { mathjaxConfig } from "../../Core/utils/math.js";
 
 import UIDocs from "./uiDocs.jsx";
 
-// import { initialize } from '../imports/courseInfo';
-// initialize();
-
 const root = createRoot(document.getElementById("root"));
 root.render(
   <MathJaxContext

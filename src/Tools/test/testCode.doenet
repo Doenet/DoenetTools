@@ -1,1 +1,11 @@
-<p>Use this to test DoenetML</p>
+<graph>
+  <point name="P">(1,2)
+  <constraints><constrainToGrid /></constraints>
+  </point>
+  <point name="Q">(3,2)
+  <constraints><constrainToGrid /></constraints>
+  </point>
+  <function name="f" through="$P $Q" />
+  <derivative name="df">$f</derivative>
+</graph>
+$$df(1)

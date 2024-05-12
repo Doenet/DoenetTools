@@ -67,7 +67,6 @@ export default function SignIn(props) {
     }
   });
 
-  //If already signed in go to course
   if (
     Object.keys(jwt).includes("JWT_JS") ||
     document.cookie.indexOf("email") !== -1
@@ -78,12 +77,6 @@ export default function SignIn(props) {
         // if (resp.data.success === '1') {
         localStorage.setItem("Profile", JSON.stringify(resp.data.profile));
         location.href = "/";
-        // navigate('/'); //Not sure why this doesn't work
-        // navigate('/course');
-        //   location.href = '/#/course';
-        // } else {
-        //   //  Error currently does nothing
-        // }
       })
       .catch((error) => {
         console.log(error);

@@ -1,4 +1,3 @@
-
 export default function findFirstPageIdInContent(content) {
   let pageId = null;
 
@@ -9,8 +8,6 @@ export default function findFirstPageIdInContent(content) {
         pageId = recursivePageId;
         break;
       }
-    } else if (item?.type == "collectionLink") {
-      //Skip
     } else {
       pageId = item;
       break;

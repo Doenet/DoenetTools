@@ -4,7 +4,6 @@ import { useRecoilValue } from "recoil";
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import { redirect, useLoaderData, useNavigate } from "react-router";
 import { pageToolViewAtom, searchParamAtomFamily } from "../NewToolRoot";
-import { useCourse } from "../../../_reactComponents/Course/CourseActions";
 import { Form } from "react-router-dom";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 
@@ -79,9 +78,6 @@ export default function SupportPanel({ hide, children }) {
   const navigate = useNavigate();
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const recoilPageToolView = useRecoilValue(pageToolViewAtom);
-  const { compileActivity, updateAssignItem } = useCourse(
-    data?.activityData?.courseId,
-  );
 
   let signInToRemix = false;
   if (
@@ -108,32 +104,6 @@ export default function SupportPanel({ hide, children }) {
         aria-label="complementary controls"
         data-test="Support Panel Controls"
       >
-        {recoilPageToolView?.page == "portfolioeditor" &&
-        data?.activityData?.public == "1" ? (
-          <Button
-            style={{ background: "#ff7b00" }}
-            value="Update Public Activity"
-            onClick={() => {
-              compileActivity({
-                activityDoenetId: doenetId,
-                isAssigned: true,
-                courseId: data?.activityData?.courseId,
-                // successCallback: () => {
-                //   addToast('Activity Assigned.', toastType.INFO);
-                // },
-              });
-
-              updateAssignItem({
-                doenetId,
-                isAssigned: true,
-                successCallback: () => {
-                  //addToast(assignActivityToast, toastType.INFO);
-                },
-              });
-            }}
-          />
-        ) : null}
-
         {signInToRemix ? (
           <Button
             value="Sign In To Remix"
