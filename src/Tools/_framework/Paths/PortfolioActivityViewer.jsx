@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router";
 import styled from "styled-components";
-import { DoenetML } from "../../../Viewer/DoenetML";
+import { DoenetML } from "@doenet/doenetml";
 
 import { useRecoilState } from "recoil";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";

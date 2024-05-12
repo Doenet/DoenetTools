@@ -37,7 +37,7 @@
     "@codemirror/highlight": "^0.19.6",
     "@codemirror/lang-xml": "^0.19.2",
     "@codemirror/language": "^0.19.7",
-    "@doenet/doenetml": "^0.7.0-alpha1",
+    "@doenet/doenetml": "0.7.0-alpha2",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@fontsource/jost": "^4.5.13",

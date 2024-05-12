@@ -2,8 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { redirect, useLoaderData } from "react-router";
 import CodeMirror from "../CodeMirror";
 
-// import { DoenetML } from "../../../Viewer/DoenetML";
-import { DoenetML } from "@doenet/doenetml";
+import { DoenetML, cidFromText } from "@doenet/doenetml";
 import Papa from "papaparse";
 
 import { useSetRecoilState } from "recoil";
@@ -69,7 +68,6 @@ import { useDropzone } from "react-dropzone";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { GoKebabVertical } from "react-icons/go";
 import { useSaveDraft } from "../../../_utils/hooks/useSaveDraft";
-import { cidFromText } from "../../../Core/utils/cid";
 import { textEditorDoenetMLAtom } from "../../../_sharedRecoil/EditorViewerRecoil";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
 // import Select from "react-select";

@@ -18,12 +18,10 @@ import {
   indentNodeProp,
   foldNodeProp,
 } from "@codemirror/language";
-import { HighlightStyle } from "@codemirror/highlight";
 import { completeFromSchema } from "@codemirror/lang-xml";
 import { parser } from "../../Parser/doenet";
 import { atom, useRecoilValue } from "recoil";
-import { getRenderer } from "handsontable/renderers";
-import doenetSchema from "../../Core/doenetSchema.json";
+import { doenetSchema } from "@doenet/doenetml";
 
 const editorConfigStateAtom = atom({
   key: "editorConfigStateAtom",

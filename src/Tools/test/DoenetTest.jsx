@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { DoenetML } from "../../Viewer/DoenetML";
+import { DoenetML } from "@doenet/doenetml";
 import testCodeDoenetML from "./testCode.doenet?raw";
 import { MathJaxContext } from "better-react-mathjax";
-import { mathjaxConfig } from "../../Core/utils/math.js";
-import { useRecoilState } from "recoil";
 import { useLocation, useNavigate } from "react-router";
+import { mathjaxConfig } from "@doenet/doenetml";
 
 function Test() {
   // console.log("===Test")

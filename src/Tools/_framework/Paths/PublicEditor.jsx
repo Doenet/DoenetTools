@@ -8,7 +8,7 @@ import {
 } from "react-router";
 import CodeMirror from "../CodeMirror";
 
-import { DoenetML } from "../../../Viewer/DoenetML";
+import { DoenetML } from "@doenet/doenetml";
 
 import {
   Box,
@@ -32,12 +32,12 @@ import {
 import { BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
 import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
-import { cidFromText } from "../../../Core/utils/cid";
 import { pageToolViewAtom } from "../NewToolRoot";
 import { useRecoilState } from "recoil";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
+import { cidFromText } from "@doenet/doenetml";
 
 export async function loader({ params }) {
   try {

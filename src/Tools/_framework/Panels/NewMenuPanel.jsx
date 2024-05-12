@@ -287,7 +287,6 @@ export default function MenuPanel({
 
   const LazyMenuObj = useRef({
     PageVariant: lazy(() => import("../Menus/PageVariant")),
-    ActivityVariant: lazy(() => import("../Menus/ActivityVariant")),
     AutoSaves: lazy(() => import("../Menus/AutoSaves")),
     SupportingFilesMenu: lazy(() => import("../Menus/SupportingFilesMenu")),
   }).current;
