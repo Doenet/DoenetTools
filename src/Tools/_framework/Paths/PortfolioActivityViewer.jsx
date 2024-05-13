@@ -8,7 +8,6 @@ import {
 import styled from "styled-components";
 import { DoenetML } from "@doenet/doenetml";
 
-import { useRecoilState } from "recoil";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import { Form } from "react-router-dom";
 import {
@@ -20,7 +19,6 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { pageToolViewAtom } from "../NewToolRoot";
 import axios from "axios";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
@@ -88,9 +86,6 @@ export function PortfolioActivityViewer() {
 
   const navigate = useNavigate();
   const location = useLocation();
-
-  const [recoilPageToolView, setRecoilPageToolView] =
-    useRecoilState(pageToolViewAtom);
 
   let navigateTo = useRef("");
 
@@ -193,12 +188,6 @@ export function PortfolioActivityViewer() {
                       size="xs"
                       onClick={() => {
                         navigateTo.current = "/signin";
-                        setRecoilPageToolView({
-                          page: "signin",
-                          tool: "",
-                          view: "",
-                          params: {},
-                        });
                       }}
                     >
                       Sign In To Remix

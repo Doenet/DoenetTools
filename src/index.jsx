@@ -5,10 +5,8 @@ import {
   redirect,
   RouterProvider,
 } from "react-router-dom";
-import { RecoilRoot } from "recoil";
 import { createRoot } from "react-dom/client";
 
-import ToolRoot from "./Tools/_framework/NewToolRoot";
 import { MathJaxContext } from "better-react-mathjax";
 import {
   loader as communityLoader,
@@ -25,7 +23,7 @@ import {
   SiteHeader,
 } from "./Tools/_framework/Paths/SiteHeader";
 import {
-  loader as caroselLoader,
+  loader as carouselLoader,
   // action as homeAction,
   Home,
 } from "./Tools/_framework/Paths/Home";
@@ -45,10 +43,7 @@ import {
   PortfolioActivityViewer,
 } from "./Tools/_framework/Paths/PortfolioActivityViewer";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import {
-  action as editorSupportPanelAction,
-  loader as editorSupportPanelLoader,
-} from "./Tools/_framework/Panels/NewSupportPanel";
+
 import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
 
 import "@fontsource/jost";
@@ -62,6 +57,8 @@ import {
   loader as publicEditorLoader,
 } from "./Tools/_framework/Paths/PublicEditor";
 import { mathjaxConfig } from "@doenet/doenetml";
+import SignIn from "./Tools/_framework/ToolPanels/SignIn";
+import SignOut from "./Tools/_framework/ToolPanels/SignOut";
 
 {
   /* <Button colorScheme="doenet_blue">TESTING 123</Button> */
@@ -131,7 +128,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        loader: caroselLoader,
+        loader: carouselLoader,
         // action: homeAction,
         errorElement: (
           <ChakraProvider theme={theme}>
@@ -139,7 +136,6 @@ const router = createBrowserRouter([
           </ChakraProvider>
         ),
         element: (
-          // <DarkmodeController>
           <MathJaxContext
             version={2}
             config={mathjaxConfig}
@@ -149,7 +145,6 @@ const router = createBrowserRouter([
               <Home />
             </ChakraProvider>
           </MathJaxContext>
-          // </DarkmodeController>
         ),
       },
       {
@@ -227,7 +222,6 @@ const router = createBrowserRouter([
           </ChakraProvider>
         ),
         element: (
-          // <DarkmodeController>
           <MathJaxContext
             version={2}
             config={mathjaxConfig}
@@ -237,7 +231,6 @@ const router = createBrowserRouter([
               <PortfolioActivityViewer />
             </ChakraProvider>
           </MathJaxContext>
-          // </DarkmodeController>
         ),
       },
       {
@@ -298,52 +291,27 @@ const router = createBrowserRouter([
           </MathJaxContext>
         ),
       },
+      {
+        path: "signin",
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+        element: <SignIn />,
+      },
+      {
+        path: "signout",
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+        element: <SignOut />,
+      },
     ],
-  },
-  {
-    path: "public",
-    loader: editorSupportPanelLoader,
-    action: editorSupportPanelAction,
-    // errorElement: <div>Error!</div>,
-    element: (
-      <MathJaxContext
-        version={2}
-        config={mathjaxConfig}
-        onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-      >
-        <ToolRoot />
-      </MathJaxContext>
-    ),
-  },
-
-  {
-    path: "*",
-    element: (
-      <MathJaxContext
-        version={2}
-        config={mathjaxConfig}
-        onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-      >
-        <ToolRoot />
-      </MathJaxContext>
-    ),
-    // TODO - probably not a good idea long term, this is to populate the site header
-    // on the 404 page, but this results in extra network requests when loading
-    // ToolRoot content
-    loader: siteLoader,
-    errorElement: (
-      <ChakraProvider theme={theme}>
-        <SiteHeader childComponent={<ErrorPage />} />
-      </ChakraProvider>
-    ),
   },
 ]);
 
 const root = createRoot(document.getElementById("root"));
-root.render(
-  <RecoilRoot>
-    {/* <ColorModeScript initialColorMode={theme.config.initialColorMode} /> */}
-
-    <RouterProvider router={router} />
-  </RecoilRoot>,
-);
+root.render(<RouterProvider router={router} />);

@@ -1,14 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router";
-import {
-  useRecoilCallback,
-  atom,
-  useRecoilValueLoadable,
-  useSetRecoilState,
-} from "recoil";
 
 import styled from "styled-components";
-import { pageToolViewAtom } from "./NewToolRoot";
 
 const LogoButton = styled.button`
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
@@ -35,21 +28,9 @@ const LogoButton = styled.button`
   }
 `;
 
-export const profileToolViewStashAtom = atom({
-  key: "profileToolViewStashAtom",
-  default: {},
-});
-
 export default function Logo({ hasLink = true }) {
   const navigate = useNavigate();
 
-  // if (profile.state === "loading"){ return null;}
-  //   if (profile.state === "hasError"){
-  //     console.error(profile.contents)
-  //     return null;}
-
-  // let profilePicName = "cat";
-  // return <ProfilePicture pic={profilePicName} onClick={()=>{location.href = '/accountSettings/'}}/>
   return (
     <LogoButton
       hasLink={hasLink}

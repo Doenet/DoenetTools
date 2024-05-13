@@ -1,11 +1,7 @@
 import React, { lazy, Suspense, useEffect } from "react";
 import { useLoaderData, useOutletContext } from "react-router";
 import { DoenetML } from "@doenet/doenetml";
-import {
-  pageVariantInfoAtom,
-  pageVariantPanelAtom,
-} from "../../../_sharedRecoil/PageViewerRecoil";
-import { useRecoilState, useSetRecoilState } from "recoil";
+
 import { Carousel } from "../../../_reactComponents/PanelHeaderComponents/Carousel";
 import {
   Box,
@@ -110,26 +106,9 @@ export function Home() {
 
   const favorites = loaderData?.carouselData?.Homepage;
 
-  const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
-  const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
-
   useEffect(() => {
     document.title = `Home - Doenet`;
   }, []);
-
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
-    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
-    const cleanGeneratedVariant = JSON.parse(
-      JSON.stringify(generatedVariantInfo),
-    );
-    setVariantPanel({
-      index: cleanGeneratedVariant.index,
-      allPossibleVariants,
-    });
-    setVariantInfo({
-      index: cleanGeneratedVariant.index,
-    });
-  }
 
   const grayColor = useColorModeValue("doenet.mainGray", "doenet.lightGray");
   const blueColor = useColorModeValue("doenet.lightBlue", "doenet.mainBlue");
@@ -528,8 +507,6 @@ export function Home() {
                 }}
                 // activityId={doenetId}
                 attemptNumber={1}
-                generatedVariantCallback={variantCallback} //TODO:Replace
-                requestedVariantIndex={variantInfo.index}
                 // setIsInErrorState={setIsInErrorState}
                 addBottomPadding={false}
                 linkSettings={{
