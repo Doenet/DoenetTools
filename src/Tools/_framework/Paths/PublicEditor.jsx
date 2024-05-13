@@ -24,11 +24,7 @@ import {
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
-import {
-  ExternalLinkIcon,
-  WarningIcon,
-  WarningTwoIcon,
-} from "@chakra-ui/icons";
+import { WarningIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import { BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
 import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
@@ -56,24 +52,19 @@ export async function loader({ params }) {
       //If we found a pageId then redirect there
       //TODO: test what happens when there are only orders and no pageIds
       if (pageId != "_") {
-        return redirect(`/portfolioeditor/${params.doenetId}/${pageId}`);
+        return redirect(`/publiceditor/${params.doenetId}/${pageId}`);
       }
     }
 
-    //Get the public doenetML of the Activity
-    const { data: data2 } = await axios.get(
-      `/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`,
+    //Get the doenetML of the pageId.
+    //we need transformResponse because
+    //large numbers are simplified with toString if used on doenetMLResponse.data
+    //which was causing errors
+    const doenetMLResponse = await axios.get(
+      `/media/byPageId/${pageId}.doenet`,
+      { transformResponse: (data) => data.toString() },
     );
-
-    const { data: activityML } = await axios.get(
-      `/media/${data2.json.assignedCid}.doenet`,
-    );
-    //Find the first page's doenetML
-    const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
-    const pageIds = activityML.match(regex);
-
-    //NEED AXIOS GET HERE!!!
-    const { data: doenetML } = await axios.get(`/media/${pageIds[1]}.doenet`);
+    let doenetML = doenetMLResponse.data;
     const lastKnownCid = await cidFromText(doenetML);
 
     const supportingFileResp = await axios.get(

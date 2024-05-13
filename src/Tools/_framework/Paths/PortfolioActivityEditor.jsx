@@ -56,7 +56,7 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
+import { WarningTwoIcon } from "@chakra-ui/icons";
 import { BsClipboardPlus, BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
 import { MdModeEditOutline, MdOutlineCloudUpload } from "react-icons/md";
 import { FaCog, FaFileImage } from "react-icons/fa";
@@ -71,6 +71,7 @@ import { HiOutlineX, HiPlus } from "react-icons/hi";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
 import { useLocation, useNavigate } from "react-router";
+import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -148,24 +149,6 @@ export async function action({ params, request }) {
   // return redirect(
   //   `/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`,
   // );
-}
-
-function findFirstPageIdInContent(content) {
-  let pageId = null;
-
-  for (let item of content) {
-    if (item?.type == "order") {
-      let recursivePageId = findFirstPageIdInContent(item.content);
-      if (recursivePageId != null) {
-        pageId = recursivePageId;
-        break;
-      }
-    } else {
-      pageId = item;
-      break;
-    }
-  }
-  return pageId;
 }
 
 export async function loader({ params }) {
