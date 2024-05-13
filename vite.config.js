@@ -12,22 +12,23 @@ const require = createRequire(import.meta.url);
 
 export default defineConfig((env) => ({
   appType: "mpa",
-  plugins: [react(),
-        viteStaticCopy({
-            targets: [
-              {
-                src: path.join(
-                  require.resolve("@doenet/doenetml/doenetml-worker/CoreWorker.js"),
-                  "../*"
-                ),
-                dest: "doenetml-worker/",
-              },
-              {
-                src: path.join(require.resolve("@doenet/doenetml"), "../fonts/*"),
-                dest: "fonts/",
-              },
-            ],
-          }),
+  plugins: [
+    react(),
+    viteStaticCopy({
+      targets: [
+        {
+          src: path.join(
+            require.resolve("@doenet/doenetml/doenetml-worker/CoreWorker.js"),
+            "../*",
+          ),
+          dest: "doenetml-worker/",
+        },
+        {
+          src: path.join(require.resolve("@doenet/doenetml"), "../fonts/*"),
+          dest: "fonts/",
+        },
+      ],
+    }),
   ],
   server: {
     port: 8000,
@@ -42,9 +43,7 @@ export default defineConfig((env) => ({
   resolve: {
     alias: [
       { find: "csv-parse", replacement: "csv-parse/browser/esm" },
-      { find: "@Toast", replacement: "/src/Tools/_framework/Toast" },
       { find: "@Tool", replacement: "/src/Tools/_framework/Tool" },
-      { find: "@ToolRoot", replacement: "/src/Tools/_framework/NewToolRoot" },
       { find: "solid-svg", replacement: "@fortawesome/free-solid-svg-icons" },
     ],
   },

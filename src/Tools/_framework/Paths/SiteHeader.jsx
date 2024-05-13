@@ -11,7 +11,6 @@ import {
   Link,
   Text,
   Tooltip,
-  useColorMode,
   Menu,
   MenuButton,
   MenuList,
@@ -26,8 +25,6 @@ import { Outlet, useLoaderData, useLocation, useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import RouterLogo from "../RouterLogo";
-import { pageToolViewAtom } from "../NewToolRoot";
-import { useRecoilState } from "recoil";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import axios from "axios";
@@ -105,14 +102,9 @@ export function SiteHeader(props) {
     useLoaderData();
   const { childComponent } = props;
 
-  const { colorMode, toggleColorMode, setColorMode } = useColorMode();
   let location = useLocation();
 
-  // const navColor = useColorModeValue("#ffffff", "gray.800");
   const navigate = useNavigate();
-
-  const [recoilPageToolView, setRecoilPageToolView] =
-    useRecoilState(pageToolViewAtom);
 
   let navigateTo = useRef("");
 
@@ -253,31 +245,6 @@ export function SiteHeader(props) {
                             {firstName} {lastName}
                           </Text>
                           <Text>{email}</Text>
-                          <ButtonGroup size="sm" isAttached variant="outline">
-                            <Button
-                              leftIcon={<FaSun />}
-                              onClick={toggleColorMode}
-                              isDisabled={colorMode == "light"}
-                            >
-                              Light
-                            </Button>
-                            <Button
-                              leftIcon={<FaMoon />}
-                              onClick={toggleColorMode}
-                              isDisabled={colorMode == "dark"}
-                              // cursor="not-allowed"
-                            >
-                              Dark
-                            </Button>
-                            {/* <Button
-                            leftIcon={<FaRobot />}
-                            onClick={() => setColorMode("system")}
-                            // isDisabled={colorMode == ""}
-                            // cursor="not-allowed"
-                          >
-                            Auto
-                          </Button> */}
-                          </ButtonGroup>
                         </VStack>
                         <MenuItem as="a" href="/signout">
                           Sign Out
@@ -294,12 +261,6 @@ export function SiteHeader(props) {
                       variant="outline"
                       onClick={() => {
                         navigateTo.current = "/signin";
-                        setRecoilPageToolView({
-                          page: "signin",
-                          tool: "",
-                          view: "",
-                          params: {},
-                        });
                       }}
                     >
                       Sign In

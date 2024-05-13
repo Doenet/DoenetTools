@@ -16,10 +16,7 @@ import {
 import { GoKebabVertical } from "react-icons/go";
 import { Link, useFetcher } from "react-router-dom";
 
-// import { useRecoilState, useSetRecoilState } from "recoil";
-// import { pageToolViewAtom } from "../../Tools/_framework/NewToolRoot";
-
-export default function RecoilActivityCard({
+export default function ActivityCard2({
   doenetId,
   imagePath,
   label,
@@ -34,10 +31,6 @@ export default function RecoilActivityCard({
   onOpen,
 }) {
   const fetcher = useFetcher();
-  // const setItemByDoenetId = useSetRecoilState(itemByDoenetId(doenetId));
-
-  // const [recoilPageToolView, setRecoilPageToolView] =
-  //   useRecoilState(pageToolViewAtom);
 
   let navigateTo = useRef("");
 

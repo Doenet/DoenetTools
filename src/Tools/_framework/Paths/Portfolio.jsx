@@ -26,7 +26,7 @@ import {
 import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
-import RecoilActivityCard from "../../../_reactComponents/PanelHeaderComponents/RecoilActivityCard";
+import ActivityCard2 from "../../../_reactComponents/PanelHeaderComponents/ActivityCard2";
 import { GeneralActivityControls } from "./PortfolioActivityEditor";
 import axios from "axios";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
@@ -329,7 +329,7 @@ export function Portfolio() {
               <>
                 {data.publicActivities.map((activity) => {
                   return (
-                    <RecoilActivityCard
+                    <ActivityCard2
                       key={`Card${activity.doenetId}`}
                       {...activity}
                       fullName={data.fullName}
@@ -369,7 +369,7 @@ export function Portfolio() {
               <>
                 {data.privateActivities.map((activity) => {
                   return (
-                    <RecoilActivityCard
+                    <ActivityCard2
                       key={`Card${activity.doenetId}`}
                       {...activity}
                       fullName={data.fullName}

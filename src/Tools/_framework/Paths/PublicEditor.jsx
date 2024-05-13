@@ -32,8 +32,6 @@ import {
 import { BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
 import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
-import { pageToolViewAtom } from "../NewToolRoot";
-import { useRecoilState } from "recoil";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
@@ -134,9 +132,6 @@ export function PublicEditor() {
   const { signedIn } = useOutletContext();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const [recoilPageToolView, setRecoilPageToolView] =
-    useRecoilState(pageToolViewAtom);
 
   let navigateTo = useRef("");
 
@@ -277,12 +272,6 @@ export function PublicEditor() {
                     colorScheme="blue"
                     onClick={() => {
                       navigateTo.current = "/signin";
-                      setRecoilPageToolView({
-                        page: "signin",
-                        tool: "",
-                        view: "",
-                        params: {},
-                      });
                     }}
                   >
                     Sign In To Remix

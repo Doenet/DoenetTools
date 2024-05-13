@@ -1,16 +1,13 @@
-import React from "react";
-import { useRecoilState } from "recoil";
-import {
-  pageVariantInfoAtom,
-  pageVariantPanelAtom,
-} from "../../../_sharedRecoil/PageViewerRecoil";
+import React, { useState } from "react";
 
 export default function PageVariant(props) {
-  const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
-  const [variantPanel, setVariantPanel] = useRecoilState(pageVariantPanelAtom);
+  const [variantInfo, setVariantInfo] = useState({ index: 1 });
+  const [variantPanel, setVariantPanel] = useState({
+    index: 1,
+    allPossibleVariants: [],
+  });
 
-  function updateVariantInfoAtom() {
-    // console.log(">>>updateVariantInfoAtom")
+  function updateVariantInfo() {
     //Prevent calling when it didn't change
     if (variantPanel.index === variantInfo.index) {
       return;
@@ -51,10 +48,10 @@ export default function PageVariant(props) {
             value={variantPanel.index}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                updateVariantInfoAtom();
+                updateVariantInfo();
               }
             }}
-            onBlur={() => updateVariantInfoAtom()}
+            onBlur={() => updateVariantInfo()}
             onChange={(e) => {
               setVariantPanel((was) => {
                 let newObj = { ...was };

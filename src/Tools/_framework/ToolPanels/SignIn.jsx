@@ -3,7 +3,6 @@ import Cookies from "js-cookie"; // import Textinput from "../imports/Textinput"
 import axios from "axios";
 import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 import Textfield from "../../../_reactComponents/PanelHeaderComponents/Textfield";
-import { useToast, toastType } from "../Toast.jsx";
 import Checkbox from "../../../_reactComponents/PanelHeaderComponents/Checkbox";
 
 export default function SignIn(props) {
@@ -30,8 +29,6 @@ export default function SignIn(props) {
 
   const emailRef = useRef(null);
   const codeRef = useRef(null);
-
-  const toast = useToast();
 
   function validateEmail(inputEmail) {
     if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(inputEmail)) {
@@ -168,7 +165,7 @@ export default function SignIn(props) {
             setSignInStage("Code expired");
           } else if (resp.data.reason === "Invalid Code") {
             setSignInStage("enter code");
-            toast("Invalid code. Please try again.", toastType.ERROR);
+            alert("Invalid code. Please try again.");
           }
         }
       })
@@ -347,18 +344,12 @@ export default function SignIn(props) {
                   setSignInStage("check code");
                   // } else if (((e.key === 'Enter') || ((e.ctrlKey || e.metaKey) && e.keyCode == 86)) && !validCode) {
                 } else if (e.key === "Enter" && !validCode) {
-                  toast(
-                    "Invalid code format. Please enter 9 digits.",
-                    toastType.ERROR,
-                  );
+                  alert("Invalid code format. Please enter 9 digits.");
                 }
               }}
               onBlur={() => {
                 if (!validCode && !signInAlert) {
-                  toast(
-                    "Invalid code format. Please enter 9 digits.",
-                    toastType.ERROR,
-                  );
+                  alert("Invalid code format. Please enter 9 digits.");
                 }
               }}
               onChange={(e) => {
@@ -419,13 +410,13 @@ export default function SignIn(props) {
                   if (e.key === "Enter" && validEmail) {
                     setSignInStage("enter code");
                   } else if (e.key === "Enter" && !validEmail) {
-                    toast("Invalid email. Please try again.", toastType.ERROR);
+                    alert("Invalid email. Please try again.");
                   }
                 }}
                 onBlur={() => {
                   validateEmail(email);
                   if (!validEmail && !sendEmailAlert) {
-                    toast("Invalid email. Please try again.", toastType.ERROR);
+                    alert("Invalid email. Please try again.");
                   }
                 }}
                 onChange={(e) => {

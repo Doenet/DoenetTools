@@ -5,7 +5,6 @@ import CodeMirror from "../CodeMirror";
 import { DoenetML, cidFromText } from "@doenet/doenetml";
 import Papa from "papaparse";
 
-import { useSetRecoilState } from "recoil";
 import {
   Alert,
   AlertDescription,
@@ -67,8 +66,6 @@ import axios from "axios";
 import { useDropzone } from "react-dropzone";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { GoKebabVertical } from "react-icons/go";
-import { useSaveDraft } from "../../../_utils/hooks/useSaveDraft";
-import { textEditorDoenetMLAtom } from "../../../_sharedRecoil/EditorViewerRecoil";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
 // import Select from "react-select";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
@@ -1333,7 +1330,6 @@ export function PortfolioActivityEditor() {
 
   let textEditorDoenetML = useRef(doenetML);
   let lastKnownCidRef = useRef(lastKnownCid);
-  const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
   // const [mode, setMode] = useState("View");
   const [mode, setMode] = useState("Edit");
@@ -1352,8 +1348,6 @@ export function PortfolioActivityEditor() {
   let navigate = useNavigate();
   let location = useLocation();
 
-  const { saveDraft } = useSaveDraft();
-
   const handleSaveDraft = useCallback(async () => {
     const doenetML = textEditorDoenetML.current;
     const lastKnownCid = lastKnownCidRef.current;
@@ -1363,18 +1357,31 @@ export function PortfolioActivityEditor() {
       postponedSaving.current = true;
     } else {
       inTheMiddleOfSaving.current = true;
-      let result = await saveDraft({
-        pageId,
-        courseId,
-        backup,
-        lastKnownCid,
-        doenetML,
-      });
 
-      if (result.success) {
+      //Save in localStorage
+      // localStorage.setItem(cid,doenetML)
+
+      try {
+        const params = {
+          doenetML,
+          pageId,
+          courseId,
+          backup,
+          lastKnownCid,
+        };
+        const {
+          data: { success, message },
+        } = await axios.post("/api/saveDoenetML.php", params);
+
+        if (!success) throw new Error(message);
+
+        const cid = await cidFromText(doenetML);
+        lastKnownCidRef.current = cid;
         backupOldDraft.current = false;
-        lastKnownCidRef.current = result.cid;
+      } catch (error) {
+        alert(error.message);
       }
+
       inTheMiddleOfSaving.current = false;
       timeout.current = null;
 
@@ -1386,7 +1393,7 @@ export function PortfolioActivityEditor() {
         handleSaveDraft();
       }
     }
-  }, [pageId, courseId, saveDraft]);
+  }, [pageId, courseId]);
 
   useEffect(() => {
     const handleEditorKeyDown = (event) => {
@@ -1713,7 +1720,6 @@ export function PortfolioActivityEditor() {
                           setInternalValueTo={initializeEditorDoenetML.current}
                           onBeforeChange={(value) => {
                             textEditorDoenetML.current = value;
-                            setEditorDoenetML(value);
                             if (!codeChangedRef.current) {
                               setCodeChanged(true);
                             }
