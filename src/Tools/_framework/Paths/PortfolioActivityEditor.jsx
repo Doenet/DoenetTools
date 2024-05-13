@@ -73,7 +73,6 @@ import { cidFromText } from "../../../Core/utils/cid";
 import { textEditorDoenetMLAtom } from "../../../_sharedRecoil/EditorViewerRecoil";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
 // import Select from "react-select";
-import { useCourse } from "../../../_reactComponents/Course/CourseActions";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
 import { useLocation, useNavigate } from "react-router";
@@ -166,8 +165,6 @@ function findFirstPageIdInContent(content) {
         pageId = recursivePageId;
         break;
       }
-    } else if (item?.type == "collectionLink") {
-      //Skip
     } else {
       pageId = item;
       break;
@@ -832,7 +829,6 @@ export function GeneralActivityControls({
 
   let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
   let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
-  const { compileActivity, updateAssignItem } = useCourse(courseId);
   let [doenetmlVersion, setDoenetmlVersion] = useState(doenetmlVersionInit);
 
   function saveDataToServer({
@@ -1146,27 +1142,6 @@ export function GeneralActivityControls({
               let nextIsPublic = false;
               if (e.target.checked) {
                 nextIsPublic = true;
-                //Process making activity public here
-                compileActivity({
-                  activityDoenetId: doenetId,
-                  isAssigned: true,
-                  courseId,
-                  activity: {
-                    version: activityData.version,
-                    isSinglePage: true,
-                    content: activityData.content,
-                  },
-                  // successCallback: () => {
-                  //   addToast('Activity Assigned.', toastType.INFO);
-                  // },
-                });
-                updateAssignItem({
-                  doenetId,
-                  isAssigned: true,
-                  successCallback: () => {
-                    //addToast(assignActivityToast, toastType.INFO);
-                  },
-                });
               }
               setCheckboxIsPublic(nextIsPublic);
               saveDataToServer({ nextIsPublic });
@@ -1337,8 +1312,6 @@ export function PortfolioActivityEditor() {
     activityData,
     lastKnownCid,
   } = useLoaderData();
-
-  const { compileActivity, updateAssignItem } = useCourse(courseId);
 
   const [errorsAndWarnings, setErrorsAndWarningsCallback] = useState({
     errors: [],
@@ -1553,38 +1526,6 @@ export function PortfolioActivityEditor() {
               justifyContent="flex-end"
             >
               <HStack mr="10px">
-                {activityData?.isPublic == "1" && (
-                  <Button
-                    data-test="Update Public Activity Button"
-                    size="sm"
-                    onClick={() => {
-                      //Process making activity public here
-                      compileActivity({
-                        activityDoenetId: doenetId,
-                        isAssigned: true,
-                        courseId,
-                        activity: {
-                          version: activityData.version,
-                          isSinglePage: true,
-                          content: activityData.content,
-                        },
-                        // successCallback: () => {
-                        //   addToast('Activity Assigned.', toastType.INFO);
-                        // },
-                      });
-                      updateAssignItem({
-                        doenetId,
-                        isAssigned: true,
-                        successCallback: () => {
-                          //addToast(assignActivityToast, toastType.INFO);
-                        },
-                      });
-                    }}
-                  >
-                    Update Public Activity
-                  </Button>
-                )}
-
                 <Tooltip
                   hasArrow
                   label={

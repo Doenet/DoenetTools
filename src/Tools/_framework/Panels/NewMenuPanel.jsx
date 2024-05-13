@@ -277,59 +277,19 @@ export default function MenuPanel({
 
   // const profilePicName = profile.profilePicture;
   const LazyMenuPanelCapObj = useRef({
-    DriveInfoCap: lazy(() => import("../MenuPanelCaps/DriveInfoCap")),
-    DataCap: lazy(() => import("../MenuPanelCaps/DataCap")),
-    EditorInfoCap: lazy(() => import("../MenuPanelCaps/EditorInfoCap")),
     PortfolioEditorInfoCap: lazy(() =>
       import("../MenuPanelCaps/PortfolioEditorInfoCap"),
     ),
     PublicEditorInfoCap: lazy(() =>
       import("../MenuPanelCaps/PublicEditorInfoCap"),
     ),
-    AssignmentInfoCap: lazy(() => import("../MenuPanelCaps/AssignmentInfoCap")),
-    DraftActivityCap: lazy(() => import("../MenuPanelCaps/DraftActivityCap")),
-    ContentInfoCap: lazy(() => import("../MenuPanelCaps/ContentInfoCap")),
   }).current;
 
   const LazyMenuObj = useRef({
-    SelectedCourse: lazy(() => import("../Menus/SelectedCourse")),
-    GradeSettings: lazy(() => import("../Menus/GradeSettings")),
-    SelectedSection: lazy(() => import("../Menus/SelectedSection")),
-    SelectedBank: lazy(() => import("../Menus/SelectedBank")),
-    SelectedDataSources: lazy(() => import("../Menus/SelectedDataSources")),
-    SelectedActivity: lazy(() => import("../Menus/SelectedActivity")),
-    SelectedOrder: lazy(() => import("../Menus/SelectedOrder")),
-    SelectedPage: lazy(() => import("../Menus/SelectedPage")),
-    SelectedPageLink: lazy(() => import("../Menus/SelectedPageLink")),
-    SelectedCollectionLink: lazy(() =>
-      import("../Menus/SelectedCollectionLink"),
-    ),
-    CreateCourse: lazy(() => import("../Menus/CreateCourse")),
-    CourseEnroll: lazy(() => import("../Menus/CourseEnroll")),
-    AddDriveItems: lazy(() => import("../Menus/AddDriveItems")),
-    CutCopyPasteMenu: lazy(() => import("../Menus/CutCopyPasteMenu")),
-    EnrollStudents: lazy(() => import("../Menus/EnrollStudents")),
-    DoenetMLSettings: lazy(() => import("../Menus/DoenetMLSettings")),
-    VersionHistory: lazy(() => import("../Menus/VersionHistory")),
     PageVariant: lazy(() => import("../Menus/PageVariant")),
-    PageLink: lazy(() => import("../Menus/PageLink")),
     ActivityVariant: lazy(() => import("../Menus/ActivityVariant")),
     AutoSaves: lazy(() => import("../Menus/AutoSaves")),
-    LoadPeople: lazy(() => import("../Menus/LoadPeople")),
-    GradeUpload: lazy(() => import("../Menus/GradeUpload")),
-    GradeDownload: lazy(() => import("../Menus/GradeDownload")),
-    ManualEnrollment: lazy(() => import("../Menus/ManualEnrollment")),
-    AssignmentSettingsMenu: lazy(() =>
-      import("../Menus/AssignmentSettingsMenu"),
-    ),
     SupportingFilesMenu: lazy(() => import("../Menus/SupportingFilesMenu")),
-    GroupSettings: lazy(() => import("../Menus/GroupSettings")),
-    TimerMenu: lazy(() => import("../Menus/TimerMenu")),
-    CreditAchieved: lazy(() => import("../Menus/CreditAchieved")),
-    ActivityDates: lazy(() => import("../Menus/ActivityDates")),
-    ClassTimes: lazy(() => import("../Menus/ClassTimes")),
-    CurrentContent: lazy(() => import("../Menus/CurrentContent")),
-    ManageUsersMenu: lazy(() => import("../Menus/ManageUsersMenu")),
   }).current;
 
   let selectionPanel = null;

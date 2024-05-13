@@ -15,10 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { GoKebabVertical } from "react-icons/go";
 import { Link, useFetcher } from "react-router-dom";
-import {
-  // itemByDoenetId,
-  useCourse,
-} from "../Course/CourseActions";
+
 // import { useRecoilState, useSetRecoilState } from "recoil";
 // import { pageToolViewAtom } from "../../Tools/_framework/NewToolRoot";
 
@@ -38,7 +35,6 @@ export default function RecoilActivityCard({
 }) {
   const fetcher = useFetcher();
   // const setItemByDoenetId = useSetRecoilState(itemByDoenetId(doenetId));
-  const { compileActivity, updateAssignItem } = useCourse(courseId);
 
   // const [recoilPageToolView, setRecoilPageToolView] =
   //   useRecoilState(pageToolViewAtom);
@@ -115,31 +111,6 @@ export default function RecoilActivityCard({
                     //THINGS WE NEED FROM THE DB
                     //- Version of DoenetML
                     //Eventually we want the content too (multipage)
-
-                    compileActivity({
-                      activityDoenetId: doenetId,
-                      isAssigned: true,
-                      courseId,
-                      activity: {
-                        version,
-                        isSinglePage: true,
-                        content,
-                      },
-                      // successCallback: () => {
-                      //   addToast('Activity Assigned.', toastType.INFO);
-                      // },
-                    });
-                    updateAssignItem({
-                      doenetId,
-                      isAssigned: true,
-                      successCallback: () => {
-                        fetcher.submit(
-                          { _action: "Make Public", doenetId },
-                          { method: "post" },
-                        );
-                        //addToast(assignActivityToast, toastType.INFO);
-                      },
-                    });
                   }}
                 >
                   Make Public

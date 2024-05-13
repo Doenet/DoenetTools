@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useRecoilCallback } from "recoil";
 import { toastType, useToast } from "../../Tools/_framework/Toast";
-import { fileByPageId } from "../../_reactComponents/Course/CourseActions";
 import {
   textEditorDoenetMLAtom,
   textEditorLastKnownCidAtom,
@@ -37,7 +36,6 @@ export function useSaveDraft() {
 
           if (!success) throw new Error(message);
 
-          set(fileByPageId(pageId), doenetML);
           const cid = await cidFromText(doenetML);
           set(textEditorLastKnownCidAtom, cid);
 

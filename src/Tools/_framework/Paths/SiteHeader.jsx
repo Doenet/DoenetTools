@@ -183,9 +183,6 @@ export function SiteHeader(props) {
                     >
                       Portfolio
                     </NavLinkTab>
-                    <NavLinkTab to="courses" dataTest="My Courses">
-                      My Courses
-                    </NavLinkTab>
                     {isAdmin && (
                       <NavLinkTab to="admin" dataTest="Admin">
                         Admin
