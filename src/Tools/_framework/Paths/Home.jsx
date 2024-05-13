@@ -23,19 +23,6 @@ import {
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
-import { MdBuild } from "react-icons/md";
-import axios from "axios";
-import { useFetcher } from "react-router-dom";
-
-// export async function action() {
-//   //Create a portfolio activity and redirect to the editor for it
-//   let { data } = await axios.get("/api/createPortfolioActivity.php");
-
-//   let { doenetId, pageDoenetId } = data;
-//   return redirect(
-//     `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`,
-//   );
-// }
 
 export async function loader() {
   const response = await fetch("/api/loadPromotedContent.php");
@@ -448,7 +435,7 @@ export function Home() {
               Designed for the In-Person Classroom
             </Text>
           </HStack>
-          <Text
+          <Box
             pt="24px"
             fontSize={"18px"}
             // fontSize="20px"
@@ -479,7 +466,7 @@ export function Home() {
                 )
               </Text>
             </Show>
-          </Text>
+          </Box>
 
           <Show above="sm">
             <Flex
