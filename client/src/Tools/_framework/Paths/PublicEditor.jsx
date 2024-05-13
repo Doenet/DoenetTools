@@ -39,9 +39,12 @@ export async function loader({ params }) {
     let success = true;
     let message = "";
 
-    const { data } = await axios.get("/api/getPortfolioEditorData.php", {
-      params: { doenetId: params.doenetId, publicEditor: true },
-    });
+    const { data } = await axios.get(
+      `/api/getPortfolioEditorData/${params.doenetId}`,
+      {
+        params: { publicEditor: true },
+      },
+    );
     const activityData = { ...data.activity };
     const courseId = data.courseId;
 

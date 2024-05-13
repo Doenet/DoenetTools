@@ -10,6 +10,7 @@ node_modules
 # local build files
 /dist_local
 
+**/.env
 
 # misc
 .DS_Store
@@ -24,33 +25,32 @@ node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json
 
 .vscode
 # src/Tools/test/testCode.doenet
 #ignore the distribution
 # dist/index.html
 # dist/main.js
-dist_local/*
+**/dist_local/*
 
-cypress/videos
-cypress/screenshots
-runner-results
+**/cypress/videos
+**/cypress/screenshots
+**/runner-results
 parallel-weights.json
 
-src/tempcodes
+**/src/tempcodes
 
 # Docker testing environment
 docker\ deb/
 docker\ alp/
 
 #Docker mysql db
-docker/mysql/data/*
+**/docker/mysql/data/*
 
 .eslintrc.js
 
-src/API/vendor
+**/src/API/vendor
 
-src/Media/bydoenetid/
+**/src/Media/bydoenetid/
 
-src/Media/byPageId/
+**/src/Media/byPageId/
