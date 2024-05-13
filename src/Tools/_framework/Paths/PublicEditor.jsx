@@ -24,11 +24,7 @@ import {
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
-import {
-  ExternalLinkIcon,
-  WarningIcon,
-  WarningTwoIcon,
-} from "@chakra-ui/icons";
+import { WarningIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import { BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
 import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
@@ -36,6 +32,7 @@ import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 import { cidFromText } from "@doenet/doenetml";
+import { ResizableSideBySide } from "./ResizableSideBySide";
 
 export async function loader({ params }) {
   try {
@@ -56,24 +53,19 @@ export async function loader({ params }) {
       //If we found a pageId then redirect there
       //TODO: test what happens when there are only orders and no pageIds
       if (pageId != "_") {
-        return redirect(`/portfolioeditor/${params.doenetId}/${pageId}`);
+        return redirect(`/publiceditor/${params.doenetId}/${pageId}`);
       }
     }
 
-    //Get the public doenetML of the Activity
-    const { data: data2 } = await axios.get(
-      `/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`,
+    //Get the doenetML of the pageId.
+    //we need transformResponse because
+    //large numbers are simplified with toString if used on doenetMLResponse.data
+    //which was causing errors
+    const doenetMLResponse = await axios.get(
+      `/media/byPageId/${pageId}.doenet`,
+      { transformResponse: (data) => data.toString() },
     );
-
-    const { data: activityML } = await axios.get(
-      `/media/${data2.json.assignedCid}.doenet`,
-    );
-    //Find the first page's doenetML
-    const regex = /<page\s+cid="(\w+)"\s+(label="[^"]+"\s+)?\/>/;
-    const pageIds = activityML.match(regex);
-
-    //NEED AXIOS GET HERE!!!
-    const { data: doenetML } = await axios.get(`/media/${pageIds[1]}.doenet`);
+    let doenetML = doenetMLResponse.data;
     const lastKnownCid = await cidFromText(doenetML);
 
     const supportingFileResp = await axios.get(
@@ -283,7 +275,7 @@ export function PublicEditor() {
         </GridItem>
 
         <GridItem area="centerContent">
-          <ResizeableSideBySide
+          <ResizableSideBySide
             headerHeight={110}
             left={
               <>
@@ -455,118 +447,3 @@ export function PublicEditor() {
     </>
   );
 }
-
-const clamp = (
-  value,
-  min = Number.POSITIVE_INFINITY,
-  max = Number.NEGATIVE_INFINITY,
-) => {
-  return Math.min(Math.max(value, min), max);
-};
-
-const ResizeableSideBySide = ({
-  left,
-  right,
-  centerWidth = "10px",
-  headerHeight = 80,
-}) => {
-  const wrapperRef = useRef();
-
-  useEffect(() => {
-    wrapperRef.current.handleClicked = false;
-    wrapperRef.current.handleDragged = false;
-  }, []);
-
-  const onMouseDown = (event) => {
-    event.preventDefault();
-    wrapperRef.current.handleClicked = true;
-  };
-
-  const onMouseMove = (event) => {
-    //TODO: minimum movment calc
-    if (wrapperRef.current.handleClicked) {
-      event.preventDefault();
-      wrapperRef.current.handleDragged = true;
-
-      let proportion = clamp(
-        (event.clientX - wrapperRef.current.offsetLeft) /
-          wrapperRef.current.clientWidth,
-        0.18,
-        1,
-      );
-
-      //using a ref to save without react refresh
-      wrapperRef.current.style.gridTemplateColumns = `${proportion}fr ${centerWidth} ${
-        1 - proportion
-      }fr`;
-      wrapperRef.current.proportion = proportion;
-    }
-  };
-
-  const onMouseUp = () => {
-    if (wrapperRef.current.handleClicked) {
-      wrapperRef.current.handleClicked = false;
-      if (wrapperRef.current.handleDragged) {
-        wrapperRef.current.handleDragged = false;
-      }
-    }
-  };
-
-  return (
-    <Grid
-      width="100%"
-      height={`calc(100vh - ${headerHeight}px)`}
-      templateAreas={`"viewer middleGutter textEditor"`}
-      templateColumns={`.5fr ${centerWidth} .5fr`}
-      overflow="hidden"
-      onMouseUp={onMouseUp}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseUp}
-      ref={wrapperRef}
-    >
-      <GridItem
-        area="viewer"
-        width="100%"
-        placeSelf="center"
-        height="100%"
-        maxWidth="850px"
-        overflow="hidden"
-      >
-        {left}
-      </GridItem>
-      <GridItem
-        area="middleGutter"
-        background="doenet.lightBlue"
-        width="100%"
-        height="100%"
-        paddingTop="42px"
-        alignSelf="start"
-      >
-        <Center
-          cursor="col-resize"
-          background="doenet.mainGray"
-          borderLeft="solid 1px"
-          borderTop="solid 1px"
-          borderBottom="solid 1px"
-          borderColor="doenet.mediumGray"
-          height={`calc(100vh - ${headerHeight + 54}px)`}
-          width="10px"
-          onMouseDown={onMouseDown}
-          data-test="contentPanelDragHandle"
-          paddingLeft="1px"
-        >
-          <Icon ml="0" as={BsGripVertical} />
-        </Center>
-      </GridItem>
-      <GridItem
-        area="textEditor"
-        width="100%"
-        background="doenet.lightBlue"
-        alignSelf="start"
-        paddingTop="10px"
-      >
-        {right}
-      </GridItem>
-    </Grid>
-  );
-};
