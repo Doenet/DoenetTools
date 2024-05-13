@@ -51,6 +51,70 @@ app.get("/api/sendSignInEmail.php", async (req: Request, res: Response) => {
   res.send({ success: true });
 });
 
+app.get("/api/deletePortfolioActivity.php", (req: Request, res: Response) => {
+  res.send({});
+});
+
+app.get("/api/createPortfolioActivity.php", (req: Request, res: Response) => {
+  res.send({});
+});
+
+app.get("/api/updatePortfolioActivityLabel.php", (req: Request, res: Response) => {
+  res.send({});
+});
+
+app.get("/api/updateIsPublicActivity.php", (req: Request, res: Response) => {
+  res.send({});
+});
+
+app.get("/api/loadSupportingFileInfo.php", (req: Request, res: Response) => {
+  res.send({});
+});
+
+app.get("/api/checkCredentials.php", (req: Request, res: Response) => {
+  res.send({});
+});
+
+app.get("/api/getCoursePermissionsAndSettings.php", (req: Request, res: Response) => {
+  res.send({});
+});
+
+app.get("/api/searchPublicActivities.php", (req: Request, res: Response) => {
+  res.send({});
+});
+
+app.get("/api/getPortfolioEditorData.php", (req: Request, res: Response) => {
+  res.send({});
+});
+
+app.get("/api/getAllDoenetmlVersions.php", (req: Request, res: Response) => {
+  res.send({});
+});
+
+app.get("/api/loadProfile.php", (req: Request, res: Response) => {
+  res.send({});
+});
+
+app.get("/api/getPortfolioActivityView.php", (req: Request, res: Response) => {
+  res.send({});
+});
+
+app.get("/api/getPorfolioCourseId.php", (req: Request, res: Response) => {
+  res.send({});
+});
+
+app.get("/api/loadPromotedContentGroups.php", (req: Request, res: Response) => {
+  res.send({});
+});
+
+app.get("/api/saveDoenetML.php", (req: Request, res: Response) => {
+  res.send({});
+});
+
+app.get("/api/updatePortfolioActivitySettings.php", (req: Request, res: Response) => {
+  res.send({});
+});
+
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
 });
