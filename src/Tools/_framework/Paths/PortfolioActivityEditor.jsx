@@ -47,6 +47,7 @@ import {
   MenuItem,
   MenuList,
   Progress,
+  Select,
   Tab,
   TabList,
   TabPanel,
@@ -106,6 +107,7 @@ export async function action({ params, request }) {
         public: formObj.public,
         doenetId: params.doenetId,
         learningOutcomes,
+        doenetmlVersionId: formObj.doenetmlVersionId,
       },
     );
     return {
@@ -114,6 +116,7 @@ export async function action({ params, request }) {
       public: formObj.public,
       doenetId: params.doenetId,
       learningOutcomes,
+      doenetmlVersionId: formObj.doenetmlVersionId,
     };
   }
   if (formObj._action == "update description") {
@@ -230,6 +233,12 @@ export async function loader({ params }) {
       platform = "Mac";
     }
 
+    const allDoenetmlVersionsResp = await axios.get(
+      "/api/getAllDoenetmlVersions.php",
+    );
+
+    const allDoenetmlVersions = allDoenetmlVersionsResp.data;
+
     return {
       platform,
       activityData,
@@ -239,6 +248,7 @@ export async function loader({ params }) {
       doenetML,
       doenetId: params.doenetId,
       supportingFileData,
+      allDoenetmlVersions,
     };
   } catch (e) {
     if (e.response.data.message == "Redirect to public activity.") {
@@ -796,24 +806,47 @@ export function GeneralActivityControls({
   courseId,
   doenetId,
   activityData,
+  allDoenetmlVersions,
 }) {
   let { isPublic, label, imagePath: dataImagePath } = activityData;
-  if (!isPublic && activityData?.public) {
-    isPublic = activityData.public;
-  }
 
   let numberOfFilesUploading = useRef(0);
   let [imagePath, setImagePath] = useState(dataImagePath);
   let [alerts, setAlerts] = useState([]);
 
-  function saveDataToServer({ nextLearningOutcomes, nextIsPublic } = {}) {
+  let learningOutcomesInit = activityData.learningOutcomes;
+  if (learningOutcomesInit == null) {
+    learningOutcomesInit = [""];
+  }
+
+  // TODO: if saveDataToServer is unsuccessful, then doenetmlVersion from the server
+  // will not match doenetmlVersion on the client and the client will not be notified.
+  // (And same for other variables using this pattern)
+  // It appears this file is using optimistic UI without a recourse
+  // should the optimism be unmerited.
+  let doenetmlVersionInit = activityData.doenetmlVersion;
+
+  let [labelValue, setLabel] = useState(label);
+  let lastAcceptedLabelValue = useRef(label);
+  let [labelIsInvalid, setLabelIsInvalid] = useState(false);
+
+  let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
+  let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
+  const { compileActivity, updateAssignItem } = useCourse(courseId);
+  let [doenetmlVersion, setDoenetmlVersion] = useState(doenetmlVersionInit);
+
+  function saveDataToServer({
+    nextLearningOutcomes,
+    nextIsPublic,
+    nextDoenetmlVersionId,
+  } = {}) {
     let learningOutcomesToSubmit = learningOutcomes;
     if (nextLearningOutcomes) {
       learningOutcomesToSubmit = nextLearningOutcomes;
     }
 
     let isPublicToSubmit = checkboxIsPublic;
-    if (nextIsPublic) {
+    if (nextIsPublic != undefined) {
       isPublicToSubmit = nextIsPublic;
     }
 
@@ -830,6 +863,12 @@ export function GeneralActivityControls({
     }
     lastAcceptedLabelValue.current = labelToSubmit;
     let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
+
+    let doenetmlVersionIdToSubmit = doenetmlVersion.versionId;
+    if (nextDoenetmlVersionId) {
+      doenetmlVersionIdToSubmit = nextDoenetmlVersionId;
+    }
+
     fetcher.submit(
       {
         _action: "update general",
@@ -838,6 +877,7 @@ export function GeneralActivityControls({
         public: isPublicToSubmit,
         learningOutcomes: serializedLearningOutcomes,
         doenetId,
+        doenetmlVersionId: doenetmlVersionIdToSubmit,
       },
       { method: "post" },
     );
@@ -934,19 +974,6 @@ export function GeneralActivityControls({
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
-  let learningOutcomesInit = activityData.learningOutcomes;
-  if (learningOutcomesInit == null) {
-    learningOutcomesInit = [""];
-  }
-
-  let [labelValue, setLabel] = useState(label);
-  let lastAcceptedLabelValue = useRef(label);
-  let [labelIsInvalid, setLabelIsInvalid] = useState(false);
-
-  let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
-  let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
-  const { compileActivity, updateAssignItem } = useCourse(courseId);
 
   //TODO: Cypress is opening the drawer so fast
   //the activitieData is out of date
@@ -1114,11 +1141,11 @@ export function GeneralActivityControls({
             data-test="Public Checkbox"
             name="public"
             value="on"
-            isChecked={checkboxIsPublic == "1"}
+            isChecked={checkboxIsPublic}
             onChange={(e) => {
-              let nextIsPublic = "0";
+              let nextIsPublic = false;
               if (e.target.checked) {
-                nextIsPublic = "1";
+                nextIsPublic = true;
                 //Process making activity public here
                 compileActivity({
                   activityDoenetId: doenetId,
@@ -1148,6 +1175,37 @@ export function GeneralActivityControls({
             Public
           </Checkbox>
         </FormControl>
+        <FormControl>
+          <FormLabel mt="16px">DoenetML version</FormLabel>
+          <Select
+            value={doenetmlVersion.versionId}
+            onChange={(e) => {
+              // TODO: do we worry about this pattern?
+              // If saveDataToServer is unsuccessful, the client doenetmlVersion
+              // will no match what's on the server.
+              // (See TODO from near where doenetmlVersion is defined)
+              let nextDoenetmlVersionId = e.target.value;
+              let nextDoenetmlVersion = allDoenetmlVersions.find(
+                (v) => v.versionId == nextDoenetmlVersionId,
+              );
+              setDoenetmlVersion(nextDoenetmlVersion);
+              saveDataToServer({ nextDoenetmlVersionId });
+            }}
+          >
+            {allDoenetmlVersions.map((version) => (
+              <option value={version.versionId} key={version.versionId}>
+                {version.displayedVersion}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
+        {doenetmlVersion.deprecated && (
+          <p>
+            <strong>Warning</strong>: DoenetML version{" "}
+            {doenetmlVersion.displayedVersion} is deprecated.{" "}
+            {doenetmlVersion.deprecationMessage}
+          </p>
+        )}
         <input type="hidden" name="imagePath" value={imagePath} />
         <input type="hidden" name="_action" value="update general" />
       </Form>
@@ -1161,7 +1219,8 @@ function PortfolioActivitySettingsDrawer({
   finalFocusRef,
   controlsTabsLastIndex,
 }) {
-  const { courseId, doenetId, activityData } = useLoaderData();
+  const { courseId, doenetId, activityData, allDoenetmlVersions } =
+    useLoaderData();
   //Need fetcher at this level to get label refresh
   //when close drawer after changing label
   const fetcher = useFetcher();
@@ -1211,6 +1270,7 @@ function PortfolioActivitySettingsDrawer({
                     doenetId={doenetId}
                     activityData={activityData}
                     courseId={courseId}
+                    allDoenetmlVersions={allDoenetmlVersions}
                   />
                 </TabPanel>
                 <TabPanel>
@@ -1679,6 +1739,16 @@ export function PortfolioActivityEditor() {
                       margin={0} //Only need when there is an outline
                       justifyContent="flex-end"
                     >
+                      {activityData.doenetmlVersion.deprecated && (
+                        <Box style={{ backgroundColor: "lightcoral" }}>
+                          We need an appropriate way to warn, probably in the
+                          warnings, below, that DoenetML version{" "}
+                          {activityData.doenetmlVersion.displayedVersion} is
+                          deprecated.{" "}
+                          {activityData.doenetmlVersion.deprecationMessage}{" "}
+                          Include a link to how to upgrade.
+                        </Box>
+                      )}
                     </HStack>
 
                     <Box
