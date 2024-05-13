@@ -23,7 +23,7 @@ import {
   SiteHeader,
 } from "./Tools/_framework/Paths/SiteHeader";
 import {
-  loader as caroselLoader,
+  loader as carouselLoader,
   // action as homeAction,
   Home,
 } from "./Tools/_framework/Paths/Home";
@@ -57,6 +57,8 @@ import {
   loader as publicEditorLoader,
 } from "./Tools/_framework/Paths/PublicEditor";
 import { mathjaxConfig } from "@doenet/doenetml";
+import SignIn from "./Tools/_framework/ToolPanels/SignIn";
+import SignOut from "./Tools/_framework/ToolPanels/SignOut";
 
 {
   /* <Button colorScheme="doenet_blue">TESTING 123</Button> */
@@ -126,7 +128,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        loader: caroselLoader,
+        loader: carouselLoader,
         // action: homeAction,
         errorElement: (
           <ChakraProvider theme={theme}>
@@ -288,6 +290,24 @@ const router = createBrowserRouter([
             <PublicEditor />
           </MathJaxContext>
         ),
+      },
+      {
+        path: "signin",
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+        element: <SignIn />,
+      },
+      {
+        path: "signout",
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+        element: <SignOut />,
       },
     ],
   },

@@ -254,17 +254,9 @@ export function SiteHeader(props) {
                   </Center>
                 ) : (
                   <Center h="40px" mr="10px">
-                    <Button
-                      data-test="Nav to signin"
-                      size="sm"
-                      // variant="ghost"
-                      variant="outline"
-                      onClick={() => {
-                        navigateTo.current = "/signin";
-                      }}
-                    >
+                    <NavLinkTab to="/signin" dataTest="signin">
                       Sign In
-                    </Button>
+                    </NavLinkTab>
                   </Center>
                 )}
               </Flex>
