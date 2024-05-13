@@ -1,8 +1,0 @@
-/*!
-* direction.less v0.1.0
-*
-* Copyright 2013 Moshe Simantov
-* Licensed under the MIT license
-* 
-* Keep tracking: https://github.com/DevelopmentIL/direction.less
-*/#ggbFooterMenu,#ggbFooterOptions,#ggbFooterOptions #ggbFollowUs,#ggbHeader #ggbNavigation #ggbLoginContainer,#ggbHeader #ggbNavigation #ggbLoginContainer #ggbUserPopup .submenu-content li,#ggbSubHeader ul li,.ggbBanner .ggbBannerContent .box p,.ggbBanner .ggbBannerContent .box.left,.ggbBanner .ggbBannerContent .box.right,.imageButtonContainer.slide,.left,.right{text-align:center}body{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}img,input[type=text],input[type=email],input[type=password],select,textarea{max-width:100%}.floatLeft,.floatRight{display:block;max-width:100%}.ggbBanner.lightPetrolium .huge{font-size:2.3em}.ggbBanner .ggbBannerContent .box.left img,.ggbBanner .ggbBannerContent .box.right img{float:none;margin:0 auto;display:block}#ggbHeader #ggbNavigation,#ggbSubHeader{display:none}.ggbBanner .ggbBannerContent{font-size:1.1em}#ggbHeader #ggbLogo{display:block;padding-right:35px}#ggbHeader #ggbNavigation #ggbMainMenu li{text-align:center;padding:5px 0}#ggbHeader #ggbNavigation #ggbLoginContainer #ggbUserPopup .submenu-arrow{right:50%;margin-right:-21px}#ggbHeader #ggbNavigation #ggbLoginContainer #ggbUserPopup .submenu-content{width:100%;box-sizing:border-box;-webkit-box-sizing:border-box;-moz-box-sizing:border-box}#ggbFooterMenu li{padding:.3em 0}#ggbFooterMenu li ul{margin-top:.3em}#ggbFooterMenu>li{padding-bottom:10px}#ggbFooterBottomContent ul li{padding:.2em 0 .5em}#ggbFooterOptions #ggbFollowUs{margin-top:10px}
