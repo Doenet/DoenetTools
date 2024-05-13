@@ -10,7 +10,6 @@ import { createRoot } from "react-dom/client";
 
 import ToolRoot from "./Tools/_framework/NewToolRoot";
 import { MathJaxContext } from "better-react-mathjax";
-import { mathjaxConfig } from "./Core/utils/math";
 import {
   loader as communityLoader,
   action as communityAction,
@@ -62,6 +61,7 @@ import {
   PublicEditor,
   loader as publicEditorLoader,
 } from "./Tools/_framework/Paths/PublicEditor";
+import { mathjaxConfig } from "@doenet/doenetml";
 
 {
   /* <Button colorScheme="doenet_blue">TESTING 123</Button> */

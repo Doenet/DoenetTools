@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect } from "react";
 import { useLoaderData, useOutletContext } from "react-router";
-import { DoenetML } from "../../../Viewer/DoenetML";
+import { DoenetML } from "@doenet/doenetml";
 import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,
