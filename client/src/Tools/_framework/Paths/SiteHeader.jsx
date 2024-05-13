@@ -43,7 +43,7 @@ export async function loader() {
   let isAdmin = false;
   if (signedIn) {
     //Check on portfolio courseId
-    const response = await axios.get("/api/getPorfolioCourseId.php");
+    const response = await axios.get("/api/getPortfolioCourseId.php");
     let { data } = response;
     portfolioCourseId = data.portfolioCourseId;
     firstName = data.firstName;

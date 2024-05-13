@@ -154,9 +154,9 @@ export async function action({ params, request }) {
 
 export async function loader({ params }) {
   try {
-    const response = await axios.get("/api/getPortfolioEditorData.php", {
-      params: { doenetId: params.doenetId },
-    });
+    const response = await axios.get(
+      `/api/getPortfolioEditorData/${params.doenetId}`,
+    );
     let data = response.data;
     const activityData = { ...data.activity };
     const courseId = data.courseId;
