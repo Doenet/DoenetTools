@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+model activities {
+  activityId    Int             @id @unique() @default(autoincrement())
+  ownerId       Int
+  name          String?
+  createdAt     DateTime?
+  lastEdited    DateTime?
+  owner         users           @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  activityItems activityItems[]
+  assignments   assignments[]
+
+  @@index([ownerId])
+}
+
+model activityItems {
+  activityId Int
+  docId      Int
+  activity   activities @relation(fields: [activityId], references: [activityId], onDelete: NoAction, onUpdate: NoAction)
+  document   documents  @relation(fields: [docId], references: [docId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([activityId, docId])
+  @@index([activityId])
+  @@index([docId])
+}
+
+model assignmentItems {
+  assignmentId         Int
+  docVersionId         Int
+  docId                Int
+  assignment           assignments            @relation(fields: [assignmentId], references: [assignmentId], onDelete: NoAction, onUpdate: NoAction)
+  documentVersion      documentVersions       @relation(fields: [docVersionId, docId], references: [version, docId], onDelete: NoAction, onUpdate: NoAction)
+  studentItemResponses studentItemResponses[]
+
+  @@id([assignmentId, docVersionId, docId])
+  @@index([assignmentId])
+  @@index([docVersionId, docId])
+}
+
+model assignments {
+  assignmentId               Int                          @id @unique @default(autoincrement())
+  classCode                  String?                      @db.VarChar(45)
+  activityId                 Int
+  ownerId                    Int
+  assignmentItems            assignmentItems[]
+  activity                   activities                   @relation(fields: [activityId], references: [activityId], onDelete: NoAction, onUpdate: NoAction)
+  owner                      users                        @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  studentAssignmentResponses studentAssignmentResponses[]
+
+  @@index([activityId])
+  @@index([ownerId])
+}
+
+model documentVersions {
+  version           Int
+  docId             Int
+  cid               String?
+  createdAt         DateTime?
+  doenetmlVersionId Int
+  assignmentItems   assignmentItems[]
+  document          documents         @relation(fields: [docId], references: [docId], onDelete: NoAction, onUpdate: NoAction)
+  doenetmlVersion   doenetmlVersions  @relation(fields: [doenetmlVersionId], references: [versionId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([version, docId])
+  @@index([docId])
+}
+
+model documents {
+  docId             Int                @id @unique @default(autoincrement())
+  ownerId           Int
+  contentLocation   String?
+  lastEdited        DateTime?
+  name              String?
+  isPublic          Boolean?
+  isDeleted         Boolean?
+  imagePath         String?
+  doenetmlVersionId Int
+  activityItems     activityItems[]
+  documentVersions  documentVersions[]
+  owner             users              @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  doenetmlVersion   doenetmlVersions   @relation(fields: [doenetmlVersionId], references: [versionId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([ownerId])
+}
+
+model doenetmlVersions {
+  versionId          Int                @id @unique @default(autoincrement())
+  displayedVersion   String             @unique
+  fullVersion        String
+  default            Boolean            @default(false)
+  deprecated         Boolean            @default(false)
+  removed            Boolean            @default(false)
+  deprecationMessage String             @default("")
+  documents          documents[]
+  documentVersions   documentVersions[]
+}
+
+model studentAssignmentResponses {
+  assignmentId Int
+  userId       Int
+  score        Float?
+  assignment   assignments @relation(fields: [assignmentId], references: [assignmentId], onDelete: NoAction, onUpdate: NoAction)
+  user         users       @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([assignmentId, userId])
+  @@index([assignmentId])
+  @@index([userId])
+}
+
+model studentItemResponses {
+  assignmentId   Int
+  docVersionId   Int
+  docId          Int
+  userId         Int
+  response       String?
+  assignmentItem assignmentItems @relation(fields: [assignmentId, docVersionId, docId], references: [assignmentId, docVersionId, docId], onDelete: NoAction, onUpdate: NoAction)
+  user           users           @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([assignmentId, docVersionId, docId, userId])
+  @@index([assignmentId, docVersionId, docId])
+  @@index([userId])
+}
+
+model users {
+  userId                     Int                          @id @default(autoincrement())
+  email                      String                       @unique @db.VarChar(45)
+  activities                 activities[]
+  assignments                assignments[]
+  documents                  documents[]
+  studentAssignmentResponses studentAssignmentResponses[]
+  studentItemResponses       studentItemResponses[]
+}

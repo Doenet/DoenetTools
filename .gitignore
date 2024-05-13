@@ -10,6 +10,7 @@ node_modules
 # local build files
 /dist_local
 
+**/.env
 
 # misc
 .DS_Store
