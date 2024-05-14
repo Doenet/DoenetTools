@@ -31,30 +31,6 @@ export default function ActivityCard({
     imagePath = "/activity_default.jpg";
   }
 
-  //Define the avatar
-  let avatar = <Avatar size="sm" name={fullName} />;
-  if (isUserPortfolio == "0") {
-    if (courseColor == "none") {
-      avatar = (
-        <Avatar
-          size="sm"
-          borderRadius="md"
-          src={`/drive_pictures/${courseImage}`}
-        />
-      );
-    } else {
-      avatar = (
-        <Avatar
-          size="sm"
-          borderRadius="md"
-          bg={`#${courseColor}`}
-          icon={<></>}
-        />
-      );
-    }
-  }
-  //<Avatar size="sm" name={fullName} />
-
   //Note: when we have a menu width 140px becomes 120px
   return (
     <Card width="180px" height="180px" p="0" m="0" data-test="Activity Card">
@@ -72,7 +48,7 @@ export default function ActivityCard({
       </Link>
       <CardBody p="1">
         <Flex columnGap="2px">
-          {avatar}
+          <Avatar size="sm" name={fullName} />
 
           <Box width="140px" p="1">
             <Text
@@ -92,7 +68,7 @@ export default function ActivityCard({
               textAlign="left"
               data-test="Card Full Name"
             >
-              {isUserPortfolio == "1" ? fullName : courseLabel}
+              {fullName}
             </Text>
           </Box>
 

@@ -14,6 +14,7 @@ import {
   DrawerContent,
   DrawerOverlay,
   Drawer,
+  MenuItem,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -26,7 +27,7 @@ import {
 import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
-import ActivityCard2 from "../../../_reactComponents/PanelHeaderComponents/ActivityCard2";
+import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/ActivityCard";
 import { GeneralActivityControls } from "./PortfolioActivityEditor";
 import axios from "axios";
 import findFirstPageIdInContent from "../../../_utils/findFirstPage";
@@ -42,62 +43,40 @@ export async function action({ request }) {
       label = "Untitled";
     }
     let learningOutcomes = JSON.parse(formObj.learningOutcomes);
-    let response = await axios.post(
-      "/api/updatePortfolioActivitySettings.php",
-      {
-        label,
-        imagePath: formObj.imagePath,
-        public: formObj.public,
-        doenetId: formObj.doenetId,
-        learningOutcomes,
-      },
-    );
+    await axios.post("/api/updatePortfolioActivitySettings", {
+      label,
+      imagePath: formObj.imagePath,
+      public: formObj.public,
+      doenetId: formObj.doenetId,
+      learningOutcomes,
+    });
     return true;
   } else if (formObj?._action == "Add Activity") {
-    //Create a portfilio activity and redirect to the editor for it
-    let response = await fetch("/api/createPortfolioActivity.php");
+    //Create a portfolio activity and redirect to the editor for it
+    let { data } = await axios.post("/api/createPortfolioActivity");
 
-    if (response.ok) {
-      let { doenetId, pageDoenetId } = await response.json();
-      return redirect(
-        `/portfolioeditor/${doenetId}?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`,
-      );
-    } else {
-      throw Error(response.message);
-    }
+    let { docId } = data;
+    return redirect(`/portfolioeditor/${docId}`);
   } else if (formObj?._action == "Delete") {
-    let response = await fetch(
-      `/api/deletePortfolioActivity.php?doenetId=${formObj.doenetId}`,
-    );
+    await axios.post(`/api/deletePortfolioActivity`, {
+      doenetId: formObj.doenetId,
+    });
 
-    if (response.ok) {
-      // let respObj = await response.json();
-      return true;
-    } else {
-      throw Error(response.message);
-    }
+    return true;
   } else if (formObj?._action == "Make Public") {
-    let response = await fetch(
-      `/api/updateIsPublicActivity.php?doenetId=${formObj.doenetId}&isPublic=1`,
-    );
+    await axios.post(`/api/updateIsPublicActivity`, {
+      doenetId: formObj.doenetId,
+      isPublic: true,
+    });
 
-    if (response.ok) {
-      // let respObj = await response.json();
-      return true;
-    } else {
-      throw Error(response.message);
-    }
+    return true;
   } else if (formObj?._action == "Make Private") {
-    let response = await fetch(
-      `/api/updateIsPublicActivity.php?doenetId=${formObj.doenetId}&isPublic=0`,
-    );
+    await axios.post(`/api/updateIsPublicActivity`, {
+      doenetId: formObj.doenetId,
+      isPublic: false,
+    });
 
-    if (response.ok) {
-      // let respObj = await response.json();
-      return true;
-    } else {
-      throw Error(response.message);
-    }
+    return true;
   } else if (formObj?._action == "noop") {
     return true;
   }
@@ -106,12 +85,6 @@ export async function action({ request }) {
 }
 
 export async function loader({ params }) {
-  //If we didn't create the course yet for this user then create it
-  if (params.courseId == "not_created") {
-    const { data } = await axios.get("/api/createPortfolioCourse.php");
-    return redirect(`/portfolio/${data.portfolioCourseId}`);
-  }
-
   const { data } = await axios.get(
     `/api/getPortfolio.php?courseId=${params.courseId}`,
   );
@@ -249,9 +222,61 @@ export function Portfolio() {
     document.title = `Portfolio - Doenet`;
   }, []);
 
+  const fetcher = useFetcher();
+
   //Don't do more processing if we don't know if we are signed in or not
   if (context.signedIn == null) {
     return null;
+  }
+
+  function getCardMenuList(isPublic, doenetId) {
+    return (
+      <>
+        {" "}
+        {isPublic ? (
+          <MenuItem
+            data-test="Make Private Menu Item"
+            onClick={() => {
+              fetcher.submit(
+                { _action: "Make Private", doenetId },
+                { method: "post" },
+              );
+            }}
+          >
+            Make Private
+          </MenuItem>
+        ) : (
+          <MenuItem
+            data-test="Make Public Menu Item"
+            onClick={() => {
+              fetcher.submit(
+                { _action: "Make Public", doenetId },
+                { method: "post" },
+              );
+            }}
+          >
+            Make Public
+          </MenuItem>
+        )}
+        <MenuItem
+          data-test="Delete Menu Item"
+          onClick={() => {
+            fetcher.submit({ _action: "Delete", doenetId }, { method: "post" });
+          }}
+        >
+          Delete
+        </MenuItem>
+        <MenuItem
+          data-test="Settings Menu Item"
+          onClick={() => {
+            setDoenetId(doenetId);
+            onOpen();
+          }}
+        >
+          Settings
+        </MenuItem>
+      </>
+    );
   }
 
   return (
@@ -291,15 +316,11 @@ export function Portfolio() {
               size="xs"
               colorScheme="blue"
               onClick={async () => {
-                //Create a portfilio activity and redirect to the editor for it
-                let response = await fetch("/api/createPortfolioActivity.php");
+                //Create a portfolio activity and redirect to the editor for it
+                let response = await axios.post("/api/createPortfolioActivity");
 
-                if (response.ok) {
-                  let { doenetId, pageDoenetId } = await response.json();
-                  navigate(`/portfolioeditor/${doenetId}/${pageDoenetId}`);
-                } else {
-                  throw Error(response.message);
-                }
+                let { docId } = response;
+                navigate(`/portfolioeditor/${docId}`);
               }}
             >
               Add Activity
@@ -329,11 +350,12 @@ export function Portfolio() {
               <>
                 {data.publicActivities.map((activity) => {
                   return (
-                    <ActivityCard2
+                    <ActivityCard
                       key={`Card${activity.doenetId}`}
                       {...activity}
                       fullName={data.fullName}
-                      isPublic={true}
+                      menuItems={getCardMenuList(true, activity.doenetId)}
+                      imageLink={`/portfolioeditor/${activity.doenetId}/${activity.pageDoenetId}`}
                       courseId={data.courseId}
                       setDoenetId={setDoenetId}
                       onClose={settingsOnClose}
@@ -369,11 +391,12 @@ export function Portfolio() {
               <>
                 {data.privateActivities.map((activity) => {
                   return (
-                    <ActivityCard2
+                    <ActivityCard
                       key={`Card${activity.doenetId}`}
                       {...activity}
                       fullName={data.fullName}
-                      isPublic={false}
+                      menuItems={getCardMenuList(false, activity.doenetId)}
+                      imageLink={`/portfolioeditor/${activity.doenetId}/${activity.pageDoenetId}`}
                       courseId={data.courseId}
                       setDoenetId={setDoenetId}
                       onClose={settingsOnClose}

@@ -36,28 +36,22 @@ export async function loader() {
   if (profileInfo.cookieRemoved) {
     signedIn = false;
   }
-  let portfolioCourseId = null;
+  let userId = null;
   let firstName = "";
   let lastName = "";
   let email = "";
   let isAdmin = false;
   if (signedIn) {
-    //Check on portfolio courseId
-    const response = await axios.get("/api/getPortfolioCourseId.php");
+    const response = await axios.get("/api/getUser");
     let { data } = response;
-    portfolioCourseId = data.portfolioCourseId;
-    firstName = data.firstName;
-    lastName = data.lastName;
+    userId = data.userId;
     email = data.email;
 
-    if (portfolioCourseId == "") {
-      portfolioCourseId = "not_created";
-    }
     const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
     const isAdminJson = await isAdminResponse.json();
     isAdmin = isAdminJson.isAdmin;
   }
-  return { signedIn, portfolioCourseId, isAdmin, firstName, lastName, email };
+  return { signedIn, userId, isAdmin, firstName, lastName, email };
 }
 
 function NavLinkTab({ to, children, dataTest }) {
@@ -98,7 +92,7 @@ function NavLinkTab({ to, children, dataTest }) {
 }
 
 export function SiteHeader(props) {
-  let { signedIn, portfolioCourseId, isAdmin, firstName, lastName, email } =
+  let { signedIn, userId, isAdmin, firstName, lastName, email } =
     useLoaderData();
   const { childComponent } = props;
 
@@ -169,10 +163,7 @@ export function SiteHeader(props) {
                 </NavLinkTab>
                 {signedIn && (
                   <>
-                    <NavLinkTab
-                      to={`portfolio/${portfolioCourseId}`}
-                      dataTest="Portfolio"
-                    >
+                    <NavLinkTab to={`portfolio/${userId}`} dataTest="Portfolio">
                       Portfolio
                     </NavLinkTab>
                     {isAdmin && (

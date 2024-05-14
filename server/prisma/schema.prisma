@@ -10,9 +10,9 @@ datasource db {
 model activities {
   activityId    Int             @id @unique() @default(autoincrement())
   ownerId       Int
-  name          String?
-  createdAt     DateTime?
-  lastEdited    DateTime?
+  name          String
+  createdAt     DateTime        @default(now())
+  lastEdited    DateTime        @default(now())
   owner         users           @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   activityItems activityItems[]
   assignments   assignments[]
@@ -49,6 +49,7 @@ model assignments {
   classCode                  String?                      @db.VarChar(45)
   activityId                 Int
   ownerId                    Int
+  createdAt                  DateTime                     @default(now())
   assignmentItems            assignmentItems[]
   activity                   activities                   @relation(fields: [activityId], references: [activityId], onDelete: NoAction, onUpdate: NoAction)
   owner                      users                        @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
@@ -79,8 +80,9 @@ model documents {
   docId              Int                  @id @unique @default(autoincrement())
   ownerId            Int
   contentLocation    String
-  lastEdited         DateTime?
-  name               String?
+  createdAt          DateTime             @default(now())
+  lastEdited         DateTime             @default(now())
+  name               String
   isPublic           Boolean              @default(false)
   isDeleted          Boolean              @default(false)
   imagePath          String?

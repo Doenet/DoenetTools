@@ -10,6 +10,7 @@ import {
   getDoc,
   getDocEditorData,
   getDocViewerData,
+  getUserInfo,
   listUserDocs,
   saveDoc,
   searchPublicDocs,
@@ -32,8 +33,14 @@ app.get("/api/getQuickCheckSignedIn.php", (req: Request, res: Response) => {
   res.send({ signedIn: signedIn });
 });
 
-app.get("/api/getPortfolioCourseId.php", (req: Request, res: Response) => {
-  res.send({});
+app.get("/api/getUser", async (req: Request, res: Response) => {
+  const signedIn = req.cookies.email ? true : false;
+  if (signedIn) {
+    let userInfo = await getUserInfo(req.cookies.email);
+    res.send(userInfo);
+  } else {
+    res.send({});
+  }
 });
 
 app.get("/api/checkForCommunityAdmin.php", (req: Request, res: Response) => {
@@ -72,21 +79,22 @@ app.get("/api/sendSignInEmail.php", async (req: Request, res: Response) => {
   res.send({ success: true });
 });
 
-app.get(
-  "/api/deletePortfolioActivity.php",
+app.post(
+  "/api/deletePortfolioActivity",
   async (req: Request, res: Response) => {
-    const doenetId = Number(req.query.doenetId as string);
+    const body = req.body;
+    const doenetId = Number(body.doenetId);
     const docId = await deleteDocument(doenetId);
-    res.send({ success: true, docId });
+    res.send();
   },
 );
 
-app.get(
-  "/api/createPortfolioActivity.php",
+app.post(
+  "/api/createPortfolioActivity",
   async (req: Request, res: Response) => {
     const loggedInUserId = Number(req.cookies.userId);
     const docId = await createDocument(loggedInUserId);
-    res.send({ success: true, docId, doenetId: docId, pageDoenetId: docId });
+    res.send({ docId });
   },
 );
 
@@ -100,14 +108,10 @@ app.get(
   },
 );
 
-app.get("/api/updateIsPublicActivity.php", (req: Request, res: Response) => {
-  const doenetId = Number(req.query.doenetId as string);
-  // figure out a definite strategy for representing booleans and transmitting them
-  const isPublicRaw = req.query.isPublic as string;
-  let isPublic = false;
-  if (isPublicRaw == "1") {
-    isPublic = true;
-  }
+app.post("/api/updateIsPublicActivity", (req: Request, res: Response) => {
+  const body = req.body;
+  const doenetId = Number(body.doenetId);
+  const isPublic = body.isPublic;
   saveDoc({ docId: doenetId, isPublic });
   res.send({ success: true });
 });
@@ -184,10 +188,6 @@ app.get(
   },
 );
 
-app.get("/api/getPortfolioCourseId.php", (req: Request, res: Response) => {
-  res.send({});
-});
-
 app.get("/api/loadPromotedContentGroups.php", (req: Request, res: Response) => {
   res.send({});
 });
@@ -201,7 +201,7 @@ app.post("/api/saveDoenetML.php", (req: Request, res: Response) => {
 });
 
 app.post(
-  "/api/updatePortfolioActivitySettings.php",
+  "/api/updatePortfolioActivitySettings",
   (req: Request, res: Response) => {
     const body = req.body;
     const docId = Number(body.doenetId);
