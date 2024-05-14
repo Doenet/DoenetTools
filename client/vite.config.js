@@ -11,7 +11,6 @@ import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 
 export default defineConfig((env) => ({
-  appType: "mpa",
   plugins: [
     react(),
     viteStaticCopy({
