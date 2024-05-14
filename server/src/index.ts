@@ -175,11 +175,11 @@ app.get(
 );
 
 app.get(
-  "/api/getPortfolioActivityView.php",
+  "/api/getPortfolioActivityView/:docId",
   async (req: Request, res: Response) => {
-    const doenetId = Number(req.query.doenetId as string);
+    const docId = Number(req.params.docId);
 
-    const viewerData = await getDocViewerData(doenetId);
+    const viewerData = await getDocViewerData(docId);
     res.send(viewerData);
   },
 );
