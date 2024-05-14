@@ -172,18 +172,12 @@ test('searchPublicDocs returns documents matching the query', async () => {
 });
 
 test('findOrCreateUser finds an existing user or creates a new one', async () => {
-  const email = 'test@example.com';
+  const email = `unique-${Date.now()}@example.com`;
   const userId = await findOrCreateUser(email);
   expect(userId).toBeTypeOf('number');
   // Attempt to find the same user again
   const sameUserId = await findOrCreateUser(email);
   expect(sameUserId).toBe(userId);
-});
-
-test('createUser creates a new user with a unique email', async () => {
-  const email = `unique-${Date.now()}@example.com`;
-  const userId = await createUser(email);
-  expect(userId).toBeTypeOf('number');
 });
 
 test('getAllDoenetmlVersions retrieves all non-removed versions', async () => {
