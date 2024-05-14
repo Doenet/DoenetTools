@@ -1,6 +1,7 @@
 import { expect, test, vi } from 'vitest'
-import { createDocument, deleteDocument, findOrCreateUser, getDocEditorData, listUserDocs } from './model'
+import { copyPublicDocumentToPortfolio, createDocument, createDocumentVersion, createUser, deleteDocument, findOrCreateUser, getAllDoenetmlVersions, getDoc, getDocEditorData, getDocViewerData, listUserDocs, saveDoc, searchPublicDocs } from './model'
 
+// create an isolated user for each test, will allow tests to be run in parallel
 async function createTestUser() {
   const username = "vitest-" + new Date().toJSON() + "@vitest.test"
   return await findOrCreateUser(username);
@@ -19,7 +20,7 @@ test('New user has an empty portfolio', async () => {
   });
 });
 
-test('New document starts out private', async () => {
+test('New document starts out private, then delete it', async () => {
   const userId = await createTestUser();
   const docId = await createDocument(userId);
   const docContent = await getDocEditorData(docId);
@@ -61,3 +62,175 @@ test('New document starts out private', async () => {
   expect(docsAfterDelete.publicActivities.length).toBe(0);
 });
 
+test('Test updating various doc properties', async () => {
+  const userId = await createTestUser();
+  const docId = await createDocument(userId);
+  const docName = "Test Name";
+  await saveDoc({docId, name: docName});
+  const docContent = await getDocEditorData(docId);
+  expect(docContent.activity.label).toBe(docName);
+  const content = "Here comes some content, I made you some content";
+  await saveDoc({docId, content});
+  const docContent2 = await getDocEditorData(docId);
+  expect(docContent2.activity.content).toBe(content);
+
+  const docViewerContent = await getDocViewerData(docId);
+  expect(docViewerContent.label).toBe(docName);
+  expect(docViewerContent.content).toBe(content);
+});
+
+test('createDocument creates a new document with default properties', async () => {
+  const ownerId = 1; // Example owner ID
+  const docId = await createDocument(ownerId);
+  expect(docId).toBeTypeOf('number'); // Assuming docId is a number
+});
+
+test('deleteDocument marks a document as deleted', async () => {
+  const ownerId = 1;
+  const docId = await createDocument(ownerId);
+  const deleteResult = await deleteDocument(docId);
+  expect(deleteResult.isDeleted).toBe(true);
+});
+
+test('saveDoc updates document properties', async () => {
+  const ownerId = 1;
+  const docId = await createDocument(ownerId);
+  const newName = 'Updated Name';
+  const newContent = 'Updated Content';
+  await saveDoc({ docId, name: newName, content: newContent });
+  const updatedDoc = await getDoc(docId);
+  expect(updatedDoc.name).toBe(newName);
+  expect(updatedDoc.contentLocation).toBe(newContent);
+});
+
+test('copyPublicDocumentToPortfolio copies a public document to a new owner', async () => {
+  const originalOwnerId = await createTestUser();
+  const newOwnerId = await createTestUser();
+  const docId = await createDocument(originalOwnerId);
+  // Make the document public before copying
+  await saveDoc({ docId, isPublic: true });
+  const newDocId = await copyPublicDocumentToPortfolio(docId, newOwnerId);
+  expect(newDocId).toBeTypeOf('number');
+  const newDoc = await getDoc(newDocId);
+  expect(newDoc.ownerId).toBe(newOwnerId);
+  expect(newDoc.isPublic).toBe(false);
+});
+
+test('createDocumentVersion creates a new version for a document', async () => {
+  const ownerId = await createTestUser();
+  const docId = await createDocument(ownerId);
+  const docVersion = await createDocumentVersion(docId, ownerId);
+  expect(docVersion).toMatchObject({
+    version: expect.any(Number),
+    docId: docId,
+    cid: expect.any(String),
+    contentLocation: expect.any(String),
+    createdAt: expect.any(Date),
+    doenetmlVersionId: expect.any(Number),
+  });
+});
+
+test('getDocEditorData retrieves editor data for a document', async () => {
+  const ownerId = await createTestUser();
+  const docId = await createDocument(ownerId);
+  const editorData = await getDocEditorData(docId);
+  expect(editorData).toMatchObject({
+    success: true,
+    activity: expect.any(Object),
+    courseId: null,
+  });
+});
+
+test('getDocViewerData retrieves viewer data for a document', async () => {
+  const ownerId = await createTestUser();
+  const docId = await createDocument(ownerId);
+  const viewerData = await getDocViewerData(docId);
+  expect(viewerData).toMatchObject({
+    success: true,
+    label: expect.any(String),
+    contributors: expect.any(Array),
+    type: 'activity',
+    files: expect.any(Array),
+    content: expect.any(String),
+    version: '',
+  });
+});
+
+test('searchPublicDocs returns documents matching the query', async () => {
+  const ownerId = await createTestUser();
+  const docId = await createDocument(ownerId);
+  // Make the document public and give it a unique name for the test
+  const uniqueName = 'UniqueNameForSearchTest';
+  await saveDoc({ docId, name: uniqueName, isPublic: true });
+  const searchResults = await searchPublicDocs(uniqueName);
+  expect(searchResults).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: uniqueName,
+      }),
+    ])
+  );
+});
+
+test('listUserDocs returns both public and private documents for a user', async () => {
+  const ownerId = await createTestUser();
+  const publicDocId = await createDocument(ownerId);
+  const privateDocId = await createDocument(ownerId);
+  // Make one document public
+  await saveDoc({ docId: publicDocId, isPublic: true });
+  const userDocs = await listUserDocs(ownerId);
+  expect(userDocs).toMatchObject({
+    success: true,
+    publicActivities: expect.arrayContaining([
+      expect.objectContaining({
+        doenetId: publicDocId,
+      }),
+    ]),
+    privateActivities: expect.arrayContaining([
+      expect.objectContaining({
+        doenetId: privateDocId,
+      }),
+    ]),
+  });
+});
+
+test('findOrCreateUser finds an existing user or creates a new one', async () => {
+  const email = 'test@example.com';
+  const userId = await findOrCreateUser(email);
+  expect(userId).toBeTypeOf('number');
+  // Attempt to find the same user again
+  const sameUserId = await findOrCreateUser(email);
+  expect(sameUserId).toBe(userId);
+});
+
+test('createUser creates a new user with a unique email', async () => {
+  const email = `unique-${Date.now()}@example.com`;
+  const userId = await createUser(email);
+  expect(userId).toBeTypeOf('number');
+});
+
+test('getAllDoenetmlVersions retrieves all non-removed versions', async () => {
+  const allVersions = await getAllDoenetmlVersions();
+  expect(allVersions).toBeInstanceOf(Array);
+  // Ensure none of the versions are marked as removed
+  expect(allVersions.length).toBeGreaterThan(0);
+  allVersions.forEach(version => {
+    expect(version.removed).toBe(false);
+  });
+});
+
+test('deleteDocument prevents a document from being retrieved', async () => {
+  const ownerId = await createTestUser();
+  const docId = await createDocument(ownerId);
+  await deleteDocument(docId);
+  await expect(getDoc(docId)).rejects.toThrow('No documents found');
+});
+
+test('saveDoc does not update properties when passed undefined values', async () => {
+  const ownerId = await createTestUser();
+  const docId = await createDocument(ownerId);
+  const originalDoc = await getDoc(docId);
+  await saveDoc({ docId });
+  const updatedDoc = await getDoc(docId);
+  expect(updatedDoc).toEqual(originalDoc);
+});
