@@ -179,3 +179,12 @@ export async function getAllDoenetmlVersions() {
   });
   return allDoenetmlVersions;
 }
+
+export async function getIsAdmin(email: string) {
+  const user = await prisma.users.findUnique({ where: { email } });
+  let isAdmin = false;
+  if(user) {
+    isAdmin = user.isAdmin;
+  }
+  return isAdmin;
+}

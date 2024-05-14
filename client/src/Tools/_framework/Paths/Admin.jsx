@@ -1,4 +1,4 @@
-// import axios from 'axios';
+import axios from 'axios';
 import { Box, Text, Wrap } from "@chakra-ui/react";
 import React from "react";
 import { useLoaderData } from "react-router-dom";
@@ -7,10 +7,12 @@ import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/Activi
 import { MoveToGroupMenuItem } from "./Community";
 
 export async function loader() {
-  const response = await fetch(`/api/getAllRecentPublicActivites.php`);
+  const response = await axios.get(`/api/getAllRecentPublicActivites`);
   const data = await response.json();
-  const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
-  const { isAdmin } = await isAdminResponse.json();
+  const isAdminResponse = await axios.get(`/api/checkForCommunityAdmin`);
+  let { data: isAdminData } = isAdminResponse;
+  const isAdmin = isAdminData.isAdmin;
+  
   let carouselGroups = [];
   if (isAdmin) {
     const carouselDataGroups = await fetch(

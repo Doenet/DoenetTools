@@ -9,6 +9,7 @@ import {
   getDoc,
   getDocEditorData,
   getDocViewerData,
+  getIsAdmin,
   listUserDocs,
   saveDoc,
   searchPublicDocs,
@@ -35,9 +36,21 @@ app.get("/api/getPortfolioCourseId.php", (req: Request, res: Response) => {
   res.send({});
 });
 
-app.get("/api/checkForCommunityAdmin.php", (req: Request, res: Response) => {
+app.get("/api/checkForCommunityAdmin", async (req: Request, res: Response) => {
+  const userEmail = req.cookies.email;
+  const isAdmin = await getIsAdmin(userEmail);
+  res.send({
+    isAdmin
+  });
+  res.send({
+    isAdmin: true
+  });
+});
+
+app.get("/api/getAllRecentPublicActivites", async (req: Request, res: Response) => {
   res.send({});
 });
+
 
 app.get("/api/loadProfile.php", (req: Request, res: Response) => {
   const loggedInEmail = req.cookies.email;
