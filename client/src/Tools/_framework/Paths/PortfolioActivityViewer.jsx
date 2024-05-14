@@ -21,18 +21,20 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
-import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 import ContributorsMenu from "../ChakraBasedComponents/ContributorsMenu";
 
 export async function action({ params }) {
-  let { data } = await axios.get(
-    `/api/duplicatePortfolioActivity.php?doenetId=${params.doenetId}`,
-  );
+  // TODO: it is confusing that the one "action" of this viewer is to duplicate.
 
-  const { nextActivityDoenetId, nextPageDoenetId } = data;
-  return redirect(
-    `/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`,
-  );
+  let { data } = await axios.post(`/api/duplicatePortfolioActivity`, {
+    docId: params.doenetId,
+  });
+
+  const { newDocId } = data;
+
+  // TODO: do not navigate to editor
+  // Instead, navigate to portfolio with newly created activity highlighted
+  return redirect(`/portfolioeditor/${newDocId}/${newDocId}`);
 }
 
 export async function loader({ params }) {
@@ -172,12 +174,12 @@ export function PortfolioActivityViewer() {
                     <HeaderSectionRight>
                       <Form method="post">
                         <Button
-                          data-test="Remix Button"
+                          data-test="Copy to Portfolio Button"
                           size="xs"
                           colorScheme="blue"
                           type="submit"
                         >
-                          Remix
+                          Copy to Portfolio
                         </Button>
                       </Form>
                     </HeaderSectionRight>
@@ -190,7 +192,7 @@ export function PortfolioActivityViewer() {
                         navigateTo.current = "/signin";
                       }}
                     >
-                      Sign In To Remix
+                      Sign In To Copy to Portfolio
                     </Button>
                   )}
                 </VStack>

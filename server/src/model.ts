@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { cidFromText } from "./utils/cid";
 
 const prisma = new PrismaClient();
 
@@ -57,8 +58,110 @@ export async function saveDoc({
 // TODO - access control
 export async function getDoc(docId: number) {
   return await prisma.documents.findFirstOrThrow({
-    where: { docId, OR: [{ isDeleted: false }, { isDeleted: null }] },
+    where: { docId, isDeleted: false },
   });
+}
+
+// TODO - access control
+export async function copyPublicDocumentToPortfolio(
+  docId: number,
+  ownerId: number,
+) {
+  let doc = await getDoc(docId);
+
+  if (!doc.isPublic) {
+    throw Error("Cannot copy a non-public document to portfolio");
+  }
+
+  let docVersion = await createDocumentVersion(docId, ownerId);
+
+  // create new document with new owner and non-public,
+  // ignoring the docId and lastEdited fields
+  const {
+    docId: _ignoreDocId,
+    lastEdited: _ignoreLastEdited,
+    ...docInfo
+  } = doc;
+  docInfo.ownerId = ownerId;
+  docInfo.isPublic = false;
+
+  const result = await prisma.documents.create({
+    data: docInfo,
+  });
+
+  const newDocId = result.docId;
+
+  await prisma.contributorHistory.create({
+    data: {
+      docId: newDocId,
+      prevDocId: docId,
+      prevDocVersion: docVersion.version,
+    },
+  });
+
+  const previousHistory = await prisma.contributorHistory.findMany({
+    where: {
+      docId,
+    },
+    orderBy: { timestamp: "desc" },
+  });
+
+  await prisma.contributorHistory.createMany({
+    data: previousHistory.map((hist) => ({
+      docId: newDocId,
+      prevDocId: hist.prevDocId,
+      prevDocVersion: hist.prevDocVersion,
+      timestamp: hist.timestamp,
+    })),
+  });
+
+  return result.docId;
+}
+
+// TODO - access control
+export async function createDocumentVersion(
+  docId: number,
+  ownerId: number,
+): Promise<{
+  version: number;
+  docId: number;
+  cid: string | null;
+  contentLocation: string | null;
+  createdAt: Date | null;
+  doenetmlVersionId: number;
+}> {
+  const doc = await getDoc(docId);
+
+  // TODO: cid should really include the doenetmlVersion
+  const cid = await cidFromText(doc.contentLocation || "");
+
+  let docVersion = await prisma.documentVersions.findUnique({
+    where: { docId_cid: { docId, cid } },
+  });
+
+  if (!docVersion) {
+    // TODO: not sure how to make an atomic operation of this with the ORM.
+    // Should we write a raw SQL query to accomplish this in one query?
+
+    const aggregations = await prisma.documentVersions.aggregate({
+      _max: { version: true },
+      where: { docId },
+    });
+    const lastVersion = aggregations._max.version;
+    const newVersion = lastVersion ? lastVersion + 1 : 1;
+
+    docVersion = await prisma.documentVersions.create({
+      data: {
+        version: newVersion,
+        docId,
+        cid,
+        doenetmlVersionId: doc.doenetmlVersionId,
+        contentLocation: doc.contentLocation,
+      },
+    });
+  }
+
+  return docVersion;
 }
 
 // TODO - access control
@@ -111,7 +214,7 @@ export async function searchPublicDocs(query: string) {
     where: {
       name: { contains: "%" + query + "%" },
       isPublic: true,
-      OR: [{ isDeleted: false }, { isDeleted: null }],
+      isDeleted: false,
     },
   });
   let massaged = ret.map((doc) => {
@@ -131,7 +234,7 @@ export async function searchPublicDocs(query: string) {
 
 export async function listUserDocs(ownerId: number) {
   let ret = await prisma.documents.findMany({
-    where: { ownerId, OR: [{ isDeleted: false }, { isDeleted: null }] },
+    where: { ownerId, isDeleted: false },
   });
   // TODO - delete, just massaging to make old client happy
   let massaged = ret.map((doc) => {
