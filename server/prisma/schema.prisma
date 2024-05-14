@@ -59,35 +59,51 @@ model assignments {
 }
 
 model documentVersions {
-  version           Int
-  docId             Int
-  cid               String?
-  createdAt         DateTime?
-  doenetmlVersionId Int
-  assignmentItems   assignmentItems[]
-  document          documents         @relation(fields: [docId], references: [docId], onDelete: NoAction, onUpdate: NoAction)
-  doenetmlVersion   doenetmlVersions  @relation(fields: [doenetmlVersionId], references: [versionId], onDelete: NoAction, onUpdate: NoAction)
+  version            Int
+  docId              Int
+  cid                String
+  contentLocation    String
+  createdAt          DateTime             @default(now())
+  doenetmlVersionId  Int
+  assignmentItems    assignmentItems[]
+  document           documents            @relation(fields: [docId], references: [docId], onDelete: NoAction, onUpdate: NoAction)
+  doenetmlVersion    doenetmlVersions     @relation(fields: [doenetmlVersionId], references: [versionId], onDelete: NoAction, onUpdate: NoAction)
+  contributorHistory contributorHistory[]
 
   @@id([version, docId])
+  @@unique([docId, cid])
   @@index([docId])
 }
 
 model documents {
-  docId             Int                @id @unique @default(autoincrement())
-  ownerId           Int
-  contentLocation   String?
-  lastEdited        DateTime?
-  name              String?
-  isPublic          Boolean?
-  isDeleted         Boolean?
-  imagePath         String?
-  doenetmlVersionId Int
-  activityItems     activityItems[]
-  documentVersions  documentVersions[]
-  owner             users              @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  doenetmlVersion   doenetmlVersions   @relation(fields: [doenetmlVersionId], references: [versionId], onDelete: NoAction, onUpdate: NoAction)
+  docId              Int                  @id @unique @default(autoincrement())
+  ownerId            Int
+  contentLocation    String
+  lastEdited         DateTime?
+  name               String?
+  isPublic           Boolean              @default(false)
+  isDeleted          Boolean              @default(false)
+  imagePath          String?
+  doenetmlVersionId  Int
+  activityItems      activityItems[]
+  documentVersions   documentVersions[]
+  owner              users                @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  doenetmlVersion    doenetmlVersions     @relation(fields: [doenetmlVersionId], references: [versionId], onDelete: NoAction, onUpdate: NoAction)
+  contributorHistory contributorHistory[]
 
   @@index([ownerId])
+}
+
+model contributorHistory {
+  docId          Int
+  prevDocId      Int
+  prevDocVersion Int
+  timestamp      DateTime         @default(now())
+  document       documents        @relation(fields: [docId], references: [docId], onDelete: NoAction, onUpdate: NoAction)
+  prevDoc        documentVersions @relation(fields: [prevDocId, prevDocVersion], references: [docId, version], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([docId, prevDocId])
+  @@index([prevDocId, prevDocVersion])
 }
 
 model doenetmlVersions {

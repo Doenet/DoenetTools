@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import {
+  copyPublicDocumentToPortfolio,
   createDocument,
   deleteDocument,
   findOrCreateUser,
@@ -212,6 +213,21 @@ app.post(
     const doenetmlVersionId = Number(body.doenetmlVersionId);
     saveDoc({ docId, imagePath, name: label, isPublic, doenetmlVersionId });
     res.send({ success: true });
+  },
+);
+
+app.post(
+  "/api/duplicatePortfolioActivity",
+  async (req: Request, res: Response) => {
+    const targetDocId = Number(req.body.docId);
+    const loggedInUserId = Number(req.cookies.userId);
+
+    let newDocId = await copyPublicDocumentToPortfolio(
+      targetDocId,
+      loggedInUserId,
+    );
+
+    res.send({ newDocId });
   },
 );
 
