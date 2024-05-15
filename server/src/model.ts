@@ -190,23 +190,28 @@ export async function getDocEditorData(docId: number) {
 
 // TODO - access control
 export async function getDocViewerData(docId: number) {
-  let doc = await prisma.documents.findFirstOrThrow({ where: { docId } });
-  // TODO - delete, just massaging to make old client happy
-  return {
-    success: true,
-    label: doc.name,
-    contributors: [
-      {
-        isUserPortfolio: "1",
-        firstName: "Doenet",
-        lastName: "Author",
+  let doc = await prisma.documents.findFirstOrThrow({
+    where: { docId },
+    include: {
+      owner: { select: { userId: true, email: true } },
+      contributorHistory: {
+        include: {
+          prevDoc: {
+            select: {
+              document: {
+                select: {
+                  owner: { select: { userId: true, email: true } },
+                  name: true,
+                },
+              },
+            },
+          },
+        },
       },
-    ],
-    type: "activity",
-    files: [],
-    content: doc.contentLocation,
-    version: "",
-  };
+    },
+  });
+
+  return doc;
 }
 
 export async function searchPublicDocs(query: string) {

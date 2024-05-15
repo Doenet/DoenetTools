@@ -1,5 +1,7 @@
 import React from "react";
 
+import "@doenet/doenetml/style.css";
+
 import {
   createBrowserRouter,
   redirect,
