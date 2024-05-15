@@ -152,22 +152,15 @@ export async function action({ params, request }) {
 export async function loader({ params }) {
   try {
     const response = await axios.get(
-      `/api/getActivityEditorData/${params.doenetId}`,
+      `/api/getActivityEditorData/${params.activityId}`,
     );
-    let data = response.data;
-    const activityData = { ...data.activity };
-    const courseId = data.courseId;
+    const activityData = { ...response.data };
+    const courseId = undefined; // TODO - delete this
 
     let pageId = params.pageId;
     if (params.pageId == "_") {
-      //find pageId in data.content
-      let pageId = findFirstPageIdInContent(activityData.content);
-
-      //If we found a pageId then redirect there
-      //TODO: test what happens when there are only orders and no pageIds
-      if (pageId != "_") {
-        return redirect(`/portfolioeditor/${params.doenetId}/${pageId}`);
-      }
+      const firstPageId = activityData.documents[0].docId;
+      return redirect(`/portfolioeditor/${params.activityId}/${firstPageId}`);
     }
 
     //Get the doenetML of the pageId.
@@ -221,6 +214,7 @@ export async function loader({ params }) {
       allDoenetmlVersions,
     };
   } catch (e) {
+    console.log(e);
     if (e.response.data.message == "Redirect to public activity.") {
       return redirect(`/publiceditor/${params.doenetId}/${params.pageId}`);
     } else {
@@ -794,7 +788,7 @@ export function GeneralActivityControls({
   // (And same for other variables using this pattern)
   // It appears this file is using optimistic UI without a recourse
   // should the optimism be unmerited.
-  let doenetmlVersionInit = activityData.doenetmlVersion;
+  let doenetmlVersionInit = activityData.documents[0].doenetmlVersion;
 
   let [labelValue, setLabel] = useState(label);
   let lastAcceptedLabelValue = useRef(label);
@@ -1661,13 +1655,13 @@ export function PortfolioActivityEditor() {
                       margin={0} //Only need when there is an outline
                       justifyContent="flex-end"
                     >
-                      {activityData.doenetmlVersion.deprecated && (
+                      {activityData.documents[0].doenetmlVersion.deprecated && (
                         <Box style={{ backgroundColor: "lightcoral" }}>
                           We need an appropriate way to warn, probably in the
                           warnings, below, that DoenetML version{" "}
-                          {activityData.doenetmlVersion.displayedVersion} is
+                          {activityData.documents[0].doenetmlVersion.displayedVersion} is
                           deprecated.{" "}
-                          {activityData.doenetmlVersion.deprecationMessage}{" "}
+                          {activityData.documents[0].doenetmlVersion.deprecationMessage}{" "}
                           Include a link to how to upgrade.
                         </Box>
                       )}

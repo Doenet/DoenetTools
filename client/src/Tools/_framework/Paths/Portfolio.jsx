@@ -54,8 +54,8 @@ export async function action({ request }) {
     //Create a portfolio activity and redirect to the editor for it
     let { data } = await axios.post("/api/createActivity");
 
-    let { docId } = data;
-    return redirect(`/portfolioeditor/${docId}`);
+    let { activityId } = data;
+    return redirect(`/portfolioeditor/${activityId}`);
   } else if (formObj?._action == "Delete") {
     await axios.post(`/api/deletePortfolioActivity`, {
       doenetId: formObj.doenetId,
@@ -297,10 +297,18 @@ export function Portfolio() {
               colorScheme="blue"
               onClick={async () => {
                 //Create a portfolio activity and redirect to the editor for it
-                let response = await axios.post("/api/createActivity");
+                // let { data } = await axios.post("/api/createActivity");
+                // let { activityId } = data;
+                // navigate(`/portfolioeditor/${activityId}`);
 
-                let { activityId } = response;
-                navigate(`/portfolioeditor/${activityId}`);
+                // TODO - review this, elsewhere the fetcher is being used, and
+                // there was code up in the action() method for this action
+                // that was unused. This appears to work okay though? And it
+                // would make it consistent with how API requests are done elsewhere
+                fetcher.submit(
+                  { _action: "Add Activity", doenetId },
+                  { method: "post" },
+                );
               }}
             >
               Add Activity
