@@ -29,7 +29,16 @@ async function main() {
     },
   });
 
-  console.log({ old_version, current_version, dev_user });
+  const admin_user = await prisma.users.upsert({
+    where: { email: "admin@doenet.org" },
+    update: {},
+    create: {
+      email: "admin@doenet.org",
+      isAdmin: true,
+    },
+  });
+
+  console.log({ old_version, current_version, dev_user, admin_user });
 }
 main()
   .then(async () => {

@@ -7,10 +7,8 @@ import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/Activi
 import { MoveToGroupMenuItem } from "./Community";
 
 export async function loader() {
-  const response = await axios.get(`/api/getAllRecentPublicActivites`);
-  const data = await response.json();
-  const isAdminResponse = await axios.get(`/api/checkForCommunityAdmin`);
-  let { data: isAdminData } = isAdminResponse;
+  const { data: recentActivities } = await axios.get(`/api/getAllRecentPublicActivites`);
+  const { data: isAdminData } = await axios.get(`/api/checkForCommunityAdmin`);
   const isAdmin = isAdminData.isAdmin;
   
   let carouselGroups = [];
@@ -23,8 +21,7 @@ export async function loader() {
   }
 
   return {
-    fullName: data.fullName,
-    publicActivities: data.searchResults.activities,
+    publicActivities: recentActivities,
     isAdmin,
     carouselGroups,
   };
@@ -81,21 +78,20 @@ export function Admin() {
             ) : (
               <>
                 {publicActivities.map((activity) => {
-                  const { doenetId, label, imagePath } = activity;
-                  const imageLink = `/portfolioviewer/${doenetId}`;
+                  const imageLink = `/portfolioviewer/${activity.docId}`;
 
                   return (
                     <ActivityCard
-                      key={`ActivityCard${activity.doenetId}`}
+                      key={`ActivityCard${activity.docId}`}
                       imageLink={imageLink}
-                      label={label}
-                      imagePath={imagePath}
-                      fullName={activity.fullName}
+                      label={activity.name}
+                      imagePath={activity.imagePath}
+                      fullName={activity.owner.email}
                       menuItems={
                         isAdmin ? (
                           <>
                             <MoveToGroupMenuItem
-                              doenetId={doenetId}
+                              doenetId={activity.docId}
                               carouselGroups={carouselGroups}
                             />
                           </>

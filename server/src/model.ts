@@ -291,3 +291,19 @@ export async function getIsAdmin(email: string) {
   }
   return isAdmin;
 }
+
+export async function getAllRecentPublicActivites() {
+  const docs = await prisma.documents.findMany({
+    where: {isPublic: true, isDeleted: false},
+    orderBy: {lastEdited: "desc"},
+    take: 100,
+    include: {
+      owner: {
+        select: {
+          email: true
+        }
+      }
+    }
+  })
+  return docs;
+}

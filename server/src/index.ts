@@ -7,6 +7,7 @@ import {
   deleteDocument,
   findOrCreateUser,
   getAllDoenetmlVersions,
+  getAllRecentPublicActivites,
   getDoc,
   getDocEditorData,
   getDocViewerData,
@@ -43,13 +44,11 @@ app.get("/api/checkForCommunityAdmin", async (req: Request, res: Response) => {
   res.send({
     isAdmin
   });
-  res.send({
-    isAdmin: true
-  });
 });
 
 app.get("/api/getAllRecentPublicActivites", async (req: Request, res: Response) => {
-  res.send({});
+  const docs = await getAllRecentPublicActivites();
+  res.send(docs);
 });
 
 
