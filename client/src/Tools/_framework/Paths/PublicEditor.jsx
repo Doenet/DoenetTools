@@ -238,27 +238,29 @@ export function PublicEditor() {
                   <WarningIcon color="orange.500" mr="6px" />
 
                   <Text size="xs" pl="4px" pr="4px">
-                    This is a public editor. Remix to save changes.
+                    This is a public editor. Copy to portfolio to save changes.
                   </Text>
                 </Center>
                 {signedIn ? (
                   <Button
-                    data-test="Remix Button"
+                    data-test="Copy to Portfolio Button"
                     size="xs"
                     colorScheme="blue"
                     onClick={async () => {
-                      let resp = await axios.get(
-                        `/api/duplicatePortfolioActivity.php?doenetId=${doenetId}`,
+                      let { data } = await axios.post(
+                        `/api/duplicatePortfolioActivity`,
+                        {
+                          docId: doenetId,
+                        },
                       );
-                      const { nextActivityDoenetId, nextPageDoenetId } =
-                        resp.data;
+                      const { newDocId } = data;
 
-                      navigate(
-                        `/portfolioeditor/${nextActivityDoenetId}/${nextPageDoenetId}`,
-                      );
+                      // TODO: do not navigate to editor
+                      // Instead, navigate to portfolio with newly created activity highlighted
+                      navigate(`/portfolioeditor/${newDocId}/${newDocId}`);
                     }}
                   >
-                    Remix
+                    Copy to Portfolio
                   </Button>
                 ) : (
                   <Button
@@ -269,7 +271,7 @@ export function PublicEditor() {
                       navigateTo.current = "/signin";
                     }}
                   >
-                    Sign In To Remix
+                    Sign In To Copy to Portfolio
                   </Button>
                 )}
               </HStack>
