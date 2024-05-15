@@ -66,8 +66,7 @@ export default function ContributorsMenu({ contributorHistory, owner }) {
             as={Link}
             to={`/publicportfolio/${owner.userId}`}
           >
-            {avatars[0]}{" "}
-            <Text ml="4px">{owner.email + "?????" + owner.userId}</Text>
+            {avatars[0]} <Text ml="4px">{owner.email}</Text>
           </MenuItem>
           {contributorHistory.map((contrib_hist, i) => {
             let prevDoc = contrib_hist.prevDoc.document;
