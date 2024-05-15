@@ -30,21 +30,20 @@ import { RiEmotionSadLine } from "react-icons/ri";
 import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/ActivityCard";
 import { GeneralActivityControls } from "./PortfolioActivityEditor";
 import axios from "axios";
-import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 
 export async function action({ request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
 
   if (formObj._action == "update general") {
-    //Don't let label be blank
-    let label = formObj?.label?.trim();
-    if (label == "") {
-      label = "Untitled";
+    //Don't let name be blank
+    let name = formObj?.name?.trim();
+    if (name == "") {
+      name = "Untitled";
     }
     let learningOutcomes = JSON.parse(formObj.learningOutcomes);
     await axios.post("/api/updatePortfolioActivitySettings", {
-      label,
+      name,
       imagePath: formObj.imagePath,
       public: formObj.public,
       doenetId: formObj.doenetId,
@@ -85,31 +84,12 @@ export async function action({ request }) {
 }
 
 export async function loader({ params }) {
-  const { data } = await axios.get(
-    `/api/getPortfolio?courseId=${params.courseId}`,
-  );
+  const { data } = await axios.get(`/api/getPortfolio/${params.userId}`);
   if (data.notMe) {
     return redirect(`/publicportfolio/${params.courseId}`);
   }
 
-  //Add pageDoenetId to all activities
-  let publicActivities = [];
-  data.publicActivities.map((activity) => {
-    const pageDoenetId = findFirstPageIdInContent(activity.content);
-    publicActivities.push({ ...activity, pageDoenetId });
-  });
-  let privateActivities = [];
-  data.privateActivities.map((activity) => {
-    const pageDoenetId = findFirstPageIdInContent(activity.content);
-    privateActivities.push({ ...activity, pageDoenetId });
-  });
-
-  return {
-    courseId: params.courseId,
-    fullName: data.fullName,
-    publicActivities,
-    privateActivities,
-  };
+  return data;
 }
 
 const PublicActivitiesSection = styled.div`
@@ -319,8 +299,8 @@ export function Portfolio() {
                 //Create a portfolio activity and redirect to the editor for it
                 let response = await axios.post("/api/createActivity");
 
-                let { docId } = response;
-                navigate(`/portfolioeditor/${docId}`);
+                let { activityId } = response;
+                navigate(`/portfolioeditor/${activityId}`);
               }}
             >
               Add Activity
@@ -351,15 +331,11 @@ export function Portfolio() {
                 {data.publicActivities.map((activity) => {
                   return (
                     <ActivityCard
-                      key={`Card${activity.doenetId}`}
+                      key={`Card${activity.activityId}`}
                       {...activity}
                       fullName={data.fullName}
-                      menuItems={getCardMenuList(true, activity.doenetId)}
-                      imageLink={`/portfolioeditor/${activity.doenetId}/${activity.pageDoenetId}`}
-                      courseId={data.courseId}
-                      setDoenetId={setDoenetId}
-                      onClose={settingsOnClose}
-                      onOpen={settingsOnOpen}
+                      menuItems={getCardMenuList(true, activity.activityId)}
+                      imageLink={`/portfolioeditor/${activity.activityId}`}
                     />
                   );
                 })}
@@ -392,15 +368,11 @@ export function Portfolio() {
                 {data.privateActivities.map((activity) => {
                   return (
                     <ActivityCard
-                      key={`Card${activity.doenetId}`}
+                      key={`Card${activity.activityId}`}
                       {...activity}
                       fullName={data.fullName}
-                      menuItems={getCardMenuList(false, activity.doenetId)}
-                      imageLink={`/portfolioeditor/${activity.doenetId}/${activity.pageDoenetId}`}
-                      courseId={data.courseId}
-                      setDoenetId={setDoenetId}
-                      onClose={settingsOnClose}
-                      onOpen={settingsOnOpen}
+                      menuItems={getCardMenuList(false, activity.activityId)}
+                      imageLink={`/portfolioeditor/${activity.activityId}`}
                     />
                   );
                 })}

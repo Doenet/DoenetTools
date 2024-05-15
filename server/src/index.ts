@@ -66,9 +66,10 @@ app.get("/api/loadProfile", (req: Request, res: Response) => {
   });
 });
 
-app.get("/api/getPortfolio", async (req: Request, res: Response) => {
+app.get("/api/getPortfolio/:userId", async (req: Request, res: Response) => {
   const loggedInUserId = Number(req.cookies.userId);
-  const ret = await listUserActivities(loggedInUserId, loggedInUserId);
+  const userId = Number(req.params.userId);
+  const ret = await listUserActivities(userId, loggedInUserId);
   res.send(ret);
 });
 

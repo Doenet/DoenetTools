@@ -191,7 +191,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "portfolio/:courseId",
+        path: "portfolio/:userId",
         loader: portfolioLoader,
         action: portfolioAction,
         element: (
@@ -236,19 +236,19 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "portfolioeditor/:doenetId",
+        path: "portfolioeditor/:activityId",
         loader: async ({ params }) => {
           //This leaves a location in history
           //this is because redirect creates a standard Response object and
           //Response objects has no way to set replace: true
 
           //Redirect as an activity can have no pageids
-          return redirect(`/portfolioeditor/${params.doenetId}/_`);
+          return redirect(`/portfolioeditor/${params.activityId}/_`);
         },
         element: <div>Loading...</div>,
       },
       {
-        path: "portfolioeditor/:doenetId/:pageId",
+        path: "portfolioeditor/:activityId/:pageId",
         loader: portfolioEditorLoader,
         action: portfolioEditorAction,
         // errorElement: <div>Error!</div>,
