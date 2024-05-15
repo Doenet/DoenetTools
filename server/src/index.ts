@@ -9,7 +9,7 @@ import {
   getAllDoenetmlVersions,
   getActivity,
   getActivityEditorData,
-  getDocViewerData,
+  getActivityViewerData,
   getUserInfo,
   listUserActivities,
   updateDoc,
@@ -182,7 +182,7 @@ app.get(
   async (req: Request, res: Response) => {
     const docId = Number(req.params.docId);
 
-    const viewerData = await getDocViewerData(docId);
+    const viewerData = await getActivityViewerData(docId);
     res.send(viewerData);
   },
 );
