@@ -40,7 +40,7 @@ export async function loader({ params }) {
     let message = "";
 
     const { data } = await axios.get(
-      `/api/getPortfolioEditorData/${params.doenetId}`,
+      `/api/getActivityEditorData/${params.doenetId}`,
       {
         params: { publicEditor: true },
       },

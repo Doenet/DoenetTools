@@ -24,7 +24,17 @@ export async function createActivity(ownerId: number) {
       },
     },
   });
-  return activity.activityId;
+
+  let activityId = activity.activityId;
+
+  const activityWithDoc = await prisma.activities.findUniqueOrThrow({
+    where: { activityId },
+    select: { documents: { select: { docId: true } } },
+  });
+
+  let docId = activityWithDoc.documents[0].docId;
+
+  return { activityId, docId };
 }
 
 export async function deleteActivity(activityId: number) {
@@ -252,7 +262,8 @@ export async function createDocumentVersion(
 }
 
 // TODO - access control
-export async function getDocEditorData(activityId: number) {
+export async function getActivityEditorData(activityId: number) {
+  // TODO: add pagination or a hard limit in the number of documents one can add to an activity
   let activity = await prisma.activities.findFirstOrThrow({
     where: { activityId },
     include: {
@@ -260,6 +271,8 @@ export async function getDocEditorData(activityId: number) {
         include: {
           doenetmlVersion: true,
         },
+        // TODO: implement ability to allow users to order the documents within an activity
+        orderBy: { docId: "asc" },
       },
     },
   });
@@ -268,7 +281,14 @@ export async function getDocEditorData(activityId: number) {
 }
 
 // TODO - access control
-export async function getDocViewerData(docId: number) {
+// TODO: generalize this to multi-document activities
+export async function getActivityViewerData(activityId: number) {
+  const activity = await prisma.activities.findFirstOrThrow({
+    where: { activityId },
+    include: { documents: { select: { docId: true } } },
+  });
+  const docId = activity.documents[0].docId;
+
   let doc = await prisma.documents.findFirstOrThrow({
     where: { docId },
     include: {
@@ -298,7 +318,10 @@ export async function getDocViewerData(docId: number) {
     },
   });
 
-  return doc;
+  return {
+    activity,
+    doc,
+  };
 }
 
 export async function searchPublicActivities(query: string) {
@@ -323,7 +346,7 @@ export async function listUserActivities(
   let notMe = ownerId !== loggedInUserId;
 
   let activities = await prisma.activities.findMany({
-    where: { ownerId, isDeleted: false, isPublic: true },
+    where: { ownerId, isDeleted: false, isPublic: notMe ? true : undefined },
   });
 
   let publicActivities = activities.filter((activity) => activity.isPublic);
@@ -337,7 +360,6 @@ export async function listUserActivities(
   });
 
   return {
-    success: true,
     publicActivities: publicActivities,
     privateActivities: privateActivities,
     fullName: user.name,

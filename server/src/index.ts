@@ -8,7 +8,7 @@ import {
   findOrCreateUser,
   getAllDoenetmlVersions,
   getActivity,
-  getDocEditorData,
+  getActivityEditorData,
   getDocViewerData,
   getUserInfo,
   listUserActivities,
@@ -91,14 +91,11 @@ app.post(
   },
 );
 
-app.post(
-  "/api/createPortfolioActivity",
-  async (req: Request, res: Response) => {
-    const loggedInUserId = Number(req.cookies.userId);
-    const docId = await createActivity(loggedInUserId);
-    res.send({ docId });
-  },
-);
+app.post("/api/createActivity", async (req: Request, res: Response) => {
+  const loggedInUserId = Number(req.cookies.userId);
+  const { activityId, docId } = await createActivity(loggedInUserId);
+  res.send({ activityId, docId });
+});
 
 app.get(
   "/api/updatePortfolioActivityLabel.php",
@@ -163,10 +160,10 @@ app.get("/api/loadPromotedContent.php", (req: Request, res: Response) => {
 });
 
 app.get(
-  "/api/getPortfolioEditorData/:doenetId",
+  "/api/getActivityEditorData/:activityId",
   async (req: Request, res: Response) => {
-    const doenetId = Number(req.params.doenetId);
-    const editorData = await getDocEditorData(doenetId);
+    const activityId = Number(req.params.activityId);
+    const editorData = await getActivityEditorData(activityId);
     res.send(editorData);
   },
 );

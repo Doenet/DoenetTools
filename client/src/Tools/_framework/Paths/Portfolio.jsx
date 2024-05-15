@@ -53,7 +53,7 @@ export async function action({ request }) {
     return true;
   } else if (formObj?._action == "Add Activity") {
     //Create a portfolio activity and redirect to the editor for it
-    let { data } = await axios.post("/api/createPortfolioActivity");
+    let { data } = await axios.post("/api/createActivity");
 
     let { docId } = data;
     return redirect(`/portfolioeditor/${docId}`);
@@ -317,7 +317,7 @@ export function Portfolio() {
               colorScheme="blue"
               onClick={async () => {
                 //Create a portfolio activity and redirect to the editor for it
-                let response = await axios.post("/api/createPortfolioActivity");
+                let response = await axios.post("/api/createActivity");
 
                 let { docId } = response;
                 navigate(`/portfolioeditor/${docId}`);
