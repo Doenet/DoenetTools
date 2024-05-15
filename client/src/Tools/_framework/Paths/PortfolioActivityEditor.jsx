@@ -95,17 +95,14 @@ export async function action({ params, request }) {
 
   if (formObj._action == "update general") {
     let learningOutcomes = JSON.parse(formObj.learningOutcomes);
-    let response = await axios.post(
-      "/api/updatePortfolioActivitySettings.php",
-      {
-        label,
-        imagePath: formObj.imagePath,
-        public: formObj.public,
-        doenetId: params.doenetId,
-        learningOutcomes,
-        doenetmlVersionId: formObj.doenetmlVersionId,
-      },
-    );
+    await axios.post("/api/updatePortfolioActivitySettings", {
+      label,
+      imagePath: formObj.imagePath,
+      public: formObj.public,
+      doenetId: params.doenetId,
+      learningOutcomes,
+      doenetmlVersionId: formObj.doenetmlVersionId,
+    });
     return {
       label,
       imagePath: formObj.imagePath,

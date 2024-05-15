@@ -276,6 +276,18 @@ export async function createUser(email: string) {
   return result.userId;
 }
 
+export async function getUserInfo(email: string) {
+  const user = await prisma.users.findUnique({
+    where: { email },
+    select: { userId: true, email: true },
+  });
+  if (user) {
+    return user;
+  } else {
+    return {};
+  }
+}
+
 export async function getAllDoenetmlVersions() {
   const allDoenetmlVersions = await prisma.doenetmlVersions.findMany({
     where: {
