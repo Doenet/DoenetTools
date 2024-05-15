@@ -1,6 +1,6 @@
 import { expect, test, vi } from "vitest";
 import {
-  // copyPublicDocumentToPortfolio,
+  copyPublicActivityToPortfolio,
   createActivity,
   createDocumentVersion,
   createUser,
@@ -12,7 +12,7 @@ import {
   getActivityViewerData,
   listUserActivities,
   updateDoc,
-  searchPublicDocs,
+  searchPublicActivities,
   updateActivity,
   getActivity,
 } from "./model";
@@ -148,50 +148,51 @@ test("updateDoc updates document properties", async () => {
   expect(activityViewerContent.doc.contentLocation).toBe(newContent);
 });
 
-test.only("copyPublicDocumentToPortfolio copies a public document to a new owner", async () => {
+test("copyPublicActivityToPortfolio copies a public document to a new owner", async () => {
   const originalOwnerId = await createTestUser();
   const newOwnerId = await createTestUser();
-  const docId = await createActivity(originalOwnerId);
-  // Make the document public before copying
-  await updateDoc({ docId, isPublic: true });
-  const newDocId = await copyPublicDocumentToPortfolio(docId, newOwnerId);
-  const newDoc = await getDoc(newDocId);
-  expect(newDoc.ownerId).toBe(newOwnerId);
-  expect(newDoc.isPublic).toBe(false);
-});
+  const { activityId, docId } = await createActivity(originalOwnerId);
+  // cannot copy if not yet public
+  await expect(
+    copyPublicActivityToPortfolio(activityId, newOwnerId),
+  ).rejects.toThrow("Cannot copy a non-public activity to portfolio");
 
-test("createDocumentVersion creates a new version for a document", async () => {
-  const ownerId = await createTestUser();
-  const docId = await createActivity(ownerId);
-  const docVersion = await createDocumentVersion(docId, ownerId);
-  expect(docVersion).toMatchObject({
-    version: 1,
-    docId: docId,
-    cid: EMPTY_DOC_CID,
-    contentLocation: "",
-    createdAt: expect.any(Date),
-    doenetmlVersionId: 2,
-  });
-
-  const docVersionUnchangedContent = await createDocumentVersion(
-    docId,
-    ownerId,
+  // Make the activity public before copying
+  await updateActivity({ activityId, isPublic: true });
+  const newActivityId = await copyPublicActivityToPortfolio(
+    activityId,
+    newOwnerId,
   );
-  expect(docVersionUnchangedContent.version).toBe(1);
+  const newActivity = await getActivity(newActivityId);
+  expect(newActivity.ownerId).toBe(newOwnerId);
+  expect(newActivity.isPublic).toBe(false);
 
-  const content = "Here comes some content, I made you some content";
-  await updateDoc({ docId, content });
-  const docVersionNewContent = await createDocumentVersion(docId, ownerId);
-  expect(docVersionNewContent.version).toBe(2);
+  const activityData = await getActivityViewerData(newActivityId);
+
+  const contribHist = activityData.doc.contributorHistory;
+  expect(contribHist.length).eq(1);
+
+  expect(contribHist[0].prevDocId).eq(docId);
+  expect(contribHist[0].prevDocVersion).eq(1);
 });
 
-test("searchPublicDocs returns documents matching the query", async () => {
+// TODO:
+// create activity
+// remix that activity
+// modify the original activity
+// remix the original activity again
+
+// create activity
+// remix that activity
+// remix the remixed activity
+
+test("searchPublicActivities returns activities matching the query", async () => {
   const ownerId = await createTestUser();
-  const docId = await createActivity(ownerId);
+  const { activityId } = await createActivity(ownerId);
   // Make the document public and give it a unique name for the test
   const uniqueName = "UniqueNameForSearchTest";
-  await updateDoc({ docId, name: uniqueName, isPublic: true });
-  const searchResults = await searchPublicDocs(uniqueName);
+  await updateActivity({ activityId, name: uniqueName, isPublic: true });
+  const searchResults = await searchPublicActivities(uniqueName);
   expect(searchResults).toEqual(
     expect.arrayContaining([
       expect.objectContaining({
@@ -203,10 +204,11 @@ test("searchPublicDocs returns documents matching the query", async () => {
 
 test("findOrCreateUser finds an existing user or creates a new one", async () => {
   const email = `unique-${Date.now()}@example.com`;
-  const userId = await findOrCreateUser(email);
+  const name = "vitest user";
+  const userId = await findOrCreateUser(email, name);
   expect(userId).toBeTypeOf("number");
   // Attempt to find the same user again
-  const sameUserId = await findOrCreateUser(email);
+  const sameUserId = await findOrCreateUser(email, name);
   expect(sameUserId).toBe(userId);
 });
 

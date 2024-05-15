@@ -126,7 +126,7 @@ export async function getDoc(docId: number) {
 // TODO - access control
 export async function copyPublicActivityToPortfolio(
   origActivityId: number,
-  ownerId: number,
+  userId: number,
 ) {
   let origActivity = await getActivity(origActivityId);
 
@@ -138,7 +138,7 @@ export async function copyPublicActivityToPortfolio(
     data: {
       name: origActivity.name,
       imagePath: origActivity.imagePath,
-      ownerId,
+      ownerId: userId,
     },
   });
 
@@ -146,7 +146,7 @@ export async function copyPublicActivityToPortfolio(
     origActivity.documents.map(async (doc) => {
       // For each of the original documents, create a document version (i.e., a frozen snapshot)
       // that we will link to when creating contributor history, below.
-      let originalDocVersion = await createDocumentVersion(doc.docId, ownerId);
+      let originalDocVersion = await createDocumentVersion(doc.docId, userId);
 
       // document to create with new activityId (to associate it with newly created activity)
       // ignoring the docId, lastEdited, createdAt fields
