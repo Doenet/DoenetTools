@@ -2,18 +2,20 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import {
-  copyPublicDocumentToPortfolio,
-  createDocument,
-  deleteDocument,
+  copyPublicActivityToPortfolio,
+  createActivity,
+  deleteActivity,
   findOrCreateUser,
   getAllDoenetmlVersions,
-  getDoc,
+  getActivity,
   getDocEditorData,
   getDocViewerData,
   getUserInfo,
-  listUserDocs,
-  saveDoc,
-  searchPublicDocs,
+  listUserActivities,
+  updateDoc,
+  searchPublicActivities,
+  updateActivity,
+  getDoc,
 } from "./model";
 
 dotenv.config();
@@ -65,15 +67,15 @@ app.get("/api/loadProfile.php", (req: Request, res: Response) => {
 });
 
 app.get("/api/getPortfolio.php", async (req: Request, res: Response) => {
-  const loggedInEmail = req.cookies.email;
   const loggedInUserId = Number(req.cookies.userId);
-  const ret = await listUserDocs(loggedInUserId);
+  const ret = await listUserActivities(loggedInUserId, loggedInUserId);
   res.send(ret);
 });
 
 app.get("/api/sendSignInEmail.php", async (req: Request, res: Response) => {
   const email: string = req.query.emailaddress as string;
-  const userId = await findOrCreateUser(email);
+  // TODO: add the ability to give a name after logging in or creating an account
+  const userId = await findOrCreateUser(email, email);
   res.cookie("email", email);
   res.cookie("userId", String(userId));
   res.send({ success: true });
@@ -84,8 +86,8 @@ app.post(
   async (req: Request, res: Response) => {
     const body = req.body;
     const doenetId = Number(body.doenetId);
-    const docId = await deleteDocument(doenetId);
-    res.send();
+    await deleteActivity(doenetId);
+    res.send({});
   },
 );
 
@@ -93,7 +95,7 @@ app.post(
   "/api/createPortfolioActivity",
   async (req: Request, res: Response) => {
     const loggedInUserId = Number(req.cookies.userId);
-    const docId = await createDocument(loggedInUserId);
+    const docId = await createActivity(loggedInUserId);
     res.send({ docId });
   },
 );
@@ -103,17 +105,17 @@ app.get(
   (req: Request, res: Response) => {
     const doenetId = Number(req.query.doenetId as string);
     const label = req.query.label as string;
-    saveDoc({ docId: doenetId, name: label });
+    updateDoc({ docId: doenetId, name: label });
     res.send({ success: true });
   },
 );
 
 app.post("/api/updateIsPublicActivity", (req: Request, res: Response) => {
   const body = req.body;
-  const doenetId = Number(body.doenetId);
+  const activityId = Number(body.activityId);
   const isPublic = body.isPublic;
-  saveDoc({ docId: doenetId, isPublic });
-  res.send({ success: true });
+  updateActivity({ activityId, isPublic });
+  res.send({});
 });
 
 app.get("/api/loadSupportingFileInfo.php", (req: Request, res: Response) => {
@@ -147,7 +149,7 @@ app.get(
       success: true,
       searchResults: {
         users: [], // TODO - this
-        activities: await searchPublicDocs(query),
+        activities: await searchPublicActivities(query),
       },
     });
   },
@@ -196,25 +198,42 @@ app.post("/api/saveDoenetML.php", (req: Request, res: Response) => {
   const body = req.body;
   const doenetML = body.doenetML;
   const docId = Number(body.pageId);
-  saveDoc({ docId, content: doenetML });
+  updateDoc({ docId, content: doenetML });
   res.send({ success: true });
 });
 
-app.post(
-  "/api/updatePortfolioActivitySettings",
-  (req: Request, res: Response) => {
-    const body = req.body;
-    const docId = Number(body.doenetId);
-    const imagePath = body.imagePath;
-    const label = body.label;
-    // TODO - deal with learning outcomes
-    const learningOutcomes = body.learningOutcomes;
-    const isPublic = body.public === "true";
-    const doenetmlVersionId = Number(body.doenetmlVersionId);
-    saveDoc({ docId, imagePath, name: label, isPublic, doenetmlVersionId });
-    res.send({ success: true });
-  },
-);
+app.post("/api/updateActivitySettings", (req: Request, res: Response) => {
+  const body = req.body;
+  const activityId = Number(body.activityId);
+  const imagePath = body.imagePath;
+  const name = body.name;
+  // TODO - deal with learning outcomes
+  const learningOutcomes = body.learningOutcomes;
+  const isPublic = body.public === "true";
+  const doenetmlVersionId = Number(body.doenetmlVersionId);
+  updateActivity({
+    activityId,
+    imagePath,
+    name,
+    isPublic,
+  });
+  res.send({});
+});
+
+app.post("/api/updateDocumentSettings", (req: Request, res: Response) => {
+  const body = req.body;
+  const docId = Number(body.docId);
+  const name = body.name;
+  // TODO - deal with learning outcomes
+  const learningOutcomes = body.learningOutcomes;
+  const doenetmlVersionId = Number(body.doenetmlVersionId);
+  updateDoc({
+    docId,
+    name,
+    doenetmlVersionId,
+  });
+  res.send({});
+});
 
 app.post(
   "/api/duplicatePortfolioActivity",
@@ -222,7 +241,7 @@ app.post(
     const targetDocId = Number(req.body.docId);
     const loggedInUserId = Number(req.cookies.userId);
 
-    let newDocId = await copyPublicDocumentToPortfolio(
+    let newDocId = await copyPublicActivityToPortfolio(
       targetDocId,
       loggedInUserId,
     );

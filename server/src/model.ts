@@ -3,21 +3,45 @@ import { cidFromText } from "./utils/cid";
 
 const prisma = new PrismaClient();
 
-export async function createDocument(ownerId: number) {
+export async function createActivity(ownerId: number) {
   let defaultDoenetmlVersion = await prisma.doenetmlVersions.findFirstOrThrow({
     where: { default: true },
   });
 
-  const result = await prisma.documents.create({
+  const activity = await prisma.activities.create({
     data: {
       ownerId,
-      contentLocation: "",
-      name: "untitled doc",
+      name: "Untitled Activity",
       imagePath: "/activity_default.jpg",
-      doenetmlVersionId: defaultDoenetmlVersion.versionId,
+      documents: {
+        create: [
+          {
+            contentLocation: "",
+            doenetmlVersionId: defaultDoenetmlVersion.versionId,
+            name: "Untitled Document",
+          },
+        ],
+      },
     },
   });
-  return result.docId;
+  return activity.activityId;
+}
+
+export async function deleteActivity(activityId: number) {
+  return await prisma.activities.update({
+    where: { activityId },
+    data: {
+      isDeleted: true,
+      documents: {
+        updateMany: {
+          where: {},
+          data: {
+            isDeleted: true,
+          },
+        },
+      },
+    },
+  });
 }
 
 export async function deleteDocument(docId: number) {
@@ -27,20 +51,37 @@ export async function deleteDocument(docId: number) {
   });
 }
 
-// TODO - access control
-export async function saveDoc({
-  docId,
-  content,
+export async function updateActivity({
+  activityId,
   name,
   imagePath,
   isPublic,
+}: {
+  activityId: number;
+  name?: string;
+  imagePath?: string;
+  isPublic?: boolean;
+}) {
+  return await prisma.activities.update({
+    where: { activityId },
+    data: {
+      name,
+      imagePath,
+      isPublic,
+    },
+  });
+}
+
+// TODO - access control
+export async function updateDoc({
+  docId,
+  content,
+  name,
   doenetmlVersionId,
 }: {
   docId: number;
   content?: string;
   name?: string;
-  isPublic?: boolean;
-  imagePath?: string;
   doenetmlVersionId?: number;
 }) {
   return await prisma.documents.update({
@@ -48,9 +89,19 @@ export async function saveDoc({
     data: {
       contentLocation: content,
       name,
-      isPublic,
-      imagePath,
       doenetmlVersionId,
+    },
+  });
+}
+
+// TODO - access control
+export async function getActivity(activityId: number) {
+  return await prisma.activities.findFirstOrThrow({
+    where: { activityId, isDeleted: false },
+    include: {
+      documents: {
+        where: { isDeleted: false },
+      },
     },
   });
 }
@@ -63,59 +114,95 @@ export async function getDoc(docId: number) {
 }
 
 // TODO - access control
-export async function copyPublicDocumentToPortfolio(
-  docId: number,
+export async function copyPublicActivityToPortfolio(
+  origActivityId: number,
   ownerId: number,
 ) {
-  let doc = await getDoc(docId);
+  let origActivity = await getActivity(origActivityId);
 
-  if (!doc.isPublic) {
-    throw Error("Cannot copy a non-public document to portfolio");
+  if (!origActivity.isPublic) {
+    throw Error("Cannot copy a non-public activity to portfolio");
   }
 
-  let docVersion = await createDocumentVersion(docId, ownerId);
-
-  // create new document with new owner and non-public,
-  // ignoring the docId and lastEdited fields
-  const {
-    docId: _ignoreDocId,
-    lastEdited: _ignoreLastEdited,
-    ...docInfo
-  } = doc;
-  docInfo.ownerId = ownerId;
-  docInfo.isPublic = false;
-
-  const result = await prisma.documents.create({
-    data: docInfo,
-  });
-
-  const newDocId = result.docId;
-
-  await prisma.contributorHistory.create({
+  let newActivity = await prisma.activities.create({
     data: {
-      docId: newDocId,
-      prevDocId: docId,
-      prevDocVersion: docVersion.version,
+      name: origActivity.name,
+      imagePath: origActivity.imagePath,
+      ownerId,
     },
   });
 
-  const previousHistory = await prisma.contributorHistory.findMany({
-    where: {
-      docId,
-    },
-    orderBy: { timestamp: "desc" },
+  let documentsToAdd = await Promise.all(
+    origActivity.documents.map(async (doc) => {
+      // For each of the original documents, create a document version (i.e., a frozen snapshot)
+      // that we will link to when creating contributor history, below.
+      let originalDocVersion = await createDocumentVersion(doc.docId, ownerId);
+
+      // document to create with new activityId (to associate it with newly created activity)
+      // ignoring the docId, lastEdited, createdAt fields
+      const {
+        docId: _ignoreDocId,
+        lastEdited: _ignoreLastEdited,
+        createdAt: _ignoreCreatedAt,
+        ...docInfo
+      } = doc;
+      docInfo.activityId = newActivity.activityId;
+
+      return { docInfo, originalDocVersion };
+    }),
+  );
+
+  // TODO: When createManyAndReturn is rolled out,
+  // (see: https://github.com/prisma/prisma/pull/24064#issuecomment-2093331715)
+  // use that to give a list of the newly created docIds.
+  await prisma.documents.createMany({
+    data: documentsToAdd.map((x) => x.docInfo),
   });
 
+  // In lieu of createManyAndReturn, get a list of the docIds of the newly created documents.
+  const newDocIds = (
+    await prisma.activities.findUniqueOrThrow({
+      where: { activityId: newActivity.activityId },
+      select: {
+        documents: { select: { docId: true }, orderBy: { docId: "asc" } },
+      },
+    })
+  ).documents.map((docIdObj) => docIdObj.docId);
+
+  // Create contributor history linking each newly created document
+  // to the corresponding versioned document from origActivity.
+  let contribHistoryInfo = newDocIds.map((docId, i) => ({
+    docId,
+    prevDocId: origActivity.documents[i].docId,
+    prevDocVersion: documentsToAdd[i].originalDocVersion.version,
+  }));
   await prisma.contributorHistory.createMany({
-    data: previousHistory.map((hist) => ({
-      docId: newDocId,
-      prevDocId: hist.prevDocId,
-      prevDocVersion: hist.prevDocVersion,
-      timestamp: hist.timestamp,
-    })),
+    data: contribHistoryInfo,
   });
 
-  return result.docId;
+  // Create contributor history linking each newly created document
+  // to the contributor history of the corresponding document from origActivity.
+  // Note: we copy all history rather than using a linked list
+  // due to inefficient queries necessary to traverse link lists.
+  for (let [i, origDoc] of origActivity.documents.entries()) {
+    const previousHistory = await prisma.contributorHistory.findMany({
+      where: {
+        docId: origDoc.docId,
+      },
+      orderBy: { timestamp: "desc" },
+    });
+
+    await prisma.contributorHistory.createMany({
+      data: previousHistory.map((hist) => ({
+        docId: newDocIds[i],
+        prevDocId: hist.prevDocId,
+        prevDocVersion: hist.prevDocVersion,
+        timestamp: hist.timestamp,
+      })),
+    });
+  }
+
+  return newActivity.activityId;
 }
 
 // TODO - access control
@@ -165,27 +252,19 @@ export async function createDocumentVersion(
 }
 
 // TODO - access control
-export async function getDocEditorData(docId: number) {
-  let doc = await prisma.documents.findFirstOrThrow({
-    where: { docId },
-    include: { doenetmlVersion: true },
-  });
-  // TODO - delete, just massaging to make old client happy
-  return {
-    success: true,
-    activity: {
-      type: "activity",
-      label: doc.name,
-      imagePath: doc.imagePath,
-      content: doc.contentLocation,
-      isSinglePage: true,
-      isPublic: doc.isPublic,
-      version: "",
-      learningOutcomes: [],
-      doenetmlVersion: doc.doenetmlVersion,
+export async function getDocEditorData(activityId: number) {
+  let activity = await prisma.activities.findFirstOrThrow({
+    where: { activityId },
+    include: {
+      documents: {
+        include: {
+          doenetmlVersion: true,
+        },
+      },
     },
-    courseId: null,
-  };
+  });
+
+  return activity;
 }
 
 // TODO - access control
@@ -193,14 +272,22 @@ export async function getDocViewerData(docId: number) {
   let doc = await prisma.documents.findFirstOrThrow({
     where: { docId },
     include: {
-      owner: { select: { userId: true, email: true } },
+      activity: {
+        select: {
+          owner: { select: { userId: true, email: true } },
+        },
+      },
       contributorHistory: {
         include: {
           prevDoc: {
             select: {
               document: {
                 select: {
-                  owner: { select: { userId: true, email: true } },
+                  activity: {
+                    select: {
+                      owner: { select: { userId: true, email: true } },
+                    },
+                  },
                   name: true,
                 },
               },
@@ -214,78 +301,70 @@ export async function getDocViewerData(docId: number) {
   return doc;
 }
 
-export async function searchPublicDocs(query: string) {
-  let ret = await prisma.documents.findMany({
+export async function searchPublicActivities(query: string) {
+  let activities = await prisma.activities.findMany({
     where: {
       name: { contains: "%" + query + "%" },
       isPublic: true,
       isDeleted: false,
     },
+    include: {
+      owner: true,
+    },
   });
-  let massaged = ret.map((doc) => {
-    return {
-      ...doc,
-      firstName: "standin",
-      lastName: "Name",
-      type: "activity",
-      course: doc.docId,
-      doenetId: doc.docId,
-      label: doc.name,
-      content: [doc.docId],
-    };
-  });
-  return massaged;
+
+  return activities;
 }
 
-export async function listUserDocs(ownerId: number) {
-  let ret = await prisma.documents.findMany({
-    where: { ownerId, isDeleted: false },
+export async function listUserActivities(
+  ownerId: number,
+  loggedInUserId: number,
+) {
+  let notMe = ownerId !== loggedInUserId;
+
+  let activities = await prisma.activities.findMany({
+    where: { ownerId, isDeleted: false, isPublic: true },
   });
-  // TODO - delete, just massaging to make old client happy
-  let massaged = ret.map((doc) => {
-    return {
-      ...doc,
-      doenetId: doc.docId,
-      label: doc.name,
-      content: [doc.docId],
-    };
+
+  let publicActivities = activities.filter((activity) => activity.isPublic);
+  let privateActivities = activities.filter(
+    (activity) => !activity.isPublic && !notMe,
+  );
+
+  let user = await prisma.users.findUniqueOrThrow({
+    where: { userId: ownerId },
+    select: { name: true },
   });
-  let publicDocs = massaged.filter((doc) => doc.isPublic);
-  let privateDocs = massaged.filter((doc) => !doc.isPublic);
-  //console.log(ret);
+
   return {
     success: true,
-    publicActivities: publicDocs || [],
-    privateActivities: privateDocs || [],
-    fullName: "stand-in name",
-    notMe: false,
+    publicActivities: publicActivities,
+    privateActivities: privateActivities,
+    fullName: user.name,
+    notMe,
   };
 }
 
-export async function findOrCreateUser(email: string) {
+export async function findOrCreateUser(email: string, name: string) {
   const user = await prisma.users.findUnique({ where: { email } });
   if (user) {
     return user.userId;
   } else {
-    return createUser(email);
+    return createUser(email, name);
   }
 }
 
-export async function createUser(email: string) {
-  const result = await prisma.users.create({ data: { email } });
+export async function createUser(email: string, name: string) {
+  const result = await prisma.users.create({ data: { email, name } });
   return result.userId;
 }
 
 export async function getUserInfo(email: string) {
-  const user = await prisma.users.findUnique({
+  const user = await prisma.users.findUniqueOrThrow({
     where: { email },
-    select: { userId: true, email: true },
+    select: { userId: true, email: true, name: true },
   });
-  if (user) {
-    return user;
-  } else {
-    return {};
-  }
+  return user;
 }
 
 export async function getAllDoenetmlVersions() {
