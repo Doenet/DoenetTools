@@ -58,20 +58,20 @@ export async function action({ request }) {
     return redirect(`/portfolioeditor/${activityId}`);
   } else if (formObj?._action == "Delete") {
     await axios.post(`/api/deletePortfolioActivity`, {
-      doenetId: formObj.doenetId,
+      activityId: formObj.activityId,
     });
 
     return true;
   } else if (formObj?._action == "Make Public") {
     await axios.post(`/api/updateIsPublicActivity`, {
-      doenetId: formObj.doenetId,
+      activityId: formObj.activityId,
       isPublic: true,
     });
 
     return true;
   } else if (formObj?._action == "Make Private") {
     await axios.post(`/api/updateIsPublicActivity`, {
-      doenetId: formObj.doenetId,
+      activityId: formObj.activityId,
       isPublic: false,
     });
 
@@ -209,7 +209,7 @@ export function Portfolio() {
     return null;
   }
 
-  function getCardMenuList(isPublic, doenetId) {
+  function getCardMenuList(isPublic, activityId) {
     return (
       <>
         {" "}
@@ -218,7 +218,7 @@ export function Portfolio() {
             data-test="Make Private Menu Item"
             onClick={() => {
               fetcher.submit(
-                { _action: "Make Private", doenetId },
+                { _action: "Make Private", activityId },
                 { method: "post" },
               );
             }}
@@ -230,7 +230,7 @@ export function Portfolio() {
             data-test="Make Public Menu Item"
             onClick={() => {
               fetcher.submit(
-                { _action: "Make Public", doenetId },
+                { _action: "Make Public", activityId },
                 { method: "post" },
               );
             }}
@@ -241,7 +241,7 @@ export function Portfolio() {
         <MenuItem
           data-test="Delete Menu Item"
           onClick={() => {
-            fetcher.submit({ _action: "Delete", doenetId }, { method: "post" });
+            fetcher.submit({ _action: "Delete", activityId }, { method: "post" });
           }}
         >
           Delete
@@ -249,7 +249,7 @@ export function Portfolio() {
         <MenuItem
           data-test="Settings Menu Item"
           onClick={() => {
-            setDoenetId(doenetId);
+            setDoenetId(activityId);
             onOpen();
           }}
         >

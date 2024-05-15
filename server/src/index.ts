@@ -86,8 +86,8 @@ app.post(
   "/api/deletePortfolioActivity",
   async (req: Request, res: Response) => {
     const body = req.body;
-    const doenetId = Number(body.doenetId);
-    await deleteActivity(doenetId);
+    const activityId = Number(body.activityId);
+    await deleteActivity(activityId);
     res.send({});
   },
 );
