@@ -88,7 +88,7 @@ export async function action({ params, request }) {
   // console.log("formObj", formObj, params.doenetId);
   if (formObj._action == "update label") {
     let response = await fetch(
-      `/api/updatePortfolioActivityLabel.php?doenetId=${params.doenetId}&label=${label}`,
+      `/api/updatePortfolioActivityLabel?doenetId=${params.doenetId}&label=${label}`,
     );
     let respObj = await response.json();
   }
@@ -113,7 +113,7 @@ export async function action({ params, request }) {
     };
   }
   if (formObj._action == "update description") {
-    let { data } = await axios.get("/api/updateFileDescription.php", {
+    let { data } = await axios.get("/api/updateFileDescription", {
       params: {
         doenetId: formObj.doenetId,
         cid: formObj.cid,
@@ -122,7 +122,7 @@ export async function action({ params, request }) {
     });
   }
   if (formObj._action == "remove file") {
-    let resp = await axios.get("/api/deleteFile.php", {
+    let resp = await axios.get("/api/deleteFile", {
       params: { doenetId: formObj.doenetId, cid: formObj.cid },
     });
 
@@ -139,7 +139,7 @@ export async function action({ params, request }) {
 
   return { nothingToReturn: true };
   // let response = await fetch(
-  //   `/api/duplicatePortfolioActivity.php?doenetId=${params.doenetId}`,
+  //   `/api/duplicatePortfolioActivity?doenetId=${params.doenetId}`,
   // );
   // let respObj = await response.json();
 
@@ -181,12 +181,9 @@ export async function loader({ params }) {
     let doenetML = doenetMLResponse.data;
     const lastKnownCid = await cidFromText(doenetML);
 
-    const supportingFileResp = await axios.get(
-      "/api/loadSupportingFileInfo.php",
-      {
-        params: { doenetId: params.doenetId },
-      },
-    );
+    const supportingFileResp = await axios.get("/api/loadSupportingFileInfo", {
+      params: { doenetId: params.doenetId },
+    });
 
     let supportingFileData = supportingFileResp.data;
 
@@ -207,7 +204,7 @@ export async function loader({ params }) {
     }
 
     const allDoenetmlVersionsResp = await axios.get(
-      "/api/getAllDoenetmlVersions.php",
+      "/api/getAllDoenetmlVersions",
     );
 
     const allDoenetmlVersions = allDoenetmlVersionsResp.data;
@@ -328,7 +325,7 @@ function SupportFilesControls() {
         uploadData.append("doenetId", doenetId);
         uploadData.append("columnTypes", columnTypes);
 
-        let resp = await axios.post("/api/supportFileUpload.php", uploadData);
+        let resp = await axios.post("/api/supportFileUpload", uploadData);
 
         if (resp.data.success) {
           setAlerts([
@@ -911,35 +908,33 @@ export function GeneralActivityControls({
         uploadData.append("file", image);
         uploadData.append("doenetId", doenetId);
 
-        axios
-          .post("/api/activityThumbnailUpload.php", uploadData)
-          .then((resp) => {
-            let { data } = resp;
-            // console.log("RESPONSE data>", data);
+        axios.post("/api/activityThumbnailUpload", uploadData).then((resp) => {
+          let { data } = resp;
+          // console.log("RESPONSE data>", data);
 
-            //uploads are finished clear it out
-            numberOfFilesUploading.current = 0;
-            let { success, cid, msg, asFileName } = data;
-            if (success) {
-              setImagePath(`/media/${cid}.jpg`);
-              //Refresh images in portfolio
-              fetcher.submit(
-                {
-                  _action: "noop",
-                },
-                { method: "post" },
-              );
-              setAlerts([
-                {
-                  type: "success",
-                  id: cid,
-                  title: "Activity thumbnail updated!",
-                },
-              ]);
-            } else {
-              setAlerts([{ type: "error", id: cid, title: msg }]);
-            }
-          });
+          //uploads are finished clear it out
+          numberOfFilesUploading.current = 0;
+          let { success, cid, msg, asFileName } = data;
+          if (success) {
+            setImagePath(`/media/${cid}.jpg`);
+            //Refresh images in portfolio
+            fetcher.submit(
+              {
+                _action: "noop",
+              },
+              { method: "post" },
+            );
+            setAlerts([
+              {
+                type: "success",
+                id: cid,
+                title: "Activity thumbnail updated!",
+              },
+            ]);
+          } else {
+            setAlerts([{ type: "error", id: cid, title: msg }]);
+          }
+        });
       };
     },
     [doenetId],
@@ -1352,7 +1347,7 @@ export function PortfolioActivityEditor() {
         };
         const {
           data: { success, message },
-        } = await axios.post("/api/saveDoenetML.php", params);
+        } = await axios.post("/api/saveDoenetML", params);
 
         if (!success) throw new Error(message);
 

@@ -47,7 +47,7 @@ export async function loader() {
     userId = data.userId;
     email = data.email;
 
-    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
+    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin`);
     const isAdminJson = await isAdminResponse.json();
     isAdmin = isAdminJson.isAdmin;
   }

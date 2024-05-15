@@ -20,7 +20,7 @@ import axios from "axios";
 export async function loader({ params }) {
   try {
     const { data } = await axios.get(
-      `/api/getPublicPortfolio.php?courseId=${params.courseId}`,
+      `/api/getPublicPortfolio?courseId=${params.courseId}`,
     );
 
     return {

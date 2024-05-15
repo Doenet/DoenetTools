@@ -86,7 +86,7 @@ export async function action({ request }) {
 
 export async function loader({ params }) {
   const { data } = await axios.get(
-    `/api/getPortfolio.php?courseId=${params.courseId}`,
+    `/api/getPortfolio?courseId=${params.courseId}`,
   );
   if (data.notMe) {
     return redirect(`/publicportfolio/${params.courseId}`);

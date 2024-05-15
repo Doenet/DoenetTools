@@ -7,15 +7,13 @@ import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/Activi
 import { MoveToGroupMenuItem } from "./Community";
 
 export async function loader() {
-  const response = await fetch(`/api/getAllRecentPublicActivites.php`);
+  const response = await fetch(`/api/getAllRecentPublicActivites`);
   const data = await response.json();
-  const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
+  const isAdminResponse = await fetch(`/api/checkForCommunityAdmin`);
   const { isAdmin } = await isAdminResponse.json();
   let carouselGroups = [];
   if (isAdmin) {
-    const carouselDataGroups = await fetch(
-      `/api/loadPromotedContentGroups.php`,
-    );
+    const carouselDataGroups = await fetch(`/api/loadPromotedContentGroups`);
     const responseGroups = await carouselDataGroups.json();
     carouselGroups = responseGroups.carouselGroups;
   }

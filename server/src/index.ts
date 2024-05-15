@@ -30,7 +30,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
 });
 
-app.get("/api/getQuickCheckSignedIn.php", (req: Request, res: Response) => {
+app.get("/api/getQuickCheckSignedIn", (req: Request, res: Response) => {
   const signedIn = req.cookies.email ? true : false;
   res.send({ signedIn: signedIn });
 });
@@ -45,11 +45,11 @@ app.get("/api/getUser", async (req: Request, res: Response) => {
   }
 });
 
-app.get("/api/checkForCommunityAdmin.php", (req: Request, res: Response) => {
+app.get("/api/checkForCommunityAdmin", (req: Request, res: Response) => {
   res.send({});
 });
 
-app.get("/api/loadProfile.php", (req: Request, res: Response) => {
+app.get("/api/loadProfile", (req: Request, res: Response) => {
   const loggedInEmail = req.cookies.email;
   res.send({
     profile: {
@@ -66,13 +66,13 @@ app.get("/api/loadProfile.php", (req: Request, res: Response) => {
   });
 });
 
-app.get("/api/getPortfolio.php", async (req: Request, res: Response) => {
+app.get("/api/getPortfolio", async (req: Request, res: Response) => {
   const loggedInUserId = Number(req.cookies.userId);
   const ret = await listUserActivities(loggedInUserId, loggedInUserId);
   res.send(ret);
 });
 
-app.get("/api/sendSignInEmail.php", async (req: Request, res: Response) => {
+app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
   const email: string = req.query.emailaddress as string;
   // TODO: add the ability to give a name after logging in or creating an account
   const userId = await findOrCreateUser(email, email);
@@ -97,15 +97,12 @@ app.post("/api/createActivity", async (req: Request, res: Response) => {
   res.send({ activityId, docId });
 });
 
-app.get(
-  "/api/updatePortfolioActivityLabel.php",
-  (req: Request, res: Response) => {
-    const doenetId = Number(req.query.doenetId as string);
-    const label = req.query.label as string;
-    updateDoc({ docId: doenetId, name: label });
-    res.send({ success: true });
-  },
-);
+app.get("/api/updatePortfolioActivityLabel", (req: Request, res: Response) => {
+  const doenetId = Number(req.query.doenetId as string);
+  const label = req.query.label as string;
+  updateDoc({ docId: doenetId, name: label });
+  res.send({ success: true });
+});
 
 app.post("/api/updateIsPublicActivity", (req: Request, res: Response) => {
   const body = req.body;
@@ -115,7 +112,7 @@ app.post("/api/updateIsPublicActivity", (req: Request, res: Response) => {
   res.send({});
 });
 
-app.get("/api/loadSupportingFileInfo.php", (req: Request, res: Response) => {
+app.get("/api/loadSupportingFileInfo", (req: Request, res: Response) => {
   const doenetId = Number(req.query.doenetId as string);
   res.send({
     success: true,
@@ -126,33 +123,30 @@ app.get("/api/loadSupportingFileInfo.php", (req: Request, res: Response) => {
   });
 });
 
-app.get("/api/checkCredentials.php", (req: Request, res: Response) => {
+app.get("/api/checkCredentials", (req: Request, res: Response) => {
   const loggedIn = req.cookies.email ? true : false;
   res.send({ loggedIn });
 });
 
 app.get(
-  "/api/getCoursePermissionsAndSettings.php",
+  "/api/getCoursePermissionsAndSettings",
   (req: Request, res: Response) => {
     res.send({});
   },
 );
 
-app.get(
-  "/api/searchPublicActivities.php",
-  async (req: Request, res: Response) => {
-    const query = req.query.q as string;
-    res.send({
-      success: true,
-      searchResults: {
-        users: [], // TODO - this
-        activities: await searchPublicActivities(query),
-      },
-    });
-  },
-);
+app.get("/api/searchPublicActivities", async (req: Request, res: Response) => {
+  const query = req.query.q as string;
+  res.send({
+    success: true,
+    searchResults: {
+      users: [], // TODO - this
+      activities: await searchPublicActivities(query),
+    },
+  });
+});
 
-app.get("/api/loadPromotedContent.php", (req: Request, res: Response) => {
+app.get("/api/loadPromotedContent", (req: Request, res: Response) => {
   res.send({
     success: true,
     carouselData: {},
@@ -168,14 +162,11 @@ app.get(
   },
 );
 
-app.get(
-  "/api/getAllDoenetmlVersions.php",
-  async (req: Request, res: Response) => {
-    const allDoenetmlVersions = await getAllDoenetmlVersions();
+app.get("/api/getAllDoenetmlVersions", async (req: Request, res: Response) => {
+  const allDoenetmlVersions = await getAllDoenetmlVersions();
 
-    res.send(allDoenetmlVersions);
-  },
-);
+  res.send(allDoenetmlVersions);
+});
 
 app.get(
   "/api/getPortfolioActivityView/:docId",
@@ -187,11 +178,11 @@ app.get(
   },
 );
 
-app.get("/api/loadPromotedContentGroups.php", (req: Request, res: Response) => {
+app.get("/api/loadPromotedContentGroups", (req: Request, res: Response) => {
   res.send({});
 });
 
-app.post("/api/saveDoenetML.php", (req: Request, res: Response) => {
+app.post("/api/saveDoenetML", (req: Request, res: Response) => {
   const body = req.body;
   const doenetML = body.doenetML;
   const docId = Number(body.pageId);

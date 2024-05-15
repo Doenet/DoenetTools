@@ -60,29 +60,29 @@ export async function action({ request }) {
 
   switch (formObj?._action) {
     case "Ban Content":
-      return postApiAlertOnError("/api/markContentAsBanned.php", { doenetId });
+      return postApiAlertOnError("/api/markContentAsBanned", { doenetId });
     case "Remove Promoted Content":
-      return postApiAlertOnError("/api/removePromotedContent.php", {
+      return postApiAlertOnError("/api/removePromotedContent", {
         doenetId,
         groupId,
       });
     case "Move Promoted Content":
-      return postApiAlertOnError("/api/movePromotedContent.php", {
+      return postApiAlertOnError("/api/movePromotedContent", {
         doenetId,
         groupId,
         direction,
       });
     case "Move Promoted Group":
-      return postApiAlertOnError("/api/movePromotedContentGroup.php", {
+      return postApiAlertOnError("/api/movePromotedContentGroup", {
         groupId,
         direction,
       });
     case "New Group":
-      return postApiAlertOnError("/api/addPromotedContentGroup.php", {
+      return postApiAlertOnError("/api/addPromotedContentGroup", {
         groupName,
       });
     case "Rename Group":
-      return postApiAlertOnError("/api/addPromotedContentGroup.php", {
+      return postApiAlertOnError("/api/addPromotedContentGroup", {
         groupName,
       });
     case "Promote Group":
@@ -90,7 +90,7 @@ export async function action({ request }) {
       currentlyFeatured =
         !currentlyFeatured || currentlyFeatured == "false" ? false : true;
       homepage = !homepage || homepage == "false" ? false : true;
-      return postApiAlertOnError("/api/updatePromotedContentGroup.php", {
+      return postApiAlertOnError("/api/updatePromotedContentGroup", {
         groupName,
         newGroupName,
         currentlyFeatured,
@@ -105,23 +105,21 @@ export async function loader({ request }) {
   const q = url.searchParams.get("q");
   if (q) {
     //Show search results
-    const response = await fetch(`/api/searchPublicActivities.php?q=${q}`);
+    const response = await fetch(`/api/searchPublicActivities?q=${q}`);
     const respObj = await response.json();
-    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
+    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin`);
     const { isAdmin } = await isAdminResponse.json();
     let carouselGroups = [];
     if (isAdmin) {
-      const carouselDataGroups = await fetch(
-        `/api/loadPromotedContentGroups.php`,
-      );
+      const carouselDataGroups = await fetch(`/api/loadPromotedContentGroups`);
       const responseGroups = await carouselDataGroups.json();
       carouselGroups = responseGroups.carouselGroups;
     }
     return { q, searchResults: respObj.searchResults, carouselGroups, isAdmin };
   } else {
-    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
+    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin`);
     const { isAdmin } = await isAdminResponse.json();
-    const response = await fetch("/api/loadPromotedContent.php");
+    const response = await fetch("/api/loadPromotedContent");
     const { carouselData } = await response.json();
     return { carouselData, isAdmin };
   }
@@ -190,7 +188,7 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
       doenetId,
     };
     axios
-      .post("/api/addPromotedContent.php", uploadData)
+      .post("/api/addPromotedContent", uploadData)
       .then(({ data }) => {
         onClose();
       })
