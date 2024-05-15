@@ -176,12 +176,58 @@ test("copyPublicActivityToPortfolio copies a public document to a new owner", as
   expect(contribHist[0].prevDocVersion).eq(1);
 });
 
-// TODO:
-// create activity
-// remix that activity
-// modify the original activity
-// remix the original activity again
+test("copyPublicActivityToPortfolio remixes correct versions", async () => {
+  const ownerId1 = await createTestUser();
+  const ownerId2 = await createTestUser();
+  const ownerId3 = await createTestUser();
 
+  // create activity 1 by owner 1
+  const { activityId: activityId1, docId: docId1 } = await createActivity(
+    ownerId1,
+  );
+  const activity1Content = "<p>Hello!</p>";
+  await updateActivity({ activityId: activityId1, isPublic: true });
+  await updateDoc({ docId: docId1, content: activity1Content });
+
+  // copy activity 1 to owner 2's portfolio
+  const activityId2 = await copyPublicActivityToPortfolio(
+    activityId1,
+    ownerId2,
+  );
+  const activity2 = await getActivity(activityId2);
+  expect(activity2.ownerId).toBe(ownerId2);
+  expect(activity2.documents[0].contentLocation).eq(activity1Content);
+
+  // history should be version 1 of activity 1
+  const activityData2 = await getActivityViewerData(activityId2);
+  const contribHist2 = activityData2.doc.contributorHistory;
+  expect(contribHist2.length).eq(1);
+  expect(contribHist2[0].prevDocId).eq(docId1);
+  expect(contribHist2[0].prevDocVersion).eq(1);
+
+  // modify activity 1 so that will have a new version
+  const activity1ContentModified = "<p>Bye</p>";
+  await updateDoc({ docId: docId1, content: activity1ContentModified });
+
+  // copy activity 1 to owner 3's portfolio
+  const activityId3 = await copyPublicActivityToPortfolio(
+    activityId1,
+    ownerId3,
+  );
+
+  const activity3 = await getActivity(activityId3);
+  expect(activity3.ownerId).toBe(ownerId3);
+  expect(activity3.documents[0].contentLocation).eq(activity1ContentModified);
+
+  // history should be version 2 of activity 1
+  const activityData3 = await getActivityViewerData(activityId3);
+  const contribHist3 = activityData3.doc.contributorHistory;
+  expect(contribHist3.length).eq(1);
+  expect(contribHist3[0].prevDocId).eq(docId1);
+  expect(contribHist3[0].prevDocVersion).eq(2);
+});
+
+// TODO:
 // create activity
 // remix that activity
 // remix the remixed activity
