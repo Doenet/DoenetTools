@@ -237,18 +237,6 @@ const router = createBrowserRouter([
       },
       {
         path: "portfolioeditor/:activityId",
-        loader: async ({ params }) => {
-          //This leaves a location in history
-          //this is because redirect creates a standard Response object and
-          //Response objects has no way to set replace: true
-
-          //Redirect as an activity can have no pageids
-          return redirect(`/portfolioeditor/${params.activityId}/_`);
-        },
-        element: <div>Loading...</div>,
-      },
-      {
-        path: "portfolioeditor/:activityId/:pageId",
         loader: portfolioEditorLoader,
         action: portfolioEditorAction,
         // errorElement: <div>Error!</div>,
@@ -259,7 +247,21 @@ const router = createBrowserRouter([
             onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
           >
             <PortfolioActivityEditor />
-            {/* <ToolRoot /> */}
+          </MathJaxContext>
+        ),
+      },
+      {
+        path: "portfolioeditor/:activityId/:docId",
+        loader: portfolioEditorLoader,
+        action: portfolioEditorAction,
+        // errorElement: <div>Error!</div>,
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <PortfolioActivityEditor />
           </MathJaxContext>
         ),
       },

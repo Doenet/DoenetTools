@@ -42,11 +42,11 @@ export async function action({ request }) {
       name = "Untitled";
     }
     let learningOutcomes = JSON.parse(formObj.learningOutcomes);
-    await axios.post("/api/updatePortfolioActivitySettings", {
+    await axios.post("/api/updateActivitySettings", {
       name,
       imagePath: formObj.imagePath,
       public: formObj.public,
-      doenetId: formObj.doenetId,
+      activityId: formObj.activityId,
       learningOutcomes,
     });
     return true;
@@ -127,23 +127,21 @@ function PortfolioSettingsDrawer({
   isOpen,
   onClose,
   finalFocusRef,
-  doenetId,
+  activityId,
   data,
   courseId,
 }) {
-  // const { pageId, activityData } = useLoaderData();
-  // console.log({ doenetId, data });
   const fetcher = useFetcher();
   let activityData;
-  if (doenetId) {
+  if (activityId) {
     let publicIndex = data.publicActivities.findIndex(
-      (obj) => obj.doenetId == doenetId,
+      (obj) => obj.activityId == activityId,
     );
     if (publicIndex != -1) {
       activityData = data.publicActivities[publicIndex];
     } else {
       let privateIndex = data.privateActivities.findIndex(
-        (obj) => obj.doenetId == doenetId,
+        (obj) => obj.activityId == activityId,
       );
       if (privateIndex != -1) {
         activityData = data.privateActivities[privateIndex];
@@ -171,10 +169,10 @@ function PortfolioSettingsDrawer({
         </DrawerHeader>
 
         <DrawerBody>
-          {doenetId && (
+          {activityId && (
             <GeneralActivityControls
               fetcher={fetcher}
-              doenetId={doenetId}
+              activityId={activityId}
               activityData={activityData}
               courseId={courseId}
             />
@@ -188,7 +186,7 @@ function PortfolioSettingsDrawer({
 export function Portfolio() {
   let context = useOutletContext();
   let data = useLoaderData();
-  const [doenetId, setDoenetId] = useState();
+  const [activityId, setActivityId] = useState();
   const controlsBtnRef = useRef(null);
 
   const navigate = useNavigate();
@@ -241,7 +239,10 @@ export function Portfolio() {
         <MenuItem
           data-test="Delete Menu Item"
           onClick={() => {
-            fetcher.submit({ _action: "Delete", activityId }, { method: "post" });
+            fetcher.submit(
+              { _action: "Delete", activityId },
+              { method: "post" },
+            );
           }}
         >
           Delete
@@ -249,7 +250,7 @@ export function Portfolio() {
         <MenuItem
           data-test="Settings Menu Item"
           onClick={() => {
-            setDoenetId(activityId);
+            setActivityId(activityId);
             onOpen();
           }}
         >
@@ -265,7 +266,7 @@ export function Portfolio() {
         isOpen={settingsAreOpen}
         onClose={settingsOnClose}
         finalFocusRef={controlsBtnRef}
-        doenetId={doenetId}
+        activityId={activityId}
         data={data}
         courseId={data.courseId}
       />
@@ -306,7 +307,7 @@ export function Portfolio() {
                 // that was unused. This appears to work okay though? And it
                 // would make it consistent with how API requests are done elsewhere
                 fetcher.submit(
-                  { _action: "Add Activity", doenetId },
+                  { _action: "Add Activity", activityId },
                   { method: "post" },
                 );
               }}

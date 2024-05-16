@@ -98,11 +98,12 @@ app.post("/api/createActivity", async (req: Request, res: Response) => {
   res.send({ activityId, docId });
 });
 
-app.get("/api/updatePortfolioActivityLabel", (req: Request, res: Response) => {
-  const doenetId = Number(req.query.doenetId as string);
-  const label = req.query.label as string;
-  updateDoc({ docId: doenetId, name: label });
-  res.send({ success: true });
+app.post("/api/updateActivityName", (req: Request, res: Response) => {
+  const body = req.body;
+  const activityId = Number(body.activityId);
+  const name = body.name;
+  updateActivity({ activityId, name });
+  res.send({});
 });
 
 app.post("/api/updateIsPublicActivity", (req: Request, res: Response) => {
@@ -113,16 +114,19 @@ app.post("/api/updateIsPublicActivity", (req: Request, res: Response) => {
   res.send({});
 });
 
-app.get("/api/loadSupportingFileInfo", (req: Request, res: Response) => {
-  const doenetId = Number(req.query.doenetId as string);
-  res.send({
-    success: true,
-    supportingFiles: [],
-    canUpload: true,
-    userQuotaBytesAvailable: 1000000,
-    quotaBytes: 9000000,
-  });
-});
+app.get(
+  "/api/loadSupportingFileInfo/:activityId",
+  (req: Request, res: Response) => {
+    const activityId = Number(req.params.activityId as string);
+    res.send({
+      success: true,
+      supportingFiles: [],
+      canUpload: true,
+      userQuotaBytesAvailable: 1000000,
+      quotaBytes: 9000000,
+    });
+  },
+);
 
 app.get("/api/checkCredentials", (req: Request, res: Response) => {
   const loggedIn = req.cookies.email ? true : false;
@@ -186,9 +190,9 @@ app.get("/api/loadPromotedContentGroups", (req: Request, res: Response) => {
 app.post("/api/saveDoenetML", (req: Request, res: Response) => {
   const body = req.body;
   const doenetML = body.doenetML;
-  const docId = Number(body.pageId);
+  const docId = Number(body.docId);
   updateDoc({ docId, content: doenetML });
-  res.send({ success: true });
+  res.send({});
 });
 
 app.post("/api/updateActivitySettings", (req: Request, res: Response) => {
@@ -198,8 +202,7 @@ app.post("/api/updateActivitySettings", (req: Request, res: Response) => {
   const name = body.name;
   // TODO - deal with learning outcomes
   const learningOutcomes = body.learningOutcomes;
-  const isPublic = body.public === "true";
-  const doenetmlVersionId = Number(body.doenetmlVersionId);
+  const isPublic = body.isPublic;
   updateActivity({
     activityId,
     imagePath,
@@ -239,6 +242,16 @@ app.post(
   },
 );
 
+app.get(
+  "/api/getDocumentContent/:docId",
+  async (req: Request, res: Response) => {
+    const docId = Number(req.params.docId);
+    const doc = await getDoc(docId);
+    res.send(doc.contentLocation);
+  },
+);
+
+// TODO: delete this when remove all references to it
 app.get(
   "/media/byPageId/:doenetId.doenet",
   async (req: Request, res: Response) => {

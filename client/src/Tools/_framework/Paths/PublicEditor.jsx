@@ -71,9 +71,9 @@ export async function loader({ params }) {
     let doenetML = doenetMLResponse.data;
     const lastKnownCid = await cidFromText(doenetML);
 
-    const supportingFileResp = await axios.get("/api/loadSupportingFileInfo", {
-      params: { doenetId: params.doenetId },
-    });
+    const supportingFileResp = await axios.get(
+      `/api/loadSupportingFileInfo/${params.doenetId}`,
+    );
 
     let supportingFileData = supportingFileResp.data;
 
