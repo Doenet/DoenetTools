@@ -47,9 +47,9 @@ export async function loader() {
     userId = data.userId;
     email = data.email;
 
-    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
-    const isAdminJson = await isAdminResponse.json();
-    isAdmin = isAdminJson.isAdmin;
+    const isAdminResponse = await axios.get(`/api/checkForCommunityAdmin`);
+    let { data: isAdminData } = isAdminResponse;
+    isAdmin = isAdminData.isAdmin;
   }
   return { signedIn, userId, isAdmin, firstName, lastName, email };
 }
@@ -112,7 +112,7 @@ export function SiteHeader(props) {
   return (
     <>
       <Grid
-        templateAreas={`"siteHeader" 
+        templateAreas={`"siteHeader"
         "main"`}
         gridTemplateRows="40px auto"
         width="100vw"
@@ -138,7 +138,7 @@ export function SiteHeader(props) {
             margin="0"
             display="flex"
             justifyContent="space-between"
-            templateAreas={`"leftHeader menus rightHeader" 
+            templateAreas={`"leftHeader menus rightHeader"
         "main"`}
             gridTemplateColumns="1f auto 1f"
           >

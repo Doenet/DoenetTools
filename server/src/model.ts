@@ -299,3 +299,28 @@ export async function getAllDoenetmlVersions() {
   });
   return allDoenetmlVersions;
 }
+
+export async function getIsAdmin(email: string) {
+  const user = await prisma.users.findUnique({ where: { email } });
+  let isAdmin = false;
+  if(user) {
+    isAdmin = user.isAdmin;
+  }
+  return isAdmin;
+}
+
+export async function getAllRecentPublicActivites() {
+  const docs = await prisma.documents.findMany({
+    where: {isPublic: true, isDeleted: false},
+    orderBy: {lastEdited: "desc"},
+    take: 100,
+    include: {
+      owner: {
+        select: {
+          email: true
+        }
+      }
+    }
+  })
+  return docs;
+}

@@ -7,9 +7,11 @@ import {
   deleteDocument,
   findOrCreateUser,
   getAllDoenetmlVersions,
+  getAllRecentPublicActivites,
   getDoc,
   getDocEditorData,
   getDocViewerData,
+  getIsAdmin,
   getUserInfo,
   listUserDocs,
   saveDoc,
@@ -43,9 +45,19 @@ app.get("/api/getUser", async (req: Request, res: Response) => {
   }
 });
 
-app.get("/api/checkForCommunityAdmin.php", (req: Request, res: Response) => {
-  res.send({});
+app.get("/api/checkForCommunityAdmin", async (req: Request, res: Response) => {
+  const userEmail = req.cookies.email;
+  const isAdmin = await getIsAdmin(userEmail);
+  res.send({
+    isAdmin
+  });
 });
+
+app.get("/api/getAllRecentPublicActivites", async (req: Request, res: Response) => {
+  const docs = await getAllRecentPublicActivites();
+  res.send(docs);
+});
+
 
 app.get("/api/loadProfile.php", (req: Request, res: Response) => {
   const loggedInEmail = req.cookies.email;

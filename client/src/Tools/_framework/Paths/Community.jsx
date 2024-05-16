@@ -107,7 +107,7 @@ export async function loader({ request }) {
     //Show search results
     const response = await fetch(`/api/searchPublicActivities.php?q=${q}`);
     const respObj = await response.json();
-    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
+    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin`);
     const { isAdmin } = await isAdminResponse.json();
     let carouselGroups = [];
     if (isAdmin) {
@@ -119,7 +119,7 @@ export async function loader({ request }) {
     }
     return { q, searchResults: respObj.searchResults, carouselGroups, isAdmin };
   } else {
-    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin.php`);
+    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin`);
     const { isAdmin } = await isAdminResponse.json();
     const response = await fetch("/api/loadPromotedContent.php");
     const { carouselData } = await response.json();

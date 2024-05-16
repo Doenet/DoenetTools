@@ -149,6 +149,7 @@ model studentItemResponses {
 model users {
   userId                     Int                          @id @default(autoincrement())
   email                      String                       @unique @db.VarChar(45)
+  isAdmin                    Boolean                      @default(false)
   activities                 activities[]
   assignments                assignments[]
   documents                  documents[]
