@@ -7,9 +7,10 @@ import {
   deleteActivity,
   findOrCreateUser,
   getAllDoenetmlVersions,
-  getActivity,
   getActivityEditorData,
   getActivityViewerData,
+  getAllRecentPublicActivities,
+  getIsAdmin,
   getUserInfo,
   listUserActivities,
   updateDoc,
@@ -45,9 +46,21 @@ app.get("/api/getUser", async (req: Request, res: Response) => {
   }
 });
 
-app.get("/api/checkForCommunityAdmin", (req: Request, res: Response) => {
-  res.send({});
+app.get("/api/checkForCommunityAdmin", async (req: Request, res: Response) => {
+  const userEmail = req.cookies.email;
+  const isAdmin = await getIsAdmin(userEmail);
+  res.send({
+    isAdmin,
+  });
 });
+
+app.get(
+  "/api/getAllRecentPublicActivities",
+  async (req: Request, res: Response) => {
+    const docs = await getAllRecentPublicActivities();
+    res.send(docs);
+  },
+);
 
 app.get("/api/loadProfile", (req: Request, res: Response) => {
   const loggedInEmail = req.cookies.email;
