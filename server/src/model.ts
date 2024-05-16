@@ -285,18 +285,16 @@ export async function getActivityEditorData(activityId: number) {
 export async function getActivityViewerData(activityId: number) {
   const activity = await prisma.activities.findFirstOrThrow({
     where: { activityId },
-    include: { documents: { select: { docId: true } } },
+    include: {
+      owner: { select: { userId: true, email: true, name: true } },
+      documents: { select: { docId: true } },
+    },
   });
   const docId = activity.documents[0].docId;
 
   let doc = await prisma.documents.findFirstOrThrow({
     where: { docId },
     include: {
-      activity: {
-        select: {
-          owner: { select: { userId: true, email: true } },
-        },
-      },
       contributorHistory: {
         include: {
           prevDoc: {
@@ -305,7 +303,9 @@ export async function getActivityViewerData(activityId: number) {
                 select: {
                   activity: {
                     select: {
-                      owner: { select: { userId: true, email: true } },
+                      owner: {
+                        select: { userId: true, email: true, name: true },
+                      },
                     },
                   },
                   name: true,
@@ -325,9 +325,10 @@ export async function getActivityViewerData(activityId: number) {
 }
 
 export async function searchPublicActivities(query: string) {
+  let query_words = query.split(" ");
   let activities = await prisma.activities.findMany({
     where: {
-      name: { contains: "%" + query + "%" },
+      AND: query_words.map((qw) => ({ name: { contains: "%" + qw + "%" } })),
       isPublic: true,
       isDeleted: false,
     },
@@ -347,6 +348,7 @@ export async function listUserActivities(
 
   let activities = await prisma.activities.findMany({
     where: { ownerId, isDeleted: false, isPublic: notMe ? true : undefined },
+    include: { documents: { select: { docId: true, doenetmlVersion: true } } },
   });
 
   let publicActivities = activities.filter((activity) => activity.isPublic);

@@ -41,14 +41,33 @@ export async function action({ request }) {
     if (name == "") {
       name = "Untitled";
     }
-    let learningOutcomes = JSON.parse(formObj.learningOutcomes);
+
+    let learningOutcomes;
+    if (formObj.learningOutcomes) {
+      learningOutcomes = JSON.parse(formObj.learningOutcomes);
+    }
+    let isPublic;
+
+    if (formObj.isPublic) {
+      isPublic = formObj.isPublic === "true";
+    }
+
     await axios.post("/api/updateActivitySettings", {
       name,
       imagePath: formObj.imagePath,
-      public: formObj.public,
+      isPublic,
       activityId: formObj.activityId,
       learningOutcomes,
     });
+
+    if (formObj.doenetmlVersionId) {
+      // TODO: handle other updates to just a document
+      await axios.post("/api/updateDocumentSettings", {
+        docId: formObj.docId,
+        doenetmlVersionId: formObj.doenetmlVersionId,
+      });
+    }
+
     return true;
   } else if (formObj?._action == "Add Activity") {
     //Create a portfolio activity and redirect to the editor for it
@@ -86,7 +105,7 @@ export async function action({ request }) {
 export async function loader({ params }) {
   const { data } = await axios.get(`/api/getPortfolio/${params.userId}`);
   if (data.notMe) {
-    return redirect(`/publicportfolio/${params.courseId}`);
+    return redirect(`/publicportfolio/${params.userId}`);
   }
 
   return data;
@@ -129,7 +148,6 @@ function PortfolioSettingsDrawer({
   finalFocusRef,
   activityId,
   data,
-  courseId,
 }) {
   const fetcher = useFetcher();
   let activityData;
@@ -173,8 +191,9 @@ function PortfolioSettingsDrawer({
             <GeneralActivityControls
               fetcher={fetcher}
               activityId={activityId}
+              docId={activityData.docId}
               activityData={activityData}
-              courseId={courseId}
+              allDoenetmlVersions={data.allDoenetmlVersions}
             />
           )}
         </DrawerBody>
@@ -189,7 +208,6 @@ export function Portfolio() {
   const [activityId, setActivityId] = useState();
   const controlsBtnRef = useRef(null);
 
-  const navigate = useNavigate();
   const {
     isOpen: settingsAreOpen,
     onOpen: settingsOnOpen,
@@ -251,7 +269,7 @@ export function Portfolio() {
           data-test="Settings Menu Item"
           onClick={() => {
             setActivityId(activityId);
-            onOpen();
+            settingsOnOpen();
           }}
         >
           Settings
@@ -268,7 +286,6 @@ export function Portfolio() {
         finalFocusRef={controlsBtnRef}
         activityId={activityId}
         data={data}
-        courseId={data.courseId}
       />
       <PortfolioGrid>
         <Box

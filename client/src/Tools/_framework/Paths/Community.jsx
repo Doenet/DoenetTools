@@ -39,7 +39,7 @@ export async function action({ request }) {
   let formObj = Object.fromEntries(formData);
   let {
     direction,
-    doenetId,
+    activityId,
     groupName,
     newGroupName,
     groupId,
@@ -60,15 +60,15 @@ export async function action({ request }) {
 
   switch (formObj?._action) {
     case "Ban Content":
-      return postApiAlertOnError("/api/markContentAsBanned", { doenetId });
+      return postApiAlertOnError("/api/markContentAsBanned", { activityId });
     case "Remove Promoted Content":
       return postApiAlertOnError("/api/removePromotedContent", {
-        doenetId,
+        activityId,
         groupId,
       });
     case "Move Promoted Content":
       return postApiAlertOnError("/api/movePromotedContent", {
-        doenetId,
+        activityId,
         groupId,
         direction,
       });
@@ -105,20 +105,31 @@ export async function loader({ request }) {
   const q = url.searchParams.get("q");
   if (q) {
     //Show search results
-    const response = await fetch(`/api/searchPublicActivities?q=${q}`);
-    const respObj = await response.json();
-    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin`);
-    const { isAdmin } = await isAdminResponse.json();
+    const { data: searchData } = await axios.get(
+      `/api/searchPublicActivities?q=${q}`,
+    );
+
+    const { data: isAdminData } = await axios.get(
+      `/api/checkForCommunityAdmin`,
+    );
+    const isAdmin = isAdminData.isAdmin;
     let carouselGroups = [];
     if (isAdmin) {
       const carouselDataGroups = await fetch(`/api/loadPromotedContentGroups`);
       const responseGroups = await carouselDataGroups.json();
       carouselGroups = responseGroups.carouselGroups;
     }
-    return { q, searchResults: respObj.searchResults, carouselGroups, isAdmin };
+    return {
+      q,
+      searchResults: searchData,
+      carouselGroups,
+      isAdmin,
+    };
   } else {
-    const isAdminResponse = await fetch(`/api/checkForCommunityAdmin`);
-    const { isAdmin } = await isAdminResponse.json();
+    const { data: isAdminData } = await axios.get(
+      `/api/checkForCommunityAdmin`,
+    );
+    const isAdmin = isAdminData.isAdmin;
     const response = await fetch("/api/loadPromotedContent");
     const { carouselData } = await response.json();
     return { carouselData, isAdmin };
@@ -144,7 +155,7 @@ function Heading(props) {
   );
 }
 
-export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
+export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = React.useRef();
   const fetcher = useFetcher();
@@ -155,7 +166,10 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
 
   const banContent = () => {
     if (window.confirm("Are you sure you want to ban this content?")) {
-      fetcher.submit({ _action: "Ban Content", doenetId }, { method: "post" });
+      fetcher.submit(
+        { _action: "Ban Content", activityId },
+        { method: "post" },
+      );
     }
   };
 
@@ -185,7 +199,7 @@ export function MoveToGroupMenuItem({ doenetId, carouselGroups }) {
   const promoteContent = (groupInfo) => {
     const uploadData = {
       groupId: groupInfo.promotedGroupId,
-      doenetId,
+      activityId,
     };
     axios
       .post("/api/addPromotedContent", uploadData)
@@ -319,7 +333,10 @@ export function Community() {
   }, []);
 
   if (searchResults) {
-    let allMatches = [...searchResults?.activities, ...searchResults?.users];
+    let allMatches = [
+      ...searchResults?.activities.map((a) => ({ type: "activity", ...a })),
+      ...searchResults?.users,
+    ];
     const tabs = [
       {
         label: "All Matches",
@@ -431,34 +448,21 @@ export function Community() {
               >
                 {allMatches.map((itemObj) => {
                   if (itemObj?.type == "activity") {
-                    const {
-                      doenetId,
-                      imagePath,
-                      label,
-                      fullName,
-                      isUserPortfolio,
-                      courseLabel,
-                      courseImage,
-                      courseColor,
-                    } = itemObj;
-                    const imageLink = `/portfolioviewer/${doenetId}`;
+                    const { activityId, imagePath, name, owner } = itemObj;
+                    const imageLink = `/portfolioviewer/${activityId}`;
 
                     return (
                       <ActivityCard
-                        key={`ActivityCard${doenetId}`}
+                        key={`ActivityCard${activityId}`}
                         imageLink={imageLink}
-                        label={label}
+                        name={name}
                         imagePath={imagePath}
-                        fullName={fullName}
-                        isUserPortfolio={isUserPortfolio}
-                        courseLabel={courseLabel}
-                        courseImage={courseImage}
-                        courseColor={courseColor}
+                        fullName={owner.name}
                         menuItems={
                           isAdmin ? (
                             <>
                               <MoveToGroupMenuItem
-                                doenetId={doenetId}
+                                activityId={activityId}
                                 carouselGroups={carouselGroups}
                               />
                             </>
@@ -506,22 +510,22 @@ export function Community() {
                 data-test="Results Activities"
               >
                 {searchResults?.activities.map((activityObj) => {
-                  const { doenetId, imagePath, label, fullName } = activityObj;
-                  //{ activityLink, doenetId, imagePath, label, fullName }
-                  const imageLink = `/portfolioviewer/${doenetId}`;
+                  const { activityId, imagePath, name, fullName } = activityObj;
+                  //{ activityLink, activityId, imagePath, name, fullName }
+                  const imageLink = `/portfolioviewer/${activityId}`;
 
                   return (
                     <ActivityCard
-                      key={doenetId}
+                      key={activityId}
                       imageLink={imageLink}
                       imagePath={imagePath}
-                      label={label}
+                      name={name}
                       fullName={fullName}
                       menuItems={
                         isAdmin ? (
                           <>
                             <MoveToGroupMenuItem
-                              doenetId={doenetId}
+                              activityId={activityId}
                               carouselGroups={carouselGroups}
                             />
                           </>
@@ -708,7 +712,7 @@ export function Community() {
                             fullName={
                               cardObj.firstName + " " + cardObj.lastName
                             }
-                            imageLink={`/portfolioviewer/${cardObj.doenetId}`}
+                            imageLink={`/portfolioviewer/${cardObj.activityId}`}
                             menuItems={
                               <>
                                 <MenuItem
@@ -716,7 +720,7 @@ export function Community() {
                                     fetcher.submit(
                                       {
                                         _action: "Remove Promoted Content",
-                                        doenetId: cardObj.doenetId,
+                                        activityId: cardObj.activityId,
                                         groupId: cardObj.promotedGroupId,
                                       },
                                       { method: "post" },
@@ -730,7 +734,7 @@ export function Community() {
                                     fetcher.submit(
                                       {
                                         _action: "Move Promoted Content",
-                                        doenetId: cardObj.doenetId,
+                                        activityId: cardObj.activityId,
                                         groupId: cardObj.promotedGroupId,
                                         direction: "left",
                                       },
@@ -745,7 +749,7 @@ export function Community() {
                                     fetcher.submit(
                                       {
                                         _action: "Move Promoted Content",
-                                        doenetId: cardObj.doenetId,
+                                        activityId: cardObj.activityId,
                                         groupId: cardObj.promotedGroupId,
                                         direction: "right",
                                       },

@@ -82,8 +82,10 @@ app.get("/api/loadProfile", (req: Request, res: Response) => {
 app.get("/api/getPortfolio/:userId", async (req: Request, res: Response) => {
   const loggedInUserId = Number(req.cookies.userId);
   const userId = Number(req.params.userId);
-  const ret = await listUserActivities(userId, loggedInUserId);
-  res.send(ret);
+  const activityLists = await listUserActivities(userId, loggedInUserId);
+  const allDoenetmlVersions = await getAllDoenetmlVersions();
+
+  res.send({ allDoenetmlVersions, ...activityLists });
 });
 
 app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
@@ -156,11 +158,8 @@ app.get(
 app.get("/api/searchPublicActivities", async (req: Request, res: Response) => {
   const query = req.query.q as string;
   res.send({
-    success: true,
-    searchResults: {
-      users: [], // TODO - this
-      activities: await searchPublicActivities(query),
-    },
+    users: [], // TODO - this
+    activities: await searchPublicActivities(query),
   });
 });
 

@@ -193,11 +193,9 @@ export async function loader({ params }) {
       platform = "Mac";
     }
 
-    const allDoenetmlVersionsResp = await axios.get(
+    const { data: allDoenetmlVersions } = await axios.get(
       "/api/getAllDoenetmlVersions",
     );
-
-    const allDoenetmlVersions = allDoenetmlVersionsResp.data;
 
     return {
       platform,
@@ -820,6 +818,7 @@ export function GeneralActivityControls({
     fetcher.submit(
       {
         _action: "update general",
+        activityId,
         docId,
         ...data,
       },
@@ -1129,6 +1128,7 @@ export function GeneralActivityControls({
         )}
         <input type="hidden" name="imagePath" value={imagePath} />
         <input type="hidden" name="_action" value="update general" />
+        <input type="hidden" name="activityId" value={activityId} />
       </Form>
     </>
   );
