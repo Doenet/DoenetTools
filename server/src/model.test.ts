@@ -32,7 +32,7 @@ test("New user has an empty portfolio", async () => {
   expect(docs).toStrictEqual({
     publicActivities: [],
     privateActivities: [],
-    fullName: "vitest user",
+    name: "vitest user",
     notMe: false,
   });
 });
