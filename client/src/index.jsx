@@ -266,19 +266,25 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "publiceditor/:doenetId",
-        loader: async ({ params }) => {
-          //This leaves a location in history
-          //this is because redirect creates a standard Response object and
-          //Response objects has no way to set replace: true
-
-          //Redirect as an activity can have no pageids
-          return redirect(`/publiceditor/${params.doenetId}/_`);
-        },
-        element: <div>Loading...</div>,
+        path: "publiceditor/:activityId",
+        loader: publicEditorLoader,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <PublicEditor />
+          </MathJaxContext>
+        ),
       },
       {
-        path: "publiceditor/:doenetId/:pageId",
+        path: "publiceditor/:activityId/:docId",
         loader: publicEditorLoader,
         errorElement: (
           <ChakraProvider theme={theme}>

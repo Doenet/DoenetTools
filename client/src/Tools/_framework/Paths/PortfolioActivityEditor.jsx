@@ -146,10 +146,9 @@ export async function action({ params, request }) {
 
 export async function loader({ params }) {
   try {
-    const response = await axios.get(
+    const { data: activityData } = await axios.get(
       `/api/getActivityEditorData/${params.activityId}`,
     );
-    const activityData = { ...response.data };
 
     let activityId = params.activityId;
     let docId = params.docId;
