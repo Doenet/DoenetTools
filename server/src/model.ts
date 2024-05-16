@@ -303,12 +303,13 @@ export async function getActivityViewerData(activityId: number) {
                 select: {
                   activity: {
                     select: {
+                      activityId: true,
+                      name: true,
                       owner: {
                         select: { userId: true, email: true, name: true },
                       },
                     },
                   },
-                  name: true,
                 },
               },
             },

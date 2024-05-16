@@ -30,11 +30,11 @@ export async function action({ params }) {
     activityId: params.activityId,
   });
 
-  const { newDocId } = data;
+  const { newActivityId } = data;
 
   // TODO: do not navigate to editor
   // Instead, navigate to portfolio with newly created activity highlighted
-  return redirect(`/portfolioeditor/${newDocId}/${newDocId}`);
+  return redirect(`/portfolioeditor/${newActivityId}`);
 }
 
 export async function loader({ params }) {

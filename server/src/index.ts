@@ -242,15 +242,15 @@ app.post("/api/updateDocumentSettings", (req: Request, res: Response) => {
 app.post(
   "/api/duplicatePortfolioActivity",
   async (req: Request, res: Response) => {
-    const targetDocId = Number(req.body.docId);
+    const targetActivityId = Number(req.body.activityId);
     const loggedInUserId = Number(req.cookies.userId);
 
-    let newDocId = await copyPublicActivityToPortfolio(
-      targetDocId,
+    let newActivityId = await copyPublicActivityToPortfolio(
+      targetActivityId,
       loggedInUserId,
     );
 
-    res.send({ newDocId });
+    res.send({ newActivityId });
   },
 );
 

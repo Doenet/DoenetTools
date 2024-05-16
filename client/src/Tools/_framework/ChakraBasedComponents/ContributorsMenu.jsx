@@ -18,8 +18,8 @@ export default function ContributorsMenu({ contributorHistory, owner }) {
 
   let recentByLine = "";
   if (contributorHistory.length > 0) {
-    let prevDoc = contributorHistory[0].prevDoc.document;
-    recentByLine = `remixed from ${prevDoc.name} by ${prevDoc.owner.name}`;
+    let prevActivity = contributorHistory[0].prevDoc.document.activity;
+    recentByLine = `remixed from ${prevActivity.name} by ${prevActivity.owner.name}`;
   }
 
   const avatars = [
@@ -40,7 +40,7 @@ export default function ContributorsMenu({ contributorHistory, owner }) {
         m={0}
         border="0"
         size="sm"
-        name={contrib_hist.prevDoc.document.owner.name}
+        name={contrib_hist.prevDoc.document.activity.owner.name}
         mr="4px"
       />
     )),
@@ -69,9 +69,9 @@ export default function ContributorsMenu({ contributorHistory, owner }) {
             {avatars[0]} <Text ml="4px">{owner.name}</Text>
           </MenuItem>
           {contributorHistory.map((contrib_hist, i) => {
-            let prevDoc = contrib_hist.prevDoc.document;
-            let label = `${prevDoc.name} by ${prevDoc.owner.name}`;
-            const href = `/portfolioviewer/${contrib_hist.prevDocId}`;
+            let prevActivity = contrib_hist.prevDoc.document.activity;
+            let label = `${prevActivity.name} by ${prevActivity.owner.name}`;
+            const href = `/portfolioviewer/${prevActivity.activityId}`;
 
             return (
               <MenuItem
