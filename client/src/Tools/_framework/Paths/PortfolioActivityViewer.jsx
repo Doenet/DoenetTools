@@ -46,16 +46,17 @@ export async function loader({ params }) {
   }
   try {
     const { data } = await axios.get(
-      `/api/getPortfolioActivityView.php?doenetId=${params.doenetId}`,
+      `/api/getPortfolioActivityView/${params.doenetId}`,
     );
 
     return {
       success: true,
       doenetId: params.doenetId,
-      doenetML: data.content,
+      doenetML: data.contentLocation,
       signedIn,
-      label: data.label,
-      contributors: data.contributors,
+      label: data.name,
+      owner: data.owner,
+      contributorHistory: data.contributorHistory,
       pageDoenetId: params.doenetId,
     };
   } catch (e) {
@@ -79,7 +80,8 @@ export function PortfolioActivityViewer() {
     label,
     doenetId,
     pageDoenetId,
-    contributors,
+    owner,
+    contributorHistory,
   } = useLoaderData();
 
   if (!success) {
@@ -156,7 +158,10 @@ export function PortfolioActivityViewer() {
                     {label}
                   </Text>
                   <Box mt="10px">
-                    <ContributorsMenu contributors={contributors} />
+                    <ContributorsMenu
+                      owner={owner}
+                      contributorHistory={contributorHistory}
+                    />
                   </Box>
                 </Flex>
                 <VStack mt="20px" alignItems="flex-end" spacing="4">

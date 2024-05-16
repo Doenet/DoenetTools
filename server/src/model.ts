@@ -190,23 +190,28 @@ export async function getDocEditorData(docId: number) {
 
 // TODO - access control
 export async function getDocViewerData(docId: number) {
-  let doc = await prisma.documents.findFirstOrThrow({ where: { docId } });
-  // TODO - delete, just massaging to make old client happy
-  return {
-    success: true,
-    label: doc.name,
-    contributors: [
-      {
-        isUserPortfolio: "1",
-        firstName: "Doenet",
-        lastName: "Author",
+  let doc = await prisma.documents.findFirstOrThrow({
+    where: { docId },
+    include: {
+      owner: { select: { userId: true, email: true } },
+      contributorHistory: {
+        include: {
+          prevDoc: {
+            select: {
+              document: {
+                select: {
+                  owner: { select: { userId: true, email: true } },
+                  name: true,
+                },
+              },
+            },
+          },
+        },
       },
-    ],
-    type: "activity",
-    files: [],
-    content: doc.contentLocation,
-    version: "",
-  };
+    },
+  });
+
+  return doc;
 }
 
 export async function searchPublicDocs(query: string) {
@@ -269,6 +274,18 @@ export async function findOrCreateUser(email: string) {
 export async function createUser(email: string) {
   const result = await prisma.users.create({ data: { email } });
   return result.userId;
+}
+
+export async function getUserInfo(email: string) {
+  const user = await prisma.users.findUnique({
+    where: { email },
+    select: { userId: true, email: true },
+  });
+  if (user) {
+    return user;
+  } else {
+    return {};
+  }
 }
 
 export async function getAllDoenetmlVersions() {
