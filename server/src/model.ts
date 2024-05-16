@@ -365,7 +365,7 @@ export async function listUserActivities(
   return {
     publicActivities: publicActivities,
     privateActivities: privateActivities,
-    fullName: user.name,
+    name: user.name,
     notMe,
   };
 }

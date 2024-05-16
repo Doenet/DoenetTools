@@ -88,6 +88,16 @@ app.get("/api/getPortfolio/:userId", async (req: Request, res: Response) => {
   res.send({ allDoenetmlVersions, ...activityLists });
 });
 
+app.get(
+  "/api/getPublicPortfolio/:userId",
+  async (req: Request, res: Response) => {
+    const userId = Number(req.params.userId);
+    const activityLists = await listUserActivities(userId, 0);
+
+    res.send(activityLists);
+  },
+);
+
 app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
   const email: string = req.query.emailaddress as string;
   // TODO: add the ability to give a name after logging in or creating an account
@@ -259,16 +269,6 @@ app.get(
   async (req: Request, res: Response) => {
     const docId = Number(req.params.docId);
     const doc = await getDoc(docId);
-    res.send(doc.contentLocation);
-  },
-);
-
-// TODO: delete this when remove all references to it
-app.get(
-  "/media/byPageId/:doenetId.doenet",
-  async (req: Request, res: Response) => {
-    const doenetId = Number(req.params.doenetId);
-    const doc = await getDoc(doenetId);
     res.send(doc.contentLocation);
   },
 );

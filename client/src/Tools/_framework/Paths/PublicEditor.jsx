@@ -62,7 +62,7 @@ export async function loader({ params }) {
     const lastKnownCid = await cidFromText(doenetML);
 
     const supportingFileResp = await axios.get(
-      `/api/loadSupportingFileInfo/${params.doenetId}`,
+      `/api/loadSupportingFileInfo/${params.activityId}`,
     );
 
     let supportingFileData = supportingFileResp.data;
@@ -190,7 +190,7 @@ export function PublicEditor() {
                     variant="outline"
                     leftIcon={<BsPlayBtnFill />}
                     onClick={() => {
-                      navigate(`/portfolioviewer/${doenetId}`);
+                      navigate(`/portfolioviewer/${activityId}`);
                     }}
                   >
                     View

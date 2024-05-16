@@ -91,7 +91,7 @@ export function Admin() {
                         isAdmin ? (
                           <>
                             <MoveToGroupMenuItem
-                              doenetId={activity.activityId}
+                              activityId={activity.activityId}
                               carouselGroups={carouselGroups}
                             />
                           </>

@@ -303,7 +303,7 @@ export function Portfolio() {
           zIndex="500"
         >
           <Text fontSize="24px" fontWeight="700">
-            {data.fullName}
+            {data.name}
           </Text>
           <Text fontSize="16px" fontWeight="700">
             Portfolio
@@ -359,7 +359,7 @@ export function Portfolio() {
                     <ActivityCard
                       key={`Card${activity.activityId}`}
                       {...activity}
-                      fullName={data.fullName}
+                      fullName={data.name}
                       menuItems={getCardMenuList(true, activity.activityId)}
                       imageLink={`/portfolioeditor/${activity.activityId}`}
                     />
@@ -396,7 +396,7 @@ export function Portfolio() {
                     <ActivityCard
                       key={`Card${activity.activityId}`}
                       {...activity}
-                      fullName={data.fullName}
+                      fullName={data.name}
                       menuItems={getCardMenuList(false, activity.activityId)}
                       imageLink={`/portfolioeditor/${activity.activityId}`}
                     />

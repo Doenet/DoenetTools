@@ -201,7 +201,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "publicportfolio/:courseId",
+        path: "publicportfolio/:userId",
         loader: publicPortfolioLoader,
         errorElement: (
           <ChakraProvider theme={theme}>
