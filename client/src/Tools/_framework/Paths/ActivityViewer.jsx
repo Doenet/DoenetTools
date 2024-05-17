@@ -31,17 +31,17 @@ export async function action({ params, request }) {
 
   if (formObj._action == "copy to portfolio") {
     let { data } = await axios.post(`/api/duplicateActivity`, {
-      activityId: params.activityId,
+      activityId: Number(params.activityId),
     });
 
     const { newActivityId } = data;
 
     // TODO: do not navigate to editor
     // Instead, navigate to portfolio with newly created activity highlighted
-    return redirect(`/portfolioeditor/${newActivityId}`);
+    return redirect(`/activityEditor/${newActivityId}`);
   } else if (formObj?._action == "create assignment") {
     const { data } = await axios.post(`/api/assignActivity`, {
-      activityId: params.activityId,
+      activityId: Number(params.activityId),
     });
     return redirect(`/assignments/${data.userId}`);
   }
@@ -61,8 +61,8 @@ export async function loader({ params }) {
       `/api/getActivityView/${params.activityId}`,
     );
 
-    let activityId = params.activityId;
-    let docId = params.docId;
+    let activityId = Number(params.activityId);
+    let docId = Number(params.docId);
     if (!docId) {
       // If docId was not supplied in the url,
       // then use the first docId from the activity.
@@ -70,14 +70,7 @@ export async function loader({ params }) {
       docId = activityData.activity.documents[0].docId;
     }
 
-    //Get the doenetML of the docId.
-    //we need transformResponse because
-    //large numbers are simplified with toString if used on doenetMLResponse.data
-    //which was causing errors
-    const { data: doenetML } = await axios.get(
-      `/api/getDocumentContent/${docId}`,
-      { transformResponse: (data) => data.toString() },
-    );
+    const doenetML = activityData.activity.documents[0].content;
 
     return {
       activityId,
@@ -100,7 +93,7 @@ const HeaderSectionRight = styled.div`
   justify-content: flex-end;
 `;
 
-export function PortfolioActivityViewer() {
+export function ActivityViewer() {
   const {
     doenetML,
     signedIn,
@@ -195,7 +188,7 @@ export function PortfolioActivityViewer() {
                     colorScheme="blue"
                     data-test="See Inside"
                     onClick={() => {
-                      navigate(`/publiceditor/${activityId}/${docId}`);
+                      navigate(`/publicEditor/${activityId}/${docId}`);
                     }}
                   >
                     See Inside
@@ -236,11 +229,11 @@ export function PortfolioActivityViewer() {
                     </HeaderSectionRight>
                   ) : (
                     <Button
-                      dataTest="Nav to signin"
+                      dataTest="Nav to signIn"
                       colorScheme="blue"
                       size="xs"
                       onClick={() => {
-                        navigateTo.current = "/signin";
+                        navigateTo.current = "/signIn";
                       }}
                     >
                       Sign In To Copy to Portfolio
@@ -343,8 +336,8 @@ export function PortfolioActivityViewer() {
                     location={location}
                     navigate={navigate}
                     linkSettings={{
-                      viewURL: "/portfolioviewer",
-                      editURL: "/publiceditor",
+                      viewURL: "/activityViewer",
+                      editURL: "/publicEditor",
                     }}
                   />
                 </Box>

@@ -16,7 +16,7 @@ export async function createActivity(ownerId: number) {
       documents: {
         create: [
           {
-            contentLocation: "",
+            content: "",
             doenetmlVersionId: defaultDoenetmlVersion.versionId,
             name: "Untitled Document",
           },
@@ -106,7 +106,7 @@ export async function updateDoc({
   return await prisma.documents.update({
     where: { docId },
     data: {
-      contentLocation: content,
+      content: content,
       name,
       doenetmlVersionId,
     },
@@ -247,7 +247,7 @@ export async function createDocumentVersion(docId: number): Promise<{
   version: number;
   docId: number;
   cid: string | null;
-  contentLocation: string | null;
+  content: string | null;
   createdAt: Date | null;
   doenetmlVersionId: number;
 }> {
@@ -259,7 +259,7 @@ export async function createDocumentVersion(docId: number): Promise<{
   });
 
   // TODO: cid should really include the doenetmlVersion
-  const cid = await cidFromText(doc.contentLocation || "");
+  const cid = await cidFromText(doc.content || "");
 
   let docVersion = await prisma.documentVersions.findUnique({
     where: { docId_cid: { docId, cid } },
@@ -284,7 +284,7 @@ export async function createDocumentVersion(docId: number): Promise<{
         name: doc.name,
         activityName: doc.activity.name,
         doenetmlVersionId: doc.doenetmlVersionId,
-        contentLocation: doc.contentLocation,
+        content: doc.content,
       },
     });
   }
@@ -318,7 +318,7 @@ export async function getActivityViewerData(activityId: number) {
     where: { activityId },
     include: {
       owner: { select: { userId: true, email: true, name: true } },
-      documents: { select: { docId: true } },
+      documents: { select: { docId: true, content: true } },
     },
   });
   const docId = activity.documents[0].docId;
@@ -368,7 +368,7 @@ export async function getAssignmentEditorData(assignmentId: number) {
           docVersionId: true,
           documentVersion: {
             select: {
-              contentLocation: true,
+              content: true,
             },
           },
         },
@@ -380,6 +380,31 @@ export async function getAssignmentEditorData(assignmentId: number) {
   });
 
   return activity;
+}
+
+export async function getAssignmentDataFromCode(code: string) {
+  let assignment = await prisma.assignments.findFirstOrThrow({
+    where: {
+      classCode: code,
+    },
+    include: {
+      assignmentItems: {
+        select: {
+          docId: true,
+          docVersionId: true,
+          documentVersion: {
+            select: {
+              content: true,
+            },
+          },
+        },
+        orderBy: {
+          docId: "asc",
+        },
+      },
+    },
+  });
+  return assignment;
 }
 
 export async function searchPublicActivities(query: string) {
@@ -523,12 +548,15 @@ export async function assignActivity(activityId: number, userId: number) {
     }),
   );
 
+  let code = ("00000" + Math.floor(Math.random() * 1000000)).slice(-6);
+
   let newAssignment = await prisma.assignments.create({
     data: {
       name: origActivity.name,
       activityId: origActivity.activityId,
       imagePath: origActivity.imagePath,
       ownerId: userId,
+      classCode: code,
       assignmentItems: {
         create: documentsVersionsToAdd.map((docVersion) => ({
           documentVersion: {

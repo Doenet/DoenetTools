@@ -22,6 +22,7 @@ import {
   deleteAssignment,
   getAssignmentEditorData,
   updateAssignment,
+  getAssignmentDataFromCode,
 } from "./model";
 
 dotenv.config();
@@ -228,6 +229,15 @@ app.get(
   },
 );
 
+app.get(
+  "/api/getAssignmentDataFromCode/:code",
+  async (req: Request, res: Response) => {
+    const code = req.params.code;
+    const assignmentData = await getAssignmentDataFromCode(code);
+    res.send(assignmentData);
+  },
+);
+
 app.get("/api/loadPromotedContentGroups", (req: Request, res: Response) => {
   res.send({});
 });
@@ -313,15 +323,6 @@ app.post("/api/updateAssignmentSettings", (req: Request, res: Response) => {
   });
   res.send({});
 });
-
-app.get(
-  "/api/getDocumentContent/:docId",
-  async (req: Request, res: Response) => {
-    const docId = Number(req.params.docId);
-    const doc = await getDoc(docId);
-    res.send(doc.contentLocation);
-  },
-);
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);

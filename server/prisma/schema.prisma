@@ -52,6 +52,7 @@ model assignments {
 
   @@index([activityId])
   @@index([ownerId])
+  @@index([classCode])
 }
 
 model documentVersions {
@@ -60,7 +61,7 @@ model documentVersions {
   cid                String
   name               String
   activityName       String
-  contentLocation    String
+  content            String
   createdAt          DateTime             @default(now())
   doenetmlVersionId  Int
   assignmentItems    assignmentItems[]
@@ -76,7 +77,7 @@ model documentVersions {
 model documents {
   docId              Int                  @id @unique @default(autoincrement())
   activityId         Int
-  contentLocation    String
+  content            String
   createdAt          DateTime             @default(now())
   lastEdited         DateTime             @default(now())
   name               String

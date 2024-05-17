@@ -189,7 +189,7 @@ export function SiteHeader(props) {
                   mt="4px"
                   h="32px"
                   bg="#EDF2F7"
-                  href="https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4"
+                  href="https://www.doenet.org/activityViewer/_7KL7tiBBS2MhM6k1OrPt4"
                   isExternal
                   data-test="Documentation Link"
                 >
@@ -243,7 +243,7 @@ export function SiteHeader(props) {
                           </Text>
                           <Text>{email}</Text>
                         </VStack>
-                        <MenuItem as="a" href="/signout">
+                        <MenuItem as="a" href="/signOut">
                           Sign Out
                         </MenuItem>
                       </MenuList>
@@ -251,7 +251,7 @@ export function SiteHeader(props) {
                   </Center>
                 ) : (
                   <Center h="40px" mr="10px">
-                    <NavLinkTab to="/signin" dataTest="signin">
+                    <NavLinkTab to="/signIn" dataTest="signIn">
                       Sign In
                     </NavLinkTab>
                   </Center>

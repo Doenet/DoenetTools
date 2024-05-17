@@ -56,7 +56,7 @@ test("New document starts out private, then delete it", async () => {
       {
         docId: expect.any(Number),
         activityId: expect.any(Number),
-        contentLocation: "",
+        content: "",
         createdAt: expect.any(Date),
         lastEdited: expect.any(Date),
         name: "Untitled Document",
@@ -120,11 +120,11 @@ test("Test updating various activity properties", async () => {
   const content = "Here comes some content, I made you some content";
   await updateDoc({ docId, content });
   const activityContent2 = await getActivityEditorData(activityId);
-  expect(activityContent2.documents[0].contentLocation).toBe(content);
+  expect(activityContent2.documents[0].content).toBe(content);
 
   const activityViewerContent = await getActivityViewerData(activityId);
   expect(activityViewerContent.activity.name).toBe(activityName);
-  expect(activityViewerContent.doc.contentLocation).toBe(content);
+  expect(activityViewerContent.doc.content).toBe(content);
 });
 
 test("deleteActivity marks a document as deleted", async () => {
@@ -146,7 +146,7 @@ test("updateDoc updates document properties", async () => {
   });
   const activityViewerContent = await getActivityViewerData(activityId);
   expect(activityViewerContent.activity.name).toBe(newName);
-  expect(activityViewerContent.doc.contentLocation).toBe(newContent);
+  expect(activityViewerContent.doc.content).toBe(newContent);
 });
 
 test("copyPublicActivityToPortfolio copies a public document to a new owner", async () => {
@@ -197,7 +197,7 @@ test("copyPublicActivityToPortfolio remixes correct versions", async () => {
   );
   const activity2 = await getActivity(activityId2);
   expect(activity2.ownerId).toBe(ownerId2);
-  expect(activity2.documents[0].contentLocation).eq(activity1Content);
+  expect(activity2.documents[0].content).eq(activity1Content);
 
   // history should be version 1 of activity 1
   const activityData2 = await getActivityViewerData(activityId2);
@@ -218,7 +218,7 @@ test("copyPublicActivityToPortfolio remixes correct versions", async () => {
 
   const activity3 = await getActivity(activityId3);
   expect(activity3.ownerId).toBe(ownerId3);
-  expect(activity3.documents[0].contentLocation).eq(activity1ContentModified);
+  expect(activity3.documents[0].content).eq(activity1ContentModified);
 
   // history should be version 2 of activity 1
   const activityData3 = await getActivityViewerData(activityId3);
@@ -302,7 +302,7 @@ test("assign an activity", async () => {
   expect(assignment.activityId).eq(activityId);
   expect(assignment.name).eq("Activity 1");
   expect(assignment.assignmentItems.length).eq(1);
-  expect(assignment.assignmentItems[0].documentVersion.contentLocation).eq(
+  expect(assignment.assignmentItems[0].documentVersion.content).eq(
     "Some content",
   );
 
@@ -315,15 +315,13 @@ test("assign an activity", async () => {
 
   const updatedActivity = await getActivity(activityId);
   expect(updatedActivity.name).eq("Activity 1a");
-  expect(updatedActivity.documents[0].contentLocation).eq(
-    "Some amended content",
-  );
+  expect(updatedActivity.documents[0].content).eq("Some amended content");
 
   const unchangedAssignment = await getAssignment(assignmentId, ownerId);
   expect(unchangedAssignment.name).eq("Activity 1");
-  expect(
-    unchangedAssignment.assignmentItems[0].documentVersion.contentLocation,
-  ).eq("Some content");
+  expect(unchangedAssignment.assignmentItems[0].documentVersion.content).eq(
+    "Some content",
+  );
 });
 
 test("cannot assign other user's private activity", async () => {
@@ -350,7 +348,7 @@ test("cannot assign other user's private activity", async () => {
   expect(assignment.activityId).eq(activityId);
   expect(assignment.name).eq("Activity 1");
   expect(assignment.assignmentItems.length).eq(1);
-  expect(assignment.assignmentItems[0].documentVersion.contentLocation).eq(
+  expect(assignment.assignmentItems[0].documentVersion.content).eq(
     "Some content",
   );
 });

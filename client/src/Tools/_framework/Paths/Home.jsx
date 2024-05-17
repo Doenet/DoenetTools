@@ -132,7 +132,7 @@ export function Home() {
               Explore Activities
             </Button>
           </Link>
-          <Link href="https://www.doenet.org/portfolioviewer/_7OlapeBhtcfQaa5f7sOCH">
+          <Link href="https://www.doenet.org/activityViewer/_7OlapeBhtcfQaa5f7sOCH">
             <Button
               mt="20px"
               p="10px"
@@ -497,8 +497,8 @@ export function Home() {
                 // setIsInErrorState={setIsInErrorState}
                 addBottomPadding={false}
                 linkSettings={{
-                  viewURL: "/portfolioviewer",
-                  editURL: "/publiceditor",
+                  viewURL: "/activityViewer",
+                  editURL: "/publicEditor",
                 }}
               />
             </Flex>

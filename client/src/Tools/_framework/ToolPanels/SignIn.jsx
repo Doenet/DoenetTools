@@ -266,7 +266,7 @@ export default function SignIn(props) {
         <h2 style={{ textAlign: "center" }}>Code Expired</h2>
         <Button
           onClick={() => {
-            location.href = "/signin";
+            location.href = "/signIn";
           }}
           value="Restart Signin"
         ></Button>

@@ -52,7 +52,7 @@ export async function action({ params, request }) {
 
   if (formObj._action == "update name") {
     await axios.post(`/api/updateAssignmentName`, {
-      assignmentId: params.assignmentId,
+      assignmentId: Number(params.assignmentId),
       name,
     });
     return true;
@@ -62,7 +62,7 @@ export async function action({ params, request }) {
     await axios.post("/api/updateAssignmentSettings", {
       name,
       imagePath: formObj.imagePath,
-      assignmentId: params.assignmentId,
+      assignmentId: Number(params.assignmentId),
     });
 
     return true;
@@ -76,23 +76,12 @@ export async function loader({ params }) {
     `/api/getAssignmentEditorData/${params.assignmentId}`,
   );
 
-  let assignmentId = params.assignmentId;
-  let docId = params.docId;
-  if (!docId) {
-    // If docId was not supplied in the url,
-    // then use the first docId from the assignment.
-    // TODO: what happens if assignment has no documents?
-    docId = assignmentData.assignmentItems[0].docId;
-  }
+  let assignmentId = Number(params.assignmentId);
 
-  //Get the doenetML of the docId.
-  //we need transformResponse because
-  //large numbers are simplified with toString if used on doenetMLResponse.data
-  //which was causing errors
-  const doenetMLResponse = await axios.get(`/api/getDocumentContent/${docId}`, {
-    transformResponse: (data) => data.toString(),
-  });
-  let doenetML = doenetMLResponse.data;
+  // TODO: what happens if assignment has no documents?
+  let docId = assignmentData.assignmentItems[0].docId;
+
+  const doenetML = activityData.documents[0].content;
 
   //Win, Mac or Linux
   let platform = "Linux";
@@ -481,8 +470,8 @@ export function AssignmentEditor() {
                     location={location}
                     navigate={navigate}
                     linkSettings={{
-                      viewURL: "/portfolioviewer",
-                      editURL: "/publiceditor",
+                      viewURL: "/activityViewer",
+                      editURL: "/publicEditor",
                     }}
                     scrollableContainer={
                       document.getElementById("viewer-container") || undefined

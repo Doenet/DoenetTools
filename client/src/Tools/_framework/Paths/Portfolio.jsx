@@ -28,7 +28,7 @@ import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
 import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/ActivityCard";
-import { GeneralActivityControls } from "./PortfolioActivityEditor";
+import { GeneralActivityControls } from "./ActivityEditor";
 import axios from "axios";
 
 export async function action({ request, params }) {
@@ -74,7 +74,7 @@ export async function action({ request, params }) {
     let { data } = await axios.post("/api/createActivity");
 
     let { activityId } = data;
-    return redirect(`/portfolioeditor/${activityId}`);
+    return redirect(`/activityEditor/${activityId}`);
   } else if (formObj?._action == "Delete") {
     await axios.post(`/api/deleteActivity`, {
       activityId: formObj.activityId,
@@ -110,7 +110,7 @@ export async function action({ request, params }) {
 export async function loader({ params }) {
   const { data } = await axios.get(`/api/getPortfolio/${params.userId}`);
   if (data.notMe) {
-    return redirect(`/publicportfolio/${params.userId}`);
+    return redirect(`/publicPortfolio/${params.userId}`);
   }
 
   return data;
@@ -333,7 +333,7 @@ export function Portfolio() {
                 //Create a portfolio activity and redirect to the editor for it
                 // let { data } = await axios.post("/api/createActivity");
                 // let { activityId } = data;
-                // navigate(`/portfolioeditor/${activityId}`);
+                // navigate(`/activityEditor/${activityId}`);
 
                 // TODO - review this, elsewhere the fetcher is being used, and
                 // there was code up in the action() method for this action
@@ -377,7 +377,7 @@ export function Portfolio() {
                       {...activity}
                       fullName={data.name}
                       menuItems={getCardMenuList(true, activity.activityId)}
-                      imageLink={`/portfolioeditor/${activity.activityId}`}
+                      imageLink={`/activityEditor/${activity.activityId}`}
                     />
                   );
                 })}
@@ -414,7 +414,7 @@ export function Portfolio() {
                       {...activity}
                       fullName={data.name}
                       menuItems={getCardMenuList(false, activity.activityId)}
-                      imageLink={`/portfolioeditor/${activity.activityId}`}
+                      imageLink={`/activityEditor/${activity.activityId}`}
                     />
                   );
                 })}

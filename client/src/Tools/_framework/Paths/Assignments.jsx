@@ -6,17 +6,9 @@ import {
   Text,
   Flex,
   Wrap,
-  useDisclosure,
-  Center,
-  DrawerHeader,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerOverlay,
-  Drawer,
   MenuItem,
 } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import {
   redirect,
   useOutletContext,
@@ -28,7 +20,6 @@ import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
 import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/ActivityCard";
-import { GeneralActivityControls } from "./PortfolioActivityEditor";
 import axios from "axios";
 
 export async function action({ request }) {
@@ -85,69 +76,9 @@ const AssignmentsGrid = styled.div`
   height: 100vh;
 `;
 
-function AssignmentSettingsDrawer({
-  isOpen,
-  onClose,
-  finalFocusRef,
-  activityId: assignmentId,
-  data,
-}) {
-  const fetcher = useFetcher();
-  let assignmentData;
-  if (assignmentId) {
-    let assignmentIndex = data.assignments.findIndex(
-      (obj) => obj.assignmentId == assignmentId,
-    );
-    if (assignmentIndex != -1) {
-      assignmentData = data.assignments[assignmentIndex];
-    } else {
-      //Throw error not found
-    }
-  }
-
-  return (
-    <Drawer
-      isOpen={isOpen}
-      placement="right"
-      onClose={onClose}
-      finalFocusRef={finalFocusRef}
-      size="lg"
-    >
-      <DrawerOverlay />
-      <DrawerContent>
-        <DrawerCloseButton />
-        <DrawerHeader>
-          <Center>
-            <Text>Activity Settings</Text>
-          </Center>
-        </DrawerHeader>
-
-        <DrawerBody>
-          {assignmentId && (
-            <GeneralActivityControls
-              fetcher={fetcher}
-              activityId={assignmentId}
-              docId={assignmentData.docId}
-              activityData={assignmentData}
-            />
-          )}
-        </DrawerBody>
-      </DrawerContent>
-    </Drawer>
-  );
-}
-
 export function Assignments() {
   let context = useOutletContext();
   let data = useLoaderData();
-  const [assignmentId, setAssignmentId] = useState();
-  const controlsBtnRef = useRef(null);
-
-  const {
-    isOpen: settingsAreOpen,
-    onOpen: settingsOnOpen,
-    onClose: settingsOnClose,
-  } = useDisclosure();
 
   useEffect(() => {
     document.title = `Portfolio - Doenet`;
@@ -175,28 +106,12 @@ export function Assignments() {
         >
           Delete
         </MenuItem>
-        <MenuItem
-          data-test="Settings Menu Item"
-          onClick={() => {
-            setAssignmentId(assignmentId);
-            settingsOnOpen();
-          }}
-        >
-          Settings
-        </MenuItem>
       </>
     );
   }
 
   return (
     <>
-      <AssignmentSettingsDrawer
-        isOpen={settingsAreOpen}
-        onClose={settingsOnClose}
-        finalFocusRef={controlsBtnRef}
-        assignmentId={assignmentId}
-        data={data}
-      />
       <AssignmentsGrid>
         <Box
           gridRow="1/2"
