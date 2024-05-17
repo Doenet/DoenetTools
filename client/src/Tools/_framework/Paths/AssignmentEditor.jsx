@@ -81,7 +81,7 @@ export async function loader({ params }) {
   // TODO: what happens if assignment has no documents?
   let docId = assignmentData.assignmentItems[0].docId;
 
-  const doenetML = activityData.documents[0].content;
+  const doenetML = assignmentData.assignmentItems[0].documentVersion.content;
 
   //Win, Mac or Linux
   let platform = "Linux";

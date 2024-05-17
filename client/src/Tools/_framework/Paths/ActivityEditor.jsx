@@ -161,7 +161,6 @@ export async function loader({ params }) {
 
     // If docId isn't in the activity, use the first docId
     let docInOrder = activityData.documents.map((x) => x.docId).indexOf(docId);
-    console.log({ docInOrder });
     if (docInOrder === -1) {
       docInOrder = 0;
       docId = activityData.documents[docInOrder].docId;
