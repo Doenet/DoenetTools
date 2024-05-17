@@ -313,14 +313,6 @@ export function AssignmentEditor() {
 
   return (
     <>
-      <AssignmentSettingsDrawer
-        isOpen={controlsAreOpen}
-        onClose={controlsOnClose}
-        finalFocusRef={controlsBtnRef}
-        assignmentData={assignmentData}
-        controlsTabsLastIndex={controlsTabsLastIndex}
-      />
-
       <Grid
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height
@@ -354,30 +346,7 @@ export function AssignmentEditor() {
               area="rightControls"
               display="flex"
               justifyContent="flex-end"
-            >
-              <HStack mr="10px">
-                <Tooltip
-                  hasArrow
-                  label={
-                    platform == "Mac"
-                      ? "Open Controls cmd+u"
-                      : "Open Controls ctrl+u"
-                  }
-                >
-                  <Button
-                    data-test="Controls Button"
-                    mt="4px"
-                    size="sm"
-                    variant="outline"
-                    leftIcon={<FaCog />}
-                    onClick={controlsOnOpen}
-                    ref={controlsBtnRef}
-                  >
-                    Controls
-                  </Button>
-                </Tooltip>
-              </HStack>
-            </GridItem>
+            ></GridItem>
           </Grid>
         </GridItem>
 

@@ -39,6 +39,7 @@ model assignmentItems {
 model assignments {
   assignmentId               Int                          @id @unique @default(autoincrement())
   classCode                  String?                      @db.VarChar(45)
+  codeValidUntil             DateTime?
   activityId                 Int
   ownerId                    Int
   name                       String

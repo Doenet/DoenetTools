@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import { DateTime } from "luxon";
 import {
   copyPublicActivityToPortfolio,
   createActivity,
@@ -23,6 +24,7 @@ import {
   getAssignmentEditorData,
   updateAssignment,
   getAssignmentDataFromCode,
+  openAssignmentWithCode,
 } from "./model";
 
 dotenv.config();
@@ -322,6 +324,18 @@ app.post("/api/updateAssignmentSettings", (req: Request, res: Response) => {
     name,
   });
   res.send({});
+});
+
+app.post("/api/openAssignmentWithCode", async (req: Request, res: Response) => {
+  const body = req.body;
+  const assignmentId = Number(body.assignmentId);
+  const closeAt = DateTime.fromISO(body.closeAt);
+
+  const { classCode, codeValidUntil } = await openAssignmentWithCode(
+    assignmentId,
+    closeAt,
+  );
+  res.send({ classCode, codeValidUntil });
 });
 
 app.listen(port, () => {

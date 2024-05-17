@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { cidFromText } from "./utils/cid";
+import { DateTime } from "luxon";
 
 const prisma = new PrismaClient();
 
@@ -386,6 +387,9 @@ export async function getAssignmentDataFromCode(code: string) {
   let assignment = await prisma.assignments.findFirstOrThrow({
     where: {
       classCode: code,
+      codeValidUntil: {
+        gte: Date(),
+      },
     },
     include: {
       assignmentItems: {
@@ -548,15 +552,12 @@ export async function assignActivity(activityId: number, userId: number) {
     }),
   );
 
-  let code = ("00000" + Math.floor(Math.random() * 1000000)).slice(-6);
-
   let newAssignment = await prisma.assignments.create({
     data: {
       name: origActivity.name,
       activityId: origActivity.activityId,
       imagePath: origActivity.imagePath,
       ownerId: userId,
-      classCode: code,
       assignmentItems: {
         create: documentsVersionsToAdd.map((docVersion) => ({
           documentVersion: {
@@ -575,6 +576,24 @@ export async function assignActivity(activityId: number, userId: number) {
   return newAssignment.assignmentId;
 }
 
+export async function openAssignmentWithCode(
+  assignmentId: number,
+  closeAt: DateTime,
+) {
+  const classCode = generateClassCode();
+
+  const codeValidUntil = closeAt.toJSDate();
+
+  await prisma.assignments.update({
+    where: { assignmentId },
+    data: {
+      classCode,
+      codeValidUntil,
+    },
+  });
+  return { classCode, codeValidUntil };
+}
+
 export async function getAssignment(assignmentId: number, ownerId: number) {
   let assignment = await prisma.assignments.findFirstOrThrow({
     where: {
@@ -590,4 +609,8 @@ export async function getAssignment(assignmentId: number, ownerId: number) {
     },
   });
   return assignment;
+}
+
+function generateClassCode() {
+  return ("00000" + Math.floor(Math.random() * 1000000)).slice(-6);
 }
