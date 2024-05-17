@@ -31,7 +31,7 @@ import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/Activi
 import { GeneralActivityControls } from "./PortfolioActivityEditor";
 import axios from "axios";
 
-export async function action({ request }) {
+export async function action({ request, params }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
 
@@ -95,6 +95,11 @@ export async function action({ request }) {
     });
 
     return true;
+  } else if (formObj?._action == "Create Assignment") {
+    const assignmentId = await axios.post(`/api/assignActivity`, {
+      activityId: formObj.activityId,
+    });
+    return redirect(`/assignments/${params.userId}`);
   } else if (formObj?._action == "noop") {
     return true;
   }
@@ -254,6 +259,17 @@ export function Portfolio() {
             Make Public
           </MenuItem>
         )}
+        <MenuItem
+          data-test="Create Assignment Menu Item"
+          onClick={() => {
+            fetcher.submit(
+              { _action: "Create Assignment", activityId },
+              { method: "post" },
+            );
+          }}
+        >
+          Create Assignment
+        </MenuItem>
         <MenuItem
           data-test="Delete Menu Item"
           onClick={() => {

@@ -44,6 +44,7 @@ model assignments {
   name                       String
   imagePath                  String?
   createdAt                  DateTime                     @default(now())
+  isDeleted                  Boolean                      @default(false)
   assignmentItems            assignmentItems[]
   activity                   activities                   @relation(fields: [activityId], references: [activityId], onDelete: NoAction, onUpdate: NoAction)
   owner                      users                        @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)

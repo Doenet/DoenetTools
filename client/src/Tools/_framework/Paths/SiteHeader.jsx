@@ -166,6 +166,12 @@ export function SiteHeader(props) {
                     <NavLinkTab to={`portfolio/${userId}`} dataTest="Portfolio">
                       Portfolio
                     </NavLinkTab>
+                    <NavLinkTab
+                      to={`assignments/${userId}`}
+                      dataTest="Assignments"
+                    >
+                      Assignments
+                    </NavLinkTab>
                     {isAdmin && (
                       <NavLinkTab to="admin" dataTest="Admin">
                         Admin

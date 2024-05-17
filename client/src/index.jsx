@@ -44,6 +44,16 @@ import {
   action as portfolioActivityViewerAction,
   PortfolioActivityViewer,
 } from "./Tools/_framework/Paths/PortfolioActivityViewer";
+import {
+  loader as assignmentsLoader,
+  action as assignmentsAction,
+  Assignments,
+} from "./Tools/_framework/Paths/Assignments";
+import {
+  loader as assignmentEditorLoader,
+  action as assignmentEditorAction,
+  AssignmentEditor,
+} from "./Tools/_framework/Paths/AssignmentEditor";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
@@ -126,6 +136,11 @@ const router = createBrowserRouter([
           <SiteHeader />
         </ChakraProvider>
       </>
+    ),
+    errorElement: (
+      <ChakraProvider theme={theme}>
+        <ErrorPage />
+      </ChakraProvider>
     ),
     children: [
       {
@@ -298,6 +313,30 @@ const router = createBrowserRouter([
             onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
           >
             <PublicEditor />
+          </MathJaxContext>
+        ),
+      },
+      {
+        path: "assignments/:userId",
+        loader: assignmentsLoader,
+        action: assignmentsAction,
+        element: (
+          <ChakraProvider theme={theme}>
+            <Assignments />
+          </ChakraProvider>
+        ),
+      },
+      {
+        path: "assignmentEditor/:assignmentId",
+        loader: assignmentEditorLoader,
+        action: assignmentEditorAction,
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <AssignmentEditor />
           </MathJaxContext>
         ),
       },

@@ -18,6 +18,10 @@ import {
   updateActivity,
   getDoc,
   assignActivity,
+  listUserAssignments,
+  deleteAssignment,
+  getAssignmentEditorData,
+  updateAssignment,
 } from "./model";
 
 dotenv.config();
@@ -99,6 +103,14 @@ app.get(
   },
 );
 
+app.get("/api/getAssignments/:userId", async (req: Request, res: Response) => {
+  const loggedInUserId = Number(req.cookies.userId);
+  const userId = Number(req.params.userId);
+  const assignmentList = await listUserAssignments(userId, loggedInUserId);
+
+  res.send(assignmentList);
+});
+
 app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
   const email: string = req.query.emailaddress as string;
   // TODO: add the ability to give a name after logging in or creating an account
@@ -112,6 +124,13 @@ app.post("/api/deleteActivity", async (req: Request, res: Response) => {
   const body = req.body;
   const activityId = Number(body.activityId);
   await deleteActivity(activityId);
+  res.send({});
+});
+
+app.post("/api/deleteAssignment", async (req: Request, res: Response) => {
+  const body = req.body;
+  const assignmentId = Number(body.assignmentId);
+  await deleteAssignment(assignmentId);
   res.send({});
 });
 
@@ -200,6 +219,15 @@ app.get("/api/getActivityView/:docId", async (req: Request, res: Response) => {
   res.send(viewerData);
 });
 
+app.get(
+  "/api/getAssignmentEditorData/:assignmentId",
+  async (req: Request, res: Response) => {
+    const assignmentId = Number(req.params.assignmentId);
+    const editorData = await getAssignmentEditorData(assignmentId);
+    res.send(editorData);
+  },
+);
+
 app.get("/api/loadPromotedContentGroups", (req: Request, res: Response) => {
   res.send({});
 });
@@ -263,6 +291,27 @@ app.post("/api/assignActivity", async (req: Request, res: Response) => {
   let assignmentId = await assignActivity(activityId, loggedInUserId);
 
   res.send({ assignmentId });
+});
+
+app.post("/api/updateAssignmentName", (req: Request, res: Response) => {
+  const body = req.body;
+  const assignmentId = Number(body.assignmentId);
+  const name = body.name;
+  updateAssignment({ assignmentId, name });
+  res.send({});
+});
+
+app.post("/api/updateAssignmentSettings", (req: Request, res: Response) => {
+  const body = req.body;
+  const assignmentId = Number(body.assignmentId);
+  const imagePath = body.imagePath;
+  const name = body.name;
+  updateAssignment({
+    assignmentId,
+    imagePath,
+    name,
+  });
+  res.send({});
 });
 
 app.get(

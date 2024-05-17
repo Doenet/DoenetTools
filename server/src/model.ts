@@ -61,6 +61,15 @@ export async function deleteDocument(docId: number) {
   });
 }
 
+export async function deleteAssignment(assignmentId: number) {
+  return await prisma.assignments.update({
+    where: { assignmentId },
+    data: {
+      isDeleted: true,
+    },
+  });
+}
+
 export async function updateActivity({
   activityId,
   name,
@@ -100,6 +109,24 @@ export async function updateDoc({
       contentLocation: content,
       name,
       doenetmlVersionId,
+    },
+  });
+}
+
+export async function updateAssignment({
+  assignmentId,
+  name,
+  imagePath,
+}: {
+  assignmentId: number;
+  name?: string;
+  imagePath?: string;
+}) {
+  return await prisma.assignments.update({
+    where: { assignmentId },
+    data: {
+      name,
+      imagePath,
     },
   });
 }
@@ -329,6 +356,32 @@ export async function getActivityViewerData(activityId: number) {
   };
 }
 
+// TODO - access control
+export async function getAssignmentEditorData(assignmentId: number) {
+  // TODO: add pagination or a hard limit in the number of documents one can add to an activity
+  let activity = await prisma.assignments.findFirstOrThrow({
+    where: { assignmentId },
+    include: {
+      assignmentItems: {
+        select: {
+          docId: true,
+          docVersionId: true,
+          documentVersion: {
+            select: {
+              contentLocation: true,
+            },
+          },
+        },
+        orderBy: {
+          docId: "asc",
+        },
+      },
+    },
+  });
+
+  return activity;
+}
+
 export async function searchPublicActivities(query: string) {
   let query_words = query.split(" ");
   let activities = await prisma.activities.findMany({
@@ -349,28 +402,50 @@ export async function listUserActivities(
   ownerId: number,
   loggedInUserId: number,
 ) {
-  let notMe = ownerId !== loggedInUserId;
+  const notMe = ownerId !== loggedInUserId;
 
-  let activities = await prisma.activities.findMany({
+  const activities = await prisma.activities.findMany({
     where: { ownerId, isDeleted: false, isPublic: notMe ? true : undefined },
     include: { documents: { select: { docId: true, doenetmlVersion: true } } },
   });
 
-  let publicActivities = activities.filter((activity) => activity.isPublic);
-  let privateActivities = activities.filter(
+  const publicActivities = activities.filter((activity) => activity.isPublic);
+  const privateActivities = activities.filter(
     (activity) => !activity.isPublic && !notMe,
   );
 
-  let user = await prisma.users.findUniqueOrThrow({
+  const user = await prisma.users.findUniqueOrThrow({
     where: { userId: ownerId },
     select: { name: true },
   });
 
   return {
-    publicActivities: publicActivities,
-    privateActivities: privateActivities,
+    publicActivities,
+    privateActivities,
     name: user.name,
     notMe,
+  };
+}
+
+export async function listUserAssignments(
+  ownerId: number,
+  loggedInUserId: number,
+) {
+  if (ownerId !== loggedInUserId) {
+    return [];
+  }
+  const assignments = await prisma.assignments.findMany({
+    where: { ownerId, isDeleted: false },
+  });
+
+  const user = await prisma.users.findUniqueOrThrow({
+    where: { userId: ownerId },
+    select: { name: true },
+  });
+
+  return {
+    assignments,
+    name: user.name,
   };
 }
 

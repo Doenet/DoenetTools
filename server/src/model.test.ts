@@ -326,7 +326,7 @@ test("assign an activity", async () => {
   ).eq("Some content");
 });
 
-test.only("cannot assign other user's private activity", async () => {
+test("cannot assign other user's private activity", async () => {
   const ownerId1 = await createTestUser();
   const ownerId2 = await createTestUser();
   const { activityId } = await createActivity(ownerId1);
