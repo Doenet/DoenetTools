@@ -136,7 +136,7 @@ export async function loader({ request }) {
   }
 }
 
-function Heading(props) {
+export function Heading(props) {
   return (
     <Flex
       flexDirection="column"

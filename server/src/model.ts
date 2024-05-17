@@ -360,7 +360,7 @@ export async function getActivityViewerData(activityId: number) {
 // TODO - access control
 export async function getAssignmentEditorData(assignmentId: number) {
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
-  let activity = await prisma.assignments.findFirstOrThrow({
+  let assignment = await prisma.assignments.findFirstOrThrow({
     where: { assignmentId },
     include: {
       assignmentItems: {
@@ -380,7 +380,14 @@ export async function getAssignmentEditorData(assignmentId: number) {
     },
   });
 
-  return activity;
+  let stillOpen = false;
+  if (assignment.codeValidUntil) {
+    const endDate = DateTime.fromJSDate(assignment.codeValidUntil);
+    console.log(endDate, DateTime.now());
+    stillOpen = DateTime.now() <= endDate;
+  }
+
+  return { ...assignment, stillOpen };
 }
 
 export async function getAssignmentDataFromCode(code: string) {
@@ -388,7 +395,7 @@ export async function getAssignmentDataFromCode(code: string) {
     where: {
       classCode: code,
       codeValidUntil: {
-        gte: Date(),
+        gte: Date(), // TODO - confirm this works with timezone stuff
       },
     },
     include: {

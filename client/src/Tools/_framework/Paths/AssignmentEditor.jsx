@@ -30,13 +30,18 @@ import {
   Tabs,
   Text,
   Tooltip,
+  RadioGroup,
+  Radio,
   VStack,
+  Stack,
+  SimpleGrid,
   useDisclosure,
 } from "@chakra-ui/react";
 import { FaCog } from "react-icons/fa";
 import { Form, useFetcher } from "react-router-dom";
 import axios from "axios";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
+import { Heading } from "./Community";
 import { useLocation, useNavigate } from "react-router";
 
 export async function action({ params, request }) {
@@ -303,155 +308,80 @@ export function AssignmentEditor() {
 
   const controlsBtnRef = useRef(null);
 
+  const [duration, setDuration] = useState(null);
+
   const [variants, setVariants] = useState({
     index: 1,
     numVariants: 1,
     allPossibleVariants: ["a"],
   });
 
+  console.log(assignmentData);
+
   // console.log("variants", variants);
 
   return (
     <>
-      <Grid
-        background="doenet.lightBlue"
-        minHeight="calc(100vh - 40px)" //40px header height
-        templateAreas={`"header header header"
-      "leftGutter centerContent rightGutter"
-      `}
-        templateRows="40px auto"
-        templateColumns=".06fr 1fr .06fr"
-        position="relative"
-      >
-        <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
-        <GridItem area="rightGutter" background="doenet.lightBlue"></GridItem>
-        <GridItem
-          area="header"
-          position="fixed"
-          height="40px"
-          background="doenet.canvas"
+      <Heading heading={assignmentData.name} />
+      <SimpleGrid columns={2} spacing="20px" margin="20px">
+        <Box
+          background="var(--canvas)"
+          borderWidth="1px"
+          borderStyle="solid"
+          borderColor="doenet.mediumGray"
           width="100%"
-          zIndex="500"
+          overflow="scroll"
         >
-          <Grid
-            templateAreas={`"leftControls label rightControls"`}
-            templateColumns="1fr 400px 1fr"
-            width="100%"
-          >
-            <GridItem area="leftControls"></GridItem>
-            <GridItem area="label">
-              <EditableName dataTest="Assignment Name Editable" />
-            </GridItem>
-            <GridItem
-              area="rightControls"
-              display="flex"
-              justifyContent="flex-end"
-            ></GridItem>
-          </Grid>
-        </GridItem>
-
-        <GridItem area="centerContent">
-          <Grid
-            width="100%"
-            height="calc(100vh - 80px)"
-            templateAreas={`"leftGutter viewer rightGutter"`}
-            templateColumns={`1fr minmax(400px,850px) 1fr`}
-            overflow="hidden"
-          >
-            <GridItem
-              area="leftGutter"
-              background="doenet.lightBlue"
-              width="100%"
-              paddingTop="10px"
-              alignSelf="start"
-            ></GridItem>
-            <GridItem
-              area="rightGutter"
-              background="doenet.lightBlue"
-              width="100%"
-              paddingTop="10px"
-              alignSelf="start"
-            />
-            <GridItem
-              area="viewer"
-              width="100%"
-              placeSelf="center"
-              minHeight="100%"
-              maxWidth="850px"
-              overflow="hidden"
-            >
-              <VStack
-                spacing={0}
-                margin="10px 0px 10px 0px" //Only need when there is an outline
-              >
-                {variants.numVariants > 1 && (
-                  <Box bg="doenet.lightBlue" h="32px" width="100%">
-                    <VariantSelect
-                      size="sm"
-                      menuWidth="140px"
-                      syncIndex={variants.index}
-                      array={variants.allPossibleVariants}
-                      onChange={(index) =>
-                        setVariants((prev) => {
-                          let next = { ...prev };
-                          next.index = index + 1;
-                          return next;
-                        })
-                      }
-                    />
-                  </Box>
-                )}
-                <Box
-                  h={
-                    variants.numVariants > 1
-                      ? "calc(100vh - 132px)"
-                      : "calc(100vh - 100px)"
-                  }
-                  background="var(--canvas)"
-                  borderWidth="1px"
-                  borderStyle="solid"
-                  borderColor="doenet.mediumGray"
-                  padding="20px 5px 20px 5px"
-                  flexGrow={1}
-                  overflow="scroll"
-                  w="100%"
-                  id="viewer-container"
-                >
-                  <DoenetML
-                    doenetML={doenetML}
-                    flags={{
-                      showCorrectness: true,
-                      solutionDisplayMode: "button",
-                      showFeedback: true,
-                      showHints: true,
-                      autoSubmit: false,
-                      allowLoadState: false,
-                      allowSaveState: false,
-                      allowLocalState: false,
-                      allowSaveSubmissions: false,
-                      allowSaveEvents: false,
-                    }}
-                    attemptNumber={1}
-                    generatedVariantCallback={setVariants}
-                    requestedVariantIndex={variants.index}
-                    idsIncludeActivityId={false}
-                    paginate={true}
-                    location={location}
-                    navigate={navigate}
-                    linkSettings={{
-                      viewURL: "/activityViewer",
-                      editURL: "/publicEditor",
-                    }}
-                    scrollableContainer={
-                      document.getElementById("viewer-container") || undefined
-                    }
-                  />
-                </Box>
-              </VStack>
-            </GridItem>
-          </Grid>
-        </GridItem>
-      </Grid>
+          <DoenetML
+            doenetML={doenetML}
+            flags={{
+              showCorrectness: true,
+              solutionDisplayMode: "button",
+              showFeedback: true,
+              showHints: true,
+              autoSubmit: false,
+              allowLoadState: false,
+              allowSaveState: false,
+              allowLocalState: false,
+              allowSaveSubmissions: false,
+              allowSaveEvents: false,
+            }}
+            attemptNumber={1}
+            generatedVariantCallback={setVariants}
+            requestedVariantIndex={variants.index}
+            idsIncludeActivityId={false}
+            paginate={true}
+            location={location}
+            navigate={navigate}
+            linkSettings={{
+              viewURL: "/activityViewer",
+              editURL: "/publicEditor",
+            }}
+            scrollableContainer={
+              document.getElementById("viewer-container") || undefined
+            }
+          />
+        </Box>
+        <Box>
+          {assignmentData.stillOpen ? (
+            <Box>
+              Assignment is currently active, and open for students to join
+              until {assignmentData.codeValidUntil}.
+            </Box>
+          ) : (
+            <Box>
+              How long would you like this activity to remain open?
+              <RadioGroup onChange={setDuration} value={duration}>
+                <Stack direction="row">
+                  <Radio value="48">48 Hours</Radio>
+                  <Radio value={"" + 24 * 12}>2 Weeks</Radio>
+                  <Radio value={"" + 24 * 365}>1 Year</Radio>
+                </Stack>
+              </RadioGroup>
+            </Box>
+          )}
+        </Box>
+      </SimpleGrid>
     </>
   );
 }
