@@ -228,7 +228,7 @@ export function PublicEditor() {
                     colorScheme="blue"
                     onClick={async () => {
                       let { data } = await axios.post(
-                        `/api/duplicatePortfolioActivity`,
+                        `/api/duplicateActivity`,
                         {
                           activityId,
                         },

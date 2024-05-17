@@ -26,7 +26,7 @@ import ContributorsMenu from "../ChakraBasedComponents/ContributorsMenu";
 export async function action({ params }) {
   // TODO: it is confusing that the one "action" of this viewer is to duplicate.
 
-  let { data } = await axios.post(`/api/duplicatePortfolioActivity`, {
+  let { data } = await axios.post(`/api/duplicateActivity`, {
     activityId: params.activityId,
   });
 
@@ -46,7 +46,7 @@ export async function loader({ params }) {
   }
   try {
     const { data: activityData } = await axios.get(
-      `/api/getPortfolioActivityView/${params.activityId}`,
+      `/api/getActivityView/${params.activityId}`,
     );
 
     let activityId = params.activityId;

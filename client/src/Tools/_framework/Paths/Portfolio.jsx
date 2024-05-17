@@ -76,7 +76,7 @@ export async function action({ request }) {
     let { activityId } = data;
     return redirect(`/portfolioeditor/${activityId}`);
   } else if (formObj?._action == "Delete") {
-    await axios.post(`/api/deletePortfolioActivity`, {
+    await axios.post(`/api/deleteActivity`, {
       activityId: formObj.activityId,
     });
 

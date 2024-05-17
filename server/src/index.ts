@@ -107,15 +107,12 @@ app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
   res.send({ success: true });
 });
 
-app.post(
-  "/api/deletePortfolioActivity",
-  async (req: Request, res: Response) => {
-    const body = req.body;
-    const activityId = Number(body.activityId);
-    await deleteActivity(activityId);
-    res.send({});
-  },
-);
+app.post("/api/deleteActivity", async (req: Request, res: Response) => {
+  const body = req.body;
+  const activityId = Number(body.activityId);
+  await deleteActivity(activityId);
+  res.send({});
+});
 
 app.post("/api/createActivity", async (req: Request, res: Response) => {
   const loggedInUserId = Number(req.cookies.userId);
@@ -195,15 +192,12 @@ app.get("/api/getAllDoenetmlVersions", async (req: Request, res: Response) => {
   res.send(allDoenetmlVersions);
 });
 
-app.get(
-  "/api/getPortfolioActivityView/:docId",
-  async (req: Request, res: Response) => {
-    const docId = Number(req.params.docId);
+app.get("/api/getActivityView/:docId", async (req: Request, res: Response) => {
+  const docId = Number(req.params.docId);
 
-    const viewerData = await getActivityViewerData(docId);
-    res.send(viewerData);
-  },
-);
+  const viewerData = await getActivityViewerData(docId);
+  res.send(viewerData);
+});
 
 app.get("/api/loadPromotedContentGroups", (req: Request, res: Response) => {
   res.send({});
@@ -249,20 +243,17 @@ app.post("/api/updateDocumentSettings", (req: Request, res: Response) => {
   res.send({});
 });
 
-app.post(
-  "/api/duplicatePortfolioActivity",
-  async (req: Request, res: Response) => {
-    const targetActivityId = Number(req.body.activityId);
-    const loggedInUserId = Number(req.cookies.userId);
+app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
+  const targetActivityId = Number(req.body.activityId);
+  const loggedInUserId = Number(req.cookies.userId);
 
-    let newActivityId = await copyPublicActivityToPortfolio(
-      targetActivityId,
-      loggedInUserId,
-    );
+  let newActivityId = await copyPublicActivityToPortfolio(
+    targetActivityId,
+    loggedInUserId,
+  );
 
-    res.send({ newActivityId });
-  },
-);
+  res.send({ newActivityId });
+});
 
 app.get(
   "/api/getDocumentContent/:docId",
