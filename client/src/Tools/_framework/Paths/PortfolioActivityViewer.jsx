@@ -27,14 +27,14 @@ export async function action({ params }) {
   // TODO: it is confusing that the one "action" of this viewer is to duplicate.
 
   let { data } = await axios.post(`/api/duplicatePortfolioActivity`, {
-    docId: params.doenetId,
+    activityId: params.activityId,
   });
 
-  const { newDocId } = data;
+  const { newActivityId } = data;
 
   // TODO: do not navigate to editor
   // Instead, navigate to portfolio with newly created activity highlighted
-  return redirect(`/portfolioeditor/${newDocId}/${newDocId}`);
+  return redirect(`/portfolioeditor/${newActivityId}`);
 }
 
 export async function loader({ params }) {
@@ -45,19 +45,36 @@ export async function loader({ params }) {
     signedIn = false;
   }
   try {
-    const { data } = await axios.get(
-      `/api/getPortfolioActivityView/${params.doenetId}`,
+    const { data: activityData } = await axios.get(
+      `/api/getPortfolioActivityView/${params.activityId}`,
+    );
+
+    let activityId = params.activityId;
+    let docId = params.docId;
+    if (!docId) {
+      // If docId was not supplied in the url,
+      // then use the first docId from the activity.
+      // TODO: what happens if activity has no documents?
+      docId = activityData.activity.documents[0].docId;
+    }
+
+    //Get the doenetML of the docId.
+    //we need transformResponse because
+    //large numbers are simplified with toString if used on doenetMLResponse.data
+    //which was causing errors
+    const { data: doenetML } = await axios.get(
+      `/api/getDocumentContent/${docId}`,
+      { transformResponse: (data) => data.toString() },
     );
 
     return {
-      success: true,
-      doenetId: params.doenetId,
-      doenetML: data.contentLocation,
+      activityId,
+      doenetML,
       signedIn,
-      label: data.name,
-      owner: data.owner,
-      contributorHistory: data.contributorHistory,
-      pageDoenetId: params.doenetId,
+      name: activityData.activity.name,
+      owner: activityData.activity.owner,
+      contributorHistory: activityData.doc.contributorHistory,
+      docId,
     };
   } catch (e) {
     return { success: false, message: e.response.data.message };
@@ -73,20 +90,14 @@ const HeaderSectionRight = styled.div`
 
 export function PortfolioActivityViewer() {
   const {
-    success,
-    message,
     doenetML,
     signedIn,
-    label,
-    doenetId,
-    pageDoenetId,
+    name,
+    activityId,
+    docId,
     owner,
     contributorHistory,
   } = useLoaderData();
-
-  if (!success) {
-    throw new Error(message);
-  }
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -100,8 +111,8 @@ export function PortfolioActivityViewer() {
   }
 
   useEffect(() => {
-    document.title = `${label} - Doenet`;
-  }, [label]);
+    document.title = `${name} - Doenet`;
+  }, [name]);
 
   const [variants, setVariants] = useState({
     index: 1,
@@ -155,7 +166,7 @@ export function PortfolioActivityViewer() {
                     textOverflow="ellipsis"
                     whiteSpace="nowrap"
                   >
-                    {label}
+                    {name}
                   </Text>
                   <Box mt="10px">
                     <ContributorsMenu
@@ -170,7 +181,7 @@ export function PortfolioActivityViewer() {
                     colorScheme="blue"
                     data-test="See Inside"
                     onClick={() => {
-                      navigate(`/publiceditor/${doenetId}/${pageDoenetId}`);
+                      navigate(`/publiceditor/${activityId}/${docId}`);
                     }}
                   >
                     See Inside
@@ -289,7 +300,6 @@ export function PortfolioActivityViewer() {
                       allowSaveSubmissions: false,
                       allowSaveEvents: false,
                     }}
-                    // doenetId={doenetId}
                     attemptNumber={1}
                     idsIncludeActivityId={false}
                     generatedVariantCallback={setVariants}

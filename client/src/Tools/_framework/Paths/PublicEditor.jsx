@@ -36,46 +36,33 @@ import { ResizableSideBySide } from "./ResizableSideBySide";
 
 export async function loader({ params }) {
   try {
-    let success = true;
-    let message = "";
-
-    const { data } = await axios.get(
-      `/api/getPortfolioEditorData/${params.doenetId}`,
-      {
-        params: { publicEditor: true },
-      },
+    const { data: activityData } = await axios.get(
+      `/api/getActivityEditorData/${params.activityId}`,
     );
-    const activityData = { ...data.activity };
-    const courseId = data.courseId;
 
-    let pageId = params.pageId;
-    if (params.pageId == "_") {
-      //find pageId in data.content
-      let pageId = findFirstPageIdInContent(activityData.content);
-
-      //If we found a pageId then redirect there
-      //TODO: test what happens when there are only orders and no pageIds
-      if (pageId != "_") {
-        return redirect(`/publiceditor/${params.doenetId}/${pageId}`);
-      }
+    let activityId = params.activityId;
+    let docId = params.docId;
+    if (!docId) {
+      // If docId was not supplied in the url,
+      // then use the first docId from the activity.
+      // TODO: what happens if activity has no documents?
+      docId = activityData.documents[0].docId;
     }
 
-    //Get the doenetML of the pageId.
+    //Get the doenetML of the docId.
     //we need transformResponse because
     //large numbers are simplified with toString if used on doenetMLResponse.data
     //which was causing errors
     const doenetMLResponse = await axios.get(
-      `/media/byPageId/${pageId}.doenet`,
+      `/api/getDocumentContent/${docId}`,
       { transformResponse: (data) => data.toString() },
     );
     let doenetML = doenetMLResponse.data;
+
     const lastKnownCid = await cidFromText(doenetML);
 
     const supportingFileResp = await axios.get(
-      "/api/loadSupportingFileInfo.php",
-      {
-        params: { doenetId: params.doenetId },
-      },
+      `/api/loadSupportingFileInfo/${params.activityId}`,
     );
 
     let supportingFileData = supportingFileResp.data;
@@ -89,15 +76,12 @@ export async function loader({ params }) {
     }
 
     return {
-      success,
-      message,
       platform,
       activityData,
-      pageId,
-      courseId,
+      docId,
       lastKnownCid,
       doenetML,
-      doenetId: params.doenetId,
+      activityId,
       supportingFileData,
     };
   } catch (e) {
@@ -106,12 +90,8 @@ export async function loader({ params }) {
 }
 
 export function PublicEditor() {
-  const { success, message, platform, doenetId, doenetML, activityData } =
+  const { platform, activityId, doenetML, docId, activityData } =
     useLoaderData();
-
-  if (!success) {
-    throw new Error(message);
-  }
 
   const [errorsAndWarnings, setErrorsAndWarningsCallback] = useState({
     errors: [],
@@ -143,8 +123,8 @@ export function PublicEditor() {
   let [codeChanged, setCodeChanged] = useState(false);
 
   useEffect(() => {
-    document.title = `${activityData.label} - Doenet`;
-  }, [activityData.label]);
+    document.title = `${activityData.name} - Doenet`;
+  }, [activityData.name]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -210,7 +190,7 @@ export function PublicEditor() {
                     variant="outline"
                     leftIcon={<BsPlayBtnFill />}
                     onClick={() => {
-                      navigate(`/portfolioviewer/${doenetId}`);
+                      navigate(`/portfolioviewer/${activityId}`);
                     }}
                   >
                     View
@@ -219,7 +199,7 @@ export function PublicEditor() {
               </GridItem>
               <GridItem area="label">
                 <Text width="400px" mt="8px" textAlign="center">
-                  {activityData.label}
+                  {activityData.name}
                 </Text>
               </GridItem>
               <GridItem
@@ -250,14 +230,14 @@ export function PublicEditor() {
                       let { data } = await axios.post(
                         `/api/duplicatePortfolioActivity`,
                         {
-                          docId: doenetId,
+                          activityId,
                         },
                       );
-                      const { newDocId } = data;
+                      const { newActivityId } = data;
 
                       // TODO: do not navigate to editor
                       // Instead, navigate to portfolio with newly created activity highlighted
-                      navigate(`/portfolioeditor/${newDocId}/${newDocId}`);
+                      navigate(`/portfolioeditor/${newActivityId}`);
                     }}
                   >
                     Copy to Portfolio

@@ -2,20 +2,21 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import {
-  copyPublicDocumentToPortfolio,
-  createDocument,
-  deleteDocument,
+  copyPublicActivityToPortfolio,
+  createActivity,
+  deleteActivity,
   findOrCreateUser,
   getAllDoenetmlVersions,
-  getAllRecentPublicActivites,
-  getDoc,
-  getDocEditorData,
-  getDocViewerData,
+  getActivityEditorData,
+  getActivityViewerData,
+  getAllRecentPublicActivities,
   getIsAdmin,
   getUserInfo,
-  listUserDocs,
-  saveDoc,
-  searchPublicDocs,
+  listUserActivities,
+  updateDoc,
+  searchPublicActivities,
+  updateActivity,
+  getDoc,
 } from "./model";
 
 dotenv.config();
@@ -30,7 +31,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
 });
 
-app.get("/api/getQuickCheckSignedIn.php", (req: Request, res: Response) => {
+app.get("/api/getQuickCheckSignedIn", (req: Request, res: Response) => {
   const signedIn = req.cookies.email ? true : false;
   res.send({ signedIn: signedIn });
 });
@@ -49,17 +50,19 @@ app.get("/api/checkForCommunityAdmin", async (req: Request, res: Response) => {
   const userEmail = req.cookies.email;
   const isAdmin = await getIsAdmin(userEmail);
   res.send({
-    isAdmin
+    isAdmin,
   });
 });
 
-app.get("/api/getAllRecentPublicActivites", async (req: Request, res: Response) => {
-  const docs = await getAllRecentPublicActivites();
-  res.send(docs);
-});
+app.get(
+  "/api/getAllRecentPublicActivities",
+  async (req: Request, res: Response) => {
+    const docs = await getAllRecentPublicActivities();
+    res.send(docs);
+  },
+);
 
-
-app.get("/api/loadProfile.php", (req: Request, res: Response) => {
+app.get("/api/loadProfile", (req: Request, res: Response) => {
   const loggedInEmail = req.cookies.email;
   res.send({
     profile: {
@@ -76,16 +79,29 @@ app.get("/api/loadProfile.php", (req: Request, res: Response) => {
   });
 });
 
-app.get("/api/getPortfolio.php", async (req: Request, res: Response) => {
-  const loggedInEmail = req.cookies.email;
+app.get("/api/getPortfolio/:userId", async (req: Request, res: Response) => {
   const loggedInUserId = Number(req.cookies.userId);
-  const ret = await listUserDocs(loggedInUserId);
-  res.send(ret);
+  const userId = Number(req.params.userId);
+  const activityLists = await listUserActivities(userId, loggedInUserId);
+  const allDoenetmlVersions = await getAllDoenetmlVersions();
+
+  res.send({ allDoenetmlVersions, ...activityLists });
 });
 
-app.get("/api/sendSignInEmail.php", async (req: Request, res: Response) => {
+app.get(
+  "/api/getPublicPortfolio/:userId",
+  async (req: Request, res: Response) => {
+    const userId = Number(req.params.userId);
+    const activityLists = await listUserActivities(userId, 0);
+
+    res.send(activityLists);
+  },
+);
+
+app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
   const email: string = req.query.emailaddress as string;
-  const userId = await findOrCreateUser(email);
+  // TODO: add the ability to give a name after logging in or creating an account
+  const userId = await findOrCreateUser(email, email);
   res.cookie("email", email);
   res.cookie("userId", String(userId));
   res.send({ success: true });
@@ -95,77 +111,69 @@ app.post(
   "/api/deletePortfolioActivity",
   async (req: Request, res: Response) => {
     const body = req.body;
-    const doenetId = Number(body.doenetId);
-    const docId = await deleteDocument(doenetId);
-    res.send();
+    const activityId = Number(body.activityId);
+    await deleteActivity(activityId);
+    res.send({});
   },
 );
 
-app.post(
-  "/api/createPortfolioActivity",
-  async (req: Request, res: Response) => {
-    const loggedInUserId = Number(req.cookies.userId);
-    const docId = await createDocument(loggedInUserId);
-    res.send({ docId });
-  },
-);
+app.post("/api/createActivity", async (req: Request, res: Response) => {
+  const loggedInUserId = Number(req.cookies.userId);
+  const { activityId, docId } = await createActivity(loggedInUserId);
+  res.send({ activityId, docId });
+});
 
-app.get(
-  "/api/updatePortfolioActivityLabel.php",
-  (req: Request, res: Response) => {
-    const doenetId = Number(req.query.doenetId as string);
-    const label = req.query.label as string;
-    saveDoc({ docId: doenetId, name: label });
-    res.send({ success: true });
-  },
-);
+app.post("/api/updateActivityName", (req: Request, res: Response) => {
+  const body = req.body;
+  const activityId = Number(body.activityId);
+  const name = body.name;
+  updateActivity({ activityId, name });
+  res.send({});
+});
 
 app.post("/api/updateIsPublicActivity", (req: Request, res: Response) => {
   const body = req.body;
-  const doenetId = Number(body.doenetId);
+  const activityId = Number(body.activityId);
   const isPublic = body.isPublic;
-  saveDoc({ docId: doenetId, isPublic });
-  res.send({ success: true });
+  updateActivity({ activityId, isPublic });
+  res.send({});
 });
 
-app.get("/api/loadSupportingFileInfo.php", (req: Request, res: Response) => {
-  const doenetId = Number(req.query.doenetId as string);
-  res.send({
-    success: true,
-    supportingFiles: [],
-    canUpload: true,
-    userQuotaBytesAvailable: 1000000,
-    quotaBytes: 9000000,
-  });
-});
+app.get(
+  "/api/loadSupportingFileInfo/:activityId",
+  (req: Request, res: Response) => {
+    const activityId = Number(req.params.activityId as string);
+    res.send({
+      success: true,
+      supportingFiles: [],
+      canUpload: true,
+      userQuotaBytesAvailable: 1000000,
+      quotaBytes: 9000000,
+    });
+  },
+);
 
-app.get("/api/checkCredentials.php", (req: Request, res: Response) => {
+app.get("/api/checkCredentials", (req: Request, res: Response) => {
   const loggedIn = req.cookies.email ? true : false;
   res.send({ loggedIn });
 });
 
 app.get(
-  "/api/getCoursePermissionsAndSettings.php",
+  "/api/getCoursePermissionsAndSettings",
   (req: Request, res: Response) => {
     res.send({});
   },
 );
 
-app.get(
-  "/api/searchPublicActivities.php",
-  async (req: Request, res: Response) => {
-    const query = req.query.q as string;
-    res.send({
-      success: true,
-      searchResults: {
-        users: [], // TODO - this
-        activities: await searchPublicDocs(query),
-      },
-    });
-  },
-);
+app.get("/api/searchPublicActivities", async (req: Request, res: Response) => {
+  const query = req.query.q as string;
+  res.send({
+    users: [], // TODO - this
+    activities: await searchPublicActivities(query),
+  });
+});
 
-app.get("/api/loadPromotedContent.php", (req: Request, res: Response) => {
+app.get("/api/loadPromotedContent", (req: Request, res: Response) => {
   res.send({
     success: true,
     carouselData: {},
@@ -173,81 +181,94 @@ app.get("/api/loadPromotedContent.php", (req: Request, res: Response) => {
 });
 
 app.get(
-  "/api/getPortfolioEditorData/:doenetId",
+  "/api/getActivityEditorData/:activityId",
   async (req: Request, res: Response) => {
-    const doenetId = Number(req.params.doenetId);
-    const editorData = await getDocEditorData(doenetId);
+    const activityId = Number(req.params.activityId);
+    const editorData = await getActivityEditorData(activityId);
     res.send(editorData);
   },
 );
 
-app.get(
-  "/api/getAllDoenetmlVersions.php",
-  async (req: Request, res: Response) => {
-    const allDoenetmlVersions = await getAllDoenetmlVersions();
+app.get("/api/getAllDoenetmlVersions", async (req: Request, res: Response) => {
+  const allDoenetmlVersions = await getAllDoenetmlVersions();
 
-    res.send(allDoenetmlVersions);
-  },
-);
+  res.send(allDoenetmlVersions);
+});
 
 app.get(
   "/api/getPortfolioActivityView/:docId",
   async (req: Request, res: Response) => {
     const docId = Number(req.params.docId);
 
-    const viewerData = await getDocViewerData(docId);
+    const viewerData = await getActivityViewerData(docId);
     res.send(viewerData);
   },
 );
 
-app.get("/api/loadPromotedContentGroups.php", (req: Request, res: Response) => {
+app.get("/api/loadPromotedContentGroups", (req: Request, res: Response) => {
   res.send({});
 });
 
-app.post("/api/saveDoenetML.php", (req: Request, res: Response) => {
+app.post("/api/saveDoenetML", (req: Request, res: Response) => {
   const body = req.body;
   const doenetML = body.doenetML;
-  const docId = Number(body.pageId);
-  saveDoc({ docId, content: doenetML });
-  res.send({ success: true });
+  const docId = Number(body.docId);
+  updateDoc({ docId, content: doenetML });
+  res.send({});
 });
 
-app.post(
-  "/api/updatePortfolioActivitySettings",
-  (req: Request, res: Response) => {
-    const body = req.body;
-    const docId = Number(body.doenetId);
-    const imagePath = body.imagePath;
-    const label = body.label;
-    // TODO - deal with learning outcomes
-    const learningOutcomes = body.learningOutcomes;
-    const isPublic = body.public === "true";
-    const doenetmlVersionId = Number(body.doenetmlVersionId);
-    saveDoc({ docId, imagePath, name: label, isPublic, doenetmlVersionId });
-    res.send({ success: true });
-  },
-);
+app.post("/api/updateActivitySettings", (req: Request, res: Response) => {
+  const body = req.body;
+  const activityId = Number(body.activityId);
+  const imagePath = body.imagePath;
+  const name = body.name;
+  // TODO - deal with learning outcomes
+  const learningOutcomes = body.learningOutcomes;
+  const isPublic = body.isPublic;
+  updateActivity({
+    activityId,
+    imagePath,
+    name,
+    isPublic,
+  });
+  res.send({});
+});
+
+app.post("/api/updateDocumentSettings", (req: Request, res: Response) => {
+  const body = req.body;
+  const docId = Number(body.docId);
+  const name = body.name;
+  // TODO - deal with learning outcomes
+  const learningOutcomes = body.learningOutcomes;
+  const doenetmlVersionId = Number(body.doenetmlVersionId);
+  updateDoc({
+    docId,
+    name,
+    doenetmlVersionId,
+  });
+  res.send({});
+});
 
 app.post(
   "/api/duplicatePortfolioActivity",
   async (req: Request, res: Response) => {
-    const targetDocId = Number(req.body.docId);
+    const targetActivityId = Number(req.body.activityId);
     const loggedInUserId = Number(req.cookies.userId);
 
-    let newDocId = await copyPublicDocumentToPortfolio(
-      targetDocId,
+    let newActivityId = await copyPublicActivityToPortfolio(
+      targetActivityId,
       loggedInUserId,
     );
 
-    res.send({ newDocId });
+    res.send({ newActivityId });
   },
 );
 
 app.get(
-  "/media/byPageId/:doenetId.doenet",
+  "/api/getDocumentContent/:docId",
   async (req: Request, res: Response) => {
-    const doenetId = Number(req.params.doenetId);
-    const doc = await getDoc(doenetId);
+    const docId = Number(req.params.docId);
+    const doc = await getDoc(docId);
     res.send(doc.contentLocation);
   },
 );

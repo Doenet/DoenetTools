@@ -6,13 +6,6 @@ import { MathJaxContext } from "better-react-mathjax";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { mathjaxConfig } from "@doenet/doenetml";
 
-// function CypressTest(props){
-
-//   axios.post('/api/test.php',{}).then((resp) => console.log('>>>resp', resp.data));
-
-//   return <p>test</p>
-// }
-
 const root = createRoot(document.getElementById("root"));
 root.render(
   <Router>

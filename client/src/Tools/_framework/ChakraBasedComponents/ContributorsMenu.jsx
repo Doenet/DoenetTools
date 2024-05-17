@@ -14,12 +14,12 @@ import { Link } from "react-router-dom";
 
 export default function ContributorsMenu({ contributorHistory, owner }) {
   // TODO: add name once have it in database
-  let byLine = `by ${owner.email}`;
+  let byLine = `by ${owner.name}`;
 
   let recentByLine = "";
   if (contributorHistory.length > 0) {
-    let prevDoc = contributorHistory[0].prevDoc.document;
-    recentByLine = `remixed from ${prevDoc.name} by ${prevDoc.owner.email}`;
+    let prevActivity = contributorHistory[0].prevDoc.document.activity;
+    recentByLine = `remixed from ${prevActivity.name} by ${prevActivity.owner.name}`;
   }
 
   const avatars = [
@@ -28,7 +28,7 @@ export default function ContributorsMenu({ contributorHistory, owner }) {
       m={0}
       border="0"
       size="sm"
-      name={owner.email}
+      name={owner.name}
       mr="4px"
     />,
   ];
@@ -40,7 +40,7 @@ export default function ContributorsMenu({ contributorHistory, owner }) {
         m={0}
         border="0"
         size="sm"
-        name={contrib_hist.prevDoc.document.owner.email}
+        name={contrib_hist.prevDoc.document.activity.owner.name}
         mr="4px"
       />
     )),
@@ -66,13 +66,12 @@ export default function ContributorsMenu({ contributorHistory, owner }) {
             as={Link}
             to={`/publicportfolio/${owner.userId}`}
           >
-            {avatars[0]}{" "}
-            <Text ml="4px">{owner.email}</Text>
+            {avatars[0]} <Text ml="4px">{owner.name}</Text>
           </MenuItem>
           {contributorHistory.map((contrib_hist, i) => {
-            let prevDoc = contrib_hist.prevDoc.document;
-            let label = `${prevDoc.name} by ${prevDoc.owner.email}`;
-            const href = `/portfolioviewer/${contrib_hist.prevDocId}`;
+            let prevActivity = contrib_hist.prevDoc.document.activity;
+            let label = `${prevActivity.name} by ${prevActivity.owner.name}`;
+            const href = `/portfolioviewer/${prevActivity.activityId}`;
 
             return (
               <MenuItem

@@ -67,11 +67,9 @@ import { useDropzone } from "react-dropzone";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { GoKebabVertical } from "react-icons/go";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
-// import Select from "react-select";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
 import { useLocation, useNavigate } from "react-router";
-import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 import { ResizableSideBySide } from "./ResizableSideBySide";
 
 export async function action({ params, request }) {
@@ -79,51 +77,61 @@ export async function action({ params, request }) {
   let formObj = Object.fromEntries(formData);
   // console.log({ formObj });
 
-  //Don't let label be blank
-  let label = formObj?.label?.trim();
-  if (label == "") {
-    label = "Untitled";
+  //Don't let name be blank
+  let name = formObj?.name?.trim();
+  if (name == "") {
+    name = "Untitled";
   }
 
-  // console.log("formObj", formObj, params.doenetId);
-  if (formObj._action == "update label") {
-    let response = await fetch(
-      `/api/updatePortfolioActivityLabel.php?doenetId=${params.doenetId}&label=${label}`,
-    );
-    let respObj = await response.json();
+  if (formObj._action == "update name") {
+    await axios.post(`/api/updateActivityName`, {
+      activityId: params.activityId,
+      name,
+    });
+    return true;
   }
 
   if (formObj._action == "update general") {
-    let learningOutcomes = JSON.parse(formObj.learningOutcomes);
-    await axios.post("/api/updatePortfolioActivitySettings", {
-      label,
+    let learningOutcomes;
+    if (formObj.learningOutcomes) {
+      learningOutcomes = JSON.parse(formObj.learningOutcomes);
+    }
+    let isPublic;
+
+    if (formObj.isPublic) {
+      isPublic = formObj.isPublic === "true";
+    }
+
+    await axios.post("/api/updateActivitySettings", {
+      name,
       imagePath: formObj.imagePath,
-      public: formObj.public,
-      doenetId: params.doenetId,
+      isPublic,
+      activityId: params.activityId,
       learningOutcomes,
-      doenetmlVersionId: formObj.doenetmlVersionId,
     });
-    return {
-      label,
-      imagePath: formObj.imagePath,
-      public: formObj.public,
-      doenetId: params.doenetId,
-      learningOutcomes,
-      doenetmlVersionId: formObj.doenetmlVersionId,
-    };
+
+    if (formObj.doenetmlVersionId) {
+      // TODO: handle other updates to just a document
+      await axios.post("/api/updateDocumentSettings", {
+        docId: formObj.docId,
+        doenetmlVersionId: formObj.doenetmlVersionId,
+      });
+    }
+    return true;
   }
   if (formObj._action == "update description") {
-    let { data } = await axios.get("/api/updateFileDescription.php", {
+    await axios.get("/api/updateFileDescription", {
       params: {
-        doenetId: formObj.doenetId,
+        activityId: params.activityId,
         cid: formObj.cid,
         description: formObj.description,
       },
     });
+    return true;
   }
   if (formObj._action == "remove file") {
-    let resp = await axios.get("/api/deleteFile.php", {
-      params: { doenetId: formObj.doenetId, cid: formObj.cid },
+    let resp = await axios.get("/api/deleteFile", {
+      params: { activityId: params.activityId, cid: formObj.cid },
     });
 
     return {
@@ -133,59 +141,37 @@ export async function action({ params, request }) {
     };
   }
 
-  if (formObj._action == "noop") {
-    // console.log("noop");
-  }
-
-  return { nothingToReturn: true };
-  // let response = await fetch(
-  //   `/api/duplicatePortfolioActivity.php?doenetId=${params.doenetId}`,
-  // );
-  // let respObj = await response.json();
-
-  // const { nextActivityDoenetId, nextPageDoenetId } = respObj;
-  // return redirect(
-  //   `/portfolioeditor/${nextActivityDoenetId}?tool=editor&doenetId=${nextActivityDoenetId}&pageId=${nextPageDoenetId}`,
-  // );
+  return null;
 }
 
 export async function loader({ params }) {
   try {
-    const response = await axios.get(
-      `/api/getPortfolioEditorData/${params.doenetId}`,
+    const { data: activityData } = await axios.get(
+      `/api/getActivityEditorData/${params.activityId}`,
     );
-    let data = response.data;
-    const activityData = { ...data.activity };
-    const courseId = data.courseId;
 
-    let pageId = params.pageId;
-    if (params.pageId == "_") {
-      //find pageId in data.content
-      let pageId = findFirstPageIdInContent(activityData.content);
-
-      //If we found a pageId then redirect there
-      //TODO: test what happens when there are only orders and no pageIds
-      if (pageId != "_") {
-        return redirect(`/portfolioeditor/${params.doenetId}/${pageId}`);
-      }
+    let activityId = params.activityId;
+    let docId = params.docId;
+    if (!docId) {
+      // If docId was not supplied in the url,
+      // then use the first docId from the activity.
+      // TODO: what happens if activity has no documents?
+      docId = activityData.documents[0].docId;
     }
 
-    //Get the doenetML of the pageId.
+    //Get the doenetML of the docId.
     //we need transformResponse because
     //large numbers are simplified with toString if used on doenetMLResponse.data
     //which was causing errors
     const doenetMLResponse = await axios.get(
-      `/media/byPageId/${pageId}.doenet`,
+      `/api/getDocumentContent/${docId}`,
       { transformResponse: (data) => data.toString() },
     );
     let doenetML = doenetMLResponse.data;
     const lastKnownCid = await cidFromText(doenetML);
 
     const supportingFileResp = await axios.get(
-      "/api/loadSupportingFileInfo.php",
-      {
-        params: { doenetId: params.doenetId },
-      },
+      `/api/loadSupportingFileInfo/${activityId}`,
     );
 
     let supportingFileData = supportingFileResp.data;
@@ -206,26 +192,24 @@ export async function loader({ params }) {
       platform = "Mac";
     }
 
-    const allDoenetmlVersionsResp = await axios.get(
-      "/api/getAllDoenetmlVersions.php",
+    const { data: allDoenetmlVersions } = await axios.get(
+      "/api/getAllDoenetmlVersions",
     );
-
-    const allDoenetmlVersions = allDoenetmlVersionsResp.data;
 
     return {
       platform,
       activityData,
-      pageId,
-      courseId,
+      docId,
       lastKnownCid,
       doenetML,
-      doenetId: params.doenetId,
+      activityId,
       supportingFileData,
       allDoenetmlVersions,
     };
   } catch (e) {
+    console.log(e);
     if (e.response.data.message == "Redirect to public activity.") {
-      return redirect(`/publiceditor/${params.doenetId}/${params.pageId}`);
+      return redirect(`/publiceditor/${activityId}/${docId}`);
     } else {
       throw new Error(e);
     }
@@ -270,7 +254,7 @@ function AlertQueue({ alerts = [] }) {
 }
 
 function SupportFilesControls() {
-  const { supportingFileData, doenetId } = useLoaderData();
+  const { supportingFileData, activityId } = useLoaderData();
   const { supportingFiles, userQuotaBytesAvailable, quotaBytes } =
     supportingFileData;
 
@@ -325,10 +309,10 @@ function SupportFilesControls() {
         }
         const uploadData = new FormData();
         uploadData.append("file", file);
-        uploadData.append("doenetId", doenetId);
+        uploadData.append("activityId", activityId);
         uploadData.append("columnTypes", columnTypes);
 
-        let resp = await axios.post("/api/supportFileUpload.php", uploadData);
+        let resp = await axios.post("/api/supportFileUpload", uploadData);
 
         if (resp.data.success) {
           setAlerts([
@@ -548,7 +532,6 @@ function SupportFilesControls() {
                                   fetcher.submit(
                                     {
                                       _action: "remove file",
-                                      doenetId,
                                       cid: file.cid,
                                     },
                                     { method: "post" },
@@ -581,7 +564,6 @@ function SupportFilesControls() {
                               fetcher.submit(
                                 {
                                   _action: "update description",
-                                  doenetId,
                                   cid: file.cid,
                                   description: e.target.value,
                                 },
@@ -593,7 +575,6 @@ function SupportFilesControls() {
                                 fetcher.submit(
                                   {
                                     _action: "update description",
-                                    doenetId,
                                     cid: file.cid,
                                     description: e.target.value,
                                   },
@@ -614,11 +595,6 @@ function SupportFilesControls() {
                             </Button>
                           </InputRightElement>
                           <input type="hidden" name="cid" value={file.cid} />
-                          <input
-                            type="hidden"
-                            name="doenetId"
-                            value={doenetId}
-                          />
                         </InputGroup>
                       </VStack>
                     </CardBody>
@@ -669,7 +645,6 @@ function SupportFilesControls() {
                               {
                                 _action: "update description",
                                 description: value,
-                                doenetId,
                                 cid: file.cid,
                               },
                               { method: "post" },
@@ -729,7 +704,6 @@ function SupportFilesControls() {
                                 fetcher.submit(
                                   {
                                     _action: "remove file",
-                                    doenetId,
                                     cid: file.cid,
                                   },
                                   { method: "post" },
@@ -776,12 +750,12 @@ function SupportFilesControls() {
 
 export function GeneralActivityControls({
   fetcher,
-  courseId,
-  doenetId,
+  activityId,
+  docId,
   activityData,
   allDoenetmlVersions,
 }) {
-  let { isPublic, label, imagePath: dataImagePath } = activityData;
+  let { isPublic, name, imagePath: dataImagePath } = activityData;
 
   let numberOfFilesUploading = useRef(0);
   let [imagePath, setImagePath] = useState(dataImagePath);
@@ -797,11 +771,11 @@ export function GeneralActivityControls({
   // (And same for other variables using this pattern)
   // It appears this file is using optimistic UI without a recourse
   // should the optimism be unmerited.
-  let doenetmlVersionInit = activityData.doenetmlVersion;
+  let doenetmlVersionInit = activityData.documents[0].doenetmlVersion;
 
-  let [labelValue, setLabel] = useState(label);
-  let lastAcceptedLabelValue = useRef(label);
-  let [labelIsInvalid, setLabelIsInvalid] = useState(false);
+  let [nameValue, setName] = useState(name);
+  let lastAcceptedNameValue = useRef(name);
+  let [nameIsInvalid, setNameIsInvalid] = useState(false);
 
   let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
   let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
@@ -812,44 +786,40 @@ export function GeneralActivityControls({
     nextIsPublic,
     nextDoenetmlVersionId,
   } = {}) {
-    let learningOutcomesToSubmit = learningOutcomes;
+    let data = {};
     if (nextLearningOutcomes) {
-      learningOutcomesToSubmit = nextLearningOutcomes;
+      data.learningOutcomes = JSON.stringify(nextLearningOutcomes);
     }
 
-    let isPublicToSubmit = checkboxIsPublic;
     if (nextIsPublic != undefined) {
-      isPublicToSubmit = nextIsPublic;
+      data.isPublic = nextIsPublic;
     }
 
-    // Turn on/off label error messages and
-    // use the latest valid label
-    let labelToSubmit = labelValue;
-    if (labelValue == "") {
-      labelToSubmit = lastAcceptedLabelValue.current;
-      setLabelIsInvalid(true);
+    // Turn on/off name error messages and
+    // use the latest valid name
+    let nameToSubmit = nameValue;
+    if (nameValue == "") {
+      nameToSubmit = lastAcceptedNameValue.current;
+      setNameIsInvalid(true);
     } else {
-      if (labelIsInvalid) {
-        setLabelIsInvalid(false);
+      if (nameIsInvalid) {
+        setNameIsInvalid(false);
       }
     }
-    lastAcceptedLabelValue.current = labelToSubmit;
-    let serializedLearningOutcomes = JSON.stringify(learningOutcomesToSubmit);
+    lastAcceptedNameValue.current = nameToSubmit;
 
-    let doenetmlVersionIdToSubmit = doenetmlVersion.versionId;
+    data.name = nameToSubmit;
+
     if (nextDoenetmlVersionId) {
-      doenetmlVersionIdToSubmit = nextDoenetmlVersionId;
+      data.doenetmlVersionId = nextDoenetmlVersionId;
     }
 
     fetcher.submit(
       {
         _action: "update general",
-        label: labelToSubmit,
-        imagePath,
-        public: isPublicToSubmit,
-        learningOutcomes: serializedLearningOutcomes,
-        doenetId,
-        doenetmlVersionId: doenetmlVersionIdToSubmit,
+        activityId,
+        docId,
+        ...data,
       },
       { method: "post" },
     );
@@ -909,40 +879,38 @@ export function GeneralActivityControls({
         const uploadData = new FormData();
         // uploadData.append('file',file);
         uploadData.append("file", image);
-        uploadData.append("doenetId", doenetId);
+        uploadData.append("activityId", activityId);
 
-        axios
-          .post("/api/activityThumbnailUpload.php", uploadData)
-          .then((resp) => {
-            let { data } = resp;
-            // console.log("RESPONSE data>", data);
+        axios.post("/api/activityThumbnailUpload", uploadData).then((resp) => {
+          let { data } = resp;
+          // console.log("RESPONSE data>", data);
 
-            //uploads are finished clear it out
-            numberOfFilesUploading.current = 0;
-            let { success, cid, msg, asFileName } = data;
-            if (success) {
-              setImagePath(`/media/${cid}.jpg`);
-              //Refresh images in portfolio
-              fetcher.submit(
-                {
-                  _action: "noop",
-                },
-                { method: "post" },
-              );
-              setAlerts([
-                {
-                  type: "success",
-                  id: cid,
-                  title: "Activity thumbnail updated!",
-                },
-              ]);
-            } else {
-              setAlerts([{ type: "error", id: cid, title: msg }]);
-            }
-          });
+          //uploads are finished clear it out
+          numberOfFilesUploading.current = 0;
+          let { success, cid, msg, asFileName } = data;
+          if (success) {
+            setImagePath(`/media/${cid}.jpg`);
+            //Refresh images in portfolio
+            fetcher.submit(
+              {
+                _action: "noop",
+              },
+              { method: "post" },
+            );
+            setAlerts([
+              {
+                type: "success",
+                id: cid,
+                title: "Activity thumbnail updated!",
+              },
+            ]);
+          } else {
+            setAlerts([{ type: "error", id: cid, title: msg }]);
+          }
+        });
       };
     },
-    [doenetId],
+    [activityId],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
@@ -1001,19 +969,19 @@ export function GeneralActivityControls({
           </Box>
         </FormControl>
 
-        <FormControl isRequired isInvalid={labelIsInvalid}>
-          <FormLabel mt="16px">Label</FormLabel>
+        <FormControl isRequired isInvalid={nameIsInvalid}>
+          <FormLabel mt="16px">Name</FormLabel>
 
           <Input
-            name="label"
+            name="name"
             size="sm"
             // width="392px"
             width="100%"
             placeholder="Activity 1"
-            data-test="Activity Label"
-            value={labelValue}
+            data-test="Activity Name"
+            value={nameValue}
             onChange={(e) => {
-              setLabel(e.target.value);
+              setName(e.target.value);
             }}
             onBlur={saveDataToServer}
             onKeyDown={(e) => {
@@ -1023,7 +991,7 @@ export function GeneralActivityControls({
             }}
           />
           <FormErrorMessage>
-            Error - A label for the activity is required.
+            Error - A name for the activity is required.
           </FormErrorMessage>
         </FormControl>
         <FormControl>
@@ -1159,6 +1127,7 @@ export function GeneralActivityControls({
         )}
         <input type="hidden" name="imagePath" value={imagePath} />
         <input type="hidden" name="_action" value="update general" />
+        <input type="hidden" name="activityId" value={activityId} />
       </Form>
     </>
   );
@@ -1170,10 +1139,10 @@ function PortfolioActivitySettingsDrawer({
   finalFocusRef,
   controlsTabsLastIndex,
 }) {
-  const { courseId, doenetId, activityData, allDoenetmlVersions } =
+  const { activityId, docId, activityData, allDoenetmlVersions } =
     useLoaderData();
-  //Need fetcher at this level to get label refresh
-  //when close drawer after changing label
+  //Need fetcher at this level to get name refresh
+  //when close drawer after changing name
   const fetcher = useFetcher();
 
   return (
@@ -1218,9 +1187,9 @@ function PortfolioActivitySettingsDrawer({
                 <TabPanel>
                   <GeneralActivityControls
                     fetcher={fetcher}
-                    doenetId={doenetId}
+                    activityId={activityId}
+                    docId={docId}
                     activityData={activityData}
-                    courseId={courseId}
                     allDoenetmlVersions={allDoenetmlVersions}
                   />
                 </TabPanel>
@@ -1239,35 +1208,35 @@ function PortfolioActivitySettingsDrawer({
   );
 }
 //This is separate as <Editable> wasn't updating when defaultValue was changed
-function EditableLabel({ dataTest }) {
+function EditableName({ dataTest }) {
   const { activityData } = useLoaderData();
-  const [label, setLabel] = useState(activityData.label);
+  const [name, setName] = useState(activityData.name);
   const fetcher = useFetcher();
 
-  let lastActivityDataLabel = useRef(activityData.label);
+  let lastActivityDataName = useRef(activityData.name);
 
-  //Update when something else updates the label
-  if (activityData.label != lastActivityDataLabel.current) {
-    if (label != activityData.label) {
-      setLabel(activityData.label);
+  //Update when something else updates the name
+  if (activityData.name != lastActivityDataName.current) {
+    if (name != activityData.name) {
+      setName(activityData.name);
     }
   }
-  lastActivityDataLabel.current = activityData.label;
+  lastActivityDataName.current = activityData.name;
 
   return (
     <Editable
       data-test={dataTest}
       mt="4px"
-      value={label}
+      value={name}
       textAlign="center"
       onChange={(value) => {
-        setLabel(value);
+        setName(value);
       }}
       onSubmit={(value) => {
         let submitValue = value;
 
         fetcher.submit(
-          { _action: "update label", label: submitValue },
+          { _action: "update name", name: submitValue },
           { method: "post" },
         );
       }}
@@ -1279,15 +1248,8 @@ function EditableLabel({ dataTest }) {
 }
 
 export function PortfolioActivityEditor() {
-  const {
-    platform,
-    doenetId,
-    doenetML,
-    pageId,
-    courseId,
-    activityData,
-    lastKnownCid,
-  } = useLoaderData();
+  const { platform, activityId, doenetML, docId, activityData, lastKnownCid } =
+    useLoaderData();
 
   const [errorsAndWarnings, setErrorsAndWarningsCallback] = useState({
     errors: [],
@@ -1345,16 +1307,11 @@ export function PortfolioActivityEditor() {
       try {
         const params = {
           doenetML,
-          pageId,
-          courseId,
+          docId,
           backup,
           lastKnownCid,
         };
-        const {
-          data: { success, message },
-        } = await axios.post("/api/saveDoenetML.php", params);
-
-        if (!success) throw new Error(message);
+        await axios.post("/api/saveDoenetML", params);
 
         const cid = await cidFromText(doenetML);
         lastKnownCidRef.current = cid;
@@ -1374,7 +1331,7 @@ export function PortfolioActivityEditor() {
         handleSaveDraft();
       }
     }
-  }, [pageId, courseId]);
+  }, [docId]);
 
   useEffect(() => {
     const handleEditorKeyDown = (event) => {
@@ -1421,8 +1378,8 @@ export function PortfolioActivityEditor() {
   }, [handleSaveDraft]);
 
   useEffect(() => {
-    document.title = `${activityData.label} - Doenet`;
-  }, [activityData.label]);
+    document.title = `${activityData.name} - Doenet`;
+  }, [activityData.name]);
 
   const controlsBtnRef = useRef(null);
 
@@ -1504,7 +1461,7 @@ export function PortfolioActivityEditor() {
               </HStack>
             </GridItem>
             <GridItem area="label">
-              <EditableLabel dataTest="Activity Label Editable" />
+              <EditableName dataTest="Activity Name Editable" />
             </GridItem>
             <GridItem
               area="rightControls"
@@ -1666,13 +1623,19 @@ export function PortfolioActivityEditor() {
                       margin={0} //Only need when there is an outline
                       justifyContent="flex-end"
                     >
-                      {activityData.doenetmlVersion.deprecated && (
+                      {activityData.documents[0].doenetmlVersion.deprecated && (
                         <Box style={{ backgroundColor: "lightcoral" }}>
                           We need an appropriate way to warn, probably in the
                           warnings, below, that DoenetML version{" "}
-                          {activityData.doenetmlVersion.displayedVersion} is
-                          deprecated.{" "}
-                          {activityData.doenetmlVersion.deprecationMessage}{" "}
+                          {
+                            activityData.documents[0].doenetmlVersion
+                              .displayedVersion
+                          }{" "}
+                          is deprecated.{" "}
+                          {
+                            activityData.documents[0].doenetmlVersion
+                              .deprecationMessage
+                          }{" "}
                           Include a link to how to upgrade.
                         </Box>
                       )}

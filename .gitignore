@@ -50,7 +50,3 @@ docker\ alp/
 .eslintrc.js
 
 **/src/API/vendor
-
-**/src/Media/bydoenetid/
-
-**/src/Media/byPageId/

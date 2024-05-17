@@ -25,7 +25,7 @@ import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
 
 export async function loader() {
-  const response = await fetch("/api/loadPromotedContent.php");
+  const response = await fetch("/api/loadPromotedContent");
   const data = await response.json();
   return data;
 }

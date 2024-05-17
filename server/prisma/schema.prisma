@@ -13,23 +13,15 @@ model activities {
   name            String
   createdAt       DateTime          @default(now())
   lastEdited      DateTime          @default(now())
+  imagePath       String?
+  isPublic        Boolean           @default(false)
+  isDeleted       Boolean           @default(false)
   owner           users             @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  activityItems   activityItems[]
   assignments     assignments[]
+  documents       documents[]
   promotedContent promotedContent[]
 
   @@index([ownerId])
-}
-
-model activityItems {
-  activityId Int
-  docId      Int
-  activity   activities @relation(fields: [activityId], references: [activityId], onDelete: NoAction, onUpdate: NoAction)
-  document   documents  @relation(fields: [docId], references: [docId], onDelete: NoAction, onUpdate: NoAction)
-
-  @@id([activityId, docId])
-  @@index([activityId])
-  @@index([docId])
 }
 
 model assignmentItems {
@@ -79,22 +71,17 @@ model documentVersions {
 
 model documents {
   docId              Int                  @id @unique @default(autoincrement())
-  ownerId            Int
+  activityId         Int
   contentLocation    String
   createdAt          DateTime             @default(now())
   lastEdited         DateTime             @default(now())
   name               String
-  isPublic           Boolean              @default(false)
   isDeleted          Boolean              @default(false)
-  imagePath          String?
   doenetmlVersionId  Int
-  activityItems      activityItems[]
   documentVersions   documentVersions[]
-  owner              users                @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  activity           activities           @relation(fields: [activityId], references: [activityId], onDelete: NoAction, onUpdate: NoAction)
   doenetmlVersion    doenetmlVersions     @relation(fields: [doenetmlVersionId], references: [versionId], onDelete: NoAction, onUpdate: NoAction)
   contributorHistory contributorHistory[]
-
-  @@index([ownerId])
 }
 
 model contributorHistory {
@@ -150,10 +137,10 @@ model studentItemResponses {
 model users {
   userId                     Int                          @id @default(autoincrement())
   email                      String                       @unique @db.VarChar(45)
+  name                       String
   isAdmin                    Boolean                      @default(false)
   activities                 activities[]
   assignments                assignments[]
-  documents                  documents[]
   studentAssignmentResponses studentAssignmentResponses[]
   studentItemResponses       studentItemResponses[]
 }

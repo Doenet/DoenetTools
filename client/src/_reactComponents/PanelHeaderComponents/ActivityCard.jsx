@@ -19,13 +19,9 @@ import { Link } from "react-router-dom";
 export default function ActivityCard({
   imageLink = "",
   imagePath,
-  label,
+  name,
   fullName,
   menuItems,
-  isUserPortfolio,
-  courseLabel,
-  courseImage,
-  courseColor,
 }) {
   if (!imagePath) {
     imagePath = "/activity_default.jpg";
@@ -60,7 +56,7 @@ export default function ActivityCard({
               noOfLines={2}
               textAlign="left"
             >
-              {label}
+              {name}
             </Text>
             <Text
               fontSize="xs"
