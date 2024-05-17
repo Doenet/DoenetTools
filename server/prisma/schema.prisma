@@ -8,14 +8,15 @@ datasource db {
 }
 
 model activities {
-  activityId    Int             @id @unique() @default(autoincrement())
-  ownerId       Int
-  name          String
-  createdAt     DateTime        @default(now())
-  lastEdited    DateTime        @default(now())
-  owner         users           @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  activityItems activityItems[]
-  assignments   assignments[]
+  activityId      Int               @id @unique() @default(autoincrement())
+  ownerId         Int
+  name            String
+  createdAt       DateTime          @default(now())
+  lastEdited      DateTime          @default(now())
+  owner           users             @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  activityItems   activityItems[]
+  assignments     assignments[]
+  promotedContent promotedContent[]
 
   @@index([ownerId])
 }
@@ -155,4 +156,23 @@ model users {
   documents                  documents[]
   studentAssignmentResponses studentAssignmentResponses[]
   studentItemResponses       studentItemResponses[]
+}
+
+model promotedContentGroups {
+  promotedGroupId   Int               @id @default(autoincrement())
+  groupName         String
+  currentlyFeatured Boolean           @default(false)
+  homepage          Boolean           @default(false)
+  sortOrder         String
+  promotedContent   promotedContent[]
+}
+
+model promotedContent {
+  activityId      Int
+  promotedGroupId Int
+  sortOrder       String
+  activity        activities            @relation(fields: [activityId], references: [activityId])
+  promotedGroup   promotedContentGroups @relation(fields: [promotedGroupId], references: [promotedGroupId])
+
+  @@id([activityId, promotedGroupId])
 }

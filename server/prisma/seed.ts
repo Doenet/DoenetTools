@@ -38,7 +38,26 @@ async function main() {
     },
   });
 
-  console.log({ old_version, current_version, dev_user, admin_user });
+  
+  const delete_groups = await prisma.promotedContentGroups.deleteMany({});
+  const content_groups = await prisma.promotedContentGroups.createMany({
+    data: [
+      {groupName: "Homepage", currentlyFeatured: true, sortOrder: "a", homepage: true, },
+      {groupName: "Sample", currentlyFeatured: true, sortOrder: "b"},
+      {groupName: "K-12", currentlyFeatured: true, sortOrder: "c"},
+      {groupName: "Unfeatured", currentlyFeatured: false, sortOrder: "ba"},
+    ]
+  });
+
+  // const homepage_group = await prisma.promotedContentGroups.upsert({
+  //   where: { groupName: "Homepage" },
+  //   update: {},
+  //   create: {
+  //     groupName: "Homepage",
+  //   }
+  // });
+
+  console.log({ old_version, current_version, dev_user, admin_user, content_groups });
 }
 main()
   .then(async () => {
