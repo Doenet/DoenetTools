@@ -69,7 +69,7 @@ export default function SignIn(props) {
     document.cookie.indexOf("email") !== -1
   ) {
     axios
-      .get("/api/loadProfile.php", { params: {} })
+      .get("/api/loadProfile", { params: {} })
       .then((resp) => {
         // if (resp.data.success === '1') {
         localStorage.setItem("Profile", JSON.stringify(resp.data.profile));
@@ -94,7 +94,7 @@ export default function SignIn(props) {
   //   let cookieSettingsObj = { path: '/', expires: 24000, sameSite: 'strict' };
   //   Cookies.set('Device', deviceName, cookieSettingsObj);
   //   Cookies.set('Stay', 1, cookieSettingsObj);
-  //   location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(
+  //   location.href = `/api/jwt?emailaddress=${encodeURIComponent(
   //     emailaddress,
   //   )}&nineCode=${encodeURIComponent(
   //     '123456789',
@@ -110,7 +110,7 @@ export default function SignIn(props) {
   //   let cookieSettingsObj = { path: '/', expires: 24000, sameSite: 'strict' };
   //   Cookies.set('Device', deviceName, cookieSettingsObj);
   //   Cookies.set('Stay', 1, cookieSettingsObj);
-  //   location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(
+  //   location.href = `/api/jwt?emailaddress=${encodeURIComponent(
   //     emailaddress,
   //   )}&nineCode=${encodeURIComponent(
   //     '123456789',
@@ -129,7 +129,7 @@ export default function SignIn(props) {
       params: data,
     };
     axios
-      .get("/api/checkCredentials.php", payload)
+      .get("/api/checkCredentials", payload)
       .then((resp) => {
         if (resp.data.success) {
           let newAccount = "1";
@@ -144,7 +144,7 @@ export default function SignIn(props) {
           if (resp.data.hasFullName == 0) {
             setSignInStage("Need Name Entered");
             setJwtLink(
-              `/api/jwt.php?emailaddress=${encodeURIComponent(
+              `/api/jwt?emailaddress=${encodeURIComponent(
                 email,
               )}&nineCode=${encodeURIComponent(
                 nineCode,
@@ -152,14 +152,14 @@ export default function SignIn(props) {
             );
           } else {
             //We have the user's name so sign them in
-            location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(
+            location.href = `/api/jwt?emailaddress=${encodeURIComponent(
               email,
             )}&nineCode=${encodeURIComponent(
               nineCode,
             )}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`;
           }
 
-          // // console.log(`/api/jwt.php?emailaddress=${encodeURIComponent(email)}&nineCode=${encodeURIComponent(nineCode)}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`)
+          // // console.log(`/api/jwt?emailaddress=${encodeURIComponent(email)}&nineCode=${encodeURIComponent(nineCode)}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`)
         } else {
           if (resp.data.reason === "Code expired") {
             setSignInStage("Code expired");
@@ -220,7 +220,7 @@ export default function SignIn(props) {
               value="Submit"
               onClick={() => {
                 axios
-                  .get("/api/saveUsersName.php", {
+                  .get("/api/saveUsersName", {
                     params: { firstName, lastName, email },
                   })
                   .then((resp) => {
@@ -276,7 +276,7 @@ export default function SignIn(props) {
 
   if (signInStage === "enter code" || signInStage === "Invalid Code") {
     if (!isSentEmail) {
-      const phpUrl = "/api/sendSignInEmail.php";
+      const phpUrl = "/api/sendSignInEmail";
       const data = {
         emailaddress: email,
       };

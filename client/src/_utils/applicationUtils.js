@@ -3,7 +3,7 @@ import { clear as idb_clear, keys as idb_keys } from "idb-keyval";
 
 export async function clearUsersInformationFromTheBrowser() {
   localStorage.clear(); //Clear out the profile of the last exam taker
-  await axios.get("/api/signOut.php");
+  await axios.get("/api/signOut");
   await idb_clear();
   return true;
 }
@@ -26,7 +26,7 @@ export async function checkIfUserClearedOut() {
 
   //Check for cookie
   //Ask the server without hitting the database
-  const { data } = await axios.get("/api/getQuickCheckSignedIn.php");
+  const { data } = await axios.get("/api/getQuickCheckSignedIn");
   const secureCookieRemoved = !data?.signedIn;
 
   const vanillaCookies = document.cookie.split(";").filter((element) => {

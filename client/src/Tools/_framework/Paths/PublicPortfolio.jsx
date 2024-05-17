@@ -20,62 +20,20 @@ import axios from "axios";
 export async function loader({ params }) {
   try {
     const { data } = await axios.get(
-      `/api/getPublicPortfolio.php?courseId=${params.courseId}`,
+      `/api/getPublicPortfolio/${params.userId}`,
     );
 
-    return {
-      success: data.success,
-      message: data.message,
-      fullName: data.fullName,
-      publicActivities: data.publicActivities,
-      isUserPortfolio: data.isUserPortfolio,
-      courseLabel: data.courseLabel,
-      courseImage: data.courseImage,
-      courseColor: data.courseColor,
-    };
+    return data;
   } catch (e) {
     return { success: false, message: e.response.data.message };
   }
 }
 
 export function PublicPortfolio() {
-  let {
-    success,
-    message,
-    fullName,
-    publicActivities,
-    isUserPortfolio,
-    courseLabel,
-    courseImage,
-    courseColor,
-  } = useLoaderData();
-
-  if (!success) {
-    throw new Error(message);
-  }
+  let { name, publicActivities } = useLoaderData();
 
   //Define the avatar
-  let avatar = <Avatar size="lg" name={fullName} />;
-  if (isUserPortfolio == "0") {
-    if (courseColor == "none") {
-      avatar = (
-        <Avatar
-          size="lg"
-          borderRadius="md"
-          src={`/drive_pictures/${courseImage}`}
-        />
-      );
-    } else {
-      avatar = (
-        <Avatar
-          size="lg"
-          borderRadius="md"
-          bg={`#${courseColor}`}
-          icon={<></>}
-        />
-      );
-    }
-  }
+  let avatar = <Avatar size="lg" name={name} />;
 
   return (
     <Grid
@@ -104,12 +62,10 @@ export function PublicPortfolio() {
             {avatar}
             <VStack spacing={0}>
               <Text fontSize="24px" fontWeight="700" data-test="heading1">
-                {isUserPortfolio == "1" ? fullName : courseLabel}
+                {name}
               </Text>
               <Text fontSize="16px" fontWeight="700" data-test="heading2">
-                {isUserPortfolio == "1"
-                  ? "User Portfolio"
-                  : "Public Course Activities"}
+                User Portfolio
               </Text>
             </VStack>
           </HStack>
@@ -135,20 +91,14 @@ export function PublicPortfolio() {
             ) : (
               <>
                 {publicActivities.map((activity) => {
-                  const { doenetId, label, imagePath } = activity;
-                  const imageLink = `/portfolioviewer/${doenetId}`;
+                  const imageLink = `/portfolioviewer/${activity.activityId}`;
 
                   return (
                     <ActivityCard
-                      key={`ActivityCard${activity.doenetId}`}
+                      key={`ActivityCard${activity.activityId}`}
                       imageLink={imageLink}
-                      label={label}
-                      imagePath={imagePath}
-                      fullName={fullName}
-                      isUserPortfolio={isUserPortfolio}
-                      courseLabel={courseLabel}
-                      courseImage={courseImage}
-                      courseColor={courseColor}
+                      {...activity}
+                      fullName={name}
                     />
                   );
                 })}

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 import { Box, Text, Wrap } from "@chakra-ui/react";
 import React from "react";
 import { useLoaderData } from "react-router-dom";
@@ -7,15 +7,15 @@ import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/Activi
 import { MoveToGroupMenuItem } from "./Community";
 
 export async function loader() {
-  const { data: recentActivities } = await axios.get(`/api/getAllRecentPublicActivites`);
+  const { data: recentActivities } = await axios.get(
+    `/api/getAllRecentPublicActivities`,
+  );
   const { data: isAdminData } = await axios.get(`/api/checkForCommunityAdmin`);
   const isAdmin = isAdminData.isAdmin;
-  
+
   let carouselGroups = [];
   if (isAdmin) {
-    const carouselDataGroups = await fetch(
-      `/api/loadPromotedContentGroups.php`,
-    );
+    const carouselDataGroups = await fetch(`/api/loadPromotedContentGroups`);
     const responseGroups = await carouselDataGroups.json();
     carouselGroups = responseGroups.carouselGroups;
   }
@@ -78,11 +78,11 @@ export function Admin() {
             ) : (
               <>
                 {publicActivities.map((activity) => {
-                  const imageLink = `/portfolioviewer/${activity.docId}`;
+                  const imageLink = `/portfolioviewer/${activity.activityId}`;
 
                   return (
                     <ActivityCard
-                      key={`ActivityCard${activity.docId}`}
+                      key={`ActivityCard${activity.activityId}`}
                       imageLink={imageLink}
                       label={activity.name}
                       imagePath={activity.imagePath}
@@ -91,7 +91,7 @@ export function Admin() {
                         isAdmin ? (
                           <>
                             <MoveToGroupMenuItem
-                              doenetId={activity.docId}
+                              activityId={activity.activityId}
                               carouselGroups={carouselGroups}
                             />
                           </>

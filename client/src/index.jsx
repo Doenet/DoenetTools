@@ -191,7 +191,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "portfolio/:courseId",
+        path: "portfolio/:userId",
         loader: portfolioLoader,
         action: portfolioAction,
         element: (
@@ -201,7 +201,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "publicportfolio/:courseId",
+        path: "publicportfolio/:userId",
         loader: publicPortfolioLoader,
         errorElement: (
           <ChakraProvider theme={theme}>
@@ -215,7 +215,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "portfolioviewer/:doenetId",
+        path: "portfolioviewer/:activityId",
         loader: portfolioActivityViewerLoader,
         action: portfolioActivityViewerAction,
         errorElement: (
@@ -236,19 +236,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "portfolioeditor/:doenetId",
-        loader: async ({ params }) => {
-          //This leaves a location in history
-          //this is because redirect creates a standard Response object and
-          //Response objects has no way to set replace: true
-
-          //Redirect as an activity can have no pageids
-          return redirect(`/portfolioeditor/${params.doenetId}/_`);
-        },
-        element: <div>Loading...</div>,
-      },
-      {
-        path: "portfolioeditor/:doenetId/:pageId",
+        path: "portfolioeditor/:activityId",
         loader: portfolioEditorLoader,
         action: portfolioEditorAction,
         // errorElement: <div>Error!</div>,
@@ -259,24 +247,44 @@ const router = createBrowserRouter([
             onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
           >
             <PortfolioActivityEditor />
-            {/* <ToolRoot /> */}
           </MathJaxContext>
         ),
       },
       {
-        path: "publiceditor/:doenetId",
-        loader: async ({ params }) => {
-          //This leaves a location in history
-          //this is because redirect creates a standard Response object and
-          //Response objects has no way to set replace: true
-
-          //Redirect as an activity can have no pageids
-          return redirect(`/publiceditor/${params.doenetId}/_`);
-        },
-        element: <div>Loading...</div>,
+        path: "portfolioeditor/:activityId/:docId",
+        loader: portfolioEditorLoader,
+        action: portfolioEditorAction,
+        // errorElement: <div>Error!</div>,
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <PortfolioActivityEditor />
+          </MathJaxContext>
+        ),
       },
       {
-        path: "publiceditor/:doenetId/:pageId",
+        path: "publiceditor/:activityId",
+        loader: publicEditorLoader,
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <PublicEditor />
+          </MathJaxContext>
+        ),
+      },
+      {
+        path: "publiceditor/:activityId/:docId",
         loader: publicEditorLoader,
         errorElement: (
           <ChakraProvider theme={theme}>
