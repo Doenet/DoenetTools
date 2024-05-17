@@ -41,6 +41,8 @@ model assignments {
   classCode                  String?                      @db.VarChar(45)
   activityId                 Int
   ownerId                    Int
+  name                       String
+  imagePath                  String?
   createdAt                  DateTime                     @default(now())
   assignmentItems            assignmentItems[]
   activity                   activities                   @relation(fields: [activityId], references: [activityId], onDelete: NoAction, onUpdate: NoAction)
@@ -55,6 +57,8 @@ model documentVersions {
   version            Int
   docId              Int
   cid                String
+  name               String
+  activityName       String
   contentLocation    String
   createdAt          DateTime             @default(now())
   doenetmlVersionId  Int

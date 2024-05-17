@@ -146,7 +146,7 @@ export async function copyPublicActivityToPortfolio(
     origActivity.documents.map(async (doc) => {
       // For each of the original documents, create a document version (i.e., a frozen snapshot)
       // that we will link to when creating contributor history, below.
-      let originalDocVersion = await createDocumentVersion(doc.docId, userId);
+      let originalDocVersion = await createDocumentVersion(doc.docId);
 
       // document to create with new activityId (to associate it with newly created activity)
       // ignoring the docId, lastEdited, createdAt fields
@@ -216,10 +216,7 @@ export async function copyPublicActivityToPortfolio(
 }
 
 // TODO - access control
-export async function createDocumentVersion(
-  docId: number,
-  ownerId: number,
-): Promise<{
+export async function createDocumentVersion(docId: number): Promise<{
   version: number;
   docId: number;
   cid: string | null;
@@ -227,7 +224,12 @@ export async function createDocumentVersion(
   createdAt: Date | null;
   doenetmlVersionId: number;
 }> {
-  const doc = await getDoc(docId);
+  const doc = await prisma.documents.findFirstOrThrow({
+    where: { docId, isDeleted: false },
+    include: {
+      activity: { select: { name: true } },
+    },
+  });
 
   // TODO: cid should really include the doenetmlVersion
   const cid = await cidFromText(doc.contentLocation || "");
@@ -252,6 +254,8 @@ export async function createDocumentVersion(
         version: newVersion,
         docId,
         cid,
+        name: doc.name,
+        activityName: doc.activity.name,
         doenetmlVersionId: doc.doenetmlVersionId,
         contentLocation: doc.contentLocation,
       },
@@ -427,4 +431,60 @@ export async function getAllRecentPublicActivities() {
     },
   });
   return docs;
+}
+
+export async function assignActivity(activityId: number, userId: number) {
+  let origActivity = await getActivity(activityId);
+
+  if (!(origActivity.isPublic || origActivity.ownerId === userId)) {
+    throw Error("Activity not found");
+  }
+
+  let documentsVersionsToAdd = await Promise.all(
+    origActivity.documents.map(async (doc) => {
+      // For each of the original documents, create a document version (i.e., a frozen snapshot)
+      // that we will link the assignment to.
+      return await createDocumentVersion(doc.docId);
+    }),
+  );
+
+  let newAssignment = await prisma.assignments.create({
+    data: {
+      name: origActivity.name,
+      activityId: origActivity.activityId,
+      imagePath: origActivity.imagePath,
+      ownerId: userId,
+      assignmentItems: {
+        create: documentsVersionsToAdd.map((docVersion) => ({
+          documentVersion: {
+            connect: {
+              version_docId: {
+                docId: docVersion.docId,
+                version: docVersion.version,
+              },
+            },
+          },
+        })),
+      },
+    },
+  });
+
+  return newAssignment.assignmentId;
+}
+
+export async function getAssignment(assignmentId: number, ownerId: number) {
+  let assignment = await prisma.assignments.findFirstOrThrow({
+    where: {
+      assignmentId,
+      ownerId,
+    },
+    include: {
+      assignmentItems: {
+        select: {
+          documentVersion: true,
+        },
+      },
+    },
+  });
+  return assignment;
 }

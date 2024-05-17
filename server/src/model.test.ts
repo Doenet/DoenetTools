@@ -15,6 +15,8 @@ import {
   searchPublicActivities,
   updateActivity,
   getActivity,
+  assignActivity,
+  getAssignment,
 } from "./model";
 
 const EMPTY_DOC_CID =
@@ -41,7 +43,6 @@ test("New document starts out private, then delete it", async () => {
   const userId = await createTestUser();
   const { activityId } = await createActivity(userId);
   const activityContent = await getActivityEditorData(activityId);
-  console.log(JSON.stringify(activityContent));
   expect(activityContent).toStrictEqual({
     activityId: expect.any(Number),
     ownerId: expect.any(Number),
@@ -283,4 +284,73 @@ test("updateActivity does not update properties when passed undefined values", a
   await updateActivity({ activityId });
   const updatedActivity = await getActivity(activityId);
   expect(updatedActivity).toEqual(originalActivity);
+});
+
+test("assign an activity", async () => {
+  const ownerId = await createTestUser();
+  const { activityId } = await createActivity(ownerId);
+  const activity = await getActivity(activityId);
+  await updateActivity({ activityId, name: "Activity 1" });
+  await updateDoc({
+    docId: activity.documents[0].docId,
+    content: "Some content",
+  });
+
+  const assignmentId = await assignActivity(activityId, ownerId);
+  const assignment = await getAssignment(assignmentId, ownerId);
+
+  expect(assignment.activityId).eq(activityId);
+  expect(assignment.name).eq("Activity 1");
+  expect(assignment.assignmentItems.length).eq(1);
+  expect(assignment.assignmentItems[0].documentVersion.contentLocation).eq(
+    "Some content",
+  );
+
+  // changing name and content of activity does not change assignment
+  await updateActivity({ activityId, name: "Activity 1a" });
+  await updateDoc({
+    docId: activity.documents[0].docId,
+    content: "Some amended content",
+  });
+
+  const updatedActivity = await getActivity(activityId);
+  expect(updatedActivity.name).eq("Activity 1a");
+  expect(updatedActivity.documents[0].contentLocation).eq(
+    "Some amended content",
+  );
+
+  const unchangedAssignment = await getAssignment(assignmentId, ownerId);
+  expect(unchangedAssignment.name).eq("Activity 1");
+  expect(
+    unchangedAssignment.assignmentItems[0].documentVersion.contentLocation,
+  ).eq("Some content");
+});
+
+test.only("cannot assign other user's private activity", async () => {
+  const ownerId1 = await createTestUser();
+  const ownerId2 = await createTestUser();
+  const { activityId } = await createActivity(ownerId1);
+  const activity = await getActivity(activityId);
+  await updateActivity({ activityId, name: "Activity 1" });
+  await updateDoc({
+    docId: activity.documents[0].docId,
+    content: "Some content",
+  });
+
+  await expect(assignActivity(activityId, ownerId2)).rejects.toThrow(
+    "Activity not found",
+  );
+
+  // can create assignment if activity is made public
+  await updateActivity({ activityId, isPublic: true });
+
+  const assignmentId = await assignActivity(activityId, ownerId2);
+  const assignment = await getAssignment(assignmentId, ownerId2);
+
+  expect(assignment.activityId).eq(activityId);
+  expect(assignment.name).eq("Activity 1");
+  expect(assignment.assignmentItems.length).eq(1);
+  expect(assignment.assignmentItems[0].documentVersion.contentLocation).eq(
+    "Some content",
+  );
 });

@@ -17,6 +17,7 @@ import {
   searchPublicActivities,
   updateActivity,
   getDoc,
+  assignActivity,
 } from "./model";
 
 dotenv.config();
@@ -253,6 +254,15 @@ app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
   );
 
   res.send({ newActivityId });
+});
+
+app.post("/api/assignActivity", async (req: Request, res: Response) => {
+  const activityId = Number(req.body.activityId);
+  const loggedInUserId = Number(req.cookies.userId);
+
+  let assignmentId = await assignActivity(activityId, loggedInUserId);
+
+  res.send({ assignmentId });
 });
 
 app.get(
