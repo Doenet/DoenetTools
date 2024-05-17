@@ -96,7 +96,7 @@ export async function action({ request, params }) {
 
     return true;
   } else if (formObj?._action == "Create Assignment") {
-    const assignmentId = await axios.post(`/api/assignActivity`, {
+    await axios.post(`/api/assignActivity`, {
       activityId: formObj.activityId,
     });
     return redirect(`/assignments/${params.userId}`);

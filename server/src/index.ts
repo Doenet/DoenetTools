@@ -290,7 +290,7 @@ app.post("/api/assignActivity", async (req: Request, res: Response) => {
 
   let assignmentId = await assignActivity(activityId, loggedInUserId);
 
-  res.send({ assignmentId });
+  res.send({ assignmentId, userId: loggedInUserId });
 });
 
 app.post("/api/updateAssignmentName", (req: Request, res: Response) => {
