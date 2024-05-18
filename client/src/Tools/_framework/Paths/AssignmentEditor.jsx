@@ -1,44 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLoaderData } from "react-router";
+import { DateTime } from "luxon";
 
-import { DoenetML, cidFromText } from "@doenet/doenetml";
+import { DoenetML } from "@doenet/doenetml";
 
 import {
   Box,
   Button,
-  Center,
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerHeader,
-  DrawerOverlay,
-  Editable,
-  EditableInput,
-  EditablePreview,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Grid,
-  GridItem,
-  HStack,
-  Input,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-  Tooltip,
   RadioGroup,
   Radio,
   VStack,
   Stack,
   SimpleGrid,
-  useDisclosure,
 } from "@chakra-ui/react";
-import { FaCog } from "react-icons/fa";
-import { Form, useFetcher } from "react-router-dom";
+import { useFetcher } from "react-router-dom";
 import axios from "axios";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import { Heading } from "./Community";
@@ -73,6 +48,22 @@ export async function action({ params, request }) {
     return true;
   }
 
+  if (formObj._action == "open assignment") {
+    const closeAt = DateTime.now().plus(JSON.parse(formObj.duration));
+    await axios.post("/api/openAssignmentWithCode", {
+      assignmentId: Number(params.assignmentId),
+      closeAt,
+    });
+    return true;
+  }
+
+  if (formObj._action == "close assignment") {
+    await axios.post("/api/closeAssignmentWithCode", {
+      assignmentId: Number(params.assignmentId),
+    });
+    return true;
+  }
+
   return null;
 }
 
@@ -88,16 +79,7 @@ export async function loader({ params }) {
 
   const doenetML = assignmentData.assignmentItems[0].documentVersion.content;
 
-  //Win, Mac or Linux
-  let platform = "Linux";
-  if (navigator.platform.indexOf("Win") != -1) {
-    platform = "Win";
-  } else if (navigator.platform.indexOf("Mac") != -1) {
-    platform = "Mac";
-  }
-
   return {
-    platform,
     assignmentData,
     docId,
     doenetML,
@@ -105,199 +87,8 @@ export async function loader({ params }) {
   };
 }
 
-export function GeneralAssignmentControls({
-  fetcher,
-  assignmentId,
-  docId,
-  assignmentData,
-}) {
-  let { name, imagePath: dataImagePath } = assignmentData;
-
-  let [imagePath, setImagePath] = useState(dataImagePath);
-
-  let [nameValue, setName] = useState(name);
-  let lastAcceptedNameValue = useRef(name);
-  let [nameIsInvalid, setNameIsInvalid] = useState(false);
-
-  function saveDataToServer() {
-    let data = {};
-
-    // Turn on/off name error messages and
-    // use the latest valid name
-    let nameToSubmit = nameValue;
-    if (nameValue == "") {
-      nameToSubmit = lastAcceptedNameValue.current;
-      setNameIsInvalid(true);
-    } else {
-      if (nameIsInvalid) {
-        setNameIsInvalid(false);
-      }
-    }
-    lastAcceptedNameValue.current = nameToSubmit;
-
-    data.name = nameToSubmit;
-
-    fetcher.submit(
-      {
-        _action: "update general",
-        assignmentId,
-        docId,
-        ...data,
-      },
-      { method: "post" },
-    );
-  }
-
-  return (
-    <>
-      <Form method="post">
-        <FormControl isRequired isInvalid={nameIsInvalid}>
-          <FormLabel mt="16px">Name</FormLabel>
-
-          <Input
-            name="name"
-            size="sm"
-            // width="392px"
-            width="100%"
-            placeholder="Assignment 1"
-            data-test="Assignment Name"
-            value={nameValue}
-            onChange={(e) => {
-              setName(e.target.value);
-            }}
-            onBlur={saveDataToServer}
-            onKeyDown={(e) => {
-              if (e.key == "Enter") {
-                saveDataToServer();
-              }
-            }}
-          />
-          <FormErrorMessage>
-            Error - A name for the assignment is required.
-          </FormErrorMessage>
-        </FormControl>
-
-        <input type="hidden" name="imagePath" value={imagePath} />
-        <input type="hidden" name="_action" value="update general" />
-        <input type="hidden" name="assignmentId" value={assignmentId} />
-      </Form>
-    </>
-  );
-}
-
-function AssignmentSettingsDrawer({
-  isOpen,
-  onClose,
-  finalFocusRef,
-  controlsTabsLastIndex,
-}) {
-  const { assignmentId, docId, assignmentData } = useLoaderData();
-  //Need fetcher at this level to get name refresh
-  //when close drawer after changing name
-  const fetcher = useFetcher();
-
-  return (
-    <Drawer
-      isOpen={isOpen}
-      placement="right"
-      onClose={onClose}
-      finalFocusRef={finalFocusRef}
-      size="lg"
-    >
-      <DrawerOverlay />
-      <DrawerContent>
-        <DrawerCloseButton data-test="Close Settings Button" />
-        <DrawerHeader>
-          <Center>
-            {/* <Icon as={FaCog} mr="14px" /> */}
-            <Text>Assignment Controls</Text>
-          </Center>
-        </DrawerHeader>
-
-        <DrawerBody>
-          <Tabs defaultIndex={controlsTabsLastIndex.current}>
-            <TabList>
-              <Tab
-                onClick={() => (controlsTabsLastIndex.current = 0)}
-                data-test="General Tab"
-              >
-                General
-              </Tab>
-              {/* <Tab onClick={() => (controlsTabsLastIndex.current = 2)}>
-                Pages & Orders
-              </Tab> */}
-            </TabList>
-            <Box overflowY="scroll" height="calc(100vh - 120px)">
-              <TabPanels>
-                <TabPanel>
-                  <GeneralAssignmentControls
-                    fetcher={fetcher}
-                    assignmentId={assignmentId}
-                    docId={docId}
-                    assignmentData={assignmentData}
-                  />
-                </TabPanel>
-                {/* <TabPanel>
-                  <Button size="sm">Enable Pages & Orders</Button>
-                </TabPanel> */}
-              </TabPanels>
-            </Box>
-          </Tabs>
-        </DrawerBody>
-      </DrawerContent>
-    </Drawer>
-  );
-}
-//This is separate as <Editable> wasn't updating when defaultValue was changed
-function EditableName({ dataTest }) {
-  const { assignmentData } = useLoaderData();
-  const [name, setName] = useState(assignmentData.name);
-  const fetcher = useFetcher();
-
-  let lastAssignmentDataName = useRef(assignmentData.name);
-
-  //Update when something else updates the name
-  if (assignmentData.name != lastAssignmentDataName.current) {
-    if (name != assignmentData.name) {
-      setName(assignmentData.name);
-    }
-  }
-  lastAssignmentDataName.current = assignmentData.name;
-
-  return (
-    <Editable
-      data-test={dataTest}
-      mt="4px"
-      value={name}
-      textAlign="center"
-      onChange={(value) => {
-        setName(value);
-      }}
-      onSubmit={(value) => {
-        let submitValue = value;
-
-        fetcher.submit(
-          { _action: "update name", name: submitValue },
-          { method: "post" },
-        );
-      }}
-    >
-      <EditablePreview data-test="Editable Preview" />
-      <EditableInput width="400px" data-test="Editable Input" />
-    </Editable>
-  );
-}
-
 export function AssignmentEditor() {
-  const { platform, doenetML, assignmentData } = useLoaderData();
-
-  const {
-    isOpen: controlsAreOpen,
-    onOpen: controlsOnOpen,
-    onClose: controlsOnClose,
-  } = useDisclosure();
-
-  let controlsTabsLastIndex = useRef(0);
+  const { doenetML, assignmentData } = useLoaderData();
 
   let navigate = useNavigate();
   let location = useLocation();
@@ -306,9 +97,8 @@ export function AssignmentEditor() {
     document.title = `${assignmentData.name} - Doenet`;
   }, [assignmentData.name]);
 
-  const controlsBtnRef = useRef(null);
-
-  const [duration, setDuration] = useState(null);
+  // duration for how long to open assignment
+  const [duration, setDuration] = useState(JSON.stringify({ hours: 48 }));
 
   const [variants, setVariants] = useState({
     index: 1,
@@ -316,68 +106,118 @@ export function AssignmentEditor() {
     allPossibleVariants: ["a"],
   });
 
-  console.log(assignmentData);
-
-  // console.log("variants", variants);
+  const fetcher = useFetcher();
 
   return (
     <>
       <Heading heading={assignmentData.name} />
       <SimpleGrid columns={2} spacing="20px" margin="20px">
-        <Box
-          background="var(--canvas)"
-          borderWidth="1px"
-          borderStyle="solid"
-          borderColor="doenet.mediumGray"
-          width="100%"
-          overflow="scroll"
-        >
-          <DoenetML
-            doenetML={doenetML}
-            flags={{
-              showCorrectness: true,
-              solutionDisplayMode: "button",
-              showFeedback: true,
-              showHints: true,
-              autoSubmit: false,
-              allowLoadState: false,
-              allowSaveState: false,
-              allowLocalState: false,
-              allowSaveSubmissions: false,
-              allowSaveEvents: false,
-            }}
-            attemptNumber={1}
-            generatedVariantCallback={setVariants}
-            requestedVariantIndex={variants.index}
-            idsIncludeActivityId={false}
-            paginate={true}
-            location={location}
-            navigate={navigate}
-            linkSettings={{
-              viewURL: "/activityViewer",
-              editURL: "/publicEditor",
-            }}
-            scrollableContainer={
-              document.getElementById("viewer-container") || undefined
-            }
-          />
-        </Box>
+        <VStack>
+          <p>
+            <strong>
+              Assignment preview (left align me please, aria tags for heading)
+            </strong>
+          </p>
+
+          <Box
+            background="var(--canvas)"
+            borderWidth="1px"
+            borderStyle="solid"
+            borderColor="doenet.mediumGray"
+            width="100%"
+            overflow="scroll"
+          >
+            <DoenetML
+              doenetML={doenetML}
+              flags={{
+                showCorrectness: true,
+                solutionDisplayMode: "button",
+                showFeedback: true,
+                showHints: true,
+                autoSubmit: false,
+                allowLoadState: false,
+                allowSaveState: false,
+                allowLocalState: false,
+                allowSaveSubmissions: false,
+                allowSaveEvents: false,
+              }}
+              attemptNumber={1}
+              generatedVariantCallback={setVariants}
+              requestedVariantIndex={variants.index}
+              idsIncludeActivityId={false}
+              paginate={true}
+              location={location}
+              navigate={navigate}
+              linkSettings={{
+                viewURL: "/activityViewer",
+                editURL: "/publicEditor",
+              }}
+              scrollableContainer={
+                document.getElementById("viewer-container") || undefined
+              }
+            />
+          </Box>
+        </VStack>
         <Box>
           {assignmentData.stillOpen ? (
             <Box>
-              Assignment is currently active, and open for students to join
-              until {assignmentData.codeValidUntil}.
+              <p>
+                <strong>Quick assign (aria tags for heading)</strong>
+              </p>
+              <p>
+                Assignment is currently active with code{" "}
+                <strong>{assignmentData.classCode}</strong>, and open for
+                students to join until{" "}
+                {DateTime.fromISO(assignmentData.codeValidUntil).toLocaleString(
+                  DateTime.DATETIME_MED,
+                )}
+                .
+              </p>
+              <Button
+                type="submit"
+                colorScheme="blue"
+                mt="8px"
+                mr="12px"
+                size="xs"
+                onClick={() => {
+                  fetcher.submit(
+                    { _action: "close assignment" },
+                    { method: "post" },
+                  );
+                }}
+              >
+                Close assignment
+              </Button>
             </Box>
           ) : (
             <Box>
+              <p>
+                <strong>Quick assign (aria tags for heading)</strong>
+              </p>
+              <p>Assign to students with a code</p>
               How long would you like this activity to remain open?
               <RadioGroup onChange={setDuration} value={duration}>
                 <Stack direction="row">
-                  <Radio value="48">48 Hours</Radio>
-                  <Radio value={"" + 24 * 12}>2 Weeks</Radio>
-                  <Radio value={"" + 24 * 365}>1 Year</Radio>
+                  <Radio value={JSON.stringify({ hours: 48 })}>48 Hours</Radio>
+                  <Radio value={JSON.stringify({ weeks: 2 })}>2 Weeks</Radio>
+                  <Radio value={JSON.stringify({ years: 1 })}>1 Year</Radio>
                 </Stack>
               </RadioGroup>
+              <Button
+                type="submit"
+                colorScheme="blue"
+                mt="8px"
+                mr="12px"
+                size="xs"
+                onClick={() => {
+                  fetcher.submit(
+                    { _action: "open assignment", duration },
+                    { method: "post" },
+                  );
+                }}
+              >
+                Submit
+              </Button>
             </Box>
           )}
         </Box>

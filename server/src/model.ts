@@ -587,7 +587,16 @@ export async function openAssignmentWithCode(
   assignmentId: number,
   closeAt: DateTime,
 ) {
-  const classCode = generateClassCode();
+  let classCode = (
+    await prisma.assignments.findUniqueOrThrow({
+      where: { assignmentId },
+      select: { classCode: true },
+    })
+  ).classCode;
+
+  if (!classCode) {
+    classCode = generateClassCode();
+  }
 
   const codeValidUntil = closeAt.toJSDate();
 
@@ -599,6 +608,15 @@ export async function openAssignmentWithCode(
     },
   });
   return { classCode, codeValidUntil };
+}
+
+export async function closeAssignmentWithCode(assignmentId: number) {
+  await prisma.assignments.update({
+    where: { assignmentId },
+    data: {
+      codeValidUntil: null,
+    },
+  });
 }
 
 export async function getAssignment(assignmentId: number, ownerId: number) {

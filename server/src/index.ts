@@ -25,6 +25,7 @@ import {
   updateAssignment,
   getAssignmentDataFromCode,
   openAssignmentWithCode,
+  closeAssignmentWithCode,
 } from "./model";
 
 dotenv.config();
@@ -337,6 +338,17 @@ app.post("/api/openAssignmentWithCode", async (req: Request, res: Response) => {
   );
   res.send({ classCode, codeValidUntil });
 });
+
+app.post(
+  "/api/closeAssignmentWithCode",
+  async (req: Request, res: Response) => {
+    const body = req.body;
+    const assignmentId = Number(body.assignmentId);
+
+    await closeAssignmentWithCode(assignmentId);
+    res.send({});
+  },
+);
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
