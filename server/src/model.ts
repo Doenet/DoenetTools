@@ -395,7 +395,7 @@ export async function getAssignmentDataFromCode(code: string) {
     where: {
       classCode: code,
       codeValidUntil: {
-        gte: Date(), // TODO - confirm this works with timezone stuff
+        gte: DateTime.now().toISO(), // TODO - confirm this works with timezone stuff
       },
     },
     include: {

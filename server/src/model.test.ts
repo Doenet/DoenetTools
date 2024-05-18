@@ -17,7 +17,11 @@ import {
   getActivity,
   assignActivity,
   getAssignment,
+  openAssignmentWithCode,
+  closeAssignmentWithCode,
+  getAssignmentDataFromCode,
 } from "./model";
+import { DateTime } from "luxon";
 
 const EMPTY_DOC_CID =
   "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
@@ -350,5 +354,69 @@ test("cannot assign other user's private activity", async () => {
   expect(assignment.assignmentItems.length).eq(1);
   expect(assignment.assignmentItems[0].documentVersion.content).eq(
     "Some content",
+  );
+});
+
+test("open and close assignment with code", async () => {
+  const ownerId1 = await createTestUser();
+  const { activityId } = await createActivity(ownerId1);
+  const activity = await getActivity(activityId);
+  await updateActivity({ activityId, name: "Activity 1" });
+  await updateDoc({
+    docId: activity.documents[0].docId,
+    content: "Some content",
+  });
+
+  const assignmentId = await assignActivity(activityId, ownerId1);
+  let assignment = await getAssignment(assignmentId, ownerId1);
+
+  expect(assignment.classCode).eq(null);
+  expect(assignment.codeValidUntil).eq(null);
+
+  // open assignment generates code
+  let closeAt = DateTime.now().plus({ days: 1 });
+  const { classCode } = await openAssignmentWithCode(assignmentId, closeAt);
+  assignment = await getAssignment(assignmentId, ownerId1);
+  expect(assignment.classCode).eq(classCode);
+  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+
+  let assignmentData = await getAssignmentDataFromCode(classCode);
+  expect(assignmentData.assignmentId).eq(assignmentId);
+  expect(assignmentData.classCode).eq(classCode);
+  expect(assignmentData.codeValidUntil).eqls(closeAt.toJSDate());
+
+  await closeAssignmentWithCode(assignmentId);
+  assignment = await getAssignment(assignmentId, ownerId1);
+  expect(assignment.classCode).eq(classCode);
+  expect(assignment.codeValidUntil).eqls(null);
+
+  await expect(getAssignmentDataFromCode(classCode)).rejects.toThrow(
+    "No assignments found",
+  );
+
+  // get same code back if reopen
+  closeAt = DateTime.now().plus({ weeks: 3 });
+  const { classCode: classCode2 } = await openAssignmentWithCode(
+    assignmentId,
+    closeAt,
+  );
+  expect(classCode2).eq(classCode);
+  assignment = await getAssignment(assignmentId, ownerId1);
+  expect(assignment.classCode).eq(classCode);
+  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+
+  assignmentData = await getAssignmentDataFromCode(classCode);
+  expect(assignmentData.assignmentId).eq(assignmentId);
+  expect(assignmentData.classCode).eq(classCode);
+  expect(assignmentData.codeValidUntil).eqls(closeAt.toJSDate());
+
+  // Open with past date.
+  // Currently, it throws and error
+  // TODO: if we want students who have previously joined the assignment to be able to reload the page,
+  // then this shouldn't throw an error for those students.
+  closeAt = DateTime.now().plus({ seconds: -7 });
+  await openAssignmentWithCode(assignmentId, closeAt);
+  await expect(getAssignmentDataFromCode(classCode)).rejects.toThrow(
+    "No assignments found",
   );
 });
