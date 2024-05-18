@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { cidFromText } from "./utils/cid";
 import { DateTime } from "luxon";
 
@@ -390,32 +390,52 @@ export async function getAssignmentEditorData(assignmentId: number) {
   return { ...assignment, stillOpen };
 }
 
-export async function getAssignmentDataFromCode(code: string) {
-  let assignment = await prisma.assignments.findFirstOrThrow({
-    where: {
-      classCode: code,
-      codeValidUntil: {
-        gte: DateTime.now().toISO(), // TODO - confirm this works with timezone stuff
+export async function getAssignmentDataFromCode(
+  code: string,
+  signedIn: boolean,
+) {
+  let assignment;
+
+  try {
+    assignment = await prisma.assignments.findFirstOrThrow({
+      where: {
+        classCode: code,
+        codeValidUntil: {
+          gte: DateTime.now().toISO(), // TODO - confirm this works with timezone stuff
+        },
       },
-    },
-    include: {
-      assignmentItems: {
-        select: {
-          docId: true,
-          docVersionId: true,
-          documentVersion: {
-            select: {
-              content: true,
+      include: {
+        assignmentItems: {
+          select: {
+            docId: true,
+            docVersionId: true,
+            documentVersion: {
+              select: {
+                content: true,
+              },
             },
           },
-        },
-        orderBy: {
-          docId: "asc",
+          orderBy: {
+            docId: "asc",
+          },
         },
       },
-    },
-  });
-  return assignment;
+    });
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      return {
+        assignmentFound: false,
+        newAnonymousUser: null,
+        assignment: null,
+      };
+    } else {
+      throw e;
+    }
+  }
+
+  let newAnonymousUser = signedIn ? null : await createAnonymousUser();
+
+  return { assignmentFound: true, newAnonymousUser, assignment };
 }
 
 export async function searchPublicActivities(query: string) {
@@ -488,7 +508,7 @@ export async function listUserAssignments(
 export async function findOrCreateUser(email: string, name: string) {
   const user = await prisma.users.findUnique({ where: { email } });
   if (user) {
-    return user.userId;
+    return user;
   } else {
     return createUser(email, name);
   }
@@ -496,13 +516,26 @@ export async function findOrCreateUser(email: string, name: string) {
 
 export async function createUser(email: string, name: string) {
   const result = await prisma.users.create({ data: { email, name } });
-  return result.userId;
+  return result;
+}
+
+export async function createAnonymousUser() {
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  const random_number = array[0];
+  const name = `Anonymous User`;
+  const email = `anonymous${random_number}@example.com`;
+  const result = await prisma.users.create({
+    data: { email, name, anonymous: true },
+  });
+
+  return result;
 }
 
 export async function getUserInfo(email: string) {
   const user = await prisma.users.findUniqueOrThrow({
     where: { email },
-    select: { userId: true, email: true, name: true },
+    select: { userId: true, email: true, name: true, anonymous: true },
   });
   return user;
 }

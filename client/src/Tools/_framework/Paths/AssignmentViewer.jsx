@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLoaderData } from "react-router";
+import { redirect, useLoaderData } from "react-router";
 
 import { DoenetML } from "@doenet/doenetml";
 
@@ -7,11 +7,17 @@ import { Box, Grid, GridItem, VStack } from "@chakra-ui/react";
 import axios from "axios";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import { useLocation, useNavigate } from "react-router";
+import { EnterClassCode } from "./EnterClassCode";
+import { useFetcher } from "react-router-dom";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
   // console.log({ formObj });
+
+  if (formObj._action == "submit code") {
+    return redirect(`/classCode/${formObj.classCode}`);
+  }
 
   //Don't let name be blank
   let name = formObj?.name?.trim();
@@ -41,44 +47,69 @@ export async function action({ params, request }) {
 }
 
 export async function loader({ params }) {
-  let assignmentData;
+  let assignment;
+  let newlyLoggedIn = false;
 
   if (params.assignmentId) {
     let { data } = await axios.get(
       `/api/getAssignmentData/${params.assignmentId}`,
     );
-    assignmentData = data;
+    assignment = data;
   } else if (params.classCode) {
     let { data } = await axios.get(
       `/api/getAssignmentDataFromCode/${params.classCode}`,
     );
-    assignmentData = data;
+
+    if (!data.assignmentFound) {
+      return {
+        assignmentFound: false,
+        assignment: null,
+        invalidClassCode: params.classCode,
+        newlyLoggedIn,
+      };
+    }
+
+    if (data.profile) {
+      localStorage.setItem("Profile", JSON.stringify(data.profile));
+      newlyLoggedIn = true;
+    }
+
+    assignment = data.assignment;
   }
 
   let assignmentId = params.assignmentId;
 
   // TODO: what happens if assignment has no documents?
-  let docId = assignmentData.assignmentItems[0].docId;
+  let docId = assignment.assignmentItems[0].docId;
 
-  let doenetML = assignmentData.assignmentItems[0].documentVersion.content;
+  let doenetML = assignment.assignmentItems[0].documentVersion.content;
 
   return {
-    assignmentData,
+    assignmentFound: true,
+    assignment,
     docId,
     doenetML,
     assignmentId,
+    newlyLoggedIn,
   };
 }
 
 export function AssignmentViewer() {
-  const { doenetML, assignmentData } = useLoaderData();
+  const { doenetML, assignment, assignmentFound, newlyLoggedIn } =
+    useLoaderData();
 
   let navigate = useNavigate();
   let location = useLocation();
 
+  const submittedLoggedIn = useRef(false);
+
   useEffect(() => {
-    document.title = `${assignmentData.name} - Doenet`;
-  }, [assignmentData.name]);
+    if (assignmentFound) {
+      document.title = `${assignment.name} - Doenet`;
+    } else {
+      document.title = `Enter class code - Doenet`;
+    }
+  }, [assignmentFound, assignment?.name]);
 
   const [variants, setVariants] = useState({
     index: 1,
@@ -86,7 +117,17 @@ export function AssignmentViewer() {
     allPossibleVariants: ["a"],
   });
 
-  // console.log("variants", variants);
+  const fetcher = useFetcher();
+
+  if (!assignmentFound) {
+    return <EnterClassCode />;
+  }
+
+  // The first time we are newly logged in, we submit to
+  if (newlyLoggedIn && !submittedLoggedIn.current) {
+    submittedLoggedIn.current = true;
+    fetcher.submit({ _action: "newly logged in" }, { method: "post" });
+  }
 
   return (
     <>
@@ -122,7 +163,7 @@ export function AssignmentViewer() {
               display="flex"
               fontSize={20}
             >
-              {assignmentData.name}
+              {assignment.name}
             </GridItem>
             <GridItem
               area="rightControls"

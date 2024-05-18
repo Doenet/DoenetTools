@@ -145,6 +145,7 @@ model users {
   email                      String                       @unique @db.VarChar(45)
   name                       String
   isAdmin                    Boolean                      @default(false)
+  anonymous                  Boolean                      @default(false)
   activities                 activities[]
   assignments                assignments[]
   studentAssignmentResponses studentAssignmentResponses[]

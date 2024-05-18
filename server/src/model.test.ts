@@ -20,6 +20,7 @@ import {
   openAssignmentWithCode,
   closeAssignmentWithCode,
   getAssignmentDataFromCode,
+  createAnonymousUser,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -29,7 +30,8 @@ const EMPTY_DOC_CID =
 // create an isolated user for each test, will allow tests to be run in parallel
 async function createTestUser() {
   const username = "vitest-" + new Date().toJSON() + "@vitest.test";
-  return await findOrCreateUser(username, "vitest user");
+  const user = await findOrCreateUser(username, "vitest user");
+  return user.userId;
 }
 
 test("New user has an empty portfolio", async () => {
@@ -256,11 +258,11 @@ test("searchPublicActivities returns activities matching the query", async () =>
 test("findOrCreateUser finds an existing user or creates a new one", async () => {
   const email = `unique-${Date.now()}@example.com`;
   const name = "vitest user";
-  const userId = await findOrCreateUser(email, name);
-  expect(userId).toBeTypeOf("number");
+  const user = await findOrCreateUser(email, name);
+  expect(user.userId).toBeTypeOf("number");
   // Attempt to find the same user again
-  const sameUserId = await findOrCreateUser(email, name);
-  expect(sameUserId).toBe(userId);
+  const sameUser = await findOrCreateUser(email, name);
+  expect(sameUser).toStrictEqual(user);
 });
 
 test("getAllDoenetmlVersions retrieves all non-removed versions", async () => {
@@ -380,19 +382,20 @@ test("open and close assignment with code", async () => {
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
 
-  let assignmentData = await getAssignmentDataFromCode(classCode);
-  expect(assignmentData.assignmentId).eq(assignmentId);
-  expect(assignmentData.classCode).eq(classCode);
-  expect(assignmentData.codeValidUntil).eqls(closeAt.toJSDate());
+  let assignmentData = await getAssignmentDataFromCode(classCode, true);
+  expect(assignmentData.assignmentFound).eq(true);
+  expect(assignmentData.assignment!.assignmentId).eq(assignmentId);
+  expect(assignmentData.assignment!.classCode).eq(classCode);
+  expect(assignmentData.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   await closeAssignmentWithCode(assignmentId);
   assignment = await getAssignment(assignmentId, ownerId1);
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(null);
 
-  await expect(getAssignmentDataFromCode(classCode)).rejects.toThrow(
-    "No assignments found",
-  );
+  assignmentData = await getAssignmentDataFromCode(classCode, true);
+  expect(assignmentData.assignmentFound).eq(false);
+  expect(assignmentData.assignment).eq(null);
 
   // get same code back if reopen
   closeAt = DateTime.now().plus({ weeks: 3 });
@@ -405,18 +408,69 @@ test("open and close assignment with code", async () => {
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
 
-  assignmentData = await getAssignmentDataFromCode(classCode);
-  expect(assignmentData.assignmentId).eq(assignmentId);
-  expect(assignmentData.classCode).eq(classCode);
-  expect(assignmentData.codeValidUntil).eqls(closeAt.toJSDate());
+  assignmentData = await getAssignmentDataFromCode(classCode, true);
+  expect(assignmentData.assignmentFound).eq(true);
+  expect(assignmentData.assignment!.assignmentId).eq(assignmentId);
+  expect(assignmentData.assignment!.classCode).eq(classCode);
+  expect(assignmentData.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   // Open with past date.
-  // Currently, it throws and error
+  // Currently, says assignment is not found
   // TODO: if we want students who have previously joined the assignment to be able to reload the page,
   // then this shouldn't throw an error for those students.
   closeAt = DateTime.now().plus({ seconds: -7 });
   await openAssignmentWithCode(assignmentId, closeAt);
-  await expect(getAssignmentDataFromCode(classCode)).rejects.toThrow(
-    "No assignments found",
-  );
+  assignmentData = await getAssignmentDataFromCode(classCode, true);
+  expect(assignmentData.assignmentFound).eq(false);
+  expect(assignmentData.assignment).eq(null);
+});
+
+test("create anonymous users", async () => {
+  // create an anonymous user
+  const user1 = await createAnonymousUser();
+  expect(user1.anonymous).eq(true);
+
+  // create another anonymous user
+  const user2 = await createAnonymousUser();
+  expect(user2.anonymous).eq(true);
+  expect(user1.userId).not.eq(user2.userId);
+});
+
+test("assignment data with code create anonymous user when not signed in", async () => {
+  const ownerId1 = await createTestUser();
+  const { activityId } = await createActivity(ownerId1);
+  const activity = await getActivity(activityId);
+  await updateActivity({ activityId, name: "Activity 1" });
+  await updateDoc({
+    docId: activity.documents[0].docId,
+    content: "Some content",
+  });
+
+  const assignmentId = await assignActivity(activityId, ownerId1);
+
+  // open assignment generates code
+  let closeAt = DateTime.now().plus({ days: 1 });
+  const { classCode } = await openAssignmentWithCode(assignmentId, closeAt);
+
+  let assignmentData = await getAssignmentDataFromCode(classCode, false);
+  expect(assignmentData.assignmentFound).eq(true);
+
+  // created new anonymous user since weren't logged in
+  const newUser1 = assignmentData.newAnonymousUser;
+  expect(newUser1!.anonymous).eq(true);
+
+  // don't get new user if assignment is closed
+  await closeAssignmentWithCode(assignmentId);
+  assignmentData = await getAssignmentDataFromCode(classCode, false);
+  expect(assignmentData.assignmentFound).eq(false);
+  expect(assignmentData.newAnonymousUser).eq(null);
+
+  // reopen and get another user if load again when not logged in
+  closeAt = DateTime.now().plus({ weeks: 3 });
+  await openAssignmentWithCode(assignmentId, closeAt);
+  assignmentData = await getAssignmentDataFromCode(classCode, false);
+  expect(assignmentData.assignmentFound).eq(true);
+  const newUser2 = assignmentData.newAnonymousUser;
+  expect(newUser2!.anonymous).eq(true);
+  expect(newUser2!.userId).not.eq(newUser1!.userId);
 });

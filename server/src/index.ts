@@ -71,15 +71,15 @@ app.get(
   },
 );
 
-app.get("/api/loadProfile", (req: Request, res: Response) => {
+app.get("/api/loadProfile", async (req: Request, res: Response) => {
   const loggedInEmail = req.cookies.email;
+  const user = await getUserInfo(loggedInEmail);
   res.send({
     profile: {
-      screenName: "",
       email: loggedInEmail,
-      firstName: "",
-      lastName: "",
+      name: user.name,
       profilePicture: "anonymous",
+      anonymous: user.anonymous,
       trackingConsent: true,
       signedIn: "0",
       userId: "",
@@ -121,7 +121,7 @@ app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
   const userId = await findOrCreateUser(email, email);
   res.cookie("email", email);
   res.cookie("userId", String(userId));
-  res.send({ success: true });
+  res.send({});
 });
 
 app.post("/api/deleteActivity", async (req: Request, res: Response) => {
@@ -236,8 +236,30 @@ app.get(
   "/api/getAssignmentDataFromCode/:code",
   async (req: Request, res: Response) => {
     const code = req.params.code;
-    const assignmentData = await getAssignmentDataFromCode(code);
-    res.send(assignmentData);
+    const signedIn = req.cookies.email ? true : false;
+
+    let assignmentData = await getAssignmentDataFromCode(code, signedIn);
+
+    let profile;
+
+    if (assignmentData.newAnonymousUser) {
+      const anonymousUser = assignmentData.newAnonymousUser;
+      // create a user with random name and email
+      res.cookie("email", anonymousUser.email);
+      res.cookie("userId", String(anonymousUser.userId));
+
+      profile = {
+        name: anonymousUser.name,
+        anonymous: true,
+        profilePicture: "anonymous",
+        trackingConsent: true,
+        signedIn: "0",
+        userId: "",
+        canUpload: "0",
+      };
+    }
+
+    res.send({ profile, ...assignmentData });
   },
 );
 

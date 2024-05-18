@@ -55,6 +55,11 @@ import {
   AssignmentEditor,
 } from "./Tools/_framework/Paths/AssignmentEditor";
 import {
+  loader as enterClassCodeLoader,
+  action as enterClassCodeAction,
+  EnterClassCode,
+} from "./Tools/_framework/Paths/EnterClassCode";
+import {
   loader as assignmentViewerLoader,
   action as assignmentViewerAction,
   AssignmentViewer,
@@ -342,6 +347,20 @@ const router = createBrowserRouter([
             onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
           >
             <AssignmentEditor />
+          </MathJaxContext>
+        ),
+      },
+      {
+        path: "classCode",
+        loader: enterClassCodeLoader,
+        action: enterClassCodeAction,
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <EnterClassCode />
           </MathJaxContext>
         ),
       },

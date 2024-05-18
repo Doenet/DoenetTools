@@ -37,21 +37,23 @@ export async function loader() {
     signedIn = false;
   }
   let userId = null;
-  let firstName = "";
-  let lastName = "";
+  let name = "";
   let email = "";
+  let anonymous = false;
   let isAdmin = false;
   if (signedIn) {
     const response = await axios.get("/api/getUser");
     let { data } = response;
     userId = data.userId;
     email = data.email;
+    name = data.name;
+    anonymous = data.anonymous;
 
     const isAdminResponse = await axios.get(`/api/checkForCommunityAdmin`);
     let { data: isAdminData } = isAdminResponse;
     isAdmin = isAdminData.isAdmin;
   }
-  return { signedIn, userId, isAdmin, firstName, lastName, email };
+  return { signedIn, userId, isAdmin, name, email, anonymous };
 }
 
 function NavLinkTab({ to, children, dataTest }) {
@@ -92,8 +94,7 @@ function NavLinkTab({ to, children, dataTest }) {
 }
 
 export function SiteHeader(props) {
-  let { signedIn, userId, isAdmin, firstName, lastName, email } =
-    useLoaderData();
+  let { signedIn, userId, isAdmin, name, email, anonymous } = useLoaderData();
   const { childComponent } = props;
 
   let location = useLocation();
@@ -233,15 +234,13 @@ export function SiteHeader(props) {
                   <Center h="40px" mr="10px">
                     <Menu>
                       <MenuButton>
-                        <Avatar size="sm" name={`${firstName} ${lastName}`} />
+                        <Avatar size="sm" name={`${name}`} />
                       </MenuButton>
                       <MenuList>
                         <VStack mb="20px">
-                          <Avatar size="xl" name={`${firstName} ${lastName}`} />
-                          <Text>
-                            {firstName} {lastName}
-                          </Text>
-                          <Text>{email}</Text>
+                          <Avatar size="xl" name={`${name}`} />
+                          <Text>{name}</Text>
+                          <Text>{anonymous ? "" : email}</Text>
                         </VStack>
                         <MenuItem as="a" href="/signOut">
                           Sign Out
