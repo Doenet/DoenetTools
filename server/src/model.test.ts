@@ -21,6 +21,8 @@ import {
   closeAssignmentWithCode,
   getAssignmentDataFromCode,
   createAnonymousUser,
+  updateUser,
+  getUserInfo,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -31,11 +33,12 @@ const EMPTY_DOC_CID =
 async function createTestUser() {
   const username = "vitest-" + new Date().toJSON() + "@vitest.test";
   const user = await findOrCreateUser(username, "vitest user");
-  return user.userId;
+  return user;
 }
 
 test("New user has an empty portfolio", async () => {
-  const userId = await createTestUser();
+  const user = await createTestUser();
+  const userId = user.userId;
   const docs = await listUserActivities(userId, userId);
   expect(docs).toStrictEqual({
     publicActivities: [],
@@ -45,8 +48,21 @@ test("New user has an empty portfolio", async () => {
   });
 });
 
+test("Update user name", async () => {
+  let user = await createTestUser();
+  const userId = user.userId;
+  expect(user.name).eq("vitest user");
+
+  user = await updateUser({ userId, name: "New name" });
+  expect(user.name).eq("New name");
+
+  const userInfo = await getUserInfo(user.email);
+  expect(userInfo.name).eq("New name");
+});
+
 test("New document starts out private, then delete it", async () => {
-  const userId = await createTestUser();
+  const user = await createTestUser();
+  const userId = user.userId;
   const { activityId } = await createActivity(userId);
   const activityContent = await getActivityEditorData(activityId);
   expect(activityContent).toStrictEqual({
@@ -95,7 +111,8 @@ test("New document starts out private, then delete it", async () => {
 });
 
 test("listUserActivities returns both public and private documents for a user", async () => {
-  const ownerId = await createTestUser();
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
   const { activityId: publicActivityId } = await createActivity(ownerId);
   const { activityId: privateActivityId } = await createActivity(ownerId);
   // Make one activity public
@@ -116,7 +133,8 @@ test("listUserActivities returns both public and private documents for a user", 
 });
 
 test("Test updating various activity properties", async () => {
-  const userId = await createTestUser();
+  const user = await createTestUser();
+  const userId = user.userId;
   const { activityId } = await createActivity(userId);
   const activityName = "Test Name";
   await updateActivity({ activityId, name: activityName });
@@ -134,14 +152,16 @@ test("Test updating various activity properties", async () => {
 });
 
 test("deleteActivity marks a document as deleted", async () => {
-  const userId = await createTestUser();
+  const user = await createTestUser();
+  const userId = user.userId;
   const { activityId } = await createActivity(userId);
   const deleteResult = await deleteActivity(activityId);
   expect(deleteResult.isDeleted).toBe(true);
 });
 
 test("updateDoc updates document properties", async () => {
-  const userId = await createTestUser();
+  const user = await createTestUser();
+  const userId = user.userId;
   const { activityId, docId } = await createActivity(userId);
   const newName = "Updated Name";
   const newContent = "Updated Content";
@@ -156,8 +176,8 @@ test("updateDoc updates document properties", async () => {
 });
 
 test("copyPublicActivityToPortfolio copies a public document to a new owner", async () => {
-  const originalOwnerId = await createTestUser();
-  const newOwnerId = await createTestUser();
+  const originalOwnerId = (await createTestUser()).userId;
+  const newOwnerId = (await createTestUser()).userId;
   const { activityId, docId } = await createActivity(originalOwnerId);
   // cannot copy if not yet public
   await expect(
@@ -184,9 +204,9 @@ test("copyPublicActivityToPortfolio copies a public document to a new owner", as
 });
 
 test("copyPublicActivityToPortfolio remixes correct versions", async () => {
-  const ownerId1 = await createTestUser();
-  const ownerId2 = await createTestUser();
-  const ownerId3 = await createTestUser();
+  const ownerId1 = (await createTestUser()).userId;
+  const ownerId2 = (await createTestUser()).userId;
+  const ownerId3 = (await createTestUser()).userId;
 
   // create activity 1 by owner 1
   const { activityId: activityId1, docId: docId1 } = await createActivity(
@@ -240,7 +260,8 @@ test("copyPublicActivityToPortfolio remixes correct versions", async () => {
 // remix the remixed activity
 
 test("searchPublicActivities returns activities matching the query", async () => {
-  const ownerId = await createTestUser();
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
   const { activityId } = await createActivity(ownerId);
   // Make the document public and give it a unique name for the test
   const uniqueName = "UniqueNameForSearchTest";
@@ -277,14 +298,16 @@ test("getAllDoenetmlVersions retrieves all non-removed versions", async () => {
 });
 
 test("deleteActivity prevents a document from being retrieved", async () => {
-  const ownerId = await createTestUser();
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
   const { activityId } = await createActivity(ownerId);
   await deleteActivity(activityId);
   await expect(getActivity(activityId)).rejects.toThrow("No activities found");
 });
 
 test("updateActivity does not update properties when passed undefined values", async () => {
-  const ownerId = await createTestUser();
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
   const { activityId } = await createActivity(ownerId);
   const originalActivity = await getActivity(activityId);
   await updateActivity({ activityId });
@@ -293,7 +316,8 @@ test("updateActivity does not update properties when passed undefined values", a
 });
 
 test("assign an activity", async () => {
-  const ownerId = await createTestUser();
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
   const { activityId } = await createActivity(ownerId);
   const activity = await getActivity(activityId);
   await updateActivity({ activityId, name: "Activity 1" });
@@ -331,8 +355,8 @@ test("assign an activity", async () => {
 });
 
 test("cannot assign other user's private activity", async () => {
-  const ownerId1 = await createTestUser();
-  const ownerId2 = await createTestUser();
+  const ownerId1 = (await createTestUser()).userId;
+  const ownerId2 = (await createTestUser()).userId;
   const { activityId } = await createActivity(ownerId1);
   const activity = await getActivity(activityId);
   await updateActivity({ activityId, name: "Activity 1" });
@@ -360,8 +384,9 @@ test("cannot assign other user's private activity", async () => {
 });
 
 test("open and close assignment with code", async () => {
-  const ownerId1 = await createTestUser();
-  const { activityId } = await createActivity(ownerId1);
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId } = await createActivity(ownerId);
   const activity = await getActivity(activityId);
   await updateActivity({ activityId, name: "Activity 1" });
   await updateDoc({
@@ -369,8 +394,8 @@ test("open and close assignment with code", async () => {
     content: "Some content",
   });
 
-  const assignmentId = await assignActivity(activityId, ownerId1);
-  let assignment = await getAssignment(assignmentId, ownerId1);
+  const assignmentId = await assignActivity(activityId, ownerId);
+  let assignment = await getAssignment(assignmentId, ownerId);
 
   expect(assignment.classCode).eq(null);
   expect(assignment.codeValidUntil).eq(null);
@@ -378,7 +403,7 @@ test("open and close assignment with code", async () => {
   // open assignment generates code
   let closeAt = DateTime.now().plus({ days: 1 });
   const { classCode } = await openAssignmentWithCode(assignmentId, closeAt);
-  assignment = await getAssignment(assignmentId, ownerId1);
+  assignment = await getAssignment(assignmentId, ownerId);
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
 
@@ -389,7 +414,7 @@ test("open and close assignment with code", async () => {
   expect(assignmentData.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   await closeAssignmentWithCode(assignmentId);
-  assignment = await getAssignment(assignmentId, ownerId1);
+  assignment = await getAssignment(assignmentId, ownerId);
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(null);
 
@@ -404,7 +429,7 @@ test("open and close assignment with code", async () => {
     closeAt,
   );
   expect(classCode2).eq(classCode);
-  assignment = await getAssignment(assignmentId, ownerId1);
+  assignment = await getAssignment(assignmentId, ownerId);
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
 
@@ -437,8 +462,9 @@ test("create anonymous users", async () => {
 });
 
 test("assignment data with code create anonymous user when not signed in", async () => {
-  const ownerId1 = await createTestUser();
-  const { activityId } = await createActivity(ownerId1);
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId } = await createActivity(ownerId);
   const activity = await getActivity(activityId);
   await updateActivity({ activityId, name: "Activity 1" });
   await updateDoc({
@@ -446,7 +472,7 @@ test("assignment data with code create anonymous user when not signed in", async
     content: "Some content",
   });
 
-  const assignmentId = await assignActivity(activityId, ownerId1);
+  const assignmentId = await assignActivity(activityId, ownerId);
 
   // open assignment generates code
   let closeAt = DateTime.now().plus({ days: 1 });

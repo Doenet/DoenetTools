@@ -68,17 +68,7 @@ export default function SignIn(props) {
     Object.keys(jwt).includes("JWT_JS") ||
     document.cookie.indexOf("email") !== -1
   ) {
-    axios
-      .get("/api/loadProfile", { params: {} })
-      .then((resp) => {
-        // if (resp.data.success === '1') {
-        localStorage.setItem("Profile", JSON.stringify(resp.data.profile));
-        location.href = "/";
-      })
-      .catch((error) => {
-        console.log(error);
-        //  Error currently does nothing
-      });
+    location.href = "/";
     return null;
   }
 

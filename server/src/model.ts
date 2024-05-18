@@ -383,7 +383,6 @@ export async function getAssignmentEditorData(assignmentId: number) {
   let stillOpen = false;
   if (assignment.codeValidUntil) {
     const endDate = DateTime.fromJSDate(assignment.codeValidUntil);
-    console.log(endDate, DateTime.now());
     stillOpen = DateTime.now() <= endDate;
   }
 
@@ -523,7 +522,7 @@ export async function createAnonymousUser() {
   const array = new Uint32Array(1);
   crypto.getRandomValues(array);
   const random_number = array[0];
-  const name = `Anonymous User`;
+  const name = ``;
   const email = `anonymous${random_number}@example.com`;
   const result = await prisma.users.create({
     data: { email, name, anonymous: true },
@@ -536,6 +535,20 @@ export async function getUserInfo(email: string) {
   const user = await prisma.users.findUniqueOrThrow({
     where: { email },
     select: { userId: true, email: true, name: true, anonymous: true },
+  });
+  return user;
+}
+
+export async function updateUser({
+  userId,
+  name,
+}: {
+  userId: number;
+  name: string;
+}) {
+  const user = await prisma.users.update({
+    where: { userId },
+    data: { name },
   });
   return user;
 }

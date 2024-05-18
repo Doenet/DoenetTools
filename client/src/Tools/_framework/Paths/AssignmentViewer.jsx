@@ -3,12 +3,21 @@ import { redirect, useLoaderData } from "react-router";
 
 import { DoenetML } from "@doenet/doenetml";
 
-import { Box, Grid, GridItem, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Grid,
+  GridItem,
+  Input,
+  VStack,
+} from "@chakra-ui/react";
 import axios from "axios";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import { useLocation, useNavigate } from "react-router";
 import { EnterClassCode } from "./EnterClassCode";
-import { useFetcher } from "react-router-dom";
+import { Form, useFetcher } from "react-router-dom";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -17,29 +26,8 @@ export async function action({ params, request }) {
 
   if (formObj._action == "submit code") {
     return redirect(`/classCode/${formObj.classCode}`);
-  }
-
-  //Don't let name be blank
-  let name = formObj?.name?.trim();
-  if (name == "") {
-    name = "Untitled";
-  }
-
-  if (formObj._action == "update name") {
-    await axios.post(`/api/updateAssignmentName`, {
-      assignmentId: params.assignmentId,
-      name,
-    });
-    return true;
-  }
-
-  if (formObj._action == "update general") {
-    await axios.post("/api/updateAssignmentSettings", {
-      name,
-      imagePath: formObj.imagePath,
-      assignmentId: params.assignmentId,
-    });
-
+  } else if (formObj._action == "submit user name") {
+    await axios.post(`/api/updateUser`, { name: formObj.name });
     return true;
   }
 
@@ -48,7 +36,7 @@ export async function action({ params, request }) {
 
 export async function loader({ params }) {
   let assignment;
-  let newlyLoggedIn = false;
+  let userName;
 
   if (params.assignmentId) {
     let { data } = await axios.get(
@@ -65,16 +53,11 @@ export async function loader({ params }) {
         assignmentFound: false,
         assignment: null,
         invalidClassCode: params.classCode,
-        newlyLoggedIn,
       };
     }
 
-    if (data.profile) {
-      localStorage.setItem("Profile", JSON.stringify(data.profile));
-      newlyLoggedIn = true;
-    }
-
     assignment = data.assignment;
+    userName = data.name;
   }
 
   let assignmentId = params.assignmentId;
@@ -90,18 +73,15 @@ export async function loader({ params }) {
     docId,
     doenetML,
     assignmentId,
-    newlyLoggedIn,
+    userName,
   };
 }
 
 export function AssignmentViewer() {
-  const { doenetML, assignment, assignmentFound, newlyLoggedIn } =
-    useLoaderData();
+  const { doenetML, assignment, assignmentFound, userName } = useLoaderData();
 
   let navigate = useNavigate();
   let location = useLocation();
-
-  const submittedLoggedIn = useRef(false);
 
   useEffect(() => {
     if (assignmentFound) {
@@ -123,10 +103,21 @@ export function AssignmentViewer() {
     return <EnterClassCode />;
   }
 
-  // The first time we are newly logged in, we submit to
-  if (newlyLoggedIn && !submittedLoggedIn.current) {
-    submittedLoggedIn.current = true;
-    fetcher.submit({ _action: "newly logged in" }, { method: "post" });
+  if (!userName) {
+    return (
+      <Box margin="20px">
+        <Form method="post">
+          <FormControl isRequired>
+            <FormLabel mt="16px">Enter your name:</FormLabel>
+            <Input placeholder="Name" name="name" size="sm" width={40} />
+          </FormControl>
+          <Button type="submit" colorScheme="blue" mt="8px" mr="12px" size="xs">
+            Start assignment
+          </Button>
+          <input type="hidden" name="_action" value="submit user name" />
+        </Form>
+      </Box>
+    );
   }
 
   return (

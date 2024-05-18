@@ -26,6 +26,7 @@ import {
   getAssignmentDataFromCode,
   openAssignmentWithCode,
   closeAssignmentWithCode,
+  updateUser,
 } from "./model";
 
 dotenv.config();
@@ -55,6 +56,19 @@ app.get("/api/getUser", async (req: Request, res: Response) => {
   }
 });
 
+app.post("/api/updateUser", async (req: Request, res: Response) => {
+  const signedIn = req.cookies.email ? true : false;
+  if (signedIn) {
+    const body = req.body;
+    const name = body.name;
+    await updateUser({ userId: Number(req.cookies.userId), name });
+    res.cookie("name", name);
+    res.send({ name });
+  } else {
+    res.send({});
+  }
+});
+
 app.get("/api/checkForCommunityAdmin", async (req: Request, res: Response) => {
   const userEmail = req.cookies.email;
   const isAdmin = await getIsAdmin(userEmail);
@@ -70,23 +84,6 @@ app.get(
     res.send(docs);
   },
 );
-
-app.get("/api/loadProfile", async (req: Request, res: Response) => {
-  const loggedInEmail = req.cookies.email;
-  const user = await getUserInfo(loggedInEmail);
-  res.send({
-    profile: {
-      email: loggedInEmail,
-      name: user.name,
-      profilePicture: "anonymous",
-      anonymous: user.anonymous,
-      trackingConsent: true,
-      signedIn: "0",
-      userId: "",
-      canUpload: "0",
-    },
-  });
-});
 
 app.get("/api/getPortfolio/:userId", async (req: Request, res: Response) => {
   const loggedInUserId = Number(req.cookies.userId);
@@ -118,9 +115,10 @@ app.get("/api/getAssignments/:userId", async (req: Request, res: Response) => {
 app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
   const email: string = req.query.emailaddress as string;
   // TODO: add the ability to give a name after logging in or creating an account
-  const userId = await findOrCreateUser(email, email);
+  const user = await findOrCreateUser(email, email);
   res.cookie("email", email);
-  res.cookie("userId", String(userId));
+  res.cookie("userId", String(user.userId));
+  res.cookie("name", String(user.name));
   res.send({});
 });
 
@@ -240,26 +238,19 @@ app.get(
 
     let assignmentData = await getAssignmentDataFromCode(code, signedIn);
 
-    let profile;
-
+    let name: string;
     if (assignmentData.newAnonymousUser) {
       const anonymousUser = assignmentData.newAnonymousUser;
       // create a user with random name and email
       res.cookie("email", anonymousUser.email);
       res.cookie("userId", String(anonymousUser.userId));
-
-      profile = {
-        name: anonymousUser.name,
-        anonymous: true,
-        profilePicture: "anonymous",
-        trackingConsent: true,
-        signedIn: "0",
-        userId: "",
-        canUpload: "0",
-      };
+      res.cookie("name", String(anonymousUser.name));
+      name = anonymousUser.name;
+    } else {
+      name = req.cookies.name;
     }
 
-    res.send({ profile, ...assignmentData });
+    res.send({ name, ...assignmentData });
   },
 );
 
