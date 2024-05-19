@@ -17,6 +17,7 @@ import {
   searchPublicActivities,
   updateActivity,
   getDoc,
+  addPromotedContentGroup,
 } from "./model";
 
 dotenv.config();
@@ -173,11 +174,17 @@ app.get("/api/searchPublicActivities", async (req: Request, res: Response) => {
   });
 });
 
-app.get("/api/loadPromotedContent", (req: Request, res: Response) => {
+app.get("/api/loadPromotedContent", (req: Request, res: Response) => {  
   res.send({
     success: true,
     carouselData: {},
   });
+});
+
+app.post("/api/addPromotedContentGroup", async (req: Request, res: Response) => {
+  const groupName = req.body.groupName;
+  const response = await addPromotedContentGroup(groupName);
+  res.send(response);
 });
 
 app.get(

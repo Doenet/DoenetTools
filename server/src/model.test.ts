@@ -15,6 +15,7 @@ import {
   searchPublicActivities,
   updateActivity,
   getActivity,
+  addPromotedContentGroup,
 } from "./model";
 
 const EMPTY_DOC_CID =
@@ -283,4 +284,12 @@ test("updateActivity does not update properties when passed undefined values", a
   await updateActivity({ activityId });
   const updatedActivity = await getActivity(activityId);
   expect(updatedActivity).toEqual(originalActivity);
+});
+
+test("addPromotedContentGroup does not allow duplicates", async () => {
+  const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
+  const firstGroup = await addPromotedContentGroup(groupName);
+  expect(firstGroup).toEqual({success: true});
+  const duplicateGroup = await addPromotedContentGroup(groupName);
+  expect(duplicateGroup).toEqual({success: false, message: "A group with that name already exists."});
 });

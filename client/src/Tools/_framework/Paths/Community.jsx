@@ -47,6 +47,8 @@ export async function action({ request }) {
     homepage,
   } = formObj;
 
+  // TODO: should this function exist?
+  // Could be bad pattern to catch all API errors as browser alerts
   async function postApiAlertOnError(url, uploadData) {
     try {
       const response = await axios.post(url, uploadData);
@@ -78,13 +80,21 @@ export async function action({ request }) {
         direction,
       });
     case "New Group":
-      return postApiAlertOnError("/api/addPromotedContentGroup", {
-        groupName,
-      });
+      {
+        const response = await axios.post("/api/addPromotedContentGroup", { groupName });
+        if(response.data.success) {
+          return true;
+        } else {
+          alert(response.data.message);
+          return false;
+        }        
+      }
     case "Rename Group":
-      return postApiAlertOnError("/api/addPromotedContentGroup", {
-        groupName,
-      });
+      {
+        return postApiAlertOnError("/api/addPromotedContentGroup", {
+          groupName,
+        });  
+      }
     case "Promote Group":
       // convert to real booleans
       currentlyFeatured =

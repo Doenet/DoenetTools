@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { cidFromText } from "./utils/cid";
 
 const prisma = new PrismaClient();
@@ -427,4 +427,32 @@ export async function getAllRecentPublicActivities() {
     },
   });
   return docs;
+}
+
+// TODO - access control
+export async function addPromotedContentGroup(groupName: string) {
+  console.log(`Add ${groupName}`);
+  try {    
+    await prisma.promotedContentGroups.create({
+      data: {
+        groupName,
+        sortOrder: "a",
+      },
+    });
+    return { success: true };
+
+  } catch(err) {
+    if(err instanceof Prisma.PrismaClientKnownRequestError) {
+      // The .code property can be accessed in a type-safe manner
+      if(err.code === "P2002") {
+        console.log("A group with that name already exists.");
+
+        return {
+          success: false,
+          message: "A group with that name already exists.",
+        };
+      }
+    }
+    throw err;
+  }
 }

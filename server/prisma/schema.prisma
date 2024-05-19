@@ -147,7 +147,7 @@ model users {
 
 model promotedContentGroups {
   promotedGroupId   Int               @id @default(autoincrement())
-  groupName         String
+  groupName         String            @unique
   currentlyFeatured Boolean           @default(false)
   homepage          Boolean           @default(false)
   sortOrder         String
