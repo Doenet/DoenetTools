@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express, NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { DateTime } from "luxon";
@@ -28,6 +28,7 @@ import {
   closeAssignmentWithCode,
   updateUser,
 } from "./model";
+import { Prisma } from "@prisma/client";
 
 dotenv.config();
 
@@ -85,32 +86,62 @@ app.get(
   },
 );
 
-app.get("/api/getPortfolio/:userId", async (req: Request, res: Response) => {
-  const loggedInUserId = Number(req.cookies.userId);
-  const userId = Number(req.params.userId);
-  const activityLists = await listUserActivities(userId, loggedInUserId);
-  const allDoenetmlVersions = await getAllDoenetmlVersions();
-
-  res.send({ allDoenetmlVersions, ...activityLists });
-});
-
 app.get(
-  "/api/getPublicPortfolio/:userId",
-  async (req: Request, res: Response) => {
+  "/api/getPortfolio/:userId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
     const userId = Number(req.params.userId);
-    const activityLists = await listUserActivities(userId, 0);
+    try {
+      const activityLists = await listUserActivities(userId, loggedInUserId);
+      const allDoenetmlVersions = await getAllDoenetmlVersions();
 
-    res.send(activityLists);
+      res.send({ allDoenetmlVersions, ...activityLists });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
   },
 );
 
-app.get("/api/getAssignments/:userId", async (req: Request, res: Response) => {
-  const loggedInUserId = Number(req.cookies.userId);
-  const userId = Number(req.params.userId);
-  const assignmentList = await listUserAssignments(userId, loggedInUserId);
+app.get(
+  "/api/getPublicPortfolio/:userId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = Number(req.params.userId);
+    try {
+      const activityLists = await listUserActivities(userId, 0);
 
-  res.send(assignmentList);
-});
+      res.send(activityLists);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getAssignments/:userId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const userId = Number(req.params.userId);
+    try {
+      const assignmentList = await listUserAssignments(userId, loggedInUserId);
+
+      res.send(assignmentList);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
 
 app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
   const email: string = req.query.emailaddress as string;
@@ -201,10 +232,18 @@ app.get("/api/loadPromotedContent", (req: Request, res: Response) => {
 
 app.get(
   "/api/getActivityEditorData/:activityId",
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const activityId = Number(req.params.activityId);
-    const editorData = await getActivityEditorData(activityId);
-    res.send(editorData);
+    try {
+      const editorData = await getActivityEditorData(activityId);
+      res.send(editorData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
   },
 );
 
@@ -214,19 +253,38 @@ app.get("/api/getAllDoenetmlVersions", async (req: Request, res: Response) => {
   res.send(allDoenetmlVersions);
 });
 
-app.get("/api/getActivityView/:docId", async (req: Request, res: Response) => {
-  const docId = Number(req.params.docId);
+app.get(
+  "/api/getActivityView/:docId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const docId = Number(req.params.docId);
 
-  const viewerData = await getActivityViewerData(docId);
-  res.send(viewerData);
-});
+    try {
+      const viewerData = await getActivityViewerData(docId);
+      res.send(viewerData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
 
 app.get(
   "/api/getAssignmentEditorData/:assignmentId",
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const assignmentId = Number(req.params.assignmentId);
-    const editorData = await getAssignmentEditorData(assignmentId);
-    res.send(editorData);
+    try {
+      const editorData = await getAssignmentEditorData(assignmentId);
+      res.send(editorData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
   },
 );
 
