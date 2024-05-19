@@ -91,6 +91,21 @@ export function AssignmentViewer() {
     }
   }, [assignmentFound, assignment?.name]);
 
+  useEffect(() => {
+    addEventListener("message", async (event) => {
+      if (event.data.subject == "SPLICE.reportScoreAndState") {
+        // TODO: generalize to multiple documents. For now, assume just have one.
+        await axios.post("/api/saveScoreAndState", {
+          assignmentId: assignment.assignmentId,
+          docId: assignment.assignmentDocuments[0].docId,
+          docVersionId: assignment.assignmentDocuments[0].docVersionId,
+          score: event.data.score,
+          state: JSON.stringify(event.data.state),
+        });
+      }
+    });
+  }, []);
+
   const [variants, setVariants] = useState({
     index: 1,
     numVariants: 1,
@@ -239,10 +254,10 @@ export function AssignmentViewer() {
                       showFeedback: true,
                       showHints: true,
                       autoSubmit: false,
-                      allowLoadState: false,
-                      allowSaveState: false,
+                      allowLoadState: true,
+                      allowSaveState: true,
                       allowLocalState: false,
-                      allowSaveSubmissions: false,
+                      allowSaveSubmissions: true,
                       allowSaveEvents: false,
                     }}
                     attemptNumber={1}
@@ -256,6 +271,7 @@ export function AssignmentViewer() {
                       viewURL: "/activityViewer",
                       editURL: "/publicEditor",
                     }}
+                    apiURLs={{ postMessages: true }}
                     scrollableContainer={
                       document.getElementById("viewer-container") || undefined
                     }

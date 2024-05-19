@@ -115,11 +115,12 @@ model doenetmlVersions {
 }
 
 model assignmentScores {
-  assignmentId Int
-  userId       Int
-  score        Float       @default(0)
-  assignment   assignments @relation(fields: [assignmentId], references: [assignmentId], onDelete: NoAction, onUpdate: NoAction)
-  user         users       @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  assignmentId  Int
+  userId        Int
+  score         Float           @default(0)
+  assignment    assignments     @relation(fields: [assignmentId], references: [assignmentId], onDelete: NoAction, onUpdate: NoAction)
+  user          users           @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  documentState documentState[]
 
   @@id([assignmentId, userId])
   @@index([assignmentId])
@@ -133,6 +134,7 @@ model documentState {
   userId             Int
   state              String?
   score              Float               @default(0)
+  assignmentScore    assignmentScores    @relation(fields: [assignmentId, userId], references: [assignmentId, userId], onDelete: NoAction, onUpdate: NoAction)
   assignmentDocument assignmentDocuments @relation(fields: [assignmentId, docVersionId, docId], references: [assignmentId, docVersionId, docId], onDelete: NoAction, onUpdate: NoAction)
   user               users               @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 

@@ -682,6 +682,86 @@ export async function getAssignment(assignmentId: number, ownerId: number) {
   return assignment;
 }
 
+export async function saveScoreAndState({
+  assignmentId,
+  docId,
+  docVersionId,
+  userId,
+  score,
+  state,
+}: {
+  assignmentId: number;
+  docId: number;
+  docVersionId: number;
+  userId: number;
+  score: number;
+  state: string;
+}) {
+  // make sure have an assignmentScores record
+  const assignmentScores = await prisma.assignmentScores.upsert({
+    where: { assignmentId_userId: { assignmentId, userId } },
+    update: {},
+    create: { assignmentId, userId },
+  });
+
+  // record score and state for this document
+  await prisma.documentState.upsert({
+    where: {
+      assignmentId_docVersionId_docId_userId: {
+        assignmentId,
+        docId,
+        docVersionId,
+        userId,
+      },
+    },
+    update: {
+      score,
+      state,
+    },
+    create: {
+      assignmentId,
+      docId,
+      docVersionId,
+      userId,
+      score,
+      state,
+    },
+  });
+
+  const assignmentScore = await prisma.assignmentScores.findUniqueOrThrow({
+    where: {
+      assignmentId_userId: {
+        assignmentId,
+        userId,
+      },
+    },
+    include: {
+      documentState: true,
+    },
+  });
+
+  // for now, make score be the maximum of the current score and the weighted averages of the scores from the documents
+
+  const assignmentDocuments = await prisma.assignments.findUniqueOrThrow({
+    where: { assignmentId },
+    select: { assignmentDocuments: { select: { docId: true } } },
+  });
+  const numDocuments = assignmentDocuments.assignmentDocuments.length;
+
+  const currentScore = assignmentScore.score;
+  const documentScores = assignmentScore.documentState.map((x) => x.score);
+  const averageScore = documentScores.reduce((a, c) => a + c) / numDocuments;
+
+  if (averageScore > currentScore) {
+    await prisma.assignmentScores.update({
+      where: { assignmentId_userId: { assignmentId, userId } },
+      data: {
+        score: averageScore,
+      },
+    });
+  }
+}
+
 function generateClassCode() {
   return ("00000" + Math.floor(Math.random() * 1000000)).slice(-6);
 }
