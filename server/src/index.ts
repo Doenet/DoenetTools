@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import { DateTime } from "luxon";
 import {
   copyPublicActivityToPortfolio,
   createActivity,
@@ -17,6 +18,15 @@ import {
   searchPublicActivities,
   updateActivity,
   getDoc,
+  assignActivity,
+  listUserAssignments,
+  deleteAssignment,
+  getAssignmentEditorData,
+  updateAssignment,
+  getAssignmentDataFromCode,
+  openAssignmentWithCode,
+  closeAssignmentWithCode,
+  updateUser,
 } from "./model";
 
 dotenv.config();
@@ -46,6 +56,19 @@ app.get("/api/getUser", async (req: Request, res: Response) => {
   }
 });
 
+app.post("/api/updateUser", async (req: Request, res: Response) => {
+  const signedIn = req.cookies.email ? true : false;
+  if (signedIn) {
+    const body = req.body;
+    const name = body.name;
+    await updateUser({ userId: Number(req.cookies.userId), name });
+    res.cookie("name", name);
+    res.send({ name });
+  } else {
+    res.send({});
+  }
+});
+
 app.get("/api/checkForCommunityAdmin", async (req: Request, res: Response) => {
   const userEmail = req.cookies.email;
   const isAdmin = await getIsAdmin(userEmail);
@@ -61,23 +84,6 @@ app.get(
     res.send(docs);
   },
 );
-
-app.get("/api/loadProfile", (req: Request, res: Response) => {
-  const loggedInEmail = req.cookies.email;
-  res.send({
-    profile: {
-      screenName: "",
-      email: loggedInEmail,
-      firstName: "",
-      lastName: "",
-      profilePicture: "anonymous",
-      trackingConsent: true,
-      signedIn: "0",
-      userId: "",
-      canUpload: "0",
-    },
-  });
-});
 
 app.get("/api/getPortfolio/:userId", async (req: Request, res: Response) => {
   const loggedInUserId = Number(req.cookies.userId);
@@ -98,24 +104,37 @@ app.get(
   },
 );
 
+app.get("/api/getAssignments/:userId", async (req: Request, res: Response) => {
+  const loggedInUserId = Number(req.cookies.userId);
+  const userId = Number(req.params.userId);
+  const assignmentList = await listUserAssignments(userId, loggedInUserId);
+
+  res.send(assignmentList);
+});
+
 app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
   const email: string = req.query.emailaddress as string;
   // TODO: add the ability to give a name after logging in or creating an account
-  const userId = await findOrCreateUser(email, email);
+  const user = await findOrCreateUser(email, email);
   res.cookie("email", email);
-  res.cookie("userId", String(userId));
-  res.send({ success: true });
+  res.cookie("userId", String(user.userId));
+  res.cookie("name", String(user.name));
+  res.send({});
 });
 
-app.post(
-  "/api/deletePortfolioActivity",
-  async (req: Request, res: Response) => {
-    const body = req.body;
-    const activityId = Number(body.activityId);
-    await deleteActivity(activityId);
-    res.send({});
-  },
-);
+app.post("/api/deleteActivity", async (req: Request, res: Response) => {
+  const body = req.body;
+  const activityId = Number(body.activityId);
+  await deleteActivity(activityId);
+  res.send({});
+});
+
+app.post("/api/deleteAssignment", async (req: Request, res: Response) => {
+  const body = req.body;
+  const assignmentId = Number(body.assignmentId);
+  await deleteAssignment(assignmentId);
+  res.send({});
+});
 
 app.post("/api/createActivity", async (req: Request, res: Response) => {
   const loggedInUserId = Number(req.cookies.userId);
@@ -195,13 +214,43 @@ app.get("/api/getAllDoenetmlVersions", async (req: Request, res: Response) => {
   res.send(allDoenetmlVersions);
 });
 
-app.get(
-  "/api/getPortfolioActivityView/:docId",
-  async (req: Request, res: Response) => {
-    const docId = Number(req.params.docId);
+app.get("/api/getActivityView/:docId", async (req: Request, res: Response) => {
+  const docId = Number(req.params.docId);
 
-    const viewerData = await getActivityViewerData(docId);
-    res.send(viewerData);
+  const viewerData = await getActivityViewerData(docId);
+  res.send(viewerData);
+});
+
+app.get(
+  "/api/getAssignmentEditorData/:assignmentId",
+  async (req: Request, res: Response) => {
+    const assignmentId = Number(req.params.assignmentId);
+    const editorData = await getAssignmentEditorData(assignmentId);
+    res.send(editorData);
+  },
+);
+
+app.get(
+  "/api/getAssignmentDataFromCode/:code",
+  async (req: Request, res: Response) => {
+    const code = req.params.code;
+    const signedIn = req.cookies.email ? true : false;
+
+    let assignmentData = await getAssignmentDataFromCode(code, signedIn);
+
+    let name: string;
+    if (assignmentData.newAnonymousUser) {
+      const anonymousUser = assignmentData.newAnonymousUser;
+      // create a user with random name and email
+      res.cookie("email", anonymousUser.email);
+      res.cookie("userId", String(anonymousUser.userId));
+      res.cookie("name", String(anonymousUser.name));
+      name = anonymousUser.name;
+    } else {
+      name = req.cookies.name;
+    }
+
+    res.send({ name, ...assignmentData });
   },
 );
 
@@ -249,27 +298,68 @@ app.post("/api/updateDocumentSettings", (req: Request, res: Response) => {
   res.send({});
 });
 
+app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
+  const targetActivityId = Number(req.body.activityId);
+  const loggedInUserId = Number(req.cookies.userId);
+
+  let newActivityId = await copyPublicActivityToPortfolio(
+    targetActivityId,
+    loggedInUserId,
+  );
+
+  res.send({ newActivityId });
+});
+
+app.post("/api/assignActivity", async (req: Request, res: Response) => {
+  const activityId = Number(req.body.activityId);
+  const loggedInUserId = Number(req.cookies.userId);
+
+  let assignmentId = await assignActivity(activityId, loggedInUserId);
+
+  res.send({ assignmentId, userId: loggedInUserId });
+});
+
+app.post("/api/updateAssignmentName", (req: Request, res: Response) => {
+  const body = req.body;
+  const assignmentId = Number(body.assignmentId);
+  const name = body.name;
+  updateAssignment({ assignmentId, name });
+  res.send({});
+});
+
+app.post("/api/updateAssignmentSettings", (req: Request, res: Response) => {
+  const body = req.body;
+  const assignmentId = Number(body.assignmentId);
+  const imagePath = body.imagePath;
+  const name = body.name;
+  updateAssignment({
+    assignmentId,
+    imagePath,
+    name,
+  });
+  res.send({});
+});
+
+app.post("/api/openAssignmentWithCode", async (req: Request, res: Response) => {
+  const body = req.body;
+  const assignmentId = Number(body.assignmentId);
+  const closeAt = DateTime.fromISO(body.closeAt);
+
+  const { classCode, codeValidUntil } = await openAssignmentWithCode(
+    assignmentId,
+    closeAt,
+  );
+  res.send({ classCode, codeValidUntil });
+});
+
 app.post(
-  "/api/duplicatePortfolioActivity",
+  "/api/closeAssignmentWithCode",
   async (req: Request, res: Response) => {
-    const targetActivityId = Number(req.body.activityId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const body = req.body;
+    const assignmentId = Number(body.assignmentId);
 
-    let newActivityId = await copyPublicActivityToPortfolio(
-      targetActivityId,
-      loggedInUserId,
-    );
-
-    res.send({ newActivityId });
-  },
-);
-
-app.get(
-  "/api/getDocumentContent/:docId",
-  async (req: Request, res: Response) => {
-    const docId = Number(req.params.docId);
-    const doc = await getDoc(docId);
-    res.send(doc.contentLocation);
+    await closeAssignmentWithCode(assignmentId);
+    res.send({});
   },
 );
 

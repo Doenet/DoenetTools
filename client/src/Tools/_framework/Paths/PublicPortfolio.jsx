@@ -91,7 +91,7 @@ export function PublicPortfolio() {
             ) : (
               <>
                 {publicActivities.map((activity) => {
-                  const imageLink = `/portfolioviewer/${activity.activityId}`;
+                  const imageLink = `/activityViewer/${activity.activityId}`;
 
                   return (
                     <ActivityCard

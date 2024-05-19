@@ -30,7 +30,6 @@ import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
-import findFirstPageIdInContent from "../../../_utils/findFirstPage";
 import { cidFromText } from "@doenet/doenetml";
 import { ResizableSideBySide } from "./ResizableSideBySide";
 
@@ -40,8 +39,8 @@ export async function loader({ params }) {
       `/api/getActivityEditorData/${params.activityId}`,
     );
 
-    let activityId = params.activityId;
-    let docId = params.docId;
+    let activityId = Number(params.activityId);
+    let docId = Number(params.docId);
     if (!docId) {
       // If docId was not supplied in the url,
       // then use the first docId from the activity.
@@ -49,15 +48,14 @@ export async function loader({ params }) {
       docId = activityData.documents[0].docId;
     }
 
-    //Get the doenetML of the docId.
-    //we need transformResponse because
-    //large numbers are simplified with toString if used on doenetMLResponse.data
-    //which was causing errors
-    const doenetMLResponse = await axios.get(
-      `/api/getDocumentContent/${docId}`,
-      { transformResponse: (data) => data.toString() },
-    );
-    let doenetML = doenetMLResponse.data;
+    // If docId isn't in the activity, use the first docId
+    let docInOrder = activityData.documents.map((x) => x.docId).indexOf(docId);
+    if (docInOrder === -1) {
+      docInOrder = 0;
+      docId = activityData.documents[docInOrder].docId;
+    }
+
+    const doenetML = activityData.documents[docInOrder].content;
 
     const lastKnownCid = await cidFromText(doenetML);
 
@@ -190,7 +188,7 @@ export function PublicEditor() {
                     variant="outline"
                     leftIcon={<BsPlayBtnFill />}
                     onClick={() => {
-                      navigate(`/portfolioviewer/${activityId}`);
+                      navigate(`/activityViewer/${activityId}`);
                     }}
                   >
                     View
@@ -228,7 +226,7 @@ export function PublicEditor() {
                     colorScheme="blue"
                     onClick={async () => {
                       let { data } = await axios.post(
-                        `/api/duplicatePortfolioActivity`,
+                        `/api/duplicateActivity`,
                         {
                           activityId,
                         },
@@ -237,18 +235,18 @@ export function PublicEditor() {
 
                       // TODO: do not navigate to editor
                       // Instead, navigate to portfolio with newly created activity highlighted
-                      navigate(`/portfolioeditor/${newActivityId}`);
+                      navigate(`/activityEditor/${newActivityId}`);
                     }}
                   >
                     Copy to Portfolio
                   </Button>
                 ) : (
                   <Button
-                    data-test="Nav to signin"
+                    data-test="Nav to signIn"
                     size="xs"
                     colorScheme="blue"
                     onClick={() => {
-                      navigateTo.current = "/signin";
+                      navigateTo.current = "/signIn";
                     }}
                   >
                     Sign In To Copy to Portfolio
@@ -363,8 +361,8 @@ export function PublicEditor() {
                       location={location}
                       navigate={navigate}
                       linkSettings={{
-                        viewURL: "/portfolioviewer",
-                        editURL: "/publiceditor",
+                        viewURL: "/activityViewer",
+                        editURL: "/publicEditor",
                       }}
                     />
                     <Box marginBottom="50vh" />

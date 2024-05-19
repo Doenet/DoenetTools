@@ -85,7 +85,7 @@ export async function action({ params, request }) {
 
   if (formObj._action == "update name") {
     await axios.post(`/api/updateActivityName`, {
-      activityId: params.activityId,
+      activityId: Number(params.activityId),
       name,
     });
     return true;
@@ -106,7 +106,7 @@ export async function action({ params, request }) {
       name,
       imagePath: formObj.imagePath,
       isPublic,
-      activityId: params.activityId,
+      activityId: Number(params.activityId),
       learningOutcomes,
     });
 
@@ -122,7 +122,7 @@ export async function action({ params, request }) {
   if (formObj._action == "update description") {
     await axios.get("/api/updateFileDescription", {
       params: {
-        activityId: params.activityId,
+        activityId: Number(params.activityId),
         cid: formObj.cid,
         description: formObj.description,
       },
@@ -131,7 +131,7 @@ export async function action({ params, request }) {
   }
   if (formObj._action == "remove file") {
     let resp = await axios.get("/api/deleteFile", {
-      params: { activityId: params.activityId, cid: formObj.cid },
+      params: { activityId: Number(params.activityId), cid: formObj.cid },
     });
 
     return {
@@ -150,8 +150,8 @@ export async function loader({ params }) {
       `/api/getActivityEditorData/${params.activityId}`,
     );
 
-    let activityId = params.activityId;
-    let docId = params.docId;
+    let activityId = Number(params.activityId);
+    let docId = Number(params.docId);
     if (!docId) {
       // If docId was not supplied in the url,
       // then use the first docId from the activity.
@@ -159,15 +159,15 @@ export async function loader({ params }) {
       docId = activityData.documents[0].docId;
     }
 
-    //Get the doenetML of the docId.
-    //we need transformResponse because
-    //large numbers are simplified with toString if used on doenetMLResponse.data
-    //which was causing errors
-    const doenetMLResponse = await axios.get(
-      `/api/getDocumentContent/${docId}`,
-      { transformResponse: (data) => data.toString() },
-    );
-    let doenetML = doenetMLResponse.data;
+    // If docId isn't in the activity, use the first docId
+    let docInOrder = activityData.documents.map((x) => x.docId).indexOf(docId);
+    if (docInOrder === -1) {
+      docInOrder = 0;
+      docId = activityData.documents[docInOrder].docId;
+    }
+
+    const doenetML = activityData.documents[docInOrder].content;
+
     const lastKnownCid = await cidFromText(doenetML);
 
     const supportingFileResp = await axios.get(
@@ -209,7 +209,7 @@ export async function loader({ params }) {
   } catch (e) {
     console.log(e);
     if (e.response.data.message == "Redirect to public activity.") {
-      return redirect(`/publiceditor/${activityId}/${docId}`);
+      return redirect(`/publicEditor/${activityId}/${docId}`);
     } else {
       throw new Error(e);
     }
@@ -1133,7 +1133,7 @@ export function GeneralActivityControls({
   );
 }
 
-function PortfolioActivitySettingsDrawer({
+function ActivitySettingsDrawer({
   isOpen,
   onClose,
   finalFocusRef,
@@ -1247,7 +1247,7 @@ function EditableName({ dataTest }) {
   );
 }
 
-export function PortfolioActivityEditor() {
+export function ActivityEditor() {
   const { platform, activityId, doenetML, docId, activityData, lastKnownCid } =
     useLoaderData();
 
@@ -1393,7 +1393,7 @@ export function PortfolioActivityEditor() {
 
   return (
     <>
-      <PortfolioActivitySettingsDrawer
+      <ActivitySettingsDrawer
         isOpen={controlsAreOpen}
         onClose={controlsOnClose}
         finalFocusRef={controlsBtnRef}
@@ -1602,8 +1602,8 @@ export function PortfolioActivityEditor() {
                           location={location}
                           navigate={navigate}
                           linkSettings={{
-                            viewURL: "/portfolioviewer",
-                            editURL: "/publiceditor",
+                            viewURL: "/activityViewer",
+                            editURL: "/publicEditor",
                           }}
                           scrollableContainer={
                             document.getElementById("viewer-container") ||
@@ -1789,8 +1789,8 @@ export function PortfolioActivityEditor() {
                         location={location}
                         navigate={navigate}
                         linkSettings={{
-                          viewURL: "/portfolioviewer",
-                          editURL: "/publiceditor",
+                          viewURL: "/activityViewer",
+                          editURL: "/publicEditor",
                         }}
                         scrollableContainer={
                           document.getElementById("viewer-container") ||
