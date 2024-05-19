@@ -685,3 +685,45 @@ test("get assignment data from anonymous users", async () => {
     ],
   });
 });
+
+test("can't get assignment data if other user", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const otherUser = await createTestUser();
+  const otherUserId = otherUser.userId;
+  const { activityId } = await createActivity(ownerId);
+  const assignmentId = await assignActivity(activityId, ownerId);
+
+  await getAssignmentScoreData({
+    assignmentId,
+    ownerId,
+  });
+
+  await expect(
+    getAssignmentScoreData({
+      assignmentId,
+      ownerId: otherUserId,
+    }),
+  ).rejects.toThrow("No assignments found");
+});
+
+test("can't get assignment data if deleted", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId } = await createActivity(ownerId);
+  const assignmentId = await assignActivity(activityId, ownerId);
+
+  await getAssignmentScoreData({
+    assignmentId,
+    ownerId,
+  });
+
+  await deleteAssignment(assignmentId);
+
+  await expect(
+    getAssignmentScoreData({
+      assignmentId,
+      ownerId,
+    }),
+  ).rejects.toThrow("No assignments found");
+});

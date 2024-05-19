@@ -28,6 +28,7 @@ import {
   closeAssignmentWithCode,
   updateUser,
   saveScoreAndState,
+  getAssignmentScoreData,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -441,6 +442,28 @@ app.post("/api/saveScoreAndState", async (req: Request, res: Response) => {
   });
   res.send({});
 });
+
+app.get(
+  "/api/getAssignmentScoreData/:assignmentId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const assignmentId = Number(req.params.assignmentId);
+    const loggedInUserId = Number(req.cookies.userId);
+
+    try {
+      const assignmentWithData = await getAssignmentScoreData({
+        assignmentId,
+        ownerId: loggedInUserId,
+      });
+      res.send(assignmentWithData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);

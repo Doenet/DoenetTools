@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLoaderData } from "react-router";
+import { redirect, useLoaderData } from "react-router";
 import { DateTime } from "luxon";
 
 import { DoenetML } from "@doenet/doenetml";
@@ -64,6 +64,10 @@ export async function action({ params, request }) {
     return true;
   }
 
+  if (formObj._action == "go to data") {
+    return redirect(`/assignmentData/${params.assignmentId}`);
+  }
+
   return null;
 }
 
@@ -89,7 +93,7 @@ export async function loader({ params }) {
 }
 
 export function AssignmentEditor() {
-  const { doenetML, assignmentData } = useLoaderData();
+  const { doenetML, assignmentData, assignmentId } = useLoaderData();
 
   let navigate = useNavigate();
   let location = useLocation();
@@ -221,6 +225,21 @@ export function AssignmentEditor() {
               </Button>
             </Box>
           )}
+          <p>
+            <strong>Some heading or what (aria tags for heading)</strong>
+          </p>
+          <Button
+            type="submit"
+            colorScheme="blue"
+            mt="8px"
+            mr="12px"
+            size="xs"
+            onClick={() => {
+              fetcher.submit({ _action: "go to data" }, { method: "post" });
+            }}
+          >
+            View data
+          </Button>
         </Box>
       </SimpleGrid>
     </>
