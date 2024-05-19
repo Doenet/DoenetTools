@@ -331,8 +331,8 @@ test("assign an activity", async () => {
 
   expect(assignment.activityId).eq(activityId);
   expect(assignment.name).eq("Activity 1");
-  expect(assignment.assignmentItems.length).eq(1);
-  expect(assignment.assignmentItems[0].documentVersion.content).eq(
+  expect(assignment.assignmentDocuments.length).eq(1);
+  expect(assignment.assignmentDocuments[0].documentVersion.content).eq(
     "Some content",
   );
 
@@ -349,7 +349,7 @@ test("assign an activity", async () => {
 
   const unchangedAssignment = await getAssignment(assignmentId, ownerId);
   expect(unchangedAssignment.name).eq("Activity 1");
-  expect(unchangedAssignment.assignmentItems[0].documentVersion.content).eq(
+  expect(unchangedAssignment.assignmentDocuments[0].documentVersion.content).eq(
     "Some content",
   );
 });
@@ -377,8 +377,8 @@ test("cannot assign other user's private activity", async () => {
 
   expect(assignment.activityId).eq(activityId);
   expect(assignment.name).eq("Activity 1");
-  expect(assignment.assignmentItems.length).eq(1);
-  expect(assignment.assignmentItems[0].documentVersion.content).eq(
+  expect(assignment.assignmentDocuments.length).eq(1);
+  expect(assignment.assignmentDocuments[0].documentVersion.content).eq(
     "Some content",
   );
 });

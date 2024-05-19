@@ -363,7 +363,7 @@ export async function getAssignmentEditorData(assignmentId: number) {
   let assignment = await prisma.assignments.findFirstOrThrow({
     where: { assignmentId },
     include: {
-      assignmentItems: {
+      assignmentDocuments: {
         select: {
           docId: true,
           docVersionId: true,
@@ -404,7 +404,7 @@ export async function getAssignmentDataFromCode(
         },
       },
       include: {
-        assignmentItems: {
+        assignmentDocuments: {
           select: {
             docId: true,
             docVersionId: true,
@@ -611,7 +611,7 @@ export async function assignActivity(activityId: number, userId: number) {
       activityId: origActivity.activityId,
       imagePath: origActivity.imagePath,
       ownerId: userId,
-      assignmentItems: {
+      assignmentDocuments: {
         create: documentsVersionsToAdd.map((docVersion) => ({
           documentVersion: {
             connect: {
@@ -672,7 +672,7 @@ export async function getAssignment(assignmentId: number, ownerId: number) {
       ownerId,
     },
     include: {
-      assignmentItems: {
+      assignmentDocuments: {
         select: {
           documentVersion: true,
         },

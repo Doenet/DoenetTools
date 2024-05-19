@@ -75,9 +75,10 @@ export async function loader({ params }) {
   let assignmentId = Number(params.assignmentId);
 
   // TODO: what happens if assignment has no documents?
-  let docId = assignmentData.assignmentItems[0].docId;
+  let docId = assignmentData.assignmentDocuments[0].docId;
 
-  const doenetML = assignmentData.assignmentItems[0].documentVersion.content;
+  const doenetML =
+    assignmentData.assignmentDocuments[0].documentVersion.content;
 
   return {
     assignmentData,

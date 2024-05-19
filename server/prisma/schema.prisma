@@ -23,13 +23,13 @@ model activities {
   @@index([ownerId])
 }
 
-model assignmentItems {
-  assignmentId         Int
-  docVersionId         Int
-  docId                Int
-  assignment           assignments            @relation(fields: [assignmentId], references: [assignmentId], onDelete: NoAction, onUpdate: NoAction)
-  documentVersion      documentVersions       @relation(fields: [docVersionId, docId], references: [version, docId], onDelete: NoAction, onUpdate: NoAction)
-  studentItemResponses studentItemResponses[]
+model assignmentDocuments {
+  assignmentId    Int
+  docVersionId    Int
+  docId           Int
+  assignment      assignments      @relation(fields: [assignmentId], references: [assignmentId], onDelete: NoAction, onUpdate: NoAction)
+  documentVersion documentVersions @relation(fields: [docVersionId, docId], references: [version, docId], onDelete: NoAction, onUpdate: NoAction)
+  documentState   documentState[]
 
   @@id([assignmentId, docVersionId, docId])
   @@index([assignmentId])
@@ -37,19 +37,19 @@ model assignmentItems {
 }
 
 model assignments {
-  assignmentId               Int                          @id @unique @default(autoincrement())
-  classCode                  String?                      @db.VarChar(45)
-  codeValidUntil             DateTime?
-  activityId                 Int
-  ownerId                    Int
-  name                       String
-  imagePath                  String?
-  createdAt                  DateTime                     @default(now())
-  isDeleted                  Boolean                      @default(false)
-  assignmentItems            assignmentItems[]
-  activity                   activities                   @relation(fields: [activityId], references: [activityId], onDelete: NoAction, onUpdate: NoAction)
-  owner                      users                        @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  studentAssignmentResponses studentAssignmentResponses[]
+  assignmentId        Int                   @id @unique @default(autoincrement())
+  classCode           String?               @db.VarChar(45)
+  codeValidUntil      DateTime?
+  activityId          Int
+  ownerId             Int
+  name                String
+  imagePath           String?
+  createdAt           DateTime              @default(now())
+  isDeleted           Boolean               @default(false)
+  assignmentDocuments assignmentDocuments[]
+  activity            activities            @relation(fields: [activityId], references: [activityId], onDelete: NoAction, onUpdate: NoAction)
+  owner               users                 @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  assignmentScores    assignmentScores[]
 
   @@index([activityId])
   @@index([ownerId])
@@ -57,18 +57,18 @@ model assignments {
 }
 
 model documentVersions {
-  version            Int
-  docId              Int
-  cid                String
-  name               String
-  activityName       String
-  content            String
-  createdAt          DateTime             @default(now())
-  doenetmlVersionId  Int
-  assignmentItems    assignmentItems[]
-  document           documents            @relation(fields: [docId], references: [docId], onDelete: NoAction, onUpdate: NoAction)
-  doenetmlVersion    doenetmlVersions     @relation(fields: [doenetmlVersionId], references: [versionId], onDelete: NoAction, onUpdate: NoAction)
-  contributorHistory contributorHistory[]
+  version             Int
+  docId               Int
+  cid                 String
+  name                String
+  activityName        String
+  content             String
+  createdAt           DateTime              @default(now())
+  doenetmlVersionId   Int
+  assignmentDocuments assignmentDocuments[]
+  document            documents             @relation(fields: [docId], references: [docId], onDelete: NoAction, onUpdate: NoAction)
+  doenetmlVersion     doenetmlVersions      @relation(fields: [doenetmlVersionId], references: [versionId], onDelete: NoAction, onUpdate: NoAction)
+  contributorHistory  contributorHistory[]
 
   @@id([version, docId])
   @@unique([docId, cid])
@@ -114,10 +114,10 @@ model doenetmlVersions {
   documentVersions   documentVersions[]
 }
 
-model studentAssignmentResponses {
+model assignmentScores {
   assignmentId Int
   userId       Int
-  score        Float?
+  score        Float       @default(0)
   assignment   assignments @relation(fields: [assignmentId], references: [assignmentId], onDelete: NoAction, onUpdate: NoAction)
   user         users       @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
@@ -126,14 +126,15 @@ model studentAssignmentResponses {
   @@index([userId])
 }
 
-model studentItemResponses {
-  assignmentId   Int
-  docVersionId   Int
-  docId          Int
-  userId         Int
-  response       String?
-  assignmentItem assignmentItems @relation(fields: [assignmentId, docVersionId, docId], references: [assignmentId, docVersionId, docId], onDelete: NoAction, onUpdate: NoAction)
-  user           users           @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+model documentState {
+  assignmentId       Int
+  docVersionId       Int
+  docId              Int
+  userId             Int
+  state              String?
+  score              Float               @default(0)
+  assignmentDocument assignmentDocuments @relation(fields: [assignmentId, docVersionId, docId], references: [assignmentId, docVersionId, docId], onDelete: NoAction, onUpdate: NoAction)
+  user               users               @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([assignmentId, docVersionId, docId, userId])
   @@index([assignmentId, docVersionId, docId])
@@ -141,13 +142,13 @@ model studentItemResponses {
 }
 
 model users {
-  userId                     Int                          @id @default(autoincrement())
-  email                      String                       @unique @db.VarChar(45)
-  name                       String
-  isAdmin                    Boolean                      @default(false)
-  anonymous                  Boolean                      @default(false)
-  activities                 activities[]
-  assignments                assignments[]
-  studentAssignmentResponses studentAssignmentResponses[]
-  studentItemResponses       studentItemResponses[]
+  userId           Int                @id @default(autoincrement())
+  email            String             @unique @db.VarChar(45)
+  name             String
+  isAdmin          Boolean            @default(false)
+  anonymous        Boolean            @default(false)
+  activities       activities[]
+  assignments      assignments[]
+  assignmentScores assignmentScores[]
+  documentState    documentState[]
 }
