@@ -319,10 +319,10 @@ export function Portfolio() {
           zIndex="500"
         >
           <Text fontSize="24px" fontWeight="700">
-            {data.name}
+            {data.name} - no, not a p, but a heading with aria
           </Text>
           <Text fontSize="16px" fontWeight="700">
-            Portfolio
+            Portfolio - no, not a p, but a heading with aria
           </Text>
           <div style={{ position: "absolute", top: "48px", right: "10px" }}>
             <Button
@@ -351,7 +351,7 @@ export function Portfolio() {
         </Box>
         <PublicActivitiesSection data-test="Public Activities">
           <Text fontSize="20px" fontWeight="700">
-            Public
+            Public - no, not a p, but a heading with aria
           </Text>
           <Wrap p="10px" overflow="visible">
             {data.publicActivities.length < 1 ? (
@@ -388,7 +388,7 @@ export function Portfolio() {
 
         <PrivateActivitiesSection data-test="Private Activities">
           <Text fontSize="20px" fontWeight="700">
-            Private
+            Private - no, not a p, but a heading with aria
           </Text>
           <Wrap p="10px" overflow="visible">
             {data.privateActivities.length < 1 ? (

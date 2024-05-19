@@ -128,10 +128,10 @@ export function Assignments() {
           zIndex="500"
         >
           <Text fontSize="24px" fontWeight="700">
-            {data.name}
+            {data.name} - no, not a p, but a heading with aria
           </Text>
           <Text fontSize="16px" fontWeight="700">
-            Assignments
+            Assignments - no, not a p, but a heading with aria
           </Text>
         </Box>
         <AssignmentsSection data-test="Assignments">

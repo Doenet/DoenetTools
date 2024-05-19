@@ -146,10 +146,10 @@ export function Heading(props) {
       flexShrink={0}
     >
       <Text fontSize="24px" fontWeight="700">
-        {props.heading}
+        {props.heading} (hey, no aria params here!)
       </Text>
       <Text fontSize="16px" fontWeight="700">
-        {props.subheading}
+        {props.subheading} (hey, no aria params here!)
       </Text>
     </Flex>
   );
@@ -617,7 +617,7 @@ export function Community() {
           {/* <input type='text' width="400px" /> */}
         </Box>
       </Flex>
-      <Heading heading="Community Public Content" />
+      <Heading heading="Community Content" />
       <Box
         display="flex"
         flexDirection="column"
