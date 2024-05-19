@@ -1,5 +1,6 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { cidFromText } from "./utils/cid";
+import { DateTime } from "luxon";
 
 const prisma = new PrismaClient();
 
@@ -16,7 +17,7 @@ export async function createActivity(ownerId: number) {
       documents: {
         create: [
           {
-            contentLocation: "",
+            content: "",
             doenetmlVersionId: defaultDoenetmlVersion.versionId,
             name: "Untitled Document",
           },
@@ -61,6 +62,15 @@ export async function deleteDocument(docId: number) {
   });
 }
 
+export async function deleteAssignment(assignmentId: number) {
+  return await prisma.assignments.update({
+    where: { assignmentId },
+    data: {
+      isDeleted: true,
+    },
+  });
+}
+
 export async function updateActivity({
   activityId,
   name,
@@ -97,9 +107,27 @@ export async function updateDoc({
   return await prisma.documents.update({
     where: { docId },
     data: {
-      contentLocation: content,
+      content: content,
       name,
       doenetmlVersionId,
+    },
+  });
+}
+
+export async function updateAssignment({
+  assignmentId,
+  name,
+  imagePath,
+}: {
+  assignmentId: number;
+  name?: string;
+  imagePath?: string;
+}) {
+  return await prisma.assignments.update({
+    where: { assignmentId },
+    data: {
+      name,
+      imagePath,
     },
   });
 }
@@ -146,7 +174,7 @@ export async function copyPublicActivityToPortfolio(
     origActivity.documents.map(async (doc) => {
       // For each of the original documents, create a document version (i.e., a frozen snapshot)
       // that we will link to when creating contributor history, below.
-      let originalDocVersion = await createDocumentVersion(doc.docId, userId);
+      let originalDocVersion = await createDocumentVersion(doc.docId);
 
       // document to create with new activityId (to associate it with newly created activity)
       // ignoring the docId, lastEdited, createdAt fields
@@ -216,21 +244,23 @@ export async function copyPublicActivityToPortfolio(
 }
 
 // TODO - access control
-export async function createDocumentVersion(
-  docId: number,
-  ownerId: number,
-): Promise<{
+export async function createDocumentVersion(docId: number): Promise<{
   version: number;
   docId: number;
   cid: string | null;
-  contentLocation: string | null;
+  content: string | null;
   createdAt: Date | null;
   doenetmlVersionId: number;
 }> {
-  const doc = await getDoc(docId);
+  const doc = await prisma.documents.findFirstOrThrow({
+    where: { docId, isDeleted: false },
+    include: {
+      activity: { select: { name: true } },
+    },
+  });
 
   // TODO: cid should really include the doenetmlVersion
-  const cid = await cidFromText(doc.contentLocation || "");
+  const cid = await cidFromText(doc.content || "");
 
   let docVersion = await prisma.documentVersions.findUnique({
     where: { docId_cid: { docId, cid } },
@@ -252,8 +282,10 @@ export async function createDocumentVersion(
         version: newVersion,
         docId,
         cid,
+        name: doc.name,
+        activityName: doc.activity.name,
         doenetmlVersionId: doc.doenetmlVersionId,
-        contentLocation: doc.contentLocation,
+        content: doc.content,
       },
     });
   }
@@ -287,7 +319,7 @@ export async function getActivityViewerData(activityId: number) {
     where: { activityId },
     include: {
       owner: { select: { userId: true, email: true, name: true } },
-      documents: { select: { docId: true } },
+      documents: { select: { docId: true, content: true } },
     },
   });
   const docId = activity.documents[0].docId;
@@ -325,6 +357,86 @@ export async function getActivityViewerData(activityId: number) {
   };
 }
 
+// TODO - access control
+export async function getAssignmentEditorData(assignmentId: number) {
+  // TODO: add pagination or a hard limit in the number of documents one can add to an activity
+  let assignment = await prisma.assignments.findFirstOrThrow({
+    where: { assignmentId },
+    include: {
+      assignmentItems: {
+        select: {
+          docId: true,
+          docVersionId: true,
+          documentVersion: {
+            select: {
+              content: true,
+            },
+          },
+        },
+        orderBy: {
+          docId: "asc",
+        },
+      },
+    },
+  });
+
+  let stillOpen = false;
+  if (assignment.codeValidUntil) {
+    const endDate = DateTime.fromJSDate(assignment.codeValidUntil);
+    stillOpen = DateTime.now() <= endDate;
+  }
+
+  return { ...assignment, stillOpen };
+}
+
+export async function getAssignmentDataFromCode(
+  code: string,
+  signedIn: boolean,
+) {
+  let assignment;
+
+  try {
+    assignment = await prisma.assignments.findFirstOrThrow({
+      where: {
+        classCode: code,
+        codeValidUntil: {
+          gte: DateTime.now().toISO(), // TODO - confirm this works with timezone stuff
+        },
+      },
+      include: {
+        assignmentItems: {
+          select: {
+            docId: true,
+            docVersionId: true,
+            documentVersion: {
+              select: {
+                content: true,
+              },
+            },
+          },
+          orderBy: {
+            docId: "asc",
+          },
+        },
+      },
+    });
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      return {
+        assignmentFound: false,
+        newAnonymousUser: null,
+        assignment: null,
+      };
+    } else {
+      throw e;
+    }
+  }
+
+  let newAnonymousUser = signedIn ? null : await createAnonymousUser();
+
+  return { assignmentFound: true, newAnonymousUser, assignment };
+}
+
 export async function searchPublicActivities(query: string) {
   let query_words = query.split(" ");
   let activities = await prisma.activities.findMany({
@@ -345,35 +457,57 @@ export async function listUserActivities(
   ownerId: number,
   loggedInUserId: number,
 ) {
-  let notMe = ownerId !== loggedInUserId;
+  const notMe = ownerId !== loggedInUserId;
 
-  let activities = await prisma.activities.findMany({
+  const activities = await prisma.activities.findMany({
     where: { ownerId, isDeleted: false, isPublic: notMe ? true : undefined },
     include: { documents: { select: { docId: true, doenetmlVersion: true } } },
   });
 
-  let publicActivities = activities.filter((activity) => activity.isPublic);
-  let privateActivities = activities.filter(
+  const publicActivities = activities.filter((activity) => activity.isPublic);
+  const privateActivities = activities.filter(
     (activity) => !activity.isPublic && !notMe,
   );
 
-  let user = await prisma.users.findUniqueOrThrow({
+  const user = await prisma.users.findUniqueOrThrow({
     where: { userId: ownerId },
     select: { name: true },
   });
 
   return {
-    publicActivities: publicActivities,
-    privateActivities: privateActivities,
+    publicActivities,
+    privateActivities,
     name: user.name,
     notMe,
+  };
+}
+
+export async function listUserAssignments(
+  ownerId: number,
+  loggedInUserId: number,
+) {
+  if (ownerId !== loggedInUserId) {
+    return [];
+  }
+  const assignments = await prisma.assignments.findMany({
+    where: { ownerId, isDeleted: false },
+  });
+
+  const user = await prisma.users.findUniqueOrThrow({
+    where: { userId: ownerId },
+    select: { name: true },
+  });
+
+  return {
+    assignments,
+    name: user.name,
   };
 }
 
 export async function findOrCreateUser(email: string, name: string) {
   const user = await prisma.users.findUnique({ where: { email } });
   if (user) {
-    return user.userId;
+    return user;
   } else {
     return createUser(email, name);
   }
@@ -381,13 +515,40 @@ export async function findOrCreateUser(email: string, name: string) {
 
 export async function createUser(email: string, name: string) {
   const result = await prisma.users.create({ data: { email, name } });
-  return result.userId;
+  return result;
+}
+
+export async function createAnonymousUser() {
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  const random_number = array[0];
+  const name = ``;
+  const email = `anonymous${random_number}@example.com`;
+  const result = await prisma.users.create({
+    data: { email, name, anonymous: true },
+  });
+
+  return result;
 }
 
 export async function getUserInfo(email: string) {
   const user = await prisma.users.findUniqueOrThrow({
     where: { email },
-    select: { userId: true, email: true, name: true },
+    select: { userId: true, email: true, name: true, anonymous: true },
+  });
+  return user;
+}
+
+export async function updateUser({
+  userId,
+  name,
+}: {
+  userId: number;
+  name: string;
+}) {
+  const user = await prisma.users.update({
+    where: { userId },
+    data: { name },
   });
   return user;
 }
@@ -455,4 +616,99 @@ export async function addPromotedContentGroup(groupName: string) {
     }
     throw err;
   }
+}
+export async function assignActivity(activityId: number, userId: number) {
+  let origActivity = await getActivity(activityId);
+
+  if (!(origActivity.isPublic || origActivity.ownerId === userId)) {
+    throw Error("Activity not found");
+  }
+
+  let documentsVersionsToAdd = await Promise.all(
+    origActivity.documents.map(async (doc) => {
+      // For each of the original documents, create a document version (i.e., a frozen snapshot)
+      // that we will link the assignment to.
+      return await createDocumentVersion(doc.docId);
+    }),
+  );
+
+  let newAssignment = await prisma.assignments.create({
+    data: {
+      name: origActivity.name,
+      activityId: origActivity.activityId,
+      imagePath: origActivity.imagePath,
+      ownerId: userId,
+      assignmentItems: {
+        create: documentsVersionsToAdd.map((docVersion) => ({
+          documentVersion: {
+            connect: {
+              version_docId: {
+                docId: docVersion.docId,
+                version: docVersion.version,
+              },
+            },
+          },
+        })),
+      },
+    },
+  });
+
+  return newAssignment.assignmentId;
+}
+
+export async function openAssignmentWithCode(
+  assignmentId: number,
+  closeAt: DateTime,
+) {
+  let classCode = (
+    await prisma.assignments.findUniqueOrThrow({
+      where: { assignmentId },
+      select: { classCode: true },
+    })
+  ).classCode;
+
+  if (!classCode) {
+    classCode = generateClassCode();
+  }
+
+  const codeValidUntil = closeAt.toJSDate();
+
+  await prisma.assignments.update({
+    where: { assignmentId },
+    data: {
+      classCode,
+      codeValidUntil,
+    },
+  });
+  return { classCode, codeValidUntil };
+}
+
+export async function closeAssignmentWithCode(assignmentId: number) {
+  await prisma.assignments.update({
+    where: { assignmentId },
+    data: {
+      codeValidUntil: null,
+    },
+  });
+}
+
+export async function getAssignment(assignmentId: number, ownerId: number) {
+  let assignment = await prisma.assignments.findFirstOrThrow({
+    where: {
+      assignmentId,
+      ownerId,
+    },
+    include: {
+      assignmentItems: {
+        select: {
+          documentVersion: true,
+        },
+      },
+    },
+  });
+  return assignment;
+}
+
+function generateClassCode() {
+  return ("00000" + Math.floor(Math.random() * 1000000)).slice(-6);
 }

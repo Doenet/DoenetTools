@@ -40,9 +40,13 @@ model assignmentItems {
 model assignments {
   assignmentId               Int                          @id @unique @default(autoincrement())
   classCode                  String?                      @db.VarChar(45)
+  codeValidUntil             DateTime?
   activityId                 Int
   ownerId                    Int
+  name                       String
+  imagePath                  String?
   createdAt                  DateTime                     @default(now())
+  isDeleted                  Boolean                      @default(false)
   assignmentItems            assignmentItems[]
   activity                   activities                   @relation(fields: [activityId], references: [activityId], onDelete: NoAction, onUpdate: NoAction)
   owner                      users                        @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
@@ -50,13 +54,16 @@ model assignments {
 
   @@index([activityId])
   @@index([ownerId])
+  @@index([classCode])
 }
 
 model documentVersions {
   version            Int
   docId              Int
   cid                String
-  contentLocation    String
+  name               String
+  activityName       String
+  content            String
   createdAt          DateTime             @default(now())
   doenetmlVersionId  Int
   assignmentItems    assignmentItems[]
@@ -72,7 +79,7 @@ model documentVersions {
 model documents {
   docId              Int                  @id @unique @default(autoincrement())
   activityId         Int
-  contentLocation    String
+  content            String
   createdAt          DateTime             @default(now())
   lastEdited         DateTime             @default(now())
   name               String
@@ -139,6 +146,7 @@ model users {
   email                      String                       @unique @db.VarChar(45)
   name                       String
   isAdmin                    Boolean                      @default(false)
+  anonymous                  Boolean                      @default(false)
   activities                 activities[]
   assignments                assignments[]
   studentAssignmentResponses studentAssignmentResponses[]

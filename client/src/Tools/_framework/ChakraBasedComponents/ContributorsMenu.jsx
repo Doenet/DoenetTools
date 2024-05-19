@@ -64,14 +64,14 @@ export default function ContributorsMenu({ contributorHistory, owner }) {
             key={"miauthor"}
             data-test={"contributors menu item author"}
             as={Link}
-            to={`/publicportfolio/${owner.userId}`}
+            to={`/publicPortfolio/${owner.userId}`}
           >
             {avatars[0]} <Text ml="4px">{owner.name}</Text>
           </MenuItem>
           {contributorHistory.map((contrib_hist, i) => {
             let prevActivity = contrib_hist.prevDoc.document.activity;
             let label = `${prevActivity.name} by ${prevActivity.owner.name}`;
-            const href = `/portfolioviewer/${prevActivity.activityId}`;
+            const href = `/activityViewer/${prevActivity.activityId}`;
 
             return (
               <MenuItem

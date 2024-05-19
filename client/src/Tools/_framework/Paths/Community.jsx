@@ -146,7 +146,7 @@ export async function loader({ request }) {
   }
 }
 
-function Heading(props) {
+export function Heading(props) {
   return (
     <Flex
       flexDirection="column"
@@ -459,7 +459,7 @@ export function Community() {
                 {allMatches.map((itemObj) => {
                   if (itemObj?.type == "activity") {
                     const { activityId, imagePath, name, owner } = itemObj;
-                    const imageLink = `/portfolioviewer/${activityId}`;
+                    const imageLink = `/activityViewer/${activityId}`;
 
                     return (
                       <ActivityCard
@@ -482,7 +482,7 @@ export function Community() {
                     );
                   } else if (itemObj?.type == "author") {
                     const { courseId, firstName, lastName } = itemObj;
-                    const imageLink = `/publicportfolio/${courseId}`;
+                    const imageLink = `/publicPortfolio/${courseId}`;
 
                     return (
                       <AuthorCard
@@ -522,7 +522,7 @@ export function Community() {
                 {searchResults?.activities.map((activityObj) => {
                   const { activityId, imagePath, name, fullName } = activityObj;
                   //{ activityLink, activityId, imagePath, name, fullName }
-                  const imageLink = `/portfolioviewer/${activityId}`;
+                  const imageLink = `/activityViewer/${activityId}`;
 
                   return (
                     <ActivityCard
@@ -574,7 +574,7 @@ export function Community() {
                 {searchResults?.users.map((authorObj) => {
                   const { courseId, firstName, lastName } = authorObj;
                   // console.log("authorObj",authorObj)
-                  const imageLink = `/publicportfolio/${courseId}`;
+                  const imageLink = `/publicPortfolio/${courseId}`;
 
                   return (
                     <AuthorCard
@@ -722,7 +722,7 @@ export function Community() {
                             fullName={
                               cardObj.firstName + " " + cardObj.lastName
                             }
-                            imageLink={`/portfolioviewer/${cardObj.activityId}`}
+                            imageLink={`/activityViewer/${cardObj.activityId}`}
                             menuItems={
                               <>
                                 <MenuItem

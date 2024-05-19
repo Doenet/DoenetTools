@@ -56,7 +56,7 @@ export default function HomeIntroVideo() {
       <Show above="sm">
         <Link
           color={"white"}
-          href="https://www.doenet.org/portfolioviewer/_IDTeopxcrVV2EzMEA4Cg9"
+          href="https://www.doenet.org/activityViewer/_IDTeopxcrVV2EzMEA4Cg9"
         >
           How to Make this Animation
         </Link>
