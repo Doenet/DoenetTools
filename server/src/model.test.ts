@@ -24,6 +24,8 @@ import {
   createAnonymousUser,
   updateUser,
   getUserInfo,
+  addPromotedContent,
+  loadPromotedContentGroups,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -316,13 +318,43 @@ test("updateActivity does not update properties when passed undefined values", a
   expect(updatedActivity).toEqual(originalActivity);
 });
 
-test("addPromotedContentGroup does not allow duplicates", async () => {
+test("Create promotedContentGroup and assign an activity to it", async () => {
   const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
-  const firstGroup = await addPromotedContentGroup(groupName);
-  expect(firstGroup).toEqual({success: true});
-  const duplicateGroup = await addPromotedContentGroup(groupName);
-  expect(duplicateGroup).toEqual({success: false, message: "A group with that name already exists."});
+  const groupResponse = await addPromotedContentGroup(groupName);
+  expect(groupResponse).toEqual({success: true});
+
+  // Creating the same group again should fail
+  const duplicateGroupResponse = await addPromotedContentGroup(groupName);
+  expect(duplicateGroupResponse).toEqual({success: false, message: "A group with that name already exists."});
+
+  const groups = await loadPromotedContentGroups();
+
+  //Find groupId
+  let groupId = -1;
+  for(const group of groups) {
+    if(group.groupName === groupName) {
+      groupId = group.promotedGroupId;
+      break;
+    }
+  }
+
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId } = await createActivity(ownerId);
+
+  const responsePrivate = await addPromotedContent(groupId, activityId);
+  expect(responsePrivate).toEqual({
+    success: false,
+    message: "This activity does not exist or is not public."
+  });
+
+  await updateActivity({activityId, isPublic: true});
+
+  const responseSuccess = await addPromotedContent(groupId, activityId);
+  expect(responseSuccess).toEqual({success: true});
+ 
 });
+
 test("assign an activity", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;

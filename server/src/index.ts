@@ -28,6 +28,8 @@ import {
   openAssignmentWithCode,
   closeAssignmentWithCode,
   updateUser,
+  loadPromotedContentGroups,
+  addPromotedContent,
 } from "./model";
 
 dotenv.config();
@@ -200,6 +202,14 @@ app.get("/api/loadPromotedContent", (req: Request, res: Response) => {
   });
 });
 
+app.post("/api/addPromotedContent", async (req: Request, res: Response) => {
+  const groupId = req.body.groupId;
+  const activityId = req.body.activityId;
+  const response = await addPromotedContent(groupId, activityId);
+  res.send(response);
+});
+
+
 app.post("/api/addPromotedContentGroup", async (req: Request, res: Response) => {
   const groupName = req.body.groupName;
   const response = await addPromotedContentGroup(groupName);
@@ -261,8 +271,13 @@ app.get(
   },
 );
 
-app.get("/api/loadPromotedContentGroups", (req: Request, res: Response) => {
-  res.send({});
+app.get("/api/loadPromotedContentGroups", async (req: Request, res: Response) => {
+  const groups = await loadPromotedContentGroups();
+  console.log(groups);
+  res.send({
+    success: true, //TODO: do we need this?
+    carouselGroups: groups
+  });
 });
 
 app.post("/api/saveDoenetML", (req: Request, res: Response) => {

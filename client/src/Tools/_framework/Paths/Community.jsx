@@ -206,20 +206,16 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
     );
   };
 
-  const promoteContent = (groupInfo) => {
+  const promoteContent = async (groupInfo) => {
     const uploadData = {
       groupId: groupInfo.promotedGroupId,
       activityId,
     };
-    axios
-      .post("/api/addPromotedContent", uploadData)
-      .then(({ data }) => {
-        onClose();
-      })
-      .catch((e) => {
-        console.log(e);
-        alert("Error - " + e.response.data.message);
-      });
+    const response = await axios.post("/api/addPromotedContent", uploadData);
+    if(!response.data.success) {
+      alert(response.data.message);
+    } 
+
   };
 
   const createGroup = () => {

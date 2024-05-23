@@ -617,6 +617,82 @@ export async function addPromotedContentGroup(groupName: string) {
     throw err;
   }
 }
+
+// TODO - access control
+export async function loadPromotedContentGroups() {
+  let groups = await prisma.promotedContentGroups.findMany({
+    select: {
+      promotedGroupId: true,
+      groupName: true,
+      currentlyFeatured: true,
+      homepage: true,
+      _count: { //is this used on client?
+        select: {
+          promotedContent: true
+        }
+      }
+    }
+  });
+
+  const reformatted_groups = groups.map((group) => {
+    return {
+      promotedGroupId: group.promotedGroupId,
+      groupName: group.groupName,
+      currentyFeatured: group.currentlyFeatured,
+      homepage: group.homepage,
+      itemCount: group._count.promotedContent
+    };
+  });
+
+  return reformatted_groups;
+}
+
+// TODO - access control
+export async function addPromotedContent(groupId: number, activityId: number) {
+
+  const activity = await prisma.activities.findUnique({
+    where: {
+      activityId,
+      isPublic: true
+    },
+    select: {
+      // not using this, we just need to select one field
+      activityId: true
+    }
+  });
+  if(!activity) {
+    return {
+      success: false,
+      message: "This activity does not exist or is not public."
+    };
+  }
+
+  try {    
+    await prisma.promotedContent.create({
+      data: {
+        activityId,
+        promotedGroupId: groupId,
+        sortOrder: "1",
+      }
+    });
+    return { success: true };
+
+  } catch(err) {
+    if(err instanceof Prisma.PrismaClientKnownRequestError) {
+      // The .code property can be accessed in a type-safe manner
+      if(err.code === "P2002") {
+        return {
+          success: false,
+          message: "This activity is already in that group.",
+        };
+      }
+    }
+    throw err;
+  }
+}
+
+
+
 export async function assignActivity(activityId: number, userId: number) {
   let origActivity = await getActivity(activityId);
 
