@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "vitest",
-    "dev": "npx nodemon src/index.ts"
+    "dev": "npx nodemon src/index.ts",
+    "start": "npx nodemon src/index.ts"
   },
   "keywords": [],
   "author": "",
