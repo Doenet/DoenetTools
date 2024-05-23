@@ -102,6 +102,9 @@ export function AssignmentViewer() {
           score: event.data.score,
           state: JSON.stringify(event.data.state),
         });
+      } else if (event.data.subject == "SPLICE.getState") {
+        // get state from database
+        // send message "SPLICE.getState.response" with same message id
       }
     });
   }, []);
