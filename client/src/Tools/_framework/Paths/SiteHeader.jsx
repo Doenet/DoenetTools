@@ -162,6 +162,11 @@ export function SiteHeader(props) {
                 <NavLinkTab to="community" dataTest="Community">
                   Community
                 </NavLinkTab>
+                {!signedIn ? (
+                  <NavLinkTab to="classCode" dataTest="Class Code">
+                    Class Code
+                  </NavLinkTab>
+                ) : null}
                 {signedIn && (
                   <>
                     <NavLinkTab to={`portfolio/${userId}`} dataTest="Portfolio">

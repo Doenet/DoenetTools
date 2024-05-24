@@ -116,6 +116,7 @@ export function AssignmentEditor() {
   return (
     <>
       <Heading heading={assignmentData.name} />
+      <Heading heading={assignmentData.classCode} />
       <SimpleGrid columns={2} spacing="20px" margin="20px">
         <VStack>
           <Heading subheading="Assignment Preview" />
