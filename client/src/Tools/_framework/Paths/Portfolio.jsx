@@ -15,6 +15,7 @@ import {
   DrawerOverlay,
   Drawer,
   MenuItem,
+  Heading,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -318,12 +319,12 @@ export function Portfolio() {
           textAlign="center"
           zIndex="500"
         >
-          <Text fontSize="24px" fontWeight="700">
-            {data.name} - no, not a p, but a heading with aria
-          </Text>
-          <Text fontSize="16px" fontWeight="700">
-            Portfolio - no, not a p, but a heading with aria
-          </Text>
+          <Heading as="h2" size="lg">
+            {data.name}
+          </Heading>
+          <Heading as="h3" size="md">
+            Portfolio
+          </Heading>
           <div style={{ position: "absolute", top: "48px", right: "10px" }}>
             <Button
               data-test="Add Activity"
@@ -350,9 +351,9 @@ export function Portfolio() {
           </div>
         </Box>
         <PublicActivitiesSection data-test="Public Activities">
-          <Text fontSize="20px" fontWeight="700">
-            Public - no, not a p, but a heading with aria
-          </Text>
+          <Heading as="h2" size="lg">
+            Public
+          </Heading>
           <Wrap p="10px" overflow="visible">
             {data.publicActivities.length < 1 ? (
               <Flex
@@ -387,9 +388,9 @@ export function Portfolio() {
         </PublicActivitiesSection>
 
         <PrivateActivitiesSection data-test="Private Activities">
-          <Text fontSize="20px" fontWeight="700">
-            Private - no, not a p, but a heading with aria
-          </Text>
+          <Heading as="h2" size="lg">
+            Private
+          </Heading>
           <Wrap p="10px" overflow="visible">
             {data.privateActivities.length < 1 ? (
               <Flex

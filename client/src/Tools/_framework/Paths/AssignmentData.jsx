@@ -12,7 +12,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { Heading } from "./Community";
+import { DoenetHeading as Heading } from "./Community";
 import { useFetcher } from "react-router-dom";
 
 export async function action({ params, request }) {

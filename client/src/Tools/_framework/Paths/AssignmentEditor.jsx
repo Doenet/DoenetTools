@@ -16,7 +16,7 @@ import {
 import { useFetcher } from "react-router-dom";
 import axios from "axios";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
-import { Heading } from "./Community";
+import { DoenetHeading as Heading } from "./Community";
 import { useLocation, useNavigate } from "react-router";
 
 export async function action({ params, request }) {
@@ -118,11 +118,7 @@ export function AssignmentEditor() {
       <Heading heading={assignmentData.name} />
       <SimpleGrid columns={2} spacing="20px" margin="20px">
         <VStack>
-          <p>
-            <strong>
-              Assignment preview (left align me please, aria tags for heading)
-            </strong>
-          </p>
+          <Heading subheading="Assignment Preview" />
 
           <Box
             background="var(--canvas)"
@@ -166,9 +162,7 @@ export function AssignmentEditor() {
         <Box>
           {assignmentData.stillOpen ? (
             <Box>
-              <p>
-                <strong>Quick assign (aria tags for heading)</strong>
-              </p>
+              <Heading subheading="Quick Assign" />
               <p>
                 Assignment is currently active with code{" "}
                 <strong>{assignmentData.classCode}</strong>, and open for
@@ -196,9 +190,7 @@ export function AssignmentEditor() {
             </Box>
           ) : (
             <Box>
-              <p>
-                <strong>Quick assign (aria tags for heading)</strong>
-              </p>
+              <Heading subheading="Quick Assign" />
               <p>Assign to students with a code</p>
               How long would you like this activity to remain open?
               <RadioGroup onChange={setDuration} value={duration}>
@@ -225,9 +217,8 @@ export function AssignmentEditor() {
               </Button>
             </Box>
           )}
-          <p>
-            <strong>Some heading or what (aria tags for heading)</strong>
-          </p>
+
+          <Heading subheading="Instructor Overview" />
           <Button
             type="submit"
             colorScheme="blue"
