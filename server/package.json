@@ -6,7 +6,8 @@
   "scripts": {
     "test": "vitest",
     "dev": "npx nodemon src/index.ts",
-    "start": "npx nodemon src/index.ts"
+    "build": "npx tsc",
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
