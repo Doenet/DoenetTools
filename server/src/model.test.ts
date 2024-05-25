@@ -26,6 +26,7 @@ import {
   deleteAssignment,
   saveScoreAndState,
   getAssignmentScoreData,
+  loadState,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -724,6 +725,65 @@ test("can't get assignment data if deleted", async () => {
     getAssignmentScoreData({
       assignmentId,
       ownerId,
+    }),
+  ).rejects.toThrow("No assignments found");
+});
+
+test("only user and assignment owner can load document state", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId, docId } = await createActivity(ownerId);
+  const assignmentId = await assignActivity(activityId, ownerId);
+
+  // open assignment generates code
+  let closeAt = DateTime.now().plus({ days: 1 });
+  const { classCode } = await openAssignmentWithCode(assignmentId, closeAt);
+
+  // create new anonymous user
+  let assignmentData = await getAssignmentDataFromCode(classCode, false);
+  let newUser = assignmentData.newAnonymousUser;
+
+  await saveScoreAndState({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    userId: newUser!.userId,
+    score: 0.5,
+    state: "document state 1",
+  });
+
+  // anonymous user can load state
+  let retrievedState = await loadState({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    requestedUserId: newUser!.userId,
+    userId: newUser!.userId,
+  });
+
+  expect(retrievedState).eq("document state 1");
+
+  // assignment owner can load state
+  let retrievedState2 = await loadState({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    requestedUserId: newUser!.userId,
+    userId: ownerId,
+  });
+
+  expect(retrievedState2).eq("document state 1");
+
+  // another user cannot load state
+  const user2 = await createTestUser();
+
+  await expect(
+    loadState({
+      assignmentId,
+      docId,
+      docVersionId: 1,
+      requestedUserId: newUser!.userId,
+      userId: user2.userId,
     }),
   ).rejects.toThrow("No assignments found");
 });

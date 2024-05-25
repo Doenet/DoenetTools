@@ -29,6 +29,7 @@ import {
   updateUser,
   saveScoreAndState,
   getAssignmentScoreData,
+  loadState,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -444,6 +445,34 @@ app.post("/api/saveScoreAndState", async (req: Request, res: Response) => {
   });
   res.send({});
 });
+
+app.get(
+  "/api/loadState",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const assignmentId = Number(req.query.assignmentId);
+    const docId = Number(req.query.docId);
+    const docVersionId = Number(req.query.docVersionId);
+    const requestedUserId = Number(req.query.userId || req.cookies.userId);
+    const loggedInUserId = Number(req.cookies.userId);
+
+    try {
+      const state = await loadState({
+        assignmentId,
+        docId,
+        docVersionId,
+        requestedUserId,
+        userId: loggedInUserId,
+      });
+      res.send({ state });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.status(204).send({});
+      } else {
+        next(e);
+      }
+    }
+  },
+);
 
 app.get(
   "/api/getAssignmentScoreData/:assignmentId",

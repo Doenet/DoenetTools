@@ -771,6 +771,46 @@ export async function saveScoreAndState({
   }
 }
 
+export async function loadState({
+  assignmentId,
+  docId,
+  docVersionId,
+  requestedUserId,
+  userId,
+}: {
+  assignmentId: number;
+  docId: number;
+  docVersionId: number;
+  requestedUserId: number;
+  userId: number;
+}) {
+  if (requestedUserId !== userId) {
+    // If user isn't the requested user, then user is allowed to load requested users state
+    // only if they are the owner of the assignment.
+    // If not user is not owner, then it will throw an error.
+    await prisma.assignments.findUniqueOrThrow({
+      where: {
+        assignmentId,
+        ownerId: userId,
+      },
+    });
+  }
+
+  const documentState = await prisma.documentState.findUniqueOrThrow({
+    where: {
+      assignmentId_docVersionId_docId_userId: {
+        assignmentId,
+        docId,
+        docVersionId,
+        userId: requestedUserId,
+      },
+    },
+    select: { state: true },
+  });
+
+  return documentState.state;
+}
+
 export async function getAssignmentScoreData({
   assignmentId,
   ownerId,
