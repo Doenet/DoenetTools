@@ -103,8 +103,40 @@ export function AssignmentViewer() {
           state: JSON.stringify(event.data.state),
         });
       } else if (event.data.subject == "SPLICE.getState") {
-        // get state from database
-        // send message "SPLICE.getState.response" with same message id
+        try {
+          let { data } = await axios.get("/api/loadState", {
+            params: {
+              assignmentId: assignment.assignmentId,
+              docId: assignment.assignmentDocuments[0].docId,
+              docVersionId: assignment.assignmentDocuments[0].docVersionId,
+              userId: event.data.userId,
+            },
+          });
+
+          if (data.state) {
+            window.postMessage({
+              subject: "SPLICE.getState.response",
+              messageId: event.data.messageId,
+              success: true,
+              loadedState: true,
+              state: data.state,
+            });
+          } else {
+            window.postMessage({
+              subject: "SPLICE.getState.response",
+              messageId: event.data.messageId,
+              success: true,
+              loadedState: false,
+            });
+          }
+        } catch (e) {
+          window.postMessage({
+            subject: "SPLICE.getState.response",
+            messageId: event.data.messageId,
+            success: false,
+            message: "Server error loading page state.",
+          });
+        }
       }
     });
   }, []);
