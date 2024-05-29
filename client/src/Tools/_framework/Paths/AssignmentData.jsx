@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
-import { useFetcher } from "react-router-dom";
+import { useFetcher, Link } from "react-router-dom";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -75,8 +75,30 @@ export function AssignmentData() {
           <Tbody>
             {assignmentData.assignmentScores.map((assignmentScore) => (
               <Tr key={`user${assignmentScore.user.userId}`}>
-                <Td>{assignmentScore.user.name}</Td>
-                <Td>{Math.round(assignmentScore.score * 100) / 100}</Td>
+                <Td>
+                  <Link
+                    to={
+                      "/assignmentData/" +
+                      assignmentId +
+                      "/" +
+                      assignmentScore.user.userId
+                    }
+                  >
+                    {assignmentScore.user.name}
+                  </Link>
+                </Td>
+                <Td>
+                  <Link
+                    to={
+                      "/assignmentData/" +
+                      assignmentId +
+                      "/" +
+                      assignmentScore.user.userId
+                    }
+                  >
+                    {Math.round(assignmentScore.score * 100) / 100}
+                  </Link>
+                </Td>
               </Tr>
             ))}
           </Tbody>

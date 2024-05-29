@@ -30,6 +30,7 @@ import {
   saveScoreAndState,
   getAssignmentScoreData,
   loadState,
+  getAssignmentStudentData,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -486,6 +487,30 @@ app.get(
         ownerId: loggedInUserId,
       });
       res.send(assignmentWithData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getAssignmentStudentData/:assignmentId/:userId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const assignmentId = Number(req.params.assignmentId);
+    const userId = Number(req.params.userId);
+    const loggedInUserId = Number(req.cookies.userId);
+
+    try {
+      const assignmentData = await getAssignmentStudentData({
+        assignmentId,
+        ownerId: loggedInUserId,
+        userId,
+      });
+      res.send(assignmentData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);

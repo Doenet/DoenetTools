@@ -60,6 +60,11 @@ import {
   AssignmentData,
 } from "./Tools/_framework/Paths/AssignmentData";
 import {
+  loader as assignmentStudentDataLoader,
+  action as assignmentStudentDataAction,
+  AssignmentStudentData,
+} from "./Tools/_framework/Paths/AssignmentStudentData";
+import {
   loader as enterClassCodeLoader,
   action as enterClassCodeAction,
   EnterClassCode,
@@ -405,6 +410,25 @@ const router = createBrowserRouter([
             onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
           >
             <AssignmentData />
+          </MathJaxContext>
+        ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+      },
+      {
+        path: "assignmentData/:assignmentId/:userId",
+        loader: assignmentStudentDataLoader,
+        action: assignmentStudentDataAction,
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <AssignmentStudentData />
           </MathJaxContext>
         ),
         errorElement: (

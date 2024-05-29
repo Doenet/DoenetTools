@@ -113,10 +113,21 @@ export function AssignmentEditor() {
 
   const fetcher = useFetcher();
 
+  let subheading;
+  if (assignmentData.classCode) {
+    if (assignmentData.stillOpen) {
+      subheading = `Class code: ${assignmentData.classCode}`;
+    } else {
+      subheading = `Class code (inactive): ${assignmentData.classCode}`;
+    }
+  } else {
+    subheading = `Inactive`;
+  }
+
   return (
     <>
       <Heading heading={assignmentData.name} />
-      <Heading heading={assignmentData.classCode} />
+      <Heading subheading={subheading} />
       <SimpleGrid columns={2} spacing="20px" margin="20px">
         <VStack>
           <Heading subheading="Assignment Preview" />

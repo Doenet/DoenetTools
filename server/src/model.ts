@@ -836,3 +836,37 @@ export async function getAssignmentScoreData({
 
   return assignment;
 }
+
+export async function getAssignmentStudentData({
+  assignmentId,
+  ownerId,
+  userId,
+}: {
+  assignmentId: number;
+  ownerId: number;
+  userId: number;
+}) {
+  const assignmentData = await prisma.assignmentScores.findUniqueOrThrow({
+    where: {
+      assignmentId_userId: { assignmentId, userId },
+      assignment: { ownerId, isDeleted: false },
+    },
+    include: {
+      assignment: {
+        select: {
+          name: true,
+          assignmentDocuments: {
+            select: {
+              docId: true,
+              docVersionId: true,
+              documentVersion: { select: { content: true } },
+            },
+          },
+        },
+      },
+      user: { select: { name: true } },
+    },
+  });
+
+  return assignmentData;
+}

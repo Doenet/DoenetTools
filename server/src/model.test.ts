@@ -27,6 +27,7 @@ import {
   saveScoreAndState,
   getAssignmentScoreData,
   loadState,
+  getAssignmentStudentData,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -564,19 +565,233 @@ test("assignment data with code create anonymous user when not signed in", async
   expect(newUser2!.userId).not.eq(newUser1!.userId);
 });
 
-test("get assignment data from anonymous users", async () => {
+test(
+  "get assignment data from anonymous users",
+  { timeout: 6000 },
+  async () => {
+    const owner = await createTestUser();
+    const ownerId = owner.userId;
+    const { activityId, docId } = await createActivity(ownerId);
+    await updateActivity({ activityId, name: "Activity 1" });
+    await updateDoc({
+      docId,
+      content: "Some content",
+    });
+
+    const assignmentId = await assignActivity(activityId, ownerId);
+
+    // open assignment generates code
+    let closeAt = DateTime.now().plus({ days: 1 });
+    const { classCode } = await openAssignmentWithCode(assignmentId, closeAt);
+
+    let assignmentData = await getAssignmentDataFromCode(classCode, false);
+    let newUser1 = assignmentData.newAnonymousUser;
+    newUser1 = await updateUser({
+      userId: newUser1!.userId,
+      name: "Zoe Zaborowski",
+    });
+    const userData1 = { userId: newUser1!.userId, name: newUser1!.name };
+
+    await saveScoreAndState({
+      assignmentId,
+      docId,
+      docVersionId: 1,
+      userId: newUser1!.userId,
+      score: 0.5,
+      state: "document state 1",
+    });
+
+    let assignmentWithScores = await getAssignmentScoreData({
+      assignmentId,
+      ownerId,
+    });
+
+    expect(assignmentWithScores).eqls({
+      name: "Activity 1",
+      assignmentScores: [{ score: 0.5, user: userData1 }],
+    });
+
+    let assignmentStudentData = await getAssignmentStudentData({
+      assignmentId,
+      ownerId,
+      userId: newUser1!.userId,
+    });
+
+    expect(assignmentStudentData).eqls({
+      assignmentId,
+      userId: newUser1!.userId,
+      score: 0.5,
+      assignment: {
+        name: "Activity 1",
+        assignmentDocuments: [
+          {
+            docId,
+            docVersionId: 1,
+            documentVersion: { content: "Some content" },
+          },
+        ],
+      },
+      user: { name: "Zoe Zaborowski" },
+    });
+
+    // new lower score ignored
+    await saveScoreAndState({
+      assignmentId,
+      docId,
+      docVersionId: 1,
+      userId: newUser1!.userId,
+      score: 0.2,
+      state: "document state 2",
+    });
+    assignmentWithScores = await getAssignmentScoreData({
+      assignmentId,
+      ownerId,
+    });
+    expect(assignmentWithScores).eqls({
+      name: "Activity 1",
+      assignmentScores: [{ score: 0.5, user: userData1 }],
+    });
+
+    assignmentStudentData = await getAssignmentStudentData({
+      assignmentId,
+      ownerId,
+      userId: newUser1!.userId,
+    });
+
+    expect(assignmentStudentData).eqls({
+      assignmentId,
+      userId: newUser1!.userId,
+      score: 0.5,
+      assignment: {
+        name: "Activity 1",
+        assignmentDocuments: [
+          {
+            docId,
+            docVersionId: 1,
+            documentVersion: { content: "Some content" },
+          },
+        ],
+      },
+      user: { name: "Zoe Zaborowski" },
+    });
+
+    // new higher score used
+    await saveScoreAndState({
+      assignmentId,
+      docId,
+      docVersionId: 1,
+      userId: newUser1!.userId,
+      score: 0.7,
+      state: "document state 3",
+    });
+    assignmentWithScores = await getAssignmentScoreData({
+      assignmentId,
+      ownerId,
+    });
+    expect(assignmentWithScores).eqls({
+      name: "Activity 1",
+      assignmentScores: [{ score: 0.7, user: userData1 }],
+    });
+
+    assignmentStudentData = await getAssignmentStudentData({
+      assignmentId,
+      ownerId,
+      userId: newUser1!.userId,
+    });
+
+    expect(assignmentStudentData).eqls({
+      assignmentId,
+      userId: newUser1!.userId,
+      score: 0.7,
+      assignment: {
+        name: "Activity 1",
+        assignmentDocuments: [
+          {
+            docId,
+            docVersionId: 1,
+            documentVersion: { content: "Some content" },
+          },
+        ],
+      },
+      user: { name: "Zoe Zaborowski" },
+    });
+
+    // second user opens assignment
+    assignmentData = await getAssignmentDataFromCode(classCode, false);
+
+    let newUser2 = assignmentData.newAnonymousUser;
+    newUser2 = await updateUser({
+      userId: newUser2!.userId,
+      name: "Arya Abbas",
+    });
+    const userData2 = { userId: newUser2!.userId, name: newUser2!.name };
+
+    // assignment scores still unchanged
+    assignmentWithScores = await getAssignmentScoreData({
+      assignmentId,
+      ownerId,
+    });
+    expect(assignmentWithScores).eqls({
+      name: "Activity 1",
+      assignmentScores: [{ score: 0.7, user: userData1 }],
+    });
+
+    // save state for second user
+    await saveScoreAndState({
+      assignmentId,
+      docId,
+      docVersionId: 1,
+      userId: newUser2!.userId,
+      score: 0.3,
+      state: "document state 4",
+    });
+
+    // second user's score shows up first due to alphabetical sorting
+    assignmentWithScores = await getAssignmentScoreData({
+      assignmentId,
+      ownerId,
+    });
+    expect(assignmentWithScores).eqls({
+      name: "Activity 1",
+      assignmentScores: [
+        { score: 0.3, user: userData2 },
+        { score: 0.7, user: userData1 },
+      ],
+    });
+
+    assignmentStudentData = await getAssignmentStudentData({
+      assignmentId,
+      ownerId,
+      userId: newUser2!.userId,
+    });
+
+    expect(assignmentStudentData).eqls({
+      assignmentId,
+      userId: newUser2!.userId,
+      score: 0.3,
+      assignment: {
+        name: "Activity 1",
+        assignmentDocuments: [
+          {
+            docId,
+            docVersionId: 1,
+            documentVersion: { content: "Some content" },
+          },
+        ],
+      },
+      user: { name: "Arya Abbas" },
+    });
+  },
+);
+
+test("can't get assignment data if other user", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
+  const otherUser = await createTestUser();
+  const otherUserId = otherUser.userId;
   const { activityId, docId } = await createActivity(ownerId);
-  await updateActivity({ activityId, name: "Activity 1" });
-  await updateDoc({
-    docId,
-    content: "Some content",
-  });
-
   const assignmentId = await assignActivity(activityId, ownerId);
 
-  // open assignment generates code
   let closeAt = DateTime.now().plus({ days: 1 });
   const { classCode } = await openAssignmentWithCode(assignmentId, closeAt);
 
@@ -586,7 +801,6 @@ test("get assignment data from anonymous users", async () => {
     userId: newUser1!.userId,
     name: "Zoe Zaborowski",
   });
-  const userData1 = { userId: newUser1!.userId, name: newUser1!.name };
 
   await saveScoreAndState({
     assignmentId,
@@ -596,104 +810,6 @@ test("get assignment data from anonymous users", async () => {
     score: 0.5,
     state: "document state 1",
   });
-
-  let assignmentWithScores = await getAssignmentScoreData({
-    assignmentId,
-    ownerId,
-  });
-
-  expect(assignmentWithScores).eqls({
-    name: "Activity 1",
-    assignmentScores: [{ score: 0.5, user: userData1 }],
-  });
-
-  // new lower score ignored
-  await saveScoreAndState({
-    assignmentId,
-    docId,
-    docVersionId: 1,
-    userId: newUser1!.userId,
-    score: 0.2,
-    state: "document state 2",
-  });
-  assignmentWithScores = await getAssignmentScoreData({
-    assignmentId,
-    ownerId,
-  });
-  expect(assignmentWithScores).eqls({
-    name: "Activity 1",
-    assignmentScores: [{ score: 0.5, user: userData1 }],
-  });
-
-  // new higher score used
-  await saveScoreAndState({
-    assignmentId,
-    docId,
-    docVersionId: 1,
-    userId: newUser1!.userId,
-    score: 0.7,
-    state: "document state 3",
-  });
-  assignmentWithScores = await getAssignmentScoreData({
-    assignmentId,
-    ownerId,
-  });
-  expect(assignmentWithScores).eqls({
-    name: "Activity 1",
-    assignmentScores: [{ score: 0.7, user: userData1 }],
-  });
-
-  // second user opens assignment
-  assignmentData = await getAssignmentDataFromCode(classCode, false);
-
-  let newUser2 = assignmentData.newAnonymousUser;
-  newUser2 = await updateUser({
-    userId: newUser2!.userId,
-    name: "Arya Abbas",
-  });
-  const userData2 = { userId: newUser2!.userId, name: newUser2!.name };
-
-  // assignment scores still unchanged
-  assignmentWithScores = await getAssignmentScoreData({
-    assignmentId,
-    ownerId,
-  });
-  expect(assignmentWithScores).eqls({
-    name: "Activity 1",
-    assignmentScores: [{ score: 0.7, user: userData1 }],
-  });
-
-  // save state for second user
-  await saveScoreAndState({
-    assignmentId,
-    docId,
-    docVersionId: 1,
-    userId: newUser2!.userId,
-    score: 0.3,
-    state: "document state 4",
-  });
-
-  // second user's score shows up first due to alphabetical sorting
-  assignmentWithScores = await getAssignmentScoreData({
-    assignmentId,
-    ownerId,
-  });
-  expect(assignmentWithScores).eqls({
-    name: "Activity 1",
-    assignmentScores: [
-      { score: 0.3, user: userData2 },
-      { score: 0.7, user: userData1 },
-    ],
-  });
-});
-
-test("can't get assignment data if other user", async () => {
-  const owner = await createTestUser();
-  const ownerId = owner.userId;
-  const otherUser = await createTestUser();
-  const otherUserId = otherUser.userId;
-  const { activityId } = await createActivity(ownerId);
-  const assignmentId = await assignActivity(activityId, ownerId);
 
   await getAssignmentScoreData({
     assignmentId,
@@ -706,17 +822,56 @@ test("can't get assignment data if other user", async () => {
       ownerId: otherUserId,
     }),
   ).rejects.toThrow("No assignments found");
+
+  await getAssignmentStudentData({
+    assignmentId,
+    ownerId,
+    userId: newUser1!.userId,
+  });
+
+  await expect(
+    getAssignmentStudentData({
+      assignmentId,
+      ownerId: otherUserId,
+      userId: newUser1!.userId,
+    }),
+  ).rejects.toThrow("No assignmentScores found");
 });
 
 test("can't get assignment data if deleted", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId } = await createActivity(ownerId);
+  const { activityId, docId } = await createActivity(ownerId);
   const assignmentId = await assignActivity(activityId, ownerId);
+
+  let closeAt = DateTime.now().plus({ days: 1 });
+  const { classCode } = await openAssignmentWithCode(assignmentId, closeAt);
+
+  let assignmentData = await getAssignmentDataFromCode(classCode, false);
+  let newUser1 = assignmentData.newAnonymousUser;
+  newUser1 = await updateUser({
+    userId: newUser1!.userId,
+    name: "Zoe Zaborowski",
+  });
+
+  await saveScoreAndState({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    userId: newUser1!.userId,
+    score: 0.5,
+    state: "document state 1",
+  });
 
   await getAssignmentScoreData({
     assignmentId,
     ownerId,
+  });
+
+  await getAssignmentStudentData({
+    assignmentId,
+    ownerId,
+    userId: newUser1!.userId,
   });
 
   await deleteAssignment(assignmentId);
@@ -727,6 +882,14 @@ test("can't get assignment data if deleted", async () => {
       ownerId,
     }),
   ).rejects.toThrow("No assignments found");
+
+  await expect(
+    getAssignmentStudentData({
+      assignmentId,
+      ownerId,
+      userId: newUser1!.userId,
+    }),
+  ).rejects.toThrow("No assignmentScores found");
 });
 
 test("only user and assignment owner can load document state", async () => {
