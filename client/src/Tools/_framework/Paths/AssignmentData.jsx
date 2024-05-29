@@ -85,6 +85,28 @@ export function AssignmentData() {
       >
         Some UI element for going back to assignment editor
       </Button>
+      <Heading subheading="Score summary" />
+      <BarChart
+        width={600}
+        height={300}
+        data={scoreData}
+        margin={{
+          top: 5,
+          right: 30,
+          left: 20,
+          bottom: 5,
+        }}
+      >
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="score">
+          <Label value="Score" offset={0} position="insideBottom" />
+        </XAxis>
+        <YAxis>
+          <Label value="Number of students" angle="-90" position="insideLeft" />
+        </YAxis>
+        <Bar dataKey="count" fill="#8884d8" />
+      </BarChart>
+      <Heading subheading="Individual scores" />
       <TableContainer>
         <Table>
           <Thead>
@@ -125,27 +147,6 @@ export function AssignmentData() {
           </Tbody>
         </Table>
       </TableContainer>
-      <Heading subheading="Score summary" />
-      <BarChart
-        width={600}
-        height={300}
-        data={scoreData}
-        margin={{
-          top: 5,
-          right: 30,
-          left: 20,
-          bottom: 5,
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="score">
-          <Label value="Score" offset={0} position="insideBottom" />
-        </XAxis>
-        <YAxis>
-          <Label value="Number of students" angle="-90" position="insideLeft" />
-        </YAxis>
-        <Bar dataKey="count" fill="#8884d8" />
-      </BarChart>
     </>
   );
 }
