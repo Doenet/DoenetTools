@@ -24,12 +24,13 @@ model activities {
 }
 
 model assignmentDocuments {
-  assignmentId    Int
-  docVersionId    Int
-  docId           Int
-  assignment      assignments      @relation(fields: [assignmentId], references: [assignmentId], onDelete: NoAction, onUpdate: NoAction)
-  documentVersion documentVersions @relation(fields: [docVersionId, docId], references: [version, docId], onDelete: NoAction, onUpdate: NoAction)
-  documentState   documentState[]
+  assignmentId               Int
+  docVersionId               Int
+  docId                      Int
+  assignment                 assignments                  @relation(fields: [assignmentId], references: [assignmentId], onDelete: NoAction, onUpdate: NoAction)
+  documentVersion            documentVersions             @relation(fields: [docVersionId, docId], references: [version, docId], onDelete: NoAction, onUpdate: NoAction)
+  documentState              documentState[]
+  documentSubmittedResponses documentSubmittedResponses[]
 
   @@id([assignmentId, docVersionId, docId])
   @@index([assignmentId])
@@ -143,14 +144,31 @@ model documentState {
   @@index([userId])
 }
 
+model documentSubmittedResponses {
+  assignmentId       Int
+  docVersionId       Int
+  docId              Int
+  userId             Int
+  answerId           String
+  result             String
+  submittedAt        DateTime            @default(now())
+  assignmentDocument assignmentDocuments @relation(fields: [assignmentId, docVersionId, docId], references: [assignmentId, docVersionId, docId], onDelete: NoAction, onUpdate: NoAction)
+  user               users               @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([assignmentId, docVersionId, docId, userId, answerId])
+  @@index([assignmentId, docVersionId, docId, answerId])
+  @@index([userId])
+}
+
 model users {
-  userId           Int                @id @default(autoincrement())
-  email            String             @unique @db.VarChar(45)
-  name             String
-  isAdmin          Boolean            @default(false)
-  anonymous        Boolean            @default(false)
-  activities       activities[]
-  assignments      assignments[]
-  assignmentScores assignmentScores[]
-  documentState    documentState[]
+  userId                     Int                          @id @default(autoincrement())
+  email                      String                       @unique @db.VarChar(45)
+  name                       String
+  isAdmin                    Boolean                      @default(false)
+  anonymous                  Boolean                      @default(false)
+  activities                 activities[]
+  assignments                assignments[]
+  assignmentScores           assignmentScores[]
+  documentState              documentState[]
+  documentSubmittedResponses documentSubmittedResponses[]
 }

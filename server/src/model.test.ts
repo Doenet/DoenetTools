@@ -28,6 +28,8 @@ import {
   getAssignmentScoreData,
   loadState,
   getAssignmentStudentData,
+  recordSubmittedEvent,
+  getDocumentSubmittedResponses,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -949,4 +951,217 @@ test("only user and assignment owner can load document state", async () => {
       userId: user2.userId,
     }),
   ).rejects.toThrow("No assignments found");
+});
+
+test("record submitted events and get responses", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId, docId } = await createActivity(ownerId);
+  const assignmentId = await assignActivity(activityId, ownerId);
+
+  // open assignment generates code
+  let closeAt = DateTime.now().plus({ days: 1 });
+  const { classCode } = await openAssignmentWithCode(assignmentId, closeAt);
+
+  // create new anonymous user
+  let assignmentData = await getAssignmentDataFromCode(classCode, false);
+  let newUser = assignmentData.newAnonymousUser;
+  let userData = { userId: newUser!.userId, name: newUser!.name };
+
+  let answerId1 = "answer1";
+  let answerId2 = "answer2";
+
+  // no submitted responses at first
+  let submittedResponses = await getDocumentSubmittedResponses({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    ownerId,
+    answerId: answerId1,
+  });
+
+  expect(submittedResponses).eqls([]);
+
+  // record event and retrieve it
+  await recordSubmittedEvent({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    userId: newUser!.userId,
+    answerId: answerId1,
+    result: "Answer result 1",
+  });
+  submittedResponses = await getDocumentSubmittedResponses({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    ownerId,
+    answerId: answerId1,
+  });
+
+  expect(submittedResponses).toMatchObject([
+    {
+      user: userData,
+      result: "Answer result 1",
+    },
+  ]);
+
+  // record new event overwrites result
+  await recordSubmittedEvent({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    userId: newUser!.userId,
+    answerId: answerId1,
+    result: "Answer result 2",
+  });
+  submittedResponses = await getDocumentSubmittedResponses({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    ownerId,
+    answerId: answerId1,
+  });
+  expect(submittedResponses).toMatchObject([
+    {
+      user: userData,
+      result: "Answer result 2",
+    },
+  ]);
+
+  // record event for different answer
+  await recordSubmittedEvent({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    userId: newUser!.userId,
+    answerId: answerId2,
+    result: "Answer result 3",
+  });
+  submittedResponses = await getDocumentSubmittedResponses({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    ownerId,
+    answerId: answerId1,
+  });
+  expect(submittedResponses).toMatchObject([
+    {
+      user: userData,
+      result: "Answer result 2",
+    },
+  ]);
+  submittedResponses = await getDocumentSubmittedResponses({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    ownerId,
+    answerId: answerId2,
+  });
+  expect(submittedResponses).toMatchObject([
+    {
+      user: userData,
+      result: "Answer result 3",
+    },
+  ]);
+
+  // response for a second user
+  assignmentData = await getAssignmentDataFromCode(classCode, false);
+  let newUser2 = assignmentData.newAnonymousUser;
+  let userData2 = { userId: newUser2!.userId, name: newUser2!.name };
+  await recordSubmittedEvent({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    userId: newUser2!.userId,
+    answerId: answerId1,
+    result: "Answer result 4",
+  });
+  submittedResponses = await getDocumentSubmittedResponses({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    ownerId,
+    answerId: answerId1,
+  });
+  expect(submittedResponses).toMatchObject([
+    {
+      user: userData,
+      result: "Answer result 2",
+    },
+    {
+      user: userData2,
+      result: "Answer result 4",
+    },
+  ]);
+  submittedResponses = await getDocumentSubmittedResponses({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    ownerId,
+    answerId: answerId2,
+  });
+  expect(submittedResponses).toMatchObject([
+    {
+      user: userData,
+      result: "Answer result 3",
+    },
+  ]);
+});
+
+test("only owner can get submitted responses", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId, docId } = await createActivity(ownerId);
+  const assignmentId = await assignActivity(activityId, ownerId);
+
+  const user2 = await createTestUser();
+  const userId2 = user2.userId;
+
+  // open assignment generates code
+  let closeAt = DateTime.now().plus({ days: 1 });
+  const { classCode } = await openAssignmentWithCode(assignmentId, closeAt);
+
+  // create new anonymous user
+  let assignmentData = await getAssignmentDataFromCode(classCode, false);
+  let newUser = assignmentData.newAnonymousUser;
+  let userData = { userId: newUser!.userId, name: newUser!.name };
+
+  let answerId1 = "answer1";
+  let answerId2 = "answer2";
+
+  // record event and retrieve it
+  await recordSubmittedEvent({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    userId: newUser!.userId,
+    answerId: answerId1,
+    result: "Answer result 1",
+  });
+  let submittedResponses = await getDocumentSubmittedResponses({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    ownerId,
+    answerId: answerId1,
+  });
+
+  expect(submittedResponses).toMatchObject([
+    {
+      user: userData,
+      result: "Answer result 1",
+    },
+  ]);
+
+  // cannot retrieve responses as other user
+  submittedResponses = await getDocumentSubmittedResponses({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    ownerId: userId2,
+    answerId: answerId1,
+  });
+
+  expect(submittedResponses).eqls([]);
 });

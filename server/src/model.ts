@@ -870,3 +870,78 @@ export async function getAssignmentStudentData({
 
   return assignmentData;
 }
+
+export async function recordSubmittedEvent({
+  assignmentId,
+  docId,
+  docVersionId,
+  userId,
+  answerId,
+  result,
+}: {
+  assignmentId: number;
+  docId: number;
+  docVersionId: number;
+  userId: number;
+  answerId: string;
+  result: string;
+}) {
+  await prisma.documentSubmittedResponses.upsert({
+    where: {
+      assignmentId_docVersionId_docId_userId_answerId: {
+        assignmentId,
+        docVersionId,
+        docId,
+        userId,
+        answerId,
+      },
+    },
+    update: {
+      result,
+      submittedAt: DateTime.now().toISO(),
+    },
+    create: {
+      assignmentId,
+      docVersionId,
+      docId,
+      userId,
+      answerId,
+      result,
+    },
+  });
+}
+
+export async function getDocumentSubmittedResponses({
+  assignmentId,
+  docId,
+  docVersionId,
+  ownerId,
+  answerId,
+}: {
+  assignmentId: number;
+  docId: number;
+  docVersionId: number;
+  ownerId: number;
+  answerId: string;
+}) {
+  const submittedResponses = await prisma.documentSubmittedResponses.findMany({
+    where: {
+      assignmentId,
+      docVersionId,
+      docId,
+      answerId,
+      assignmentDocument: {
+        assignment: {
+          ownerId,
+        },
+      },
+    },
+    select: {
+      user: { select: { userId: true, name: true } },
+      result: true,
+      submittedAt: true,
+    },
+  });
+
+  return submittedResponses;
+}

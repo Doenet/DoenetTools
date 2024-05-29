@@ -33,6 +33,7 @@ import {
   getAssignmentScoreData,
   loadState,
   getAssignmentStudentData,
+  recordSubmittedEvent,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -537,6 +538,40 @@ app.get(
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/recordSubmittedEvent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const body = req.body;
+    const assignmentId = Number(body.assignmentId);
+    const docId = Number(body.docId);
+    const docVersionId = Number(body.docVersionId);
+    const answerId = body.answerId as string;
+    const loggedInUserId = Number(req.cookies.userId);
+    const result = body.result as string;
+
+    try {
+      await recordSubmittedEvent({
+        assignmentId,
+        docId,
+        docVersionId,
+        userId: loggedInUserId,
+        answerId,
+        result,
+      });
+      res.send({});
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientValidationError ||
+        e instanceof Prisma.PrismaClientKnownRequestError
+      ) {
+        res.status(400).send({});
       } else {
         next(e);
       }
