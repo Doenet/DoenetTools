@@ -427,25 +427,39 @@ app.post(
   },
 );
 
-app.post("/api/saveScoreAndState", async (req: Request, res: Response) => {
-  const body = req.body;
-  const assignmentId = Number(body.assignmentId);
-  const docId = Number(body.docId);
-  const docVersionId = Number(body.docVersionId);
-  const loggedInUserId = Number(req.cookies.userId);
-  const score = Number(body.score);
-  const state = body.state;
+app.post(
+  "/api/saveScoreAndState",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const body = req.body;
+    const assignmentId = Number(body.assignmentId);
+    const docId = Number(body.docId);
+    const docVersionId = Number(body.docVersionId);
+    const loggedInUserId = Number(req.cookies.userId);
+    const score = Number(body.score);
+    const state = body.state;
 
-  await saveScoreAndState({
-    assignmentId,
-    docId,
-    docVersionId,
-    userId: loggedInUserId,
-    score,
-    state,
-  });
-  res.send({});
-});
+    try {
+      await saveScoreAndState({
+        assignmentId,
+        docId,
+        docVersionId,
+        userId: loggedInUserId,
+        score,
+        state,
+      });
+      res.send({});
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientValidationError ||
+        e instanceof Prisma.PrismaClientKnownRequestError
+      ) {
+        res.status(400).send({});
+      } else {
+        next(e);
+      }
+    }
+  },
+);
 
 app.get(
   "/api/loadState",

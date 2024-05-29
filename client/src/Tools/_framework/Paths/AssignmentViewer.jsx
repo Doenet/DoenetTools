@@ -130,6 +130,7 @@ export function AssignmentViewer() {
             });
           }
         } catch (e) {
+          console.error("error loading state", e);
           window.postMessage({
             subject: "SPLICE.getState.response",
             messageId: event.data.messageId,
