@@ -1,4 +1,6 @@
 import express, { Express, NextFunction, Request, Response } from "express";
+import bodyParser from "body-parser";
+
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { DateTime } from "luxon";
@@ -38,7 +40,14 @@ dotenv.config();
 
 const app: Express = express();
 app.use(cookieParser());
-app.use(express.json());
+
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(
+  bodyParser.urlencoded({
+    limit: "50mb",
+    extended: true,
+  }),
+);
 
 const port = process.env.PORT || 3000;
 
