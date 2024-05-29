@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLoaderData } from "react-router";
+import { redirect, useLoaderData } from "react-router";
 import { DateTime } from "luxon";
 
 import { DoenetML } from "@doenet/doenetml";
@@ -16,7 +16,7 @@ import {
 import { useFetcher } from "react-router-dom";
 import axios from "axios";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
-import { Heading } from "./Community";
+import { DoenetHeading as Heading } from "./Community";
 import { useLocation, useNavigate } from "react-router";
 
 export async function action({ params, request }) {
@@ -64,6 +64,10 @@ export async function action({ params, request }) {
     return true;
   }
 
+  if (formObj._action == "go to data") {
+    return redirect(`/assignmentData/${params.assignmentId}`);
+  }
+
   return null;
 }
 
@@ -75,9 +79,10 @@ export async function loader({ params }) {
   let assignmentId = Number(params.assignmentId);
 
   // TODO: what happens if assignment has no documents?
-  let docId = assignmentData.assignmentItems[0].docId;
+  let docId = assignmentData.assignmentDocuments[0].docId;
 
-  const doenetML = assignmentData.assignmentItems[0].documentVersion.content;
+  const doenetML =
+    assignmentData.assignmentDocuments[0].documentVersion.content;
 
   return {
     assignmentData,
@@ -88,7 +93,7 @@ export async function loader({ params }) {
 }
 
 export function AssignmentEditor() {
-  const { doenetML, assignmentData } = useLoaderData();
+  const { doenetML, assignmentData, assignmentId } = useLoaderData();
 
   let navigate = useNavigate();
   let location = useLocation();
@@ -108,16 +113,24 @@ export function AssignmentEditor() {
 
   const fetcher = useFetcher();
 
+  let subheading;
+  if (assignmentData.classCode) {
+    if (assignmentData.stillOpen) {
+      subheading = `Class code: ${assignmentData.classCode}`;
+    } else {
+      subheading = `Class code (inactive): ${assignmentData.classCode}`;
+    }
+  } else {
+    subheading = `Inactive`;
+  }
+
   return (
     <>
       <Heading heading={assignmentData.name} />
+      <Heading subheading={subheading} />
       <SimpleGrid columns={2} spacing="20px" margin="20px">
         <VStack>
-          <p>
-            <strong>
-              Assignment preview (left align me please, aria tags for heading)
-            </strong>
-          </p>
+          <Heading subheading="Assignment Preview" />
 
           <Box
             background="var(--canvas)"
@@ -161,9 +174,7 @@ export function AssignmentEditor() {
         <Box>
           {assignmentData.stillOpen ? (
             <Box>
-              <p>
-                <strong>Quick assign (aria tags for heading)</strong>
-              </p>
+              <Heading subheading="Quick Assign" />
               <p>
                 Assignment is currently active with code{" "}
                 <strong>{assignmentData.classCode}</strong>, and open for
@@ -191,9 +202,7 @@ export function AssignmentEditor() {
             </Box>
           ) : (
             <Box>
-              <p>
-                <strong>Quick assign (aria tags for heading)</strong>
-              </p>
+              <Heading subheading="Quick Assign" />
               <p>Assign to students with a code</p>
               How long would you like this activity to remain open?
               <RadioGroup onChange={setDuration} value={duration}>
@@ -220,6 +229,20 @@ export function AssignmentEditor() {
               </Button>
             </Box>
           )}
+
+          <Heading subheading="Instructor Overview" />
+          <Button
+            type="submit"
+            colorScheme="blue"
+            mt="8px"
+            mr="12px"
+            size="xs"
+            onClick={() => {
+              fetcher.submit({ _action: "go to data" }, { method: "post" });
+            }}
+          >
+            View data
+          </Button>
         </Box>
       </SimpleGrid>
     </>

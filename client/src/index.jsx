@@ -55,6 +55,16 @@ import {
   AssignmentEditor,
 } from "./Tools/_framework/Paths/AssignmentEditor";
 import {
+  loader as assignmentDataLoader,
+  action as assignmentDataAction,
+  AssignmentData,
+} from "./Tools/_framework/Paths/AssignmentData";
+import {
+  loader as assignmentStudentDataLoader,
+  action as assignmentStudentDataAction,
+  AssignmentStudentData,
+} from "./Tools/_framework/Paths/AssignmentStudentData";
+import {
   loader as enterClassCodeLoader,
   action as enterClassCodeAction,
   EnterClassCode,
@@ -188,6 +198,11 @@ const router = createBrowserRouter([
             <Library />
           </ChakraProvider>
         ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
       },
       {
         path: "community",
@@ -197,6 +212,11 @@ const router = createBrowserRouter([
         element: (
           <ChakraProvider theme={theme}>
             <Community />
+          </ChakraProvider>
+        ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
           </ChakraProvider>
         ),
       },
@@ -214,6 +234,11 @@ const router = createBrowserRouter([
             <Admin />
           </ChakraProvider>
         ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
       },
       {
         path: "portfolio/:userId",
@@ -222,6 +247,11 @@ const router = createBrowserRouter([
         element: (
           <ChakraProvider theme={theme}>
             <Portfolio />
+          </ChakraProvider>
+        ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
           </ChakraProvider>
         ),
       },
@@ -264,7 +294,6 @@ const router = createBrowserRouter([
         path: "activityEditor/:activityId",
         loader: activityEditorLoader,
         action: activityEditorAction,
-        // errorElement: <div>Error!</div>,
         element: (
           <MathJaxContext
             version={2}
@@ -273,6 +302,11 @@ const router = createBrowserRouter([
           >
             <ActivityEditor />
           </MathJaxContext>
+        ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
         ),
       },
       {
@@ -288,6 +322,11 @@ const router = createBrowserRouter([
           >
             <ActivityEditor />
           </MathJaxContext>
+        ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
         ),
       },
       {
@@ -335,6 +374,11 @@ const router = createBrowserRouter([
             <Assignments />
           </ChakraProvider>
         ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
       },
       {
         path: "assignmentEditor/:assignmentId",
@@ -348,6 +392,49 @@ const router = createBrowserRouter([
           >
             <AssignmentEditor />
           </MathJaxContext>
+        ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+      },
+      {
+        path: "assignmentData/:assignmentId",
+        loader: assignmentDataLoader,
+        action: assignmentDataAction,
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <AssignmentData />
+          </MathJaxContext>
+        ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+      },
+      {
+        path: "assignmentData/:assignmentId/:userId",
+        loader: assignmentStudentDataLoader,
+        action: assignmentStudentDataAction,
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <AssignmentStudentData />
+          </MathJaxContext>
+        ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
         ),
       },
       {
@@ -363,6 +450,11 @@ const router = createBrowserRouter([
             <EnterClassCode />
           </MathJaxContext>
         ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
       },
       {
         path: "classCode/:classCode",
@@ -376,6 +468,11 @@ const router = createBrowserRouter([
           >
             <AssignmentViewer />
           </MathJaxContext>
+        ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
         ),
       },
       {

@@ -11,6 +11,7 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
+  Heading,
   Icon,
   MenuItem,
   Tab,
@@ -136,7 +137,7 @@ export async function loader({ request }) {
   }
 }
 
-export function Heading(props) {
+export function DoenetHeading(props) {
   return (
     <Flex
       flexDirection="column"
@@ -145,12 +146,12 @@ export function Heading(props) {
       height="100px"
       flexShrink={0}
     >
-      <Text fontSize="24px" fontWeight="700">
+      <Heading as="h2" size="lg">
         {props.heading}
-      </Text>
-      <Text fontSize="16px" fontWeight="700">
+      </Heading>
+      <Heading as="h3" size="md">
         {props.subheading}
-      </Text>
+      </Heading>
     </Flex>
   );
 }
@@ -617,7 +618,7 @@ export function Community() {
           {/* <input type='text' width="400px" /> */}
         </Box>
       </Flex>
-      <Heading heading="Community Public Content" />
+      <DoenetHeading subheading="Community Content" />
       <Box
         display="flex"
         flexDirection="column"

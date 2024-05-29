@@ -7,6 +7,7 @@ import {
   Flex,
   Wrap,
   MenuItem,
+  Heading,
 } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import {
@@ -127,12 +128,12 @@ export function Assignments() {
           textAlign="center"
           zIndex="500"
         >
-          <Text fontSize="24px" fontWeight="700">
+          <Heading as="h2" size="lg">
             {data.name}
-          </Text>
-          <Text fontSize="16px" fontWeight="700">
+          </Heading>
+          <Heading as="h3" size="md">
             Assignments
-          </Text>
+          </Heading>
         </Box>
         <AssignmentsSection data-test="Assignments">
           <Wrap p="10px" overflow="visible">

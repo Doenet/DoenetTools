@@ -134,7 +134,7 @@ export async function updateAssignment({
 
 // TODO - access control
 export async function getActivity(activityId: number) {
-  return await prisma.activities.findFirstOrThrow({
+  return await prisma.activities.findUniqueOrThrow({
     where: { activityId, isDeleted: false },
     include: {
       documents: {
@@ -146,7 +146,7 @@ export async function getActivity(activityId: number) {
 
 // TODO - access control
 export async function getDoc(docId: number) {
-  return await prisma.documents.findFirstOrThrow({
+  return await prisma.documents.findUniqueOrThrow({
     where: { docId, isDeleted: false },
   });
 }
@@ -252,7 +252,7 @@ export async function createDocumentVersion(docId: number): Promise<{
   createdAt: Date | null;
   doenetmlVersionId: number;
 }> {
-  const doc = await prisma.documents.findFirstOrThrow({
+  const doc = await prisma.documents.findUniqueOrThrow({
     where: { docId, isDeleted: false },
     include: {
       activity: { select: { name: true } },
@@ -296,8 +296,8 @@ export async function createDocumentVersion(docId: number): Promise<{
 // TODO - access control
 export async function getActivityEditorData(activityId: number) {
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
-  let activity = await prisma.activities.findFirstOrThrow({
-    where: { activityId },
+  let activity = await prisma.activities.findUniqueOrThrow({
+    where: { activityId, isDeleted: false },
     include: {
       documents: {
         include: {
@@ -315,17 +315,20 @@ export async function getActivityEditorData(activityId: number) {
 // TODO - access control
 // TODO: generalize this to multi-document activities
 export async function getActivityViewerData(activityId: number) {
-  const activity = await prisma.activities.findFirstOrThrow({
-    where: { activityId },
+  const activity = await prisma.activities.findUniqueOrThrow({
+    where: { activityId, isDeleted: false },
     include: {
       owner: { select: { userId: true, email: true, name: true } },
-      documents: { select: { docId: true, content: true } },
+      documents: {
+        where: { isDeleted: false },
+        select: { docId: true, content: true },
+      },
     },
   });
   const docId = activity.documents[0].docId;
 
-  let doc = await prisma.documents.findFirstOrThrow({
-    where: { docId },
+  let doc = await prisma.documents.findUniqueOrThrow({
+    where: { docId, isDeleted: false },
     include: {
       contributorHistory: {
         include: {
@@ -360,10 +363,10 @@ export async function getActivityViewerData(activityId: number) {
 // TODO - access control
 export async function getAssignmentEditorData(assignmentId: number) {
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
-  let assignment = await prisma.assignments.findFirstOrThrow({
-    where: { assignmentId },
+  let assignment = await prisma.assignments.findUniqueOrThrow({
+    where: { assignmentId, isDeleted: false },
     include: {
-      assignmentItems: {
+      assignmentDocuments: {
         select: {
           docId: true,
           docVersionId: true,
@@ -402,9 +405,10 @@ export async function getAssignmentDataFromCode(
         codeValidUntil: {
           gte: DateTime.now().toISO(), // TODO - confirm this works with timezone stuff
         },
+        isDeleted: false,
       },
       include: {
-        assignmentItems: {
+        assignmentDocuments: {
           select: {
             docId: true,
             docVersionId: true,
@@ -611,7 +615,7 @@ export async function assignActivity(activityId: number, userId: number) {
       activityId: origActivity.activityId,
       imagePath: origActivity.imagePath,
       ownerId: userId,
-      assignmentItems: {
+      assignmentDocuments: {
         create: documentsVersionsToAdd.map((docVersion) => ({
           documentVersion: {
             connect: {
@@ -627,6 +631,10 @@ export async function assignActivity(activityId: number, userId: number) {
   });
 
   return newAssignment.assignmentId;
+}
+
+function generateClassCode() {
+  return ("00000" + Math.floor(Math.random() * 1000000)).slice(-6);
 }
 
 export async function openAssignmentWithCode(
@@ -666,13 +674,14 @@ export async function closeAssignmentWithCode(assignmentId: number) {
 }
 
 export async function getAssignment(assignmentId: number, ownerId: number) {
-  let assignment = await prisma.assignments.findFirstOrThrow({
+  let assignment = await prisma.assignments.findUniqueOrThrow({
     where: {
       assignmentId,
       ownerId,
+      isDeleted: false,
     },
     include: {
-      assignmentItems: {
+      assignmentDocuments: {
         select: {
           documentVersion: true,
         },
@@ -682,6 +691,182 @@ export async function getAssignment(assignmentId: number, ownerId: number) {
   return assignment;
 }
 
-function generateClassCode() {
-  return ("00000" + Math.floor(Math.random() * 1000000)).slice(-6);
+export async function saveScoreAndState({
+  assignmentId,
+  docId,
+  docVersionId,
+  userId,
+  score,
+  state,
+}: {
+  assignmentId: number;
+  docId: number;
+  docVersionId: number;
+  userId: number;
+  score: number;
+  state: string;
+}) {
+  // make sure have an assignmentScores record
+  const assignmentScores = await prisma.assignmentScores.upsert({
+    where: { assignmentId_userId: { assignmentId, userId } },
+    update: {},
+    create: { assignmentId, userId },
+  });
+
+  // record score and state for this document
+  await prisma.documentState.upsert({
+    where: {
+      assignmentId_docVersionId_docId_userId: {
+        assignmentId,
+        docId,
+        docVersionId,
+        userId,
+      },
+    },
+    update: {
+      score,
+      state,
+    },
+    create: {
+      assignmentId,
+      docId,
+      docVersionId,
+      userId,
+      score,
+      state,
+    },
+  });
+
+  const assignmentScore = await prisma.assignmentScores.findUniqueOrThrow({
+    where: {
+      assignmentId_userId: {
+        assignmentId,
+        userId,
+      },
+    },
+    include: {
+      documentState: true,
+    },
+  });
+
+  // for now, make score be the maximum of the current score and the weighted averages of the scores from the documents
+
+  const assignmentDocuments = await prisma.assignments.findUniqueOrThrow({
+    where: { assignmentId },
+    select: { assignmentDocuments: { select: { docId: true } } },
+  });
+  const numDocuments = assignmentDocuments.assignmentDocuments.length;
+
+  const currentScore = assignmentScore.score;
+  const documentScores = assignmentScore.documentState.map((x) => x.score);
+  const averageScore = documentScores.reduce((a, c) => a + c) / numDocuments;
+
+  if (averageScore > currentScore) {
+    await prisma.assignmentScores.update({
+      where: { assignmentId_userId: { assignmentId, userId } },
+      data: {
+        score: averageScore,
+      },
+    });
+  }
+}
+
+export async function loadState({
+  assignmentId,
+  docId,
+  docVersionId,
+  requestedUserId,
+  userId,
+}: {
+  assignmentId: number;
+  docId: number;
+  docVersionId: number;
+  requestedUserId: number;
+  userId: number;
+}) {
+  if (requestedUserId !== userId) {
+    // If user isn't the requested user, then user is allowed to load requested users state
+    // only if they are the owner of the assignment.
+    // If not user is not owner, then it will throw an error.
+    await prisma.assignments.findUniqueOrThrow({
+      where: {
+        assignmentId,
+        ownerId: userId,
+      },
+    });
+  }
+
+  const documentState = await prisma.documentState.findUniqueOrThrow({
+    where: {
+      assignmentId_docVersionId_docId_userId: {
+        assignmentId,
+        docId,
+        docVersionId,
+        userId: requestedUserId,
+      },
+    },
+    select: { state: true },
+  });
+
+  return documentState.state;
+}
+
+export async function getAssignmentScoreData({
+  assignmentId,
+  ownerId,
+}: {
+  assignmentId: number;
+  ownerId: number;
+}) {
+  const assignment = await prisma.assignments.findUniqueOrThrow({
+    where: { assignmentId, ownerId, isDeleted: false },
+    select: {
+      name: true,
+      assignmentScores: {
+        select: {
+          user: {
+            select: { name: true, userId: true },
+          },
+          score: true,
+        },
+        orderBy: { user: { name: "asc" } },
+      },
+    },
+  });
+
+  return assignment;
+}
+
+export async function getAssignmentStudentData({
+  assignmentId,
+  ownerId,
+  userId,
+}: {
+  assignmentId: number;
+  ownerId: number;
+  userId: number;
+}) {
+  const assignmentData = await prisma.assignmentScores.findUniqueOrThrow({
+    where: {
+      assignmentId_userId: { assignmentId, userId },
+      assignment: { ownerId, isDeleted: false },
+    },
+    include: {
+      assignment: {
+        select: {
+          name: true,
+          assignmentDocuments: {
+            select: {
+              docId: true,
+              docVersionId: true,
+              documentVersion: { select: { content: true } },
+            },
+          },
+        },
+      },
+      user: { select: { name: true } },
+    },
+  });
+
+  return assignmentData;
 }

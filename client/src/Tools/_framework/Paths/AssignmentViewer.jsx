@@ -63,9 +63,9 @@ export async function loader({ params }) {
   let assignmentId = params.assignmentId;
 
   // TODO: what happens if assignment has no documents?
-  let docId = assignment.assignmentItems[0].docId;
+  let docId = assignment.assignmentDocuments[0].docId;
 
-  let doenetML = assignment.assignmentItems[0].documentVersion.content;
+  let doenetML = assignment.assignmentDocuments[0].documentVersion.content;
 
   return {
     assignmentFound: true,
@@ -90,6 +90,57 @@ export function AssignmentViewer() {
       document.title = `Enter class code - Doenet`;
     }
   }, [assignmentFound, assignment?.name]);
+
+  useEffect(() => {
+    addEventListener("message", async (event) => {
+      if (event.data.subject == "SPLICE.reportScoreAndState") {
+        // TODO: generalize to multiple documents. For now, assume just have one.
+        await axios.post("/api/saveScoreAndState", {
+          assignmentId: assignment.assignmentId,
+          docId: assignment.assignmentDocuments[0].docId,
+          docVersionId: assignment.assignmentDocuments[0].docVersionId,
+          score: event.data.score,
+          state: JSON.stringify(event.data.state),
+        });
+      } else if (event.data.subject == "SPLICE.getState") {
+        try {
+          let { data } = await axios.get("/api/loadState", {
+            params: {
+              assignmentId: assignment.assignmentId,
+              docId: assignment.assignmentDocuments[0].docId,
+              docVersionId: assignment.assignmentDocuments[0].docVersionId,
+              userId: event.data.userId,
+            },
+          });
+
+          if (data.state) {
+            window.postMessage({
+              subject: "SPLICE.getState.response",
+              messageId: event.data.messageId,
+              success: true,
+              loadedState: true,
+              state: data.state,
+            });
+          } else {
+            window.postMessage({
+              subject: "SPLICE.getState.response",
+              messageId: event.data.messageId,
+              success: true,
+              loadedState: false,
+            });
+          }
+        } catch (e) {
+          console.error("error loading state", e);
+          window.postMessage({
+            subject: "SPLICE.getState.response",
+            messageId: event.data.messageId,
+            success: false,
+            message: "Server error loading page state.",
+          });
+        }
+      }
+    });
+  }, []);
 
   const [variants, setVariants] = useState({
     index: 1,
@@ -239,10 +290,10 @@ export function AssignmentViewer() {
                       showFeedback: true,
                       showHints: true,
                       autoSubmit: false,
-                      allowLoadState: false,
-                      allowSaveState: false,
+                      allowLoadState: true,
+                      allowSaveState: true,
                       allowLocalState: false,
-                      allowSaveSubmissions: false,
+                      allowSaveSubmissions: true,
                       allowSaveEvents: false,
                     }}
                     attemptNumber={1}
@@ -256,6 +307,7 @@ export function AssignmentViewer() {
                       viewURL: "/activityViewer",
                       editURL: "/publicEditor",
                     }}
+                    apiURLs={{ postMessages: true }}
                     scrollableContainer={
                       document.getElementById("viewer-container") || undefined
                     }
