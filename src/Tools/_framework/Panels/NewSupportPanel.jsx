@@ -163,11 +163,7 @@ export default function SupportPanel({ hide, children }) {
         ) : null}
         <Button
           value="Documentation"
-          onClick={() =>
-            window.open(
-              "https://www.doenet.org/portfolioviewer/_7KL7tiBBS2MhM6k1OrPt4",
-            )
-          }
+          onClick={() => window.open("https://doenet-ml.vercel.app")}
         />
       </ControlsWrapper>
       <SupportWrapper
