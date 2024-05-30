@@ -153,12 +153,12 @@ export function Home() {
             Enhance your classroom with great OER resources from Doenet and
             learn how we make it easy to create your own.
           </Text>
-          <Link href="/library">
+          <Link href="/community">
             <Button
               mt="20px"
               p="10px"
               colorScheme="blue"
-              // these are out of order because on phones we chane the number of columns
+              // these are out of order because on phones we change the number of columns
               w={["260px", "200px", "260px", "300px"]}
               h={["40px", "40px", "40px", "50px", "60px"]}
               fontSize={["18px", "18px", "18px", "22px", "26px"]}
@@ -166,7 +166,10 @@ export function Home() {
               Explore Activities
             </Button>
           </Link>
-          <Link href="https://www.doenet.org/portfolioviewer/_7OlapeBhtcfQaa5f7sOCH">
+          <Link
+            href="https://doenet-ml.vercel.app/tutorials/quickStart"
+            isExternal
+          >
             <Button
               mt="20px"
               p="10px"
@@ -237,60 +240,8 @@ export function Home() {
           </SimpleGrid>
         </Show>
       </Flex>
+
       <Center w="100%" bg={grayColor} pl="10px" pr="10px">
-        <VStack maxWidth="900px" w="100%" spacing={4} marginBottom={"30px"}>
-          <HStack>
-            <Box
-              w={["90px", "90px", "100px", "160px", "200px"]}
-              h={["90px", "90px", "100px", "160px", "200px"]}
-              mr="20px"
-              id="workshop"
-            >
-              <Image src="Doenet_Logo_Frontpage.png" />
-            </Box>
-
-            <Text
-              fontSize={["30px", "30px", "30px", "40px", "60px"]}
-              // fontSize="60px"
-              fontWeight="700"
-              color={blackColor}
-            >
-              Doenet Higher Ed Workshop 2024
-            </Text>
-          </HStack>
-          <Text
-            pt="24px"
-            fontSize={"18px"}
-            // fontSize="20px"
-            fontWeight="500"
-            color={blackColor}
-          >
-            From May 20 - May 24, 2024, we will host our third{" "}
-            <Link
-              href="https://cse.umn.edu/ima/events/developing-online-learning-experiments-using-doenet-2024"
-              textDecoration="underline"
-            >
-              workshop
-            </Link>{" "}
-            on developing content and learning experiments in Doenet. Held at
-            the University of Minnesota, the workshop for instructors of college
-            STEM courses will be a hands-on introduction to authoring and
-            running experiments, led by the developers of Doenet.
-            <br />
-            <br />
-            For more information and to apply to the workshop, please visit the{" "}
-            <Link
-              href="https://cse.umn.edu/ima/events/developing-online-learning-experiments-using-doenet-2024"
-              textDecoration="underline"
-            >
-              workshop website
-            </Link>
-            .
-          </Text>
-        </VStack>
-      </Center>
-
-      <Center w="100%" bg={"white"} pl="10px" pr="10px">
         <VStack
           maxWidth="900px"
           w="100%"
@@ -354,7 +305,7 @@ export function Home() {
         </VStack>
       </Center>
 
-      <Center w="100%" bg={grayColor} pl="10px" pr="10px">
+      <Center w="100%" bg={"white"} pl="10px" pr="10px">
         <VStack
           maxWidth="900px"
           w="100%"
@@ -386,7 +337,7 @@ export function Home() {
             >
               PROSE Consortium
             </Link>
-            , Doenet invites you to join us each Thursday 1-3pm Central{" "}
+            , Doenet invites you to join us each Thursday 2:15-4:15pm Central{" "}
             <Link
               href="https://prose.runestone.academy/dropin/"
               textDecoration="underline"
@@ -410,7 +361,7 @@ export function Home() {
         </VStack>
       </Center>
 
-      <Center w="100%" bg={"white"} paddingTop="40px" pl="10px" pr="10px">
+      <Center w="100%" bg={grayColor} paddingTop="40px" pl="10px" pr="10px">
         <HStack maxWidth="750px" w="100%" spacing={4}>
           <Text
             fontSize={["30px", "30px", "30px", "40px", "60px"]}
@@ -436,7 +387,7 @@ export function Home() {
       <Flex
         justifyContent="center"
         alignItems="center"
-        bg={"white"}
+        bg={grayColor}
         p="60px 10px"
       >
         <Carousel title="Doenet Team Favorites" data={favorites} />
