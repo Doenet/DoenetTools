@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { redirect, useLoaderData } from "react-router";
+import { parseAndCompile } from "@doenet/doenetml";
 
 import {
   TableContainer,
@@ -20,7 +21,6 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Label } from "recharts";
 export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-  // console.log({ formObj });
 
   if (formObj._action == "back to editor") {
     return redirect(`/assignmentEditor/${params.assignmentId}`);
@@ -29,20 +29,26 @@ export async function action({ params, request }) {
 }
 
 export async function loader({ params }) {
-  const { data: assignmentData } = await axios.get(
-    `/api/getAssignmentScoreData/${params.assignmentId}`,
+  const { data } = await axios.get(
+    `/api/getAssignmentData/${params.assignmentId}`,
   );
 
   let assignmentId = Number(params.assignmentId);
 
+  // TODO: address case where don't have one document
+  const doenetML = data.assignmentContent[0].documentVersion.content;
+
   return {
-    assignmentData,
+    assignmentData: data.assignmentData,
+    answerList: data.answerList,
+    doenetML,
     assignmentId,
   };
 }
 
 export function AssignmentData() {
-  const { assignmentId, assignmentData } = useLoaderData();
+  const { assignmentId, assignmentData, answerList, doenetML } =
+    useLoaderData();
 
   useEffect(() => {
     document.title = `${assignmentData.name} - Doenet`;
@@ -67,7 +73,18 @@ export function AssignmentData() {
     setScoreData(
       hist.map((v, i) => ({ count: v, score: Math.round(i * size * 10) / 10 })),
     );
-  }, assignmentData);
+  }, [assignmentData]);
+
+  useEffect(() => {
+    const serializedDocument = parseAndCompile(doenetML);
+
+    const { answerNames } = findAnswers(serializedDocument.components);
+  }, [doenetML]);
+
+  const linkStyle = {
+    display: "block",
+    textDecoration: "underline",
+  };
 
   return (
     <>
@@ -99,13 +116,49 @@ export function AssignmentData() {
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="score">
-          <Label value="Score" offset={0} position="insideBottom" />
+          <Label value="Maximum Score" offset={0} position="insideBottom" />
         </XAxis>
         <YAxis>
           <Label value="Number of students" angle="-90" position="insideLeft" />
         </YAxis>
         <Bar dataKey="count" fill="#8884d8" />
       </BarChart>
+      <Heading subheading="Answers with responses" />
+      <TableContainer>
+        <Table>
+          <Thead>
+            <Tr>
+              <Th>Answer name</Th>
+              <Th>Number of responses</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {answerList.map((answerObj) => {
+              const key = `/assignmentAnswerResponses/${assignmentId}/${answerObj.docId}/${answerObj.docVersionId}/${answerObj.answerId}`;
+              const linkURL = `/assignmentAnswerResponses/${assignmentId}/${
+                answerObj.docId
+              }/${answerObj.docVersionId}?answerId=${encodeURIComponent(
+                answerObj.answerId,
+              )}`;
+              return (
+                <Tr key={key}>
+                  <Td>
+                    <Link to={linkURL} style={linkStyle}>
+                      {answerObj.answerId}
+                    </Link>
+                  </Td>
+                  <Td>
+                    <Link to={linkURL} style={linkStyle}>
+                      {answerObj.count}
+                    </Link>
+                  </Td>
+                </Tr>
+              );
+            })}
+          </Tbody>
+        </Table>
+      </TableContainer>
+
       <Heading subheading="Individual scores" />
       <TableContainer>
         <Table>
@@ -116,37 +169,51 @@ export function AssignmentData() {
             </Tr>
           </Thead>
           <Tbody>
-            {assignmentData.assignmentScores.map((assignmentScore) => (
-              <Tr key={`user${assignmentScore.user.userId}`}>
-                <Td>
-                  <Link
-                    to={
-                      "/assignmentData/" +
-                      assignmentId +
-                      "/" +
-                      assignmentScore.user.userId
-                    }
-                  >
-                    {assignmentScore.user.name}
-                  </Link>
-                </Td>
-                <Td>
-                  <Link
-                    to={
-                      "/assignmentData/" +
-                      assignmentId +
-                      "/" +
-                      assignmentScore.user.userId
-                    }
-                  >
-                    {Math.round(assignmentScore.score * 100) / 100}
-                  </Link>
-                </Td>
-              </Tr>
-            ))}
+            {assignmentData.assignmentScores.map((assignmentScore) => {
+              const linkURL =
+                "/assignmentData/" +
+                assignmentId +
+                "/" +
+                assignmentScore.user.userId;
+              return (
+                <Tr key={`user${assignmentScore.user.userId}`}>
+                  <Td>
+                    <Link to={linkURL} style={linkStyle}>
+                      {assignmentScore.user.name}
+                    </Link>
+                  </Td>
+                  <Td>
+                    <Link to={linkURL} style={linkStyle}>
+                      {Math.round(assignmentScore.score * 100) / 100}
+                    </Link>
+                  </Td>
+                </Tr>
+              );
+            })}
           </Tbody>
         </Table>
       </TableContainer>
     </>
   );
+}
+
+function findAnswers(components, numSoFar = 0) {
+  let count = numSoFar;
+  const answerNames = components.flatMap((comp) => {
+    if (comp.componentType === "answer") {
+      count++;
+      let answerName = comp.props.name;
+      if (!answerName) {
+        answerName = `Answer ${count}`;
+      }
+      return answerName;
+    } else if (comp.children) {
+      const result = findAnswers(comp.children, count);
+      count += result.count;
+      return result.answerNames;
+    } else {
+      return [];
+    }
+  });
+  return { answerNames, count };
 }

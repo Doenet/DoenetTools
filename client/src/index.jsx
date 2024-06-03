@@ -60,6 +60,16 @@ import {
   AssignmentData,
 } from "./Tools/_framework/Paths/AssignmentData";
 import {
+  loader as assignmentAnswerResponsesLoader,
+  action as assignmentAnswerResponsesAction,
+  AssignmentAnswerResponses,
+} from "./Tools/_framework/Paths/AssignmentAnswerResponses";
+import {
+  loader as assignmentAnswerResponseHistoryLoader,
+  action as assignmentAnswerResponseHistoryAction,
+  AssignmentAnswerResponseHistory,
+} from "./Tools/_framework/Paths/AssignmentAnswerResponseHistory";
+import {
   loader as assignmentStudentDataLoader,
   action as assignmentStudentDataAction,
   AssignmentStudentData,
@@ -410,6 +420,44 @@ const router = createBrowserRouter([
             onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
           >
             <AssignmentData />
+          </MathJaxContext>
+        ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+      },
+      {
+        path: "assignmentAnswerResponses/:assignmentId/:docId/:docVersionId",
+        loader: assignmentAnswerResponsesLoader,
+        action: assignmentAnswerResponsesAction,
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <AssignmentAnswerResponses />
+          </MathJaxContext>
+        ),
+        errorElement: (
+          <ChakraProvider theme={theme}>
+            <ErrorPage />
+          </ChakraProvider>
+        ),
+      },
+      {
+        path: "assignmentAnswerResponseHistory/:assignmentId/:docId/:docVersionId/:userId",
+        loader: assignmentAnswerResponseHistoryLoader,
+        action: assignmentAnswerResponseHistoryAction,
+        element: (
+          <MathJaxContext
+            version={2}
+            config={mathjaxConfig}
+            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <AssignmentAnswerResponseHistory />
           </MathJaxContext>
         ),
         errorElement: (

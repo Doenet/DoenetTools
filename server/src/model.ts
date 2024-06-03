@@ -619,7 +619,7 @@ export async function assignActivity(activityId: number, userId: number) {
         create: documentsVersionsToAdd.map((docVersion) => ({
           documentVersion: {
             connect: {
-              version_docId: {
+              docId_version: {
                 docId: docVersion.docId,
                 version: docVersion.version,
               },
@@ -707,61 +707,151 @@ export async function saveScoreAndState({
   state: string;
 }) {
   // make sure have an assignmentScores record
-  const assignmentScores = await prisma.assignmentScores.upsert({
+  // so that can satisfy foreign key constraints on documentState
+  await prisma.assignmentScores.upsert({
     where: { assignmentId_userId: { assignmentId, userId } },
     update: {},
     create: { assignmentId, userId },
   });
 
-  // record score and state for this document
-  await prisma.documentState.upsert({
+  const stateWithMaxScore = await prisma.documentState.findUnique({
     where: {
-      assignmentId_docVersionId_docId_userId: {
+      assignmentId_docId_docVersionId_userId_hasMaxScore: {
         assignmentId,
         docId,
         docVersionId,
         userId,
+        hasMaxScore: true,
+      },
+    },
+    select: { score: true },
+  });
+
+  // use non-strict inequality for hasMaxScore
+  // so that will update the hasMaxScore state to the latest
+  // even if the current score matched the old max score
+  const hasMaxScore =
+    stateWithMaxScore === null || score >= stateWithMaxScore.score;
+
+  if (hasMaxScore) {
+    // if there is a non-latest document state record,
+    // delete it as latest is now maxScore as well
+    try {
+      await prisma.documentState.delete({
+        where: {
+          assignmentId_docId_docVersionId_userId_isLatest: {
+            assignmentId,
+            docId,
+            docVersionId,
+            userId,
+            isLatest: false,
+          },
+        },
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === "P2001") {
+          // if error was that record doesn't exist, then ignore it
+        }
+      } else {
+        throw e;
+      }
+    }
+  } else {
+    // since the latest is not with max score,
+    // mark the record with hasMaxScore as not the latest
+    try {
+      await prisma.documentState.update({
+        where: {
+          assignmentId_docId_docVersionId_userId_hasMaxScore: {
+            assignmentId,
+            docId,
+            docVersionId,
+            userId,
+            hasMaxScore: true,
+          },
+        },
+        data: {
+          isLatest: false,
+        },
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === "P2001") {
+          // if error was that record doesn't exist, then ignore it
+        }
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  // add/update the latest document state and maxScore
+  await prisma.documentState.upsert({
+    where: {
+      assignmentId_docId_docVersionId_userId_isLatest: {
+        assignmentId,
+        docId,
+        docVersionId,
+        userId,
+        isLatest: true,
       },
     },
     update: {
       score,
       state,
+      hasMaxScore,
     },
     create: {
       assignmentId,
       docId,
       docVersionId,
       userId,
+      isLatest: true,
+      hasMaxScore,
       score,
       state,
     },
   });
 
-  const assignmentScore = await prisma.assignmentScores.findUniqueOrThrow({
-    where: {
-      assignmentId_userId: {
-        assignmentId,
-        userId,
+  // use strict inequality for hasStrictMaxScore
+  // so that we don't update the actual score tables
+  // unless the score increased
+  const hasStrictMaxScore =
+    stateWithMaxScore === null || score > stateWithMaxScore.score;
+
+  if (hasStrictMaxScore) {
+    // recalculate the score using the new maximum scores from each document
+    const documentStates = await prisma.documentState.findMany({
+      where: {
+        assignmentScore: {
+          assignmentId,
+          userId,
+        },
+        hasMaxScore: true,
       },
-    },
-    include: {
-      documentState: true,
-    },
-  });
+      select: {
+        score: true,
+      },
+    });
+    const documentMaxScores = documentStates.map((x) => x.score);
 
-  // for now, make score be the maximum of the current score and the weighted averages of the scores from the documents
+    // since some document might not have a score recorded yet,
+    // count the number of actual documents for the assignment
+    const assignmentDocumentsAggregation =
+      await prisma.assignmentDocuments.aggregate({
+        _count: {
+          docId: true,
+        },
+        where: {
+          assignmentId,
+        },
+      });
+    const numDocuments = assignmentDocumentsAggregation._count.docId;
 
-  const assignmentDocuments = await prisma.assignments.findUniqueOrThrow({
-    where: { assignmentId },
-    select: { assignmentDocuments: { select: { docId: true } } },
-  });
-  const numDocuments = assignmentDocuments.assignmentDocuments.length;
+    const averageScore =
+      documentMaxScores.reduce((a, c) => a + c) / numDocuments;
 
-  const currentScore = assignmentScore.score;
-  const documentScores = assignmentScore.documentState.map((x) => x.score);
-  const averageScore = documentScores.reduce((a, c) => a + c) / numDocuments;
-
-  if (averageScore > currentScore) {
     await prisma.assignmentScores.update({
       where: { assignmentId_userId: { assignmentId, userId } },
       data: {
@@ -777,12 +867,14 @@ export async function loadState({
   docVersionId,
   requestedUserId,
   userId,
+  withMaxScore,
 }: {
   assignmentId: number;
   docId: number;
   docVersionId: number;
   requestedUserId: number;
   userId: number;
+  withMaxScore: boolean;
 }) {
   if (requestedUserId !== userId) {
     // If user isn't the requested user, then user is allowed to load requested users state
@@ -796,18 +888,35 @@ export async function loadState({
     });
   }
 
-  const documentState = await prisma.documentState.findUniqueOrThrow({
-    where: {
-      assignmentId_docVersionId_docId_userId: {
-        assignmentId,
-        docId,
-        docVersionId,
-        userId: requestedUserId,
-      },
-    },
-    select: { state: true },
-  });
+  let documentState;
 
+  if (withMaxScore) {
+    documentState = await prisma.documentState.findUniqueOrThrow({
+      where: {
+        assignmentId_docId_docVersionId_userId_hasMaxScore: {
+          assignmentId,
+          docId,
+          docVersionId,
+          userId: requestedUserId,
+          hasMaxScore: true,
+        },
+      },
+      select: { state: true },
+    });
+  } else {
+    documentState = await prisma.documentState.findUniqueOrThrow({
+      where: {
+        assignmentId_docId_docVersionId_userId_isLatest: {
+          assignmentId,
+          docId,
+          docVersionId,
+          userId: requestedUserId,
+          isLatest: true,
+        },
+      },
+      select: { state: true },
+    });
+  }
   return documentState.state;
 }
 
@@ -868,6 +977,42 @@ export async function getAssignmentStudentData({
     },
   });
 
+  const documentScores = await prisma.documentState.findMany({
+    where: { assignmentId, userId },
+    select: {
+      docId: true,
+      docVersionId: true,
+      hasMaxScore: true,
+      score: true,
+    },
+    orderBy: {
+      score: "asc",
+    },
+  });
+
+  return { ...assignmentData, documentScores };
+}
+
+export async function getAssignmentContent({
+  assignmentId,
+  ownerId,
+}: {
+  assignmentId: number;
+  ownerId: number;
+}) {
+  const assignmentData = await prisma.assignmentDocuments.findMany({
+    where: {
+      assignmentId,
+      assignment: { ownerId, isDeleted: false },
+    },
+
+    select: {
+      docId: true,
+      docVersionId: true,
+      documentVersion: { select: { content: true } },
+    },
+  });
+
   return assignmentData;
 }
 
@@ -877,38 +1022,77 @@ export async function recordSubmittedEvent({
   docVersionId,
   userId,
   answerId,
-  result,
+  response,
+  answerNumber,
+  itemNumber,
+  creditAchieved,
+  itemCreditAchieved,
+  documentCreditAchieved,
 }: {
   assignmentId: number;
   docId: number;
   docVersionId: number;
   userId: number;
   answerId: string;
-  result: string;
+  response: string;
+  answerNumber?: number;
+  itemNumber: number;
+  creditAchieved: number;
+  itemCreditAchieved: number;
+  documentCreditAchieved: number;
 }) {
-  await prisma.documentSubmittedResponses.upsert({
-    where: {
-      assignmentId_docVersionId_docId_userId_answerId: {
-        assignmentId,
-        docVersionId,
-        docId,
-        userId,
-        answerId,
-      },
-    },
-    update: {
-      result,
-      submittedAt: DateTime.now().toISO(),
-    },
-    create: {
+  await prisma.documentSubmittedResponses.create({
+    data: {
       assignmentId,
       docVersionId,
       docId,
       userId,
       answerId,
-      result,
+      response,
+      answerNumber,
+      itemNumber,
+      creditAchieved,
+      itemCreditAchieved,
+      documentCreditAchieved,
     },
   });
+}
+
+export async function getAnswersThatHaveSubmittedResponses({
+  assignmentId,
+  ownerId,
+}: {
+  assignmentId: number;
+  ownerId: number;
+}) {
+  // Using raw query as it seems prisma does not support distinct in count.
+  // https://github.com/prisma/prisma/issues/4228
+
+  // TODO: require that assignmentId is owned by ownerId as we do for above queries?
+  let submittedResponses = await prisma.$queryRaw<
+    {
+      docId: number;
+      docVersionId: number;
+      answerId: string;
+      answerNumber: number | null;
+      count: number;
+    }[]
+  >(Prisma.sql`
+    SELECT "docId", "docVersionId", "answerId", MAX("answerNumber") as "answerNumber", COUNT(DISTINCT "userId") as "count"
+    FROM "documentSubmittedResponses"
+    WHERE "assignmentId"=${assignmentId}
+    GROUP BY "docId", "docVersionId", "answerId"
+    ORDER BY "answerNumber"
+    `);
+
+  // For some reason, the query returns a BigInt for count, which TypeScript doesn't know how to serialize,
+  // so we convert into a Number.
+  submittedResponses = submittedResponses.map((row) => {
+    row.count = Number(row.count);
+    return row;
+  });
+
+  return submittedResponses;
 }
 
 export async function getDocumentSubmittedResponses({
@@ -924,7 +1108,9 @@ export async function getDocumentSubmittedResponses({
   ownerId: number;
   answerId: string;
 }) {
-  const submittedResponses = await prisma.documentSubmittedResponses.findMany({
+  // for each combination of ["assignmentId", "docId", "docVersionId", "answerId", "userId"],
+  // find the latest submitted response
+  let submittedResponses = await prisma.documentSubmittedResponses.findMany({
     where: {
       assignmentId,
       docVersionId,
@@ -938,8 +1124,89 @@ export async function getDocumentSubmittedResponses({
     },
     select: {
       user: { select: { userId: true, name: true } },
-      result: true,
+      response: true,
+      creditAchieved: true,
       submittedAt: true,
+      userId: true,
+    },
+    distinct: ["assignmentId", "docId", "docVersionId", "answerId", "userId"],
+    orderBy: {
+      // since order by submittedAt in descending order,
+      // the distinct picks out the response, submittedAt, and creditAchieved from the most recent submission
+      submittedAt: "desc",
+    },
+  });
+
+  // Don't know how to sort by submittedAt and userId at the same time in the above distinct query,
+  // so sort by userId afterwards
+  submittedResponses.sort((a, b) => a.userId - b.userId);
+
+  // Don't know how to get results in a single query, so executing a second query
+  const responseCounts = await prisma.documentSubmittedResponses.groupBy({
+    by: ["assignmentId", "docId", "docVersionId", "answerId", "userId"],
+    _count: { response: true },
+    where: {
+      assignmentId,
+      docVersionId,
+      docId,
+      answerId,
+      assignmentDocument: {
+        assignment: {
+          ownerId,
+        },
+      },
+    },
+    orderBy: {
+      userId: "asc",
+    },
+  });
+
+  const combinedResponses = submittedResponses.map((obj, i) => ({
+    ...obj,
+    responseCount: responseCounts[i]._count.response,
+  }));
+
+  return combinedResponses;
+}
+
+export async function getDocumentSubmittedResponseHistory({
+  assignmentId,
+  docId,
+  docVersionId,
+  ownerId,
+  answerId,
+  userId,
+}: {
+  assignmentId: number;
+  docId: number;
+  docVersionId: number;
+  ownerId: number;
+  answerId: string;
+  userId: number;
+}) {
+  // for each combination of ["assignmentId", "docId", "docVersionId", "answerId", "userId"],
+  // find the latest submitted response
+  let submittedResponses = await prisma.documentSubmittedResponses.findMany({
+    where: {
+      assignmentId,
+      docVersionId,
+      docId,
+      answerId,
+      userId,
+      assignmentDocument: {
+        assignment: {
+          ownerId,
+        },
+      },
+    },
+    select: {
+      user: { select: { userId: true, name: true } },
+      response: true,
+      creditAchieved: true,
+      submittedAt: true,
+    },
+    orderBy: {
+      submittedAt: "asc",
     },
   });
 

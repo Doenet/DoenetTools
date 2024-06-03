@@ -101,7 +101,11 @@ export function AssignmentViewer() {
   }, [assignmentFound, assignment?.name]);
 
   useEffect(() => {
-    addEventListener("message", async (event) => {
+    if (!assignment) {
+      return;
+    }
+
+    let messageListener = async function (event) {
       if (event.data.subject == "SPLICE.reportScoreAndState") {
         // TODO: generalize to multiple documents. For now, assume just have one.
         await axios.post("/api/saveScoreAndState", {
@@ -158,8 +162,14 @@ export function AssignmentViewer() {
           });
         }
       }
-    });
-  }, []);
+    };
+
+    addEventListener("message", messageListener);
+
+    return () => {
+      removeEventListener("message", messageListener);
+    };
+  }, [assignment]);
 
   const [variants, setVariants] = useState({
     index: 1,
@@ -351,12 +361,30 @@ async function recordSubmittedEvent({
   const answerId = object.componentName;
 
   if (answerId) {
+    let result = JSON.parse(data.result);
+    const creditAchieved = result.creditAchieved;
+    const response = JSON.stringify({
+      response: result.response,
+      componentTypes: result.componentTypes,
+    });
+    const context = JSON.parse(data.context);
+    const itemNumber = context.item;
+    const itemCreditAchieved = context.itemCreditAchieved;
+    const documentCreditAchieved = context.pageCreditAchieved;
+
     await axios.post(`/api/recordSubmittedEvent`, {
       assignmentId,
       docId,
       docVersionId,
       answerId,
-      result: data.result,
+      answerNumber: object.answerNumber,
+      result: {
+        response,
+        itemNumber,
+        creditAchieved,
+        itemCreditAchieved,
+        documentCreditAchieved,
+      },
     });
   }
 }
