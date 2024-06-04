@@ -22,6 +22,7 @@ export default function ActivityCard({
   name,
   fullName,
   menuItems,
+  suppressAvatar = false,
 }) {
   if (!imagePath) {
     imagePath = "/activity_default.jpg";
@@ -44,9 +45,9 @@ export default function ActivityCard({
       </Link>
       <CardBody p="1">
         <Flex columnGap="2px">
-          <Avatar size="sm" name={fullName} />
+          {suppressAvatar ? null : <Avatar size="sm" name={fullName} />}
 
-          <Box width="140px" p="1">
+          <Box width="160px" p="1">
             <Text
               data-test="Card Label"
               height="26px"

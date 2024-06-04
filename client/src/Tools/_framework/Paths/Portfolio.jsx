@@ -100,7 +100,7 @@ export async function action({ request, params }) {
     await axios.post(`/api/assignActivity`, {
       activityId: formObj.activityId,
     });
-    return redirect(`/assignments/${params.userId}`);
+    return redirect(`/assignments`);
   } else if (formObj?._action == "noop") {
     return true;
   }

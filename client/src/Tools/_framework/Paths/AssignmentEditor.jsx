@@ -30,6 +30,7 @@ export async function action({ params, request }) {
     name = "Untitled";
   }
 
+  // TODO: add a way to change an assignment name
   if (formObj._action == "update name") {
     await axios.post(`/api/updateAssignmentName`, {
       assignmentId: Number(params.assignmentId),
@@ -38,6 +39,7 @@ export async function action({ params, request }) {
     return true;
   }
 
+  // TODO: do we want to have images for assignments?
   if (formObj._action == "update general") {
     await axios.post("/api/updateAssignmentSettings", {
       name,

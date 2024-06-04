@@ -376,7 +376,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "assignments/:userId",
+        path: "assignments",
         loader: assignmentsLoader,
         action: assignmentsAction,
         element: (

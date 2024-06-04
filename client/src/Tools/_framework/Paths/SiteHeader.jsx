@@ -172,10 +172,7 @@ export function SiteHeader(props) {
                     <NavLinkTab to={`portfolio/${userId}`} dataTest="Portfolio">
                       Portfolio
                     </NavLinkTab>
-                    <NavLinkTab
-                      to={`assignments/${userId}`}
-                      dataTest="Assignments"
-                    >
+                    <NavLinkTab to={`assignments`} dataTest="Assignments">
                       Assignments
                     </NavLinkTab>
                     {isAdmin && (
