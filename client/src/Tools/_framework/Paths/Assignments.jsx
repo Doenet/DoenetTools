@@ -53,9 +53,12 @@ export async function action({ request }) {
 }
 
 export async function loader({ params }) {
-  const { data } = await axios.get(`/api/getAssignments/${params.userId}`);
+  const { data: assignmentData } = await axios.get(`/api/getAssignments`);
 
-  return data;
+  return {
+    user: assignmentData.user,
+    assignments: assignmentData.assignments,
+  };
 }
 
 const AssignmentsSection = styled.div`
@@ -79,7 +82,7 @@ const AssignmentsGrid = styled.div`
 
 export function Assignments() {
   let context = useOutletContext();
-  let data = useLoaderData();
+  let { user, assignments } = useLoaderData();
 
   useEffect(() => {
     document.title = `Portfolio - Doenet`;
@@ -129,7 +132,7 @@ export function Assignments() {
           zIndex="500"
         >
           <Heading as="h2" size="lg">
-            {data.name}
+            {user.name}
           </Heading>
           <Heading as="h3" size="md">
             Assignments
@@ -137,7 +140,7 @@ export function Assignments() {
         </Box>
         <AssignmentsSection data-test="Assignments">
           <Wrap p="10px" overflow="visible">
-            {data.assignments.length < 1 ? (
+            {assignments.length < 1 ? (
               <Flex
                 flexDirection="column"
                 justifyContent="center"
@@ -153,14 +156,20 @@ export function Assignments() {
               </Flex>
             ) : (
               <>
-                {data.assignments.map((assignment) => {
+                {assignments.map((assignment) => {
+                  const isInstructor = assignment.ownerId === user.userId;
                   return (
                     <ActivityCard
                       key={`Card${assignment.assignmentId}`}
                       {...assignment}
-                      fullName={data.name}
+                      fullName={isInstructor ? "Instructor" : "Student"}
                       menuItems={getCardMenuList(assignment.assignmentId)}
-                      imageLink={`/assignmentEditor/${assignment.assignmentId}`}
+                      imageLink={
+                        isInstructor
+                          ? `/assignmentEditor/${assignment.assignmentId}`
+                          : `/classCode/${assignment.classCode}`
+                      }
+                      suppressAvatar={true}
                     />
                   );
                 })}
