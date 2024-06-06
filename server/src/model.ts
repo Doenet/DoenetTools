@@ -38,9 +38,9 @@ export async function createActivity(ownerId: number) {
   return { activityId, docId };
 }
 
-export async function deleteActivity(activityId: number) {
+export async function deleteActivity(activityId: number, ownerId: number) {
   return await prisma.activities.update({
-    where: { activityId },
+    where: { activityId, ownerId },
     data: {
       isDeleted: true,
       documents: {
@@ -55,16 +55,17 @@ export async function deleteActivity(activityId: number) {
   });
 }
 
-export async function deleteDocument(docId: number) {
+// Note: currently (June 4, 2024) unused and untested
+export async function deleteDocument(docId: number, ownerId: number) {
   return await prisma.documents.update({
-    where: { docId },
+    where: { docId, activity: { ownerId } },
     data: { isDeleted: true },
   });
 }
 
-export async function deleteAssignment(assignmentId: number) {
+export async function deleteAssignment(assignmentId: number, ownerId: number) {
   return await prisma.assignments.update({
-    where: { assignmentId },
+    where: { assignmentId, ownerId },
     data: {
       isDeleted: true,
     },
@@ -76,14 +77,16 @@ export async function updateActivity({
   name,
   imagePath,
   isPublic,
+  ownerId,
 }: {
   activityId: number;
   name?: string;
   imagePath?: string;
   isPublic?: boolean;
+  ownerId: number;
 }) {
   return await prisma.activities.update({
-    where: { activityId },
+    where: { activityId, ownerId },
     data: {
       name,
       imagePath,
@@ -92,20 +95,21 @@ export async function updateActivity({
   });
 }
 
-// TODO - access control
 export async function updateDoc({
   docId,
   content,
   name,
   doenetmlVersionId,
+  ownerId,
 }: {
   docId: number;
   content?: string;
   name?: string;
   doenetmlVersionId?: number;
+  ownerId: number;
 }) {
   return await prisma.documents.update({
-    where: { docId },
+    where: { docId, activity: { ownerId } },
     data: {
       content: content,
       name,
@@ -118,13 +122,15 @@ export async function updateAssignment({
   assignmentId,
   name,
   imagePath,
+  ownerId,
 }: {
   assignmentId: number;
   name?: string;
   imagePath?: string;
+  ownerId: number;
 }) {
   return await prisma.assignments.update({
-    where: { assignmentId },
+    where: { assignmentId, ownerId },
     data: {
       name,
       imagePath,
@@ -132,7 +138,8 @@ export async function updateAssignment({
   });
 }
 
-// TODO - access control
+// Note: getActivity does not currently incorporate access control,
+// by relies on calling functions to determine access
 export async function getActivity(activityId: number) {
   return await prisma.activities.findUniqueOrThrow({
     where: { activityId, isDeleted: false },
@@ -144,14 +151,14 @@ export async function getActivity(activityId: number) {
   });
 }
 
-// TODO - access control
+// Note: getDoc does not currently incorporate access control,
+// by relies on calling functions to determine access
 export async function getDoc(docId: number) {
   return await prisma.documents.findUniqueOrThrow({
     where: { docId, isDeleted: false },
   });
 }
 
-// TODO - access control
 export async function copyPublicActivityToPortfolio(
   origActivityId: number,
   userId: number,
@@ -243,8 +250,9 @@ export async function copyPublicActivityToPortfolio(
   return newActivity.activityId;
 }
 
-// TODO - access control
-export async function createDocumentVersion(docId: number): Promise<{
+// Note: createDocumentVersion does not currently incorporate access control,
+// by relies on calling functions to determine access
+async function createDocumentVersion(docId: number): Promise<{
   version: number;
   docId: number;
   cid: string | null;
@@ -293,11 +301,13 @@ export async function createDocumentVersion(docId: number): Promise<{
   return docVersion;
 }
 
-// TODO - access control
-export async function getActivityEditorData(activityId: number) {
+export async function getActivityEditorData(
+  activityId: number,
+  ownerId: number,
+) {
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
   let activity = await prisma.activities.findUniqueOrThrow({
-    where: { activityId, isDeleted: false },
+    where: { activityId, isDeleted: false, ownerId },
     include: {
       documents: {
         include: {
@@ -312,11 +322,17 @@ export async function getActivityEditorData(activityId: number) {
   return activity;
 }
 
-// TODO - access control
 // TODO: generalize this to multi-document activities
-export async function getActivityViewerData(activityId: number) {
+export async function getActivityViewerData(
+  activityId: number,
+  userId: number,
+) {
   const activity = await prisma.activities.findUniqueOrThrow({
-    where: { activityId, isDeleted: false },
+    where: {
+      activityId,
+      isDeleted: false,
+      OR: [{ ownerId: userId }, { isPublic: true }],
+    },
     include: {
       owner: { select: { userId: true, email: true, name: true } },
       documents: {
@@ -360,11 +376,13 @@ export async function getActivityViewerData(activityId: number) {
   };
 }
 
-// TODO - access control
-export async function getAssignmentEditorData(assignmentId: number) {
+export async function getAssignmentEditorData(
+  assignmentId: number,
+  ownerId: number,
+) {
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
   let assignment = await prisma.assignments.findUniqueOrThrow({
-    where: { assignmentId, isDeleted: false },
+    where: { assignmentId, isDeleted: false, ownerId },
     include: {
       assignmentDocuments: {
         select: {
@@ -486,25 +504,22 @@ export async function listUserActivities(
   };
 }
 
-export async function listUserAssignments(
-  ownerId: number,
-  loggedInUserId: number,
-) {
-  if (ownerId !== loggedInUserId) {
-    return [];
-  }
+export async function listUserAssignments(userId: number) {
   const assignments = await prisma.assignments.findMany({
-    where: { ownerId, isDeleted: false },
+    where: {
+      isDeleted: false,
+      OR: [{ ownerId: userId }, { assignmentScores: { some: { userId } } }],
+    },
   });
 
   const user = await prisma.users.findUniqueOrThrow({
-    where: { userId: ownerId },
-    select: { name: true },
+    where: { userId },
+    select: { userId: true, name: true },
   });
 
   return {
     assignments,
-    name: user.name,
+    user,
   };
 }
 
@@ -569,8 +584,8 @@ export async function getAllDoenetmlVersions() {
   return allDoenetmlVersions;
 }
 
-export async function getIsAdmin(email: string) {
-  const user = await prisma.users.findUnique({ where: { email } });
+export async function getIsAdmin(userId: number) {
+  const user = await prisma.users.findUnique({ where: { userId } });
   let isAdmin = false;
   if (user) {
     isAdmin = user.isAdmin;
@@ -640,10 +655,11 @@ function generateClassCode() {
 export async function openAssignmentWithCode(
   assignmentId: number,
   closeAt: DateTime,
+  ownerId: number,
 ) {
   let classCode = (
     await prisma.assignments.findUniqueOrThrow({
-      where: { assignmentId },
+      where: { assignmentId, ownerId },
       select: { classCode: true },
     })
   ).classCode;
@@ -655,7 +671,7 @@ export async function openAssignmentWithCode(
   const codeValidUntil = closeAt.toJSDate();
 
   await prisma.assignments.update({
-    where: { assignmentId },
+    where: { assignmentId, ownerId },
     data: {
       classCode,
       codeValidUntil,
@@ -664,9 +680,12 @@ export async function openAssignmentWithCode(
   return { classCode, codeValidUntil };
 }
 
-export async function closeAssignmentWithCode(assignmentId: number) {
+export async function closeAssignmentWithCode(
+  assignmentId: number,
+  ownerId: number,
+) {
   await prisma.assignments.update({
-    where: { assignmentId },
+    where: { assignmentId, ownerId },
     data: {
       codeValidUntil: null,
     },
@@ -691,6 +710,8 @@ export async function getAssignment(assignmentId: number, ownerId: number) {
   return assignment;
 }
 
+// TODO: do we still save score and state if assignment isn't open?
+// If not, how do we communicate that fact
 export async function saveScoreAndState({
   assignmentId,
   docId,
@@ -1016,6 +1037,8 @@ export async function getAssignmentContent({
   return assignmentData;
 }
 
+// TODO: do we still record submitted event if an assignment isn't open?
+// If so, do we mark it special to indicate that assignment wasn't open at the time?
 export async function recordSubmittedEvent({
   assignmentId,
   docId,
@@ -1068,7 +1091,6 @@ export async function getAnswersThatHaveSubmittedResponses({
   // Using raw query as it seems prisma does not support distinct in count.
   // https://github.com/prisma/prisma/issues/4228
 
-  // TODO: require that assignmentId is owned by ownerId as we do for above queries?
   let submittedResponses = await prisma.$queryRaw<
     {
       docId: number;
@@ -1080,7 +1102,8 @@ export async function getAnswersThatHaveSubmittedResponses({
   >(Prisma.sql`
     SELECT "docId", "docVersionId", "answerId", MAX("answerNumber") as "answerNumber", COUNT(DISTINCT "userId") as "count"
     FROM "documentSubmittedResponses"
-    WHERE "assignmentId"=${assignmentId}
+    INNER JOIN "assignments" ON "documentSubmittedResponses"."assignmentId" = "assignments"."assignmentId" 
+    WHERE "documentSubmittedResponses"."assignmentId"=${assignmentId} AND "ownerId" = ${ownerId}
     GROUP BY "docId", "docVersionId", "answerId"
     ORDER BY "answerNumber"
     `);
