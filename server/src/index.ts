@@ -33,6 +33,12 @@ import {
   getAssignmentScoreData,
   loadState,
   getAssignmentStudentData,
+  recordSubmittedEvent,
+  getAnswersThatHaveSubmittedResponses,
+  getDocumentSubmittedResponses,
+  getAssignment,
+  getAssignmentContent,
+  getDocumentSubmittedResponseHistory,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -62,15 +68,22 @@ app.get("/api/getQuickCheckSignedIn", (req: Request, res: Response) => {
   res.send({ signedIn: signedIn });
 });
 
-app.get("/api/getUser", async (req: Request, res: Response) => {
-  const signedIn = req.cookies.email ? true : false;
-  if (signedIn) {
-    let userInfo = await getUserInfo(req.cookies.email);
-    res.send(userInfo);
-  } else {
-    res.send({});
-  }
-});
+app.get(
+  "/api/getUser",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const signedIn = req.cookies.email ? true : false;
+    if (signedIn) {
+      try {
+        let userInfo = await getUserInfo(req.cookies.email);
+        res.send(userInfo);
+      } catch (e) {
+        next(e);
+      }
+    } else {
+      res.send({});
+    }
+  },
+);
 
 app.post("/api/updateUser", async (req: Request, res: Response) => {
   const signedIn = req.cookies.email ? true : false;
@@ -478,6 +491,7 @@ app.get(
     const docVersionId = Number(req.query.docVersionId);
     const requestedUserId = Number(req.query.userId || req.cookies.userId);
     const loggedInUserId = Number(req.cookies.userId);
+    const withMaxScore = req.query.withMaxScore === "1";
 
     try {
       const state = await loadState({
@@ -486,6 +500,7 @@ app.get(
         docVersionId,
         requestedUserId,
         userId: loggedInUserId,
+        withMaxScore,
       });
       res.send({ state });
     } catch (e) {
@@ -499,17 +514,25 @@ app.get(
 );
 
 app.get(
-  "/api/getAssignmentScoreData/:assignmentId",
+  "/api/getAssignmentData/:assignmentId",
   async (req: Request, res: Response, next: NextFunction) => {
     const assignmentId = Number(req.params.assignmentId);
     const loggedInUserId = Number(req.cookies.userId);
 
     try {
-      const assignmentWithData = await getAssignmentScoreData({
+      const assignmentData = await getAssignmentScoreData({
         assignmentId,
         ownerId: loggedInUserId,
       });
-      res.send(assignmentWithData);
+      const answerList = await getAnswersThatHaveSubmittedResponses({
+        assignmentId,
+        ownerId: loggedInUserId,
+      });
+      const assignmentContent = await getAssignmentContent({
+        assignmentId,
+        ownerId: loggedInUserId,
+      });
+      res.send({ assignmentData, answerList, assignmentContent });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
@@ -537,6 +560,112 @@ app.get(
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/recordSubmittedEvent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const body = req.body;
+    const assignmentId = Number(body.assignmentId);
+    const docId = Number(body.docId);
+    const docVersionId = Number(body.docVersionId);
+    const answerId = body.answerId as string;
+    const loggedInUserId = Number(req.cookies.userId);
+    const response = body.result.response as string;
+    const itemNumber = Number(body.result.itemNumber);
+    const creditAchieved = Number(body.result.creditAchieved);
+    const itemCreditAchieved = Number(body.result.itemCreditAchieved);
+    const documentCreditAchieved = Number(body.result.documentCreditAchieved);
+    const answerNumber = body.answerNumber
+      ? Number(body.answerNumber)
+      : undefined;
+
+    try {
+      await recordSubmittedEvent({
+        assignmentId,
+        docId,
+        docVersionId,
+        userId: loggedInUserId,
+        answerId,
+        answerNumber,
+        response,
+        itemNumber,
+        creditAchieved,
+        itemCreditAchieved,
+        documentCreditAchieved,
+      });
+      res.send({});
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientValidationError ||
+        e instanceof Prisma.PrismaClientKnownRequestError
+      ) {
+        res.status(400).send({});
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getSubmittedResponses/:assignmentId/:docId/:docVersionId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const assignmentId = Number(req.params.assignmentId);
+    const docId = Number(req.params.docId);
+    const docVersionId = Number(req.params.docVersionId);
+    const answerId = req.query.answerId as string;
+    const loggedInUserId = Number(req.cookies.userId);
+
+    try {
+      const assignment = await getAssignment(assignmentId, loggedInUserId);
+      const submittedResponses = await getDocumentSubmittedResponses({
+        assignmentId,
+        docId,
+        docVersionId,
+        answerId,
+        ownerId: loggedInUserId,
+      });
+      res.send({ assignment, submittedResponses });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(204);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getSubmittedResponseHistory/:assignmentId/:docId/:docVersionId/:userId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const assignmentId = Number(req.params.assignmentId);
+    const docId = Number(req.params.docId);
+    const docVersionId = Number(req.params.docVersionId);
+    const userId = Number(req.params.userId);
+    const answerId = req.query.answerId as string;
+    const loggedInUserId = Number(req.cookies.userId);
+
+    try {
+      const assignment = await getAssignment(assignmentId, loggedInUserId);
+      const submittedResponses = await getDocumentSubmittedResponseHistory({
+        assignmentId,
+        docId,
+        docVersionId,
+        answerId,
+        userId,
+        ownerId: loggedInUserId,
+      });
+      res.send({ assignment, submittedResponses });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(204);
       } else {
         next(e);
       }
