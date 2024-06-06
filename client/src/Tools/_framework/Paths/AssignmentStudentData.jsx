@@ -24,7 +24,7 @@ export async function action({ params, request }) {
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);
-  const withMaxScore = url.searchParams.get("withMaxScore") === "1" ? 1 : 0;
+  const withMaxScore = url.searchParams.get("withMaxScore") === "0" ? 0 : 1;
 
   const { data: assignmentData } = await axios.get(
     `/api/getAssignmentStudentData/${params.assignmentId}/${params.userId}`,
@@ -143,13 +143,15 @@ export function AssignmentStudentData() {
 
       {numStatesSaved === 1 ? (
         <>
-          <p>Score achieved: {score}</p>
-          <p>Latest work:</p>
+          <p>Best score achieved: {Math.round(score * 1000) / 1000}</p>
+          <p>Best (and latest) work:</p>
         </>
       ) : withMaxScore ? (
         <>
-          <p>Maximum score achieved: {documentScores.maxScore}</p>
           <p>
+            Best score achieved:{" "}
+            {Math.round(documentScores.maxScore * 1000) / 1000} (Latest work has
+            a score of {Math.round(documentScores.latest * 1000) / 1000}.{" "}
             <Button
               colorScheme="blue"
               mt="8px"
@@ -159,15 +161,20 @@ export function AssignmentStudentData() {
                 fetcher.submit({ _action: "view current" }, { method: "post" });
               }}
             >
-              Show current work
+              Switch to latest work
             </Button>
+            )
           </p>
-          <p>Work obtaining maximum score:</p>
+          <p></p>
+          <p>Best work:</p>
         </>
       ) : (
         <>
-          <p>Latest score achieved: {documentScores.latest}</p>
           <p>
+            Score achieved with latest work:{" "}
+            {Math.round(documentScores.latest * 1000) / 1000} (Earlier work
+            achieved the best score of{" "}
+            {Math.round(documentScores.maxScore * 1000) / 1000}.{" "}
             <Button
               colorScheme="blue"
               mt="8px"
@@ -177,8 +184,9 @@ export function AssignmentStudentData() {
                 fetcher.submit({ _action: "view max" }, { method: "post" });
               }}
             >
-              Show work achieving maximum score
+              Switch to best work
             </Button>
+            )
           </p>
           <p>Latest work:</p>
         </>

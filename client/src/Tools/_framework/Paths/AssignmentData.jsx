@@ -11,12 +11,21 @@ import {
   Tbody,
   Td,
   Button,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
+  SimpleGrid,
+  VStack,
+  Box,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 import { useFetcher, Link } from "react-router-dom";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Label } from "recharts";
+import AssignmentPreview from "../ToolPanels/AssignmentPreview";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -58,10 +67,11 @@ export function AssignmentData() {
 
   const [scoreData, setScoreData] = useState([]);
 
+  const [activatePreview, setActivatePreview] = useState(false);
+  const [previewKey, setPreviewKey] = useState(1);
+
   useEffect(() => {
-    const scores = assignmentData.assignmentScores.map((obj) => obj.score);
     const minScore = 0;
-    const maxScore = 1;
     const numBins = 11;
     const size = 1 / (numBins - 1);
 
@@ -74,12 +84,6 @@ export function AssignmentData() {
       hist.map((v, i) => ({ count: v, score: Math.round(i * size * 10) / 10 })),
     );
   }, [assignmentData]);
-
-  useEffect(() => {
-    const serializedDocument = parseAndCompile(doenetML);
-
-    const { answerNames } = findAnswers(serializedDocument.components);
-  }, [doenetML]);
 
   const linkStyle = {
     display: "block",
@@ -123,97 +127,131 @@ export function AssignmentData() {
         </YAxis>
         <Bar dataKey="count" fill="#8884d8" />
       </BarChart>
-      <Heading subheading="Answers with responses" />
-      <TableContainer>
-        <Table>
-          <Thead>
-            <Tr>
-              <Th>Answer name</Th>
-              <Th>Number of responses</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {answerList.map((answerObj) => {
-              const key = `/assignmentAnswerResponses/${assignmentId}/${answerObj.docId}/${answerObj.docVersionId}/${answerObj.answerId}`;
-              const linkURL = `/assignmentAnswerResponses/${assignmentId}/${
-                answerObj.docId
-              }/${answerObj.docVersionId}?answerId=${encodeURIComponent(
-                answerObj.answerId,
-              )}`;
-              return (
-                <Tr key={key}>
-                  <Td>
-                    <Link to={linkURL} style={linkStyle}>
-                      {answerObj.answerId}
-                    </Link>
-                  </Td>
-                  <Td>
-                    <Link to={linkURL} style={linkStyle}>
-                      {answerObj.count}
-                    </Link>
-                  </Td>
-                </Tr>
-              );
-            })}
-          </Tbody>
-        </Table>
-      </TableContainer>
 
-      <Heading subheading="Individual scores" />
-      <TableContainer>
-        <Table>
-          <Thead>
-            <Tr>
-              <Th>Name</Th>
-              <Th>Score</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {assignmentData.assignmentScores.map((assignmentScore) => {
-              const linkURL =
-                "/assignmentData/" +
-                assignmentId +
-                "/" +
-                assignmentScore.user.userId;
-              return (
-                <Tr key={`user${assignmentScore.user.userId}`}>
-                  <Td>
-                    <Link to={linkURL} style={linkStyle}>
-                      {assignmentScore.user.name}
-                    </Link>
-                  </Td>
-                  <Td>
-                    <Link to={linkURL} style={linkStyle}>
-                      {Math.round(assignmentScore.score * 100) / 100}
-                    </Link>
-                  </Td>
-                </Tr>
-              );
-            })}
-          </Tbody>
-        </Table>
-      </TableContainer>
+      <Tabs>
+        <TabList>
+          <Tab>Individual scores</Tab>
+          <Tab
+            onClick={() => {
+              setActivatePreview(true);
+              setPreviewKey(previewKey + 1);
+            }}
+          >
+            Item summary
+          </Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <Heading subheading="Individual scores" />
+            <TableContainer>
+              <Table>
+                <Thead>
+                  <Tr>
+                    <Th>Name</Th>
+                    <Th>Score</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {assignmentData.assignmentScores.map((assignmentScore) => {
+                    const linkURL =
+                      "/assignmentData/" +
+                      assignmentId +
+                      "/" +
+                      assignmentScore.user.userId;
+                    return (
+                      <Tr key={`user${assignmentScore.user.userId}`}>
+                        <Td>
+                          <Link to={linkURL} style={linkStyle}>
+                            {assignmentScore.user.name}
+                          </Link>
+                        </Td>
+                        <Td>
+                          <Link to={linkURL} style={linkStyle}>
+                            {Math.round(assignmentScore.score * 100) / 100}
+                          </Link>
+                        </Td>
+                      </Tr>
+                    );
+                  })}
+                </Tbody>
+              </Table>
+            </TableContainer>
+          </TabPanel>
+          <TabPanel>
+            <Heading subheading="Item summary" />
+
+            <SimpleGrid columns={2} spacing="20px" margin="20px">
+              <VStack>
+                {/* <Heading subheading="Assignment Preview" /> */}
+
+                <p>
+                  Note: hover over an answer submit button to reveal answer
+                  name.
+                </p>
+                <AssignmentPreview
+                  doenetML={doenetML}
+                  active={activatePreview}
+                  key={`preview${previewKey}`}
+                />
+              </VStack>
+              <Box>
+                <TableContainer>
+                  <Table>
+                    <Thead>
+                      <Tr>
+                        <Th>Answer name</Th>
+                        <Th>
+                          Number of
+                          <br />
+                          students
+                          <br />
+                          responded
+                        </Th>
+                        <Th>
+                          Average
+                          <br />
+                          correct
+                        </Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {answerList.map((answerObj) => {
+                        const key = `/assignmentAnswerResponses/${assignmentId}/${answerObj.docId}/${answerObj.docVersionId}/${answerObj.answerId}`;
+                        const linkURL = `/assignmentAnswerResponses/${assignmentId}/${
+                          answerObj.docId
+                        }/${
+                          answerObj.docVersionId
+                        }?answerId=${encodeURIComponent(answerObj.answerId)}`;
+                        return (
+                          <Tr key={key}>
+                            <Td>
+                              <Link to={linkURL} style={linkStyle}>
+                                {answerObj.answerId}
+                              </Link>
+                            </Td>
+                            <Td>
+                              <Link to={linkURL} style={linkStyle}>
+                                {answerObj.count}
+                              </Link>
+                            </Td>
+                            <Td>
+                              <Link to={linkURL} style={linkStyle}>
+                                {Math.round(answerObj.averageCredit * 1000) /
+                                  10}
+                                %
+                              </Link>
+                            </Td>
+                          </Tr>
+                        );
+                      })}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
+              </Box>
+            </SimpleGrid>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </>
   );
-}
-
-function findAnswers(components, numSoFar = 0) {
-  let count = numSoFar;
-  const answerNames = components.flatMap((comp) => {
-    if (comp.componentType === "answer") {
-      count++;
-      let answerName = comp.props.name;
-      if (!answerName) {
-        answerName = `Answer ${count}`;
-      }
-      return answerName;
-    } else if (comp.children) {
-      const result = findAnswers(comp.children, count);
-      count += result.count;
-      return result.answerNames;
-    } else {
-      return [];
-    }
-  });
-  return { answerNames, count };
 }

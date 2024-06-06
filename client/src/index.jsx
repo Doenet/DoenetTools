@@ -163,7 +163,13 @@ const router = createBrowserRouter([
     element: (
       <>
         <ChakraProvider theme={theme}>
-          <SiteHeader />
+          <MathJaxContext
+            version={3}
+            config={mathjaxConfig}
+            // onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+          >
+            <SiteHeader />
+          </MathJaxContext>
         </ChakraProvider>
       </>
     ),
@@ -177,22 +183,8 @@ const router = createBrowserRouter([
         path: "/",
         loader: carouselLoader,
         // action: homeAction,
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
-        element: (
-          <MathJaxContext
-            version={2}
-            config={mathjaxConfig}
-            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
-            <ChakraProvider theme={theme}>
-              <Home />
-            </ChakraProvider>
-          </MathJaxContext>
-        ),
+        errorElement: <ErrorPage />,
+        element: <Home />,
       },
       {
         path: "/library",
@@ -203,32 +195,16 @@ const router = createBrowserRouter([
         // TODO - determine if this is an okay way to share functionality across
         // pages or a bad idea
         action: communityAction,
-        element: (
-          <ChakraProvider theme={theme}>
-            <Library />
-          </ChakraProvider>
-        ),
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
+        element: <Library />,
+        errorElement: <ErrorPage />,
       },
       {
         path: "community",
         loader: communityLoader,
         action: communityAction,
         // action: communitySearchAction,
-        element: (
-          <ChakraProvider theme={theme}>
-            <Community />
-          </ChakraProvider>
-        ),
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
+        element: <Community />,
+        errorElement: <ErrorPage />,
       },
       {
         path: "admin",
@@ -239,306 +215,120 @@ const router = createBrowserRouter([
         // TODO - determine if this is an okay way to share functionality across
         // pages or a bad idea
         action: communityAction,
-        element: (
-          <ChakraProvider theme={theme}>
-            <Admin />
-          </ChakraProvider>
-        ),
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
+        element: <Admin />,
+        errorElement: <ErrorPage />,
       },
       {
         path: "portfolio/:userId",
         loader: portfolioLoader,
         action: portfolioAction,
-        element: (
-          <ChakraProvider theme={theme}>
-            <Portfolio />
-          </ChakraProvider>
-        ),
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
+        element: <Portfolio />,
+        errorElement: <ErrorPage />,
       },
       {
         path: "publicPortfolio/:userId",
         loader: publicPortfolioLoader,
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
-        element: (
-          <ChakraProvider theme={theme}>
-            <PublicPortfolio />
-          </ChakraProvider>
-        ),
+        errorElement: <ErrorPage />,
+        element: <PublicPortfolio />,
       },
       {
         path: "activityViewer/:activityId",
         loader: activityViewerLoader,
         action: activityViewerAction,
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
-        element: (
-          <MathJaxContext
-            version={2}
-            config={mathjaxConfig}
-            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
-            <ChakraProvider theme={theme}>
-              <ActivityViewer />
-            </ChakraProvider>
-          </MathJaxContext>
-        ),
+        errorElement: <ErrorPage />,
+        element: <ActivityViewer />,
       },
       {
         path: "activityEditor/:activityId",
         loader: activityEditorLoader,
         action: activityEditorAction,
-        element: (
-          <MathJaxContext
-            version={2}
-            config={mathjaxConfig}
-            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
-            <ActivityEditor />
-          </MathJaxContext>
-        ),
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
+        element: <ActivityEditor />,
+        errorElement: <ErrorPage />,
       },
       {
         path: "activityEditor/:activityId/:docId",
         loader: activityEditorLoader,
         action: activityEditorAction,
         // errorElement: <div>Error!</div>,
-        element: (
-          <MathJaxContext
-            version={2}
-            config={mathjaxConfig}
-            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
-            <ActivityEditor />
-          </MathJaxContext>
-        ),
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
+        element: <ActivityEditor />,
+        errorElement: <ErrorPage />,
       },
       {
         path: "publicEditor/:activityId",
         loader: publicEditorLoader,
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
-        element: (
-          <MathJaxContext
-            version={2}
-            config={mathjaxConfig}
-            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
-            <PublicEditor />
-          </MathJaxContext>
-        ),
+        errorElement: <ErrorPage />,
+        element: <PublicEditor />,
       },
       {
         path: "publicEditor/:activityId/:docId",
         loader: publicEditorLoader,
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
-        element: (
-          <MathJaxContext
-            version={2}
-            config={mathjaxConfig}
-            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
-            <PublicEditor />
-          </MathJaxContext>
-        ),
+        errorElement: <ErrorPage />,
+        element: <PublicEditor />,
       },
       {
         path: "assignments",
         loader: assignmentsLoader,
         action: assignmentsAction,
-        element: (
-          <ChakraProvider theme={theme}>
-            <Assignments />
-          </ChakraProvider>
-        ),
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
+        element: <Assignments />,
+        errorElement: <ErrorPage />,
       },
       {
         path: "assignmentEditor/:assignmentId",
         loader: assignmentEditorLoader,
         action: assignmentEditorAction,
-        element: (
-          <MathJaxContext
-            version={2}
-            config={mathjaxConfig}
-            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
-            <AssignmentEditor />
-          </MathJaxContext>
-        ),
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
+        element: <AssignmentEditor />,
+        errorElement: <ErrorPage />,
       },
       {
         path: "assignmentData/:assignmentId",
         loader: assignmentDataLoader,
         action: assignmentDataAction,
-        element: (
-          <MathJaxContext
-            version={2}
-            config={mathjaxConfig}
-            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
-            <AssignmentData />
-          </MathJaxContext>
-        ),
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
+        element: <AssignmentData />,
+        errorElement: <ErrorPage />,
       },
       {
         path: "assignmentAnswerResponses/:assignmentId/:docId/:docVersionId",
         loader: assignmentAnswerResponsesLoader,
         action: assignmentAnswerResponsesAction,
-        element: (
-          <MathJaxContext
-            version={2}
-            config={mathjaxConfig}
-            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
-            <AssignmentAnswerResponses />
-          </MathJaxContext>
-        ),
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
+        element: <AssignmentAnswerResponses />,
+        errorElement: <ErrorPage />,
       },
       {
         path: "assignmentAnswerResponseHistory/:assignmentId/:docId/:docVersionId/:userId",
         loader: assignmentAnswerResponseHistoryLoader,
         action: assignmentAnswerResponseHistoryAction,
-        element: (
-          <MathJaxContext
-            version={2}
-            config={mathjaxConfig}
-            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
-            <AssignmentAnswerResponseHistory />
-          </MathJaxContext>
-        ),
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
+        element: <AssignmentAnswerResponseHistory />,
+        errorElement: <ErrorPage />,
       },
       {
         path: "assignmentData/:assignmentId/:userId",
         loader: assignmentStudentDataLoader,
         action: assignmentStudentDataAction,
-        element: (
-          <MathJaxContext
-            version={2}
-            config={mathjaxConfig}
-            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
-            <AssignmentStudentData />
-          </MathJaxContext>
-        ),
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
+        element: <AssignmentStudentData />,
+        errorElement: <ErrorPage />,
       },
       {
         path: "classCode",
         loader: enterClassCodeLoader,
         action: enterClassCodeAction,
-        element: (
-          <MathJaxContext
-            version={2}
-            config={mathjaxConfig}
-            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
-            <EnterClassCode />
-          </MathJaxContext>
-        ),
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
+        element: <EnterClassCode />,
+        errorElement: <ErrorPage />,
       },
       {
         path: "classCode/:classCode",
         loader: assignmentViewerLoader,
         action: assignmentViewerAction,
-        element: (
-          <MathJaxContext
-            version={2}
-            config={mathjaxConfig}
-            onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-          >
-            <AssignmentViewer />
-          </MathJaxContext>
-        ),
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
+        element: <AssignmentViewer />,
+        errorElement: <ErrorPage />,
       },
       {
         path: "signIn",
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
+        errorElement: <ErrorPage />,
         element: <SignIn />,
       },
       {
         path: "signOut",
-        errorElement: (
-          <ChakraProvider theme={theme}>
-            <ErrorPage />
-          </ChakraProvider>
-        ),
+        errorElement: <ErrorPage />,
         element: <SignOut />,
       },
     ],
