@@ -18,15 +18,9 @@ import { RiEmotionSadLine } from "react-icons/ri";
 import axios from "axios";
 
 export async function loader({ params }) {
-  try {
-    const { data } = await axios.get(
-      `/api/getPublicPortfolio/${params.userId}`,
-    );
+  const { data } = await axios.get(`/api/getPublicPortfolio/${params.userId}`);
 
-    return data;
-  } catch (e) {
-    return { success: false, message: e.response.data.message };
-  }
+  return data;
 }
 
 export function PublicPortfolio() {

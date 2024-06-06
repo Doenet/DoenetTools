@@ -114,6 +114,7 @@ export function AssignmentViewer() {
           docVersionId: assignment.assignmentDocuments[0].docVersionId,
           score: event.data.score,
           state: JSON.stringify(event.data.state),
+          onSubmission: event.data.state.onSubmission,
         });
       } else if (event.data.subject == "SPLICE.sendEvent") {
         const data = event.data.data;

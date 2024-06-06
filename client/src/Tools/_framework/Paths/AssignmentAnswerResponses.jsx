@@ -12,6 +12,7 @@ import {
   Tbody,
   Td,
   Button,
+  Box,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
@@ -43,8 +44,8 @@ export async function loader({ params, request }) {
 
   // sort response data by user name
   let responseData = data.submittedResponses.toSorted((a, b) => {
-    const name1 = a.user.name.toLowerCase();
-    const name2 = b.user.name.toLowerCase();
+    const name1 = a.userName.toLowerCase();
+    const name2 = b.userName.toLowerCase();
     if (name1 > name2) {
       return 1;
     }
@@ -82,29 +83,16 @@ export function AssignmentAnswerResponses() {
 
   const [responses, setResponses] = useState([]);
   const [showNames, setShowNames] = useState(false);
+  const [useBest, setUseBest] = useState(true);
+
+  const bestOrLatest = useBest ? "Best" : "Latest";
 
   useEffect(() => {
     setResponses(
       responseData.map((sr) => {
-        let parsedResp = JSON.parse(sr.response);
-
-        return parsedResp.response.map((v, i) => {
-          const componentType = parsedResp.componentTypes[i];
-          if (componentType === "math") {
-            const expr = me.fromAst(v);
-            return (
-              <MathJax hideUntilTypeset={"first"} inline dynamic key={i}>
-                {"\\( " + expr.toLatex() + " \\)"}
-              </MathJax>
-            );
-          } else {
-            return (
-              <div style={{ whiteSpace: "pre-line" }} key={i}>
-                {String(v)}
-              </div>
-            );
-          }
-        });
+        const latestResponse = parseAndFormatResponse(sr.latestResponse);
+        const bestResponse = parseAndFormatResponse(sr.bestResponse);
+        return { latestResponse, bestResponse };
       }),
     );
   }, [responseData]);
@@ -126,50 +114,90 @@ export function AssignmentAnswerResponses() {
         Some UI element for going back to assignment data
       </Button>
 
-      <Heading subheading={`Last responses submitted for ${answerId}`} />
-      <div>
+      <Heading
+        subheading={`${bestOrLatest} responses submitted for ${answerId}`}
+      />
+      <Box marginLeft={6}>
         <label>
           <input
             type="checkbox"
             checked={showNames}
             onChange={() => setShowNames(!showNames)}
-          />
+          />{" "}
           Show names
+        </label>{" "}
+        <label>
+          <input
+            type="checkbox"
+            checked={!useBest}
+            onChange={() => setUseBest(!useBest)}
+          />{" "}
+          Show latest responses
         </label>
-      </div>
+      </Box>
       <TableContainer>
         <Table>
           <Thead>
             <Tr>
-              {showNames ? <Th>Name</Th> : null}
-              <Th>Last Response</Th>
-              <Th>Percent correct</Th>
+              <Th>Name</Th>
+              <Th>{bestOrLatest} Response</Th>
+              <Th>{bestOrLatest} Percent correct</Th>
               <Th>Number of responses</Th>
             </Tr>
           </Thead>
           <Tbody>
-            {responses.map((resp, i) => (
-              <Tr key={i}>
-                {showNames ? <Td>{responseData[i].user.name}</Td> : null}
-                <Td>{resp}</Td>
-                <Td>
-                  {Math.round(responseData[i].creditAchieved * 1000) / 10}%
-                </Td>
-                <Td>
-                  <Link
-                    style={{ display: "block", textDecoration: "underline" }}
-                    to={`/assignmentAnswerResponseHistory/${assignmentId}/${docId}/${docVersionId}/${
-                      responseData[i].userId
-                    }?answerId=${encodeURIComponent(answerId)}`}
-                  >
-                    {responseData[i].responseCount}
-                  </Link>
-                </Td>
-              </Tr>
-            ))}
+            {responses.map((resp, i) => {
+              const response = useBest
+                ? resp.bestResponse
+                : resp.latestResponse;
+              const data = responseData[i];
+              const creditAchieved = useBest
+                ? data.bestCreditAchieved
+                : data.latestCreditAchieved;
+              return (
+                <Tr key={i}>
+                  <Td>{showNames ? data.userName : `Student ${i + 1}`}</Td>
+                  <Td>{response}</Td>
+                  <Td>{Math.round(creditAchieved * 1000) / 10}%</Td>
+                  <Td>
+                    <Link
+                      style={{ display: "block", textDecoration: "underline" }}
+                      to={`/assignmentAnswerResponseHistory/${assignmentId}/${docId}/${docVersionId}/${
+                        data.userId
+                      }?answerId=${encodeURIComponent(answerId)}`}
+                    >
+                      {data.numResponses}
+                    </Link>
+                  </Td>
+                </Tr>
+              );
+            })}
           </Tbody>
         </Table>
       </TableContainer>
     </>
   );
+}
+function parseAndFormatResponse(response) {
+  let parsedResp = JSON.parse(response);
+
+  return parsedResp.response.map((v, i) => {
+    const componentType = parsedResp.componentTypes[i];
+    if (componentType === "math") {
+      const expr = me.fromAst(v);
+      return (
+        <div>
+          <MathJax hideUntilTypeset={"first"} inline dynamic key={i}>
+            {"\\(" + expr.toLatex() + "\\)"}
+          </MathJax>
+        </div>
+      );
+    } else {
+      return (
+        <div style={{ whiteSpace: "pre-line" }} key={i}>
+          {String(v)}
+        </div>
+      );
+    }
+  });
 }

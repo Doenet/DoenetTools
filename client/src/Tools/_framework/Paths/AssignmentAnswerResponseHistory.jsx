@@ -95,9 +95,11 @@ export function AssignmentAnswerResponseHistory() {
           if (componentType === "math") {
             const expr = me.fromAst(v);
             return (
-              <MathJax hideUntilTypeset={"first"} inline dynamic key={i}>
-                {"\\( " + expr.toLatex() + " \\)"}
-              </MathJax>
+              <div>
+                <MathJax hideUntilTypeset={"first"} inline dynamic key={i}>
+                  {"\\(" + expr.toLatex() + "\\)"}
+                </MathJax>
+              </div>
             );
           } else {
             return (

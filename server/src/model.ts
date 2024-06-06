@@ -718,6 +718,7 @@ export async function saveScoreAndState({
   docVersionId,
   userId,
   score,
+  onSubmission,
   state,
 }: {
   assignmentId: number;
@@ -725,6 +726,7 @@ export async function saveScoreAndState({
   docVersionId: number;
   userId: number;
   score: number;
+  onSubmission: boolean;
   state: string;
 }) {
   // make sure have an assignmentScores record
@@ -748,11 +750,16 @@ export async function saveScoreAndState({
     select: { score: true },
   });
 
-  // use non-strict inequality for hasMaxScore
+  const hasStrictMaxScore =
+    stateWithMaxScore === null || score > stateWithMaxScore.score;
+
+  // Use non-strict inequality for hasMaxScore
   // so that will update the hasMaxScore state to the latest
-  // even if the current score matched the old max score
+  // even if the current score matched the old max score.
+  // Count a non-strict max only if it was saved on submitting an answer
+  // so that the max score state is less likely to have unsubmitted results.
   const hasMaxScore =
-    stateWithMaxScore === null || score >= stateWithMaxScore.score;
+    hasStrictMaxScore || (score === stateWithMaxScore.score && onSubmission);
 
   if (hasMaxScore) {
     // if there is a non-latest document state record,
@@ -838,8 +845,6 @@ export async function saveScoreAndState({
   // use strict inequality for hasStrictMaxScore
   // so that we don't update the actual score tables
   // unless the score increased
-  const hasStrictMaxScore =
-    stateWithMaxScore === null || score > stateWithMaxScore.score;
 
   if (hasStrictMaxScore) {
     // recalculate the score using the new maximum scores from each document
@@ -1100,11 +1105,17 @@ export async function getAnswersThatHaveSubmittedResponses({
       count: number;
     }[]
   >(Prisma.sql`
-    SELECT "docId", "docVersionId", "answerId", MAX("answerNumber") as "answerNumber", COUNT(DISTINCT "userId") as "count"
-    FROM "documentSubmittedResponses"
-    INNER JOIN "assignments" ON "documentSubmittedResponses"."assignmentId" = "assignments"."assignmentId" 
-    WHERE "documentSubmittedResponses"."assignmentId"=${assignmentId} AND "ownerId" = ${ownerId}
-    GROUP BY "docId", "docVersionId", "answerId"
+    SELECT "docId", "docVersionId", "answerId", "answerNumber", 
+    COUNT("userId") as "count", AVG("maxCredit") as "averageCredit"
+    FROM (
+      SELECT "assignmentId", "docId", "docVersionId", "answerId", "answerNumber", "userId", MAX("creditAchieved") as "maxCredit"
+      FROM "documentSubmittedResponses"
+      WHERE "assignmentId" = ${assignmentId}
+      GROUP BY "assignmentId", "docId", "docVersionId", "answerId", "answerNumber", "userId" 
+    ) as "dsr"
+    INNER JOIN "assignments" on "dsr"."assignmentId" = "assignments"."assignmentId" 
+    WHERE "assignments"."assignmentId"=${assignmentId} and "ownerId" = ${ownerId}
+    GROUP BY "docId", "docVersionId", "answerId", "answerNumber"
     ORDER BY "answerNumber"
     `);
 
@@ -1131,65 +1142,64 @@ export async function getDocumentSubmittedResponses({
   ownerId: number;
   answerId: string;
 }) {
-  // for each combination of ["assignmentId", "docId", "docVersionId", "answerId", "userId"],
-  // find the latest submitted response
-  let submittedResponses = await prisma.documentSubmittedResponses.findMany({
-    where: {
-      assignmentId,
-      docVersionId,
-      docId,
-      answerId,
-      assignmentDocument: {
-        assignment: {
-          ownerId,
-        },
-      },
-    },
-    select: {
-      user: { select: { userId: true, name: true } },
-      response: true,
-      creditAchieved: true,
-      submittedAt: true,
-      userId: true,
-    },
-    distinct: ["assignmentId", "docId", "docVersionId", "answerId", "userId"],
-    orderBy: {
-      // since order by submittedAt in descending order,
-      // the distinct picks out the response, submittedAt, and creditAchieved from the most recent submission
-      submittedAt: "desc",
-    },
-  });
+  // TODO: gave up figuring out to do find the best response and the latest response in a SQL query,
+  // so just create in via JS based on this one query.
+  // Can we come up with a better solution?
+  let rawResponses = await prisma.$queryRaw<
+    {
+      userId: number;
+      userName: string;
+      response: string;
+      creditAchieved: number;
+      submittedAt: DateTime;
+      maxCredit: number;
+      numResponses: number;
+    }[]
+  >(Prisma.sql`
+select "dsr"."userId", "users"."name" AS "userName", "response", "creditAchieved", "submittedAt",
+    	MAX("creditAchieved") over (partition by "dsr"."userId") as "maxCredit",
+    	COUNT("creditAchieved") over (partition by "dsr"."userId") as "numResponses"
+    	from "documentSubmittedResponses" as dsr
+      INNER JOIN "assignments" on "dsr"."assignmentId" = "assignments"."assignmentId" 
+      INNER JOIN "users" on "dsr"."userId" = "users"."userId" 
+      WHERE "assignments"."assignmentId"=${assignmentId} and "ownerId" = ${ownerId}
+    	and "docId" = ${docId} and "docVersionId" = ${docVersionId} and "answerId" = ${answerId}
+    	order by "dsr"."userId" asc, "submittedAt" desc
+  `);
 
-  // Don't know how to sort by submittedAt and userId at the same time in the above distinct query,
-  // so sort by userId afterwards
-  submittedResponses.sort((a, b) => a.userId - b.userId);
+  let responses = [];
+  let newResponse;
+  let lastUserId = 0;
 
-  // Don't know how to get results in a single query, so executing a second query
-  const responseCounts = await prisma.documentSubmittedResponses.groupBy({
-    by: ["assignmentId", "docId", "docVersionId", "answerId", "userId"],
-    _count: { response: true },
-    where: {
-      assignmentId,
-      docVersionId,
-      docId,
-      answerId,
-      assignmentDocument: {
-        assignment: {
-          ownerId,
-        },
-      },
-    },
-    orderBy: {
-      userId: "asc",
-    },
-  });
+  for (let respObj of rawResponses) {
+    if (respObj.userId > lastUserId) {
+      lastUserId = respObj.userId;
+      if (newResponse) {
+        responses.push(newResponse);
+      }
+      newResponse = {
+        userId: respObj.userId,
+        userName: respObj.userName,
+        latestResponse: respObj.response,
+        latestCreditAchieved: respObj.creditAchieved,
+        bestCreditAchieved: respObj.maxCredit,
+        numResponses: Number(respObj.numResponses),
+        bestResponse: "",
+      };
+    }
+    if (
+      newResponse?.bestResponse === "" &&
+      respObj.creditAchieved === newResponse.bestCreditAchieved
+    ) {
+      newResponse.bestResponse = respObj.response;
+    }
+  }
 
-  const combinedResponses = submittedResponses.map((obj, i) => ({
-    ...obj,
-    responseCount: responseCounts[i]._count.response,
-  }));
+  if (newResponse) {
+    responses.push(newResponse);
+  }
 
-  return combinedResponses;
+  return responses;
 }
 
 export async function getDocumentSubmittedResponseHistory({

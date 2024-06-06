@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { redirect, useLoaderData } from "react-router";
 import { DateTime } from "luxon";
 
-import { DoenetML } from "@doenet/doenetml";
-
 import {
   Box,
   Button,
@@ -15,9 +13,8 @@ import {
 } from "@chakra-ui/react";
 import { useFetcher } from "react-router-dom";
 import axios from "axios";
-import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import { DoenetHeading as Heading } from "./Community";
-import { useLocation, useNavigate } from "react-router";
+import AssignmentPreview from "../ToolPanels/AssignmentPreview";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -97,9 +94,6 @@ export async function loader({ params }) {
 export function AssignmentEditor() {
   const { doenetML, assignmentData, assignmentId } = useLoaderData();
 
-  let navigate = useNavigate();
-  let location = useLocation();
-
   useEffect(() => {
     document.title = `${assignmentData.name} - Doenet`;
   }, [assignmentData.name]);
@@ -134,44 +128,7 @@ export function AssignmentEditor() {
         <VStack>
           <Heading subheading="Assignment Preview" />
 
-          <Box
-            background="var(--canvas)"
-            borderWidth="1px"
-            borderStyle="solid"
-            borderColor="doenet.mediumGray"
-            width="100%"
-            overflow="scroll"
-          >
-            <DoenetML
-              doenetML={doenetML}
-              flags={{
-                showCorrectness: true,
-                solutionDisplayMode: "button",
-                showFeedback: true,
-                showHints: true,
-                autoSubmit: false,
-                allowLoadState: false,
-                allowSaveState: false,
-                allowLocalState: false,
-                allowSaveSubmissions: false,
-                allowSaveEvents: false,
-              }}
-              attemptNumber={1}
-              generatedVariantCallback={setVariants}
-              requestedVariantIndex={variants.index}
-              idsIncludeActivityId={false}
-              paginate={true}
-              location={location}
-              navigate={navigate}
-              linkSettings={{
-                viewURL: "/activityViewer",
-                editURL: "/publicEditor",
-              }}
-              scrollableContainer={
-                document.getElementById("viewer-container") || undefined
-              }
-            />
-          </Box>
+          <AssignmentPreview doenetML={doenetML} />
         </VStack>
         <Box>
           {assignmentData.stillOpen ? (

@@ -126,7 +126,7 @@ app.get(
       res.send({ allDoenetmlVersions, ...activityLists });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.sendStatus(404);
+        res.status(404).send("No portfolio found");
       } else {
         next(e);
       }
@@ -143,7 +143,7 @@ app.get(
       res.send(activityLists);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.sendStatus(404);
+        res.status(404).send("No portfolio found");
       } else {
         next(e);
       }
@@ -599,6 +599,7 @@ app.post(
     const docVersionId = Number(body.docVersionId);
     const loggedInUserId = Number(req.cookies.userId);
     const score = Number(body.score);
+    const onSubmission = body.onSubmission as boolean;
     const state = body.state;
 
     try {
@@ -608,6 +609,7 @@ app.post(
         docVersionId,
         userId: loggedInUserId,
         score,
+        onSubmission,
         state,
       });
       res.send({});

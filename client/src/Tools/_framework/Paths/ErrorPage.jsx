@@ -48,10 +48,20 @@ function ErrorPage() {
     );
   }
 
+  let errorMessage;
+  if (
+    typeof error.response?.data === "string" &&
+    error.response.data.length < 50
+  ) {
+    errorMessage = error.response.data;
+  } else {
+    errorMessage = error.message;
+  }
+
   return (
     <Container padding="70px 0" textAlign="center" maxWidth="800px">
       {/* <Heading>Oops! Page not found.</Heading> */}
-      <Heading data-test="Error Message">{error.message}</Heading>
+      <Heading data-test="Error Message">{errorMessage}</Heading>
       {/* <Heading fontSize="96">404</Heading> */}
       {errorDescription}
       <Container centerContent padding="36px">
