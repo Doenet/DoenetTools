@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { redirect, useLoaderData } from "react-router";
-import { parseAndCompile } from "@doenet/doenetml";
+import { useLoaderData } from "react-router";
 
 import {
   TableContainer,
@@ -10,7 +9,6 @@ import {
   Th,
   Tbody,
   Td,
-  Button,
   Tabs,
   TabList,
   Tab,
@@ -19,21 +17,15 @@ import {
   SimpleGrid,
   VStack,
   Box,
+  Link,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
-import { useFetcher, Link } from "react-router-dom";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Label } from "recharts";
 import AssignmentPreview from "../ToolPanels/AssignmentPreview";
 
 export async function action({ params, request }) {
-  const formData = await request.formData();
-  let formObj = Object.fromEntries(formData);
-
-  if (formObj._action == "back to editor") {
-    return redirect(`/assignmentEditor/${params.assignmentId}`);
-  }
   return null;
 }
 
@@ -63,8 +55,6 @@ export function AssignmentData() {
     document.title = `${assignmentData.name} - Doenet`;
   }, [assignmentData.name]);
 
-  const fetcher = useFetcher();
-
   const [scoreData, setScoreData] = useState([]);
 
   const [activatePreview, setActivatePreview] = useState(false);
@@ -87,25 +77,24 @@ export function AssignmentData() {
 
   const linkStyle = {
     display: "block",
-    textDecoration: "underline",
+    color: "var(--mainBlue)",
   };
 
   return (
     <>
+      <Box style={{ marginTop: 15, marginLeft: 15 }}>
+        <Link
+          href={`/assignmentEditor/${assignmentId}`}
+          style={{
+            color: "var(--mainBlue)",
+          }}
+        >
+          {" "}
+          &lt; Back to assignment editor
+        </Link>
+      </Box>
       <Heading heading={assignmentData.name} />
 
-      <Button
-        type="submit"
-        colorScheme="blue"
-        mt="8px"
-        mr="12px"
-        size="xs"
-        onClick={() => {
-          fetcher.submit({ _action: "back to editor" }, { method: "post" });
-        }}
-      >
-        Some UI element for going back to assignment editor
-      </Button>
       <Heading subheading="Score summary" />
       <BarChart
         width={600}
@@ -161,12 +150,12 @@ export function AssignmentData() {
                     return (
                       <Tr key={`user${assignmentScore.user.userId}`}>
                         <Td>
-                          <Link to={linkURL} style={linkStyle}>
+                          <Link href={linkURL} style={linkStyle}>
                             {assignmentScore.user.name}
                           </Link>
                         </Td>
                         <Td>
-                          <Link to={linkURL} style={linkStyle}>
+                          <Link href={linkURL} style={linkStyle}>
                             {Math.round(assignmentScore.score * 100) / 100}
                           </Link>
                         </Td>
@@ -225,17 +214,17 @@ export function AssignmentData() {
                         return (
                           <Tr key={key}>
                             <Td>
-                              <Link to={linkURL} style={linkStyle}>
+                              <Link href={linkURL} style={linkStyle}>
                                 {answerObj.answerId}
                               </Link>
                             </Td>
                             <Td>
-                              <Link to={linkURL} style={linkStyle}>
+                              <Link href={linkURL} style={linkStyle}>
                                 {answerObj.count}
                               </Link>
                             </Td>
                             <Td>
-                              <Link to={linkURL} style={linkStyle}>
+                              <Link href={linkURL} style={linkStyle}>
                                 {Math.round(answerObj.averageCredit * 1000) /
                                   10}
                                 %

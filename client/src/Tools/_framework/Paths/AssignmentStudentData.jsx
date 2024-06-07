@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { redirect, useLoaderData } from "react-router";
 import { DoenetML } from "@doenet/doenetml";
 
-import { Button, Box } from "@chakra-ui/react";
+import { Button, Box, Link } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 import { useFetcher } from "react-router-dom";
@@ -11,9 +11,7 @@ export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
 
-  if (formObj._action == "back to data") {
-    return redirect(`/assignmentData/${params.assignmentId}`);
-  } else if (formObj._action == "view max") {
+  if (formObj._action == "view max") {
     return redirect("?withMaxScore=1");
   } else if (formObj._action == "view current") {
     return redirect("?withMaxScore=0");
@@ -126,72 +124,74 @@ export function AssignmentStudentData() {
 
   return (
     <>
+      <Box style={{ marginTop: 15, marginLeft: 15 }}>
+        <Link
+          href={`/assignmentData/${assignmentId}`}
+          style={{
+            color: "var(--mainBlue)",
+          }}
+        >
+          {" "}
+          &lt; Back to assignment data
+        </Link>
+      </Box>
       <Heading heading={user.name} subheading={assignment.name} />
 
-      <Button
-        type="submit"
-        colorScheme="blue"
-        mt="8px"
-        mr="12px"
-        size="xs"
-        onClick={() => {
-          fetcher.submit({ _action: "back to data" }, { method: "post" });
-        }}
-      >
-        Some UI element for going back to assignment data
-      </Button>
-
-      {numStatesSaved === 1 ? (
-        <>
-          <p>Best score achieved: {Math.round(score * 1000) / 1000}</p>
-          <p>Best (and latest) work:</p>
-        </>
-      ) : withMaxScore ? (
-        <>
-          <p>
-            Best score achieved:{" "}
-            {Math.round(documentScores.maxScore * 1000) / 1000} (Latest work has
-            a score of {Math.round(documentScores.latest * 1000) / 1000}.{" "}
-            <Button
-              colorScheme="blue"
-              mt="8px"
-              mr="12px"
-              size="xs"
-              onClick={() => {
-                fetcher.submit({ _action: "view current" }, { method: "post" });
-              }}
-            >
-              Switch to latest work
-            </Button>
-            )
-          </p>
-          <p></p>
-          <p>Best work:</p>
-        </>
-      ) : (
-        <>
-          <p>
-            Score achieved with latest work:{" "}
-            {Math.round(documentScores.latest * 1000) / 1000} (Earlier work
-            achieved the best score of{" "}
-            {Math.round(documentScores.maxScore * 1000) / 1000}.{" "}
-            <Button
-              colorScheme="blue"
-              mt="8px"
-              mr="12px"
-              size="xs"
-              onClick={() => {
-                fetcher.submit({ _action: "view max" }, { method: "post" });
-              }}
-            >
-              Switch to best work
-            </Button>
-            )
-          </p>
-          <p>Latest work:</p>
-        </>
-      )}
-
+      <Box style={{ margin: 20 }}>
+        {numStatesSaved === 1 ? (
+          <>
+            <p>Best score achieved: {Math.round(score * 1000) / 1000}</p>
+            <p>Best (and latest) work:</p>
+          </>
+        ) : withMaxScore ? (
+          <>
+            <p>
+              Best score achieved:{" "}
+              {Math.round(documentScores.maxScore * 1000) / 1000} (Latest work
+              has a score of {Math.round(documentScores.latest * 1000) / 1000}.{" "}
+              <Button
+                colorScheme="blue"
+                mt="8px"
+                mr="12px"
+                size="xs"
+                onClick={() => {
+                  fetcher.submit(
+                    { _action: "view current" },
+                    { method: "post" },
+                  );
+                }}
+              >
+                Switch to latest work
+              </Button>
+              )
+            </p>
+            <p></p>
+            <p>Best work:</p>
+          </>
+        ) : (
+          <>
+            <p>
+              Score achieved with latest work:{" "}
+              {Math.round(documentScores.latest * 1000) / 1000} (Earlier work
+              achieved the best score of{" "}
+              {Math.round(documentScores.maxScore * 1000) / 1000}.{" "}
+              <Button
+                colorScheme="blue"
+                mt="8px"
+                mr="12px"
+                size="xs"
+                onClick={() => {
+                  fetcher.submit({ _action: "view max" }, { method: "post" });
+                }}
+              >
+                Switch to best work
+              </Button>
+              )
+            </p>
+            <p>Latest work:</p>
+          </>
+        )}
+      </Box>
       <Box>
         {withMaxScore ? (
           <DoenetML

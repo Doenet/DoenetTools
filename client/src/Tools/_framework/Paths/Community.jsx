@@ -143,7 +143,7 @@ export function DoenetHeading(props) {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      height="100px"
+      height="40px"
       flexShrink={0}
     >
       <Heading as="h2" size="lg">

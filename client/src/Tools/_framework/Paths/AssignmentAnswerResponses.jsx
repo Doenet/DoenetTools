@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { redirect, useLoaderData } from "react-router";
+import { useLoaderData } from "react-router";
 import me from "math-expressions";
 import { MathJax } from "better-react-mathjax";
 
@@ -11,20 +11,13 @@ import {
   Th,
   Tbody,
   Td,
-  Button,
+  Link,
   Box,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
-import { Link, useFetcher } from "react-router-dom";
 
 export async function action({ params, request }) {
-  const formData = await request.formData();
-  let formObj = Object.fromEntries(formData);
-
-  if (formObj._action == "back to data") {
-    return redirect(`/assignmentData/${params.assignmentId}`);
-  }
   return null;
 }
 export async function loader({ params, request }) {
@@ -79,8 +72,6 @@ export function AssignmentAnswerResponses() {
     document.title = `${assignment.name} - Doenet`;
   }, [assignment.name]);
 
-  const fetcher = useFetcher();
-
   const [responses, setResponses] = useState([]);
   const [showNames, setShowNames] = useState(false);
   const [useBest, setUseBest] = useState(true);
@@ -99,20 +90,18 @@ export function AssignmentAnswerResponses() {
 
   return (
     <>
+      <Box style={{ marginTop: 15, marginLeft: 15 }}>
+        <Link
+          href={`/assignmentData/${assignmentId}`}
+          style={{
+            color: "var(--mainBlue)",
+          }}
+        >
+          {" "}
+          &lt; Back to assignment data
+        </Link>
+      </Box>
       <Heading heading={assignment.name} />
-
-      <Button
-        type="submit"
-        colorScheme="blue"
-        mt="8px"
-        mr="12px"
-        size="xs"
-        onClick={() => {
-          fetcher.submit({ _action: "back to data" }, { method: "post" });
-        }}
-      >
-        Some UI element for going back to assignment data
-      </Button>
 
       <Heading
         subheading={`${bestOrLatest} responses submitted for ${answerId}`}
@@ -126,7 +115,7 @@ export function AssignmentAnswerResponses() {
           />{" "}
           Show names
         </label>{" "}
-        <label>
+        <label style={{ marginLeft: 20 }}>
           <input
             type="checkbox"
             checked={!useBest}
@@ -161,8 +150,8 @@ export function AssignmentAnswerResponses() {
                   <Td>{Math.round(creditAchieved * 1000) / 10}%</Td>
                   <Td>
                     <Link
-                      style={{ display: "block", textDecoration: "underline" }}
-                      to={`/assignmentAnswerResponseHistory/${assignmentId}/${docId}/${docVersionId}/${
+                      style={{ display: "block", color: "var(--mainBlue)" }}
+                      href={`/assignmentAnswerResponseHistory/${assignmentId}/${docId}/${docVersionId}/${
                         data.userId
                       }?answerId=${encodeURIComponent(answerId)}`}
                     >
