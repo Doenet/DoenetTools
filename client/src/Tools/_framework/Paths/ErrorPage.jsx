@@ -51,6 +51,7 @@ function ErrorPage() {
   let errorMessage;
   if (
     typeof error.response?.data === "string" &&
+    error.response.data.length > 0 &&
     error.response.data.length < 50
   ) {
     errorMessage = error.response.data;

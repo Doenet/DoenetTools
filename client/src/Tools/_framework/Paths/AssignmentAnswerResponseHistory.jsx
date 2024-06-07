@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { redirect, useLoaderData } from "react-router";
+import { useLoaderData } from "react-router";
 import me from "math-expressions";
 import { MathJax } from "better-react-mathjax";
 import { DateTime } from "luxon";
@@ -12,25 +12,13 @@ import {
   Th,
   Tbody,
   Td,
-  Button,
+  Box,
+  Link,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
-import { useFetcher } from "react-router-dom";
 
 export async function action({ params, request }) {
-  const url = new URL(request.url);
-  const answerId = url.searchParams.get("answerId");
-  const formData = await request.formData();
-  let formObj = Object.fromEntries(formData);
-
-  if (formObj._action == "back to responses") {
-    return redirect(
-      `/assignmentAnswerResponses/${params.assignmentId}/${params.docId}/${
-        params.docVersionId
-      }?answerId=${encodeURIComponent(answerId)}`,
-    );
-  }
   return null;
 }
 export async function loader({ params, request }) {
@@ -81,8 +69,6 @@ export function AssignmentAnswerResponseHistory() {
     document.title = `${assignment.name} - Doenet`;
   }, [assignment.name]);
 
-  const fetcher = useFetcher();
-
   const [responses, setResponses] = useState([]);
 
   useEffect(() => {
@@ -115,28 +101,31 @@ export function AssignmentAnswerResponseHistory() {
 
   return (
     <>
-      <Heading heading={assignment.name} />
+      <Box style={{ marginTop: 15, marginLeft: 15 }}>
+        <Link
+          href={`/assignmentAnswerResponses/${assignmentId}/${docId}/${docVersionId}?answerId=${encodeURIComponent(
+            answerId,
+          )}`}
+          style={{
+            color: "var(--mainBlue)",
+          }}
+        >
+          {" "}
+          &lt; Back to answer responses
+        </Link>
+      </Box>
 
-      <Button
-        type="submit"
-        colorScheme="blue"
-        mt="8px"
-        mr="12px"
-        size="xs"
-        onClick={() => {
-          fetcher.submit({ _action: "back to responses" }, { method: "post" });
-        }}
-      >
-        Some UI element for going back to answer responses
-      </Button>
+      <Heading heading={assignment.name} />
 
       <Heading
         subheading={`Responses submitted by ${responseData[0]?.user.name} for ${answerId}`}
       />
-      <p>
-        Best percent correct:
-        {Math.round(maxCredit * 1000) / 10}%
-      </p>
+      <Box margin={5}>
+        <p>
+          Best percent correct:
+          {Math.round(maxCredit * 1000) / 10}%
+        </p>
+      </Box>
       <TableContainer>
         <Table>
           <Thead>
