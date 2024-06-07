@@ -167,12 +167,13 @@ export function AssignmentAnswerResponses() {
     </>
   );
 }
-function parseAndFormatResponse(response) {
+
+export function parseAndFormatResponse(response) {
   let parsedResp = JSON.parse(response);
 
   return parsedResp.response.map((v, i) => {
     const componentType = parsedResp.componentTypes[i];
-    if (componentType === "math") {
+    if (componentType === "math" || componentType === "point") {
       const expr = me.fromAst(v);
       return (
         <div>

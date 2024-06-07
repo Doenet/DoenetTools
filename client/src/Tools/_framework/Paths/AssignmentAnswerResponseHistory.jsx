@@ -17,6 +17,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
+import { parseAndFormatResponse } from "./AssignmentAnswerResponses";
 
 export async function action({ params, request }) {
   return null;
@@ -72,31 +73,7 @@ export function AssignmentAnswerResponseHistory() {
   const [responses, setResponses] = useState([]);
 
   useEffect(() => {
-    setResponses(
-      responseData.map((sr) => {
-        let parsedResp = JSON.parse(sr.response);
-
-        return parsedResp.response.map((v, i) => {
-          const componentType = parsedResp.componentTypes[i];
-          if (componentType === "math") {
-            const expr = me.fromAst(v);
-            return (
-              <div>
-                <MathJax hideUntilTypeset={"first"} inline dynamic key={i}>
-                  {"\\(" + expr.toLatex() + "\\)"}
-                </MathJax>
-              </div>
-            );
-          } else {
-            return (
-              <div style={{ whiteSpace: "pre-line" }} key={i}>
-                {String(v)}
-              </div>
-            );
-          }
-        });
-      }),
-    );
+    setResponses(responseData.map((sr) => parseAndFormatResponse(sr.response)));
   }, [responseData]);
 
   return (
