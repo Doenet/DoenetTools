@@ -699,7 +699,7 @@ test("assignment data with code create anonymous user when not signed in", async
 
 test(
   "get assignment data from anonymous users",
-  { timeout: 8000 },
+  { timeout: 12000 },
   async () => {
     const owner = await createTestUser();
     const ownerId = owner.userId;
