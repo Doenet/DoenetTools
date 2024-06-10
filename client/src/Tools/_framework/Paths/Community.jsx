@@ -55,7 +55,7 @@ export async function action({ request }) {
       return true;
     } catch (e) {
       console.log(e);
-      alert("Error - " + e.response?.data?.message);
+      alert("Error - " + e.response?.data);
       return false;
     }
   }
@@ -81,13 +81,7 @@ export async function action({ request }) {
       });
     case "New Group":
       {
-        const response = await axios.post("/api/addPromotedContentGroup", { groupName });
-        if(response.data.success) {
-          return true;
-        } else {
-          alert(response.data.message);
-          return false;
-        }        
+        return postApiAlertOnError("/api/addPromotedContentGroup", { groupName });
       }
     case "Rename Group":
       {
@@ -211,10 +205,15 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
       groupId: groupInfo.promotedGroupId,
       activityId,
     };
-    const response = await axios.post("/api/addPromotedContent", uploadData);
-    if(!response.data.success) {
-      alert(response.data.message);
-    } 
+    axios
+      .post("/api/addPromotedContent", uploadData)
+      .then(({ data }) => {
+        onClose();
+      })
+      .catch((e) => {
+        console.log(e);
+        alert("Error - " + e.response?.data);
+      });
 
   };
 

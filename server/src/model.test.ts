@@ -318,42 +318,50 @@ test("updateActivity does not update properties when passed undefined values", a
   expect(updatedActivity).toEqual(originalActivity);
 });
 
-test("Create promotedContentGroup and assign an activity to it", async () => {
+test("Add promoted content", async () => {
   const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
   const groupResponse = await addPromotedContentGroup(groupName);
   expect(groupResponse).toEqual({success: true});
+  const groups = await loadPromotedContentGroups();
+  const groupId = groups.find((group) => group.groupName === groupName)!.promotedGroupId;
 
   // Creating the same group again should fail
   const duplicateGroupResponse = await addPromotedContentGroup(groupName);
   expect(duplicateGroupResponse).toEqual({success: false, message: "A group with that name already exists."});
-
-  const groups = await loadPromotedContentGroups();
-
-  //Find groupId
-  let groupId = -1;
-  for(const group of groups) {
-    if(group.groupName === groupName) {
-      groupId = group.promotedGroupId;
-      break;
-    }
-  }
-
-  const owner = await createTestUser();
-  const ownerId = owner.userId;
+  
+  const { userId: ownerId } = await createTestUser();
   const { activityId } = await createActivity(ownerId);
-
+  // Cannot promote private activity 
   const responsePrivate = await addPromotedContent(groupId, activityId);
   expect(responsePrivate).toEqual({
     success: false,
     message: "This activity does not exist or is not public."
   });
-
+  // Can promote public activity
   await updateActivity({activityId, isPublic: true});
-
   const responseSuccess = await addPromotedContent(groupId, activityId);
   expect(responseSuccess).toEqual({success: true});
- 
+
+  // Cannot add to same group twice
+  const twice = await addPromotedContent(groupId, activityId);
+  expect(twice).toEqual({success: false, message: "This activity is already in that group."});
+  // Cannot promote non-existent activity
+  const fakeActivityId = Math.random() * 1e8;
+  const responseFakeActivity = await addPromotedContent(groupId, fakeActivityId);
+  expect(responseFakeActivity).toEqual({
+    success: false,
+    message: "This activity does not exist or is not public."
+  });
+  // Cannot promote to non-existent group
+  const fakeGroupId = Math.random() * 1e8;
+  const responseFakeGroup = await addPromotedContent(fakeGroupId, activityId);
+  console.log({responseFakeGroup});
+  expect(responseFakeGroup).toEqual({
+    success: false,
+    message: "That group does not exist."
+  });
 });
+
 
 test("assign an activity", async () => {
   const owner = await createTestUser();

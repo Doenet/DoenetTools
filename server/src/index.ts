@@ -205,15 +205,23 @@ app.get("/api/loadPromotedContent", (req: Request, res: Response) => {
 app.post("/api/addPromotedContent", async (req: Request, res: Response) => {
   const groupId = req.body.groupId;
   const activityId = req.body.activityId;
-  const response = await addPromotedContent(groupId, activityId);
-  res.send(response);
+  const {success, message} = await addPromotedContent(groupId, activityId);
+  if(success) {
+    res.send({});
+  } else {
+    res.status(400).send(message);
+  }
 });
 
 
 app.post("/api/addPromotedContentGroup", async (req: Request, res: Response) => {
   const groupName = req.body.groupName;
-  const response = await addPromotedContentGroup(groupName);
-  res.send(response);
+  const {success, message} = await addPromotedContentGroup(groupName);
+  if(success) {
+    res.send({});
+  } else {
+    res.status(400).send(message);
+  }
 });
 
 app.get(

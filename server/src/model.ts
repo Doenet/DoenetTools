@@ -592,7 +592,6 @@ export async function getAllRecentPublicActivities() {
 
 // TODO - access control
 export async function addPromotedContentGroup(groupName: string) {
-  console.log(`Add ${groupName}`);
   try {    
     await prisma.promotedContentGroups.create({
       data: {
@@ -666,14 +665,14 @@ export async function addPromotedContent(groupId: number, activityId: number) {
       message: "This activity does not exist or is not public."
     };
   }
-
-  try {    
+  
+  try {
     await prisma.promotedContent.create({
       data: {
         activityId,
         promotedGroupId: groupId,
         sortOrder: "1",
-      }
+      },
     });
     return { success: true };
 
@@ -685,12 +684,16 @@ export async function addPromotedContent(groupId: number, activityId: number) {
           success: false,
           message: "This activity is already in that group.",
         };
+      } else if(err.code === "P2003") {
+        return {
+          success: false,
+          message: "That group does not exist."
+        }
       }
     }
     throw err;
   }
 }
-
 
 
 export async function assignActivity(activityId: number, userId: number) {
