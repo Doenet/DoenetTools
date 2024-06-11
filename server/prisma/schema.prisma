@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgres"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -63,7 +63,7 @@ model documentVersions {
   cid                 String
   name                String
   activityName        String
-  content             String
+  content             String                @db.MediumText
   createdAt           DateTime              @default(now())
   doenetmlVersionId   Int
   assignmentDocuments assignmentDocuments[]
@@ -79,7 +79,7 @@ model documentVersions {
 model documents {
   docId              Int                  @id @unique @default(autoincrement())
   activityId         Int
-  content            String
+  content            String               @db.MediumText
   createdAt          DateTime             @default(now())
   lastEdited         DateTime             @default(now())
   name               String
@@ -135,7 +135,7 @@ model documentState {
   userId             Int
   isLatest           Boolean             @default(true)
   hasMaxScore        Boolean             @default(false)
-  state              String?
+  state              String?             @db.MediumText
   score              Float               @default(0)
   assignmentScore    assignmentScores    @relation(fields: [assignmentId, userId], references: [assignmentId, userId], onDelete: NoAction, onUpdate: NoAction)
   assignmentDocument assignmentDocuments @relation(fields: [assignmentId, docId, docVersionId], references: [assignmentId, docId, docVersionId], onDelete: NoAction, onUpdate: NoAction)
@@ -154,7 +154,7 @@ model documentSubmittedResponses {
   docVersionId           Int
   userId                 Int
   answerId               String
-  response               String
+  response               String              @db.Text
   answerNumber           Int?
   itemNumber             Int
   creditAchieved         Float
