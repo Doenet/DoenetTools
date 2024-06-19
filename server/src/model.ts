@@ -1019,6 +1019,55 @@ export async function getAssignmentStudentData({
   return { ...assignmentData, documentScores };
 }
 
+export async function getAllAssignmentStudentData({
+  userId,
+} : {
+  userId: number;
+}) {
+
+  const userScores = await prisma.users.findMany({
+    where: { 
+      assignmentScores: {
+        some: {
+          assignment: {
+            ownerId: userId
+          }
+        }
+      }
+    },
+    include: {
+      assignmentScores: {
+        where: {
+          assignment: {
+            ownerId: userId
+          }
+        },
+        select: {
+          assignmentId: true,
+          userId: true,
+          score: true
+        },
+      },
+    },
+  });
+
+  const assignments = await prisma.assignments.findMany({
+    where: {
+      ownerId: userId,
+      isDeleted: false
+    },
+    select: {
+      assignmentId: true,
+      name: true
+    },
+    orderBy: {
+      assignmentId: "asc",
+    },
+  });
+
+  return { userScores: userScores, assignments: assignments };
+}
+
 export async function getAssignmentContent({
   assignmentId,
   ownerId,

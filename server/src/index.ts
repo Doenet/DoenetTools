@@ -33,6 +33,7 @@ import {
   getAssignmentScoreData,
   loadState,
   getAssignmentStudentData,
+  getAllAssignmentStudentData,
   recordSubmittedEvent,
   getAnswersThatHaveSubmittedResponses,
   getDocumentSubmittedResponses,
@@ -700,6 +701,27 @@ app.get(
         userId,
       });
       res.send(assignmentData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getAllAssignmentStudentData/:userId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = Number(req.params.userId);
+    //const loggedInUserId = Number(req.cookies.userId);
+
+    try {
+      const data = await getAllAssignmentStudentData({
+        userId,
+      });
+      res.send(data);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
