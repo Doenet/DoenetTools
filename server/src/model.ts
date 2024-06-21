@@ -1055,7 +1055,7 @@ export async function getAllAssignmentStudentData({
 
   const assignments = await prisma.assignments.findMany({
     where: {
-      ownerId,
+      ownerId: ownerId,
       isDeleted: false
     },
     select: {

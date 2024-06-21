@@ -54,17 +54,21 @@ export function AllAssignmentStudentData() {
         <TableContainer>
             <Table>
             <Thead>
-                <Tr>
+                <Tr verticalAlign={"bottom"}>
                     <Th>Student</Th>
                     {assignments.map((assignment) => {
                         return (
                             <Th key={`assignment${assignment.assignmentId}`}>
-                                <Link href={`/assignmentData/${assignment.assignmentId}`} style={linkStyle}>
+                                <Link href={`/assignmentData/${assignment.assignmentId}`} 
+                                    style={linkStyle}
+                                    height="15em"
+                                    width="4em"
+                                    transform="rotate(315deg) translate(-4em, 10em)">
                                     {
                                         assignment.name.length < 30 ? 
                                         assignment.name
                                         : <Tooltip label={assignment.name}>
-                                                {assignment.name.substring(0, 27)+"..."}
+                                                {assignment.name.substring(0, assignment.name.substring(0, 27).lastIndexOf(" "))+"..."}
                                             </Tooltip>
                                     }
                                 </Link>
@@ -99,7 +103,7 @@ export function AllAssignmentStudentData() {
                                             </Td>
                                 }
                                 else {
-                                    return <Td key={`student${student.userId}_assignment${assignment.assignmentId}`}>N/A</Td>;
+                                    return <Td key={`student${student.userId}_assignment${assignment.assignmentId}`}>--</Td>;
                                 }
                             })
                         }
