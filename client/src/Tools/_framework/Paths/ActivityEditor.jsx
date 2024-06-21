@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { redirect, useLoaderData } from "react-router";
 import CodeMirror from "../CodeMirror";
 
-import { DoenetML, cidFromText } from "@doenet/doenetml";
+import { cidFromText } from "@doenet/doenetml";
+import { DoenetMLIframe } from "@doenet/doenetml-iframe";
 import Papa from "papaparse";
 
 import {
@@ -1577,8 +1578,10 @@ export function ActivityEditor() {
                         w="100%"
                         id="viewer-container"
                       >
-                        <DoenetML
+                        <DoenetMLIframe
                           doenetML={viewerDoenetML}
+                          standaloneUrl={`https://cdn.jsdelivr.net/npm/@doenet/standalone@${activityData.documents[0].doenetmlVersion.fullVersion}/doenet-standalone.js`}
+                          cssUrl={`https://cdn.jsdelivr.net/npm/@doenet/standalone@${activityData.documents[0].doenetmlVersion.fullVersion}/style.css`}
                           flags={{
                             showCorrectness: true,
                             solutionDisplayMode: "button",
@@ -1767,8 +1770,10 @@ export function ActivityEditor() {
                       w="100%"
                       id="viewer-container"
                     >
-                      <DoenetML
+                      <DoenetMLIframe
                         doenetML={viewerDoenetML}
+                        standaloneUrl={`https://cdn.jsdelivr.net/npm/@doenet/standalone@${activityData.documents[0].doenetmlVersion.fullVersion}/doenet-standalone.js`}
+                        cssUrl={`https://cdn.jsdelivr.net/npm/@doenet/standalone@${activityData.documents[0].doenetmlVersion.fullVersion}/style.css`}
                         flags={{
                           showCorrectness: true,
                           solutionDisplayMode: "button",

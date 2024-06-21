@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router";
 import styled from "styled-components";
-import { DoenetML } from "@doenet/doenetml";
+import { DoenetMLIframe } from "@doenet/doenetml-iframe";
 
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import {
@@ -80,6 +80,7 @@ export async function loader({ params }) {
       owner: activityData.activity.owner,
       contributorHistory: activityData.doc.contributorHistory,
       docId,
+      doenetmlVersion: activityData.doc.doenetmlVersion.fullVersion,
     };
   } catch (e) {
     if (e.response.status === 404) {
@@ -106,6 +107,7 @@ export function ActivityViewer() {
     docId,
     owner,
     contributorHistory,
+    doenetmlVersion,
   } = useLoaderData();
 
   const fetcher = useFetcher();
@@ -316,9 +318,11 @@ export function ActivityViewer() {
                   width="100%"
                   overflow="scroll"
                 >
-                  <DoenetML
+                  <DoenetMLIframe
                     key={`HPpageViewer`}
                     doenetML={doenetML}
+                    standaloneUrl={`https://cdn.jsdelivr.net/npm/@doenet/standalone@${doenetmlVersion}/doenet-standalone.js`}
+                    cssUrl={`https://cdn.jsdelivr.net/npm/@doenet/standalone@${doenetmlVersion}/style.css`}
                     // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
                     flags={{
                       showCorrectness: true,

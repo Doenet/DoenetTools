@@ -346,6 +346,9 @@ export async function getActivityViewerData(
   let doc = await prisma.documents.findUniqueOrThrow({
     where: { docId, isDeleted: false },
     include: {
+      doenetmlVersion: {
+        select: { fullVersion: true },
+      },
       contributorHistory: {
         include: {
           prevDoc: {
