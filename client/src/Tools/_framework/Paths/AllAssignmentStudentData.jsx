@@ -62,8 +62,8 @@ export function AllAssignmentStudentData() {
                                 <Link href={`/assignmentData/${assignment.assignmentId}`} 
                                     style={linkStyle}
                                     height="15em"
-                                    width="4em"
-                                    transform="rotate(315deg) translate(-4em, 10em)">
+                                    width="1em"
+                                    transform="rotate(315deg) translate(-4em, 11em)">
                                     {
                                         assignment.name.length < 30 ? 
                                         assignment.name
