@@ -20,9 +20,7 @@ export async function action({ params, request }) {
 }
 
 export async function loader({ params }) {
-  const { data } = await axios.get(
-    `/api/getAllAssignmentStudentData/${params.userId}`,
-  );
+  const { data } = await axios.get("/api/getAllAssignmentStudentData");
 
   let userId = Number(params.userId);
 

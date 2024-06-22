@@ -712,16 +712,14 @@ app.get(
 );
 
 app.get(
-  "/api/getAllAssignmentStudentData/:userId",
+  "/api/getAllAssignmentStudentData",
   async (req: Request, res: Response, next: NextFunction) => {
 
     const loggedInUserId = Number(req.cookies.userId);
-    const userId = Number(req.params.userId);
 
     try {
       const data = await getAllAssignmentStudentData({
-        ownerId: loggedInUserId,
-        userId
+        ownerId: loggedInUserId
       });
       res.send(data);
     } catch (e) {

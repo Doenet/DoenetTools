@@ -1020,11 +1020,9 @@ export async function getAssignmentStudentData({
 }
 
 export async function getAllAssignmentStudentData({
-  ownerId,
-  userId,
+  ownerId
 } : {
-  ownerId: number;
-  userId: number
+  ownerId: number
 }) {
 
   const userScores = await prisma.users.findMany({
