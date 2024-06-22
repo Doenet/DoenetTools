@@ -22,17 +22,24 @@ export async function action({ params, request }) {
 export async function loader({ params }) {
   const { data } = await axios.get("/api/getAllAssignmentStudentData");
 
-  let userId = Number(params.userId);
+  let studentData = {};
+  data.forEach(function(assignment) {
+    assignment.assignmentScores.forEach(function(score) {
+        if(!(score.userId in studentData)) {
+            studentData[score.userId] = {name: score.user.name, scores: {}}
+        }
+        studentData[score.userId].scores[assignment.assignmentId] = score.score;
+    })
+  })
 
   return {
-    userId,
-    studentScores: data.userScores,
-    assignments: data.assignments
+    assignments: data,
+    students: studentData
   };
 }
 
 export function AllAssignmentStudentData() {
-  const { userId, studentScores, assignments } =
+  const { assignments, students } =
     useLoaderData();
 
   useEffect(() => {
@@ -76,32 +83,25 @@ export function AllAssignmentStudentData() {
                 </Tr>
             </Thead>
             <Tbody>
-                {studentScores.map((student) => 
-                    <Tr key={`student${student.userId}`}>
+                {Object.keys(students).map((studentId) => 
+                    <Tr key={`student${studentId}`}>
                         <Td>
                             <Link href={""} style={linkStyle}>
-                                {student.name}
+                                {students[studentId].name}
                             </Link>
                         </Td>
                         {
                             // if student has a score for this assignment, display it
                             assignments.map(function(assignment) {
-                                let score = -1;
-                                for(let i=0; i<student.assignmentScores.length; i++) {
-                                    if(student.assignmentScores[i].assignmentId === assignment.assignmentId) {
-                                        score = student.assignmentScores[i].score;
-                                        break;
-                                    }
-                                }
-                                if(score > -1) {
-                                    return <Td key={`student${student.userId}_assignment${assignment.assignmentId}`}>
-                                                <Link href={`/assignmentData/${assignment.assignmentId}/${student.userId}`} style={linkStyle}>
-                                                    {Math.round(score * 100) / 100}
+                                if(assignment.assignmentId in students[studentId].scores) {
+                                    return <Td key={`student${studentId}_assignment${assignment.assignmentId}`}>
+                                                <Link href={`/assignmentData/${assignment.assignmentId}/${studentId}`} style={linkStyle}>
+                                                    {Math.round(students[studentId].scores[assignment.assignmentId] * 100) / 100}
                                                 </Link>
                                             </Td>
                                 }
                                 else {
-                                    return <Td key={`student${student.userId}_assignment${assignment.assignmentId}`}>--</Td>;
+                                    return <Td key={`student${studentId}_assignment${assignment.assignmentId}`}>--</Td>;
                                 }
                             })
                         }

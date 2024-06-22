@@ -1025,47 +1025,28 @@ export async function getAllAssignmentStudentData({
   ownerId: number
 }) {
 
-  const userScores = await prisma.users.findMany({
+  const assignments = await prisma.assignments.findMany({
     where: { 
-      assignmentScores: {
-        some: {
-          assignment: {
-            ownerId
-          }
-        }
-      }
+      ownerId,
+      isDeleted: false
     },
     include: {
       assignmentScores: {
-        where: {
-          assignment: {
-            ownerId
-          }
-        },
         select: {
           assignmentId: true,
           userId: true,
-          score: true
+          score: true,
+          user: {
+            select: {
+              name: true
+            }
+          }
         },
       },
     },
   });
 
-  const assignments = await prisma.assignments.findMany({
-    where: {
-      ownerId: ownerId,
-      isDeleted: false
-    },
-    select: {
-      assignmentId: true,
-      name: true
-    },
-    orderBy: {
-      assignmentId: "asc",
-    },
-  });
-
-  return { userScores: userScores, assignments: assignments };
+  return assignments;
 }
 
 export async function getAssignmentContent({
