@@ -226,7 +226,7 @@ export function PublicEditor() {
                 {/*
                 Assume if there is an activity ID, the user is exploring a longer and uneditable community activity. 
                 The user should copy the activity into their portfolio to edit.
-                
+
                 Assume if there is no activity ID, the user is exploring a short and editable example and will not be saved.
                 */}
                 {!activityId ? (
@@ -426,6 +426,7 @@ export function PublicEditor() {
                     overflow="scroll"
                   >
                     <CodeMirror
+                      readOnly={activityId}
                       editorRef={editorRef}
                       setInternalValueTo={doenetML}
                       onBeforeChange={(value) => {
