@@ -98,7 +98,7 @@ test("New activity starts out private, then delete it", async () => {
         doenetmlVersion: {
           versionId: 2,
           displayedVersion: "0.7",
-          fullVersion: "0.7.0-alpha1",
+          fullVersion: "0.7.0-alpha7",
           default: true,
           deprecated: false,
           removed: false,
@@ -708,271 +708,267 @@ test("assignment data with code create anonymous user when not signed in", async
   expect(newUser2!.userId).not.eq(newUser1!.userId);
 });
 
-test(
-  "get assignment data from anonymous users",
-  { timeout: 12000 },
-  async () => {
-    const owner = await createTestUser();
-    const ownerId = owner.userId;
-    const { activityId, docId } = await createActivity(ownerId);
-    await updateActivity({ activityId, name: "Activity 1", ownerId });
-    await updateDoc({
-      docId,
-      content: "Some content",
-      ownerId,
-    });
+test("get assignment data from anonymous users", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId, docId } = await createActivity(ownerId);
+  await updateActivity({ activityId, name: "Activity 1", ownerId });
+  await updateDoc({
+    docId,
+    content: "Some content",
+    ownerId,
+  });
 
-    const assignmentId = await assignActivity(activityId, ownerId);
+  const assignmentId = await assignActivity(activityId, ownerId);
 
-    // open assignment generates code
-    let closeAt = DateTime.now().plus({ days: 1 });
-    const { classCode } = await openAssignmentWithCode(
-      assignmentId,
-      closeAt,
-      ownerId,
-    );
+  // open assignment generates code
+  let closeAt = DateTime.now().plus({ days: 1 });
+  const { classCode } = await openAssignmentWithCode(
+    assignmentId,
+    closeAt,
+    ownerId,
+  );
 
-    let assignmentData = await getAssignmentDataFromCode(classCode, false);
-    let newUser1 = assignmentData.newAnonymousUser;
-    newUser1 = await updateUser({
-      userId: newUser1!.userId,
-      name: "Zoe Zaborowski",
-    });
-    const userData1 = { userId: newUser1!.userId, name: newUser1!.name };
+  let assignmentData = await getAssignmentDataFromCode(classCode, false);
+  let newUser1 = assignmentData.newAnonymousUser;
+  newUser1 = await updateUser({
+    userId: newUser1!.userId,
+    name: "Zoe Zaborowski",
+  });
+  const userData1 = { userId: newUser1!.userId, name: newUser1!.name };
 
-    await saveScoreAndState({
-      assignmentId,
-      docId,
-      docVersionId: 1,
-      userId: newUser1!.userId,
-      score: 0.5,
-      onSubmission: true,
-      state: "document state 1",
-    });
+  await saveScoreAndState({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    userId: newUser1!.userId,
+    score: 0.5,
+    onSubmission: true,
+    state: "document state 1",
+  });
 
-    let assignmentWithScores = await getAssignmentScoreData({
-      assignmentId,
-      ownerId,
-    });
+  let assignmentWithScores = await getAssignmentScoreData({
+    assignmentId,
+    ownerId,
+  });
 
-    expect(assignmentWithScores).eqls({
+  expect(assignmentWithScores).eqls({
+    name: "Activity 1",
+    assignmentScores: [{ score: 0.5, user: userData1 }],
+  });
+
+  let assignmentStudentData = await getAssignmentStudentData({
+    assignmentId,
+    ownerId,
+    userId: newUser1!.userId,
+  });
+
+  expect(assignmentStudentData).eqls({
+    assignmentId,
+    userId: newUser1!.userId,
+    score: 0.5,
+    assignment: {
       name: "Activity 1",
-      assignmentScores: [{ score: 0.5, user: userData1 }],
-    });
-
-    let assignmentStudentData = await getAssignmentStudentData({
-      assignmentId,
-      ownerId,
-      userId: newUser1!.userId,
-    });
-
-    expect(assignmentStudentData).eqls({
-      assignmentId,
-      userId: newUser1!.userId,
-      score: 0.5,
-      assignment: {
-        name: "Activity 1",
-        assignmentDocuments: [
-          {
-            docId,
-            docVersionId: 1,
-            documentVersion: { content: "Some content" },
-          },
-        ],
+      assignmentDocuments: [
+        {
+          docId,
+          docVersionId: 1,
+          documentVersion: { content: "Some content" },
+        },
+      ],
+    },
+    user: { name: "Zoe Zaborowski" },
+    documentScores: [
+      {
+        docId,
+        docVersionId: 1,
+        hasMaxScore: true,
+        score: 0.5,
       },
-      user: { name: "Zoe Zaborowski" },
-      documentScores: [
+    ],
+  });
+
+  // new lower score ignored
+  await saveScoreAndState({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    userId: newUser1!.userId,
+    score: 0.2,
+    onSubmission: true,
+    state: "document state 2",
+  });
+  assignmentWithScores = await getAssignmentScoreData({
+    assignmentId,
+    ownerId,
+  });
+  expect(assignmentWithScores).eqls({
+    name: "Activity 1",
+    assignmentScores: [{ score: 0.5, user: userData1 }],
+  });
+
+  assignmentStudentData = await getAssignmentStudentData({
+    assignmentId,
+    ownerId,
+    userId: newUser1!.userId,
+  });
+
+  expect(assignmentStudentData).eqls({
+    assignmentId,
+    userId: newUser1!.userId,
+    score: 0.5,
+    assignment: {
+      name: "Activity 1",
+      assignmentDocuments: [
         {
           docId,
           docVersionId: 1,
-          hasMaxScore: true,
-          score: 0.5,
+          documentVersion: { content: "Some content" },
         },
       ],
-    });
-
-    // new lower score ignored
-    await saveScoreAndState({
-      assignmentId,
-      docId,
-      docVersionId: 1,
-      userId: newUser1!.userId,
-      score: 0.2,
-      onSubmission: true,
-      state: "document state 2",
-    });
-    assignmentWithScores = await getAssignmentScoreData({
-      assignmentId,
-      ownerId,
-    });
-    expect(assignmentWithScores).eqls({
-      name: "Activity 1",
-      assignmentScores: [{ score: 0.5, user: userData1 }],
-    });
-
-    assignmentStudentData = await getAssignmentStudentData({
-      assignmentId,
-      ownerId,
-      userId: newUser1!.userId,
-    });
-
-    expect(assignmentStudentData).eqls({
-      assignmentId,
-      userId: newUser1!.userId,
-      score: 0.5,
-      assignment: {
-        name: "Activity 1",
-        assignmentDocuments: [
-          {
-            docId,
-            docVersionId: 1,
-            documentVersion: { content: "Some content" },
-          },
-        ],
+    },
+    user: { name: "Zoe Zaborowski" },
+    documentScores: [
+      {
+        docId,
+        docVersionId: 1,
+        hasMaxScore: false,
+        score: 0.2,
       },
-      user: { name: "Zoe Zaborowski" },
-      documentScores: [
-        {
-          docId,
-          docVersionId: 1,
-          hasMaxScore: false,
-          score: 0.2,
-        },
-        {
-          docId,
-          docVersionId: 1,
-          hasMaxScore: true,
-          score: 0.5,
-        },
-      ],
-    });
-
-    // new higher score used
-    await saveScoreAndState({
-      assignmentId,
-      docId,
-      docVersionId: 1,
-      userId: newUser1!.userId,
-      score: 0.7,
-      onSubmission: true,
-      state: "document state 3",
-    });
-    assignmentWithScores = await getAssignmentScoreData({
-      assignmentId,
-      ownerId,
-    });
-    expect(assignmentWithScores).eqls({
-      name: "Activity 1",
-      assignmentScores: [{ score: 0.7, user: userData1 }],
-    });
-
-    assignmentStudentData = await getAssignmentStudentData({
-      assignmentId,
-      ownerId,
-      userId: newUser1!.userId,
-    });
-
-    expect(assignmentStudentData).eqls({
-      assignmentId,
-      userId: newUser1!.userId,
-      score: 0.7,
-      assignment: {
-        name: "Activity 1",
-        assignmentDocuments: [
-          {
-            docId,
-            docVersionId: 1,
-            documentVersion: { content: "Some content" },
-          },
-        ],
+      {
+        docId,
+        docVersionId: 1,
+        hasMaxScore: true,
+        score: 0.5,
       },
-      user: { name: "Zoe Zaborowski" },
-      documentScores: [
+    ],
+  });
+
+  // new higher score used
+  await saveScoreAndState({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    userId: newUser1!.userId,
+    score: 0.7,
+    onSubmission: true,
+    state: "document state 3",
+  });
+  assignmentWithScores = await getAssignmentScoreData({
+    assignmentId,
+    ownerId,
+  });
+  expect(assignmentWithScores).eqls({
+    name: "Activity 1",
+    assignmentScores: [{ score: 0.7, user: userData1 }],
+  });
+
+  assignmentStudentData = await getAssignmentStudentData({
+    assignmentId,
+    ownerId,
+    userId: newUser1!.userId,
+  });
+
+  expect(assignmentStudentData).eqls({
+    assignmentId,
+    userId: newUser1!.userId,
+    score: 0.7,
+    assignment: {
+      name: "Activity 1",
+      assignmentDocuments: [
         {
           docId,
           docVersionId: 1,
-          hasMaxScore: true,
-          score: 0.7,
+          documentVersion: { content: "Some content" },
         },
       ],
-    });
-
-    // second user opens assignment
-    assignmentData = await getAssignmentDataFromCode(classCode, false);
-
-    let newUser2 = assignmentData.newAnonymousUser;
-    newUser2 = await updateUser({
-      userId: newUser2!.userId,
-      name: "Arya Abbas",
-    });
-    const userData2 = { userId: newUser2!.userId, name: newUser2!.name };
-
-    // assignment scores still unchanged
-    assignmentWithScores = await getAssignmentScoreData({
-      assignmentId,
-      ownerId,
-    });
-    expect(assignmentWithScores).eqls({
-      name: "Activity 1",
-      assignmentScores: [{ score: 0.7, user: userData1 }],
-    });
-
-    // save state for second user
-    await saveScoreAndState({
-      assignmentId,
-      docId,
-      docVersionId: 1,
-      userId: newUser2!.userId,
-      score: 0.3,
-      onSubmission: true,
-      state: "document state 4",
-    });
-
-    // second user's score shows up first due to alphabetical sorting
-    assignmentWithScores = await getAssignmentScoreData({
-      assignmentId,
-      ownerId,
-    });
-    expect(assignmentWithScores).eqls({
-      name: "Activity 1",
-      assignmentScores: [
-        { score: 0.3, user: userData2 },
-        { score: 0.7, user: userData1 },
-      ],
-    });
-
-    assignmentStudentData = await getAssignmentStudentData({
-      assignmentId,
-      ownerId,
-      userId: newUser2!.userId,
-    });
-
-    expect(assignmentStudentData).eqls({
-      assignmentId,
-      userId: newUser2!.userId,
-      score: 0.3,
-      assignment: {
-        name: "Activity 1",
-        assignmentDocuments: [
-          {
-            docId,
-            docVersionId: 1,
-            documentVersion: { content: "Some content" },
-          },
-        ],
+    },
+    user: { name: "Zoe Zaborowski" },
+    documentScores: [
+      {
+        docId,
+        docVersionId: 1,
+        hasMaxScore: true,
+        score: 0.7,
       },
-      user: { name: "Arya Abbas" },
-      documentScores: [
+    ],
+  });
+
+  // second user opens assignment
+  assignmentData = await getAssignmentDataFromCode(classCode, false);
+
+  let newUser2 = assignmentData.newAnonymousUser;
+  newUser2 = await updateUser({
+    userId: newUser2!.userId,
+    name: "Arya Abbas",
+  });
+  const userData2 = { userId: newUser2!.userId, name: newUser2!.name };
+
+  // assignment scores still unchanged
+  assignmentWithScores = await getAssignmentScoreData({
+    assignmentId,
+    ownerId,
+  });
+  expect(assignmentWithScores).eqls({
+    name: "Activity 1",
+    assignmentScores: [{ score: 0.7, user: userData1 }],
+  });
+
+  // save state for second user
+  await saveScoreAndState({
+    assignmentId,
+    docId,
+    docVersionId: 1,
+    userId: newUser2!.userId,
+    score: 0.3,
+    onSubmission: true,
+    state: "document state 4",
+  });
+
+  // second user's score shows up first due to alphabetical sorting
+  assignmentWithScores = await getAssignmentScoreData({
+    assignmentId,
+    ownerId,
+  });
+  expect(assignmentWithScores).eqls({
+    name: "Activity 1",
+    assignmentScores: [
+      { score: 0.3, user: userData2 },
+      { score: 0.7, user: userData1 },
+    ],
+  });
+
+  assignmentStudentData = await getAssignmentStudentData({
+    assignmentId,
+    ownerId,
+    userId: newUser2!.userId,
+  });
+
+  expect(assignmentStudentData).eqls({
+    assignmentId,
+    userId: newUser2!.userId,
+    score: 0.3,
+    assignment: {
+      name: "Activity 1",
+      assignmentDocuments: [
         {
           docId,
           docVersionId: 1,
-          hasMaxScore: true,
-          score: 0.3,
+          documentVersion: { content: "Some content" },
         },
       ],
-    });
-  },
-);
+    },
+    user: { name: "Arya Abbas" },
+    documentScores: [
+      {
+        docId,
+        docVersionId: 1,
+        hasMaxScore: true,
+        score: 0.3,
+      },
+    ],
+  });
+});
 
 test("can't get assignment data if other user", async () => {
   const owner = await createTestUser();
