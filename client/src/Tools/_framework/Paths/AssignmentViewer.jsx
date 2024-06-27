@@ -63,14 +63,16 @@ export async function loader({ params }) {
   let assignmentId = params.assignmentId;
 
   // TODO: what happens if assignment has no documents?
-  let docId = assignment.assignmentItems[0].docId;
+  let docId = assignment.assignmentDocuments[0].docId;
+  let docVersionId = assignment.assignmentDocuments[0].docVersionId;
 
-  let doenetML = assignment.assignmentItems[0].documentVersion.content;
+  let doenetML = assignment.assignmentDocuments[0].documentVersion.content;
 
   return {
     assignmentFound: true,
     assignment,
     docId,
+    docVersionId,
     doenetML,
     assignmentId,
     userName,
@@ -78,7 +80,14 @@ export async function loader({ params }) {
 }
 
 export function AssignmentViewer() {
-  const { doenetML, assignment, assignmentFound, userName } = useLoaderData();
+  const {
+    doenetML,
+    assignment,
+    assignmentFound,
+    userName,
+    docId,
+    docVersionId,
+  } = useLoaderData();
 
   let navigate = useNavigate();
   let location = useLocation();
@@ -90,6 +99,78 @@ export function AssignmentViewer() {
       document.title = `Enter class code - Doenet`;
     }
   }, [assignmentFound, assignment?.name]);
+
+  useEffect(() => {
+    if (!assignment) {
+      return;
+    }
+
+    let messageListener = async function (event) {
+      if (event.data.subject == "SPLICE.reportScoreAndState") {
+        // TODO: generalize to multiple documents. For now, assume just have one.
+        await axios.post("/api/saveScoreAndState", {
+          assignmentId: assignment.assignmentId,
+          docId: assignment.assignmentDocuments[0].docId,
+          docVersionId: assignment.assignmentDocuments[0].docVersionId,
+          score: event.data.score,
+          state: JSON.stringify(event.data.state),
+          onSubmission: event.data.state.onSubmission,
+        });
+      } else if (event.data.subject == "SPLICE.sendEvent") {
+        const data = event.data.data;
+        if (data.verb === "submitted") {
+          recordSubmittedEvent({
+            assignmentId: assignment.assignmentId,
+            docId,
+            docVersionId,
+            data,
+          });
+        }
+      } else if (event.data.subject == "SPLICE.getState") {
+        try {
+          let { data } = await axios.get("/api/loadState", {
+            params: {
+              assignmentId: assignment.assignmentId,
+              docId: assignment.assignmentDocuments[0].docId,
+              docVersionId: assignment.assignmentDocuments[0].docVersionId,
+              userId: event.data.userId,
+            },
+          });
+
+          if (data.state) {
+            window.postMessage({
+              subject: "SPLICE.getState.response",
+              messageId: event.data.messageId,
+              success: true,
+              loadedState: true,
+              state: data.state,
+            });
+          } else {
+            window.postMessage({
+              subject: "SPLICE.getState.response",
+              messageId: event.data.messageId,
+              success: true,
+              loadedState: false,
+            });
+          }
+        } catch (e) {
+          console.error("error loading state", e);
+          window.postMessage({
+            subject: "SPLICE.getState.response",
+            messageId: event.data.messageId,
+            success: false,
+            message: "Server error loading page state.",
+          });
+        }
+      }
+    };
+
+    addEventListener("message", messageListener);
+
+    return () => {
+      removeEventListener("message", messageListener);
+    };
+  }, [assignment]);
 
   const [variants, setVariants] = useState({
     index: 1,
@@ -239,11 +320,11 @@ export function AssignmentViewer() {
                       showFeedback: true,
                       showHints: true,
                       autoSubmit: false,
-                      allowLoadState: false,
-                      allowSaveState: false,
+                      allowLoadState: true,
+                      allowSaveState: true,
                       allowLocalState: false,
-                      allowSaveSubmissions: false,
-                      allowSaveEvents: false,
+                      allowSaveSubmissions: true,
+                      allowSaveEvents: true,
                     }}
                     attemptNumber={1}
                     generatedVariantCallback={setVariants}
@@ -256,6 +337,7 @@ export function AssignmentViewer() {
                       viewURL: "/activityViewer",
                       editURL: "/publicEditor",
                     }}
+                    apiURLs={{ postMessages: true }}
                     scrollableContainer={
                       document.getElementById("viewer-container") || undefined
                     }
@@ -268,4 +350,42 @@ export function AssignmentViewer() {
       </Grid>
     </>
   );
+}
+
+async function recordSubmittedEvent({
+  assignmentId,
+  docId,
+  docVersionId,
+  data,
+}) {
+  const object = JSON.parse(data.object);
+  const answerId = object.componentName;
+
+  if (answerId) {
+    let result = JSON.parse(data.result);
+    const creditAchieved = result.creditAchieved;
+    const response = JSON.stringify({
+      response: result.response,
+      componentTypes: result.componentTypes,
+    });
+    const context = JSON.parse(data.context);
+    const itemNumber = context.item;
+    const itemCreditAchieved = context.itemCreditAchieved;
+    const documentCreditAchieved = context.pageCreditAchieved;
+
+    await axios.post(`/api/recordSubmittedEvent`, {
+      assignmentId,
+      docId,
+      docVersionId,
+      answerId,
+      answerNumber: object.answerNumber,
+      result: {
+        response,
+        itemNumber,
+        creditAchieved,
+        itemCreditAchieved,
+        documentCreditAchieved,
+      },
+    });
+  }
 }

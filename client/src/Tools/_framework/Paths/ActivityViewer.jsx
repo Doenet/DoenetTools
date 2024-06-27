@@ -82,7 +82,11 @@ export async function loader({ params }) {
       docId,
     };
   } catch (e) {
-    return { success: false, message: e.response.data.message };
+    if (e.response.status === 404) {
+      throw Error("Activity not found");
+    } else {
+      throw e;
+    }
   }
 }
 

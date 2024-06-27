@@ -16,7 +16,7 @@ async function main() {
     update: {},
     create: {
       displayedVersion: "0.7",
-      fullVersion: "0.7.0-alpha1",
+      fullVersion: "0.7.0-alpha7",
       default: true,
     },
   });
@@ -40,26 +40,54 @@ async function main() {
     },
   });
 
-  
-  const delete_groups = await prisma.promotedContentGroups.deleteMany({});
-  const content_groups = await prisma.promotedContentGroups.createMany({
-    data: [
-      {groupName: "Homepage", currentlyFeatured: true, sortOrder: "a", homepage: true, },
-      {groupName: "Sample", currentlyFeatured: true, sortOrder: "b"},
-      {groupName: "K-12", currentlyFeatured: true, sortOrder: "c"},
-      {groupName: "Unfeatured", currentlyFeatured: false, sortOrder: "ba"},
-    ]
+  const group_homepage = await prisma.promotedContentGroups.upsert({
+    where: { groupName: "Homepage" },
+    update: { currentlyFeatured: true, sortOrder: "a", homepage: true },
+    create: {
+      groupName: "Homepage",
+      currentlyFeatured: true,
+      sortOrder: "a",
+      homepage: true,
+    },
+  });
+  const group_sample = await prisma.promotedContentGroups.upsert({
+    where: { groupName: "Sample" },
+    update: { currentlyFeatured: true, sortOrder: "b" },
+    create: {
+      groupName: "Sample",
+      currentlyFeatured: true,
+      sortOrder: "b",
+    },
+  });
+  const group_k12 = await prisma.promotedContentGroups.upsert({
+    where: { groupName: "K-12" },
+    update: { currentlyFeatured: true, sortOrder: "c" },
+    create: {
+      groupName: "K-12",
+      currentlyFeatured: true,
+      sortOrder: "c",
+    },
+  });
+  const group_unfeatured = await prisma.promotedContentGroups.upsert({
+    where: { groupName: "Unfeatured" },
+    update: { currentlyFeatured: false, sortOrder: "ba" },
+    create: {
+      groupName: "Unfeatured",
+      currentlyFeatured: false,
+      sortOrder: "ba",
+    },
   });
 
-  // const homepage_group = await prisma.promotedContentGroups.upsert({
-  //   where: { groupName: "Homepage" },
-  //   update: {},
-  //   create: {
-  //     groupName: "Homepage",
-  //   }
-  // });
-
-  console.log({ old_version, current_version, dev_user, admin_user, content_groups });
+  console.log({
+    old_version,
+    current_version,
+    dev_user,
+    admin_user,
+    group_homepage,
+    group_sample,
+    group_k12,
+    group_unfeatured,
+  });
 }
 main()
   .then(async () => {

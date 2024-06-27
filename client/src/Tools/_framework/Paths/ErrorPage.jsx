@@ -26,15 +26,45 @@ function ErrorPage() {
   const error = useRouteError();
   console.error(error);
 
+  let errorDescription;
+
+  if (
+    !error.response ||
+    error.response.status === 404 ||
+    error.response.status === 403
+  ) {
+    errorDescription = (
+      <Text>
+        We are very sorry for the inconvenience. It looks like you&apos;re
+        trying to access a page that is unavailable.
+      </Text>
+    );
+  } else {
+    errorDescription = (
+      <Text>
+        We are very sorry for for the inconvenience. It appears that we have
+        encountered an error.
+      </Text>
+    );
+  }
+
+  let errorMessage;
+  if (
+    typeof error.response?.data === "string" &&
+    error.response.data.length > 0 &&
+    error.response.data.length < 50
+  ) {
+    errorMessage = error.response.data;
+  } else {
+    errorMessage = error.message;
+  }
+
   return (
     <Container padding="70px 0" textAlign="center" maxWidth="800px">
       {/* <Heading>Oops! Page not found.</Heading> */}
-      <Heading data-test="Error Message">{error.message}</Heading>
-      <Heading fontSize="96">404</Heading>
-      <Text>
-        We are very sorry for the inconvenience. It looks like you&apos;re
-        trying to access a page that has been deleted or never even existed.
-      </Text>
+      <Heading data-test="Error Message">{errorMessage}</Heading>
+      {/* <Heading fontSize="96">404</Heading> */}
+      {errorDescription}
       <Container centerContent padding="36px">
         <svg
           width="240"

@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLoaderData } from "react-router";
+import { redirect, useLoaderData } from "react-router";
 import { DateTime } from "luxon";
-
-import { DoenetML } from "@doenet/doenetml";
 
 import {
   Box,
@@ -15,9 +13,8 @@ import {
 } from "@chakra-ui/react";
 import { useFetcher } from "react-router-dom";
 import axios from "axios";
-import VariantSelect from "../ChakraBasedComponents/VariantSelect";
-import { Heading } from "./Community";
-import { useLocation, useNavigate } from "react-router";
+import { DoenetHeading as Heading } from "./Community";
+import AssignmentPreview from "../ToolPanels/AssignmentPreview";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -30,6 +27,7 @@ export async function action({ params, request }) {
     name = "Untitled";
   }
 
+  // TODO: add a way to change an assignment name
   if (formObj._action == "update name") {
     await axios.post(`/api/updateAssignmentName`, {
       assignmentId: Number(params.assignmentId),
@@ -38,6 +36,7 @@ export async function action({ params, request }) {
     return true;
   }
 
+  // TODO: do we want to have images for assignments?
   if (formObj._action == "update general") {
     await axios.post("/api/updateAssignmentSettings", {
       name,
@@ -64,6 +63,10 @@ export async function action({ params, request }) {
     return true;
   }
 
+  if (formObj._action == "go to data") {
+    return redirect(`/assignmentData/${params.assignmentId}`);
+  }
+
   return null;
 }
 
@@ -75,9 +78,10 @@ export async function loader({ params }) {
   let assignmentId = Number(params.assignmentId);
 
   // TODO: what happens if assignment has no documents?
-  let docId = assignmentData.assignmentItems[0].docId;
+  let docId = assignmentData.assignmentDocuments[0].docId;
 
-  const doenetML = assignmentData.assignmentItems[0].documentVersion.content;
+  const doenetML =
+    assignmentData.assignmentDocuments[0].documentVersion.content;
 
   return {
     assignmentData,
@@ -88,10 +92,7 @@ export async function loader({ params }) {
 }
 
 export function AssignmentEditor() {
-  const { doenetML, assignmentData } = useLoaderData();
-
-  let navigate = useNavigate();
-  let location = useLocation();
+  const { doenetML, assignmentData, assignmentId } = useLoaderData();
 
   useEffect(() => {
     document.title = `${assignmentData.name} - Doenet`;
@@ -108,62 +109,31 @@ export function AssignmentEditor() {
 
   const fetcher = useFetcher();
 
+  let subheading;
+  if (assignmentData.classCode) {
+    if (assignmentData.stillOpen) {
+      subheading = `Class code: ${assignmentData.classCode}`;
+    } else {
+      subheading = `Class code (inactive): ${assignmentData.classCode}`;
+    }
+  } else {
+    subheading = `Inactive`;
+  }
+
   return (
     <>
       <Heading heading={assignmentData.name} />
+      <Heading subheading={subheading} />
       <SimpleGrid columns={2} spacing="20px" margin="20px">
         <VStack>
-          <p>
-            <strong>
-              Assignment preview (left align me please, aria tags for heading)
-            </strong>
-          </p>
+          <Heading subheading="Assignment Preview" />
 
-          <Box
-            background="var(--canvas)"
-            borderWidth="1px"
-            borderStyle="solid"
-            borderColor="doenet.mediumGray"
-            width="100%"
-            overflow="scroll"
-          >
-            <DoenetML
-              doenetML={doenetML}
-              flags={{
-                showCorrectness: true,
-                solutionDisplayMode: "button",
-                showFeedback: true,
-                showHints: true,
-                autoSubmit: false,
-                allowLoadState: false,
-                allowSaveState: false,
-                allowLocalState: false,
-                allowSaveSubmissions: false,
-                allowSaveEvents: false,
-              }}
-              attemptNumber={1}
-              generatedVariantCallback={setVariants}
-              requestedVariantIndex={variants.index}
-              idsIncludeActivityId={false}
-              paginate={true}
-              location={location}
-              navigate={navigate}
-              linkSettings={{
-                viewURL: "/activityViewer",
-                editURL: "/publicEditor",
-              }}
-              scrollableContainer={
-                document.getElementById("viewer-container") || undefined
-              }
-            />
-          </Box>
+          <AssignmentPreview doenetML={doenetML} />
         </VStack>
         <Box>
           {assignmentData.stillOpen ? (
             <Box>
-              <p>
-                <strong>Quick assign (aria tags for heading)</strong>
-              </p>
+              <Heading subheading="Quick Assign" />
               <p>
                 Assignment is currently active with code{" "}
                 <strong>{assignmentData.classCode}</strong>, and open for
@@ -191,9 +161,7 @@ export function AssignmentEditor() {
             </Box>
           ) : (
             <Box>
-              <p>
-                <strong>Quick assign (aria tags for heading)</strong>
-              </p>
+              <Heading subheading="Quick Assign" />
               <p>Assign to students with a code</p>
               How long would you like this activity to remain open?
               <RadioGroup onChange={setDuration} value={duration}>
@@ -220,6 +188,20 @@ export function AssignmentEditor() {
               </Button>
             </Box>
           )}
+
+          <Heading subheading="Instructor Overview" />
+          <Button
+            type="submit"
+            colorScheme="blue"
+            mt="8px"
+            mr="12px"
+            size="xs"
+            onClick={() => {
+              fetcher.submit({ _action: "go to data" }, { method: "post" });
+            }}
+          >
+            View data
+          </Button>
         </Box>
       </SimpleGrid>
     </>
