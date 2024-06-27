@@ -128,16 +128,23 @@ test("New activity starts out private, then delete it", async () => {
 test("listUserActivities returns both public and private documents for a user", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
+
+  // User is not the owner
+  const user = await createTestUser();
+  const userId = user.userId
+
   const { activityId: publicActivityId } = await createActivity(ownerId);
   const { activityId: privateActivityId } = await createActivity(ownerId);
+
   // Make one activity public
   await updateActivity({
     activityId: publicActivityId,
     isPublic: true,
     ownerId,
   });
-  const userDocs = await listUserActivities(ownerId, ownerId);
-  expect(userDocs).toMatchObject({
+
+  const ownerDocs = await listUserActivities(ownerId, ownerId);
+  expect(ownerDocs).toMatchObject({
     publicActivities: expect.arrayContaining([
       expect.objectContaining({
         activityId: publicActivityId,
@@ -149,6 +156,10 @@ test("listUserActivities returns both public and private documents for a user", 
       }),
     ]),
   });
+
+  const userDocs = await listUserActivities(ownerId, userId);
+
+  expect(userDocs.privateActivities).toStrictEqual([]);
 });
 
 test("Test updating various activity properties", async () => {
