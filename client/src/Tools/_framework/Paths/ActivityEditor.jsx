@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { redirect, useLoaderData } from "react-router";
-import CodeMirror from "../CodeMirror";
 
-import { cidFromText } from "@doenet/doenetml";
-import { DoenetMLIframe } from "@doenet/doenetml-iframe";
+import { DoenetEditor } from "@doenet/doenetml-iframe";
 import Papa from "papaparse";
 
 import {
@@ -69,14 +67,11 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { GoKebabVertical } from "react-icons/go";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
 import VariantSelect from "../ChakraBasedComponents/VariantSelect";
-import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers";
 import { useLocation, useNavigate } from "react-router";
-import { ResizableSideBySide } from "./ResizableSideBySide";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
-  // console.log({ formObj });
 
   //Don't let name be blank
   let name = formObj?.name?.trim();
@@ -168,8 +163,8 @@ export async function loader({ params }) {
     }
 
     const doenetML = activityData.documents[docInOrder].content;
-
-    const lastKnownCid = await cidFromText(doenetML);
+    const doenetmlVersion =
+      activityData.documents[docInOrder].doenetmlVersion.fullVersion;
 
     const supportingFileResp = await axios.get(
       `/api/loadSupportingFileInfo/${activityId}`,
@@ -201,8 +196,8 @@ export async function loader({ params }) {
       platform,
       activityData,
       docId,
-      lastKnownCid,
       doenetML,
+      doenetmlVersion,
       activityId,
       supportingFileData,
       allDoenetmlVersions,
@@ -214,7 +209,6 @@ export async function loader({ params }) {
     } else {
       throw new Error(e);
     }
-    // console.log("response", response);
   }
 }
 
@@ -857,18 +851,6 @@ export function GeneralActivityControls({
         maxHeight: 234,
         debug: true,
       });
-      // const convertToBase64 = (blob) => {
-      //   return new Promise((resolve) => {
-      //     var reader = new FileReader();
-      //     reader.onload = function () {
-      //       resolve(reader.result);
-      //     };
-      //     reader.readAsDataURL(blob);
-      //   });
-      // };
-      // let base64Image = await convertToBase64(image);
-      // console.log("image",image)
-      // console.log("base64Image",base64Image)
 
       //Upload files
       const reader = new FileReader();
@@ -884,7 +866,6 @@ export function GeneralActivityControls({
 
         axios.post("/api/activityThumbnailUpload", uploadData).then((resp) => {
           let { data } = resp;
-          // console.log("RESPONSE data>", data);
 
           //uploads are finished clear it out
           numberOfFilesUploading.current = 0;
@@ -1249,19 +1230,14 @@ function EditableName({ dataTest }) {
 }
 
 export function ActivityEditor() {
-  const { platform, activityId, doenetML, docId, activityData, lastKnownCid } =
-    useLoaderData();
-
-  const [errorsAndWarnings, setErrorsAndWarningsCallback] = useState({
-    errors: [],
-    warnings: [],
-  });
-
-  const warningsLevel = 1; //TODO: eventually give user ability adjust warning level filter
-  const warningsObjs = errorsAndWarnings.warnings.filter(
-    (w) => w.level <= warningsLevel,
-  );
-  const errorsObjs = [...errorsAndWarnings.errors];
+  const {
+    platform,
+    activityId,
+    doenetML,
+    doenetmlVersion,
+    docId,
+    activityData,
+  } = useLoaderData();
 
   const {
     isOpen: controlsAreOpen,
@@ -1269,34 +1245,22 @@ export function ActivityEditor() {
     onClose: controlsOnClose,
   } = useDisclosure();
 
-  //Warning: this will reboot codeMirror Editor sending cursor to the top
   let initializeEditorDoenetML = useRef(doenetML);
 
   let textEditorDoenetML = useRef(doenetML);
-  let lastKnownCidRef = useRef(lastKnownCid);
   const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
-  // const [mode, setMode] = useState("View");
   const [mode, setMode] = useState("Edit");
-  let [codeChanged, setCodeChanged] = useState(false);
-  const codeChangedRef = useRef(null); //To keep value up to date in the code mirror function
-  codeChangedRef.current = codeChanged;
 
   let controlsTabsLastIndex = useRef(0);
 
-  let editorRef = useRef(null);
-  let timeout = useRef(null);
-  let backupOldDraft = useRef(true);
   let inTheMiddleOfSaving = useRef(false);
   let postponedSaving = useRef(false);
 
   let navigate = useNavigate();
   let location = useLocation();
 
-  const handleSaveDraft = useCallback(async () => {
-    const doenetML = textEditorDoenetML.current;
-    const lastKnownCid = lastKnownCidRef.current;
-    const backup = backupOldDraft.current;
-
+  const handleSaveDoc = useCallback(async () => {
+    const newDoenetML = textEditorDoenetML.current;
     if (inTheMiddleOfSaving.current) {
       postponedSaving.current = true;
     } else {
@@ -1307,90 +1271,38 @@ export function ActivityEditor() {
 
       try {
         const params = {
-          doenetML,
+          doenetML: newDoenetML,
           docId,
-          backup,
-          lastKnownCid,
         };
         await axios.post("/api/saveDoenetML", params);
-
-        const cid = await cidFromText(doenetML);
-        lastKnownCidRef.current = cid;
-        backupOldDraft.current = false;
       } catch (error) {
         alert(error.message);
       }
 
       inTheMiddleOfSaving.current = false;
-      timeout.current = null;
 
       //If we postponed then potentially
       //some changes were saved again while we were saving
       //so save again
       if (postponedSaving.current) {
         postponedSaving.current = false;
-        handleSaveDraft();
+        handleSaveDoc();
       }
     }
   }, [docId]);
 
-  useEffect(() => {
-    const handleEditorKeyDown = (event) => {
-      if (
-        (platform == "Mac" && event.metaKey && event.code === "KeyS") ||
-        (platform != "Mac" && event.ctrlKey && event.code === "KeyS")
-      ) {
-        event.preventDefault();
-        event.stopPropagation();
-        setViewerDoenetML(textEditorDoenetML.current);
-        setCodeChanged(false);
-        clearTimeout(timeout.current);
-        handleSaveDraft();
-      }
-    };
-
-    const handleDocumentKeyDown = (event) => {
-      if (
-        (platform == "Mac" && event.metaKey && event.code === "KeyU") ||
-        (platform != "Mac" && event.ctrlKey && event.code === "KeyU")
-      ) {
-        event.preventDefault();
-        event.stopPropagation();
-        controlsOnOpen();
-      }
-    };
-    let codeEditorContainer = document.getElementById("codeEditorContainer");
-
-    document.addEventListener("keydown", handleDocumentKeyDown);
-    codeEditorContainer.addEventListener("keydown", handleEditorKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleDocumentKeyDown);
-      codeEditorContainer.removeEventListener("keydown", handleEditorKeyDown);
-    };
-  }, [textEditorDoenetML, controlsOnOpen, platform, handleSaveDraft]);
-
   // save draft when leave page
   useEffect(() => {
     return () => {
-      clearTimeout(timeout.current);
-      handleSaveDraft();
+      handleSaveDoc();
     };
-  }, [handleSaveDraft]);
+  }, [handleSaveDoc]);
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
   }, [activityData.name]);
 
   const controlsBtnRef = useRef(null);
-
-  const [variants, setVariants] = useState({
-    index: 1,
-    numVariants: 1,
-    allPossibleVariants: ["a"],
-  });
-
-  // console.log("variants", variants);
 
   return (
     <>
@@ -1405,15 +1317,12 @@ export function ActivityEditor() {
       <Grid
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height
-        templateAreas={`"header header header"
-      "leftGutter centerContent rightGutter"
+        templateAreas={`"header"
+      "centerContent"
       `}
         templateRows="40px auto"
-        templateColumns=".06fr 1fr .06fr"
         position="relative"
       >
-        <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
-        <GridItem area="rightGutter" background="doenet.lightBlue"></GridItem>
         <GridItem
           area="header"
           position="fixed"
@@ -1496,209 +1405,19 @@ export function ActivityEditor() {
         </GridItem>
 
         {mode == "Edit" && (
-          <>
-            <GridItem area="centerContent">
-              <ResizableSideBySide
-                left={
-                  <>
-                    <VStack spacing={0}>
-                      <HStack
-                        w="100%"
-                        h="32px"
-                        bg="doenet.lightBlue"
-                        margin="10px 0px 0px 0px" //Only need when there is an outline
-                      >
-                        <Box
-                        //bg="doenet.canvas"
-                        >
-                          <Tooltip
-                            hasArrow
-                            label={
-                              platform == "Mac"
-                                ? "Updates Viewer cmd+s"
-                                : "Updates Viewer ctrl+s"
-                            }
-                          >
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              data-test="Viewer Update Button"
-                              bg="doenet.canvas"
-                              leftIcon={<RxUpdate />}
-                              rightIcon={
-                                codeChanged ? (
-                                  <WarningTwoIcon
-                                    color="doenet.mainBlue"
-                                    fontSize="18px"
-                                  />
-                                ) : (
-                                  ""
-                                )
-                              }
-                              isDisabled={!codeChanged}
-                              onClick={() => {
-                                setViewerDoenetML(textEditorDoenetML.current);
-                                setCodeChanged(false);
-                                clearTimeout(timeout.current);
-                                handleSaveDraft();
-                              }}
-                            >
-                              Update
-                            </Button>
-                          </Tooltip>
-                        </Box>
-                        {variants.numVariants > 1 && (
-                          <Box bg="doenet.lightBlue" h="32px" width="100%">
-                            <VariantSelect
-                              size="sm"
-                              menuWidth="140px"
-                              array={variants.allPossibleVariants}
-                              syncIndex={variants.index}
-                              onChange={(index) =>
-                                setVariants((prev) => {
-                                  let next = { ...prev };
-                                  next.index = index + 1;
-                                  return next;
-                                })
-                              }
-                            />
-                          </Box>
-                        )}
-                      </HStack>
-
-                      <Box
-                        height={`calc(100vh - 132px)`}
-                        background="var(--canvas)"
-                        borderWidth="1px"
-                        borderStyle="solid"
-                        borderColor="doenet.mediumGray"
-                        padding="20px 5px 20px 5px"
-                        flexGrow={1}
-                        overflow="scroll"
-                        w="100%"
-                        id="viewer-container"
-                      >
-                        <DoenetMLIframe
-                          doenetML={viewerDoenetML}
-                          standaloneUrl={`https://cdn.jsdelivr.net/npm/@doenet/standalone@${activityData.documents[0].doenetmlVersion.fullVersion}/doenet-standalone.js`}
-                          cssUrl={`https://cdn.jsdelivr.net/npm/@doenet/standalone@${activityData.documents[0].doenetmlVersion.fullVersion}/style.css`}
-                          flags={{
-                            showCorrectness: true,
-                            solutionDisplayMode: "button",
-                            showFeedback: true,
-                            showHints: true,
-                            autoSubmit: false,
-                            allowLoadState: false,
-                            allowSaveState: false,
-                            allowLocalState: false,
-                            allowSaveSubmissions: false,
-                            allowSaveEvents: false,
-                          }}
-                          attemptNumber={1}
-                          generatedVariantCallback={setVariants}
-                          requestedVariantIndex={variants.index}
-                          setErrorsAndWarningsCallback={
-                            setErrorsAndWarningsCallback
-                          }
-                          idsIncludeActivityId={false}
-                          paginate={true}
-                          location={location}
-                          navigate={navigate}
-                          linkSettings={{
-                            viewURL: "/activityViewer",
-                            editURL: "/publicEditor",
-                          }}
-                          scrollableContainer={
-                            document.getElementById("viewer-container") ||
-                            undefined
-                          }
-                        />
-                      </Box>
-                    </VStack>
-                  </>
-                }
-                right={
-                  <VStack spacing={0}>
-                    <HStack
-                      w="100%"
-                      h="32px"
-                      bg="doenet.lightBlue"
-                      margin={0} //Only need when there is an outline
-                      justifyContent="flex-end"
-                    >
-                      {activityData.documents[0].doenetmlVersion.deprecated && (
-                        <Box style={{ backgroundColor: "lightcoral" }}>
-                          We need an appropriate way to warn, probably in the
-                          warnings, below, that DoenetML version{" "}
-                          {
-                            activityData.documents[0].doenetmlVersion
-                              .displayedVersion
-                          }{" "}
-                          is deprecated.{" "}
-                          {
-                            activityData.documents[0].doenetmlVersion
-                              .deprecationMessage
-                          }{" "}
-                          Include a link to how to upgrade.
-                        </Box>
-                      )}
-                    </HStack>
-
-                    <Box
-                      top="50px"
-                      boxSizing="border-box"
-                      background="doenet.canvas"
-                      height={`calc(100vh - 132px)`}
-                      overflowY="scroll"
-                      borderRight="solid 1px"
-                      borderTop="solid 1px"
-                      borderBottom="solid 1px"
-                      borderColor="doenet.mediumGray"
-                      w="100%"
-                      id="codeEditorContainer"
-                    >
-                      <Box
-                        height={`calc(100vh - 166px)`}
-                        w="100%"
-                        overflow="scroll"
-                      >
-                        <CodeMirror
-                          editorRef={editorRef}
-                          setInternalValueTo={initializeEditorDoenetML.current}
-                          onBeforeChange={(value) => {
-                            textEditorDoenetML.current = value;
-                            if (!codeChangedRef.current) {
-                              setCodeChanged(true);
-                            }
-                            // Debounce save to server at 3 seconds
-                            clearTimeout(timeout.current);
-                            timeout.current = setTimeout(async function () {
-                              handleSaveDraft();
-                            }, 3000); //3 seconds
-                          }}
-                        />
-                      </Box>
-
-                      <Box bg="doenet.mainGray" h="32px" w="100%">
-                        <Flex
-                          ml="0px"
-                          h="32px"
-                          bg="doenet.mainGray"
-                          pl="10px"
-                          pt="1px"
-                        >
-                          <ErrorWarningPopovers
-                            warningsObjs={warningsObjs}
-                            errorsObjs={errorsObjs}
-                          />
-                        </Flex>
-                      </Box>
-                    </Box>
-                  </VStack>
-                }
-              />
-            </GridItem>
-          </>
+          <GridItem area="centerContent">
+            <DoenetEditor
+              height={`calc(100vh - 80px)`}
+              width="100%"
+              doenetML={viewerDoenetML}
+              doenetmlChangeCallback={handleSaveDoc}
+              immediateDoenetmlChangeCallback={(newDoenetML) => {
+                textEditorDoenetML.current = newDoenetML;
+              }}
+              doenetmlVersion={doenetmlVersion}
+              border="none"
+            />
+          </GridItem>
         )}
 
         {mode == "View" && (
@@ -1770,10 +1489,9 @@ export function ActivityEditor() {
                       w="100%"
                       id="viewer-container"
                     >
-                      <DoenetMLIframe
+                      <DoenetViewer
                         doenetML={viewerDoenetML}
-                        standaloneUrl={`https://cdn.jsdelivr.net/npm/@doenet/standalone@${activityData.documents[0].doenetmlVersion.fullVersion}/doenet-standalone.js`}
-                        cssUrl={`https://cdn.jsdelivr.net/npm/@doenet/standalone@${activityData.documents[0].doenetmlVersion.fullVersion}/style.css`}
+                        doenetmlVersion={doenetmlVersion}
                         flags={{
                           showCorrectness: true,
                           solutionDisplayMode: "button",

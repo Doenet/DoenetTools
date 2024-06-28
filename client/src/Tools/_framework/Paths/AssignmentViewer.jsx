@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { redirect, useLoaderData } from "react-router";
 
-import { DoenetML } from "@doenet/doenetml";
+import { DoenetViewer } from "@doenet/doenetml-iframe";
 
 import {
   Box,
@@ -67,6 +67,9 @@ export async function loader({ params }) {
   let docVersionId = assignment.assignmentDocuments[0].docVersionId;
 
   let doenetML = assignment.assignmentDocuments[0].documentVersion.content;
+  let doenetmlVersion =
+    assignment.assignmentDocuments[0].documentVersion.doenetmlVersion
+      .fullVersion;
 
   return {
     assignmentFound: true,
@@ -74,6 +77,7 @@ export async function loader({ params }) {
     docId,
     docVersionId,
     doenetML,
+    doenetmlVersion,
     assignmentId,
     userName,
   };
@@ -87,6 +91,7 @@ export function AssignmentViewer() {
     userName,
     docId,
     docVersionId,
+    doenetmlVersion,
   } = useLoaderData();
 
   let navigate = useNavigate();
@@ -312,8 +317,9 @@ export function AssignmentViewer() {
                   w="100%"
                   id="viewer-container"
                 >
-                  <DoenetML
+                  <DoenetViewer
                     doenetML={doenetML}
+                    doenetmlVersion={doenetmlVersion}
                     flags={{
                       showCorrectness: true,
                       solutionDisplayMode: "button",

@@ -11,24 +11,7 @@ import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 
 export default defineConfig((env) => ({
-  plugins: [
-    react(),
-    viteStaticCopy({
-      targets: [
-        {
-          src: path.join(
-            require.resolve("@doenet/doenetml/doenetml-worker/CoreWorker.js"),
-            "../*",
-          ),
-          dest: "doenetml-worker/",
-        },
-        {
-          src: path.join(require.resolve("@doenet/doenetml"), "../fonts/*"),
-          dest: "fonts/",
-        },
-      ],
-    }),
-  ],
+  plugins: [react()],
   server: {
     port: 8000,
     proxy: {
@@ -67,17 +50,7 @@ export default defineConfig((env) => ({
     outDir: "./dist_local",
     rollupOptions: {
       plugins: [nodePolyfills()],
-      input:
-        env.mode === "development"
-          ? {
-              main: resolve(__dirname, "index.html"),
-              cypressTest: resolve(
-                __dirname,
-                "src/Tools/",
-                "cypressTest/index.html",
-              ),
-            }
-          : "index.html",
+      input: "index.html",
     },
     commonjsOptions: {
       transformMixedEsModules: true,

@@ -98,7 +98,7 @@ test("New activity starts out private, then delete it", async () => {
         doenetmlVersion: {
           versionId: 2,
           displayedVersion: "0.7",
-          fullVersion: "0.7.0-alpha7",
+          fullVersion: "0.7.0-alpha11",
           default: true,
           deprecated: false,
           removed: false,
@@ -762,7 +762,10 @@ test("get assignment data from anonymous users", async () => {
         {
           docId,
           docVersionId: 1,
-          documentVersion: { content: "Some content" },
+          documentVersion: {
+            content: "Some content",
+            doenetmlVersion: { fullVersion: "0.7.0-alpha11" },
+          },
         },
       ],
     },
@@ -812,7 +815,10 @@ test("get assignment data from anonymous users", async () => {
         {
           docId,
           docVersionId: 1,
-          documentVersion: { content: "Some content" },
+          documentVersion: {
+            content: "Some content",
+            doenetmlVersion: { fullVersion: "0.7.0-alpha11" },
+          },
         },
       ],
     },
@@ -868,7 +874,10 @@ test("get assignment data from anonymous users", async () => {
         {
           docId,
           docVersionId: 1,
-          documentVersion: { content: "Some content" },
+          documentVersion: {
+            content: "Some content",
+            doenetmlVersion: { fullVersion: "0.7.0-alpha11" },
+          },
         },
       ],
     },
@@ -943,7 +952,10 @@ test("get assignment data from anonymous users", async () => {
         {
           docId,
           docVersionId: 1,
-          documentVersion: { content: "Some content" },
+          documentVersion: {
+            content: "Some content",
+            doenetmlVersion: { fullVersion: "0.7.0-alpha11" },
+          },
         },
       ],
     },

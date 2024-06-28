@@ -114,6 +114,7 @@ export async function updateDoc({
       content: content,
       name,
       doenetmlVersionId,
+      lastEdited: DateTime.now().toJSDate(),
     },
   });
 }
@@ -337,7 +338,13 @@ export async function getActivityViewerData(
       owner: { select: { userId: true, email: true, name: true } },
       documents: {
         where: { isDeleted: false },
-        select: { docId: true, content: true },
+        select: {
+          docId: true,
+          content: true,
+          doenetmlVersion: {
+            select: { fullVersion: true },
+          },
+        },
       },
     },
   });
@@ -346,9 +353,6 @@ export async function getActivityViewerData(
   let doc = await prisma.documents.findUniqueOrThrow({
     where: { docId, isDeleted: false },
     include: {
-      doenetmlVersion: {
-        select: { fullVersion: true },
-      },
       contributorHistory: {
         include: {
           prevDoc: {
@@ -394,6 +398,7 @@ export async function getAssignmentEditorData(
           documentVersion: {
             select: {
               content: true,
+              doenetmlVersion: { select: { fullVersion: true } },
             },
           },
         },
@@ -436,6 +441,7 @@ export async function getAssignmentDataFromCode(
             documentVersion: {
               select: {
                 content: true,
+                doenetmlVersion: { select: { fullVersion: true } },
               },
             },
           },
@@ -997,7 +1003,12 @@ export async function getAssignmentStudentData({
             select: {
               docId: true,
               docVersionId: true,
-              documentVersion: { select: { content: true } },
+              documentVersion: {
+                select: {
+                  content: true,
+                  doenetmlVersion: { select: { fullVersion: true } },
+                },
+              },
             },
           },
         },
@@ -1038,7 +1049,12 @@ export async function getAssignmentContent({
     select: {
       docId: true,
       docVersionId: true,
-      documentVersion: { select: { content: true } },
+      documentVersion: {
+        select: {
+          content: true,
+          doenetmlVersion: { select: { fullVersion: true } },
+        },
+      },
     },
   });
 
