@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { redirect, useLoaderData } from "react-router";
 
-import { DoenetEditor } from "@doenet/doenetml-iframe";
+import { DoenetEditor, DoenetViewer } from "@doenet/doenetml-iframe";
 import Papa from "papaparse";
 
 import {
@@ -55,18 +55,15 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { WarningTwoIcon } from "@chakra-ui/icons";
-import { BsClipboardPlus, BsGripVertical, BsPlayBtnFill } from "react-icons/bs";
+import { BsClipboardPlus, BsPlayBtnFill } from "react-icons/bs";
 import { MdModeEditOutline, MdOutlineCloudUpload } from "react-icons/md";
 import { FaCog, FaFileImage } from "react-icons/fa";
 import { Form, useFetcher } from "react-router-dom";
-import { RxUpdate } from "react-icons/rx";
 import axios from "axios";
 import { useDropzone } from "react-dropzone";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { GoKebabVertical } from "react-icons/go";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
-import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import { useLocation, useNavigate } from "react-router";
 
 export async function action({ params, request }) {
@@ -163,8 +160,7 @@ export async function loader({ params }) {
     }
 
     const doenetML = activityData.documents[docInOrder].content;
-    const doenetmlVersion =
-      activityData.documents[docInOrder].doenetmlVersion.fullVersion;
+    const doenetmlVersion = activityData.documents[docInOrder].doenetmlVersion;
 
     const supportingFileResp = await axios.get(
       `/api/loadSupportingFileInfo/${activityId}`,
@@ -1248,8 +1244,18 @@ export function ActivityEditor() {
   let initializeEditorDoenetML = useRef(doenetML);
 
   let textEditorDoenetML = useRef(doenetML);
-  const [viewerDoenetML, setViewerDoenetML] = useState(doenetML);
   const [mode, setMode] = useState("Edit");
+
+  const initialWarnings = doenetmlVersion.deprecated
+    ? [
+        {
+          level: 1,
+          message: `DoenetML version
+            ${doenetmlVersion.displayedVersion} is deprecated.
+            ${doenetmlVersion.deprecationMessage}`,
+        },
+      ]
+    : [];
 
   let controlsTabsLastIndex = useRef(0);
 
@@ -1409,12 +1415,13 @@ export function ActivityEditor() {
             <DoenetEditor
               height={`calc(100vh - 80px)`}
               width="100%"
-              doenetML={viewerDoenetML}
+              doenetML={textEditorDoenetML.current}
               doenetmlChangeCallback={handleSaveDoc}
               immediateDoenetmlChangeCallback={(newDoenetML) => {
                 textEditorDoenetML.current = newDoenetML;
               }}
-              doenetmlVersion={doenetmlVersion}
+              doenetmlVersion={doenetmlVersion.fullVersion}
+              initialWarnings={initialWarnings}
               border="none"
             />
           </GridItem>
@@ -1456,42 +1463,21 @@ export function ActivityEditor() {
                     spacing={0}
                     margin="10px 0px 10px 0px" //Only need when there is an outline
                   >
-                    {variants.numVariants > 1 && (
-                      <Box bg="doenet.lightBlue" h="32px" width="100%">
-                        <VariantSelect
-                          size="sm"
-                          menuWidth="140px"
-                          syncIndex={variants.index}
-                          array={variants.allPossibleVariants}
-                          onChange={(index) =>
-                            setVariants((prev) => {
-                              let next = { ...prev };
-                              next.index = index + 1;
-                              return next;
-                            })
-                          }
-                        />
-                      </Box>
-                    )}
                     <Box
-                      h={
-                        variants.numVariants > 1
-                          ? "calc(100vh - 132px)"
-                          : "calc(100vh - 100px)"
-                      }
+                      h={"calc(100vh - 100px)"}
                       background="var(--canvas)"
                       borderWidth="1px"
                       borderStyle="solid"
                       borderColor="doenet.mediumGray"
-                      padding="20px 5px 20px 5px"
+                      padding="0px 0px 20px 0px"
                       flexGrow={1}
                       overflow="scroll"
                       w="100%"
                       id="viewer-container"
                     >
                       <DoenetViewer
-                        doenetML={viewerDoenetML}
-                        doenetmlVersion={doenetmlVersion}
+                        doenetML={textEditorDoenetML.current}
+                        doenetmlVersion={doenetmlVersion.fullVersion}
                         flags={{
                           showCorrectness: true,
                           solutionDisplayMode: "button",
@@ -1505,8 +1491,6 @@ export function ActivityEditor() {
                           allowSaveEvents: false,
                         }}
                         attemptNumber={1}
-                        generatedVariantCallback={setVariants}
-                        requestedVariantIndex={variants.index}
                         idsIncludeActivityId={false}
                         paginate={true}
                         location={location}
@@ -1519,6 +1503,7 @@ export function ActivityEditor() {
                           document.getElementById("viewer-container") ||
                           undefined
                         }
+                        includeVariantSelector={true}
                       />
                     </Box>
                   </VStack>

@@ -14,7 +14,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import axios from "axios";
-import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import { useLocation, useNavigate } from "react-router";
 import { EnterClassCode } from "./EnterClassCode";
 import { Form, useFetcher } from "react-router-dom";
@@ -37,6 +36,8 @@ export async function action({ params, request }) {
 export async function loader({ params }) {
   let assignment;
   let userName;
+
+  // TODO: need to select variant for each student (just once)
 
   if (params.assignmentId) {
     let { data } = await axios.get(
@@ -177,12 +178,6 @@ export function AssignmentViewer() {
     };
   }, [assignment]);
 
-  const [variants, setVariants] = useState({
-    index: 1,
-    numVariants: 1,
-    allPossibleVariants: ["a"],
-  });
-
   const fetcher = useFetcher();
 
   if (!assignmentFound) {
@@ -284,29 +279,8 @@ export function AssignmentViewer() {
                 spacing={0}
                 margin="10px 0px 10px 0px" //Only need when there is an outline
               >
-                {variants.numVariants > 1 && (
-                  <Box bg="doenet.lightBlue" h="32px" width="100%">
-                    <VariantSelect
-                      size="sm"
-                      menuWidth="140px"
-                      syncIndex={variants.index}
-                      array={variants.allPossibleVariants}
-                      onChange={(index) =>
-                        setVariants((prev) => {
-                          let next = { ...prev };
-                          next.index = index + 1;
-                          return next;
-                        })
-                      }
-                    />
-                  </Box>
-                )}
                 <Box
-                  h={
-                    variants.numVariants > 1
-                      ? "calc(100vh - 132px)"
-                      : "calc(100vh - 100px)"
-                  }
+                  h="calc(100vh - 100px)"
                   background="var(--canvas)"
                   borderWidth="1px"
                   borderStyle="solid"
@@ -333,8 +307,6 @@ export function AssignmentViewer() {
                       allowSaveEvents: true,
                     }}
                     attemptNumber={1}
-                    generatedVariantCallback={setVariants}
-                    requestedVariantIndex={variants.index}
                     idsIncludeActivityId={false}
                     paginate={true}
                     location={location}

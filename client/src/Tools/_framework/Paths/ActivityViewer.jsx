@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   redirect,
   useLoaderData,
@@ -19,7 +19,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import axios from "axios";
-import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import ContributorsMenu from "../ChakraBasedComponents/ContributorsMenu";
 import { useFetcher } from "react-router-dom";
 
@@ -127,12 +126,6 @@ export function ActivityViewer() {
   useEffect(() => {
     document.title = `${name} - Doenet`;
   }, [name]);
-
-  const [variants, setVariants] = useState({
-    index: 1,
-    numVariants: 1,
-    allPossibleVariants: ["a"],
-  });
 
   return (
     <>
@@ -290,28 +283,8 @@ export function ActivityViewer() {
                 spacing={0}
                 width="100%"
               >
-                {variants.numVariants > 1 && (
-                  <Box bg="doenet.lightBlue" h="32px" width="100%">
-                    <VariantSelect
-                      size="sm"
-                      menuWidth="140px"
-                      array={variants.allPossibleVariants}
-                      onChange={(index) =>
-                        setVariants((prev) => {
-                          let next = { ...prev };
-                          next.index = index + 1;
-                          return next;
-                        })
-                      }
-                    />
-                  </Box>
-                )}
                 <Box
-                  h={
-                    variants.numVariants > 1
-                      ? "calc(100vh - 192px)"
-                      : "calc(100vh - 160px)"
-                  }
+                  h={"calc(100vh - 160px)"}
                   background="var(--canvas)"
                   borderWidth="1px"
                   borderStyle="solid"
@@ -338,8 +311,6 @@ export function ActivityViewer() {
                     }}
                     attemptNumber={1}
                     idsIncludeActivityId={false}
-                    generatedVariantCallback={setVariants}
-                    requestedVariantIndex={variants.index}
                     // setIsInErrorState={setIsInErrorState}
                     location={location}
                     navigate={navigate}
@@ -347,6 +318,7 @@ export function ActivityViewer() {
                       viewURL: "/activityViewer",
                       editURL: "/publicEditor",
                     }}
+                    includeVariantSelector={true}
                   />
                 </Box>
               </VStack>
