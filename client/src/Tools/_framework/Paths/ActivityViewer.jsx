@@ -129,203 +129,174 @@ export function ActivityViewer() {
 
   return (
     <>
-      <Grid
-        background="doenet.lightBlue"
-        minHeight="calc(100vh - 40px)" //40px header height
-        templateAreas={`"header header header"
-      "leftGutter centerContent rightGutter"
-      `}
-        templateRows="100px auto"
-        templateColumns=".06fr 1fr .06fr"
-        position="relative"
-      >
-        <GridItem
-          area="header"
-          height="100px"
-          zIndex="500"
-          background="doenet.mainGray"
+      <VStack spacing={0}>
+        <Flex
+          background="doenet.lightBlue"
+          alignItems="center"
+          width="100%"
+          direction="column"
         >
           <Grid
+            templateAreas={`"header"
+      "centerContent"
+      `}
+            templateRows="100px calc(100% - 100px)"
             width="100%"
-            height="100px"
-            templateAreas={`"leftHeader headerContent rightHeader"`}
-            templateColumns={`1fr minmax(400px,800px) 1fr`}
-            overflow="hidden"
-            background="doenet.mainGray"
+            maxWidth="850px"
           >
-            <GridItem area="leftHeader" background="doenet.mainGray"></GridItem>
-            <GridItem
-              area="rightHeader"
-              background="doenet.mainGray"
-            ></GridItem>
-            <GridItem
-              area="rightHeader"
-              background="doenet.mainGray"
-            ></GridItem>
-            <GridItem area="headerContent" maxWidth="800px" width="100%">
-              <Flex justifyContent="space-between">
-                <Flex flexDirection="column" alignItems="flex-start" mt="10px">
-                  <Text
-                    fontSize="1.4em"
-                    fontWeight="bold"
-                    maxWidth="500px"
-                    overflow="hidden"
-                    textOverflow="ellipsis"
-                    whiteSpace="nowrap"
-                  >
-                    {name}
-                  </Text>
-                  <Box mt="10px">
-                    <ContributorsMenu
-                      owner={owner}
-                      contributorHistory={contributorHistory}
-                    />
-                  </Box>
-                </Flex>
-                <VStack mt="20px" alignItems="flex-end" spacing="4">
-                  <Button
-                    size="xs"
-                    colorScheme="blue"
-                    data-test="See Inside"
-                    onClick={() => {
-                      navigate(`/publicEditor/${activityId}/${docId}`);
-                    }}
-                  >
-                    See Inside
-                  </Button>
-                  {signedIn ? (
-                    <HeaderSectionRight>
-                      <Button
-                        data-test="Copy to Portfolio Button"
-                        size="xs"
-                        colorScheme="blue"
-                        onClick={() => {
-                          fetcher.submit(
-                            {
-                              _action: "copy to portfolio",
-                            },
-                            { method: "post" },
-                          );
-                        }}
-                      >
-                        Copy to Portfolio
-                      </Button>
-
-                      <Button
-                        data-test="Create Assignment"
-                        size="xs"
-                        colorScheme="blue"
-                        onClick={() => {
-                          fetcher.submit(
-                            {
-                              _action: "create assignment",
-                            },
-                            { method: "post" },
-                          );
-                        }}
-                      >
-                        Create Assignment
-                      </Button>
-                    </HeaderSectionRight>
-                  ) : (
-                    <Button
-                      dataTest="Nav to signIn"
-                      colorScheme="blue"
-                      size="xs"
-                      onClick={() => {
-                        navigateTo.current = "/signIn";
-                      }}
-                    >
-                      Sign In To Copy to Portfolio
-                    </Button>
-                  )}
-                </VStack>
-              </Flex>
-            </GridItem>
-          </Grid>
-        </GridItem>
-        <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
-        <GridItem area="rightGutter" background="doenet.lightBlue"></GridItem>
-        <GridItem area="centerContent">
-          <Grid
-            width="100%"
-            height="calc(100vh - 140px)"
-            templateAreas={`"leftViewer viewer rightViewer"`}
-            templateColumns={`1fr minmax(400px,850px) 1fr`}
-            overflow="hidden"
-          >
-            <GridItem
-              area="leftViewer"
-              background="doenet.lightBlue"
-              width="100%"
-              paddingTop="10px"
-              alignSelf="start"
-            ></GridItem>
-            <GridItem
-              area="rightViewer"
-              background="doenet.lightBlue"
-              width="100%"
-              paddingTop="10px"
-              alignSelf="start"
-            />
-
-            <GridItem
-              area="viewer"
-              width="100%"
-              maxWidth="850px"
-              placeSelf="center"
-              minHeight="100%"
-              overflow="hidden"
-            >
-              <VStack
-                margin="10px 0px 10px 0px" //Only need when there is an outline
-                height="calc(100vh - 160px)" //40px header height
-                spacing={0}
+            <GridItem area="header" height="100px" background="doenet.mainGray">
+              <Grid
                 width="100%"
+                height="100px"
+                templateAreas={`"leftHeader headerContent rightHeader"`}
+                templateColumns={`1fr minmax(100px,800px) 1fr`}
+                background="doenet.mainGray"
               >
-                <Box
-                  h={"calc(100vh - 160px)"}
-                  background="var(--canvas)"
-                  borderWidth="1px"
-                  borderStyle="solid"
-                  borderColor="doenet.mediumGray"
-                  width="100%"
-                  overflow="scroll"
-                >
-                  <DoenetViewer
-                    key={`HPpageViewer`}
-                    doenetML={doenetML}
-                    doenetmlVersion={doenetmlVersion}
-                    // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
-                    flags={{
-                      showCorrectness: true,
-                      solutionDisplayMode: "button",
-                      showFeedback: true,
-                      showHints: true,
-                      autoSubmit: false,
-                      allowLoadState: false,
-                      allowSaveState: false,
-                      allowLocalState: false,
-                      allowSaveSubmissions: false,
-                      allowSaveEvents: false,
-                    }}
-                    attemptNumber={1}
-                    idsIncludeActivityId={false}
-                    // setIsInErrorState={setIsInErrorState}
-                    location={location}
-                    navigate={navigate}
-                    linkSettings={{
-                      viewURL: "/activityViewer",
-                      editURL: "/publicEditor",
-                    }}
-                    includeVariantSelector={true}
-                  />
-                </Box>
-              </VStack>
+                <GridItem
+                  area="leftHeader"
+                  paddingLeft="10px"
+                  background="doenet.mainGray"
+                ></GridItem>
+                <GridItem
+                  area="rightHeader"
+                  paddingRight="10px"
+                  background="doenet.mainGray"
+                ></GridItem>
+                <GridItem area="headerContent" maxWidth="800px" width="100%">
+                  <Flex justifyContent="space-between">
+                    <Flex
+                      flexDirection="column"
+                      alignItems="flex-start"
+                      mt="10px"
+                    >
+                      <Text
+                        fontSize="1.4em"
+                        fontWeight="bold"
+                        maxWidth="500px"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        whiteSpace="nowrap"
+                      >
+                        {name}
+                      </Text>
+                      <Box mt="10px">
+                        <ContributorsMenu
+                          owner={owner}
+                          contributorHistory={contributorHistory}
+                        />
+                      </Box>
+                    </Flex>
+                    <VStack mt="20px" alignItems="flex-end" spacing="4">
+                      <Button
+                        size="xs"
+                        colorScheme="blue"
+                        data-test="See Inside"
+                        onClick={() => {
+                          navigate(`/publicEditor/${activityId}/${docId}`);
+                        }}
+                      >
+                        See Inside
+                      </Button>
+                      {signedIn ? (
+                        <HeaderSectionRight>
+                          <Button
+                            data-test="Copy to Portfolio Button"
+                            size="xs"
+                            colorScheme="blue"
+                            onClick={() => {
+                              fetcher.submit(
+                                {
+                                  _action: "copy to portfolio",
+                                },
+                                { method: "post" },
+                              );
+                            }}
+                          >
+                            Copy to Portfolio
+                          </Button>
+
+                          <Button
+                            data-test="Create Assignment"
+                            size="xs"
+                            colorScheme="blue"
+                            onClick={() => {
+                              fetcher.submit(
+                                {
+                                  _action: "create assignment",
+                                },
+                                { method: "post" },
+                              );
+                            }}
+                          >
+                            Create Assignment
+                          </Button>
+                        </HeaderSectionRight>
+                      ) : (
+                        <Button
+                          dataTest="Nav to signIn"
+                          colorScheme="blue"
+                          size="xs"
+                          onClick={() => {
+                            navigateTo.current = "/signIn";
+                          }}
+                        >
+                          Sign In To Copy to Portfolio
+                        </Button>
+                      )}
+                    </VStack>
+                  </Flex>
+                </GridItem>
+              </Grid>
+            </GridItem>
+            <GridItem area="centerContent">
+              <Box
+                background="var(--canvas)"
+                borderWidth="1px"
+                borderStyle="solid"
+                borderColor="doenet.mediumGray"
+                width="100%"
+                height="100%"
+              >
+                <DoenetViewer
+                  key={`HPpageViewer`}
+                  doenetML={doenetML}
+                  doenetmlVersion={doenetmlVersion}
+                  // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
+                  flags={{
+                    showCorrectness: true,
+                    solutionDisplayMode: "button",
+                    showFeedback: true,
+                    showHints: true,
+                    autoSubmit: false,
+                    allowLoadState: false,
+                    allowSaveState: false,
+                    allowLocalState: false,
+                    allowSaveSubmissions: false,
+                    allowSaveEvents: false,
+                  }}
+                  attemptNumber={1}
+                  idsIncludeActivityId={false}
+                  // setIsInErrorState={setIsInErrorState}
+                  location={location}
+                  navigate={navigate}
+                  linkSettings={{
+                    viewURL: "/activityViewer",
+                    editURL: "/publicEditor",
+                  }}
+                  includeVariantSelector={true}
+                />
+              </Box>
             </GridItem>
           </Grid>
-        </GridItem>
-      </Grid>
+        </Flex>
+        <Box
+          width="100%"
+          height="50vh"
+          background="doenet.lightBlue"
+          padding="0px"
+          margin="0px"
+        />
+      </VStack>
     </>
   );
 }
