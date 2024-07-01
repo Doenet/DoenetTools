@@ -33,8 +33,27 @@ import ErrorWarningPopovers from "../ChakraBasedComponents/ErrorWarningPopovers"
 import { cidFromText } from "@doenet/doenetml";
 import { ResizableSideBySide } from "./ResizableSideBySide";
 
-export async function loader({ params }) {
+export async function loader({ params, request }) {
   try {
+    const url = new URL(request.url);
+    const queryParamDoenetML = url.searchParams.get("doenetml");
+
+    //Win, Mac or Linux
+    let platform = "Linux";
+    if (navigator.platform.indexOf("Win") != -1) {
+      platform = "Win";
+    } else if (navigator.platform.indexOf("Mac") != -1) {
+      platform = "Mac";
+    }
+
+    if (!params.activityId) {
+      return {
+        platform,
+        activityData: {name: "Public Editor"},
+        // lastKnownCid,
+        doenetML: queryParamDoenetML,
+      };
+    }
     const { data: activityData } = await axios.get(
       `/api/getActivityEditorData/${params.activityId}`,
     );
@@ -57,7 +76,7 @@ export async function loader({ params }) {
 
     const doenetML = activityData.documents[docInOrder].content;
 
-    const lastKnownCid = await cidFromText(doenetML);
+    // const lastKnownCid = await cidFromText(doenetML);
 
     const supportingFileResp = await axios.get(
       `/api/loadSupportingFileInfo/${params.activityId}`,
@@ -65,19 +84,11 @@ export async function loader({ params }) {
 
     let supportingFileData = supportingFileResp.data;
 
-    //Win, Mac or Linux
-    let platform = "Linux";
-    if (navigator.platform.indexOf("Win") != -1) {
-      platform = "Win";
-    } else if (navigator.platform.indexOf("Mac") != -1) {
-      platform = "Mac";
-    }
-
     return {
       platform,
       activityData,
       docId,
-      lastKnownCid,
+      // lastKnownCid,
       doenetML,
       activityId,
       supportingFileData,
@@ -212,45 +223,63 @@ export function PublicEditor() {
             </Grid>
             <Center mt="2px" h="30px" background="doenet.mainGray">
               <HStack>
-                <Center background="orange.100" pl="10px" pr="6px">
+                {/*
+                Assume if there is an activity ID, the user is exploring a longer and uneditable community activity. 
+                The user should copy the activity into their portfolio to edit.
+
+                Assume if there is no activity ID, the user is exploring a short and editable example and will not be saved.
+                */}
+                {!activityId ? (
+                   <Center background="orange.100" pl="10px" pr="6px">
+                   <WarningIcon color="orange.500" mr="6px" />
+ 
+                   <Text size="xs" pl="4px" pr="4px">
+                     Your code is not being saved in this view. Copy to one of your activities to save changes.
+                   </Text>
+                 </Center>
+                ) : (
+                  <>
+                  <Center background="orange.100" pl="10px" pr="6px">
                   <WarningIcon color="orange.500" mr="6px" />
 
                   <Text size="xs" pl="4px" pr="4px">
-                    This is a public editor. Copy to portfolio to save changes.
+                    Copy to portfolio to make your own edits.
                   </Text>
                 </Center>
-                {signedIn ? (
-                  <Button
-                    data-test="Copy to Portfolio Button"
-                    size="xs"
-                    colorScheme="blue"
-                    onClick={async () => {
-                      let { data } = await axios.post(
-                        `/api/duplicateActivity`,
-                        {
-                          activityId,
-                        },
-                      );
-                      const { newActivityId } = data;
+                  {signedIn ? (
+                    <Button
+                      data-test="Copy to Portfolio Button"
+                      size="xs"
+                      colorScheme="blue"
+                      onClick={async () => {
+                        let { data } = await axios.post(
+                          `/api/duplicateActivity`,
+                          {
+                            activityId,
+                          },
+                        );
+                        const { newActivityId } = data;
 
-                      // TODO: do not navigate to editor
-                      // Instead, navigate to portfolio with newly created activity highlighted
-                      navigate(`/activityEditor/${newActivityId}`);
-                    }}
-                  >
-                    Copy to Portfolio
-                  </Button>
-                ) : (
-                  <Button
-                    data-test="Nav to signIn"
-                    size="xs"
-                    colorScheme="blue"
-                    onClick={() => {
-                      navigateTo.current = "/signIn";
-                    }}
-                  >
-                    Sign In To Copy to Portfolio
-                  </Button>
+                        // TODO: do not navigate to editor
+                        // Instead, navigate to portfolio with newly created activity highlighted
+                        navigate(`/activityEditor/${newActivityId}`);
+                      }}
+                    >
+                      Copy to Portfolio
+                    </Button>
+                  ) : (
+                    <Button
+                      data-test="Nav to signIn"
+                      size="xs"
+                      colorScheme="blue"
+                      onClick={() => {
+                        navigateTo.current = "/signIn";
+                      }}
+                    >
+                      Sign In To Copy to Portfolio
+                    </Button>
+                  )}
+                  </>
                 )}
               </HStack>
             </Center>
@@ -397,6 +426,7 @@ export function PublicEditor() {
                     overflow="scroll"
                   >
                     <CodeMirror
+                      readOnly={activityId}
                       editorRef={editorRef}
                       setInternalValueTo={doenetML}
                       onBeforeChange={(value) => {

@@ -254,6 +254,12 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
+        path: "publicEditor",
+        loader: publicEditorLoader,
+        errorElement: <ErrorPage />,
+        element: <PublicEditor />,
+      },
+      {
         path: "publicEditor/:activityId",
         loader: publicEditorLoader,
         errorElement: <ErrorPage />,
