@@ -131,7 +131,7 @@ test("listUserActivities returns both public and private documents for a user", 
 
   // User is not the owner
   const user = await createTestUser();
-  const userId = user.userId
+  const userId = user.userId;
 
   const { activityId: publicActivityId } = await createActivity(ownerId);
   const { activityId: privateActivityId } = await createActivity(ownerId);

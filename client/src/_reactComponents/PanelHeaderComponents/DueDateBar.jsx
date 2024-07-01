@@ -146,8 +146,8 @@ export default function DueDateBar({ startDate, endDate, isCompleted }) {
             {isOverdue
               ? `Assignment Overdue`
               : !isCompleted
-              ? `${timeLeft.value} ${timeLeft.unit} remaining`
-              : null}
+                ? `${timeLeft.value} ${timeLeft.unit} remaining`
+                : null}
           </Text>
         </RemainingTimeContainer>
       }

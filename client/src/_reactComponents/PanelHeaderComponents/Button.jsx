@@ -30,8 +30,8 @@ const ButtonStyling = styled.button`
         props.alert
           ? "var(--mainRed)"
           : props.disabled
-          ? "var(--canvastext)"
-          : "var(--mainBlue)"};
+            ? "var(--canvastext)"
+            : "var(--mainBlue)"};
     outline-offset: 2px;
   }
 `;

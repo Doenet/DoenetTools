@@ -76,7 +76,7 @@ const Unit = styled.div`
   border-radius: var(--mainBorderRadius);
   ${Units}:hover & {
     display: ${(props) => (props.disabled ? "none" : "block")};
-  } ;
+  }
 `;
 
 const Unitoption = styled.button`

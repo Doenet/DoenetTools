@@ -9,15 +9,15 @@ const Button = styled.button`
     props.alert
       ? "2px solid var(--mainRed)"
       : props.disabled
-      ? "2px solid var(--mainGray)"
-      : "2px solid var(--mainBlue)"};
+        ? "2px solid var(--mainGray)"
+        : "2px solid var(--mainBlue)"};
   border-width: 2px;
   color: ${(props) =>
     props.alert
       ? "var(--mainRed)"
       : props.disabled
-      ? "var(--mainGray)"
-      : "var(--mainBlue)"};
+        ? "var(--mainGray)"
+        : "var(--mainBlue)"};
   background-color: var(--canvas);
   border-radius: ${(props) => props.theme.borderRadius};
   padding: ${(props) => props.theme.padding};
@@ -32,8 +32,8 @@ const Button = styled.button`
       props.alert
         ? "var(--lightRed)"
         : props.disabled
-        ? "none"
-        : "var(--lightBlue)"};
+          ? "none"
+          : "var(--lightBlue)"};
   }
 
   &:focus {
@@ -42,8 +42,8 @@ const Button = styled.button`
         props.disabled
           ? "var(--mainGray)"
           : props.alert
-          ? "var(--mainRed)"
-          : "var(--mainBlue)"};
+            ? "var(--mainRed)"
+            : "var(--mainBlue)"};
     outline-offset: 2px;
   }
 `;
