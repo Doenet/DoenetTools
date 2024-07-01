@@ -51,4 +51,4 @@ docker\ alp/
 
 **/src/API/vendor
 
-public/doenetml-worker
+client/public/doenetml-worker

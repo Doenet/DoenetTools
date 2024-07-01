@@ -84,6 +84,8 @@ export function Assignments() {
   let context = useOutletContext();
   let { user, assignments } = useLoaderData();
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     document.title = `Portfolio - Doenet`;
   }, []);
@@ -137,6 +139,15 @@ export function Assignments() {
           <Heading as="h3" size="md">
             Assignments
           </Heading>
+          <div style={{ position: "absolute", top: "48px", right: "10px" }}>
+            <Button
+              size="xs"
+              colorScheme="blue"
+              onClick={() => navigate("/allAssignmentScores")}
+            >
+              See Scores
+            </Button>
+          </div>
         </Box>
         <AssignmentsSection data-test="Assignments">
           <Wrap p="10px" overflow="visible">
