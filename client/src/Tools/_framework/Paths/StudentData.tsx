@@ -30,7 +30,8 @@ export async function loader({ params }) {
   let { data } = await axios.get(
     `/api/getStudentData/${Number(params.userId)}`,
   );
-  return { data };
+
+  return { userData: data };
 }
 
 export function StudentData() {
