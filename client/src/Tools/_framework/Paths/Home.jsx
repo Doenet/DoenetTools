@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect } from "react";
 import { useLoaderData, useOutletContext } from "react-router";
-import { DoenetML } from "@doenet/doenetml";
+import { DoenetViewer } from "@doenet/doenetml-iframe";
 
 import { Carousel } from "../../../_reactComponents/PanelHeaderComponents/Carousel";
 import {
@@ -32,6 +32,7 @@ export async function loader() {
 
 const HomeIntroVideo = lazy(() => import("./HomeIntroVideo"));
 
+let doenetmlVersion = "0.7.0-alpha9";
 let doenetML = `
 <example>
 <setup>
@@ -490,9 +491,10 @@ export function Home() {
               width={["350px", "450px", "650px", "850px"]}
               overflow="clip"
             >
-              <DoenetML
+              <DoenetViewer
                 key={`HPpageViewer`}
                 doenetML={doenetML}
+                doenetmlVersion={doenetmlVersion}
                 flags={{
                   showCorrectness: true,
                   solutionDisplayMode: "button",

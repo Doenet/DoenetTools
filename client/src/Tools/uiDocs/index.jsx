@@ -3,7 +3,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 
 import UIDocs from "./uiDocs.jsx";
-import { mathjaxConfig } from "@doenet/doenetml";
+import { mathjaxConfig } from "@doenet/doenetml-iframe";
 
 const root = createRoot(document.getElementById("root"));
 root.render(

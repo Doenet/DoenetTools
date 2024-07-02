@@ -85,8 +85,8 @@ export default function CollapseSection(props) {
           disabled
             ? ""
             : e.key === "Enter" || e.key === "Spacebar" || e.key === " "
-            ? setCollapsed(!collapsed)
-            : "";
+              ? setCollapsed(!collapsed)
+              : "";
         }}
         tabIndex="0"
       >

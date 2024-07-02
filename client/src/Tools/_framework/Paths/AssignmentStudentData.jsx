@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { redirect, useLoaderData } from "react-router";
-import { DoenetML } from "@doenet/doenetml";
+import { DoenetViewer } from "@doenet/doenetml-iframe";
 
 import { Button, Box, Link } from "@chakra-ui/react";
 import axios from "axios";
@@ -36,6 +36,9 @@ export async function loader({ params, request }) {
 
   // TODO: deal with case where don't have exactly 1 document
   const doenetML = assignment.assignmentDocuments[0].documentVersion.content;
+  const doenetmlVersion =
+    assignment.assignmentDocuments[0].documentVersion.doenetmlVersion
+      .fullVersion;
   const numStatesSaved = assignmentData.documentScores.length;
   let documentScores = { latest: assignmentData.documentScores[0].score };
   if (numStatesSaved === 2) {
@@ -49,6 +52,7 @@ export async function loader({ params, request }) {
     user,
     score,
     doenetML,
+    doenetmlVersion,
     withMaxScore,
     numStatesSaved,
     documentScores,
@@ -63,10 +67,13 @@ export function AssignmentStudentData() {
     user,
     score,
     doenetML,
+    doenetmlVersion,
     withMaxScore,
     numStatesSaved,
     documentScores,
   } = useLoaderData();
+
+  console.log({ doenetmlVersion });
 
   useEffect(() => {
     document.title = `${assignment?.name} - Doenet`;
@@ -76,6 +83,7 @@ export function AssignmentStudentData() {
 
   useEffect(() => {
     let messageListener = async function (event) {
+      console.log("message in AssignmentStudentData", event.data);
       if (event.data.subject == "SPLICE.getState") {
         try {
           let { data } = await axios.get("/api/loadState", {
@@ -194,9 +202,10 @@ export function AssignmentStudentData() {
       </Box>
       <Box>
         {withMaxScore ? (
-          <DoenetML
+          <DoenetViewer
             key={"maxScore"}
             doenetML={doenetML}
+            doenetmlVersion={doenetmlVersion}
             flags={{
               showCorrectness: true,
               solutionDisplayMode: "button",
@@ -224,9 +233,10 @@ export function AssignmentStudentData() {
             apiURLs={{ postMessages: true }}
           />
         ) : (
-          <DoenetML
+          <DoenetViewer
             doenetML={doenetML}
             key={"currentScore"}
+            doenetmlVersion={doenetmlVersion}
             flags={{
               showCorrectness: true,
               solutionDisplayMode: "button",

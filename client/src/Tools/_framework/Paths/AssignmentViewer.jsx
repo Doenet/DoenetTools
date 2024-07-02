@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { redirect, useLoaderData } from "react-router";
 
-import { DoenetML } from "@doenet/doenetml";
+import { DoenetViewer } from "@doenet/doenetml-iframe";
 
 import {
   Box,
@@ -14,7 +14,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import axios from "axios";
-import VariantSelect from "../ChakraBasedComponents/VariantSelect";
 import { useLocation, useNavigate } from "react-router";
 import { EnterClassCode } from "./EnterClassCode";
 import { Form, useFetcher } from "react-router-dom";
@@ -37,6 +36,8 @@ export async function action({ params, request }) {
 export async function loader({ params }) {
   let assignment;
   let userName;
+
+  // TODO: need to select variant for each student (just once)
 
   if (params.assignmentId) {
     let { data } = await axios.get(
@@ -67,6 +68,9 @@ export async function loader({ params }) {
   let docVersionId = assignment.assignmentDocuments[0].docVersionId;
 
   let doenetML = assignment.assignmentDocuments[0].documentVersion.content;
+  let doenetmlVersion =
+    assignment.assignmentDocuments[0].documentVersion.doenetmlVersion
+      .fullVersion;
 
   return {
     assignmentFound: true,
@@ -74,6 +78,7 @@ export async function loader({ params }) {
     docId,
     docVersionId,
     doenetML,
+    doenetmlVersion,
     assignmentId,
     userName,
   };
@@ -87,6 +92,7 @@ export function AssignmentViewer() {
     userName,
     docId,
     docVersionId,
+    doenetmlVersion,
   } = useLoaderData();
 
   let navigate = useNavigate();
@@ -171,12 +177,6 @@ export function AssignmentViewer() {
       removeEventListener("message", messageListener);
     };
   }, [assignment]);
-
-  const [variants, setVariants] = useState({
-    index: 1,
-    numVariants: 1,
-    allPossibleVariants: ["a"],
-  });
 
   const fetcher = useFetcher();
 
@@ -279,29 +279,8 @@ export function AssignmentViewer() {
                 spacing={0}
                 margin="10px 0px 10px 0px" //Only need when there is an outline
               >
-                {variants.numVariants > 1 && (
-                  <Box bg="doenet.lightBlue" h="32px" width="100%">
-                    <VariantSelect
-                      size="sm"
-                      menuWidth="140px"
-                      syncIndex={variants.index}
-                      array={variants.allPossibleVariants}
-                      onChange={(index) =>
-                        setVariants((prev) => {
-                          let next = { ...prev };
-                          next.index = index + 1;
-                          return next;
-                        })
-                      }
-                    />
-                  </Box>
-                )}
                 <Box
-                  h={
-                    variants.numVariants > 1
-                      ? "calc(100vh - 132px)"
-                      : "calc(100vh - 100px)"
-                  }
+                  h="calc(100vh - 100px)"
                   background="var(--canvas)"
                   borderWidth="1px"
                   borderStyle="solid"
@@ -312,8 +291,9 @@ export function AssignmentViewer() {
                   w="100%"
                   id="viewer-container"
                 >
-                  <DoenetML
+                  <DoenetViewer
                     doenetML={doenetML}
+                    doenetmlVersion={doenetmlVersion}
                     flags={{
                       showCorrectness: true,
                       solutionDisplayMode: "button",
@@ -327,8 +307,6 @@ export function AssignmentViewer() {
                       allowSaveEvents: true,
                     }}
                     attemptNumber={1}
-                    generatedVariantCallback={setVariants}
-                    requestedVariantIndex={variants.index}
                     idsIncludeActivityId={false}
                     paginate={true}
                     location={location}

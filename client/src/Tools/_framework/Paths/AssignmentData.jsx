@@ -38,18 +38,26 @@ export async function loader({ params }) {
 
   // TODO: address case where don't have one document
   const doenetML = data.assignmentContent[0].documentVersion.content;
+  const doenetmlVersion =
+    data.assignmentContent[0].documentVersion.doenetmlVersion.fullVersion;
 
   return {
     assignmentData: data.assignmentData,
     answerList: data.answerList,
     doenetML,
+    doenetmlVersion,
     assignmentId,
   };
 }
 
 export function AssignmentData() {
-  const { assignmentId, assignmentData, answerList, doenetML } =
-    useLoaderData();
+  const {
+    assignmentId,
+    assignmentData,
+    answerList,
+    doenetML,
+    doenetmlVersion,
+  } = useLoaderData();
 
   useEffect(() => {
     document.title = `${assignmentData.name} - Doenet`;
@@ -58,6 +66,9 @@ export function AssignmentData() {
   const [scoreData, setScoreData] = useState([]);
 
   const [activatePreview, setActivatePreview] = useState(false);
+
+  // TODO: delete previewKey if it turns out we no longer need to reload the DoenetViewer
+  // (The reload is currently disabled)
   const [previewKey, setPreviewKey] = useState(1);
 
   useEffect(() => {
@@ -123,7 +134,8 @@ export function AssignmentData() {
           <Tab
             onClick={() => {
               setActivatePreview(true);
-              setPreviewKey(previewKey + 1);
+              // TODO: delete this commented out refresh if it turns out it is no longer needed
+              // setPreviewKey(previewKey + 1);
             }}
           >
             Item summary
@@ -179,6 +191,7 @@ export function AssignmentData() {
                 </p>
                 <AssignmentPreview
                   doenetML={doenetML}
+                  doenetmlVersion={doenetmlVersion}
                   active={activatePreview}
                   key={`preview${previewKey}`}
                 />

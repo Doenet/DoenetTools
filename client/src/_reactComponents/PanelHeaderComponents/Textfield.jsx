@@ -10,8 +10,8 @@ const TextfieldStyling = styled.input`
       props.disabled
         ? "var(--mainGray)"
         : props.alert
-        ? "var(--mainRed)"
-        : "var(--canvastext)"};
+          ? "var(--mainRed)"
+          : "var(--canvastext)"};
   font-family: Arial;
   border-radius: var(--mainBorderRadius);
   color: var(--canvastext);
@@ -29,8 +29,8 @@ const TextfieldStyling = styled.input`
         props.disabled
           ? "var(--mainGray)"
           : props.alert
-          ? "var(--mainRed)"
-          : "var(--canvastext)"};
+            ? "var(--mainRed)"
+            : "var(--canvastext)"};
     outline-offset: 2px;
   }
 `;

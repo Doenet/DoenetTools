@@ -16,8 +16,8 @@ const Select = styled.select`
     props.alert
       ? "2px solid var(--mainRed)"
       : props.disabled
-      ? "2px solid var(--mainGray)"
-      : "var(--mainBorder)"};
+        ? "2px solid var(--mainGray)"
+        : "var(--mainBorder)"};
   border-radius: var(--mainBorderRadius);
   size: ${(props) => props.size};
   overflow: auto;

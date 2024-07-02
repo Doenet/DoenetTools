@@ -29,8 +29,8 @@ const DropdownMenu = (props) => {
         backgroundColor: state.isFocused
           ? "var(--lightBlue)"
           : state.isSelected
-          ? "var(--mainGray)"
-          : "var(--canvas)",
+            ? "var(--mainGray)"
+            : "var(--canvas)",
         ":active": { backgroundColor: "var(--canvas)" },
       };
     },
@@ -43,8 +43,8 @@ const DropdownMenu = (props) => {
       backgroundColor: state.isFocused
         ? "var(--lightBlue)"
         : state.isSelected
-        ? "var(--mainGray)"
-        : "var(--canvas)",
+          ? "var(--mainGray)"
+          : "var(--canvas)",
       ":active": { backgroundColor: "var(--canvas)" },
     }),
     container: (provided, state) => ({
@@ -67,8 +67,8 @@ const DropdownMenu = (props) => {
       backgroundColor: state.isFocused
         ? "var(--lightBlue)"
         : state.isSelected
-        ? "var(--mainGray)"
-        : "var(--canvas)",
+          ? "var(--mainGray)"
+          : "var(--canvas)",
       ":active": { backgroundColor: "var(--canvas)" },
       // padding: '0 6px',
     }),
@@ -79,8 +79,8 @@ const DropdownMenu = (props) => {
       backgroundColor: state.isFocused
         ? "var(--lightBlue)"
         : state.isSelected
-        ? "var(--mainGray)"
-        : "var(--canvas)",
+          ? "var(--mainGray)"
+          : "var(--canvas)",
       ":active": { backgroundColor: "var(--canvas)" },
     }),
     singleValue: (provided, state) => {
@@ -90,8 +90,8 @@ const DropdownMenu = (props) => {
         backgroundColor: state.isFocused
           ? "var(--lightBlue)"
           : state.isSelected
-          ? "var(--mainGray)"
-          : "var(--canvas)",
+            ? "var(--mainGray)"
+            : "var(--canvas)",
         ":active": { backgroundColor: "var(--canvas)" },
       };
     },

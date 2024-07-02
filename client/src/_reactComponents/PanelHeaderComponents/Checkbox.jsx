@@ -17,8 +17,8 @@ const Button = styled.button`
       props.alert
         ? "var(--lightRed)"
         : props.disabled
-        ? "var(--mainGray)"
-        : "var(--lightBlue)"};
+          ? "var(--mainGray)"
+          : "var(--lightBlue)"};
   }
 
   &:focus {

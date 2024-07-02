@@ -1,9 +1,13 @@
 import { Box } from "@chakra-ui/react";
-import { DoenetML } from "@doenet/doenetml";
+import { DoenetViewer } from "@doenet/doenetml-iframe";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 
-export default function AssignmentPreview({ doenetML, active = true }) {
+export default function AssignmentPreview({
+  doenetML,
+  doenetmlVersion,
+  active = true,
+}) {
   const [variants, setVariants] = useState({
     index: 1,
     numVariants: 1,
@@ -24,8 +28,9 @@ export default function AssignmentPreview({ doenetML, active = true }) {
       maxHeight={600}
     >
       {active ? (
-        <DoenetML
+        <DoenetViewer
           doenetML={doenetML}
+          doenetmlVersion={doenetmlVersion}
           flags={{
             showCorrectness: true,
             solutionDisplayMode: "button",

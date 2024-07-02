@@ -1,13 +1,13 @@
 import React from "react";
 
-import "@doenet/doenetml/style.css";
-
 import {
   createBrowserRouter,
   redirect,
   RouterProvider,
 } from "react-router-dom";
 import { createRoot } from "react-dom/client";
+
+import "@doenet/doenetml-iframe/style.css";
 
 import { MathJaxContext } from "better-react-mathjax";
 import {
@@ -98,7 +98,7 @@ import {
   PublicEditor,
   loader as publicEditorLoader,
 } from "./Tools/_framework/Paths/PublicEditor";
-import { mathjaxConfig } from "@doenet/doenetml";
+import { mathjaxConfig } from "@doenet/doenetml-iframe";
 import SignIn from "./Tools/_framework/ToolPanels/SignIn";
 import SignOut from "./Tools/_framework/ToolPanels/SignOut";
 

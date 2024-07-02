@@ -10,8 +10,8 @@ const Textarea = styled.textarea`
       props.disabled
         ? "var(--mainGray)"
         : props.alert
-        ? "var(--mainRed)"
-        : "var(--canvastext)"};
+          ? "var(--mainRed)"
+          : "var(--canvastext)"};
   border-radius: var(--mainBorderRadius);
   font-family: Arial;
   font-size: 14px;
@@ -23,8 +23,8 @@ const Textarea = styled.textarea`
         props.disabled
           ? "var(--mainGray)"
           : props.alert
-          ? "var(--mainRed)"
-          : "var(--canvastext)"};
+            ? "var(--mainRed)"
+            : "var(--canvastext)"};
     outline-offset: 2px;
   }
 `;

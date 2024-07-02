@@ -98,7 +98,7 @@ test("New activity starts out private, then delete it", async () => {
         doenetmlVersion: {
           versionId: 2,
           displayedVersion: "0.7",
-          fullVersion: "0.7.0-alpha7",
+          fullVersion: "0.7.0-alpha16",
           default: true,
           deprecated: false,
           removed: false,
@@ -131,7 +131,7 @@ test("listUserActivities returns both public and private documents for a user", 
 
   // User is not the owner
   const user = await createTestUser();
-  const userId = user.userId
+  const userId = user.userId;
 
   const { activityId: publicActivityId } = await createActivity(ownerId);
   const { activityId: privateActivityId } = await createActivity(ownerId);
@@ -773,7 +773,10 @@ test("get assignment data from anonymous users", async () => {
         {
           docId,
           docVersionId: 1,
-          documentVersion: { content: "Some content" },
+          documentVersion: {
+            content: "Some content",
+            doenetmlVersion: { fullVersion: "0.7.0-alpha16" },
+          },
         },
       ],
     },
@@ -823,7 +826,10 @@ test("get assignment data from anonymous users", async () => {
         {
           docId,
           docVersionId: 1,
-          documentVersion: { content: "Some content" },
+          documentVersion: {
+            content: "Some content",
+            doenetmlVersion: { fullVersion: "0.7.0-alpha16" },
+          },
         },
       ],
     },
@@ -879,7 +885,10 @@ test("get assignment data from anonymous users", async () => {
         {
           docId,
           docVersionId: 1,
-          documentVersion: { content: "Some content" },
+          documentVersion: {
+            content: "Some content",
+            doenetmlVersion: { fullVersion: "0.7.0-alpha16" },
+          },
         },
       ],
     },
@@ -954,7 +963,10 @@ test("get assignment data from anonymous users", async () => {
         {
           docId,
           docVersionId: 1,
-          documentVersion: { content: "Some content" },
+          documentVersion: {
+            content: "Some content",
+            doenetmlVersion: { fullVersion: "0.7.0-alpha16" },
+          },
         },
       ],
     },
