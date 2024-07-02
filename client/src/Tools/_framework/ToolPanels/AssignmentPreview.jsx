@@ -54,9 +54,6 @@ export default function AssignmentPreview({
             viewURL: "/activityViewer",
             editURL: "/publicEditor",
           }}
-          scrollableContainer={
-            document.getElementById("viewer-container") || undefined
-          }
           showAnswerTitles={true}
         />
       ) : null}
