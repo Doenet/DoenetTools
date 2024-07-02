@@ -50,3 +50,5 @@ docker\ alp/
 .eslintrc.js
 
 **/src/API/vendor
+
+client/public/doenetml-worker

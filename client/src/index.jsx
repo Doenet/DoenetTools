@@ -84,6 +84,14 @@ import {
   action as assignmentViewerAction,
   AssignmentViewer,
 } from "./Tools/_framework/Paths/AssignmentViewer";
+import {
+  loader as allAssignmentScoresLoader,
+  AllAssignmentScores,
+} from "./Tools/_framework/Paths/AllAssignmentScores";
+import {
+  loader as studentDataLoader,
+  StudentData,
+} from "./Tools/_framework/Paths/StudentData";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
@@ -309,8 +317,19 @@ const router = createBrowserRouter([
       {
         path: "assignmentData/:assignmentId/:userId",
         loader: assignmentStudentDataLoader,
-        action: assignmentStudentDataAction,
         element: <AssignmentStudentData />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "allAssignmentScores",
+        loader: allAssignmentScoresLoader,
+        element: <AllAssignmentScores />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "studentData/:userId",
+        loader: studentDataLoader,
+        element: <StudentData />,
         errorElement: <ErrorPage />,
       },
       {
