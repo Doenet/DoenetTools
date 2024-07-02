@@ -92,8 +92,6 @@ export async function loader({ params }) {
 }
 
 const HeaderSectionRight = styled.div`
-  margin: 5px;
-  height: 30px;
   display: flex;
   justify-content: flex-end;
 `;
@@ -203,6 +201,7 @@ export function ActivityViewer() {
                             data-test="Copy to Portfolio Button"
                             size="xs"
                             colorScheme="blue"
+                            marginRight="10px"
                             onClick={() => {
                               fetcher.submit(
                                 {
