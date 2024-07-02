@@ -1499,10 +1499,6 @@ export function ActivityEditor() {
                           viewURL: "/activityViewer",
                           editURL: "/publicEditor",
                         }}
-                        scrollableContainer={
-                          document.getElementById("viewer-container") ||
-                          undefined
-                        }
                         includeVariantSelector={true}
                       />
                     </Box>

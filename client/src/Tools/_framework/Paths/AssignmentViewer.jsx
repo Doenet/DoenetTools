@@ -316,9 +316,6 @@ export function AssignmentViewer() {
                       editURL: "/publicEditor",
                     }}
                     apiURLs={{ postMessages: true }}
-                    scrollableContainer={
-                      document.getElementById("viewer-container") || undefined
-                    }
                   />
                 </Box>
               </VStack>
