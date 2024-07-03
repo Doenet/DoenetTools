@@ -42,6 +42,7 @@ import {
   getAssignment,
   getAssignmentContent,
   getDocumentSubmittedResponseHistory,
+  updatePromotedContentGroup,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -184,7 +185,6 @@ app.get(
   },
 );
 
-
 app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
   const email: string = req.query.emailaddress as string;
   // TODO: add the ability to give a name after logging in or creating an account
@@ -313,7 +313,7 @@ app.get("/api/searchPublicActivities", async (req: Request, res: Response) => {
   });
 });
 
-app.get("/api/loadPromotedContent", (req: Request, res: Response) => {  
+app.get("/api/loadPromotedContent", (req: Request, res: Response) => {
   res.send({
     success: true,
     carouselData: {},
@@ -323,24 +323,44 @@ app.get("/api/loadPromotedContent", (req: Request, res: Response) => {
 app.post("/api/addPromotedContent", async (req: Request, res: Response) => {
   const groupId = req.body.groupId;
   const activityId = req.body.activityId;
-  const {success, message} = await addPromotedContent(groupId, activityId);
-  if(success) {
+  const { success, message } = await addPromotedContent(groupId, activityId);
+  if (success) {
     res.send({});
   } else {
     res.status(400).send(message);
   }
 });
 
+app.post(
+  "/api/addPromotedContentGroup",
+  async (req: Request, res: Response) => {
+    const groupName = req.body.groupName;
+    const { success, message } = await addPromotedContentGroup(groupName);
+    if (success) {
+      res.send({});
+    } else {
+      res.status(400).send(message);
+    }
+  },
+);
 
-app.post("/api/addPromotedContentGroup", async (req: Request, res: Response) => {
-  const groupName = req.body.groupName;
-  const {success, message} = await addPromotedContentGroup(groupName);
-  if(success) {
-    res.send({});
-  } else {
-    res.status(400).send(message);
-  }
-});
+app.post(
+  "/api/updatePromotedContentGroup",
+  async (req: Request, res: Response) => {
+    const { groupName, newGroupName, homepage, currentlyFeatured } = req.body;
+    const { success, message } = await updatePromotedContentGroup(
+      groupName,
+      newGroupName,
+      homepage,
+      currentlyFeatured,
+    );
+    if (success) {
+      res.send({});
+    } else {
+      res.status(400).send(message);
+    }
+  },
+);
 
 app.get(
   "/api/getActivityEditorData/:activityId",
@@ -435,14 +455,17 @@ app.get(
   },
 );
 
-app.get("/api/loadPromotedContentGroups", async (req: Request, res: Response) => {
-  const groups = await loadPromotedContentGroups();
-  console.log(groups);
-  res.send({
-    success: true, //TODO: do we need this?
-    carouselGroups: groups
-  });
-});
+app.get(
+  "/api/loadPromotedContentGroups",
+  async (req: Request, res: Response) => {
+    const groups = await loadPromotedContentGroups();
+    console.log(groups);
+    res.send({
+      success: true, //TODO: do we need this?
+      carouselGroups: groups,
+    });
+  },
+);
 
 app.post(
   "/api/saveDoenetML",

@@ -611,7 +611,7 @@ export async function getAllRecentPublicActivities() {
 
 // TODO - access control
 export async function addPromotedContentGroup(groupName: string) {
-  try {    
+  try {
     await prisma.promotedContentGroups.create({
       data: {
         groupName,
@@ -619,13 +619,43 @@ export async function addPromotedContentGroup(groupName: string) {
       },
     });
     return { success: true };
-
-  } catch(err) {
-    if(err instanceof Prisma.PrismaClientKnownRequestError) {
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
       // The .code property can be accessed in a type-safe manner
-      if(err.code === "P2002") {
-        console.log("A group with that name already exists.");
+      if (err.code === "P2002") {
+        return {
+          success: false,
+          message: "A group with that name already exists.",
+        };
+      }
+    }
+    throw err;
+  }
+}
 
+// TODO - access control
+export async function updatePromotedContentGroup(
+  groupName: string,
+  newGroupName: string,
+  homepage: boolean,
+  currentlyFeatured: boolean,
+) {
+  try {
+    await prisma.promotedContentGroups.update({
+      where: {
+        groupName,
+      },
+      data: {
+        groupName: newGroupName,
+        homepage,
+        currentlyFeatured,
+      },
+    });
+    return { success: true };
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      // The .code property can be accessed in a type-safe manner
+      if (err.code === "P2002") {
         return {
           success: false,
           message: "A group with that name already exists.",
@@ -644,12 +674,13 @@ export async function loadPromotedContentGroups() {
       groupName: true,
       currentlyFeatured: true,
       homepage: true,
-      _count: { //is this used on client?
+      _count: {
+        //is this used on client?
         select: {
-          promotedContent: true
-        }
-      }
-    }
+          promotedContent: true,
+        },
+      },
+    },
   });
 
   const reformatted_groups = groups.map((group) => {
@@ -658,7 +689,7 @@ export async function loadPromotedContentGroups() {
       groupName: group.groupName,
       currentyFeatured: group.currentlyFeatured,
       homepage: group.homepage,
-      itemCount: group._count.promotedContent
+      itemCount: group._count.promotedContent,
     };
   });
 
@@ -667,24 +698,23 @@ export async function loadPromotedContentGroups() {
 
 // TODO - access control
 export async function addPromotedContent(groupId: number, activityId: number) {
-
   const activity = await prisma.activities.findUnique({
     where: {
       activityId,
-      isPublic: true
+      isPublic: true,
     },
     select: {
       // not using this, we just need to select one field
-      activityId: true
-    }
+      activityId: true,
+    },
   });
-  if(!activity) {
+  if (!activity) {
     return {
       success: false,
-      message: "This activity does not exist or is not public."
+      message: "This activity does not exist or is not public.",
     };
   }
-  
+
   try {
     await prisma.promotedContent.create({
       data: {
@@ -694,26 +724,24 @@ export async function addPromotedContent(groupId: number, activityId: number) {
       },
     });
     return { success: true };
-
-  } catch(err) {
-    if(err instanceof Prisma.PrismaClientKnownRequestError) {
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
       // The .code property can be accessed in a type-safe manner
-      if(err.code === "P2002") {
+      if (err.code === "P2002") {
         return {
           success: false,
           message: "This activity is already in that group.",
         };
-      } else if(err.code === "P2003") {
+      } else if (err.code === "P2003") {
         return {
           success: false,
-          message: "That group does not exist."
-        }
+          message: "That group does not exist.",
+        };
       }
     }
     throw err;
   }
 }
-
 
 export async function assignActivity(activityId: number, userId: number) {
   let origActivity = await getActivity(activityId);

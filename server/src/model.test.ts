@@ -37,6 +37,7 @@ import {
   updateAssignment,
   getAssignmentEditorData,
   listUserAssignments,
+  updatePromotedContentGroup,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -268,9 +269,8 @@ test("copyPublicActivityToPortfolio remixes correct versions", async () => {
   const ownerId3 = (await createTestUser()).userId;
 
   // create activity 1 by owner 1
-  const { activityId: activityId1, docId: docId1 } = await createActivity(
-    ownerId1,
-  );
+  const { activityId: activityId1, docId: docId1 } =
+    await createActivity(ownerId1);
   const activity1Content = "<p>Hello!</p>";
   await updateActivity({
     activityId: activityId1,
@@ -389,47 +389,90 @@ test("updateActivity does not update properties when passed undefined values", a
 test("Add promoted content", async () => {
   const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
   const groupResponse = await addPromotedContentGroup(groupName);
-  expect(groupResponse).toEqual({success: true});
+  expect(groupResponse).toEqual({ success: true });
   const groups = await loadPromotedContentGroups();
-  const groupId = groups.find((group) => group.groupName === groupName)!.promotedGroupId;
+  const groupId = groups.find(
+    (group) => group.groupName === groupName,
+  )!.promotedGroupId;
 
   // Creating the same group again should fail
   const duplicateGroupResponse = await addPromotedContentGroup(groupName);
-  expect(duplicateGroupResponse).toEqual({success: false, message: "A group with that name already exists."});
-  
+  expect(duplicateGroupResponse).toEqual({
+    success: false,
+    message: "A group with that name already exists.",
+  });
+
   const { userId: ownerId } = await createTestUser();
   const { activityId } = await createActivity(ownerId);
-  // Cannot promote private activity 
+  // Cannot promote private activity
   const responsePrivate = await addPromotedContent(groupId, activityId);
   expect(responsePrivate).toEqual({
     success: false,
-    message: "This activity does not exist or is not public."
+    message: "This activity does not exist or is not public.",
   });
   // Can promote public activity
-  await updateActivity({activityId, isPublic: true, ownerId});
+  await updateActivity({ activityId, isPublic: true, ownerId });
   const responseSuccess = await addPromotedContent(groupId, activityId);
-  expect(responseSuccess).toEqual({success: true});
+  expect(responseSuccess).toEqual({ success: true });
 
   // Cannot add to same group twice
   const twice = await addPromotedContent(groupId, activityId);
-  expect(twice).toEqual({success: false, message: "This activity is already in that group."});
+  expect(twice).toEqual({
+    success: false,
+    message: "This activity is already in that group.",
+  });
   // Cannot promote non-existent activity
   const fakeActivityId = Math.random() * 1e8;
-  const responseFakeActivity = await addPromotedContent(groupId, fakeActivityId);
+  const responseFakeActivity = await addPromotedContent(
+    groupId,
+    fakeActivityId,
+  );
   expect(responseFakeActivity).toEqual({
     success: false,
-    message: "This activity does not exist or is not public."
+    message: "This activity does not exist or is not public.",
   });
   // Cannot promote to non-existent group
   const fakeGroupId = Math.random() * 1e8;
   const responseFakeGroup = await addPromotedContent(fakeGroupId, activityId);
-  console.log({responseFakeGroup});
+  console.log({ responseFakeGroup });
   expect(responseFakeGroup).toEqual({
     success: false,
-    message: "That group does not exist."
+    message: "That group does not exist.",
   });
 });
 
+test("Update promoted content group", async () => {
+  const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
+  const groupResponse = await addPromotedContentGroup(groupName);
+  expect(groupResponse).toEqual({ success: true });
+
+  const secondGroupName = "vitest-unique-promoted-group-" + new Date().toJSON();
+  const secondGroupResponse = await addPromotedContentGroup(secondGroupName);
+  expect(secondGroupResponse).toEqual({ success: true });
+
+  const updateResponseExistingName = await updatePromotedContentGroup(
+    groupName,
+    secondGroupName,
+    false,
+    false,
+  );
+  expect(updateResponseExistingName).toEqual({
+    success: false,
+    message: "A group with that name already exists.",
+  });
+
+  const newGroupName =
+    "vitest-unique-NEW-promoted-group-" + new Date().toJSON();
+  const updateResponse = await updatePromotedContentGroup(
+    groupName,
+    newGroupName,
+    false,
+    false,
+  );
+  expect(updateResponse).toEqual({
+    success: true,
+  });
+});
 
 test("assign an activity", async () => {
   const owner = await createTestUser();
@@ -2015,9 +2058,8 @@ test("list assignments gets instructor and student activities", async () => {
     },
   ]);
 
-  const { activityId: activityId2, docId: docId2 } = await createActivity(
-    user2Id,
-  );
+  const { activityId: activityId2, docId: docId2 } =
+    await createActivity(user2Id);
   const assignmentId2 = await assignActivity(activityId2, user2Id);
 
   assignmentList = await listUserAssignments(user1Id);
