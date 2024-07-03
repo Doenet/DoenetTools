@@ -39,6 +39,7 @@ import {
   getAssignment,
   getAssignmentContent,
   getDocumentSubmittedResponseHistory,
+  moveContent,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -535,6 +536,24 @@ app.post(
     }
   },
 );
+
+app.post("/api/moveContent", async (req: Request, res: Response) => {
+  const id = Number(req.body.id);
+  const desiredParentFolderId = req.body.desiredParentFolderId
+    ? Number(req.body.desiredParentFolderId)
+    : undefined;
+  const desiredPosition = Number(req.body.desiredPosition);
+  const loggedInUserId = Number(req.cookies.userId);
+
+  await moveContent({
+    id,
+    desiredParentFolderId,
+    desiredPosition,
+    ownerId: loggedInUserId,
+  });
+
+  res.send({});
+});
 
 app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
   const targetActivityId = Number(req.body.activityId);
