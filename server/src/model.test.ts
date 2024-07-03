@@ -2154,7 +2154,7 @@ test(
   },
 );
 
-test("get data for user's assignments", { timeout: 20000 }, async () => {
+test("get data for user's assignments", { timeout: 30000 }, async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
@@ -2249,6 +2249,8 @@ test("get data for user's assignments", { timeout: 20000 }, async () => {
     },
   ]);
 
+  assignmentData = await getAssignmentDataFromCode(classCode, false);
+
   let newUser2 = assignmentData.newAnonymousUser;
   newUser2 = await updateUser({
     userId: newUser2!.userId,
@@ -2301,7 +2303,7 @@ test("get data for user's assignments", { timeout: 20000 }, async () => {
   const { activityId: activity2Id, docId: doc2Id } = await createActivity(
     ownerId,
   );
-  await updateActivity({ activityId, name: "Activity 2", ownerId });
+  await updateActivity({ activityId: activity2Id, name: "Activity 2", ownerId });
   await updateDoc({
     docId,
     content: "Some content",
@@ -2317,10 +2319,10 @@ test("get data for user's assignments", { timeout: 20000 }, async () => {
   );
 
   // identical name to user 2
-  let assignment2Data = await getAssignmentDataFromCode(classCode2, false);
+  assignmentData = await getAssignmentDataFromCode(classCode2, false);
 
-  let newUser3 = assignment2Data.newAnonymousUser;
-  newUser2 = await updateUser({
+  let newUser3 = assignmentData.newAnonymousUser;
+  newUser3 = await updateUser({
     userId: newUser3!.userId,
     name: "Arya Abbas",
   });
@@ -2329,7 +2331,7 @@ test("get data for user's assignments", { timeout: 20000 }, async () => {
     assignmentId: assignment2Id,
     docId: doc2Id,
     docVersionId: 1,
-    userId: newUser2!.userId,
+    userId: newUser3!.userId,
     score: 0.9,
     onSubmission: true,
     state: "document state 1",
@@ -2362,9 +2364,9 @@ test("get data for user's assignments", { timeout: 20000 }, async () => {
       assignmentScores: [
         {
           assignmentId: assignment2Id,
-          userId: newUser2!.userId,
+          userId: newUser3!.userId,
           score: 0.9,
-          user: { name: newUser2!.name },
+          user: { name: newUser3!.name },
         },
       ],
     },
