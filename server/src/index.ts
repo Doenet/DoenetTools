@@ -5,9 +5,10 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { DateTime } from "luxon";
 import {
-  copyPublicActivityToPortfolio,
+  copyActivityToFolder,
   createActivity,
   deleteActivity,
+  deleteFolder,
   findOrCreateUser,
   getAllDoenetmlVersions,
   getActivityEditorData,
@@ -15,16 +16,13 @@ import {
   getAllRecentPublicActivities,
   getIsAdmin,
   getUserInfo,
-  listUserActivities,
+  listUserContent,
   updateDoc,
-  searchPublicActivities,
-  updateActivity,
+  searchPublicContent,
+  updateContent,
   getDoc,
   assignActivity,
-  listUserAssignments,
-  deleteAssignment,
-  getAssignmentEditorData,
-  updateAssignment,
+  listUserAssigned,
   getAssignmentDataFromCode,
   openAssignmentWithCode,
   closeAssignmentWithCode,
@@ -118,17 +116,17 @@ app.get(
 );
 
 app.get(
-  "/api/getPortfolio/:userId",
+  "/api/getContent/:userId",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const userId = Number(req.params.userId);
     try {
-      const activityLists = await listUserActivities(userId, loggedInUserId);
+      const contentData = await listUserContent(userId, loggedInUserId);
       const allDoenetmlVersions = await getAllDoenetmlVersions();
-      res.send({ allDoenetmlVersions, ...activityLists });
+      res.send({ allDoenetmlVersions, ...contentData });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.status(404).send("No portfolio found");
+        res.status(404).send("No content found");
       } else {
         next(e);
       }
@@ -137,15 +135,40 @@ app.get(
 );
 
 app.get(
-  "/api/getPublicPortfolio/:userId",
+  "/api/getContent/:userId/:folderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const folderId = Number(req.params.folderId);
+    const userId = Number(req.params.userId);
+    try {
+      const contentData = await listUserContent(
+        userId,
+        loggedInUserId,
+        folderId,
+      );
+      const allDoenetmlVersions = await getAllDoenetmlVersions();
+      res.send({ allDoenetmlVersions, ...contentData });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.status(404).send("No content found");
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getPublicContent/:userId",
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = Number(req.params.userId);
     try {
-      const activityLists = await listUserActivities(userId, 0);
-      res.send(activityLists);
+      // send 0 as the logged in content to make sure get only public content
+      const contentData = await listUserContent(userId, 0);
+      res.send(contentData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.status(404).send("No portfolio found");
+        res.status(404).send("No content found");
       } else {
         next(e);
       }
@@ -154,12 +177,49 @@ app.get(
 );
 
 app.get(
-  "/api/getAssignments",
+  "/api/getPublicContent/:userId/:folderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = Number(req.params.userId);
+    const folderId = Number(req.params.folderId);
+    try {
+      // send 0 as the logged in content to make sure get only public content
+      const contentData = await listUserContent(userId, 0, folderId);
+      res.send(contentData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.status(404).send("No content found");
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getAssigned",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     try {
-      const assignmentList = await listUserAssignments(loggedInUserId);
-      res.send(assignmentList);
+      const assignedData = await listUserAssigned(loggedInUserId);
+      res.send(assignedData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getAssigned/:folderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const folderId = Number(req.params.folderId);
+    try {
+      const assignedData = await listUserAssigned(loggedInUserId, folderId);
+      res.send(assignedData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
@@ -200,13 +260,13 @@ app.post(
 );
 
 app.post(
-  "/api/deleteAssignment",
+  "/api/deleteFolder",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
-    const assignmentId = Number(body.assignmentId);
+    const folderId = Number(body.folderId);
     try {
-      await deleteAssignment(assignmentId, loggedInUserId);
+      await deleteFolder(folderId, loggedInUserId);
       res.send({});
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -225,14 +285,27 @@ app.post("/api/createActivity", async (req: Request, res: Response) => {
 });
 
 app.post(
-  "/api/updateActivityName",
+  "/api/createActivity/:folderId",
+  async (req: Request, res: Response) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const folderId = Number(req.params.folderId);
+    const { activityId, docId } = await createActivity(
+      loggedInUserId,
+      folderId,
+    );
+    res.send({ activityId, docId });
+  },
+);
+
+app.post(
+  "/api/updateContentName",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
-    const activityId = Number(body.activityId);
+    const id = Number(body.id);
     const name = body.name;
     try {
-      await updateActivity({ activityId, name, ownerId: loggedInUserId });
+      await updateContent({ id, name, ownerId: loggedInUserId });
       res.send({});
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -245,14 +318,14 @@ app.post(
 );
 
 app.post(
-  "/api/updateIsPublicActivity",
+  "/api/updateIsPublicContent",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
-    const activityId = Number(body.activityId);
+    const id = Number(body.id);
     const isPublic = body.isPublic;
     try {
-      await updateActivity({ activityId, isPublic, ownerId: loggedInUserId });
+      await updateContent({ id, isPublic, ownerId: loggedInUserId });
       res.send({});
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -290,11 +363,11 @@ app.get(
   },
 );
 
-app.get("/api/searchPublicActivities", async (req: Request, res: Response) => {
+app.get("/api/searchPublicContent", async (req: Request, res: Response) => {
   const query = req.query.q as string;
   res.send({
     users: [], // TODO - this
-    activities: await searchPublicActivities(query),
+    content: await searchPublicContent(query),
   });
 });
 
@@ -354,27 +427,6 @@ app.get(
 );
 
 app.get(
-  "/api/getAssignmentEditorData/:assignmentId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
-    const assignmentId = Number(req.params.assignmentId);
-    try {
-      const editorData = await getAssignmentEditorData(
-        assignmentId,
-        loggedInUserId,
-      );
-      res.send(editorData);
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.sendStatus(404);
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
   "/api/getAssignmentDataFromCode/:code",
   async (req: Request, res: Response) => {
     const code = req.params.code;
@@ -410,7 +462,11 @@ app.post(
     const doenetML = body.doenetML;
     const docId = Number(body.docId);
     try {
-      await updateDoc({ docId, content: doenetML, ownerId: loggedInUserId });
+      await updateDoc({
+        id: docId,
+        source: doenetML,
+        ownerId: loggedInUserId,
+      });
       res.send({});
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -423,19 +479,19 @@ app.post(
 );
 
 app.post(
-  "/api/updateActivitySettings",
+  "/api/updateContentSettings",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
-    const activityId = Number(body.activityId);
+    const id = Number(body.id);
     const imagePath = body.imagePath;
     const name = body.name;
     // TODO - deal with learning outcomes
     const learningOutcomes = body.learningOutcomes;
     const isPublic = body.isPublic;
     try {
-      await updateActivity({
-        activityId,
+      await updateContent({
+        id,
         imagePath,
         name,
         isPublic,
@@ -464,7 +520,7 @@ app.post(
     const doenetmlVersionId = Number(body.doenetmlVersionId);
     try {
       await updateDoc({
-        docId,
+        id: docId,
         name,
         doenetmlVersionId,
         ownerId: loggedInUserId,
@@ -484,7 +540,7 @@ app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
   const targetActivityId = Number(req.body.activityId);
   const loggedInUserId = Number(req.cookies.userId);
 
-  let newActivityId = await copyPublicActivityToPortfolio(
+  let newActivityId = await copyActivityToFolder(
     targetActivityId,
     loggedInUserId,
   );
@@ -496,68 +552,22 @@ app.post("/api/assignActivity", async (req: Request, res: Response) => {
   const activityId = Number(req.body.activityId);
   const loggedInUserId = Number(req.cookies.userId);
 
-  let assignmentId = await assignActivity(activityId, loggedInUserId);
+  await assignActivity(activityId, loggedInUserId);
 
-  res.send({ assignmentId, userId: loggedInUserId });
+  res.send({ userId: loggedInUserId });
 });
-
-app.post(
-  "/api/updateAssignmentName",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
-    const body = req.body;
-    const assignmentId = Number(body.assignmentId);
-    const name = body.name;
-    try {
-      await updateAssignment({ assignmentId, name, ownerId: loggedInUserId });
-      res.send({});
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.sendStatus(403);
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.post(
-  "/api/updateAssignmentSettings",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
-    const body = req.body;
-    const assignmentId = Number(body.assignmentId);
-    const imagePath = body.imagePath;
-    const name = body.name;
-    try {
-      await updateAssignment({
-        assignmentId,
-        imagePath,
-        name,
-        ownerId: loggedInUserId,
-      });
-      res.send({});
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.sendStatus(403);
-      } else {
-        next(e);
-      }
-    }
-  },
-);
 
 app.post(
   "/api/openAssignmentWithCode",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
-    const assignmentId = Number(body.assignmentId);
+    const activityId = Number(body.activityId);
     const closeAt = DateTime.fromISO(body.closeAt);
 
     try {
       const { classCode, codeValidUntil } = await openAssignmentWithCode(
-        assignmentId,
+        activityId,
         closeAt,
         loggedInUserId,
       );
@@ -577,10 +587,10 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
-    const assignmentId = Number(body.assignmentId);
+    const activityId = Number(body.activityId);
 
     try {
-      await closeAssignmentWithCode(assignmentId, loggedInUserId);
+      await closeAssignmentWithCode(activityId, loggedInUserId);
       res.send({});
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -596,9 +606,9 @@ app.post(
   "/api/saveScoreAndState",
   async (req: Request, res: Response, next: NextFunction) => {
     const body = req.body;
-    const assignmentId = Number(body.assignmentId);
+    const activityId = Number(body.activityId);
     const docId = Number(body.docId);
-    const docVersionId = Number(body.docVersionId);
+    const docVersionNum = Number(body.docVersionNum);
     const loggedInUserId = Number(req.cookies.userId);
     const score = Number(body.score);
     const onSubmission = body.onSubmission as boolean;
@@ -606,9 +616,9 @@ app.post(
 
     try {
       await saveScoreAndState({
-        assignmentId,
+        activityId,
         docId,
-        docVersionId,
+        docVersionNum,
         userId: loggedInUserId,
         score,
         onSubmission,
@@ -631,18 +641,18 @@ app.post(
 app.get(
   "/api/loadState",
   async (req: Request, res: Response, next: NextFunction) => {
-    const assignmentId = Number(req.query.assignmentId);
+    const activityId = Number(req.query.activityId);
     const docId = Number(req.query.docId);
-    const docVersionId = Number(req.query.docVersionId);
+    const docVersionNum = Number(req.query.docVersionNum);
     const requestedUserId = Number(req.query.userId || req.cookies.userId);
     const loggedInUserId = Number(req.cookies.userId);
     const withMaxScore = req.query.withMaxScore === "1";
 
     try {
       const state = await loadState({
-        assignmentId,
+        activityId,
         docId,
-        docVersionId,
+        docVersionNum,
         requestedUserId,
         userId: loggedInUserId,
         withMaxScore,
@@ -659,22 +669,22 @@ app.get(
 );
 
 app.get(
-  "/api/getAssignmentData/:assignmentId",
+  "/api/getAssignmentData/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const assignmentId = Number(req.params.assignmentId);
+    const activityId = Number(req.params.activityId);
     const loggedInUserId = Number(req.cookies.userId);
 
     try {
       const assignmentData = await getAssignmentScoreData({
-        assignmentId,
+        activityId,
         ownerId: loggedInUserId,
       });
       const answerList = await getAnswersThatHaveSubmittedResponses({
-        assignmentId,
+        activityId,
         ownerId: loggedInUserId,
       });
       const assignmentContent = await getAssignmentContent({
-        assignmentId,
+        activityId,
         ownerId: loggedInUserId,
       });
       res.send({ assignmentData, answerList, assignmentContent });
@@ -689,15 +699,15 @@ app.get(
 );
 
 app.get(
-  "/api/getAssignmentStudentData/:assignmentId/:userId",
+  "/api/getAssignmentStudentData/:activityId/:userId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const assignmentId = Number(req.params.assignmentId);
+    const activityId = Number(req.params.activityId);
     const userId = Number(req.params.userId);
     const loggedInUserId = Number(req.cookies.userId);
 
     try {
       const assignmentData = await getAssignmentStudentData({
-        assignmentId,
+        activityId,
         ownerId: loggedInUserId,
         userId,
       });
@@ -757,9 +767,9 @@ app.post(
   "/api/recordSubmittedEvent",
   async (req: Request, res: Response, next: NextFunction) => {
     const body = req.body;
-    const assignmentId = Number(body.assignmentId);
+    const activityId = Number(body.activityId);
     const docId = Number(body.docId);
-    const docVersionId = Number(body.docVersionId);
+    const docVersionNum = Number(body.docVersionNum);
     const answerId = body.answerId as string;
     const loggedInUserId = Number(req.cookies.userId);
     const response = body.result.response as string;
@@ -773,9 +783,9 @@ app.post(
 
     try {
       await recordSubmittedEvent({
-        assignmentId,
+        activityId,
         docId,
-        docVersionId,
+        docVersionNum,
         userId: loggedInUserId,
         answerId,
         answerNumber,
@@ -800,20 +810,20 @@ app.post(
 );
 
 app.get(
-  "/api/getSubmittedResponses/:assignmentId/:docId/:docVersionId",
+  "/api/getSubmittedResponses/:activityId/:docId/:docVersionNum",
   async (req: Request, res: Response, next: NextFunction) => {
-    const assignmentId = Number(req.params.assignmentId);
+    const activityId = Number(req.params.activityId);
     const docId = Number(req.params.docId);
-    const docVersionId = Number(req.params.docVersionId);
+    const docVersionNum = Number(req.params.docVersionNum);
     const answerId = req.query.answerId as string;
     const loggedInUserId = Number(req.cookies.userId);
 
     try {
-      const assignment = await getAssignment(assignmentId, loggedInUserId);
+      const assignment = await getAssignment(activityId, loggedInUserId);
       const submittedResponses = await getDocumentSubmittedResponses({
-        assignmentId,
+        activityId,
         docId,
-        docVersionId,
+        docVersionNum,
         answerId,
         ownerId: loggedInUserId,
       });
@@ -829,21 +839,21 @@ app.get(
 );
 
 app.get(
-  "/api/getSubmittedResponseHistory/:assignmentId/:docId/:docVersionId/:userId",
+  "/api/getSubmittedResponseHistory/:activityId/:docId/:docVersionNum/:userId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const assignmentId = Number(req.params.assignmentId);
+    const activityId = Number(req.params.activityId);
     const docId = Number(req.params.docId);
-    const docVersionId = Number(req.params.docVersionId);
+    const docVersionNum = Number(req.params.docVersionNum);
     const userId = Number(req.params.userId);
     const answerId = req.query.answerId as string;
     const loggedInUserId = Number(req.cookies.userId);
 
     try {
-      const assignment = await getAssignment(assignmentId, loggedInUserId);
+      const assignment = await getAssignment(activityId, loggedInUserId);
       const submittedResponses = await getDocumentSubmittedResponseHistory({
-        assignmentId,
+        activityId,
         docId,
-        docVersionId,
+        docVersionNum,
         answerId,
         userId,
         ownerId: loggedInUserId,
