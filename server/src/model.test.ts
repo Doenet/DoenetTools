@@ -40,6 +40,16 @@ import { DateTime } from "luxon";
 const EMPTY_DOC_CID =
   "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
 
+const currentDoenetmlVersion = {
+  id: 2,
+  displayedVersion: "0.7",
+  fullVersion: "0.7.0-alpha17",
+  default: true,
+  deprecated: false,
+  removed: false,
+  deprecationMessage: "",
+};
+
 // create an isolated user for each test, will allow tests to be run in parallel
 async function createTestUser() {
   const username = "vitest-" + new Date().toJSON() + "@vitest.test";
@@ -73,7 +83,7 @@ test("Update user name", async () => {
 test("New activity starts out private, then delete it", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const { activityId } = await createActivity(userId);
+  const { activityId, docId } = await createActivity(userId);
   const activityContent = await getActivityEditorData(activityId, userId);
   expect(activityContent).toStrictEqual({
     name: "Untitled Activity",
@@ -85,17 +95,11 @@ test("New activity starts out private, then delete it", async () => {
     codeValidUntil: null,
     documents: [
       {
+        id: docId,
+        versionNum: null,
         source: "",
         name: "Untitled Document",
-        doenetmlVersion: {
-          id: 2,
-          displayedVersion: "0.7",
-          fullVersion: "0.7.0-alpha17",
-          default: true,
-          deprecated: false,
-          removed: false,
-          deprecationMessage: "",
-        },
+        doenetmlVersion: currentDoenetmlVersion,
       },
     ],
   });
@@ -1111,6 +1115,130 @@ test("get activity editor data only if owner", async () => {
   await expect(getActivityEditorData(activityId, otherUserId)).rejects.toThrow(
     "No content found",
   );
+});
+
+test("activity editor data before and after assigned", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId, docId } = await createActivity(ownerId);
+
+  const preAssignedData = await getActivityEditorData(activityId, ownerId);
+
+  expect(preAssignedData).eqls({
+    name: "Untitled Activity",
+    imagePath: "/activity_default.jpg",
+    isPublic: false,
+    isAssigned: false,
+    stillOpen: false,
+    classCode: null,
+    codeValidUntil: null,
+    documents: [
+      {
+        id: docId,
+        versionNum: null,
+        source: "",
+        name: "Untitled Document",
+        doenetmlVersion: currentDoenetmlVersion,
+      },
+    ],
+  });
+
+  await assignActivity(activityId, ownerId);
+
+  const assignedData = await getActivityEditorData(activityId, ownerId);
+
+  expect(assignedData).eqls({
+    name: "Untitled Activity",
+    imagePath: "/activity_default.jpg",
+    isPublic: false,
+    isAssigned: true,
+    stillOpen: false,
+    classCode: null,
+    codeValidUntil: null,
+    documents: [
+      {
+        id: docId,
+        versionNum: 1,
+        source: "",
+        name: "Untitled Document",
+        doenetmlVersion: currentDoenetmlVersion,
+      },
+    ],
+  });
+
+  let closeAt = DateTime.now().plus({ days: 1 });
+  const { classCode } = await openAssignmentWithCode(
+    activityId,
+    closeAt,
+    ownerId,
+  );
+
+  const openedData = await getActivityEditorData(activityId, ownerId);
+
+  expect(openedData).eqls({
+    name: "Untitled Activity",
+    imagePath: "/activity_default.jpg",
+    isPublic: false,
+    isAssigned: true,
+    stillOpen: true,
+    classCode,
+    codeValidUntil: closeAt.toJSDate(),
+    documents: [
+      {
+        id: docId,
+        versionNum: 1,
+        source: "",
+        name: "Untitled Document",
+        doenetmlVersion: currentDoenetmlVersion,
+      },
+    ],
+  });
+
+  await closeAssignmentWithCode(activityId, ownerId);
+
+  const closedData = await getActivityEditorData(activityId, ownerId);
+
+  expect(closedData).eqls({
+    name: "Untitled Activity",
+    imagePath: "/activity_default.jpg",
+    isPublic: false,
+    isAssigned: true,
+    stillOpen: false,
+    classCode,
+    codeValidUntil: null,
+    documents: [
+      {
+        id: docId,
+        versionNum: 1,
+        source: "",
+        name: "Untitled Document",
+        doenetmlVersion: currentDoenetmlVersion,
+      },
+    ],
+  });
+
+  await unassignActivity(activityId, ownerId);
+
+  const unAssignedData = await getActivityEditorData(activityId, ownerId);
+
+  expect(unAssignedData).eqls({
+    name: "Untitled Activity",
+    imagePath: "/activity_default.jpg",
+    isPublic: false,
+    isAssigned: false,
+    stillOpen: false,
+    classCode,
+    codeValidUntil: null,
+    documents: [
+      {
+        id: docId,
+        versionNum: null,
+        source: "",
+        name: "Untitled Document",
+        doenetmlVersion: currentDoenetmlVersion,
+      },
+    ],
+  });
 });
 
 test("only user and assignment owner can load document state", async () => {
@@ -2129,7 +2257,7 @@ test("get all assignment data from anonymous user", async () => {
   });
 });
 
-test.only("get data for user's assignments", { timeout: 30000 }, async () => {
+test("get data for user's assignments", { timeout: 30000 }, async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
