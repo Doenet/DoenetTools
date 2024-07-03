@@ -208,6 +208,164 @@ export async function getDoc(id: number) {
 }
 
 /**
+ * Move the content with `id` to position `desiredPosition` in the folder `desiredParentFolderId`
+ * (where an undefined `desiredParentFolderId` indicates the root folder of `ownerId`).
+ *
+ * `desiredPosition` is the 0-based index in the array of content with parent folder `desiredParentFolderId`
+ * and owner `ownerId` sorted by `sortIndex`.
+ */
+export async function moveContent({
+  id,
+  desiredParentFolderId,
+  desiredPosition,
+  ownerId,
+}: {
+  id: number;
+  desiredParentFolderId?: number;
+  desiredPosition: number;
+  ownerId: number;
+}) {
+  if (!Number.isInteger(desiredPosition)) {
+    throw Error("desiredPosition must be an integer");
+  }
+
+  // make sure content exists and is owned by `ownerId`
+  await prisma.content.findUniqueOrThrow({
+    where: {
+      id,
+      ownerId,
+      isDeleted: false,
+    },
+  });
+
+  // if desired parent folder is specified, make sure it exists and is owned by `ownerId`
+  if (desiredParentFolderId !== undefined) {
+    await prisma.content.findUniqueOrThrow({
+      where: {
+        id: desiredParentFolderId,
+        ownerId,
+        isDeleted: false,
+        isFolder: true,
+      },
+    });
+  }
+
+  let newSortIndex: number;
+
+  if (desiredPosition <= 0) {
+    // If desired position is the first position,
+    // then we need only look up the first item in the folder.
+    const firstItem = await prisma.content.findFirst({
+      where: {
+        ownerId,
+        parentFolderId: desiredParentFolderId,
+        id: { not: id },
+        isDeleted: false,
+      },
+      select: {
+        sortIndex: true,
+      },
+      orderBy: { sortIndex: "asc" },
+    });
+
+    // If there is no other content, set sort index to 0,
+    // else set it to be the first index - `SORT_INCREMENT`.
+    newSortIndex =
+      firstItem === null ? 0 : Number(firstItem.sortIndex) - SORT_INCREMENT;
+  } else {
+    // find all content in folder other than moved content
+    const currentItems = await prisma.content.findMany({
+      where: {
+        ownerId,
+        parentFolderId: desiredParentFolderId,
+        id: { not: id },
+        isDeleted: false,
+      },
+      select: {
+        sortIndex: true,
+      },
+      orderBy: { sortIndex: "asc" },
+    });
+
+    if (desiredPosition >= currentItems.length) {
+      newSortIndex =
+        Number(currentItems[currentItems.length - 1].sortIndex) +
+        SORT_INCREMENT;
+    } else {
+      const precedingSortIndex = Number(
+        currentItems[desiredPosition - 1].sortIndex,
+      );
+      const followingSortIndex = Number(
+        currentItems[desiredPosition].sortIndex,
+      );
+      const candidateSortIndex = Math.round(
+        (precedingSortIndex + followingSortIndex) / 2,
+      );
+      if (
+        candidateSortIndex > precedingSortIndex &&
+        candidateSortIndex < followingSortIndex
+      ) {
+        newSortIndex = candidateSortIndex;
+      } else {
+        // There is no room in sort indices to insert a new item at `desiredLocation`,
+        // as the distance between precedingSortIndex and followingSortIndex is too small to fit another integer
+        // (presumably because the distance is 1, though possibly a larger distance if we are outside
+        // the bounds of safe integers in Javascript).
+        // We need to re-index; we shift the smaller set of items preceding or following the desired location.
+        if (desiredPosition >= currentItems.length / 2) {
+          // We add `SORT_INCREMENT` to all items with sort index `followingSortIndex` or larger.
+          await prisma.content.updateMany({
+            where: {
+              ownerId,
+              parentFolderId: desiredParentFolderId,
+              id: { not: id },
+              sortIndex: {
+                gte: followingSortIndex,
+              },
+              isDeleted: false,
+            },
+            data: {
+              sortIndex: { increment: SORT_INCREMENT },
+            },
+          });
+          newSortIndex = Math.round(
+            (precedingSortIndex + followingSortIndex + SORT_INCREMENT) / 2,
+          );
+        } else {
+          // We subtract `SORT_INCREMENT` from all items with sort index `precedingSortIndex` or smaller.
+          await prisma.content.updateMany({
+            where: {
+              ownerId,
+              parentFolderId: desiredParentFolderId,
+              id: { not: id },
+              sortIndex: {
+                lte: precedingSortIndex,
+              },
+              isDeleted: false,
+            },
+            data: {
+              sortIndex: { decrement: SORT_INCREMENT },
+            },
+          });
+          newSortIndex = Math.round(
+            (precedingSortIndex - SORT_INCREMENT + followingSortIndex) / 2,
+          );
+        }
+      }
+    }
+  }
+
+  // Move the item!
+  await prisma.content.update({
+    where: { id },
+    data: {
+      sortIndex: newSortIndex,
+      parentFolderId: desiredParentFolderId,
+    },
+  });
+}
+
+/**
  * Copies the activity given by `origActivityId` into `folderId` of `ownerId`.
  *
  * Places the activity at the end of the folder.
