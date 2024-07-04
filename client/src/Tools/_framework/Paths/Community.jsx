@@ -265,7 +265,7 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
               {carouselGroups.map((group) => {
                 return (
                   <Button
-                    mergin="5px"
+                    margin="5px"
                     key={group.groupName}
                     onClick={() => promoteContent(group)}
                   >
@@ -287,7 +287,8 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
                     return (
                       <Wrap key={group.promotedGroupId}>
                         <Checkbox
-                          isChecked={group.currentlyFeatured == "1"}
+                          isDisabled={group.homepage}
+                          isChecked={group.currentlyFeatured}
                           name={group.groupId}
                           onChange={(evt) =>
                             promoteGroup(group, evt.target.checked)

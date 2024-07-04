@@ -696,7 +696,7 @@ export async function loadPromotedContentGroups() {
     return {
       promotedGroupId: group.promotedGroupId,
       groupName: group.groupName,
-      currentyFeatured: group.currentlyFeatured,
+      currentlyFeatured: group.currentlyFeatured,
       homepage: group.homepage,
       itemCount: group._count.promotedContent,
     };
