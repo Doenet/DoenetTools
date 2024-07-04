@@ -19,6 +19,9 @@ import { Link } from "react-router-dom";
 export default function ActivityCard({
   imageLink = "",
   imagePath,
+  isAssigned,
+  isFolder,
+  isPublic,
   name,
   fullName,
   menuItems,
@@ -50,11 +53,10 @@ export default function ActivityCard({
           <Box width="160px" p="1">
             <Text
               data-test="Card Label"
-              height="26px"
               lineHeight="1.1"
               fontSize="xs"
               fontWeight="700"
-              noOfLines={2}
+              noOfLines={1}
               textAlign="left"
             >
               {name}
@@ -67,6 +69,17 @@ export default function ActivityCard({
             >
               {fullName}
             </Text>
+            {
+              (!isFolder) ?
+                <Text
+                fontSize="xs"
+                noOfLines={1}
+                textAlign="left"
+                //data-test="Card Full Name"
+                >
+                  {isPublic ? "Public" : "Private"} / {isAssigned ? "Assigned" : "Unassigned"}
+                </Text> : ""
+            }
           </Box>
 
           {menuItems ? (

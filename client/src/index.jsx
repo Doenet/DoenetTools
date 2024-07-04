@@ -227,7 +227,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "portfolio/:userId",
+        path: "portfolio/:userId/:folderId",
         loader: portfolioLoader,
         action: portfolioAction,
         element: <Portfolio />,

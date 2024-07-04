@@ -41,6 +41,7 @@ import {
   getAssignmentContent,
   getDocumentSubmittedResponseHistory,
   moveContent,
+  getFolderContent,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -770,6 +771,7 @@ app.get(
     try {
       const data = await getAllAssignmentScores({
         ownerId: loggedInUserId,
+        parentFolderId: null,
       });
       res.send(data);
     } catch (e) {
@@ -899,6 +901,25 @@ app.get(
         ownerId: loggedInUserId,
       });
       res.send({ assignment, submittedResponses });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(204);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getFolderContent/:folderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const folderId = eval(req.params.folderId); // is there a better way to expect number or null?
+    const loggedInUserId = Number(req.cookies.userId);
+
+    try {
+      const folder = await getFolderContent({ folderId, loggedInUserId });
+      res.send({ folder });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(204);

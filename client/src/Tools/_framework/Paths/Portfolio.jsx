@@ -36,6 +36,8 @@ export async function action({ request, params }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
 
+  console.log(formObj);
+
   if (formObj._action == "update general") {
     //Don't let name be blank
     let name = formObj?.name?.trim();
@@ -76,23 +78,20 @@ export async function action({ request, params }) {
 
     let { activityId } = data;
     return redirect(`/activityEditor/${activityId}`);
+  } else if (formObj?._action == "Add Folder") {
+    console.log("new folder created");
+    await axios.post(`/api/createFolder`, { parentFolderId: formObj.folderId });
+
   } else if (formObj?._action == "Delete") {
     await axios.post(`/api/deleteActivity`, {
       activityId: formObj.activityId,
     });
 
     return true;
-  } else if (formObj?._action == "Make Public") {
-    await axios.post(`/api/updateIsPublicActivity`, {
-      activityId: formObj.activityId,
-      isPublic: true,
-    });
-
-    return true;
-  } else if (formObj?._action == "Make Private") {
-    await axios.post(`/api/updateIsPublicActivity`, {
-      activityId: formObj.activityId,
-      isPublic: false,
+  } else if (formObj?._action == "Update Public") {
+    await axios.post(`/api/updateIsPublicContent`, {
+      id: formObj.activityId,
+      isPublic: formObj.isPublic,
     });
 
     return true;
@@ -109,43 +108,25 @@ export async function action({ request, params }) {
 }
 
 export async function loader({ params }) {
-  const { data } = await axios.get(`/api/getPortfolio/${params.userId}`);
+
+  const { data } = await axios.get(`/api/getFolderContent/${params.folderId}`);
   if (data.notMe) {
     return redirect(`/publicPortfolio/${params.userId}`);
   }
 
-  return data;
+  console.log(data);
+
+  return { folderId: params.folderId, data };
 }
 
-const PublicActivitiesSection = styled.div`
-  grid-row: 2/3;
-  display: flex;
-  flex-direction: column;
-  padding: 10px 10px 10px 10px;
+const ActivitiesSection = styled.div`
+  padding: 10px;
   margin: 0px;
   justify-content: center;
   align-items: center;
   text-align: center;
   background: var(--lightBlue);
-`;
-
-const PrivateActivitiesSection = styled.div`
-  grid-row: 3/4;
-  display: flex;
-  flex-direction: column;
-  padding: 10px 10px 10px 10px;
-  margin: 0px;
-  justify-content: flex-start;
-  align-items: center;
-  text-align: center;
-  background: var(--mainGray);
-`;
-
-const PortfolioGrid = styled.div`
-  display: grid;
-  grid-template-rows: 80px min-content auto;
-  /* grid-template-rows: 80px min-content min-content; */
-  height: 100vh;
+  height: 100%;
 `;
 
 function PortfolioSettingsDrawer({
@@ -210,8 +191,9 @@ function PortfolioSettingsDrawer({
 
 export function Portfolio() {
   let context = useOutletContext();
-  let data = useLoaderData();
+  let { folderId, data } = useLoaderData();
   const [activityId, setActivityId] = useState();
+  const [content, setContent] = useState(data.folder);
   const controlsBtnRef = useRef(null);
 
   const {
@@ -221,7 +203,7 @@ export function Portfolio() {
   } = useDisclosure();
 
   useEffect(() => {
-    document.title = `Portfolio - Doenet`;
+    document.title = `Activities - Doenet`;
   }, []);
 
   const fetcher = useFetcher();
@@ -240,7 +222,7 @@ export function Portfolio() {
             data-test="Make Private Menu Item"
             onClick={() => {
               fetcher.submit(
-                { _action: "Make Private", activityId },
+                { _action: "Update Public", isPublic, activityId },
                 { method: "post" },
               );
             }}
@@ -252,7 +234,7 @@ export function Portfolio() {
             data-test="Make Public Menu Item"
             onClick={() => {
               fetcher.submit(
-                { _action: "Make Public", activityId },
+                { _action: "Update Public", isPublic, activityId },
                 { method: "post" },
               );
             }}
@@ -304,29 +286,30 @@ export function Portfolio() {
         activityId={activityId}
         data={data}
       />
-      <PortfolioGrid>
-        <Box
-          gridRow="1/2"
-          backgroundColor="#fff"
-          color="#000"
-          height="80px"
-          position="fixed"
-          width="100%"
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
-          textAlign="center"
-          zIndex="500"
-        >
-          <Heading as="h2" size="lg">
-            {data.name}
-          </Heading>
-          <Heading as="h3" size="md">
-            Portfolio
-          </Heading>
-          <div style={{ position: "absolute", top: "48px", right: "10px" }}>
+      <Box
+        backgroundColor="#fff"
+        color="#000"
+        height="80px"
+        width="100%"
+        textAlign="center"
+      >
+        <Heading as="h2" size="lg" paddingTop=".5em">My Activities</Heading>
+        <div style={{float: 'right'}}>
+          <Button
+              margin="2px"
+              size="xs"
+              colorScheme="blue"
+              onClick={async () => {
+                fetcher.submit(
+                  { _action: "Add Folder", folderId },
+                  { method: "post" },
+                );
+              }}
+            >
+              + Add Folder
+            </Button>
             <Button
+              margin="3px"
               data-test="Add Activity"
               size="xs"
               colorScheme="blue"
@@ -346,16 +329,13 @@ export function Portfolio() {
                 );
               }}
             >
-              Add Activity
+              + Add Activity
             </Button>
           </div>
         </Box>
-        <PublicActivitiesSection data-test="Public Activities">
-          <Heading as="h2" size="lg">
-            Public
-          </Heading>
+        <ActivitiesSection data-test="Public Activities">
           <Wrap p="10px" overflow="visible">
-            {data.publicActivities.length < 1 ? (
+            {content.length < 1 ? (
               <Flex
                 flexDirection="column"
                 justifyContent="center"
@@ -365,19 +345,20 @@ export function Portfolio() {
                 background="doenet.canvas"
                 padding={20}
                 width="100%"
+                backgroundColor="transparent"
               >
                 <Icon fontSize="48pt" as={RiEmotionSadLine} />
-                <Text fontSize="36pt">No Public Activities</Text>
+                <Text fontSize="36pt">No Activities Yet</Text>
               </Flex>
             ) : (
               <>
-                {data.publicActivities.map((activity) => {
+                {content.map((activity) => {
                   return (
                     <ActivityCard
-                      key={`Card${activity.activityId}`}
+                      key={`Card${activity.id}`}
                       {...activity}
-                      fullName={data.name}
-                      menuItems={getCardMenuList(true, activity.activityId)}
+                      fullName={activity.owner.name}
+                      menuItems={getCardMenuList(activity.isPublic, activity.id)}
                       imageLink={`/activityEditor/${activity.activityId}`}
                     />
                   );
@@ -385,45 +366,7 @@ export function Portfolio() {
               </>
             )}
           </Wrap>
-        </PublicActivitiesSection>
-
-        <PrivateActivitiesSection data-test="Private Activities">
-          <Heading as="h2" size="lg">
-            Private
-          </Heading>
-          <Wrap p="10px" overflow="visible">
-            {data.privateActivities.length < 1 ? (
-              <Flex
-                flexDirection="column"
-                justifyContent="center"
-                alignItems="center"
-                alignContent="center"
-                minHeight={200}
-                background="doenet.canvas"
-                padding={20}
-                width="100%"
-              >
-                <Icon fontSize="48pt" as={RiEmotionSadLine} />
-                <Text fontSize="36pt">No Private Activities</Text>
-              </Flex>
-            ) : (
-              <>
-                {data.privateActivities.map((activity) => {
-                  return (
-                    <ActivityCard
-                      key={`Card${activity.activityId}`}
-                      {...activity}
-                      fullName={data.name}
-                      menuItems={getCardMenuList(false, activity.activityId)}
-                      imageLink={`/activityEditor/${activity.activityId}`}
-                    />
-                  );
-                })}
-              </>
-            )}
-          </Wrap>
-        </PrivateActivitiesSection>
-      </PortfolioGrid>
+        </ActivitiesSection>
     </>
   );
 }

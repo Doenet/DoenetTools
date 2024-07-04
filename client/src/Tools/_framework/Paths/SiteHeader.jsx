@@ -169,8 +169,8 @@ export function SiteHeader(props) {
                 ) : null}
                 {signedIn && !anonymous && (
                   <>
-                    <NavLinkTab to={`portfolio/${userId}`} dataTest="Portfolio">
-                      Portfolio
+                    <NavLinkTab to={`portfolio/${userId}/${null}`} dataTest="Portfolio">
+                      Activities
                     </NavLinkTab>
                     <NavLinkTab to={`assignments`} dataTest="Assignments">
                       Assignments
