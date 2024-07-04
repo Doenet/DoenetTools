@@ -706,6 +706,68 @@ export async function loadPromotedContentGroups() {
 }
 
 // TODO - access control
+export async function loadPromotedContent(includeUnfeaturedGroups: boolean) {
+  let content = await prisma.promotedContentGroups.findMany({
+    where: {
+      currentlyFeatured: includeUnfeaturedGroups ? undefined : true,
+    },
+    orderBy: {
+      sortOrder: "desc",
+    },
+    select: {
+      groupName: true,
+      promotedGroupId: true,
+      currentlyFeatured: true,
+      homepage: true,
+
+      promotedContent: {
+        select: {
+          sortOrder: true,
+          activity: {
+            select: {
+              activityId: true,
+              name: true,
+              imagePath: true,
+
+              owner: {
+                select: {
+                  name: true,
+                  // email: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const reformattedContent = content.map((groupContent) => {
+    const reformattedActivities = groupContent.promotedContent.map(
+      (promoted) => {
+        return {
+          name: promoted.activity.name,
+          activityId: promoted.activity.activityId,
+          imagePath: promoted.activity.imagePath,
+          owner: promoted.activity.owner.name,
+          sortOrder: promoted.sortOrder,
+        };
+      },
+    );
+
+    return {
+      groupName: groupContent.groupName,
+      promotedGroupId: groupContent.promotedGroupId,
+      currentlyFeatured: groupContent.currentlyFeatured,
+      homepage: groupContent.homepage,
+      promotedContent: reformattedActivities,
+    };
+  });
+
+  return reformattedContent;
+}
+
+// TODO - access control
 export async function addPromotedContent(groupId: number, activityId: number) {
   const activity = await prisma.activities.findUnique({
     where: {

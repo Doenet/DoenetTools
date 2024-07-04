@@ -45,6 +45,7 @@ import {
   getAssignmentContent,
   getDocumentSubmittedResponseHistory,
   updatePromotedContentGroup,
+  loadPromotedContent,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -120,10 +121,8 @@ app.post("/api/updateUser", async (req: Request, res: Response) => {
 
 app.get("/api/checkForCommunityAdmin", async (req: Request, res: Response) => {
   const loggedInUserId = Number(req.cookies.userId);
-  const isAdmin = await getIsAdmin(loggedInUserId);
-  res.send({
-    isAdmin,
-  });
+  const isAdmin = loggedInUserId ? await getIsAdmin(loggedInUserId) : false;
+  res.send({ isAdmin });
 });
 
 app.get(
@@ -315,11 +314,11 @@ app.get("/api/searchPublicActivities", async (req: Request, res: Response) => {
   });
 });
 
-app.get("/api/loadPromotedContent", (req: Request, res: Response) => {
-  res.send({
-    success: true,
-    carouselData: {},
-  });
+app.get("/api/loadPromotedContent", async (req: Request, res: Response) => {
+  const loggedInUserId = Number(req.cookies.userId);
+  const isAdmin = loggedInUserId ? await getIsAdmin(loggedInUserId) : false;
+  const carouselData = await loadPromotedContent(isAdmin);
+  res.send(carouselData);
 });
 
 app.post("/api/addPromotedContent", async (req: Request, res: Response) => {
@@ -393,7 +392,7 @@ app.get("/api/getAllDoenetmlVersions", async (req: Request, res: Response) => {
 app.get(
   "/api/getActivityView/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = req.cookies.userId ? Number(req.cookies.userId) : 0;
     const activityId = Number(req.params.activityId);
 
     try {

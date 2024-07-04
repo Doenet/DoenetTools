@@ -135,8 +135,7 @@ export async function loader({ request }) {
       `/api/checkForCommunityAdmin`,
     );
     const isAdmin = isAdminData.isAdmin;
-    const response = await fetch("/api/loadPromotedContent");
-    const { carouselData } = await response.json();
+    const { data: carouselData } = await axios.get("/api/loadPromotedContent");
     return { carouselData, isAdmin };
   }
 }
@@ -641,30 +640,26 @@ export function Community() {
             show to other users as carousels
           </Text>
         ) : null}
-        {Object.keys(carouselData)
-          .map((groupName) => {
-            return { activities: carouselData[groupName], groupName };
+        {carouselData.sort((a, b) => {
+            if (a.groupName == "Homepage") return -1;
+            else if (b.groupName == "Homepage") return 1;
+            else if (a.currentlyFeatured && !b.currentlyFeatured) return -1;
+            else if (!a.currentlyFeatured && b.currentlyFeatured) return 1;
+            else return 0;
           })
-          .sort((a, b) => {
-            if (a.activities[0].groupName == "Homepage") return -1;
-            else if (b.activities[0].groupName == "Homepage") return 1;
-            else
-              return a.activities[0].currentlyFeatured >
-                b.activities[0].currentlyFeatured
-                ? -1
-                : 1;
-          })
-          .map((groupInfo) => {
-            let groupName = groupInfo.groupName;
-            const group = groupInfo.activities;
-            let notPromoted = false;
-            if (!isAdmin && group[0].groupName == "Homepage") {
+          .map((group) => {
+
+            // Homepage only visible to admins
+            if (!isAdmin && group.groupName == "Homepage") {
               return null;
             }
+
+            let groupName = group.groupName;
+            let notPromoted = false;
             if (
               isAdmin &&
-              group[0].groupName != "Homepage" &&
-              (group[0].currentlyFeatured == "0" || !group[0].currentlyFeatured)
+              group.groupName != "Homepage" &&
+              group.currentlyFeatured == false
             ) {
               groupName += " (Not currently featured on community page)";
               notPromoted = true;
@@ -710,14 +705,12 @@ export function Community() {
                     <br />
                     <br />
                     <Wrap overflow="visible">
-                      {group.map((cardObj, i) => {
+                      {group.promotedContent.map((cardObj, i) => {
                         return (
                           <ActivityCard
                             {...cardObj}
                             key={`swipercard${i}`}
-                            fullName={
-                              cardObj.firstName + " " + cardObj.lastName
-                            }
+                            fullName={cardObj.owner}
                             imageLink={`/activityViewer/${cardObj.activityId}`}
                             menuItems={
                               <>
@@ -773,7 +766,7 @@ export function Community() {
                     </Wrap>
                   </span>
                 ) : (
-                  <Carousel title={groupName} data={group} />
+                  <Carousel title={groupName} data={group.promotedContent} />
                 )}
               </>
             );
