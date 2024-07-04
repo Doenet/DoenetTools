@@ -132,12 +132,23 @@ export async function deleteActivity(id: number, ownerId: number) {
 }
 
 export async function deleteFolder(id: number, ownerId: number) {
-  return await prisma.content.update({
-    where: { id, ownerId, isFolder: true },
-    data: {
-      isDeleted: true,
-    },
-  });
+  // Delete the folder `id` along with all the content inside it,
+  // recursing to subfolders.
+
+  await prisma.$queryRaw(Prisma.sql`
+    WITH RECURSIVE content_tree(id) AS (
+      SELECT id FROM content
+      WHERE id = ${id} AND ownerId = ${ownerId}
+      UNION ALL
+      SELECT content.id FROM content
+      INNER JOIN content_tree AS ft
+      ON content.parentFolderId = ft.id
+    )
+
+    UPDATE content
+      SET isDeleted = TRUE
+      WHERE id IN (SELECT id from content_tree)
+    `);
 }
 
 // Note: currently (June 4, 2024) unused and untested
