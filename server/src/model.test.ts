@@ -464,7 +464,7 @@ test("Add and remove promoted content", async () => {
   });
 
   const removeResponse = await removePromotedContent(groupId, activityId);
-  expect(removeResponse).toEqual({ sucess: true });
+  expect(removeResponse).toEqual({ success: true });
 });
 
 test("Update promoted content group", async () => {
