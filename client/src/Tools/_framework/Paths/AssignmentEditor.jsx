@@ -82,17 +82,22 @@ export async function loader({ params }) {
 
   const doenetML =
     assignmentData.assignmentDocuments[0].documentVersion.content;
+  const doenetmlVersion =
+    assignmentData.assignmentDocuments[0].documentVersion.doenetmlVersion
+      .fullVersion;
 
   return {
     assignmentData,
     docId,
     doenetML,
+    doenetmlVersion,
     assignmentId,
   };
 }
 
 export function AssignmentEditor() {
-  const { doenetML, assignmentData, assignmentId } = useLoaderData();
+  const { doenetML, doenetmlVersion, assignmentData, assignmentId } =
+    useLoaderData();
 
   useEffect(() => {
     document.title = `${assignmentData.name} - Doenet`;
@@ -128,7 +133,10 @@ export function AssignmentEditor() {
         <VStack>
           <Heading subheading="Assignment Preview" />
 
-          <AssignmentPreview doenetML={doenetML} />
+          <AssignmentPreview
+            doenetML={doenetML}
+            doenetmlVersion={doenetmlVersion}
+          />
         </VStack>
         <Box>
           {assignmentData.stillOpen ? (

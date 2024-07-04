@@ -114,6 +114,7 @@ export async function updateDoc({
       content: content,
       name,
       doenetmlVersionId,
+      lastEdited: DateTime.now().toJSDate(),
     },
   });
 }
@@ -337,7 +338,13 @@ export async function getActivityViewerData(
       owner: { select: { userId: true, email: true, name: true } },
       documents: {
         where: { isDeleted: false },
-        select: { docId: true, content: true },
+        select: {
+          docId: true,
+          content: true,
+          doenetmlVersion: {
+            select: { fullVersion: true },
+          },
+        },
       },
     },
   });
@@ -391,6 +398,7 @@ export async function getAssignmentEditorData(
           documentVersion: {
             select: {
               content: true,
+              doenetmlVersion: { select: { fullVersion: true } },
             },
           },
         },
@@ -433,6 +441,7 @@ export async function getAssignmentDataFromCode(
             documentVersion: {
               select: {
                 content: true,
+                doenetmlVersion: { select: { fullVersion: true } },
               },
             },
           },
@@ -1128,7 +1137,12 @@ export async function getAssignmentStudentData({
             select: {
               docId: true,
               docVersionId: true,
-              documentVersion: { select: { content: true } },
+              documentVersion: {
+                select: {
+                  content: true,
+                  doenetmlVersion: { select: { fullVersion: true } },
+                },
+              },
             },
           },
         },
@@ -1153,6 +1167,63 @@ export async function getAssignmentStudentData({
   return { ...assignmentData, documentScores };
 }
 
+export async function getAllAssignmentScores({ ownerId }: { ownerId: number }) {
+  const assignments = await prisma.assignments.findMany({
+    where: {
+      ownerId,
+      isDeleted: false,
+    },
+    select: {
+      assignmentId: true,
+      name: true,
+      assignmentScores: {
+        select: {
+          assignmentId: true,
+          userId: true,
+          score: true,
+          user: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return assignments;
+}
+
+export async function getStudentData({ userId }: { userId: number }) {
+  const userData = await prisma.users.findUniqueOrThrow({
+    where: {
+      userId,
+    },
+    select: {
+      userId: true,
+      name: true,
+      assignmentScores: {
+        where: {
+          assignment: {
+            isDeleted: false,
+          },
+        },
+        select: {
+          assignmentId: true,
+          score: true,
+          assignment: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return userData;
+}
+
 export async function getAssignmentContent({
   assignmentId,
   ownerId,
@@ -1169,7 +1240,12 @@ export async function getAssignmentContent({
     select: {
       docId: true,
       docVersionId: true,
-      documentVersion: { select: { content: true } },
+      documentVersion: {
+        select: {
+          content: true,
+          doenetmlVersion: { select: { fullVersion: true } },
+        },
+      },
     },
   });
 

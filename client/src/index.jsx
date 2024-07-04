@@ -1,13 +1,13 @@
 import React from "react";
 
-import "@doenet/doenetml/style.css";
-
 import {
   createBrowserRouter,
   redirect,
   RouterProvider,
 } from "react-router-dom";
 import { createRoot } from "react-dom/client";
+
+import "@doenet/doenetml-iframe/style.css";
 
 import { MathJaxContext } from "better-react-mathjax";
 import {
@@ -84,6 +84,14 @@ import {
   action as assignmentViewerAction,
   AssignmentViewer,
 } from "./Tools/_framework/Paths/AssignmentViewer";
+import {
+  loader as allAssignmentScoresLoader,
+  AllAssignmentScores,
+} from "./Tools/_framework/Paths/AllAssignmentScores";
+import {
+  loader as studentDataLoader,
+  StudentData,
+} from "./Tools/_framework/Paths/StudentData";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
@@ -98,7 +106,7 @@ import {
   PublicEditor,
   loader as publicEditorLoader,
 } from "./Tools/_framework/Paths/PublicEditor";
-import { mathjaxConfig } from "@doenet/doenetml";
+import { mathjaxConfig } from "@doenet/doenetml-iframe";
 import SignIn from "./Tools/_framework/ToolPanels/SignIn";
 import SignOut from "./Tools/_framework/ToolPanels/SignOut";
 
@@ -254,6 +262,12 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
+        path: "publicEditor",
+        loader: publicEditorLoader,
+        errorElement: <ErrorPage />,
+        element: <PublicEditor />,
+      },
+      {
         path: "publicEditor/:activityId",
         loader: publicEditorLoader,
         errorElement: <ErrorPage />,
@@ -303,8 +317,19 @@ const router = createBrowserRouter([
       {
         path: "assignmentData/:assignmentId/:userId",
         loader: assignmentStudentDataLoader,
-        action: assignmentStudentDataAction,
         element: <AssignmentStudentData />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "allAssignmentScores",
+        loader: allAssignmentScoresLoader,
+        element: <AllAssignmentScores />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "studentData/:userId",
+        loader: studentDataLoader,
+        element: <StudentData />,
         errorElement: <ErrorPage />,
       },
       {

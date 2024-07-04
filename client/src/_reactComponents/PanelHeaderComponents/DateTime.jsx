@@ -158,8 +158,8 @@ export default function DateTime(props) {
           props.precision === "seconds" && props.timePicker !== false
             ? "hh:mm:ss a"
             : props.timePicker === false
-            ? false
-            : true
+              ? false
+              : true
         }
         inputProps={inputProps}
         onChange={(dateObjectOrString) => {

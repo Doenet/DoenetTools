@@ -41,7 +41,9 @@
   background-color: var(--canvas);
   border: 1px solid var(--mainGray);
 
-  box-shadow: 0 2px 4px -1px var(--mainGray), 0 4px 5px 0 var(--mainGray),
+  box-shadow:
+    0 2px 4px -1px var(--mainGray),
+    0 4px 5px 0 var(--mainGray),
     0 1px 10px 0 var(--mainGray);
 }
 

@@ -21,8 +21,8 @@ const CardStyling = styled.button`
       props.alert
         ? "var(--mainRed)"
         : props.disabled
-        ? "var(--mainGray)"
-        : "var(--canvastext)"};
+          ? "var(--mainGray)"
+          : "var(--canvastext)"};
   cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
 
   &:focus {
@@ -31,8 +31,8 @@ const CardStyling = styled.button`
         props.alert
           ? "var(--mainRed)"
           : props.disabled
-          ? "var(--mainGray)"
-          : "var(--canvastext)"};
+            ? "var(--mainGray)"
+            : "var(--canvastext)"};
     outline-offset: 2px;
   }
 `;

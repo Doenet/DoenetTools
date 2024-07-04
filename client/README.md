@@ -80,7 +80,7 @@ Run with the `--watch` flag (`npm test -- --watch`) to run in interactive watch 
 - dev container crashes due to cypress error
   - make sure you have placed all cypress related dependencies in the optional category with `--save-optional`
 - course creation or other basic functions are not working after an update
-  - run `npm reset:db` 
+  - run `npm reset:db`
 
 ### - Can not find the doenet_local database
 
