@@ -601,7 +601,7 @@ export async function getAllRecentPublicActivities() {
     include: {
       owner: {
         select: {
-          email: true,
+          name: true,
         },
       },
     },

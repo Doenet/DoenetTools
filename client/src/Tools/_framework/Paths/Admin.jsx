@@ -15,9 +15,8 @@ export async function loader() {
 
   let carouselGroups = [];
   if (isAdmin) {
-    const carouselDataGroups = await fetch(`/api/loadPromotedContentGroups`);
-    const responseGroups = await carouselDataGroups.json();
-    carouselGroups = responseGroups.carouselGroups;
+    const { data: carouselDataGroups } = await axios.get(`/api/loadPromotedContentGroups`);
+    carouselGroups = carouselDataGroups.carouselGroups;
   }
 
   return {
@@ -84,9 +83,9 @@ export function Admin() {
                     <ActivityCard
                       key={`ActivityCard${activity.activityId}`}
                       imageLink={imageLink}
-                      label={activity.name}
+                      name={activity.name}
                       imagePath={activity.imagePath}
-                      fullName={activity.owner.email}
+                      fullName={activity.owner.name}
                       menuItems={
                         isAdmin ? (
                           <>
