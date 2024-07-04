@@ -80,16 +80,14 @@ export async function action({ request }) {
         groupId,
         direction,
       });
-    case "New Group":
-      {
-        return postApiAlertOnError("/api/addPromotedContentGroup", { groupName });
-      }
-    case "Rename Group":
-      {
-        return postApiAlertOnError("/api/addPromotedContentGroup", {
-          groupName,
-        });  
-      }
+    case "New Group": {
+      return postApiAlertOnError("/api/addPromotedContentGroup", { groupName });
+    }
+    case "Rename Group": {
+      return postApiAlertOnError("/api/addPromotedContentGroup", {
+        groupName,
+      });
+    }
     case "Promote Group":
       // convert to real booleans
       currentlyFeatured =
@@ -214,7 +212,6 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
         console.log(e);
         alert("Error - " + e.response?.data);
       });
-
   };
 
   const createGroup = () => {
@@ -640,17 +637,17 @@ export function Community() {
             show to other users as carousels
           </Text>
         ) : null}
-        {carouselData.sort((a, b) => {
-            if (a.groupName == "Homepage") return -1;
-            else if (b.groupName == "Homepage") return 1;
+        {carouselData
+          .sort((a, b) => {
+            if (a.homepage) return -1;
+            else if (b.homepage) return 1;
             else if (a.currentlyFeatured && !b.currentlyFeatured) return -1;
             else if (!a.currentlyFeatured && b.currentlyFeatured) return 1;
             else return 0;
           })
           .map((group) => {
-
             // Homepage only visible to admins
-            if (!isAdmin && group.groupName == "Homepage") {
+            if (!isAdmin && group.homepage) {
               return null;
             }
 
@@ -658,7 +655,7 @@ export function Community() {
             let notPromoted = false;
             if (
               isAdmin &&
-              group.groupName != "Homepage" &&
+              !group.homepage &&
               group.currentlyFeatured == false
             ) {
               groupName += " (Not currently featured on community page)";
@@ -669,13 +666,15 @@ export function Community() {
                 {isAdmin ? (
                   <span>
                     <Text fontSize="24px">{groupName}</Text>
-                    {notPromoted ? (
+                    {group.homepage ? (
+                      <Text>Always promoted</Text>
+                    ) : notPromoted ? (
                       <Button
                         onClick={() => {
                           fetcher.submit(
                             {
                               _action: "Promote Group",
-                              groupName: groupInfo.groupName,
+                              groupName: group.groupName,
                               currentlyFeatured: true,
                               homepage: false,
                             },
@@ -691,7 +690,7 @@ export function Community() {
                           fetcher.submit(
                             {
                               _action: "Promote Group",
-                              groupName: groupInfo.groupName,
+                              groupName: group.groupName,
                               currentlyFeatured: false,
                               homepage: false,
                             },
@@ -720,7 +719,7 @@ export function Community() {
                                       {
                                         _action: "Remove Promoted Content",
                                         activityId: cardObj.activityId,
-                                        groupId: cardObj.promotedGroupId,
+                                        groupId: group.promotedGroupId,
                                       },
                                       { method: "post" },
                                     );
@@ -734,7 +733,7 @@ export function Community() {
                                       {
                                         _action: "Move Promoted Content",
                                         activityId: cardObj.activityId,
-                                        groupId: cardObj.promotedGroupId,
+                                        groupId: group.promotedGroupId,
                                         direction: "left",
                                       },
                                       { method: "post" },
@@ -749,7 +748,7 @@ export function Community() {
                                       {
                                         _action: "Move Promoted Content",
                                         activityId: cardObj.activityId,
-                                        groupId: cardObj.promotedGroupId,
+                                        groupId: group.promotedGroupId,
                                         direction: "right",
                                       },
                                       { method: "post" },

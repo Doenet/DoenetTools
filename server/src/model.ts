@@ -814,6 +814,51 @@ export async function addPromotedContent(groupId: number, activityId: number) {
   }
 }
 
+// TODO - access control
+export async function removePromotedContent(
+  groupId: number,
+  activityId: number,
+) {
+  const activity = await prisma.activities.findUnique({
+    where: {
+      activityId,
+      isPublic: true,
+    },
+    select: {
+      // not using this, we just need to select one field
+      activityId: true,
+    },
+  });
+  if (!activity) {
+    return {
+      success: false,
+      message: "This activity does not exist or is not public.",
+    };
+  }
+
+  try {
+    await prisma.promotedContent.delete({
+      where: {
+        activityId_promotedGroupId: {
+          activityId,
+          promotedGroupId: groupId,
+        },
+      },
+    });
+    return { success: true };
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      if (err.code === "P2025") {
+        return {
+          success: false,
+          message: "That group does not exist.",
+        };
+      }
+    }
+    throw err;
+  }
+}
+
 export async function assignActivity(activityId: number, userId: number) {
   let origActivity = await getActivity(activityId);
 

@@ -40,6 +40,7 @@ import {
   updatePromotedContentGroup,
   getStudentData,
   getAllAssignmentScores,
+  removePromotedContent,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -399,7 +400,7 @@ test("updateActivity does not update properties when passed undefined values", a
   expect(updatedActivity).toEqual(originalActivity);
 });
 
-test("Add promoted content", async () => {
+test("Add and remove promoted content", async () => {
   const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
   const groupResponse = await addPromotedContentGroup(groupName);
   expect(groupResponse).toEqual({ success: true });
@@ -452,6 +453,18 @@ test("Add promoted content", async () => {
     success: false,
     message: "That group does not exist.",
   });
+
+  const fakeGroupRemoveResponse = await removePromotedContent(
+    fakeGroupId,
+    activityId,
+  );
+  expect(fakeGroupRemoveResponse).toEqual({
+    success: false,
+    message: "That group does not exist.",
+  });
+
+  const removeResponse = await removePromotedContent(groupId, activityId);
+  expect(removeResponse).toEqual({ sucess: true });
 });
 
 test("Update promoted content group", async () => {

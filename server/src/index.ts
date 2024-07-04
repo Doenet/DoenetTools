@@ -46,6 +46,7 @@ import {
   getDocumentSubmittedResponseHistory,
   updatePromotedContentGroup,
   loadPromotedContent,
+  removePromotedContent,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -325,6 +326,17 @@ app.post("/api/addPromotedContent", async (req: Request, res: Response) => {
   const groupId = req.body.groupId;
   const activityId = req.body.activityId;
   const { success, message } = await addPromotedContent(groupId, activityId);
+  if (success) {
+    res.send({});
+  } else {
+    res.status(400).send(message);
+  }
+});
+
+app.post("/api/removePromotedContent", async (req: Request, res: Response) => {
+  const groupId = Number(req.body.groupId);
+  const activityId = Number(req.body.activityId);
+  const { success, message } = await removePromotedContent(groupId, activityId);
   if (success) {
     res.send({});
   } else {
