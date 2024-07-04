@@ -2806,7 +2806,6 @@ test("get assignments folder structure", { timeout: 30000 }, async () => {
   expect(assignmentScores.folderStructure).eqls([]);
 });
 
-
 test("get data for user's assignments", { timeout: 30000 }, async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
@@ -2829,10 +2828,13 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     ownerId,
   );
 
-  let assignmentScores = await getAllAssignmentScores({ ownerId });
+  let assignmentScores = await getAllAssignmentScores({
+    ownerId,
+    parentFolderId: null,
+  });
 
   // no one has done the assignment yet
-  expect(assignmentScores).eqls([
+  expect(assignmentScores.assignments).eqls([
     {
       id: activityId,
       name: "Activity 1",
@@ -2857,9 +2859,12 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     state: "document state 1",
   });
 
-  assignmentScores = await getAllAssignmentScores({ ownerId });
+  assignmentScores = await getAllAssignmentScores({
+    ownerId,
+    parentFolderId: null,
+  });
 
-  expect(assignmentScores).eqls([
+  expect(assignmentScores.assignments).eqls([
     {
       id: activityId,
       name: "Activity 1",
@@ -2885,9 +2890,12 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     state: "document state 2",
   });
 
-  assignmentScores = await getAllAssignmentScores({ ownerId });
+  assignmentScores = await getAllAssignmentScores({
+    ownerId,
+    parentFolderId: null,
+  });
 
-  expect(assignmentScores).eqls([
+  expect(assignmentScores.assignments).eqls([
     {
       id: activityId,
       name: "Activity 1",
@@ -2930,9 +2938,12 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     state: "document state 4",
   });
 
-  assignmentScores = await getAllAssignmentScores({ ownerId });
+  assignmentScores = await getAllAssignmentScores({
+    ownerId,
+    parentFolderId: null,
+  });
 
-  expect(assignmentScores).eqls([
+  expect(assignmentScores.assignments).eqls([
     {
       id: activityId,
       name: "Activity 1",
@@ -2995,9 +3006,12 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     state: "document state 1",
   });
 
-  assignmentScores = await getAllAssignmentScores({ ownerId });
+  assignmentScores = await getAllAssignmentScores({
+    ownerId,
+    parentFolderId: null,
+  });
 
-  expect(assignmentScores).eqls([
+  expect(assignmentScores.assignments).eqls([
     {
       id: activityId,
       name: "Activity 1",
