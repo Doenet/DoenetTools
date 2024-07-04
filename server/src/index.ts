@@ -770,6 +770,29 @@ app.get(
     try {
       const data = await getAllAssignmentScores({
         ownerId: loggedInUserId,
+        parentFolderId: null,
+      });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getAllAssignmentScores",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const parentFolderId = Number(req.params.parentFolderId);
+
+    try {
+      const data = await getAllAssignmentScores({
+        ownerId: loggedInUserId,
+        parentFolderId,
       });
       res.send(data);
     } catch (e) {
