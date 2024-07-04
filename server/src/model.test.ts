@@ -2579,6 +2579,234 @@ test("get all assignment data from anonymous user", async () => {
   });
 });
 
+test("get assignments folder structure", { timeout: 30000 }, async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  // Folder structure
+  // Base folder
+  // - Folder 1
+  //   - Activity 1a
+  //   - Activity 1b (unassigned)
+  //   - Folder 1c
+  //     - Activity 1c1
+  //     - Folder 1c2
+  //       - Activity 1c2a
+  //       - Activity 1c2b
+  //     - Activity 1c3 (unassigned)
+  //   - Folder 1d
+  //   - Activity 1e
+  // - Activity 2
+  // - Folder 3
+  //   - Activity 3a (unassigned)
+  //   - Activity 3b
+  //   - Activity 3c (deleted)
+  // - Activity 4 (deleted)
+  // Activity null (unassigned)
+  // Activity gone (deleted)
+
+  const { folderId: baseFolderId } = await createFolder(ownerId, null);
+  const { folderId: folder3Id } = await createFolder(ownerId, baseFolderId);
+
+  // create folder 1 after folder 3 and move to make sure it is using sortIndex
+  // and not the order content was created
+  const { folderId: folder1Id } = await createFolder(ownerId, baseFolderId);
+  await moveContent({
+    id: folder1Id,
+    desiredParentFolderId: baseFolderId,
+    desiredPosition: 0,
+    ownerId,
+  });
+
+  const { folderId: folder1cId } = await createFolder(ownerId, folder1Id);
+  const { folderId: folder1dId } = await createFolder(ownerId, folder1Id);
+
+  const { activityId: activity2Id } = await createActivity(
+    ownerId,
+    baseFolderId,
+  );
+  await moveContent({
+    id: activity2Id,
+    desiredParentFolderId: baseFolderId,
+    desiredPosition: 1,
+    ownerId,
+  });
+
+  // create activity 1a in wrong folder initially
+  const { activityId: activity1aId } = await createActivity(ownerId, folder3Id);
+  const { activityId: activity1eId } = await createActivity(ownerId, folder1Id);
+  // move activity 1a to right places
+  await moveContent({
+    id: activity1aId,
+    desiredParentFolderId: folder1Id,
+    desiredPosition: 0,
+    ownerId,
+  });
+
+  const { activityId: activity1c1Id } = await createActivity(
+    ownerId,
+    folder1cId,
+  );
+  const { activityId: activity1c3Id } = await createActivity(
+    ownerId,
+    folder1cId,
+  );
+
+  // create folder 1c2 in wrong folder initially
+  const { folderId: folder1c2Id } = await createFolder(ownerId, baseFolderId);
+  const { activityId: activity1c2aId } = await createActivity(
+    ownerId,
+    folder1c2Id,
+  );
+  const { activityId: activity1c2bId } = await createActivity(
+    ownerId,
+    folder1c2Id,
+  );
+
+  // after creating its content move folder 1c2 into the right place
+  await moveContent({
+    id: folder1c2Id,
+    desiredParentFolderId: folder1cId,
+    desiredPosition: 1,
+    ownerId,
+  });
+
+  // create activity 1b in wrong place then move it
+  const { activityId: activity1b } = await createActivity(ownerId, folder1c2Id);
+  await moveContent({
+    id: activity1b,
+    desiredParentFolderId: folder1Id,
+    desiredPosition: 1,
+    ownerId,
+  });
+
+  // move activity 1e to end of folder 1
+  await moveContent({
+    id: activity1eId,
+    desiredParentFolderId: folder1Id,
+    desiredPosition: 100,
+    ownerId,
+  });
+
+  const { activityId: activity3aId } = await createActivity(ownerId, folder3Id);
+  const { activityId: activity3bId } = await createActivity(ownerId, folder3Id);
+
+  const { activityId: activityNullId } = await createActivity(ownerId, null);
+
+  // add some deleted activities
+  const { activityId: activityGoneId } = await createActivity(ownerId, null);
+  await deleteActivity(activityGoneId, ownerId);
+  const { activityId: activity4Id } = await createActivity(
+    ownerId,
+    baseFolderId,
+  );
+  await deleteActivity(activity4Id, ownerId);
+  const { activityId: activity3cId } = await createActivity(ownerId, folder3Id);
+  await deleteActivity(activity3cId, ownerId);
+
+  await assignActivity(activity1aId, ownerId);
+  await assignActivity(activity1c1Id, ownerId);
+  await assignActivity(activity1c2aId, ownerId);
+  await assignActivity(activity1c2bId, ownerId);
+  await assignActivity(activity1eId, ownerId);
+  await assignActivity(activity2Id, ownerId);
+  await assignActivity(activity3bId, ownerId);
+
+  const desiredFolder3 = [
+    { id: activity3bId, parentId: folder3Id, isFolder: false, rank: 1 },
+  ];
+  const desiredFolder1c2 = [
+    { id: activity1c2aId, parentId: folder1c2Id, isFolder: false, rank: 1 },
+    { id: activity1c2bId, parentId: folder1c2Id, isFolder: false, rank: 2 },
+  ];
+  const desiredFolder1c = [
+    { id: activity1c1Id, parentId: folder1cId, isFolder: false, rank: 1 },
+    { id: folder1c2Id, parentId: folder1cId, isFolder: true, rank: 2 },
+    ...desiredFolder1c2,
+  ];
+  const desiredFolder1 = [
+    { id: activity1aId, parentId: folder1Id, isFolder: false, rank: 1 },
+    { id: folder1cId, parentId: folder1Id, isFolder: true, rank: 2 },
+    ...desiredFolder1c,
+    { id: folder1dId, parentId: folder1Id, isFolder: true, rank: 3 },
+    { id: activity1eId, parentId: folder1Id, isFolder: false, rank: 4 },
+  ];
+  const desiredBaseFolder = [
+    { id: folder1Id, parentId: baseFolderId, isFolder: true, rank: 1 },
+    ...desiredFolder1,
+    { id: activity2Id, parentId: baseFolderId, isFolder: false, rank: 2 },
+    { id: folder3Id, parentId: baseFolderId, isFolder: true, rank: 3 },
+    ...desiredFolder3,
+  ];
+
+  const desiredNullFolder = [
+    { id: baseFolderId, parentId: null, isFolder: true, rank: 1 },
+    ...desiredBaseFolder,
+  ];
+
+  let assignmentScores = await getAllAssignmentScores({
+    ownerId,
+    parentFolderId: null,
+  });
+  expect(assignmentScores.folderStructure).toEqual(
+    expect.arrayContaining(desiredNullFolder),
+  );
+  expect(desiredNullFolder).toEqual(
+    expect.arrayContaining(assignmentScores.folderStructure),
+  );
+
+  assignmentScores = await getAllAssignmentScores({
+    ownerId,
+    parentFolderId: baseFolderId,
+  });
+  expect(assignmentScores.folderStructure).toEqual(
+    expect.arrayContaining(desiredBaseFolder),
+  );
+  expect(desiredBaseFolder).toEqual(
+    expect.arrayContaining(assignmentScores.folderStructure),
+  );
+
+  assignmentScores = await getAllAssignmentScores({
+    ownerId,
+    parentFolderId: folder1Id,
+  });
+  expect(assignmentScores.folderStructure).toEqual(
+    expect.arrayContaining(desiredFolder1),
+  );
+  expect(desiredFolder1).toEqual(
+    expect.arrayContaining(assignmentScores.folderStructure),
+  );
+
+  assignmentScores = await getAllAssignmentScores({
+    ownerId,
+    parentFolderId: folder3Id,
+  });
+  expect(assignmentScores.folderStructure).toEqual(
+    expect.arrayContaining(desiredFolder3),
+  );
+  expect(desiredFolder3).toEqual(
+    expect.arrayContaining(assignmentScores.folderStructure),
+  );
+
+  assignmentScores = await getAllAssignmentScores({
+    ownerId,
+    parentFolderId: folder1cId,
+  });
+  expect(assignmentScores.folderStructure).toEqual(
+    expect.arrayContaining(desiredFolder1c),
+  );
+  expect(desiredFolder1c).toEqual(
+    expect.arrayContaining(assignmentScores.folderStructure),
+  );
+
+  assignmentScores = await getAllAssignmentScores({
+    ownerId,
+    parentFolderId: folder1dId,
+  });
+  expect(assignmentScores.folderStructure).eqls([]);
+});
+
+
 test("get data for user's assignments", { timeout: 30000 }, async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;

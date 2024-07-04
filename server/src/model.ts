@@ -883,6 +883,7 @@ export async function listUserContent(
     },
     select: {
       id: true,
+      isFolder: true,
       ownerId: true,
       name: true,
       imagePath: true,
@@ -923,6 +924,17 @@ export async function listUserAssigned(
       isAssigned: true,
       assignmentScores: { some: { userId } },
       parentFolderId: folderId,
+    },
+    select: {
+      id: true,
+      isFolder: true,
+      ownerId: true,
+      name: true,
+      imagePath: true,
+      createdAt: true,
+      lastEdited: true,
+      isPublic: true,
+      isAssigned: true,
     },
   });
 
@@ -1465,13 +1477,96 @@ export async function getAssignmentStudentData({
   return { ...assignmentData, documentScores };
 }
 
-export async function getAllAssignmentScores({ ownerId }: { ownerId: number }) {
+export async function getAllAssignmentScores({
+  ownerId,
+  parentFolderId,
+}: {
+  ownerId: number;
+  parentFolderId: number | null;
+}) {
+  // Recurse through all subfolders of `parentFolderId`
+  // to find all folders and activities.
+  // Include each item's rank, i.e., its ordering amount other items with the same parent.
+  let contentRecursivelyInFolder;
+
+  // NOTE: the string after `Prisma.sql` is NOT interpreted as a regular string,
+  // but it does special processing with the template variables.
+  // For this reason, one cannot have an operator such as "=" or "IS" as a template variable
+  // or a phrase such as "parentFolderId IS NULL".
+  // To get two versions, one with `parentFolderId IS NULL` and the other with `parentFolderId = ${parentFolderId}`,
+  // we had to make two completely separate raw queries.
+  // See: https://www.prisma.io/docs/orm/prisma-client/queries/raw-database-access/raw-queries#considerations
+
+  if (parentFolderId === null) {
+    contentRecursivelyInFolder = await prisma.$queryRaw<
+      {
+        id: number;
+        parentId: number;
+        isFolder: number;
+        rank: bigint;
+      }[]
+    >(Prisma.sql`
+    WITH RECURSIVE content_tree(id, parentId, isFolder, sortIndex) AS (
+      SELECT id, parentFolderId, isFolder, sortIndex FROM content
+      WHERE parentFolderId IS NULL AND ownerId = ${ownerId}
+      AND (isAssigned = true or isFolder = true) AND isDeleted = false
+      UNION ALL
+      SELECT c.id, c.parentFolderId, c.isFolder, c.sortIndex FROM (
+        SELECT * from content 
+        WHERE (isAssigned = true or isFolder = true) AND isDeleted = false
+        ORDER BY "sortIndex"
+        ) AS c
+      INNER JOIN content_tree AS ft
+      ON c.parentFolderId = ft.id
+    )
+
+    SELECT id, parentId, isFolder, RANK() OVER (PARTITION by "parentId" ORDER BY "sortIndex") as "rank" FROM content_tree
+  `);
+  } else {
+    contentRecursivelyInFolder = await prisma.$queryRaw<
+      {
+        id: number;
+        parentId: number;
+        isFolder: number;
+        rank: bigint;
+      }[]
+    >(Prisma.sql`
+    WITH RECURSIVE content_tree(id, parentId, isFolder, sortIndex) AS (
+      SELECT id, parentFolderId, isFolder, sortIndex FROM content
+      WHERE parentFolderId = ${parentFolderId} AND ownerId = ${ownerId}
+      AND (isAssigned = true or isFolder = true) AND isDeleted = false
+      UNION ALL
+      SELECT c.id, c.parentFolderId, c.isFolder, c.sortIndex FROM (
+        SELECT * from content 
+        WHERE (isAssigned = true or isFolder = true) AND isDeleted = false
+        ORDER BY "sortIndex"
+        ) AS c
+      INNER JOIN content_tree AS ft
+      ON c.parentFolderId = ft.id
+    )
+
+    SELECT id, parentId, isFolder, RANK() OVER (PARTITION by "parentId" ORDER BY "sortIndex") as "rank" FROM content_tree
+  `);
+  }
+
+  const folderStructure = contentRecursivelyInFolder.map((c) => ({
+    id: c.id,
+    parentId: c.parentId,
+    isFolder: Boolean(c.isFolder),
+    rank: Number(c.rank),
+  }));
+
+  const activityIdsRecursivelyInFolder = contentRecursivelyInFolder
+    .filter((c) => !c.isFolder)
+    .map((c) => c.id);
+
   const assignments = await prisma.content.findMany({
     where: {
       ownerId,
       isDeleted: false,
       isAssigned: true,
       isFolder: false,
+      id: { in: activityIdsRecursivelyInFolder },
     },
     select: {
       id: true,
@@ -1491,7 +1586,7 @@ export async function getAllAssignmentScores({ ownerId }: { ownerId: number }) {
     },
   });
 
-  return assignments;
+  return { assignments, folderStructure };
 }
 
 export async function getStudentData({ userId }: { userId: number }) {
