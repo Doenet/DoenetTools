@@ -7,6 +7,7 @@ import { DateTime } from "luxon";
 import {
   copyActivityToFolder,
   createActivity,
+  createFolder,
   deleteActivity,
   deleteFolder,
   findOrCreateUser,
@@ -39,6 +40,7 @@ import {
   getAssignment,
   getAssignmentContent,
   getDocumentSubmittedResponseHistory,
+  moveContent,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -121,7 +123,7 @@ app.get(
     const loggedInUserId = Number(req.cookies.userId);
     const userId = Number(req.params.userId);
     try {
-      const contentData = await listUserContent(userId, loggedInUserId);
+      const contentData = await listUserContent(userId, loggedInUserId, null);
       const allDoenetmlVersions = await getAllDoenetmlVersions();
       res.send({ allDoenetmlVersions, ...contentData });
     } catch (e) {
@@ -164,7 +166,7 @@ app.get(
     const userId = Number(req.params.userId);
     try {
       // send 0 as the logged in content to make sure get only public content
-      const contentData = await listUserContent(userId, 0);
+      const contentData = await listUserContent(userId, 0, null);
       res.send(contentData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -200,7 +202,7 @@ app.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     try {
-      const assignedData = await listUserAssigned(loggedInUserId);
+      const assignedData = await listUserAssigned(loggedInUserId, null);
       res.send(assignedData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -280,20 +282,36 @@ app.post(
 
 app.post("/api/createActivity", async (req: Request, res: Response) => {
   const loggedInUserId = Number(req.cookies.userId);
-  const { activityId, docId } = await createActivity(loggedInUserId);
+  const { activityId, docId } = await createActivity(loggedInUserId, null);
   res.send({ activityId, docId });
 });
 
 app.post(
-  "/api/createActivity/:folderId",
+  "/api/createActivity/:parentFolderId",
   async (req: Request, res: Response) => {
     const loggedInUserId = Number(req.cookies.userId);
-    const folderId = Number(req.params.folderId);
+    const parentFolderId = Number(req.params.parentFolderId);
     const { activityId, docId } = await createActivity(
       loggedInUserId,
-      folderId,
+      parentFolderId,
     );
     res.send({ activityId, docId });
+  },
+);
+
+app.post("/api/createFolder", async (req: Request, res: Response) => {
+  const loggedInUserId = Number(req.cookies.userId);
+  const { folderId } = await createFolder(loggedInUserId, null);
+  res.send({ folderId });
+});
+
+app.post(
+  "/api/createFolder/:parentFolderId",
+  async (req: Request, res: Response) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const parentFolderId = Number(req.params.parentFolderId);
+    const { folderId } = await createFolder(loggedInUserId, parentFolderId);
+    res.send({ folderId });
   },
 );
 
@@ -536,13 +554,35 @@ app.post(
   },
 );
 
+app.post("/api/moveContent", async (req: Request, res: Response) => {
+  const id = Number(req.body.id);
+  const desiredParentFolderId = req.body.desiredParentFolderId
+    ? Number(req.body.desiredParentFolderId)
+    : null;
+  const desiredPosition = Number(req.body.desiredPosition);
+  const loggedInUserId = Number(req.cookies.userId);
+
+  await moveContent({
+    id,
+    desiredParentFolderId,
+    desiredPosition,
+    ownerId: loggedInUserId,
+  });
+
+  res.send({});
+});
+
 app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
   const targetActivityId = Number(req.body.activityId);
+  const desiredParentFolderId = req.body.desiredParentFolderId
+    ? Number(req.body.desiredParentFolderId)
+    : null;
   const loggedInUserId = Number(req.cookies.userId);
 
   let newActivityId = await copyActivityToFolder(
     targetActivityId,
     loggedInUserId,
+    desiredParentFolderId,
   );
 
   res.send({ newActivityId });

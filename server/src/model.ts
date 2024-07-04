@@ -14,7 +14,10 @@ const SORT_INCREMENT = 2 ** 32;
  * @param ownerId
  * @param folderId
  */
-export async function createActivity(ownerId: number, parentFolderId?: number) {
+export async function createActivity(
+  ownerId: number,
+  parentFolderId: number | null,
+) {
   const sortIndex = await getNextSortIndexForFolder(ownerId, parentFolderId);
 
   let defaultDoenetmlVersion = await prisma.doenetmlVersions.findFirstOrThrow({
@@ -53,6 +56,26 @@ export async function createActivity(ownerId: number, parentFolderId?: number) {
   return { activityId, docId };
 }
 
+export async function createFolder(
+  ownerId: number,
+  parentFolderId: number | null,
+) {
+  const sortIndex = await getNextSortIndexForFolder(ownerId, parentFolderId);
+
+  const folder = await prisma.content.create({
+    data: {
+      ownerId,
+      isFolder: true,
+      parentFolderId,
+      name: "Untitled Folder",
+      imagePath: "/folder_default.jpg",
+      sortIndex,
+    },
+  });
+
+  return { folderId: folder.id };
+}
+
 /**
  * For folder given by `folderId` and `ownerId`,
  * find the `sortIndex` that will place a new item as the last entry in the folder.
@@ -65,9 +88,9 @@ export async function createActivity(ownerId: number, parentFolderId?: number) {
  */
 async function getNextSortIndexForFolder(
   ownerId: number,
-  folderId: number | undefined,
+  folderId: number | null,
 ) {
-  if (folderId !== undefined) {
+  if (folderId !== null) {
     // if a folderId is present, verify that it is a folder is owned by ownerId
     await prisma.content.findUniqueOrThrow({
       where: { id: folderId, ownerId, isFolder: true },
@@ -208,6 +231,197 @@ export async function getDoc(id: number) {
 }
 
 /**
+ * Move the content with `id` to position `desiredPosition` in the folder `desiredParentFolderId`
+ * (where an undefined `desiredParentFolderId` indicates the root folder of `ownerId`).
+ *
+ * `desiredPosition` is the 0-based index in the array of content with parent folder `desiredParentFolderId`
+ * and owner `ownerId` sorted by `sortIndex`.
+ */
+export async function moveContent({
+  id,
+  desiredParentFolderId,
+  desiredPosition,
+  ownerId,
+}: {
+  id: number;
+  desiredParentFolderId: number | null;
+  desiredPosition: number;
+  ownerId: number;
+}) {
+  if (!Number.isInteger(desiredPosition)) {
+    throw Error("desiredPosition must be an integer");
+  }
+
+  // make sure content exists and is owned by `ownerId`
+  const content = await prisma.content.findUniqueOrThrow({
+    where: {
+      id,
+      ownerId,
+      isDeleted: false,
+    },
+  });
+
+  if (desiredParentFolderId !== null) {
+    // if desired parent folder is specified, make sure it exists and is owned by `ownerId`
+    await prisma.content.findUniqueOrThrow({
+      where: {
+        id: desiredParentFolderId,
+        ownerId,
+        isDeleted: false,
+        isFolder: true,
+      },
+    });
+
+    if (content.isFolder) {
+      // if content is a folder and moving it to another folder,
+      // make that folder is not itself or a subfolder of itself
+
+      if (desiredParentFolderId === content.id) {
+        throw Error("Cannot move folder into itself");
+      }
+
+      let subfolders = await prisma.$queryRaw<
+        {
+          id: number;
+        }[]
+      >(Prisma.sql`
+        WITH RECURSIVE folder_tree(id) AS (
+          SELECT id FROM content
+          WHERE parentFolderId = ${content.id} AND isFolder = TRUE 
+          UNION ALL
+          SELECT c.id FROM content AS c
+          INNER JOIN folder_tree AS ft
+          ON c.parentFolderId = ft.id
+          WHERE c.isFolder = TRUE 
+        )
+
+        SELECT * FROM folder_tree
+        `);
+
+      if (subfolders.map((sf) => sf.id).includes(desiredParentFolderId)) {
+        throw Error("Cannot move folder into a subfolder of itself");
+      }
+    }
+  }
+
+  let newSortIndex: number;
+
+  if (desiredPosition <= 0) {
+    // If desired position is the first position,
+    // then we need only look up the first item in the folder.
+    const firstItem = await prisma.content.findFirst({
+      where: {
+        ownerId,
+        parentFolderId: desiredParentFolderId,
+        id: { not: id },
+        isDeleted: false,
+      },
+      select: {
+        sortIndex: true,
+      },
+      orderBy: { sortIndex: "asc" },
+    });
+
+    // If there is no other content, set sort index to 0,
+    // else set it to be the first index - `SORT_INCREMENT`.
+    newSortIndex =
+      firstItem === null ? 0 : Number(firstItem.sortIndex) - SORT_INCREMENT;
+  } else {
+    // find all content in folder other than moved content
+    const currentItems = await prisma.content.findMany({
+      where: {
+        ownerId,
+        parentFolderId: desiredParentFolderId,
+        id: { not: id },
+        isDeleted: false,
+      },
+      select: {
+        sortIndex: true,
+      },
+      orderBy: { sortIndex: "asc" },
+    });
+
+    if (currentItems.length === 0) {
+      newSortIndex = 0;
+    } else if (desiredPosition >= currentItems.length) {
+      newSortIndex =
+        Number(currentItems[currentItems.length - 1].sortIndex) +
+        SORT_INCREMENT;
+    } else {
+      const precedingSortIndex = Number(
+        currentItems[desiredPosition - 1].sortIndex,
+      );
+      const followingSortIndex = Number(
+        currentItems[desiredPosition].sortIndex,
+      );
+      const candidateSortIndex = Math.round(
+        (precedingSortIndex + followingSortIndex) / 2,
+      );
+      if (
+        candidateSortIndex > precedingSortIndex &&
+        candidateSortIndex < followingSortIndex
+      ) {
+        newSortIndex = candidateSortIndex;
+      } else {
+        // There is no room in sort indices to insert a new item at `desiredLocation`,
+        // as the distance between precedingSortIndex and followingSortIndex is too small to fit another integer
+        // (presumably because the distance is 1, though possibly a larger distance if we are outside
+        // the bounds of safe integers in Javascript).
+        // We need to re-index; we shift the smaller set of items preceding or following the desired location.
+        if (desiredPosition >= currentItems.length / 2) {
+          // We add `SORT_INCREMENT` to all items with sort index `followingSortIndex` or larger.
+          await prisma.content.updateMany({
+            where: {
+              ownerId,
+              parentFolderId: desiredParentFolderId,
+              id: { not: id },
+              sortIndex: {
+                gte: followingSortIndex,
+              },
+              isDeleted: false,
+            },
+            data: {
+              sortIndex: { increment: SORT_INCREMENT },
+            },
+          });
+          newSortIndex = Math.round(
+            (precedingSortIndex + followingSortIndex + SORT_INCREMENT) / 2,
+          );
+        } else {
+          // We subtract `SORT_INCREMENT` from all items with sort index `precedingSortIndex` or smaller.
+          await prisma.content.updateMany({
+            where: {
+              ownerId,
+              parentFolderId: desiredParentFolderId,
+              id: { not: id },
+              sortIndex: {
+                lte: precedingSortIndex,
+              },
+              isDeleted: false,
+            },
+            data: {
+              sortIndex: { decrement: SORT_INCREMENT },
+            },
+          });
+          newSortIndex = Math.round(
+            (precedingSortIndex - SORT_INCREMENT + followingSortIndex) / 2,
+          );
+        }
+      }
+    }
+  }
+
+  // Move the item!
+  await prisma.content.update({
+    where: { id },
+    data: {
+      sortIndex: newSortIndex,
+      parentFolderId: desiredParentFolderId,
+    },
+  });
+}
+
+/**
  * Copies the activity given by `origActivityId` into `folderId` of `ownerId`.
  *
  * Places the activity at the end of the folder.
@@ -226,7 +440,7 @@ export async function getDoc(id: number) {
 export async function copyActivityToFolder(
   origActivityId: number,
   userId: number,
-  folderId?: number,
+  folderId: number | null,
 ) {
   const origActivity = await prisma.content.findUniqueOrThrow({
     where: {
@@ -656,7 +870,7 @@ export async function searchPublicContent(query: string) {
 export async function listUserContent(
   ownerId: number,
   loggedInUserId: number,
-  folderId?: number,
+  folderId: number | null,
 ) {
   const notMe = ownerId !== loggedInUserId;
 
@@ -699,7 +913,10 @@ export async function listUserContent(
  * @param userId
  * @param folderId
  */
-export async function listUserAssigned(userId: number, folderId?: number) {
+export async function listUserAssigned(
+  userId: number,
+  folderId: number | null,
+) {
   const assignments = await prisma.content.findMany({
     where: {
       isDeleted: false,
@@ -1551,12 +1768,12 @@ export async function getFolderContent({
   folderId,
   loggedInUserId,
 }: {
-  folderId?: number;
+  folderId: number | null;
   loggedInUserId: number;
 }) {
   let notMe = false;
 
-  if (folderId !== undefined) {
+  if (folderId !== null) {
     const ownerId = (
       await prisma.content.findUniqueOrThrow({
         where: { id: folderId, isDeleted: false, isFolder: true },

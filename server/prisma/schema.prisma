@@ -28,9 +28,9 @@ model content {
   documents        documents[]
   assignmentScores assignmentScores[]
 
-  @@index([ownerId])
+  @@index([ownerId, parentFolderId, sortIndex])
   @@index([classCode])
-  @@index([parentFolderId])
+  @@index([parentFolderId, isFolder])
 }
 
 model documents {
