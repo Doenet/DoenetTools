@@ -30,7 +30,7 @@ model content {
 
   @@index([ownerId, parentFolderId, sortIndex])
   @@index([classCode])
-  @@index([parentFolderId])
+  @@index([parentFolderId, isFolder])
 }
 
 model documents {

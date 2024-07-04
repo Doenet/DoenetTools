@@ -34,6 +34,8 @@ import {
   getAllAssignmentScores,
   unassignActivity,
   listUserAssigned,
+  createFolder,
+  moveContent,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -60,7 +62,7 @@ async function createTestUser() {
 test("New user has no content", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const docs = await listUserContent(userId, userId);
+  const docs = await listUserContent(userId, userId, null);
   expect(docs).toStrictEqual({
     content: [],
     name: "vitest user",
@@ -83,7 +85,7 @@ test("Update user name", async () => {
 test("New activity starts out private, then delete it", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const { activityId, docId } = await createActivity(userId);
+  const { activityId, docId } = await createActivity(userId, null);
   const activityContent = await getActivityEditorData(activityId, userId);
   expect(activityContent).toStrictEqual({
     name: "Untitled Activity",
@@ -104,7 +106,7 @@ test("New activity starts out private, then delete it", async () => {
     ],
   });
 
-  const data = await listUserContent(userId, userId);
+  const data = await listUserContent(userId, userId, null);
 
   expect(data.content.length).toBe(1);
   expect(data.content[0].isPublic).eq(false);
@@ -116,7 +118,7 @@ test("New activity starts out private, then delete it", async () => {
     "No content found",
   );
 
-  const dataAfterDelete = await listUserContent(userId, userId);
+  const dataAfterDelete = await listUserContent(userId, userId, null);
 
   expect(dataAfterDelete.content.length).toBe(0);
 });
@@ -129,8 +131,8 @@ test("listUserContent returns both public and private activities for a user", as
   const user = await createTestUser();
   const userId = user.userId;
 
-  const { activityId: publicActivityId } = await createActivity(ownerId);
-  const { activityId: privateActivityId } = await createActivity(ownerId);
+  const { activityId: publicActivityId } = await createActivity(ownerId, null);
+  const { activityId: privateActivityId } = await createActivity(ownerId, null);
 
   // Make one activity public
   await updateContent({
@@ -139,7 +141,7 @@ test("listUserContent returns both public and private activities for a user", as
     ownerId,
   });
 
-  const ownerDocs = await listUserContent(ownerId, ownerId);
+  const ownerDocs = await listUserContent(ownerId, ownerId, null);
   expect(ownerDocs.content.length).eq(2);
   expect(ownerDocs).toMatchObject({
     content: expect.arrayContaining([
@@ -154,7 +156,7 @@ test("listUserContent returns both public and private activities for a user", as
     ]),
   });
 
-  const userDocs = await listUserContent(ownerId, userId);
+  const userDocs = await listUserContent(ownerId, userId, null);
   expect(userDocs.content.length).eq(1);
   expect(userDocs).toMatchObject({
     content: expect.arrayContaining([
@@ -169,7 +171,7 @@ test("listUserContent returns both public and private activities for a user", as
 test("Test updating various activity properties", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const { activityId } = await createActivity(userId);
+  const { activityId } = await createActivity(userId, null);
   const activityName = "Test Name";
   await updateContent({ id: activityId, name: activityName, ownerId: userId });
   const activityContent = await getActivityEditorData(activityId, userId);
@@ -188,7 +190,7 @@ test("Test updating various activity properties", async () => {
 test("deleteActivity marks a activity and document as deleted and prevents its retrieval", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const { activityId, docId } = await createActivity(userId);
+  const { activityId, docId } = await createActivity(userId, null);
 
   // activity can be retrieved
   await getActivity(activityId);
@@ -215,7 +217,7 @@ test("only owner can delete an activity", async () => {
   const ownerId = owner.userId;
   const user2 = await createTestUser();
   const user2Id = user2.userId;
-  const { activityId, docId } = await createActivity(ownerId);
+  const { activityId, docId } = await createActivity(ownerId, null);
 
   await expect(deleteActivity(activityId, user2Id)).rejects.toThrow(
     "Record to update not found",
@@ -228,7 +230,7 @@ test("only owner can delete an activity", async () => {
 test("updateDoc updates document properties", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const { activityId, docId } = await createActivity(userId);
+  const { activityId, docId } = await createActivity(userId, null);
   const newName = "Updated Name";
   const newContent = "Updated Content";
   await updateContent({ id: activityId, name: newName, ownerId: userId });
@@ -242,14 +244,326 @@ test("updateDoc updates document properties", async () => {
   expect(activityViewerContent.doc.source).toBe(newContent);
 });
 
+test("move content to different locations", async () => {
+  const ownerId = (await createTestUser()).userId;
+
+  const { activityId: activity1Id } = await createActivity(ownerId, null);
+  const { activityId: activity2Id } = await createActivity(ownerId, null);
+  const { folderId: folder1Id } = await createFolder(ownerId, null);
+  const { activityId: activity3Id } = await createActivity(ownerId, folder1Id);
+  const { folderId: folder2Id } = await createFolder(ownerId, folder1Id);
+  const { folderId: folder3Id } = await createFolder(ownerId, null);
+
+  let baseContent = await listUserContent(ownerId, ownerId, null);
+  let folder1Content = await listUserContent(ownerId, ownerId, folder1Id);
+  let folder2Content = await listUserContent(ownerId, ownerId, folder2Id);
+  let folder3Content = await listUserContent(ownerId, ownerId, folder3Id);
+
+  expect(baseContent.content.map((item) => item.id)).eqls([
+    activity1Id,
+    activity2Id,
+    folder1Id,
+    folder3Id,
+  ]);
+
+  expect(folder1Content.content.map((item) => item.id)).eqls([
+    activity3Id,
+    folder2Id,
+  ]);
+  expect(folder2Content.content.map((item) => item.id)).eqls([]);
+  expect(folder3Content.content.map((item) => item.id)).eqls([]);
+
+  await moveContent({
+    id: activity1Id,
+    desiredParentFolderId: null,
+    desiredPosition: 1,
+    ownerId,
+  });
+  baseContent = await listUserContent(ownerId, ownerId, null);
+  expect(baseContent.content.map((item) => item.id)).eqls([
+    activity2Id,
+    activity1Id,
+    folder1Id,
+    folder3Id,
+  ]);
+
+  await moveContent({
+    id: folder1Id,
+    desiredParentFolderId: null,
+    desiredPosition: 0,
+    ownerId,
+  });
+  baseContent = await listUserContent(ownerId, ownerId, null);
+  expect(baseContent.content.map((item) => item.id)).eqls([
+    folder1Id,
+    activity2Id,
+    activity1Id,
+    folder3Id,
+  ]);
+
+  await moveContent({
+    id: activity2Id,
+    desiredParentFolderId: null,
+    desiredPosition: 10,
+    ownerId,
+  });
+  baseContent = await listUserContent(ownerId, ownerId, null);
+  expect(baseContent.content.map((item) => item.id)).eqls([
+    folder1Id,
+    activity1Id,
+    folder3Id,
+    activity2Id,
+  ]);
+
+  await moveContent({
+    id: folder3Id,
+    desiredParentFolderId: null,
+    desiredPosition: -10,
+    ownerId,
+  });
+  baseContent = await listUserContent(ownerId, ownerId, null);
+  expect(baseContent.content.map((item) => item.id)).eqls([
+    folder3Id,
+    folder1Id,
+    activity1Id,
+    activity2Id,
+  ]);
+
+  await moveContent({
+    id: folder3Id,
+    desiredParentFolderId: folder1Id,
+    desiredPosition: 0,
+    ownerId,
+  });
+  baseContent = await listUserContent(ownerId, ownerId, null);
+  folder1Content = await listUserContent(ownerId, ownerId, folder1Id);
+  expect(baseContent.content.map((item) => item.id)).eqls([
+    folder1Id,
+    activity1Id,
+    activity2Id,
+  ]);
+  expect(folder1Content.content.map((item) => item.id)).eqls([
+    folder3Id,
+    activity3Id,
+    folder2Id,
+  ]);
+
+  await moveContent({
+    id: activity3Id,
+    desiredParentFolderId: null,
+    desiredPosition: 2,
+    ownerId,
+  });
+  baseContent = await listUserContent(ownerId, ownerId, null);
+  folder1Content = await listUserContent(ownerId, ownerId, folder1Id);
+  expect(baseContent.content.map((item) => item.id)).eqls([
+    folder1Id,
+    activity1Id,
+    activity3Id,
+    activity2Id,
+  ]);
+  expect(folder1Content.content.map((item) => item.id)).eqls([
+    folder3Id,
+    folder2Id,
+  ]);
+
+  await moveContent({
+    id: folder2Id,
+    desiredParentFolderId: folder3Id,
+    desiredPosition: 2,
+    ownerId,
+  });
+  folder1Content = await listUserContent(ownerId, ownerId, folder1Id);
+  folder3Content = await listUserContent(ownerId, ownerId, folder3Id);
+  expect(folder1Content.content.map((item) => item.id)).eqls([folder3Id]);
+  expect(folder3Content.content.map((item) => item.id)).eqls([folder2Id]);
+
+  await moveContent({
+    id: activity3Id,
+    desiredParentFolderId: folder3Id,
+    desiredPosition: 0,
+    ownerId,
+  });
+  await moveContent({
+    id: activity1Id,
+    desiredParentFolderId: folder2Id,
+    desiredPosition: 1,
+    ownerId,
+  });
+  baseContent = await listUserContent(ownerId, ownerId, null);
+  folder2Content = await listUserContent(ownerId, ownerId, folder2Id);
+  folder3Content = await listUserContent(ownerId, ownerId, folder3Id);
+  expect(baseContent.content.map((item) => item.id)).eqls([
+    folder1Id,
+    activity2Id,
+  ]);
+  expect(folder2Content.content.map((item) => item.id)).eqls([activity1Id]);
+  expect(folder3Content.content.map((item) => item.id)).eqls([
+    activity3Id,
+    folder2Id,
+  ]);
+});
+
+test("cannot move folder into itself or a subfolder of itself", async () => {
+  const ownerId = (await createTestUser()).userId;
+
+  const { folderId: folder1Id } = await createFolder(ownerId, null);
+  const { folderId: folder2Id } = await createFolder(ownerId, folder1Id);
+  const { folderId: folder3Id } = await createFolder(ownerId, folder2Id);
+  const { folderId: folder4Id } = await createFolder(ownerId, folder3Id);
+
+  await expect(
+    moveContent({
+      id: folder1Id,
+      desiredParentFolderId: folder1Id,
+      desiredPosition: 0,
+      ownerId,
+    }),
+  ).rejects.toThrow("Cannot move folder into itself");
+
+  await expect(
+    moveContent({
+      id: folder1Id,
+      desiredParentFolderId: folder2Id,
+      desiredPosition: 0,
+      ownerId,
+    }),
+  ).rejects.toThrow("Cannot move folder into a subfolder of itself");
+
+  await expect(
+    moveContent({
+      id: folder1Id,
+      desiredParentFolderId: folder3Id,
+      desiredPosition: 0,
+      ownerId,
+    }),
+  ).rejects.toThrow("Cannot move folder into a subfolder of itself");
+
+  await expect(
+    moveContent({
+      id: folder1Id,
+      desiredParentFolderId: folder4Id,
+      desiredPosition: 0,
+      ownerId,
+    }),
+  ).rejects.toThrow("Cannot move folder into a subfolder of itself");
+});
+
+test("insert many items into sort order", { timeout: 30000 }, async () => {
+  // This test is designed to test the parts of the moveContent
+  // where the gap between successive sort indices reaches 1,
+  // so that sort indices need to be shifted left or right.
+  // As long as SORT_INCREMENT is 2**32, this happens after 33 inserts into the same gap.
+  // (The test takes a long time to run; it could be made shorter if we could initialize
+  // sort indices to desired values rather than performing so many moves.)
+
+  const ownerId = (await createTestUser()).userId;
+
+  const { activityId: activity1Id } = await createActivity(ownerId, null);
+  const { activityId: activity2Id } = await createActivity(ownerId, null);
+  const { activityId: activity3Id } = await createActivity(ownerId, null);
+  const { activityId: activity4Id } = await createActivity(ownerId, null);
+  const { activityId: activity5Id } = await createActivity(ownerId, null);
+  const { activityId: activity6Id } = await createActivity(ownerId, null);
+
+  // With the current algorithm and parameters,
+  // the sort indices will need to be shifted after 32 inserts in between a pair of items.
+  // Repeatedly moving items to position 3 will eventually cause a shift to the right.
+  for (let i = 0; i < 5; i++) {
+    await moveContent({
+      id: activity1Id,
+      desiredParentFolderId: null,
+      desiredPosition: 3,
+      ownerId,
+    });
+    await moveContent({
+      id: activity2Id,
+      desiredParentFolderId: null,
+      desiredPosition: 3,
+      ownerId,
+    });
+    await moveContent({
+      id: activity3Id,
+      desiredParentFolderId: null,
+      desiredPosition: 3,
+      ownerId,
+    });
+    await moveContent({
+      id: activity4Id,
+      desiredParentFolderId: null,
+      desiredPosition: 3,
+      ownerId,
+    });
+    await moveContent({
+      id: activity6Id,
+      desiredParentFolderId: null,
+      desiredPosition: 3,
+      ownerId,
+    });
+    if (i === 4) {
+      // This is the 33rd insert, so we invoked a shift to the right
+      break;
+    }
+    await moveContent({
+      id: activity5Id,
+      desiredParentFolderId: null,
+      desiredPosition: 3,
+      ownerId,
+    });
+    await moveContent({
+      id: activity4Id,
+      desiredParentFolderId: null,
+      desiredPosition: 3,
+      ownerId,
+    });
+  }
+
+  let contentList = await listUserContent(ownerId, ownerId, null);
+  expect(contentList.content.map((item) => item.id)).eqls([
+    activity1Id,
+    activity2Id,
+    activity3Id,
+    activity6Id,
+    activity4Id,
+    activity5Id,
+  ]);
+
+  // Activities 4 and 5 were shifted right to make room for activity 6.
+  // There is still a small gap between activities 2 and 3.
+  // Moving activities 5 and 4 into position 2 will place them into that gap will trigger a shift,
+  // this time to the left since fewer items are to the left.
+  await moveContent({
+    id: activity5Id,
+    desiredParentFolderId: null,
+    desiredPosition: 2,
+    ownerId,
+  });
+  await moveContent({
+    id: activity4Id,
+    desiredParentFolderId: null,
+    desiredPosition: 2,
+    ownerId,
+  });
+
+  contentList = await listUserContent(ownerId, ownerId, null);
+  expect(contentList.content.map((item) => item.id)).eqls([
+    activity1Id,
+    activity2Id,
+    activity4Id,
+    activity5Id,
+    activity3Id,
+    activity6Id,
+  ]);
+});
+
 test("copyActivityToFolder copies a public document to a new owner", async () => {
   const originalOwnerId = (await createTestUser()).userId;
   const newOwnerId = (await createTestUser()).userId;
-  const { activityId, docId } = await createActivity(originalOwnerId);
+  const { activityId, docId } = await createActivity(originalOwnerId, null);
   // cannot copy if not yet public
-  await expect(copyActivityToFolder(activityId, newOwnerId)).rejects.toThrow(
-    "No content found",
-  );
+  await expect(
+    copyActivityToFolder(activityId, newOwnerId, null),
+  ).rejects.toThrow("No content found");
 
   // Make the activity public before copying
   await updateContent({
@@ -257,7 +571,11 @@ test("copyActivityToFolder copies a public document to a new owner", async () =>
     isPublic: true,
     ownerId: originalOwnerId,
   });
-  const newActivityId = await copyActivityToFolder(activityId, newOwnerId);
+  const newActivityId = await copyActivityToFolder(
+    activityId,
+    newOwnerId,
+    null,
+  );
   const newActivity = await getActivity(newActivityId);
   expect(newActivity.ownerId).toBe(newOwnerId);
   expect(newActivity.isPublic).toBe(false);
@@ -277,8 +595,10 @@ test("copyActivityToFolder remixes correct versions", async () => {
   const ownerId3 = (await createTestUser()).userId;
 
   // create activity 1 by owner 1
-  const { activityId: activityId1, docId: docId1 } =
-    await createActivity(ownerId1);
+  const { activityId: activityId1, docId: docId1 } = await createActivity(
+    ownerId1,
+    null,
+  );
   const activity1Content = "<p>Hello!</p>";
   await updateContent({
     id: activityId1,
@@ -292,7 +612,7 @@ test("copyActivityToFolder remixes correct versions", async () => {
   });
 
   // copy activity 1 to owner 2's portfolio
-  const activityId2 = await copyActivityToFolder(activityId1, ownerId2);
+  const activityId2 = await copyActivityToFolder(activityId1, ownerId2, null);
   const activity2 = await getActivity(activityId2);
   expect(activity2.ownerId).toBe(ownerId2);
   expect(activity2.documents[0].source).eq(activity1Content);
@@ -313,7 +633,7 @@ test("copyActivityToFolder remixes correct versions", async () => {
   });
 
   // copy activity 1 to owner 3's portfolio
-  const activityId3 = await copyActivityToFolder(activityId1, ownerId3);
+  const activityId3 = await copyActivityToFolder(activityId1, ownerId3, null);
 
   const activity3 = await getActivity(activityId3);
   expect(activity3.ownerId).toBe(ownerId3);
@@ -331,7 +651,7 @@ test("copyActivityToFolder remixes correct versions", async () => {
 test("searchPublicContent returns activities matching the query", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId } = await createActivity(ownerId);
+  const { activityId } = await createActivity(ownerId, null);
   // Make the document public and give it a unique name for the test
   const uniqueName = "UniqueNameForSearchTest";
   await updateContent({
@@ -374,7 +694,7 @@ test("getAllDoenetmlVersions retrieves all non-removed versions", async () => {
 test("deleteActivity prevents a document from being retrieved", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId } = await createActivity(ownerId);
+  const { activityId } = await createActivity(ownerId, null);
   await deleteActivity(activityId, ownerId);
   await expect(getActivity(activityId)).rejects.toThrow("No content found");
 });
@@ -382,7 +702,7 @@ test("deleteActivity prevents a document from being retrieved", async () => {
 test("updateContent does not update properties when passed undefined values", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId } = await createActivity(ownerId);
+  const { activityId } = await createActivity(ownerId, null);
   const originalActivity = await getActivity(activityId);
   await updateContent({ id: activityId, ownerId });
   const updatedActivity = await getActivity(activityId);
@@ -392,7 +712,7 @@ test("updateContent does not update properties when passed undefined values", as
 test("assign an activity", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId } = await createActivity(ownerId);
+  const { activityId } = await createActivity(ownerId, null);
   const activity = await getActivity(activityId);
   await updateContent({ id: activityId, name: "Activity 1", ownerId });
   await updateDoc({
@@ -438,7 +758,7 @@ test("assign an activity", async () => {
 test("cannot assign other user's activity", async () => {
   const ownerId1 = (await createTestUser()).userId;
   const ownerId2 = (await createTestUser()).userId;
-  const { activityId } = await createActivity(ownerId1);
+  const { activityId } = await createActivity(ownerId1, null);
   const activity = await getActivity(activityId);
   await updateContent({
     id: activityId,
@@ -466,7 +786,7 @@ test("cannot assign other user's activity", async () => {
 test("open and close assignment with code", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId } = await createActivity(ownerId);
+  const { activityId } = await createActivity(ownerId, null);
   const activity = await getActivity(activityId);
   await updateContent({ id: activityId, name: "Activity 1", ownerId });
   await updateDoc({
@@ -542,7 +862,7 @@ test("open and close assignment with code", async () => {
 test("open and unassign assignment with code", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId } = await createActivity(ownerId);
+  const { activityId } = await createActivity(ownerId, null);
   const activity = await getActivity(activityId);
   await updateContent({ id: activityId, name: "Activity 1", ownerId });
   await updateDoc({
@@ -589,7 +909,7 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
   const ownerId = owner.userId;
   const user2 = await createTestUser();
   const userId2 = user2.userId;
-  const { activityId } = await createActivity(ownerId);
+  const { activityId } = await createActivity(ownerId, null);
   const activity = await getActivity(activityId);
 
   await expect(
@@ -669,7 +989,7 @@ test("create anonymous users", async () => {
 test("assignment data with code create anonymous user when not signed in", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId } = await createActivity(ownerId);
+  const { activityId } = await createActivity(ownerId, null);
   const activity = await getActivity(activityId);
   await updateContent({ id: activityId, name: "Activity 1", ownerId });
   await updateDoc({
@@ -714,7 +1034,7 @@ test("assignment data with code create anonymous user when not signed in", async
 test("get assignment data from anonymous users", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId, docId } = await createActivity(ownerId);
+  const { activityId, docId } = await createActivity(ownerId, null);
   await updateContent({ id: activityId, name: "Activity 1", ownerId });
   await updateDoc({
     id: docId,
@@ -990,7 +1310,7 @@ test("can't get assignment data if other user", async () => {
   const ownerId = owner.userId;
   const otherUser = await createTestUser();
   const otherUserId = otherUser.userId;
-  const { activityId, docId } = await createActivity(ownerId);
+  const { activityId, docId } = await createActivity(ownerId, null);
   await assignActivity(activityId, ownerId);
 
   let closeAt = DateTime.now().plus({ days: 1 });
@@ -1047,7 +1367,7 @@ test("can't get assignment data if other user", async () => {
 test("can't get assignment data if unassigned", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId, docId } = await createActivity(ownerId);
+  const { activityId, docId } = await createActivity(ownerId, null);
   await assignActivity(activityId, ownerId);
 
   let closeAt = DateTime.now().plus({ days: 1 });
@@ -1108,7 +1428,7 @@ test("get activity editor data only if owner", async () => {
   const ownerId = owner.userId;
   const otherUser = await createTestUser();
   const otherUserId = otherUser.userId;
-  const { activityId } = await createActivity(ownerId);
+  const { activityId } = await createActivity(ownerId, null);
 
   await getActivityEditorData(activityId, ownerId);
 
@@ -1120,7 +1440,7 @@ test("get activity editor data only if owner", async () => {
 test("activity editor data before and after assigned", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId, docId } = await createActivity(ownerId);
+  const { activityId, docId } = await createActivity(ownerId, null);
 
   const preAssignedData = await getActivityEditorData(activityId, ownerId);
 
@@ -1244,7 +1564,7 @@ test("activity editor data before and after assigned", async () => {
 test("only user and assignment owner can load document state", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId, docId } = await createActivity(ownerId);
+  const { activityId, docId } = await createActivity(ownerId, null);
   await assignActivity(activityId, ownerId);
 
   // open assignment generates code
@@ -1311,7 +1631,7 @@ test("only user and assignment owner can load document state", async () => {
 test("load document state based on withMaxScore", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId, docId } = await createActivity(ownerId);
+  const { activityId, docId } = await createActivity(ownerId, null);
   await assignActivity(activityId, ownerId);
 
   // open assignment generates code
@@ -1456,7 +1776,7 @@ test("load document state based on withMaxScore", async () => {
 test("record submitted events and get responses", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId, docId } = await createActivity(ownerId);
+  const { activityId, docId } = await createActivity(ownerId, null);
   await assignActivity(activityId, ownerId);
 
   // open assignment generates code
@@ -1982,7 +2302,7 @@ test("record submitted events and get responses", async () => {
 test("only owner can get submitted responses", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId, docId } = await createActivity(ownerId);
+  const { activityId, docId } = await createActivity(ownerId, null);
   await assignActivity(activityId, ownerId);
 
   const user2 = await createTestUser();
@@ -2097,21 +2417,23 @@ test("list assigned gets student assignments", async () => {
   const user2 = await createTestUser();
   const user2Id = user2.userId;
 
-  let assignmentList = await listUserAssigned(user1Id);
+  let assignmentList = await listUserAssigned(user1Id, null);
   expect(assignmentList.assignments).eqls([]);
   expect(assignmentList.user.userId).eq(user1Id);
 
-  const { activityId: activityId1 } = await createActivity(user1Id);
+  const { activityId: activityId1 } = await createActivity(user1Id, null);
   await assignActivity(activityId1, user1Id);
 
-  assignmentList = await listUserAssigned(user1Id);
+  assignmentList = await listUserAssigned(user1Id, null);
   expect(assignmentList.assignments).eqls([]);
 
-  const { activityId: activityId2, docId: docId2 } =
-    await createActivity(user2Id);
+  const { activityId: activityId2, docId: docId2 } = await createActivity(
+    user2Id,
+    null,
+  );
   await assignActivity(activityId2, user2Id);
 
-  assignmentList = await listUserAssigned(user1Id);
+  assignmentList = await listUserAssigned(user1Id, null);
   expect(assignmentList.assignments).eqls([]);
 
   // open assignment generates code
@@ -2133,7 +2455,7 @@ test("list assigned gets student assignments", async () => {
     state: "document state 1",
   });
 
-  assignmentList = await listUserAssigned(user1Id);
+  assignmentList = await listUserAssigned(user1Id, null);
   expect(assignmentList.assignments).toMatchObject([
     {
       id: activityId2,
@@ -2143,7 +2465,7 @@ test("list assigned gets student assignments", async () => {
 
   // unassigning activity removes them from list
   await unassignActivity(activityId2, user2Id);
-  assignmentList = await listUserAssigned(user1Id);
+  assignmentList = await listUserAssigned(user1Id, null);
   expect(assignmentList.assignments).eqls([]);
 });
 
@@ -2151,7 +2473,7 @@ test("get all assignment data from anonymous user", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { activityId, docId } = await createActivity(ownerId);
+  const { activityId, docId } = await createActivity(ownerId, null);
   await updateContent({ id: activityId, name: "Activity 1", ownerId });
   await updateDoc({
     id: docId,
@@ -2261,7 +2583,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { activityId, docId } = await createActivity(ownerId);
+  const { activityId, docId } = await createActivity(ownerId, null);
   await updateContent({ id: activityId, name: "Activity 1", ownerId });
   await updateDoc({
     id: docId,
@@ -2403,8 +2725,10 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     },
   ]);
 
-  const { activityId: activity2Id, docId: doc2Id } =
-    await createActivity(ownerId);
+  const { activityId: activity2Id, docId: doc2Id } = await createActivity(
+    ownerId,
+    null,
+  );
   await updateContent({
     id: activity2Id,
     name: "Activity 2",
