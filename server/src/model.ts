@@ -1895,6 +1895,7 @@ export async function getFolderContent({
       imagePath: true,
       isAssigned: true,
       isPublic: true,
+      owner: { select: { name: true } },
     },
     orderBy: { sortIndex: "asc" },
   });
