@@ -948,7 +948,7 @@ app.get(
 app.get(
   "/api/getFolderContent/:folderId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const folderId = eval(req.params.folderId); // is there a better way to expect number or null?
+    const folderId = eval(req.params.folderId); //  is there a better way to expect number or null?
     const loggedInUserId = Number(req.cookies.userId);
 
     try {
