@@ -17,7 +17,6 @@ import {
   getAllRecentPublicActivities,
   getIsAdmin,
   getUserInfo,
-  listUserContent,
   updateDoc,
   searchPublicContent,
   updateContent,
@@ -41,6 +40,7 @@ import {
   getAssignmentContent,
   getDocumentSubmittedResponseHistory,
   moveContent,
+  getFolderContent,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -123,7 +123,11 @@ app.get(
     const loggedInUserId = Number(req.cookies.userId);
     const userId = Number(req.params.userId);
     try {
-      const contentData = await listUserContent(userId, loggedInUserId, null);
+      const contentData = await getFolderContent({
+        ownerId: userId,
+        loggedInUserId,
+        folderId: null,
+      });
       const allDoenetmlVersions = await getAllDoenetmlVersions();
       res.send({ allDoenetmlVersions, ...contentData });
     } catch (e) {
@@ -143,11 +147,11 @@ app.get(
     const folderId = Number(req.params.folderId);
     const userId = Number(req.params.userId);
     try {
-      const contentData = await listUserContent(
-        userId,
+      const contentData = await getFolderContent({
+        ownerId: userId,
         loggedInUserId,
         folderId,
-      );
+      });
       const allDoenetmlVersions = await getAllDoenetmlVersions();
       res.send({ allDoenetmlVersions, ...contentData });
     } catch (e) {
@@ -166,7 +170,11 @@ app.get(
     const userId = Number(req.params.userId);
     try {
       // send 0 as the logged in content to make sure get only public content
-      const contentData = await listUserContent(userId, 0, null);
+      const contentData = await getFolderContent({
+        ownerId: userId,
+        loggedInUserId: 0,
+        folderId: null,
+      });
       res.send(contentData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -185,7 +193,11 @@ app.get(
     const folderId = Number(req.params.folderId);
     try {
       // send 0 as the logged in content to make sure get only public content
-      const contentData = await listUserContent(userId, 0, folderId);
+      const contentData = await getFolderContent({
+        ownerId: userId,
+        loggedInUserId: 0,
+        folderId,
+      });
       res.send(contentData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -770,6 +782,29 @@ app.get(
     try {
       const data = await getAllAssignmentScores({
         ownerId: loggedInUserId,
+        parentFolderId: null,
+      });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getAllAssignmentScores",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const parentFolderId = Number(req.params.parentFolderId);
+
+    try {
+      const data = await getAllAssignmentScores({
+        ownerId: loggedInUserId,
+        parentFolderId,
       });
       res.send(data);
     } catch (e) {
