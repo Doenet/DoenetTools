@@ -2977,16 +2977,20 @@ test("get all assignment data from anonymous user", async () => {
 
   let userWithScores = await getStudentData({
     userId: newUser1!.userId,
+    ownerId,
+    parentFolderId: null,
   });
 
   expect(userWithScores).eqls({
-    userId: newUser1!.userId,
-    name: newUser1!.name,
-    assignmentScores: [
+    userData: {
+      userId: newUser1!.userId,
+      name: newUser1!.name,
+    },
+    orderedActivityScores: [
       {
         activityId: activityId,
         score: 0.5,
-        activity: { name: "Activity 1" },
+        activityName: "Activity 1",
       },
     ],
   });
@@ -3004,16 +3008,20 @@ test("get all assignment data from anonymous user", async () => {
 
   userWithScores = await getStudentData({
     userId: newUser1!.userId,
+    ownerId,
+    parentFolderId: null,
   });
 
   expect(userWithScores).eqls({
-    userId: newUser1!.userId,
-    name: newUser1!.name,
-    assignmentScores: [
+    userData: {
+      userId: newUser1!.userId,
+      name: newUser1!.name,
+    },
+    orderedActivityScores: [
       {
         activityId: activityId,
         score: 0.5,
-        activity: { name: "Activity 1" },
+        activityName: "Activity 1",
       },
     ],
   });
@@ -3030,16 +3038,20 @@ test("get all assignment data from anonymous user", async () => {
 
   userWithScores = await getStudentData({
     userId: newUser1!.userId,
+    ownerId,
+    parentFolderId: null,
   });
 
   expect(userWithScores).eqls({
-    userId: newUser1!.userId,
-    name: newUser1!.name,
-    assignmentScores: [
+    userData: {
+      userId: newUser1!.userId,
+      name: newUser1!.name,
+    },
+    orderedActivityScores: [
       {
         activityId: activityId,
         score: 0.7,
-        activity: { name: "Activity 1" },
+        activityName: "Activity 1",
       },
     ],
   });
@@ -3070,6 +3082,7 @@ test("get assignments folder structure", { timeout: 30000 }, async () => {
   // - Activity 4 (deleted)
   // Activity null (unassigned)
   // Activity gone (deleted)
+  // Activity root
 
   const { folderId: baseFolderId } = await createFolder(ownerId, null);
   const { folderId: folder3Id } = await createFolder(ownerId, baseFolderId);
@@ -3091,6 +3104,7 @@ test("get assignments folder structure", { timeout: 30000 }, async () => {
     ownerId,
     baseFolderId,
   );
+  await updateContent({ id: activity2Id, name: "Activity 2", ownerId });
   await moveContent({
     id: activity2Id,
     desiredParentFolderId: baseFolderId,
@@ -3100,7 +3114,9 @@ test("get assignments folder structure", { timeout: 30000 }, async () => {
 
   // create activity 1a in wrong folder initially
   const { activityId: activity1aId } = await createActivity(ownerId, folder3Id);
+  await updateContent({ id: activity1aId, name: "Activity 1a", ownerId });
   const { activityId: activity1eId } = await createActivity(ownerId, folder1Id);
+  await updateContent({ id: activity1eId, name: "Activity 1e", ownerId });
   // move activity 1a to right places
   await moveContent({
     id: activity1aId,
@@ -3113,7 +3129,8 @@ test("get assignments folder structure", { timeout: 30000 }, async () => {
     ownerId,
     folder1cId,
   );
-  const { activityId: activity1c3Id } = await createActivity(
+  await updateContent({ id: activity1c1Id, name: "Activity 1c1", ownerId });
+  const { activityId: _activity1c3Id } = await createActivity(
     ownerId,
     folder1cId,
   );
@@ -3124,10 +3141,12 @@ test("get assignments folder structure", { timeout: 30000 }, async () => {
     ownerId,
     folder1c2Id,
   );
+  await updateContent({ id: activity1c2aId, name: "Activity 1c2a", ownerId });
   const { activityId: activity1c2bId } = await createActivity(
     ownerId,
     folder1c2Id,
   );
+  await updateContent({ id: activity1c2bId, name: "Activity 1c2b", ownerId });
 
   // after creating its content move folder 1c2 into the right place
   await moveContent({
@@ -3139,6 +3158,7 @@ test("get assignments folder structure", { timeout: 30000 }, async () => {
 
   // create activity 1b in wrong place then move it
   const { activityId: activity1b } = await createActivity(ownerId, folder1c2Id);
+  await updateContent({ id: activity1b, name: "Activity 1b", ownerId });
   await moveContent({
     id: activity1b,
     desiredParentFolderId: folder1Id,
@@ -3154,10 +3174,14 @@ test("get assignments folder structure", { timeout: 30000 }, async () => {
     ownerId,
   });
 
-  const { activityId: activity3aId } = await createActivity(ownerId, folder3Id);
+  const { activityId: _activity3aId } = await createActivity(
+    ownerId,
+    folder3Id,
+  );
   const { activityId: activity3bId } = await createActivity(ownerId, folder3Id);
+  await updateContent({ id: activity3bId, name: "Activity 3b", ownerId });
 
-  const { activityId: activityNullId } = await createActivity(ownerId, null);
+  const { activityId: _activityNullId } = await createActivity(ownerId, null);
 
   // add some deleted activities
   const { activityId: activityGoneId } = await createActivity(ownerId, null);
@@ -3170,6 +3194,10 @@ test("get assignments folder structure", { timeout: 30000 }, async () => {
   const { activityId: activity3cId } = await createActivity(ownerId, folder3Id);
   await deleteActivity(activity3cId, ownerId);
 
+  // one activity at root level
+  const { activityId: activityRootId } = await createActivity(ownerId, null);
+  await updateContent({ id: activityRootId, name: "Activity root", ownerId });
+
   await assignActivity(activity1aId, ownerId);
   await assignActivity(activity1c1Id, ownerId);
   await assignActivity(activity1c2aId, ownerId);
@@ -3177,99 +3205,68 @@ test("get assignments folder structure", { timeout: 30000 }, async () => {
   await assignActivity(activity1eId, ownerId);
   await assignActivity(activity2Id, ownerId);
   await assignActivity(activity3bId, ownerId);
+  await assignActivity(activityRootId, ownerId);
 
-  const desiredFolder3 = [
-    { id: activity3bId, parentId: folder3Id, isFolder: false, rank: 1 },
-  ];
+  const desiredFolder3 = [{ id: activity3bId, name: "Activity 3b" }];
   const desiredFolder1c2 = [
-    { id: activity1c2aId, parentId: folder1c2Id, isFolder: false, rank: 1 },
-    { id: activity1c2bId, parentId: folder1c2Id, isFolder: false, rank: 2 },
+    { id: activity1c2aId, name: "Activity 1c2a" },
+    { id: activity1c2bId, name: "Activity 1c2b" },
   ];
   const desiredFolder1c = [
-    { id: activity1c1Id, parentId: folder1cId, isFolder: false, rank: 1 },
-    { id: folder1c2Id, parentId: folder1cId, isFolder: true, rank: 2 },
+    { id: activity1c1Id, name: "Activity 1c1" },
     ...desiredFolder1c2,
   ];
   const desiredFolder1 = [
-    { id: activity1aId, parentId: folder1Id, isFolder: false, rank: 1 },
-    { id: folder1cId, parentId: folder1Id, isFolder: true, rank: 2 },
+    { id: activity1aId, name: "Activity 1a" },
     ...desiredFolder1c,
-    { id: folder1dId, parentId: folder1Id, isFolder: true, rank: 3 },
-    { id: activity1eId, parentId: folder1Id, isFolder: false, rank: 4 },
+    { id: activity1eId, name: "Activity 1e" },
   ];
   const desiredBaseFolder = [
-    { id: folder1Id, parentId: baseFolderId, isFolder: true, rank: 1 },
     ...desiredFolder1,
-    { id: activity2Id, parentId: baseFolderId, isFolder: false, rank: 2 },
-    { id: folder3Id, parentId: baseFolderId, isFolder: true, rank: 3 },
+    { id: activity2Id, name: "Activity 2" },
     ...desiredFolder3,
   ];
 
   const desiredNullFolder = [
-    { id: baseFolderId, parentId: null, isFolder: true, rank: 1 },
     ...desiredBaseFolder,
+    { id: activityRootId, name: "Activity root" },
   ];
 
-  let assignmentScores = await getAllAssignmentScores({
+  let scoreData = await getAllAssignmentScores({
     ownerId,
     parentFolderId: null,
   });
-  expect(assignmentScores.folderStructure).toEqual(
-    expect.arrayContaining(desiredNullFolder),
-  );
-  expect(desiredNullFolder).toEqual(
-    expect.arrayContaining(assignmentScores.folderStructure),
-  );
+  expect(scoreData.orderedActivities).eqls(desiredNullFolder);
 
-  assignmentScores = await getAllAssignmentScores({
+  scoreData = await getAllAssignmentScores({
     ownerId,
     parentFolderId: baseFolderId,
   });
-  expect(assignmentScores.folderStructure).toEqual(
-    expect.arrayContaining(desiredBaseFolder),
-  );
-  expect(desiredBaseFolder).toEqual(
-    expect.arrayContaining(assignmentScores.folderStructure),
-  );
+  expect(scoreData.orderedActivities).eqls(desiredBaseFolder);
 
-  assignmentScores = await getAllAssignmentScores({
+  scoreData = await getAllAssignmentScores({
     ownerId,
     parentFolderId: folder1Id,
   });
-  expect(assignmentScores.folderStructure).toEqual(
-    expect.arrayContaining(desiredFolder1),
-  );
-  expect(desiredFolder1).toEqual(
-    expect.arrayContaining(assignmentScores.folderStructure),
-  );
+  expect(scoreData.orderedActivities).eqls(desiredFolder1);
 
-  assignmentScores = await getAllAssignmentScores({
+  scoreData = await getAllAssignmentScores({
     ownerId,
     parentFolderId: folder3Id,
   });
-  expect(assignmentScores.folderStructure).toEqual(
-    expect.arrayContaining(desiredFolder3),
-  );
-  expect(desiredFolder3).toEqual(
-    expect.arrayContaining(assignmentScores.folderStructure),
-  );
+  expect(scoreData.orderedActivities).eqls(desiredFolder3);
 
-  assignmentScores = await getAllAssignmentScores({
+  scoreData = await getAllAssignmentScores({
     ownerId,
     parentFolderId: folder1cId,
   });
-  expect(assignmentScores.folderStructure).toEqual(
-    expect.arrayContaining(desiredFolder1c),
-  );
-  expect(desiredFolder1c).toEqual(
-    expect.arrayContaining(assignmentScores.folderStructure),
-  );
+  expect(scoreData.orderedActivities).eqls(desiredFolder1c);
 
-  assignmentScores = await getAllAssignmentScores({
+  scoreData = await getAllAssignmentScores({
     ownerId,
     parentFolderId: folder1dId,
   });
-  expect(assignmentScores.folderStructure).eqls([]);
+  expect(scoreData.orderedActivities).eqls([]);
 });
 
 test("get data for user's assignments", { timeout: 30000 }, async () => {
@@ -3294,19 +3291,19 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     ownerId,
   );
 
-  let assignmentScores = await getAllAssignmentScores({
+  let scoreData = await getAllAssignmentScores({
     ownerId,
     parentFolderId: null,
   });
 
   // no one has done the assignment yet
-  expect(assignmentScores.assignments).eqls([
+  expect(scoreData.orderedActivities).eqls([
     {
       id: activityId,
       name: "Activity 1",
-      assignmentScores: [],
     },
   ]);
+  expect(scoreData.assignmentScores).eqls([]);
 
   let assignmentData = await getAssignmentDataFromCode(classCode, false);
   let newUser1 = assignmentData.newAnonymousUser;
@@ -3325,23 +3322,23 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     state: "document state 1",
   });
 
-  assignmentScores = await getAllAssignmentScores({
+  scoreData = await getAllAssignmentScores({
     ownerId,
     parentFolderId: null,
   });
 
-  expect(assignmentScores.assignments).eqls([
+  expect(scoreData.orderedActivities).eqls([
     {
       id: activityId,
       name: "Activity 1",
-      assignmentScores: [
-        {
-          activityId: activityId,
-          userId: newUser1!.userId,
-          score: 0.5,
-          user: { name: newUser1!.name },
-        },
-      ],
+    },
+  ]);
+  expect(scoreData.assignmentScores).eqls([
+    {
+      activityId: activityId,
+      userId: newUser1!.userId,
+      score: 0.5,
+      user: { name: newUser1!.name },
     },
   ]);
 
@@ -3356,23 +3353,23 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     state: "document state 2",
   });
 
-  assignmentScores = await getAllAssignmentScores({
+  scoreData = await getAllAssignmentScores({
     ownerId,
     parentFolderId: null,
   });
 
-  expect(assignmentScores.assignments).eqls([
+  expect(scoreData.orderedActivities).eqls([
     {
       id: activityId,
       name: "Activity 1",
-      assignmentScores: [
-        {
-          activityId: activityId,
-          userId: newUser1!.userId,
-          score: 0.5,
-          user: { name: newUser1!.name },
-        },
-      ],
+    },
+  ]);
+  expect(scoreData.assignmentScores).eqls([
+    {
+      activityId: activityId,
+      userId: newUser1!.userId,
+      score: 0.5,
+      user: { name: newUser1!.name },
     },
   ]);
 
@@ -3404,29 +3401,29 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     state: "document state 4",
   });
 
-  assignmentScores = await getAllAssignmentScores({
+  scoreData = await getAllAssignmentScores({
     ownerId,
     parentFolderId: null,
   });
 
-  expect(assignmentScores.assignments).eqls([
+  expect(scoreData.orderedActivities).eqls([
     {
       id: activityId,
       name: "Activity 1",
-      assignmentScores: [
-        {
-          activityId: activityId,
-          userId: newUser1!.userId,
-          score: 0.7,
-          user: { name: newUser1!.name },
-        },
-        {
-          activityId: activityId,
-          userId: newUser2!.userId,
-          score: 0.3,
-          user: { name: newUser2!.name },
-        },
-      ],
+    },
+  ]);
+  expect(scoreData.assignmentScores).eqls([
+    {
+      activityId: activityId,
+      userId: newUser1!.userId,
+      score: 0.7,
+      user: { name: newUser1!.name },
+    },
+    {
+      activityId: activityId,
+      userId: newUser2!.userId,
+      score: 0.3,
+      user: { name: newUser2!.name },
     },
   ]);
 
@@ -3472,41 +3469,39 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     state: "document state 1",
   });
 
-  assignmentScores = await getAllAssignmentScores({
+  scoreData = await getAllAssignmentScores({
     ownerId,
     parentFolderId: null,
   });
 
-  expect(assignmentScores.assignments).eqls([
+  expect(scoreData.orderedActivities).eqls([
     {
       id: activityId,
       name: "Activity 1",
-      assignmentScores: [
-        {
-          activityId: activityId,
-          userId: newUser1!.userId,
-          score: 0.7,
-          user: { name: newUser1!.name },
-        },
-        {
-          activityId: activityId,
-          userId: newUser2!.userId,
-          score: 0.3,
-          user: { name: newUser2!.name },
-        },
-      ],
     },
     {
       id: activity2Id,
       name: "Activity 2",
-      assignmentScores: [
-        {
-          activityId: activity2Id,
-          userId: newUser3!.userId,
-          score: 0.9,
-          user: { name: newUser3!.name },
-        },
-      ],
+    },
+  ]);
+  expect(scoreData.assignmentScores).eqls([
+    {
+      activityId: activityId,
+      userId: newUser1!.userId,
+      score: 0.7,
+      user: { name: newUser1!.name },
+    },
+    {
+      activityId: activityId,
+      userId: newUser2!.userId,
+      score: 0.3,
+      user: { name: newUser2!.name },
+    },
+    {
+      activityId: activity2Id,
+      userId: newUser3!.userId,
+      score: 0.9,
+      user: { name: newUser3!.name },
     },
   ]);
 });

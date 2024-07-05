@@ -1447,6 +1447,17 @@ export async function getAssignmentStudentData({
   return { ...assignmentData, documentScores };
 }
 
+/**
+ * Recurses through all subfolders of `parentFolderId`
+ * to return all content of it and its subfolders.
+ * Results are ordered via a `sortIndex` and a depth-first search,
+ * i.e., the contents of a folder immediately follow the folder itself,
+ * and items within a folder are ordered by `sortIndex`
+ *
+ * @returns A Promise that resolves to an object with
+ * - orderedActivities: the ordered list of all activities in the folder (and subfolders)
+ * - assignmentScores: the scores that student achieved on those activities
+ */
 export async function getAllAssignmentScores({
   ownerId,
   parentFolderId,
@@ -1454,10 +1465,7 @@ export async function getAllAssignmentScores({
   ownerId: number;
   parentFolderId: number | null;
 }) {
-  // Recurse through all subfolders of `parentFolderId`
-  // to find all folders and activities.
-  // Include each item's rank, i.e., its ordering amount other items with the same parent.
-  let contentRecursivelyInFolder;
+  let orderedActivities;
 
   // NOTE: the string after `Prisma.sql` is NOT interpreted as a regular string,
   // but it does special processing with the template variables.
@@ -1466,100 +1474,96 @@ export async function getAllAssignmentScores({
   // To get two versions, one with `parentFolderId IS NULL` and the other with `parentFolderId = ${parentFolderId}`,
   // we had to make two completely separate raw queries.
   // See: https://www.prisma.io/docs/orm/prisma-client/queries/raw-database-access/raw-queries#considerations
-
   if (parentFolderId === null) {
-    contentRecursivelyInFolder = await prisma.$queryRaw<
+    orderedActivities = await prisma.$queryRaw<
       {
         id: number;
-        parentId: number;
-        isFolder: number;
-        rank: bigint;
+        name: string;
       }[]
     >(Prisma.sql`
-    WITH RECURSIVE content_tree(id, parentId, isFolder, sortIndex) AS (
-      SELECT id, parentFolderId, isFolder, sortIndex FROM content
+    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
+      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
       WHERE parentFolderId IS NULL AND ownerId = ${ownerId}
       AND (isAssigned = true or isFolder = true) AND isDeleted = false
       UNION ALL
-      SELECT c.id, c.parentFolderId, c.isFolder, c.sortIndex FROM (
-        SELECT * from content 
-        WHERE (isAssigned = true or isFolder = true) AND isDeleted = false
-        ORDER BY "sortIndex"
-        ) AS c
+      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
+      FROM content AS c
       INNER JOIN content_tree AS ft
       ON c.parentFolderId = ft.id
+      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
     )
-
-    SELECT id, parentId, isFolder, RANK() OVER (PARTITION by "parentId" ORDER BY "sortIndex") as "rank" FROM content_tree
+    
+    SELECT c.id, c.name FROM content AS c
+    INNER JOIN content_tree AS ct
+    ON ct.id = c.id
+    WHERE ct.isFolder = FALSE ORDER BY path
   `);
   } else {
-    contentRecursivelyInFolder = await prisma.$queryRaw<
+    orderedActivities = await prisma.$queryRaw<
       {
         id: number;
-        parentId: number;
-        isFolder: number;
-        rank: bigint;
+        name: string;
       }[]
     >(Prisma.sql`
-    WITH RECURSIVE content_tree(id, parentId, isFolder, sortIndex) AS (
-      SELECT id, parentFolderId, isFolder, sortIndex FROM content
+    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
+      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
       WHERE parentFolderId = ${parentFolderId} AND ownerId = ${ownerId}
       AND (isAssigned = true or isFolder = true) AND isDeleted = false
       UNION ALL
-      SELECT c.id, c.parentFolderId, c.isFolder, c.sortIndex FROM (
-        SELECT * from content 
-        WHERE (isAssigned = true or isFolder = true) AND isDeleted = false
-        ORDER BY "sortIndex"
-        ) AS c
+      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
+      FROM content AS c
       INNER JOIN content_tree AS ft
       ON c.parentFolderId = ft.id
+      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
     )
-
-    SELECT id, parentId, isFolder, RANK() OVER (PARTITION by "parentId" ORDER BY "sortIndex") as "rank" FROM content_tree
+    
+    SELECT c.id, c.name FROM content AS c
+    INNER JOIN content_tree AS ct
+    ON ct.id = c.id
+    WHERE ct.isFolder = FALSE ORDER BY path
   `);
   }
 
-  const folderStructure = contentRecursivelyInFolder.map((c) => ({
-    id: c.id,
-    parentId: c.parentId,
-    isFolder: Boolean(c.isFolder),
-    rank: Number(c.rank),
-  }));
-
-  const activityIdsRecursivelyInFolder = contentRecursivelyInFolder
-    .filter((c) => !c.isFolder)
-    .map((c) => c.id);
-
-  const assignments = await prisma.content.findMany({
+  const assignmentScores = await prisma.assignmentScores.findMany({
     where: {
-      ownerId,
-      isDeleted: false,
-      isAssigned: true,
-      isFolder: false,
-      id: { in: activityIdsRecursivelyInFolder },
+      activityId: { in: orderedActivities.map((a) => a.id) },
     },
     select: {
-      id: true,
-      name: true,
-      assignmentScores: {
+      activityId: true,
+      userId: true,
+      score: true,
+      user: {
         select: {
-          activityId: true,
-          userId: true,
-          score: true,
-          user: {
-            select: {
-              name: true,
-            },
-          },
+          name: true,
         },
       },
     },
   });
 
-  return { assignments, folderStructure };
+  return { orderedActivities, assignmentScores };
 }
 
-export async function getStudentData({ userId }: { userId: number }) {
+/**
+ * Recurses through all subfolders of `parentFolderId`
+ * to return all content of it and its subfolders.
+ * Results are ordered via a `sortIndex` and a depth-first search,
+ * i.e., the contents of a folder immediately follow the folder itself,
+ * and items within a folder are ordered by `sortIndex`
+ *
+ * @returns A Promise that resolves to an object with
+ * - userData: information on the student
+ * - orderedActivities: the ordered list of all activities in the folder (and subfolders)
+ *   along with the student's score, if it exists
+ */
+export async function getStudentData({
+  userId,
+  ownerId,
+  parentFolderId,
+}: {
+  userId: number;
+  ownerId: number;
+  parentFolderId: number | null;
+}) {
   const userData = await prisma.users.findUniqueOrThrow({
     where: {
       userId,
@@ -1567,28 +1571,79 @@ export async function getStudentData({ userId }: { userId: number }) {
     select: {
       userId: true,
       name: true,
-      assignmentScores: {
-        where: {
-          activity: {
-            isDeleted: false,
-            isAssigned: true,
-            isFolder: false,
-          },
-        },
-        select: {
-          activityId: true,
-          score: true,
-          activity: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
     },
   });
 
-  return userData;
+  let orderedActivityScores;
+
+  // NOTE: the string after `Prisma.sql` is NOT interpreted as a regular string,
+  // but it does special processing with the template variables.
+  // For this reason, one cannot have an operator such as "=" or "IS" as a template variable
+  // or a phrase such as "parentFolderId IS NULL".
+  // To get two versions, one with `parentFolderId IS NULL` and the other with `parentFolderId = ${parentFolderId}`,
+  // we had to make two completely separate raw queries.
+  // See: https://www.prisma.io/docs/orm/prisma-client/queries/raw-database-access/raw-queries#considerations
+  if (parentFolderId === null) {
+    orderedActivityScores = await prisma.$queryRaw<
+      {
+        activityId: number;
+        activityName: string;
+        score: number | null;
+      }[]
+    >(Prisma.sql`
+    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
+      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
+      WHERE parentFolderId IS NULL AND ownerId = ${ownerId}
+      AND (isAssigned = true or isFolder = true) AND isDeleted = false
+      UNION ALL
+      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
+      FROM content AS c
+      INNER JOIN content_tree AS ft
+      ON c.parentFolderId = ft.id
+      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
+    )
+    
+    SELECT c.id AS activityId, c.name AS activityName, s.score FROM content AS c
+    INNER JOIN content_tree AS ct
+    ON ct.id = c.id
+    LEFT JOIN (
+    	SELECT * FROM assignmentScores WHERE userId=${userId}
+    	) as s
+    ON s.activityId  = c.id 
+    WHERE ct.isFolder = FALSE ORDER BY path
+  `);
+  } else {
+    orderedActivityScores = await prisma.$queryRaw<
+      {
+        activityId: number;
+        activityName: string;
+        score: number | null;
+      }[]
+    >(Prisma.sql`
+    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
+      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
+      WHERE parentFolderId = ${parentFolderId} AND ownerId = ${ownerId}
+      AND (isAssigned = true or isFolder = true) AND isDeleted = false
+      UNION ALL
+      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
+      FROM content AS c
+      INNER JOIN content_tree AS ft
+      ON c.parentFolderId = ft.id
+      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
+    )
+    
+    SELECT c.id AS activityId, c.name AS activityName, s.score FROM content AS c
+    INNER JOIN content_tree AS ct
+    ON ct.id = c.id
+    LEFT JOIN (
+    	SELECT * FROM assignmentScores WHERE userId=${userId}
+    	) as s
+    ON s.activityId  = c.id 
+    WHERE ct.isFolder = FALSE ORDER BY path
+  `);
+  }
+
+  return { userData, orderedActivityScores };
 }
 
 export async function getAssignmentContent({
