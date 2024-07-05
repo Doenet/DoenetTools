@@ -501,7 +501,8 @@ test("deleteFolder marks a folder and all its sub content as deleted and prevent
   await getDoc(doc6Id);
 
   // delete the entire folder 1 and all its content
-  await deleteFolder(folder1Id, userId);
+  let deleteResult = await deleteFolder(folder1Id, userId);
+  expect(deleteResult.isDeleted).eq(true);
 
   baseContent = await getFolderContent({
     ownerId: userId,
@@ -563,7 +564,8 @@ test("deleteFolder marks a folder and all its sub content as deleted and prevent
   await getDoc(doc6Id);
 
   // delete folder 5 and its content
-  await deleteFolder(folder5Id, userId);
+  deleteResult = await deleteFolder(folder5Id, userId);
+  expect(deleteResult.isDeleted).eq(true);
 
   baseContent = await getFolderContent({
     ownerId: userId,
@@ -607,7 +609,9 @@ test("non-owner cannot delete folder", async () => {
   const userId = user.userId;
 
   const { folderId } = await createFolder(ownerId, null);
-  await deleteFolder(folderId, userId);
+  await expect(deleteFolder(folderId, userId)).rejects.toThrow(
+    "No content found",
+  );
 
   // folder is still around
   getFolderContent({
@@ -1077,7 +1081,7 @@ test("copyActivityToFolder remixes correct versions", async () => {
     ownerId: ownerId1,
   });
 
-  // copy activity 1 to owner 2's portfolio
+  // copy activity 1 to owner 2's root folder
   const activityId2 = await copyActivityToFolder(activityId1, ownerId2, null);
   const activity2 = await getActivity(activityId2);
   expect(activity2.ownerId).toBe(ownerId2);
@@ -1098,7 +1102,7 @@ test("copyActivityToFolder remixes correct versions", async () => {
     ownerId: ownerId1,
   });
 
-  // copy activity 1 to owner 3's portfolio
+  // copy activity 1 to owner 3's root folder
   const activityId3 = await copyActivityToFolder(activityId1, ownerId3, null);
 
   const activity3 = await getActivity(activityId3);
@@ -2243,6 +2247,7 @@ test("record submitted events and get responses", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const { activityId, docId } = await createActivity(ownerId, null);
+  await updateContent({ id: activityId, name: "My Activity", ownerId });
   await assignActivity(activityId, ownerId);
 
   // open assignment generates code
@@ -2268,16 +2273,21 @@ test("record submitted events and get responses", async () => {
   });
   expect(answerWithResponses).eqls([]);
 
-  let submittedResponses = await getDocumentSubmittedResponses({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
-    answerId: answerId1,
-  });
+  let { submittedResponses, activityName } =
+    await getDocumentSubmittedResponses({
+      activityId,
+      docId,
+      docVersionNum: 1,
+      ownerId,
+      answerId: answerId1,
+    });
+  expect(activityName).eq("My Activity");
   expect(submittedResponses).eqls([]);
 
-  let submittedResponseHistory = await getDocumentSubmittedResponseHistory({
+  let {
+    submittedResponses: submittedResponseHistory,
+    activityName: activityName2,
+  } = await getDocumentSubmittedResponseHistory({
     activityId,
     docId,
     docVersionNum: 1,
@@ -2285,6 +2295,7 @@ test("record submitted events and get responses", async () => {
     answerId: answerId1,
     userId: newUser!.userId,
   });
+  expect(activityName2).eq("My Activity");
   expect(submittedResponseHistory).eqls([]);
 
   // record event and retrieve it
@@ -2315,13 +2326,13 @@ test("record submitted events and get responses", async () => {
       averageCredit: 0.4,
     },
   ]);
-  submittedResponses = await getDocumentSubmittedResponses({
+  ({ submittedResponses } = await getDocumentSubmittedResponses({
     activityId,
     docId,
     docVersionNum: 1,
     ownerId,
     answerId: answerId1,
-  });
+  }));
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
@@ -2333,14 +2344,15 @@ test("record submitted events and get responses", async () => {
       numResponses: 1,
     },
   ]);
-  submittedResponseHistory = await getDocumentSubmittedResponseHistory({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
-    answerId: answerId1,
-    userId: newUser!.userId,
-  });
+  ({ submittedResponses: submittedResponseHistory } =
+    await getDocumentSubmittedResponseHistory({
+      activityId,
+      docId,
+      docVersionNum: 1,
+      ownerId,
+      answerId: answerId1,
+      userId: newUser!.userId,
+    }));
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData,
@@ -2377,13 +2389,13 @@ test("record submitted events and get responses", async () => {
       averageCredit: 0.8,
     },
   ]);
-  submittedResponses = await getDocumentSubmittedResponses({
+  ({ submittedResponses } = await getDocumentSubmittedResponses({
     activityId,
     docId,
     docVersionNum: 1,
     ownerId,
     answerId: answerId1,
-  });
+  }));
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
@@ -2395,14 +2407,15 @@ test("record submitted events and get responses", async () => {
       numResponses: 2,
     },
   ]);
-  submittedResponseHistory = await getDocumentSubmittedResponseHistory({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
-    answerId: answerId1,
-    userId: newUser!.userId,
-  });
+  ({ submittedResponses: submittedResponseHistory } =
+    await getDocumentSubmittedResponseHistory({
+      activityId,
+      docId,
+      docVersionNum: 1,
+      ownerId,
+      answerId: answerId1,
+      userId: newUser!.userId,
+    }));
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData,
@@ -2455,13 +2468,13 @@ test("record submitted events and get responses", async () => {
       },
     ]),
   );
-  submittedResponses = await getDocumentSubmittedResponses({
+  ({ submittedResponses } = await getDocumentSubmittedResponses({
     activityId,
     docId,
     docVersionNum: 1,
     ownerId,
     answerId: answerId1,
-  });
+  }));
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
@@ -2473,14 +2486,15 @@ test("record submitted events and get responses", async () => {
       numResponses: 2,
     },
   ]);
-  submittedResponseHistory = await getDocumentSubmittedResponseHistory({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
-    answerId: answerId1,
-    userId: newUser!.userId,
-  });
+  ({ submittedResponses: submittedResponseHistory } =
+    await getDocumentSubmittedResponseHistory({
+      activityId,
+      docId,
+      docVersionNum: 1,
+      ownerId,
+      answerId: answerId1,
+      userId: newUser!.userId,
+    }));
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData,
@@ -2494,13 +2508,13 @@ test("record submitted events and get responses", async () => {
     },
   ]);
 
-  submittedResponses = await getDocumentSubmittedResponses({
+  ({ submittedResponses } = await getDocumentSubmittedResponses({
     activityId,
     docId,
     docVersionNum: 1,
     ownerId,
     answerId: answerId2,
-  });
+  }));
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
@@ -2512,14 +2526,15 @@ test("record submitted events and get responses", async () => {
       numResponses: 1,
     },
   ]);
-  submittedResponseHistory = await getDocumentSubmittedResponseHistory({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
-    answerId: answerId2,
-    userId: newUser!.userId,
-  });
+  ({ submittedResponses: submittedResponseHistory } =
+    await getDocumentSubmittedResponseHistory({
+      activityId,
+      docId,
+      docVersionNum: 1,
+      ownerId,
+      answerId: answerId2,
+      userId: newUser!.userId,
+    }));
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData,
@@ -2569,13 +2584,13 @@ test("record submitted events and get responses", async () => {
       },
     ]),
   );
-  submittedResponses = await getDocumentSubmittedResponses({
+  ({ submittedResponses } = await getDocumentSubmittedResponses({
     activityId,
     docId,
     docVersionNum: 1,
     ownerId,
     answerId: answerId1,
-  });
+  }));
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
@@ -2597,14 +2612,15 @@ test("record submitted events and get responses", async () => {
     },
   ]);
 
-  submittedResponseHistory = await getDocumentSubmittedResponseHistory({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
-    answerId: answerId1,
-    userId: newUser!.userId,
-  });
+  ({ submittedResponses: submittedResponseHistory } =
+    await getDocumentSubmittedResponseHistory({
+      activityId,
+      docId,
+      docVersionNum: 1,
+      ownerId,
+      answerId: answerId1,
+      userId: newUser!.userId,
+    }));
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData,
@@ -2617,14 +2633,15 @@ test("record submitted events and get responses", async () => {
       creditAchieved: 0.8,
     },
   ]);
-  submittedResponseHistory = await getDocumentSubmittedResponseHistory({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
-    answerId: answerId1,
-    userId: newUser2!.userId,
-  });
+  ({ submittedResponses: submittedResponseHistory } =
+    await getDocumentSubmittedResponseHistory({
+      activityId,
+      docId,
+      docVersionNum: 1,
+      ownerId,
+      answerId: answerId1,
+      userId: newUser2!.userId,
+    }));
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData2,
@@ -2633,13 +2650,13 @@ test("record submitted events and get responses", async () => {
     },
   ]);
 
-  submittedResponses = await getDocumentSubmittedResponses({
+  ({ submittedResponses } = await getDocumentSubmittedResponses({
     activityId,
     docId,
     docVersionNum: 1,
     ownerId,
     answerId: answerId2,
-  });
+  }));
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
@@ -2651,14 +2668,15 @@ test("record submitted events and get responses", async () => {
       numResponses: 1,
     },
   ]);
-  submittedResponseHistory = await getDocumentSubmittedResponseHistory({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
-    answerId: answerId2,
-    userId: newUser!.userId,
-  });
+  ({ submittedResponses: submittedResponseHistory } =
+    await getDocumentSubmittedResponseHistory({
+      activityId,
+      docId,
+      docVersionNum: 1,
+      ownerId,
+      answerId: answerId2,
+      userId: newUser!.userId,
+    }));
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData,
@@ -2666,14 +2684,15 @@ test("record submitted events and get responses", async () => {
       creditAchieved: 0.2,
     },
   ]);
-  submittedResponseHistory = await getDocumentSubmittedResponseHistory({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
-    answerId: answerId2,
-    userId: newUser2!.userId,
-  });
+  ({ submittedResponses: submittedResponseHistory } =
+    await getDocumentSubmittedResponseHistory({
+      activityId,
+      docId,
+      docVersionNum: 1,
+      ownerId,
+      answerId: answerId2,
+      userId: newUser2!.userId,
+    }));
   expect(submittedResponseHistory).eqls([]);
 
   // verify submitted responses changes but average max credit doesn't change if submit a lower credit answer
@@ -2691,14 +2710,15 @@ test("record submitted events and get responses", async () => {
     documentCreditAchieved: 0.15,
   });
 
-  submittedResponseHistory = await getDocumentSubmittedResponseHistory({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
-    answerId: answerId1,
-    userId: newUser2!.userId,
-  });
+  ({ submittedResponses: submittedResponseHistory } =
+    await getDocumentSubmittedResponseHistory({
+      activityId,
+      docId,
+      docVersionNum: 1,
+      ownerId,
+      answerId: answerId1,
+      userId: newUser2!.userId,
+    }));
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData2,
@@ -2712,13 +2732,13 @@ test("record submitted events and get responses", async () => {
     },
   ]);
 
-  submittedResponses = await getDocumentSubmittedResponses({
+  ({ submittedResponses } = await getDocumentSubmittedResponses({
     activityId,
     docId,
     docVersionNum: 1,
     ownerId,
     answerId: answerId1,
-  });
+  }));
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
@@ -2817,7 +2837,7 @@ test("only owner can get submitted responses", async () => {
       averageCredit: 1,
     },
   ]);
-  let submittedResponses = await getDocumentSubmittedResponses({
+  let { submittedResponses } = await getDocumentSubmittedResponses({
     activityId,
     docId,
     docVersionNum: 1,
@@ -2835,14 +2855,15 @@ test("only owner can get submitted responses", async () => {
       numResponses: 1,
     },
   ]);
-  let submittedResponseHistory = await getDocumentSubmittedResponseHistory({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
-    answerId: answerId1,
-    userId: newUser!.userId,
-  });
+  let { submittedResponses: submittedResponseHistory } =
+    await getDocumentSubmittedResponseHistory({
+      activityId,
+      docId,
+      docVersionNum: 1,
+      ownerId,
+      answerId: answerId1,
+      userId: newUser!.userId,
+    });
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData,
@@ -2858,23 +2879,26 @@ test("only owner can get submitted responses", async () => {
   expect(answerWithResponses).eqls([]);
 
   // cannot retrieve responses as other user
-  submittedResponses = await getDocumentSubmittedResponses({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId: userId2,
-    answerId: answerId1,
-  });
-  expect(submittedResponses).eqls([]);
-  submittedResponseHistory = await getDocumentSubmittedResponseHistory({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId: userId2,
-    answerId: answerId1,
-    userId: newUser!.userId,
-  });
-  expect(submittedResponseHistory).eqls([]);
+  await expect(
+    getDocumentSubmittedResponses({
+      activityId,
+      docId,
+      docVersionNum: 1,
+      ownerId: userId2,
+      answerId: answerId1,
+    }),
+  ).rejects.toThrow("No content found");
+
+  await expect(
+    getDocumentSubmittedResponseHistory({
+      activityId,
+      docId,
+      docVersionNum: 1,
+      ownerId: userId2,
+      answerId: answerId1,
+      userId: newUser!.userId,
+    }),
+  ).rejects.toThrow("No content found");
 });
 
 test("list assigned gets student assignments", async () => {

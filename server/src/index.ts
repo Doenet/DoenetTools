@@ -36,7 +36,6 @@ import {
   recordSubmittedEvent,
   getAnswersThatHaveSubmittedResponses,
   getDocumentSubmittedResponses,
-  getAssignment,
   getAssignmentContent,
   getDocumentSubmittedResponseHistory,
   moveContent,
@@ -920,15 +919,14 @@ app.get(
     const loggedInUserId = Number(req.cookies.userId);
 
     try {
-      const assignment = await getAssignment(activityId, loggedInUserId);
-      const submittedResponses = await getDocumentSubmittedResponses({
+      const responseData = await getDocumentSubmittedResponses({
         activityId,
         docId,
         docVersionNum,
         answerId,
         ownerId: loggedInUserId,
       });
-      res.send({ assignment, submittedResponses });
+      res.send(responseData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(204);
@@ -950,8 +948,7 @@ app.get(
     const loggedInUserId = Number(req.cookies.userId);
 
     try {
-      const assignment = await getAssignment(activityId, loggedInUserId);
-      const submittedResponses = await getDocumentSubmittedResponseHistory({
+      const responseData = await getDocumentSubmittedResponseHistory({
         activityId,
         docId,
         docVersionNum,
@@ -959,7 +956,7 @@ app.get(
         userId,
         ownerId: loggedInUserId,
       });
-      res.send({ assignment, submittedResponses });
+      res.send(responseData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(204);
