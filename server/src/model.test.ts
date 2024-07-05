@@ -412,7 +412,7 @@ test("Add and remove promoted content", async () => {
   const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
   await addPromotedContentGroup(groupName, userId);
   const groups = await loadPromotedContentGroups();
-  const groupId = groups.find( 
+  const groupId = groups.find(
     (group) => group.groupName === groupName,
   )!.promotedGroupId;
   expect(groups.find((group) => group.groupName === groupName)).toBeDefined();
@@ -509,6 +509,49 @@ test("Update promoted content group", async () => {
   expect(
     groups3.find((group) => group.groupName === newGroupName),
   ).toBeDefined();
+});
+
+test("promoted content access control", async () => {
+  // Setup
+  const { userId } = await createTestUser();
+  const { activityId } = await createActivity(userId);
+  const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
+  const { activityId: promotedActivityId } = await createActivity(userId);
+  await updateActivity({
+    activityId: promotedActivityId,
+    isPublic: true,
+    ownerId: userId,
+  });
+  let groupId;
+  {
+    const { userId: adminId } = await createTestAdminUser();
+    await addPromotedContentGroup(groupName, adminId);
+    const groups = await loadPromotedContentGroups();
+    groupId = groups.find(
+      (group) => group.groupName === groupName,
+    )!.promotedGroupId;
+    await addPromotedContent(groupId, promotedActivityId, adminId);
+  }
+
+  // add group fails
+  await expect(
+    addPromotedContentGroup("some group name", userId),
+  ).rejects.toThrowError("admin");
+
+  // update group fails
+  await expect(
+    updatePromotedContentGroup(groupName, "some new name", true, true, userId),
+  ).rejects.toThrowError("admin");
+
+  // add content fails
+  await expect(
+    addPromotedContent(groupId, activityId, userId),
+  ).rejects.toThrowError("admin");
+
+  // remove content fails
+  await expect(
+    removePromotedContent(groupId, promotedActivityId, userId),
+  ).rejects.toThrowError("admin");
 });
 
 test("assign an activity", async () => {

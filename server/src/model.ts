@@ -649,7 +649,7 @@ export async function addPromotedContentGroup(
   groupName: string,
   userId: number,
 ) {
-  mustBeAdmin(
+  await mustBeAdmin(
     userId,
     "You must be a community admin to edit promoted content.",
   );
@@ -669,7 +669,7 @@ export async function updatePromotedContentGroup(
   currentlyFeatured: boolean,
   userId: number,
 ) {
-  mustBeAdmin(
+  await mustBeAdmin(
     userId,
     "You must be a community admin to edit promoted content.",
   );
@@ -781,7 +781,7 @@ export async function addPromotedContent(
   activityId: number,
   userId: number,
 ) {
-  mustBeAdmin(
+  await mustBeAdmin(
     userId,
     "You must be a community admin to edit promoted content.",
   );
@@ -815,7 +815,7 @@ export async function removePromotedContent(
   activityId: number,
   userId: number,
 ) {
-  mustBeAdmin(
+  await mustBeAdmin(
     userId,
     "You must be a community admin to edit promoted content.",
   );
