@@ -80,7 +80,7 @@ const PublicActivitiesSection = styled.div`
   background: #ffffff;
 `;
 
-const PortfolioGrid = styled.div`
+const ActivitiesGrid = styled.div`
   display: grid;
   grid-template-rows: 80px auto;
   height: 100vh;
@@ -318,7 +318,7 @@ export function Library() {
 
   return (
     <>
-      <PortfolioGrid>
+      <ActivitiesGrid>
         <Box
           as="header"
           gridRow="1/2"
@@ -378,7 +378,7 @@ export function Library() {
             </SimpleGrid>
           )}
         </PublicActivitiesSection>
-      </PortfolioGrid>
+      </ActivitiesGrid>
     </>
   );
 }

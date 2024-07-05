@@ -473,7 +473,7 @@ export function Community() {
                     );
                   } else if (itemObj?.type == "author") {
                     const { courseId, firstName, lastName } = itemObj;
-                    const imageLink = `/publicPortfolio/${courseId}`;
+                    const imageLink = `/publicActivities/${courseId}`;
 
                     return (
                       <AuthorCard
@@ -565,7 +565,7 @@ export function Community() {
                 {searchResults?.users.map((authorObj) => {
                   const { courseId, firstName, lastName } = authorObj;
                   // console.log("authorObj",authorObj)
-                  const imageLink = `/publicPortfolio/${courseId}`;
+                  const imageLink = `/publicActivities/${courseId}`;
 
                   return (
                     <AuthorCard

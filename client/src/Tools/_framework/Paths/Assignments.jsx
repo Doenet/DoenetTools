@@ -87,7 +87,7 @@ export function Assignments() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = `Portfolio - Doenet`;
+    document.title = `Activities - Doenet`;
   }, []);
 
   const fetcher = useFetcher();

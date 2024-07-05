@@ -158,7 +158,7 @@ export function PublicEditor() {
               <HStack>
                 {/*
                 Assume if there is an activity ID, the user is exploring a longer and uneditable community activity. 
-                The user should copy the activity into their portfolio to edit.
+                The user should copy the activity into their Activities page to edit.
 
                 Assume if there is no activity ID, the user is exploring a short and editable example and will not be saved.
                 */}
@@ -177,12 +177,12 @@ export function PublicEditor() {
                       <WarningIcon color="orange.500" mr="6px" />
 
                       <Text size="xs" pl="4px" pr="4px">
-                        Copy to portfolio to make your own edits.
+                        Copy to Activities to make your own edits.
                       </Text>
                     </Center>
                     {signedIn ? (
                       <Button
-                        data-test="Copy to Portfolio Button"
+                        data-test="Copy to Activities Button"
                         size="xs"
                         colorScheme="blue"
                         onClick={async () => {
@@ -195,11 +195,11 @@ export function PublicEditor() {
                           const { newActivityId } = data;
 
                           // TODO: do not navigate to editor
-                          // Instead, navigate to portfolio with newly created activity highlighted
+                          // Instead, navigate to Activities page with newly created activity highlighted
                           navigate(`/activityEditor/${newActivityId}`);
                         }}
                       >
-                        Copy to Portfolio
+                        Copy to Activities
                       </Button>
                     ) : (
                       <Button
@@ -210,7 +210,7 @@ export function PublicEditor() {
                           navigateTo.current = "/signIn";
                         }}
                       >
-                        Sign In To Copy to Portfolio
+                        Sign In To Copy to Activities
                       </Button>
                     )}
                   </>

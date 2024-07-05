@@ -1,6 +1,6 @@
 const { cesc2 } = require("../../../src/_utils/url");
 
-describe("Portfolio Editor Tests", function () {
+describe("Activities Editor Tests", function () {
   const userId = "cyuserId";
 
   beforeEach(() => {
@@ -15,13 +15,13 @@ describe("Portfolio Editor Tests", function () {
   });
 
   it("Update Button", () => {
-    const label = "Portfolio Variant Control";
+    const label = "Activities Variant Control";
     const text1 = "Hello World";
     const text2 = "Hi";
     const text3 = "There";
 
-    cy.log("Make an activity in the portfolio");
-    cy.get('[data-test="Portfolio"]').click();
+    cy.log("Make an activity in the activities page");
+    cy.get('[data-test="Activities"]').click();
     cy.get('[data-test="Add Activity"]').click();
 
     cy.get('[data-test="Controls Button"]').click();

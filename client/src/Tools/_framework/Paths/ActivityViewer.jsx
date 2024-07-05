@@ -28,7 +28,7 @@ export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
 
-  if (formObj._action == "copy to portfolio") {
+  if (formObj._action == "copy to activities") {
     let { data } = await axios.post(`/api/duplicateActivity`, {
       activityId: Number(params.activityId),
     });
@@ -36,7 +36,7 @@ export async function action({ params, request }) {
     const { newActivityId } = data;
 
     // TODO: do not navigate to editor
-    // Instead, navigate to portfolio with newly created activity highlighted
+    // Instead, navigate to activities with newly created activity highlighted
     return redirect(`/activityEditor/${newActivityId}`);
   } else if (formObj?._action == "create assignment") {
     const { data } = await axios.post(`/api/assignActivity`, {
@@ -198,20 +198,20 @@ export function ActivityViewer() {
                       {signedIn ? (
                         <HeaderSectionRight>
                           <Button
-                            data-test="Copy to Portfolio Button"
+                            data-test="Copy to Activities Button"
                             size="xs"
                             colorScheme="blue"
                             marginRight="10px"
                             onClick={() => {
                               fetcher.submit(
                                 {
-                                  _action: "copy to portfolio",
+                                  _action: "copy to activities",
                                 },
                                 { method: "post" },
                               );
                             }}
                           >
-                            Copy to Portfolio
+                            Copy to Activities
                           </Button>
 
                           <Button
@@ -239,7 +239,7 @@ export function ActivityViewer() {
                             navigateTo.current = "/signIn";
                           }}
                         >
-                          Sign In To Copy to Portfolio
+                          Sign In To Copy to Activities
                         </Button>
                       )}
                     </VStack>

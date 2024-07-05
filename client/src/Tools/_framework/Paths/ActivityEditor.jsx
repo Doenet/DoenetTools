@@ -868,7 +868,7 @@ export function GeneralActivityControls({
           let { success, cid, msg, asFileName } = data;
           if (success) {
             setImagePath(`/media/${cid}.jpg`);
-            //Refresh images in portfolio
+            //Refresh images in activities
             fetcher.submit(
               {
                 _action: "noop",

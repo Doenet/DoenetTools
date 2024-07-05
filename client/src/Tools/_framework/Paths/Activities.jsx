@@ -72,7 +72,7 @@ export async function action({ request, params }) {
 
     return true;
   } else if (formObj?._action == "Add Activity") {
-    //Create a portfolio activity and redirect to the editor for it
+    //Create an activity and redirect to the editor for it
     console.log(formObj.folderId);
     let { data } = await axios.post(`/api/createActivity/${formObj.folderId}`);
 
@@ -105,7 +105,7 @@ export async function action({ request, params }) {
     await axios.post(`/api/assignActivity`, {
       id: formObj.id,
     });
-    return redirect(`/assignments`);
+    return redirect(`/activityEditor/${formObj.id}`);
   } else if (formObj?._action == "noop") {
     return true;
   }
@@ -116,7 +116,7 @@ export async function action({ request, params }) {
 export async function loader({ params }) {
   const { data } = await axios.get(`/api/getFolderContent/${params.folderId}`);
   if (data.notMe) {
-    return redirect(`/publicPortfolio/${params.userId}`);
+    return redirect(`/publicActivities/${params.userId}`);
   }
 
   return { folderId: params.folderId, folder: data.folder };
@@ -132,7 +132,7 @@ const ActivitiesSection = styled.div`
   height: 100vh;
 `;
 
-function PortfolioSettingsDrawer({
+function ActivitySettingsDrawer({
   isOpen,
   onClose,
   finalFocusRef,
@@ -183,7 +183,7 @@ function PortfolioSettingsDrawer({
   );
 }
 
-export function Portfolio() {
+export function Activities() {
   let context = useOutletContext();
   let { folderId, folder } = useLoaderData();
   const [activityId, setActivityId] = useState();
@@ -258,7 +258,7 @@ export function Portfolio() {
 
   return (
     <>
-      <PortfolioSettingsDrawer
+      <ActivitySettingsDrawer
         isOpen={settingsAreOpen}
         onClose={settingsOnClose}
         finalFocusRef={controlsBtnRef}
@@ -295,7 +295,7 @@ export function Portfolio() {
             size="xs"
             colorScheme="blue"
             onClick={async () => {
-              //Create a portfolio activity and redirect to the editor for it
+              //Create an activity and redirect to the editor for it
               // let { data } = await axios.post("/api/createActivity");
               // let { activityId } = data;
               // navigate(`/activityEditor/${activityId}`);
@@ -354,7 +354,7 @@ export function Portfolio() {
                     )}
                     imageLink={
                       activity.isFolder
-                        ? `/portfolio/${activity.ownerId}/${activity.id}`
+                        ? `/activities/${activity.ownerId}/${activity.id}`
                         : `/activityEditor/${activity.id}`
                     }
                   />

@@ -1077,7 +1077,7 @@ test("copyActivityToFolder remixes correct versions", async () => {
     ownerId: ownerId1,
   });
 
-  // copy activity 1 to owner 2's portfolio
+  // copy activity 1 to owner 2's activities
   const activityId2 = await copyActivityToFolder(activityId1, ownerId2, null);
   const activity2 = await getActivity(activityId2);
   expect(activity2.ownerId).toBe(ownerId2);
@@ -1098,7 +1098,7 @@ test("copyActivityToFolder remixes correct versions", async () => {
     ownerId: ownerId1,
   });
 
-  // copy activity 1 to owner 3's portfolio
+  // copy activity 1 to owner 3's activities
   const activityId3 = await copyActivityToFolder(activityId1, ownerId3, null);
 
   const activity3 = await getActivity(activityId3);
