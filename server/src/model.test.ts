@@ -9,7 +9,7 @@ import {
   getDoc,
   getActivityEditorData,
   getActivityViewerData,
-  listUserContent,
+  getFolderContent,
   updateDoc,
   searchPublicContent,
   updateContent,
@@ -62,7 +62,11 @@ async function createTestUser() {
 test("New user has no content", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const docs = await listUserContent(userId, userId, null);
+  const docs = await getFolderContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    folderId: null,
+  });
   expect(docs).toStrictEqual({
     content: [],
     name: "vitest user",
@@ -106,7 +110,11 @@ test("New activity starts out private, then delete it", async () => {
     ],
   });
 
-  const data = await listUserContent(userId, userId, null);
+  const data = await getFolderContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    folderId: null,
+  });
 
   expect(data.content.length).toBe(1);
   expect(data.content[0].isPublic).eq(false);
@@ -118,12 +126,16 @@ test("New activity starts out private, then delete it", async () => {
     "No content found",
   );
 
-  const dataAfterDelete = await listUserContent(userId, userId, null);
+  const dataAfterDelete = await getFolderContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    folderId: null,
+  });
 
   expect(dataAfterDelete.content.length).toBe(0);
 });
 
-test("listUserContent returns both public and private activities for a user", async () => {
+test("getFolderContent returns both public and private content only for owner", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
@@ -131,41 +143,207 @@ test("listUserContent returns both public and private activities for a user", as
   const user = await createTestUser();
   const userId = user.userId;
 
-  const { activityId: publicActivityId } = await createActivity(ownerId, null);
-  const { activityId: privateActivityId } = await createActivity(ownerId, null);
+  const { activityId: publicActivity1Id } = await createActivity(ownerId, null);
+  const { activityId: privateActivity1Id } = await createActivity(
+    ownerId,
+    null,
+  );
 
-  // Make one activity public
+  const { folderId: publicFolder1Id } = await createFolder(ownerId, null);
+  const { folderId: privateFolder1Id } = await createFolder(ownerId, null);
+
+  const { activityId: publicActivity2Id } = await createActivity(
+    ownerId,
+    publicFolder1Id,
+  );
+  const { activityId: privateActivity2Id } = await createActivity(
+    ownerId,
+    publicFolder1Id,
+  );
+  const { folderId: publicFolder2Id } = await createFolder(
+    ownerId,
+    publicFolder1Id,
+  );
+  const { folderId: privateFolder2Id } = await createFolder(
+    ownerId,
+    publicFolder1Id,
+  );
+
+  const { activityId: publicActivity3Id } = await createActivity(
+    ownerId,
+    privateFolder1Id,
+  );
+  const { activityId: privateActivity3Id } = await createActivity(
+    ownerId,
+    privateFolder1Id,
+  );
+  const { folderId: publicFolder3Id } = await createFolder(
+    ownerId,
+    privateFolder1Id,
+  );
+  const { folderId: privateFolder3Id } = await createFolder(
+    ownerId,
+    privateFolder1Id,
+  );
+
+  // Make items public
   await updateContent({
-    id: publicActivityId,
+    id: publicActivity1Id,
+    isPublic: true,
+    ownerId,
+  });
+  await updateContent({
+    id: publicActivity2Id,
+    isPublic: true,
+    ownerId,
+  });
+  await updateContent({
+    id: publicActivity3Id,
+    isPublic: true,
+    ownerId,
+  });
+  await updateContent({
+    id: publicFolder1Id,
+    isPublic: true,
+    ownerId,
+  });
+  await updateContent({
+    id: publicFolder2Id,
+    isPublic: true,
+    ownerId,
+  });
+  await updateContent({
+    id: publicFolder3Id,
     isPublic: true,
     ownerId,
   });
 
-  const ownerDocs = await listUserContent(ownerId, ownerId, null);
-  expect(ownerDocs.content.length).eq(2);
-  expect(ownerDocs).toMatchObject({
+  let ownerContent = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: null,
+  });
+  expect(ownerContent.content.length).eq(4);
+  expect(ownerContent).toMatchObject({
     content: expect.arrayContaining([
       expect.objectContaining({
-        id: publicActivityId,
+        id: publicActivity1Id,
         isPublic: true,
       }),
       expect.objectContaining({
-        id: privateActivityId,
+        id: privateActivity1Id,
+        isPublic: false,
+      }),
+      expect.objectContaining({
+        id: publicFolder1Id,
+        isPublic: true,
+      }),
+      expect.objectContaining({
+        id: privateFolder1Id,
         isPublic: false,
       }),
     ]),
   });
 
-  const userDocs = await listUserContent(ownerId, userId, null);
-  expect(userDocs.content.length).eq(1);
-  expect(userDocs).toMatchObject({
+  let userContent = await getFolderContent({
+    ownerId,
+    loggedInUserId: userId,
+    folderId: null,
+  });
+  expect(userContent.content.length).eq(2);
+  expect(userContent).toMatchObject({
     content: expect.arrayContaining([
       expect.objectContaining({
-        id: publicActivityId,
+        id: publicActivity1Id,
+        isPublic: true,
+      }),
+      expect.objectContaining({
+        id: publicFolder1Id,
         isPublic: true,
       }),
     ]),
   });
+
+  ownerContent = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: publicFolder1Id,
+  });
+  expect(ownerContent.content.length).eq(4);
+  expect(ownerContent).toMatchObject({
+    content: expect.arrayContaining([
+      expect.objectContaining({
+        id: publicActivity2Id,
+        isPublic: true,
+      }),
+      expect.objectContaining({
+        id: privateActivity2Id,
+        isPublic: false,
+      }),
+      expect.objectContaining({
+        id: publicFolder2Id,
+        isPublic: true,
+      }),
+      expect.objectContaining({
+        id: privateFolder2Id,
+        isPublic: false,
+      }),
+    ]),
+  });
+
+  userContent = await getFolderContent({
+    ownerId,
+    loggedInUserId: userId,
+    folderId: publicFolder1Id,
+  });
+  expect(userContent.content.length).eq(2);
+  expect(userContent).toMatchObject({
+    content: expect.arrayContaining([
+      expect.objectContaining({
+        id: publicActivity2Id,
+        isPublic: true,
+      }),
+      expect.objectContaining({
+        id: publicFolder2Id,
+        isPublic: true,
+      }),
+    ]),
+  });
+
+  ownerContent = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: privateFolder1Id,
+  });
+  expect(ownerContent.content.length).eq(4);
+  expect(ownerContent).toMatchObject({
+    content: expect.arrayContaining([
+      expect.objectContaining({
+        id: publicActivity3Id,
+        isPublic: true,
+      }),
+      expect.objectContaining({
+        id: privateActivity3Id,
+        isPublic: false,
+      }),
+      expect.objectContaining({
+        id: publicFolder3Id,
+        isPublic: true,
+      }),
+      expect.objectContaining({
+        id: privateFolder3Id,
+        isPublic: false,
+      }),
+    ]),
+  });
+
+  await expect(
+    getFolderContent({
+      ownerId,
+      loggedInUserId: userId,
+      folderId: privateFolder1Id,
+    }),
+  ).rejects.toThrow("No content found");
 });
 
 test("Test updating various activity properties", async () => {
@@ -254,10 +432,26 @@ test("move content to different locations", async () => {
   const { folderId: folder2Id } = await createFolder(ownerId, folder1Id);
   const { folderId: folder3Id } = await createFolder(ownerId, null);
 
-  let baseContent = await listUserContent(ownerId, ownerId, null);
-  let folder1Content = await listUserContent(ownerId, ownerId, folder1Id);
-  let folder2Content = await listUserContent(ownerId, ownerId, folder2Id);
-  let folder3Content = await listUserContent(ownerId, ownerId, folder3Id);
+  let baseContent = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: null,
+  });
+  let folder1Content = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: folder1Id,
+  });
+  let folder2Content = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: folder2Id,
+  });
+  let folder3Content = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: folder3Id,
+  });
 
   expect(baseContent.content.map((item) => item.id)).eqls([
     activity1Id,
@@ -279,7 +473,11 @@ test("move content to different locations", async () => {
     desiredPosition: 1,
     ownerId,
   });
-  baseContent = await listUserContent(ownerId, ownerId, null);
+  baseContent = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: null,
+  });
   expect(baseContent.content.map((item) => item.id)).eqls([
     activity2Id,
     activity1Id,
@@ -293,7 +491,11 @@ test("move content to different locations", async () => {
     desiredPosition: 0,
     ownerId,
   });
-  baseContent = await listUserContent(ownerId, ownerId, null);
+  baseContent = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: null,
+  });
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder1Id,
     activity2Id,
@@ -307,7 +509,11 @@ test("move content to different locations", async () => {
     desiredPosition: 10,
     ownerId,
   });
-  baseContent = await listUserContent(ownerId, ownerId, null);
+  baseContent = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: null,
+  });
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder1Id,
     activity1Id,
@@ -321,7 +527,11 @@ test("move content to different locations", async () => {
     desiredPosition: -10,
     ownerId,
   });
-  baseContent = await listUserContent(ownerId, ownerId, null);
+  baseContent = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: null,
+  });
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder3Id,
     folder1Id,
@@ -335,8 +545,16 @@ test("move content to different locations", async () => {
     desiredPosition: 0,
     ownerId,
   });
-  baseContent = await listUserContent(ownerId, ownerId, null);
-  folder1Content = await listUserContent(ownerId, ownerId, folder1Id);
+  baseContent = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: null,
+  });
+  folder1Content = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: folder1Id,
+  });
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder1Id,
     activity1Id,
@@ -354,8 +572,16 @@ test("move content to different locations", async () => {
     desiredPosition: 2,
     ownerId,
   });
-  baseContent = await listUserContent(ownerId, ownerId, null);
-  folder1Content = await listUserContent(ownerId, ownerId, folder1Id);
+  baseContent = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: null,
+  });
+  folder1Content = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: folder1Id,
+  });
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder1Id,
     activity1Id,
@@ -373,8 +599,16 @@ test("move content to different locations", async () => {
     desiredPosition: 2,
     ownerId,
   });
-  folder1Content = await listUserContent(ownerId, ownerId, folder1Id);
-  folder3Content = await listUserContent(ownerId, ownerId, folder3Id);
+  folder1Content = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: folder1Id,
+  });
+  folder3Content = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: folder3Id,
+  });
   expect(folder1Content.content.map((item) => item.id)).eqls([folder3Id]);
   expect(folder3Content.content.map((item) => item.id)).eqls([folder2Id]);
 
@@ -390,9 +624,21 @@ test("move content to different locations", async () => {
     desiredPosition: 1,
     ownerId,
   });
-  baseContent = await listUserContent(ownerId, ownerId, null);
-  folder2Content = await listUserContent(ownerId, ownerId, folder2Id);
-  folder3Content = await listUserContent(ownerId, ownerId, folder3Id);
+  baseContent = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: null,
+  });
+  folder2Content = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: folder2Id,
+  });
+  folder3Content = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: folder3Id,
+  });
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder1Id,
     activity2Id,
@@ -518,7 +764,11 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
     });
   }
 
-  let contentList = await listUserContent(ownerId, ownerId, null);
+  let contentList = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: null,
+  });
   expect(contentList.content.map((item) => item.id)).eqls([
     activity1Id,
     activity2Id,
@@ -545,7 +795,11 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
     ownerId,
   });
 
-  contentList = await listUserContent(ownerId, ownerId, null);
+  contentList = await getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId: null,
+  });
   expect(contentList.content.map((item) => item.id)).eqls([
     activity1Id,
     activity2Id,

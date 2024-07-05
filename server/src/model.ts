@@ -878,47 +878,6 @@ export async function searchPublicContent(query: string) {
   return content;
 }
 
-export async function listUserContent(
-  ownerId: number,
-  loggedInUserId: number,
-  folderId: number | null,
-) {
-  const notMe = ownerId !== loggedInUserId;
-
-  const content = await prisma.content.findMany({
-    where: {
-      ownerId,
-      isDeleted: false,
-      isPublic: notMe ? true : undefined,
-      parentFolderId: folderId,
-    },
-    select: {
-      id: true,
-      isFolder: true,
-      ownerId: true,
-      name: true,
-      imagePath: true,
-      createdAt: true,
-      lastEdited: true,
-      isPublic: true,
-      isAssigned: true,
-      documents: { select: { id: true, doenetmlVersion: true } },
-    },
-    orderBy: { sortIndex: "asc" },
-  });
-
-  const user = await prisma.users.findUniqueOrThrow({
-    where: { userId: ownerId },
-    select: { name: true },
-  });
-
-  return {
-    content,
-    name: user.name,
-    notMe,
-  };
-}
-
 /**
  * Lists the content inside `folderId` where the user has an assignment score record.
  *
@@ -1871,45 +1830,59 @@ export async function getDocumentSubmittedResponseHistory({
 }
 
 export async function getFolderContent({
+  ownerId,
   folderId,
   loggedInUserId,
 }: {
+  ownerId: number;
   folderId: number | null;
   loggedInUserId: number;
 }) {
-  let notMe = false;
+  const notMe = ownerId !== loggedInUserId;
 
   if (folderId !== null) {
-    const ownerId = (
-      await prisma.content.findUniqueOrThrow({
-        where: { id: folderId, isDeleted: false, isFolder: true },
-        select: { ownerId: true },
-      })
-    ).ownerId;
-
-    notMe = loggedInUserId !== ownerId;
+    // if ask for a folder, make sure it exists and is allowed to be seen
+    await prisma.content.findUniqueOrThrow({
+      where: {
+        ownerId,
+        id: folderId,
+        isDeleted: false,
+        isPublic: notMe ? true : undefined,
+      },
+      select: { id: true },
+    });
   }
 
   const content = await prisma.content.findMany({
     where: {
-      parentFolderId: folderId,
+      ownerId,
       isDeleted: false,
       isPublic: notMe ? true : undefined,
+      parentFolderId: folderId,
     },
     select: {
       id: true,
-      ownerId: true,
       isFolder: true,
+      ownerId: true,
       name: true,
+      imagePath: true,
       createdAt: true,
       lastEdited: true,
-      imagePath: true,
-      isAssigned: true,
       isPublic: true,
-      owner: { select: { name: true } },
+      isAssigned: true,
+      documents: { select: { id: true, doenetmlVersion: true } },
     },
     orderBy: { sortIndex: "asc" },
   });
 
-  return content;
+  const user = await prisma.users.findUniqueOrThrow({
+    where: { userId: ownerId },
+    select: { name: true },
+  });
+
+  return {
+    content,
+    name: user.name,
+    notMe,
+  };
 }
