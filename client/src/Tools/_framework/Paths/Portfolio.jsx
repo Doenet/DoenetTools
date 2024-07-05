@@ -29,6 +29,7 @@ import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
 import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/ActivityCard";
+import Draggable from "../../../_reactComponents/Draggable/Draggable";
 import { GeneralActivityControls } from "./ActivityEditor";
 import axios from "axios";
 
@@ -59,7 +60,7 @@ export async function action({ request, params }) {
       name,
       imagePath: formObj.imagePath,
       isPublic,
-      activityId: formObj.activityId,
+      id: formObj.id,
       learningOutcomes,
     });
 
@@ -76,28 +77,29 @@ export async function action({ request, params }) {
     //Create a portfolio activity and redirect to the editor for it
     let { data } = await axios.post("/api/createActivity");
 
-    let { activityId } = data;
-    return redirect(`/activityEditor/${activityId}`);
+    let { id } = data;
+    return redirect(`/activityEditor/${id}`);
   } else if (formObj?._action == "Add Folder") {
     console.log("new folder created");
     await axios.post(`/api/createFolder`, { parentFolderId: formObj.folderId });
 
+    return true;
   } else if (formObj?._action == "Delete") {
     await axios.post(`/api/deleteActivity`, {
-      activityId: formObj.activityId,
+      id: formObj.id,
     });
 
     return true;
   } else if (formObj?._action == "Update Public") {
     await axios.post(`/api/updateIsPublicContent`, {
-      id: formObj.activityId,
+      id: formObj.id,
       isPublic: formObj.isPublic,
     });
 
     return true;
   } else if (formObj?._action == "Create Assignment") {
     await axios.post(`/api/assignActivity`, {
-      activityId: formObj.activityId,
+      id: formObj.id,
     });
     return redirect(`/assignments`);
   } else if (formObj?._action == "noop") {
@@ -126,33 +128,27 @@ const ActivitiesSection = styled.div`
   align-items: center;
   text-align: center;
   background: var(--lightBlue);
-  height: 100%;
+  height: 100vh;
 `;
 
 function PortfolioSettingsDrawer({
   isOpen,
   onClose,
   finalFocusRef,
-  activityId,
-  data,
+  id,
+  content,
 }) {
   const fetcher = useFetcher();
   let activityData;
-  if (activityId) {
-    let publicIndex = data.publicActivities.findIndex(
-      (obj) => obj.activityId == activityId,
+  console.log(content);
+  if (id) {
+    let index = content.findIndex(
+      (obj) => obj.id == id,
     );
-    if (publicIndex != -1) {
-      activityData = data.publicActivities[publicIndex];
+    if (index != -1) {
+      activityData = content[index];
     } else {
-      let privateIndex = data.privateActivities.findIndex(
-        (obj) => obj.activityId == activityId,
-      );
-      if (privateIndex != -1) {
-        activityData = data.privateActivities[privateIndex];
-      } else {
-        //Throw error not found
-      }
+      //Throw error not found
     }
   }
 
@@ -174,13 +170,13 @@ function PortfolioSettingsDrawer({
         </DrawerHeader>
 
         <DrawerBody>
-          {activityId && (
+          {id && (
             <GeneralActivityControls
               fetcher={fetcher}
-              activityId={activityId}
+              activityId={id}
               docId={activityData.docId}
               activityData={activityData}
-              allDoenetmlVersions={data.allDoenetmlVersions}
+              allDoenetmlVersions={content.allDoenetmlVersions}
             />
           )}
         </DrawerBody>
@@ -213,40 +209,25 @@ export function Portfolio() {
     return null;
   }
 
-  function getCardMenuList(isPublic, activityId) {
+  function getCardMenuList(isPublic, id) {
     return (
       <>
-        {" "}
-        {isPublic ? (
-          <MenuItem
-            data-test="Make Private Menu Item"
-            onClick={() => {
-              fetcher.submit(
-                { _action: "Update Public", isPublic, activityId },
-                { method: "post" },
-              );
-            }}
-          >
-            Make Private
-          </MenuItem>
-        ) : (
-          <MenuItem
-            data-test="Make Public Menu Item"
-            onClick={() => {
-              fetcher.submit(
-                { _action: "Update Public", isPublic, activityId },
-                { method: "post" },
-              );
-            }}
-          >
-            Make Public
-          </MenuItem>
-        )}
+        <MenuItem
+          data-test={`Make ${isPublic ? "Private" : "Public"} Menu Item`}
+          onClick={() => {
+            fetcher.submit(
+              { _action: "Update Public", isPublic, id },
+              { method: "post" },
+            );
+          }}
+        >
+          Make {isPublic ? "Private" : "Public"}
+        </MenuItem>
         <MenuItem
           data-test="Create Assignment Menu Item"
           onClick={() => {
             fetcher.submit(
-              { _action: "Create Assignment", activityId },
+              { _action: "Create Assignment", id },
               { method: "post" },
             );
           }}
@@ -257,7 +238,7 @@ export function Portfolio() {
           data-test="Delete Menu Item"
           onClick={() => {
             fetcher.submit(
-              { _action: "Delete", activityId },
+              { _action: "Delete", id },
               { method: "post" },
             );
           }}
@@ -267,7 +248,7 @@ export function Portfolio() {
         <MenuItem
           data-test="Settings Menu Item"
           onClick={() => {
-            setActivityId(activityId);
+            setActivityId(id);
             settingsOnOpen();
           }}
         >
@@ -283,8 +264,8 @@ export function Portfolio() {
         isOpen={settingsAreOpen}
         onClose={settingsOnClose}
         finalFocusRef={controlsBtnRef}
-        activityId={activityId}
-        data={data}
+        id={activityId}
+        content={content}
       />
       <Box
         backgroundColor="#fff"
@@ -324,7 +305,7 @@ export function Portfolio() {
                 // that was unused. This appears to work okay though? And it
                 // would make it consistent with how API requests are done elsewhere
                 fetcher.submit(
-                  { _action: "Add Activity", activityId },
+                  { _action: "Add Activity", id },
                   { method: "post" },
                 );
               }}
@@ -359,7 +340,7 @@ export function Portfolio() {
                       {...activity}
                       fullName={activity.owner.name}
                       menuItems={getCardMenuList(activity.isPublic, activity.id)}
-                      imageLink={`/activityEditor/${activity.activityId}`}
+                      imageLink={activity.isFolder ? `/portfolio/${activity.ownerId}/${activity.id}` : `/activityEditor/${activity.id}`}
                     />
                   );
                 })}

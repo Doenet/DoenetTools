@@ -342,7 +342,7 @@ app.post(
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
     const id = Number(body.id);
-    const isPublic = body.isPublic;
+    const isPublic = Boolean(body.isPublic);
     try {
       await updateContent({ id, isPublic, ownerId: loggedInUserId });
       res.send({});
