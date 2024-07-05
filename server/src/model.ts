@@ -115,7 +115,7 @@ async function getNextSortIndexForFolder(
 }
 
 export async function deleteActivity(id: number, ownerId: number) {
-  return await prisma.content.update({
+  const deleted = await prisma.content.update({
     where: { id, ownerId, isFolder: false },
     data: {
       isDeleted: true,
@@ -129,6 +129,8 @@ export async function deleteActivity(id: number, ownerId: number) {
       },
     },
   });
+
+  return { id: deleted.id, isDeleted: deleted.isDeleted };
 }
 
 export async function deleteFolder(id: number, ownerId: number) {
@@ -149,11 +151,16 @@ export async function deleteFolder(id: number, ownerId: number) {
       SET content.isDeleted = TRUE, documents.isDeleted = TRUE
       WHERE content.id IN (SELECT id from content_tree);
     `);
+
+  return await prisma.content.findUniqueOrThrow({
+    where: { id, ownerId },
+    select: { id: true, isDeleted: true },
+  });
 }
 
 // Note: currently (June 4, 2024) unused and untested
 export async function deleteDocument(id: number, ownerId: number) {
-  return await prisma.documents.update({
+  await prisma.documents.update({
     where: { id, activity: { ownerId } },
     data: { isDeleted: true },
   });
@@ -165,24 +172,28 @@ export async function updateContent({
   imagePath,
   isPublic,
   ownerId,
-  sortIndex,
 }: {
   id: number;
   name?: string;
   imagePath?: string;
   isPublic?: boolean;
   ownerId: number;
-  sortIndex?: number;
 }) {
-  return await prisma.content.update({
+  const updated = await prisma.content.update({
     where: { id, ownerId },
     data: {
       name,
       imagePath,
       isPublic,
-      sortIndex,
     },
   });
+
+  return {
+    id: updated.id,
+    name: updated.name,
+    imagePath: updated.imagePath,
+    isPublic: updated.isPublic,
+  };
 }
 
 export async function updateDoc({
@@ -209,7 +220,7 @@ export async function updateDoc({
     throw Error("Cannot change source of assigned document");
   }
 
-  return await prisma.documents.update({
+  const updated = await prisma.documents.update({
     where: { id, activity: { ownerId } },
     data: {
       source,
@@ -218,10 +229,19 @@ export async function updateDoc({
       lastEdited: DateTime.now().toJSDate(),
     },
   });
+
+  return {
+    id: updated.id,
+    name: updated.name,
+    source: updated.source,
+    doenetmlVersionId: updated.doenetmlVersionId,
+  };
 }
 
 // Note: getActivity does not currently incorporate access control,
-// by relies on calling functions to determine access
+// by relies on calling functions to determine access.
+// Also, the results of getActivity shouldn't be sent unchanged to the response,
+// as the sortIndex (bigint) cannot be serialized
 export async function getActivity(id: number) {
   return await prisma.content.findUniqueOrThrow({
     where: { id, isDeleted: false, isFolder: false },
@@ -229,6 +249,16 @@ export async function getActivity(id: number) {
       documents: {
         where: { isDeleted: false },
       },
+    },
+  });
+}
+
+export async function getActivityName(id: number) {
+  return await prisma.content.findUniqueOrThrow({
+    where: { id, isDeleted: false, isFolder: false },
+    select: {
+      id: true,
+      name: true,
     },
   });
 }
@@ -994,7 +1024,10 @@ export async function getAllRecentPublicActivities() {
     where: { isPublic: true, isDeleted: false, isFolder: false },
     orderBy: { lastEdited: "desc" },
     take: 100,
-    include: {
+    select: {
+      id: true,
+      name: true,
+      imagePath: true,
       owner: {
         select: {
           email: true,
@@ -1101,6 +1134,8 @@ export async function closeAssignmentWithCode(
   });
 }
 
+// Note: this function returns `sortIndex` (which is a bigint)
+// so the data shouldn't be sent unchanged to the response
 export async function getAssignment(activityId: number, ownerId: number) {
   let assignment = await prisma.content.findUniqueOrThrow({
     where: {
@@ -1778,6 +1813,19 @@ export async function getDocumentSubmittedResponses({
   ownerId: number;
   answerId: string;
 }) {
+  // get activity name and make sure that owner is the owner
+  const activityName = (
+    await prisma.content.findUniqueOrThrow({
+      where: {
+        id: activityId,
+        ownerId,
+        isDeleted: false,
+        isFolder: false,
+      },
+      select: { name: true },
+    })
+  ).name;
+
   // TODO: gave up figuring out to do find the best response and the latest response in a SQL query,
   // so just create in via JS based on this one query.
   // Can we come up with a better solution?
@@ -1789,7 +1837,7 @@ export async function getDocumentSubmittedResponses({
       creditAchieved: number;
       submittedAt: DateTime;
       maxCredit: number;
-      numResponses: number;
+      numResponses: bigint;
     }[]
   >(Prisma.sql`
 select "dsr"."userId", "users"."name" AS "userName", "response", "creditAchieved", "submittedAt",
@@ -1803,7 +1851,7 @@ select "dsr"."userId", "users"."name" AS "userName", "response", "creditAchieved
     	order by "dsr"."userId" asc, "submittedAt" desc
   `);
 
-  let responses = [];
+  let submittedResponses = [];
   let newResponse;
   let lastUserId = 0;
 
@@ -1811,7 +1859,7 @@ select "dsr"."userId", "users"."name" AS "userName", "response", "creditAchieved
     if (respObj.userId > lastUserId) {
       lastUserId = respObj.userId;
       if (newResponse) {
-        responses.push(newResponse);
+        submittedResponses.push(newResponse);
       }
       newResponse = {
         userId: respObj.userId,
@@ -1832,10 +1880,10 @@ select "dsr"."userId", "users"."name" AS "userName", "response", "creditAchieved
   }
 
   if (newResponse) {
-    responses.push(newResponse);
+    submittedResponses.push(newResponse);
   }
 
-  return responses;
+  return { activityName, submittedResponses };
 }
 
 export async function getDocumentSubmittedResponseHistory({
@@ -1853,6 +1901,19 @@ export async function getDocumentSubmittedResponseHistory({
   answerId: string;
   userId: number;
 }) {
+  // get activity name and make sure that owner is the owner
+  const activityName = (
+    await prisma.content.findUniqueOrThrow({
+      where: {
+        id: activityId,
+        ownerId,
+        isDeleted: false,
+        isFolder: false,
+      },
+      select: { name: true },
+    })
+  ).name;
+
   // for each combination of ["activityId", "docId", "docVersionNum", "answerId", "userId"],
   // find the latest submitted response
   let submittedResponses = await prisma.documentSubmittedResponses.findMany({
@@ -1881,7 +1942,7 @@ export async function getDocumentSubmittedResponseHistory({
     },
   });
 
-  return submittedResponses;
+  return { activityName, submittedResponses };
 }
 
 export async function getFolderContent({
