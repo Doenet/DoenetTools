@@ -37,8 +37,6 @@ export async function action({ request, params }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
 
-  console.log(formObj);
-
   if (formObj._action == "update general") {
     //Don't let name be blank
     let name = formObj?.name?.trim();
@@ -75,18 +73,24 @@ export async function action({ request, params }) {
     return true;
   } else if (formObj?._action == "Add Activity") {
     //Create a portfolio activity and redirect to the editor for it
-    let { data } = await axios.post("/api/createActivity");
+    console.log(formObj.folderId);
+    let { data } = await axios.post(`/api/createActivity/${formObj.folderId}`);
 
-    let { id } = data;
-    return redirect(`/activityEditor/${id}`);
+    let { activityId, docId } = data;
+    return redirect(`/activityEditor/${activityId}`);
   } else if (formObj?._action == "Add Folder") {
-    console.log("new folder created");
-    await axios.post(`/api/createFolder`, { parentFolderId: formObj.folderId });
+    await axios.post(`/api/createFolder/${formObj.folderId}`);
 
     return true;
-  } else if (formObj?._action == "Delete") {
+  } else if (formObj?._action == "Delete Activity") {
     await axios.post(`/api/deleteActivity`, {
-      id: formObj.id,
+      activityId: formObj.id,
+    });
+
+    return true;
+  } else if (formObj?._action == "Delete Folder") {
+    await axios.post(`/api/deleteFolder`, {
+      folderId: formObj.id,
     });
 
     return true;
@@ -110,15 +114,12 @@ export async function action({ request, params }) {
 }
 
 export async function loader({ params }) {
-
   const { data } = await axios.get(`/api/getFolderContent/${params.folderId}`);
   if (data.notMe) {
     return redirect(`/publicPortfolio/${params.userId}`);
   }
 
-  console.log(data);
-
-  return { folderId: params.folderId, data };
+  return { folderId: params.folderId, folder: data.folder };
 }
 
 const ActivitiesSection = styled.div`
@@ -141,9 +142,7 @@ function PortfolioSettingsDrawer({
   const fetcher = useFetcher();
   let activityData;
   if (id) {
-    let index = content.findIndex(
-      (obj) => obj.id == id,
-    );
+    let index = content.findIndex((obj) => obj.id == id);
     if (index != -1) {
       activityData = content[index];
     } else {
@@ -186,7 +185,7 @@ function PortfolioSettingsDrawer({
 
 export function Portfolio() {
   let context = useOutletContext();
-  let { folderId, data } = useLoaderData();
+  let { folderId, folder } = useLoaderData();
   const [activityId, setActivityId] = useState();
   const controlsBtnRef = useRef(null);
   const navigate = useNavigate();
@@ -208,7 +207,7 @@ export function Portfolio() {
     return null;
   }
 
-  function getCardMenuList(isPublic, id) {
+  function getCardMenuList(isPublic, isFolder, id) {
     return (
       <>
         <MenuItem
@@ -237,7 +236,7 @@ export function Portfolio() {
           data-test="Delete Menu Item"
           onClick={() => {
             fetcher.submit(
-              { _action: "Delete", id },
+              { _action: isFolder ? "Delete Folder" : "Delete Activity", id },
               { method: "post" },
             );
           }}
@@ -264,7 +263,7 @@ export function Portfolio() {
         onClose={settingsOnClose}
         finalFocusRef={controlsBtnRef}
         id={activityId}
-        content={data.folder}
+        content={folder.content}
       />
       <Box
         backgroundColor="#fff"
@@ -273,88 +272,98 @@ export function Portfolio() {
         width="100%"
         textAlign="center"
       >
-        <Heading as="h2" size="lg" paddingTop=".5em">My Activities</Heading>
-        <div style={{float: 'right'}}>
+        <Heading as="h2" size="lg" paddingTop=".5em">
+          My Activities
+        </Heading>
+        <div style={{ float: "right" }}>
           <Button
-              margin="3px"
-              size="xs"
-              colorScheme="blue"
-              onClick={async () => {
-                fetcher.submit(
-                  { _action: "Add Folder", folderId },
-                  { method: "post" },
-                );
-              }}
-            >
-              + Add Folder
-            </Button>
-            <Button
-              margin="3px"
-              data-test="Add Activity"
-              size="xs"
-              colorScheme="blue"
-              onClick={async () => {
-                //Create a portfolio activity and redirect to the editor for it
-                // let { data } = await axios.post("/api/createActivity");
-                // let { activityId } = data;
-                // navigate(`/activityEditor/${activityId}`);
+            margin="3px"
+            size="xs"
+            colorScheme="blue"
+            onClick={async () => {
+              fetcher.submit(
+                { _action: "Add Folder", folderId },
+                { method: "post" },
+              );
+            }}
+          >
+            + Add Folder
+          </Button>
+          <Button
+            margin="3px"
+            data-test="Add Activity"
+            size="xs"
+            colorScheme="blue"
+            onClick={async () => {
+              //Create a portfolio activity and redirect to the editor for it
+              // let { data } = await axios.post("/api/createActivity");
+              // let { activityId } = data;
+              // navigate(`/activityEditor/${activityId}`);
 
-                // TODO - review this, elsewhere the fetcher is being used, and
-                // there was code up in the action() method for this action
-                // that was unused. This appears to work okay though? And it
-                // would make it consistent with how API requests are done elsewhere
-                fetcher.submit(
-                  { _action: "Add Activity", id },
-                  { method: "post" },
+              // TODO - review this, elsewhere the fetcher is being used, and
+              // there was code up in the action() method for this action
+              // that was unused. This appears to work okay though? And it
+              // would make it consistent with how API requests are done elsewhere
+              fetcher.submit(
+                { _action: "Add Activity", folderId },
+                { method: "post" },
+              );
+            }}
+          >
+            + Add Activity
+          </Button>
+          <Button
+            margin="3px"
+            size="xs"
+            colorScheme="blue"
+            onClick={() => navigate(`/allAssignmentScores/${folderId}`)}
+          >
+            See Scores
+          </Button>
+        </div>
+      </Box>
+      <ActivitiesSection data-test="Public Activities">
+        <Wrap p="10px" overflow="visible">
+          {folder.content.length < 1 ? (
+            <Flex
+              flexDirection="column"
+              justifyContent="center"
+              alignItems="center"
+              alignContent="center"
+              minHeight={200}
+              background="doenet.canvas"
+              padding={20}
+              width="100%"
+              backgroundColor="transparent"
+            >
+              <Icon fontSize="48pt" as={RiEmotionSadLine} />
+              <Text fontSize="36pt">No Activities Yet</Text>
+            </Flex>
+          ) : (
+            <>
+              {folder.content.map((activity) => {
+                return (
+                  <ActivityCard
+                    key={`Card${activity.id}`}
+                    {...activity}
+                    fullName={folder.name}
+                    menuItems={getCardMenuList(
+                      activity.isPublic,
+                      activity.isFolder,
+                      activity.id,
+                    )}
+                    imageLink={
+                      activity.isFolder
+                        ? `/portfolio/${activity.ownerId}/${activity.id}`
+                        : `/activityEditor/${activity.id}`
+                    }
+                  />
                 );
-              }}
-            >
-              + Add Activity
-            </Button>
-            <Button
-              margin="3px"
-              size="xs"
-              colorScheme="blue"
-              onClick={() => navigate(`/allAssignmentScores/${folderId}`)}
-            >
-              See Scores
-            </Button>
-          </div>
-        </Box>
-        <ActivitiesSection data-test="Public Activities">
-          <Wrap p="10px" overflow="visible">
-            {data.folder.length < 1 ? (
-              <Flex
-                flexDirection="column"
-                justifyContent="center"
-                alignItems="center"
-                alignContent="center"
-                minHeight={200}
-                background="doenet.canvas"
-                padding={20}
-                width="100%"
-                backgroundColor="transparent"
-              >
-                <Icon fontSize="48pt" as={RiEmotionSadLine} />
-                <Text fontSize="36pt">No Activities Yet</Text>
-              </Flex>
-            ) : (
-              <>
-                {data.folder.map((activity) => {
-                  return (
-                    <ActivityCard
-                      key={`Card${activity.id}`}
-                      {...activity}
-                      fullName={activity.owner.name}
-                      menuItems={getCardMenuList(activity.isPublic, activity.id)}
-                      imageLink={activity.isFolder ? `/portfolio/${activity.ownerId}/${activity.id}` : `/activityEditor/${activity.id}`}
-                    />
-                  );
-                })}
-              </>
-            )}
-          </Wrap>
-        </ActivitiesSection>
+              })}
+            </>
+          )}
+        </Wrap>
+      </ActivitiesSection>
     </>
   );
 }

@@ -17,7 +17,6 @@ import {
   getAllRecentPublicActivities,
   getIsAdmin,
   getUserInfo,
-  listUserContent,
   updateDoc,
   searchPublicContent,
   updateContent,
@@ -124,7 +123,11 @@ app.get(
     const loggedInUserId = Number(req.cookies.userId);
     const userId = Number(req.params.userId);
     try {
-      const contentData = await listUserContent(userId, loggedInUserId, null);
+      const contentData = await getFolderContent({
+        ownerId: userId,
+        loggedInUserId,
+        folderId: null,
+      });
       const allDoenetmlVersions = await getAllDoenetmlVersions();
       res.send({ allDoenetmlVersions, ...contentData });
     } catch (e) {
@@ -144,11 +147,11 @@ app.get(
     const folderId = Number(req.params.folderId);
     const userId = Number(req.params.userId);
     try {
-      const contentData = await listUserContent(
-        userId,
+      const contentData = await getFolderContent({
+        ownerId: userId,
         loggedInUserId,
         folderId,
-      );
+      });
       const allDoenetmlVersions = await getAllDoenetmlVersions();
       res.send({ allDoenetmlVersions, ...contentData });
     } catch (e) {
@@ -167,7 +170,11 @@ app.get(
     const userId = Number(req.params.userId);
     try {
       // send 0 as the logged in content to make sure get only public content
-      const contentData = await listUserContent(userId, 0, null);
+      const contentData = await getFolderContent({
+        ownerId: userId,
+        loggedInUserId: 0,
+        folderId: null,
+      });
       res.send(contentData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -186,7 +193,11 @@ app.get(
     const folderId = Number(req.params.folderId);
     try {
       // send 0 as the logged in content to make sure get only public content
-      const contentData = await listUserContent(userId, 0, folderId);
+      const contentData = await getFolderContent({
+        ownerId: userId,
+        loggedInUserId: 0,
+        folderId,
+      });
       res.send(contentData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -248,9 +259,9 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
-    const activityId = Number(body.activityId);
+    const id = Number(body.activityId);
     try {
-      await deleteActivity(activityId, loggedInUserId);
+      await deleteActivity(id, loggedInUserId);
       res.send({});
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -291,7 +302,7 @@ app.post(
   "/api/createActivity/:parentFolderId",
   async (req: Request, res: Response) => {
     const loggedInUserId = Number(req.cookies.userId);
-    const parentFolderId = Number(req.params.parentFolderId);
+    const parentFolderId = eval(req.params.parentFolderId); // is there a better way to let this be a number or null?
     const { activityId, docId } = await createActivity(
       loggedInUserId,
       parentFolderId,
@@ -590,7 +601,7 @@ app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
 });
 
 app.post("/api/assignActivity", async (req: Request, res: Response) => {
-  const activityId = Number(req.body.activityId);
+  const activityId = Number(req.body.id);
   const loggedInUserId = Number(req.cookies.userId);
 
   await assignActivity(activityId, loggedInUserId);
@@ -786,6 +797,28 @@ app.get(
 );
 
 app.get(
+  "/api/getAllAssignmentScores",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const parentFolderId = Number(req.params.parentFolderId);
+
+    try {
+      const data = await getAllAssignmentScores({
+        ownerId: loggedInUserId,
+        parentFolderId,
+      });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
   "/api/getStudentData/:userId",
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = Number(req.params.userId);
@@ -919,7 +952,11 @@ app.get(
     const loggedInUserId = Number(req.cookies.userId);
 
     try {
-      const folder = await getFolderContent({ folderId, loggedInUserId });
+      const folder = await getFolderContent({
+        ownerId: loggedInUserId,
+        folderId,
+        loggedInUserId,
+      });
       res.send({ folder });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {

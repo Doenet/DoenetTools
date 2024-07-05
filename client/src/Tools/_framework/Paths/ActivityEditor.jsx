@@ -77,8 +77,8 @@ export async function action({ params, request }) {
   }
 
   if (formObj._action == "update name") {
-    await axios.post(`/api/updateActivityName`, {
-      activityId: Number(params.activityId),
+    await axios.post(`/api/updateContentName`, {
+      id: Number(params.activityId),
       name,
     });
     return true;
@@ -149,14 +149,14 @@ export async function loader({ params }) {
       // If docId was not supplied in the url,
       // then use the first docId from the activity.
       // TODO: what happens if activity has no documents?
-      docId = activityData.documents[0].docId;
+      docId = activityData.documents[0].id;
     }
 
     // If docId isn't in the activity, use the first docId
-    let docInOrder = activityData.documents.map((x) => x.docId).indexOf(docId);
+    let docInOrder = activityData.documents.map((x) => x.id).indexOf(docId);
     if (docInOrder === -1) {
       docInOrder = 0;
-      docId = activityData.documents[docInOrder].docId;
+      docId = activityData.documents[docInOrder].id;
     }
 
     const doenetML = activityData.documents[docInOrder].content;
