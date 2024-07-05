@@ -36,6 +36,7 @@ import {
   listUserAssigned,
   createFolder,
   moveContent,
+  deleteFolder,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -403,6 +404,217 @@ test("only owner can delete an activity", async () => {
 
   const deleteResult = await deleteActivity(activityId, ownerId);
   expect(deleteResult.isDeleted).toBe(true);
+});
+
+test("deleteFolder marks a folder and all its sub content as deleted and prevents its retrieval", async () => {
+  const user = await createTestUser();
+  const userId = user.userId;
+
+  const { folderId: folder1Id } = await createFolder(userId, null);
+
+  const { activityId: activity1Id, docId: doc1Id } = await createActivity(
+    userId,
+    folder1Id,
+  );
+  const { folderId: folder2Id } = await createFolder(userId, folder1Id);
+  const { activityId: activity2Id, docId: doc2Id } = await createActivity(
+    userId,
+    folder2Id,
+  );
+  const { folderId: folder3Id } = await createFolder(userId, folder2Id);
+  const { activityId: activity3Id, docId: doc3Id } = await createActivity(
+    userId,
+    folder3Id,
+  );
+
+  const { folderId: folder4Id } = await createFolder(userId, null);
+  const { activityId: activity4Id, docId: doc4Id } = await createActivity(
+    userId,
+    folder4Id,
+  );
+  const { folderId: folder5Id } = await createFolder(userId, folder4Id);
+  const { activityId: activity5Id, docId: doc5Id } = await createActivity(
+    userId,
+    folder5Id,
+  );
+  const { folderId: folder6Id } = await createFolder(userId, folder5Id);
+  const { activityId: activity6Id, docId: doc6Id } = await createActivity(
+    userId,
+    folder6Id,
+  );
+
+  // items can be retrieved
+  let baseContent = await getFolderContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    folderId: null,
+  });
+  expect(baseContent.content.length).eq(2);
+  let folder1Content = await getFolderContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    folderId: folder1Id,
+  });
+  expect(folder1Content.content.length).eq(2);
+  let folder2Content = await getFolderContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    folderId: folder2Id,
+  });
+  expect(folder2Content.content.length).eq(2);
+  let folder3Content = await getFolderContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    folderId: folder3Id,
+  });
+  expect(folder3Content.content.length).eq(1);
+  let folder4Content = await getFolderContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    folderId: folder4Id,
+  });
+  expect(folder4Content.content.length).eq(2);
+  let folder5Content = await getFolderContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    folderId: folder5Id,
+  });
+  expect(folder5Content.content.length).eq(2);
+  let folder6Content = await getFolderContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    folderId: folder6Id,
+  });
+  expect(folder6Content.content.length).eq(1);
+
+  await getActivity(activity1Id);
+  await getActivity(activity2Id);
+  await getActivity(activity3Id);
+  await getActivity(activity4Id);
+  await getActivity(activity5Id);
+  await getActivity(activity6Id);
+  await getDoc(doc1Id);
+  await getDoc(doc2Id);
+  await getDoc(doc3Id);
+  await getDoc(doc4Id);
+  await getDoc(doc5Id);
+  await getDoc(doc6Id);
+
+  // delete the entire folder 1 and all its content
+  await deleteFolder(folder1Id, userId);
+
+  baseContent = await getFolderContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    folderId: null,
+  });
+  expect(baseContent.content.length).eq(1);
+  await expect(
+    getFolderContent({
+      ownerId: userId,
+      loggedInUserId: userId,
+      folderId: folder1Id,
+    }),
+  ).rejects.toThrow("No content found");
+  await expect(
+    getFolderContent({
+      ownerId: userId,
+      loggedInUserId: userId,
+      folderId: folder2Id,
+    }),
+  ).rejects.toThrow("No content found");
+  await expect(
+    getFolderContent({
+      ownerId: userId,
+      loggedInUserId: userId,
+      folderId: folder3Id,
+    }),
+  ).rejects.toThrow("No content found");
+  folder4Content = await getFolderContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    folderId: folder4Id,
+  });
+  expect(folder4Content.content.length).eq(2);
+  folder5Content = await getFolderContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    folderId: folder5Id,
+  });
+  expect(folder5Content.content.length).eq(2);
+  folder6Content = await getFolderContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    folderId: folder6Id,
+  });
+  expect(folder6Content.content.length).eq(1);
+
+  await expect(getActivity(activity1Id)).rejects.toThrow("No content found");
+  await expect(getActivity(activity2Id)).rejects.toThrow("No content found");
+  await expect(getActivity(activity3Id)).rejects.toThrow("No content found");
+  await getActivity(activity4Id);
+  await getActivity(activity5Id);
+  await getActivity(activity6Id);
+  await expect(getDoc(doc1Id)).rejects.toThrow("No documents found");
+  await expect(getDoc(doc2Id)).rejects.toThrow("No documents found");
+  await expect(getDoc(doc3Id)).rejects.toThrow("No documents found");
+  await getDoc(doc4Id);
+  await getDoc(doc5Id);
+  await getDoc(doc6Id);
+
+  // delete folder 5 and its content
+  await deleteFolder(folder5Id, userId);
+
+  baseContent = await getFolderContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    folderId: null,
+  });
+  expect(baseContent.content.length).eq(1);
+  folder4Content = await getFolderContent({
+    ownerId: userId,
+    loggedInUserId: userId,
+    folderId: folder4Id,
+  });
+  expect(folder4Content.content.length).eq(1);
+  await expect(
+    getFolderContent({
+      ownerId: userId,
+      loggedInUserId: userId,
+      folderId: folder5Id,
+    }),
+  ).rejects.toThrow("No content found");
+  await expect(
+    getFolderContent({
+      ownerId: userId,
+      loggedInUserId: userId,
+      folderId: folder6Id,
+    }),
+  ).rejects.toThrow("No content found");
+
+  await getActivity(activity4Id);
+  await expect(getActivity(activity5Id)).rejects.toThrow("No content found");
+  await expect(getActivity(activity6Id)).rejects.toThrow("No content found");
+  await getDoc(doc4Id);
+  await expect(getDoc(doc5Id)).rejects.toThrow("No documents found");
+  await expect(getDoc(doc6Id)).rejects.toThrow("No documents found");
+});
+
+test("non-owner cannot delete folder", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const user = await createTestUser();
+  const userId = user.userId;
+
+  const { folderId } = await createFolder(ownerId, null);
+  await deleteFolder(folderId, userId);
+
+  // folder is still around
+  getFolderContent({
+    ownerId,
+    loggedInUserId: ownerId,
+    folderId,
+  });
 });
 
 test("updateDoc updates document properties", async () => {
