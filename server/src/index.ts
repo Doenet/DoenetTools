@@ -764,14 +764,15 @@ app.get(
 );
 
 app.get(
-  "/api/getAllAssignmentScores",
+  "/api/getAllAssignmentScores/:folderId",
   async (req: Request, res: Response, next: NextFunction) => {
+    const folderId = eval(req.params.folderId); // is there a better way to get this as null or number?
     const loggedInUserId = Number(req.cookies.userId);
 
     try {
       const data = await getAllAssignmentScores({
         ownerId: loggedInUserId,
-        parentFolderId: null,
+        parentFolderId: folderId,
       });
       res.send(data);
     } catch (e) {

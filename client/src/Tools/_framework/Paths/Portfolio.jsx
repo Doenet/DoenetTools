@@ -140,7 +140,6 @@ function PortfolioSettingsDrawer({
 }) {
   const fetcher = useFetcher();
   let activityData;
-  console.log(content);
   if (id) {
     let index = content.findIndex(
       (obj) => obj.id == id,
@@ -189,8 +188,8 @@ export function Portfolio() {
   let context = useOutletContext();
   let { folderId, data } = useLoaderData();
   const [activityId, setActivityId] = useState();
-  const [content, setContent] = useState(data.folder);
   const controlsBtnRef = useRef(null);
+  const navigate = useNavigate();
 
   const {
     isOpen: settingsAreOpen,
@@ -265,7 +264,7 @@ export function Portfolio() {
         onClose={settingsOnClose}
         finalFocusRef={controlsBtnRef}
         id={activityId}
-        content={content}
+        content={data.folder}
       />
       <Box
         backgroundColor="#fff"
@@ -277,7 +276,7 @@ export function Portfolio() {
         <Heading as="h2" size="lg" paddingTop=".5em">My Activities</Heading>
         <div style={{float: 'right'}}>
           <Button
-              margin="2px"
+              margin="3px"
               size="xs"
               colorScheme="blue"
               onClick={async () => {
@@ -312,11 +311,19 @@ export function Portfolio() {
             >
               + Add Activity
             </Button>
+            <Button
+              margin="3px"
+              size="xs"
+              colorScheme="blue"
+              onClick={() => navigate(`/allAssignmentScores/${folderId}`)}
+            >
+              See Scores
+            </Button>
           </div>
         </Box>
         <ActivitiesSection data-test="Public Activities">
           <Wrap p="10px" overflow="visible">
-            {content.length < 1 ? (
+            {data.folder.length < 1 ? (
               <Flex
                 flexDirection="column"
                 justifyContent="center"
@@ -333,7 +340,7 @@ export function Portfolio() {
               </Flex>
             ) : (
               <>
-                {content.map((activity) => {
+                {data.folder.map((activity) => {
                   return (
                     <ActivityCard
                       key={`Card${activity.id}`}

@@ -321,7 +321,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "allAssignmentScores",
+        path: "allAssignmentScores/:folderId",
         loader: allAssignmentScoresLoader,
         element: <AllAssignmentScores />,
         errorElement: <ErrorPage />,
