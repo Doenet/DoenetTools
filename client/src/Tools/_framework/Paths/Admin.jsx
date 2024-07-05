@@ -15,8 +15,7 @@ export async function loader() {
 
   let carouselGroups = [];
   if (isAdmin) {
-    const { data: carouselDataGroups } = await axios.get(`/api/loadPromotedContentGroups`);
-    carouselGroups = carouselDataGroups.carouselGroups;
+    carouselGroups = (await axios.get(`/api/loadPromotedContentGroups`)).data;
   }
 
   return {

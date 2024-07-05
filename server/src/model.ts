@@ -2,7 +2,26 @@ import { PrismaClient, Prisma } from "@prisma/client";
 import { cidFromText } from "./utils/cid";
 import { DateTime } from "luxon";
 
+export class InvalidRequestError extends Error {
+  errorCode = 400;
+  constructor(message: string) {
+    super(message);
+    // 👇️ because we are extending a built-in class
+    Object.setPrototypeOf(this, InvalidRequestError.prototype);
+  }
+}
+
 const prisma = new PrismaClient();
+
+async function mustBeAdmin(
+  userId: number,
+  message = "You must be an community admin to take this action",
+) {
+  const isAdmin = await getIsAdmin(userId);
+  if (!isAdmin) {
+    throw new InvalidRequestError(message);
+  }
+}
 
 export async function createActivity(ownerId: number) {
   let defaultDoenetmlVersion = await prisma.doenetmlVersions.findFirstOrThrow({
@@ -532,17 +551,25 @@ export async function listUserAssignments(userId: number) {
   };
 }
 
-export async function findOrCreateUser(email: string, name: string) {
+export async function findOrCreateUser(
+  email: string,
+  name: string,
+  isAdmin = false,
+) {
   const user = await prisma.users.findUnique({ where: { email } });
   if (user) {
     return user;
   } else {
-    return createUser(email, name);
+    return createUser(email, name, isAdmin);
   }
 }
 
-export async function createUser(email: string, name: string) {
-  const result = await prisma.users.create({ data: { email, name } });
+export async function createUser(
+  email: string,
+  name: string,
+  isAdmin: boolean,
+) {
+  const result = await prisma.users.create({ data: { email, name, isAdmin } });
   return result;
 }
 
@@ -618,64 +645,47 @@ export async function getAllRecentPublicActivities() {
   return docs;
 }
 
-// TODO - access control
-export async function addPromotedContentGroup(groupName: string) {
-  try {
-    await prisma.promotedContentGroups.create({
-      data: {
-        groupName,
-        sortOrder: "a",
-      },
-    });
-    return { success: true };
-  } catch (err) {
-    if (err instanceof Prisma.PrismaClientKnownRequestError) {
-      // The .code property can be accessed in a type-safe manner
-      if (err.code === "P2002") {
-        return {
-          success: false,
-          message: "A group with that name already exists.",
-        };
-      }
-    }
-    throw err;
-  }
+export async function addPromotedContentGroup(
+  groupName: string,
+  userId: number,
+) {
+  mustBeAdmin(
+    userId,
+    "You must be a community admin to edit promoted content.",
+  );
+
+  await prisma.promotedContentGroups.create({
+    data: {
+      groupName,
+      sortOrder: "a",
+    },
+  });
 }
 
-// TODO - access control
 export async function updatePromotedContentGroup(
   groupName: string,
   newGroupName: string,
   homepage: boolean,
   currentlyFeatured: boolean,
+  userId: number,
 ) {
-  try {
-    await prisma.promotedContentGroups.update({
-      where: {
-        groupName,
-      },
-      data: {
-        groupName: newGroupName,
-        homepage,
-        currentlyFeatured,
-      },
-    });
-    return { success: true };
-  } catch (err) {
-    if (err instanceof Prisma.PrismaClientKnownRequestError) {
-      // The .code property can be accessed in a type-safe manner
-      if (err.code === "P2002") {
-        return {
-          success: false,
-          message: "A group with that name already exists.",
-        };
-      }
-    }
-    throw err;
-  }
+  mustBeAdmin(
+    userId,
+    "You must be a community admin to edit promoted content.",
+  );
+
+  await prisma.promotedContentGroups.update({
+    where: {
+      groupName,
+    },
+    data: {
+      groupName: newGroupName,
+      homepage,
+      currentlyFeatured,
+    },
+  });
 }
 
-// TODO - access control
 export async function loadPromotedContentGroups() {
   let groups = await prisma.promotedContentGroups.findMany({
     select: {
@@ -683,12 +693,11 @@ export async function loadPromotedContentGroups() {
       groupName: true,
       currentlyFeatured: true,
       homepage: true,
-      _count: {
-        //is this used on client?
-        select: {
-          promotedContent: true,
-        },
-      },
+      // _count: {
+      //   select: {
+      //     promotedContent: true,
+      //   },
+      // },
     },
   });
 
@@ -698,18 +707,19 @@ export async function loadPromotedContentGroups() {
       groupName: group.groupName,
       currentlyFeatured: group.currentlyFeatured,
       homepage: group.homepage,
-      itemCount: group._count.promotedContent,
+      // itemCount: group._count.promotedContent,
     };
   });
 
   return reformatted_groups;
 }
 
-// TODO - access control
-export async function loadPromotedContent(includeUnfeaturedGroups: boolean) {
+export async function loadPromotedContent(userId: number) {
+  const isAdmin = userId ? await getIsAdmin(userId) : false;
   let content = await prisma.promotedContentGroups.findMany({
     where: {
-      currentlyFeatured: includeUnfeaturedGroups ? undefined : true,
+      // If admin, also include groups not featured
+      currentlyFeatured: isAdmin ? undefined : true,
     },
     orderBy: {
       sortOrder: "desc",
@@ -732,7 +742,6 @@ export async function loadPromotedContent(includeUnfeaturedGroups: boolean) {
               owner: {
                 select: {
                   name: true,
-                  // email: true,
                 },
               },
             },
@@ -767,8 +776,15 @@ export async function loadPromotedContent(includeUnfeaturedGroups: boolean) {
   return reformattedContent;
 }
 
-// TODO - access control
-export async function addPromotedContent(groupId: number, activityId: number) {
+export async function addPromotedContent(
+  groupId: number,
+  activityId: number,
+  userId: number,
+) {
+  mustBeAdmin(
+    userId,
+    "You must be a community admin to edit promoted content.",
+  );
   const activity = await prisma.activities.findUnique({
     where: {
       activityId,
@@ -780,45 +796,29 @@ export async function addPromotedContent(groupId: number, activityId: number) {
     },
   });
   if (!activity) {
-    return {
-      success: false,
-      message: "This activity does not exist or is not public.",
-    };
+    throw new InvalidRequestError(
+      "This activity does not exist or is not public.",
+    );
   }
 
-  try {
-    await prisma.promotedContent.create({
-      data: {
-        activityId,
-        promotedGroupId: groupId,
-        sortOrder: "1",
-      },
-    });
-    return { success: true };
-  } catch (err) {
-    if (err instanceof Prisma.PrismaClientKnownRequestError) {
-      // The .code property can be accessed in a type-safe manner
-      if (err.code === "P2002") {
-        return {
-          success: false,
-          message: "This activity is already in that group.",
-        };
-      } else if (err.code === "P2003") {
-        return {
-          success: false,
-          message: "That group does not exist.",
-        };
-      }
-    }
-    throw err;
-  }
+  await prisma.promotedContent.create({
+    data: {
+      activityId,
+      promotedGroupId: groupId,
+      sortOrder: "1",
+    },
+  });
 }
 
-// TODO - access control
 export async function removePromotedContent(
   groupId: number,
   activityId: number,
+  userId: number,
 ) {
+  mustBeAdmin(
+    userId,
+    "You must be a community admin to edit promoted content.",
+  );
   const activity = await prisma.activities.findUnique({
     where: {
       activityId,
@@ -830,33 +830,19 @@ export async function removePromotedContent(
     },
   });
   if (!activity) {
-    return {
-      success: false,
-      message: "This activity does not exist or is not public.",
-    };
+    throw new InvalidRequestError(
+      "This activity does not exist or is not public.",
+    );
   }
 
-  try {
-    await prisma.promotedContent.delete({
-      where: {
-        activityId_promotedGroupId: {
-          activityId,
-          promotedGroupId: groupId,
-        },
+  await prisma.promotedContent.delete({
+    where: {
+      activityId_promotedGroupId: {
+        activityId,
+        promotedGroupId: groupId,
       },
-    });
-    return { success: true };
-  } catch (err) {
-    if (err instanceof Prisma.PrismaClientKnownRequestError) {
-      if (err.code === "P2025") {
-        return {
-          success: false,
-          message: "That group does not exist.",
-        };
-      }
-    }
-    throw err;
-  }
+    },
+  });
 }
 
 export async function assignActivity(activityId: number, userId: number) {

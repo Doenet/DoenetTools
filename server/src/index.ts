@@ -47,6 +47,7 @@ import {
   updatePromotedContentGroup,
   loadPromotedContent,
   removePromotedContent,
+  InvalidRequestError,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -100,19 +101,6 @@ app.post("/api/updateUser", async (req: Request, res: Response) => {
     const body = req.body;
     const name = body.name;
     await updateUser({ userId: loggedInUserId, name });
-    res.cookie("name", name);
-    res.send({ name });
-  } else {
-    res.send({});
-  }
-});
-
-app.post("/api/updateUser", async (req: Request, res: Response) => {
-  const signedIn = req.cookies.email ? true : false;
-  if (signedIn) {
-    const body = req.body;
-    const name = body.name;
-    await updateUser({ userId: Number(req.cookies.userId), name });
     res.cookie("name", name);
     res.send({ name });
   } else {
@@ -315,62 +303,133 @@ app.get("/api/searchPublicActivities", async (req: Request, res: Response) => {
   });
 });
 
-app.get("/api/loadPromotedContent", async (req: Request, res: Response) => {
-  const loggedInUserId = Number(req.cookies.userId);
-  const isAdmin = loggedInUserId ? await getIsAdmin(loggedInUserId) : false;
-  const carouselData = await loadPromotedContent(isAdmin);
-  res.send(carouselData);
-});
+app.post(
+  "/api/addPromotedContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { groupId, activityId } = req.body;
+    const loggedInUserId = Number(req.cookies.userId);
+    try {
+      await addPromotedContent(groupId, activityId, loggedInUserId);
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        if (e.code === "P2002") {
+          res.status(400).send("This activity is already in that group.");
+          return;
+        } else if (e.code === "P2003") {
+          res.status(400).send("That group does not exist.");
+          return;
+        }
+      } else if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
 
-app.post("/api/addPromotedContent", async (req: Request, res: Response) => {
-  const groupId = req.body.groupId;
-  const activityId = req.body.activityId;
-  const { success, message } = await addPromotedContent(groupId, activityId);
-  if (success) {
-    res.send({});
-  } else {
-    res.status(400).send(message);
-  }
-});
+app.get(
+  "/api/loadPromotedContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const loggedInUserId = Number(req.cookies.userId);
+      const content = await loadPromotedContent(loggedInUserId);
+      res.send(content);
+    } catch (e) {
+      next(e);
+    }
+  },
+);
 
-app.post("/api/removePromotedContent", async (req: Request, res: Response) => {
-  const groupId = Number(req.body.groupId);
-  const activityId = Number(req.body.activityId);
-  const { success, message } = await removePromotedContent(groupId, activityId);
-  if (success) {
-    res.send({});
-  } else {
-    res.status(400).send(message);
-  }
-});
+app.post(
+  "/api/removePromotedContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const groupId = Number(req.body.groupId);
+      const activityId = Number(req.body.activityId);
+      const loggedInUserId = Number(req.cookies.userId);
+
+      await removePromotedContent(groupId, activityId, loggedInUserId);
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === "P2025") {
+          res.status(400).send("That group does not exist.");
+          return;
+        }
+      } else if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
 
 app.post(
   "/api/addPromotedContentGroup",
-  async (req: Request, res: Response) => {
-    const groupName = req.body.groupName;
-    const { success, message } = await addPromotedContentGroup(groupName);
-    if (success) {
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { groupName } = req.body;
+      const loggedInUserId = Number(req.cookies.userId);
+      await addPromotedContentGroup(groupName, loggedInUserId);
       res.send({});
-    } else {
-      res.status(400).send(message);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        if (e.code === "P2002") {
+          res.status(400).send("A group with that name already exists.");
+          return;
+        }
+      } else if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.get(
+  "/api/loadPromotedContentGroups",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const groups = await loadPromotedContentGroups();
+      res.send(groups);
+    } catch (e) {
+      next(e);
     }
   },
 );
 
 app.post(
   "/api/updatePromotedContentGroup",
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const { groupName, newGroupName, homepage, currentlyFeatured } = req.body;
-    const { success, message } = await updatePromotedContentGroup(
-      groupName,
-      newGroupName,
-      homepage,
-      currentlyFeatured,
-    );
-    if (success) {
+    const loggedInUserId = Number(req.cookies.userId);
+    try {
+      await updatePromotedContentGroup(
+        groupName,
+        newGroupName,
+        homepage,
+        currentlyFeatured,
+        loggedInUserId,
+      );
       res.send({});
-    } else {
-      res.status(400).send(message);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        if (e.code === "P2002") {
+          res.status(400).send("A group with that name already exists.");
+          return;
+        }
+      } else if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
     }
   },
 );
@@ -465,18 +524,6 @@ app.get(
     }
 
     res.send({ name, ...assignmentData });
-  },
-);
-
-app.get(
-  "/api/loadPromotedContentGroups",
-  async (req: Request, res: Response) => {
-    const groups = await loadPromotedContentGroups();
-    console.log(groups);
-    res.send({
-      success: true, //TODO: do we need this?
-      carouselGroups: groups,
-    });
   },
 );
 

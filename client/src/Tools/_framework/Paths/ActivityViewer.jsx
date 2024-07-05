@@ -42,7 +42,7 @@ export async function action({ params, request }) {
     const { data } = await axios.post(`/api/assignActivity`, {
       activityId: Number(params.activityId),
     });
-    return redirect(`/assignments/${data.userId}`);
+    return redirect(`/assignments`);
   }
 
   return null;
