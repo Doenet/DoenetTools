@@ -796,7 +796,7 @@ app.get(
 );
 
 app.get(
-  "/api/getAllAssignmentScores",
+  "/api/getAllAssignmentScores/:parentFolderId",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const parentFolderId = Number(req.params.parentFolderId);
@@ -826,6 +826,32 @@ app.get(
     try {
       const data = await getStudentData({
         userId: userId,
+        ownerId: loggedInUserId,
+        parentFolderId: null,
+      });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getStudentData/:userId/:parentFolderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = Number(req.params.userId);
+    const loggedInUserId = Number(req.cookies.userId);
+    const parentFolderId = Number(req.params.parentFolderId);
+
+    try {
+      const data = await getStudentData({
+        userId: userId,
+        ownerId: loggedInUserId,
+        parentFolderId,
       });
       res.send(data);
     } catch (e) {
