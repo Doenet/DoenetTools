@@ -38,9 +38,8 @@ type studentStructure = {
 };
 
 export async function loader({ params }) {
-  const { data } = await axios.get(
-    `/api/getAllAssignmentScores/${params.folderId}`,
-  );
+  const { data } = await axios.get(`/api/getAllAssignmentScores/${params.folderId ?? ""}`);
+  console.log(data);
 
   let studentData = {};
   data.assignmentScores.forEach(function (assignment: assignmentStructure) {

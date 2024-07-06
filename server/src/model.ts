@@ -869,7 +869,13 @@ export async function getAssignmentDataFromCode(
         isAssigned: true,
         isFolder: false,
       },
-      include: {
+      select: {
+        id: true,
+
+        // TODO: these values are only used in tests. Do we need them in this API?
+        classCode: true,
+        codeValidUntil: true,
+
         documents: {
           select: {
             id: true,
