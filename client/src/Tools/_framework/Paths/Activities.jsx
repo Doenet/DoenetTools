@@ -210,11 +210,10 @@ export function Activities() {
     return null;
   }
 
-  function getCardMenuList(isPublic, isFolder, id) {
+  function getCardMenuList(isPublic, isFolder, isAssigned, id) {
     return (
       <>
-      {
-        !isFolder ? (
+      { !isFolder ?
           <>
             <MenuItem
               data-test={`Make ${isPublic ? "Private" : "Public"} Menu Item`}
@@ -227,19 +226,20 @@ export function Activities() {
             >
               Make {isPublic ? "Private" : "Public"}
             </MenuItem>
-            <MenuItem
-              data-test="Create Assignment Menu Item"
-              onClick={() => {
-                fetcher.submit(
-                  { _action: "Create Assignment", id },
-                  { method: "post" },
-                );
-              }}
-            >
-              Create Assignment
-            </MenuItem>
-          </>
-         ) : ""
+            { !isAssigned ? 
+              <MenuItem
+                data-test="Create Assignment Menu Item"
+                onClick={() => {
+                  fetcher.submit(
+                    { _action: "Create Assignment", id },
+                    { method: "post" },
+                  );
+                }}
+              >
+                Create Assignment
+              </MenuItem> : ""
+            }
+          </> : ""
       }
         <MenuItem
           data-test="Delete Menu Item"
@@ -355,12 +355,13 @@ export function Activities() {
                     menuItems={getCardMenuList(
                       activity.isPublic,
                       activity.isFolder,
+                      activity.isAssigned,
                       activity.id,
                     )}
                     imageLink={
                       activity.isFolder
                         ? `/activities/${activity.ownerId}${activity.id ? "/" + activity.id : ""}`
-                        : `/activityEditor/${activity.id}`
+                        : (activity.isAssigned ? `/assignmentEditor/${activity.id}` : `/activityEditor/${activity.id}`)
                     }
                   />
                 );

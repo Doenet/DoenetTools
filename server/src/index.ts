@@ -636,7 +636,7 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
-    const activityId = Number(body.activityId);
+    const activityId = Number(body.assignmentId);
     const closeAt = DateTime.fromISO(body.closeAt);
 
     try {
