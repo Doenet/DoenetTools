@@ -54,11 +54,11 @@ export async function action({ request, params }) {
       isPublic = formObj.isPublic === "true";
     }
 
-    await axios.post("/api/updateActivitySettings", {
+    await axios.post("/api/updateContentSettings", {
       name,
       imagePath: formObj.imagePath,
       isPublic,
-      id: formObj.id,
+      id: formObj.activityId,
       learningOutcomes,
     });
 
@@ -122,7 +122,11 @@ export async function loader({ params }) {
     return redirect(`/publicActivities/${params.userId}`);
   }
 
-  return { folderId: params.folderId, folder: data.folder };
+  return {
+    folderId: params.folderId,
+    folder: data.folder,
+    allDoenetmlVersions: data.allDoenetmlVersions,
+  };
 }
 
 const ActivitiesSection = styled.div`
@@ -141,6 +145,7 @@ function ActivitySettingsDrawer({
   finalFocusRef,
   id,
   content,
+  allDoenetmlVersions,
 }) {
   const fetcher = useFetcher();
   let activityData;
@@ -177,7 +182,7 @@ function ActivitySettingsDrawer({
               activityId={id}
               docId={activityData.docId}
               activityData={activityData}
-              allDoenetmlVersions={content.allDoenetmlVersions}
+              allDoenetmlVersions={allDoenetmlVersions}
             />
           )}
         </DrawerBody>
@@ -188,7 +193,7 @@ function ActivitySettingsDrawer({
 
 export function Activities() {
   let context = useOutletContext();
-  let { folderId, folder } = useLoaderData();
+  let { folderId, folder, allDoenetmlVersions } = useLoaderData();
   const [activityId, setActivityId] = useState();
   const controlsBtnRef = useRef(null);
   const navigate = useNavigate();
@@ -267,6 +272,7 @@ export function Activities() {
         finalFocusRef={controlsBtnRef}
         id={activityId}
         content={folder.content}
+        allDoenetmlVersions={allDoenetmlVersions}
       />
       <Box
         backgroundColor="#fff"
