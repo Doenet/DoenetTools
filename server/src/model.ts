@@ -714,6 +714,30 @@ export async function loadPromotedContentGroups() {
   return reformatted_groups;
 }
 
+export async function removePromotedContentGroup(
+  groupName: string,
+  userId: number,
+) {
+  await mustBeAdmin(
+    userId,
+    "You must be a community admin to edit promoted content.",
+  );
+  // Delete group and entries all in one transaction, so both succeed or fail together
+  const deleteEntries = prisma.promotedContent.deleteMany({
+    where: {
+      promotedGroup: {
+        groupName,
+      },
+    },
+  });
+  const deleteGroup = prisma.promotedContentGroups.delete({
+    where: {
+      groupName,
+    },
+  });
+  await prisma.$transaction([deleteEntries, deleteGroup]);
+}
+
 export async function loadPromotedContent(userId: number) {
   const isAdmin = userId ? await getIsAdmin(userId) : false;
   let content = await prisma.promotedContentGroups.findMany({

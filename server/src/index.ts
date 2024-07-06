@@ -48,6 +48,7 @@ import {
   loadPromotedContent,
   removePromotedContent,
   InvalidRequestError,
+  removePromotedContentGroup,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -429,6 +430,20 @@ app.post(
         res.status(e.errorCode).send(e.message);
         return;
       }
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/removePromotedContentGroup",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { groupName } = req.body;
+      const loggedInUserId = Number(req.cookies.userId);
+      await removePromotedContentGroup(groupName, loggedInUserId);
+      res.send({});
+    } catch (e) {
       next(e);
     }
   },

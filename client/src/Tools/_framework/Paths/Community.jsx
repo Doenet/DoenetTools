@@ -88,7 +88,7 @@ export async function action({ request }) {
         groupName,
       });
     }
-    case "Promote Group":
+    case "Promote Group": {
       // convert to real booleans
       currentlyFeatured =
         !currentlyFeatured || currentlyFeatured == "false" ? false : true;
@@ -99,6 +99,12 @@ export async function action({ request }) {
         currentlyFeatured,
         homepage,
       });
+    }
+    case "Delete Group": {
+      return postApiAlertOnError("/api/removePromotedContentGroup", {
+        groupName,
+      });
+    }
   }
 }
 
@@ -240,6 +246,21 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
     }
   };
 
+  const deleteGroup = (groupName) => {
+    const shouldDelete = confirm(
+      `Are you sure you want to delete ${groupName}? You can't undo this action afterwards.`,
+    );
+    if (shouldDelete) {
+      fetcher.submit(
+        {
+          _action: "Delete Group",
+          groupName,
+        },
+        { method: "post" },
+      );
+    }
+  };
+
   return (
     <>
       <MenuItem ref={btnRef} onClick={onOpen}>
@@ -305,6 +326,12 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
                         </Button>
                         <Button onClick={() => moveGroup(group, "down")}>
                           ↓
+                        </Button>
+                        <Button
+                          isDisabled={group.homepage}
+                          onClick={() => deleteGroup(group.groupName)}
+                        >
+                          Delete
                         </Button>
                       </Wrap>
                     );
