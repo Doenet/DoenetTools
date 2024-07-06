@@ -28,7 +28,6 @@ import axios from "axios";
 export async function loader() {
   const { data: promotedContent } = await axios.get("/api/loadPromotedContent");
   const favorites = promotedContent.find((content) => content.homepage);
-  console.log(favorites);
   return { favorites };
 }
 
