@@ -263,9 +263,9 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
-    const activityId = Number(body.activityId);
+    const id = Number(body.activityId);
     try {
-      await deleteActivity(activityId, loggedInUserId);
+      await deleteActivity(id, loggedInUserId);
       res.send({});
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -296,38 +296,60 @@ app.post(
   },
 );
 
-app.post("/api/createActivity", async (req: Request, res: Response) => {
-  const loggedInUserId = Number(req.cookies.userId);
-  const { activityId, docId } = await createActivity(loggedInUserId, null);
-  res.send({ activityId, docId });
-});
-
 app.post(
-  "/api/createActivity/:parentFolderId",
-  async (req: Request, res: Response) => {
+  "/api/createActivity/",
+  async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
-    const parentFolderId = Number(req.params.parentFolderId);
-    const { activityId, docId } = await createActivity(
-      loggedInUserId,
-      parentFolderId,
-    );
-    res.send({ activityId, docId });
+    try {
+      const { activityId, docId } = await createActivity(loggedInUserId, null);
+      res.send({ activityId, docId });
+    } catch (e) {
+      next(e);
+    }
   },
 );
 
-app.post("/api/createFolder", async (req: Request, res: Response) => {
-  const loggedInUserId = Number(req.cookies.userId);
-  const { folderId } = await createFolder(loggedInUserId, null);
-  res.send({ folderId });
-});
+app.post(
+  "/api/createActivity/:parentFolderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const parentFolderId = Number(req.params.parentFolderId);
+    try {
+      const { activityId, docId } = await createActivity(
+        loggedInUserId,
+        parentFolderId,
+      );
+      res.send({ activityId, docId });
+    } catch (e) {
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/createFolder/",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    try {
+      const { folderId } = await createFolder(loggedInUserId, null);
+      res.send({ folderId });
+    } catch (e) {
+      next(e);
+    }
+  },
+);
 
 app.post(
   "/api/createFolder/:parentFolderId",
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const parentFolderId = Number(req.params.parentFolderId);
-    const { folderId } = await createFolder(loggedInUserId, parentFolderId);
-    res.send({ folderId });
+    try {
+      const { folderId } = await createFolder(loggedInUserId, parentFolderId);
+      res.send({ folderId });
+    } catch (e) {
+      next(e);
+    }
   },
 );
 
@@ -357,7 +379,7 @@ app.post(
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
     const id = Number(body.id);
-    const isPublic = body.isPublic;
+    const isPublic = Boolean(body.isPublic);
     try {
       await updateContent({ id, isPublic, ownerId: loggedInUserId });
       res.send({});
@@ -735,7 +757,7 @@ app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
 });
 
 app.post("/api/assignActivity", async (req: Request, res: Response) => {
-  const activityId = Number(req.body.activityId);
+  const activityId = Number(req.body.id);
   const loggedInUserId = Number(req.cookies.userId);
 
   await assignActivity(activityId, loggedInUserId);
@@ -748,7 +770,7 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
-    const activityId = Number(body.activityId);
+    const activityId = Number(body.assignmentId);
     const closeAt = DateTime.fromISO(body.closeAt);
 
     try {
@@ -909,7 +931,7 @@ app.get(
 );
 
 app.get(
-  "/api/getAllAssignmentScores",
+  "/api/getAllAssignmentScores/",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
 
@@ -932,13 +954,13 @@ app.get(
 app.get(
   "/api/getAllAssignmentScores/:parentFolderId",
   async (req: Request, res: Response, next: NextFunction) => {
+    const folderId = Number(req.params.parentFolderId);
     const loggedInUserId = Number(req.cookies.userId);
-    const parentFolderId = Number(req.params.parentFolderId);
 
     try {
       const data = await getAllAssignmentScores({
         ownerId: loggedInUserId,
-        parentFolderId,
+        parentFolderId: folderId,
       });
       res.send(data);
     } catch (e) {
@@ -1092,6 +1114,54 @@ app.get(
         ownerId: loggedInUserId,
       });
       res.send(responseData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(204);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getFolderContent/",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+
+    try {
+      const folder = await getFolderContent({
+        ownerId: loggedInUserId,
+        folderId: null,
+        loggedInUserId,
+      });
+
+      const allDoenetmlVersions = await getAllDoenetmlVersions();
+      res.send({ allDoenetmlVersions, folder });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(204);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getFolderContent/:folderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const folderId = Number(req.params.folderId);
+    const loggedInUserId = Number(req.cookies.userId);
+
+    try {
+      const folder = await getFolderContent({
+        ownerId: loggedInUserId,
+        folderId,
+        loggedInUserId,
+      });
+      const allDoenetmlVersions = await getAllDoenetmlVersions();
+      res.send({ allDoenetmlVersions, folder });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(204);

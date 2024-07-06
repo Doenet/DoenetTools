@@ -31,14 +31,10 @@ import {
 } from "./Tools/_framework/Paths/Home";
 
 import {
-  loader as portfolioLoader,
-  action as portfolioAction,
-  Portfolio,
-} from "./Tools/_framework/Paths/Portfolio";
-import {
-  loader as publicPortfolioLoader,
-  PublicPortfolio,
-} from "./Tools/_framework/Paths/PublicPortfolio";
+  loader as activitiesLoader,
+  action as activitiesAction,
+  Activities,
+} from "./Tools/_framework/Paths/Activities";
 import {
   loader as activityViewerLoader,
   action as activityViewerAction,
@@ -227,17 +223,18 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "portfolio/:userId",
-        loader: portfolioLoader,
-        action: portfolioAction,
-        element: <Portfolio />,
+        path: "activities/:userId",
+        loader: activitiesLoader,
+        action: activitiesAction,
+        element: <Activities />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "publicPortfolio/:userId",
-        loader: publicPortfolioLoader,
+        path: "activities/:userId/:folderId",
+        loader: activitiesLoader,
+        action: activitiesAction,
+        element: <Activities />,
         errorElement: <ErrorPage />,
-        element: <PublicPortfolio />,
       },
       {
         path: "activityViewer/:activityId",
@@ -322,6 +319,12 @@ const router = createBrowserRouter([
       },
       {
         path: "allAssignmentScores",
+        loader: allAssignmentScoresLoader,
+        element: <AllAssignmentScores />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "allAssignmentScores/:folderId",
         loader: allAssignmentScoresLoader,
         element: <AllAssignmentScores />,
         errorElement: <ErrorPage />,

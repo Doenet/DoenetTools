@@ -209,10 +209,10 @@ export function SiteHeader(props) {
                   {signedIn && !anonymous && (
                     <>
                       <NavLinkTab
-                        to={`portfolio/${userId}`}
-                        dataTest="Portfolio"
+                        to={`activities/${userId}`}
+                        dataTest="Activities"
                       >
-                        Portfolio
+                        Activities
                       </NavLinkTab>
                       <NavLinkTab to={`assignments`} dataTest="Assignments">
                         Assignments
@@ -320,10 +320,10 @@ export function SiteHeader(props) {
                         {signedIn && !anonymous && (
                           <>
                             <NavLinkDropdownTab
-                              to={`portfolio/${userId}`}
-                              dataTest="Portfolio"
+                              to={`activities/${userId}`}
+                              dataTest="Activities"
                             >
-                              Portfolio
+                              Activities
                             </NavLinkDropdownTab>
                             <NavLinkDropdownTab
                               to={`assignments`}

@@ -18,12 +18,12 @@ import { RiEmotionSadLine } from "react-icons/ri";
 import axios from "axios";
 
 export async function loader({ params }) {
-  const { data } = await axios.get(`/api/getPublicPortfolio/${params.userId}`);
+  const { data } = await axios.get(`/api/getPublicActivities/${params.userId}`);
 
   return data;
 }
 
-export function PublicPortfolio() {
+export function PublicActivities() {
   let { name, publicActivities } = useLoaderData();
 
   //Define the avatar
@@ -31,12 +31,12 @@ export function PublicPortfolio() {
 
   return (
     <Grid
-      templateAreas={`"portfolioHeader" 
+      templateAreas={`"ActivitiesHeader" 
         "activityCards"`}
       gridTemplateRows={`80px auto`}
       h="calc(100vh - 40px)"
     >
-      <GridItem area="portfolioHeader" data-test="Heading Bar">
+      <GridItem area="activitiesHeader" data-test="Heading Bar">
         <Box
           as="header"
           gridRow="1/2"
@@ -59,7 +59,7 @@ export function PublicPortfolio() {
                 {name}
               </Text>
               <Text fontSize="16px" fontWeight="700" data-test="heading2">
-                User Portfolio
+                User Activities
               </Text>
             </VStack>
           </HStack>

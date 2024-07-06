@@ -39,7 +39,7 @@ const PublicActivitiesSection = styled.div`
   background: var(--lightBlue);
 `;
 
-const PortfolioGrid = styled.div`
+const ActivitiesGrid = styled.div`
   display: grid;
   grid-template-rows: 80px auto;
   height: 100vh;
@@ -50,7 +50,7 @@ export function Admin() {
 
   return (
     <>
-      <PortfolioGrid>
+      <ActivitiesGrid>
         <Box
           as="header"
           gridRow="1/2"
@@ -99,7 +99,7 @@ export function Admin() {
             )}
           </Wrap>
         </PublicActivitiesSection>
-      </PortfolioGrid>
+      </ActivitiesGrid>
     </>
   );
 }

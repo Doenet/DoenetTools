@@ -37,11 +37,13 @@ type studentStructure = {
   }[];
 };
 
-export async function loader() {
-  const { data } = await axios.get("/api/getAllAssignmentScores");
+export async function loader({ params }) {
+  const { data } = await axios.get(
+    `/api/getAllAssignmentScores/${params.folderId}`,
+  );
 
   let studentData = {};
-  data.forEach(function (assignment: assignmentStructure) {
+  data.assignmentScores.forEach(function (assignment: assignmentStructure) {
     assignment.assignmentScores.forEach(function (score) {
       if (!(score.userId in studentData)) {
         studentData[score.userId] = { name: score.user.name, scores: {} };
@@ -69,7 +71,7 @@ export async function loader() {
   });
 
   return {
-    assignments: data,
+    assignments: data.assignmentScores,
     students: studentData,
     studentIdsOrdered,
   };
@@ -83,7 +85,7 @@ export function AllAssignmentScores() {
   };
 
   useEffect(() => {
-    document.title = "Your Assignments";
+    document.title = "My Assignments";
   });
 
   const linkStyle = {
@@ -93,7 +95,7 @@ export function AllAssignmentScores() {
 
   return (
     <>
-      <Heading heading={"Your Assignments"} />
+      <Heading heading={"My Assignments"} />
 
       <Heading subheading="Score summary" />
       <TableContainer>

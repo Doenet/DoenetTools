@@ -1112,7 +1112,7 @@ test("copyActivityToFolder remixes correct versions", async () => {
     ownerId: ownerId1,
   });
 
-  // copy activity 1 to owner 3's root folder
+  // copy activity 1 to owner 3's Activities page
   const activityId3 = await copyActivityToFolder(activityId1, ownerId3, null);
 
   const activity3 = await getActivity(activityId3);

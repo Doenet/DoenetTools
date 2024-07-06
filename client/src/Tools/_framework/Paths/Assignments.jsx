@@ -87,7 +87,7 @@ export function Assignments() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = `Portfolio - Doenet`;
+    document.title = `Activities - Doenet`;
   }, []);
 
   const fetcher = useFetcher();
@@ -143,7 +143,11 @@ export function Assignments() {
             <Button
               size="xs"
               colorScheme="blue"
-              onClick={() => navigate("/allAssignmentScores")}
+              onClick={() =>
+                navigate(
+                  `/allAssignmentScores${folderId ? "/" + folderId : ""}`,
+                )
+              }
             >
               See Scores
             </Button>
