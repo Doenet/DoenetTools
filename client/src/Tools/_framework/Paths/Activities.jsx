@@ -73,13 +73,14 @@ export async function action({ request, params }) {
     return true;
   } else if (formObj?._action == "Add Activity") {
     //Create an activity and redirect to the editor for it
-    console.log(formObj.folderId);
-    let { data } = await axios.post(`/api/createActivity/${formObj.folderId}`);
+    let { data } = await axios.post(
+      `/api/createActivity/${params.folderId ?? ""}`,
+    );
 
     let { activityId, docId } = data;
     return redirect(`/activityEditor/${activityId}`);
   } else if (formObj?._action == "Add Folder") {
-    await axios.post(`/api/createFolder/${formObj.folderId}`);
+    await axios.post(`/api/createFolder/${params.folderId ?? ""}`);
 
     return true;
   } else if (formObj?._action == "Delete Activity") {
@@ -114,7 +115,9 @@ export async function action({ request, params }) {
 }
 
 export async function loader({ params }) {
-  const { data } = await axios.get(`/api/getFolderContent/${params.folderId}`);
+  const { data } = await axios.get(
+    `/api/getFolderContent/${params.folderId ?? ""}`,
+  );
   if (data.notMe) {
     return redirect(`/publicActivities/${params.userId}`);
   }
@@ -281,10 +284,7 @@ export function Activities() {
             size="xs"
             colorScheme="blue"
             onClick={async () => {
-              fetcher.submit(
-                { _action: "Add Folder", folderId },
-                { method: "post" },
-              );
+              fetcher.submit({ _action: "Add Folder" }, { method: "post" });
             }}
           >
             + Add Folder
@@ -304,10 +304,7 @@ export function Activities() {
               // there was code up in the action() method for this action
               // that was unused. This appears to work okay though? And it
               // would make it consistent with how API requests are done elsewhere
-              fetcher.submit(
-                { _action: "Add Activity", folderId },
-                { method: "post" },
-              );
+              fetcher.submit({ _action: "Add Activity" }, { method: "post" });
             }}
           >
             + Add Activity
@@ -316,7 +313,9 @@ export function Activities() {
             margin="3px"
             size="xs"
             colorScheme="blue"
-            onClick={() => navigate(`/allAssignmentScores/${folderId}`)}
+            onClick={() =>
+              navigate(`/allAssignmentScores${folderId ? "/" + folderId : ""}`)
+            }
           >
             See Scores
           </Button>
