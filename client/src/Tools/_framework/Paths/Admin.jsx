@@ -7,20 +7,21 @@ import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/Activi
 import { MoveToGroupMenuItem } from "./Community";
 
 export async function loader() {
+  const {
+    data: { isAdmin },
+  } = await axios.get(`/api/checkForCommunityAdmin`);
+  if (!isAdmin) {
+    throw Error();
+  }
+
+  const { data: carouselGroups } = await axios.get(`/api/loadPromotedContent`);
+
   const { data: recentActivities } = await axios.get(
     `/api/getAllRecentPublicActivities`,
   );
-  const { data: isAdminData } = await axios.get(`/api/checkForCommunityAdmin`);
-  const isAdmin = isAdminData.isAdmin;
-
-  let carouselGroups = [];
-  if (isAdmin) {
-    carouselGroups = (await axios.get(`/api/loadPromotedContentGroups`)).data;
-  }
 
   return {
     publicActivities: recentActivities,
-    isAdmin,
     carouselGroups,
   };
 }
@@ -45,7 +46,7 @@ const PortfolioGrid = styled.div`
 `;
 
 export function Admin() {
-  const { carouselGroups, isAdmin, publicActivities } = useLoaderData();
+  const { carouselGroups, publicActivities } = useLoaderData();
 
   return (
     <>
@@ -86,14 +87,10 @@ export function Admin() {
                       imagePath={activity.imagePath}
                       fullName={activity.owner.name}
                       menuItems={
-                        isAdmin ? (
-                          <>
-                            <MoveToGroupMenuItem
-                              activityId={activity.activityId}
-                              carouselGroups={carouselGroups}
-                            />
-                          </>
-                        ) : null
+                        <MoveToGroupMenuItem
+                          activityId={activity.activityId}
+                          carouselGroups={carouselGroups}
+                        />
                       }
                     />
                   );

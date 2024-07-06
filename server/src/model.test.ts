@@ -24,7 +24,6 @@ import {
   updateUser,
   getUserInfo,
   addPromotedContent,
-  loadPromotedContentGroups,
   deleteAssignment,
   saveScoreAndState,
   getAssignmentScoreData,
@@ -42,7 +41,7 @@ import {
   getAllAssignmentScores,
   removePromotedContent,
   loadPromotedContent,
-  removePromotedContentGroup,
+  deletePromotedContentGroup,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -412,7 +411,7 @@ test("add and remove promoted content", async () => {
   // Can create new promoted content group
   const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
   await addPromotedContentGroup(groupName, userId);
-  const groups = await loadPromotedContentGroups();
+  const groups = await loadPromotedContent(userId);
   const groupId = groups.find(
     (group) => group.groupName === groupName,
   )!.promotedGroupId;
@@ -524,15 +523,15 @@ test("delete promoted content group", async () => {
 
   const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
   await addPromotedContentGroup(groupName, userId);
-  const groups = await loadPromotedContentGroups();
+  const groups = await loadPromotedContent(userId);
   const groupId = groups.find(
     (group) => group.groupName === groupName,
   )!.promotedGroupId;
   await addPromotedContent(groupId, activity1, userId);
   await addPromotedContent(groupId, activity2, userId);
 
-  await removePromotedContentGroup(groupName, userId);
-  const groupsAfterRemove = await loadPromotedContentGroups();
+  await deletePromotedContentGroup(groupId, userId);
+  const groupsAfterRemove = await loadPromotedContent(userId);
   expect(
     groupsAfterRemove.find((group) => group.groupName === groupName),
   ).toBeUndefined();
@@ -542,11 +541,12 @@ test("update promoted content group", async () => {
   const { userId } = await createTestAdminUser();
 
   const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
-  await addPromotedContentGroup(groupName, userId);
-  const secondGroupName = "vitest-unique-promoted-group-" + new Date().toJSON();
-  await addPromotedContentGroup(secondGroupName, userId);
+  const groupId = await addPromotedContentGroup(groupName, userId);
 
-  const groups = await loadPromotedContentGroups();
+  const secondGroupName = "vitest-unique-promoted-group-" + new Date().toJSON();
+  const secondGroupId = await addPromotedContentGroup(secondGroupName, userId);
+
+  const groups = await loadPromotedContent(userId);
   expect(groups.find((group) => group.groupName === groupName)).toBeDefined();
   expect(
     groups.find((group) => group.groupName === secondGroupName),
@@ -554,26 +554,14 @@ test("update promoted content group", async () => {
 
   // Cannot update group name to different existing name
   await expect(
-    updatePromotedContentGroup(
-      groupName,
-      secondGroupName,
-      false,
-      false,
-      userId,
-    ),
+    updatePromotedContentGroup(groupId, secondGroupName, false, false, userId),
   ).rejects.toThrowError();
 
   const newGroupName =
     "vitest-unique-NEW-promoted-group-" + new Date().toJSON();
-  await updatePromotedContentGroup(
-    groupName,
-    newGroupName,
-    false,
-    false,
-    userId,
-  );
+  await updatePromotedContentGroup(groupId, newGroupName, false, false, userId);
 
-  const groups3 = await loadPromotedContentGroups();
+  const groups3 = await loadPromotedContent(userId);
   expect(
     groups3.find((group) => group.groupName === newGroupName),
   ).toBeDefined();
@@ -590,16 +578,9 @@ test("promoted content access control", async () => {
     isPublic: true,
     ownerId: userId,
   });
-  let groupId;
-  {
-    const { userId: adminId } = await createTestAdminUser();
-    await addPromotedContentGroup(groupName, adminId);
-    const groups = await loadPromotedContentGroups();
-    groupId = groups.find(
-      (group) => group.groupName === groupName,
-    )!.promotedGroupId;
-    await addPromotedContent(groupId, promotedActivityId, adminId);
-  }
+  const { userId: adminId } = await createTestAdminUser();
+  const groupId = await addPromotedContentGroup(groupName, adminId);
+  await addPromotedContent(groupId, promotedActivityId, adminId);
 
   // add group fails
   await expect(
@@ -608,12 +589,12 @@ test("promoted content access control", async () => {
 
   // update group fails
   await expect(
-    updatePromotedContentGroup(groupName, "some new name", true, true, userId),
+    updatePromotedContentGroup(groupId, "some new name", true, true, userId),
   ).rejects.toThrowError("admin");
 
   // delete group fails
   await expect(
-    removePromotedContentGroup(groupName, userId),
+    deletePromotedContentGroup(groupId, userId),
   ).rejects.toThrowError("admin");
 
   // add content fails

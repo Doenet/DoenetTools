@@ -654,16 +654,17 @@ export async function addPromotedContentGroup(
     "You must be a community admin to edit promoted content.",
   );
 
-  await prisma.promotedContentGroups.create({
+  const { promotedGroupId } = await prisma.promotedContentGroups.create({
     data: {
       groupName,
       sortOrder: "a",
     },
   });
+  return promotedGroupId;
 }
 
 export async function updatePromotedContentGroup(
-  groupName: string,
+  groupId: number,
   newGroupName: string,
   homepage: boolean,
   currentlyFeatured: boolean,
@@ -676,7 +677,7 @@ export async function updatePromotedContentGroup(
 
   await prisma.promotedContentGroups.update({
     where: {
-      groupName,
+      promotedGroupId: groupId,
     },
     data: {
       groupName: newGroupName,
@@ -686,36 +687,8 @@ export async function updatePromotedContentGroup(
   });
 }
 
-export async function loadPromotedContentGroups() {
-  let groups = await prisma.promotedContentGroups.findMany({
-    select: {
-      promotedGroupId: true,
-      groupName: true,
-      currentlyFeatured: true,
-      homepage: true,
-      // _count: {
-      //   select: {
-      //     promotedContent: true,
-      //   },
-      // },
-    },
-  });
-
-  const reformatted_groups = groups.map((group) => {
-    return {
-      promotedGroupId: group.promotedGroupId,
-      groupName: group.groupName,
-      currentlyFeatured: group.currentlyFeatured,
-      homepage: group.homepage,
-      // itemCount: group._count.promotedContent,
-    };
-  });
-
-  return reformatted_groups;
-}
-
-export async function removePromotedContentGroup(
-  groupName: string,
+export async function deletePromotedContentGroup(
+  groupId: number,
   userId: number,
 ) {
   await mustBeAdmin(
@@ -725,14 +698,12 @@ export async function removePromotedContentGroup(
   // Delete group and entries all in one transaction, so both succeed or fail together
   const deleteEntries = prisma.promotedContent.deleteMany({
     where: {
-      promotedGroup: {
-        groupName,
-      },
+      promotedGroupId: groupId,
     },
   });
   const deleteGroup = prisma.promotedContentGroups.delete({
     where: {
-      groupName,
+      promotedGroupId: groupId,
     },
   });
   await prisma.$transaction([deleteEntries, deleteGroup]);

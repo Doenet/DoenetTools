@@ -94,40 +94,42 @@ export async function action({ request }) {
         !currentlyFeatured || currentlyFeatured == "false" ? false : true;
       homepage = !homepage || homepage == "false" ? false : true;
       return postApiAlertOnError("/api/updatePromotedContentGroup", {
-        groupName,
+        groupId,
         newGroupName,
         currentlyFeatured,
         homepage,
       });
     }
     case "Delete Group": {
-      return postApiAlertOnError("/api/removePromotedContentGroup", {
-        groupName,
+      return postApiAlertOnError("/api/deletePromotedContentGroup", {
+        groupId,
       });
     }
   }
 }
 
-//TODO: update to try/catch axios not fetch
 export async function loader({ request }) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
+
   if (q) {
     //Show search results
     const { data: searchData } = await axios.get(
       `/api/searchPublicActivities?q=${q}`,
     );
 
-    const { data: isAdminData } = await axios.get(
-      `/api/checkForCommunityAdmin`,
-    );
-    const isAdmin = isAdminData.isAdmin;
+    const {
+      data: { isAdmin },
+    } = await axios.get(`/api/checkForCommunityAdmin`);
+
     let carouselGroups = [];
     if (isAdmin) {
-      const carouselDataGroups = await fetch(`/api/loadPromotedContentGroups`);
-      const responseGroups = await carouselDataGroups.json();
-      carouselGroups = responseGroups.carouselGroups;
+      const carouselGroupsData = await axios.get(
+        `/api/loadPromotedContentGroups`,
+      );
+      carouselGroups = carouselGroupsData.data;
     }
+
     return {
       q,
       searchResults: searchData,
@@ -185,7 +187,8 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
     fetcher.submit(
       {
         _action: "Promote Group",
-        groupName: groupInfo.groupName,
+        // groupName: groupInfo.groupName,
+        groupId: groupInfo.promotedGroupId,
         currentlyFeatured,
         homepage: false,
       },
@@ -236,7 +239,7 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
       fetcher.submit(
         {
           _action: "Promote Group",
-          groupName: groupInfo.groupName,
+          groupId: groupInfo.promotedGroupId,
           currentlyFeatured: groupInfo.currentlyFeatured,
           newGroupName,
           homepage: false,
@@ -246,7 +249,7 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
     }
   };
 
-  const deleteGroup = (groupName) => {
+  const deleteGroup = (groupId, groupName) => {
     const shouldDelete = confirm(
       `Are you sure you want to delete ${groupName}? You can't undo this action afterwards.`,
     );
@@ -254,7 +257,7 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
       fetcher.submit(
         {
           _action: "Delete Group",
-          groupName,
+          groupId,
         },
         { method: "post" },
       );
@@ -329,7 +332,9 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
                         </Button>
                         <Button
                           isDisabled={group.homepage}
-                          onClick={() => deleteGroup(group.groupName)}
+                          onClick={() =>
+                            deleteGroup(group.promotedGroupId, group.groupName)
+                          }
                         >
                           Delete
                         </Button>
@@ -702,7 +707,7 @@ export function Community() {
                           fetcher.submit(
                             {
                               _action: "Promote Group",
-                              groupName: group.groupName,
+                              groupId: group.promotedGroupId,
                               currentlyFeatured: true,
                               homepage: false,
                             },
@@ -718,7 +723,7 @@ export function Community() {
                           fetcher.submit(
                             {
                               _action: "Promote Group",
-                              groupName: group.groupName,
+                              groupId: group.promotedGroupId,
                               currentlyFeatured: false,
                               homepage: false,
                             },

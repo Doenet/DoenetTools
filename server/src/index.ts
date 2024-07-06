@@ -30,7 +30,6 @@ import {
   openAssignmentWithCode,
   closeAssignmentWithCode,
   updateUser,
-  loadPromotedContentGroups,
   addPromotedContent,
   saveScoreAndState,
   getAssignmentScoreData,
@@ -48,7 +47,7 @@ import {
   loadPromotedContent,
   removePromotedContent,
   InvalidRequestError,
-  removePromotedContentGroup,
+  deletePromotedContentGroup,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -339,6 +338,10 @@ app.get(
       const content = await loadPromotedContent(loggedInUserId);
       res.send(content);
     } catch (e) {
+      if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
       next(e);
     }
   },
@@ -375,8 +378,8 @@ app.post(
     try {
       const { groupName } = req.body;
       const loggedInUserId = Number(req.cookies.userId);
-      await addPromotedContentGroup(groupName, loggedInUserId);
-      res.send({});
+      const id = await addPromotedContentGroup(groupName, loggedInUserId);
+      res.send({ id });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         // The .code property can be accessed in a type-safe manner
@@ -393,26 +396,14 @@ app.post(
   },
 );
 
-app.get(
-  "/api/loadPromotedContentGroups",
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const groups = await loadPromotedContentGroups();
-      res.send(groups);
-    } catch (e) {
-      next(e);
-    }
-  },
-);
-
 app.post(
   "/api/updatePromotedContentGroup",
   async (req: Request, res: Response, next: NextFunction) => {
-    const { groupName, newGroupName, homepage, currentlyFeatured } = req.body;
+    const { groupId, newGroupName, homepage, currentlyFeatured } = req.body;
     const loggedInUserId = Number(req.cookies.userId);
     try {
       await updatePromotedContentGroup(
-        groupName,
+        Number(groupId),
         newGroupName,
         homepage,
         currentlyFeatured,
@@ -436,14 +427,18 @@ app.post(
 );
 
 app.post(
-  "/api/removePromotedContentGroup",
+  "/api/deletePromotedContentGroup",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { groupName } = req.body;
+      const { groupId } = req.body;
       const loggedInUserId = Number(req.cookies.userId);
-      await removePromotedContentGroup(groupName, loggedInUserId);
+      await deletePromotedContentGroup(Number(groupId), loggedInUserId);
       res.send({});
     } catch (e) {
+      if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
       next(e);
     }
   },
