@@ -38,10 +38,12 @@ type studentStructure = {
 };
 
 export async function loader({ params }) {
-  const { data } = await axios.get(`/api/getAllAssignmentScores/${params.folderId}`);
+  const { data } = await axios.get(
+    `/api/getAllAssignmentScores/${params.folderId}`,
+  );
 
   let studentData = {};
-  data.assignments.forEach(function (assignment: assignmentStructure) {
+  data.assignmentScores.forEach(function (assignment: assignmentStructure) {
     assignment.assignmentScores.forEach(function (score) {
       if (!(score.userId in studentData)) {
         studentData[score.userId] = { name: score.user.name, scores: {} };
@@ -69,7 +71,7 @@ export async function loader({ params }) {
   });
 
   return {
-    assignments: data.assignments,
+    assignments: data.assignmentScores,
     students: studentData,
     studentIdsOrdered,
   };

@@ -39,10 +39,9 @@ export async function loader({ params }) {
   console.log(data);
 
   // TODO: address case where don't have one document
-  const doenetML =
-    data.assignmentContent[0].assignedVersion.source;
+  const doenetML = data.assignmentContent[0].assignedVersion.source;
   const doenetmlVersion =
-  data.assignmentContent[0].assignedVersion.doenetmlVersion.fullVersion;
+    data.assignmentContent[0].assignedVersion.doenetmlVersion.fullVersion;
 
   return {
     assignmentData: data.assignmentData,

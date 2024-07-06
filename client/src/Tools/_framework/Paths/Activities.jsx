@@ -106,7 +106,7 @@ export async function action({ request, params }) {
     await axios.post(`/api/assignActivity`, {
       id: formObj.id,
     });
-    return redirect(`/activityEditor/${formObj.id}`);
+    return redirect(`/assignmentEditor/${formObj.id}`);
   } else if (formObj?._action == "noop") {
     return true;
   }
@@ -213,7 +213,7 @@ export function Activities() {
   function getCardMenuList(isPublic, isFolder, isAssigned, id) {
     return (
       <>
-      { !isFolder ?
+        {!isFolder ? (
           <>
             <MenuItem
               data-test={`Make ${isPublic ? "Private" : "Public"} Menu Item`}
@@ -226,7 +226,7 @@ export function Activities() {
             >
               Make {isPublic ? "Private" : "Public"}
             </MenuItem>
-            { !isAssigned ? 
+            {!isAssigned ? (
               <MenuItem
                 data-test="Create Assignment Menu Item"
                 onClick={() => {
@@ -237,10 +237,14 @@ export function Activities() {
                 }}
               >
                 Create Assignment
-              </MenuItem> : ""
-            }
-          </> : ""
-      }
+              </MenuItem>
+            ) : (
+              ""
+            )}
+          </>
+        ) : (
+          ""
+        )}
         <MenuItem
           data-test="Delete Menu Item"
           onClick={() => {
@@ -361,7 +365,9 @@ export function Activities() {
                     imageLink={
                       activity.isFolder
                         ? `/activities/${activity.ownerId}${activity.id ? "/" + activity.id : ""}`
-                        : (activity.isAssigned ? `/assignmentEditor/${activity.id}` : `/activityEditor/${activity.id}`)
+                        : activity.isAssigned
+                          ? `/assignmentEditor/${activity.id}`
+                          : `/activityEditor/${activity.id}`
                     }
                   />
                 );
