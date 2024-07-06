@@ -223,6 +223,13 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
+        path: "activities/:userId",
+        loader: activitiesLoader,
+        action: activitiesAction,
+        element: <Activities />,
+        errorElement: <ErrorPage />,
+      },
+      {
         path: "activities/:userId/:folderId",
         loader: activitiesLoader,
         action: activitiesAction,
@@ -308,6 +315,12 @@ const router = createBrowserRouter([
         path: "assignmentData/:assignmentId/:userId",
         loader: assignmentStudentDataLoader,
         element: <AssignmentStudentData />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "allAssignmentScores",
+        loader: allAssignmentScoresLoader,
+        element: <AllAssignmentScores />,
         errorElement: <ErrorPage />,
       },
       {

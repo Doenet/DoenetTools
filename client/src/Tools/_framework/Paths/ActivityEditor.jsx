@@ -159,7 +159,7 @@ export async function loader({ params }) {
       docId = activityData.documents[docInOrder].id;
     }
 
-    const doenetML = activityData.documents[docInOrder].content;
+    const doenetML = activityData.documents[docInOrder].source;
     const doenetmlVersion = activityData.documents[docInOrder].doenetmlVersion;
 
     const supportingFileResp = await axios.get(

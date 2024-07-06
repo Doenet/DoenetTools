@@ -292,38 +292,60 @@ app.post(
   },
 );
 
-app.post("/api/createActivity", async (req: Request, res: Response) => {
-  const loggedInUserId = Number(req.cookies.userId);
-  const { activityId, docId } = await createActivity(loggedInUserId, null);
-  res.send({ activityId, docId });
-});
-
 app.post(
-  "/api/createActivity/:parentFolderId",
-  async (req: Request, res: Response) => {
+  "/api/createActivity/",
+  async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
-    const parentFolderId = eval(req.params.parentFolderId); // is there a better way to let this be a number or null?
-    const { activityId, docId } = await createActivity(
-      loggedInUserId,
-      parentFolderId,
-    );
-    res.send({ activityId, docId });
+    try {
+      const { activityId, docId } = await createActivity(loggedInUserId, null);
+      res.send({ activityId, docId });
+    } catch (e) {
+      next(e);
+    }
   },
 );
 
-app.post("/api/createFolder", async (req: Request, res: Response) => {
-  const loggedInUserId = Number(req.cookies.userId);
-  const { folderId } = await createFolder(loggedInUserId, null);
-  res.send({ folderId });
-});
+app.post(
+  "/api/createActivity/:parentFolderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const parentFolderId = Number(req.params.parentFolderId);
+    try {
+      const { activityId, docId } = await createActivity(
+        loggedInUserId,
+        parentFolderId,
+      );
+      res.send({ activityId, docId });
+    } catch (e) {
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/createFolder/",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    try {
+      const { folderId } = await createFolder(loggedInUserId, null);
+      res.send({ folderId });
+    } catch (e) {
+      next(e);
+    }
+  },
+);
 
 app.post(
   "/api/createFolder/:parentFolderId",
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const parentFolderId = Number(req.params.parentFolderId);
-    const { folderId } = await createFolder(loggedInUserId, parentFolderId);
-    res.send({ folderId });
+    try {
+      const { folderId } = await createFolder(loggedInUserId, parentFolderId);
+      res.send({ folderId });
+    } catch (e) {
+      next(e);
+    }
   },
 );
 
@@ -775,15 +797,14 @@ app.get(
 );
 
 app.get(
-  "/api/getAllAssignmentScores/:folderId",
+  "/api/getAllAssignmentScores/",
   async (req: Request, res: Response, next: NextFunction) => {
-    const folderId = eval(req.params.folderId); // is there a better way to get this as null or number?
     const loggedInUserId = Number(req.cookies.userId);
 
     try {
       const data = await getAllAssignmentScores({
         ownerId: loggedInUserId,
-        parentFolderId: folderId,
+        parentFolderId: null,
       });
       res.send(data);
     } catch (e) {
@@ -797,15 +818,15 @@ app.get(
 );
 
 app.get(
-  "/api/getAllAssignmentScores",
+  "/api/getAllAssignmentScores/:folderId",
   async (req: Request, res: Response, next: NextFunction) => {
+    const folderId = Number(req.params.folderId);
     const loggedInUserId = Number(req.cookies.userId);
-    const parentFolderId = Number(req.params.parentFolderId);
 
     try {
       const data = await getAllAssignmentScores({
         ownerId: loggedInUserId,
-        parentFolderId,
+        parentFolderId: folderId,
       });
       res.send(data);
     } catch (e) {
@@ -946,9 +967,31 @@ app.get(
 );
 
 app.get(
+  "/api/getFolderContent/",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+
+    try {
+      const folder = await getFolderContent({
+        ownerId: loggedInUserId,
+        folderId: null,
+        loggedInUserId,
+      });
+      res.send({ folder });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(204);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
   "/api/getFolderContent/:folderId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const folderId = eval(req.params.folderId); //  is there a better way to expect number or null?
+    const folderId = Number(req.params.folderId);
     const loggedInUserId = Number(req.cookies.userId);
 
     try {
