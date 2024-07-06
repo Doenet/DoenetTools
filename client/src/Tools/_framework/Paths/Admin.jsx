@@ -11,7 +11,7 @@ export async function loader() {
     data: { isAdmin },
   } = await axios.get(`/api/checkForCommunityAdmin`);
   if (!isAdmin) {
-    throw Error();
+    throw Error("Page not available");
   }
 
   const { data: carouselGroups } = await axios.get(`/api/loadPromotedContent`);
@@ -77,18 +77,18 @@ export function Admin() {
             ) : (
               <>
                 {publicActivities.map((activity) => {
-                  const imageLink = `/activityViewer/${activity.activityId}`;
+                  const imageLink = `/activityViewer/${activity.id}`;
 
                   return (
                     <ActivityCard
-                      key={`ActivityCard${activity.activityId}`}
+                      key={`ActivityCard${activity.id}`}
                       imageLink={imageLink}
                       name={activity.name}
                       imagePath={activity.imagePath}
                       fullName={activity.owner.name}
                       menuItems={
                         <MoveToGroupMenuItem
-                          activityId={activity.activityId}
+                          activityId={activity.id}
                           carouselGroups={carouselGroups}
                         />
                       }
