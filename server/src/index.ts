@@ -1135,7 +1135,9 @@ app.get(
         folderId: null,
         loggedInUserId,
       });
-      res.send({ folder });
+
+      const allDoenetmlVersions = await getAllDoenetmlVersions();
+      res.send({ allDoenetmlVersions, folder });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(204);
@@ -1158,7 +1160,8 @@ app.get(
         folderId,
         loggedInUserId,
       });
-      res.send({ folder });
+      const allDoenetmlVersions = await getAllDoenetmlVersions();
+      res.send({ allDoenetmlVersions, folder });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(204);
