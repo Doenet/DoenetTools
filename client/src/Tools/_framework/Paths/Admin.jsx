@@ -7,22 +7,21 @@ import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/Activi
 import { MoveToGroupMenuItem } from "./Community";
 
 export async function loader() {
+  const {
+    data: { isAdmin },
+  } = await axios.get(`/api/checkForCommunityAdmin`);
+  if (!isAdmin) {
+    throw Error("Page not available");
+  }
+
+  const { data: carouselGroups } = await axios.get(`/api/loadPromotedContent`);
+
   const { data: recentActivities } = await axios.get(
     `/api/getAllRecentPublicActivities`,
   );
-  const { data: isAdminData } = await axios.get(`/api/checkForCommunityAdmin`);
-  const isAdmin = isAdminData.isAdmin;
-
-  let carouselGroups = [];
-  if (isAdmin) {
-    const carouselDataGroups = await fetch(`/api/loadPromotedContentGroups`);
-    const responseGroups = await carouselDataGroups.json();
-    carouselGroups = responseGroups.carouselGroups;
-  }
 
   return {
     publicActivities: recentActivities,
-    isAdmin,
     carouselGroups,
   };
 }
@@ -47,7 +46,7 @@ const ActivitiesGrid = styled.div`
 `;
 
 export function Admin() {
-  const { carouselGroups, isAdmin, publicActivities } = useLoaderData();
+  const { carouselGroups, publicActivities } = useLoaderData();
 
   return (
     <>
@@ -78,24 +77,20 @@ export function Admin() {
             ) : (
               <>
                 {publicActivities.map((activity) => {
-                  const imageLink = `/activityViewer/${activity.activityId}`;
+                  const imageLink = `/activityViewer/${activity.id}`;
 
                   return (
                     <ActivityCard
-                      key={`ActivityCard${activity.activityId}`}
+                      key={`ActivityCard${activity.id}`}
                       imageLink={imageLink}
-                      label={activity.name}
+                      name={activity.name}
                       imagePath={activity.imagePath}
-                      fullName={activity.owner.email}
+                      fullName={activity.owner.name}
                       menuItems={
-                        isAdmin ? (
-                          <>
-                            <MoveToGroupMenuItem
-                              activityId={activity.activityId}
-                              carouselGroups={carouselGroups}
-                            />
-                          </>
-                        ) : null
+                        <MoveToGroupMenuItem
+                          activityId={activity.id}
+                          carouselGroups={carouselGroups}
+                        />
                       }
                     />
                   );

@@ -2,7 +2,26 @@ import { PrismaClient, Prisma } from "@prisma/client";
 import { cidFromText } from "./utils/cid";
 import { DateTime } from "luxon";
 
+export class InvalidRequestError extends Error {
+  errorCode = 400;
+  constructor(message: string) {
+    super(message);
+    // 👇️ because we are extending a built-in class
+    Object.setPrototypeOf(this, InvalidRequestError.prototype);
+  }
+}
+
 const prisma = new PrismaClient();
+
+async function mustBeAdmin(
+  userId: number,
+  message = "You must be an community admin to take this action",
+) {
+  const isAdmin = await getIsAdmin(userId);
+  if (!isAdmin) {
+    throw new InvalidRequestError(message);
+  }
+}
 
 const SORT_INCREMENT = 2 ** 32;
 
@@ -115,7 +134,7 @@ async function getNextSortIndexForFolder(
 }
 
 export async function deleteActivity(id: number, ownerId: number) {
-  return await prisma.content.update({
+  const deleted = await prisma.content.update({
     where: { id, ownerId, isFolder: false },
     data: {
       isDeleted: true,
@@ -129,6 +148,8 @@ export async function deleteActivity(id: number, ownerId: number) {
       },
     },
   });
+
+  return { id: deleted.id, isDeleted: deleted.isDeleted };
 }
 
 export async function deleteFolder(id: number, ownerId: number) {
@@ -149,11 +170,16 @@ export async function deleteFolder(id: number, ownerId: number) {
       SET content.isDeleted = TRUE, documents.isDeleted = TRUE
       WHERE content.id IN (SELECT id from content_tree);
     `);
+
+  return await prisma.content.findUniqueOrThrow({
+    where: { id, ownerId },
+    select: { id: true, isDeleted: true },
+  });
 }
 
 // Note: currently (June 4, 2024) unused and untested
 export async function deleteDocument(id: number, ownerId: number) {
-  return await prisma.documents.update({
+  await prisma.documents.update({
     where: { id, activity: { ownerId } },
     data: { isDeleted: true },
   });
@@ -165,24 +191,28 @@ export async function updateContent({
   imagePath,
   isPublic,
   ownerId,
-  sortIndex,
 }: {
   id: number;
   name?: string;
   imagePath?: string;
   isPublic?: boolean;
   ownerId: number;
-  sortIndex?: number;
 }) {
-  return await prisma.content.update({
+  const updated = await prisma.content.update({
     where: { id, ownerId },
     data: {
       name,
       imagePath,
       isPublic,
-      sortIndex,
     },
   });
+
+  return {
+    id: updated.id,
+    name: updated.name,
+    imagePath: updated.imagePath,
+    isPublic: updated.isPublic,
+  };
 }
 
 export async function updateDoc({
@@ -209,7 +239,7 @@ export async function updateDoc({
     throw Error("Cannot change source of assigned document");
   }
 
-  return await prisma.documents.update({
+  const updated = await prisma.documents.update({
     where: { id, activity: { ownerId } },
     data: {
       source,
@@ -218,10 +248,19 @@ export async function updateDoc({
       lastEdited: DateTime.now().toJSDate(),
     },
   });
+
+  return {
+    id: updated.id,
+    name: updated.name,
+    source: updated.source,
+    doenetmlVersionId: updated.doenetmlVersionId,
+  };
 }
 
 // Note: getActivity does not currently incorporate access control,
-// by relies on calling functions to determine access
+// by relies on calling functions to determine access.
+// Also, the results of getActivity shouldn't be sent unchanged to the response,
+// as the sortIndex (bigint) cannot be serialized
 export async function getActivity(id: number) {
   return await prisma.content.findUniqueOrThrow({
     where: { id, isDeleted: false, isFolder: false },
@@ -229,6 +268,16 @@ export async function getActivity(id: number) {
       documents: {
         where: { isDeleted: false },
       },
+    },
+  });
+}
+
+export async function getActivityName(id: number) {
+  return await prisma.content.findUniqueOrThrow({
+    where: { id, isDeleted: false, isFolder: false },
+    select: {
+      id: true,
+      name: true,
     },
   });
 }
@@ -752,7 +801,9 @@ export async function getActivityViewerData(
       isFolder: false,
       OR: [{ ownerId: userId }, { isPublic: true }],
     },
-    include: {
+    select: {
+      id: true,
+      name: true,
       owner: { select: { userId: true, email: true, name: true } },
       documents: {
         where: { isDeleted: false },
@@ -919,17 +970,25 @@ export async function listUserAssigned(
   };
 }
 
-export async function findOrCreateUser(email: string, name: string) {
+export async function findOrCreateUser(
+  email: string,
+  name: string,
+  isAdmin = false,
+) {
   const user = await prisma.users.findUnique({ where: { email } });
   if (user) {
     return user;
   } else {
-    return createUser(email, name);
+    return createUser(email, name, isAdmin);
   }
 }
 
-export async function createUser(email: string, name: string) {
-  const result = await prisma.users.create({ data: { email, name } });
+export async function createUser(
+  email: string,
+  name: string,
+  isAdmin: boolean,
+) {
+  const result = await prisma.users.create({ data: { email, name, isAdmin } });
   return result;
 }
 
@@ -994,15 +1053,217 @@ export async function getAllRecentPublicActivities() {
     where: { isPublic: true, isDeleted: false, isFolder: false },
     orderBy: { lastEdited: "desc" },
     take: 100,
-    include: {
+    select: {
+      id: true,
+      name: true,
+      imagePath: true,
       owner: {
         select: {
-          email: true,
+          name: true,
         },
       },
     },
   });
   return activities;
+}
+
+export async function addPromotedContentGroup(
+  groupName: string,
+  userId: number,
+) {
+  await mustBeAdmin(
+    userId,
+    "You must be a community admin to edit promoted content.",
+  );
+
+  const { promotedGroupId } = await prisma.promotedContentGroups.create({
+    data: {
+      groupName,
+      sortOrder: "a",
+    },
+  });
+  return promotedGroupId;
+}
+
+export async function updatePromotedContentGroup(
+  groupId: number,
+  newGroupName: string,
+  homepage: boolean,
+  currentlyFeatured: boolean,
+  userId: number,
+) {
+  await mustBeAdmin(
+    userId,
+    "You must be a community admin to edit promoted content.",
+  );
+
+  await prisma.promotedContentGroups.update({
+    where: {
+      promotedGroupId: groupId,
+    },
+    data: {
+      groupName: newGroupName,
+      homepage,
+      currentlyFeatured,
+    },
+  });
+}
+
+export async function deletePromotedContentGroup(
+  groupId: number,
+  userId: number,
+) {
+  await mustBeAdmin(
+    userId,
+    "You must be a community admin to edit promoted content.",
+  );
+  // Delete group and entries all in one transaction, so both succeed or fail together
+  const deleteEntries = prisma.promotedContent.deleteMany({
+    where: {
+      promotedGroupId: groupId,
+    },
+  });
+  const deleteGroup = prisma.promotedContentGroups.delete({
+    where: {
+      promotedGroupId: groupId,
+    },
+  });
+  await prisma.$transaction([deleteEntries, deleteGroup]);
+}
+
+export async function loadPromotedContent(userId: number) {
+  const isAdmin = userId ? await getIsAdmin(userId) : false;
+  let content = await prisma.promotedContentGroups.findMany({
+    where: {
+      // If admin, also include groups not featured
+      currentlyFeatured: isAdmin ? undefined : true,
+    },
+    orderBy: {
+      sortOrder: "desc",
+    },
+    select: {
+      groupName: true,
+      promotedGroupId: true,
+      currentlyFeatured: true,
+      homepage: true,
+
+      promotedContent: {
+        select: {
+          sortOrder: true,
+          activity: {
+            select: {
+              id: true,
+              name: true,
+              imagePath: true,
+
+              owner: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const reformattedContent = content.map((groupContent) => {
+    const reformattedActivities = groupContent.promotedContent.map(
+      (promoted) => {
+        return {
+          name: promoted.activity.name,
+          activityId: promoted.activity.id,
+          imagePath: promoted.activity.imagePath,
+          owner: promoted.activity.owner.name,
+          sortOrder: promoted.sortOrder,
+        };
+      },
+    );
+
+    return {
+      groupName: groupContent.groupName,
+      promotedGroupId: groupContent.promotedGroupId,
+      currentlyFeatured: groupContent.currentlyFeatured,
+      homepage: groupContent.homepage,
+      promotedContent: reformattedActivities,
+    };
+  });
+
+  return reformattedContent;
+}
+
+export async function addPromotedContent(
+  groupId: number,
+  activityId: number,
+  userId: number,
+) {
+  await mustBeAdmin(
+    userId,
+    "You must be a community admin to edit promoted content.",
+  );
+  const activity = await prisma.content.findUnique({
+    where: {
+      id: activityId,
+      isPublic: true,
+      isFolder: false,
+      isDeleted: false,
+    },
+    select: {
+      // not using this, we just need to select one field
+      id: true,
+    },
+  });
+  if (!activity) {
+    throw new InvalidRequestError(
+      "This activity does not exist or is not public.",
+    );
+  }
+
+  await prisma.promotedContent.create({
+    data: {
+      activityId,
+      promotedGroupId: groupId,
+      sortOrder: "1",
+    },
+  });
+}
+
+export async function removePromotedContent(
+  groupId: number,
+  activityId: number,
+  userId: number,
+) {
+  await mustBeAdmin(
+    userId,
+    "You must be a community admin to edit promoted content.",
+  );
+  const activity = await prisma.content.findUnique({
+    where: {
+      id: activityId,
+      isPublic: true,
+      isFolder: false,
+      isDeleted: false,
+    },
+    select: {
+      // not using this, we just need to select one field
+      id: true,
+    },
+  });
+  if (!activity) {
+    throw new InvalidRequestError(
+      "This activity does not exist or is not public.",
+    );
+  }
+
+  await prisma.promotedContent.delete({
+    where: {
+      activityId_promotedGroupId: {
+        activityId,
+        promotedGroupId: groupId,
+      },
+    },
+  });
 }
 
 export async function assignActivity(activityId: number, userId: number) {
@@ -1101,6 +1362,8 @@ export async function closeAssignmentWithCode(
   });
 }
 
+// Note: this function returns `sortIndex` (which is a bigint)
+// so the data shouldn't be sent unchanged to the response
 export async function getAssignment(activityId: number, ownerId: number) {
   let assignment = await prisma.content.findUniqueOrThrow({
     where: {
@@ -1447,6 +1710,17 @@ export async function getAssignmentStudentData({
   return { ...assignmentData, documentScores };
 }
 
+/**
+ * Recurses through all subfolders of `parentFolderId`
+ * to return all content of it and its subfolders.
+ * Results are ordered via a `sortIndex` and a depth-first search,
+ * i.e., the contents of a folder immediately follow the folder itself,
+ * and items within a folder are ordered by `sortIndex`
+ *
+ * @returns A Promise that resolves to an object with
+ * - orderedActivities: the ordered list of all activities in the folder (and subfolders)
+ * - assignmentScores: the scores that student achieved on those activities
+ */
 export async function getAllAssignmentScores({
   ownerId,
   parentFolderId,
@@ -1454,10 +1728,7 @@ export async function getAllAssignmentScores({
   ownerId: number;
   parentFolderId: number | null;
 }) {
-  // Recurse through all subfolders of `parentFolderId`
-  // to find all folders and activities.
-  // Include each item's rank, i.e., its ordering amount other items with the same parent.
-  let contentRecursivelyInFolder;
+  let orderedActivities;
 
   // NOTE: the string after `Prisma.sql` is NOT interpreted as a regular string,
   // but it does special processing with the template variables.
@@ -1466,100 +1737,96 @@ export async function getAllAssignmentScores({
   // To get two versions, one with `parentFolderId IS NULL` and the other with `parentFolderId = ${parentFolderId}`,
   // we had to make two completely separate raw queries.
   // See: https://www.prisma.io/docs/orm/prisma-client/queries/raw-database-access/raw-queries#considerations
-
   if (parentFolderId === null) {
-    contentRecursivelyInFolder = await prisma.$queryRaw<
+    orderedActivities = await prisma.$queryRaw<
       {
         id: number;
-        parentId: number;
-        isFolder: number;
-        rank: bigint;
+        name: string;
       }[]
     >(Prisma.sql`
-    WITH RECURSIVE content_tree(id, parentId, isFolder, sortIndex) AS (
-      SELECT id, parentFolderId, isFolder, sortIndex FROM content
+    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
+      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
       WHERE parentFolderId IS NULL AND ownerId = ${ownerId}
       AND (isAssigned = true or isFolder = true) AND isDeleted = false
       UNION ALL
-      SELECT c.id, c.parentFolderId, c.isFolder, c.sortIndex FROM (
-        SELECT * from content 
-        WHERE (isAssigned = true or isFolder = true) AND isDeleted = false
-        ORDER BY "sortIndex"
-        ) AS c
+      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
+      FROM content AS c
       INNER JOIN content_tree AS ft
       ON c.parentFolderId = ft.id
+      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
     )
-
-    SELECT id, parentId, isFolder, RANK() OVER (PARTITION by "parentId" ORDER BY "sortIndex") as "rank" FROM content_tree
+    
+    SELECT c.id, c.name FROM content AS c
+    INNER JOIN content_tree AS ct
+    ON ct.id = c.id
+    WHERE ct.isFolder = FALSE ORDER BY path
   `);
   } else {
-    contentRecursivelyInFolder = await prisma.$queryRaw<
+    orderedActivities = await prisma.$queryRaw<
       {
         id: number;
-        parentId: number;
-        isFolder: number;
-        rank: bigint;
+        name: string;
       }[]
     >(Prisma.sql`
-    WITH RECURSIVE content_tree(id, parentId, isFolder, sortIndex) AS (
-      SELECT id, parentFolderId, isFolder, sortIndex FROM content
+    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
+      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
       WHERE parentFolderId = ${parentFolderId} AND ownerId = ${ownerId}
       AND (isAssigned = true or isFolder = true) AND isDeleted = false
       UNION ALL
-      SELECT c.id, c.parentFolderId, c.isFolder, c.sortIndex FROM (
-        SELECT * from content 
-        WHERE (isAssigned = true or isFolder = true) AND isDeleted = false
-        ORDER BY "sortIndex"
-        ) AS c
+      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
+      FROM content AS c
       INNER JOIN content_tree AS ft
       ON c.parentFolderId = ft.id
+      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
     )
-
-    SELECT id, parentId, isFolder, RANK() OVER (PARTITION by "parentId" ORDER BY "sortIndex") as "rank" FROM content_tree
+    
+    SELECT c.id, c.name FROM content AS c
+    INNER JOIN content_tree AS ct
+    ON ct.id = c.id
+    WHERE ct.isFolder = FALSE ORDER BY path
   `);
   }
 
-  const folderStructure = contentRecursivelyInFolder.map((c) => ({
-    id: c.id,
-    parentId: c.parentId,
-    isFolder: Boolean(c.isFolder),
-    rank: Number(c.rank),
-  }));
-
-  const activityIdsRecursivelyInFolder = contentRecursivelyInFolder
-    .filter((c) => !c.isFolder)
-    .map((c) => c.id);
-
-  const assignments = await prisma.content.findMany({
+  const assignmentScores = await prisma.assignmentScores.findMany({
     where: {
-      ownerId,
-      isDeleted: false,
-      isAssigned: true,
-      isFolder: false,
-      id: { in: activityIdsRecursivelyInFolder },
+      activityId: { in: orderedActivities.map((a) => a.id) },
     },
     select: {
-      id: true,
-      name: true,
-      assignmentScores: {
+      activityId: true,
+      userId: true,
+      score: true,
+      user: {
         select: {
-          activityId: true,
-          userId: true,
-          score: true,
-          user: {
-            select: {
-              name: true,
-            },
-          },
+          name: true,
         },
       },
     },
   });
 
-  return { assignments, folderStructure };
+  return { orderedActivities, assignmentScores };
 }
 
-export async function getStudentData({ userId }: { userId: number }) {
+/**
+ * Recurses through all subfolders of `parentFolderId`
+ * to return all content of it and its subfolders.
+ * Results are ordered via a `sortIndex` and a depth-first search,
+ * i.e., the contents of a folder immediately follow the folder itself,
+ * and items within a folder are ordered by `sortIndex`
+ *
+ * @returns A Promise that resolves to an object with
+ * - userData: information on the student
+ * - orderedActivities: the ordered list of all activities in the folder (and subfolders)
+ *   along with the student's score, if it exists
+ */
+export async function getStudentData({
+  userId,
+  ownerId,
+  parentFolderId,
+}: {
+  userId: number;
+  ownerId: number;
+  parentFolderId: number | null;
+}) {
   const userData = await prisma.users.findUniqueOrThrow({
     where: {
       userId,
@@ -1567,28 +1834,79 @@ export async function getStudentData({ userId }: { userId: number }) {
     select: {
       userId: true,
       name: true,
-      assignmentScores: {
-        where: {
-          activity: {
-            isDeleted: false,
-            isAssigned: true,
-            isFolder: false,
-          },
-        },
-        select: {
-          activityId: true,
-          score: true,
-          activity: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
     },
   });
 
-  return userData;
+  let orderedActivityScores;
+
+  // NOTE: the string after `Prisma.sql` is NOT interpreted as a regular string,
+  // but it does special processing with the template variables.
+  // For this reason, one cannot have an operator such as "=" or "IS" as a template variable
+  // or a phrase such as "parentFolderId IS NULL".
+  // To get two versions, one with `parentFolderId IS NULL` and the other with `parentFolderId = ${parentFolderId}`,
+  // we had to make two completely separate raw queries.
+  // See: https://www.prisma.io/docs/orm/prisma-client/queries/raw-database-access/raw-queries#considerations
+  if (parentFolderId === null) {
+    orderedActivityScores = await prisma.$queryRaw<
+      {
+        activityId: number;
+        activityName: string;
+        score: number | null;
+      }[]
+    >(Prisma.sql`
+    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
+      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
+      WHERE parentFolderId IS NULL AND ownerId = ${ownerId}
+      AND (isAssigned = true or isFolder = true) AND isDeleted = false
+      UNION ALL
+      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
+      FROM content AS c
+      INNER JOIN content_tree AS ft
+      ON c.parentFolderId = ft.id
+      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
+    )
+    
+    SELECT c.id AS activityId, c.name AS activityName, s.score FROM content AS c
+    INNER JOIN content_tree AS ct
+    ON ct.id = c.id
+    LEFT JOIN (
+    	SELECT * FROM assignmentScores WHERE userId=${userId}
+    	) as s
+    ON s.activityId  = c.id 
+    WHERE ct.isFolder = FALSE ORDER BY path
+  `);
+  } else {
+    orderedActivityScores = await prisma.$queryRaw<
+      {
+        activityId: number;
+        activityName: string;
+        score: number | null;
+      }[]
+    >(Prisma.sql`
+    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
+      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
+      WHERE parentFolderId = ${parentFolderId} AND ownerId = ${ownerId}
+      AND (isAssigned = true or isFolder = true) AND isDeleted = false
+      UNION ALL
+      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
+      FROM content AS c
+      INNER JOIN content_tree AS ft
+      ON c.parentFolderId = ft.id
+      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
+    )
+    
+    SELECT c.id AS activityId, c.name AS activityName, s.score FROM content AS c
+    INNER JOIN content_tree AS ct
+    ON ct.id = c.id
+    LEFT JOIN (
+    	SELECT * FROM assignmentScores WHERE userId=${userId}
+    	) as s
+    ON s.activityId  = c.id 
+    WHERE ct.isFolder = FALSE ORDER BY path
+  `);
+  }
+
+  return { userData, orderedActivityScores };
 }
 
 export async function getAssignmentContent({
@@ -1723,6 +2041,19 @@ export async function getDocumentSubmittedResponses({
   ownerId: number;
   answerId: string;
 }) {
+  // get activity name and make sure that owner is the owner
+  const activityName = (
+    await prisma.content.findUniqueOrThrow({
+      where: {
+        id: activityId,
+        ownerId,
+        isDeleted: false,
+        isFolder: false,
+      },
+      select: { name: true },
+    })
+  ).name;
+
   // TODO: gave up figuring out to do find the best response and the latest response in a SQL query,
   // so just create in via JS based on this one query.
   // Can we come up with a better solution?
@@ -1734,7 +2065,7 @@ export async function getDocumentSubmittedResponses({
       creditAchieved: number;
       submittedAt: DateTime;
       maxCredit: number;
-      numResponses: number;
+      numResponses: bigint;
     }[]
   >(Prisma.sql`
 select "dsr"."userId", "users"."name" AS "userName", "response", "creditAchieved", "submittedAt",
@@ -1748,7 +2079,7 @@ select "dsr"."userId", "users"."name" AS "userName", "response", "creditAchieved
     	order by "dsr"."userId" asc, "submittedAt" desc
   `);
 
-  let responses = [];
+  let submittedResponses = [];
   let newResponse;
   let lastUserId = 0;
 
@@ -1756,7 +2087,7 @@ select "dsr"."userId", "users"."name" AS "userName", "response", "creditAchieved
     if (respObj.userId > lastUserId) {
       lastUserId = respObj.userId;
       if (newResponse) {
-        responses.push(newResponse);
+        submittedResponses.push(newResponse);
       }
       newResponse = {
         userId: respObj.userId,
@@ -1777,10 +2108,10 @@ select "dsr"."userId", "users"."name" AS "userName", "response", "creditAchieved
   }
 
   if (newResponse) {
-    responses.push(newResponse);
+    submittedResponses.push(newResponse);
   }
 
-  return responses;
+  return { activityName, submittedResponses };
 }
 
 export async function getDocumentSubmittedResponseHistory({
@@ -1798,6 +2129,19 @@ export async function getDocumentSubmittedResponseHistory({
   answerId: string;
   userId: number;
 }) {
+  // get activity name and make sure that owner is the owner
+  const activityName = (
+    await prisma.content.findUniqueOrThrow({
+      where: {
+        id: activityId,
+        ownerId,
+        isDeleted: false,
+        isFolder: false,
+      },
+      select: { name: true },
+    })
+  ).name;
+
   // for each combination of ["activityId", "docId", "docVersionNum", "answerId", "userId"],
   // find the latest submitted response
   let submittedResponses = await prisma.documentSubmittedResponses.findMany({
@@ -1826,7 +2170,7 @@ export async function getDocumentSubmittedResponseHistory({
     },
   });
 
-  return submittedResponses;
+  return { activityName, submittedResponses };
 }
 
 export async function getFolderContent({

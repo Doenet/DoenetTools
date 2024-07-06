@@ -21,12 +21,14 @@ import {
   searchPublicContent,
   updateContent,
   getDoc,
+  addPromotedContentGroup,
   assignActivity,
   listUserAssigned,
   getAssignmentDataFromCode,
   openAssignmentWithCode,
   closeAssignmentWithCode,
   updateUser,
+  addPromotedContent,
   saveScoreAndState,
   getAssignmentScoreData,
   loadState,
@@ -36,9 +38,13 @@ import {
   recordSubmittedEvent,
   getAnswersThatHaveSubmittedResponses,
   getDocumentSubmittedResponses,
-  getAssignment,
   getAssignmentContent,
   getDocumentSubmittedResponseHistory,
+  updatePromotedContentGroup,
+  loadPromotedContent,
+  removePromotedContent,
+  InvalidRequestError,
+  deletePromotedContentGroup,
   moveContent,
   getFolderContent,
 } from "./model";
@@ -103,10 +109,8 @@ app.post("/api/updateUser", async (req: Request, res: Response) => {
 
 app.get("/api/checkForCommunityAdmin", async (req: Request, res: Response) => {
   const loggedInUserId = Number(req.cookies.userId);
-  const isAdmin = await getIsAdmin(loggedInUserId);
-  res.send({
-    isAdmin,
-  });
+  const isAdmin = loggedInUserId ? await getIsAdmin(loggedInUserId) : false;
+  res.send({ isAdmin });
 });
 
 app.get(
@@ -423,12 +427,146 @@ app.get("/api/searchPublicContent", async (req: Request, res: Response) => {
   });
 });
 
-app.get("/api/loadPromotedContent", (req: Request, res: Response) => {
-  res.send({
-    success: true,
-    carouselData: {},
-  });
-});
+app.post(
+  "/api/addPromotedContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { groupId, activityId } = req.body;
+    const loggedInUserId = Number(req.cookies.userId);
+    try {
+      await addPromotedContent(groupId, activityId, loggedInUserId);
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        if (e.code === "P2002") {
+          res.status(400).send("This activity is already in that group.");
+          return;
+        } else if (e.code === "P2003") {
+          res.status(400).send("That group does not exist.");
+          return;
+        }
+      } else if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.get(
+  "/api/loadPromotedContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const loggedInUserId = Number(req.cookies.userId);
+      const content = await loadPromotedContent(loggedInUserId);
+      res.send(content);
+    } catch (e) {
+      if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/removePromotedContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const groupId = Number(req.body.groupId);
+      const activityId = Number(req.body.activityId);
+      const loggedInUserId = Number(req.cookies.userId);
+
+      await removePromotedContent(groupId, activityId, loggedInUserId);
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === "P2025") {
+          res.status(400).send("That group does not exist.");
+          return;
+        }
+      } else if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/addPromotedContentGroup",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { groupName } = req.body;
+      const loggedInUserId = Number(req.cookies.userId);
+      const id = await addPromotedContentGroup(groupName, loggedInUserId);
+      res.send({ id });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        if (e.code === "P2002") {
+          res.status(400).send("A group with that name already exists.");
+          return;
+        }
+      } else if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/updatePromotedContentGroup",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { groupId, newGroupName, homepage, currentlyFeatured } = req.body;
+    const loggedInUserId = Number(req.cookies.userId);
+    try {
+      await updatePromotedContentGroup(
+        Number(groupId),
+        newGroupName,
+        homepage,
+        currentlyFeatured,
+        loggedInUserId,
+      );
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        if (e.code === "P2002") {
+          res.status(400).send("A group with that name already exists.");
+          return;
+        }
+      } else if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/deletePromotedContentGroup",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { groupId } = req.body;
+      const loggedInUserId = Number(req.cookies.userId);
+      await deletePromotedContentGroup(Number(groupId), loggedInUserId);
+      res.send({});
+    } catch (e) {
+      if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
 
 app.get(
   "/api/getActivityEditorData/:activityId",
@@ -459,7 +597,7 @@ app.get("/api/getAllDoenetmlVersions", async (req: Request, res: Response) => {
 app.get(
   "/api/getActivityView/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = req.cookies.userId ? Number(req.cookies.userId) : 0;
     const activityId = Number(req.params.activityId);
 
     try {
@@ -501,10 +639,6 @@ app.get(
     res.send({ name, ...assignmentData });
   },
 );
-
-app.get("/api/loadPromotedContentGroups", (req: Request, res: Response) => {
-  res.send({});
-});
 
 app.post(
   "/api/saveDoenetML",
@@ -818,9 +952,9 @@ app.get(
 );
 
 app.get(
-  "/api/getAllAssignmentScores/:folderId",
+  "/api/getAllAssignmentScores/:parentFolderId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const folderId = Number(req.params.folderId);
+    const folderId = Number(req.params.parentFolderId);
     const loggedInUserId = Number(req.cookies.userId);
 
     try {
@@ -848,6 +982,32 @@ app.get(
     try {
       const data = await getStudentData({
         userId: userId,
+        ownerId: loggedInUserId,
+        parentFolderId: null,
+      });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getStudentData/:userId/:parentFolderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = Number(req.params.userId);
+    const loggedInUserId = Number(req.cookies.userId);
+    const parentFolderId = Number(req.params.parentFolderId);
+
+    try {
+      const data = await getStudentData({
+        userId: userId,
+        ownerId: loggedInUserId,
+        parentFolderId,
       });
       res.send(data);
     } catch (e) {
@@ -916,15 +1076,14 @@ app.get(
     const loggedInUserId = Number(req.cookies.userId);
 
     try {
-      const assignment = await getAssignment(activityId, loggedInUserId);
-      const submittedResponses = await getDocumentSubmittedResponses({
+      const responseData = await getDocumentSubmittedResponses({
         activityId,
         docId,
         docVersionNum,
         answerId,
         ownerId: loggedInUserId,
       });
-      res.send({ assignment, submittedResponses });
+      res.send(responseData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(204);
@@ -946,8 +1105,7 @@ app.get(
     const loggedInUserId = Number(req.cookies.userId);
 
     try {
-      const assignment = await getAssignment(activityId, loggedInUserId);
-      const submittedResponses = await getDocumentSubmittedResponseHistory({
+      const responseData = await getDocumentSubmittedResponseHistory({
         activityId,
         docId,
         docVersionNum,
@@ -955,7 +1113,7 @@ app.get(
         userId,
         ownerId: loggedInUserId,
       });
-      res.send({ assignment, submittedResponses });
+      res.send(responseData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(204);

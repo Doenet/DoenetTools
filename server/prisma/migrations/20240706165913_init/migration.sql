@@ -16,9 +16,9 @@ CREATE TABLE `content` (
     `sortIndex` BIGINT NOT NULL,
 
     UNIQUE INDEX `content_id_key`(`id`),
-    INDEX `content_ownerId_idx`(`ownerId`),
+    INDEX `content_ownerId_parentFolderId_sortIndex_idx`(`ownerId`, `parentFolderId`, `sortIndex`),
     INDEX `content_classCode_idx`(`classCode`),
-    INDEX `content_parentFolderId_idx`(`parentFolderId`),
+    INDEX `content_parentFolderId_isFolder_idx`(`parentFolderId`, `isFolder`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -140,6 +140,27 @@ CREATE TABLE `users` (
     PRIMARY KEY (`userId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `promotedContentGroups` (
+    `promotedGroupId` INTEGER NOT NULL AUTO_INCREMENT,
+    `groupName` VARCHAR(191) NOT NULL,
+    `currentlyFeatured` BOOLEAN NOT NULL DEFAULT false,
+    `homepage` BOOLEAN NOT NULL DEFAULT false,
+    `sortOrder` VARCHAR(191) NOT NULL,
+
+    UNIQUE INDEX `promotedContentGroups_groupName_key`(`groupName`),
+    PRIMARY KEY (`promotedGroupId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `promotedContent` (
+    `activityId` INTEGER NOT NULL,
+    `promotedGroupId` INTEGER NOT NULL,
+    `sortOrder` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`activityId`, `promotedGroupId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
 ALTER TABLE `content` ADD CONSTRAINT `content_ownerId_fkey` FOREIGN KEY (`ownerId`) REFERENCES `users`(`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
@@ -187,3 +208,9 @@ ALTER TABLE `documentSubmittedResponses` ADD CONSTRAINT `documentSubmittedRespon
 
 -- AddForeignKey
 ALTER TABLE `documentSubmittedResponses` ADD CONSTRAINT `documentSubmittedResponses_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE `promotedContent` ADD CONSTRAINT `promotedContent_activityId_fkey` FOREIGN KEY (`activityId`) REFERENCES `content`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `promotedContent` ADD CONSTRAINT `promotedContent_promotedGroupId_fkey` FOREIGN KEY (`promotedGroupId`) REFERENCES `promotedContentGroups`(`promotedGroupId`) ON DELETE RESTRICT ON UPDATE CASCADE;
