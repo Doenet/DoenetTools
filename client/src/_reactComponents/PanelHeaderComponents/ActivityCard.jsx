@@ -47,7 +47,7 @@ export default function ActivityCard({
         <Flex columnGap="2px">
           {suppressAvatar ? null : <Avatar size="sm" name={fullName} />}
 
-          <Box width="160px" p="1">
+          <Box width="160px" minWidth="0px" p="1">
             <Text
               data-test="Card Label"
               height="26px"
@@ -56,6 +56,7 @@ export default function ActivityCard({
               fontWeight="700"
               noOfLines={2}
               textAlign="left"
+              overflow="hidden"
             >
               {name}
             </Text>

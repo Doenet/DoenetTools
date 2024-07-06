@@ -115,8 +115,8 @@ export function Carousel({ title = "", data = [] }) {
                 <SwiperSlide key={`swipercard${i}`}>
                   <ActivityCard
                     {...cardObj}
-                    fullName={cardObj.firstName + " " + cardObj.lastName}
-                    imageLink={`/activityViewer/${cardObj.doenetId}`}
+                    fullName={cardObj.owner}
+                    imageLink={`/activityViewer/${cardObj.activityId}`}
                     menuItems={
                       null
                       /* z-index stacking issues, might be related to the carousel

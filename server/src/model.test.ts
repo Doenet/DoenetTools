@@ -14,6 +14,7 @@ import {
   searchPublicContent,
   updateContent,
   getActivity,
+  addPromotedContentGroup,
   assignActivity,
   getAssignment,
   openAssignmentWithCode,
@@ -22,6 +23,7 @@ import {
   createAnonymousUser,
   updateUser,
   getUserInfo,
+  addPromotedContent,
   saveScoreAndState,
   getAssignmentScoreData,
   loadState,
@@ -30,6 +32,10 @@ import {
   getDocumentSubmittedResponses,
   getAnswersThatHaveSubmittedResponses,
   getDocumentSubmittedResponseHistory,
+  updatePromotedContentGroup,
+  removePromotedContent,
+  loadPromotedContent,
+  deletePromotedContentGroup,
   getStudentData,
   getAllAssignmentScores,
   unassignActivity,
@@ -54,10 +60,14 @@ const currentDoenetmlVersion = {
 };
 
 // create an isolated user for each test, will allow tests to be run in parallel
-async function createTestUser() {
+async function createTestUser(isAdmin = false) {
   const username = "vitest-" + new Date().toJSON() + "@vitest.test";
-  const user = await findOrCreateUser(username, "vitest user");
+  const user = await findOrCreateUser(username, "vitest user", isAdmin);
   return user;
+}
+
+async function createTestAdminUser() {
+  return await createTestUser(true);
 }
 
 test("New user has no content", async () => {
@@ -1177,6 +1187,209 @@ test("updateContent does not update properties when passed undefined values", as
   await updateContent({ id: activityId, ownerId });
   const updatedActivity = await getActivity(activityId);
   expect(updatedActivity).toEqual(originalActivity);
+});
+
+test("add and remove promoted content", async () => {
+  const { userId, name: userName } = await createTestAdminUser();
+
+  // Can create new promoted content group
+  const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
+  await addPromotedContentGroup(groupName, userId);
+  const groups = await loadPromotedContent(userId);
+  const groupId = groups.find(
+    (group) => group.groupName === groupName,
+  )!.promotedGroupId;
+  expect(groups.find((group) => group.groupName === groupName)).toBeDefined();
+
+  // Creating the same group again should fail
+  await expect(addPromotedContentGroup(groupName, userId)).rejects.toThrowError(
+    "Unique constraint failed",
+  );
+
+  // Cannot promote private activity to that group
+  const { activityId } = await createActivity(userId, null);
+  await expect(
+    addPromotedContent(groupId, activityId, userId),
+  ).rejects.toThrowError("not public");
+  {
+    const promotedContent = await loadPromotedContent(userId);
+    const myGroup = promotedContent.find(
+      (content) => (content.groupName = groupName),
+    );
+    expect(myGroup).toBeDefined();
+    expect(myGroup?.promotedContent).toEqual([]);
+  }
+
+  // Can promote public activity to that group
+  await updateContent({ id: activityId, isPublic: true, ownerId: userId });
+  await addPromotedContent(groupId, activityId, userId);
+  {
+    const promotedContent = await loadPromotedContent(userId);
+    const myContent = promotedContent.find(
+      (content) => content.promotedGroupId === groupId,
+    );
+    expect(myContent).toBeDefined();
+    expect(myContent?.promotedContent[0].activityId).toEqual(activityId);
+  }
+
+  // Cannot add to same group twice
+  await expect(
+    addPromotedContent(groupId, activityId, userId),
+  ).rejects.toThrowError("Unique constraint failed");
+  {
+    const promotedContent = await loadPromotedContent(userId);
+    const myContent = promotedContent.find(
+      (content) => content.promotedGroupId === groupId,
+    );
+    expect(myContent).toBeDefined();
+    expect(myContent?.promotedContent.length).toEqual(1);
+  }
+
+  // Cannot promote non-existent activity
+  const fakeActivityId = Math.random() * 1e8;
+  await expect(
+    addPromotedContent(groupId, fakeActivityId, userId),
+  ).rejects.toThrowError("does not exist");
+  {
+    const promotedContent = await loadPromotedContent(userId);
+    const myContent = promotedContent.find(
+      (content) => content.promotedGroupId === groupId,
+    );
+    expect(myContent).toBeDefined();
+    expect(myContent?.promotedContent.length).toEqual(1);
+  }
+
+  // Cannot promote to non-existent group
+  const fakeGroupId = Math.random() * 1e8;
+  await expect(
+    addPromotedContent(fakeGroupId, activityId, userId),
+  ).rejects.toThrowError("Foreign key constraint failed");
+  {
+    const promotedContent = await loadPromotedContent(userId);
+    const myContent = promotedContent.find(
+      (content) => content.promotedGroupId === groupId,
+    );
+    expect(myContent).toBeDefined();
+    expect(myContent?.promotedContent.length).toEqual(1);
+  }
+
+  // Remove content from group
+  await removePromotedContent(groupId, activityId, userId);
+  {
+    const promotedContent = await loadPromotedContent(userId);
+    const myContent = promotedContent.find(
+      (content) => content.promotedGroupId === groupId,
+    );
+    expect(myContent).toBeDefined();
+    expect(myContent?.promotedContent.length).toEqual(0);
+  }
+
+  // Cannot remove non-existent activity
+  await expect(
+    removePromotedContent(fakeGroupId, activityId, userId),
+  ).rejects.toThrowError("does not exist");
+});
+
+test("delete promoted content group", async () => {
+  const { userId } = await createTestAdminUser();
+  const { activityId: activity1 } = await createActivity(userId, null);
+  const { activityId: activity2 } = await createActivity(userId, null);
+  await updateContent({
+    id: activity1,
+    isPublic: true,
+    ownerId: userId,
+  });
+  await updateContent({
+    id: activity2,
+    isPublic: true,
+    ownerId: userId,
+  });
+
+  const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
+  await addPromotedContentGroup(groupName, userId);
+  const groups = await loadPromotedContent(userId);
+  const groupId = groups.find(
+    (group) => group.groupName === groupName,
+  )!.promotedGroupId;
+  await addPromotedContent(groupId, activity1, userId);
+  await addPromotedContent(groupId, activity2, userId);
+
+  await deletePromotedContentGroup(groupId, userId);
+  const groupsAfterRemove = await loadPromotedContent(userId);
+  expect(
+    groupsAfterRemove.find((group) => group.groupName === groupName),
+  ).toBeUndefined();
+});
+
+test("update promoted content group", async () => {
+  const { userId } = await createTestAdminUser();
+
+  const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
+  const groupId = await addPromotedContentGroup(groupName, userId);
+
+  const secondGroupName = "vitest-unique-promoted-group-" + new Date().toJSON();
+  const secondGroupId = await addPromotedContentGroup(secondGroupName, userId);
+
+  const groups = await loadPromotedContent(userId);
+  expect(groups.find((group) => group.groupName === groupName)).toBeDefined();
+  expect(
+    groups.find((group) => group.groupName === secondGroupName),
+  ).toBeDefined();
+
+  // Cannot update group name to different existing name
+  await expect(
+    updatePromotedContentGroup(groupId, secondGroupName, false, false, userId),
+  ).rejects.toThrowError();
+
+  const newGroupName =
+    "vitest-unique-NEW-promoted-group-" + new Date().toJSON();
+  await updatePromotedContentGroup(groupId, newGroupName, false, false, userId);
+
+  const groups3 = await loadPromotedContent(userId);
+  expect(
+    groups3.find((group) => group.groupName === newGroupName),
+  ).toBeDefined();
+});
+
+test("promoted content access control", async () => {
+  // Setup
+  const { userId } = await createTestUser();
+  const { activityId } = await createActivity(userId, null);
+  const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
+  const { activityId: promotedActivityId } = await createActivity(userId, null);
+  await updateContent({
+    id: promotedActivityId,
+    isPublic: true,
+    ownerId: userId,
+  });
+  const { userId: adminId } = await createTestAdminUser();
+  const groupId = await addPromotedContentGroup(groupName, adminId);
+  await addPromotedContent(groupId, promotedActivityId, adminId);
+
+  // add group fails
+  await expect(
+    addPromotedContentGroup("some group name", userId),
+  ).rejects.toThrowError("admin");
+
+  // update group fails
+  await expect(
+    updatePromotedContentGroup(groupId, "some new name", true, true, userId),
+  ).rejects.toThrowError("admin");
+
+  // delete group fails
+  await expect(
+    deletePromotedContentGroup(groupId, userId),
+  ).rejects.toThrowError("admin");
+
+  // add content fails
+  await expect(
+    addPromotedContent(groupId, activityId, userId),
+  ).rejects.toThrowError("admin");
+
+  // remove content fails
+  await expect(
+    removePromotedContent(groupId, promotedActivityId, userId),
+  ).rejects.toThrowError("admin");
 });
 
 test("assign an activity", async () => {

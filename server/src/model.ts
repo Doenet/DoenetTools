@@ -2,7 +2,26 @@ import { PrismaClient, Prisma } from "@prisma/client";
 import { cidFromText } from "./utils/cid";
 import { DateTime } from "luxon";
 
+export class InvalidRequestError extends Error {
+  errorCode = 400;
+  constructor(message: string) {
+    super(message);
+    // 👇️ because we are extending a built-in class
+    Object.setPrototypeOf(this, InvalidRequestError.prototype);
+  }
+}
+
 const prisma = new PrismaClient();
+
+async function mustBeAdmin(
+  userId: number,
+  message = "You must be an community admin to take this action",
+) {
+  const isAdmin = await getIsAdmin(userId);
+  if (!isAdmin) {
+    throw new InvalidRequestError(message);
+  }
+}
 
 const SORT_INCREMENT = 2 ** 32;
 
@@ -951,17 +970,25 @@ export async function listUserAssigned(
   };
 }
 
-export async function findOrCreateUser(email: string, name: string) {
+export async function findOrCreateUser(
+  email: string,
+  name: string,
+  isAdmin = false,
+) {
   const user = await prisma.users.findUnique({ where: { email } });
   if (user) {
     return user;
   } else {
-    return createUser(email, name);
+    return createUser(email, name, isAdmin);
   }
 }
 
-export async function createUser(email: string, name: string) {
-  const result = await prisma.users.create({ data: { email, name } });
+export async function createUser(
+  email: string,
+  name: string,
+  isAdmin: boolean,
+) {
+  const result = await prisma.users.create({ data: { email, name, isAdmin } });
   return result;
 }
 
@@ -1032,12 +1059,211 @@ export async function getAllRecentPublicActivities() {
       imagePath: true,
       owner: {
         select: {
-          email: true,
+          name: true,
         },
       },
     },
   });
   return activities;
+}
+
+export async function addPromotedContentGroup(
+  groupName: string,
+  userId: number,
+) {
+  await mustBeAdmin(
+    userId,
+    "You must be a community admin to edit promoted content.",
+  );
+
+  const { promotedGroupId } = await prisma.promotedContentGroups.create({
+    data: {
+      groupName,
+      sortOrder: "a",
+    },
+  });
+  return promotedGroupId;
+}
+
+export async function updatePromotedContentGroup(
+  groupId: number,
+  newGroupName: string,
+  homepage: boolean,
+  currentlyFeatured: boolean,
+  userId: number,
+) {
+  await mustBeAdmin(
+    userId,
+    "You must be a community admin to edit promoted content.",
+  );
+
+  await prisma.promotedContentGroups.update({
+    where: {
+      promotedGroupId: groupId,
+    },
+    data: {
+      groupName: newGroupName,
+      homepage,
+      currentlyFeatured,
+    },
+  });
+}
+
+export async function deletePromotedContentGroup(
+  groupId: number,
+  userId: number,
+) {
+  await mustBeAdmin(
+    userId,
+    "You must be a community admin to edit promoted content.",
+  );
+  // Delete group and entries all in one transaction, so both succeed or fail together
+  const deleteEntries = prisma.promotedContent.deleteMany({
+    where: {
+      promotedGroupId: groupId,
+    },
+  });
+  const deleteGroup = prisma.promotedContentGroups.delete({
+    where: {
+      promotedGroupId: groupId,
+    },
+  });
+  await prisma.$transaction([deleteEntries, deleteGroup]);
+}
+
+export async function loadPromotedContent(userId: number) {
+  const isAdmin = userId ? await getIsAdmin(userId) : false;
+  let content = await prisma.promotedContentGroups.findMany({
+    where: {
+      // If admin, also include groups not featured
+      currentlyFeatured: isAdmin ? undefined : true,
+    },
+    orderBy: {
+      sortOrder: "desc",
+    },
+    select: {
+      groupName: true,
+      promotedGroupId: true,
+      currentlyFeatured: true,
+      homepage: true,
+
+      promotedContent: {
+        select: {
+          sortOrder: true,
+          activity: {
+            select: {
+              id: true,
+              name: true,
+              imagePath: true,
+
+              owner: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const reformattedContent = content.map((groupContent) => {
+    const reformattedActivities = groupContent.promotedContent.map(
+      (promoted) => {
+        return {
+          name: promoted.activity.name,
+          activityId: promoted.activity.id,
+          imagePath: promoted.activity.imagePath,
+          owner: promoted.activity.owner.name,
+          sortOrder: promoted.sortOrder,
+        };
+      },
+    );
+
+    return {
+      groupName: groupContent.groupName,
+      promotedGroupId: groupContent.promotedGroupId,
+      currentlyFeatured: groupContent.currentlyFeatured,
+      homepage: groupContent.homepage,
+      promotedContent: reformattedActivities,
+    };
+  });
+
+  return reformattedContent;
+}
+
+export async function addPromotedContent(
+  groupId: number,
+  activityId: number,
+  userId: number,
+) {
+  await mustBeAdmin(
+    userId,
+    "You must be a community admin to edit promoted content.",
+  );
+  const activity = await prisma.content.findUnique({
+    where: {
+      id: activityId,
+      isPublic: true,
+      isFolder: false,
+      isDeleted: false,
+    },
+    select: {
+      // not using this, we just need to select one field
+      id: true,
+    },
+  });
+  if (!activity) {
+    throw new InvalidRequestError(
+      "This activity does not exist or is not public.",
+    );
+  }
+
+  await prisma.promotedContent.create({
+    data: {
+      activityId,
+      promotedGroupId: groupId,
+      sortOrder: "1",
+    },
+  });
+}
+
+export async function removePromotedContent(
+  groupId: number,
+  activityId: number,
+  userId: number,
+) {
+  await mustBeAdmin(
+    userId,
+    "You must be a community admin to edit promoted content.",
+  );
+  const activity = await prisma.content.findUnique({
+    where: {
+      id: activityId,
+      isPublic: true,
+      isFolder: false,
+      isDeleted: false,
+    },
+    select: {
+      // not using this, we just need to select one field
+      id: true,
+    },
+  });
+  if (!activity) {
+    throw new InvalidRequestError(
+      "This activity does not exist or is not public.",
+    );
+  }
+
+  await prisma.promotedContent.delete({
+    where: {
+      activityId_promotedGroupId: {
+        activityId,
+        promotedGroupId: groupId,
+      },
+    },
+  });
 }
 
 export async function assignActivity(activityId: number, userId: number) {

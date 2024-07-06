@@ -23,11 +23,12 @@ import {
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
+import axios from "axios";
 
 export async function loader() {
-  const response = await fetch("/api/loadPromotedContent");
-  const data = await response.json();
-  return data;
+  const { data: promotedContent } = await axios.get("/api/loadPromotedContent");
+  const favorites = promotedContent.find((content) => content.homepage);
+  return { favorites };
 }
 
 const HomeIntroVideo = lazy(() => import("./HomeIntroVideo"));
@@ -90,9 +91,7 @@ let doenetML = `
 
 export function Home() {
   let context = useOutletContext();
-  const loaderData = useLoaderData();
-
-  const favorites = loaderData?.carouselData?.Homepage;
+  const { favorites } = useLoaderData();
 
   useEffect(() => {
     document.title = `Home - Doenet`;
@@ -419,7 +418,10 @@ export function Home() {
         bg={"white"}
         p="60px 10px"
       >
-        <Carousel title="Doenet Team Favorites" data={favorites} />
+        <Carousel
+          title="Doenet Team Favorites"
+          data={favorites.promotedContent}
+        />
       </Flex>
 
       <Center w="100%" bg={blueColor} pl="10px" pr="10px">

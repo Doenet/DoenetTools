@@ -27,6 +27,7 @@ model content {
   subFolders       content[]          @relation("folderStructure")
   documents        documents[]
   assignmentScores assignmentScores[]
+  promotedContent  promotedContent[]
 
   @@index([ownerId, parentFolderId, sortIndex])
   @@index([classCode])
@@ -158,4 +159,23 @@ model users {
   assignmentScores           assignmentScores[]
   documentState              documentState[]
   documentSubmittedResponses documentSubmittedResponses[]
+}
+
+model promotedContentGroups {
+  promotedGroupId   Int               @id @default(autoincrement())
+  groupName         String            @unique
+  currentlyFeatured Boolean           @default(false)
+  homepage          Boolean           @default(false)
+  sortOrder         String
+  promotedContent   promotedContent[]
+}
+
+model promotedContent {
+  activityId      Int
+  promotedGroupId Int
+  sortOrder       String
+  activity        content               @relation(fields: [activityId], references: [id])
+  promotedGroup   promotedContentGroups @relation(fields: [promotedGroupId], references: [promotedGroupId])
+
+  @@id([activityId, promotedGroupId])
 }
