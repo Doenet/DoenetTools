@@ -16,6 +16,7 @@ import {
   Avatar,
   VStack,
   Show,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
@@ -135,6 +136,11 @@ export function SiteHeader(props) {
 
   let navigateTo = useRef("");
 
+  const helpMenuShouldFocusFirst = useBreakpointValue(
+    { base: false, md: true },
+    { ssr: false },
+  );
+
   if (navigateTo.current != "") {
     const newHref = navigateTo.current;
     navigateTo.current = "";
@@ -223,7 +229,7 @@ export function SiteHeader(props) {
             </Show>
             <GridItem area="rightHeader">
               <Flex columnGap="10px">
-                <Menu>
+                <Menu autoSelect={helpMenuShouldFocusFirst}>
                   <MenuButton as={Button} color="doenet.canvastext">
                     Help
                   </MenuButton>
@@ -287,7 +293,7 @@ export function SiteHeader(props) {
                 )}
                 <Show below="md">
                   <Center h="40px" mr="10px">
-                    <Menu>
+                    <Menu autoSelect={false}>
                       <MenuButton
                         as={IconButton}
                         aria-label="Menu"
