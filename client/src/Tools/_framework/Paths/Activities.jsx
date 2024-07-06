@@ -213,28 +213,34 @@ export function Activities() {
   function getCardMenuList(isPublic, isFolder, id) {
     return (
       <>
-        <MenuItem
-          data-test={`Make ${isPublic ? "Private" : "Public"} Menu Item`}
-          onClick={() => {
-            fetcher.submit(
-              { _action: "Update Public", isPublic, id },
-              { method: "post" },
-            );
-          }}
-        >
-          Make {isPublic ? "Private" : "Public"}
-        </MenuItem>
-        <MenuItem
-          data-test="Create Assignment Menu Item"
-          onClick={() => {
-            fetcher.submit(
-              { _action: "Create Assignment", id },
-              { method: "post" },
-            );
-          }}
-        >
-          Create Assignment
-        </MenuItem>
+      {
+        !isFolder ? (
+          <>
+            <MenuItem
+              data-test={`Make ${isPublic ? "Private" : "Public"} Menu Item`}
+              onClick={() => {
+                fetcher.submit(
+                  { _action: "Update Public", isPublic, id },
+                  { method: "post" },
+                );
+              }}
+            >
+              Make {isPublic ? "Private" : "Public"}
+            </MenuItem>
+            <MenuItem
+              data-test="Create Assignment Menu Item"
+              onClick={() => {
+                fetcher.submit(
+                  { _action: "Create Assignment", id },
+                  { method: "post" },
+                );
+              }}
+            >
+              Create Assignment
+            </MenuItem>
+          </>
+         ) : ""
+      }
         <MenuItem
           data-test="Delete Menu Item"
           onClick={() => {
@@ -353,7 +359,7 @@ export function Activities() {
                     )}
                     imageLink={
                       activity.isFolder
-                        ? `/activities/${activity.ownerId}/${activity.id}`
+                        ? `/activities/${activity.ownerId}${activity.id ? "/" + activity.id : ""}`
                         : `/activityEditor/${activity.id}`
                     }
                   />

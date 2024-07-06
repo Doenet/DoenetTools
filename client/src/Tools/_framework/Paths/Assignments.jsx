@@ -143,7 +143,7 @@ export function Assignments() {
             <Button
               size="xs"
               colorScheme="blue"
-              onClick={() => navigate("/allAssignmentScores")}
+              onClick={() => navigate(`/allAssignmentScores${folderId ? "/" + folderId : ""}`)}
             >
               See Scores
             </Button>
