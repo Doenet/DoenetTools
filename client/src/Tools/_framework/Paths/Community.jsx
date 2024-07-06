@@ -107,7 +107,7 @@ export async function loader({ request }) {
   if (q) {
     //Show search results
     const { data: searchData } = await axios.get(
-      `/api/searchPublicActivities?q=${q}`,
+      `/api/searchPublicContent?q=${q}`,
     );
 
     const { data: isAdminData } = await axios.get(
@@ -335,7 +335,7 @@ export function Community() {
 
   if (searchResults) {
     let allMatches = [
-      ...searchResults?.activities.map((a) => ({ type: "activity", ...a })),
+      ...searchResults?.content.map((a) => ({ type: "activity", ...a })),
       ...searchResults?.users,
     ];
     const tabs = [
@@ -345,7 +345,7 @@ export function Community() {
       },
       {
         label: "Activities",
-        count: searchResults?.activities?.length,
+        count: searchResults?.content?.length,
       },
       {
         label: "Authors",
@@ -449,28 +449,32 @@ export function Community() {
               >
                 {allMatches.map((itemObj) => {
                   if (itemObj?.type == "activity") {
-                    const { activityId, imagePath, name, owner } = itemObj;
-                    const imageLink = `/activityViewer/${activityId}`;
+                    const { id, imagePath, name, owner, isFolder } = itemObj;
+                    if (isFolder) {
+                      // TODO
+                    } else {
+                      const imageLink = `/activityViewer/${id}`;
 
-                    return (
-                      <ActivityCard
-                        key={`ActivityCard${activityId}`}
-                        imageLink={imageLink}
-                        name={name}
-                        imagePath={imagePath}
-                        fullName={owner.name}
-                        menuItems={
-                          isAdmin ? (
-                            <>
-                              <MoveToGroupMenuItem
-                                activityId={activityId}
-                                carouselGroups={carouselGroups}
-                              />
-                            </>
-                          ) : null
-                        }
-                      />
-                    );
+                      return (
+                        <ActivityCard
+                          key={`ActivityCard${id}`}
+                          imageLink={imageLink}
+                          name={name}
+                          imagePath={imagePath}
+                          fullName={owner.name}
+                          menuItems={
+                            isAdmin ? (
+                              <>
+                                <MoveToGroupMenuItem
+                                  activityId={id}
+                                  carouselGroups={carouselGroups}
+                                />
+                              </>
+                            ) : null
+                          }
+                        />
+                      );
+                    }
                   } else if (itemObj?.type == "author") {
                     const { courseId, firstName, lastName } = itemObj;
                     const imageLink = `/publicPortfolio/${courseId}`;
@@ -510,32 +514,36 @@ export function Community() {
                 alignItems="center"
                 data-test="Results Activities"
               >
-                {searchResults?.activities.map((activityObj) => {
-                  const { activityId, imagePath, name, fullName } = activityObj;
-                  //{ activityLink, activityId, imagePath, name, fullName }
-                  const imageLink = `/activityViewer/${activityId}`;
+                {searchResults?.content.map((activityObj) => {
+                  const { id, imagePath, name, owner } = activityObj;
+                  console.log({ id, imagePath, name, owner });
+                  if (activityObj.isFolder) {
+                    // TODO
+                  } else {
+                    const imageLink = `/activityViewer/${id}`;
 
-                  return (
-                    <ActivityCard
-                      key={activityId}
-                      imageLink={imageLink}
-                      imagePath={imagePath}
-                      name={name}
-                      fullName={fullName}
-                      menuItems={
-                        isAdmin ? (
-                          <>
-                            <MoveToGroupMenuItem
-                              activityId={activityId}
-                              carouselGroups={carouselGroups}
-                            />
-                          </>
-                        ) : null
-                      }
-                    />
-                  );
+                    return (
+                      <ActivityCard
+                        key={id}
+                        imageLink={imageLink}
+                        imagePath={imagePath}
+                        name={name}
+                        fullName={owner.name}
+                        menuItems={
+                          isAdmin ? (
+                            <>
+                              <MoveToGroupMenuItem
+                                activityId={id}
+                                carouselGroups={carouselGroups}
+                              />
+                            </>
+                          ) : null
+                        }
+                      />
+                    );
+                  }
                 })}
-                {searchResults?.activities?.length == 0 ? (
+                {searchResults?.content?.length == 0 ? (
                   <Flex
                     flexDirection="column"
                     justifyContent="center"

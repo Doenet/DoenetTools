@@ -782,7 +782,9 @@ export async function getActivityViewerData(
       isFolder: false,
       OR: [{ ownerId: userId }, { isPublic: true }],
     },
-    include: {
+    select: {
+      id: true,
+      name: true,
       owner: { select: { userId: true, email: true, name: true } },
       documents: {
         where: { isDeleted: false },
