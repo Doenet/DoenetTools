@@ -332,7 +332,7 @@ export function Library() {
           justifyContent="center"
           alignItems="center"
           textAlign="center"
-          zIndex="1200"
+          zIndex="120"
         >
           <Text fontSize="24px" fontWeight="700">
             Public Problem Library (hey, no aria parameters here!)
