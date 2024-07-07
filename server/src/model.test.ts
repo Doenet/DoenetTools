@@ -1215,7 +1215,7 @@ test("add and remove promoted content", async () => {
   {
     const promotedContent = await loadPromotedContent(userId);
     const myGroup = promotedContent.find(
-      (content) => (content.groupName = groupName),
+      (content) => content.groupName === groupName,
     );
     expect(myGroup).toBeDefined();
     expect(myGroup?.promotedContent).toEqual([]);
