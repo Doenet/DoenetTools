@@ -3,7 +3,7 @@ import { Box, Text, Wrap } from "@chakra-ui/react";
 import React from "react";
 import { useLoaderData } from "react-router-dom";
 import styled from "styled-components";
-import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/ActivityCard";
+import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
 import { MoveToGroupMenuItem } from "./Community";
 
 export async function loader() {
@@ -80,8 +80,8 @@ export function Admin() {
                   const imageLink = `/activityViewer/${activity.id}`;
 
                   return (
-                    <ActivityCard
-                      key={`ActivityCard${activity.id}`}
+                    <ContentCard
+                      key={`ContentCard${activity.id}`}
                       imageLink={imageLink}
                       name={activity.name}
                       imagePath={activity.imagePath}

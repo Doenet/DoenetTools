@@ -16,7 +16,7 @@ import {
 import { GoKebabVertical } from "react-icons/go";
 import { Link } from "react-router-dom";
 
-export default function ActivityCard({
+export default function ContentCard({
   imageLink = "",
   imagePath,
   isAssigned,
@@ -70,17 +70,19 @@ export default function ActivityCard({
             >
               {fullName}
             </Text>
-            {
-              (!isFolder) ?
-                <Text
+            {!isFolder ? (
+              <Text
                 fontSize="xs"
                 noOfLines={1}
                 textAlign="left"
                 //data-test="Card Full Name"
-                >
-                  {isPublic ? "Public" : "Private"} / {isAssigned ? "Assigned" : "Unassigned"}
-                </Text> : ""
-            }
+              >
+                {isPublic ? "Public" : "Private"} /{" "}
+                {isAssigned ? "Assigned" : "Unassigned"}
+              </Text>
+            ) : (
+              ""
+            )}
           </Box>
 
           {menuItems ? (

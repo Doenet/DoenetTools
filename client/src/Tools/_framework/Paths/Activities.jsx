@@ -28,7 +28,7 @@ import {
 import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
-import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/ActivityCard";
+import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
 import Draggable from "../../../_reactComponents/Draggable/Draggable";
 import { GeneralActivityControls } from "./ActivityEditor";
 import axios from "axios";
@@ -98,13 +98,19 @@ export async function action({ request, params }) {
   } else if (formObj?._action == "Update Public") {
     await axios.post(`/api/updateIsPublicContent`, {
       id: formObj.id,
-      isPublic: formObj.isPublic,
+      isPublic: !(formObj.isPublic === "true"),
     });
 
     return true;
   } else if (formObj?._action == "Create Assignment") {
     await axios.post(`/api/assignActivity`, {
       id: formObj.id,
+    });
+    return redirect(`/assignmentEditor/${formObj.id}`);
+  } else if (formObj?._action == "Duplicate Activity") {
+    await axios.post(`/api/duplicateActivity`, {
+      activityId: formObj.id,
+      desiredParentFolderId: formObj.folderId ?? "",
     });
     return redirect(`/assignmentEditor/${formObj.id}`);
   } else if (formObj?._action == "noop") {
@@ -230,6 +236,17 @@ export function Activities() {
               }}
             >
               Make {isPublic ? "Private" : "Public"}
+            </MenuItem>
+            <MenuItem
+              data-test={"Duplicate Activity"}
+              onClick={() => {
+                fetcher.submit(
+                  { _action: "Duplicate Activity", id, folderId },
+                  { method: "post" },
+                );
+              }}
+            >
+              Duplicate Activity
             </MenuItem>
             {!isAssigned ? (
               <MenuItem
@@ -358,7 +375,7 @@ export function Activities() {
             <>
               {folder.content.map((activity) => {
                 return (
-                  <ActivityCard
+                  <ContentCard
                     key={`Card${activity.id}`}
                     {...activity}
                     fullName={folder.name}

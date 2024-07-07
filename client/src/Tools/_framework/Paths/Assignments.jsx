@@ -20,7 +20,7 @@ import {
 import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
-import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/ActivityCard";
+import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
 import axios from "axios";
 
 export async function action({ request }) {
@@ -174,7 +174,7 @@ export function Assignments() {
                 {assignments.map((assignment) => {
                   const isInstructor = assignment.ownerId === user.userId;
                   return (
-                    <ActivityCard
+                    <ContentCard
                       key={`Card${assignment.assignmentId}`}
                       {...assignment}
                       fullName={isInstructor ? "Instructor" : "Student"}

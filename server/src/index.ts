@@ -380,6 +380,8 @@ app.post(
     const body = req.body;
     const id = Number(body.id);
     const isPublic = Boolean(body.isPublic);
+    console.log(isPublic);
+    console.log(body);
     try {
       await updateContent({ id, isPublic, ownerId: loggedInUserId });
       res.send({});

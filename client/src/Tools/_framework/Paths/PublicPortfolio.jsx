@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { useLoaderData } from "react-router-dom";
-import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/ActivityCard";
+import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
 import { RiEmotionSadLine } from "react-icons/ri";
 import axios from "axios";
 
@@ -32,7 +32,7 @@ export function PublicActivities() {
   return (
     <Grid
       templateAreas={`"ActivitiesHeader" 
-        "activityCards"`}
+        "contentCards"`}
       gridTemplateRows={`80px auto`}
       h="calc(100vh - 40px)"
     >
@@ -65,7 +65,7 @@ export function PublicActivities() {
           </HStack>
         </Box>
       </GridItem>
-      <GridItem area="activityCards" bg="var(--lightBlue)">
+      <GridItem area="contentCards" bg="var(--lightBlue)">
         <Center>
           <Wrap p="10px" data-test="list of activities">
             {publicActivities.length < 1 ? (
@@ -88,8 +88,8 @@ export function PublicActivities() {
                   const imageLink = `/activityViewer/${activity.activityId}`;
 
                   return (
-                    <ActivityCard
-                      key={`ActivityCard${activity.activityId}`}
+                    <ContentCard
+                      key={`ContentCard${activity.activityId}`}
                       imageLink={imageLink}
                       {...activity}
                       fullName={name}
