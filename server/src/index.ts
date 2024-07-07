@@ -218,25 +218,7 @@ app.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     try {
-      const assignedData = await listUserAssigned(loggedInUserId, null);
-      res.send(assignedData);
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.sendStatus(404);
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
-  "/api/getAssigned/:folderId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
-    const folderId = Number(req.params.folderId);
-    try {
-      const assignedData = await listUserAssigned(loggedInUserId, folderId);
+      const assignedData = await listUserAssigned(loggedInUserId);
       res.send(assignedData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {

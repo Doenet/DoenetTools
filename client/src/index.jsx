@@ -43,8 +43,8 @@ import {
 import {
   loader as assignmentsLoader,
   action as assignmentsAction,
-  Assignments,
-} from "./Tools/_framework/Paths/Assignments";
+  Assigned,
+} from "./Tools/_framework/Paths/Assigned";
 import {
   loader as assignmentEditorLoader,
   action as assignmentEditorAction,
@@ -277,10 +277,10 @@ const router = createBrowserRouter([
         element: <PublicEditor />,
       },
       {
-        path: "assignments",
+        path: "assigned",
         loader: assignmentsLoader,
         action: assignmentsAction,
-        element: <Assignments />,
+        element: <Assigned />,
         errorElement: <ErrorPage />,
       },
       {

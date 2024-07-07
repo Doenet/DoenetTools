@@ -30,7 +30,8 @@ export default function ContentCard({
   menuItems,
   suppressAvatar = false,
   editable = false,
-  autoFocusName = false
+  autoFocusName = false,
+  showStatus = true,
 }) {
   if (!imagePath) {
     imagePath = "/activity_default.jpg";
@@ -39,7 +40,10 @@ export default function ContentCard({
   const fetcher = useFetcher();
 
   function saveUpdatedName() {
-    fetcher.submit({ _action: "update name", id, cardName, isFolder }, { method: "post" });
+    fetcher.submit(
+      { _action: "update name", id, cardName, isFolder },
+      { method: "post" },
+    );
   }
 
   //Note: when we have a menu width 140px becomes 120px
@@ -59,17 +63,21 @@ export default function ContentCard({
       </Link>
       <CardBody p="1">
         <Flex columnGap="2px">
-          {suppressAvatar ? null : <Tooltip label={fullName}><Avatar size="sm" name={fullName} /></Tooltip> }
+          {suppressAvatar ? null : (
+            <Tooltip label={fullName}>
+              <Avatar size="sm" name={fullName} />
+            </Tooltip>
+          )}
 
           <Box width="160px" minWidth="0px" p="1">
-            { editable ? 
-              <Input 
-                value={cardName} 
-                size='xs' 
-                border='none' 
-                padding='0' 
-                margin='0' 
-                height='1em' 
+            {editable ? (
+              <Input
+                value={cardName}
+                size="xs"
+                border="none"
+                padding="0"
+                margin="0"
+                height="1em"
                 fontWeight="bold"
                 autoFocus={autoFocusName}
                 onChange={(e) => {
@@ -81,7 +89,8 @@ export default function ContentCard({
                     saveUpdatedName();
                   }
                 }}
-              /> :
+              />
+            ) : (
               <Text
                 data-test="Card Label"
                 lineHeight="1.1"
@@ -93,7 +102,7 @@ export default function ContentCard({
               >
                 {name}
               </Text>
-            }
+            )}
             {/* <Text
               fontSize="xs"
               noOfLines={1}
@@ -102,7 +111,7 @@ export default function ContentCard({
             >
               {fullName}
             </Text> */}
-            {!isFolder ? (
+            {!isFolder && showStatus ? (
               <Text
                 fontSize="xs"
                 noOfLines={1}

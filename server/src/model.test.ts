@@ -3116,14 +3116,14 @@ test("list assigned gets student assignments", async () => {
   const user2 = await createTestUser();
   const user2Id = user2.userId;
 
-  let assignmentList = await listUserAssigned(user1Id, null);
+  let assignmentList = await listUserAssigned(user1Id);
   expect(assignmentList.assignments).eqls([]);
   expect(assignmentList.user.userId).eq(user1Id);
 
   const { activityId: activityId1 } = await createActivity(user1Id, null);
   await assignActivity(activityId1, user1Id);
 
-  assignmentList = await listUserAssigned(user1Id, null);
+  assignmentList = await listUserAssigned(user1Id);
   expect(assignmentList.assignments).eqls([]);
 
   const { activityId: activityId2, docId: docId2 } = await createActivity(
@@ -3132,7 +3132,7 @@ test("list assigned gets student assignments", async () => {
   );
   await assignActivity(activityId2, user2Id);
 
-  assignmentList = await listUserAssigned(user1Id, null);
+  assignmentList = await listUserAssigned(user1Id);
   expect(assignmentList.assignments).eqls([]);
 
   // open assignment generates code
@@ -3154,7 +3154,7 @@ test("list assigned gets student assignments", async () => {
     state: "document state 1",
   });
 
-  assignmentList = await listUserAssigned(user1Id, null);
+  assignmentList = await listUserAssigned(user1Id);
   expect(assignmentList.assignments).toMatchObject([
     {
       id: activityId2,
@@ -3164,7 +3164,7 @@ test("list assigned gets student assignments", async () => {
 
   // unassigning activity removes them from list
   await unassignActivity(activityId2, user2Id);
-  assignmentList = await listUserAssigned(user1Id, null);
+  assignmentList = await listUserAssigned(user1Id);
   expect(assignmentList.assignments).eqls([]);
 });
 

@@ -53,7 +53,7 @@ export async function action({ request }) {
 }
 
 export async function loader({ params }) {
-  const { data: assignmentData } = await axios.get(`/api/getAssignments`);
+  const { data: assignmentData } = await axios.get(`/api/getAssigned`);
 
   return {
     user: assignmentData.user,
@@ -80,14 +80,16 @@ const AssignmentsGrid = styled.div`
   height: 100vh;
 `;
 
-export function Assignments() {
+export function Assigned() {
   let context = useOutletContext();
   let { user, assignments } = useLoaderData();
+
+  console.log({ user, assignments });
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = `Activities - Doenet`;
+    document.title = `Assigned - Doenet`;
   }, []);
 
   const fetcher = useFetcher();
@@ -97,57 +99,36 @@ export function Assignments() {
     return null;
   }
 
-  function getCardMenuList(assignmentId) {
-    return (
-      <>
-        {" "}
-        <MenuItem
-          data-test="Delete Menu Item"
-          onClick={() => {
-            fetcher.submit(
-              { _action: "Delete", assignmentId },
-              { method: "post" },
-            );
-          }}
-        >
-          Delete
-        </MenuItem>
-      </>
-    );
-  }
-
   return (
     <>
       <AssignmentsGrid>
         <Box
-          gridRow="1/2"
           backgroundColor="#fff"
           color="#000"
           height="80px"
-          position="fixed"
           width="100%"
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
           textAlign="center"
-          zIndex="500"
         >
           <Heading as="h2" size="lg">
             {user.name}
           </Heading>
           <Heading as="h3" size="md">
-            Assignments
+            Assigned Activities
           </Heading>
-          <div style={{ position: "absolute", top: "48px", right: "10px" }}>
+          <div style={{ float: "right", marginTop: "-10px" }}>
             <Button
+              margin="3px"
               size="xs"
               colorScheme="blue"
-              onClick={() =>
-                navigate(
-                  `/allAssignmentScores${folderId ? "/" + folderId : ""}`,
-                )
-              }
+              onClick={() => navigate(`/classCode`)}
+            >
+              Class code
+            </Button>
+            <Button
+              margin="3px"
+              size="xs"
+              colorScheme="blue"
+              onClick={() => navigate(`/assignedData`)}
             >
               See Scores
             </Button>
@@ -167,7 +148,7 @@ export function Assignments() {
                 width="100%"
               >
                 <Icon fontSize="48pt" as={RiEmotionSadLine} />
-                <Text fontSize="36pt">No Assignments</Text>
+                <Text fontSize="36pt">Nothing Assigned</Text>
               </Flex>
             ) : (
               <>
@@ -176,15 +157,12 @@ export function Assignments() {
                   return (
                     <ContentCard
                       key={`Card${assignment.assignmentId}`}
-                      {...assignment}
-                      fullName={isInstructor ? "Instructor" : "Student"}
-                      menuItems={getCardMenuList(assignment.assignmentId)}
-                      imageLink={
-                        isInstructor
-                          ? `/assignmentEditor/${assignment.assignmentId}`
-                          : `/classCode/${assignment.classCode}`
-                      }
+                      imagePath={assignment.imagePath}
+                      name={assignment.name}
+                      fullName={"Quick assign activity"}
+                      imageLink={`/classCode/${assignment.classCode}`}
                       suppressAvatar={true}
+                      showStatus={false}
                     />
                   );
                 })}

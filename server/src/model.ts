@@ -938,16 +938,12 @@ export async function searchPublicContent(query: string) {
  * @param userId
  * @param folderId
  */
-export async function listUserAssigned(
-  userId: number,
-  folderId: number | null,
-) {
+export async function listUserAssigned(userId: number) {
   const assignments = await prisma.content.findMany({
     where: {
       isDeleted: false,
       isAssigned: true,
       assignmentScores: { some: { userId } },
-      parentFolderId: folderId,
     },
     select: {
       id: true,
@@ -959,6 +955,7 @@ export async function listUserAssigned(
       lastEdited: true,
       isPublic: true,
       isAssigned: true,
+      classCode: true,
     },
   });
 
