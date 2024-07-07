@@ -15,16 +15,17 @@ import {
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 
-type assignmentStructure = {
-  assignmentId: number;
-  assignmentScores: {
-    assignmentId: number;
-    score: number;
-    user: {
-      name: string;
-    };
-    userId: number;
-  }[];
+type assignmentScore = {
+  activityId: number;
+  score: number;
+  userId: number;
+  user: {
+    name: string;
+  };
+};
+
+type orderedActivity = {
+  id: number;
   name: string;
 };
 
@@ -38,16 +39,18 @@ type studentStructure = {
 };
 
 export async function loader({ params }) {
-  const { data } = await axios.get(`/api/getAllAssignmentScores/${params.folderId ?? ""}`);
+  const { data } = await axios.get(
+    `/api/getAllAssignmentScores/${params.folderId ?? ""}`,
+  );
+
+  const assignmentScores: assignmentScore[] = data.assignmentScores;
 
   let studentData = {};
-  data.assignmentScores.forEach(function (assignment: assignmentStructure) {
-    assignment.assignmentScores.forEach(function (score) {
-      if (!(score.userId in studentData)) {
-        studentData[score.userId] = { name: score.user.name, scores: {} };
-      }
-      studentData[score.userId].scores[assignment.assignmentId] = score.score;
-    });
+  assignmentScores.forEach((score) => {
+    if (!(score.userId in studentData)) {
+      studentData[score.userId] = { name: score.user.name, scores: {} };
+    }
+    studentData[score.userId].scores[score.activityId] = score.score;
   });
 
   // list of student ids (keys to studentData) ordered based on corresponding student name
@@ -69,7 +72,7 @@ export async function loader({ params }) {
   });
 
   return {
-    assignments: data.assignmentScores,
+    assignments: data.orderedActivities,
     students: studentData,
     studentIdsOrdered,
   };
@@ -77,7 +80,7 @@ export async function loader({ params }) {
 
 export function AllAssignmentScores() {
   const { assignments, students, studentIdsOrdered } = useLoaderData() as {
-    assignments: assignmentStructure[];
+    assignments: orderedActivity[];
     students: studentStructure[];
     studentIdsOrdered: number[];
   };
@@ -104,11 +107,11 @@ export function AllAssignmentScores() {
               {assignments.map((assignment) => {
                 return (
                   <Th
-                    key={`assignment${assignment.assignmentId}`}
+                    key={`assignment${assignment.id}`}
                     textTransform={"capitalize"}
                   >
                     <Link
-                      href={`/assignmentData/${assignment.assignmentId}`}
+                      href={`/assignmentData/${assignment.id}`}
                       style={linkStyle}
                       height="14em"
                       width="1em"
@@ -158,18 +161,18 @@ export function AllAssignmentScores() {
                 {
                   // if student has a score for this assignment, display it
                   assignments.map(function (assignment) {
-                    if (assignment.assignmentId in students[studentId].scores) {
+                    if (assignment.id in students[studentId].scores) {
                       return (
                         <Td
-                          key={`student${studentId}_assignment${assignment.assignmentId}`}
+                          key={`student${studentId}_assignment${assignment.id}`}
                         >
                           <Link
-                            href={`/assignmentData/${assignment.assignmentId}/${studentId}`}
+                            href={`/assignmentData/${assignment.id}/${studentId}`}
                             style={linkStyle}
                           >
                             {Math.round(
                               (students[studentId].scores[
-                                assignment.assignmentId
+                                assignment.id
                               ] as number) * 100,
                             ) / 100}
                           </Link>
@@ -178,7 +181,7 @@ export function AllAssignmentScores() {
                     } else {
                       return (
                         <Td
-                          key={`student${studentId}_assignment${assignment.assignmentId}`}
+                          key={`student${studentId}_assignment${assignment.id}`}
                         >
                           &#8212;
                         </Td>
