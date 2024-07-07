@@ -957,6 +957,7 @@ export async function listUserAssigned(userId: number) {
       isAssigned: true,
       classCode: true,
     },
+    orderBy: { createdAt: "asc" },
   });
 
   const user = await prisma.users.findUniqueOrThrow({
@@ -1905,6 +1906,33 @@ export async function getStudentData({
     WHERE ct.isFolder = FALSE ORDER BY path
   `);
   }
+
+  return { userData, orderedActivityScores };
+}
+
+export async function getAssignedScores(loggedInUserId: number) {
+  const scores = await prisma.assignmentScores.findMany({
+    where: {
+      userId: loggedInUserId,
+      activity: { isAssigned: true, isDeleted: false },
+    },
+    select: {
+      score: true,
+      activity: { select: { id: true, name: true } },
+    },
+    orderBy: { activity: { createdAt: "asc" } },
+  });
+
+  const orderedActivityScores = scores.map((obj) => ({
+    activityId: obj.activity.id,
+    activityName: obj.activity.name,
+    score: obj.score,
+  }));
+
+  const userData = await prisma.users.findUniqueOrThrow({
+    where: { userId: loggedInUserId },
+    select: { userId: true, name: true },
+  });
 
   return { userData, orderedActivityScores };
 }

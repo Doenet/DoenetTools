@@ -47,6 +47,7 @@ import {
   deletePromotedContentGroup,
   moveContent,
   getFolderContent,
+  getAssignedScores,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -220,6 +221,23 @@ app.get(
     try {
       const assignedData = await listUserAssigned(loggedInUserId);
       res.send(assignedData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getAssignedScores",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    try {
+      const scoreData = await getAssignedScores(loggedInUserId);
+      res.send(scoreData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
