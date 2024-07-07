@@ -869,7 +869,8 @@ export async function getAssignmentDataFromCode(
         isAssigned: true,
         isFolder: false,
       },
-      include: {
+      select: {
+        id: true,
         documents: {
           select: {
             id: true,

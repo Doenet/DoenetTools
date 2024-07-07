@@ -1498,8 +1498,6 @@ test("open and close assignment with code", async () => {
   let assignmentData = await getAssignmentDataFromCode(classCode, true);
   expect(assignmentData.assignmentFound).eq(true);
   expect(assignmentData.assignment!.id).eq(activityId);
-  expect(assignmentData.assignment!.classCode).eq(classCode);
-  expect(assignmentData.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
   expect(assignmentData.assignment!.documents[0].assignedVersion!.source).eq(
     "Some content",
   );
@@ -1528,8 +1526,6 @@ test("open and close assignment with code", async () => {
   assignmentData = await getAssignmentDataFromCode(classCode, true);
   expect(assignmentData.assignmentFound).eq(true);
   expect(assignmentData.assignment!.id).eq(activityId);
-  expect(assignmentData.assignment!.classCode).eq(classCode);
-  expect(assignmentData.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   // Open with past date.
   // Currently, says assignment is not found
@@ -1563,12 +1559,12 @@ test("open and unassign assignment with code", async () => {
     closeAt,
     ownerId,
   );
+  const assignment = await getAssignment(activityId, ownerId);
+  expect(assignment.classCode).eq(classCode);
+  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
 
   let assignmentData = await getAssignmentDataFromCode(classCode, true);
-  expect(assignmentData.assignmentFound).eq(true);
   expect(assignmentData.assignment!.id).eq(activityId);
-  expect(assignmentData.assignment!.classCode).eq(classCode);
-  expect(assignmentData.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   // unassign activity
   await unassignActivity(activityId, ownerId);
