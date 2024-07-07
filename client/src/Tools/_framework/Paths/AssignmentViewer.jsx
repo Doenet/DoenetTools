@@ -39,9 +39,10 @@ export async function loader({ params }) {
 
   // TODO: need to select variant for each student (just once)
 
-  if (params.assignmentId) {
+  if (params.activityId) {
+    // TODO: create this route
     let { data } = await axios.get(
-      `/api/getAssignmentData/${params.assignmentId}`,
+      `/api/getAssignmentData/${params.activityId}`,
     );
     assignment = data;
   } else if (params.classCode) {
