@@ -24,7 +24,7 @@ describe("Activity Controls Tests", function () {
   it("Update Label of an Activity both ways", () => {
     const label1 = "Scooby Doo";
     const label2 = "Duck Tails";
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
     cy.get('[data-test="Add Activity"]').click();
     cy.get('[data-test="Controls Button"]').click();
     cy.get('[data-test="Activity Label"]').clear().type(label1);
@@ -48,7 +48,7 @@ describe("Activity Controls Tests", function () {
     const learningOutcome3 = "Five, six, pick up sticks";
     const learningOutcome4 = "Seven, eight, lay them straight";
     const learningOutcome5 = "Nine, ten, a big fat hen";
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
     cy.get('[data-test="Add Activity"]').click();
     cy.get('[data-test="Controls Button"]').click();
     cy.get('[data-test="add a learning outcome button"]').click();

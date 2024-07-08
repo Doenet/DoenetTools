@@ -32,7 +32,7 @@ import { Carousel } from "../../../_reactComponents/PanelHeaderComponents/Carous
 import Searchbar from "../../../_reactComponents/PanelHeaderComponents/SearchBar";
 import { Form, useFetcher } from "react-router-dom";
 import { RiEmotionSadLine } from "react-icons/ri";
-import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/ActivityCard";
+import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
 import AuthorCard from "../../../_reactComponents/PanelHeaderComponents/AuthorCard";
 
 export async function action({ request }) {
@@ -48,13 +48,15 @@ export async function action({ request }) {
     homepage,
   } = formObj;
 
+  // TODO: should this function exist?
+  // Could be bad pattern to catch all API errors as browser alerts
   async function postApiAlertOnError(url, uploadData) {
     try {
       const response = await axios.post(url, uploadData);
       return true;
     } catch (e) {
       console.log(e);
-      alert("Error - " + e.response?.data?.message);
+      alert("Error - " + e.response?.data);
       return false;
     }
   }
@@ -78,48 +80,56 @@ export async function action({ request }) {
         groupId,
         direction,
       });
-    case "New Group":
+    case "New Group": {
+      return postApiAlertOnError("/api/addPromotedContentGroup", { groupName });
+    }
+    case "Rename Group": {
       return postApiAlertOnError("/api/addPromotedContentGroup", {
         groupName,
       });
-    case "Rename Group":
-      return postApiAlertOnError("/api/addPromotedContentGroup", {
-        groupName,
-      });
-    case "Promote Group":
+    }
+    case "Promote Group": {
       // convert to real booleans
       currentlyFeatured =
         !currentlyFeatured || currentlyFeatured == "false" ? false : true;
       homepage = !homepage || homepage == "false" ? false : true;
       return postApiAlertOnError("/api/updatePromotedContentGroup", {
-        groupName,
+        groupId,
         newGroupName,
         currentlyFeatured,
         homepage,
       });
+    }
+    case "Delete Group": {
+      return postApiAlertOnError("/api/deletePromotedContentGroup", {
+        groupId,
+      });
+    }
   }
 }
 
-//TODO: update to try/catch axios not fetch
 export async function loader({ request }) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
+
   if (q) {
     //Show search results
     const { data: searchData } = await axios.get(
-      `/api/searchPublicActivities?q=${q}`,
+      `/api/searchPublicContent?q=${q}`,
     );
 
-    const { data: isAdminData } = await axios.get(
-      `/api/checkForCommunityAdmin`,
-    );
-    const isAdmin = isAdminData.isAdmin;
+    const {
+      data: { isAdmin },
+    } = await axios.get(`/api/checkForCommunityAdmin`);
+
     let carouselGroups = [];
     if (isAdmin) {
-      const carouselDataGroups = await fetch(`/api/loadPromotedContentGroups`);
-      const responseGroups = await carouselDataGroups.json();
-      carouselGroups = responseGroups.carouselGroups;
+      const carouselGroupsData = await axios.get(
+        `/api/loadPromotedContentGroups`,
+      );
+      carouselGroups = carouselGroupsData.data;
     }
+
     return {
       q,
       searchResults: searchData,
@@ -131,8 +141,7 @@ export async function loader({ request }) {
       `/api/checkForCommunityAdmin`,
     );
     const isAdmin = isAdminData.isAdmin;
-    const response = await fetch("/api/loadPromotedContent");
-    const { carouselData } = await response.json();
+    const { data: carouselData } = await axios.get("/api/loadPromotedContent");
     return { carouselData, isAdmin };
   }
 }
@@ -178,7 +187,8 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
     fetcher.submit(
       {
         _action: "Promote Group",
-        groupName: groupInfo.groupName,
+        // groupName: groupInfo.groupName,
+        groupId: groupInfo.promotedGroupId,
         currentlyFeatured,
         homepage: false,
       },
@@ -197,7 +207,7 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
     );
   };
 
-  const promoteContent = (groupInfo) => {
+  const promoteContent = async (groupInfo) => {
     const uploadData = {
       groupId: groupInfo.promotedGroupId,
       activityId,
@@ -209,7 +219,7 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
       })
       .catch((e) => {
         console.log(e);
-        alert("Error - " + e.response.data.message);
+        alert("Error - " + e.response?.data);
       });
   };
 
@@ -229,10 +239,25 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
       fetcher.submit(
         {
           _action: "Promote Group",
-          groupName: groupInfo.groupName,
+          groupId: groupInfo.promotedGroupId,
           currentlyFeatured: groupInfo.currentlyFeatured,
           newGroupName,
           homepage: false,
+        },
+        { method: "post" },
+      );
+    }
+  };
+
+  const deleteGroup = (groupId, groupName) => {
+    const shouldDelete = confirm(
+      `Are you sure you want to delete ${groupName}? You can't undo this action afterwards.`,
+    );
+    if (shouldDelete) {
+      fetcher.submit(
+        {
+          _action: "Delete Group",
+          groupId,
         },
         { method: "post" },
       );
@@ -264,7 +289,7 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
               {carouselGroups.map((group) => {
                 return (
                   <Button
-                    mergin="5px"
+                    margin="5px"
                     key={group.groupName}
                     onClick={() => promoteContent(group)}
                   >
@@ -286,7 +311,8 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
                     return (
                       <Wrap key={group.promotedGroupId}>
                         <Checkbox
-                          isChecked={group.currentlyFeatured == "1"}
+                          isDisabled={group.homepage}
+                          isChecked={group.currentlyFeatured}
                           name={group.groupId}
                           onChange={(evt) =>
                             promoteGroup(group, evt.target.checked)
@@ -303,6 +329,14 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
                         </Button>
                         <Button onClick={() => moveGroup(group, "down")}>
                           ↓
+                        </Button>
+                        <Button
+                          isDisabled={group.homepage}
+                          onClick={() =>
+                            deleteGroup(group.promotedGroupId, group.groupName)
+                          }
+                        >
+                          Delete
                         </Button>
                       </Wrap>
                     );
@@ -335,7 +369,7 @@ export function Community() {
 
   if (searchResults) {
     let allMatches = [
-      ...searchResults?.activities.map((a) => ({ type: "activity", ...a })),
+      ...searchResults?.content.map((a) => ({ type: "activity", ...a })),
       ...searchResults?.users,
     ];
     const tabs = [
@@ -345,7 +379,7 @@ export function Community() {
       },
       {
         label: "Activities",
-        count: searchResults?.activities?.length,
+        count: searchResults?.content?.length,
       },
       {
         label: "Authors",
@@ -449,31 +483,35 @@ export function Community() {
               >
                 {allMatches.map((itemObj) => {
                   if (itemObj?.type == "activity") {
-                    const { activityId, imagePath, name, owner } = itemObj;
-                    const imageLink = `/activityViewer/${activityId}`;
+                    const { id, imagePath, name, owner, isFolder } = itemObj;
+                    if (isFolder) {
+                      // TODO
+                    } else {
+                      const imageLink = `/activityViewer/${id}`;
 
-                    return (
-                      <ActivityCard
-                        key={`ActivityCard${activityId}`}
-                        imageLink={imageLink}
-                        name={name}
-                        imagePath={imagePath}
-                        fullName={owner.name}
-                        menuItems={
-                          isAdmin ? (
-                            <>
-                              <MoveToGroupMenuItem
-                                activityId={activityId}
-                                carouselGroups={carouselGroups}
-                              />
-                            </>
-                          ) : null
-                        }
-                      />
-                    );
+                      return (
+                        <ContentCard
+                          key={`ContentCard${id}`}
+                          imageLink={imageLink}
+                          name={name}
+                          imagePath={imagePath}
+                          fullName={owner.name}
+                          menuItems={
+                            isAdmin ? (
+                              <>
+                                <MoveToGroupMenuItem
+                                  activityId={id}
+                                  carouselGroups={carouselGroups}
+                                />
+                              </>
+                            ) : null
+                          }
+                        />
+                      );
+                    }
                   } else if (itemObj?.type == "author") {
                     const { courseId, firstName, lastName } = itemObj;
-                    const imageLink = `/publicPortfolio/${courseId}`;
+                    const imageLink = `/publicActivities/${courseId}`;
 
                     return (
                       <AuthorCard
@@ -510,32 +548,36 @@ export function Community() {
                 alignItems="center"
                 data-test="Results Activities"
               >
-                {searchResults?.activities.map((activityObj) => {
-                  const { activityId, imagePath, name, fullName } = activityObj;
-                  //{ activityLink, activityId, imagePath, name, fullName }
-                  const imageLink = `/activityViewer/${activityId}`;
+                {searchResults?.content.map((activityObj) => {
+                  const { id, imagePath, name, owner } = activityObj;
+                  console.log({ id, imagePath, name, owner });
+                  if (activityObj.isFolder) {
+                    // TODO
+                  } else {
+                    const imageLink = `/activityViewer/${id}`;
 
-                  return (
-                    <ActivityCard
-                      key={activityId}
-                      imageLink={imageLink}
-                      imagePath={imagePath}
-                      name={name}
-                      fullName={fullName}
-                      menuItems={
-                        isAdmin ? (
-                          <>
-                            <MoveToGroupMenuItem
-                              activityId={activityId}
-                              carouselGroups={carouselGroups}
-                            />
-                          </>
-                        ) : null
-                      }
-                    />
-                  );
+                    return (
+                      <ContentCard
+                        key={id}
+                        imageLink={imageLink}
+                        imagePath={imagePath}
+                        name={name}
+                        fullName={owner.name}
+                        menuItems={
+                          isAdmin ? (
+                            <>
+                              <MoveToGroupMenuItem
+                                activityId={id}
+                                carouselGroups={carouselGroups}
+                              />
+                            </>
+                          ) : null
+                        }
+                      />
+                    );
+                  }
                 })}
-                {searchResults?.activities?.length == 0 ? (
+                {searchResults?.content?.length == 0 ? (
                   <Flex
                     flexDirection="column"
                     justifyContent="center"
@@ -565,7 +607,7 @@ export function Community() {
                 {searchResults?.users.map((authorObj) => {
                   const { courseId, firstName, lastName } = authorObj;
                   // console.log("authorObj",authorObj)
-                  const imageLink = `/publicPortfolio/${courseId}`;
+                  const imageLink = `/publicActivities/${courseId}`;
 
                   return (
                     <AuthorCard
@@ -636,30 +678,26 @@ export function Community() {
             show to other users as carousels
           </Text>
         ) : null}
-        {Object.keys(carouselData)
-          .map((groupName) => {
-            return { activities: carouselData[groupName], groupName };
-          })
+        {carouselData
           .sort((a, b) => {
-            if (a.activities[0].groupName == "Homepage") return -1;
-            else if (b.activities[0].groupName == "Homepage") return 1;
-            else
-              return a.activities[0].currentlyFeatured >
-                b.activities[0].currentlyFeatured
-                ? -1
-                : 1;
+            if (a.homepage) return -1;
+            else if (b.homepage) return 1;
+            else if (a.currentlyFeatured && !b.currentlyFeatured) return -1;
+            else if (!a.currentlyFeatured && b.currentlyFeatured) return 1;
+            else return 0;
           })
-          .map((groupInfo) => {
-            let groupName = groupInfo.groupName;
-            const group = groupInfo.activities;
-            let notPromoted = false;
-            if (!isAdmin && group[0].groupName == "Homepage") {
+          .map((group) => {
+            // Homepage only visible to admins
+            if (!isAdmin && group.homepage) {
               return null;
             }
+
+            let groupName = group.groupName;
+            let notPromoted = false;
             if (
               isAdmin &&
-              group[0].groupName != "Homepage" &&
-              (group[0].currentlyFeatured == "0" || !group[0].currentlyFeatured)
+              !group.homepage &&
+              group.currentlyFeatured == false
             ) {
               groupName += " (Not currently featured on community page)";
               notPromoted = true;
@@ -669,13 +707,15 @@ export function Community() {
                 {isAdmin ? (
                   <span>
                     <Text fontSize="24px">{groupName}</Text>
-                    {notPromoted ? (
+                    {group.homepage ? (
+                      <Text>Always promoted</Text>
+                    ) : notPromoted ? (
                       <Button
                         onClick={() => {
                           fetcher.submit(
                             {
                               _action: "Promote Group",
-                              groupName: groupInfo.groupName,
+                              groupId: group.promotedGroupId,
                               currentlyFeatured: true,
                               homepage: false,
                             },
@@ -691,7 +731,7 @@ export function Community() {
                           fetcher.submit(
                             {
                               _action: "Promote Group",
-                              groupName: groupInfo.groupName,
+                              groupId: group.promotedGroupId,
                               currentlyFeatured: false,
                               homepage: false,
                             },
@@ -705,14 +745,12 @@ export function Community() {
                     <br />
                     <br />
                     <Wrap overflow="visible">
-                      {group.map((cardObj, i) => {
+                      {group.promotedContent.map((cardObj, i) => {
                         return (
-                          <ActivityCard
+                          <ContentCard
                             {...cardObj}
                             key={`swipercard${i}`}
-                            fullName={
-                              cardObj.firstName + " " + cardObj.lastName
-                            }
+                            fullName={cardObj.owner}
                             imageLink={`/activityViewer/${cardObj.activityId}`}
                             menuItems={
                               <>
@@ -722,7 +760,7 @@ export function Community() {
                                       {
                                         _action: "Remove Promoted Content",
                                         activityId: cardObj.activityId,
-                                        groupId: cardObj.promotedGroupId,
+                                        groupId: group.promotedGroupId,
                                       },
                                       { method: "post" },
                                     );
@@ -736,7 +774,7 @@ export function Community() {
                                       {
                                         _action: "Move Promoted Content",
                                         activityId: cardObj.activityId,
-                                        groupId: cardObj.promotedGroupId,
+                                        groupId: group.promotedGroupId,
                                         direction: "left",
                                       },
                                       { method: "post" },
@@ -751,7 +789,7 @@ export function Community() {
                                       {
                                         _action: "Move Promoted Content",
                                         activityId: cardObj.activityId,
-                                        groupId: cardObj.promotedGroupId,
+                                        groupId: group.promotedGroupId,
                                         direction: "right",
                                       },
                                       { method: "post" },
@@ -768,7 +806,7 @@ export function Community() {
                     </Wrap>
                   </span>
                 ) : (
-                  <Carousel title={groupName} data={group} />
+                  <Carousel title={groupName} data={group.promotedContent} />
                 )}
               </>
             );

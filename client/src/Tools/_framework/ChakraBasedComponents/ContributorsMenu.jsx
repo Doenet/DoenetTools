@@ -64,7 +64,7 @@ export default function ContributorsMenu({ contributorHistory, owner }) {
             key={"miauthor"}
             data-test={"contributors menu item author"}
             as={Link}
-            to={`/publicPortfolio/${owner.userId}`}
+            to={`/publicActivities/${owner.userId}`}
           >
             {avatars[0]} <Text ml="4px">{owner.name}</Text>
           </MenuItem>

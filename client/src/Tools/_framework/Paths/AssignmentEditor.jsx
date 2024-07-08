@@ -72,19 +72,19 @@ export async function action({ params, request }) {
 
 export async function loader({ params }) {
   const { data: assignmentData } = await axios.get(
-    `/api/getAssignmentEditorData/${params.assignmentId}`,
+    `/api/getActivityEditorData/${params.assignmentId}`,
   );
+
+  console.log(assignmentData);
 
   let assignmentId = Number(params.assignmentId);
 
   // TODO: what happens if assignment has no documents?
-  let docId = assignmentData.assignmentDocuments[0].docId;
+  let docId = assignmentData.documents[0].docId;
 
-  const doenetML =
-    assignmentData.assignmentDocuments[0].documentVersion.content;
+  const doenetML = assignmentData.documents[0].source;
   const doenetmlVersion =
-    assignmentData.assignmentDocuments[0].documentVersion.doenetmlVersion
-      .fullVersion;
+    assignmentData.documents[0].doenetmlVersion.fullVersion;
 
   return {
     assignmentData,

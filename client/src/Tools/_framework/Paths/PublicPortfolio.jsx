@@ -13,17 +13,17 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { useLoaderData } from "react-router-dom";
-import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/ActivityCard";
+import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
 import { RiEmotionSadLine } from "react-icons/ri";
 import axios from "axios";
 
 export async function loader({ params }) {
-  const { data } = await axios.get(`/api/getPublicPortfolio/${params.userId}`);
+  const { data } = await axios.get(`/api/getPublicActivities/${params.userId}`);
 
   return data;
 }
 
-export function PublicPortfolio() {
+export function PublicActivities() {
   let { name, publicActivities } = useLoaderData();
 
   //Define the avatar
@@ -31,12 +31,12 @@ export function PublicPortfolio() {
 
   return (
     <Grid
-      templateAreas={`"portfolioHeader" 
-        "activityCards"`}
+      templateAreas={`"ActivitiesHeader" 
+        "contentCards"`}
       gridTemplateRows={`80px auto`}
       h="calc(100vh - 40px)"
     >
-      <GridItem area="portfolioHeader" data-test="Heading Bar">
+      <GridItem area="activitiesHeader" data-test="Heading Bar">
         <Box
           as="header"
           gridRow="1/2"
@@ -59,13 +59,13 @@ export function PublicPortfolio() {
                 {name}
               </Text>
               <Text fontSize="16px" fontWeight="700" data-test="heading2">
-                User Portfolio
+                User Activities
               </Text>
             </VStack>
           </HStack>
         </Box>
       </GridItem>
-      <GridItem area="activityCards" bg="var(--lightBlue)">
+      <GridItem area="contentCards" bg="var(--lightBlue)">
         <Center>
           <Wrap p="10px" data-test="list of activities">
             {publicActivities.length < 1 ? (
@@ -88,8 +88,8 @@ export function PublicPortfolio() {
                   const imageLink = `/activityViewer/${activity.activityId}`;
 
                   return (
-                    <ActivityCard
-                      key={`ActivityCard${activity.activityId}`}
+                    <ContentCard
+                      key={`ContentCard${activity.activityId}`}
                       imageLink={imageLink}
                       {...activity}
                       fullName={name}

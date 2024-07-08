@@ -39,9 +39,10 @@ export async function loader({ params }) {
 
   // TODO: need to select variant for each student (just once)
 
-  if (params.assignmentId) {
+  if (params.activityId) {
+    // TODO: create this route
     let { data } = await axios.get(
-      `/api/getAssignmentData/${params.assignmentId}`,
+      `/api/getAssignmentData/${params.activityId}`,
     );
     assignment = data;
   } else if (params.classCode) {
@@ -61,25 +62,21 @@ export async function loader({ params }) {
     userName = data.name;
   }
 
-  let assignmentId = params.assignmentId;
-
   // TODO: what happens if assignment has no documents?
-  let docId = assignment.assignmentDocuments[0].docId;
-  let docVersionId = assignment.assignmentDocuments[0].docVersionId;
+  const docId = assignment.documents[0].id;
+  const docVersionNum = assignment.documents[0].assignedVersionNum;
 
-  let doenetML = assignment.assignmentDocuments[0].documentVersion.content;
-  let doenetmlVersion =
-    assignment.assignmentDocuments[0].documentVersion.doenetmlVersion
-      .fullVersion;
+  const doenetML = assignment.documents[0].assignedVersion.source;
+  const doenetmlVersion =
+    assignment.documents[0].assignedVersion.doenetmlVersion.fullVersion;
 
   return {
     assignmentFound: true,
     assignment,
     docId,
-    docVersionId,
+    docVersionNum,
     doenetML,
     doenetmlVersion,
-    assignmentId,
     userName,
   };
 }
@@ -91,7 +88,7 @@ export function AssignmentViewer() {
     assignmentFound,
     userName,
     docId,
-    docVersionId,
+    docVersionNum,
     doenetmlVersion,
   } = useLoaderData();
 
@@ -115,9 +112,9 @@ export function AssignmentViewer() {
       if (event.data.subject == "SPLICE.reportScoreAndState") {
         // TODO: generalize to multiple documents. For now, assume just have one.
         await axios.post("/api/saveScoreAndState", {
-          assignmentId: assignment.assignmentId,
-          docId: assignment.assignmentDocuments[0].docId,
-          docVersionId: assignment.assignmentDocuments[0].docVersionId,
+          activityId: assignment.id,
+          docId: assignment.documents[0].id,
+          docVersionNum: assignment.documents[0].assignedVersionNum,
           score: event.data.score,
           state: JSON.stringify(event.data.state),
           onSubmission: event.data.state.onSubmission,
@@ -126,9 +123,9 @@ export function AssignmentViewer() {
         const data = event.data.data;
         if (data.verb === "submitted") {
           recordSubmittedEvent({
-            assignmentId: assignment.assignmentId,
+            activityId: assignment.id,
             docId,
-            docVersionId,
+            docVersionNum,
             data,
           });
         }
@@ -136,9 +133,9 @@ export function AssignmentViewer() {
         try {
           let { data } = await axios.get("/api/loadState", {
             params: {
-              assignmentId: assignment.assignmentId,
-              docId: assignment.assignmentDocuments[0].docId,
-              docVersionId: assignment.assignmentDocuments[0].docVersionId,
+              activityId: assignment.id,
+              docId: assignment.documents[0].id,
+              docVersionNum: assignment.documents[0].assignedVersionNum,
               userId: event.data.userId,
             },
           });
@@ -328,9 +325,9 @@ export function AssignmentViewer() {
 }
 
 async function recordSubmittedEvent({
-  assignmentId,
+  activityId,
   docId,
-  docVersionId,
+  docVersionNum,
   data,
 }) {
   const object = JSON.parse(data.object);
@@ -349,9 +346,9 @@ async function recordSubmittedEvent({
     const documentCreditAchieved = context.pageCreditAchieved;
 
     await axios.post(`/api/recordSubmittedEvent`, {
-      assignmentId,
+      activityId,
       docId,
-      docVersionId,
+      docVersionNum,
       answerId,
       answerNumber: object.answerNumber,
       result: {

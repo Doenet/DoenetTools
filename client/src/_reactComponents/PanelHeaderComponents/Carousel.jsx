@@ -17,7 +17,7 @@ import "swiper/css/keyboard";
 import "./Carousel.css";
 
 import { Box, Flex, IconButton, Text } from "@chakra-ui/react";
-import ActivityCard from "./ActivityCard";
+import ContentCard from "./ContentCard";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
 SwiperCore.use([Keyboard, Mousewheel]);
@@ -113,10 +113,10 @@ export function Carousel({ title = "", data = [] }) {
             {data.map((cardObj, i) => {
               return (
                 <SwiperSlide key={`swipercard${i}`}>
-                  <ActivityCard
+                  <ContentCard
                     {...cardObj}
-                    fullName={cardObj.firstName + " " + cardObj.lastName}
-                    imageLink={`/activityViewer/${cardObj.doenetId}`}
+                    fullName={cardObj.owner}
+                    imageLink={`/activityViewer/${cardObj.activityId}`}
                     menuItems={
                       null
                       /* z-index stacking issues, might be related to the carousel

@@ -1,6 +1,6 @@
 import { cesc2 } from "../../../src/_utils/url";
 
-describe("Portfolio Variant Tests", function () {
+describe("Activities Variant Tests", function () {
   const userId = "cyuserId";
   const userId2 = "cyuserId2";
 
@@ -15,12 +15,12 @@ describe("Portfolio Variant Tests", function () {
     return false;
   });
 
-  it("Portfolio Editor Varient Control Shows Up", () => {
-    const label = "Portfolio Variant Control";
+  it("Activities Editor Varient Control Shows Up", () => {
+    const label = "Activities Variant Control";
     const text1 = "Hello World";
 
-    cy.log("Make an activity in the portfolio");
-    cy.get('[data-test="Portfolio"]').click();
+    cy.log("Make an activity in the Activities Page");
+    cy.get('[data-test="Activities"]').click();
     cy.get('[data-test="Add Activity"]').click();
 
     cy.get('[data-test="Variant Select Menu Button"]').should("not.exist");

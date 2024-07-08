@@ -26,12 +26,12 @@ describe("Load and Save Editor", function () {
 
   it("Load Large Number", () => {
     const largeNumber = `12345678901234567890123456789012345678901234567890123456789012345678901234567890`;
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
     cy.get('[data-test="Add Activity"]').click();
     cy.get(".cm-content").type(largeNumber);
     cy.get('[data-test="Viewer Update Button"]').click();
 
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
     cy.get('[data-test="Private Activities"] [data-test="Card Image Link"] ')
       .eq(0)
       .click();
@@ -40,7 +40,7 @@ describe("Load and Save Editor", function () {
   });
 
   it("Quickly Save", () => {
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
     cy.get('[data-test="Add Activity"]').click();
     cy.get(".cm-content").type(
       `{ctrl+end}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}<p name="draft">Draft content</p>`,
@@ -49,7 +49,7 @@ describe("Load and Save Editor", function () {
     // cy.get('[data-test="Viewer Update Button"]').click();
     // cy.get(cesc2("#/draft")).should("have.text", "Draft content");
 
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
     cy.wait(500);
     cy.get('[data-test="Private Activities"] [data-test="Card Image Link"] ')
       .eq(0)

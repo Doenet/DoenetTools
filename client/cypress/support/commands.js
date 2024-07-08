@@ -218,7 +218,7 @@ Cypress.Commands.add("deleteCourse", ({ label, courseId }) => {
   }
 });
 
-Cypress.Commands.add("deletePortfolioActivity", ({ userId, label }) => {
+Cypress.Commands.add("deleteActivity", ({ userId, label }) => {
   cy.task(
     "queryDb",
     `DELETE

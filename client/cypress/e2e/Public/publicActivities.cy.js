@@ -133,7 +133,7 @@ describe("Public activity tests", function () {
     const doenetId = "rssactivity1id";
     const pageDoenetId = "_rsspage1id";
 
-    // cy.deletePortfolioActivity({ userId, label })
+    // cy.deleteActivity({ userId, label })
 
     cy.deleteCourseDBRows({ courseId });
 

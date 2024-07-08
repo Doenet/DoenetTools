@@ -20,25 +20,23 @@ export async function action({ params, request }) {
   return null;
 }
 
-export async function loader({ params, request }) {
+export async function loader({ params, request, isAssignedData = false }) {
   const url = new URL(request.url);
   const withMaxScore = url.searchParams.get("withMaxScore") === "0" ? 0 : 1;
 
   const { data: assignmentData } = await axios.get(
-    `/api/getAssignmentStudentData/${params.assignmentId}/${params.userId}`,
+    `/api/getAssignmentStudentData/${params.activityId}/${params.userId ?? ""}`,
   );
 
-  let assignmentId = Number(params.assignmentId);
-  let assignment = assignmentData.assignment;
-  let userId = Number(params.userId);
-  let user = assignmentData.user;
-  let score = assignmentData.score;
+  const assignment = assignmentData.activity;
+  const userId = assignmentData.userId;
+  const user = assignmentData.user;
+  const score = assignmentData.score;
 
   // TODO: deal with case where don't have exactly 1 document
-  const doenetML = assignment.assignmentDocuments[0].documentVersion.content;
+  const doenetML = assignment.documents[0].assignedVersion.source;
   const doenetmlVersion =
-    assignment.assignmentDocuments[0].documentVersion.doenetmlVersion
-      .fullVersion;
+    assignment.documents[0].assignedVersion.doenetmlVersion.fullVersion;
   const numStatesSaved = assignmentData.documentScores.length;
   let documentScores = { latest: assignmentData.documentScores[0].score };
   if (numStatesSaved === 2) {
@@ -46,7 +44,7 @@ export async function loader({ params, request }) {
   }
 
   return {
-    assignmentId,
+    activityId: assignmentData.activityId,
     assignment,
     userId,
     user,
@@ -56,12 +54,17 @@ export async function loader({ params, request }) {
     withMaxScore,
     numStatesSaved,
     documentScores,
+    isAssignedData,
   };
+}
+
+export async function assignedAssignmentDataloader({ params, request }) {
+  return await loader({ params, request, isAssignedData: true });
 }
 
 export function AssignmentStudentData() {
   const {
-    assignmentId,
+    activityId,
     assignment,
     userId,
     user,
@@ -71,9 +74,8 @@ export function AssignmentStudentData() {
     withMaxScore,
     numStatesSaved,
     documentScores,
+    isAssignedData,
   } = useLoaderData();
-
-  console.log({ doenetmlVersion });
 
   useEffect(() => {
     document.title = `${assignment?.name} - Doenet`;
@@ -83,14 +85,13 @@ export function AssignmentStudentData() {
 
   useEffect(() => {
     let messageListener = async function (event) {
-      console.log("message in AssignmentStudentData", event.data);
       if (event.data.subject == "SPLICE.getState") {
         try {
           let { data } = await axios.get("/api/loadState", {
             params: {
-              assignmentId,
-              docId: assignment.assignmentDocuments[0].docId,
-              docVersionId: assignment.assignmentDocuments[0].docVersionId,
+              activityId,
+              docId: assignment.documents[0].assignedVersion.docId,
+              docVersionNum: assignment.documents[0].assignedVersion.versionNum,
               userId,
               withMaxScore,
             },
@@ -134,7 +135,9 @@ export function AssignmentStudentData() {
     <>
       <Box style={{ marginTop: 15, marginLeft: 15 }}>
         <Link
-          href={`/assignmentData/${assignmentId}`}
+          href={
+            isAssignedData ? `/assignedData` : `/assignmentData/${activityId}`
+          }
           style={{
             color: "var(--mainBlue)",
           }}

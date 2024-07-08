@@ -28,7 +28,7 @@ export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
 
-  if (formObj._action == "copy to portfolio") {
+  if (formObj._action == "copy to activities") {
     let { data } = await axios.post(`/api/duplicateActivity`, {
       activityId: Number(params.activityId),
     });
@@ -36,7 +36,7 @@ export async function action({ params, request }) {
     const { newActivityId } = data;
 
     // TODO: do not navigate to editor
-    // Instead, navigate to portfolio with newly created activity highlighted
+    // Instead, navigate to activities with newly created activity highlighted
     return redirect(`/activityEditor/${newActivityId}`);
   } else if (formObj?._action == "create assignment") {
     const { data } = await axios.post(`/api/assignActivity`, {
@@ -69,7 +69,7 @@ export async function loader({ params }) {
       docId = activityData.activity.documents[0].docId;
     }
 
-    const doenetML = activityData.activity.documents[0].content;
+    const doenetML = activityData.activity.documents[0].source;
 
     return {
       activityId,
@@ -127,7 +127,7 @@ export function ActivityViewer() {
 
   return (
     <>
-      <VStack spacing={0}>
+      <Box background="doenet.lightBlue" height="100%">
         <Flex
           background="doenet.lightBlue"
           alignItems="center"
@@ -198,20 +198,20 @@ export function ActivityViewer() {
                       {signedIn ? (
                         <HeaderSectionRight>
                           <Button
-                            data-test="Copy to Portfolio Button"
+                            data-test="Copy to Activities Button"
                             size="xs"
                             colorScheme="blue"
                             marginRight="10px"
                             onClick={() => {
                               fetcher.submit(
                                 {
-                                  _action: "copy to portfolio",
+                                  _action: "copy to activities",
                                 },
                                 { method: "post" },
                               );
                             }}
                           >
-                            Copy to Portfolio
+                            Copy to Activities
                           </Button>
 
                           <Button
@@ -239,7 +239,7 @@ export function ActivityViewer() {
                             navigateTo.current = "/signIn";
                           }}
                         >
-                          Sign In To Copy to Portfolio
+                          Sign In To Copy to Activities
                         </Button>
                       )}
                     </VStack>
@@ -248,54 +248,48 @@ export function ActivityViewer() {
               </Grid>
             </GridItem>
             <GridItem area="centerContent">
-              <Box
-                background="var(--canvas)"
-                borderWidth="1px"
-                borderStyle="solid"
-                borderColor="doenet.mediumGray"
-                width="100%"
-                height="100%"
-              >
-                <DoenetViewer
-                  key={`HPpageViewer`}
-                  doenetML={doenetML}
-                  doenetmlVersion={doenetmlVersion}
-                  // cid={"bafkreibfz6m6pt4vmwlch7ok5y5qjyksomidk5f2vn2chuj4qqeqnrfrfe"}
-                  flags={{
-                    showCorrectness: true,
-                    solutionDisplayMode: "button",
-                    showFeedback: true,
-                    showHints: true,
-                    autoSubmit: false,
-                    allowLoadState: false,
-                    allowSaveState: false,
-                    allowLocalState: false,
-                    allowSaveSubmissions: false,
-                    allowSaveEvents: false,
-                  }}
-                  attemptNumber={1}
-                  idsIncludeActivityId={false}
-                  // setIsInErrorState={setIsInErrorState}
-                  location={location}
-                  navigate={navigate}
-                  linkSettings={{
-                    viewURL: "/activityViewer",
-                    editURL: "/publicEditor",
-                  }}
-                  includeVariantSelector={true}
+              <VStack gap={0}>
+                <Box background="var(--canvas)" width="100%" height="100%">
+                  <DoenetViewer
+                    key={`HPpageViewer`}
+                    doenetML={doenetML}
+                    doenetmlVersion={doenetmlVersion}
+                    flags={{
+                      showCorrectness: true,
+                      solutionDisplayMode: "button",
+                      showFeedback: true,
+                      showHints: true,
+                      autoSubmit: false,
+                      allowLoadState: false,
+                      allowSaveState: false,
+                      allowLocalState: false,
+                      allowSaveSubmissions: false,
+                      allowSaveEvents: false,
+                    }}
+                    attemptNumber={1}
+                    idsIncludeActivityId={false}
+                    // setIsInErrorState={setIsInErrorState}
+                    location={location}
+                    navigate={navigate}
+                    linkSettings={{
+                      viewURL: "/activityViewer",
+                      editURL: "/publicEditor",
+                    }}
+                    includeVariantSelector={false}
+                  />
+                </Box>
+                <Box
+                  width="100%"
+                  height="50vh"
+                  background="var(--canvas)"
+                  padding="0px"
+                  margin="0px"
                 />
-              </Box>
+              </VStack>
             </GridItem>
           </Grid>
         </Flex>
-        <Box
-          width="100%"
-          height="50vh"
-          background="doenet.lightBlue"
-          padding="0px"
-          margin="0px"
-        />
-      </VStack>
+      </Box>
     </>
   );
 }

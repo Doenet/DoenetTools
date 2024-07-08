@@ -1,6 +1,5 @@
 import React, { useEffect, FunctionComponent } from "react";
 import { useLoaderData } from "react-router";
-
 import {
   TableContainer,
   Table,
@@ -10,20 +9,19 @@ import {
   Tbody,
   Td,
   Link,
+  Text,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 
-type userDataStructure = {
-  assignmentScores: {
-    assignment: {
-      name: string;
-    };
-    assignmentId: number;
-    score: number;
-  }[];
-  name: string;
+type userData = {
   userId: number;
+  name: string;
+};
+type orderedActivityScore = {
+  activityId: number;
+  activityName: string;
+  score: number;
 };
 
 export async function loader({ params }) {
@@ -31,11 +29,27 @@ export async function loader({ params }) {
     `/api/getStudentData/${Number(params.userId)}`,
   );
 
-  return { userData: data };
+  const userData = data.userData;
+  const scores = data.orderedActivityScores;
+
+  return { userData, scores, isAssignedData: false };
+}
+
+export async function assignedDataloader() {
+  let { data } = await axios.get(`/api/getAssignedScores`);
+
+  const userData = data.userData;
+  const scores = data.orderedActivityScores;
+
+  return { userData, scores, isAssignedData: true };
 }
 
 export function StudentData() {
-  const { userData } = useLoaderData() as { userData: userDataStructure };
+  const { userData, scores, isAssignedData } = useLoaderData() as {
+    userData: userData;
+    scores: orderedActivityScore[];
+    isAssignedData: boolean;
+  };
 
   useEffect(() => {
     document.title = `${userData.name}'s Assignments`;
@@ -60,24 +74,36 @@ export function StudentData() {
             </Tr>
           </Thead>
           <Tbody>
-            {userData.assignmentScores.map((score) => {
+            {scores.map((score) => {
               return (
-                <Tr key={`assignment${score.assignmentId}`}>
-                  <Td key={`assignment_title${score.assignmentId}`}>
-                    <Link
-                      href={`/assignmentData/${score.assignmentId}`}
-                      style={linkStyle}
-                    >
-                      {score.assignment.name}
-                    </Link>
+                <Tr key={`assignment${score.activityId}`}>
+                  <Td key={`assignment_title${score.activityId}`}>
+                    {isAssignedData ? (
+                      score.activityName
+                    ) : (
+                      <Link
+                        href={`/assignmentData/${score.activityId}`}
+                        style={linkStyle}
+                      >
+                        {score.activityName}
+                      </Link>
+                    )}
                   </Td>
-                  <Td key={`score${score.assignmentId}`}>
-                    <Link
-                      href={`/assignmentData/${score.assignmentId}/${userData.userId}`}
-                      style={linkStyle}
-                    >
-                      {score.score}
-                    </Link>
+                  <Td key={`score${score.activityId}`}>
+                    {score.score !== null ? (
+                      <Link
+                        href={
+                          isAssignedData
+                            ? `assignedData/${score.activityId}`
+                            : `/assignmentData/${score.activityId}/${userData.userId}`
+                        }
+                        style={linkStyle}
+                      >
+                        {score.score}
+                      </Link>
+                    ) : (
+                      <Text>&#8212;</Text>
+                    )}
                   </Td>
                 </Tr>
               );

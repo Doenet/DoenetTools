@@ -3,26 +3,25 @@ import { Box, Text, Wrap } from "@chakra-ui/react";
 import React from "react";
 import { useLoaderData } from "react-router-dom";
 import styled from "styled-components";
-import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/ActivityCard";
+import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
 import { MoveToGroupMenuItem } from "./Community";
 
 export async function loader() {
+  const {
+    data: { isAdmin },
+  } = await axios.get(`/api/checkForCommunityAdmin`);
+  if (!isAdmin) {
+    throw Error("Page not available");
+  }
+
+  const { data: carouselGroups } = await axios.get(`/api/loadPromotedContent`);
+
   const { data: recentActivities } = await axios.get(
     `/api/getAllRecentPublicActivities`,
   );
-  const { data: isAdminData } = await axios.get(`/api/checkForCommunityAdmin`);
-  const isAdmin = isAdminData.isAdmin;
-
-  let carouselGroups = [];
-  if (isAdmin) {
-    const carouselDataGroups = await fetch(`/api/loadPromotedContentGroups`);
-    const responseGroups = await carouselDataGroups.json();
-    carouselGroups = responseGroups.carouselGroups;
-  }
 
   return {
     publicActivities: recentActivities,
-    isAdmin,
     carouselGroups,
   };
 }
@@ -40,18 +39,18 @@ const PublicActivitiesSection = styled.div`
   background: var(--lightBlue);
 `;
 
-const PortfolioGrid = styled.div`
+const ActivitiesGrid = styled.div`
   display: grid;
   grid-template-rows: 80px auto;
   height: 100vh;
 `;
 
 export function Admin() {
-  const { carouselGroups, isAdmin, publicActivities } = useLoaderData();
+  const { carouselGroups, publicActivities } = useLoaderData();
 
   return (
     <>
-      <PortfolioGrid>
+      <ActivitiesGrid>
         <Box
           as="header"
           gridRow="1/2"
@@ -65,7 +64,7 @@ export function Admin() {
           justifyContent="center"
           alignItems="center"
           textAlign="center"
-          zIndex="1200"
+          zIndex="120"
         >
           <Text fontSize="24px" fontWeight="700">
             Recent Public Activities
@@ -78,24 +77,20 @@ export function Admin() {
             ) : (
               <>
                 {publicActivities.map((activity) => {
-                  const imageLink = `/activityViewer/${activity.activityId}`;
+                  const imageLink = `/activityViewer/${activity.id}`;
 
                   return (
-                    <ActivityCard
-                      key={`ActivityCard${activity.activityId}`}
+                    <ContentCard
+                      key={`ContentCard${activity.id}`}
                       imageLink={imageLink}
-                      label={activity.name}
+                      name={activity.name}
                       imagePath={activity.imagePath}
-                      fullName={activity.owner.email}
+                      fullName={activity.owner.name}
                       menuItems={
-                        isAdmin ? (
-                          <>
-                            <MoveToGroupMenuItem
-                              activityId={activity.activityId}
-                              carouselGroups={carouselGroups}
-                            />
-                          </>
-                        ) : null
+                        <MoveToGroupMenuItem
+                          activityId={activity.id}
+                          carouselGroups={carouselGroups}
+                        />
                       }
                     />
                   );
@@ -104,7 +99,7 @@ export function Admin() {
             )}
           </Wrap>
         </PublicActivitiesSection>
-      </PortfolioGrid>
+      </ActivitiesGrid>
     </>
   );
 }

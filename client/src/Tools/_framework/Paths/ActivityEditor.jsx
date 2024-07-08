@@ -77,8 +77,8 @@ export async function action({ params, request }) {
   }
 
   if (formObj._action == "update name") {
-    await axios.post(`/api/updateActivityName`, {
-      activityId: Number(params.activityId),
+    await axios.post(`/api/updateContentName`, {
+      id: Number(params.activityId),
       name,
     });
     return true;
@@ -149,17 +149,17 @@ export async function loader({ params }) {
       // If docId was not supplied in the url,
       // then use the first docId from the activity.
       // TODO: what happens if activity has no documents?
-      docId = activityData.documents[0].docId;
+      docId = activityData.documents[0].id;
     }
 
     // If docId isn't in the activity, use the first docId
-    let docInOrder = activityData.documents.map((x) => x.docId).indexOf(docId);
+    let docInOrder = activityData.documents.map((x) => x.id).indexOf(docId);
     if (docInOrder === -1) {
       docInOrder = 0;
-      docId = activityData.documents[docInOrder].docId;
+      docId = activityData.documents[docInOrder].id;
     }
 
-    const doenetML = activityData.documents[docInOrder].content;
+    const doenetML = activityData.documents[docInOrder].source;
     const doenetmlVersion = activityData.documents[docInOrder].doenetmlVersion;
 
     const supportingFileResp = await axios.get(
@@ -762,7 +762,9 @@ export function GeneralActivityControls({
   // (And same for other variables using this pattern)
   // It appears this file is using optimistic UI without a recourse
   // should the optimism be unmerited.
-  let doenetmlVersionInit = activityData.documents[0].doenetmlVersion;
+  let doenetmlVersionInit = activityData.isFolder
+    ? 0
+    : activityData.documents[0].doenetmlVersion;
 
   let [nameValue, setName] = useState(name);
   let lastAcceptedNameValue = useRef(name);
@@ -868,7 +870,7 @@ export function GeneralActivityControls({
           let { success, cid, msg, asFileName } = data;
           if (success) {
             setImagePath(`/media/${cid}.jpg`);
-            //Refresh images in portfolio
+            //Refresh images in activities
             fetcher.submit(
               {
                 _action: "noop",
@@ -1051,51 +1053,56 @@ export function GeneralActivityControls({
             </Center>
           </Flex>
         </FormControl>
-        <FormControl>
-          <FormLabel mt="16px">Visibility</FormLabel>
-
-          <Checkbox
-            size="lg"
-            data-test="Public Checkbox"
-            name="public"
-            value="on"
-            isChecked={checkboxIsPublic}
-            onChange={(e) => {
-              let nextIsPublic = false;
-              if (e.target.checked) {
-                nextIsPublic = true;
-              }
-              setCheckboxIsPublic(nextIsPublic);
-              saveDataToServer({ nextIsPublic });
-            }}
-          >
-            Public
-          </Checkbox>
-        </FormControl>
-        <FormControl>
-          <FormLabel mt="16px">DoenetML version</FormLabel>
-          <Select
-            value={doenetmlVersion.versionId}
-            onChange={(e) => {
-              // TODO: do we worry about this pattern?
-              // If saveDataToServer is unsuccessful, the client doenetmlVersion
-              // will no match what's on the server.
-              // (See TODO from near where doenetmlVersion is defined)
-              let nextDoenetmlVersionId = e.target.value;
-              let nextDoenetmlVersion = allDoenetmlVersions.find(
-                (v) => v.versionId == nextDoenetmlVersionId,
-              );
-              setDoenetmlVersion(nextDoenetmlVersion);
-              saveDataToServer({ nextDoenetmlVersionId });
-            }}
-          >
-            {allDoenetmlVersions.map((version) => (
-              <option value={version.versionId} key={version.versionId}>
-                {version.displayedVersion}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
+        {!activityData.isFolder ? (
+          <>
+            <FormControl>
+            <FormLabel mt="16px">Visibility</FormLabel>
+            <Checkbox
+              size="lg"
+              data-test="Public Checkbox"
+              name="public"
+              value="on"
+              isChecked={checkboxIsPublic}
+              onChange={(e) => {
+                let nextIsPublic = false;
+                if (e.target.checked) {
+                  nextIsPublic = true;
+                }
+                setCheckboxIsPublic(nextIsPublic);
+                saveDataToServer({ nextIsPublic });
+              }}
+            >
+              Public
+            </Checkbox>
+          </FormControl>
+          <FormControl>
+            <FormLabel mt="16px">DoenetML version</FormLabel>
+            <Select
+              value={doenetmlVersion.versionId}
+              onChange={(e) => {
+                // TODO: do we worry about this pattern?
+                // If saveDataToServer is unsuccessful, the client doenetmlVersion
+                // will no match what's on the server.
+                // (See TODO from near where doenetmlVersion is defined)
+                let nextDoenetmlVersionId = e.target.value;
+                let nextDoenetmlVersion = allDoenetmlVersions.find(
+                  (v) => v.versionId == nextDoenetmlVersionId,
+                );
+                setDoenetmlVersion(nextDoenetmlVersion);
+                saveDataToServer({ nextDoenetmlVersionId });
+              }}
+            >
+              {allDoenetmlVersions.map((version) => (
+                <option value={version.versionId} key={version.versionId}>
+                  {version.displayedVersion}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+        </>
+        ) : (
+          ""
+        )}
         {doenetmlVersion.deprecated && (
           <p>
             <strong>Warning</strong>: DoenetML version{" "}
