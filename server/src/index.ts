@@ -21,14 +21,12 @@ import {
   searchPublicContent,
   updateContent,
   getDoc,
-  addPromotedContentGroup,
   assignActivity,
   listUserAssigned,
   getAssignmentDataFromCode,
   openAssignmentWithCode,
   closeAssignmentWithCode,
   updateUser,
-  addPromotedContent,
   saveScoreAndState,
   getAssignmentScoreData,
   loadState,
@@ -40,11 +38,15 @@ import {
   getDocumentSubmittedResponses,
   getAssignmentContent,
   getDocumentSubmittedResponseHistory,
+  addPromotedContentGroup,
+  addPromotedContent,
   updatePromotedContentGroup,
   loadPromotedContent,
   removePromotedContent,
-  InvalidRequestError,
   deletePromotedContentGroup,
+  movePromotedContent,
+  movePromotedContentGroup,
+  InvalidRequestError,
   moveContent,
   getFolderContent,
   getAssignedScores,
@@ -497,6 +499,37 @@ app.post(
 );
 
 app.post(
+  "/api/movePromotedContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const groupId = Number(req.body.groupId);
+      const activityId = Number(req.body.activityId);
+      const desiredPosition = Number(req.body.desiredPosition);
+      const loggedInUserId = Number(req.cookies.userId);
+
+      await movePromotedContent(
+        groupId,
+        activityId,
+        loggedInUserId,
+        desiredPosition,
+      );
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === "P2025") {
+          res.status(400).send("That group does not exist.");
+          return;
+        }
+      } else if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.post(
   "/api/addPromotedContentGroup",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -557,6 +590,28 @@ app.post(
       const { groupId } = req.body;
       const loggedInUserId = Number(req.cookies.userId);
       await deletePromotedContentGroup(Number(groupId), loggedInUserId);
+      res.send({});
+    } catch (e) {
+      if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/movePromotedContentGroup",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { groupId, desiredPosition } = req.body;
+      const loggedInUserId = Number(req.cookies.userId);
+      await movePromotedContentGroup(
+        Number(groupId),
+        loggedInUserId,
+        Number(desiredPosition),
+      );
       res.send({});
     } catch (e) {
       if (e instanceof InvalidRequestError) {

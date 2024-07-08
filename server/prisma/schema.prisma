@@ -166,14 +166,14 @@ model promotedContentGroups {
   groupName         String            @unique
   currentlyFeatured Boolean           @default(false)
   homepage          Boolean           @default(false)
-  sortOrder         String
+  sortIndex         BigInt
   promotedContent   promotedContent[]
 }
 
 model promotedContent {
   activityId      Int
   promotedGroupId Int
-  sortOrder       String
+  sortIndex       BigInt
   activity        content               @relation(fields: [activityId], references: [id])
   promotedGroup   promotedContentGroups @relation(fields: [promotedGroupId], references: [promotedGroupId])
 
