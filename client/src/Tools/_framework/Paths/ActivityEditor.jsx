@@ -762,7 +762,9 @@ export function GeneralActivityControls({
   // (And same for other variables using this pattern)
   // It appears this file is using optimistic UI without a recourse
   // should the optimism be unmerited.
-  let doenetmlVersionInit = activityData.documents[0].doenetmlVersion;
+  let doenetmlVersionInit = activityData.isFolder
+    ? 0
+    : activityData.documents[0].doenetmlVersion;
 
   let [nameValue, setName] = useState(name);
   let lastAcceptedNameValue = useRef(name);
@@ -1051,51 +1053,56 @@ export function GeneralActivityControls({
             </Center>
           </Flex>
         </FormControl>
-        <FormControl>
-          <FormLabel mt="16px">Visibility</FormLabel>
-
-          <Checkbox
-            size="lg"
-            data-test="Public Checkbox"
-            name="public"
-            value="on"
-            isChecked={checkboxIsPublic}
-            onChange={(e) => {
-              let nextIsPublic = false;
-              if (e.target.checked) {
-                nextIsPublic = true;
-              }
-              setCheckboxIsPublic(nextIsPublic);
-              saveDataToServer({ nextIsPublic });
-            }}
-          >
-            Public
-          </Checkbox>
-        </FormControl>
-        <FormControl>
-          <FormLabel mt="16px">DoenetML version</FormLabel>
-          <Select
-            value={doenetmlVersion.versionId}
-            onChange={(e) => {
-              // TODO: do we worry about this pattern?
-              // If saveDataToServer is unsuccessful, the client doenetmlVersion
-              // will no match what's on the server.
-              // (See TODO from near where doenetmlVersion is defined)
-              let nextDoenetmlVersionId = e.target.value;
-              let nextDoenetmlVersion = allDoenetmlVersions.find(
-                (v) => v.versionId == nextDoenetmlVersionId,
-              );
-              setDoenetmlVersion(nextDoenetmlVersion);
-              saveDataToServer({ nextDoenetmlVersionId });
-            }}
-          >
-            {allDoenetmlVersions.map((version) => (
-              <option value={version.versionId} key={version.versionId}>
-                {version.displayedVersion}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
+        {!activityData.isFolder ? (
+          <>
+            <FormControl>
+            <FormLabel mt="16px">Visibility</FormLabel>
+            <Checkbox
+              size="lg"
+              data-test="Public Checkbox"
+              name="public"
+              value="on"
+              isChecked={checkboxIsPublic}
+              onChange={(e) => {
+                let nextIsPublic = false;
+                if (e.target.checked) {
+                  nextIsPublic = true;
+                }
+                setCheckboxIsPublic(nextIsPublic);
+                saveDataToServer({ nextIsPublic });
+              }}
+            >
+              Public
+            </Checkbox>
+          </FormControl>
+          <FormControl>
+            <FormLabel mt="16px">DoenetML version</FormLabel>
+            <Select
+              value={doenetmlVersion.versionId}
+              onChange={(e) => {
+                // TODO: do we worry about this pattern?
+                // If saveDataToServer is unsuccessful, the client doenetmlVersion
+                // will no match what's on the server.
+                // (See TODO from near where doenetmlVersion is defined)
+                let nextDoenetmlVersionId = e.target.value;
+                let nextDoenetmlVersion = allDoenetmlVersions.find(
+                  (v) => v.versionId == nextDoenetmlVersionId,
+                );
+                setDoenetmlVersion(nextDoenetmlVersion);
+                saveDataToServer({ nextDoenetmlVersionId });
+              }}
+            >
+              {allDoenetmlVersions.map((version) => (
+                <option value={version.versionId} key={version.versionId}>
+                  {version.displayedVersion}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+        </>
+        ) : (
+          ""
+        )}
         {doenetmlVersion.deprecated && (
           <p>
             <strong>Warning</strong>: DoenetML version{" "}

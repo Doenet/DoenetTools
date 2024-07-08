@@ -32,7 +32,7 @@ import { Carousel } from "../../../_reactComponents/PanelHeaderComponents/Carous
 import Searchbar from "../../../_reactComponents/PanelHeaderComponents/SearchBar";
 import { Form, useFetcher } from "react-router-dom";
 import { RiEmotionSadLine } from "react-icons/ri";
-import ActivityCard from "../../../_reactComponents/PanelHeaderComponents/ActivityCard";
+import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
 import AuthorCard from "../../../_reactComponents/PanelHeaderComponents/AuthorCard";
 
 export async function action({ request }) {
@@ -490,8 +490,8 @@ export function Community() {
                       const imageLink = `/activityViewer/${id}`;
 
                       return (
-                        <ActivityCard
-                          key={`ActivityCard${id}`}
+                        <ContentCard
+                          key={`ContentCard${id}`}
                           imageLink={imageLink}
                           name={name}
                           imagePath={imagePath}
@@ -557,7 +557,7 @@ export function Community() {
                     const imageLink = `/activityViewer/${id}`;
 
                     return (
-                      <ActivityCard
+                      <ContentCard
                         key={id}
                         imageLink={imageLink}
                         imagePath={imagePath}
@@ -747,7 +747,7 @@ export function Community() {
                     <Wrap overflow="visible">
                       {group.promotedContent.map((cardObj, i) => {
                         return (
-                          <ActivityCard
+                          <ContentCard
                             {...cardObj}
                             key={`swipercard${i}`}
                             fullName={cardObj.owner}

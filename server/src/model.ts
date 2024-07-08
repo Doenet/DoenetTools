@@ -207,6 +207,8 @@ export async function updateContent({
     },
   });
 
+  console.log(updated);
+
   return {
     id: updated.id,
     name: updated.name,
