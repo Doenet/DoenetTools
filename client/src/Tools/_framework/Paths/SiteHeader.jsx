@@ -214,8 +214,8 @@ export function SiteHeader(props) {
                       >
                         Activities
                       </NavLinkTab>
-                      <NavLinkTab to={`assignments`} dataTest="Assignments">
-                        Assignments
+                      <NavLinkTab to={`assigned`} dataTest="Assigned">
+                        Assigned
                       </NavLinkTab>
                       {isAdmin && (
                         <NavLinkTab to="admin" dataTest="Admin">
@@ -326,10 +326,10 @@ export function SiteHeader(props) {
                               Activities
                             </NavLinkDropdownTab>
                             <NavLinkDropdownTab
-                              to={`assignments`}
-                              dataTest="Assignments"
+                              to={`assigned`}
+                              dataTest="Assigned"
                             >
-                              Assignments
+                              Assigned
                             </NavLinkDropdownTab>
                             {isAdmin && (
                               <NavLinkDropdownTab to="admin" dataTest="Admin">

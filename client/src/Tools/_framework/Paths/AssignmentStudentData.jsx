@@ -20,16 +20,16 @@ export async function action({ params, request }) {
   return null;
 }
 
-export async function loader({ params, request }) {
+export async function loader({ params, request, isAssignedData = false }) {
   const url = new URL(request.url);
   const withMaxScore = url.searchParams.get("withMaxScore") === "0" ? 0 : 1;
 
   const { data: assignmentData } = await axios.get(
-    `/api/getAssignmentStudentData/${params.activityId}/${params.userId}`,
+    `/api/getAssignmentStudentData/${params.activityId}/${params.userId ?? ""}`,
   );
 
   const assignment = assignmentData.activity;
-  const userId = Number(params.userId);
+  const userId = assignmentData.userId;
   const user = assignmentData.user;
   const score = assignmentData.score;
 
@@ -54,7 +54,12 @@ export async function loader({ params, request }) {
     withMaxScore,
     numStatesSaved,
     documentScores,
+    isAssignedData,
   };
+}
+
+export async function assignedAssignmentDataloader({ params, request }) {
+  return await loader({ params, request, isAssignedData: true });
 }
 
 export function AssignmentStudentData() {
@@ -69,6 +74,7 @@ export function AssignmentStudentData() {
     withMaxScore,
     numStatesSaved,
     documentScores,
+    isAssignedData,
   } = useLoaderData();
 
   useEffect(() => {
@@ -129,7 +135,9 @@ export function AssignmentStudentData() {
     <>
       <Box style={{ marginTop: 15, marginLeft: 15 }}>
         <Link
-          href={`/assignmentData/${activityId}`}
+          href={
+            isAssignedData ? `/assignedData` : `/assignmentData/${activityId}`
+          }
           style={{
             color: "var(--mainBlue)",
           }}

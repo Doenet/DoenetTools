@@ -207,8 +207,6 @@ export async function updateContent({
     },
   });
 
-  console.log(updated);
-
   return {
     id: updated.id,
     name: updated.name,
@@ -938,16 +936,12 @@ export async function searchPublicContent(query: string) {
  * @param userId
  * @param folderId
  */
-export async function listUserAssigned(
-  userId: number,
-  folderId: number | null,
-) {
+export async function listUserAssigned(userId: number) {
   const assignments = await prisma.content.findMany({
     where: {
       isDeleted: false,
       isAssigned: true,
       assignmentScores: { some: { userId } },
-      parentFolderId: folderId,
     },
     select: {
       id: true,
@@ -959,7 +953,9 @@ export async function listUserAssigned(
       lastEdited: true,
       isPublic: true,
       isAssigned: true,
+      classCode: true,
     },
+    orderBy: { createdAt: "asc" },
   });
 
   const user = await prisma.users.findUniqueOrThrow({
@@ -1658,18 +1654,19 @@ export async function getAssignmentScoreData({
 
 export async function getAssignmentStudentData({
   activityId,
-  ownerId,
-  userId,
+  loggedInUserId,
+  studentId,
 }: {
   activityId: number;
-  ownerId: number;
-  userId: number;
+  loggedInUserId: number;
+  studentId: number;
 }) {
   const assignmentData = await prisma.assignmentScores.findUniqueOrThrow({
     where: {
-      activityId_userId: { activityId, userId },
+      activityId_userId: { activityId, userId: studentId },
       activity: {
-        ownerId,
+        // allow access if logged in user is the student or the owner
+        ownerId: studentId === loggedInUserId ? undefined : loggedInUserId,
         isDeleted: false,
         isFolder: false,
         isAssigned: true,
@@ -1698,7 +1695,7 @@ export async function getAssignmentStudentData({
   });
 
   const documentScores = await prisma.documentState.findMany({
-    where: { activityId, userId },
+    where: { activityId, userId: studentId },
     select: {
       docId: true,
       docVersionNum: true,
@@ -1908,6 +1905,33 @@ export async function getStudentData({
     WHERE ct.isFolder = FALSE ORDER BY path
   `);
   }
+
+  return { userData, orderedActivityScores };
+}
+
+export async function getAssignedScores(loggedInUserId: number) {
+  const scores = await prisma.assignmentScores.findMany({
+    where: {
+      userId: loggedInUserId,
+      activity: { isAssigned: true, isDeleted: false },
+    },
+    select: {
+      score: true,
+      activity: { select: { id: true, name: true } },
+    },
+    orderBy: { activity: { createdAt: "asc" } },
+  });
+
+  const orderedActivityScores = scores.map((obj) => ({
+    activityId: obj.activity.id,
+    activityName: obj.activity.name,
+    score: obj.score,
+  }));
+
+  const userData = await prisma.users.findUniqueOrThrow({
+    where: { userId: loggedInUserId },
+    select: { userId: true, name: true },
+  });
 
   return { userData, orderedActivityScores };
 }

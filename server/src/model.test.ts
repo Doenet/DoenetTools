@@ -43,6 +43,7 @@ import {
   createFolder,
   moveContent,
   deleteFolder,
+  getAssignedScores,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -1214,7 +1215,7 @@ test("add and remove promoted content", async () => {
   {
     const promotedContent = await loadPromotedContent(userId);
     const myGroup = promotedContent.find(
-      (content) => (content.groupName = groupName),
+      (content) => content.groupName === groupName,
     );
     expect(myGroup).toBeDefined();
     expect(myGroup?.promotedContent).toEqual([]);
@@ -1761,8 +1762,8 @@ test("get assignment data from anonymous users", async () => {
 
   let assignmentStudentData = await getAssignmentStudentData({
     activityId,
-    ownerId,
-    userId: newUser1!.userId,
+    loggedInUserId: ownerId,
+    studentId: newUser1!.userId,
   });
 
   expect(assignmentStudentData).eqls({
@@ -1814,8 +1815,8 @@ test("get assignment data from anonymous users", async () => {
 
   assignmentStudentData = await getAssignmentStudentData({
     activityId,
-    ownerId,
-    userId: newUser1!.userId,
+    loggedInUserId: ownerId,
+    studentId: newUser1!.userId,
   });
 
   expect(assignmentStudentData).eqls({
@@ -1873,8 +1874,8 @@ test("get assignment data from anonymous users", async () => {
 
   assignmentStudentData = await getAssignmentStudentData({
     activityId,
-    ownerId,
-    userId: newUser1!.userId,
+    loggedInUserId: ownerId,
+    studentId: newUser1!.userId,
   });
 
   expect(assignmentStudentData).eqls({
@@ -1951,8 +1952,8 @@ test("get assignment data from anonymous users", async () => {
 
   assignmentStudentData = await getAssignmentStudentData({
     activityId,
-    ownerId,
-    userId: newUser2!.userId,
+    loggedInUserId: ownerId,
+    studentId: newUser2!.userId,
   });
 
   expect(assignmentStudentData).eqls({
@@ -1984,7 +1985,7 @@ test("get assignment data from anonymous users", async () => {
   });
 });
 
-test("can't get assignment data if other user", async () => {
+test("can't get assignment data if other user, but student can get their own data", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const otherUser = await createTestUser();
@@ -2016,11 +2017,13 @@ test("can't get assignment data if other user", async () => {
     state: "document state 1",
   });
 
+  // assignment owner can get score data
   await getAssignmentScoreData({
     activityId,
     ownerId,
   });
 
+  // other user cannot get score data
   await expect(
     getAssignmentScoreData({
       activityId,
@@ -2028,19 +2031,38 @@ test("can't get assignment data if other user", async () => {
     }),
   ).rejects.toThrow("No content found");
 
-  await getAssignmentStudentData({
+  // student cannot get score data on all of assignment
+  await expect(
+    getAssignmentScoreData({
+      activityId,
+      ownerId: newUser1!.userId,
+    }),
+  ).rejects.toThrow("No content found");
+
+  // assignment owner can get data on student
+  const studentData = await getAssignmentStudentData({
     activityId,
-    ownerId,
-    userId: newUser1!.userId,
+    loggedInUserId: ownerId,
+    studentId: newUser1!.userId,
   });
 
+  // another user cannot get data on student
   await expect(
     getAssignmentStudentData({
       activityId,
-      ownerId: otherUserId,
-      userId: newUser1!.userId,
+      loggedInUserId: otherUserId,
+      studentId: newUser1!.userId,
     }),
   ).rejects.toThrow("No assignmentScores found");
+
+  // student can get own data
+  expect(
+    await getAssignmentStudentData({
+      activityId,
+      loggedInUserId: newUser1!.userId,
+      studentId: newUser1!.userId,
+    }),
+  ).eqls(studentData);
 });
 
 test("can't get assignment data if unassigned", async () => {
@@ -2080,8 +2102,8 @@ test("can't get assignment data if unassigned", async () => {
 
   await getAssignmentStudentData({
     activityId,
-    ownerId,
-    userId: newUser1!.userId,
+    loggedInUserId: ownerId,
+    studentId: newUser1!.userId,
   });
 
   await unassignActivity(activityId, ownerId);
@@ -2096,8 +2118,8 @@ test("can't get assignment data if unassigned", async () => {
   await expect(
     getAssignmentStudentData({
       activityId,
-      ownerId,
-      userId: newUser1!.userId,
+      loggedInUserId: ownerId,
+      studentId: newUser1!.userId,
     }),
   ).rejects.toThrow("No assignmentScores found");
 });
@@ -3110,30 +3132,48 @@ test("only owner can get submitted responses", async () => {
   ).rejects.toThrow("No content found");
 });
 
-test("list assigned gets student assignments", async () => {
+test("list assigned and get assigned scores get student assignments and scores", async () => {
   const user1 = await createTestUser();
   const user1Id = user1.userId;
   const user2 = await createTestUser();
   const user2Id = user2.userId;
 
-  let assignmentList = await listUserAssigned(user1Id, null);
+  let assignmentList = await listUserAssigned(user1Id);
   expect(assignmentList.assignments).eqls([]);
   expect(assignmentList.user.userId).eq(user1Id);
 
+  let studentData = await getAssignedScores(user1Id);
+  expect(studentData.orderedActivityScores).eqls([]);
+  expect(studentData.userData.userId).eq(user1Id);
+
   const { activityId: activityId1 } = await createActivity(user1Id, null);
+  await updateContent({
+    id: activityId1,
+    name: "Activity 1",
+    ownerId: user1Id,
+  });
   await assignActivity(activityId1, user1Id);
 
-  assignmentList = await listUserAssigned(user1Id, null);
+  assignmentList = await listUserAssigned(user1Id);
   expect(assignmentList.assignments).eqls([]);
+  studentData = await getAssignedScores(user1Id);
+  expect(studentData.orderedActivityScores).eqls([]);
 
   const { activityId: activityId2, docId: docId2 } = await createActivity(
     user2Id,
     null,
   );
+  await updateContent({
+    id: activityId2,
+    name: "Activity 2",
+    ownerId: user2Id,
+  });
   await assignActivity(activityId2, user2Id);
 
-  assignmentList = await listUserAssigned(user1Id, null);
+  assignmentList = await listUserAssigned(user1Id);
   expect(assignmentList.assignments).eqls([]);
+  studentData = await getAssignedScores(user1Id);
+  expect(studentData.orderedActivityScores).eqls([]);
 
   // open assignment generates code
   let closeAt = DateTime.now().plus({ days: 1 });
@@ -3154,18 +3194,24 @@ test("list assigned gets student assignments", async () => {
     state: "document state 1",
   });
 
-  assignmentList = await listUserAssigned(user1Id, null);
+  assignmentList = await listUserAssigned(user1Id);
   expect(assignmentList.assignments).toMatchObject([
     {
       id: activityId2,
       ownerId: user2Id,
     },
   ]);
+  studentData = await getAssignedScores(user1Id);
+  expect(studentData.orderedActivityScores).eqls([
+    { activityId: activityId2, activityName: "Activity 2", score: 0.5 },
+  ]);
 
   // unassigning activity removes them from list
   await unassignActivity(activityId2, user2Id);
-  assignmentList = await listUserAssigned(user1Id, null);
+  assignmentList = await listUserAssigned(user1Id);
   expect(assignmentList.assignments).eqls([]);
+  studentData = await getAssignedScores(user1Id);
+  expect(studentData.orderedActivityScores).eqls([]);
 });
 
 test("get all assignment data from anonymous user", async () => {

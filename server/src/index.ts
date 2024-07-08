@@ -47,6 +47,7 @@ import {
   deletePromotedContentGroup,
   moveContent,
   getFolderContent,
+  getAssignedScores,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -218,7 +219,7 @@ app.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     try {
-      const assignedData = await listUserAssigned(loggedInUserId, null);
+      const assignedData = await listUserAssigned(loggedInUserId);
       res.send(assignedData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -231,13 +232,12 @@ app.get(
 );
 
 app.get(
-  "/api/getAssigned/:folderId",
+  "/api/getAssignedScores",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
-    const folderId = Number(req.params.folderId);
     try {
-      const assignedData = await listUserAssigned(loggedInUserId, folderId);
-      res.send(assignedData);
+      const scoreData = await getAssignedScores(loggedInUserId);
+      res.send(scoreData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
@@ -380,8 +380,6 @@ app.post(
     const body = req.body;
     const id = Number(body.id);
     const isPublic = Boolean(body.isPublic);
-    console.log(isPublic);
-    console.log(body);
     try {
       await updateContent({ id, isPublic, ownerId: loggedInUserId });
       res.send({});
@@ -909,6 +907,29 @@ app.get(
 );
 
 app.get(
+  "/api/getAssignmentStudentData/:activityId/",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const activityId = Number(req.params.activityId);
+    const loggedInUserId = Number(req.cookies.userId);
+
+    try {
+      const assignmentData = await getAssignmentStudentData({
+        activityId,
+        loggedInUserId,
+        studentId: loggedInUserId,
+      });
+      res.send(assignmentData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
   "/api/getAssignmentStudentData/:activityId/:userId",
   async (req: Request, res: Response, next: NextFunction) => {
     const activityId = Number(req.params.activityId);
@@ -918,8 +939,8 @@ app.get(
     try {
       const assignmentData = await getAssignmentStudentData({
         activityId,
-        ownerId: loggedInUserId,
-        userId,
+        loggedInUserId,
+        studentId: userId,
       });
       res.send(assignmentData);
     } catch (e) {
