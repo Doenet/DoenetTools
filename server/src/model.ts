@@ -25,6 +25,14 @@ async function mustBeAdmin(
 
 const SORT_INCREMENT = 2 ** 32;
 
+type ShiftIndicesCallbackFunction = ({
+  shift,
+  sortIndices,
+}: {
+  shift: { increment: number } | { decrement: number };
+  sortIndices: { gte: number } | { lte: number };
+}) => Promise<void>;
+
 /**
  * Creates a new activity in folderId of ownerId.
  *
@@ -365,12 +373,9 @@ export async function moveContent({
     }
   }
 
-  let newSortIndex: number;
-
-  if (desiredPosition <= 0) {
-    // If desired position is the first position,
-    // then we need only look up the first item in the folder.
-    const firstItem = await prisma.content.findFirst({
+  // find the sort indices of all content in folder other than moved content
+  const currentSortIndices = (
+    await prisma.content.findMany({
       where: {
         ownerId,
         parentFolderId: desiredParentFolderId,
@@ -381,96 +386,37 @@ export async function moveContent({
         sortIndex: true,
       },
       orderBy: { sortIndex: "asc" },
-    });
+    })
+  ).map((obj) => obj.sortIndex);
 
-    // If there is no other content, set sort index to 0,
-    // else set it to be the first index - `SORT_INCREMENT`.
-    newSortIndex =
-      firstItem === null ? 0 : Number(firstItem.sortIndex) - SORT_INCREMENT;
-  } else {
-    // find all content in folder other than moved content
-    const currentItems = await prisma.content.findMany({
+  // the shift callback will shift all sort indices up or down, if needed to make room
+  // for a sort index at the desired position
+  const shiftCallback: ShiftIndicesCallbackFunction = async function ({
+    shift,
+    sortIndices,
+  }: {
+    shift: { increment: number } | { decrement: number };
+    sortIndices: { gte: number } | { lte: number };
+  }) {
+    await prisma.content.updateMany({
       where: {
         ownerId,
         parentFolderId: desiredParentFolderId,
         id: { not: id },
+        sortIndex: sortIndices,
         isDeleted: false,
       },
-      select: {
-        sortIndex: true,
+      data: {
+        sortIndex: shift,
       },
-      orderBy: { sortIndex: "asc" },
     });
+  };
 
-    if (currentItems.length === 0) {
-      newSortIndex = 0;
-    } else if (desiredPosition >= currentItems.length) {
-      newSortIndex =
-        Number(currentItems[currentItems.length - 1].sortIndex) +
-        SORT_INCREMENT;
-    } else {
-      const precedingSortIndex = Number(
-        currentItems[desiredPosition - 1].sortIndex,
-      );
-      const followingSortIndex = Number(
-        currentItems[desiredPosition].sortIndex,
-      );
-      const candidateSortIndex = Math.round(
-        (precedingSortIndex + followingSortIndex) / 2,
-      );
-      if (
-        candidateSortIndex > precedingSortIndex &&
-        candidateSortIndex < followingSortIndex
-      ) {
-        newSortIndex = candidateSortIndex;
-      } else {
-        // There is no room in sort indices to insert a new item at `desiredLocation`,
-        // as the distance between precedingSortIndex and followingSortIndex is too small to fit another integer
-        // (presumably because the distance is 1, though possibly a larger distance if we are outside
-        // the bounds of safe integers in Javascript).
-        // We need to re-index; we shift the smaller set of items preceding or following the desired location.
-        if (desiredPosition >= currentItems.length / 2) {
-          // We add `SORT_INCREMENT` to all items with sort index `followingSortIndex` or larger.
-          await prisma.content.updateMany({
-            where: {
-              ownerId,
-              parentFolderId: desiredParentFolderId,
-              id: { not: id },
-              sortIndex: {
-                gte: followingSortIndex,
-              },
-              isDeleted: false,
-            },
-            data: {
-              sortIndex: { increment: SORT_INCREMENT },
-            },
-          });
-          newSortIndex = Math.round(
-            (precedingSortIndex + followingSortIndex + SORT_INCREMENT) / 2,
-          );
-        } else {
-          // We subtract `SORT_INCREMENT` from all items with sort index `precedingSortIndex` or smaller.
-          await prisma.content.updateMany({
-            where: {
-              ownerId,
-              parentFolderId: desiredParentFolderId,
-              id: { not: id },
-              sortIndex: {
-                lte: precedingSortIndex,
-              },
-              isDeleted: false,
-            },
-            data: {
-              sortIndex: { decrement: SORT_INCREMENT },
-            },
-          });
-          newSortIndex = Math.round(
-            (precedingSortIndex - SORT_INCREMENT + followingSortIndex) / 2,
-          );
-        }
-      }
-    }
-  }
+  const newSortIndex = await calculateNewSortIndex(
+    currentSortIndices,
+    desiredPosition,
+    shiftCallback,
+  );
 
   // Move the item!
   await prisma.content.update({
@@ -480,6 +426,82 @@ export async function moveContent({
       parentFolderId: desiredParentFolderId,
     },
   });
+}
+
+/**
+ * We calculate the new sortIndex of an item so that it will have the `desiredPosition`
+ * within the array `currentItems` of sort indices.
+ *
+ * If it turns out that we need to shift the sort indices of `currentItems`
+ * in order to fit a new item at `desiredPosition`,
+ * then `shiftIndicesCallback` will be called to increment or decrement a subset of the sort indices.
+ *
+ * @param currentItems
+ * @param desiredPosition
+ * @param shiftIndicesCallback
+ * @returns a promise resolving to the new sortIndex
+ */
+async function calculateNewSortIndex(
+  currentSortIndices: bigint[],
+  desiredPosition: number,
+  shiftIndicesCallback: ShiftIndicesCallbackFunction,
+) {
+  if (currentSortIndices.length === 0) {
+    return 0;
+  } else if (desiredPosition <= 0) {
+    return Number(currentSortIndices[0]) - SORT_INCREMENT;
+  } else if (desiredPosition >= currentSortIndices.length) {
+    return (
+      Number(currentSortIndices[currentSortIndices.length - 1]) + SORT_INCREMENT
+    );
+  } else {
+    const precedingSortIndex = Number(currentSortIndices[desiredPosition - 1]);
+    const followingSortIndex = Number(currentSortIndices[desiredPosition]);
+    const candidateSortIndex = Math.round(
+      (precedingSortIndex + followingSortIndex) / 2,
+    );
+    if (
+      candidateSortIndex > precedingSortIndex &&
+      candidateSortIndex < followingSortIndex
+    ) {
+      return candidateSortIndex;
+    } else {
+      // There is no room in sort indices to insert a new item at `desiredLocation`,
+      // as the distance between precedingSortIndex and followingSortIndex is too small to fit another integer
+      // (presumably because the distance is 1, though possibly a larger distance if we are outside
+      // the bounds of safe integers in Javascript).
+      // We need to re-index; we shift the smaller set of items preceding or following the desired location.
+      if (desiredPosition >= currentSortIndices.length / 2) {
+        // We add `SORT_INCREMENT` to all items with sort index `followingSortIndex` or larger.
+        await shiftIndicesCallback({
+          shift: {
+            increment: SORT_INCREMENT,
+          },
+          sortIndices: {
+            gte: followingSortIndex,
+          },
+        });
+
+        return Math.round(
+          (precedingSortIndex + followingSortIndex + SORT_INCREMENT) / 2,
+        );
+      } else {
+        // We subtract `SORT_INCREMENT` from all items with sort index `precedingSortIndex` or smaller.
+        await shiftIndicesCallback({
+          shift: {
+            decrement: SORT_INCREMENT,
+          },
+          sortIndices: {
+            lte: precedingSortIndex,
+          },
+        });
+
+        return Math.round(
+          (precedingSortIndex - SORT_INCREMENT + followingSortIndex) / 2,
+        );
+      }
+    }
+  }
 }
 
 /**
@@ -1159,25 +1181,9 @@ export async function movePromotedContentGroup(
     throw Error("desiredPosition must be an integer");
   }
 
-  let newSortIndex: number;
-
-  if (desiredPosition <= 0) {
-    // If desired position is the first position,
-    // then we need only look up the first item.
-    const firstItem = await prisma.promotedContentGroups.findFirst({
-      select: {
-        sortIndex: true,
-      },
-      orderBy: { sortIndex: "asc" },
-    });
-
-    // If there is no other groups, set sort index to 0,
-    // else set it to be the first index - `SORT_INCREMENT`.
-    newSortIndex =
-      firstItem === null ? 0 : Number(firstItem.sortIndex) - SORT_INCREMENT;
-  } else {
-    // find all groups other than moved group
-    const currentItems = await prisma.promotedContentGroups.findMany({
+  // find the sort indices of all content in folder other than moved content
+  const currentSortIndices = (
+    await prisma.promotedContentGroups.findMany({
       where: {
         promotedGroupId: { not: groupId },
       },
@@ -1185,71 +1191,34 @@ export async function movePromotedContentGroup(
         sortIndex: true,
       },
       orderBy: { sortIndex: "asc" },
-    });
+    })
+  ).map((obj) => obj.sortIndex);
 
-    if (currentItems.length === 0) {
-      newSortIndex = 0;
-    } else if (desiredPosition >= currentItems.length) {
-      newSortIndex =
-        Number(currentItems[currentItems.length - 1].sortIndex) +
-        SORT_INCREMENT;
-    } else {
-      const precedingSortIndex = Number(
-        currentItems[desiredPosition - 1].sortIndex,
-      );
-      const followingSortIndex = Number(
-        currentItems[desiredPosition].sortIndex,
-      );
-      const candidateSortIndex = Math.round(
-        (precedingSortIndex + followingSortIndex) / 2,
-      );
-      if (
-        candidateSortIndex > precedingSortIndex &&
-        candidateSortIndex < followingSortIndex
-      ) {
-        newSortIndex = candidateSortIndex;
-      } else {
-        // There is no room in sort indices to insert a new item at `desiredLocation`,
-        // as the distance between precedingSortIndex and followingSortIndex is too small to fit another integer
-        // (presumably because the distance is 1, though possibly a larger distance if we are outside
-        // the bounds of safe integers in Javascript).
-        // We need to re-index; we shift the smaller set of items preceding or following the desired location.
-        if (desiredPosition >= currentItems.length / 2) {
-          // We add `SORT_INCREMENT` to all items with sort index `followingSortIndex` or larger.
-          await prisma.promotedContentGroups.updateMany({
-            where: {
-              promotedGroupId: { not: groupId },
-              sortIndex: {
-                gte: followingSortIndex,
-              },
-            },
-            data: {
-              sortIndex: { increment: SORT_INCREMENT },
-            },
-          });
-          newSortIndex = Math.round(
-            (precedingSortIndex + followingSortIndex + SORT_INCREMENT) / 2,
-          );
-        } else {
-          // We subtract `SORT_INCREMENT` from all items with sort index `precedingSortIndex` or smaller.
-          await prisma.promotedContentGroups.updateMany({
-            where: {
-              promotedGroupId: { not: groupId },
-              sortIndex: {
-                lte: precedingSortIndex,
-              },
-            },
-            data: {
-              sortIndex: { decrement: SORT_INCREMENT },
-            },
-          });
-          newSortIndex = Math.round(
-            (precedingSortIndex - SORT_INCREMENT + followingSortIndex) / 2,
-          );
-        }
-      }
-    }
-  }
+  // the shift callback will shift all sort indices up or down, if needed to make room
+  // for a sort index at the desired position
+  const shiftCallback: ShiftIndicesCallbackFunction = async function ({
+    shift,
+    sortIndices,
+  }: {
+    shift: { increment: number } | { decrement: number };
+    sortIndices: { gte: number } | { lte: number };
+  }) {
+    await prisma.promotedContentGroups.updateMany({
+      where: {
+        promotedGroupId: { not: groupId },
+        sortIndex: sortIndices,
+      },
+      data: {
+        sortIndex: shift,
+      },
+    });
+  };
+
+  const newSortIndex = await calculateNewSortIndex(
+    currentSortIndices,
+    desiredPosition,
+    shiftCallback,
+  );
 
   // Move the item!
   await prisma.promotedContentGroups.update({
@@ -1442,12 +1411,9 @@ export async function movePromotedContent(
     throw Error("desiredPosition must be an integer");
   }
 
-  let newSortIndex: number;
-
-  if (desiredPosition <= 0) {
-    // If desired position is the first position,
-    // then we need only look up the first item in the group.
-    const firstItem = await prisma.promotedContent.findFirst({
+  // find the sort indices of all content in folder other than moved content
+  const currentSortIndices = (
+    await prisma.promotedContent.findMany({
       where: {
         promotedGroupId: groupId,
         activityId: { not: activityId },
@@ -1456,90 +1422,35 @@ export async function movePromotedContent(
         sortIndex: true,
       },
       orderBy: { sortIndex: "asc" },
-    });
+    })
+  ).map((obj) => obj.sortIndex);
 
-    // If there is no other content, set sort index to 0,
-    // else set it to be the first index - `SORT_INCREMENT`.
-    newSortIndex =
-      firstItem === null ? 0 : Number(firstItem.sortIndex) - SORT_INCREMENT;
-  } else {
-    // find all content in group other than moved content
-    const currentItems = await prisma.promotedContent.findMany({
+  // the shift callback will shift all sort indices up or down, if needed to make room
+  // for a sort index at the desired position
+  const shiftCallback: ShiftIndicesCallbackFunction = async function ({
+    shift,
+    sortIndices,
+  }: {
+    shift: { increment: number } | { decrement: number };
+    sortIndices: { gte: number } | { lte: number };
+  }) {
+    await prisma.promotedContent.updateMany({
       where: {
         promotedGroupId: groupId,
         activityId: { not: activityId },
+        sortIndex: sortIndices,
       },
-      select: {
-        sortIndex: true,
+      data: {
+        sortIndex: shift,
       },
-      orderBy: { sortIndex: "asc" },
     });
+  };
 
-    if (currentItems.length === 0) {
-      newSortIndex = 0;
-    } else if (desiredPosition >= currentItems.length) {
-      newSortIndex =
-        Number(currentItems[currentItems.length - 1].sortIndex) +
-        SORT_INCREMENT;
-    } else {
-      const precedingSortIndex = Number(
-        currentItems[desiredPosition - 1].sortIndex,
-      );
-      const followingSortIndex = Number(
-        currentItems[desiredPosition].sortIndex,
-      );
-      const candidateSortIndex = Math.round(
-        (precedingSortIndex + followingSortIndex) / 2,
-      );
-      if (
-        candidateSortIndex > precedingSortIndex &&
-        candidateSortIndex < followingSortIndex
-      ) {
-        newSortIndex = candidateSortIndex;
-      } else {
-        // There is no room in sort indices to insert a new item at `desiredLocation`,
-        // as the distance between precedingSortIndex and followingSortIndex is too small to fit another integer
-        // (presumably because the distance is 1, though possibly a larger distance if we are outside
-        // the bounds of safe integers in Javascript).
-        // We need to re-index; we shift the smaller set of items preceding or following the desired location.
-        if (desiredPosition >= currentItems.length / 2) {
-          // We add `SORT_INCREMENT` to all items with sort index `followingSortIndex` or larger.
-          await prisma.promotedContent.updateMany({
-            where: {
-              promotedGroupId: groupId,
-              activityId: { not: activityId },
-              sortIndex: {
-                gte: followingSortIndex,
-              },
-            },
-            data: {
-              sortIndex: { increment: SORT_INCREMENT },
-            },
-          });
-          newSortIndex = Math.round(
-            (precedingSortIndex + followingSortIndex + SORT_INCREMENT) / 2,
-          );
-        } else {
-          // We subtract `SORT_INCREMENT` from all items with sort index `precedingSortIndex` or smaller.
-          await prisma.promotedContent.updateMany({
-            where: {
-              promotedGroupId: groupId,
-              activityId: { not: activityId },
-              sortIndex: {
-                lte: precedingSortIndex,
-              },
-            },
-            data: {
-              sortIndex: { decrement: SORT_INCREMENT },
-            },
-          });
-          newSortIndex = Math.round(
-            (precedingSortIndex - SORT_INCREMENT + followingSortIndex) / 2,
-          );
-        }
-      }
-    }
-  }
+  const newSortIndex = await calculateNewSortIndex(
+    currentSortIndices,
+    desiredPosition,
+    shiftCallback,
+  );
 
   // Move the item!
   await prisma.promotedContent.update({
