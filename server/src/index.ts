@@ -1150,7 +1150,7 @@ app.get(
 app.get(
   "/api/getFolderContent/",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = req.cookies.userId ? Number(req.cookies.userId) : 0;
 
     try {
       const folder = await getFolderContent({
@@ -1163,7 +1163,7 @@ app.get(
       res.send({ allDoenetmlVersions, folder });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.sendStatus(204);
+        res.sendStatus(404);
       } else {
         next(e);
       }

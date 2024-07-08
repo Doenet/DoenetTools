@@ -107,7 +107,7 @@ export async function action({ request, params }) {
     });
 
     return true;
-  } else if (formObj?._action == "Create Assignment") {
+  } else if (formObj?._action == "Assign Activity") {
     await axios.post(`/api/assignActivity`, {
       id: formObj.id,
     });
@@ -117,6 +117,14 @@ export async function action({ request, params }) {
       activityId: formObj.id,
       desiredParentFolderId:
         formObj.folderId === "null" ? null : formObj.folderId,
+    });
+    return true;
+  } else if (formObj?._action == "Move") {
+    await axios.post(`/api/moveContent`, {
+      id: formObj.id,
+      desiredParentFolderId:
+        formObj.folderId === "null" ? null : formObj.folderId,
+      desiredPosition: formObj.desiredPosition,
     });
     return true;
   } else if (formObj._action == "update name") {
@@ -238,7 +246,14 @@ export function Activities() {
     return null;
   }
 
-  function getCardMenuList(isPublic, isFolder, isAssigned, id) {
+  function getCardMenuList(
+    isPublic,
+    isFolder,
+    isAssigned,
+    id,
+    position,
+    numCards,
+  ) {
     return (
       <>
         {!isFolder ? (
@@ -267,23 +282,45 @@ export function Activities() {
             </MenuItem>
             {!isAssigned ? (
               <MenuItem
-                data-test="Create Assignment Menu Item"
+                data-test="Assign Activity Menu Item"
                 onClick={() => {
                   fetcher.submit(
-                    { _action: "Create Assignment", id },
+                    { _action: "Assign Activity", id },
                     { method: "post" },
                   );
                 }}
               >
-                Create Assignment
+                Assign Activity
               </MenuItem>
-            ) : (
-              ""
-            )}
+            ) : null}
           </>
-        ) : (
-          ""
-        )}
+        ) : null}
+        {position > 0 ? (
+          <MenuItem
+            data-test="Move Left Menu Item"
+            onClick={() => {
+              fetcher.submit(
+                { _action: "Move", id, desiredPosition: position - 1 },
+                { method: "post" },
+              );
+            }}
+          >
+            Move Left
+          </MenuItem>
+        ) : null}
+        {position < numCards - 1 ? (
+          <MenuItem
+            data-test="Move Right Menu Item"
+            onClick={() => {
+              fetcher.submit(
+                { _action: "Move", id, desiredPosition: position + 1 },
+                { method: "post" },
+              );
+            }}
+          >
+            Move Right
+          </MenuItem>
+        ) : null}
         <MenuItem
           data-test="Delete Menu Item"
           onClick={() => {
@@ -393,7 +430,7 @@ export function Activities() {
             </Flex>
           ) : (
             <>
-              {folder.content.map((activity) => {
+              {folder.content.map((activity, position) => {
                 return (
                   <ContentCard
                     key={`Card${activity.id}`}
@@ -404,6 +441,8 @@ export function Activities() {
                       activity.isFolder,
                       activity.isAssigned,
                       activity.id,
+                      position,
+                      folder.content.length,
                     )}
                     imageLink={
                       activity.isFolder
