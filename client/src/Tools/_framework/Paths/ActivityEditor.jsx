@@ -1053,28 +1053,28 @@ export function GeneralActivityControls({
             </Center>
           </Flex>
         </FormControl>
-        <FormControl>
-          <FormLabel mt="16px">Visibility</FormLabel>
-
-          <Checkbox
-            size="lg"
-            data-test="Public Checkbox"
-            name="public"
-            value="on"
-            isChecked={checkboxIsPublic}
-            onChange={(e) => {
-              let nextIsPublic = false;
-              if (e.target.checked) {
-                nextIsPublic = true;
-              }
-              setCheckboxIsPublic(nextIsPublic);
-              saveDataToServer({ nextIsPublic });
-            }}
-          >
-            Public
-          </Checkbox>
-        </FormControl>
         {!activityData.isFolder ? (
+          <>
+            <FormControl>
+            <FormLabel mt="16px">Visibility</FormLabel>
+            <Checkbox
+              size="lg"
+              data-test="Public Checkbox"
+              name="public"
+              value="on"
+              isChecked={checkboxIsPublic}
+              onChange={(e) => {
+                let nextIsPublic = false;
+                if (e.target.checked) {
+                  nextIsPublic = true;
+                }
+                setCheckboxIsPublic(nextIsPublic);
+                saveDataToServer({ nextIsPublic });
+              }}
+            >
+              Public
+            </Checkbox>
+          </FormControl>
           <FormControl>
             <FormLabel mt="16px">DoenetML version</FormLabel>
             <Select
@@ -1099,6 +1099,7 @@ export function GeneralActivityControls({
               ))}
             </Select>
           </FormControl>
+        </>
         ) : (
           ""
         )}

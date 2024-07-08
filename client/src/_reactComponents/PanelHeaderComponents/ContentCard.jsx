@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Image,
@@ -12,12 +12,15 @@ import {
   MenuButton,
   Icon,
   MenuList,
+  Input,
+  Tooltip,
 } from "@chakra-ui/react";
 import { GoKebabVertical } from "react-icons/go";
-import { Link } from "react-router-dom";
+import { Link, useFetcher } from "react-router-dom";
 
 export default function ContentCard({
   imageLink = "",
+  id,
   imagePath,
   isAssigned,
   isFolder,
@@ -26,9 +29,17 @@ export default function ContentCard({
   fullName,
   menuItems,
   suppressAvatar = false,
+  editable = false,
+  autoFocusName = false
 }) {
   if (!imagePath) {
     imagePath = "/activity_default.jpg";
+  }
+  const [cardName, setCardName] = useState(name);
+  const fetcher = useFetcher();
+
+  function saveUpdatedName() {
+    fetcher.submit({ _action: "update name", id, cardName, isFolder }, { method: "post" });
   }
 
   //Note: when we have a menu width 140px becomes 120px
@@ -48,28 +59,49 @@ export default function ContentCard({
       </Link>
       <CardBody p="1">
         <Flex columnGap="2px">
-          {suppressAvatar ? null : <Avatar size="sm" name={fullName} />}
+          {suppressAvatar ? null : <Tooltip label={fullName}><Avatar size="sm" name={fullName} /></Tooltip> }
 
           <Box width="160px" minWidth="0px" p="1">
-            <Text
-              data-test="Card Label"
-              lineHeight="1.1"
-              fontSize="xs"
-              fontWeight="700"
-              noOfLines={1}
-              textAlign="left"
-              overflow="hidden"
-            >
-              {name}
-            </Text>
-            <Text
+            { editable ? 
+              <Input 
+                value={cardName} 
+                size='xs' 
+                border='none' 
+                padding='0' 
+                margin='0' 
+                height='1em' 
+                fontWeight="bold"
+                autoFocus={autoFocusName}
+                onChange={(e) => {
+                  setCardName(e.target.value);
+                }}
+                onBlur={saveUpdatedName}
+                onKeyDown={(e) => {
+                  if (e.key == "Enter") {
+                    saveUpdatedName();
+                  }
+                }}
+              /> :
+              <Text
+                data-test="Card Label"
+                lineHeight="1.1"
+                fontSize="xs"
+                fontWeight="700"
+                noOfLines={1}
+                textAlign="left"
+                overflow="hidden"
+              >
+                {name}
+              </Text>
+            }
+            {/* <Text
               fontSize="xs"
               noOfLines={1}
               textAlign="left"
               data-test="Card Full Name"
             >
               {fullName}
-            </Text>
+            </Text> */}
             {!isFolder ? (
               <Text
                 fontSize="xs"

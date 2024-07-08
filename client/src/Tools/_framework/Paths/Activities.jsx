@@ -29,9 +29,11 @@ import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
-import Draggable from "../../../_reactComponents/Draggable/Draggable";
 import { GeneralActivityControls } from "./ActivityEditor";
 import axios from "axios";
+
+// what is a better solution than this?
+let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching activity/folder id 
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -80,7 +82,8 @@ export async function action({ request, params }) {
     let { activityId, docId } = data;
     return redirect(`/activityEditor/${activityId}`);
   } else if (formObj?._action == "Add Folder") {
-    await axios.post(`/api/createFolder/${params.folderId ?? ""}`);
+    let { data } = await axios.post(`/api/createFolder/${params.folderId ?? ""}`);
+    folderJustCreated = data.folderId;
 
     return true;
   } else if (formObj?._action == "Delete Activity") {
@@ -91,7 +94,7 @@ export async function action({ request, params }) {
     return true;
   } else if (formObj?._action == "Delete Folder") {
     await axios.post(`/api/deleteFolder`, {
-      folderId: formObj.id,
+      folderId: formObj.id === "null" ? null : formObj.id,
     });
 
     return true;
@@ -110,9 +113,23 @@ export async function action({ request, params }) {
   } else if (formObj?._action == "Duplicate Activity") {
     await axios.post(`/api/duplicateActivity`, {
       activityId: formObj.id,
-      desiredParentFolderId: formObj.folderId ?? "",
+      desiredParentFolderId: formObj.folderId === "null" ? null : formObj.folderId,
     });
-    return redirect(`/assignmentEditor/${formObj.id}`);
+    return true;
+  } else if (formObj._action == "update name") {
+
+    //Don't let name be blank
+    let name = formObj?.cardName?.trim();
+    console.log(name);
+    console.log(name == "")
+    if (name == "") {
+      name = "Untitled " + (formObj.isFolder ? "Folder" : "Activity");
+    }
+    await axios.post(`/api/updateContentName`, {
+      id: Number(formObj.id),
+      name,
+    });
+    return true;
   } else if (formObj?._action == "noop") {
     return true;
   }
@@ -128,8 +145,10 @@ export async function loader({ params }) {
     return redirect(`/publicActivities/${params.userId}`);
   }
 
+  console.log(data.folder)
+
   return {
-    folderId: params.folderId,
+    folderId: params.folderId ?? null,
     folder: data.folder,
     allDoenetmlVersions: data.allDoenetmlVersions,
   };
@@ -317,7 +336,7 @@ export function Activities() {
             size="xs"
             colorScheme="blue"
             onClick={async () => {
-              fetcher.submit({ _action: "Add Folder" }, { method: "post" });
+              let id = fetcher.submit({ _action: "Add Folder" }, { method: "post" });
             }}
           >
             + Add Folder
@@ -392,6 +411,8 @@ export function Activities() {
                           ? `/assignmentEditor/${activity.id}`
                           : `/activityEditor/${activity.id}`
                     }
+                    editable={true}
+                    autoFocusName={folderJustCreated === activity.id}
                   />
                 );
               })}
