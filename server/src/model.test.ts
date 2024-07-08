@@ -14,7 +14,6 @@ import {
   searchPublicContent,
   updateContent,
   getActivity,
-  addPromotedContentGroup,
   assignActivity,
   getAssignment,
   openAssignmentWithCode,
@@ -23,7 +22,6 @@ import {
   createAnonymousUser,
   updateUser,
   getUserInfo,
-  addPromotedContent,
   saveScoreAndState,
   getAssignmentScoreData,
   loadState,
@@ -32,8 +30,12 @@ import {
   getDocumentSubmittedResponses,
   getAnswersThatHaveSubmittedResponses,
   getDocumentSubmittedResponseHistory,
+  addPromotedContentGroup,
+  addPromotedContent,
   updatePromotedContentGroup,
   removePromotedContent,
+  movePromotedContentGroup,
+  movePromotedContent,
   loadPromotedContent,
   deletePromotedContentGroup,
   getStudentData,
@@ -1350,6 +1352,120 @@ test("update promoted content group", async () => {
   expect(
     groups3.find((group) => group.groupName === newGroupName),
   ).toBeDefined();
+});
+
+test("move promoted content groups", async () => {
+  const { userId } = await createTestAdminUser();
+
+  const group1Name = "vitest-unique-promoted-group-" + new Date().toJSON();
+  const group1Id = await addPromotedContentGroup(group1Name, userId);
+
+  const group2Name = "vitest-unique-promoted-group-" + new Date().toJSON();
+  const group2Id = await addPromotedContentGroup(group2Name, userId);
+
+  let groups = await loadPromotedContent(userId);
+  let groupNames = groups.map((g) => g.groupName);
+  let group1PositionA = groupNames.indexOf(group1Name);
+  let group2PositionA = groupNames.indexOf(group2Name);
+  expect(group2PositionA).eq(group1PositionA + 1);
+
+  await movePromotedContentGroup(group1Id, userId, group2PositionA);
+  groups = await loadPromotedContent(userId);
+  groupNames = groups.map((g) => g.groupName);
+  let group1PositionB = groupNames.indexOf(group1Name);
+  let group2PositionB = groupNames.indexOf(group2Name);
+  expect(group1PositionB).eq(group2PositionA);
+  expect(group2PositionB).eq(group1PositionA);
+
+  const group3Name = "vitest-unique-promoted-group-" + new Date().toJSON();
+  const group3Id = await addPromotedContentGroup(group3Name, userId);
+  groups = await loadPromotedContent(userId);
+  groupNames = groups.map((g) => g.groupName);
+  let group1PositionC = groupNames.indexOf(group1Name);
+  let group2PositionC = groupNames.indexOf(group2Name);
+  let group3PositionC = groupNames.indexOf(group3Name);
+  expect(group2PositionC).eq(group2PositionB);
+  expect(group1PositionC).eq(group2PositionC + 1);
+  expect(group3PositionC).eq(group2PositionC + 2);
+
+  await movePromotedContentGroup(group3Id, userId, group1PositionC);
+  groups = await loadPromotedContent(userId);
+  groupNames = groups.map((g) => g.groupName);
+  let group1PositionD = groupNames.indexOf(group1Name);
+  let group2PositionD = groupNames.indexOf(group2Name);
+  let group3PositionD = groupNames.indexOf(group3Name);
+  expect(group2PositionD).eq(group2PositionC);
+  expect(group3PositionD).eq(group2PositionD + 1);
+  expect(group1PositionD).eq(group2PositionD + 2);
+});
+
+test("move promoted content", async () => {
+  const { userId } = await createTestAdminUser();
+
+  const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
+  const groupId = await addPromotedContentGroup(groupName, userId);
+
+  // add first activity
+  const { activityId: activity1Id } = await createActivity(userId, null);
+  await updateContent({ id: activity1Id, isPublic: true, ownerId: userId });
+  await addPromotedContent(groupId, activity1Id, userId);
+  let promotedContent = await loadPromotedContent(userId);
+  let myContent = promotedContent.find(
+    (content) => content.promotedGroupId === groupId,
+  );
+  expect(myContent!.promotedContent[0].activityId).toEqual(activity1Id);
+
+  // add second activity
+  const { activityId: activity2Id } = await createActivity(userId, null);
+  await updateContent({ id: activity2Id, isPublic: true, ownerId: userId });
+  await addPromotedContent(groupId, activity2Id, userId);
+  promotedContent = await loadPromotedContent(userId);
+  myContent = promotedContent.find(
+    (content) => content.promotedGroupId === groupId,
+  );
+  expect(myContent!.promotedContent[0].activityId).toEqual(activity1Id);
+  expect(myContent!.promotedContent[1].activityId).toEqual(activity2Id);
+
+  // move second activity to first spot
+  await movePromotedContent(groupId, activity2Id, userId, 0);
+  promotedContent = await loadPromotedContent(userId);
+  myContent = promotedContent.find(
+    (content) => content.promotedGroupId === groupId,
+  );
+  expect(myContent!.promotedContent[0].activityId).toEqual(activity2Id);
+  expect(myContent!.promotedContent[1].activityId).toEqual(activity1Id);
+
+  // add third activity
+  const { activityId: activity3Id } = await createActivity(userId, null);
+  await updateContent({ id: activity3Id, isPublic: true, ownerId: userId });
+  await addPromotedContent(groupId, activity3Id, userId);
+  promotedContent = await loadPromotedContent(userId);
+  myContent = promotedContent.find(
+    (content) => content.promotedGroupId === groupId,
+  );
+  expect(myContent!.promotedContent[0].activityId).toEqual(activity2Id);
+  expect(myContent!.promotedContent[1].activityId).toEqual(activity1Id);
+  expect(myContent!.promotedContent[2].activityId).toEqual(activity3Id);
+
+  // move first activity to last spot
+  await movePromotedContent(groupId, activity1Id, userId, 10);
+  promotedContent = await loadPromotedContent(userId);
+  myContent = promotedContent.find(
+    (content) => content.promotedGroupId === groupId,
+  );
+  expect(myContent!.promotedContent[0].activityId).toEqual(activity2Id);
+  expect(myContent!.promotedContent[1].activityId).toEqual(activity3Id);
+  expect(myContent!.promotedContent[2].activityId).toEqual(activity1Id);
+
+  // move second activity to middle spot
+  await movePromotedContent(groupId, activity2Id, userId, 1);
+  promotedContent = await loadPromotedContent(userId);
+  myContent = promotedContent.find(
+    (content) => content.promotedGroupId === groupId,
+  );
+  expect(myContent!.promotedContent[0].activityId).toEqual(activity3Id);
+  expect(myContent!.promotedContent[1].activityId).toEqual(activity2Id);
+  expect(myContent!.promotedContent[2].activityId).toEqual(activity1Id);
 });
 
 test("promoted content access control", async () => {

@@ -123,14 +123,15 @@ async function getNextSortIndexForFolder(
     })
   )._max.sortIndex;
 
+  return getNextSortIndex(lastIndex);
+}
+
+function getNextSortIndex(lastIndex: bigint | null) {
   // The new index is a multiple of SORT_INCREMENT and is at least SORT_INCREMENT after lastIndex.
   // It is set to zero if it is the first item in the folder.
-  const newIndex =
-    lastIndex === null
-      ? 0
-      : Math.ceil(Number(lastIndex) / SORT_INCREMENT + 1) * SORT_INCREMENT;
-
-  return newIndex;
+  return lastIndex === null
+    ? 0
+    : Math.ceil(Number(lastIndex) / SORT_INCREMENT + 1) * SORT_INCREMENT;
 }
 
 export async function deleteActivity(id: number, ownerId: number) {
@@ -1075,10 +1076,18 @@ export async function addPromotedContentGroup(
     "You must be a community admin to edit promoted content.",
   );
 
+  const lastIndex = (
+    await prisma.promotedContentGroups.aggregate({
+      _max: { sortIndex: true },
+    })
+  )._max.sortIndex;
+
+  const newIndex = getNextSortIndex(lastIndex);
+
   const { promotedGroupId } = await prisma.promotedContentGroups.create({
     data: {
       groupName,
-      sortOrder: "a",
+      sortIndex: newIndex,
     },
   });
   return promotedGroupId;
@@ -1130,6 +1139,129 @@ export async function deletePromotedContentGroup(
   await prisma.$transaction([deleteEntries, deleteGroup]);
 }
 
+/**
+ * Move the promoted content group with `groupId` to position `desiredPosition`
+ *
+ * `desiredPosition` is the 0-based index in the array of promoted content groups
+ * sorted by `sortIndex`.
+ */
+export async function movePromotedContentGroup(
+  groupId: number,
+  userId: number,
+  desiredPosition: number,
+) {
+  await mustBeAdmin(
+    userId,
+    "You must be a community admin to edit promoted content.",
+  );
+
+  if (!Number.isInteger(desiredPosition)) {
+    throw Error("desiredPosition must be an integer");
+  }
+
+  let newSortIndex: number;
+
+  if (desiredPosition <= 0) {
+    // If desired position is the first position,
+    // then we need only look up the first item.
+    const firstItem = await prisma.promotedContentGroups.findFirst({
+      select: {
+        sortIndex: true,
+      },
+      orderBy: { sortIndex: "asc" },
+    });
+
+    // If there is no other groups, set sort index to 0,
+    // else set it to be the first index - `SORT_INCREMENT`.
+    newSortIndex =
+      firstItem === null ? 0 : Number(firstItem.sortIndex) - SORT_INCREMENT;
+  } else {
+    // find all groups other than moved group
+    const currentItems = await prisma.promotedContentGroups.findMany({
+      where: {
+        promotedGroupId: { not: groupId },
+      },
+      select: {
+        sortIndex: true,
+      },
+      orderBy: { sortIndex: "asc" },
+    });
+
+    if (currentItems.length === 0) {
+      newSortIndex = 0;
+    } else if (desiredPosition >= currentItems.length) {
+      newSortIndex =
+        Number(currentItems[currentItems.length - 1].sortIndex) +
+        SORT_INCREMENT;
+    } else {
+      const precedingSortIndex = Number(
+        currentItems[desiredPosition - 1].sortIndex,
+      );
+      const followingSortIndex = Number(
+        currentItems[desiredPosition].sortIndex,
+      );
+      const candidateSortIndex = Math.round(
+        (precedingSortIndex + followingSortIndex) / 2,
+      );
+      if (
+        candidateSortIndex > precedingSortIndex &&
+        candidateSortIndex < followingSortIndex
+      ) {
+        newSortIndex = candidateSortIndex;
+      } else {
+        // There is no room in sort indices to insert a new item at `desiredLocation`,
+        // as the distance between precedingSortIndex and followingSortIndex is too small to fit another integer
+        // (presumably because the distance is 1, though possibly a larger distance if we are outside
+        // the bounds of safe integers in Javascript).
+        // We need to re-index; we shift the smaller set of items preceding or following the desired location.
+        if (desiredPosition >= currentItems.length / 2) {
+          // We add `SORT_INCREMENT` to all items with sort index `followingSortIndex` or larger.
+          await prisma.promotedContentGroups.updateMany({
+            where: {
+              promotedGroupId: { not: groupId },
+              sortIndex: {
+                gte: followingSortIndex,
+              },
+            },
+            data: {
+              sortIndex: { increment: SORT_INCREMENT },
+            },
+          });
+          newSortIndex = Math.round(
+            (precedingSortIndex + followingSortIndex + SORT_INCREMENT) / 2,
+          );
+        } else {
+          // We subtract `SORT_INCREMENT` from all items with sort index `precedingSortIndex` or smaller.
+          await prisma.promotedContentGroups.updateMany({
+            where: {
+              promotedGroupId: { not: groupId },
+              sortIndex: {
+                lte: precedingSortIndex,
+              },
+            },
+            data: {
+              sortIndex: { decrement: SORT_INCREMENT },
+            },
+          });
+          newSortIndex = Math.round(
+            (precedingSortIndex - SORT_INCREMENT + followingSortIndex) / 2,
+          );
+        }
+      }
+    }
+  }
+
+  // Move the item!
+  await prisma.promotedContentGroups.update({
+    where: {
+      promotedGroupId: groupId,
+    },
+    data: {
+      sortIndex: newSortIndex,
+    },
+  });
+}
+
 export async function loadPromotedContent(userId: number) {
   const isAdmin = userId ? await getIsAdmin(userId) : false;
   let content = await prisma.promotedContentGroups.findMany({
@@ -1138,7 +1270,7 @@ export async function loadPromotedContent(userId: number) {
       currentlyFeatured: isAdmin ? undefined : true,
     },
     orderBy: {
-      sortOrder: "desc",
+      sortIndex: "asc",
     },
     select: {
       groupName: true,
@@ -1148,7 +1280,6 @@ export async function loadPromotedContent(userId: number) {
 
       promotedContent: {
         select: {
-          sortOrder: true,
           activity: {
             select: {
               id: true,
@@ -1163,6 +1294,7 @@ export async function loadPromotedContent(userId: number) {
             },
           },
         },
+        orderBy: { sortIndex: "asc" },
       },
     },
   });
@@ -1175,7 +1307,6 @@ export async function loadPromotedContent(userId: number) {
           activityId: promoted.activity.id,
           imagePath: promoted.activity.imagePath,
           owner: promoted.activity.owner.name,
-          sortOrder: promoted.sortOrder,
         };
       },
     );
@@ -1218,12 +1349,20 @@ export async function addPromotedContent(
       "This activity does not exist or is not public.",
     );
   }
+  const lastIndex = (
+    await prisma.promotedContent.aggregate({
+      where: { promotedGroupId: groupId },
+      _max: { sortIndex: true },
+    })
+  )._max.sortIndex;
+
+  const newIndex = getNextSortIndex(lastIndex);
 
   await prisma.promotedContent.create({
     data: {
       activityId,
       promotedGroupId: groupId,
-      sortOrder: "1",
+      sortIndex: newIndex,
     },
   });
 }
@@ -1261,6 +1400,154 @@ export async function removePromotedContent(
         activityId,
         promotedGroupId: groupId,
       },
+    },
+  });
+}
+
+/**
+ * Move the promoted content with `activityId` to position `desiredPosition` in the group `groupId`
+ *
+ * `desiredPosition` is the 0-based index in the array of promoted content with group `groupId`
+ * sorted by `sortIndex`.
+ */
+export async function movePromotedContent(
+  groupId: number,
+  activityId: number,
+  userId: number,
+  desiredPosition: number,
+) {
+  await mustBeAdmin(
+    userId,
+    "You must be a community admin to edit promoted content.",
+  );
+  const activity = await prisma.content.findUnique({
+    where: {
+      id: activityId,
+      isPublic: true,
+      isFolder: false,
+      isDeleted: false,
+    },
+    select: {
+      // not using this, we just need to select one field
+      id: true,
+    },
+  });
+  if (!activity) {
+    throw new InvalidRequestError(
+      "This activity does not exist or is not public.",
+    );
+  }
+
+  if (!Number.isInteger(desiredPosition)) {
+    throw Error("desiredPosition must be an integer");
+  }
+
+  let newSortIndex: number;
+
+  if (desiredPosition <= 0) {
+    // If desired position is the first position,
+    // then we need only look up the first item in the group.
+    const firstItem = await prisma.promotedContent.findFirst({
+      where: {
+        promotedGroupId: groupId,
+        activityId: { not: activityId },
+      },
+      select: {
+        sortIndex: true,
+      },
+      orderBy: { sortIndex: "asc" },
+    });
+
+    // If there is no other content, set sort index to 0,
+    // else set it to be the first index - `SORT_INCREMENT`.
+    newSortIndex =
+      firstItem === null ? 0 : Number(firstItem.sortIndex) - SORT_INCREMENT;
+  } else {
+    // find all content in group other than moved content
+    const currentItems = await prisma.promotedContent.findMany({
+      where: {
+        promotedGroupId: groupId,
+        activityId: { not: activityId },
+      },
+      select: {
+        sortIndex: true,
+      },
+      orderBy: { sortIndex: "asc" },
+    });
+
+    if (currentItems.length === 0) {
+      newSortIndex = 0;
+    } else if (desiredPosition >= currentItems.length) {
+      newSortIndex =
+        Number(currentItems[currentItems.length - 1].sortIndex) +
+        SORT_INCREMENT;
+    } else {
+      const precedingSortIndex = Number(
+        currentItems[desiredPosition - 1].sortIndex,
+      );
+      const followingSortIndex = Number(
+        currentItems[desiredPosition].sortIndex,
+      );
+      const candidateSortIndex = Math.round(
+        (precedingSortIndex + followingSortIndex) / 2,
+      );
+      if (
+        candidateSortIndex > precedingSortIndex &&
+        candidateSortIndex < followingSortIndex
+      ) {
+        newSortIndex = candidateSortIndex;
+      } else {
+        // There is no room in sort indices to insert a new item at `desiredLocation`,
+        // as the distance between precedingSortIndex and followingSortIndex is too small to fit another integer
+        // (presumably because the distance is 1, though possibly a larger distance if we are outside
+        // the bounds of safe integers in Javascript).
+        // We need to re-index; we shift the smaller set of items preceding or following the desired location.
+        if (desiredPosition >= currentItems.length / 2) {
+          // We add `SORT_INCREMENT` to all items with sort index `followingSortIndex` or larger.
+          await prisma.promotedContent.updateMany({
+            where: {
+              promotedGroupId: groupId,
+              activityId: { not: activityId },
+              sortIndex: {
+                gte: followingSortIndex,
+              },
+            },
+            data: {
+              sortIndex: { increment: SORT_INCREMENT },
+            },
+          });
+          newSortIndex = Math.round(
+            (precedingSortIndex + followingSortIndex + SORT_INCREMENT) / 2,
+          );
+        } else {
+          // We subtract `SORT_INCREMENT` from all items with sort index `precedingSortIndex` or smaller.
+          await prisma.promotedContent.updateMany({
+            where: {
+              promotedGroupId: groupId,
+              activityId: { not: activityId },
+              sortIndex: {
+                lte: precedingSortIndex,
+              },
+            },
+            data: {
+              sortIndex: { decrement: SORT_INCREMENT },
+            },
+          });
+          newSortIndex = Math.round(
+            (precedingSortIndex - SORT_INCREMENT + followingSortIndex) / 2,
+          );
+        }
+      }
+    }
+  }
+
+  // Move the item!
+  await prisma.promotedContent.update({
+    where: {
+      activityId_promotedGroupId: { activityId, promotedGroupId: groupId },
+    },
+    data: {
+      sortIndex: newSortIndex,
     },
   });
 }

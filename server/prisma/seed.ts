@@ -42,39 +42,39 @@ async function main() {
 
   const group_homepage = await prisma.promotedContentGroups.upsert({
     where: { groupName: "Homepage" },
-    update: { currentlyFeatured: true, sortOrder: "a", homepage: true },
+    update: { currentlyFeatured: true, sortIndex: 0, homepage: true },
     create: {
       groupName: "Homepage",
       currentlyFeatured: true,
-      sortOrder: "a",
+      sortIndex: 0,
       homepage: true,
     },
   });
   const group_sample = await prisma.promotedContentGroups.upsert({
     where: { groupName: "Sample" },
-    update: { currentlyFeatured: true, sortOrder: "b" },
+    update: { currentlyFeatured: true, sortIndex: 2 ** 32 },
     create: {
       groupName: "Sample",
       currentlyFeatured: true,
-      sortOrder: "b",
+      sortIndex: 2 ** 32,
     },
   });
   const group_k12 = await prisma.promotedContentGroups.upsert({
     where: { groupName: "K-12" },
-    update: { currentlyFeatured: true, sortOrder: "c" },
+    update: { currentlyFeatured: true, sortIndex: 2 ** 32 * 3 },
     create: {
       groupName: "K-12",
       currentlyFeatured: true,
-      sortOrder: "c",
+      sortIndex: 2 ** 32 * 3,
     },
   });
   const group_unfeatured = await prisma.promotedContentGroups.upsert({
     where: { groupName: "Unfeatured" },
-    update: { currentlyFeatured: false, sortOrder: "ba" },
+    update: { currentlyFeatured: false, sortIndex: 2 ** 32 * 2 },
     create: {
       groupName: "Unfeatured",
       currentlyFeatured: false,
-      sortOrder: "ba",
+      sortIndex: 2 ** 32 * 2,
     },
   });
 
