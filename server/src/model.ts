@@ -207,8 +207,6 @@ export async function updateContent({
     },
   });
 
-  console.log(updated);
-
   return {
     id: updated.id,
     name: updated.name,
@@ -1656,18 +1654,19 @@ export async function getAssignmentScoreData({
 
 export async function getAssignmentStudentData({
   activityId,
-  ownerId,
-  userId,
+  loggedInUserId,
+  studentId,
 }: {
   activityId: number;
-  ownerId: number;
-  userId: number;
+  loggedInUserId: number;
+  studentId: number;
 }) {
   const assignmentData = await prisma.assignmentScores.findUniqueOrThrow({
     where: {
-      activityId_userId: { activityId, userId },
+      activityId_userId: { activityId, userId: studentId },
       activity: {
-        ownerId,
+        // allow access if logged in user is the student or the owner
+        ownerId: studentId === loggedInUserId ? undefined : loggedInUserId,
         isDeleted: false,
         isFolder: false,
         isAssigned: true,
@@ -1696,7 +1695,7 @@ export async function getAssignmentStudentData({
   });
 
   const documentScores = await prisma.documentState.findMany({
-    where: { activityId, userId },
+    where: { activityId, userId: studentId },
     select: {
       docId: true,
       docVersionNum: true,

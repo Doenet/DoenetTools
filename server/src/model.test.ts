@@ -1762,8 +1762,8 @@ test("get assignment data from anonymous users", async () => {
 
   let assignmentStudentData = await getAssignmentStudentData({
     activityId,
-    ownerId,
-    userId: newUser1!.userId,
+    loggedInUserId: ownerId,
+    studentId: newUser1!.userId,
   });
 
   expect(assignmentStudentData).eqls({
@@ -1815,8 +1815,8 @@ test("get assignment data from anonymous users", async () => {
 
   assignmentStudentData = await getAssignmentStudentData({
     activityId,
-    ownerId,
-    userId: newUser1!.userId,
+    loggedInUserId: ownerId,
+    studentId: newUser1!.userId,
   });
 
   expect(assignmentStudentData).eqls({
@@ -1874,8 +1874,8 @@ test("get assignment data from anonymous users", async () => {
 
   assignmentStudentData = await getAssignmentStudentData({
     activityId,
-    ownerId,
-    userId: newUser1!.userId,
+    loggedInUserId: ownerId,
+    studentId: newUser1!.userId,
   });
 
   expect(assignmentStudentData).eqls({
@@ -1952,8 +1952,8 @@ test("get assignment data from anonymous users", async () => {
 
   assignmentStudentData = await getAssignmentStudentData({
     activityId,
-    ownerId,
-    userId: newUser2!.userId,
+    loggedInUserId: ownerId,
+    studentId: newUser2!.userId,
   });
 
   expect(assignmentStudentData).eqls({
@@ -1985,7 +1985,7 @@ test("get assignment data from anonymous users", async () => {
   });
 });
 
-test("can't get assignment data if other user", async () => {
+test("can't get assignment data if other user, but student can get their own data", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const otherUser = await createTestUser();
@@ -2017,11 +2017,13 @@ test("can't get assignment data if other user", async () => {
     state: "document state 1",
   });
 
+  // assignment owner can get score data
   await getAssignmentScoreData({
     activityId,
     ownerId,
   });
 
+  // other user cannot get score data
   await expect(
     getAssignmentScoreData({
       activityId,
@@ -2029,19 +2031,38 @@ test("can't get assignment data if other user", async () => {
     }),
   ).rejects.toThrow("No content found");
 
-  await getAssignmentStudentData({
+  // student cannot get score data on all of assignment
+  await expect(
+    getAssignmentScoreData({
+      activityId,
+      ownerId: newUser1!.userId,
+    }),
+  ).rejects.toThrow("No content found");
+
+  // assignment owner can get data on student
+  const studentData = await getAssignmentStudentData({
     activityId,
-    ownerId,
-    userId: newUser1!.userId,
+    loggedInUserId: ownerId,
+    studentId: newUser1!.userId,
   });
 
+  // another user cannot get data on student
   await expect(
     getAssignmentStudentData({
       activityId,
-      ownerId: otherUserId,
-      userId: newUser1!.userId,
+      loggedInUserId: otherUserId,
+      studentId: newUser1!.userId,
     }),
   ).rejects.toThrow("No assignmentScores found");
+
+  // student can get own data
+  expect(
+    await getAssignmentStudentData({
+      activityId,
+      loggedInUserId: newUser1!.userId,
+      studentId: newUser1!.userId,
+    }),
+  ).eqls(studentData);
 });
 
 test("can't get assignment data if unassigned", async () => {
@@ -2081,8 +2102,8 @@ test("can't get assignment data if unassigned", async () => {
 
   await getAssignmentStudentData({
     activityId,
-    ownerId,
-    userId: newUser1!.userId,
+    loggedInUserId: ownerId,
+    studentId: newUser1!.userId,
   });
 
   await unassignActivity(activityId, ownerId);
@@ -2097,8 +2118,8 @@ test("can't get assignment data if unassigned", async () => {
   await expect(
     getAssignmentStudentData({
       activityId,
-      ownerId,
-      userId: newUser1!.userId,
+      loggedInUserId: ownerId,
+      studentId: newUser1!.userId,
     }),
   ).rejects.toThrow("No assignmentScores found");
 });

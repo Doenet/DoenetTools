@@ -84,8 +84,6 @@ export function Assigned() {
   let context = useOutletContext();
   let { user, assignments } = useLoaderData();
 
-  console.log({ user, assignments });
-
   const navigate = useNavigate();
 
   useEffect(() => {

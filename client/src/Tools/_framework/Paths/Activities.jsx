@@ -33,7 +33,7 @@ import { GeneralActivityControls } from "./ActivityEditor";
 import axios from "axios";
 
 // what is a better solution than this?
-let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching activity/folder id 
+let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching activity/folder id
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -82,7 +82,9 @@ export async function action({ request, params }) {
     let { activityId, docId } = data;
     return redirect(`/activityEditor/${activityId}`);
   } else if (formObj?._action == "Add Folder") {
-    let { data } = await axios.post(`/api/createFolder/${params.folderId ?? ""}`);
+    let { data } = await axios.post(
+      `/api/createFolder/${params.folderId ?? ""}`,
+    );
     folderJustCreated = data.folderId;
 
     return true;
@@ -113,15 +115,13 @@ export async function action({ request, params }) {
   } else if (formObj?._action == "Duplicate Activity") {
     await axios.post(`/api/duplicateActivity`, {
       activityId: formObj.id,
-      desiredParentFolderId: formObj.folderId === "null" ? null : formObj.folderId,
+      desiredParentFolderId:
+        formObj.folderId === "null" ? null : formObj.folderId,
     });
     return true;
   } else if (formObj._action == "update name") {
-
     //Don't let name be blank
     let name = formObj?.cardName?.trim();
-    console.log(name);
-    console.log(name == "")
     if (name == "") {
       name = "Untitled " + (formObj.isFolder ? "Folder" : "Activity");
     }
@@ -144,8 +144,6 @@ export async function loader({ params }) {
   if (data.notMe) {
     return redirect(`/publicActivities/${params.userId}`);
   }
-
-  console.log(data.folder)
 
   return {
     folderId: params.folderId ?? null,
@@ -336,7 +334,10 @@ export function Activities() {
             size="xs"
             colorScheme="blue"
             onClick={async () => {
-              let id = fetcher.submit({ _action: "Add Folder" }, { method: "post" });
+              let id = fetcher.submit(
+                { _action: "Add Folder" },
+                { method: "post" },
+              );
             }}
           >
             + Add Folder

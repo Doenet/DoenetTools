@@ -41,8 +41,8 @@ import {
   ActivityViewer,
 } from "./Tools/_framework/Paths/ActivityViewer";
 import {
-  loader as assignmentsLoader,
-  action as assignmentsAction,
+  loader as assignedLoader,
+  action as assignedAction,
   Assigned,
 } from "./Tools/_framework/Paths/Assigned";
 import {
@@ -69,6 +69,7 @@ import {
   loader as assignmentStudentDataLoader,
   action as assignmentStudentDataAction,
   AssignmentStudentData,
+  assignedAssignmentDataloader,
 } from "./Tools/_framework/Paths/AssignmentStudentData";
 import {
   loader as enterClassCodeLoader,
@@ -87,6 +88,7 @@ import {
 import {
   loader as studentDataLoader,
   StudentData,
+  assignedDataloader,
 } from "./Tools/_framework/Paths/StudentData";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
@@ -278,9 +280,22 @@ const router = createBrowserRouter([
       },
       {
         path: "assigned",
-        loader: assignmentsLoader,
-        action: assignmentsAction,
+        loader: assignedLoader,
+        action: assignedAction,
         element: <Assigned />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "assignedData",
+        loader: assignedDataloader,
+        element: <StudentData />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "assignedData/:activityId",
+        action: assignmentStudentDataAction,
+        loader: assignedAssignmentDataloader,
+        element: <AssignmentStudentData />,
         errorElement: <ErrorPage />,
       },
       {
@@ -313,6 +328,7 @@ const router = createBrowserRouter([
       },
       {
         path: "assignmentData/:activityId/:userId",
+        action: assignmentStudentDataAction,
         loader: assignmentStudentDataLoader,
         element: <AssignmentStudentData />,
         errorElement: <ErrorPage />,

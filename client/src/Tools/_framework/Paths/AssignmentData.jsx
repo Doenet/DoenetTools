@@ -36,8 +36,6 @@ export async function loader({ params }) {
 
   let assignmentId = Number(params.assignmentId);
 
-  console.log(data);
-
   // TODO: address case where don't have one document
   const doenetML = data.assignmentContent[0].assignedVersion.source;
   const doenetmlVersion =

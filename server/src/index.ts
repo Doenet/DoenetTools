@@ -380,8 +380,6 @@ app.post(
     const body = req.body;
     const id = Number(body.id);
     const isPublic = Boolean(body.isPublic);
-    console.log(isPublic);
-    console.log(body);
     try {
       await updateContent({ id, isPublic, ownerId: loggedInUserId });
       res.send({});
@@ -909,6 +907,29 @@ app.get(
 );
 
 app.get(
+  "/api/getAssignmentStudentData/:activityId/",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const activityId = Number(req.params.activityId);
+    const loggedInUserId = Number(req.cookies.userId);
+
+    try {
+      const assignmentData = await getAssignmentStudentData({
+        activityId,
+        loggedInUserId,
+        studentId: loggedInUserId,
+      });
+      res.send(assignmentData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
   "/api/getAssignmentStudentData/:activityId/:userId",
   async (req: Request, res: Response, next: NextFunction) => {
     const activityId = Number(req.params.activityId);
@@ -918,8 +939,8 @@ app.get(
     try {
       const assignmentData = await getAssignmentStudentData({
         activityId,
-        ownerId: loggedInUserId,
-        userId,
+        loggedInUserId,
+        studentId: userId,
       });
       res.send(assignmentData);
     } catch (e) {
