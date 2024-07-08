@@ -312,7 +312,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentData/:assignmentId/:userId",
+        path: "assignmentData/:activityId/:userId",
         loader: assignmentStudentDataLoader,
         element: <AssignmentStudentData />,
         errorElement: <ErrorPage />,
