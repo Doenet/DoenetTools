@@ -199,7 +199,6 @@ export async function loader({ params }) {
       allDoenetmlVersions,
     };
   } catch (e) {
-    console.log(e);
     if (e.response.data.message == "Redirect to public activity.") {
       return redirect(`/publicEditor/${activityId}/${docId}`);
     } else {
@@ -974,88 +973,85 @@ export function GeneralActivityControls({
             Error - A name for the activity is required.
           </FormErrorMessage>
         </FormControl>
-        <FormControl>
-          <Flex flexDirection="column" width="100%" rowGap={6}>
-            <FormLabel mt="16px">Learning Outcomes</FormLabel>
-
-            {learningOutcomes.map((outcome, i) => {
-              return (
-                <Flex key={`learningOutcome${i}`} columnGap={4}>
-                  <Input
-                    size="sm"
-                    value={outcome}
-                    data-test={`learning outcome ${i}`}
-                    // width="300px"
-                    onChange={(e) => {
-                      setLearningOutcomes((prev) => {
-                        let next = [...prev];
-                        next[i] = e.target.value;
-                        return next;
-                      });
-                    }}
-                    onBlur={() =>
-                      saveDataToServer({
-                        nextLearningOutcomes: learningOutcomes,
-                      })
-                    }
-                    onKeyDown={(e) => {
-                      if (e.key == "Enter") {
+        { !activityData.isFolder ?
+            <FormControl>
+            <Flex flexDirection="column" width="100%" rowGap={6}>
+              <FormLabel mt="16px">Learning Outcomes</FormLabel>
+              {learningOutcomes.map((outcome, i) => {
+                return (
+                  <Flex key={`learningOutcome${i}`} columnGap={4}>
+                    <Input
+                      size="sm"
+                      value={outcome}
+                      data-test={`learning outcome ${i}`}
+                      // width="300px"
+                      onChange={(e) => {
+                        setLearningOutcomes((prev) => {
+                          let next = [...prev];
+                          next[i] = e.target.value;
+                          return next;
+                        });
+                      }}
+                      onBlur={() =>
                         saveDataToServer({
                           nextLearningOutcomes: learningOutcomes,
-                        });
+                        })
                       }
-                    }}
-                    placeholder={`Learning Outcome #${i + 1}`}
-                    data-text={`Learning Outcome #${i}`}
-                  />
-                  <IconButton
-                    variant="outline"
-                    data-test={`delete learning outcome ${i} button`}
-                    size="sm"
-                    color="doenet.mainRed"
-                    borderColor="doenet.mainRed"
-                    // background="doenet.mainRed"
-                    icon={<HiOutlineX />}
-                    onClick={() => {
-                      let nextLearningOutcomes = [...learningOutcomes];
-                      if (learningOutcomes.length < 2) {
-                        nextLearningOutcomes = [""];
-                      } else {
-                        nextLearningOutcomes.splice(i, 1);
-                      }
+                      onKeyDown={(e) => {
+                        if (e.key == "Enter") {
+                          saveDataToServer({
+                            nextLearningOutcomes: learningOutcomes,
+                          });
+                        }
+                      }}
+                      placeholder={`Learning Outcome #${i + 1}`}
+                      data-text={`Learning Outcome #${i}`}
+                    />
+                    <IconButton
+                      variant="outline"
+                      data-test={`delete learning outcome ${i} button`}
+                      size="sm"
+                      color="doenet.mainRed"
+                      borderColor="doenet.mainRed"
+                      // background="doenet.mainRed"
+                      icon={<HiOutlineX />}
+                      onClick={() => {
+                        let nextLearningOutcomes = [...learningOutcomes];
+                        if (learningOutcomes.length < 2) {
+                          nextLearningOutcomes = [""];
+                        } else {
+                          nextLearningOutcomes.splice(i, 1);
+                        }
 
-                      setLearningOutcomes(nextLearningOutcomes);
-                      saveDataToServer({ nextLearningOutcomes });
-                    }}
-                  />
-                </Flex>
-              );
-            })}
+                        setLearningOutcomes(nextLearningOutcomes);
+                        saveDataToServer({ nextLearningOutcomes });
+                      }}
+                    />
+                  </Flex>
+                );
+              })}
+              <Center>
+                <IconButton
+                  isDisabled={learningOutcomes.length > 9}
+                  data-test={`add a learning outcome button`}
+                  variant="outline"
+                  width="80%"
+                  size="xs"
+                  icon={<HiPlus />}
+                  onClick={() => {
+                    let nextLearningOutcomes = [...learningOutcomes];
+                    if (learningOutcomes.length < 9) {
+                      nextLearningOutcomes.push("");
+                    }
 
-            <Center>
-              <IconButton
-                isDisabled={learningOutcomes.length > 9}
-                data-test={`add a learning outcome button`}
-                variant="outline"
-                width="80%"
-                size="xs"
-                icon={<HiPlus />}
-                onClick={() => {
-                  let nextLearningOutcomes = [...learningOutcomes];
-                  if (learningOutcomes.length < 9) {
-                    nextLearningOutcomes.push("");
-                  }
-
-                  setLearningOutcomes(nextLearningOutcomes);
-                  saveDataToServer({ nextLearningOutcomes });
-                }}
-              />
-            </Center>
-          </Flex>
-        </FormControl>
-        {!activityData.isFolder ? (
-          <>
-            <FormControl>
+                    setLearningOutcomes(nextLearningOutcomes);
+                    saveDataToServer({ nextLearningOutcomes });
+                  }}
+                />
+              </Center>
+            </Flex>
+          </FormControl> : "" }
+          <FormControl>
             <FormLabel mt="16px">Visibility</FormLabel>
             <Checkbox
               size="lg"
@@ -1075,6 +1071,7 @@ export function GeneralActivityControls({
               Public
             </Checkbox>
           </FormControl>
+        { !activityData.isFolder ?
           <FormControl>
             <FormLabel mt="16px">DoenetML version</FormLabel>
             <Select
@@ -1098,11 +1095,7 @@ export function GeneralActivityControls({
                 </option>
               ))}
             </Select>
-          </FormControl>
-        </>
-        ) : (
-          ""
-        )}
+          </FormControl> : "" }
         {doenetmlVersion.deprecated && (
           <p>
             <strong>Warning</strong>: DoenetML version{" "}

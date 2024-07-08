@@ -25,21 +25,22 @@ export default function ContentCard({
   isAssigned,
   isFolder,
   isPublic,
-  name,
-  fullName,
+  title,
+  ownerName,
   menuItems,
   suppressAvatar = false,
-  editable = false,
-  autoFocusName = false
+  showOwnerName = true,
+  editableTitle = false,
+  autoFocusTitle = false
 }) {
   if (!imagePath) {
     imagePath = "/activity_default.jpg";
   }
-  const [cardName, setCardName] = useState(name);
+  const [cardTitle, setCardTitle] = useState(title);
   const fetcher = useFetcher();
 
-  function saveUpdatedName() {
-    fetcher.submit({ _action: "update name", id, cardName, isFolder }, { method: "post" });
+  function saveUpdatedTitle() {
+    fetcher.submit({ _action: "update title", id, cardTitle, isFolder }, { method: "post" });
   }
 
   //Note: when we have a menu width 140px becomes 120px
@@ -59,26 +60,26 @@ export default function ContentCard({
       </Link>
       <CardBody p="1">
         <Flex columnGap="2px">
-          {suppressAvatar ? null : <Tooltip label={fullName}><Avatar size="sm" name={fullName} /></Tooltip> }
+          {suppressAvatar ? null : <Tooltip label={ownerName}><Avatar size="sm" name={ownerName} /></Tooltip> }
 
           <Box width="160px" minWidth="0px" p="1">
-            { editable ? 
+            { editableTitle ? 
               <Input 
-                value={cardName} 
+                value={cardTitle} 
                 size='xs' 
                 border='none' 
                 padding='0' 
                 margin='0' 
                 height='1em' 
                 fontWeight="bold"
-                autoFocus={autoFocusName}
-                onChange={(e) => {
-                  setCardName(e.target.value);
-                }}
-                onBlur={saveUpdatedName}
+                autoFocus={autoFocusTitle}
+                onFocus={(e) => e.target.select() }
+                onChange={(e) => setCardTitle(e.target.value) }
+                onBlur={saveUpdatedTitle}
                 onKeyDown={(e) => {
                   if (e.key == "Enter") {
-                    saveUpdatedName();
+                    saveUpdatedTitle();
+                    e.target.blur();
                   }
                 }}
               /> :
@@ -91,30 +92,28 @@ export default function ContentCard({
                 textAlign="left"
                 overflow="hidden"
               >
-                {name}
+                {cardTitle}
               </Text>
             }
-            {/* <Text
-              fontSize="xs"
-              noOfLines={1}
-              textAlign="left"
-              data-test="Card Full Name"
-            >
-              {fullName}
-            </Text> */}
-            {!isFolder ? (
+            { showOwnerName ?
               <Text
                 fontSize="xs"
                 noOfLines={1}
                 textAlign="left"
-                //data-test="Card Full Name"
+                data-test="Card Full Name"
               >
-                {isPublic ? "Public" : "Private"} /{" "}
-                {isAssigned ? "Assigned" : "Unassigned"}
-              </Text>
-            ) : (
-              ""
-            )}
+                {ownerName}
+              </Text> : ""
+            }
+            <Text
+              fontSize="xs"
+              noOfLines={1}
+              textAlign="left"
+              //data-test="Card Full Name"
+            >
+              {isPublic ? "Public" : "Private"}
+              {isFolder ? "" : (isAssigned ? " / Assigned" : " / Unassigned")}
+            </Text>
           </Box>
 
           {menuItems ? (
