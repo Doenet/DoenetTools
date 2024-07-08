@@ -39,7 +39,7 @@ export async function action({ request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
   let {
-    direction,
+    desiredPosition,
     activityId,
     groupName,
     newGroupName,
@@ -73,12 +73,12 @@ export async function action({ request }) {
       return postApiAlertOnError("/api/movePromotedContent", {
         activityId,
         groupId,
-        direction,
+        desiredPosition,
       });
     case "Move Promoted Group":
       return postApiAlertOnError("/api/movePromotedContentGroup", {
         groupId,
-        direction,
+        desiredPosition,
       });
     case "New Group": {
       return postApiAlertOnError("/api/addPromotedContentGroup", { groupName });
@@ -196,12 +196,12 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
     );
   };
 
-  const moveGroup = (groupInfo, direction) => {
+  const moveGroup = (groupInfo, desiredPosition) => {
     fetcher.submit(
       {
         _action: "Move Promoted Group",
         groupId: groupInfo.promotedGroupId,
-        direction,
+        desiredPosition,
       },
       { method: "post" },
     );
@@ -307,7 +307,7 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
                 </Text>
 
                 <Form>
-                  {carouselGroups.map((group) => {
+                  {carouselGroups.map((group, position) => {
                     return (
                       <Wrap key={group.promotedGroupId}>
                         <Checkbox
@@ -324,10 +324,16 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
                         <Button onClick={() => renameGroup(group)}>
                           Rename
                         </Button>
-                        <Button onClick={() => moveGroup(group, "up")}>
+                        <Button
+                          isDisabled={position === 0}
+                          onClick={() => moveGroup(group, position - 1)}
+                        >
                           ↑
                         </Button>
-                        <Button onClick={() => moveGroup(group, "down")}>
+                        <Button
+                          isDisabled={position === carouselGroups.length - 1}
+                          onClick={() => moveGroup(group, position + 1)}
+                        >
                           ↓
                         </Button>
                         <Button
@@ -769,13 +775,14 @@ export function Community() {
                                   Remove from group
                                 </MenuItem>
                                 <MenuItem
+                                  isDisabled={i === 0}
                                   onClick={() => {
                                     fetcher.submit(
                                       {
                                         _action: "Move Promoted Content",
                                         activityId: cardObj.activityId,
                                         groupId: group.promotedGroupId,
-                                        direction: "left",
+                                        desiredPosition: i - 1,
                                       },
                                       { method: "post" },
                                     );
@@ -784,13 +791,16 @@ export function Community() {
                                   Move Left
                                 </MenuItem>
                                 <MenuItem
+                                  isDisabled={
+                                    i === group.promotedContent.length - 1
+                                  }
                                   onClick={() => {
                                     fetcher.submit(
                                       {
                                         _action: "Move Promoted Content",
                                         activityId: cardObj.activityId,
                                         groupId: group.promotedGroupId,
-                                        direction: "right",
+                                        desiredPosition: i + 1,
                                       },
                                       { method: "post" },
                                     );
