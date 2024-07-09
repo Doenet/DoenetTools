@@ -207,8 +207,6 @@ export async function updateContent({
     },
   });
 
-  console.log(updated);
-
   return {
     id: updated.id,
     name: updated.name,
@@ -543,6 +541,7 @@ export async function copyActivityToFolder(
         id: _ignoreId,
         lastEdited: _ignoreLastEdited,
         createdAt: _ignoreCreatedAt,
+        assignedVersionNum: _ignoreAssignedVersionNum,
         ...docInfo
       } = doc;
       docInfo.activityId = newActivity.id;
@@ -2186,17 +2185,18 @@ export async function getFolderContent({
   loggedInUserId: number;
 }) {
   const notMe = ownerId !== loggedInUserId;
+  let parentFolder = null;
 
   if (folderId !== null) {
     // if ask for a folder, make sure it exists and is allowed to be seen
-    await prisma.content.findUniqueOrThrow({
+    parentFolder = await prisma.content.findUniqueOrThrow({
       where: {
         ownerId,
         id: folderId,
         isDeleted: false,
         isPublic: notMe ? true : undefined,
       },
-      select: { id: true },
+      select: { parentFolderId: true },
     });
   }
 
@@ -2231,5 +2231,6 @@ export async function getFolderContent({
     content,
     name: user.name,
     notMe,
+    parentFolder
   };
 }

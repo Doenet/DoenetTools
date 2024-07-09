@@ -149,6 +149,7 @@ export async function loader({ params }) {
     folder: data.folder,
     allDoenetmlVersions: data.allDoenetmlVersions,
     userId: params.userId,
+    parentFolderId: data.folder.parentFolder ? data.folder.parentFolder.parentFolderId : null,
   };
 }
 
@@ -216,8 +217,7 @@ function ActivitySettingsDrawer({
 
 export function Activities() {
   let context = useOutletContext();
-  let { folderId, folder, allDoenetmlVersions, userId } = useLoaderData();
-  let parentFolderId = folderId;
+  let { folderId, folder, allDoenetmlVersions, userId, parentFolderId } = useLoaderData();
   const [activityId, setActivityId] = useState();
   const controlsBtnRef = useRef(null);
   const navigate = useNavigate();
