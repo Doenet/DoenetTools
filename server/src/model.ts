@@ -504,6 +504,8 @@ async function calculateNewSortIndex(
   }
 }
 
+//TODO: moveActivityToFolder()
+
 /**
  * Copies the activity given by `origActivityId` into `folderId` of `ownerId`.
  *
@@ -2453,5 +2455,55 @@ export async function getFolderContent({
     content,
     name: user.name,
     notMe,
+  };
+}
+
+// TODO: Currently only accesses your own content. Do we want to change this?
+export async function getParentFolder(id: number, loggedInUser: number) {
+  return await prisma.content.findUniqueOrThrow({
+    where: { id, isDeleted: false, ownerId: loggedInUser },
+    select: {
+      parentFolderId: true,
+    },
+  });
+}
+
+export async function getMyFolderContentSparse({
+  folderId,
+  loggedInUserId,
+}: {
+  folderId: number | null;
+  loggedInUserId: number;
+}) {
+  let currentFolderData = null;
+  if (folderId !== null) {
+    // if ask for a folder, make sure it exists and is allowed to be seen
+    currentFolderData = await prisma.content.findUniqueOrThrow({
+      where: {
+        ownerId: loggedInUserId,
+        id: folderId,
+        isDeleted: false,
+      },
+      select: { name: true, id: true, parentFolderId: true },
+    });
+  }
+
+  const content = await prisma.content.findMany({
+    where: {
+      ownerId: loggedInUserId,
+      isDeleted: false,
+      parentFolderId: folderId,
+    },
+    select: {
+      id: true,
+      isFolder: true,
+      name: true,
+    },
+    orderBy: [{ isFolder: "desc" }, { sortIndex: "asc" }],
+  });
+
+  return {
+    currentFolder: currentFolderData,
+    content,
   };
 }

@@ -50,6 +50,8 @@ import {
   moveContent,
   getFolderContent,
   getAssignedScores,
+  getMyFolderContentSparse,
+  getParentFolder,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -1240,6 +1242,68 @@ app.get(
       });
       const allDoenetmlVersions = await getAllDoenetmlVersions();
       res.send({ allDoenetmlVersions, folder });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(204);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getParentFolder/:id",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = Number(req.params.id);
+    const loggedInUserId = Number(req.cookies.userId);
+
+    try {
+      const parent = await getParentFolder(id, loggedInUserId);
+      res.send(parent);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(204);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getMyFolderContentSparse/",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+
+    try {
+      const folderContent = await getMyFolderContentSparse({
+        folderId: null,
+        loggedInUserId,
+      });
+      res.send(folderContent);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(204);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getMyFolderContentSparse/:folderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const folderId = Number(req.params.folderId);
+    const loggedInUserId = Number(req.cookies.userId);
+
+    try {
+      const folderContent = await getMyFolderContentSparse({
+        folderId,
+        loggedInUserId,
+      });
+      res.send(folderContent);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(204);

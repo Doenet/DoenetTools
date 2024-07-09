@@ -31,6 +31,7 @@ import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
 import { GeneralActivityControls } from "./ActivityEditor";
 import axios from "axios";
+import MoveContentToFolder from "../ToolPanels/MoveContentToFolder";
 
 // what is a better solution than this?
 let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching activity/folder id
@@ -355,6 +356,7 @@ export function Activities() {
         content={folder.content}
         allDoenetmlVersions={allDoenetmlVersions}
       />
+      <MoveContentToFolder />
       <Box
         backgroundColor="#fff"
         color="#000"
