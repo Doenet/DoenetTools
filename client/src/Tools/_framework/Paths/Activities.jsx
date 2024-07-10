@@ -34,7 +34,7 @@ import { GeneralActivityControls } from "./ActivityEditor";
 import axios from "axios";
 
 // what is a better solution than this?
-let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching activity/folder id 
+let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching activity/folder id
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -83,7 +83,9 @@ export async function action({ request, params }) {
     let { activityId, docId } = data;
     return redirect(`/activityEditor/${activityId}`);
   } else if (formObj?._action == "Add Folder") {
-    let { data } = await axios.post(`/api/createFolder/${params.folderId ?? ""}`);
+    let { data } = await axios.post(
+      `/api/createFolder/${params.folderId ?? ""}`,
+    );
     folderJustCreated = data.folderId;
 
     return true;
@@ -106,7 +108,7 @@ export async function action({ request, params }) {
     });
 
     return true;
-  } else if (formObj?._action == "Create Assignment") {
+  } else if (formObj?._action == "Assign Activity") {
     await axios.post(`/api/assignActivity`, {
       id: formObj.id,
     });
@@ -114,11 +116,18 @@ export async function action({ request, params }) {
   } else if (formObj?._action == "Duplicate Activity") {
     await axios.post(`/api/duplicateActivity`, {
       activityId: formObj.id,
-      desiredParentFolderId: formObj.folderId === "null" ? null : formObj.folderId,
+      desiredParentFolderId:
+        formObj.folderId === "null" ? null : formObj.folderId,
+    });
+    return true;
+  } else if (formObj?._action == "Move") {
+    await axios.post(`/api/moveContent`, {
+      id: formObj.id,
+      desiredParentFolderId: params.folderId,
+      desiredPosition: formObj.desiredPosition,
     });
     return true;
   } else if (formObj._action == "update title") {
-
     //Don't let name be blank
     let name = formObj?.cardTitle?.trim();
     if (name == "") {
@@ -149,7 +158,9 @@ export async function loader({ params }) {
     folder: data.folder,
     allDoenetmlVersions: data.allDoenetmlVersions,
     userId: params.userId,
-    parentFolderId: data.folder.parentFolder ? data.folder.parentFolder.parentFolderId : null,
+    parentFolderId: data.folder.parentFolder
+      ? data.folder.parentFolder.parentFolderId
+      : null,
   };
 }
 
@@ -217,7 +228,8 @@ function ActivitySettingsDrawer({
 
 export function Activities() {
   let context = useOutletContext();
-  let { folderId, folder, allDoenetmlVersions, userId, parentFolderId } = useLoaderData();
+  let { folderId, folder, allDoenetmlVersions, userId, parentFolderId } =
+    useLoaderData();
   const [activityId, setActivityId] = useState();
   const controlsBtnRef = useRef(null);
   const navigate = useNavigate();
@@ -239,7 +251,14 @@ export function Activities() {
     return null;
   }
 
-  function getCardMenuList(isPublic, isFolder, isAssigned, id) {
+  function getCardMenuList(
+    isPublic,
+    isFolder,
+    isAssigned,
+    id,
+    position,
+    numCards,
+  ) {
     return (
       <>
         <MenuItem
@@ -266,25 +285,58 @@ export function Activities() {
             >
               Duplicate Activity
             </MenuItem>
+            <MenuItem
+              data-test={"Duplicate Activity"}
+              onClick={() => {
+                fetcher.submit(
+                  { _action: "Duplicate Activity", id, folderId },
+                  { method: "post" },
+                );
+              }}
+            >
+              Duplicate Activity
+            </MenuItem>
             {!isAssigned ? (
               <MenuItem
-                data-test="Create Assignment Menu Item"
+                data-test="Assign Activity Menu Item"
                 onClick={() => {
                   fetcher.submit(
-                    { _action: "Create Assignment", id },
+                    { _action: "Assign Activity", id },
                     { method: "post" },
                   );
                 }}
               >
-                Create Assignment
+                Assign Activity
               </MenuItem>
-            ) : (
-              ""
-            )}
+            ) : null}
           </>
-        ) : (
-          ""
-        )}
+        ) : null}
+        {position > 0 ? (
+          <MenuItem
+            data-test="Move Left Menu Item"
+            onClick={() => {
+              fetcher.submit(
+                { _action: "Move", id, desiredPosition: position - 1 },
+                { method: "post" },
+              );
+            }}
+          >
+            Move Left
+          </MenuItem>
+        ) : null}
+        {position < numCards - 1 ? (
+          <MenuItem
+            data-test="Move Right Menu Item"
+            onClick={() => {
+              fetcher.submit(
+                { _action: "Move", id, desiredPosition: position + 1 },
+                { method: "post" },
+              );
+            }}
+          >
+            Move Right
+          </MenuItem>
+        ) : null}
         <MenuItem
           data-test="Delete Menu Item"
           onClick={() => {
@@ -319,7 +371,7 @@ export function Activities() {
         content={folder.content}
         allDoenetmlVersions={allDoenetmlVersions}
       />
-      { folderId ?
+      {folderId ? (
         <Box style={{ marginTop: 15, marginLeft: 15 }}>
           <Link
             href={`/activities/${userId}${parentFolderId ? "/" + parentFolderId : ""}`}
@@ -330,8 +382,10 @@ export function Activities() {
             {" "}
             &lt; Back
           </Link>
-        </Box> : ""
-      }
+        </Box>
+      ) : (
+        ""
+      )}
       <Box
         backgroundColor="#fff"
         color="#000"
@@ -348,7 +402,10 @@ export function Activities() {
             size="xs"
             colorScheme="blue"
             onClick={async () => {
-              let id = fetcher.submit({ _action: "Add Folder" }, { method: "post" });
+              let id = fetcher.submit(
+                { _action: "Add Folder" },
+                { method: "post" },
+              );
             }}
           >
             + Add Folder
@@ -404,7 +461,7 @@ export function Activities() {
             </Flex>
           ) : (
             <>
-              {folder.content.map((activity) => {
+              {folder.content.map((activity, position) => {
                 return (
                   <ContentCard
                     key={`Card${activity.id}`}
@@ -416,6 +473,8 @@ export function Activities() {
                       activity.isFolder,
                       activity.isAssigned,
                       activity.id,
+                      position,
+                      folder.content.length,
                     )}
                     suppressAvatar={true}
                     showOwnerName={false}

@@ -32,13 +32,23 @@ export async function loader({ params }) {
   const userData = data.userData;
   const scores = data.orderedActivityScores;
 
-  return { userData, scores };
+  return { userData, scores, isAssignedData: false };
+}
+
+export async function assignedDataloader() {
+  let { data } = await axios.get(`/api/getAssignedScores`);
+
+  const userData = data.userData;
+  const scores = data.orderedActivityScores;
+
+  return { userData, scores, isAssignedData: true };
 }
 
 export function StudentData() {
-  const { userData, scores } = useLoaderData() as {
+  const { userData, scores, isAssignedData } = useLoaderData() as {
     userData: userData;
     scores: orderedActivityScore[];
+    isAssignedData: boolean;
   };
 
   useEffect(() => {
@@ -68,17 +78,25 @@ export function StudentData() {
               return (
                 <Tr key={`assignment${score.activityId}`}>
                   <Td key={`assignment_title${score.activityId}`}>
-                    <Link
-                      href={`/assignmentData/${score.activityId}`}
-                      style={linkStyle}
-                    >
-                      {score.activityName}
-                    </Link>
+                    {isAssignedData ? (
+                      score.activityName
+                    ) : (
+                      <Link
+                        href={`/assignmentData/${score.activityId}`}
+                        style={linkStyle}
+                      >
+                        {score.activityName}
+                      </Link>
+                    )}
                   </Td>
                   <Td key={`score${score.activityId}`}>
                     {score.score !== null ? (
                       <Link
-                        href={`/assignmentData/${score.activityId}/${userData.userId}`}
+                        href={
+                          isAssignedData
+                            ? `assignedData/${score.activityId}`
+                            : `/assignmentData/${score.activityId}/${userData.userId}`
+                        }
                         style={linkStyle}
                       >
                         {score.score}

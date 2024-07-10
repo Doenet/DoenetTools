@@ -973,8 +973,8 @@ export function GeneralActivityControls({
             Error - A name for the activity is required.
           </FormErrorMessage>
         </FormControl>
-        { !activityData.isFolder ?
-            <FormControl>
+        {!activityData.isFolder ? (
+          <FormControl>
             <Flex flexDirection="column" width="100%" rowGap={6}>
               <FormLabel mt="16px">Learning Outcomes</FormLabel>
               {learningOutcomes.map((outcome, i) => {
@@ -1050,28 +1050,31 @@ export function GeneralActivityControls({
                 />
               </Center>
             </Flex>
-          </FormControl> : "" }
-          <FormControl>
-            <FormLabel mt="16px">Visibility</FormLabel>
-            <Checkbox
-              size="lg"
-              data-test="Public Checkbox"
-              name="public"
-              value="on"
-              isChecked={checkboxIsPublic}
-              onChange={(e) => {
-                let nextIsPublic = false;
-                if (e.target.checked) {
-                  nextIsPublic = true;
-                }
-                setCheckboxIsPublic(nextIsPublic);
-                saveDataToServer({ nextIsPublic });
-              }}
-            >
-              Public
-            </Checkbox>
           </FormControl>
-        { !activityData.isFolder ?
+        ) : (
+          ""
+        )}
+        <FormControl>
+          <FormLabel mt="16px">Visibility</FormLabel>
+          <Checkbox
+            size="lg"
+            data-test="Public Checkbox"
+            name="public"
+            value="on"
+            isChecked={checkboxIsPublic}
+            onChange={(e) => {
+              let nextIsPublic = false;
+              if (e.target.checked) {
+                nextIsPublic = true;
+              }
+              setCheckboxIsPublic(nextIsPublic);
+              saveDataToServer({ nextIsPublic });
+            }}
+          >
+            Public
+          </Checkbox>
+        </FormControl>
+        {!activityData.isFolder ? (
           <FormControl>
             <FormLabel mt="16px">DoenetML version</FormLabel>
             <Select
@@ -1095,7 +1098,10 @@ export function GeneralActivityControls({
                 </option>
               ))}
             </Select>
-          </FormControl> : "" }
+          </FormControl>
+        ) : (
+          ""
+        )}
         {doenetmlVersion.deprecated && (
           <p>
             <strong>Warning</strong>: DoenetML version{" "}

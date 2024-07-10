@@ -31,7 +31,7 @@ export default function ContentCard({
   suppressAvatar = false,
   showOwnerName = true,
   editableTitle = false,
-  autoFocusTitle = false
+  autoFocusTitle = false,
 }) {
   if (!imagePath) {
     imagePath = "/activity_default.jpg";
@@ -40,7 +40,10 @@ export default function ContentCard({
   const fetcher = useFetcher();
 
   function saveUpdatedTitle() {
-    fetcher.submit({ _action: "update title", id, cardTitle, isFolder }, { method: "post" });
+    fetcher.submit(
+      { _action: "update title", id, cardTitle, isFolder },
+      { method: "post" },
+    );
   }
 
   //Note: when we have a menu width 140px becomes 120px
@@ -60,21 +63,25 @@ export default function ContentCard({
       </Link>
       <CardBody p="1">
         <Flex columnGap="2px">
-          {suppressAvatar ? null : <Tooltip label={ownerName}><Avatar size="sm" name={ownerName} /></Tooltip> }
+          {suppressAvatar ? null : (
+            <Tooltip label={ownerName}>
+              <Avatar size="sm" name={ownerName} />
+            </Tooltip>
+          )}
 
           <Box width="160px" minWidth="0px" p="1">
-            { editableTitle ? 
-              <Input 
-                value={cardTitle} 
-                size='xs' 
-                border='none' 
-                padding='0' 
-                margin='0' 
-                height='1em' 
+            {editableTitle ? (
+              <Input
+                value={cardTitle}
+                size="xs"
+                border="none"
+                padding="0"
+                margin="0"
+                height="1em"
                 fontWeight="bold"
                 autoFocus={autoFocusTitle}
-                onFocus={(e) => e.target.select() }
-                onChange={(e) => setCardTitle(e.target.value) }
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => setCardTitle(e.target.value)}
                 onBlur={saveUpdatedTitle}
                 onKeyDown={(e) => {
                   if (e.key == "Enter") {
@@ -82,7 +89,8 @@ export default function ContentCard({
                     e.target.blur();
                   }
                 }}
-              /> :
+              />
+            ) : (
               <Text
                 data-test="Card Label"
                 lineHeight="1.1"
@@ -94,8 +102,8 @@ export default function ContentCard({
               >
                 {cardTitle}
               </Text>
-            }
-            { showOwnerName ?
+            )}
+            {showOwnerName ? (
               <Text
                 fontSize="xs"
                 noOfLines={1}
@@ -103,8 +111,10 @@ export default function ContentCard({
                 data-test="Card Full Name"
               >
                 {ownerName}
-              </Text> : ""
-            }
+              </Text>
+            ) : (
+              ""
+            )}
             <Text
               fontSize="xs"
               noOfLines={1}
@@ -112,7 +122,7 @@ export default function ContentCard({
               //data-test="Card Full Name"
             >
               {isPublic ? "Public" : "Private"}
-              {isFolder ? "" : (isAssigned ? " / Assigned" : " / Unassigned")}
+              {isFolder ? "" : isAssigned ? " / Assigned" : " / Unassigned"}
             </Text>
           </Box>
 
