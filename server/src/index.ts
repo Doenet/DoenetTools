@@ -1,5 +1,5 @@
 import express, { Express, NextFunction, Request, Response } from "express";
-import * as path from 'path';
+import * as path from "path";
 import bodyParser from "body-parser";
 
 import dotenv from "dotenv";
@@ -69,7 +69,7 @@ app.use(
 
 const port = process.env.PORT || 3000;
 
-app.use(express.static("public"));
+app.use(express.static(path.resolve(__dirname, "../public")));
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
@@ -1253,8 +1253,8 @@ app.get(
 
 // handle every other route with index.html, which will contain
 // a script tag to your application's JavaScript file(s).
-app.get('*', function (request, response) {
-  response.sendFile(path.resolve(__dirname, '../public/index.html'));
+app.get("*", function (request, response) {
+  response.sendFile(path.resolve(__dirname, "../public/index.html"));
 });
 
 app.listen(port, () => {
