@@ -112,9 +112,7 @@ export default function ContentCard({
               >
                 {ownerName}
               </Text>
-            ) : (
-              ""
-            )}
+            ) : null}
             <Text
               fontSize="xs"
               noOfLines={1}

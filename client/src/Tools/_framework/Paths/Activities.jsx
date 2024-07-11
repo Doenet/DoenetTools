@@ -158,9 +158,7 @@ export async function loader({ params }) {
     folder: data.folder,
     allDoenetmlVersions: data.allDoenetmlVersions,
     userId: params.userId,
-    parentFolderId: data.folder.parentFolder
-      ? data.folder.parentFolder.parentFolderId
-      : null,
+    parentFolderId: data.folder.parentFolderId,
   };
 }
 
@@ -285,17 +283,6 @@ export function Activities() {
             >
               Duplicate Activity
             </MenuItem>
-            <MenuItem
-              data-test={"Duplicate Activity"}
-              onClick={() => {
-                fetcher.submit(
-                  { _action: "Duplicate Activity", id, folderId },
-                  { method: "post" },
-                );
-              }}
-            >
-              Duplicate Activity
-            </MenuItem>
             {!isAssigned ? (
               <MenuItem
                 data-test="Assign Activity Menu Item"
@@ -371,21 +358,6 @@ export function Activities() {
         content={folder.content}
         allDoenetmlVersions={allDoenetmlVersions}
       />
-      {folderId ? (
-        <Box style={{ marginTop: 15, marginLeft: 15 }}>
-          <Link
-            href={`/activities/${userId}${parentFolderId ? "/" + parentFolderId : ""}`}
-            style={{
-              color: "var(--mainBlue)",
-            }}
-          >
-            {" "}
-            &lt; Back
-          </Link>
-        </Box>
-      ) : (
-        ""
-      )}
       <Box
         backgroundColor="#fff"
         color="#000"
@@ -442,6 +414,19 @@ export function Activities() {
           </Button>
         </div>
       </Box>
+      {folderId ? (
+        <Box style={{ marginLeft: "15px", marginTop: "-30px", float: "left" }}>
+          <Link
+            href={`/activities/${userId}${parentFolderId ? "/" + parentFolderId : ""}`}
+            style={{
+              color: "var(--mainBlue)",
+            }}
+          >
+            {" "}
+            &lt; Back
+          </Link>
+        </Box>
+      ) : null}
       <ActivitiesSection data-test="Public Activities">
         <Wrap p="10px" overflow="visible">
           {folder.content.length < 1 ? (
@@ -480,7 +465,7 @@ export function Activities() {
                     showOwnerName={false}
                     imageLink={
                       activity.isFolder
-                        ? `/activities/${activity.ownerId}${activity.id ? "/" + activity.id : ""}`
+                        ? `/activities/${activity.ownerId}/${activity.id}`
                         : activity.isAssigned
                           ? `/assignmentEditor/${activity.id}`
                           : `/activityEditor/${activity.id}`

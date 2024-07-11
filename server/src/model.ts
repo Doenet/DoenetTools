@@ -2455,6 +2455,6 @@ export async function getFolderContent({
     content,
     name: user.name,
     notMe,
-    parentFolder,
+    parentFolderId: parentFolder ? parentFolder.parentFolderId : null,
   };
 }

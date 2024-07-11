@@ -1051,9 +1051,7 @@ export function GeneralActivityControls({
               </Center>
             </Flex>
           </FormControl>
-        ) : (
-          ""
-        )}
+        ) : null}
         <FormControl>
           <FormLabel mt="16px">Visibility</FormLabel>
           <Checkbox
@@ -1099,9 +1097,7 @@ export function GeneralActivityControls({
               ))}
             </Select>
           </FormControl>
-        ) : (
-          ""
-        )}
+        ) : null}
         {doenetmlVersion.deprecated && (
           <p>
             <strong>Warning</strong>: DoenetML version{" "}
