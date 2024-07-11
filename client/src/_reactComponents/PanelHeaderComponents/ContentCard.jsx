@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Image,
@@ -38,6 +38,10 @@ export default function ContentCard({
   }
   const [cardTitle, setCardTitle] = useState(title);
   const fetcher = useFetcher();
+
+  useEffect(() => {
+    setCardTitle(title);
+  }, [title]);
 
   function saveUpdatedTitle() {
     fetcher.submit(
