@@ -226,14 +226,21 @@ function ActivitySettingsDrawer({
 export function Activities() {
   let context = useOutletContext();
   let { folderId, folder, allDoenetmlVersions } = useLoaderData();
-  const [activityId, setActivityId] = useState();
   const controlsBtnRef = useRef(null);
   const navigate = useNavigate();
 
+  const [settingsActivityId, setSettingsActivityId] = useState();
   const {
     isOpen: settingsAreOpen,
     onOpen: settingsOnOpen,
     onClose: settingsOnClose,
+  } = useDisclosure();
+
+  const [moveToFolderActivityId, setMoveToFolderActivityId] = useState();
+  const {
+    isOpen: moveToFolderIsOpen,
+    onOpen: moveToFolderOnOpen,
+    onClose: moveToFolderOnClose,
   } = useDisclosure();
 
   useEffect(() => {
@@ -323,6 +330,15 @@ export function Activities() {
           </MenuItem>
         ) : null}
         <MenuItem
+          data-test="Move to Folder"
+          onClick={() => {
+            setMoveToFolderActivityId(id);
+            moveToFolderOnOpen();
+          }}
+        >
+          Move to Folder
+        </MenuItem>
+        <MenuItem
           data-test="Delete Menu Item"
           onClick={() => {
             fetcher.submit(
@@ -336,7 +352,7 @@ export function Activities() {
         <MenuItem
           data-test="Settings Menu Item"
           onClick={() => {
-            setActivityId(id);
+            setSettingsActivityId(id);
             settingsOnOpen();
           }}
         >
@@ -352,11 +368,15 @@ export function Activities() {
         isOpen={settingsAreOpen}
         onClose={settingsOnClose}
         finalFocusRef={controlsBtnRef}
-        id={activityId}
+        id={settingsActivityId}
         content={folder.content}
         allDoenetmlVersions={allDoenetmlVersions}
       />
-      <MoveContentToFolder />
+      <MoveContentToFolder
+        isOpen={moveToFolderIsOpen}
+        onClose={moveToFolderOnClose}
+        id={moveToFolderActivityId}
+      />
       <Box
         backgroundColor="#fff"
         color="#000"

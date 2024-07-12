@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Box,
   Text,
   Modal,
   ModalOverlay,
@@ -10,13 +9,7 @@ import {
   ModalBody,
   ModalCloseButton,
   Button,
-  useDisclosure,
-  UnorderedList,
-  ListIcon,
-  ListItem,
-  Stack,
   SimpleGrid,
-  Center,
   Heading,
   IconButton,
   HStack,
@@ -24,96 +17,91 @@ import {
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 
-interface contentPiece {
-  isFolder: boolean;
-  name: string;
-  id: number;
-}
-interface folderData {
-  name: string;
-  id: number;
-  parentFolderId: number | null;
-}
-
-interface selectedContentData {
-  id: number;
+interface activeView {
+  folder: null | {
+    name: string;
+    id: number;
+    parentFolderId: number | null;
+  };
+  contents: {
+    isFolder: boolean;
+    name: string;
+    id: number;
+  }[];
 }
 
-export default function MoveContentToFolder({}) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+export default function MoveContentToFolder({ isOpen, onClose, id }) {
+  // Set when the modal opens
+  const [parentId, setParentId] = useState<number | null>(null);
+  const [contentName, setContentName] = useState<string>("");
+  useEffect(() => {
+    if (isOpen) {
+      async function saveParentId() {
+        const {
+          data: { parentFolderId, name },
+        } = await axios.get(`/api/getParentFolder/${id}`);
+        updateActiveView(parentFolderId);
+        setParentId((_) => parentFolderId);
+        setContentName((_) => name);
+      }
+      saveParentId();
+    }
+  }, [isOpen]);
 
-  // These are set when the modal opens
-  const [selectedContent, setSelectedContent] = useState<number>();
-  const [selectedContentParent, setSelectedContentParent] = useState<
-    number | null
-  >(null);
-
-  // These are set whenever the user navigates to another folder
-  const [viewData, setViewData] = useState<contentPiece[]>([]);
-  const [currentFolder, setCurrentFolder] = useState<folderData | null>(null);
-
-  async function updateView(currentFolderId: number | null) {
-    setViewData((_) => []);
+  // Set whenever the user navigates to another folder
+  const [activeView, setActiveView] = useState<activeView>({
+    folder: null,
+    contents: [],
+  });
+  async function updateActiveView(newActiveFolderId: number | null) {
     const {
-      data: { currentFolder, content },
+      data: { folder, content },
     } = await axios.get(
-      `/api/getMyFolderContentSparse/${currentFolderId ?? ""}`,
+      `/api/getMyFolderContentSparse/${newActiveFolderId ?? ""}`,
     );
-    setViewData((_) => content);
-    setCurrentFolder(currentFolder);
+    setActiveView((_) => {
+      return { folder, contents: content };
+    });
   }
 
   return (
     <>
-      <Button
-        onClick={async () => {
-          const id = 298;
-
-          onOpen();
-          setSelectedContent((_) => id);
-          const {
-            data: { parentFolderId },
-          } = await axios.get(`/api/getParentFolder/${id}`);
-          setSelectedContentParent((_) => parentFolderId);
-
-          updateView(selectedContentParent);
-        }}
-      >
-        Open Modal
-      </Button>
-
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            <Heading>Move to Folder</Heading>
+            <Heading>Move "{contentName}" to folder:</Heading>
             <HStack>
-              {currentFolder ? (
+              {activeView.folder ? (
                 <>
                   <IconButton
                     icon={<ArrowBackIcon />}
                     aria-label="Back"
-                    onClick={() => updateView(currentFolder.parentFolderId)}
+                    onClick={() =>
+                      updateActiveView(activeView.folder!.parentFolderId)
+                    }
                   />
-                  <Text>{currentFolder.name}</Text>
+                  <Text>{activeView.folder!.name}</Text>
                 </>
-              ) : null}
+              ) : (
+                <Text>Your Activities</Text>
+              )}
             </HStack>
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <SimpleGrid columns={1} spacing={0}>
-              {viewData.map((content) => (
+              {activeView.contents.map((content) => (
                 <Button
                   key={`moveContentItem${content.id}`}
                   variant="outline"
                   width="500px"
                   height="2em"
-                  // bg="red"
                   onClick={() => {
-                    if (content.isFolder) updateView(content.id);
+                    if (content.isFolder && content.id !== id)
+                      updateActiveView(content.id);
                   }}
-                  isDisabled={!content.isFolder}
+                  isDisabled={!content.isFolder || content.id === id}
                 >
                   <Text width="50%" marginTop="auto" marginBottom="auto">
                     {content.name}
@@ -128,12 +116,15 @@ export default function MoveContentToFolder({}) {
               Cancel
             </Button>
             <Button
-              onClick={onClose}
+              onClick={() => {
+                onClose();
+              }}
+              // Is disabled if the content is already in this folder
               isDisabled={
-                (currentFolder === null && selectedContentParent === null) ||
-                (currentFolder !== null &&
-                  selectedContentParent !== null &&
-                  currentFolder.id === selectedContentParent)
+                (activeView.folder === null && parentId === null) ||
+                (activeView.folder !== null &&
+                  parentId !== null &&
+                  activeView.folder.id === parentId)
               }
             >
               Move

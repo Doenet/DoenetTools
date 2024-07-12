@@ -2463,6 +2463,8 @@ export async function getParentFolder(id: number, loggedInUser: number) {
   return await prisma.content.findUniqueOrThrow({
     where: { id, isDeleted: false, ownerId: loggedInUser },
     select: {
+      // TODO: Including name here is a workaround that probably doesn't make sense. We need it for the MoveToFolder menu
+      name: true,
       parentFolderId: true,
     },
   });
@@ -2503,7 +2505,7 @@ export async function getMyFolderContentSparse({
   });
 
   return {
-    currentFolder: currentFolderData,
+    folder: currentFolderData,
     content,
   };
 }
