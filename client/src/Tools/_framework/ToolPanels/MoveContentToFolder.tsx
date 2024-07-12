@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
+import { useFetcher } from "react-router-dom";
 
 interface activeView {
   folder: null | {
@@ -63,6 +64,8 @@ export default function MoveContentToFolder({ isOpen, onClose, id }) {
       return { folder, contents: content };
     });
   }
+
+  const fetcher = useFetcher();
 
   return (
     <>
@@ -117,6 +120,15 @@ export default function MoveContentToFolder({ isOpen, onClose, id }) {
             </Button>
             <Button
               onClick={() => {
+                fetcher.submit(
+                  {
+                    _action: "Move",
+                    id,
+                    folderId: activeView.folder ? activeView.folder.id : null,
+                    desiredPosition: activeView.contents.length, // place it as the last item
+                  },
+                  { method: "post" },
+                );
                 onClose();
               }}
               // Is disabled if the content is already in this folder
