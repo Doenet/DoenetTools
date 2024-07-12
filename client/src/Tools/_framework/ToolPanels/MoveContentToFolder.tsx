@@ -65,11 +65,18 @@ export default function MoveContentToFolder({ isOpen, onClose, id }) {
     });
   }
 
+  const initialRef = React.useRef(null);
+
   const fetcher = useFetcher();
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} size="xl">
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        size="xl"
+        initialFocusRef={initialRef}
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -87,35 +94,39 @@ export default function MoveContentToFolder({ isOpen, onClose, id }) {
                   <Text>{activeView.folder!.name}</Text>
                 </>
               ) : (
-                <Text>Your Activities</Text>
+                <Text>My Activities</Text>
               )}
             </HStack>
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <SimpleGrid columns={1} spacing={0}>
-              {activeView.contents.map((content) => (
-                <Button
-                  key={`moveContentItem${content.id}`}
-                  variant="outline"
-                  width="500px"
-                  height="2em"
-                  onClick={() => {
-                    if (content.isFolder && content.id !== id)
-                      updateActiveView(content.id);
-                  }}
-                  isDisabled={!content.isFolder || content.id === id}
-                >
-                  <Text width="50%" marginTop="auto" marginBottom="auto">
-                    {content.name}
-                  </Text>
-                </Button>
-              ))}
+              {activeView.contents.length === 0 ? (
+                <Text as="i">This folder is empty.</Text>
+              ) : (
+                activeView.contents.map((content) => (
+                  <Button
+                    key={`moveContentItem${content.id}`}
+                    variant="outline"
+                    width="500px"
+                    height="2em"
+                    onClick={() => {
+                      if (content.isFolder && content.id !== id)
+                        updateActiveView(content.id);
+                    }}
+                    isDisabled={!content.isFolder || content.id === id}
+                  >
+                    <Text width="50%" marginTop="auto" marginBottom="auto">
+                      {content.name}
+                    </Text>
+                  </Button>
+                ))
+              )}
             </SimpleGrid>
           </ModalBody>
 
           <ModalFooter>
-            <Button mr={3} onClick={onClose}>
+            <Button ref={initialRef} mr={3} onClick={onClose}>
               Cancel
             </Button>
             <Button
