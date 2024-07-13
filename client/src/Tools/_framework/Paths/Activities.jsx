@@ -16,7 +16,6 @@ import {
   Drawer,
   MenuItem,
   Heading,
-  Link,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -25,6 +24,7 @@ import {
   useLoaderData,
   useNavigate,
   useFetcher,
+  Link,
 } from "react-router-dom";
 import styled from "styled-components";
 
@@ -439,12 +439,11 @@ export function Activities() {
       {folderId ? (
         <Box style={{ marginLeft: "15px", marginTop: "-30px", float: "left" }}>
           <Link
-            href={`/activities/${userId}${parentFolderId ? "/" + parentFolderId : ""}`}
+            to={`/activities/${userId}${parentFolderId ? "/" + parentFolderId : ""}`}
             style={{
               color: "var(--mainBlue)",
             }}
           >
-            {" "}
             &lt; Back
           </Link>
         </Box>
