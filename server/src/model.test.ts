@@ -84,7 +84,6 @@ test("New user has no content", async () => {
   });
   expect(docs).toStrictEqual({
     content: [],
-    name: "vitest user",
     notMe: false,
   });
 });
