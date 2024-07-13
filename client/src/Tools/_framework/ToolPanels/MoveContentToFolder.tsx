@@ -40,7 +40,7 @@ export default function MoveContentToFolder({ isOpen, onClose, id }) {
       async function saveParentId() {
         const {
           data: { parentFolderId, name },
-        } = await axios.get(`/api/getParentFolder/${id}`);
+        } = await axios.get(`/api/getMyContentInfo/${id}`);
         updateActiveView(parentFolderId);
         setParentId((_) => parentFolderId);
         setContentName((_) => name);
@@ -56,12 +56,46 @@ export default function MoveContentToFolder({ isOpen, onClose, id }) {
   });
   async function updateActiveView(newActiveFolderId: number | null) {
     const {
-      data: { folder, content },
-    } = await axios.get(
-      `/api/getMyFolderContentSparse/${newActiveFolderId ?? ""}`,
-    );
-    setActiveView((_) => {
-      return { folder, contents: content };
+      data: {
+        folder: { content: contentFromApi },
+      },
+    } = await axios.get(`/api/getFolderContent/${newActiveFolderId ?? ""}`);
+
+    const content = contentFromApi
+      .map((item) => {
+        return {
+          isFolder: item.isFolder,
+          name: item.name,
+          id: item.id,
+        };
+      })
+      .sort((a, b) => {
+        if (a.isFolder && !b.isFolder) {
+          return -1;
+        } else if (b.isFolder && !a.isFolder) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+
+    let folderData;
+    if (newActiveFolderId) {
+      const { data: contentInfo } = await axios.get(
+        `/api/getMyContentInfo/${newActiveFolderId}`,
+      );
+
+      folderData = {
+        name: contentInfo.name,
+        id: newActiveFolderId,
+        parentFolderId: contentInfo.parentFolderId,
+      };
+    } else {
+      folderData = null;
+    }
+
+    const folder = setActiveView((_) => {
+      return { folder: folderData, contents: content };
     });
   }
 

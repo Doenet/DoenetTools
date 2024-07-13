@@ -2446,66 +2446,27 @@ export async function getFolderContent({
     orderBy: { sortIndex: "asc" },
   });
 
-  const user = await prisma.users.findUniqueOrThrow({
-    where: { userId: ownerId },
-    select: { name: true },
-  });
-
   return {
     content,
-    name: user.name,
     notMe,
   };
 }
 
-// TODO: Currently only accesses your own content. Do we want to change this?
-export async function getParentFolder(id: number, loggedInUser: number) {
+/**
+ * Get the basic info about a user's own content item using its id
+ * @param id
+ * @param loggedInUser
+ */
+export async function getMyContentInfo(id: number, loggedInUser: number) {
   return await prisma.content.findUniqueOrThrow({
     where: { id, isDeleted: false, ownerId: loggedInUser },
     select: {
-      // TODO: Including name here is a workaround that probably doesn't make sense. We need it for the MoveToFolder menu
       name: true,
       parentFolderId: true,
-    },
-  });
-}
-
-export async function getMyFolderContentSparse({
-  folderId,
-  loggedInUserId,
-}: {
-  folderId: number | null;
-  loggedInUserId: number;
-}) {
-  let currentFolderData = null;
-  if (folderId !== null) {
-    // if ask for a folder, make sure it exists and is allowed to be seen
-    currentFolderData = await prisma.content.findUniqueOrThrow({
-      where: {
-        ownerId: loggedInUserId,
-        id: folderId,
-        isDeleted: false,
-      },
-      select: { name: true, id: true, parentFolderId: true },
-    });
-  }
-
-  const content = await prisma.content.findMany({
-    where: {
-      ownerId: loggedInUserId,
-      isDeleted: false,
-      parentFolderId: folderId,
-    },
-    select: {
-      id: true,
       isFolder: true,
-      name: true,
+      isPublic: true,
+      createdAt: true,
+      lastEdited: true,
     },
-    orderBy: [{ isFolder: "desc" }, { sortIndex: "asc" }],
   });
-
-  return {
-    folder: currentFolderData,
-    content,
-  };
 }
