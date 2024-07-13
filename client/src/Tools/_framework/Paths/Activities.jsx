@@ -16,6 +16,7 @@ import {
   Drawer,
   MenuItem,
   Heading,
+  Link,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -123,13 +124,13 @@ export async function action({ request, params }) {
   } else if (formObj?._action == "Move") {
     await axios.post(`/api/moveContent`, {
       id: formObj.id,
-      desiredParentFolderId: params.folderId,
+      desiredParentFolderId: formObj.folderId,
       desiredPosition: formObj.desiredPosition,
     });
     return true;
-  } else if (formObj._action == "update name") {
+  } else if (formObj._action == "update title") {
     //Don't let name be blank
-    let name = formObj?.cardName?.trim();
+    let name = formObj?.cardTitle?.trim();
     if (name == "") {
       name = "Untitled " + (formObj.isFolder ? "Folder" : "Activity");
     }
@@ -157,6 +158,8 @@ export async function loader({ params }) {
     folderId: params.folderId ?? null,
     folder: data.folder,
     allDoenetmlVersions: data.allDoenetmlVersions,
+    userId: params.userId,
+    parentFolderId: data.folder.parentFolderId,
   };
 }
 
@@ -224,7 +227,8 @@ function ActivitySettingsDrawer({
 
 export function Activities() {
   let context = useOutletContext();
-  let { folderId, folder, allDoenetmlVersions } = useLoaderData();
+  let { folderId, folder, allDoenetmlVersions, userId, parentFolderId } =
+    useLoaderData();
   const controlsBtnRef = useRef(null);
   const navigate = useNavigate();
 
@@ -263,19 +267,19 @@ export function Activities() {
   ) {
     return (
       <>
+        <MenuItem
+          data-test={`Make ${isPublic ? "Private" : "Public"} Menu Item`}
+          onClick={() => {
+            fetcher.submit(
+              { _action: "Update Public", isPublic, id },
+              { method: "post" },
+            );
+          }}
+        >
+          Make {isPublic ? "Private" : "Public"}
+        </MenuItem>
         {!isFolder ? (
           <>
-            <MenuItem
-              data-test={`Make ${isPublic ? "Private" : "Public"} Menu Item`}
-              onClick={() => {
-                fetcher.submit(
-                  { _action: "Update Public", isPublic, id },
-                  { method: "post" },
-                );
-              }}
-            >
-              Make {isPublic ? "Private" : "Public"}
-            </MenuItem>
             <MenuItem
               data-test={"Duplicate Activity"}
               onClick={() => {
@@ -432,6 +436,19 @@ export function Activities() {
           </Button>
         </div>
       </Box>
+      {folderId ? (
+        <Box style={{ marginLeft: "15px", marginTop: "-30px", float: "left" }}>
+          <Link
+            href={`/activities/${userId}${parentFolderId ? "/" + parentFolderId : ""}`}
+            style={{
+              color: "var(--mainBlue)",
+            }}
+          >
+            {" "}
+            &lt; Back
+          </Link>
+        </Box>
+      ) : null}
       <ActivitiesSection data-test="Public Activities">
         <Wrap p="10px" overflow="visible">
           {folder.content.length < 1 ? (
@@ -456,7 +473,8 @@ export function Activities() {
                   <ContentCard
                     key={`Card${activity.id}`}
                     {...activity}
-                    fullName={folder.name}
+                    title={activity.name}
+                    ownerName={folder.name}
                     menuItems={getCardMenuList(
                       activity.isPublic,
                       activity.isFolder,
@@ -465,15 +483,17 @@ export function Activities() {
                       position,
                       folder.content.length,
                     )}
+                    suppressAvatar={true}
+                    showOwnerName={false}
                     imageLink={
                       activity.isFolder
-                        ? `/activities/${activity.ownerId}${activity.id ? "/" + activity.id : ""}`
+                        ? `/activities/${activity.ownerId}/${activity.id}`
                         : activity.isAssigned
                           ? `/assignmentEditor/${activity.id}`
                           : `/activityEditor/${activity.id}`
                     }
-                    editable={true}
-                    autoFocusName={folderJustCreated === activity.id}
+                    editableTitle={true}
+                    autoFocusTitle={folderJustCreated === activity.id}
                   />
                 );
               })}
