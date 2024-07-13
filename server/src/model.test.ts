@@ -46,6 +46,13 @@ import {
   moveContent,
   deleteFolder,
   getAssignedScores,
+  addKeywordInfo,
+  getAllKeywords,
+  updateKeywordInfo,
+  deleteKeywordInfo,
+  addKeywordToActivity,
+  getKeywordsOnActivity,
+  removeKeywordFromActivity,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -3898,5 +3905,111 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
       score: 0.9,
       user: { name: newUser3!.name },
     },
+  ]);
+});
+
+test("Only admins can edit keyword list", async () => {
+  const { userId: adminId } = await createTestAdminUser();
+  const { userId } = await createTestUser();
+  const newKeyword = "vitest-keyword-" + new Date().toJSON();
+
+  // Add
+  await expect(() => addKeywordInfo(newKeyword, userId)).rejects.toThrowError(
+    "admin",
+  );
+  const keywordId = await addKeywordInfo(newKeyword, adminId);
+  {
+    const allKeywords = await getAllKeywords();
+    expect(allKeywords).toContainEqual({
+      id: keywordId,
+      name: newKeyword,
+    });
+  }
+
+  // Update
+  const secondKeyword = newKeyword + "-EDITED";
+  await expect(() =>
+    updateKeywordInfo(keywordId, secondKeyword, userId),
+  ).rejects.toThrowError("admin");
+  await updateKeywordInfo(keywordId, secondKeyword, adminId);
+  {
+    const allKeywords = await getAllKeywords();
+    expect(allKeywords).toContainEqual({
+      id: keywordId,
+      name: secondKeyword,
+    });
+  }
+
+  // Remove
+  await expect(() => deleteKeywordInfo(keywordId, userId)).rejects.toThrowError(
+    "admin",
+  );
+  await deleteKeywordInfo(keywordId, adminId);
+  {
+    const allKeywords = await getAllKeywords();
+    expect(allKeywords).not.toContainEqual({
+      id: keywordId,
+      name: secondKeyword,
+    });
+  }
+});
+
+test("Activity keywords can only be edited by activity owner", async () => {
+  const { userId } = await createTestUser();
+  const { userId: otherId } = await createTestUser();
+  const allKeywords = await getAllKeywords();
+  const { id: keywordAlgebraId } = allKeywords.find(
+    (k) => k.name === "Algebra",
+  )!;
+  const { activityId } = await createActivity(userId, null);
+
+  // Add
+  await expect(() =>
+    addKeywordToActivity(activityId, keywordAlgebraId, otherId),
+  ).rejects.toThrowError();
+  await addKeywordToActivity(activityId, keywordAlgebraId, userId);
+  {
+    const keywords = await getKeywordsOnActivity(activityId, userId);
+    expect(keywords).toEqual([{ id: keywordAlgebraId, name: "Algebra" }]);
+  }
+
+  // Remove
+  await expect(() =>
+    removeKeywordFromActivity(activityId, keywordAlgebraId, otherId),
+  ).rejects.toThrowError();
+  await removeKeywordFromActivity(activityId, keywordAlgebraId, userId);
+  {
+    const keywords = await getKeywordsOnActivity(activityId, userId);
+    expect(keywords).toEqual([]);
+  }
+});
+
+test("Get keywords of public activity", async () => {
+  const { userId: ownerId } = await createTestUser();
+  const allKeywords = await getAllKeywords();
+  const { activityId } = await createActivity(ownerId, null);
+  const { id: keywordAlgebraId } = allKeywords.find(
+    (k) => k.name === "Algebra",
+  )!;
+  const { id: keywordComplexNumId } = allKeywords.find(
+    (k) => k.name === "Complex numbers",
+  )!;
+  await addKeywordToActivity(activityId, keywordAlgebraId, ownerId);
+  await addKeywordToActivity(activityId, keywordComplexNumId, ownerId);
+
+  const { userId: viewerId } = await createTestUser();
+  await expect(() =>
+    getKeywordsOnActivity(activityId, viewerId),
+  ).rejects.toThrowError("cannot be accessed");
+
+  await updateContent({
+    id: activityId,
+    isPublic: true,
+    ownerId,
+  });
+  const keywords = await getKeywordsOnActivity(activityId, viewerId);
+  expect(keywords).toEqual([
+    { id: keywordAlgebraId, name: "Algebra" },
+    { id: keywordComplexNumId, name: "Complex numbers" },
   ]);
 });

@@ -2458,3 +2458,176 @@ export async function getFolderContent({
     parentFolderId: parentFolder ? parentFolder.parentFolderId : null,
   };
 }
+
+export async function addKeywordInfo(
+  keywordName: string,
+  loggedInUserId: number,
+) {
+  await mustBeAdmin(
+    loggedInUserId,
+    "You must be an administrator to edit keyword infos",
+  );
+
+  const { id } = await prisma.keywordInfo.create({
+    data: {
+      name: keywordName,
+    },
+  });
+  return id;
+}
+
+export async function updateKeywordInfo(
+  keywordId: number,
+  newKeywordName: string,
+  loggedInUserId: number,
+) {
+  await mustBeAdmin(
+    loggedInUserId,
+    "You must be an administrator to edit keyword infos.",
+  );
+
+  await prisma.keywordInfo.update({
+    where: {
+      id: keywordId,
+    },
+    data: {
+      name: newKeywordName,
+    },
+  });
+}
+
+export async function deleteKeywordInfo(
+  keywordId: number,
+  loggedInUserId: number,
+) {
+  await mustBeAdmin(
+    loggedInUserId,
+    "You must be an administrator to edit keyword infos.",
+  );
+  // Delete keyword info and content tags all in one transaction, so both succeed or fail together
+  const deleteTags = prisma.contentKeyword.deleteMany({
+    where: {
+      keywordId,
+    },
+  });
+  const deleteInfo = prisma.keywordInfo.delete({
+    where: {
+      id: keywordId,
+    },
+  });
+  await prisma.$transaction([deleteTags, deleteInfo]);
+}
+
+export async function getAllKeywords() {
+  return await prisma.keywordInfo.findMany();
+}
+
+export async function addKeywordToActivity(
+  activityId: number,
+  keywordId: number,
+  loggedInUserId: number,
+) {
+  const activity = await prisma.content.findUnique({
+    where: {
+      id: activityId,
+      isFolder: false,
+      isDeleted: false,
+      ownerId: loggedInUserId,
+    },
+    select: {
+      // not using this, we just need to select one field
+      id: true,
+    },
+  });
+  if (!activity) {
+    throw new InvalidRequestError(
+      "This activity does not exist or is not owned by this user.",
+    );
+  }
+  await prisma.contentKeyword.create({
+    data: {
+      contentId: activityId,
+      keywordId,
+    },
+  });
+}
+
+export async function removeKeywordFromActivity(
+  activityId: number,
+  keywordId: number,
+  loggedInUserId: number,
+) {
+  const activity = await prisma.content.findUnique({
+    where: {
+      id: activityId,
+      isFolder: false,
+      isDeleted: false,
+      ownerId: loggedInUserId,
+    },
+    select: {
+      // not using this, we just need to select one field
+      id: true,
+    },
+  });
+  if (!activity) {
+    throw new InvalidRequestError(
+      "This activity does not exist or is not owned by this user.",
+    );
+  }
+  await prisma.contentKeyword.delete({
+    where: {
+      contentId_keywordId: { contentId: activityId, keywordId },
+    },
+  });
+}
+
+export async function getKeywordsOnActivity(
+  activityId: number,
+  loggedInUserId: number,
+) {
+  const activity = await prisma.content.findUnique({
+    where: {
+      id: activityId,
+      isFolder: false,
+      isDeleted: false,
+      OR: [
+        {
+          ownerId: loggedInUserId,
+        },
+        {
+          isPublic: true,
+        },
+      ],
+    },
+    select: {
+      // not using this, we just need to select one field
+      id: true,
+    },
+  });
+  if (!activity) {
+    throw new InvalidRequestError(
+      "This activity does not exist or cannot be accessed.",
+    );
+  }
+
+  const keywords = await prisma.contentKeyword.findMany({
+    where: {
+      contentId: activityId,
+    },
+    select: {
+      keywordId: true,
+      keyword: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+  const keywordsFormatted = keywords.map((k) => {
+    return {
+      id: k.keywordId,
+      name: k.keyword.name,
+    };
+  });
+  return keywordsFormatted;
+}

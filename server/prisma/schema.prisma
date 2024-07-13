@@ -28,6 +28,7 @@ model content {
   documents        documents[]
   assignmentScores assignmentScores[]
   promotedContent  promotedContent[]
+  contentKeyword   contentKeyword[]
 
   @@index([ownerId, parentFolderId, sortIndex])
   @@index([classCode])
@@ -178,4 +179,19 @@ model promotedContent {
   promotedGroup   promotedContentGroups @relation(fields: [promotedGroupId], references: [promotedGroupId])
 
   @@id([activityId, promotedGroupId])
+}
+
+model contentKeyword {
+  contentId Int
+  keywordId Int
+  content   content     @relation(fields: [contentId], references: [id])
+  keyword   keywordInfo @relation(fields: [keywordId], references: [id])
+
+  @@id([contentId, keywordId])
+}
+
+model keywordInfo {
+  id             Int              @id @default(autoincrement())
+  name           String           @unique
+  contentKeyword contentKeyword[]
 }

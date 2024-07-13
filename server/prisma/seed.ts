@@ -78,6 +78,17 @@ async function main() {
     },
   });
 
+  const keyword1 = await prisma.keywordInfo.upsert({
+    where: { name: "Algebra" },
+    update: { name: "Algebra" },
+    create: { name: "Algebra" },
+  });
+  const keyword2 = await prisma.keywordInfo.upsert({
+    where: { name: "Complex numbers" },
+    update: { name: "Complex numbers" },
+    create: { name: "Complex numbers" },
+  });
+
   console.log({
     old_version,
     current_version,
@@ -87,6 +98,8 @@ async function main() {
     group_sample,
     group_k12,
     group_unfeatured,
+    keyword1,
+    keyword2,
   });
 }
 main()
