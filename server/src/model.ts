@@ -2459,6 +2459,12 @@ export async function getFolderContent({
   };
 }
 
+/**
+ * Create a new keyword entry. For admins only.
+ * @param keywordName
+ * @param loggedInUserId
+ * @returns id
+ */
 export async function addKeywordInfo(
   keywordName: string,
   loggedInUserId: number,
@@ -2476,6 +2482,12 @@ export async function addKeywordInfo(
   return id;
 }
 
+/**
+ * Edit the name of an existing keyword entry. For admins only.
+ * @param keywordId
+ * @param newKeywordName
+ * @param loggedInUserId
+ */
 export async function updateKeywordInfo(
   keywordId: number,
   newKeywordName: string,
@@ -2496,6 +2508,11 @@ export async function updateKeywordInfo(
   });
 }
 
+/**
+ * Delete a keyword entry. All activities with this keyword attached to them will have it removed. For admins only.
+ * @param keywordId
+ * @param loggedInUserId
+ */
 export async function deleteKeywordInfo(
   keywordId: number,
   loggedInUserId: number,
@@ -2518,10 +2535,19 @@ export async function deleteKeywordInfo(
   await prisma.$transaction([deleteTags, deleteInfo]);
 }
 
+/**
+ * Get a list of all possible keywords. Returns keyword ids and names.
+ */
 export async function getAllKeywords() {
   return await prisma.keywordInfo.findMany();
 }
 
+/**
+ * Add a keyword to an activity. The activity must be owned by the API caller.
+ * @param activityId
+ * @param keywordId
+ * @param loggedInUserId
+ */
 export async function addKeywordToActivity(
   activityId: number,
   keywordId: number,
@@ -2552,6 +2578,12 @@ export async function addKeywordToActivity(
   });
 }
 
+/**
+ * Remove a keyword from an activity. The activity must be owned by the API caller.
+ * @param activityId
+ * @param keywordId
+ * @param loggedInUserId
+ */
 export async function removeKeywordFromActivity(
   activityId: number,
   keywordId: number,
@@ -2581,6 +2613,12 @@ export async function removeKeywordFromActivity(
   });
 }
 
+/**
+ * Get all keywords on an activity. The activity must be either public or owned by
+ * the API caller.
+ * @param activityId
+ * @param loggedInUserId
+ */
 export async function getKeywordsOnActivity(
   activityId: number,
   loggedInUserId: number,

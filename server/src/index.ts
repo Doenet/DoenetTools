@@ -50,6 +50,12 @@ import {
   moveContent,
   getFolderContent,
   getAssignedScores,
+  addKeywordInfo,
+  updateKeywordInfo,
+  deleteKeywordInfo,
+  addKeywordToActivity,
+  removeKeywordFromActivity,
+  getKeywordsOnActivity,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -1246,6 +1252,146 @@ app.get(
       } else {
         next(e);
       }
+    }
+  },
+);
+
+app.post(
+  "/api/addKeywordInfo",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { keywordName } = req.body;
+    const loggedInUserId = Number(req.cookies.userId);
+    try {
+      const id = await addKeywordInfo(keywordName, loggedInUserId);
+      res.send({ id });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        if (e.code === "P2002") {
+          res.status(400).send("A keyword with that name already exists.");
+          return;
+        }
+      } else if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/updateKeywordInfo",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { keywordId, newKeywordName } = req.body;
+    const loggedInUserId = Number(req.cookies.userId);
+    try {
+      await updateKeywordInfo(
+        Number(keywordId),
+        newKeywordName,
+        loggedInUserId,
+      );
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        if (e.code === "P2002") {
+          res.status(400).send("A keyword with that name already exists.");
+          return;
+        }
+      } else if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/deleteKeywordInfo",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { keywordId } = req.body;
+      const loggedInUserId = Number(req.cookies.userId);
+      await deleteKeywordInfo(Number(keywordId), loggedInUserId);
+      res.send({});
+    } catch (e) {
+      if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/addKeywordToActivity",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { keywordId, activityId } = req.body;
+    const loggedInUserId = Number(req.cookies.userId);
+    try {
+      await addKeywordToActivity(keywordId, activityId, loggedInUserId);
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        if (e.code === "P2002") {
+          res.status(400).send("This activity already has that keyword.");
+          return;
+        } else if (e.code === "P2003") {
+          res.status(400).send("That keyword does not exist.");
+          return;
+        }
+      } else if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/removeKeywordFromActivity",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const keywordId = Number(req.body.keywordId);
+      const activityId = Number(req.body.activityId);
+      const loggedInUserId = Number(req.cookies.userId);
+
+      await removeKeywordFromActivity(keywordId, activityId, loggedInUserId);
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === "P2025") {
+          res.status(400).send("That keyword does not exist.");
+          return;
+        }
+      } else if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.get(
+  "/api/getKeywordsOnActivity",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { activityId } = req.body;
+      const loggedInUserId = Number(req.cookies.userId);
+      const keywords = await getKeywordsOnActivity(activityId, loggedInUserId);
+      res.send(keywords);
+    } catch (e) {
+      if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
     }
   },
 );
