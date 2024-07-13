@@ -30,7 +30,7 @@ import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
-import { GeneralActivityControls } from "./ActivityEditor";
+import { GeneralContentControls } from "../ToolPanels/GeneralContentControls.tsx";
 import axios from "axios";
 
 // what is a better solution than this?
@@ -210,7 +210,7 @@ function ActivitySettingsDrawer({
 
         <DrawerBody>
           {id && (
-            <GeneralActivityControls
+            <GeneralContentControls
               fetcher={fetcher}
               activityId={id}
               docId={activityData.docId}
