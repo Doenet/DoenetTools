@@ -1183,7 +1183,7 @@ export async function movePromotedContentGroup(
     throw Error("desiredPosition must be an integer");
   }
 
-  // find the sort indices of all content in folder other than moved content
+  // find the sort indices of all groups other then moved group
   const currentSortIndices = (
     await prisma.promotedContentGroups.findMany({
       where: {
@@ -1413,7 +1413,7 @@ export async function movePromotedContent(
     throw Error("desiredPosition must be an integer");
   }
 
-  // find the sort indices of all content in folder other than moved content
+  // find the sort indices of all promoted content in group other than moved content
   const currentSortIndices = (
     await prisma.promotedContent.findMany({
       where: {

@@ -123,8 +123,7 @@ export async function action({ request, params }) {
   } else if (formObj?._action == "Move") {
     await axios.post(`/api/moveContent`, {
       id: formObj.id,
-      desiredParentFolderId:
-        formObj.folderId === "null" ? null : formObj.folderId,
+      desiredParentFolderId: params.folderId,
       desiredPosition: formObj.desiredPosition,
     });
     return true;
