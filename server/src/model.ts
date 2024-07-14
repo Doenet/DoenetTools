@@ -2442,6 +2442,16 @@ export async function getFolderContent({
       isPublic: true,
       isAssigned: true,
       documents: { select: { id: true, doenetmlVersion: true } },
+      contentKeyword: {
+        select: {
+          keyword: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
     },
     orderBy: { sortIndex: "asc" },
   });

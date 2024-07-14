@@ -1332,7 +1332,7 @@ app.post(
     const { keywordId, activityId } = req.body;
     const loggedInUserId = Number(req.cookies.userId);
     try {
-      await addKeywordToActivity(keywordId, activityId, loggedInUserId);
+      await addKeywordToActivity(activityId, keywordId, loggedInUserId);
       res.send({});
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {

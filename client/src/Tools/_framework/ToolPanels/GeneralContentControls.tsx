@@ -16,7 +16,7 @@ import {
   Select,
 } from "@chakra-ui/react";
 import axios from "axios";
-import React from "react";
+import React, { useEffect } from "react";
 import { useCallback, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
@@ -32,7 +32,12 @@ export function GeneralContentControls({
   activityData,
   allDoenetmlVersions,
 }) {
-  let { isPublic, name, imagePath: dataImagePath } = activityData;
+  let {
+    isPublic,
+    name,
+    imagePath: dataImagePath,
+    contentKeyword: keywords,
+  } = activityData;
 
   let numberOfFilesUploading = useRef(0);
   let [imagePath, setImagePath] = useState(dataImagePath);
@@ -268,88 +273,39 @@ export function GeneralContentControls({
           <FormControl>
             <Flex flexDirection="column" width="100%" rowGap={6}>
               <FormLabel mt="16px">Keywords</FormLabel>
-              {learningOutcomes.map((outcome, i) => {
-                return (
-                  <Flex key={`keywords${i}`} columnGap={4}>
-                    <Input
-                      size="sm"
-                      value={outcome}
-                      data-test={`learning outcome ${i}`}
-                      // width="300px"
-                      onChange={(e) => {
-                        setLearningOutcomes((prev) => {
-                          let next = [...prev];
-                          next[i] = e.target.value;
-                          return next;
-                        });
-                      }}
-                      onBlur={() =>
-                        saveDataToServer(learningOutcomes, undefined, undefined)
-                      }
-                      onKeyDown={(e) => {
-                        if (e.key == "Enter") {
-                          saveDataToServer(
-                            learningOutcomes,
-                            undefined,
-                            undefined,
-                          );
-                        }
-                      }}
-                      placeholder={`Learning Outcome #${i + 1}`}
-                      data-text={`Learning Outcome #${i}`}
-                    />
-                    <IconButton
-                      variant="outline"
-                      data-test={`delete learning outcome ${i} button`}
-                      size="sm"
-                      color="doenet.mainRed"
-                      borderColor="doenet.mainRed"
-                      // background="doenet.mainRed"
-                      icon={<HiOutlineX />}
-                      onClick={() => {
-                        let nextLearningOutcomes = [...learningOutcomes];
-                        if (learningOutcomes.length < 2) {
-                          nextLearningOutcomes = [""];
-                        } else {
-                          nextLearningOutcomes.splice(i, 1);
-                        }
+              {keywords.map((kw, i) => (
+                <Text key={`keyword#${i}`}>{kw.keyword.name}</Text>
+              ))}
 
-                        setLearningOutcomes(nextLearningOutcomes);
-                        saveDataToServer(
-                          nextLearningOutcomes,
-                          undefined,
-                          undefined,
-                        );
-                      }}
-                      aria-label="Delete learning outcome"
-                    />
-                  </Flex>
-                );
-              })}
-              <Center>
-                <IconButton
-                  isDisabled={learningOutcomes.length > 9}
-                  data-test={`add a learning outcome button`}
-                  variant="outline"
-                  width="80%"
-                  size="xs"
-                  icon={<HiPlus />}
-                  onClick={() => {
-                    let nextLearningOutcomes = [...learningOutcomes];
-                    if (learningOutcomes.length < 9) {
-                      nextLearningOutcomes.push("");
-                    }
-
-                    setLearningOutcomes(nextLearningOutcomes);
-                    saveDataToServer(
-                      nextLearningOutcomes,
-                      undefined,
-                      undefined,
+              <Input
+                size="sm"
+                onChange={(e) => {}}
+                onBlur={() => {
+                  // saveDataToServer(learningOutcomes, undefined, undefined)
+                  fetcher.submit(
+                    {
+                      _action: "add keyword",
+                      id: activityId,
+                      //TODO: keyword id
+                    },
+                    { method: "post" },
+                  );
+                }}
+                onKeyDown={(e) => {
+                  if (e.key == "Enter") {
+                    // saveDataToServer(learningOutcomes, undefined, undefined);
+                    fetcher.submit(
+                      {
+                        _action: "add keyword",
+                        id: activityId,
+                        //TODO: keyword id
+                      },
+                      { method: "post" },
                     );
-                  }}
-                  aria-label="Add learning outcome"
-                />
-              </Center>
+                  }
+                }}
+                placeholder={`Enter a keyword`}
+              ></Input>
             </Flex>
           </FormControl>
         ) : null}
@@ -456,7 +412,7 @@ export function GeneralContentControls({
                 nextIsPublic = true;
               }
               setCheckboxIsPublic(nextIsPublic);
-              saveDataToServer(nextIsPublic, undefined, undefined);
+              saveDataToServer(undefined, nextIsPublic, undefined);
             }}
           >
             Public
@@ -480,8 +436,8 @@ export function GeneralContentControls({
                 saveDataToServer(nextDoenetmlVersionId, undefined, undefined);
               }}
             >
-              {allDoenetmlVersions.map((version) => (
-                <option value={version.versionId} key={version.versionId}>
+              {allDoenetmlVersions.map((version, i) => (
+                <option value={version.versionId} key={`doenetMLVersion#${i}`}>
                   {version.displayedVersion}
                 </option>
               ))}

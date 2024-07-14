@@ -51,17 +51,17 @@ export async function action({ request, params }) {
     if (formObj.learningOutcomes) {
       learningOutcomes = JSON.parse(formObj.learningOutcomes);
     }
-    let isPublic;
 
+    let isPublic;
     if (formObj.isPublic) {
       isPublic = formObj.isPublic === "true";
     }
 
     await axios.post("/api/updateContentSettings", {
+      id: formObj.activityId,
       name,
       imagePath: formObj.imagePath,
       isPublic,
-      id: formObj.activityId,
       learningOutcomes,
     });
 
@@ -136,6 +136,12 @@ export async function action({ request, params }) {
     await axios.post(`/api/updateContentName`, {
       id: Number(formObj.id),
       name,
+    });
+    return true;
+  } else if (formObj._action == "add keyword") {
+    await axios.post(`/api/addKeywordToActivity`, {
+      activityId: Number(formObj.id),
+      keywordId: 2,
     });
     return true;
   } else if (formObj?._action == "noop") {
