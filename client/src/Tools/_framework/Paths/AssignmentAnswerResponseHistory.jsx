@@ -28,15 +28,15 @@ export async function loader({ params, request }) {
 
   const { data } = await axios.get(
     `/api/getSubmittedResponseHistory/${params.assignmentId}/${params.docId}/${
-      params.docVersionId
+      params.docVersionNum
     }/${params.userId}?answerId=${encodeURIComponent(answerId)}`,
   );
 
   const assignmentId = Number(params.assignmentId);
   const docId = Number(params.docId);
-  const docVersionId = Number(params.docVersionId);
+  const docVersionNum = Number(params.docVersionNum);
   const userId = Number(params.userId);
-  const assignment = data.assignment;
+  const activityName = data.activityName;
   const responseData = data.submittedResponses;
   const maxCredit = responseData.reduce(
     (a, c) => Math.max(c.creditAchieved, a),
@@ -46,9 +46,9 @@ export async function loader({ params, request }) {
   return {
     answerId,
     docId,
-    docVersionId,
+    docVersionNum,
     userId,
-    assignment,
+    activityName,
     responseData,
     assignmentId,
     maxCredit,
@@ -59,16 +59,16 @@ export function AssignmentAnswerResponseHistory() {
   const {
     assignmentId,
     docId,
-    docVersionId,
+    docVersionNum,
     answerId,
-    assignment,
+    activityName,
     responseData,
     maxCredit,
   } = useLoaderData();
 
   useEffect(() => {
-    document.title = `${assignment.name} - Doenet`;
-  }, [assignment.name]);
+    document.title = `${activityName} - Doenet`;
+  }, [activityName]);
 
   const [responses, setResponses] = useState([]);
 
@@ -80,7 +80,7 @@ export function AssignmentAnswerResponseHistory() {
     <>
       <Box style={{ marginTop: 15, marginLeft: 15 }}>
         <Link
-          href={`/assignmentAnswerResponses/${assignmentId}/${docId}/${docVersionId}?answerId=${encodeURIComponent(
+          href={`/assignmentAnswerResponses/${assignmentId}/${docId}/${docVersionNum}?answerId=${encodeURIComponent(
             answerId,
           )}`}
           style={{
@@ -92,7 +92,7 @@ export function AssignmentAnswerResponseHistory() {
         </Link>
       </Box>
 
-      <Heading heading={assignment.name} />
+      <Heading heading={activityName} />
 
       <Heading
         subheading={`Responses submitted by ${responseData[0]?.user.name} for ${answerId}`}

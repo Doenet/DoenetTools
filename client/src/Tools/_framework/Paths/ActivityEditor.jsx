@@ -95,11 +95,11 @@ export async function action({ params, request }) {
       isPublic = formObj.isPublic === "true";
     }
 
-    await axios.post("/api/updateActivitySettings", {
+    await axios.post("/api/updateContentSettings", {
       name,
       imagePath: formObj.imagePath,
       isPublic,
-      activityId: Number(params.activityId),
+      id: Number(params.activityId),
       learningOutcomes,
     });
 
@@ -1076,7 +1076,7 @@ export function GeneralActivityControls({
           <FormControl>
             <FormLabel mt="16px">DoenetML version</FormLabel>
             <Select
-              value={doenetmlVersion.versionId}
+              value={doenetmlVersion.id}
               onChange={(e) => {
                 // TODO: do we worry about this pattern?
                 // If saveDataToServer is unsuccessful, the client doenetmlVersion
@@ -1084,14 +1084,14 @@ export function GeneralActivityControls({
                 // (See TODO from near where doenetmlVersion is defined)
                 let nextDoenetmlVersionId = e.target.value;
                 let nextDoenetmlVersion = allDoenetmlVersions.find(
-                  (v) => v.versionId == nextDoenetmlVersionId,
+                  (v) => v.id == nextDoenetmlVersionId,
                 );
                 setDoenetmlVersion(nextDoenetmlVersion);
                 saveDataToServer({ nextDoenetmlVersionId });
               }}
             >
               {allDoenetmlVersions.map((version) => (
-                <option value={version.versionId} key={version.versionId}>
+                <option value={version.id} key={version.id}>
                   {version.displayedVersion}
                 </option>
               ))}

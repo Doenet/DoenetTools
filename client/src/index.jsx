@@ -42,7 +42,6 @@ import {
 } from "./Tools/_framework/Paths/ActivityViewer";
 import {
   loader as assignedLoader,
-  action as assignedAction,
   Assigned,
 } from "./Tools/_framework/Paths/Assigned";
 import {
@@ -281,7 +280,6 @@ const router = createBrowserRouter([
       {
         path: "assigned",
         loader: assignedLoader,
-        action: assignedAction,
         element: <Assigned />,
         errorElement: <ErrorPage />,
       },
@@ -313,14 +311,14 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentAnswerResponses/:assignmentId/:docId/:docVersionId",
+        path: "assignmentAnswerResponses/:assignmentId/:docId/:docVersionNum",
         loader: assignmentAnswerResponsesLoader,
         action: assignmentAnswerResponsesAction,
         element: <AssignmentAnswerResponses />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentAnswerResponseHistory/:assignmentId/:docId/:docVersionId/:userId",
+        path: "assignmentAnswerResponseHistory/:assignmentId/:docId/:docVersionNum/:userId",
         loader: assignmentAnswerResponseHistoryLoader,
         action: assignmentAnswerResponseHistoryAction,
         element: <AssignmentAnswerResponseHistory />,

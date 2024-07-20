@@ -26,14 +26,14 @@ export async function loader({ params, request }) {
 
   const { data } = await axios.get(
     `/api/getSubmittedResponses/${params.assignmentId}/${params.docId}/${
-      params.docVersionId
+      params.docVersionNum
     }?answerId=${encodeURIComponent(answerId)}`,
   );
 
   let assignmentId = Number(params.assignmentId);
   let docId = Number(params.docId);
-  let docVersionId = Number(params.docVersionId);
-  let assignment = data.assignment;
+  let docVersionNum = Number(params.docVersionNum);
+  let activityName = data.activityName;
 
   // sort response data by user name
   let responseData = data.submittedResponses.toSorted((a, b) => {
@@ -51,8 +51,8 @@ export async function loader({ params, request }) {
   return {
     answerId,
     docId,
-    docVersionId,
-    assignment,
+    docVersionNum,
+    activityName,
     responseData,
     assignmentId,
   };
@@ -62,15 +62,15 @@ export function AssignmentAnswerResponses() {
   const {
     assignmentId,
     docId,
-    docVersionId,
+    docVersionNum,
     answerId,
-    assignment,
+    activityName,
     responseData,
   } = useLoaderData();
 
   useEffect(() => {
-    document.title = `${assignment.name} - Doenet`;
-  }, [assignment.name]);
+    document.title = `${activityName} - Doenet`;
+  }, [activityName]);
 
   const [responses, setResponses] = useState([]);
   const [showNames, setShowNames] = useState(false);
@@ -101,7 +101,7 @@ export function AssignmentAnswerResponses() {
           &lt; Back to assignment data
         </Link>
       </Box>
-      <Heading heading={assignment.name} />
+      <Heading heading={activityName} />
 
       <Heading
         subheading={`${bestOrLatest} responses submitted for ${answerId}`}
@@ -151,7 +151,7 @@ export function AssignmentAnswerResponses() {
                   <Td>
                     <Link
                       style={{ display: "block", color: "var(--mainBlue)" }}
-                      href={`/assignmentAnswerResponseHistory/${assignmentId}/${docId}/${docVersionId}/${
+                      href={`/assignmentAnswerResponseHistory/${assignmentId}/${docId}/${docVersionNum}/${
                         data.userId
                       }?answerId=${encodeURIComponent(answerId)}`}
                     >

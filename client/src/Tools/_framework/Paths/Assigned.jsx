@@ -23,35 +23,6 @@ import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
 import axios from "axios";
 
-export async function action({ request }) {
-  const formData = await request.formData();
-  let formObj = Object.fromEntries(formData);
-
-  if (formObj._action == "update general") {
-    //Don't let name be blank
-    let name = formObj?.name?.trim();
-    if (name == "") {
-      name = "Untitled";
-    }
-
-    await axios.post("/api/updateActivitySettings", {
-      name,
-    });
-
-    return true;
-  } else if (formObj?._action == "Delete") {
-    await axios.post(`/api/deleteAssignment`, {
-      assignmentId: formObj.assignmentId,
-    });
-
-    return true;
-  } else if (formObj?._action == "noop") {
-    return true;
-  }
-
-  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
-}
-
 export async function loader({ params }) {
   const { data: assignmentData } = await axios.get(`/api/getAssigned`);
 

@@ -218,11 +218,11 @@ export function AssignmentData() {
                     </Thead>
                     <Tbody>
                       {answerList.map((answerObj) => {
-                        const key = `/assignmentAnswerResponses/${assignmentId}/${answerObj.docId}/${answerObj.docVersionId}/${answerObj.answerId}`;
+                        const key = `/assignmentAnswerResponses/${assignmentId}/${answerObj.docId}/${answerObj.docVersionNum}/${answerObj.answerId}`;
                         const linkURL = `/assignmentAnswerResponses/${assignmentId}/${
                           answerObj.docId
                         }/${
-                          answerObj.docVersionId
+                          answerObj.docVersionNum
                         }?answerId=${encodeURIComponent(answerObj.answerId)}`;
                         return (
                           <Tr key={key}>
