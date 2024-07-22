@@ -17,6 +17,8 @@ RUN npm i
 # Copy the rest of the code
 COPY server .                
 
+RUN npx prisma generate
+
 # Invoke the build script to transpile code to js
 RUN npm run build       
 
@@ -50,10 +52,10 @@ RUN mkdir -p /app/dist/public/assets
 WORKDIR /app                            
 
 # Copy package.json and package-lock.json
-COPY server/package*.json server/prisma ./                   
+COPY server/package*.json server/prisma ./
 
 # Install only production dependencies
-RUN npm i --only=production             
+RUN npm i --only=production
 
 RUN npx prisma generate
 
