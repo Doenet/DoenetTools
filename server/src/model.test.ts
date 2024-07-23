@@ -9,7 +9,7 @@ import {
   getDoc,
   getActivityEditorData,
   getActivityViewerData,
-  getFolderContent,
+  getMyFolderContent,
   updateDoc,
   searchPublicContent,
   updateContent,
@@ -46,6 +46,7 @@ import {
   moveContent,
   deleteFolder,
   getAssignedScores,
+  getPublicFolderContent,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -76,8 +77,7 @@ async function createTestAdminUser() {
 test("New user has no content", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const docs = await getFolderContent({
-    ownerId: userId,
+  const docs = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: null,
   });
@@ -124,8 +124,7 @@ test("New activity starts out private, then delete it", async () => {
     ],
   });
 
-  const data = await getFolderContent({
-    ownerId: userId,
+  const data = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: null,
   });
@@ -140,8 +139,7 @@ test("New activity starts out private, then delete it", async () => {
     "No content found",
   );
 
-  const dataAfterDelete = await getFolderContent({
-    ownerId: userId,
+  const dataAfterDelete = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: null,
   });
@@ -149,7 +147,7 @@ test("New activity starts out private, then delete it", async () => {
   expect(dataAfterDelete.content.length).toBe(0);
 });
 
-test("getFolderContent returns both public and private content only for owner", async () => {
+test("getMyFolderContent returns both public and private content, getPublicFolderContent returns only public", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
@@ -232,8 +230,7 @@ test("getFolderContent returns both public and private content only for owner", 
     ownerId,
   });
 
-  let ownerContent = await getFolderContent({
-    ownerId,
+  let ownerContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
@@ -259,9 +256,8 @@ test("getFolderContent returns both public and private content only for owner", 
     ]),
   });
 
-  let userContent = await getFolderContent({
+  let userContent = await getPublicFolderContent({
     ownerId,
-    loggedInUserId: userId,
     folderId: null,
   });
   expect(userContent.content.length).eq(2);
@@ -278,8 +274,7 @@ test("getFolderContent returns both public and private content only for owner", 
     ]),
   });
 
-  ownerContent = await getFolderContent({
-    ownerId,
+  ownerContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: publicFolder1Id,
   });
@@ -305,9 +300,8 @@ test("getFolderContent returns both public and private content only for owner", 
     ]),
   });
 
-  userContent = await getFolderContent({
+  userContent = await getPublicFolderContent({
     ownerId,
-    loggedInUserId: userId,
     folderId: publicFolder1Id,
   });
   expect(userContent.content.length).eq(2);
@@ -324,8 +318,7 @@ test("getFolderContent returns both public and private content only for owner", 
     ]),
   });
 
-  ownerContent = await getFolderContent({
-    ownerId,
+  ownerContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: privateFolder1Id,
   });
@@ -352,9 +345,8 @@ test("getFolderContent returns both public and private content only for owner", 
   });
 
   await expect(
-    getFolderContent({
+    getPublicFolderContent({
       ownerId,
-      loggedInUserId: userId,
       folderId: privateFolder1Id,
     }),
   ).rejects.toThrow("No content found");
@@ -457,44 +449,37 @@ test("deleteFolder marks a folder and all its sub content as deleted and prevent
   );
 
   // items can be retrieved
-  let baseContent = await getFolderContent({
-    ownerId: userId,
+  let baseContent = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: null,
   });
   expect(baseContent.content.length).eq(2);
-  let folder1Content = await getFolderContent({
-    ownerId: userId,
+  let folder1Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder1Id,
   });
   expect(folder1Content.content.length).eq(2);
-  let folder2Content = await getFolderContent({
-    ownerId: userId,
+  let folder2Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder2Id,
   });
   expect(folder2Content.content.length).eq(2);
-  let folder3Content = await getFolderContent({
-    ownerId: userId,
+  let folder3Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder3Id,
   });
   expect(folder3Content.content.length).eq(1);
-  let folder4Content = await getFolderContent({
-    ownerId: userId,
+  let folder4Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder4Id,
   });
   expect(folder4Content.content.length).eq(2);
-  let folder5Content = await getFolderContent({
-    ownerId: userId,
+  let folder5Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder5Id,
   });
   expect(folder5Content.content.length).eq(2);
-  let folder6Content = await getFolderContent({
-    ownerId: userId,
+  let folder6Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder6Id,
   });
@@ -517,47 +502,40 @@ test("deleteFolder marks a folder and all its sub content as deleted and prevent
   let deleteResult = await deleteFolder(folder1Id, userId);
   expect(deleteResult.isDeleted).eq(true);
 
-  baseContent = await getFolderContent({
-    ownerId: userId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: null,
   });
   expect(baseContent.content.length).eq(1);
   await expect(
-    getFolderContent({
-      ownerId: userId,
+    getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder1Id,
     }),
   ).rejects.toThrow("No content found");
   await expect(
-    getFolderContent({
-      ownerId: userId,
+    getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder2Id,
     }),
   ).rejects.toThrow("No content found");
   await expect(
-    getFolderContent({
-      ownerId: userId,
+    getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder3Id,
     }),
   ).rejects.toThrow("No content found");
-  folder4Content = await getFolderContent({
-    ownerId: userId,
+  folder4Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder4Id,
   });
   expect(folder4Content.content.length).eq(2);
-  folder5Content = await getFolderContent({
-    ownerId: userId,
+  folder5Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder5Id,
   });
   expect(folder5Content.content.length).eq(2);
-  folder6Content = await getFolderContent({
-    ownerId: userId,
+  folder6Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder6Id,
   });
@@ -580,28 +558,24 @@ test("deleteFolder marks a folder and all its sub content as deleted and prevent
   deleteResult = await deleteFolder(folder5Id, userId);
   expect(deleteResult.isDeleted).eq(true);
 
-  baseContent = await getFolderContent({
-    ownerId: userId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: null,
   });
   expect(baseContent.content.length).eq(1);
-  folder4Content = await getFolderContent({
-    ownerId: userId,
+  folder4Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder4Id,
   });
   expect(folder4Content.content.length).eq(1);
   await expect(
-    getFolderContent({
-      ownerId: userId,
+    getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder5Id,
     }),
   ).rejects.toThrow("No content found");
   await expect(
-    getFolderContent({
-      ownerId: userId,
+    getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder6Id,
     }),
@@ -627,8 +601,7 @@ test("non-owner cannot delete folder", async () => {
   );
 
   // folder is still around
-  getFolderContent({
-    ownerId,
+  getMyFolderContent({
     loggedInUserId: ownerId,
     folderId,
   });
@@ -661,23 +634,19 @@ test("move content to different locations", async () => {
   const { folderId: folder2Id } = await createFolder(ownerId, folder1Id);
   const { folderId: folder3Id } = await createFolder(ownerId, null);
 
-  let baseContent = await getFolderContent({
-    ownerId,
+  let baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
-  let folder1Content = await getFolderContent({
-    ownerId,
+  let folder1Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder1Id,
   });
-  let folder2Content = await getFolderContent({
-    ownerId,
+  let folder2Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder2Id,
   });
-  let folder3Content = await getFolderContent({
-    ownerId,
+  let folder3Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder3Id,
   });
@@ -702,8 +671,7 @@ test("move content to different locations", async () => {
     desiredPosition: 1,
     ownerId,
   });
-  baseContent = await getFolderContent({
-    ownerId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
@@ -720,8 +688,7 @@ test("move content to different locations", async () => {
     desiredPosition: 0,
     ownerId,
   });
-  baseContent = await getFolderContent({
-    ownerId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
@@ -738,8 +705,7 @@ test("move content to different locations", async () => {
     desiredPosition: 10,
     ownerId,
   });
-  baseContent = await getFolderContent({
-    ownerId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
@@ -756,8 +722,7 @@ test("move content to different locations", async () => {
     desiredPosition: -10,
     ownerId,
   });
-  baseContent = await getFolderContent({
-    ownerId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
@@ -774,13 +739,11 @@ test("move content to different locations", async () => {
     desiredPosition: 0,
     ownerId,
   });
-  baseContent = await getFolderContent({
-    ownerId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
-  folder1Content = await getFolderContent({
-    ownerId,
+  folder1Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder1Id,
   });
@@ -801,13 +764,11 @@ test("move content to different locations", async () => {
     desiredPosition: 2,
     ownerId,
   });
-  baseContent = await getFolderContent({
-    ownerId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
-  folder1Content = await getFolderContent({
-    ownerId,
+  folder1Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder1Id,
   });
@@ -828,13 +789,11 @@ test("move content to different locations", async () => {
     desiredPosition: 2,
     ownerId,
   });
-  folder1Content = await getFolderContent({
-    ownerId,
+  folder1Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder1Id,
   });
-  folder3Content = await getFolderContent({
-    ownerId,
+  folder3Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder3Id,
   });
@@ -853,18 +812,15 @@ test("move content to different locations", async () => {
     desiredPosition: 1,
     ownerId,
   });
-  baseContent = await getFolderContent({
-    ownerId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
-  folder2Content = await getFolderContent({
-    ownerId,
+  folder2Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder2Id,
   });
-  folder3Content = await getFolderContent({
-    ownerId,
+  folder3Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder3Id,
   });
@@ -993,8 +949,7 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
     });
   }
 
-  let contentList = await getFolderContent({
-    ownerId,
+  let contentList = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
@@ -1024,8 +979,7 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
     ownerId,
   });
 
-  contentList = await getFolderContent({
-    ownerId,
+  contentList = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });

@@ -36,6 +36,10 @@ import {
   Activities,
 } from "./Tools/_framework/Paths/Activities";
 import {
+  loader as publicActivitiesLoader,
+  PublicActivities,
+} from "./Tools/_framework/Paths/PublicActivities";
+import {
   loader as activityViewerLoader,
   action as activityViewerAction,
   ActivityViewer,
@@ -235,6 +239,18 @@ const router = createBrowserRouter([
         loader: activitiesLoader,
         action: activitiesAction,
         element: <Activities />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "publicActivities/:ownerId",
+        loader: publicActivitiesLoader,
+        element: <PublicActivities />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "publicActivities/:ownerId/:folderId",
+        loader: publicActivitiesLoader,
+        element: <PublicActivities />,
         errorElement: <ErrorPage />,
       },
       {

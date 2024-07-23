@@ -492,6 +492,28 @@ export function Community() {
                     const { id, imagePath, name, owner, isFolder } = itemObj;
                     if (isFolder) {
                       // TODO
+                      const imageLink = `/publicActivities/${owner.userId}/${id}`;
+
+                      return (
+                        <ContentCard
+                          key={`ContentCard${id}`}
+                          imageLink={imageLink}
+                          title={name}
+                          imagePath={imagePath}
+                          ownerName={owner.name}
+                          showStatus={false}
+                          menuItems={
+                            isAdmin ? (
+                              <>
+                                <MoveToGroupMenuItem
+                                  activityId={id}
+                                  carouselGroups={carouselGroups}
+                                />
+                              </>
+                            ) : null
+                          }
+                        />
+                      );
                     } else {
                       const imageLink = `/activityViewer/${id}`;
 
@@ -499,9 +521,10 @@ export function Community() {
                         <ContentCard
                           key={`ContentCard${id}`}
                           imageLink={imageLink}
-                          name={name}
+                          title={name}
                           imagePath={imagePath}
-                          fullName={owner.name}
+                          ownerName={owner.name}
+                          showStatus={false}
                           menuItems={
                             isAdmin ? (
                               <>

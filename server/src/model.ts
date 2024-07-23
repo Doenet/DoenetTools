@@ -2399,36 +2399,41 @@ export async function getDocumentSubmittedResponseHistory({
   return { activityName, submittedResponses };
 }
 
-export async function getFolderContent({
-  ownerId,
+export async function getMyFolderContent({
   folderId,
   loggedInUserId,
 }: {
-  ownerId: number;
   folderId: number | null;
   loggedInUserId: number;
 }) {
-  const notMe = ownerId !== loggedInUserId;
-  let parentFolder = null;
+  let folder = null;
 
   if (folderId !== null) {
-    // if ask for a folder, make sure it exists and is allowed to be seen
-    parentFolder = await prisma.content.findUniqueOrThrow({
+    // if ask for a folder, make sure it exists and is owned by logged in user
+    folder = await prisma.content.findUniqueOrThrow({
       where: {
-        ownerId,
         id: folderId,
         isDeleted: false,
-        isPublic: notMe ? true : undefined,
       },
-      select: { parentFolderId: true },
+      select: {
+        ownerId: true,
+        name: true,
+        id: true,
+        parentFolder: { select: { id: true, name: true } },
+      },
     });
+
+    if (folder.ownerId !== loggedInUserId) {
+      // Folder exists, but it not owned by logged in user.
+      // Return this information
+      return { notMe: true, content: [], userName: "", folder: null };
+    }
   }
 
   const content = await prisma.content.findMany({
     where: {
-      ownerId,
+      ownerId: loggedInUserId,
       isDeleted: false,
-      isPublic: notMe ? true : undefined,
       parentFolderId: folderId,
     },
     select: {
@@ -2446,15 +2451,93 @@ export async function getFolderContent({
     orderBy: { sortIndex: "asc" },
   });
 
-  const user = await prisma.users.findUniqueOrThrow({
+  return {
+    content,
+    folder,
+    notMe: false,
+  };
+}
+
+export async function getPublicFolderContent({
+  ownerId,
+  folderId,
+}: {
+  ownerId: number;
+  folderId: number | null;
+}) {
+  let folder = null;
+
+  if (folderId !== null) {
+    // if ask for a folder, make sure it exists and is public
+    folder = await prisma.content.findUniqueOrThrow({
+      where: {
+        ownerId,
+        id: folderId,
+        isDeleted: false,
+        isPublic: true,
+      },
+      select: {
+        name: true,
+        id: true,
+        parentFolder: { select: { id: true, name: true, isPublic: true } },
+      },
+    });
+  }
+
+  const publicContent = await prisma.content.findMany({
+    where: {
+      ownerId,
+      isDeleted: false,
+      isPublic: true,
+      parentFolderId: folderId,
+    },
+    select: {
+      id: true,
+      isFolder: true,
+      ownerId: true,
+      name: true,
+      imagePath: true,
+      createdAt: true,
+      lastEdited: true,
+    },
+    orderBy: { sortIndex: "asc" },
+  });
+
+  // If looking in the base folder,
+  // also include orphaned public content,
+  // i.e., public content that is inside a private folder.
+  // That way, users can navigate to all of the owner's public content
+  // when start at the base folder
+  if (folderId === null) {
+    let orphanedPublicContent = await prisma.content.findMany({
+      where: {
+        ownerId,
+        isDeleted: false,
+        isPublic: true,
+        parentFolder: { isPublic: false },
+      },
+      select: {
+        id: true,
+        isFolder: true,
+        ownerId: true,
+        name: true,
+        imagePath: true,
+        createdAt: true,
+        lastEdited: true,
+      },
+      orderBy: { sortIndex: "asc" },
+    });
+    publicContent.push(...orphanedPublicContent);
+  }
+
+  const owner = await prisma.users.findUniqueOrThrow({
     where: { userId: ownerId },
     select: { name: true },
   });
 
   return {
-    content,
-    name: user.name,
-    notMe,
-    parentFolderId: parentFolder ? parentFolder.parentFolderId : null,
+    content: publicContent,
+    ownerName: owner.name,
+    folder,
   };
 }
