@@ -11,11 +11,12 @@ import {
   Th,
   Tbody,
   Td,
-  Link,
+  Link as ChakraLink,
   Box,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
+import { Link as ReactRouterLink } from "react-router-dom";
 
 export async function action({ params, request }) {
   return null;
@@ -91,15 +92,16 @@ export function AssignmentAnswerResponses() {
   return (
     <>
       <Box style={{ marginTop: 15, marginLeft: 15 }}>
-        <Link
-          href={`/assignmentData/${assignmentId}`}
+        <ChakraLink
+          as={ReactRouterLink}
+          to={`/assignmentData/${assignmentId}`}
           style={{
             color: "var(--mainBlue)",
           }}
         >
           {" "}
           &lt; Back to assignment data
-        </Link>
+        </ChakraLink>
       </Box>
       <Heading heading={activityName} />
 
@@ -149,14 +151,15 @@ export function AssignmentAnswerResponses() {
                   <Td>{response}</Td>
                   <Td>{Math.round(creditAchieved * 1000) / 10}%</Td>
                   <Td>
-                    <Link
+                    <ChakraLink
+                      as={ReactRouterLink}
                       style={{ display: "block", color: "var(--mainBlue)" }}
-                      href={`/assignmentAnswerResponseHistory/${assignmentId}/${docId}/${docVersionNum}/${
+                      to={`/assignmentAnswerResponseHistory/${assignmentId}/${docId}/${docVersionNum}/${
                         data.userId
                       }?answerId=${encodeURIComponent(answerId)}`}
                     >
                       {data.numResponses}
-                    </Link>
+                    </ChakraLink>
                   </Td>
                 </Tr>
               );

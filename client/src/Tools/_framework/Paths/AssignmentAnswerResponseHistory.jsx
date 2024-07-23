@@ -13,11 +13,12 @@ import {
   Tbody,
   Td,
   Box,
-  Link,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 import { parseAndFormatResponse } from "./AssignmentAnswerResponses";
+import { Link as ReactRouterLink } from "react-router-dom";
 
 export async function action({ params, request }) {
   return null;
@@ -79,8 +80,9 @@ export function AssignmentAnswerResponseHistory() {
   return (
     <>
       <Box style={{ marginTop: 15, marginLeft: 15 }}>
-        <Link
-          href={`/assignmentAnswerResponses/${assignmentId}/${docId}/${docVersionNum}?answerId=${encodeURIComponent(
+        <ChakraLink
+          as={ReactRouterLink}
+          to={`/assignmentAnswerResponses/${assignmentId}/${docId}/${docVersionNum}?answerId=${encodeURIComponent(
             answerId,
           )}`}
           style={{
@@ -89,7 +91,7 @@ export function AssignmentAnswerResponseHistory() {
         >
           {" "}
           &lt; Back to answer responses
-        </Link>
+        </ChakraLink>
       </Box>
 
       <Heading heading={activityName} />

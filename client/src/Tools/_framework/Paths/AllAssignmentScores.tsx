@@ -9,9 +9,10 @@ import {
   Th,
   Tbody,
   Td,
-  Link,
+  Link as ChakraLink,
   Tooltip,
 } from "@chakra-ui/react";
+import { Link as ReactRouterLink } from "react-router-dom";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 
@@ -110,8 +111,9 @@ export function AllAssignmentScores() {
                     key={`assignment${assignment.id}`}
                     textTransform={"capitalize"}
                   >
-                    <Link
-                      href={`/assignmentData/${assignment.id}`}
+                    <ChakraLink
+                      as={ReactRouterLink}
+                      to={`/assignmentData/${assignment.id}`}
                       style={linkStyle}
                       height="14em"
                       width="1em"
@@ -128,7 +130,7 @@ export function AllAssignmentScores() {
                           ) + "..."}
                         </Tooltip>
                       )}
-                    </Link>
+                    </ChakraLink>
                   </Th>
                 );
               })}
@@ -142,7 +144,11 @@ export function AllAssignmentScores() {
                 borderTopColor={"#bbb"}
               >
                 <Td>
-                  <Link href={`studentData/${studentId}`} style={linkStyle}>
+                  <ChakraLink
+                    as={ReactRouterLink}
+                    to={`studentData/${studentId}`}
+                    style={linkStyle}
+                  >
                     {
                       // if name has a space in it, display in lastname, firstname format; otherwise, display entire name as given
                       students[studentId].name.indexOf(" ") > -1
@@ -156,7 +162,7 @@ export function AllAssignmentScores() {
                           )
                         : students[studentId].name
                     }
-                  </Link>
+                  </ChakraLink>
                 </Td>
                 {
                   // if student has a score for this assignment, display it
@@ -166,8 +172,9 @@ export function AllAssignmentScores() {
                         <Td
                           key={`student${studentId}_assignment${assignment.id}`}
                         >
-                          <Link
-                            href={`/assignmentData/${assignment.id}/${studentId}`}
+                          <ChakraLink
+                            as={ReactRouterLink}
+                            to={`/assignmentData/${assignment.id}/${studentId}`}
                             style={linkStyle}
                           >
                             {Math.round(
@@ -175,7 +182,7 @@ export function AllAssignmentScores() {
                                 assignment.id
                               ] as number) * 100,
                             ) / 100}
-                          </Link>
+                          </ChakraLink>
                         </Td>
                       );
                     } else {
