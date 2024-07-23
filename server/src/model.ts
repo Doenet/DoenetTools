@@ -2486,7 +2486,7 @@ export async function getMyFolderContent({
     if (folder.ownerId !== loggedInUserId) {
       // Folder exists, but it not owned by logged in user.
       // Return this information
-      return { notMe: true, content: [], userName: "", folder: null };
+      return { notMe: true, content: [], folder: null };
     }
   }
 
@@ -2542,6 +2542,12 @@ export async function getPublicFolderContent({
         parentFolder: { select: { id: true, name: true, isPublic: true } },
       },
     });
+
+    // If parent folder is not public,
+    // make it look like it doesn't have a parent folder.
+    if (!folder.parentFolder?.isPublic) {
+      folder.parentFolder = null;
+    }
   }
 
   const publicContent = await prisma.content.findMany({

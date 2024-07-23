@@ -88,14 +88,14 @@ export function PublicActivities() {
       {folder ? (
         <Box style={{ marginLeft: "15px", marginTop: "-30px", float: "left" }}>
           <Link
-            to={`/publicActivities/${ownerId}${folder.parentFolder?.isPublic ? "/" + folder.parentFolder.id : ""}`}
+            to={`/publicActivities/${ownerId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
             style={{
               color: "var(--mainBlue)",
             }}
           >
             {" "}
             &lt; Back to{" "}
-            {folder.parentFolder?.isPublic
+            {folder.parentFolder
               ? folder.parentFolder.name
               : `Public Activities of ${ownerName}`}
           </Link>
