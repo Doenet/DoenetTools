@@ -16,7 +16,7 @@ import {
   Drawer,
   MenuItem,
   Heading,
-  Link,
+  Tooltip,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -25,6 +25,7 @@ import {
   useLoaderData,
   useNavigate,
   useFetcher,
+  Link,
 } from "react-router-dom";
 import styled from "styled-components";
 
@@ -147,18 +148,21 @@ export async function action({ request, params }) {
 
 export async function loader({ params }) {
   const { data } = await axios.get(
-    `/api/getFolderContent/${params.folderId ?? ""}`,
+    `/api/getMyFolderContent/${params.folderId ?? ""}`,
   );
+
   if (data.notMe) {
-    return redirect(`/publicActivities/${params.userId}`);
+    return redirect(
+      `/publicActivities/${params.userId}${params.folderId ? "/" + params.folderId : ""}`,
+    );
   }
 
   return {
     folderId: params.folderId ?? null,
-    folder: data.folder,
+    content: data.content,
     allDoenetmlVersions: data.allDoenetmlVersions,
     userId: params.userId,
-    parentFolderId: data.folder.parentFolderId,
+    folder: data.folder,
   };
 }
 
@@ -226,7 +230,7 @@ function ActivitySettingsDrawer({
 
 export function Activities() {
   let context = useOutletContext();
-  let { folderId, folder, allDoenetmlVersions, userId, parentFolderId } =
+  let { folderId, content, allDoenetmlVersions, userId, folder } =
     useLoaderData();
   const [activityId, setActivityId] = useState();
   const controlsBtnRef = useRef(null);
@@ -348,6 +352,14 @@ export function Activities() {
     );
   }
 
+  let headingText;
+
+  if (folder) {
+    headingText = <>Folder: {folder.name}</>;
+  } else {
+    headingText = `My Activities`;
+  }
+
   return (
     <>
       <ActivitySettingsDrawer
@@ -355,7 +367,7 @@ export function Activities() {
         onClose={settingsOnClose}
         finalFocusRef={controlsBtnRef}
         id={activityId}
-        content={folder.content}
+        content={content}
         allDoenetmlVersions={allDoenetmlVersions}
       />
       <Box
@@ -365,9 +377,11 @@ export function Activities() {
         width="100%"
         textAlign="center"
       >
-        <Heading as="h2" size="lg" paddingTop=".5em">
-          My Activities
-        </Heading>
+        <Tooltip label={headingText}>
+          <Heading as="h2" size="lg" paddingTop=".5em" noOfLines={1}>
+            {headingText}
+          </Heading>
+        </Tooltip>
         <div style={{ float: "right" }}>
           <Button
             margin="3px"
@@ -414,22 +428,23 @@ export function Activities() {
           </Button>
         </div>
       </Box>
-      {folderId ? (
+      {folder ? (
         <Box style={{ marginLeft: "15px", marginTop: "-30px", float: "left" }}>
           <Link
-            href={`/activities/${userId}${parentFolderId ? "/" + parentFolderId : ""}`}
+            to={`/activities/${userId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
             style={{
               color: "var(--mainBlue)",
             }}
           >
             {" "}
-            &lt; Back
+            &lt; Back to{" "}
+            {folder.parentFolder ? folder.parentFolder.name : `My Activities`}
           </Link>
         </Box>
       ) : null}
-      <ActivitiesSection data-test="Public Activities">
+      <ActivitiesSection data-test="Activities">
         <Wrap p="10px" overflow="visible">
-          {folder.content.length < 1 ? (
+          {content.length < 1 ? (
             <Flex
               flexDirection="column"
               justifyContent="center"
@@ -446,20 +461,19 @@ export function Activities() {
             </Flex>
           ) : (
             <>
-              {folder.content.map((activity, position) => {
+              {content.map((activity, position) => {
                 return (
                   <ContentCard
                     key={`Card${activity.id}`}
                     {...activity}
                     title={activity.name}
-                    ownerName={folder.name}
                     menuItems={getCardMenuList(
                       activity.isPublic,
                       activity.isFolder,
                       activity.isAssigned,
                       activity.id,
                       position,
-                      folder.content.length,
+                      content.length,
                     )}
                     suppressAvatar={true}
                     showOwnerName={false}

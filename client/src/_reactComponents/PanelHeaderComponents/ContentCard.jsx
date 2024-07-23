@@ -32,6 +32,7 @@ export default function ContentCard({
   showOwnerName = true,
   editableTitle = false,
   autoFocusTitle = false,
+  showStatus = true,
 }) {
   if (!imagePath) {
     imagePath = "/activity_default.jpg";
@@ -75,37 +76,42 @@ export default function ContentCard({
 
           <Box width="160px" minWidth="0px" p="1">
             {editableTitle ? (
-              <Input
-                value={cardTitle}
-                size="xs"
-                border="none"
-                padding="0"
-                margin="0"
-                height="1em"
-                fontWeight="bold"
-                autoFocus={autoFocusTitle}
-                onFocus={(e) => e.target.select()}
-                onChange={(e) => setCardTitle(e.target.value)}
-                onBlur={saveUpdatedTitle}
-                onKeyDown={(e) => {
-                  if (e.key == "Enter") {
-                    saveUpdatedTitle();
-                    e.target.blur();
-                  }
-                }}
-              />
+              <Tooltip label={cardTitle}>
+                <Input
+                  value={cardTitle}
+                  maxLength={191}
+                  size="xs"
+                  border="none"
+                  padding="0"
+                  margin="0"
+                  height="1em"
+                  fontWeight="bold"
+                  autoFocus={autoFocusTitle}
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => setCardTitle(e.target.value)}
+                  onBlur={saveUpdatedTitle}
+                  onKeyDown={(e) => {
+                    if (e.key == "Enter") {
+                      saveUpdatedTitle();
+                      e.target.blur();
+                    }
+                  }}
+                />
+              </Tooltip>
             ) : (
-              <Text
-                data-test="Card Label"
-                lineHeight="1.1"
-                fontSize="xs"
-                fontWeight="700"
-                noOfLines={1}
-                textAlign="left"
-                overflow="hidden"
-              >
-                {cardTitle}
-              </Text>
+              <Tooltip label={cardTitle}>
+                <Text
+                  data-test="Card Label"
+                  lineHeight="1.1"
+                  fontSize="xs"
+                  fontWeight="700"
+                  noOfLines={2}
+                  textAlign="left"
+                  overflow="hidden"
+                >
+                  {cardTitle}
+                </Text>
+              </Tooltip>
             )}
             {showOwnerName ? (
               <Text
@@ -117,15 +123,17 @@ export default function ContentCard({
                 {ownerName}
               </Text>
             ) : null}
-            <Text
-              fontSize="xs"
-              noOfLines={1}
-              textAlign="left"
-              //data-test="Card Full Name"
-            >
-              {isPublic ? "Public" : "Private"}
-              {isFolder ? "" : isAssigned ? " / Assigned" : " / Unassigned"}
-            </Text>
+            {showStatus ? (
+              <Text
+                fontSize="xs"
+                noOfLines={1}
+                textAlign="left"
+                //data-test="Card Full Name"
+              >
+                {isPublic ? "Public" : "Private"}
+                {isFolder ? "" : isAssigned ? " / Assigned" : " / Unassigned"}
+              </Text>
+            ) : null}
           </Box>
 
           {menuItems ? (

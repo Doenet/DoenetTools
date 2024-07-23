@@ -14,67 +14,47 @@ import { BsPlayBtnFill } from "react-icons/bs";
 import axios from "axios";
 
 export async function loader({ params, request }) {
-  try {
-    const url = new URL(request.url);
-    const queryParamDoenetML = url.searchParams.get("doenetml");
+  const url = new URL(request.url);
+  const queryParamDoenetML = url.searchParams.get("doenetml");
 
-    //Win, Mac or Linux
-    let platform = "Linux";
-    if (navigator.platform.indexOf("Win") != -1) {
-      platform = "Win";
-    } else if (navigator.platform.indexOf("Mac") != -1) {
-      platform = "Mac";
-    }
-
-    if (!params.activityId) {
-      return {
-        platform,
-        activityData: { name: "Public Editor" },
-        // lastKnownCid,
-        doenetML: queryParamDoenetML,
-      };
-    }
-    const { data: activityData } = await axios.get(
-      `/api/getActivityEditorData/${params.activityId}`,
-    );
-
-    let activityId = Number(params.activityId);
-    let docId = Number(params.docId);
-    if (!docId) {
-      // If docId was not supplied in the url,
-      // then use the first docId from the activity.
-      // TODO: what happens if activity has no documents?
-      docId = activityData.documents[0].docId;
-    }
-
-    // If docId isn't in the activity, use the first docId
-    let docInOrder = activityData.documents.map((x) => x.docId).indexOf(docId);
-    if (docInOrder === -1) {
-      docInOrder = 0;
-      docId = activityData.documents[docInOrder].docId;
-    }
-
-    const doenetML = activityData.documents[docInOrder].content;
-    const doenetmlVersion =
-      activityData.documents[docInOrder].doenetmlVersion.fullVersion;
-
-    const supportingFileResp = await axios.get(
-      `/api/loadSupportingFileInfo/${params.activityId}`,
-    );
-
-    let supportingFileData = supportingFileResp.data;
-
+  if (!params.activityId) {
     return {
-      activityData,
-      docId,
-      doenetML,
-      doenetmlVersion,
-      activityId,
-      supportingFileData,
+      activityData: { name: "Public Editor" },
+      // lastKnownCid,
+      doenetML: queryParamDoenetML,
     };
-  } catch (e) {
-    return { success: false, message: e.response.data.message };
   }
+  const { data: activityData } = await axios.get(
+    `/api/getPublicEditorData/${params.activityId}`,
+  );
+
+  let activityId = Number(params.activityId);
+  let docId = Number(params.docId);
+  if (!docId) {
+    // If docId was not supplied in the url,
+    // then use the first docId from the activity.
+    // TODO: what happens if activity has no documents?
+    docId = activityData.documents[0].id;
+  }
+
+  // If docId isn't in the activity, use the first docId
+  let docInOrder = activityData.documents.map((x) => x.id).indexOf(docId);
+  if (docInOrder === -1) {
+    docInOrder = 0;
+    docId = activityData.documents[docInOrder].id;
+  }
+
+  const doenetML = activityData.documents[docInOrder].source;
+  const doenetmlVersion =
+    activityData.documents[docInOrder].doenetmlVersion.fullVersion;
+
+  return {
+    activityData,
+    docId,
+    doenetML,
+    doenetmlVersion,
+    activityId,
+  };
 }
 
 export function PublicEditor() {

@@ -36,13 +36,16 @@ import {
   Activities,
 } from "./Tools/_framework/Paths/Activities";
 import {
+  loader as publicActivitiesLoader,
+  PublicActivities,
+} from "./Tools/_framework/Paths/PublicActivities";
+import {
   loader as activityViewerLoader,
   action as activityViewerAction,
   ActivityViewer,
 } from "./Tools/_framework/Paths/ActivityViewer";
 import {
   loader as assignedLoader,
-  action as assignedAction,
   Assigned,
 } from "./Tools/_framework/Paths/Assigned";
 import {
@@ -239,6 +242,18 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
+        path: "publicActivities/:ownerId",
+        loader: publicActivitiesLoader,
+        element: <PublicActivities />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "publicActivities/:ownerId/:folderId",
+        loader: publicActivitiesLoader,
+        element: <PublicActivities />,
+        errorElement: <ErrorPage />,
+      },
+      {
         path: "activityViewer/:activityId",
         loader: activityViewerLoader,
         action: activityViewerAction,
@@ -281,7 +296,6 @@ const router = createBrowserRouter([
       {
         path: "assigned",
         loader: assignedLoader,
-        action: assignedAction,
         element: <Assigned />,
         errorElement: <ErrorPage />,
       },
@@ -313,14 +327,14 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentAnswerResponses/:assignmentId/:docId/:docVersionId",
+        path: "assignmentAnswerResponses/:assignmentId/:docId/:docVersionNum",
         loader: assignmentAnswerResponsesLoader,
         action: assignmentAnswerResponsesAction,
         element: <AssignmentAnswerResponses />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentAnswerResponseHistory/:assignmentId/:docId/:docVersionId/:userId",
+        path: "assignmentAnswerResponseHistory/:assignmentId/:docId/:docVersionNum/:userId",
         loader: assignmentAnswerResponseHistoryLoader,
         action: assignmentAnswerResponseHistoryAction,
         element: <AssignmentAnswerResponseHistory />,

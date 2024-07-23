@@ -48,8 +48,11 @@ import {
   movePromotedContentGroup,
   InvalidRequestError,
   moveContent,
-  getFolderContent,
+  getMyFolderContent,
   getAssignedScores,
+  getPublicFolderContent,
+  searchUsersWithPublicContent,
+  getPublicEditorData,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -121,98 +124,6 @@ app.get(
   async (req: Request, res: Response) => {
     const docs = await getAllRecentPublicActivities();
     res.send(docs);
-  },
-);
-
-app.get(
-  "/api/getContent/:userId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
-    const userId = Number(req.params.userId);
-    try {
-      const contentData = await getFolderContent({
-        ownerId: userId,
-        loggedInUserId,
-        folderId: null,
-      });
-      const allDoenetmlVersions = await getAllDoenetmlVersions();
-      res.send({ allDoenetmlVersions, ...contentData });
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.status(404).send("No content found");
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
-  "/api/getContent/:userId/:folderId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
-    const folderId = Number(req.params.folderId);
-    const userId = Number(req.params.userId);
-    try {
-      const contentData = await getFolderContent({
-        ownerId: userId,
-        loggedInUserId,
-        folderId,
-      });
-      const allDoenetmlVersions = await getAllDoenetmlVersions();
-      res.send({ allDoenetmlVersions, ...contentData });
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.status(404).send("No content found");
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
-  "/api/getPublicContent/:userId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const userId = Number(req.params.userId);
-    try {
-      // send 0 as the logged in content to make sure get only public content
-      const contentData = await getFolderContent({
-        ownerId: userId,
-        loggedInUserId: 0,
-        folderId: null,
-      });
-      res.send(contentData);
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.status(404).send("No content found");
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
-  "/api/getPublicContent/:userId/:folderId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const userId = Number(req.params.userId);
-    const folderId = Number(req.params.folderId);
-    try {
-      // send 0 as the logged in content to make sure get only public content
-      const contentData = await getFolderContent({
-        ownerId: userId,
-        loggedInUserId: 0,
-        folderId,
-      });
-      res.send(contentData);
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.status(404).send("No content found");
-      } else {
-        next(e);
-      }
-    }
   },
 );
 
@@ -366,7 +277,10 @@ app.post(
       await updateContent({ id, name, ownerId: loggedInUserId });
       res.send({});
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2025"
+      ) {
         res.sendStatus(403);
       } else {
         next(e);
@@ -424,7 +338,7 @@ app.get(
 app.get("/api/searchPublicContent", async (req: Request, res: Response) => {
   const query = req.query.q as string;
   res.send({
-    users: [], // TODO - this
+    users: await searchUsersWithPublicContent(query),
     content: await searchPublicContent(query),
   });
 });
@@ -636,6 +550,26 @@ app.get(
       res.send(editorData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getPublicEditorData/:activityId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const activityId = Number(req.params.activityId);
+    try {
+      const editorData = await getPublicEditorData(activityId);
+      res.send(editorData);
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2001"
+      ) {
         res.sendStatus(404);
       } else {
         next(e);
@@ -1203,19 +1137,18 @@ app.get(
 );
 
 app.get(
-  "/api/getFolderContent/",
+  "/api/getMyFolderContent/",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = req.cookies.userId ? Number(req.cookies.userId) : 0;
 
     try {
-      const folder = await getFolderContent({
-        ownerId: loggedInUserId,
+      const contentData = await getMyFolderContent({
         folderId: null,
         loggedInUserId,
       });
 
       const allDoenetmlVersions = await getAllDoenetmlVersions();
-      res.send({ allDoenetmlVersions, folder });
+      res.send({ allDoenetmlVersions, ...contentData });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
@@ -1227,22 +1160,64 @@ app.get(
 );
 
 app.get(
-  "/api/getFolderContent/:folderId",
+  "/api/getMyFolderContent/:folderId",
   async (req: Request, res: Response, next: NextFunction) => {
     const folderId = Number(req.params.folderId);
     const loggedInUserId = Number(req.cookies.userId);
 
     try {
-      const folder = await getFolderContent({
-        ownerId: loggedInUserId,
+      const contentData = await getMyFolderContent({
         folderId,
         loggedInUserId,
       });
       const allDoenetmlVersions = await getAllDoenetmlVersions();
-      res.send({ allDoenetmlVersions, folder });
+      res.send({ allDoenetmlVersions, ...contentData });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.sendStatus(204);
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getPublicFolderContent/:ownerId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const ownerId = Number(req.params.ownerId);
+    try {
+      // send 0 as the logged in content to make sure get only public content
+      const contentData = await getPublicFolderContent({
+        ownerId,
+        folderId: null,
+      });
+      res.send(contentData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.status(404).send("No content found");
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getPublicFolderContent/:ownerId/:folderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const ownerId = Number(req.params.ownerId);
+    const folderId = Number(req.params.folderId);
+    try {
+      // send 0 as the logged in content to make sure get only public content
+      const contentData = await getPublicFolderContent({
+        ownerId,
+        folderId,
+      });
+      res.send(contentData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.status(404).send("No content found");
       } else {
         next(e);
       }
