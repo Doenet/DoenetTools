@@ -402,7 +402,6 @@ export function Community() {
       if (itemObj?.type == "content") {
         const { id, imagePath, name, owner, isFolder } = itemObj;
         if (isFolder) {
-          // TODO
           const imageLink = `/publicActivities/${owner.userId}/${id}`;
 
           return (
@@ -694,117 +693,119 @@ export function Community() {
               groupName += " (Not currently featured on community page)";
               notPromoted = true;
             }
-            return (
-              <>
-                {isAdmin ? (
-                  <span>
-                    <Text fontSize="24px">{groupName}</Text>
-                    {group.homepage ? (
-                      <Text>Always promoted</Text>
-                    ) : notPromoted ? (
-                      <Button
-                        onClick={() => {
-                          fetcher.submit(
-                            {
-                              _action: "Promote Group",
-                              groupId: group.promotedGroupId,
-                              currentlyFeatured: true,
-                              homepage: false,
-                            },
-                            { method: "post" },
-                          );
-                        }}
-                      >
-                        Promote
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={() => {
-                          fetcher.submit(
-                            {
-                              _action: "Promote Group",
-                              groupId: group.promotedGroupId,
-                              currentlyFeatured: false,
-                              homepage: false,
-                            },
-                            { method: "post" },
-                          );
-                        }}
-                      >
-                        Stop Promoting
-                      </Button>
-                    )}
-                    <br />
-                    <br />
-                    <Wrap overflow="visible">
-                      {group.promotedContent.map((cardObj, i) => {
-                        return (
-                          <ContentCard
-                            {...cardObj}
-                            key={`swipercard${i}`}
-                            fullName={cardObj.owner}
-                            imageLink={`/activityViewer/${cardObj.activityId}`}
-                            menuItems={
-                              <>
-                                <MenuItem
-                                  onClick={() => {
-                                    fetcher.submit(
-                                      {
-                                        _action: "Remove Promoted Content",
-                                        activityId: cardObj.activityId,
-                                        groupId: group.promotedGroupId,
-                                      },
-                                      { method: "post" },
-                                    );
-                                  }}
-                                >
-                                  Remove from group
-                                </MenuItem>
-                                <MenuItem
-                                  isDisabled={i === 0}
-                                  onClick={() => {
-                                    fetcher.submit(
-                                      {
-                                        _action: "Move Promoted Content",
-                                        activityId: cardObj.activityId,
-                                        groupId: group.promotedGroupId,
-                                        desiredPosition: i - 1,
-                                      },
-                                      { method: "post" },
-                                    );
-                                  }}
-                                >
-                                  Move Left
-                                </MenuItem>
-                                <MenuItem
-                                  isDisabled={
-                                    i === group.promotedContent.length - 1
-                                  }
-                                  onClick={() => {
-                                    fetcher.submit(
-                                      {
-                                        _action: "Move Promoted Content",
-                                        activityId: cardObj.activityId,
-                                        groupId: group.promotedGroupId,
-                                        desiredPosition: i + 1,
-                                      },
-                                      { method: "post" },
-                                    );
-                                  }}
-                                >
-                                  Move Right
-                                </MenuItem>
-                              </>
-                            }
-                          />
-                        );
-                      })}
-                    </Wrap>
-                  </span>
+            return isAdmin ? (
+              <span key={groupName}>
+                <Text fontSize="24px">{groupName}</Text>
+                {group.homepage ? (
+                  <Text>Always promoted</Text>
+                ) : notPromoted ? (
+                  <Button
+                    onClick={() => {
+                      fetcher.submit(
+                        {
+                          _action: "Promote Group",
+                          groupId: group.promotedGroupId,
+                          currentlyFeatured: true,
+                          homepage: false,
+                        },
+                        { method: "post" },
+                      );
+                    }}
+                  >
+                    Promote
+                  </Button>
                 ) : (
-                  <Carousel title={groupName} data={group.promotedContent} />
+                  <Button
+                    onClick={() => {
+                      fetcher.submit(
+                        {
+                          _action: "Promote Group",
+                          groupId: group.promotedGroupId,
+                          currentlyFeatured: false,
+                          homepage: false,
+                        },
+                        { method: "post" },
+                      );
+                    }}
+                  >
+                    Stop Promoting
+                  </Button>
                 )}
-              </>
+                <br />
+                <br />
+                <Wrap overflow="visible">
+                  {group.promotedContent.map((cardObj, i) => {
+                    return (
+                      <ContentCard
+                        key={`swipercard${i}`}
+                        imagePath={cardObj.imagePath}
+                        title={cardObj.name}
+                        ownerName={cardObj.owner}
+                        imageLink={`/activityViewer/${cardObj.activityId}`}
+                        showStatus={false}
+                        menuItems={
+                          <>
+                            <MenuItem
+                              onClick={() => {
+                                fetcher.submit(
+                                  {
+                                    _action: "Remove Promoted Content",
+                                    activityId: cardObj.activityId,
+                                    groupId: group.promotedGroupId,
+                                  },
+                                  { method: "post" },
+                                );
+                              }}
+                            >
+                              Remove from group
+                            </MenuItem>
+                            <MenuItem
+                              isDisabled={i === 0}
+                              onClick={() => {
+                                fetcher.submit(
+                                  {
+                                    _action: "Move Promoted Content",
+                                    activityId: cardObj.activityId,
+                                    groupId: group.promotedGroupId,
+                                    desiredPosition: i - 1,
+                                  },
+                                  { method: "post" },
+                                );
+                              }}
+                            >
+                              Move Left
+                            </MenuItem>
+                            <MenuItem
+                              isDisabled={
+                                i === group.promotedContent.length - 1
+                              }
+                              onClick={() => {
+                                fetcher.submit(
+                                  {
+                                    _action: "Move Promoted Content",
+                                    activityId: cardObj.activityId,
+                                    groupId: group.promotedGroupId,
+                                    desiredPosition: i + 1,
+                                  },
+                                  { method: "post" },
+                                );
+                              }}
+                            >
+                              Move Right
+                            </MenuItem>
+                          </>
+                        }
+                      />
+                    );
+                  })}
+                </Wrap>
+              </span>
+            ) : (
+              <Carousel
+                key={groupName}
+                title={groupName}
+                data={group.promotedContent}
+              />
             );
           })}
       </Box>

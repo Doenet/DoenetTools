@@ -107,39 +107,20 @@ export function Carousel({ title = "", data = [] }) {
               //   //   slidesPerGroup: 6
               //   // }
             }}
-            // onSwiper={(swiper) => console.log("swiper", swiper)}
-            // onSlideChange={() => console.log("slide change")}
           >
             {data.map((cardObj, i) => {
               return (
                 <SwiperSlide key={`swipercard${i}`}>
                   <ContentCard
-                    {...cardObj}
-                    fullName={cardObj.owner}
+                    imagePath={cardObj.imagePath}
+                    title={cardObj.name}
+                    ownerName={cardObj.owner}
                     imageLink={`/activityViewer/${cardObj.activityId}`}
-                    menuItems={
-                      null
-                      /* z-index stacking issues, might be related to the carousel
-                      <>
-                        <MenuItem>Move Left</MenuItem>
-                        <MenuItem>Move Right</MenuItem>
-                      </>
-                    */
-                    }
+                    showStatus={false}
                   />
                 </SwiperSlide>
               );
             })}
-
-            {/* <SwiperSlide >
-                <Card  />
-              </SwiperSlide>
-              <SwiperSlide >
-                <Card  />
-              </SwiperSlide>
-              <SwiperSlide >
-                <Card  />
-              </SwiperSlide> */}
           </Swiper>
 
           <IconButton
