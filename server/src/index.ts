@@ -52,6 +52,7 @@ import {
   getAssignedScores,
   getPublicFolderContent,
   searchUsersWithPublicContent,
+  getPublicEditorData,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -549,6 +550,26 @@ app.get(
       res.send(editorData);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getPublicEditorData/:activityId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const activityId = Number(req.params.activityId);
+    try {
+      const editorData = await getPublicEditorData(activityId);
+      res.send(editorData);
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2001"
+      ) {
         res.sendStatus(404);
       } else {
         next(e);

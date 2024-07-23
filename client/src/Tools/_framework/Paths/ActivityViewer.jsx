@@ -66,7 +66,7 @@ export async function loader({ params }) {
       // If docId was not supplied in the url,
       // then use the first docId from the activity.
       // TODO: what happens if activity has no documents?
-      docId = activityData.activity.documents[0].docId;
+      docId = activityData.activity.documents[0].id;
     }
 
     const doenetML = activityData.activity.documents[0].source;

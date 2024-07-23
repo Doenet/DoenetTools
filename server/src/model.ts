@@ -813,6 +813,42 @@ export async function getActivityEditorData(
   return activity;
 }
 
+/**
+ * Get the data needed to view the source of public activity `activityId`
+ *
+ * We return current source from the documents table
+ *
+ * @param activityId
+ */
+export async function getPublicEditorData(activityId: number) {
+  // TODO: add pagination or a hard limit in the number of documents one can add to an activity
+
+  let activity = await prisma.content.findUniqueOrThrow({
+    where: {
+      id: activityId,
+      isDeleted: false,
+      isFolder: false,
+      isPublic: true,
+    },
+    select: {
+      name: true,
+      imagePath: true,
+      documents: {
+        select: {
+          name: true,
+          id: true,
+          source: true,
+          doenetmlVersion: true,
+        },
+        // TODO: implement ability to allow users to order the documents within an activity
+        orderBy: { id: "asc" },
+      },
+    },
+  });
+
+  return activity;
+}
+
 // TODO: generalize this to multi-document activities
 export async function getActivityViewerData(
   activityId: number,
