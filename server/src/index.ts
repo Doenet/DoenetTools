@@ -51,6 +51,7 @@ import {
   getMyFolderContent,
   getAssignedScores,
   getPublicFolderContent,
+  searchUsersWithPublicContent,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -336,7 +337,7 @@ app.get(
 app.get("/api/searchPublicContent", async (req: Request, res: Response) => {
   const query = req.query.q as string;
   res.send({
-    users: [], // TODO - this
+    users: await searchUsersWithPublicContent(query),
     content: await searchPublicContent(query),
   });
 });

@@ -954,6 +954,30 @@ export async function searchPublicContent(query: string) {
   return content;
 }
 
+export async function searchUsersWithPublicContent(query: string) {
+  // TODO: how should we sort these?
+
+  let query_words = query.split(" ");
+  let usersWithPublic = await prisma.users.findMany({
+    where: {
+      AND: query_words.map((qw) => ({ name: { contains: "%" + qw + "%" } })),
+      anonymous: false,
+      content: {
+        some: {
+          isPublic: true,
+          isDeleted: false,
+        },
+      },
+    },
+    select: {
+      userId: true,
+      name: true,
+    },
+  });
+
+  return usersWithPublic;
+}
+
 /**
  * Lists the content inside `folderId` where the user has an assignment score record.
  *
