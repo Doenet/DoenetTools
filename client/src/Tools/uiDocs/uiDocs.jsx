@@ -10,13 +10,13 @@ import {
 import styled from "styled-components";
 
 //=== COMPONENT IMPORTS ===
-import SearchBar from "../../_reactComponents/PanelHeaderComponents/SearchBar.jsx";
-import Button from "../../_reactComponents/PanelHeaderComponents/Button.jsx";
-import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.jsx";
+import SearchBar from "../../PanelHeaderComponents/SearchBar.jsx";
+import Button from "../../PanelHeaderComponents/Button.jsx";
+import Textfield from "../../PanelHeaderComponents/Textfield.jsx";
 import { faCode, faFish } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ProgressBar from "../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx";
-import Checkbox from "../../_reactComponents/PanelHeaderComponents/Checkbox.jsx";
+import ProgressBar from "../../PanelHeaderComponents/ProgressBar.jsx";
+import Checkbox from "../../PanelHeaderComponents/Checkbox.jsx";
 import { useState } from "react";
 
 // === HOW TO ADD TO UI DOCS ===

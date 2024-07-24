@@ -3,7 +3,7 @@ import { Box, Text, Wrap } from "@chakra-ui/react";
 import React from "react";
 import { useLoaderData } from "react-router-dom";
 import styled from "styled-components";
-import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
+import ContentCard from "../../../PanelHeaderComponents/ContentCard";
 import { MoveToGroupMenuItem } from "./Community";
 import { createFullName } from "../../../_utils/names";
 

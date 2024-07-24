@@ -20,7 +20,7 @@ import {
 import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
-import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
+import ContentCard from "../../../PanelHeaderComponents/ContentCard";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
 
