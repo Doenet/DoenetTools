@@ -6,10 +6,12 @@ import { DoenetViewer } from "@doenet/doenetml-iframe";
 import {
   Box,
   Button,
+  Flex,
   FormControl,
   FormLabel,
   Grid,
   GridItem,
+  Heading,
   Input,
   VStack,
 } from "@chakra-ui/react";
@@ -26,7 +28,10 @@ export async function action({ params, request }) {
   if (formObj._action == "submit code") {
     return redirect(`/classCode/${formObj.classCode}`);
   } else if (formObj._action == "submit user name") {
-    await axios.post(`/api/updateUser`, { name: formObj.name });
+    await axios.post(`/api/updateUser`, {
+      firstNames: formObj.firstNames,
+      lastNames: formObj.lastNames,
+    });
     return true;
   }
 
@@ -35,7 +40,7 @@ export async function action({ params, request }) {
 
 export async function loader({ params }) {
   let assignment;
-  let userName;
+  let student;
 
   // TODO: need to select variant for each student (just once)
 
@@ -59,7 +64,7 @@ export async function loader({ params }) {
     }
 
     assignment = data.assignment;
-    userName = data.name;
+    student = data.student;
   }
 
   // TODO: what happens if assignment has no documents?
@@ -77,7 +82,7 @@ export async function loader({ params }) {
     docVersionNum,
     doenetML,
     doenetmlVersion,
-    userName,
+    student,
   };
 }
 
@@ -86,7 +91,7 @@ export function AssignmentViewer() {
     doenetML,
     assignment,
     assignmentFound,
-    userName,
+    student,
     docId,
     docVersionNum,
     doenetmlVersion,
@@ -181,14 +186,31 @@ export function AssignmentViewer() {
     return <EnterClassCode />;
   }
 
-  if (!userName) {
+  if (!student.lastNames) {
     return (
       <Box margin="20px">
+        <Heading size="lg">Enter your name</Heading>
         <Form method="post">
-          <FormControl isRequired>
-            <FormLabel mt="16px">Enter your name:</FormLabel>
-            <Input placeholder="Name" name="name" size="sm" width={40} />
-          </FormControl>
+          <Flex width="400px">
+            <FormControl>
+              <FormLabel mt="16px">First name(s):</FormLabel>
+              <Input
+                placeholder="First Name(s)"
+                name="firstNames"
+                size="sm"
+                width={40}
+              />
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel mt="16px">Last name(s):</FormLabel>
+              <Input
+                placeholder="Last Names"
+                name="lastNames"
+                size="sm"
+                width={40}
+              />
+            </FormControl>
+          </Flex>
           <Button type="submit" colorScheme="blue" mt="8px" mr="12px" size="xs">
             Start assignment
           </Button>

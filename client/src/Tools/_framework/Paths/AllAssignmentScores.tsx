@@ -15,23 +15,26 @@ import {
 import { Link as ReactRouterLink } from "react-router-dom";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
+import { lastNameFirst } from "../../../_utils/names";
 
-type assignmentScore = {
+type AssignmentScore = {
   activityId: number;
   score: number;
   userId: number;
   user: {
-    name: string;
+    firstNames: string | null;
+    lastNames: string;
   };
 };
 
-type orderedActivity = {
+type OrderedActivity = {
   id: number;
   name: string;
 };
 
-type studentStructure = {
-  name: string;
+type StudentStructure = {
+  firstNames: string | null;
+  lastNames: string;
   scores: {
     [assignmentId: number]: {
       score: number;
@@ -44,29 +47,25 @@ export async function loader({ params }) {
     `/api/getAllAssignmentScores/${params.folderId ?? ""}`,
   );
 
-  const assignmentScores: assignmentScore[] = data.assignmentScores;
+  const assignmentScores: AssignmentScore[] = data.assignmentScores;
 
-  let studentData = {};
+  let studentData: Record<string, StudentStructure> = {};
   assignmentScores.forEach((score) => {
     if (!(score.userId in studentData)) {
-      studentData[score.userId] = { name: score.user.name, scores: {} };
+      studentData[score.userId] = { ...score.user, scores: [] };
     }
     studentData[score.userId].scores[score.activityId] = score.score;
   });
 
   // list of student ids (keys to studentData) ordered based on corresponding student name
-  // sort by last name if there is one; otherwise, sort by entire name
+  // sort by last names
   let studentIdsOrdered = Object.keys(studentData);
   studentIdsOrdered.sort((a, b) => {
-    let namea = studentData[a].name.trim();
-    let nameb = studentData[b].name.trim();
-    namea =
-      namea.indexOf(" ") > -1 ? namea.substring(namea.indexOf(" ") + 1) : namea;
-    nameb =
-      nameb.indexOf(" ") > -1 ? nameb.substring(nameb.indexOf(" ") + 1) : nameb;
-    if (namea > nameb) {
+    let lastNamesA = studentData[a].lastNames.trim().toLowerCase();
+    let lastNamesB = studentData[b].lastNames.trim().toLowerCase();
+    if (lastNamesA > lastNamesB) {
       return 1;
-    } else if (namea < nameb) {
+    } else if (lastNamesA < lastNamesB) {
       return -1;
     }
     return 0;
@@ -81,8 +80,8 @@ export async function loader({ params }) {
 
 export function AllAssignmentScores() {
   const { assignments, students, studentIdsOrdered } = useLoaderData() as {
-    assignments: orderedActivity[];
-    students: studentStructure[];
+    assignments: OrderedActivity[];
+    students: Record<string, StudentStructure>;
     studentIdsOrdered: number[];
   };
 
@@ -104,13 +103,10 @@ export function AllAssignmentScores() {
         <Table>
           <Thead>
             <Tr verticalAlign={"bottom"}>
-              <Th>Student</Th>
+              <Th textTransform={"none"}>Student</Th>
               {assignments.map((assignment) => {
                 return (
-                  <Th
-                    key={`assignment${assignment.id}`}
-                    textTransform={"capitalize"}
-                  >
+                  <Th key={`assignment${assignment.id}`} textTransform={"none"}>
                     <ChakraLink
                       as={ReactRouterLink}
                       to={`/assignmentData/${assignment.id}`}
@@ -146,22 +142,10 @@ export function AllAssignmentScores() {
                 <Td>
                   <ChakraLink
                     as={ReactRouterLink}
-                    to={`studentData/${studentId}`}
+                    to={`/studentData/${studentId}`}
                     style={linkStyle}
                   >
-                    {
-                      // if name has a space in it, display in lastname, firstname format; otherwise, display entire name as given
-                      students[studentId].name.indexOf(" ") > -1
-                        ? students[studentId].name.substring(
-                            students[studentId].name.indexOf(" ") + 1,
-                          ) +
-                          ", " +
-                          students[studentId].name.substring(
-                            0,
-                            students[studentId].name.indexOf(" "),
-                          )
-                        : students[studentId].name
-                    }
+                    {lastNameFirst(students[studentId])}
                   </ChakraLink>
                 </Td>
                 {

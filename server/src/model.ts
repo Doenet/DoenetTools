@@ -1054,7 +1054,6 @@ export async function listUserAssigned(userId: number) {
       createdAt: true,
       lastEdited: true,
       isPublic: true,
-      isAssigned: true,
       classCode: true,
     },
     orderBy: { createdAt: "asc" },

@@ -5,6 +5,7 @@ import { useLoaderData } from "react-router-dom";
 import styled from "styled-components";
 import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
 import { MoveToGroupMenuItem } from "./Community";
+import { createFullName } from "../../../_utils/names";
 
 export async function loader() {
   const {
@@ -83,9 +84,10 @@ export function Admin() {
                     <ContentCard
                       key={`ContentCard${activity.id}`}
                       imageLink={imageLink}
-                      name={activity.name}
+                      title={activity.name}
                       imagePath={activity.imagePath}
-                      fullName={activity.owner.name}
+                      ownerName={createFullName(activity.owner)}
+                      showStatus={false}
                       menuItems={
                         <MoveToGroupMenuItem
                           activityId={activity.id}

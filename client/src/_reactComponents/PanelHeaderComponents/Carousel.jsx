@@ -19,6 +19,7 @@ import "./Carousel.css";
 import { Box, Flex, IconButton, Text } from "@chakra-ui/react";
 import ContentCard from "./ContentCard";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { createFullName } from "../../_utils/names";
 
 SwiperCore.use([Keyboard, Mousewheel]);
 
@@ -114,7 +115,7 @@ export function Carousel({ title = "", data = [] }) {
                   <ContentCard
                     imagePath={cardObj.imagePath}
                     title={cardObj.name}
-                    ownerName={cardObj.owner}
+                    ownerName={createFullName(cardObj.owner)}
                     imageLink={`/activityViewer/${cardObj.activityId}`}
                     showStatus={false}
                   />

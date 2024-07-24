@@ -114,14 +114,16 @@ export default function ContentCard({
               </Tooltip>
             )}
             {showOwnerName ? (
-              <Text
-                fontSize="xs"
-                noOfLines={1}
-                textAlign="left"
-                data-test="Card Full Name"
-              >
-                {ownerName}
-              </Text>
+              <Tooltip label={ownerName}>
+                <Text
+                  fontSize="xs"
+                  noOfLines={1}
+                  textAlign="left"
+                  data-test="Card Full Name"
+                >
+                  {ownerName}
+                </Text>
+              </Tooltip>
             ) : null}
             {showStatus ? (
               <Text

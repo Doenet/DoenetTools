@@ -17,6 +17,7 @@ import {
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 import { Link as ReactRouterLink } from "react-router-dom";
+import { createFullName } from "../../../_utils/names";
 
 export async function action({ params, request }) {
   return null;
@@ -38,8 +39,8 @@ export async function loader({ params, request }) {
 
   // sort response data by user name
   let responseData = data.submittedResponses.toSorted((a, b) => {
-    const name1 = a.userName.toLowerCase();
-    const name2 = b.userName.toLowerCase();
+    const name1 = createFullName(a).toLowerCase();
+    const name2 = createFullName(b).toLowerCase();
     if (name1 > name2) {
       return 1;
     }
@@ -130,10 +131,18 @@ export function AssignmentAnswerResponses() {
         <Table>
           <Thead>
             <Tr>
-              <Th>Name</Th>
-              <Th>{bestOrLatest} Response</Th>
-              <Th>{bestOrLatest} Percent correct</Th>
-              <Th>Number of responses</Th>
+              <Th textTransform={"none"} fontSize="large">
+                Name
+              </Th>
+              <Th textTransform={"none"} fontSize="large">
+                {bestOrLatest} Response
+              </Th>
+              <Th textTransform={"none"} fontSize="large">
+                {bestOrLatest} Percent correct
+              </Th>
+              <Th textTransform={"none"} fontSize="large">
+                Number of responses
+              </Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -147,7 +156,9 @@ export function AssignmentAnswerResponses() {
                 : data.latestCreditAchieved;
               return (
                 <Tr key={i}>
-                  <Td>{showNames ? data.userName : `Student ${i + 1}`}</Td>
+                  <Td>
+                    {showNames ? createFullName(data) : `Student ${i + 1}`}
+                  </Td>
                   <Td>{response}</Td>
                   <Td>{Math.round(creditAchieved * 1000) / 10}%</Td>
                   <Td>

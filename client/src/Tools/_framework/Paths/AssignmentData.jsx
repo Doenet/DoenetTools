@@ -25,6 +25,7 @@ import { DoenetHeading as Heading } from "./Community";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Label } from "recharts";
 import AssignmentPreview from "../ToolPanels/AssignmentPreview";
 import { Link as ReactRouterLink } from "react-router-dom";
+import { createFullName } from "../../../_utils/names";
 
 export async function action({ params, request }) {
   return null;
@@ -150,8 +151,12 @@ export function AssignmentData() {
               <Table>
                 <Thead>
                   <Tr>
-                    <Th>Name</Th>
-                    <Th>Score</Th>
+                    <Th textTransform={"none"} fontSize="large">
+                      Name
+                    </Th>
+                    <Th textTransform={"none"} fontSize="large">
+                      Score
+                    </Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -169,7 +174,7 @@ export function AssignmentData() {
                             to={linkURL}
                             style={linkStyle}
                           >
-                            {assignmentScore.user.name}
+                            {createFullName(assignmentScore.user)}
                           </ChakraLink>
                         </Td>
                         <Td>
@@ -211,15 +216,17 @@ export function AssignmentData() {
                   <Table>
                     <Thead>
                       <Tr>
-                        <Th>Answer name</Th>
-                        <Th>
+                        <Th textTransform={"none"} fontSize="large">
+                          Answer name
+                        </Th>
+                        <Th textTransform={"none"} fontSize="large">
                           Number of
                           <br />
                           students
                           <br />
                           responded
                         </Th>
-                        <Th>
+                        <Th textTransform={"none"} fontSize="large">
                           Average
                           <br />
                           correct
