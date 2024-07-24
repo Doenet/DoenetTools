@@ -28,12 +28,13 @@ import {
   FormLabel,
 } from "@chakra-ui/react";
 import { useLoaderData } from "react-router";
-import { Carousel } from "../../../_reactComponents/PanelHeaderComponents/Carousel";
-import Searchbar from "../../../_reactComponents/PanelHeaderComponents/SearchBar";
+import { Carousel } from "../../../PanelHeaderComponents/Carousel";
+import Searchbar from "../../../PanelHeaderComponents/SearchBar";
 import { Form, useFetcher } from "react-router-dom";
 import { RiEmotionSadLine } from "react-icons/ri";
-import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
-import AuthorCard from "../../../_reactComponents/PanelHeaderComponents/AuthorCard";
+import ContentCard from "../../../PanelHeaderComponents/ContentCard";
+import AuthorCard from "../../../PanelHeaderComponents/AuthorCard";
+import { createFullName } from "../../../_utils/names";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -410,7 +411,7 @@ export function Community() {
               imageLink={imageLink}
               title={name}
               imagePath={imagePath}
-              ownerName={owner.name}
+              ownerName={createFullName(owner)}
               showStatus={false}
               menuItems={
                 isAdmin ? (
@@ -433,7 +434,7 @@ export function Community() {
               imageLink={imageLink}
               title={name}
               imagePath={imagePath}
-              ownerName={owner.name}
+              ownerName={createFullName(owner)}
               showStatus={false}
               menuItems={
                 isAdmin ? (
@@ -449,11 +450,14 @@ export function Community() {
           );
         }
       } else if (itemObj?.type == "author") {
-        const { userId, name: userName } = itemObj;
-        const imageLink = `/publicActivities/${userId}`;
+        const imageLink = `/publicActivities/${itemObj.userId}`;
 
         return (
-          <AuthorCard key={userId} fullName={userName} imageLink={imageLink} />
+          <AuthorCard
+            key={itemObj.userId}
+            authorName={createFullName(itemObj)}
+            imageLink={imageLink}
+          />
         );
       }
     }
@@ -740,7 +744,7 @@ export function Community() {
                         key={`swipercard${i}`}
                         imagePath={cardObj.imagePath}
                         title={cardObj.name}
-                        ownerName={cardObj.owner}
+                        ownerName={createFullName(cardObj.owner)}
                         imageLink={`/activityViewer/${cardObj.activityId}`}
                         showStatus={false}
                         menuItems={

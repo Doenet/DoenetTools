@@ -68,9 +68,15 @@ const currentDoenetmlVersion = {
 // create an isolated user for each test, will allow tests to be run in parallel
 async function createTestUser(isAdmin = false) {
   const id = Date.now().toString();
-  const userEmail = `vitest${id}@vitest.test`;
-  const userName = `vitest user${id}`;
-  const user = await findOrCreateUser(userEmail, userName, isAdmin);
+  const email = `vitest${id}@vitest.test`;
+  const firstNames = `vitest`;
+  const lastNames = `user${id}`;
+  const user = await findOrCreateUser({
+    email,
+    firstNames,
+    lastNames,
+    isAdmin,
+  });
   return user;
 }
 
@@ -95,13 +101,16 @@ test("New user has no content", async () => {
 test("Update user name", async () => {
   let user = await createTestUser();
   const userId = user.userId;
-  expect(user.name.startsWith("vitest user")).eq(true);
+  expect(user.firstNames).eq("vitest");
+  expect(user.lastNames.startsWith("user")).eq(true);
 
-  user = await updateUser({ userId, name: "New name" });
-  expect(user.name).eq("New name");
+  user = await updateUser({ userId, firstNames: "New", lastNames: "Name" });
+  expect(user.firstNames).eq("New");
+  expect(user.lastNames).eq("Name");
 
   const userInfo = await getUserInfo(user.email);
-  expect(userInfo.name).eq("New name");
+  expect(userInfo.firstNames).eq("New");
+  expect(userInfo.lastNames).eq("Name");
 });
 
 test("New activity starts out private, then delete it", async () => {
@@ -1296,27 +1305,30 @@ test("searchUsersWithPublicContent returns only users with public content", asyn
   await updateContent({ id: folder3aId, ownerId: owner3Id, isPublic: true });
 
   // cannot find owner1
-  let searchResults = await searchUsersWithPublicContent(owner1.name);
+  let searchResults = await searchUsersWithPublicContent(owner1.lastNames);
   expect(searchResults.length).eq(0);
 
   // can find owner2
-  searchResults = await searchUsersWithPublicContent(owner2.name);
+  searchResults = await searchUsersWithPublicContent(owner2.lastNames);
   expect(searchResults.length).eq(1);
-  expect(searchResults[0].name).eq(owner2.name);
+  expect(searchResults[0].firstNames).eq(owner2.firstNames);
+  expect(searchResults[0].lastNames).eq(owner2.lastNames);
 
   // can find owner3
-  searchResults = await searchUsersWithPublicContent(owner3.name);
+  searchResults = await searchUsersWithPublicContent(owner3.lastNames);
   expect(searchResults.length).eq(1);
-  expect(searchResults[0].name).eq(owner3.name);
+  expect(searchResults[0].firstNames).eq(owner3.firstNames);
+  expect(searchResults[0].lastNames).eq(owner3.lastNames);
 });
 
 test("findOrCreateUser finds an existing user or creates a new one", async () => {
   const email = `unique-${Date.now()}@example.com`;
-  const name = "vitest user";
-  const user = await findOrCreateUser(email, name);
+  const firstNames = "vitest";
+  const lastNames = "user";
+  const user = await findOrCreateUser({ email, firstNames, lastNames });
   expect(user.userId).toBeTypeOf("number");
   // Attempt to find the same user again
-  const sameUser = await findOrCreateUser(email, name);
+  const sameUser = await findOrCreateUser({ email, firstNames, lastNames });
   expect(sameUser).toStrictEqual(user);
 });
 
@@ -1350,7 +1362,7 @@ test("updateContent does not update properties when passed undefined values", as
 });
 
 test("add and remove promoted content", async () => {
-  const { userId, name: userName } = await createTestAdminUser();
+  const { userId, firstNames, lastNames } = await createTestAdminUser();
 
   // Can create new promoted content group
   const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
@@ -2009,9 +2021,14 @@ test("get assignment data from anonymous users", async () => {
   let newUser1 = assignmentData.newAnonymousUser;
   newUser1 = await updateUser({
     userId: newUser1!.userId,
-    name: "Zoe Zaborowski",
+    firstNames: "Zoe",
+    lastNames: "Zaborowski",
   });
-  const userData1 = { userId: newUser1!.userId, name: newUser1!.name };
+  const userData1 = {
+    userId: newUser1!.userId,
+    firstNames: newUser1!.firstNames,
+    lastNames: newUser1!.lastNames,
+  };
 
   await saveScoreAndState({
     activityId,
@@ -2056,7 +2073,7 @@ test("get assignment data from anonymous users", async () => {
         },
       ],
     },
-    user: { name: "Zoe Zaborowski" },
+    user: { firstNames: "Zoe", lastNames: "Zaborowski" },
     documentScores: [
       {
         docId,
@@ -2109,7 +2126,7 @@ test("get assignment data from anonymous users", async () => {
         },
       ],
     },
-    user: { name: "Zoe Zaborowski" },
+    user: { firstNames: "Zoe", lastNames: "Zaborowski" },
     documentScores: [
       {
         docId,
@@ -2168,7 +2185,7 @@ test("get assignment data from anonymous users", async () => {
         },
       ],
     },
-    user: { name: "Zoe Zaborowski" },
+    user: { firstNames: "Zoe", lastNames: "Zaborowski" },
     documentScores: [
       {
         docId,
@@ -2185,9 +2202,14 @@ test("get assignment data from anonymous users", async () => {
   let newUser2 = assignmentData.newAnonymousUser;
   newUser2 = await updateUser({
     userId: newUser2!.userId,
-    name: "Arya Abbas",
+    firstNames: "Arya",
+    lastNames: "Abbas",
   });
-  const userData2 = { userId: newUser2!.userId, name: newUser2!.name };
+  const userData2 = {
+    userId: newUser2!.userId,
+    firstNames: newUser2!.firstNames,
+    lastNames: newUser2!.lastNames,
+  };
 
   // assignment scores still unchanged
   assignmentWithScores = await getAssignmentScoreData({
@@ -2246,7 +2268,7 @@ test("get assignment data from anonymous users", async () => {
         },
       ],
     },
-    user: { name: "Arya Abbas" },
+    user: { firstNames: "Arya", lastNames: "Abbas" },
     documentScores: [
       {
         docId,
@@ -2277,7 +2299,8 @@ test("can't get assignment data if other user, but student can get their own dat
   let newUser1 = assignmentData.newAnonymousUser;
   newUser1 = await updateUser({
     userId: newUser1!.userId,
-    name: "Zoe Zaborowski",
+    firstNames: "Zoe",
+    lastNames: "Zaborowski",
   });
 
   await saveScoreAndState({
@@ -2355,7 +2378,8 @@ test("can't get assignment data if unassigned", async () => {
   let newUser1 = assignmentData.newAnonymousUser;
   newUser1 = await updateUser({
     userId: newUser1!.userId,
-    name: "Zoe Zaborowski",
+    firstNames: "Zoe",
+    lastNames: "Zaborowski",
   });
 
   await saveScoreAndState({
@@ -2789,7 +2813,11 @@ test("record submitted events and get responses", async () => {
   // create new anonymous user
   let assignmentData = await getAssignmentDataFromCode(classCode, false);
   let newUser = assignmentData.newAnonymousUser;
-  let userData = { userId: newUser!.userId, name: newUser!.name };
+  let userData = {
+    userId: newUser!.userId,
+    firstNames: newUser!.firstNames,
+    lastNames: newUser!.lastNames,
+  };
 
   let answerId1 = "answer1";
   let answerId2 = "answer2";
@@ -2864,7 +2892,8 @@ test("record submitted events and get responses", async () => {
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
-      userName: newUser!.name,
+      firstNames: newUser!.firstNames,
+      lastNames: newUser!.lastNames,
       bestResponse: "Answer result 1",
       bestCreditAchieved: 0.4,
       latestResponse: "Answer result 1",
@@ -2927,7 +2956,8 @@ test("record submitted events and get responses", async () => {
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
-      userName: newUser!.name,
+      firstNames: newUser!.firstNames,
+      lastNames: newUser!.lastNames,
       bestResponse: "Answer result 2",
       bestCreditAchieved: 0.8,
       latestResponse: "Answer result 2",
@@ -3006,7 +3036,8 @@ test("record submitted events and get responses", async () => {
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
-      userName: newUser!.name,
+      firstNames: newUser!.firstNames,
+      lastNames: newUser!.lastNames,
       bestResponse: "Answer result 2",
       bestCreditAchieved: 0.8,
       latestResponse: "Answer result 2",
@@ -3046,7 +3077,8 @@ test("record submitted events and get responses", async () => {
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
-      userName: newUser!.name,
+      firstNames: newUser!.firstNames,
+      lastNames: newUser!.lastNames,
       bestResponse: "Answer result 3",
       bestCreditAchieved: 0.2,
       latestResponse: "Answer result 3",
@@ -3074,7 +3106,11 @@ test("record submitted events and get responses", async () => {
   // response for a second user
   assignmentData = await getAssignmentDataFromCode(classCode, false);
   let newUser2 = assignmentData.newAnonymousUser;
-  let userData2 = { userId: newUser2!.userId, name: newUser2!.name };
+  let userData2 = {
+    userId: newUser2!.userId,
+    firstNames: newUser2!.firstNames,
+    lastNames: newUser2!.lastNames,
+  };
   await recordSubmittedEvent({
     activityId,
     docId,
@@ -3122,7 +3158,8 @@ test("record submitted events and get responses", async () => {
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
-      userName: newUser!.name,
+      firstNames: newUser!.firstNames,
+      lastNames: newUser!.lastNames,
       bestResponse: "Answer result 2",
       bestCreditAchieved: 0.8,
       latestResponse: "Answer result 2",
@@ -3131,7 +3168,8 @@ test("record submitted events and get responses", async () => {
     },
     {
       userId: newUser2!.userId,
-      userName: newUser2!.name,
+      firstNames: newUser2!.firstNames,
+      lastNames: newUser2!.lastNames,
       bestResponse: "Answer result 4",
       bestCreditAchieved: 1,
       latestResponse: "Answer result 4",
@@ -3188,7 +3226,8 @@ test("record submitted events and get responses", async () => {
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
-      userName: newUser!.name,
+      firstNames: newUser!.firstNames,
+      lastNames: newUser!.lastNames,
       bestResponse: "Answer result 3",
       bestCreditAchieved: 0.2,
       latestResponse: "Answer result 3",
@@ -3270,7 +3309,8 @@ test("record submitted events and get responses", async () => {
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
-      userName: newUser!.name,
+      firstNames: newUser!.firstNames,
+      lastNames: newUser!.lastNames,
       bestResponse: "Answer result 2",
       bestCreditAchieved: 0.8,
       latestResponse: "Answer result 2",
@@ -3279,7 +3319,8 @@ test("record submitted events and get responses", async () => {
     },
     {
       userId: newUser2!.userId,
-      userName: newUser2!.name,
+      firstNames: newUser2!.firstNames,
+      lastNames: newUser2!.lastNames,
       bestResponse: "Answer result 4",
       bestCreditAchieved: 1,
       latestResponse: "Answer result 5",
@@ -3333,7 +3374,11 @@ test("only owner can get submitted responses", async () => {
   // create new anonymous user
   let assignmentData = await getAssignmentDataFromCode(classCode, false);
   let newUser = assignmentData.newAnonymousUser;
-  let userData = { userId: newUser!.userId, name: newUser!.name };
+  let userData = {
+    userId: newUser!.userId,
+    firstNames: newUser!.firstNames,
+    lastNames: newUser!.lastNames,
+  };
 
   let answerId1 = "answer1";
 
@@ -3375,7 +3420,8 @@ test("only owner can get submitted responses", async () => {
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
-      userName: newUser!.name,
+      firstNames: newUser!.firstNames,
+      lastNames: newUser!.lastNames,
       bestResponse: "Answer result 1",
       bestCreditAchieved: 1,
       latestResponse: "Answer result 1",
@@ -3538,7 +3584,8 @@ test("get all assignment data from anonymous user", async () => {
   let newUser1 = assignmentData.newAnonymousUser;
   newUser1 = await updateUser({
     userId: newUser1!.userId,
-    name: "Zoe Zaborowski",
+    firstNames: "Zoe",
+    lastNames: "Zaborowski",
   });
 
   await saveScoreAndState({
@@ -3560,7 +3607,8 @@ test("get all assignment data from anonymous user", async () => {
   expect(userWithScores).eqls({
     userData: {
       userId: newUser1!.userId,
-      name: newUser1!.name,
+      firstNames: newUser1!.firstNames,
+      lastNames: newUser1!.lastNames,
     },
     orderedActivityScores: [
       {
@@ -3591,7 +3639,8 @@ test("get all assignment data from anonymous user", async () => {
   expect(userWithScores).eqls({
     userData: {
       userId: newUser1!.userId,
-      name: newUser1!.name,
+      firstNames: newUser1!.firstNames,
+      lastNames: newUser1!.lastNames,
     },
     orderedActivityScores: [
       {
@@ -3621,7 +3670,8 @@ test("get all assignment data from anonymous user", async () => {
   expect(userWithScores).eqls({
     userData: {
       userId: newUser1!.userId,
-      name: newUser1!.name,
+      firstNames: newUser1!.firstNames,
+      lastNames: newUser1!.lastNames,
     },
     orderedActivityScores: [
       {
@@ -3885,7 +3935,8 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   let newUser1 = assignmentData.newAnonymousUser;
   newUser1 = await updateUser({
     userId: newUser1!.userId,
-    name: "Zoe Zaborowski",
+    firstNames: "Zoe",
+    lastNames: "Zaborowski",
   });
 
   await saveScoreAndState({
@@ -3914,7 +3965,10 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
       activityId: activityId,
       userId: newUser1!.userId,
       score: 0.5,
-      user: { name: newUser1!.name },
+      user: {
+        firstNames: newUser1!.firstNames,
+        lastNames: newUser1!.lastNames,
+      },
     },
   ]);
 
@@ -3945,7 +3999,10 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
       activityId: activityId,
       userId: newUser1!.userId,
       score: 0.5,
-      user: { name: newUser1!.name },
+      user: {
+        firstNames: newUser1!.firstNames,
+        lastNames: newUser1!.lastNames,
+      },
     },
   ]);
 
@@ -3954,7 +4011,8 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   let newUser2 = assignmentData.newAnonymousUser;
   newUser2 = await updateUser({
     userId: newUser2!.userId,
-    name: "Arya Abbas",
+    firstNames: "Arya",
+    lastNames: "Abbas",
   });
 
   await saveScoreAndState({
@@ -3993,13 +4051,19 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
       activityId: activityId,
       userId: newUser1!.userId,
       score: 0.7,
-      user: { name: newUser1!.name },
+      user: {
+        firstNames: newUser1!.firstNames,
+        lastNames: newUser1!.lastNames,
+      },
     },
     {
       activityId: activityId,
       userId: newUser2!.userId,
       score: 0.3,
-      user: { name: newUser2!.name },
+      user: {
+        firstNames: newUser2!.firstNames,
+        lastNames: newUser2!.lastNames,
+      },
     },
   ]);
 
@@ -4032,7 +4096,8 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   let newUser3 = assignmentData.newAnonymousUser;
   newUser3 = await updateUser({
     userId: newUser3!.userId,
-    name: "Arya Abbas",
+    firstNames: "Nyla",
+    lastNames: "Nyquist",
   });
 
   await saveScoreAndState({
@@ -4065,19 +4130,28 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
       activityId: activityId,
       userId: newUser1!.userId,
       score: 0.7,
-      user: { name: newUser1!.name },
+      user: {
+        firstNames: newUser1!.firstNames,
+        lastNames: newUser1!.lastNames,
+      },
     },
     {
       activityId: activityId,
       userId: newUser2!.userId,
       score: 0.3,
-      user: { name: newUser2!.name },
+      user: {
+        firstNames: newUser2!.firstNames,
+        lastNames: newUser2!.lastNames,
+      },
     },
     {
       activityId: activity2Id,
       userId: newUser3!.userId,
       score: 0.9,
-      user: { name: newUser3!.name },
+      user: {
+        firstNames: newUser3!.firstNames,
+        lastNames: newUser3!.lastNames,
+      },
     },
   ]);
 });

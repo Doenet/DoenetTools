@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
+import Button from "../../../PanelHeaderComponents/Button";
 import {
   checkIfUserClearedOut,
   clearUsersInformationFromTheBrowser,

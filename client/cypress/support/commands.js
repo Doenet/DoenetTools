@@ -26,7 +26,6 @@
 
 import "cypress-wait-until";
 import "cypress-file-upload";
-import { clear as idb_clear } from "idb-keyval";
 
 Cypress.Commands.add(
   "createUserRole",
@@ -319,7 +318,3 @@ Cypress.Commands.add(
     // })
   },
 );
-
-Cypress.Commands.add("clearIndexedDB", () => {
-  return idb_clear();
-});

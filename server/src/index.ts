@@ -105,10 +105,12 @@ app.post("/api/updateUser", async (req: Request, res: Response) => {
   if (signedIn) {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
-    const name = body.name;
-    await updateUser({ userId: loggedInUserId, name });
-    res.cookie("name", name);
-    res.send({ name });
+    const firstNames = body.firstNames;
+    const lastNames = body.lastNames;
+    await updateUser({ userId: loggedInUserId, firstNames, lastNames });
+    res.cookie("firstNames", firstNames);
+    res.cookie("lastNames", lastNames);
+    res.send({ firstNames, lastNames });
   } else {
     res.send({});
   }
@@ -165,10 +167,15 @@ app.get(
 app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
   const email: string = req.query.emailaddress as string;
   // TODO: add the ability to give a name after logging in or creating an account
-  const user = await findOrCreateUser(email, email);
+  const user = await findOrCreateUser({
+    email,
+    firstNames: null,
+    lastNames: "",
+  });
   res.cookie("email", email);
   res.cookie("userId", String(user.userId));
-  res.cookie("name", String(user.name));
+  res.cookie("firstNames", String(user.firstNames));
+  res.cookie("lastNames", String(user.lastNames));
   res.send({});
 });
 
@@ -614,19 +621,23 @@ app.get(
 
     let assignmentData = await getAssignmentDataFromCode(code, signedIn);
 
-    let name: string;
+    let firstNames: string | null;
+    let lastNames: string;
     if (assignmentData.newAnonymousUser) {
       const anonymousUser = assignmentData.newAnonymousUser;
       // create a user with random name and email
       res.cookie("email", anonymousUser.email);
       res.cookie("userId", String(anonymousUser.userId));
-      res.cookie("name", String(anonymousUser.name));
-      name = anonymousUser.name;
+      res.cookie("firstNames", String(anonymousUser.firstNames));
+      res.cookie("lastNames", String(anonymousUser.lastNames));
+      firstNames = anonymousUser.firstNames;
+      lastNames = anonymousUser.lastNames;
     } else {
-      name = req.cookies.name;
+      firstNames = req.cookies.firstNames;
+      lastNames = req.cookies.lastNames;
     }
 
-    res.send({ name, ...assignmentData });
+    res.send({ student: { firstNames, lastNames }, ...assignmentData });
   },
 );
 

@@ -20,8 +20,9 @@ import {
 import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
-import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
+import ContentCard from "../../../PanelHeaderComponents/ContentCard";
 import axios from "axios";
+import { createFullName } from "../../../_utils/names";
 
 export async function loader({ params }) {
   const { data: assignmentData } = await axios.get(`/api/getAssigned`);
@@ -79,7 +80,7 @@ export function Assigned() {
           textAlign="center"
         >
           <Heading as="h2" size="lg">
-            {user.name}
+            {createFullName(user)}
           </Heading>
           <Heading as="h3" size="md">
             Assigned Activities
@@ -122,13 +123,12 @@ export function Assigned() {
             ) : (
               <>
                 {assignments.map((assignment) => {
-                  const isInstructor = assignment.ownerId === user.userId;
                   return (
                     <ContentCard
                       key={`Card${assignment.assignmentId}`}
                       imagePath={assignment.imagePath}
-                      name={assignment.name}
-                      fullName={"Quick assign activity"}
+                      title={assignment.name}
+                      ownerName={"Quick assign activity"}
                       imageLink={`/classCode/${assignment.classCode}`}
                       suppressAvatar={true}
                       showStatus={false}

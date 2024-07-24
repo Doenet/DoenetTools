@@ -19,6 +19,7 @@ import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 import { parseAndFormatResponse } from "./AssignmentAnswerResponses";
 import { Link as ReactRouterLink } from "react-router-dom";
+import { createFullName } from "../../../_utils/names";
 
 export async function action({ params, request }) {
   return null;
@@ -97,7 +98,7 @@ export function AssignmentAnswerResponseHistory() {
       <Heading heading={activityName} />
 
       <Heading
-        subheading={`Responses submitted by ${responseData[0]?.user.name} for ${answerId}`}
+        subheading={`Responses submitted by ${createFullName(responseData[0]?.user)} for ${answerId}`}
       />
       <Box margin={5}>
         <p>
@@ -109,9 +110,15 @@ export function AssignmentAnswerResponseHistory() {
         <Table>
           <Thead>
             <Tr>
-              <Th>Response</Th>
-              <Th>Percent correct</Th>
-              <Th>Submitted</Th>
+              <Th textTransform={"none"} fontSize="large">
+                Response
+              </Th>
+              <Th textTransform={"none"} fontSize="large">
+                Percent correct
+              </Th>
+              <Th textTransform={"none"} fontSize="large">
+                Submitted
+              </Th>
             </Tr>
           </Thead>
           <Tbody>

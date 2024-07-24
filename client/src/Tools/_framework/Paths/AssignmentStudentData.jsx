@@ -6,6 +6,7 @@ import { Button, Box, Link as ChakraLink } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 import { Link as ReactRouterLink, useFetcher } from "react-router-dom";
+import { createFullName } from "../../../_utils/names";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -147,7 +148,7 @@ export function AssignmentStudentData() {
           &lt; Back to assignment data
         </ChakraLink>
       </Box>
-      <Heading heading={user.name} subheading={assignment.name} />
+      <Heading heading={createFullName(user)} subheading={assignment.name} />
 
       <Box style={{ margin: 20 }}>
         {numStatesSaved === 1 ? (

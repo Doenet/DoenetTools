@@ -864,7 +864,14 @@ export async function getActivityViewerData(
     select: {
       id: true,
       name: true,
-      owner: { select: { userId: true, email: true, name: true } },
+      owner: {
+        select: {
+          userId: true,
+          email: true,
+          firstNames: true,
+          lastNames: true,
+        },
+      },
       documents: {
         where: { isDeleted: false },
         select: {
@@ -893,7 +900,12 @@ export async function getActivityViewerData(
                       id: true,
                       name: true,
                       owner: {
-                        select: { userId: true, email: true, name: true },
+                        select: {
+                          userId: true,
+                          email: true,
+                          firstNames: true,
+                          lastNames: true,
+                        },
                       },
                     },
                   },
@@ -996,7 +1008,12 @@ export async function searchUsersWithPublicContent(query: string) {
   let query_words = query.split(" ");
   let usersWithPublic = await prisma.users.findMany({
     where: {
-      AND: query_words.map((qw) => ({ name: { contains: "%" + qw + "%" } })),
+      AND: query_words.map((qw) => ({
+        OR: [
+          { firstNames: { contains: "%" + qw + "%" } },
+          { lastNames: { contains: "%" + qw + "%" } },
+        ],
+      })),
       anonymous: false,
       content: {
         some: {
@@ -1007,7 +1024,8 @@ export async function searchUsersWithPublicContent(query: string) {
     },
     select: {
       userId: true,
-      name: true,
+      firstNames: true,
+      lastNames: true,
     },
   });
 
@@ -1036,7 +1054,6 @@ export async function listUserAssigned(userId: number) {
       createdAt: true,
       lastEdited: true,
       isPublic: true,
-      isAssigned: true,
       classCode: true,
     },
     orderBy: { createdAt: "asc" },
@@ -1044,7 +1061,7 @@ export async function listUserAssigned(userId: number) {
 
   const user = await prisma.users.findUniqueOrThrow({
     where: { userId },
-    select: { userId: true, name: true },
+    select: { userId: true, firstNames: true, lastNames: true },
   });
 
   return {
@@ -1053,25 +1070,39 @@ export async function listUserAssigned(userId: number) {
   };
 }
 
-export async function findOrCreateUser(
-  email: string,
-  name: string,
+export async function findOrCreateUser({
+  email,
+  firstNames,
+  lastNames,
   isAdmin = false,
-) {
+}: {
+  email: string;
+  firstNames: string | null;
+  lastNames: string;
+  isAdmin?: boolean;
+}) {
   const user = await prisma.users.findUnique({ where: { email } });
   if (user) {
     return user;
   } else {
-    return createUser(email, name, isAdmin);
+    return createUser({ email, firstNames, lastNames, isAdmin });
   }
 }
 
-export async function createUser(
-  email: string,
-  name: string,
-  isAdmin: boolean,
-) {
-  const result = await prisma.users.create({ data: { email, name, isAdmin } });
+export async function createUser({
+  email,
+  firstNames,
+  lastNames,
+  isAdmin,
+}: {
+  email: string;
+  firstNames: string | null;
+  lastNames: string;
+  isAdmin: boolean;
+}) {
+  const result = await prisma.users.create({
+    data: { email, firstNames, lastNames, isAdmin },
+  });
   return result;
 }
 
@@ -1079,10 +1110,10 @@ export async function createAnonymousUser() {
   const array = new Uint32Array(1);
   crypto.getRandomValues(array);
   const random_number = array[0];
-  const name = ``;
+  const lastNames = ``;
   const email = `anonymous${random_number}@example.com`;
   const result = await prisma.users.create({
-    data: { email, name, anonymous: true },
+    data: { email, lastNames, anonymous: true },
   });
 
   return result;
@@ -1091,21 +1122,29 @@ export async function createAnonymousUser() {
 export async function getUserInfo(email: string) {
   const user = await prisma.users.findUniqueOrThrow({
     where: { email },
-    select: { userId: true, email: true, name: true, anonymous: true },
+    select: {
+      userId: true,
+      email: true,
+      firstNames: true,
+      lastNames: true,
+      anonymous: true,
+    },
   });
   return user;
 }
 
 export async function updateUser({
   userId,
-  name,
+  firstNames,
+  lastNames,
 }: {
   userId: number;
-  name: string;
+  firstNames: string;
+  lastNames: string;
 }) {
   const user = await prisma.users.update({
     where: { userId },
-    data: { name },
+    data: { firstNames, lastNames },
   });
   return user;
 }
@@ -1142,7 +1181,8 @@ export async function getAllRecentPublicActivities() {
       imagePath: true,
       owner: {
         select: {
-          name: true,
+          firstNames: true,
+          lastNames: true,
         },
       },
     },
@@ -1318,7 +1358,8 @@ export async function loadPromotedContent(userId: number) {
 
               owner: {
                 select: {
-                  name: true,
+                  firstNames: true,
+                  lastNames: true,
                 },
               },
             },
@@ -1336,7 +1377,7 @@ export async function loadPromotedContent(userId: number) {
           name: promoted.activity.name,
           activityId: promoted.activity.id,
           imagePath: promoted.activity.imagePath,
-          owner: promoted.activity.owner.name,
+          owner: promoted.activity.owner,
         };
       },
     );
@@ -1899,11 +1940,14 @@ export async function getAssignmentScoreData({
       assignmentScores: {
         select: {
           user: {
-            select: { name: true, userId: true },
+            select: { firstNames: true, lastNames: true, userId: true },
           },
           score: true,
         },
-        orderBy: { user: { name: "asc" } },
+        orderBy: [
+          { user: { lastNames: "asc" } },
+          { user: { firstNames: "asc" } },
+        ],
       },
     },
   });
@@ -1949,7 +1993,7 @@ export async function getAssignmentStudentData({
           },
         },
       },
-      user: { select: { name: true } },
+      user: { select: { firstNames: true, lastNames: true } },
     },
   });
 
@@ -2056,7 +2100,8 @@ export async function getAllAssignmentScores({
       score: true,
       user: {
         select: {
-          name: true,
+          firstNames: true,
+          lastNames: true,
         },
       },
     },
@@ -2092,7 +2137,8 @@ export async function getStudentData({
     },
     select: {
       userId: true,
-      name: true,
+      firstNames: true,
+      lastNames: true,
     },
   });
 
@@ -2189,7 +2235,7 @@ export async function getAssignedScores(loggedInUserId: number) {
 
   const userData = await prisma.users.findUniqueOrThrow({
     where: { userId: loggedInUserId },
-    select: { userId: true, name: true },
+    select: { userId: true, firstNames: true, lastNames: true },
   });
 
   return { userData, orderedActivityScores };
@@ -2346,7 +2392,8 @@ export async function getDocumentSubmittedResponses({
   let rawResponses = await prisma.$queryRaw<
     {
       userId: number;
-      userName: string;
+      firstNames: string | null;
+      lastNames: string;
       response: string;
       creditAchieved: number;
       submittedAt: DateTime;
@@ -2354,7 +2401,7 @@ export async function getDocumentSubmittedResponses({
       numResponses: bigint;
     }[]
   >(Prisma.sql`
-select "dsr"."userId", "users"."name" AS "userName", "response", "creditAchieved", "submittedAt",
+select "dsr"."userId", "users"."firstNames", "users"."lastNames", "response", "creditAchieved", "submittedAt",
     	MAX("creditAchieved") over (partition by "dsr"."userId") as "maxCredit",
     	COUNT("creditAchieved") over (partition by "dsr"."userId") as "numResponses"
     	from "documentSubmittedResponses" as dsr
@@ -2377,7 +2424,8 @@ select "dsr"."userId", "users"."name" AS "userName", "response", "creditAchieved
       }
       newResponse = {
         userId: respObj.userId,
-        userName: respObj.userName,
+        firstNames: respObj.firstNames,
+        lastNames: respObj.lastNames,
         latestResponse: respObj.response,
         latestCreditAchieved: respObj.creditAchieved,
         bestCreditAchieved: respObj.maxCredit,
@@ -2446,7 +2494,7 @@ export async function getDocumentSubmittedResponseHistory({
       },
     },
     select: {
-      user: { select: { userId: true, name: true } },
+      user: { select: { userId: true, firstNames: true, lastNames: true } },
       response: true,
       creditAchieved: true,
       submittedAt: true,
@@ -2598,12 +2646,12 @@ export async function getPublicFolderContent({
 
   const owner = await prisma.users.findUniqueOrThrow({
     where: { userId: ownerId },
-    select: { name: true },
+    select: { firstNames: true, lastNames: true },
   });
 
   return {
     content: publicContent,
-    ownerName: owner.name,
+    owner,
     folder,
   };
 }
