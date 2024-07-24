@@ -1378,8 +1378,7 @@ export async function loadPromotedContent(userId: number) {
           name: promoted.activity.name,
           activityId: promoted.activity.id,
           imagePath: promoted.activity.imagePath,
-          ownerFirstNames: promoted.activity.owner.firstNames,
-          ownerLastNames: promoted.activity.owner.lastNames,
+          owner: promoted.activity.owner,
         };
       },
     );
@@ -2653,8 +2652,7 @@ export async function getPublicFolderContent({
 
   return {
     content: publicContent,
-    ownerFirstNames: owner.firstNames,
-    ownerLastNames: owner.lastNames,
+    owner,
     folder,
   };
 }

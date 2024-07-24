@@ -637,7 +637,7 @@ app.get(
       lastNames = req.cookies.lastNames;
     }
 
-    res.send({ firstNames, lastNames, ...assignmentData });
+    res.send({ student: { firstNames, lastNames }, ...assignmentData });
   },
 );
 
