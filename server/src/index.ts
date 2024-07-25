@@ -557,7 +557,10 @@ app.get(
       );
       res.send(editorData);
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2025"
+      ) {
         res.sendStatus(404);
       } else {
         next(e);

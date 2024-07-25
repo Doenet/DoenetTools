@@ -1,4 +1,3 @@
-// import axios from 'axios';
 import {
   Button,
   Box,
@@ -7,13 +6,6 @@ import {
   Flex,
   Wrap,
   useDisclosure,
-  Center,
-  DrawerHeader,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerOverlay,
-  Drawer,
   MenuItem,
   Heading,
   Tooltip,
@@ -31,8 +23,8 @@ import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../PanelHeaderComponents/ContentCard";
-import { GeneralActivityControls } from "./ActivityEditor";
 import axios from "axios";
+import { ActivitySettingsDrawer } from "../ToolPanels/ActivitySettingsDrawer";
 
 // what is a better solution than this?
 let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching activity/folder id
@@ -52,8 +44,8 @@ export async function action({ request, params }) {
     if (formObj.learningOutcomes) {
       learningOutcomes = JSON.parse(formObj.learningOutcomes);
     }
-    let isPublic;
 
+    let isPublic = false;
     if (formObj.isPublic) {
       isPublic = formObj.isPublic === "true";
     }
@@ -166,6 +158,7 @@ export async function loader({ params }) {
   };
 }
 
+//@ts-ignore
 const ActivitiesSection = styled.div`
   padding: 10px;
   margin: 0px;
@@ -176,64 +169,72 @@ const ActivitiesSection = styled.div`
   height: 100vh;
 `;
 
-function ActivitySettingsDrawer({
-  isOpen,
-  onClose,
-  finalFocusRef,
-  id,
-  content,
-  allDoenetmlVersions,
-}) {
-  const fetcher = useFetcher();
-  let activityData;
-  if (id) {
-    let index = content.findIndex((obj) => obj.id == id);
-    if (index != -1) {
-      activityData = content[index];
-    } else {
-      //Throw error not found
-    }
-  }
+// function ActivitySettingsDrawer({
+//   isOpen,
+//   onClose,
+//   finalFocusRef,
+//   id,
+//   content,
+//   allDoenetmlVersions,
+// }) {
+//   let activityData;
+//   if (id) {
+//     let index = content.findIndex((obj) => obj.id == id);
+//     if (index != -1) {
+//       activityData = content[index];
+//     } else {
+//       //Throw error not found
+//     }
+//   }
 
-  return (
-    <Drawer
-      isOpen={isOpen}
-      placement="right"
-      onClose={onClose}
-      finalFocusRef={finalFocusRef}
-      size="lg"
-    >
-      <DrawerOverlay />
-      <DrawerContent>
-        <DrawerCloseButton />
-        <DrawerHeader>
-          <Center>
-            <Text>Activity Settings</Text>
-          </Center>
-        </DrawerHeader>
+//   if (!activityData) {
+//     return null;
+//   }
 
-        <DrawerBody>
-          {id && (
-            <GeneralActivityControls
-              fetcher={fetcher}
-              activityId={id}
-              docId={activityData.docId}
-              activityData={activityData}
-              allDoenetmlVersions={allDoenetmlVersions}
-            />
-          )}
-        </DrawerBody>
-      </DrawerContent>
-    </Drawer>
-  );
-}
+//   return (
+//     <Drawer
+//       isOpen={isOpen}
+//       placement="right"
+//       onClose={onClose}
+//       finalFocusRef={finalFocusRef}
+//       size="lg"
+//     >
+//       <DrawerOverlay />
+//       <DrawerContent>
+//         <DrawerCloseButton />
+//         <DrawerHeader>
+//           <Center>
+//             <Text>Activity Settings</Text>
+//           </Center>
+//         </DrawerHeader>
+
+//         <DrawerBody>
+//           {id && (
+//             <GeneralActivityControls
+//               fetcher={fetcher}
+//               activityId={id}
+//               docId={activityData.docId}
+//               activityData={activityData}
+//               allDoenetmlVersions={allDoenetmlVersions}
+//             />
+//           )}
+//         </DrawerBody>
+//       </DrawerContent>
+//     </Drawer>
+//   );
+// }
 
 export function Activities() {
-  let context = useOutletContext();
+  let context: any = useOutletContext();
   let { folderId, content, allDoenetmlVersions, userId, folder } =
-    useLoaderData();
-  const [activityId, setActivityId] = useState();
-  const controlsBtnRef = useRef(null);
+    useLoaderData() as {
+      folderId: string | null;
+      content: any;
+      allDoenetmlVersions: any;
+      userId: string;
+      folder: any;
+    };
+  const [activityId, setActivityId] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const {
@@ -360,16 +361,32 @@ export function Activities() {
     headingText = `My Activities`;
   }
 
-  return (
-    <>
+  let activityData;
+  if (activityId) {
+    let index = content.findIndex((obj) => obj.id == activityId);
+    if (index != -1) {
+      activityData = content[index];
+    } else {
+      //Throw error not found
+    }
+  }
+
+  let settings_drawer =
+    activityData && activityId ? (
       <ActivitySettingsDrawer
         isOpen={settingsAreOpen}
         onClose={settingsOnClose}
-        finalFocusRef={controlsBtnRef}
-        id={activityId}
-        content={content}
+        activityId={activityId}
+        docId={activityData.docId}
+        activityData={activityData}
         allDoenetmlVersions={allDoenetmlVersions}
+        fetcher={fetcher}
       />
+    ) : null;
+
+  return (
+    <>
+      {settings_drawer}
       <Box
         backgroundColor="#fff"
         color="#000"
@@ -388,10 +405,7 @@ export function Activities() {
             size="xs"
             colorScheme="blue"
             onClick={async () => {
-              let id = fetcher.submit(
-                { _action: "Add Folder" },
-                { method: "post" },
-              );
+              fetcher.submit({ _action: "Add Folder" }, { method: "post" });
             }}
           >
             + Add Folder

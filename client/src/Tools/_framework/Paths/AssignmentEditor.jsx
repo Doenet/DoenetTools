@@ -136,6 +136,7 @@ export function AssignmentEditor() {
           <AssignmentPreview
             doenetML={doenetML}
             doenetmlVersion={doenetmlVersion}
+            maxHeight={600}
           />
         </VStack>
         <Box>

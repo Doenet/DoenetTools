@@ -687,20 +687,13 @@ async function createDocumentVersion(docId: number): Promise<{
  * We also return information about whether or not the assignment is open in this case.
  *
  * @param activityId
- * @param ownerId
+ * @param loggedInUserId
  */
 export async function getActivityEditorData(
   activityId: number,
-  ownerId: number,
+  loggedInUserId: number,
 ) {
   // TODO: is there a way to combine these queries and avoid any race condition?
-
-  let isAssigned = (
-    await prisma.content.findUniqueOrThrow({
-      where: { id: activityId, isDeleted: false, ownerId, isFolder: false },
-      select: { isAssigned: true },
-    })
-  ).isAssigned;
 
   type DoenetmlVersion = {
     id: number;
@@ -712,7 +705,7 @@ export async function getActivityEditorData(
     deprecationMessage: string;
   };
 
-  let activity: {
+  type ActivityStructure = {
     name: string;
     imagePath: string | null;
     isAssigned: boolean;
@@ -727,13 +720,50 @@ export async function getActivityEditorData(
       doenetmlVersion: DoenetmlVersion;
     }[];
     stillOpen: boolean;
+    notMe: boolean;
   };
+
+  let content_check = await prisma.content.findUniqueOrThrow({
+    where: {
+      id: activityId,
+      isDeleted: false,
+      isFolder: false,
+      OR: [{ ownerId: loggedInUserId }, { isPublic: true }],
+    },
+    select: { isAssigned: true, ownerId: true, isPublic: true },
+  });
+
+  if (content_check.ownerId !== loggedInUserId) {
+    // activity is public but not owned by the logged in user
+
+    let activity: ActivityStructure = {
+      name: "",
+      imagePath: null,
+      isAssigned: content_check.isAssigned,
+      classCode: null,
+      codeValidUntil: null,
+      isPublic: content_check.isPublic,
+      documents: [],
+      stillOpen: false,
+      notMe: true,
+    };
+    return activity;
+  }
+
+  let isAssigned = content_check.isAssigned;
+
+  let activity: ActivityStructure;
 
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
 
   if (isAssigned) {
     let assignedActivity = await prisma.content.findUniqueOrThrow({
-      where: { id: activityId, isDeleted: false, ownerId, isFolder: false },
+      where: {
+        id: activityId,
+        isDeleted: false,
+        ownerId: loggedInUserId,
+        isFolder: false,
+      },
       select: {
         name: true,
         imagePath: true,
@@ -776,10 +806,16 @@ export async function getActivityEditorData(
       stillOpen: assignedActivity.codeValidUntil
         ? DateTime.now() <= DateTime.fromJSDate(assignedActivity.codeValidUntil)
         : false,
+      notMe: false,
     };
   } else {
     let unassignedActivity = await prisma.content.findUniqueOrThrow({
-      where: { id: activityId, isDeleted: false, ownerId, isFolder: false },
+      where: {
+        id: activityId,
+        isDeleted: false,
+        ownerId: loggedInUserId,
+        isFolder: false,
+      },
       select: {
         name: true,
         imagePath: true,
@@ -807,6 +843,7 @@ export async function getActivityEditorData(
         versionNum: null,
       })),
       stillOpen: false,
+      notMe: false,
     };
   }
 
