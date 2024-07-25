@@ -57,10 +57,43 @@ import {
 } from "./model";
 import { Prisma } from "@prisma/client";
 
+import passport from "passport";
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import session from 'express-session';
+
 dotenv.config();
 
 const app: Express = express();
 app.use(cookieParser());
+
+const googleClientId = process.env.GOOGLE_CLIENT_ID || '';
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
+
+passport.use(new GoogleStrategy({
+  clientID: googleClientId,
+  clientSecret: googleClientSecret,
+  callbackURL: 'http://localhost:3000/login/cb',
+},
+                                (accessToken : any, refreshToken : any, profile : any, done : any) => {
+                                  done(null, profile);
+                                }));
+
+passport.serializeUser<any, any>((req, user, done) => {
+  console.log('serializeUser',user);
+  done(undefined, user);
+});
+
+passport.deserializeUser((id, done) => {
+  done(null, {profile: id});
+  //  User.findById(id, (err: NativeError, user: UserDocument) => done(err, user));
+});
+
+// TODO: this will need to be configured to use Redis or something else
+app.use(session({
+  secret: process.env.SESSION_SECRET || '',
+  resave: false,
+  saveUninitialized: true,
+}));
 
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(
@@ -70,13 +103,23 @@ app.use(
   }),
 );
 
+app.use (passport.initialize());
+app.use (passport.session());
+
 const port = process.env.PORT || 3000;
 
 app.use(express.static(path.resolve(__dirname, "../public")));
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Express + TypeScript Server");
+  res.send("Express + TypeScript Server" + JSON.stringify(req?.user));
 });
+
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile'] }));
+
+app.get('/login/cb',
+        passport.authenticate('google', { successRedirect: '/', failureRedirect: '/login' })
+       );
 
 app.get("/api/getQuickCheckSignedIn", (req: Request, res: Response) => {
   const signedIn = req.cookies.email ? true : false;
