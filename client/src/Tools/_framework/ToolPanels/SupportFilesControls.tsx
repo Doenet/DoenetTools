@@ -90,7 +90,7 @@ export function SupportFilesControls({
           const csvString = atob(dataURL.split(",")[1]);
           const parsedData = Papa.parse(csvString, {
             dynamicTyping: true,
-          }).data;
+          }).data as any[];
           columnTypes = parsedData
             .slice(1)[0]
             .reduce((acc, val) => {

@@ -25,6 +25,16 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router";
 import { ActivitySettingsDrawer } from "../ToolPanels/ActivitySettingsDrawer";
 
+export type DoenetmlVersion = {
+  id: number;
+  displayedVersion: string;
+  fullVersion: string;
+  default: boolean;
+  deprecated: boolean;
+  removed: boolean;
+  deprecationMessage: string;
+};
+
 export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
@@ -124,7 +134,8 @@ export async function loader({ params }) {
   }
 
   const doenetML = activityData.documents[docInOrder].source;
-  const doenetmlVersion = activityData.documents[docInOrder].doenetmlVersion;
+  const doenetmlVersion: DoenetmlVersion =
+    activityData.documents[docInOrder].doenetmlVersion;
 
   const supportingFileResp = await axios.get(
     `/api/loadSupportingFileInfo/${activityId}`,
@@ -217,10 +228,10 @@ export function ActivityEditor() {
     platform: "Win" | "Mac" | "Linux";
     activityId: number;
     doenetML: string;
-    doenetmlVersion: any;
+    doenetmlVersion: DoenetmlVersion;
     docId: number;
     activityData: any;
-    allDoenetmlVersions: any;
+    allDoenetmlVersions: DoenetmlVersion[];
   };
 
   const {

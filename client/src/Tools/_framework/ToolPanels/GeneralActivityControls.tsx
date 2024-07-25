@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Alert, AlertQueue } from "./AlertQueue";
-import { Form } from "react-router-dom";
+import { FetcherWithComponents, Form } from "react-router-dom";
 import {
   Box,
   FormControl,
@@ -23,6 +23,7 @@ import {
 import { FaFileImage } from "react-icons/fa";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
 import { readAndCompressImage } from "browser-image-resizer";
+import { DoenetmlVersion } from "../Paths/ActivityEditor";
 
 export function GeneralActivityControls({
   fetcher,
@@ -30,6 +31,12 @@ export function GeneralActivityControls({
   docId,
   activityData,
   allDoenetmlVersions,
+}: {
+  fetcher: FetcherWithComponents<any>;
+  activityId: number;
+  docId: number;
+  activityData: any;
+  allDoenetmlVersions: DoenetmlVersion[];
 }) {
   let { isPublic, name, imagePath: dataImagePath } = activityData;
 
@@ -47,8 +54,8 @@ export function GeneralActivityControls({
   // (And same for other variables using this pattern)
   // It appears this file is using optimistic UI without a recourse
   // should the optimism be unmerited.
-  let doenetmlVersionInit = activityData.isFolder
-    ? 0
+  let doenetmlVersionInit: DoenetmlVersion | null = activityData.isFolder
+    ? null
     : activityData.documents[0].doenetmlVersion;
 
   let [nameValue, setName] = useState(name);
@@ -66,13 +73,13 @@ export function GeneralActivityControls({
   }: {
     nextLearningOutcomes?: any[];
     nextIsPublic?: boolean;
-    nextDoenetmlVersionId?: string;
+    nextDoenetmlVersionId?: number;
   } = {}) {
     let data: {
       learningOutcomes?: string;
       isPublic?: boolean;
       name?: string;
-      doenetmlVersionId?: string;
+      doenetmlVersionId?: number;
     } = {};
     if (nextLearningOutcomes) {
       data.learningOutcomes = JSON.stringify(nextLearningOutcomes);
@@ -113,7 +120,7 @@ export function GeneralActivityControls({
   }
 
   const onDrop = useCallback(
-    async (files) => {
+    async (files: File[]) => {
       let success = true;
       const file = files[0];
       if (files.length > 1) {
@@ -154,7 +161,7 @@ export function GeneralActivityControls({
         const uploadData = new FormData();
         // uploadData.append('file',file);
         uploadData.append("file", image);
-        uploadData.append("activityId", activityId);
+        uploadData.append("activityId", activityId.toString());
 
         axios.post("/api/activityThumbnailUpload", uploadData).then((resp) => {
           let { data } = resp;
@@ -376,18 +383,20 @@ export function GeneralActivityControls({
           <FormControl>
             <FormLabel mt="16px">DoenetML version</FormLabel>
             <Select
-              value={doenetmlVersion.id}
+              value={doenetmlVersion?.id}
               onChange={(e) => {
                 // TODO: do we worry about this pattern?
                 // If saveDataToServer is unsuccessful, the client doenetmlVersion
                 // will no match what's on the server.
                 // (See TODO from near where doenetmlVersion is defined)
-                let nextDoenetmlVersionId = e.target.value;
+                let nextDoenetmlVersionId = Number(e.target.value);
                 let nextDoenetmlVersion = allDoenetmlVersions.find(
                   (v) => v.id == nextDoenetmlVersionId,
                 );
-                setDoenetmlVersion(nextDoenetmlVersion);
-                saveDataToServer({ nextDoenetmlVersionId });
+                if (nextDoenetmlVersion) {
+                  setDoenetmlVersion(nextDoenetmlVersion);
+                  saveDataToServer({ nextDoenetmlVersionId });
+                }
               }}
             >
               {allDoenetmlVersions.map((version) => (
@@ -398,7 +407,7 @@ export function GeneralActivityControls({
             </Select>
           </FormControl>
         ) : null}
-        {doenetmlVersion.deprecated && (
+        {doenetmlVersion?.deprecated && (
           <p>
             <strong>Warning</strong>: DoenetML version{" "}
             {doenetmlVersion.displayedVersion} is deprecated.{" "}

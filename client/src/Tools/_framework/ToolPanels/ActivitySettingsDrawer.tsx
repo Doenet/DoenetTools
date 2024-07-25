@@ -18,6 +18,7 @@ import {
 import { FetcherWithComponents } from "react-router-dom";
 import { GeneralActivityControls } from "./GeneralActivityControls";
 import { SupportFilesControls } from "./SupportFilesControls";
+import { DoenetmlVersion } from "../Paths/ActivityEditor";
 
 export function ActivitySettingsDrawer({
   isOpen,
@@ -36,7 +37,7 @@ export function ActivitySettingsDrawer({
   activityId: number;
   docId: number;
   activityData: any;
-  allDoenetmlVersions: any;
+  allDoenetmlVersions: DoenetmlVersion[];
   supportingFileData?: any;
   fetcher: FetcherWithComponents<any>;
 }) {

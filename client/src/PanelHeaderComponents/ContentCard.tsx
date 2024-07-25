@@ -45,16 +45,23 @@ export default function ContentCard({
   }, [title]);
 
   function saveUpdatedTitle() {
-    fetcher.submit(
-      { _action: "update title", id, cardTitle, isFolder },
-      { method: "post" },
-    );
+    if (cardTitle !== title) {
+      fetcher.submit(
+        { _action: "update title", id, cardTitle, isFolder },
+        { method: "post" },
+      );
+    }
   }
 
   //Note: when we have a menu width 140px becomes 120px
   return (
     <Card width="180px" height="180px" p="0" m="0" data-test="Activity Card">
-      <Link to={imageLink}>
+      <Link
+        to={imageLink}
+        onFocus={() => {
+          console.log("An image link received focus!");
+        }}
+      >
         <Image
           data-test="Card Image Link"
           height="120px"
@@ -92,8 +99,7 @@ export default function ContentCard({
                   onBlur={saveUpdatedTitle}
                   onKeyDown={(e) => {
                     if (e.key == "Enter") {
-                      saveUpdatedTitle();
-                      e.target.blur();
+                      (e.target as HTMLElement).blur();
                     }
                   }}
                 />
@@ -140,7 +146,14 @@ export default function ContentCard({
 
           {menuItems ? (
             <Menu>
-              <MenuButton height="30px" data-test="Card Menu Button">
+              <MenuButton
+                height="30px"
+                data-test="Card Menu Button"
+                onFocus={() => {
+                  console.log("A menu button received focus!");
+                }}
+                _focus={{ boxShadow: "outline" }}
+              >
                 <Icon color="#949494" as={GoKebabVertical} boxSize={4} />
               </MenuButton>
               <MenuList zIndex="1000">{menuItems}</MenuList>

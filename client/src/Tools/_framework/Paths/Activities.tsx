@@ -25,6 +25,7 @@ import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../PanelHeaderComponents/ContentCard";
 import axios from "axios";
 import { ActivitySettingsDrawer } from "../ToolPanels/ActivitySettingsDrawer";
+import { DoenetmlVersion } from "./ActivityEditor";
 
 // what is a better solution than this?
 let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching activity/folder id
@@ -169,68 +170,13 @@ const ActivitiesSection = styled.div`
   height: 100vh;
 `;
 
-// function ActivitySettingsDrawer({
-//   isOpen,
-//   onClose,
-//   finalFocusRef,
-//   id,
-//   content,
-//   allDoenetmlVersions,
-// }) {
-//   let activityData;
-//   if (id) {
-//     let index = content.findIndex((obj) => obj.id == id);
-//     if (index != -1) {
-//       activityData = content[index];
-//     } else {
-//       //Throw error not found
-//     }
-//   }
-
-//   if (!activityData) {
-//     return null;
-//   }
-
-//   return (
-//     <Drawer
-//       isOpen={isOpen}
-//       placement="right"
-//       onClose={onClose}
-//       finalFocusRef={finalFocusRef}
-//       size="lg"
-//     >
-//       <DrawerOverlay />
-//       <DrawerContent>
-//         <DrawerCloseButton />
-//         <DrawerHeader>
-//           <Center>
-//             <Text>Activity Settings</Text>
-//           </Center>
-//         </DrawerHeader>
-
-//         <DrawerBody>
-//           {id && (
-//             <GeneralActivityControls
-//               fetcher={fetcher}
-//               activityId={id}
-//               docId={activityData.docId}
-//               activityData={activityData}
-//               allDoenetmlVersions={allDoenetmlVersions}
-//             />
-//           )}
-//         </DrawerBody>
-//       </DrawerContent>
-//     </Drawer>
-//   );
-// }
-
 export function Activities() {
   let context: any = useOutletContext();
   let { folderId, content, allDoenetmlVersions, userId, folder } =
     useLoaderData() as {
       folderId: string | null;
       content: any;
-      allDoenetmlVersions: any;
+      allDoenetmlVersions: DoenetmlVersion[];
       userId: string;
       folder: any;
     };
