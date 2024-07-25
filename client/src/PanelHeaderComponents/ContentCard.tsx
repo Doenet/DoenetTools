@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
 import {
   Box,
   Image,
@@ -18,22 +18,40 @@ import {
 import { GoKebabVertical } from "react-icons/go";
 import { Link, useFetcher } from "react-router-dom";
 
-export default function ContentCard({
-  imageLink = "",
-  id,
-  imagePath,
-  isAssigned,
-  isFolder,
-  isPublic,
-  title,
-  ownerName,
-  menuItems,
-  suppressAvatar = false,
-  showOwnerName = true,
-  editableTitle = false,
-  autoFocusTitle = false,
-  showStatus = true,
-}) {
+export default forwardRef(function ContentCard(
+  {
+    imageLink = "",
+    id,
+    imagePath,
+    isAssigned,
+    isFolder,
+    isPublic,
+    title,
+    ownerName,
+    menuItems,
+    suppressAvatar = false,
+    showOwnerName = true,
+    editableTitle = false,
+    autoFocusTitle = false,
+    showStatus = true,
+  }: {
+    imageLink?: string;
+    id: number;
+    imagePath: string;
+    isAssigned: boolean;
+    isFolder: boolean;
+    isPublic: boolean;
+    title: string;
+    ownerName: string;
+    menuItems: any[];
+    suppressAvatar?: boolean;
+    showOwnerName?: boolean;
+    editableTitle?: boolean;
+    autoFocusTitle?: boolean;
+    showStatus?: boolean;
+  },
+  ref: React.ForwardedRef<HTMLButtonElement>,
+) {
   if (!imagePath) {
     imagePath = "/activity_default.jpg";
   }
@@ -56,12 +74,7 @@ export default function ContentCard({
   //Note: when we have a menu width 140px becomes 120px
   return (
     <Card width="180px" height="180px" p="0" m="0" data-test="Activity Card">
-      <Link
-        to={imageLink}
-        onFocus={() => {
-          console.log("An image link received focus!");
-        }}
-      >
+      <Link to={imageLink}>
         <Image
           data-test="Card Image Link"
           height="120px"
@@ -149,10 +162,8 @@ export default function ContentCard({
               <MenuButton
                 height="30px"
                 data-test="Card Menu Button"
-                onFocus={() => {
-                  console.log("A menu button received focus!");
-                }}
                 _focus={{ boxShadow: "outline" }}
+                ref={ref}
               >
                 <Icon color="#949494" as={GoKebabVertical} boxSize={4} />
               </MenuButton>
@@ -163,4 +174,4 @@ export default function ContentCard({
       </CardBody>
     </Card>
   );
-}
+});

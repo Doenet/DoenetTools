@@ -181,6 +181,10 @@ export function Activities() {
       folder: any;
     };
   const [activityId, setActivityId] = useState<number | null>(null);
+
+  const contentCardRefs = useRef(new Array());
+  const currentCardRef = useRef(null);
+
   const navigate = useNavigate();
 
   const {
@@ -312,6 +316,7 @@ export function Activities() {
     let index = content.findIndex((obj) => obj.id == activityId);
     if (index != -1) {
       activityData = content[index];
+      currentCardRef.current = contentCardRefs.current[index];
     } else {
       //Throw error not found
     }
@@ -326,6 +331,7 @@ export function Activities() {
         docId={activityData.docId}
         activityData={activityData}
         allDoenetmlVersions={allDoenetmlVersions}
+        finalFocusRef={currentCardRef}
         fetcher={fetcher}
       />
     ) : null;
@@ -422,9 +428,13 @@ export function Activities() {
           ) : (
             <>
               {content.map((activity, position) => {
+                const getCardRef = (element) => {
+                  contentCardRefs.current[position] = element;
+                };
                 return (
                   <ContentCard
                     key={`Card${activity.id}`}
+                    ref={getCardRef}
                     {...activity}
                     title={activity.name}
                     menuItems={getCardMenuList(
