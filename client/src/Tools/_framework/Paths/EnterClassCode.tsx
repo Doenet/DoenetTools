@@ -16,7 +16,11 @@ export async function action({ params, request }) {
   let formObj = Object.fromEntries(formData);
 
   if (formObj._action == "submit code") {
-    return redirect(`/classCode/${formObj.classCode}`);
+    let code: string = formObj.classCode.trim();
+    while (code[code.length - 1] === ".") {
+      code = code.substring(0, code.length - 1);
+    }
+    return redirect(`/code/${code}`);
   }
 
   return null;
@@ -29,7 +33,7 @@ export async function loader() {
 }
 
 export function EnterClassCode() {
-  const { invalidClassCode } = useLoaderData();
+  const { invalidClassCode } = useLoaderData() as { invalidClassCode: string };
 
   useEffect(() => {
     document.title = `Enter class code - Doenet`;

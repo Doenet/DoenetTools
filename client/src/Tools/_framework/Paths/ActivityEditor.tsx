@@ -7,23 +7,34 @@ import {
   Box,
   Button,
   ButtonGroup,
+  Center,
   Editable,
   EditableInput,
   EditablePreview,
   Grid,
   GridItem,
   HStack,
+  Show,
+  Text,
   Tooltip,
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
 import { BsPlayBtnFill } from "react-icons/bs";
-import { MdModeEditOutline } from "react-icons/md";
+import {
+  MdDataset,
+  MdModeEditOutline,
+  MdOutlineAssignment,
+  MdOutlineEditOff,
+} from "react-icons/md";
 import { FaCog } from "react-icons/fa";
 import { useFetcher } from "react-router-dom";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router";
 import { ActivitySettingsDrawer } from "../ToolPanels/ActivitySettingsDrawer";
+import { DateTime } from "luxon";
+import { InfoIcon } from "@chakra-ui/icons";
+import { AssignmentInvitation } from "../ToolPanels/AssignmentInvitation";
 
 export type DoenetmlVersion = {
   id: number;
@@ -33,6 +44,31 @@ export type DoenetmlVersion = {
   deprecated: boolean;
   removed: boolean;
   deprecationMessage: string;
+};
+
+export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
+
+export type ActivityStructure = {
+  id: number;
+  ownerId: number;
+  name: string;
+  imagePath: string | null;
+  isAssigned: boolean;
+  isFolder?: boolean;
+  classCode: string | null;
+  // Note: on server, codeValidUntil is Date, but it has been converted to a string, here
+  codeValidUntil: string | null;
+  isPublic: boolean;
+  documents: {
+    id: number;
+    versionNum?: number;
+    name?: string;
+    source?: string;
+    doenetmlVersion: DoenetmlVersion;
+  }[];
+  assignmentStatus: AssignmentStatus;
+  hasScoreData: boolean;
+  notMe?: boolean;
 };
 
 export async function action({ params, request }) {
@@ -101,6 +137,48 @@ export async function action({ params, request }) {
       fileRemovedCid: formObj.cid,
       success: resp.data.success,
     };
+  }
+
+  if (formObj._action == "open assignment") {
+    const closeAt = DateTime.fromSeconds(
+      Math.round(DateTime.now().toSeconds() / 60) * 60,
+    ).plus(JSON.parse(formObj.duration));
+    await axios.post("/api/openAssignmentWithCode", {
+      activityId: Number(params.activityId),
+      closeAt,
+    });
+    return true;
+  }
+
+  if (formObj._action == "update assignment close time") {
+    const closeAt = DateTime.fromISO(formObj.closeAt);
+    await axios.post("/api/updateAssignmentSettings", {
+      activityId: Number(params.activityId),
+      closeAt,
+    });
+    return true;
+  }
+
+  if (formObj._action == "close assignment") {
+    await axios.post("/api/closeAssignmentWithCode", {
+      activityId: Number(params.activityId),
+    });
+    return true;
+  }
+
+  if (formObj._action == "unassign activity") {
+    try {
+      await axios.post("/api/unassignActivity", {
+        activityId: Number(formObj.activityId),
+      });
+    } catch (e) {
+      alert("Unable to unassign activity");
+    }
+    return true;
+  }
+
+  if (formObj._action == "go to data") {
+    return redirect(`/assignmentData/${params.activityId}`);
   }
 
   return null;
@@ -209,8 +287,13 @@ function EditableName({ dataTest }) {
         );
       }}
     >
-      <EditablePreview data-test="Editable Preview" />
-      <EditableInput width="400px" data-test="Editable Input" />
+      <Tooltip label={name}>
+        <EditablePreview data-test="Editable Preview" noOfLines={1} />
+      </Tooltip>
+      <EditableInput
+        width={{ base: "200px", sm: "300px", md: "400px" }}
+        data-test="Editable Input"
+      />
     </Editable>
   );
 }
@@ -230,20 +313,33 @@ export function ActivityEditor() {
     doenetML: string;
     doenetmlVersion: DoenetmlVersion;
     docId: number;
-    activityData: any;
+    activityData: ActivityStructure;
     allDoenetmlVersions: DoenetmlVersion[];
   };
 
   const {
-    isOpen: controlsAreOpen,
-    onOpen: controlsOnOpen,
-    onClose: controlsOnClose,
+    isOpen: settingsAreOpen,
+    onOpen: settingsOnOpen,
+    onClose: settingsOnClose,
   } = useDisclosure();
 
-  let initializeEditorDoenetML = useRef(doenetML);
+  const {
+    isOpen: invitationIsOpen,
+    onOpen: invitationOnOpen,
+    onClose: invitationOnClose,
+  } = useDisclosure();
 
-  let textEditorDoenetML = useRef(doenetML);
-  const [mode, setMode] = useState("Edit");
+  const initializeEditorDoenetML = useRef(doenetML);
+  const textEditorDoenetML = useRef(doenetML);
+  const savedDoenetML = useRef(doenetML);
+
+  const assignmentStatus = activityData.assignmentStatus;
+
+  const readOnly = assignmentStatus !== "Unassigned";
+  const readOnlyRef = useRef(readOnly);
+  readOnlyRef.current = readOnly;
+
+  const [mode, setMode] = useState<"Edit" | "View">(readOnly ? "View" : "Edit");
 
   const initialWarnings = doenetmlVersion.deprecated
     ? [
@@ -256,13 +352,29 @@ export function ActivityEditor() {
       ]
     : [];
 
-  let inTheMiddleOfSaving = useRef(false);
-  let postponedSaving = useRef(false);
+  const inTheMiddleOfSaving = useRef(false);
+  const postponedSaving = useRef(false);
 
-  let navigate = useNavigate();
-  let location = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (readOnly) {
+      setMode("View");
+    } else {
+      setMode("Edit");
+    }
+  }, [readOnly]);
 
   const handleSaveDoc = useCallback(async () => {
+    if (
+      readOnlyRef.current ||
+      savedDoenetML.current === textEditorDoenetML.current
+    ) {
+      // do not attempt to save doenetml if assigned
+      return;
+    }
+
     const newDoenetML = textEditorDoenetML.current;
     if (inTheMiddleOfSaving.current) {
       postponedSaving.current = true;
@@ -278,6 +390,7 @@ export function ActivityEditor() {
           docId,
         };
         await axios.post("/api/saveDoenetML", params);
+        savedDoenetML.current = newDoenetML;
       } catch (error) {
         alert(error.message);
       }
@@ -306,24 +419,34 @@ export function ActivityEditor() {
   }, [activityData.name]);
 
   const controlsBtnRef = useRef<HTMLButtonElement>(null);
+  const [displaySettingsTab, setSettingsDisplayTab] = useState<
+    "general" | "assignment"
+  >("general");
 
-  //Need fetcher at this level to get name refresh
-  //when close drawer after changing name
   const fetcher = useFetcher();
+
+  const [editLabel, editTooltip, editIcon] =
+    assignmentStatus === "Unassigned"
+      ? ["Edit", "Edit activity", <MdModeEditOutline />]
+      : ["See Inside", "See read-only view of source", <MdOutlineEditOff />];
 
   return (
     <>
       <ActivitySettingsDrawer
-        isOpen={controlsAreOpen}
-        onClose={controlsOnClose}
+        isOpen={settingsAreOpen}
+        onClose={settingsOnClose}
         finalFocusRef={controlsBtnRef}
         fetcher={fetcher}
         activityId={activityId}
-        docId={docId}
         activityData={activityData}
         allDoenetmlVersions={allDoenetmlVersions}
+        displayTab={displaySettingsTab}
       />
-
+      <AssignmentInvitation
+        isOpen={invitationIsOpen}
+        onClose={invitationOnClose}
+        activityData={activityData}
+      />
       <Grid
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height
@@ -343,7 +466,11 @@ export function ActivityEditor() {
         >
           <Grid
             templateAreas={`"leftControls label rightControls"`}
-            templateColumns="1fr 400px 1fr"
+            templateColumns={{
+              base: "1fr 200px 1fr",
+              sm: "1fr 300px 1fr",
+              md: "1fr 400px 1fr",
+            }}
             width="100%"
           >
             <GridItem area="leftControls">
@@ -354,27 +481,29 @@ export function ActivityEditor() {
                       data-test="View Mode Button"
                       isActive={mode == "View"}
                       size="sm"
+                      pr={{ base: "0px", md: "10px" }}
                       leftIcon={<BsPlayBtnFill />}
                       onClick={() => {
                         setMode("View");
                       }}
                     >
-                      View
+                      <Show above="md">View</Show>
                     </Button>
                   </Tooltip>
-                  <Tooltip hasArrow label="Edit Activity">
+                  <Tooltip hasArrow label={editTooltip}>
                     <Button
                       isActive={mode == "Edit"}
                       data-test="Edit Mode Button"
                       size="sm"
-                      leftIcon={<MdModeEditOutline />}
+                      pr={{ base: "0px", md: "10px" }}
+                      leftIcon={editIcon}
                       onClick={() => {
                         initializeEditorDoenetML.current =
                           textEditorDoenetML.current;
                         setMode("Edit");
                       }}
                     >
-                      Edit
+                      <Show above="md">{editLabel}</Show>
                     </Button>
                   </Tooltip>
                 </ButtonGroup>
@@ -389,56 +518,134 @@ export function ActivityEditor() {
               justifyContent="flex-end"
             >
               <HStack mr="10px">
-                <Tooltip
-                  hasArrow
-                  label={
-                    platform == "Mac"
-                      ? "Open Controls cmd+u"
-                      : "Open Controls ctrl+u"
-                  }
-                >
-                  <Button
-                    data-test="Controls Button"
-                    mt="4px"
-                    size="sm"
-                    variant="outline"
-                    leftIcon={<FaCog />}
-                    onClick={controlsOnOpen}
-                    ref={controlsBtnRef}
+                <ButtonGroup size="sm" isAttached variant="outline">
+                  <Tooltip
+                    hasArrow
+                    label={
+                      assignmentStatus === "Unassigned"
+                        ? "Assign Activity"
+                        : "Manage Assignment"
+                    }
+                    placement="bottom-end"
                   >
-                    Controls
-                  </Button>
-                </Tooltip>
+                    <Button
+                      data-test="Assign Activity Button"
+                      size="sm"
+                      pr={{ base: "0px", md: "10px" }}
+                      leftIcon={<MdOutlineAssignment />}
+                      onClick={() => {
+                        setSettingsDisplayTab("assignment");
+                        settingsOnOpen();
+                      }}
+                    >
+                      <Show above="md">Assign</Show>
+                    </Button>
+                  </Tooltip>
+
+                  <Tooltip
+                    hasArrow
+                    label={
+                      platform == "Mac" ? "Open Settings" : "Open Settings"
+                    }
+                    placement="bottom-end"
+                  >
+                    <Button
+                      data-test="Settings Button"
+                      size="sm"
+                      pr={{ base: "0px", md: "10px" }}
+                      leftIcon={<FaCog />}
+                      onClick={() => {
+                        setSettingsDisplayTab("general");
+                        settingsOnOpen();
+                      }}
+                      ref={controlsBtnRef}
+                    >
+                      <Show above="md">Settings</Show>
+                    </Button>
+                  </Tooltip>
+                </ButtonGroup>
               </HStack>
             </GridItem>
           </Grid>
         </GridItem>
 
-        {mode == "Edit" && (
-          <GridItem area="centerContent">
-            <DoenetEditor
-              height={`calc(100vh - 80px)`}
-              width="100%"
-              doenetML={textEditorDoenetML.current}
-              doenetmlChangeCallback={handleSaveDoc}
-              immediateDoenetmlChangeCallback={(newDoenetML) => {
-                textEditorDoenetML.current = newDoenetML;
-              }}
-              doenetmlVersion={doenetmlVersion.fullVersion}
-              initialWarnings={initialWarnings}
-              border="none"
-            />
-          </GridItem>
-        )}
+        <GridItem area="centerContent">
+          <VStack gap={0}>
+            {readOnly ? (
+              <Center
+                background="orange.100"
+                width="100%"
+                height="40px"
+                pl="4px"
+                pr="4px"
+              >
+                <InfoIcon color="orange.500" mr="6px" />
 
-        {mode == "View" && (
-          <>
-            <GridItem area="centerContent">
+                {assignmentStatus === "Open" ? (
+                  <>
+                    <Text size="xs">
+                      {` Assignment is open with code ${activityData.classCode}. ${mode == "Edit" ? "It cannot be edited." : ""}`}
+                    </Text>
+                    <Button
+                      onClick={invitationOnOpen}
+                      colorScheme="blue"
+                      mt="4px"
+                      ml="4px"
+                      size="xs"
+                    >
+                      Activity Invitation
+                    </Button>
+                  </>
+                ) : (
+                  <Text size="xs">
+                    {`Activity is a closed assignment${mode == "Edit" ? " and cannot be edited." : "."}`}
+                  </Text>
+                )}
+                {activityData.hasScoreData ? (
+                  <Tooltip label="View data">
+                    <Button
+                      data-test="Assignment Setting Button"
+                      colorScheme="blue"
+                      mt="4px"
+                      ml="4px"
+                      size="xs"
+                      leftIcon={<MdDataset />}
+                      pr={{ base: "0px", md: "10px" }}
+                      onClick={() => {
+                        fetcher.submit(
+                          { _action: "go to data", activityId },
+                          { method: "post" },
+                        );
+                      }}
+                    >
+                      <Show above="md">View data</Show>
+                    </Button>
+                  </Tooltip>
+                ) : null}
+              </Center>
+            ) : null}
+            {mode == "Edit" && (
+              <DoenetEditor
+                height={`calc(100vh - ${readOnly ? 120 : 80}px)`}
+                width="100%"
+                doenetML={textEditorDoenetML.current}
+                doenetmlChangeCallback={handleSaveDoc}
+                immediateDoenetmlChangeCallback={(newDoenetML: string) => {
+                  textEditorDoenetML.current = newDoenetML;
+                }}
+                doenetmlVersion={doenetmlVersion.fullVersion}
+                initialWarnings={initialWarnings}
+                border="none"
+                readOnly={readOnly}
+              />
+            )}
+
+            {mode == "View" && (
               <Grid
                 width="100%"
-                height="calc(100vh - 80px)"
+                height={`calc(100vh - ${readOnly ? 120 : 80}px)`}
                 templateAreas={`"leftGutter viewer rightGutter"`}
-                templateColumns={`1fr minmax(400px,850px) 1fr`}
+                templateColumns={`1fr minmax(300px,850px) 1fr`}
                 overflow="hidden"
               >
                 <GridItem
@@ -509,9 +716,9 @@ export function ActivityEditor() {
                   </VStack>
                 </GridItem>
               </Grid>
-            </GridItem>
-          </>
-        )}
+            )}
+          </VStack>
+        </GridItem>
       </Grid>
     </>
   );

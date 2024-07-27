@@ -36,7 +36,7 @@ type StudentStructure = {
   firstNames: string | null;
   lastNames: string;
   scores: {
-    [assignmentId: number]: {
+    [activityId: number]: {
       score: number;
     };
   }[];

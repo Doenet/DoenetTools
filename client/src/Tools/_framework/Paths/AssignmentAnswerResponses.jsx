@@ -27,12 +27,12 @@ export async function loader({ params, request }) {
   const answerId = url.searchParams.get("answerId");
 
   const { data } = await axios.get(
-    `/api/getSubmittedResponses/${params.assignmentId}/${params.docId}/${
+    `/api/getSubmittedResponses/${params.activityId}/${params.docId}/${
       params.docVersionNum
     }?answerId=${encodeURIComponent(answerId)}`,
   );
 
-  let assignmentId = Number(params.assignmentId);
+  let activityId = Number(params.activityId);
   let docId = Number(params.docId);
   let docVersionNum = Number(params.docVersionNum);
   let activityName = data.activityName;
@@ -56,13 +56,13 @@ export async function loader({ params, request }) {
     docVersionNum,
     activityName,
     responseData,
-    assignmentId,
+    activityId,
   };
 }
 
 export function AssignmentAnswerResponses() {
   const {
-    assignmentId,
+    activityId,
     docId,
     docVersionNum,
     answerId,
@@ -95,7 +95,7 @@ export function AssignmentAnswerResponses() {
       <Box style={{ marginTop: 15, marginLeft: 15 }}>
         <ChakraLink
           as={ReactRouterLink}
-          to={`/assignmentData/${assignmentId}`}
+          to={`/assignmentData/${activityId}`}
           style={{
             color: "var(--mainBlue)",
           }}
@@ -165,7 +165,7 @@ export function AssignmentAnswerResponses() {
                     <ChakraLink
                       as={ReactRouterLink}
                       style={{ display: "block", color: "var(--mainBlue)" }}
-                      to={`/assignmentAnswerResponseHistory/${assignmentId}/${docId}/${docVersionNum}/${
+                      to={`/assignmentAnswerResponseHistory/${activityId}/${docId}/${docVersionNum}/${
                         data.userId
                       }?answerId=${encodeURIComponent(answerId)}`}
                     >

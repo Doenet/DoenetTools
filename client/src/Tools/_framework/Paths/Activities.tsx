@@ -25,7 +25,8 @@ import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../PanelHeaderComponents/ContentCard";
 import axios from "axios";
 import { ActivitySettingsDrawer } from "../ToolPanels/ActivitySettingsDrawer";
-import { DoenetmlVersion } from "./ActivityEditor";
+import { ActivityStructure, DoenetmlVersion } from "./ActivityEditor";
+import { DateTime } from "luxon";
 
 // what is a better solution than this?
 let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching activity/folder id
@@ -102,11 +103,6 @@ export async function action({ request, params }) {
     });
 
     return true;
-  } else if (formObj?._action == "Assign Activity") {
-    await axios.post(`/api/assignActivity`, {
-      id: formObj.id,
-    });
-    return redirect(`/assignmentEditor/${formObj.id}`);
   } else if (formObj?._action == "Duplicate Activity") {
     await axios.post(`/api/duplicateActivity`, {
       activityId: formObj.id,
@@ -132,6 +128,38 @@ export async function action({ request, params }) {
       name,
     });
     return true;
+  } else if (formObj._action == "open assignment") {
+    const closeAt = DateTime.fromSeconds(
+      Math.round(DateTime.now().toSeconds() / 60) * 60,
+    ).plus(JSON.parse(formObj.duration));
+    await axios.post("/api/openAssignmentWithCode", {
+      activityId: Number(formObj.activityId),
+      closeAt,
+    });
+    return true;
+  } else if (formObj._action == "update assignment close time") {
+    const closeAt = DateTime.fromISO(formObj.closeAt);
+    await axios.post("/api/updateAssignmentSettings", {
+      activityId: Number(formObj.activityId),
+      closeAt,
+    });
+    return true;
+  } else if (formObj._action == "close assignment") {
+    await axios.post("/api/closeAssignmentWithCode", {
+      activityId: Number(formObj.activityId),
+    });
+    return true;
+  } else if (formObj._action == "unassign activity") {
+    try {
+      await axios.post("/api/unassignActivity", {
+        activityId: Number(formObj.activityId),
+      });
+    } catch (e) {
+      alert("Unable to unassign activity");
+    }
+    return true;
+  } else if (formObj._action == "go to data") {
+    return redirect(`/assignmentData/${formObj.activityId}`);
   } else if (formObj?._action == "noop") {
     return true;
   }
@@ -175,7 +203,7 @@ export function Activities() {
   let { folderId, content, allDoenetmlVersions, userId, folder } =
     useLoaderData() as {
       folderId: string | null;
-      content: any;
+      content: ActivityStructure[];
       allDoenetmlVersions: DoenetmlVersion[];
       userId: string;
       folder: any;
@@ -193,6 +221,10 @@ export function Activities() {
     onClose: settingsOnClose,
   } = useDisclosure();
 
+  const [displaySettingsTab, setSettingsDisplayTab] = useState<
+    "general" | "assignment"
+  >("general");
+
   useEffect(() => {
     document.title = `Activities - Doenet`;
   }, []);
@@ -205,12 +237,12 @@ export function Activities() {
   }
 
   function getCardMenuList(
-    isPublic,
-    isFolder,
-    isAssigned,
-    id,
-    position,
-    numCards,
+    isPublic: boolean,
+    id: number,
+    position: number,
+    numCards: number,
+    isAssigned: boolean,
+    isFolder?: boolean,
   ) {
     return (
       <>
@@ -238,19 +270,6 @@ export function Activities() {
             >
               Duplicate Activity
             </MenuItem>
-            {!isAssigned ? (
-              <MenuItem
-                data-test="Assign Activity Menu Item"
-                onClick={() => {
-                  fetcher.submit(
-                    { _action: "Assign Activity", id },
-                    { method: "post" },
-                  );
-                }}
-              >
-                Assign Activity
-              </MenuItem>
-            ) : null}
           </>
         ) : null}
         {position > 0 ? (
@@ -291,9 +310,20 @@ export function Activities() {
           Delete
         </MenuItem>
         <MenuItem
+          data-test="Assign Activity Menu Item"
+          onClick={() => {
+            setActivityId(id);
+            setSettingsDisplayTab("assignment");
+            settingsOnOpen();
+          }}
+        >
+          {isAssigned ? "Manage Assignment" : "Assign Activity"}
+        </MenuItem>
+        <MenuItem
           data-test="Settings Menu Item"
           onClick={() => {
             setActivityId(id);
+            setSettingsDisplayTab("general");
             settingsOnOpen();
           }}
         >
@@ -311,7 +341,7 @@ export function Activities() {
     headingText = `My Activities`;
   }
 
-  let activityData;
+  let activityData: ActivityStructure | undefined;
   if (activityId) {
     let index = content.findIndex((obj) => obj.id == activityId);
     if (index != -1) {
@@ -328,11 +358,11 @@ export function Activities() {
         isOpen={settingsAreOpen}
         onClose={settingsOnClose}
         activityId={activityId}
-        docId={activityData.docId}
         activityData={activityData}
         allDoenetmlVersions={allDoenetmlVersions}
         finalFocusRef={currentCardRef}
         fetcher={fetcher}
+        displayTab={displaySettingsTab}
       />
     ) : null;
 
@@ -439,20 +469,18 @@ export function Activities() {
                     title={activity.name}
                     menuItems={getCardMenuList(
                       activity.isPublic,
-                      activity.isFolder,
-                      activity.isAssigned,
                       activity.id,
                       position,
                       content.length,
+                      activity.isAssigned,
+                      activity.isFolder,
                     )}
                     suppressAvatar={true}
                     showOwnerName={false}
                     imageLink={
                       activity.isFolder
                         ? `/activities/${activity.ownerId}/${activity.id}`
-                        : activity.isAssigned
-                          ? `/assignmentEditor/${activity.id}`
-                          : `/activityEditor/${activity.id}`
+                        : `/activityEditor/${activity.id}`
                     }
                     editableTitle={true}
                     autoFocusTitle={folderJustCreated === activity.id}

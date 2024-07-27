@@ -49,11 +49,6 @@ import {
   Assigned,
 } from "./Tools/_framework/Paths/Assigned";
 import {
-  loader as assignmentEditorLoader,
-  action as assignmentEditorAction,
-  AssignmentEditor,
-} from "./Tools/_framework/Paths/AssignmentEditor";
-import {
   loader as assignmentDataLoader,
   action as assignmentDataAction,
   AssignmentData,
@@ -313,28 +308,21 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentEditor/:assignmentId",
-        loader: assignmentEditorLoader,
-        action: assignmentEditorAction,
-        element: <AssignmentEditor />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "assignmentData/:assignmentId",
+        path: "assignmentData/:activityId",
         loader: assignmentDataLoader,
         action: assignmentDataAction,
         element: <AssignmentData />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentAnswerResponses/:assignmentId/:docId/:docVersionNum",
+        path: "assignmentAnswerResponses/:activityId/:docId/:docVersionNum",
         loader: assignmentAnswerResponsesLoader,
         action: assignmentAnswerResponsesAction,
         element: <AssignmentAnswerResponses />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentAnswerResponseHistory/:assignmentId/:docId/:docVersionNum/:userId",
+        path: "assignmentAnswerResponseHistory/:activityId/:docId/:docVersionNum/:userId",
         loader: assignmentAnswerResponseHistoryLoader,
         action: assignmentAnswerResponseHistoryAction,
         element: <AssignmentAnswerResponseHistory />,
@@ -366,14 +354,14 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "classCode",
+        path: "code",
         loader: enterClassCodeLoader,
         action: enterClassCodeAction,
         element: <EnterClassCode />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "classCode/:classCode",
+        path: "code/:classCode",
         loader: assignmentViewerLoader,
         action: assignmentViewerAction,
         element: <AssignmentViewer />,

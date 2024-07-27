@@ -23,19 +23,17 @@ import {
 import { FaFileImage } from "react-icons/fa";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
 import { readAndCompressImage } from "browser-image-resizer";
-import { DoenetmlVersion } from "../Paths/ActivityEditor";
+import { ActivityStructure, DoenetmlVersion } from "../Paths/ActivityEditor";
 
 export function GeneralActivityControls({
   fetcher,
   activityId,
-  docId,
   activityData,
   allDoenetmlVersions,
 }: {
   fetcher: FetcherWithComponents<any>;
   activityId: number;
-  docId: number;
-  activityData: any;
+  activityData: ActivityStructure;
   allDoenetmlVersions: DoenetmlVersion[];
 }) {
   let { isPublic, name, imagePath: dataImagePath } = activityData;
@@ -44,10 +42,10 @@ export function GeneralActivityControls({
   let [imagePath, setImagePath] = useState(dataImagePath);
   let [alerts, setAlerts] = useState<Alert[]>([]);
 
-  let learningOutcomesInit = activityData.learningOutcomes;
-  if (learningOutcomesInit == null) {
-    learningOutcomesInit = [""];
-  }
+  //   let learningOutcomesInit = activityData.learningOutcomes;
+  //   if (learningOutcomesInit == null) {
+  //     learningOutcomesInit = [""];
+  //   }
 
   // TODO: if saveDataToServer is unsuccessful, then doenetmlVersion from the server
   // will not match doenetmlVersion on the client and the client will not be notified.
@@ -62,7 +60,7 @@ export function GeneralActivityControls({
   let lastAcceptedNameValue = useRef(name);
   let [nameIsInvalid, setNameIsInvalid] = useState(false);
 
-  let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
+  //   let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
   let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
   let [doenetmlVersion, setDoenetmlVersion] = useState(doenetmlVersionInit);
 
@@ -112,7 +110,7 @@ export function GeneralActivityControls({
       {
         _action: "update general",
         activityId,
-        docId,
+        docId: activityData.documents[0].id,
         ...data,
       },
       { method: "post" },
@@ -200,7 +198,7 @@ export function GeneralActivityControls({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   //TODO: Cypress is opening the drawer so fast
-  //the activitieData is out of date
+  //the activityData is out of date
   //We need something like this. But this code sets learningOutcomes too often
   // useEffect(() => {
   //   setLearningOutcomes(learningOutcomesInit);
@@ -243,7 +241,7 @@ export function GeneralActivityControls({
                 <Image
                   height="120px"
                   maxWidth="180px"
-                  src={imagePath}
+                  src={imagePath ?? ""}
                   alt="Activity Card Image"
                   borderTopRadius="md"
                   objectFit="cover"
@@ -278,7 +276,7 @@ export function GeneralActivityControls({
             Error - A name for the activity is required.
           </FormErrorMessage>
         </FormControl>
-        {!activityData.isFolder ? (
+        {/* {!activityData.isFolder ? (
           <FormControl>
             <Flex flexDirection="column" width="100%" rowGap={6}>
               <FormLabel mt="16px">Learning Outcomes</FormLabel>
@@ -358,7 +356,7 @@ export function GeneralActivityControls({
               </Center>
             </Flex>
           </FormControl>
-        ) : null}
+        ) : null} */}
         <FormControl>
           <FormLabel mt="16px">Visibility</FormLabel>
           <Checkbox
@@ -384,6 +382,7 @@ export function GeneralActivityControls({
             <FormLabel mt="16px">DoenetML version</FormLabel>
             <Select
               value={doenetmlVersion?.id}
+              disabled={activityData.assignmentStatus !== "Unassigned"}
               onChange={(e) => {
                 // TODO: do we worry about this pattern?
                 // If saveDataToServer is unsuccessful, the client doenetmlVersion
@@ -407,6 +406,12 @@ export function GeneralActivityControls({
             </Select>
           </FormControl>
         ) : null}
+        {activityData.assignmentStatus !== "Unassigned" ? (
+          <p>
+            <strong>Note</strong>: Cannot modify DoenetML version since activity
+            is assigned.
+          </p>
+        ) : null}
         {doenetmlVersion?.deprecated && (
           <p>
             <strong>Warning</strong>: DoenetML version{" "}
@@ -414,7 +419,7 @@ export function GeneralActivityControls({
             {doenetmlVersion.deprecationMessage}
           </p>
         )}
-        <input type="hidden" name="imagePath" value={imagePath} />
+        <input type="hidden" name="imagePath" value={imagePath ?? undefined} />
         <input type="hidden" name="_action" value="update general" />
         <input type="hidden" name="activityId" value={activityId} />
       </Form>

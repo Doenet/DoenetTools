@@ -1,4 +1,4 @@
-import React, { RefObject, useRef } from "react";
+import React, { RefObject, useEffect, useState } from "react";
 import {
   Box,
   Center,
@@ -18,32 +18,56 @@ import {
 import { FetcherWithComponents } from "react-router-dom";
 import { GeneralActivityControls } from "./GeneralActivityControls";
 import { SupportFilesControls } from "./SupportFilesControls";
-import { DoenetmlVersion } from "../Paths/ActivityEditor";
+import { ActivityStructure, DoenetmlVersion } from "../Paths/ActivityEditor";
+import { AssignActivityControls } from "./AssignActivityControls";
 
 export function ActivitySettingsDrawer({
   isOpen,
   onClose,
   finalFocusRef,
   activityId,
-  docId,
   activityData,
   allDoenetmlVersions,
   supportingFileData,
   fetcher,
+  displayTab = "general",
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
   activityId: number;
-  docId: number;
-  activityData: any;
+  activityData: ActivityStructure;
   allDoenetmlVersions: DoenetmlVersion[];
   supportingFileData?: any;
   fetcher: FetcherWithComponents<any>;
+  displayTab?: "general" | "files" | "assignment";
 }) {
-  let controlsTabsLastIndex = useRef(0);
+  const haveSupportingFiles = Boolean(supportingFileData);
+  const isFolder: boolean = Boolean(activityData.isFolder);
+  const numTabs = haveSupportingFiles ? (isFolder ? 2 : 3) : isFolder ? 1 : 2;
 
-  let haveSupportingFiles = Boolean(supportingFileData);
+  let initialTabIndex: number;
+  switch (displayTab) {
+    case "general": {
+      initialTabIndex = 0;
+      break;
+    }
+    case "files": {
+      initialTabIndex = haveSupportingFiles ? 1 : 0;
+      break;
+    }
+    case "assignment": {
+      initialTabIndex = haveSupportingFiles ? 2 : 1;
+      break;
+    }
+  }
+  initialTabIndex = Math.min(initialTabIndex, numTabs - 1);
+
+  const [tabIndex, setTabIndex] = useState(initialTabIndex);
+
+  useEffect(() => {
+    setTabIndex(initialTabIndex);
+  }, [displayTab, isOpen]);
 
   return (
     <Drawer
@@ -56,38 +80,32 @@ export function ActivitySettingsDrawer({
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton data-test="Close Settings Button" />
-        <DrawerHeader>
-          <Center>
-            {/* <Icon as={FaCog} mr="14px" /> */}
-            <Text>Activity Controls</Text>
-          </Center>
+        <DrawerHeader textAlign="center" height="70px">
+          {activityData.isFolder ? "Folder" : "Activity"} Controls
+          <Text fontSize="smaller">{activityData.name}</Text>
         </DrawerHeader>
 
         <DrawerBody>
-          <Tabs defaultIndex={controlsTabsLastIndex.current}>
+          <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)}>
             <TabList>
-              <Tab
-                onClick={() => (controlsTabsLastIndex.current = 0)}
-                data-test="General Tab"
-              >
-                General
-              </Tab>
+              <Tab data-test="General Tab">General</Tab>
               {haveSupportingFiles ? (
-                <Tab
-                  onClick={() => (controlsTabsLastIndex.current = 1)}
-                  data-test="Support Files Tab"
-                >
-                  Support Files
+                <Tab data-test="Files Tab">Support Files</Tab>
+              ) : null}
+              {!activityData.isFolder ? (
+                <Tab data-test="Assignment Tab">
+                  {activityData.isAssigned
+                    ? "Manage Assignment"
+                    : "Assign Activity"}
                 </Tab>
               ) : null}
             </TabList>
-            <Box overflowY="scroll" height="calc(100vh - 120px)">
+            <Box overflowY="auto" height="calc(100vh - 130px)">
               <TabPanels>
                 <TabPanel>
                   <GeneralActivityControls
                     fetcher={fetcher}
                     activityId={activityId}
-                    docId={docId}
                     activityData={activityData}
                     allDoenetmlVersions={allDoenetmlVersions}
                   />
@@ -98,6 +116,16 @@ export function ActivitySettingsDrawer({
                       fetcher={fetcher}
                       activityId={activityId}
                       supportingFileData={supportingFileData}
+                    />
+                  </TabPanel>
+                ) : null}
+                {!activityData.isFolder ? (
+                  <TabPanel>
+                    <AssignActivityControls
+                      fetcher={fetcher}
+                      activityId={activityId}
+                      activityData={activityData}
+                      openTabIndex={tabIndex}
                     />
                   </TabPanel>
                 ) : null}

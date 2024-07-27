@@ -54,6 +54,8 @@ import {
   getPublicFolderContent,
   searchUsersWithPublicContent,
   getPublicEditorData,
+  unassignActivity,
+  updateAssignmentSettings,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -774,7 +776,7 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
-    const activityId = Number(body.assignmentId);
+    const activityId = Number(body.activityId);
     const closeAt = DateTime.fromISO(body.closeAt);
 
     try {
@@ -795,6 +797,27 @@ app.post(
 );
 
 app.post(
+  "/api/updateAssignmentSettings",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const body = req.body;
+    const activityId = Number(body.activityId);
+    const closeAt = DateTime.fromISO(body.closeAt);
+
+    try {
+      await updateAssignmentSettings(activityId, closeAt, loggedInUserId);
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
   "/api/closeAssignmentWithCode",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
@@ -803,6 +826,26 @@ app.post(
 
     try {
       await closeAssignmentWithCode(activityId, loggedInUserId);
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/unassignActivity",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const body = req.body;
+    const activityId = Number(body.activityId);
+
+    try {
+      await unassignActivity(activityId, loggedInUserId);
       res.send({});
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {

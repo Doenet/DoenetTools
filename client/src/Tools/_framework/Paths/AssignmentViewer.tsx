@@ -26,7 +26,11 @@ export async function action({ params, request }) {
   // console.log({ formObj });
 
   if (formObj._action == "submit code") {
-    return redirect(`/classCode/${formObj.classCode}`);
+    let code: string = formObj.classCode.trim();
+    while (code[code.length - 1] === ".") {
+      code = code.substring(0, code.length - 1);
+    }
+    return redirect(`/code/${code}`);
   } else if (formObj._action == "submit user name") {
     await axios.post(`/api/updateUser`, {
       firstNames: formObj.firstNames,
@@ -95,7 +99,15 @@ export function AssignmentViewer() {
     docId,
     docVersionNum,
     doenetmlVersion,
-  } = useLoaderData();
+  } = useLoaderData() as {
+    doenetML: string;
+    assignment: any;
+    assignmentFound: boolean;
+    student: any;
+    docId: number;
+    docVersionNum: number;
+    doenetmlVersion: string;
+  };
 
   let navigate = useNavigate();
   let location = useLocation();

@@ -90,7 +90,7 @@ export function Assigned() {
               margin="3px"
               size="xs"
               colorScheme="blue"
-              onClick={() => navigate(`/classCode`)}
+              onClick={() => navigate(`/code`)}
             >
               Class code
             </Button>
@@ -125,11 +125,11 @@ export function Assigned() {
                 {assignments.map((assignment) => {
                   return (
                     <ContentCard
-                      key={`Card${assignment.assignmentId}`}
+                      key={`Card${assignment.activityId}`}
                       imagePath={assignment.imagePath}
                       title={assignment.name}
                       ownerName={"Quick assign activity"}
-                      imageLink={`/classCode/${assignment.classCode}`}
+                      imageLink={`/code/${assignment.classCode}`}
                       suppressAvatar={true}
                       showStatus={false}
                     />

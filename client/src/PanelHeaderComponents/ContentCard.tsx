@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef } from "react";
+import React, { useState, useEffect, forwardRef, ReactElement } from "react";
 import {
   Box,
   Image,
@@ -7,7 +7,6 @@ import {
   Card,
   CardBody,
   Flex,
-  MenuItem,
   Menu,
   MenuButton,
   Icon,
@@ -17,13 +16,14 @@ import {
 } from "@chakra-ui/react";
 import { GoKebabVertical } from "react-icons/go";
 import { Link, useFetcher } from "react-router-dom";
+import { AssignmentStatus } from "../Tools/_framework/Paths/ActivityEditor";
 
 export default forwardRef(function ContentCard(
   {
     imageLink = "",
     id,
     imagePath,
-    isAssigned,
+    assignmentStatus,
     isFolder,
     isPublic,
     title,
@@ -37,13 +37,13 @@ export default forwardRef(function ContentCard(
   }: {
     imageLink?: string;
     id: number;
-    imagePath: string;
-    isAssigned: boolean;
-    isFolder: boolean;
+    imagePath: string | null;
+    assignmentStatus: AssignmentStatus;
+    isFolder?: boolean;
     isPublic: boolean;
     title: string;
-    ownerName: string;
-    menuItems: any[];
+    ownerName?: string;
+    menuItems: ReactElement;
     suppressAvatar?: boolean;
     showOwnerName?: boolean;
     editableTitle?: boolean;
@@ -65,7 +65,7 @@ export default forwardRef(function ContentCard(
   function saveUpdatedTitle() {
     if (cardTitle !== title) {
       fetcher.submit(
-        { _action: "update title", id, cardTitle, isFolder },
+        { _action: "update title", id, cardTitle, isFolder: Boolean(isFolder) },
         { method: "post" },
       );
     }
@@ -152,7 +152,7 @@ export default forwardRef(function ContentCard(
                 //data-test="Card Full Name"
               >
                 {isPublic ? "Public" : "Private"}
-                {isFolder ? "" : isAssigned ? " / Assigned" : " / Unassigned"}
+                {isFolder ? "" : " / " + assignmentStatus}
               </Text>
             ) : null}
           </Box>
