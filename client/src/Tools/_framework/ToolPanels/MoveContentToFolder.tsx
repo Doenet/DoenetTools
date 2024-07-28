@@ -190,7 +190,7 @@ export default function MoveContentToFolder({
                   activeView.folder.id === parentId)
               }
             >
-              Move
+              Move to {activeView.folder?.name ?? "My Activities"}
             </Button>
           </ModalFooter>
         </ModalContent>
