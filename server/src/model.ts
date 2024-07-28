@@ -2,6 +2,40 @@ import { PrismaClient, Prisma } from "@prisma/client";
 import { cidFromText } from "./utils/cid";
 import { DateTime } from "luxon";
 
+export type DoenetmlVersion = {
+  id: number;
+  displayedVersion: string;
+  fullVersion: string;
+  default: boolean;
+  deprecated: boolean;
+  removed: boolean;
+  deprecationMessage: string;
+};
+
+export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
+
+export type ActivityStructure = {
+  id: number;
+  ownerId: number;
+  name: string;
+  imagePath: string | null;
+  isAssigned: boolean;
+  isFolder?: boolean;
+  classCode: string | null;
+  codeValidUntil: Date | null;
+  isPublic: boolean;
+  documents: {
+    id: number;
+    versionNum?: number;
+    name?: string;
+    source?: string;
+    doenetmlVersion: DoenetmlVersion;
+  }[];
+  assignmentStatus: AssignmentStatus;
+  hasScoreData: boolean;
+  notMe?: boolean;
+};
+
 export class InvalidRequestError extends Error {
   errorCode = 400;
   constructor(message: string) {
@@ -687,55 +721,62 @@ async function createDocumentVersion(docId: number): Promise<{
  * We also return information about whether or not the assignment is open in this case.
  *
  * @param activityId
- * @param ownerId
+ * @param loggedInUserId
  */
 export async function getActivityEditorData(
   activityId: number,
-  ownerId: number,
+  loggedInUserId: number,
 ) {
   // TODO: is there a way to combine these queries and avoid any race condition?
 
-  let isAssigned = (
-    await prisma.content.findUniqueOrThrow({
-      where: { id: activityId, isDeleted: false, ownerId, isFolder: false },
-      select: { isAssigned: true },
-    })
-  ).isAssigned;
+  let content_check = await prisma.content.findUniqueOrThrow({
+    where: {
+      id: activityId,
+      isDeleted: false,
+      isFolder: false,
+      OR: [{ ownerId: loggedInUserId }, { isPublic: true }],
+    },
+    select: { isAssigned: true, ownerId: true, isPublic: true },
+  });
 
-  type DoenetmlVersion = {
-    id: number;
-    displayedVersion: string;
-    fullVersion: string;
-    default: boolean;
-    deprecated: boolean;
-    removed: boolean;
-    deprecationMessage: string;
-  };
+  if (content_check.ownerId !== loggedInUserId) {
+    // activity is public but not owned by the logged in user
 
-  let activity: {
-    name: string;
-    imagePath: string | null;
-    isAssigned: boolean;
-    classCode: string | null;
-    codeValidUntil: Date | null;
-    isPublic: boolean;
-    documents: {
-      id: number;
-      versionNum: number | null;
-      name: string;
-      source: string;
-      doenetmlVersion: DoenetmlVersion;
-    }[];
-    stillOpen: boolean;
-  };
+    let activity: ActivityStructure = {
+      id: activityId,
+      name: "",
+      ownerId: content_check.ownerId,
+      imagePath: null,
+      isAssigned: content_check.isAssigned,
+      classCode: null,
+      codeValidUntil: null,
+      isPublic: content_check.isPublic,
+      documents: [],
+      assignmentStatus: "Unassigned",
+      hasScoreData: false,
+      notMe: true,
+    };
+    return activity;
+  }
+
+  let isAssigned = content_check.isAssigned;
+
+  let activity: ActivityStructure;
 
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
 
   if (isAssigned) {
     let assignedActivity = await prisma.content.findUniqueOrThrow({
-      where: { id: activityId, isDeleted: false, ownerId, isFolder: false },
+      where: {
+        id: activityId,
+        isDeleted: false,
+        ownerId: loggedInUserId,
+        isFolder: false,
+      },
       select: {
+        id: true,
         name: true,
+        ownerId: true,
         imagePath: true,
         isAssigned: true,
         classCode: true,
@@ -756,11 +797,18 @@ export async function getActivityEditorData(
           // TODO: implement ability to allow users to order the documents within an activity
           orderBy: { id: "asc" },
         },
+        _count: { select: { assignmentScores: true } },
       },
     });
 
+    let isOpen = assignedActivity.codeValidUntil
+      ? DateTime.now() <= DateTime.fromJSDate(assignedActivity.codeValidUntil)
+      : false;
+
     activity = {
+      id: assignedActivity.id,
       name: assignedActivity.name,
+      ownerId: assignedActivity.ownerId,
       imagePath: assignedActivity.imagePath,
       isAssigned: assignedActivity.isAssigned,
       classCode: assignedActivity.classCode,
@@ -773,15 +821,22 @@ export async function getActivityEditorData(
         source: doc.assignedVersion!.source,
         doenetmlVersion: doc.assignedVersion!.doenetmlVersion,
       })),
-      stillOpen: assignedActivity.codeValidUntil
-        ? DateTime.now() <= DateTime.fromJSDate(assignedActivity.codeValidUntil)
-        : false,
+      assignmentStatus: isOpen ? "Open" : "Closed",
+      hasScoreData: assignedActivity._count.assignmentScores > 0,
+      notMe: false,
     };
   } else {
     let unassignedActivity = await prisma.content.findUniqueOrThrow({
-      where: { id: activityId, isDeleted: false, ownerId, isFolder: false },
+      where: {
+        id: activityId,
+        isDeleted: false,
+        ownerId: loggedInUserId,
+        isFolder: false,
+      },
       select: {
+        id: true,
         name: true,
+        ownerId: true,
         imagePath: true,
         isAssigned: true,
         classCode: true,
@@ -802,11 +857,9 @@ export async function getActivityEditorData(
 
     activity = {
       ...unassignedActivity,
-      documents: unassignedActivity.documents.map((doc) => ({
-        ...doc,
-        versionNum: null,
-      })),
-      stillOpen: false,
+      assignmentStatus: "Unassigned",
+      hasScoreData: false,
+      notMe: false,
     };
   }
 
@@ -961,7 +1014,10 @@ export async function getAssignmentDataFromCode(
       },
     });
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2025"
+    ) {
       return {
         assignmentFound: false,
         newAnonymousUser: null,
@@ -1597,26 +1653,6 @@ export async function assignActivity(activityId: number, userId: number) {
   }
 }
 
-export async function unassignActivity(activityId: number, userId: number) {
-  await prisma.content.update({
-    where: {
-      id: activityId,
-      isDeleted: false,
-      isFolder: false,
-      ownerId: userId,
-      isAssigned: true,
-    },
-    data: {
-      isAssigned: false,
-    },
-  });
-
-  await prisma.documents.updateMany({
-    where: { activityId },
-    data: { assignedVersionNum: null },
-  });
-}
-
 function generateClassCode() {
   return ("00000" + Math.floor(Math.random() * 1000000)).slice(-6);
 }
@@ -1624,14 +1660,18 @@ function generateClassCode() {
 export async function openAssignmentWithCode(
   activityId: number,
   closeAt: DateTime,
-  ownerId: number,
+  loggedInUserId: number,
 ) {
-  let classCode = (
-    await prisma.content.findUniqueOrThrow({
-      where: { id: activityId, ownerId, isAssigned: true, isFolder: false },
-      select: { classCode: true },
-    })
-  ).classCode;
+  let initialActivity = await prisma.content.findUniqueOrThrow({
+    where: { id: activityId, ownerId: loggedInUserId, isFolder: false },
+    select: { classCode: true, isAssigned: true },
+  });
+
+  if (!initialActivity.isAssigned) {
+    await assignActivity(activityId, loggedInUserId);
+  }
+
+  let classCode = initialActivity.classCode;
 
   if (!classCode) {
     classCode = generateClassCode();
@@ -1649,15 +1689,79 @@ export async function openAssignmentWithCode(
   return { classCode, codeValidUntil };
 }
 
+export async function updateAssignmentSettings(
+  activityId: number,
+  closeAt: DateTime,
+  loggedInUserId: number,
+) {
+  const codeValidUntil = closeAt.toJSDate();
+
+  await prisma.content.update({
+    where: {
+      id: activityId,
+      ownerId: loggedInUserId,
+      isFolder: false,
+      isAssigned: true,
+    },
+    data: {
+      codeValidUntil,
+    },
+  });
+
+  return {};
+}
+
 export async function closeAssignmentWithCode(
   activityId: number,
-  ownerId: number,
+  userId: number,
 ) {
   await prisma.content.update({
-    where: { id: activityId, ownerId, isAssigned: true, isFolder: false },
+    where: {
+      id: activityId,
+      isDeleted: false,
+      isFolder: false,
+      ownerId: userId,
+      isAssigned: true,
+    },
     data: {
       codeValidUntil: null,
     },
+  });
+
+  // attempt to unassign activity, which will succeed
+  // only if there is no student data
+  try {
+    await unassignActivity(activityId, userId);
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2025"
+    ) {
+      // ignore inability to unassign due to presence of student data
+    } else {
+      throw e;
+    }
+  }
+}
+
+export async function unassignActivity(activityId: number, userId: number) {
+  await prisma.content.update({
+    where: {
+      id: activityId,
+      isDeleted: false,
+      isFolder: false,
+      ownerId: userId,
+      isAssigned: true,
+      assignmentScores: { none: { activityId } },
+    },
+    data: {
+      isAssigned: false,
+    },
+  });
+
+  await prisma.documents.updateMany({
+    where: { activityId },
+    data: { assignedVersionNum: null },
   });
 }
 
@@ -2538,7 +2642,7 @@ export async function getMyFolderContent({
     }
   }
 
-  const content = await prisma.content.findMany({
+  let preliminaryContent = await prisma.content.findMany({
     where: {
       ownerId: loggedInUserId,
       isDeleted: false,
@@ -2550,13 +2654,31 @@ export async function getMyFolderContent({
       ownerId: true,
       name: true,
       imagePath: true,
-      createdAt: true,
-      lastEdited: true,
       isPublic: true,
       isAssigned: true,
+      classCode: true,
+      codeValidUntil: true,
       documents: { select: { id: true, doenetmlVersion: true } },
+      _count: { select: { assignmentScores: true } },
     },
     orderBy: { sortIndex: "asc" },
+  });
+
+  let content: ActivityStructure[] = preliminaryContent.map((obj) => {
+    let { _count, ...activity } = obj;
+    let isOpen = obj.codeValidUntil
+      ? DateTime.now() <= DateTime.fromJSDate(obj.codeValidUntil)
+      : false;
+    let assignmentStatus: AssignmentStatus = !obj.isAssigned
+      ? "Unassigned"
+      : !isOpen
+        ? "Closed"
+        : "Open";
+    return {
+      ...activity,
+      assignmentStatus,
+      hasScoreData: _count.assignmentScores > 0,
+    };
   });
 
   return {

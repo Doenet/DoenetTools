@@ -49,6 +49,8 @@ import {
   getPublicFolderContent,
   getPublicEditorData,
   searchUsersWithPublicContent,
+  ActivityStructure,
+  updateAssignmentSettings,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -118,24 +120,28 @@ test("New activity starts out private, then delete it", async () => {
   const userId = user.userId;
   const { activityId, docId } = await createActivity(userId, null);
   const activityContent = await getActivityEditorData(activityId, userId);
-  expect(activityContent).toStrictEqual({
+  const expectedContent: ActivityStructure = {
+    id: activityId,
     name: "Untitled Activity",
+    ownerId: userId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
     isAssigned: false,
-    stillOpen: false,
+    assignmentStatus: "Unassigned",
     classCode: null,
     codeValidUntil: null,
     documents: [
       {
         id: docId,
-        versionNum: null,
         source: "",
         name: "Untitled Document",
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
-  });
+    hasScoreData: false,
+    notMe: false,
+  };
+  expect(activityContent).toStrictEqual(expectedContent);
 
   const data = await getMyFolderContent({
     loggedInUserId: userId,
@@ -1764,20 +1770,14 @@ test("open and close assignment with code", async () => {
     ownerId,
   });
 
-  await assignActivity(activityId, ownerId);
-  let assignment = await getAssignment(activityId, ownerId);
-
-  expect(assignment.classCode).eq(null);
-  expect(assignment.codeValidUntil).eq(null);
-
-  // open assignment generates code
+  // open assignment assigns activity and generates code
   let closeAt = DateTime.now().plus({ days: 1 });
   const { classCode } = await openAssignmentWithCode(
     activityId,
     closeAt,
     ownerId,
   );
-  assignment = await getAssignment(activityId, ownerId);
+  let assignment = await getAssignment(activityId, ownerId);
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
 
@@ -1788,10 +1788,11 @@ test("open and close assignment with code", async () => {
     "Some content",
   );
 
+  // close assignment completely unassigns since there is no data
   await closeAssignmentWithCode(activityId, ownerId);
-  assignment = await getAssignment(activityId, ownerId);
-  expect(assignment.classCode).eq(classCode);
-  expect(assignment.codeValidUntil).eqls(null);
+  await expect(getAssignment(activityId, ownerId)).rejects.toThrow(
+    "No content found",
+  );
 
   assignmentData = await getAssignmentDataFromCode(classCode, true);
   expect(assignmentData.assignmentFound).eq(false);
@@ -1822,6 +1823,36 @@ test("open and close assignment with code", async () => {
   assignmentData = await getAssignmentDataFromCode(classCode, true);
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
+
+  // reopen with future date
+  closeAt = DateTime.now().plus({ years: 1 });
+  await openAssignmentWithCode(activityId, closeAt, ownerId);
+  const { classCode: classCode3 } = await openAssignmentWithCode(
+    activityId,
+    closeAt,
+    ownerId,
+  );
+  expect(classCode3).eq(classCode);
+  assignment = await getAssignment(activityId, ownerId);
+  expect(assignment.classCode).eq(classCode);
+  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+
+  // add some data
+  await saveScoreAndState({
+    activityId,
+    docId: activity.documents[0].id,
+    docVersionNum: 1,
+    userId: ownerId,
+    score: 0.3,
+    onSubmission: true,
+    state: "document state",
+  });
+
+  // closing assignment doesn't close completely due to the data
+  await closeAssignmentWithCode(activityId, ownerId);
+  assignment = await getAssignment(activityId, ownerId);
+  expect(assignment.classCode).eq(classCode);
+  expect(assignment.codeValidUntil).eqls(null);
 });
 
 test("open and unassign assignment with code", async () => {
@@ -1922,22 +1953,31 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
     openAssignmentWithCode(activityId, closeAt, userId2),
   ).rejects.toThrow("No content found");
 
-  const { classCode } = await openAssignmentWithCode(
+  const { codeValidUntil } = await openAssignmentWithCode(
     activityId,
     closeAt,
     ownerId,
   );
+
+  expect(codeValidUntil).eqls(closeAt.toJSDate());
+
+  let newCloseAt = DateTime.now().plus({ days: 2 });
+
+  await expect(
+    updateAssignmentSettings(activityId, newCloseAt, userId2),
+  ).rejects.toThrow("Record to update not found");
+  assignment = await getAssignment(activityId, ownerId);
+  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+
+  updateAssignmentSettings(activityId, newCloseAt, ownerId);
+  assignment = await getAssignment(activityId, ownerId);
+  expect(assignment.codeValidUntil).eqls(newCloseAt.toJSDate());
 
   await expect(closeAssignmentWithCode(activityId, userId2)).rejects.toThrow(
     "Record to update not found",
   );
 
   await closeAssignmentWithCode(activityId, ownerId);
-
-  await expect(unassignActivity(activityId, userId2)).rejects.toThrow(
-    "Record to update not found",
-  );
-  await unassignActivity(activityId, ownerId);
 });
 
 test("create anonymous users", async () => {
@@ -2361,7 +2401,7 @@ test("can't get assignment data if other user, but student can get their own dat
   ).eqls(studentData);
 });
 
-test("can't get assignment data if unassigned", async () => {
+test("can't unassign if have data", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const { activityId, docId } = await createActivity(ownerId, null);
@@ -2403,22 +2443,9 @@ test("can't get assignment data if unassigned", async () => {
     studentId: newUser1!.userId,
   });
 
-  await unassignActivity(activityId, ownerId);
-
-  await expect(
-    getAssignmentScoreData({
-      activityId,
-      ownerId,
-    }),
-  ).rejects.toThrow("No content found");
-
-  await expect(
-    getAssignmentStudentData({
-      activityId,
-      loggedInUserId: ownerId,
-      studentId: newUser1!.userId,
-    }),
-  ).rejects.toThrow("No assignmentScores found");
+  await expect(unassignActivity(activityId, ownerId)).rejects.toThrow(
+    "Record to update not found",
+  );
 });
 
 test("get activity editor data only if owner", async () => {
@@ -2459,55 +2486,47 @@ test("get public activity editor data only if public", async () => {
   expect(publicData.documents[0].source).eq(doenetML);
 });
 
-test("activity editor data before and after assigned", async () => {
+test.only("activity editor data and my folder contents before and after assigned", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const { activityId, docId } = await createActivity(ownerId, null);
 
   const preAssignedData = await getActivityEditorData(activityId, ownerId);
-
-  expect(preAssignedData).eqls({
+  let expectedData: ActivityStructure = {
+    id: activityId,
     name: "Untitled Activity",
+    ownerId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
     isAssigned: false,
-    stillOpen: false,
+    assignmentStatus: "Unassigned",
     classCode: null,
     codeValidUntil: null,
     documents: [
       {
         id: docId,
-        versionNum: null,
         source: "",
         name: "Untitled Document",
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
+    notMe: false,
+    hasScoreData: false,
+  };
+  expect(preAssignedData).eqls(expectedData);
+
+  // get my folder content returns same data, with differences in some optional fields
+  let folderData = await getMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
   });
+  delete expectedData.documents[0].name;
+  delete expectedData.documents[0].source;
+  expectedData.isFolder = false;
+  delete expectedData.notMe;
+  expect(folderData.content).eqls([expectedData]);
 
-  await assignActivity(activityId, ownerId);
-
-  const assignedData = await getActivityEditorData(activityId, ownerId);
-
-  expect(assignedData).eqls({
-    name: "Untitled Activity",
-    imagePath: "/activity_default.jpg",
-    isPublic: false,
-    isAssigned: true,
-    stillOpen: false,
-    classCode: null,
-    codeValidUntil: null,
-    documents: [
-      {
-        id: docId,
-        versionNum: 1,
-        source: "",
-        name: "Untitled Document",
-        doenetmlVersion: currentDoenetmlVersion,
-      },
-    ],
-  });
-
+  // Opening assignment also assigns the activity
   let closeAt = DateTime.now().plus({ days: 1 });
   const { classCode } = await openAssignmentWithCode(
     activityId,
@@ -2516,13 +2535,14 @@ test("activity editor data before and after assigned", async () => {
   );
 
   const openedData = await getActivityEditorData(activityId, ownerId);
-
-  expect(openedData).eqls({
+  expectedData = {
+    id: activityId,
     name: "Untitled Activity",
+    ownerId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
     isAssigned: true,
-    stillOpen: true,
+    assignmentStatus: "Open",
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     documents: [
@@ -2534,18 +2554,170 @@ test("activity editor data before and after assigned", async () => {
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
+    notMe: false,
+    hasScoreData: false,
+  };
+
+  expect(openedData).eqls(expectedData);
+
+  // get my folder content returns same data, with differences in some optional fields
+  folderData = await getMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
   });
+  delete expectedData.documents[0].name;
+  delete expectedData.documents[0].source;
+  delete expectedData.documents[0].versionNum;
+  expectedData.isFolder = false;
+  delete expectedData.notMe;
+  expect(folderData.content).eqls([expectedData]);
 
+  // closing the assignment without data also unassigns it
   await closeAssignmentWithCode(activityId, ownerId);
-
   const closedData = await getActivityEditorData(activityId, ownerId);
-
-  expect(closedData).eqls({
+  expectedData = {
+    id: activityId,
     name: "Untitled Activity",
+    ownerId,
+    imagePath: "/activity_default.jpg",
+    isPublic: false,
+    isAssigned: false,
+    assignmentStatus: "Unassigned",
+    classCode,
+    codeValidUntil: null,
+    documents: [
+      {
+        id: docId,
+        source: "",
+        name: "Untitled Document",
+        doenetmlVersion: currentDoenetmlVersion,
+      },
+    ],
+    notMe: false,
+    hasScoreData: false,
+  };
+
+  expect(closedData).eqls(expectedData);
+
+  // get my folder content returns same data, with differences in some optional fields
+  folderData = await getMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
+  });
+  delete expectedData.documents[0].name;
+  delete expectedData.documents[0].source;
+  expectedData.isFolder = false;
+  delete expectedData.notMe;
+  expect(folderData.content).eqls([expectedData]);
+
+  // re-opening, re-assigns with same code
+  closeAt = DateTime.now().plus({ days: 1 });
+  let { classCode: newClassCode } = await openAssignmentWithCode(
+    activityId,
+    closeAt,
+    ownerId,
+  );
+
+  expect(newClassCode).eq(classCode);
+
+  const openedData2 = await getActivityEditorData(activityId, ownerId);
+  expectedData = {
+    id: activityId,
+    name: "Untitled Activity",
+    ownerId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
     isAssigned: true,
-    stillOpen: false,
+    assignmentStatus: "Open",
+    classCode,
+    codeValidUntil: closeAt.toJSDate(),
+    documents: [
+      {
+        id: docId,
+        versionNum: 1,
+        source: "",
+        name: "Untitled Document",
+        doenetmlVersion: currentDoenetmlVersion,
+      },
+    ],
+    notMe: false,
+    hasScoreData: false,
+  };
+
+  expect(openedData2).eqls(expectedData);
+
+  // get my folder content returns same data, with differences in some optional fields
+  folderData = await getMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
+  });
+  delete expectedData.documents[0].name;
+  delete expectedData.documents[0].source;
+  delete expectedData.documents[0].versionNum;
+  expectedData.isFolder = false;
+  delete expectedData.notMe;
+  expect(folderData.content).eqls([expectedData]);
+
+  // just add some data (doesn't matter that it is owner themselves)
+  await saveScoreAndState({
+    activityId,
+    docId,
+    docVersionNum: 1,
+    userId: ownerId,
+    score: 0.5,
+    onSubmission: true,
+    state: "document state 1",
+  });
+
+  const openedData3 = await getActivityEditorData(activityId, ownerId);
+  expectedData = {
+    id: activityId,
+    name: "Untitled Activity",
+    ownerId,
+    imagePath: "/activity_default.jpg",
+    isPublic: false,
+    isAssigned: true,
+    assignmentStatus: "Open",
+    classCode,
+    codeValidUntil: closeAt.toJSDate(),
+    documents: [
+      {
+        id: docId,
+        versionNum: 1,
+        source: "",
+        name: "Untitled Document",
+        doenetmlVersion: currentDoenetmlVersion,
+      },
+    ],
+    notMe: false,
+    hasScoreData: true,
+  };
+
+  expect(openedData3).eqls(expectedData);
+
+  // get my folder content returns same data, with differences in some optional fields
+  folderData = await getMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
+  });
+  delete expectedData.documents[0].name;
+  delete expectedData.documents[0].source;
+  delete expectedData.documents[0].versionNum;
+  expectedData.isFolder = false;
+  delete expectedData.notMe;
+  expect(folderData.content).eqls([expectedData]);
+
+  // now closing does not unassign
+  await closeAssignmentWithCode(activityId, ownerId);
+  const closedData2 = await getActivityEditorData(activityId, ownerId);
+  expectedData = {
+    id: activityId,
+    name: "Untitled Activity",
+    ownerId,
+    imagePath: "/activity_default.jpg",
+    isPublic: false,
+    isAssigned: true,
+    assignmentStatus: "Closed",
     classCode,
     codeValidUntil: null,
     documents: [
@@ -2557,30 +2729,28 @@ test("activity editor data before and after assigned", async () => {
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
+    notMe: false,
+    hasScoreData: true,
+  };
+
+  expect(closedData2).eqls(expectedData);
+
+  // get my folder content returns same data, with differences in some optional fields
+  folderData = await getMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
   });
+  delete expectedData.documents[0].name;
+  delete expectedData.documents[0].source;
+  delete expectedData.documents[0].versionNum;
+  expectedData.isFolder = false;
+  delete expectedData.notMe;
+  expect(folderData.content).eqls([expectedData]);
 
-  await unassignActivity(activityId, ownerId);
-
-  const unAssignedData = await getActivityEditorData(activityId, ownerId);
-
-  expect(unAssignedData).eqls({
-    name: "Untitled Activity",
-    imagePath: "/activity_default.jpg",
-    isPublic: false,
-    isAssigned: false,
-    stillOpen: false,
-    classCode,
-    codeValidUntil: null,
-    documents: [
-      {
-        id: docId,
-        versionNum: null,
-        source: "",
-        name: "Untitled Document",
-        doenetmlVersion: currentDoenetmlVersion,
-      },
-    ],
-  });
+  // explicitly unassigning fails due to the presence of data
+  await expect(unassignActivity(activityId, ownerId)).rejects.toThrow(
+    "Record to update not found",
+  );
 });
 
 test("only user and assignment owner can load document state", async () => {
@@ -3549,12 +3719,10 @@ test("list assigned and get assigned scores get student assignments and scores",
     { activityId: activityId2, activityName: "Activity 2", score: 0.5 },
   ]);
 
-  // unassigning activity removes them from list
-  await unassignActivity(activityId2, user2Id);
-  assignmentList = await listUserAssigned(user1Id);
-  expect(assignmentList.assignments).eqls([]);
-  studentData = await getAssignedScores(user1Id);
-  expect(studentData.orderedActivityScores).eqls([]);
+  // cannot unassign
+  await expect(unassignActivity(activityId2, user2Id)).rejects.toThrow(
+    "Record to update not found",
+  );
 });
 
 test("get all assignment data from anonymous user", async () => {

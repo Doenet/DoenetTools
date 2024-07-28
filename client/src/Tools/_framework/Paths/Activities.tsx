@@ -1,4 +1,3 @@
-// import axios from 'axios';
 import {
   Button,
   Box,
@@ -7,13 +6,6 @@ import {
   Flex,
   Wrap,
   useDisclosure,
-  Center,
-  DrawerHeader,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerOverlay,
-  Drawer,
   MenuItem,
   Heading,
   Tooltip,
@@ -31,8 +23,10 @@ import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../PanelHeaderComponents/ContentCard";
-import { GeneralActivityControls } from "./ActivityEditor";
 import axios from "axios";
+import { ActivitySettingsDrawer } from "../ToolPanels/ActivitySettingsDrawer";
+import { ActivityStructure, DoenetmlVersion } from "./ActivityEditor";
+import { DateTime } from "luxon";
 
 // what is a better solution than this?
 let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching activity/folder id
@@ -52,8 +46,8 @@ export async function action({ request, params }) {
     if (formObj.learningOutcomes) {
       learningOutcomes = JSON.parse(formObj.learningOutcomes);
     }
-    let isPublic;
 
+    let isPublic = false;
     if (formObj.isPublic) {
       isPublic = formObj.isPublic === "true";
     }
@@ -109,11 +103,6 @@ export async function action({ request, params }) {
     });
 
     return true;
-  } else if (formObj?._action == "Assign Activity") {
-    await axios.post(`/api/assignActivity`, {
-      id: formObj.id,
-    });
-    return redirect(`/assignmentEditor/${formObj.id}`);
   } else if (formObj?._action == "Duplicate Activity") {
     await axios.post(`/api/duplicateActivity`, {
       activityId: formObj.id,
@@ -139,6 +128,38 @@ export async function action({ request, params }) {
       name,
     });
     return true;
+  } else if (formObj._action == "open assignment") {
+    const closeAt = DateTime.fromSeconds(
+      Math.round(DateTime.now().toSeconds() / 60) * 60,
+    ).plus(JSON.parse(formObj.duration));
+    await axios.post("/api/openAssignmentWithCode", {
+      activityId: Number(formObj.activityId),
+      closeAt,
+    });
+    return true;
+  } else if (formObj._action == "update assignment close time") {
+    const closeAt = DateTime.fromISO(formObj.closeAt);
+    await axios.post("/api/updateAssignmentSettings", {
+      activityId: Number(formObj.activityId),
+      closeAt,
+    });
+    return true;
+  } else if (formObj._action == "close assignment") {
+    await axios.post("/api/closeAssignmentWithCode", {
+      activityId: Number(formObj.activityId),
+    });
+    return true;
+  } else if (formObj._action == "unassign activity") {
+    try {
+      await axios.post("/api/unassignActivity", {
+        activityId: Number(formObj.activityId),
+      });
+    } catch (e) {
+      alert("Unable to unassign activity");
+    }
+    return true;
+  } else if (formObj._action == "go to data") {
+    return redirect(`/assignmentData/${formObj.activityId}`);
   } else if (formObj?._action == "noop") {
     return true;
   }
@@ -166,6 +187,7 @@ export async function loader({ params }) {
   };
 }
 
+//@ts-ignore
 const ActivitiesSection = styled.div`
   padding: 10px;
   margin: 0px;
@@ -176,64 +198,21 @@ const ActivitiesSection = styled.div`
   height: 100vh;
 `;
 
-function ActivitySettingsDrawer({
-  isOpen,
-  onClose,
-  finalFocusRef,
-  id,
-  content,
-  allDoenetmlVersions,
-}) {
-  const fetcher = useFetcher();
-  let activityData;
-  if (id) {
-    let index = content.findIndex((obj) => obj.id == id);
-    if (index != -1) {
-      activityData = content[index];
-    } else {
-      //Throw error not found
-    }
-  }
-
-  return (
-    <Drawer
-      isOpen={isOpen}
-      placement="right"
-      onClose={onClose}
-      finalFocusRef={finalFocusRef}
-      size="lg"
-    >
-      <DrawerOverlay />
-      <DrawerContent>
-        <DrawerCloseButton />
-        <DrawerHeader>
-          <Center>
-            <Text>Activity Settings</Text>
-          </Center>
-        </DrawerHeader>
-
-        <DrawerBody>
-          {id && (
-            <GeneralActivityControls
-              fetcher={fetcher}
-              activityId={id}
-              docId={activityData.docId}
-              activityData={activityData}
-              allDoenetmlVersions={allDoenetmlVersions}
-            />
-          )}
-        </DrawerBody>
-      </DrawerContent>
-    </Drawer>
-  );
-}
-
 export function Activities() {
-  let context = useOutletContext();
+  let context: any = useOutletContext();
   let { folderId, content, allDoenetmlVersions, userId, folder } =
-    useLoaderData();
-  const [activityId, setActivityId] = useState();
-  const controlsBtnRef = useRef(null);
+    useLoaderData() as {
+      folderId: string | null;
+      content: ActivityStructure[];
+      allDoenetmlVersions: DoenetmlVersion[];
+      userId: string;
+      folder: any;
+    };
+  const [activityId, setActivityId] = useState<number | null>(null);
+
+  const contentCardRefs = useRef(new Array());
+  const currentCardRef = useRef(null);
+
   const navigate = useNavigate();
 
   const {
@@ -241,6 +220,10 @@ export function Activities() {
     onOpen: settingsOnOpen,
     onClose: settingsOnClose,
   } = useDisclosure();
+
+  const [displaySettingsTab, setSettingsDisplayTab] = useState<
+    "general" | "assignment"
+  >("general");
 
   useEffect(() => {
     document.title = `Activities - Doenet`;
@@ -254,12 +237,12 @@ export function Activities() {
   }
 
   function getCardMenuList(
-    isPublic,
-    isFolder,
-    isAssigned,
-    id,
-    position,
-    numCards,
+    isPublic: boolean,
+    id: number,
+    position: number,
+    numCards: number,
+    isAssigned: boolean,
+    isFolder?: boolean,
   ) {
     return (
       <>
@@ -287,19 +270,6 @@ export function Activities() {
             >
               Duplicate Activity
             </MenuItem>
-            {!isAssigned ? (
-              <MenuItem
-                data-test="Assign Activity Menu Item"
-                onClick={() => {
-                  fetcher.submit(
-                    { _action: "Assign Activity", id },
-                    { method: "post" },
-                  );
-                }}
-              >
-                Assign Activity
-              </MenuItem>
-            ) : null}
           </>
         ) : null}
         {position > 0 ? (
@@ -340,9 +310,20 @@ export function Activities() {
           Delete
         </MenuItem>
         <MenuItem
+          data-test="Assign Activity Menu Item"
+          onClick={() => {
+            setActivityId(id);
+            setSettingsDisplayTab("assignment");
+            settingsOnOpen();
+          }}
+        >
+          {isAssigned ? "Manage Assignment" : "Assign Activity"}
+        </MenuItem>
+        <MenuItem
           data-test="Settings Menu Item"
           onClick={() => {
             setActivityId(id);
+            setSettingsDisplayTab("general");
             settingsOnOpen();
           }}
         >
@@ -360,16 +341,34 @@ export function Activities() {
     headingText = `My Activities`;
   }
 
-  return (
-    <>
+  let activityData: ActivityStructure | undefined;
+  if (activityId) {
+    let index = content.findIndex((obj) => obj.id == activityId);
+    if (index != -1) {
+      activityData = content[index];
+      currentCardRef.current = contentCardRefs.current[index];
+    } else {
+      //Throw error not found
+    }
+  }
+
+  let settings_drawer =
+    activityData && activityId ? (
       <ActivitySettingsDrawer
         isOpen={settingsAreOpen}
         onClose={settingsOnClose}
-        finalFocusRef={controlsBtnRef}
-        id={activityId}
-        content={content}
+        activityId={activityId}
+        activityData={activityData}
         allDoenetmlVersions={allDoenetmlVersions}
+        finalFocusRef={currentCardRef}
+        fetcher={fetcher}
+        displayTab={displaySettingsTab}
       />
+    ) : null;
+
+  return (
+    <>
+      {settings_drawer}
       <Box
         backgroundColor="#fff"
         color="#000"
@@ -388,10 +387,7 @@ export function Activities() {
             size="xs"
             colorScheme="blue"
             onClick={async () => {
-              let id = fetcher.submit(
-                { _action: "Add Folder" },
-                { method: "post" },
-              );
+              fetcher.submit({ _action: "Add Folder" }, { method: "post" });
             }}
           >
             + Add Folder
@@ -462,27 +458,29 @@ export function Activities() {
           ) : (
             <>
               {content.map((activity, position) => {
+                const getCardRef = (element) => {
+                  contentCardRefs.current[position] = element;
+                };
                 return (
                   <ContentCard
                     key={`Card${activity.id}`}
+                    ref={getCardRef}
                     {...activity}
                     title={activity.name}
                     menuItems={getCardMenuList(
                       activity.isPublic,
-                      activity.isFolder,
-                      activity.isAssigned,
                       activity.id,
                       position,
                       content.length,
+                      activity.isAssigned,
+                      activity.isFolder,
                     )}
                     suppressAvatar={true}
                     showOwnerName={false}
                     imageLink={
                       activity.isFolder
                         ? `/activities/${activity.ownerId}/${activity.id}`
-                        : activity.isAssigned
-                          ? `/assignmentEditor/${activity.id}`
-                          : `/activityEditor/${activity.id}`
+                        : `/activityEditor/${activity.id}`
                     }
                     editableTitle={true}
                     autoFocusTitle={folderJustCreated === activity.id}

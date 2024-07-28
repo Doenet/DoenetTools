@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef, ReactElement } from "react";
 import {
   Box,
   Image,
@@ -7,7 +7,6 @@ import {
   Card,
   CardBody,
   Flex,
-  MenuItem,
   Menu,
   MenuButton,
   Icon,
@@ -17,23 +16,42 @@ import {
 } from "@chakra-ui/react";
 import { GoKebabVertical } from "react-icons/go";
 import { Link, useFetcher } from "react-router-dom";
+import { AssignmentStatus } from "../Tools/_framework/Paths/ActivityEditor";
 
-export default function ContentCard({
-  imageLink = "",
-  id,
-  imagePath,
-  isAssigned,
-  isFolder,
-  isPublic,
-  title,
-  ownerName,
-  menuItems,
-  suppressAvatar = false,
-  showOwnerName = true,
-  editableTitle = false,
-  autoFocusTitle = false,
-  showStatus = true,
-}) {
+export default forwardRef(function ContentCard(
+  {
+    imageLink = "",
+    id,
+    imagePath,
+    assignmentStatus,
+    isFolder,
+    isPublic,
+    title,
+    ownerName,
+    menuItems,
+    suppressAvatar = false,
+    showOwnerName = true,
+    editableTitle = false,
+    autoFocusTitle = false,
+    showStatus = true,
+  }: {
+    imageLink?: string;
+    id: number;
+    imagePath: string | null;
+    assignmentStatus: AssignmentStatus;
+    isFolder?: boolean;
+    isPublic: boolean;
+    title: string;
+    ownerName?: string;
+    menuItems: ReactElement;
+    suppressAvatar?: boolean;
+    showOwnerName?: boolean;
+    editableTitle?: boolean;
+    autoFocusTitle?: boolean;
+    showStatus?: boolean;
+  },
+  ref: React.ForwardedRef<HTMLButtonElement>,
+) {
   if (!imagePath) {
     imagePath = "/activity_default.jpg";
   }
@@ -45,10 +63,12 @@ export default function ContentCard({
   }, [title]);
 
   function saveUpdatedTitle() {
-    fetcher.submit(
-      { _action: "update title", id, cardTitle, isFolder },
-      { method: "post" },
-    );
+    if (cardTitle !== title) {
+      fetcher.submit(
+        { _action: "update title", id, cardTitle, isFolder: Boolean(isFolder) },
+        { method: "post" },
+      );
+    }
   }
 
   //Note: when we have a menu width 140px becomes 120px
@@ -92,8 +112,7 @@ export default function ContentCard({
                   onBlur={saveUpdatedTitle}
                   onKeyDown={(e) => {
                     if (e.key == "Enter") {
-                      saveUpdatedTitle();
-                      e.target.blur();
+                      (e.target as HTMLElement).blur();
                     }
                   }}
                 />
@@ -133,14 +152,19 @@ export default function ContentCard({
                 //data-test="Card Full Name"
               >
                 {isPublic ? "Public" : "Private"}
-                {isFolder ? "" : isAssigned ? " / Assigned" : " / Unassigned"}
+                {isFolder ? "" : " / " + assignmentStatus}
               </Text>
             ) : null}
           </Box>
 
           {menuItems ? (
             <Menu>
-              <MenuButton height="30px" data-test="Card Menu Button">
+              <MenuButton
+                height="30px"
+                data-test="Card Menu Button"
+                _focus={{ boxShadow: "outline" }}
+                ref={ref}
+              >
                 <Icon color="#949494" as={GoKebabVertical} boxSize={4} />
               </MenuButton>
               <MenuList zIndex="1000">{menuItems}</MenuList>
@@ -150,4 +174,4 @@ export default function ContentCard({
       </CardBody>
     </Card>
   );
-}
+});

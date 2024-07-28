@@ -1,12 +1,13 @@
+import React, { useState } from "react";
 import { Box } from "@chakra-ui/react";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
-import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 
 export default function AssignmentPreview({
   doenetML,
   doenetmlVersion,
   active = true,
+  maxHeight = 600,
 }) {
   const [variants, setVariants] = useState({
     index: 1,
@@ -25,7 +26,7 @@ export default function AssignmentPreview({
       borderColor="doenet.mediumGray"
       width="100%"
       overflow="scroll"
-      maxHeight={600}
+      maxHeight={maxHeight}
     >
       {active ? (
         <DoenetViewer

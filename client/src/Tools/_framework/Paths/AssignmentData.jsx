@@ -33,10 +33,10 @@ export async function action({ params, request }) {
 
 export async function loader({ params }) {
   const { data } = await axios.get(
-    `/api/getAssignmentData/${params.assignmentId}`,
+    `/api/getAssignmentData/${params.activityId}`,
   );
 
-  let assignmentId = Number(params.assignmentId);
+  let activityId = Number(params.activityId);
 
   // TODO: address case where don't have one document
   const doenetML = data.assignmentContent[0].assignedVersion.source;
@@ -48,18 +48,13 @@ export async function loader({ params }) {
     answerList: data.answerList,
     doenetML,
     doenetmlVersion,
-    assignmentId,
+    activityId,
   };
 }
 
 export function AssignmentData() {
-  const {
-    assignmentId,
-    assignmentData,
-    answerList,
-    doenetML,
-    doenetmlVersion,
-  } = useLoaderData();
+  const { activityId, assignmentData, answerList, doenetML, doenetmlVersion } =
+    useLoaderData();
 
   useEffect(() => {
     document.title = `${assignmentData.name} - Doenet`;
@@ -98,13 +93,13 @@ export function AssignmentData() {
       <Box style={{ marginTop: 15, marginLeft: 15 }}>
         <ChakraLink
           as={ReactRouterLink}
-          to={`/assignmentEditor/${assignmentId}`}
+          to={`/activityEditor/${activityId}`}
           style={{
             color: "var(--mainBlue)",
           }}
         >
           {" "}
-          &lt; Back to assignment editor
+          &lt; Back to activity editor
         </ChakraLink>
       </Box>
       <Heading heading={assignmentData.name} />
@@ -163,7 +158,7 @@ export function AssignmentData() {
                   {assignmentData.assignmentScores.map((assignmentScore) => {
                     const linkURL =
                       "/assignmentData/" +
-                      assignmentId +
+                      activityId +
                       "/" +
                       assignmentScore.user.userId;
                     return (
@@ -235,8 +230,8 @@ export function AssignmentData() {
                     </Thead>
                     <Tbody>
                       {answerList.map((answerObj) => {
-                        const key = `/assignmentAnswerResponses/${assignmentId}/${answerObj.docId}/${answerObj.docVersionNum}/${answerObj.answerId}`;
-                        const linkURL = `/assignmentAnswerResponses/${assignmentId}/${
+                        const key = `/assignmentAnswerResponses/${activityId}/${answerObj.docId}/${answerObj.docVersionNum}/${answerObj.answerId}`;
+                        const linkURL = `/assignmentAnswerResponses/${activityId}/${
                           answerObj.docId
                         }/${
                           answerObj.docVersionNum
