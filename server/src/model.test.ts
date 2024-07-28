@@ -95,9 +95,8 @@ test("New user has no content", async () => {
   });
   expect(docs).toStrictEqual({
     content: [],
-    folderName: null,
     notMe: false,
-    parentFolderId: null,
+    folder: null,
   });
 });
 

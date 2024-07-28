@@ -133,47 +133,6 @@ app.get(
 );
 
 app.get(
-  "/api/getPublicFolderContent/:userId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const userId = Number(req.params.userId);
-    try {
-      const contentData = await getPublicFolderContent({
-        ownerId: userId,
-        folderId: null,
-      });
-      res.send(contentData);
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.status(404).send("No content found");
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
-  "/api/getPublicFolderContent/:userId/:folderId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const userId = Number(req.params.userId);
-    const folderId = Number(req.params.folderId);
-    try {
-      const contentData = await getPublicFolderContent({
-        ownerId: userId,
-        folderId,
-      });
-      res.send(contentData);
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.status(404).send("No content found");
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
   "/api/getAssigned",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
