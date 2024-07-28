@@ -56,7 +56,6 @@ import {
   makeContentPublic,
   License,
   makeContentPrivate,
-  setLicense,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -4425,23 +4424,21 @@ test("set license to make public", async () => {
   const { activityId } = await createActivity(ownerId, null);
 
   // cannot make it public with specifying license
-  const try_public_no_license = await makeContentPublic({
-    id: activityId,
-    ownerId,
-  });
-  expect(try_public_no_license.missingLicense).eq(true);
-  expect(try_public_no_license.isPublic).eq(false);
+  await expect(
+    makeContentPublic({
+      id: activityId,
+      ownerId,
+    }),
+  ).rejects.toThrow("Missing license");
   let activityData = await getActivityEditorData(activityId, ownerId);
   expect(activityData.isPublic).eq(false);
 
   // make public with CCBYSA license
-  const public_ccbysa = await makeContentPublic({
+  await makeContentPublic({
     id: activityId,
     ownerId,
     licenseCode: "CCBYSA",
   });
-  expect(public_ccbysa.missingLicense).eq(false);
-  expect(public_ccbysa.isPublic).eq(true);
   activityData = await getActivityEditorData(activityId, ownerId);
   expect(activityData.isPublic).eq(true);
 
@@ -4455,19 +4452,16 @@ test("set license to make public", async () => {
   expect(activityData.license?.imageUrls).eqls(["/creative_commons_by_sa.png"]);
 
   // make private
-  const make_private = await makeContentPrivate({ id: activityId, ownerId });
-  expect(make_private.isPublic).eq(false);
+  await makeContentPrivate({ id: activityId, ownerId });
   activityData = await getActivityEditorData(activityId, ownerId);
   expect(activityData.isPublic).eq(false);
 
   // make public with CCBYNCSA license
-  const public_ccbyncsa = await makeContentPublic({
+  await makeContentPublic({
     id: activityId,
     ownerId,
     licenseCode: "CCBYNCSA",
   });
-  expect(public_ccbysa.missingLicense).eq(false);
-  expect(public_ccbysa.isPublic).eq(true);
   activityData = await getActivityEditorData(activityId, ownerId);
   expect(activityData.isPublic).eq(true);
 
@@ -4483,9 +4477,9 @@ test("set license to make public", async () => {
   ]);
 
   // switch license to dual
-  await setLicense({
-    contentId: activityId,
-    loggedInUserId: ownerId,
+  await makeContentPublic({
+    id: activityId,
+    ownerId,
     licenseCode: "CCDUAL",
   });
 

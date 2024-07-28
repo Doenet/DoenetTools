@@ -113,6 +113,7 @@ export async function createActivity(
           },
         ],
       },
+      licenseCode: "CCDUAL",
     },
   });
 
@@ -2899,27 +2900,6 @@ function processLicense(
   }
 }
 
-export async function setLicense({
-  contentId,
-  loggedInUserId,
-  licenseCode,
-}: {
-  contentId: number;
-  loggedInUserId: number;
-  licenseCode: LicenseCode;
-}) {
-  await prisma.content.update({
-    where: {
-      id: contentId,
-      ownerId: loggedInUserId,
-      isDeleted: false,
-    },
-    data: {
-      licenseCode,
-    },
-  });
-}
-
 export async function makeContentPublic({
   id,
   ownerId,
@@ -2930,26 +2910,17 @@ export async function makeContentPublic({
   licenseCode?: LicenseCode;
 }) {
   // if don't specify a license code,
-  // then content must already have a license if it is an activity
+  // then content must be folder
   if (!licenseCode) {
     let original_content = await prisma.content.findUniqueOrThrow({
       where: { id, isDeleted: false, ownerId },
       select: {
-        licenseCode: true,
         isFolder: true,
-        isPublic: true,
       },
     });
 
-    if (
-      original_content.isFolder === false &&
-      original_content.licenseCode === null
-    ) {
-      return {
-        id,
-        isPublic: original_content.isPublic,
-        missingLicense: true,
-      };
+    if (original_content.isFolder === false) {
+      throw Error("Missing license");
     }
   }
 
@@ -2958,7 +2929,7 @@ export async function makeContentPublic({
     data: { isPublic: true, licenseCode },
   });
 
-  return { id: updated.id, isPublic: updated.isPublic, missingLicense: false };
+  return { id: updated.id, isPublic: updated.isPublic };
 }
 
 export async function makeContentPrivate({
