@@ -36,7 +36,7 @@ export function GeneralContentControls({
     isPublic,
     name,
     imagePath: dataImagePath,
-    contentKeyword: keywords,
+    contentClassifications: classifications,
   } = activityData;
 
   let numberOfFilesUploading = useRef(0);
@@ -272,9 +272,9 @@ export function GeneralContentControls({
         {!activityData.isFolder ? (
           <FormControl>
             <Flex flexDirection="column" width="100%" rowGap={6}>
-              <FormLabel mt="16px">Keywords</FormLabel>
-              {keywords.map((kw, i) => (
-                <Text key={`keyword#${i}`}>{kw.keyword.name}</Text>
+              <FormLabel mt="16px">Classifications</FormLabel>
+              {classifications.map((c, i) => (
+                <Text key={`classification#${i}`}>{c.code}</Text>
               ))}
 
               <Input
@@ -284,9 +284,9 @@ export function GeneralContentControls({
                   // saveDataToServer(learningOutcomes, undefined, undefined)
                   fetcher.submit(
                     {
-                      _action: "add keyword",
+                      _action: "add classification",
                       id: activityId,
-                      //TODO: keyword id
+                      //TODO: classification id
                     },
                     { method: "post" },
                   );
@@ -296,15 +296,15 @@ export function GeneralContentControls({
                     // saveDataToServer(learningOutcomes, undefined, undefined);
                     fetcher.submit(
                       {
-                        _action: "add keyword",
+                        _action: "add classification",
                         id: activityId,
-                        //TODO: keyword id
+                        //TODO: classification id
                       },
                       { method: "post" },
                     );
                   }
                 }}
-                placeholder={`Enter a keyword`}
+                placeholder={`Enter a classification`}
               ></Input>
             </Flex>
           </FormControl>

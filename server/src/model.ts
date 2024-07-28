@@ -2442,12 +2442,19 @@ export async function getFolderContent({
       isPublic: true,
       isAssigned: true,
       documents: { select: { id: true, doenetmlVersion: true } },
-      contentKeyword: {
+      classifications: {
         select: {
-          keyword: {
+          classification: {
             select: {
               id: true,
-              name: true,
+              code: true,
+              category: true,
+              description: true,
+              system: {
+                select: {
+                  name: true,
+                },
+              },
             },
           },
         },
@@ -2469,98 +2476,33 @@ export async function getFolderContent({
   };
 }
 
-/**
- * Create a new keyword entry. For admins only.
- * @param keywordName
- * @param loggedInUserId
- * @returns id
- */
-export async function addKeywordInfo(
-  keywordName: string,
-  loggedInUserId: number,
-) {
-  await mustBeAdmin(
-    loggedInUserId,
-    "You must be an administrator to edit keyword infos",
-  );
-
-  const { id } = await prisma.keywordInfo.create({
-    data: {
-      name: keywordName,
-    },
-  });
-  return id;
-}
-
-/**
- * Edit the name of an existing keyword entry. For admins only.
- * @param keywordId
- * @param newKeywordName
- * @param loggedInUserId
- */
-export async function updateKeywordInfo(
-  keywordId: number,
-  newKeywordName: string,
-  loggedInUserId: number,
-) {
-  await mustBeAdmin(
-    loggedInUserId,
-    "You must be an administrator to edit keyword infos.",
-  );
-
-  await prisma.keywordInfo.update({
-    where: {
-      id: keywordId,
-    },
-    data: {
-      name: newKeywordName,
+// TODO: filter by an input query. For now, just returns everything.
+export async function searchPossibleClassifications() {
+  return await prisma.classifications.findMany({
+    select: {
+      id: true,
+      system: {
+        select: {
+          name: true,
+        },
+      },
+      code: true,
+      category: true,
+      description: true,
     },
   });
 }
 
 /**
- * Delete a keyword entry. All activities with this keyword attached to them will have it removed. For admins only.
- * @param keywordId
- * @param loggedInUserId
- */
-export async function deleteKeywordInfo(
-  keywordId: number,
-  loggedInUserId: number,
-) {
-  await mustBeAdmin(
-    loggedInUserId,
-    "You must be an administrator to edit keyword infos.",
-  );
-  // Delete keyword info and content tags all in one transaction, so both succeed or fail together
-  const deleteTags = prisma.contentKeyword.deleteMany({
-    where: {
-      keywordId,
-    },
-  });
-  const deleteInfo = prisma.keywordInfo.delete({
-    where: {
-      id: keywordId,
-    },
-  });
-  await prisma.$transaction([deleteTags, deleteInfo]);
-}
-
-/**
- * Get a list of all possible keywords. Returns keyword ids and names.
- */
-export async function getAllKeywords() {
-  return await prisma.keywordInfo.findMany();
-}
-
-/**
- * Add a keyword to an activity. The activity must be owned by the API caller.
+ * Add a classification to an activity. The activity must be owned by the logged in user.
+ * Activity id must be an activity, not a folder.
  * @param activityId
- * @param keywordId
+ * @param classificationId
  * @param loggedInUserId
  */
-export async function addKeywordToActivity(
+export async function addClassification(
   activityId: number,
-  keywordId: number,
+  classificationId: number,
   loggedInUserId: number,
 ) {
   const activity = await prisma.content.findUnique({
@@ -2580,23 +2522,24 @@ export async function addKeywordToActivity(
       "This activity does not exist or is not owned by this user.",
     );
   }
-  await prisma.contentKeyword.create({
+  await prisma.contentClassifications.create({
     data: {
       contentId: activityId,
-      keywordId,
+      classificationId,
     },
   });
 }
 
 /**
- * Remove a keyword from an activity. The activity must be owned by the API caller.
+ * Remove a classification to an activity. The activity must be owned by the logged in user.
+ * Activity id must be an activity, not a folder.
  * @param activityId
- * @param keywordId
+ * @param classificationId
  * @param loggedInUserId
  */
-export async function removeKeywordFromActivity(
+export async function removeClassification(
   activityId: number,
-  keywordId: number,
+  classificationId: number,
   loggedInUserId: number,
 ) {
   const activity = await prisma.content.findUnique({
@@ -2616,20 +2559,20 @@ export async function removeKeywordFromActivity(
       "This activity does not exist or is not owned by this user.",
     );
   }
-  await prisma.contentKeyword.delete({
+  await prisma.contentClassifications.delete({
     where: {
-      contentId_keywordId: { contentId: activityId, keywordId },
+      contentId_classificationId: { contentId: activityId, classificationId },
     },
   });
 }
 
 /**
- * Get all keywords on an activity. The activity must be either public or owned by
- * the API caller.
+ * Get all classifications for an activity. The activity must be either public or owned by
+ * loggedInUser.
  * @param activityId
  * @param loggedInUserId
  */
-export async function getKeywordsOnActivity(
+export async function getClassifications(
   activityId: number,
   loggedInUserId: number,
 ) {
@@ -2658,24 +2601,25 @@ export async function getKeywordsOnActivity(
     );
   }
 
-  const keywords = await prisma.contentKeyword.findMany({
+  const classifications = await prisma.contentClassifications.findMany({
     where: {
       contentId: activityId,
     },
     select: {
-      keywordId: true,
-      keyword: {
+      classification: {
         select: {
-          name: true,
+          id: true,
+          system: {
+            select: {
+              name: true,
+            },
+          },
+          code: true,
+          category: true,
+          description: true,
         },
       },
     },
   });
-  const keywordsFormatted = keywords.map((k) => {
-    return {
-      id: k.keywordId,
-      name: k.keyword.name,
-    };
-  });
-  return keywordsFormatted;
+  return classifications;
 }

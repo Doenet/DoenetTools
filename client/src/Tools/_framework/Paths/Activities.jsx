@@ -138,10 +138,10 @@ export async function action({ request, params }) {
       name,
     });
     return true;
-  } else if (formObj._action == "add keyword") {
-    await axios.post(`/api/addKeywordToActivity`, {
+  } else if (formObj._action == "add classification") {
+    await axios.post(`/api/addClassification`, {
       activityId: Number(formObj.id),
-      keywordId: 2,
+      classificationId: 2,
     });
     return true;
   } else if (formObj?._action == "noop") {

@@ -8,27 +8,27 @@ datasource db {
 }
 
 model content {
-  id               Int                @id @unique() @default(autoincrement())
+  id               Int                      @id @unique() @default(autoincrement())
   ownerId          Int
   isFolder         Boolean
   parentFolderId   Int?
   name             String
-  createdAt        DateTime           @default(now())
-  lastEdited       DateTime           @default(now())
+  createdAt        DateTime                 @default(now())
+  lastEdited       DateTime                 @default(now())
   imagePath        String?
-  isAssigned       Boolean            @default(false)
-  classCode        String?            @db.VarChar(45)
+  isAssigned       Boolean                  @default(false)
+  classCode        String?                  @db.VarChar(45)
   codeValidUntil   DateTime?
-  isPublic         Boolean            @default(false)
-  isDeleted        Boolean            @default(false)
+  isPublic         Boolean                  @default(false)
+  isDeleted        Boolean                  @default(false)
   sortIndex        BigInt
-  owner            users              @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  parentFolder     content?           @relation("folderStructure", fields: [parentFolderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  subFolders       content[]          @relation("folderStructure")
+  owner            users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  parentFolder     content?                 @relation("folderStructure", fields: [parentFolderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subFolders       content[]                @relation("folderStructure")
   documents        documents[]
   assignmentScores assignmentScores[]
   promotedContent  promotedContent[]
-  contentKeyword   contentKeyword[]
+  classifications  contentClassifications[]
 
   @@index([ownerId, parentFolderId, sortIndex])
   @@index([classCode])
@@ -181,17 +181,29 @@ model promotedContent {
   @@id([activityId, promotedGroupId])
 }
 
-model contentKeyword {
-  contentId Int
-  keywordId Int
-  content   content     @relation(fields: [contentId], references: [id])
-  keyword   keywordInfo @relation(fields: [keywordId], references: [id])
+model contentClassifications {
+  contentId        Int
+  classificationId Int
+  content          content         @relation(fields: [contentId], references: [id])
+  classification   classifications @relation(fields: [classificationId], references: [id])
 
-  @@id([contentId, keywordId])
+  @@id([contentId, classificationId])
 }
 
-model keywordInfo {
-  id             Int              @id @default(autoincrement())
-  name           String           @unique
-  contentKeyword contentKeyword[]
+model classifications {
+  id                     Int                      @id @default(autoincrement())
+  code                   String
+  systemId               Int
+  category               String                   @db.TinyText
+  description            String                   @db.Text
+  system                 classificationSystems    @relation(fields: [systemId], references: [id])
+  contentClassifications contentClassifications[]
+
+  @@unique([code, systemId])
+}
+
+model classificationSystems {
+  id              Int               @id @default(autoincrement())
+  name            String            @unique
+  classifications classifications[]
 }

@@ -78,15 +78,61 @@ async function main() {
     },
   });
 
-  const keyword1 = await prisma.keywordInfo.upsert({
-    where: { name: "Algebra" },
-    update: { name: "Algebra" },
-    create: { name: "Algebra" },
+  const classificationSystem = await prisma.classificationSystems.upsert({
+    where: { name: "Test System" },
+    update: { name: "Test System" },
+    create: { name: "Test System" },
   });
-  const keyword2 = await prisma.keywordInfo.upsert({
-    where: { name: "Complex numbers" },
-    update: { name: "Complex numbers" },
-    create: { name: "Complex numbers" },
+  const { id: systemId } = await prisma.classificationSystems.findUniqueOrThrow(
+    {
+      where: { name: "Test System" },
+      select: {
+        id: true,
+      },
+    },
+  );
+
+  const classification1 = await prisma.classifications.upsert({
+    where: {
+      code_systemId: {
+        code: "Add and subtract multiples of x",
+        systemId: systemId,
+      },
+    },
+    update: {
+      code: "Add and subtract multiples of x",
+      category: "Algebra",
+      description:
+        "Used for content that involves learning elementary algebra.",
+      systemId,
+    },
+    create: {
+      code: "Add and subtract multiples of x",
+      category: "Algebra",
+      description:
+        "Used for content that involves learning elementary algebra.",
+      systemId,
+    },
+  });
+
+  const classification2 = await prisma.classifications.upsert({
+    where: {
+      code_systemId: { code: "Adding complex numbers", systemId: systemId },
+    },
+    update: {
+      code: "Adding complex numbers",
+      category: "Pre-Calculus",
+      description:
+        "Some description about learning to use complex numbers in 10th grade or so.",
+      systemId,
+    },
+    create: {
+      code: "Adding complex numbers",
+      category: "Pre-Calculus",
+      description:
+        "Some description about learning to use complex numbers in 10th grade or so.",
+      systemId,
+    },
   });
 
   console.log({
@@ -98,8 +144,8 @@ async function main() {
     group_sample,
     group_k12,
     group_unfeatured,
-    keyword1,
-    keyword2,
+    classification1,
+    classification2,
   });
 }
 main()

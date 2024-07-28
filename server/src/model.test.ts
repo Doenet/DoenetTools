@@ -46,13 +46,10 @@ import {
   moveContent,
   deleteFolder,
   getAssignedScores,
-  addKeywordInfo,
-  getAllKeywords,
-  updateKeywordInfo,
-  deleteKeywordInfo,
-  addKeywordToActivity,
-  getKeywordsOnActivity,
-  removeKeywordFromActivity,
+  searchPossibleClassifications,
+  addClassification,
+  getClassifications,
+  removeClassification,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -92,6 +89,7 @@ test("New user has no content", async () => {
     content: [],
     name: "vitest user",
     notMe: false,
+    parentFolderId: null,
   });
 });
 
@@ -3908,98 +3906,60 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   ]);
 });
 
-test("Only admins can edit keyword list", async () => {
-  const { userId: adminId } = await createTestAdminUser();
-  const { userId } = await createTestUser();
-  const newKeyword = "vitest-keyword-" + new Date().toJSON();
-
-  // Add
-  await expect(() => addKeywordInfo(newKeyword, userId)).rejects.toThrowError(
-    "admin",
-  );
-  const keywordId = await addKeywordInfo(newKeyword, adminId);
-  {
-    const allKeywords = await getAllKeywords();
-    expect(allKeywords).toContainEqual({
-      id: keywordId,
-      name: newKeyword,
-    });
-  }
-
-  // Update
-  const secondKeyword = newKeyword + "-EDITED";
-  await expect(() =>
-    updateKeywordInfo(keywordId, secondKeyword, userId),
-  ).rejects.toThrowError("admin");
-  await updateKeywordInfo(keywordId, secondKeyword, adminId);
-  {
-    const allKeywords = await getAllKeywords();
-    expect(allKeywords).toContainEqual({
-      id: keywordId,
-      name: secondKeyword,
-    });
-  }
-
-  // Remove
-  await expect(() => deleteKeywordInfo(keywordId, userId)).rejects.toThrowError(
-    "admin",
-  );
-  await deleteKeywordInfo(keywordId, adminId);
-  {
-    const allKeywords = await getAllKeywords();
-    expect(allKeywords).not.toContainEqual({
-      id: keywordId,
-      name: secondKeyword,
-    });
-  }
-});
-
-test("Activity keywords can only be edited by activity owner", async () => {
+test("Content classifications can only be edited by activity owner", async () => {
   const { userId } = await createTestUser();
   const { userId: otherId } = await createTestUser();
-  const allKeywords = await getAllKeywords();
-  const { id: keywordAlgebraId } = allKeywords.find(
-    (k) => k.name === "Algebra",
+  const allClassifications = await searchPossibleClassifications();
+  const { id: classificationAlgebraId } = allClassifications.find(
+    (k) => k.code === "Add and subtract multiples of x",
   )!;
   const { activityId } = await createActivity(userId, null);
 
   // Add
   await expect(() =>
-    addKeywordToActivity(activityId, keywordAlgebraId, otherId),
+    addClassification(activityId, classificationAlgebraId, otherId),
   ).rejects.toThrowError();
-  await addKeywordToActivity(activityId, keywordAlgebraId, userId);
+  await addClassification(activityId, classificationAlgebraId, userId);
   {
-    const keywords = await getKeywordsOnActivity(activityId, userId);
-    expect(keywords).toEqual([{ id: keywordAlgebraId, name: "Algebra" }]);
+    const classifications = await getClassifications(activityId, userId);
+    expect(classifications.length).toBe(1);
+    expect(classifications[0].classification).toHaveProperty(
+      "code",
+      "Add and subtract multiples of x",
+    );
+    expect(classifications[0].classification).toHaveProperty(
+      "id",
+      classificationAlgebraId,
+    );
   }
 
   // Remove
   await expect(() =>
-    removeKeywordFromActivity(activityId, keywordAlgebraId, otherId),
+    removeClassification(activityId, classificationAlgebraId, otherId),
   ).rejects.toThrowError();
-  await removeKeywordFromActivity(activityId, keywordAlgebraId, userId);
+  await removeClassification(activityId, classificationAlgebraId, userId);
   {
-    const keywords = await getKeywordsOnActivity(activityId, userId);
-    expect(keywords).toEqual([]);
+    const classifications = await getClassifications(activityId, userId);
+    expect(classifications).toEqual([]);
   }
 });
 
-test("Get keywords of public activity", async () => {
+test("Get classifications of public activity", async () => {
   const { userId: ownerId } = await createTestUser();
-  const allKeywords = await getAllKeywords();
+  const allClassifications = await searchPossibleClassifications();
   const { activityId } = await createActivity(ownerId, null);
-  const { id: keywordAlgebraId } = allKeywords.find(
-    (k) => k.name === "Algebra",
+  const { id: classificationAlgebraId } = allClassifications.find(
+    (k) => k.code === "Add and subtract multiples of x",
   )!;
-  const { id: keywordComplexNumId } = allKeywords.find(
-    (k) => k.name === "Complex numbers",
+  const { id: classificationComplexNumId } = allClassifications.find(
+    (k) => k.code === "Adding complex numbers",
   )!;
-  await addKeywordToActivity(activityId, keywordAlgebraId, ownerId);
-  await addKeywordToActivity(activityId, keywordComplexNumId, ownerId);
+  await addClassification(activityId, classificationAlgebraId, ownerId);
+  await addClassification(activityId, classificationComplexNumId, ownerId);
 
   const { userId: viewerId } = await createTestUser();
   await expect(() =>
-    getKeywordsOnActivity(activityId, viewerId),
+    getClassifications(activityId, viewerId),
   ).rejects.toThrowError("cannot be accessed");
 
   await updateContent({
@@ -4007,9 +3967,6 @@ test("Get keywords of public activity", async () => {
     isPublic: true,
     ownerId,
   });
-  const keywords = await getKeywordsOnActivity(activityId, viewerId);
-  expect(keywords).toEqual([
-    { id: keywordAlgebraId, name: "Algebra" },
-    { id: keywordComplexNumId, name: "Complex numbers" },
-  ]);
+  const classifications = await getClassifications(activityId, viewerId);
+  expect(classifications.length).toBe(2);
 });
