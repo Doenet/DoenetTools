@@ -56,6 +56,10 @@ import {
   getPublicEditorData,
   unassignActivity,
   updateAssignmentSettings,
+  getAllLicenses,
+  makeContentPrivate,
+  makeContentPublic,
+  LicenseCode,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -300,15 +304,55 @@ app.post(
 );
 
 app.post(
-  "/api/updateIsPublicContent",
+  "/api/makeContentPublic",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
     const id = Number(body.id);
-    const isPublic = Boolean(body.isPublic);
+
+    let licenseCode: LicenseCode | undefined;
+
+    if (body.licenseCode) {
+      let requestedCode: string = body.licenseCode;
+      switch (requestedCode) {
+        case "CCDUAL":
+        case "CCBYSA":
+        case "CCBYNCSA": {
+          licenseCode = requestedCode;
+          break;
+        }
+        default: {
+          return res.status(400).send("Invalid license code");
+        }
+      }
+    }
+
     try {
-      await updateContent({ id, isPublic, ownerId: loggedInUserId });
-      res.send({});
+      let data = await makeContentPublic({
+        id,
+        ownerId: loggedInUserId,
+        licenseCode,
+      });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/makeContentPrivate",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const body = req.body;
+    const id = Number(body.id);
+    try {
+      let data = await makeContentPrivate({ id, ownerId: loggedInUserId });
+      res.send(data);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(403);
@@ -596,6 +640,11 @@ app.get("/api/getAllDoenetmlVersions", async (req: Request, res: Response) => {
   res.send(allDoenetmlVersions);
 });
 
+app.get("/api/getAllLicenses", async (req: Request, res: Response) => {
+  const allLicenses = await getAllLicenses();
+  res.send(allLicenses);
+});
+
 app.get(
   "/api/getActivityView/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -680,13 +729,11 @@ app.post(
     const name = body.name;
     // TODO - deal with learning outcomes
     const learningOutcomes = body.learningOutcomes;
-    const isPublic = body.isPublic;
     try {
       await updateContent({
         id,
         imagePath,
         name,
-        isPublic,
         ownerId: loggedInUserId,
       });
       res.send({});
@@ -1206,7 +1253,8 @@ app.get(
       });
 
       const allDoenetmlVersions = await getAllDoenetmlVersions();
-      res.send({ allDoenetmlVersions, ...contentData });
+      const allLicenses = await getAllLicenses();
+      res.send({ allDoenetmlVersions, allLicenses, ...contentData });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
@@ -1229,7 +1277,8 @@ app.get(
         loggedInUserId,
       });
       const allDoenetmlVersions = await getAllDoenetmlVersions();
-      res.send({ allDoenetmlVersions, ...contentData });
+      const allLicenses = await getAllLicenses();
+      res.send({ allDoenetmlVersions, allLicenses, ...contentData });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);

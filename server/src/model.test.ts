@@ -51,6 +51,12 @@ import {
   searchUsersWithPublicContent,
   ActivityStructure,
   updateAssignmentSettings,
+  getLicense,
+  getAllLicenses,
+  makeContentPublic,
+  License,
+  makeContentPrivate,
+  setLicense,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -130,6 +136,7 @@ test("New activity starts out private, then delete it", async () => {
     assignmentStatus: "Unassigned",
     classCode: null,
     codeValidUntil: null,
+    license: null,
     documents: [
       {
         id: docId,
@@ -218,34 +225,34 @@ test("getMyFolderContent returns both public and private content, getPublicFolde
   );
 
   // Make items public
-  await updateContent({
+  await makeContentPublic({
     id: publicActivity1Id,
-    isPublic: true,
+    licenseCode: "CCDUAL",
     ownerId,
   });
-  await updateContent({
+  await makeContentPublic({
     id: publicActivity2Id,
-    isPublic: true,
+    licenseCode: "CCDUAL",
     ownerId,
   });
-  await updateContent({
+  await makeContentPublic({
     id: publicActivity3Id,
-    isPublic: true,
+    licenseCode: "CCDUAL",
     ownerId,
   });
-  await updateContent({
+  await makeContentPublic({
     id: publicFolder1Id,
-    isPublic: true,
+    licenseCode: "CCDUAL",
     ownerId,
   });
-  await updateContent({
+  await makeContentPublic({
     id: publicFolder2Id,
-    isPublic: true,
+    licenseCode: "CCDUAL",
     ownerId,
   });
-  await updateContent({
+  await makeContentPublic({
     id: publicFolder3Id,
-    isPublic: true,
+    licenseCode: "CCDUAL",
     ownerId,
   });
 
@@ -1083,10 +1090,10 @@ test("copyActivityToFolder copies a public document to a new owner", async () =>
   ).rejects.toThrow("No content found");
 
   // Make the activity public before copying
-  await updateContent({
+  await makeContentPublic({
     id: activityId,
-    isPublic: true,
     ownerId: originalOwnerId,
+    licenseCode: "CCDUAL",
   });
   const newActivityId = await copyActivityToFolder(
     activityId,
@@ -1117,10 +1124,10 @@ test("copyActivityToFolder remixes correct versions", async () => {
     null,
   );
   const activity1Content = "<p>Hello!</p>";
-  await updateContent({
+  await makeContentPublic({
     id: activityId1,
-    isPublic: true,
     ownerId: ownerId1,
+    licenseCode: "CCDUAL",
   });
   await updateDoc({
     id: docId1,
@@ -1180,7 +1187,11 @@ test("searchPublicContent returns public activities and folders matching the que
   await updateContent({
     id: publicActivityId,
     name: publicActivityName,
-    isPublic: true,
+    ownerId,
+  });
+  await makeContentPublic({
+    id: publicActivityId,
+    licenseCode: "CCDUAL",
     ownerId,
   });
 
@@ -1195,7 +1206,11 @@ test("searchPublicContent returns public activities and folders matching the que
   await updateContent({
     id: publicFolderId,
     name: publicFolderName,
-    isPublic: true,
+    ownerId,
+  });
+  await makeContentPublic({
+    id: publicFolderId,
+    licenseCode: "CCDUAL",
     ownerId,
   });
 
@@ -1237,7 +1252,11 @@ test("searchPublicContent returns public folders and public content even in a pr
   await updateContent({
     id: publicActivityId,
     name: publicActivityName,
-    isPublic: true,
+    ownerId,
+  });
+  await makeContentPublic({
+    id: publicActivityId,
+    licenseCode: "CCDUAL",
     ownerId,
   });
 
@@ -1258,7 +1277,11 @@ test("searchPublicContent returns public folders and public content even in a pr
   await updateContent({
     id: publicFolderId,
     name: publicFolderName,
-    isPublic: true,
+    ownerId,
+  });
+  await makeContentPublic({
+    id: publicFolderId,
+    licenseCode: "CCDUAL",
     ownerId,
   });
 
@@ -1301,14 +1324,22 @@ test("searchUsersWithPublicContent returns only users with public content", asyn
     owner2Id,
     folder2aId,
   );
-  await updateContent({ id: activity2aId, ownerId: owner2Id, isPublic: true });
+  await makeContentPublic({
+    id: activity2aId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
 
   // owner 3 has a public folder
   const owner3 = await createTestUser();
   const owner3Id = owner3.userId;
 
   const { folderId: folder3aId } = await createFolder(owner3Id, null);
-  await updateContent({ id: folder3aId, ownerId: owner3Id, isPublic: true });
+  await makeContentPublic({
+    id: folder3aId,
+    ownerId: owner3Id,
+    licenseCode: "CCDUAL",
+  });
 
   // cannot find owner1
   let searchResults = await searchUsersWithPublicContent(owner1.lastNames);
@@ -1399,7 +1430,11 @@ test("add and remove promoted content", async () => {
   }
 
   // Can promote public activity to that group
-  await updateContent({ id: activityId, isPublic: true, ownerId: userId });
+  await makeContentPublic({
+    id: activityId,
+    licenseCode: "CCDUAL",
+    ownerId: userId,
+  });
   await addPromotedContent(groupId, activityId, userId);
   {
     const promotedContent = await loadPromotedContent(userId);
@@ -1472,14 +1507,14 @@ test("delete promoted content group", async () => {
   const { userId } = await createTestAdminUser();
   const { activityId: activity1 } = await createActivity(userId, null);
   const { activityId: activity2 } = await createActivity(userId, null);
-  await updateContent({
+  await makeContentPublic({
     id: activity1,
-    isPublic: true,
+    licenseCode: "CCDUAL",
     ownerId: userId,
   });
-  await updateContent({
+  await makeContentPublic({
     id: activity2,
-    isPublic: true,
+    licenseCode: "CCDUAL",
     ownerId: userId,
   });
 
@@ -1582,7 +1617,11 @@ test("move promoted content", async () => {
 
   // add first activity
   const { activityId: activity1Id } = await createActivity(userId, null);
-  await updateContent({ id: activity1Id, isPublic: true, ownerId: userId });
+  await makeContentPublic({
+    id: activity1Id,
+    licenseCode: "CCDUAL",
+    ownerId: userId,
+  });
   await addPromotedContent(groupId, activity1Id, userId);
   let promotedContent = await loadPromotedContent(userId);
   let myContent = promotedContent.find(
@@ -1592,7 +1631,11 @@ test("move promoted content", async () => {
 
   // add second activity
   const { activityId: activity2Id } = await createActivity(userId, null);
-  await updateContent({ id: activity2Id, isPublic: true, ownerId: userId });
+  await makeContentPublic({
+    id: activity2Id,
+    licenseCode: "CCDUAL",
+    ownerId: userId,
+  });
   await addPromotedContent(groupId, activity2Id, userId);
   promotedContent = await loadPromotedContent(userId);
   myContent = promotedContent.find(
@@ -1612,7 +1655,11 @@ test("move promoted content", async () => {
 
   // add third activity
   const { activityId: activity3Id } = await createActivity(userId, null);
-  await updateContent({ id: activity3Id, isPublic: true, ownerId: userId });
+  await makeContentPublic({
+    id: activity3Id,
+    licenseCode: "CCDUAL",
+    ownerId: userId,
+  });
   await addPromotedContent(groupId, activity3Id, userId);
   promotedContent = await loadPromotedContent(userId);
   myContent = promotedContent.find(
@@ -1649,9 +1696,9 @@ test("promoted content access control", async () => {
   const { activityId } = await createActivity(userId, null);
   const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
   const { activityId: promotedActivityId } = await createActivity(userId, null);
-  await updateContent({
+  await makeContentPublic({
     id: promotedActivityId,
-    isPublic: true,
+    licenseCode: "CCDUAL",
     ownerId: userId,
   });
   const { userId: adminId } = await createTestAdminUser();
@@ -1751,7 +1798,11 @@ test("cannot assign other user's activity", async () => {
   );
 
   // still cannot create assignment even if activity is made public
-  await updateContent({ id: activityId, isPublic: true, ownerId: ownerId1 });
+  await makeContentPublic({
+    id: activityId,
+    licenseCode: "CCDUAL",
+    ownerId: ownerId1,
+  });
 
   await expect(assignActivity(activityId, ownerId2)).rejects.toThrow(
     "No content found",
@@ -1917,7 +1968,7 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
       source: "Some content",
       ownerId: userId2,
     }),
-  ).rejects.toThrow("Record to update not found");
+  ).rejects.toThrow("No content found");
 
   await updateContent({ id: activityId, name: "Activity 1", ownerId });
   await updateDoc({
@@ -2473,9 +2524,13 @@ test("get public activity editor data only if public", async () => {
 
   await updateContent({
     id: activityId,
-    isPublic: true,
     ownerId,
     name: "Some content",
+  });
+  await makeContentPublic({
+    id: activityId,
+    licenseCode: "CCDUAL",
+    ownerId,
   });
   const doenetML = "hi!";
   await updateDoc({ id: docId, source: doenetML, ownerId });
@@ -2486,7 +2541,7 @@ test("get public activity editor data only if public", async () => {
   expect(publicData.documents[0].source).eq(doenetML);
 });
 
-test.only("activity editor data and my folder contents before and after assigned", async () => {
+test("activity editor data and my folder contents before and after assigned", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const { activityId, docId } = await createActivity(ownerId, null);
@@ -2502,6 +2557,7 @@ test.only("activity editor data and my folder contents before and after assigned
     assignmentStatus: "Unassigned",
     classCode: null,
     codeValidUntil: null,
+    license: null,
     documents: [
       {
         id: docId,
@@ -2545,6 +2601,7 @@ test.only("activity editor data and my folder contents before and after assigned
     assignmentStatus: "Open",
     classCode,
     codeValidUntil: closeAt.toJSDate(),
+    license: null,
     documents: [
       {
         id: docId,
@@ -2585,6 +2642,7 @@ test.only("activity editor data and my folder contents before and after assigned
     assignmentStatus: "Unassigned",
     classCode,
     codeValidUntil: null,
+    license: null,
     documents: [
       {
         id: docId,
@@ -2631,6 +2689,7 @@ test.only("activity editor data and my folder contents before and after assigned
     assignmentStatus: "Open",
     classCode,
     codeValidUntil: closeAt.toJSDate(),
+    license: null,
     documents: [
       {
         id: docId,
@@ -2680,6 +2739,7 @@ test.only("activity editor data and my folder contents before and after assigned
     assignmentStatus: "Open",
     classCode,
     codeValidUntil: closeAt.toJSDate(),
+    license: null,
     documents: [
       {
         id: docId,
@@ -2720,6 +2780,7 @@ test.only("activity editor data and my folder contents before and after assigned
     assignmentStatus: "Closed",
     classCode,
     codeValidUntil: null,
+    license: null,
     documents: [
       {
         id: docId,
@@ -4321,5 +4382,126 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
         lastNames: newUser3!.lastNames,
       },
     },
+  ]);
+});
+
+test("get licenses", async () => {
+  let cc_by_sa = await getLicense("CCBYSA");
+  expect(cc_by_sa.name).eq("Creative Commons Attribution-ShareAlike");
+  expect(cc_by_sa.imageUrls).eqls(["/creative_commons_by_sa.png"]);
+  expect(cc_by_sa.licenseUrls).eqls([
+    "https://creativecommons.org/licenses/by-sa/4.0/",
+  ]);
+
+  let cc_by_nc_sa = await getLicense("CCBYNCSA");
+  expect(cc_by_nc_sa.name).eq(
+    "Creative Commons Attribution-NonCommercial-ShareAlike",
+  );
+  expect(cc_by_nc_sa.imageUrls).eqls(["/creative_commons_by_nc_sa.png"]);
+  expect(cc_by_nc_sa.licenseUrls).eqls([
+    "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  ]);
+
+  let cc_dual = await getLicense("CCDUAL");
+  expect(cc_dual.name).eq(
+    "Dual license Creative Commons Attribution-ShareAlike OR Attribution-NonCommercial-ShareAlike",
+  );
+  expect(cc_dual.imageUrls).eqls([
+    "/creative_commons_by_sa.png",
+    "/creative_commons_by_nc_sa.png",
+  ]);
+  expect(cc_dual.licenseUrls).eqls([
+    "https://creativecommons.org/licenses/by-sa/4.0/",
+    "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  ]);
+
+  let all = await getAllLicenses();
+  expect(all.map((x) => x.code)).eqls(["CCDUAL", "CCBYSA", "CCBYNCSA"]);
+});
+
+test("set license to make public", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId } = await createActivity(ownerId, null);
+
+  // cannot make it public with specifying license
+  const try_public_no_license = await makeContentPublic({
+    id: activityId,
+    ownerId,
+  });
+  expect(try_public_no_license.missingLicense).eq(true);
+  expect(try_public_no_license.isPublic).eq(false);
+  let activityData = await getActivityEditorData(activityId, ownerId);
+  expect(activityData.isPublic).eq(false);
+
+  // make public with CCBYSA license
+  const public_ccbysa = await makeContentPublic({
+    id: activityId,
+    ownerId,
+    licenseCode: "CCBYSA",
+  });
+  expect(public_ccbysa.missingLicense).eq(false);
+  expect(public_ccbysa.isPublic).eq(true);
+  activityData = await getActivityEditorData(activityId, ownerId);
+  expect(activityData.isPublic).eq(true);
+
+  expect(activityData.license?.code).eq("CCBYSA");
+  expect(activityData.license?.name).eq(
+    "Creative Commons Attribution-ShareAlike",
+  );
+  expect(activityData.license?.licenseUrls).eqls([
+    "https://creativecommons.org/licenses/by-sa/4.0/",
+  ]);
+  expect(activityData.license?.imageUrls).eqls(["/creative_commons_by_sa.png"]);
+
+  // make private
+  const make_private = await makeContentPrivate({ id: activityId, ownerId });
+  expect(make_private.isPublic).eq(false);
+  activityData = await getActivityEditorData(activityId, ownerId);
+  expect(activityData.isPublic).eq(false);
+
+  // make public with CCBYNCSA license
+  const public_ccbyncsa = await makeContentPublic({
+    id: activityId,
+    ownerId,
+    licenseCode: "CCBYNCSA",
+  });
+  expect(public_ccbysa.missingLicense).eq(false);
+  expect(public_ccbysa.isPublic).eq(true);
+  activityData = await getActivityEditorData(activityId, ownerId);
+  expect(activityData.isPublic).eq(true);
+
+  expect(activityData.license?.code).eq("CCBYNCSA");
+  expect(activityData.license?.name).eq(
+    "Creative Commons Attribution-NonCommercial-ShareAlike",
+  );
+  expect(activityData.license?.licenseUrls).eqls([
+    "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  ]);
+  expect(activityData.license?.imageUrls).eqls([
+    "/creative_commons_by_nc_sa.png",
+  ]);
+
+  // switch license to dual
+  await setLicense({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+
+  activityData = await getActivityEditorData(activityId, ownerId);
+  expect(activityData.isPublic).eq(true);
+
+  expect(activityData.license?.code).eq("CCDUAL");
+  expect(activityData.license?.name).eq(
+    "Dual license Creative Commons Attribution-ShareAlike OR Attribution-NonCommercial-ShareAlike",
+  );
+  expect(activityData.license?.licenseUrls).eqls([
+    "https://creativecommons.org/licenses/by-sa/4.0/",
+    "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  ]);
+  expect(activityData.license?.imageUrls).eqls([
+    "/creative_commons_by_sa.png",
+    "/creative_commons_by_nc_sa.png",
   ]);
 });

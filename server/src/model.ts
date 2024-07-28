@@ -24,6 +24,7 @@ export type ActivityStructure = {
   classCode: string | null;
   codeValidUntil: Date | null;
   isPublic: boolean;
+  license: License | null;
   documents: {
     id: number;
     versionNum?: number;
@@ -34,6 +35,16 @@ export type ActivityStructure = {
   assignmentStatus: AssignmentStatus;
   hasScoreData: boolean;
   notMe?: boolean;
+};
+
+export type LicenseCode = "CCDUAL" | "CCBYSA" | "CCBYNCSA";
+
+export type License = {
+  code: LicenseCode;
+  name: string;
+  description: string;
+  imageUrls: string[];
+  licenseUrls: string[];
 };
 
 export class InvalidRequestError extends Error {
@@ -232,21 +243,18 @@ export async function updateContent({
   id,
   name,
   imagePath,
-  isPublic,
   ownerId,
 }: {
   id: number;
   name?: string;
   imagePath?: string;
-  isPublic?: boolean;
   ownerId: number;
 }) {
   const updated = await prisma.content.update({
-    where: { id, ownerId },
+    where: { id, ownerId, isDeleted: false },
     data: {
       name,
       imagePath,
-      isPublic,
     },
   });
 
@@ -254,7 +262,6 @@ export async function updateContent({
     id: updated.id,
     name: updated.name,
     imagePath: updated.imagePath,
-    isPublic: updated.isPublic,
   };
 }
 
@@ -274,7 +281,11 @@ export async function updateDoc({
   // check if activity is assigned
   const isAssigned = (
     await prisma.content.findFirstOrThrow({
-      where: { documents: { some: { id } } },
+      where: {
+        ownerId,
+        isDeleted: false,
+        documents: { some: { id, isDeleted: false } },
+      },
     })
   ).isAssigned;
 
@@ -751,6 +762,7 @@ export async function getActivityEditorData(
       classCode: null,
       codeValidUntil: null,
       isPublic: content_check.isPublic,
+      license: null,
       documents: [],
       assignmentStatus: "Unassigned",
       hasScoreData: false,
@@ -782,6 +794,14 @@ export async function getActivityEditorData(
         classCode: true,
         codeValidUntil: true,
         isPublic: true,
+        license: {
+          include: {
+            composedOf: {
+              select: { composedOf: true },
+              orderBy: { composedOf: { sortIndex: "asc" } },
+            },
+          },
+        },
         documents: {
           select: {
             id: true,
@@ -814,6 +834,9 @@ export async function getActivityEditorData(
       classCode: assignedActivity.classCode,
       codeValidUntil: assignedActivity.codeValidUntil,
       isPublic: assignedActivity.isPublic,
+      license: assignedActivity.license
+        ? processLicense(assignedActivity.license)
+        : null,
       documents: assignedActivity.documents.map((doc) => ({
         id: doc.id,
         versionNum: doc.assignedVersion!.versionNum,
@@ -842,6 +865,14 @@ export async function getActivityEditorData(
         classCode: true,
         codeValidUntil: true,
         isPublic: true,
+        license: {
+          include: {
+            composedOf: {
+              select: { composedOf: true },
+              orderBy: { composedOf: { sortIndex: "asc" } },
+            },
+          },
+        },
         documents: {
           select: {
             name: true,
@@ -857,6 +888,9 @@ export async function getActivityEditorData(
 
     activity = {
       ...unassignedActivity,
+      license: unassignedActivity.license
+        ? processLicense(unassignedActivity.license)
+        : null,
       assignmentStatus: "Unassigned",
       hasScoreData: false,
       notMe: false,
@@ -2658,6 +2692,14 @@ export async function getMyFolderContent({
       isAssigned: true,
       classCode: true,
       codeValidUntil: true,
+      license: {
+        include: {
+          composedOf: {
+            select: { composedOf: true },
+            orderBy: { composedOf: { sortIndex: "asc" } },
+          },
+        },
+      },
       documents: { select: { id: true, doenetmlVersion: true } },
       _count: { select: { assignmentScores: true } },
     },
@@ -2676,6 +2718,7 @@ export async function getMyFolderContent({
         : "Open";
     return {
       ...activity,
+      license: activity.license ? processLicense(activity.license) : null,
       assignmentStatus,
       hasScoreData: _count.assignmentScores > 0,
     };
@@ -2776,4 +2819,159 @@ export async function getPublicFolderContent({
     owner,
     folder,
   };
+}
+
+export async function getLicense(code: string) {
+  const preliminary_license = await prisma.licenses.findUniqueOrThrow({
+    where: { code },
+    include: {
+      composedOf: {
+        select: { composedOf: true },
+        orderBy: { composedOf: { sortIndex: "asc" } },
+      },
+    },
+  });
+
+  const license = processLicense(preliminary_license);
+  return license;
+}
+
+export async function getAllLicenses() {
+  const preliminary_licenses = await prisma.licenses.findMany({
+    include: {
+      composedOf: {
+        select: { composedOf: true },
+        orderBy: { composedOf: { sortIndex: "asc" } },
+      },
+    },
+    orderBy: { sortIndex: "asc" },
+  });
+
+  const licenses = preliminary_licenses.map(processLicense);
+  return licenses;
+}
+
+function processLicense(
+  preliminary_license: {
+    composedOf: {
+      composedOf: {
+        code: string;
+        name: string;
+        description: string;
+        imageURL: string | null;
+        licenseURL: string | null;
+        sortIndex: number;
+      };
+    }[];
+  } & {
+    code: string;
+    name: string;
+    description: string;
+    imageURL: string | null;
+    licenseURL: string | null;
+    sortIndex: number;
+  },
+): License {
+  if (preliminary_license.composedOf.length > 0) {
+    return {
+      code: preliminary_license.code as LicenseCode,
+      name: preliminary_license.name,
+      description: preliminary_license.description,
+      imageUrls: preliminary_license.composedOf
+        .map((comp) => comp.composedOf.imageURL)
+        .filter((comp) => comp !== null),
+      licenseUrls: preliminary_license.composedOf
+        .map((comp) => comp.composedOf.licenseURL)
+        .filter((comp) => comp !== null),
+    };
+  } else {
+    return {
+      code: preliminary_license.code as LicenseCode,
+      name: preliminary_license.name,
+      description: preliminary_license.description,
+      imageUrls: preliminary_license.imageURL
+        ? [preliminary_license.imageURL]
+        : [],
+      licenseUrls: preliminary_license.licenseURL
+        ? [preliminary_license.licenseURL]
+        : [],
+    };
+  }
+}
+
+export async function setLicense({
+  contentId,
+  loggedInUserId,
+  licenseCode,
+}: {
+  contentId: number;
+  loggedInUserId: number;
+  licenseCode: LicenseCode;
+}) {
+  await prisma.content.update({
+    where: {
+      id: contentId,
+      ownerId: loggedInUserId,
+      isDeleted: false,
+    },
+    data: {
+      licenseCode,
+    },
+  });
+}
+
+export async function makeContentPublic({
+  id,
+  ownerId,
+  licenseCode,
+}: {
+  id: number;
+  ownerId: number;
+  licenseCode?: LicenseCode;
+}) {
+  // if don't specify a license code,
+  // then content must already have a license if it is an activity
+  if (!licenseCode) {
+    let original_content = await prisma.content.findUniqueOrThrow({
+      where: { id, isDeleted: false, ownerId },
+      select: {
+        licenseCode: true,
+        isFolder: true,
+        isPublic: true,
+      },
+    });
+
+    if (
+      original_content.isFolder === false &&
+      original_content.licenseCode === null
+    ) {
+      return {
+        id,
+        isPublic: original_content.isPublic,
+        missingLicense: true,
+      };
+    }
+  }
+
+  const updated = await prisma.content.update({
+    where: { id, isDeleted: false, ownerId: ownerId },
+    data: { isPublic: true, licenseCode },
+  });
+
+  return { id: updated.id, isPublic: updated.isPublic, missingLicense: false };
+}
+
+export async function makeContentPrivate({
+  id,
+  ownerId,
+}: {
+  id: number;
+  ownerId: number;
+}) {
+  const updated = await prisma.content.update({
+    where: { id, isDeleted: false, ownerId },
+    data: { isPublic: false },
+  });
+
+  return { id: updated.id, isPublic: updated.isPublic };
 }
