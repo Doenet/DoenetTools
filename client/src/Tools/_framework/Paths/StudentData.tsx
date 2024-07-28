@@ -13,12 +13,14 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
+import { createFullName } from "../../../_utils/names";
 
-type userData = {
+type UserData = {
   userId: number;
-  name: string;
+  firstNames: string | null;
+  lastNames: string;
 };
-type orderedActivityScore = {
+type OrderedActivityScore = {
   activityId: number;
   activityName: string;
   score: number;
@@ -46,13 +48,13 @@ export async function assignedDataloader() {
 
 export function StudentData() {
   const { userData, scores, isAssignedData } = useLoaderData() as {
-    userData: userData;
-    scores: orderedActivityScore[];
+    userData: UserData;
+    scores: OrderedActivityScore[];
     isAssignedData: boolean;
   };
 
   useEffect(() => {
-    document.title = `${userData.name}'s Assignments`;
+    document.title = `${createFullName(userData)}'s Assignments`;
   });
 
   const linkStyle = {
@@ -62,15 +64,19 @@ export function StudentData() {
 
   return (
     <>
-      <Heading heading={`${userData.name}'s Assignments`} />
+      <Heading heading={`${createFullName(userData)}'s Assignments`} />
 
       <Heading subheading="Score summary" />
       <TableContainer>
         <Table>
           <Thead>
             <Tr>
-              <Th>Assignment</Th>
-              <Th>Score</Th>
+              <Th textTransform={"none"} fontSize="large">
+                Assignment
+              </Th>
+              <Th textTransform={"none"} fontSize="large">
+                Score
+              </Th>
             </Tr>
           </Thead>
           <Tbody>

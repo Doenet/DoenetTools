@@ -11,11 +11,13 @@ import {
   Th,
   Tbody,
   Td,
-  Link,
+  Link as ChakraLink,
   Box,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
+import { Link as ReactRouterLink } from "react-router-dom";
+import { createFullName } from "../../../_utils/names";
 
 export async function action({ params, request }) {
   return null;
@@ -25,20 +27,20 @@ export async function loader({ params, request }) {
   const answerId = url.searchParams.get("answerId");
 
   const { data } = await axios.get(
-    `/api/getSubmittedResponses/${params.assignmentId}/${params.docId}/${
-      params.docVersionId
+    `/api/getSubmittedResponses/${params.activityId}/${params.docId}/${
+      params.docVersionNum
     }?answerId=${encodeURIComponent(answerId)}`,
   );
 
-  let assignmentId = Number(params.assignmentId);
+  let activityId = Number(params.activityId);
   let docId = Number(params.docId);
-  let docVersionId = Number(params.docVersionId);
-  let assignment = data.assignment;
+  let docVersionNum = Number(params.docVersionNum);
+  let activityName = data.activityName;
 
   // sort response data by user name
   let responseData = data.submittedResponses.toSorted((a, b) => {
-    const name1 = a.userName.toLowerCase();
-    const name2 = b.userName.toLowerCase();
+    const name1 = createFullName(a).toLowerCase();
+    const name2 = createFullName(b).toLowerCase();
     if (name1 > name2) {
       return 1;
     }
@@ -51,26 +53,26 @@ export async function loader({ params, request }) {
   return {
     answerId,
     docId,
-    docVersionId,
-    assignment,
+    docVersionNum,
+    activityName,
     responseData,
-    assignmentId,
+    activityId,
   };
 }
 
 export function AssignmentAnswerResponses() {
   const {
-    assignmentId,
+    activityId,
     docId,
-    docVersionId,
+    docVersionNum,
     answerId,
-    assignment,
+    activityName,
     responseData,
   } = useLoaderData();
 
   useEffect(() => {
-    document.title = `${assignment.name} - Doenet`;
-  }, [assignment.name]);
+    document.title = `${activityName} - Doenet`;
+  }, [activityName]);
 
   const [responses, setResponses] = useState([]);
   const [showNames, setShowNames] = useState(false);
@@ -91,17 +93,18 @@ export function AssignmentAnswerResponses() {
   return (
     <>
       <Box style={{ marginTop: 15, marginLeft: 15 }}>
-        <Link
-          href={`/assignmentData/${assignmentId}`}
+        <ChakraLink
+          as={ReactRouterLink}
+          to={`/assignmentData/${activityId}`}
           style={{
             color: "var(--mainBlue)",
           }}
         >
           {" "}
           &lt; Back to assignment data
-        </Link>
+        </ChakraLink>
       </Box>
-      <Heading heading={assignment.name} />
+      <Heading heading={activityName} />
 
       <Heading
         subheading={`${bestOrLatest} responses submitted for ${answerId}`}
@@ -128,10 +131,18 @@ export function AssignmentAnswerResponses() {
         <Table>
           <Thead>
             <Tr>
-              <Th>Name</Th>
-              <Th>{bestOrLatest} Response</Th>
-              <Th>{bestOrLatest} Percent correct</Th>
-              <Th>Number of responses</Th>
+              <Th textTransform={"none"} fontSize="large">
+                Name
+              </Th>
+              <Th textTransform={"none"} fontSize="large">
+                {bestOrLatest} Response
+              </Th>
+              <Th textTransform={"none"} fontSize="large">
+                {bestOrLatest} Percent correct
+              </Th>
+              <Th textTransform={"none"} fontSize="large">
+                Number of responses
+              </Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -145,18 +156,21 @@ export function AssignmentAnswerResponses() {
                 : data.latestCreditAchieved;
               return (
                 <Tr key={i}>
-                  <Td>{showNames ? data.userName : `Student ${i + 1}`}</Td>
+                  <Td>
+                    {showNames ? createFullName(data) : `Student ${i + 1}`}
+                  </Td>
                   <Td>{response}</Td>
                   <Td>{Math.round(creditAchieved * 1000) / 10}%</Td>
                   <Td>
-                    <Link
+                    <ChakraLink
+                      as={ReactRouterLink}
                       style={{ display: "block", color: "var(--mainBlue)" }}
-                      href={`/assignmentAnswerResponseHistory/${assignmentId}/${docId}/${docVersionId}/${
+                      to={`/assignmentAnswerResponseHistory/${activityId}/${docId}/${docVersionNum}/${
                         data.userId
                       }?answerId=${encodeURIComponent(answerId)}`}
                     >
                       {data.numResponses}
-                    </Link>
+                    </ChakraLink>
                   </Td>
                 </Tr>
               );

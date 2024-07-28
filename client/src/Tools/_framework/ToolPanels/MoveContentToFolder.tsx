@@ -17,6 +17,7 @@ import {
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useFetcher } from "react-router-dom";
+import { ActivityStructure } from "../Paths/ActivityEditor";
 
 interface activeView {
   folder: null | {
@@ -37,7 +38,6 @@ export default function MoveContentToFolder({
   id,
   currentParentId,
 }) {
-
   // Set when the modal opens
   const [parentId, setParentId] = useState<number | null>(null);
   const [contentName, setContentName] = useState<string>("");
@@ -57,16 +57,18 @@ export default function MoveContentToFolder({
     newActiveFolderId: number | null,
     modalJustOpened: boolean = false,
   ) {
-    const {
-      data: {
-        folder: { folderName, parentFolderId, content: contentFromApi },
-      },
-    } = await axios.get(`/api/getFolderContent/${newActiveFolderId ?? ""}`);
+    const { data } = await axios.get(
+      `/api/getMyFolderContent/${newActiveFolderId ?? ""}`,
+    );
+
+    const folderName: string = data.folder?.name ?? null;
+    const parentFolderId: number = data.folder?.parentFolder?.id ?? null;
+    const contentFromApi: ActivityStructure[] = data.content;
 
     const content = contentFromApi
       .map((item) => {
         return {
-          isFolder: item.isFolder,
+          isFolder: Boolean(item.isFolder),
           name: item.name,
           id: item.id,
         };
@@ -97,7 +99,7 @@ export default function MoveContentToFolder({
     if (modalJustOpened) {
       const { name: movableContentName } = content.find(
         (item) => item.id === id,
-      );
+      )!;
       setContentName((_) => movableContentName);
       setParentId((_) => currentParentId);
     }

@@ -36,20 +36,18 @@ import {
   Activities,
 } from "./Tools/_framework/Paths/Activities";
 import {
+  loader as publicActivitiesLoader,
+  PublicActivities,
+} from "./Tools/_framework/Paths/PublicActivities";
+import {
   loader as activityViewerLoader,
   action as activityViewerAction,
   ActivityViewer,
 } from "./Tools/_framework/Paths/ActivityViewer";
 import {
   loader as assignedLoader,
-  action as assignedAction,
   Assigned,
 } from "./Tools/_framework/Paths/Assigned";
-import {
-  loader as assignmentEditorLoader,
-  action as assignmentEditorAction,
-  AssignmentEditor,
-} from "./Tools/_framework/Paths/AssignmentEditor";
 import {
   loader as assignmentDataLoader,
   action as assignmentDataAction,
@@ -239,6 +237,18 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
+        path: "publicActivities/:ownerId",
+        loader: publicActivitiesLoader,
+        element: <PublicActivities />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "publicActivities/:ownerId/:folderId",
+        loader: publicActivitiesLoader,
+        element: <PublicActivities />,
+        errorElement: <ErrorPage />,
+      },
+      {
         path: "activityViewer/:activityId",
         loader: activityViewerLoader,
         action: activityViewerAction,
@@ -281,7 +291,6 @@ const router = createBrowserRouter([
       {
         path: "assigned",
         loader: assignedLoader,
-        action: assignedAction,
         element: <Assigned />,
         errorElement: <ErrorPage />,
       },
@@ -299,28 +308,21 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentEditor/:assignmentId",
-        loader: assignmentEditorLoader,
-        action: assignmentEditorAction,
-        element: <AssignmentEditor />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "assignmentData/:assignmentId",
+        path: "assignmentData/:activityId",
         loader: assignmentDataLoader,
         action: assignmentDataAction,
         element: <AssignmentData />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentAnswerResponses/:assignmentId/:docId/:docVersionId",
+        path: "assignmentAnswerResponses/:activityId/:docId/:docVersionNum",
         loader: assignmentAnswerResponsesLoader,
         action: assignmentAnswerResponsesAction,
         element: <AssignmentAnswerResponses />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentAnswerResponseHistory/:assignmentId/:docId/:docVersionId/:userId",
+        path: "assignmentAnswerResponseHistory/:activityId/:docId/:docVersionNum/:userId",
         loader: assignmentAnswerResponseHistoryLoader,
         action: assignmentAnswerResponseHistoryAction,
         element: <AssignmentAnswerResponseHistory />,
@@ -352,14 +354,14 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "classCode",
+        path: "code",
         loader: enterClassCodeLoader,
         action: enterClassCodeAction,
         element: <EnterClassCode />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "classCode/:classCode",
+        path: "code/:classCode",
         loader: assignmentViewerLoader,
         action: assignmentViewerAction,
         element: <AssignmentViewer />,

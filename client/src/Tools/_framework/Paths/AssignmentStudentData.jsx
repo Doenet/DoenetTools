@@ -2,10 +2,11 @@ import React, { useEffect } from "react";
 import { redirect, useLoaderData } from "react-router";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
-import { Button, Box, Link } from "@chakra-ui/react";
+import { Button, Box, Link as ChakraLink } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
-import { useFetcher } from "react-router-dom";
+import { Link as ReactRouterLink, useFetcher } from "react-router-dom";
+import { createFullName } from "../../../_utils/names";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -134,8 +135,9 @@ export function AssignmentStudentData() {
   return (
     <>
       <Box style={{ marginTop: 15, marginLeft: 15 }}>
-        <Link
-          href={
+        <ChakraLink
+          as={ReactRouterLink}
+          to={
             isAssignedData ? `/assignedData` : `/assignmentData/${activityId}`
           }
           style={{
@@ -144,9 +146,9 @@ export function AssignmentStudentData() {
         >
           {" "}
           &lt; Back to assignment data
-        </Link>
+        </ChakraLink>
       </Box>
-      <Heading heading={user.name} subheading={assignment.name} />
+      <Heading heading={createFullName(user)} subheading={assignment.name} />
 
       <Box style={{ margin: 20 }}>
         {numStatesSaved === 1 ? (

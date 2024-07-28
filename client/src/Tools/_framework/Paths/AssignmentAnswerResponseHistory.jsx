@@ -13,11 +13,13 @@ import {
   Tbody,
   Td,
   Box,
-  Link,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 import { parseAndFormatResponse } from "./AssignmentAnswerResponses";
+import { Link as ReactRouterLink } from "react-router-dom";
+import { createFullName } from "../../../_utils/names";
 
 export async function action({ params, request }) {
   return null;
@@ -27,16 +29,16 @@ export async function loader({ params, request }) {
   const answerId = url.searchParams.get("answerId");
 
   const { data } = await axios.get(
-    `/api/getSubmittedResponseHistory/${params.assignmentId}/${params.docId}/${
-      params.docVersionId
+    `/api/getSubmittedResponseHistory/${params.activityId}/${params.docId}/${
+      params.docVersionNum
     }/${params.userId}?answerId=${encodeURIComponent(answerId)}`,
   );
 
-  const assignmentId = Number(params.assignmentId);
+  const activityId = Number(params.activityId);
   const docId = Number(params.docId);
-  const docVersionId = Number(params.docVersionId);
+  const docVersionNum = Number(params.docVersionNum);
   const userId = Number(params.userId);
-  const assignment = data.assignment;
+  const activityName = data.activityName;
   const responseData = data.submittedResponses;
   const maxCredit = responseData.reduce(
     (a, c) => Math.max(c.creditAchieved, a),
@@ -46,29 +48,29 @@ export async function loader({ params, request }) {
   return {
     answerId,
     docId,
-    docVersionId,
+    docVersionNum,
     userId,
-    assignment,
+    activityName,
     responseData,
-    assignmentId,
+    activityId,
     maxCredit,
   };
 }
 
 export function AssignmentAnswerResponseHistory() {
   const {
-    assignmentId,
+    activityId,
     docId,
-    docVersionId,
+    docVersionNum,
     answerId,
-    assignment,
+    activityName,
     responseData,
     maxCredit,
   } = useLoaderData();
 
   useEffect(() => {
-    document.title = `${assignment.name} - Doenet`;
-  }, [assignment.name]);
+    document.title = `${activityName} - Doenet`;
+  }, [activityName]);
 
   const [responses, setResponses] = useState([]);
 
@@ -79,8 +81,9 @@ export function AssignmentAnswerResponseHistory() {
   return (
     <>
       <Box style={{ marginTop: 15, marginLeft: 15 }}>
-        <Link
-          href={`/assignmentAnswerResponses/${assignmentId}/${docId}/${docVersionId}?answerId=${encodeURIComponent(
+        <ChakraLink
+          as={ReactRouterLink}
+          to={`/assignmentAnswerResponses/${activityId}/${docId}/${docVersionNum}?answerId=${encodeURIComponent(
             answerId,
           )}`}
           style={{
@@ -89,13 +92,13 @@ export function AssignmentAnswerResponseHistory() {
         >
           {" "}
           &lt; Back to answer responses
-        </Link>
+        </ChakraLink>
       </Box>
 
-      <Heading heading={assignment.name} />
+      <Heading heading={activityName} />
 
       <Heading
-        subheading={`Responses submitted by ${responseData[0]?.user.name} for ${answerId}`}
+        subheading={`Responses submitted by ${createFullName(responseData[0]?.user)} for ${answerId}`}
       />
       <Box margin={5}>
         <p>
@@ -107,9 +110,15 @@ export function AssignmentAnswerResponseHistory() {
         <Table>
           <Thead>
             <Tr>
-              <Th>Response</Th>
-              <Th>Percent correct</Th>
-              <Th>Submitted</Th>
+              <Th textTransform={"none"} fontSize="large">
+                Response
+              </Th>
+              <Th textTransform={"none"} fontSize="large">
+                Percent correct
+              </Th>
+              <Th textTransform={"none"} fontSize="large">
+                Submitted
+              </Th>
             </Tr>
           </Thead>
           <Tbody>

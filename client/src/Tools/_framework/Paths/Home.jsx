@@ -2,7 +2,7 @@ import React, { lazy, Suspense, useEffect } from "react";
 import { useLoaderData, useOutletContext } from "react-router";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
-import { Carousel } from "../../../_reactComponents/PanelHeaderComponents/Carousel";
+import { Carousel } from "../../../PanelHeaderComponents/Carousel";
 import {
   Box,
   Center,
@@ -119,7 +119,7 @@ export function Home() {
             Enhance your classroom with great OER resources from Doenet and
             learn how we make it easy to create your own.
           </Text>
-          <Link href="/classCode">
+          <Link href="/code">
             <Button
               mt="20px"
               p="10px"
