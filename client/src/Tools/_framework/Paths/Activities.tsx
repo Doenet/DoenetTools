@@ -204,10 +204,10 @@ export function Activities() {
   let context: any = useOutletContext();
   let { folderId, content, allDoenetmlVersions, userId, folder } =
     useLoaderData() as {
-      folderId: string | null;
+      folderId: number | null;
       content: ActivityStructure[];
       allDoenetmlVersions: DoenetmlVersion[];
-      userId: string;
+      userId: number;
       folder: any;
     };
   const [settingsActivityId, setSettingsActivityId] = useState<number | null>(
@@ -397,6 +397,7 @@ export function Activities() {
         onClose={moveToFolderOnClose}
         id={moveToFolderActivityId}
         currentParentId={folderId}
+        finalFocusRef={currentCardRef}
       />
 
       <Box

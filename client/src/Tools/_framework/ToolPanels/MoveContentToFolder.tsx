@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { RefObject, useEffect, useState } from "react";
 import {
   Text,
   Modal,
@@ -18,39 +18,48 @@ import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useFetcher } from "react-router-dom";
 import { ActivityStructure } from "../Paths/ActivityEditor";
+import { MdFolder, MdOutlineInsertDriveFile } from "react-icons/md";
 
-interface activeView {
-  folder: null | {
-    name: string;
-    id: number;
-    parentFolderId: number | null;
-  };
+type ActiveView = {
+  // If folder name and id are null, the active view is the root
+  // If parentFolderId is null, then the parent of active view is the root
+  folderId: number | null;
+  folderName: string | null;
+  parentFolderId: number | null;
   contents: {
     isFolder: boolean;
     name: string;
     id: number;
   }[];
-}
+};
 
 export default function MoveContentToFolder({
   isOpen,
   onClose,
   id,
   currentParentId,
+  finalFocusRef,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  id: number | null;
+  currentParentId: number | null;
+  finalFocusRef: RefObject<HTMLElement>;
 }) {
   // Set when the modal opens
   const [parentId, setParentId] = useState<number | null>(null);
   const [contentName, setContentName] = useState<string>("");
   useEffect(() => {
     if (isOpen) {
-      // TODO: does this async function needed to be awaited for before we end this effect?
       updateActiveView(currentParentId, true);
     }
   }, [isOpen]);
 
   // Set whenever the user navigates to another folder
-  const [activeView, setActiveView] = useState<activeView>({
-    folder: null,
+  const [activeView, setActiveView] = useState<ActiveView>({
+    folderName: null,
+    folderId: null,
+    parentFolderId: null,
     contents: [],
   });
   async function updateActiveView(
@@ -61,8 +70,8 @@ export default function MoveContentToFolder({
       `/api/getMyFolderContent/${newActiveFolderId ?? ""}`,
     );
 
-    const folderName: string = data.folder?.name ?? null;
-    const parentFolderId: number = data.folder?.parentFolder?.id ?? null;
+    const folderName: string | null = data.folder?.name ?? null;
+    const parentFolderId: number | null = data.folder?.parentFolder?.id ?? null;
     const contentFromApi: ActivityStructure[] = data.content;
 
     const content = contentFromApi
@@ -83,29 +92,23 @@ export default function MoveContentToFolder({
         }
       });
 
-    const folderInfo =
-      newActiveFolderId === null
-        ? null
-        : {
-            name: folderName,
-            id: newActiveFolderId,
-            parentFolderId,
-          };
-
-    setActiveView((_) => {
-      return { folder: folderInfo, contents: content };
+    setActiveView({
+      folderId: newActiveFolderId,
+      folderName,
+      parentFolderId,
+      contents: content,
     });
 
     if (modalJustOpened) {
       const { name: movableContentName } = content.find(
         (item) => item.id === id,
       )!;
-      setContentName((_) => movableContentName);
-      setParentId((_) => currentParentId);
+      setContentName(movableContentName);
+      setParentId(currentParentId);
     }
   }
 
-  const initialRef = React.useRef(null);
+  const initialRef = React.useRef<HTMLButtonElement>(null);
 
   const fetcher = useFetcher();
 
@@ -116,22 +119,21 @@ export default function MoveContentToFolder({
         onClose={onClose}
         size="xl"
         initialFocusRef={initialRef}
+        finalFocusRef={finalFocusRef}
       >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            <Heading>Move "{contentName}" to folder:</Heading>
+            <Heading noOfLines={1}>Move {contentName} to folder:</Heading>
             <HStack>
-              {activeView.folder ? (
+              {activeView.folderId ? (
                 <>
                   <IconButton
                     icon={<ArrowBackIcon />}
                     aria-label="Back"
-                    onClick={() =>
-                      updateActiveView(activeView.folder!.parentFolderId)
-                    }
+                    onClick={() => updateActiveView(activeView.parentFolderId)}
                   />
-                  <Text>{activeView.folder!.name}</Text>
+                  <Text noOfLines={1}>{activeView.folderName}</Text>
                 </>
               ) : (
                 <Text>My Activities</Text>
@@ -150,13 +152,20 @@ export default function MoveContentToFolder({
                     variant="outline"
                     width="500px"
                     height="2em"
+                    leftIcon={
+                      content.isFolder ? (
+                        <MdFolder />
+                      ) : (
+                        <MdOutlineInsertDriveFile />
+                      )
+                    }
                     onClick={() => {
                       if (content.isFolder && content.id !== id)
                         updateActiveView(content.id);
                     }}
                     isDisabled={!content.isFolder || content.id === id}
                   >
-                    <Text width="50%" marginTop="auto" marginBottom="auto">
+                    <Text width="100%" textAlign="left" noOfLines={1}>
                       {content.name}
                     </Text>
                   </Button>
@@ -170,27 +179,30 @@ export default function MoveContentToFolder({
               Cancel
             </Button>
             <Button
+              width="10em"
+              // Is disabled if the content is already in this folder
+              isDisabled={
+                (activeView.folderId === null && parentId === null) ||
+                (activeView.folderId !== null &&
+                  parentId !== null &&
+                  activeView.folderId === parentId)
+              }
               onClick={() => {
                 fetcher.submit(
                   {
                     _action: "Move",
                     id,
-                    folderId: activeView.folder ? activeView.folder.id : null,
+                    folderId: activeView.folderId,
                     desiredPosition: activeView.contents.length, // place it as the last item
                   },
                   { method: "post" },
                 );
                 onClose();
               }}
-              // Is disabled if the content is already in this folder
-              isDisabled={
-                (activeView.folder === null && parentId === null) ||
-                (activeView.folder !== null &&
-                  parentId !== null &&
-                  activeView.folder.id === parentId)
-              }
             >
-              Move to {activeView.folder?.name ?? "My Activities"}
+              <Text noOfLines={1}>
+                Move to {activeView.folderName ?? "My Activities"}
+              </Text>
             </Button>
           </ModalFooter>
         </ModalContent>
