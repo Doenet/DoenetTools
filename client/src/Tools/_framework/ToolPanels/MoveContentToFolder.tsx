@@ -31,21 +31,20 @@ interface activeView {
   }[];
 }
 
-export default function MoveContentToFolder({ isOpen, onClose, id }) {
+export default function MoveContentToFolder({
+  isOpen,
+  onClose,
+  id,
+  currentParentId,
+}) {
+
   // Set when the modal opens
   const [parentId, setParentId] = useState<number | null>(null);
   const [contentName, setContentName] = useState<string>("");
   useEffect(() => {
     if (isOpen) {
-      async function saveParentId() {
-        const {
-          data: { parentFolderId, name },
-        } = await axios.get(`/api/getMyContentInfo/${id}`);
-        updateActiveView(parentFolderId);
-        setParentId((_) => parentFolderId);
-        setContentName((_) => name);
-      }
-      saveParentId();
+      // TODO: does this async function needed to be awaited for before we end this effect?
+      updateActiveView(currentParentId, true);
     }
   }, [isOpen]);
 
@@ -54,10 +53,13 @@ export default function MoveContentToFolder({ isOpen, onClose, id }) {
     folder: null,
     contents: [],
   });
-  async function updateActiveView(newActiveFolderId: number | null) {
+  async function updateActiveView(
+    newActiveFolderId: number | null,
+    modalJustOpened: boolean = false,
+  ) {
     const {
       data: {
-        folder: { content: contentFromApi },
+        folder: { folderName, parentFolderId, content: contentFromApi },
       },
     } = await axios.get(`/api/getFolderContent/${newActiveFolderId ?? ""}`);
 
@@ -79,24 +81,26 @@ export default function MoveContentToFolder({ isOpen, onClose, id }) {
         }
       });
 
-    let folderData;
-    if (newActiveFolderId) {
-      const { data: contentInfo } = await axios.get(
-        `/api/getMyContentInfo/${newActiveFolderId}`,
-      );
+    const folderInfo =
+      newActiveFolderId === null
+        ? null
+        : {
+            name: folderName,
+            id: newActiveFolderId,
+            parentFolderId,
+          };
 
-      folderData = {
-        name: contentInfo.name,
-        id: newActiveFolderId,
-        parentFolderId: contentInfo.parentFolderId,
-      };
-    } else {
-      folderData = null;
-    }
-
-    const folder = setActiveView((_) => {
-      return { folder: folderData, contents: content };
+    setActiveView((_) => {
+      return { folder: folderInfo, contents: content };
     });
+
+    if (modalJustOpened) {
+      const { name: movableContentName } = content.find(
+        (item) => item.id === id,
+      );
+      setContentName((_) => movableContentName);
+      setParentId((_) => currentParentId);
+    }
   }
 
   const initialRef = React.useRef(null);

@@ -46,7 +46,6 @@ import {
   moveContent,
   deleteFolder,
   getAssignedScores,
-  getMyContentInfo,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -84,7 +83,9 @@ test("New user has no content", async () => {
   });
   expect(docs).toStrictEqual({
     content: [],
+    folderName: null,
     notMe: false,
+    parentFolderId: null,
   });
 });
 
@@ -3899,28 +3900,4 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
       user: { name: newUser3!.name },
     },
   ]);
-});
-
-test("getMyContentInfo only works for the user's own content", async () => {
-  const owner = await createTestUser();
-  const ownerId = owner.userId;
-  const { activityId } = await createActivity(ownerId, null);
-  const activity = await getActivity(activityId);
-
-  const otherUser = await createTestUser();
-  const otherUserId = otherUser.userId;
-
-  await expect(() =>
-    getMyContentInfo(activityId, otherUserId),
-  ).rejects.toThrowError();
-
-  const info = await getMyContentInfo(activityId, ownerId);
-  expect(info).toEqual({
-    name: activity.name,
-    parentFolderId: activity.parentFolderId,
-    isFolder: activity.isFolder,
-    isPublic: activity.isPublic,
-    createdAt: activity.createdAt,
-    lastEdited: activity.lastEdited,
-  });
 });

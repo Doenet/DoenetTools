@@ -124,7 +124,8 @@ export async function action({ request, params }) {
   } else if (formObj?._action == "Move") {
     await axios.post(`/api/moveContent`, {
       id: formObj.id,
-      desiredParentFolderId: formObj.folderId,
+      desiredParentFolderId:
+        formObj.folderId === "null" ? null : formObj.folderId,
       desiredPosition: formObj.desiredPosition,
     });
     return true;
@@ -155,7 +156,7 @@ export async function loader({ params }) {
   }
 
   return {
-    folderId: params.folderId ?? null,
+    folderId: params.folderId ? Number(params.folderId) : null,
     folder: data.folder,
     allDoenetmlVersions: data.allDoenetmlVersions,
     userId: params.userId,
@@ -379,6 +380,7 @@ export function Activities() {
         isOpen={moveToFolderIsOpen}
         onClose={moveToFolderOnClose}
         id={moveToFolderActivityId}
+        currentParentId={folderId}
       />
       <Box
         backgroundColor="#fff"

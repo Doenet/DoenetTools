@@ -50,7 +50,6 @@ import {
   moveContent,
   getFolderContent,
   getAssignedScores,
-  getMyContentInfo,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -122,6 +121,51 @@ app.get(
   async (req: Request, res: Response) => {
     const docs = await getAllRecentPublicActivities();
     res.send(docs);
+  },
+);
+
+app.get(
+  "/api/getPublicFolderContent/:userId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = Number(req.params.userId);
+    try {
+      // send 0 as the logged in content to make sure get only public content
+      const contentData = await getFolderContent({
+        ownerId: userId,
+        loggedInUserId: 0,
+        folderId: null,
+      });
+      res.send(contentData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.status(404).send("No content found");
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getPublicFolderContent/:userId/:folderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = Number(req.params.userId);
+    const folderId = Number(req.params.folderId);
+    try {
+      // send 0 as the logged in content to make sure get only public content
+      const contentData = await getFolderContent({
+        ownerId: userId,
+        loggedInUserId: 0,
+        folderId,
+      });
+      res.send(contentData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.status(404).send("No content found");
+      } else {
+        next(e);
+      }
+    }
   },
 );
 
@@ -1149,25 +1193,6 @@ app.get(
       });
       const allDoenetmlVersions = await getAllDoenetmlVersions();
       res.send({ allDoenetmlVersions, folder });
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.sendStatus(204);
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
-  "/api/getMyContentInfo/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const id = Number(req.params.id);
-    const loggedInUserId = Number(req.cookies.userId);
-
-    try {
-      const parent = await getMyContentInfo(id, loggedInUserId);
-      res.send(parent);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(204);

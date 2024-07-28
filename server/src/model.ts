@@ -504,8 +504,6 @@ async function calculateNewSortIndex(
   }
 }
 
-//TODO: moveActivityToFolder()
-
 /**
  * Copies the activity given by `origActivityId` into `folderId` of `ownerId`.
  *
@@ -2411,20 +2409,25 @@ export async function getFolderContent({
   loggedInUserId: number;
 }) {
   const notMe = ownerId !== loggedInUserId;
-  let parentFolder = null;
+  let folderInfo = null;
 
   if (folderId !== null) {
     // if ask for a folder, make sure it exists and is allowed to be seen
-    parentFolder = await prisma.content.findUniqueOrThrow({
+    folderInfo = await prisma.content.findUniqueOrThrow({
       where: {
         ownerId,
         id: folderId,
         isDeleted: false,
         isPublic: notMe ? true : undefined,
       },
-      select: { parentFolderId: true },
+      select: { name: true, parentFolderId: true },
     });
   }
+
+  const folderName = folderInfo ? folderInfo.name : null;
+  const parentFolderId = folderInfo?.parentFolderId
+    ? folderInfo.parentFolderId
+    : null;
 
   const content = await prisma.content.findMany({
     where: {
@@ -2449,27 +2452,9 @@ export async function getFolderContent({
   });
 
   return {
+    folderName,
+    parentFolderId,
     content,
     notMe,
-    parentFolderId: parentFolder ? parentFolder.parentFolderId : null,
   };
-}
-
-/**
- * Get the basic info about a user's own content item using its id
- * @param id
- * @param loggedInUser
- */
-export async function getMyContentInfo(id: number, loggedInUser: number) {
-  return await prisma.content.findUniqueOrThrow({
-    where: { id, isDeleted: false, ownerId: loggedInUser },
-    select: {
-      name: true,
-      parentFolderId: true,
-      isFolder: true,
-      isPublic: true,
-      createdAt: true,
-      lastEdited: true,
-    },
-  });
 }
