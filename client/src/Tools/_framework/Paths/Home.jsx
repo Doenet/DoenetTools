@@ -124,7 +124,7 @@ export function Home() {
               mt="20px"
               p="10px"
               colorScheme="blue"
-              // these are out of order because on phones we chane the number of columns
+              // these are out of order because on phones we change the number of columns
               w={["260px", "260px", "260px", "300px"]}
               h={["40px", "40px", "40px", "50px", "60px"]}
               fontSize={["18px", "18px", "18px", "22px", "26px"]}
@@ -137,7 +137,7 @@ export function Home() {
               mt="20px"
               p="10px"
               colorScheme="blue"
-              // these are out of order because on phones we chane the number of columns
+              // these are out of order because on phones we change the number of columns
               w={["260px", "260px", "260px", "300px"]}
               h={["40px", "40px", "40px", "50px", "60px"]}
               fontSize={["18px", "18px", "18px", "22px", "26px"]}

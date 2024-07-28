@@ -24,6 +24,7 @@ import styled from "styled-components";
 import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../PanelHeaderComponents/ContentCard";
 import axios from "axios";
+import MoveContentToFolder from "../ToolPanels/MoveContentToFolder";
 import { ActivitySettingsDrawer } from "../ToolPanels/ActivitySettingsDrawer";
 import { ActivityStructure, DoenetmlVersion } from "./ActivityEditor";
 import { DateTime } from "luxon";
@@ -113,7 +114,8 @@ export async function action({ request, params }) {
   } else if (formObj?._action == "Move") {
     await axios.post(`/api/moveContent`, {
       id: formObj.id,
-      desiredParentFolderId: params.folderId,
+      desiredParentFolderId:
+        formObj.folderId === "null" ? null : formObj.folderId,
       desiredPosition: formObj.desiredPosition,
     });
     return true;
@@ -179,7 +181,7 @@ export async function loader({ params }) {
   }
 
   return {
-    folderId: params.folderId ?? null,
+    folderId: params.folderId ? Number(params.folderId) : null,
     content: data.content,
     allDoenetmlVersions: data.allDoenetmlVersions,
     userId: params.userId,
@@ -202,23 +204,34 @@ export function Activities() {
   let context: any = useOutletContext();
   let { folderId, content, allDoenetmlVersions, userId, folder } =
     useLoaderData() as {
-      folderId: string | null;
+      folderId: number | null;
       content: ActivityStructure[];
       allDoenetmlVersions: DoenetmlVersion[];
-      userId: string;
+      userId: number;
       folder: any;
     };
-  const [activityId, setActivityId] = useState<number | null>(null);
+  const [settingsActivityId, setSettingsActivityId] = useState<number | null>(
+    null,
+  );
+  const {
+    isOpen: settingsAreOpen,
+    onOpen: settingsOnOpen,
+    onClose: settingsOnClose,
+  } = useDisclosure();
 
   const contentCardRefs = useRef(new Array());
   const currentCardRef = useRef(null);
 
   const navigate = useNavigate();
 
+  const [moveToFolderActivityId, setMoveToFolderActivityId] = useState<
+    number | null
+  >(null);
+
   const {
-    isOpen: settingsAreOpen,
-    onOpen: settingsOnOpen,
-    onClose: settingsOnClose,
+    isOpen: moveToFolderIsOpen,
+    onOpen: moveToFolderOnOpen,
+    onClose: moveToFolderOnClose,
   } = useDisclosure();
 
   const [displaySettingsTab, setSettingsDisplayTab] = useState<
@@ -299,6 +312,15 @@ export function Activities() {
           </MenuItem>
         ) : null}
         <MenuItem
+          data-test="Move to Folder"
+          onClick={() => {
+            setMoveToFolderActivityId(id);
+            moveToFolderOnOpen();
+          }}
+        >
+          Move to Folder
+        </MenuItem>
+        <MenuItem
           data-test="Delete Menu Item"
           onClick={() => {
             fetcher.submit(
@@ -312,7 +334,7 @@ export function Activities() {
         <MenuItem
           data-test="Assign Activity Menu Item"
           onClick={() => {
-            setActivityId(id);
+            setSettingsActivityId(id);
             setSettingsDisplayTab("assignment");
             settingsOnOpen();
           }}
@@ -322,7 +344,7 @@ export function Activities() {
         <MenuItem
           data-test="Settings Menu Item"
           onClick={() => {
-            setActivityId(id);
+            setSettingsActivityId(id);
             setSettingsDisplayTab("general");
             settingsOnOpen();
           }}
@@ -342,8 +364,8 @@ export function Activities() {
   }
 
   let activityData: ActivityStructure | undefined;
-  if (activityId) {
-    let index = content.findIndex((obj) => obj.id == activityId);
+  if (settingsActivityId) {
+    let index = content.findIndex((obj) => obj.id == settingsActivityId);
     if (index != -1) {
       activityData = content[index];
       currentCardRef.current = contentCardRefs.current[index];
@@ -353,11 +375,11 @@ export function Activities() {
   }
 
   let settings_drawer =
-    activityData && activityId ? (
+    activityData && settingsActivityId ? (
       <ActivitySettingsDrawer
         isOpen={settingsAreOpen}
         onClose={settingsOnClose}
-        activityId={activityId}
+        activityId={settingsActivityId}
         activityData={activityData}
         allDoenetmlVersions={allDoenetmlVersions}
         finalFocusRef={currentCardRef}
@@ -369,6 +391,15 @@ export function Activities() {
   return (
     <>
       {settings_drawer}
+
+      <MoveContentToFolder
+        isOpen={moveToFolderIsOpen}
+        onClose={moveToFolderOnClose}
+        id={moveToFolderActivityId}
+        currentParentId={folderId}
+        finalFocusRef={currentCardRef}
+      />
+
       <Box
         backgroundColor="#fff"
         color="#000"
