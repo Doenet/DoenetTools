@@ -26,7 +26,8 @@ async function main() {
     update: {},
     create: {
       email: "devuser@doenet.org",
-      name: "Dev User",
+      firstNames: "Dev",
+      lastNames: "User",
     },
   });
 
@@ -35,7 +36,8 @@ async function main() {
     update: {},
     create: {
       email: "admin@doenet.org",
-      name: "Admin User",
+      firstNames: "Admin",
+      lastNames: "User",
       isAdmin: true,
     },
   });

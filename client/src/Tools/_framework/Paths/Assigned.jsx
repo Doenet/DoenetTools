@@ -20,37 +20,9 @@ import {
 import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
-import ContentCard from "../../../_reactComponents/PanelHeaderComponents/ContentCard";
+import ContentCard from "../../../PanelHeaderComponents/ContentCard";
 import axios from "axios";
-
-export async function action({ request }) {
-  const formData = await request.formData();
-  let formObj = Object.fromEntries(formData);
-
-  if (formObj._action == "update general") {
-    //Don't let name be blank
-    let name = formObj?.name?.trim();
-    if (name == "") {
-      name = "Untitled";
-    }
-
-    await axios.post("/api/updateActivitySettings", {
-      name,
-    });
-
-    return true;
-  } else if (formObj?._action == "Delete") {
-    await axios.post(`/api/deleteAssignment`, {
-      assignmentId: formObj.assignmentId,
-    });
-
-    return true;
-  } else if (formObj?._action == "noop") {
-    return true;
-  }
-
-  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
-}
+import { createFullName } from "../../../_utils/names";
 
 export async function loader({ params }) {
   const { data: assignmentData } = await axios.get(`/api/getAssigned`);
@@ -108,7 +80,7 @@ export function Assigned() {
           textAlign="center"
         >
           <Heading as="h2" size="lg">
-            {user.name}
+            {createFullName(user)}
           </Heading>
           <Heading as="h3" size="md">
             Assigned Activities
@@ -118,7 +90,7 @@ export function Assigned() {
               margin="3px"
               size="xs"
               colorScheme="blue"
-              onClick={() => navigate(`/classCode`)}
+              onClick={() => navigate(`/code`)}
             >
               Class code
             </Button>
@@ -151,14 +123,13 @@ export function Assigned() {
             ) : (
               <>
                 {assignments.map((assignment) => {
-                  const isInstructor = assignment.ownerId === user.userId;
                   return (
                     <ContentCard
-                      key={`Card${assignment.assignmentId}`}
+                      key={`Card${assignment.activityId}`}
                       imagePath={assignment.imagePath}
-                      name={assignment.name}
-                      fullName={"Quick assign activity"}
-                      imageLink={`/classCode/${assignment.classCode}`}
+                      title={assignment.name}
+                      ownerName={"Quick assign activity"}
+                      imageLink={`/code/${assignment.classCode}`}
                       suppressAvatar={true}
                       showStatus={false}
                     />

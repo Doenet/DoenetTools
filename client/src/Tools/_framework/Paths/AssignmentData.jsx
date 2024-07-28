@@ -17,13 +17,15 @@ import {
   SimpleGrid,
   VStack,
   Box,
-  Link,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Label } from "recharts";
 import AssignmentPreview from "../ToolPanels/AssignmentPreview";
+import { Link as ReactRouterLink } from "react-router-dom";
+import { createFullName } from "../../../_utils/names";
 
 export async function action({ params, request }) {
   return null;
@@ -31,10 +33,10 @@ export async function action({ params, request }) {
 
 export async function loader({ params }) {
   const { data } = await axios.get(
-    `/api/getAssignmentData/${params.assignmentId}`,
+    `/api/getAssignmentData/${params.activityId}`,
   );
 
-  let assignmentId = Number(params.assignmentId);
+  let activityId = Number(params.activityId);
 
   // TODO: address case where don't have one document
   const doenetML = data.assignmentContent[0].assignedVersion.source;
@@ -46,18 +48,13 @@ export async function loader({ params }) {
     answerList: data.answerList,
     doenetML,
     doenetmlVersion,
-    assignmentId,
+    activityId,
   };
 }
 
 export function AssignmentData() {
-  const {
-    assignmentId,
-    assignmentData,
-    answerList,
-    doenetML,
-    doenetmlVersion,
-  } = useLoaderData();
+  const { activityId, assignmentData, answerList, doenetML, doenetmlVersion } =
+    useLoaderData();
 
   useEffect(() => {
     document.title = `${assignmentData.name} - Doenet`;
@@ -94,15 +91,16 @@ export function AssignmentData() {
   return (
     <>
       <Box style={{ marginTop: 15, marginLeft: 15 }}>
-        <Link
-          href={`/assignmentEditor/${assignmentId}`}
+        <ChakraLink
+          as={ReactRouterLink}
+          to={`/activityEditor/${activityId}`}
           style={{
             color: "var(--mainBlue)",
           }}
         >
           {" "}
-          &lt; Back to assignment editor
-        </Link>
+          &lt; Back to activity editor
+        </ChakraLink>
       </Box>
       <Heading heading={assignmentData.name} />
 
@@ -148,28 +146,40 @@ export function AssignmentData() {
               <Table>
                 <Thead>
                   <Tr>
-                    <Th>Name</Th>
-                    <Th>Score</Th>
+                    <Th textTransform={"none"} fontSize="large">
+                      Name
+                    </Th>
+                    <Th textTransform={"none"} fontSize="large">
+                      Score
+                    </Th>
                   </Tr>
                 </Thead>
                 <Tbody>
                   {assignmentData.assignmentScores.map((assignmentScore) => {
                     const linkURL =
                       "/assignmentData/" +
-                      assignmentId +
+                      activityId +
                       "/" +
                       assignmentScore.user.userId;
                     return (
                       <Tr key={`user${assignmentScore.user.userId}`}>
                         <Td>
-                          <Link href={linkURL} style={linkStyle}>
-                            {assignmentScore.user.name}
-                          </Link>
+                          <ChakraLink
+                            as={ReactRouterLink}
+                            to={linkURL}
+                            style={linkStyle}
+                          >
+                            {createFullName(assignmentScore.user)}
+                          </ChakraLink>
                         </Td>
                         <Td>
-                          <Link href={linkURL} style={linkStyle}>
+                          <ChakraLink
+                            as={ReactRouterLink}
+                            to={linkURL}
+                            style={linkStyle}
+                          >
                             {Math.round(assignmentScore.score * 100) / 100}
-                          </Link>
+                          </ChakraLink>
                         </Td>
                       </Tr>
                     );
@@ -201,15 +211,17 @@ export function AssignmentData() {
                   <Table>
                     <Thead>
                       <Tr>
-                        <Th>Answer name</Th>
-                        <Th>
+                        <Th textTransform={"none"} fontSize="large">
+                          Answer name
+                        </Th>
+                        <Th textTransform={"none"} fontSize="large">
                           Number of
                           <br />
                           students
                           <br />
                           responded
                         </Th>
-                        <Th>
+                        <Th textTransform={"none"} fontSize="large">
                           Average
                           <br />
                           correct
@@ -218,30 +230,42 @@ export function AssignmentData() {
                     </Thead>
                     <Tbody>
                       {answerList.map((answerObj) => {
-                        const key = `/assignmentAnswerResponses/${assignmentId}/${answerObj.docId}/${answerObj.docVersionId}/${answerObj.answerId}`;
-                        const linkURL = `/assignmentAnswerResponses/${assignmentId}/${
+                        const key = `/assignmentAnswerResponses/${activityId}/${answerObj.docId}/${answerObj.docVersionNum}/${answerObj.answerId}`;
+                        const linkURL = `/assignmentAnswerResponses/${activityId}/${
                           answerObj.docId
                         }/${
-                          answerObj.docVersionId
+                          answerObj.docVersionNum
                         }?answerId=${encodeURIComponent(answerObj.answerId)}`;
                         return (
                           <Tr key={key}>
                             <Td>
-                              <Link href={linkURL} style={linkStyle}>
+                              <ChakraLink
+                                as={ReactRouterLink}
+                                to={linkURL}
+                                style={linkStyle}
+                              >
                                 {answerObj.answerId}
-                              </Link>
+                              </ChakraLink>
                             </Td>
                             <Td>
-                              <Link href={linkURL} style={linkStyle}>
+                              <ChakraLink
+                                as={ReactRouterLink}
+                                to={linkURL}
+                                style={linkStyle}
+                              >
                                 {answerObj.count}
-                              </Link>
+                              </ChakraLink>
                             </Td>
                             <Td>
-                              <Link href={linkURL} style={linkStyle}>
+                              <ChakraLink
+                                as={ReactRouterLink}
+                                to={linkURL}
+                                style={linkStyle}
+                              >
                                 {Math.round(answerObj.averageCredit * 1000) /
                                   10}
                                 %
-                              </Link>
+                              </ChakraLink>
                             </Td>
                           </Tr>
                         );

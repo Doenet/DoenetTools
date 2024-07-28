@@ -9,7 +9,7 @@ import {
   getDoc,
   getActivityEditorData,
   getActivityViewerData,
-  getFolderContent,
+  getMyFolderContent,
   updateDoc,
   searchPublicContent,
   updateContent,
@@ -50,6 +50,11 @@ import {
   addClassification,
   getClassifications,
   removeClassification,
+  getPublicFolderContent,
+  getPublicEditorData,
+  searchUsersWithPublicContent,
+  ActivityStructure,
+  updateAssignmentSettings,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -68,8 +73,16 @@ const currentDoenetmlVersion = {
 
 // create an isolated user for each test, will allow tests to be run in parallel
 async function createTestUser(isAdmin = false) {
-  const username = "vitest-" + new Date().toJSON() + "@vitest.test";
-  const user = await findOrCreateUser(username, "vitest user", isAdmin);
+  const id = Date.now().toString();
+  const email = `vitest${id}@vitest.test`;
+  const firstNames = `vitest`;
+  const lastNames = `user${id}`;
+  const user = await findOrCreateUser({
+    email,
+    firstNames,
+    lastNames,
+    isAdmin,
+  });
   return user;
 }
 
@@ -80,29 +93,30 @@ async function createTestAdminUser() {
 test("New user has no content", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const docs = await getFolderContent({
-    ownerId: userId,
+  const docs = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: null,
   });
   expect(docs).toStrictEqual({
     content: [],
-    name: "vitest user",
     notMe: false,
-    parentFolderId: null,
+    folder: null,
   });
 });
 
 test("Update user name", async () => {
   let user = await createTestUser();
   const userId = user.userId;
-  expect(user.name).eq("vitest user");
+  expect(user.firstNames).eq("vitest");
+  expect(user.lastNames.startsWith("user")).eq(true);
 
-  user = await updateUser({ userId, name: "New name" });
-  expect(user.name).eq("New name");
+  user = await updateUser({ userId, firstNames: "New", lastNames: "Name" });
+  expect(user.firstNames).eq("New");
+  expect(user.lastNames).eq("Name");
 
   const userInfo = await getUserInfo(user.email);
-  expect(userInfo.name).eq("New name");
+  expect(userInfo.firstNames).eq("New");
+  expect(userInfo.lastNames).eq("Name");
 });
 
 test("New activity starts out private, then delete it", async () => {
@@ -110,27 +124,30 @@ test("New activity starts out private, then delete it", async () => {
   const userId = user.userId;
   const { activityId, docId } = await createActivity(userId, null);
   const activityContent = await getActivityEditorData(activityId, userId);
-  expect(activityContent).toStrictEqual({
+  const expectedContent: ActivityStructure = {
+    id: activityId,
     name: "Untitled Activity",
+    ownerId: userId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
     isAssigned: false,
-    stillOpen: false,
+    assignmentStatus: "Unassigned",
     classCode: null,
     codeValidUntil: null,
     documents: [
       {
         id: docId,
-        versionNum: null,
         source: "",
         name: "Untitled Document",
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
-  });
+    hasScoreData: false,
+    notMe: false,
+  };
+  expect(activityContent).toStrictEqual(expectedContent);
 
-  const data = await getFolderContent({
-    ownerId: userId,
+  const data = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: null,
   });
@@ -145,8 +162,7 @@ test("New activity starts out private, then delete it", async () => {
     "No content found",
   );
 
-  const dataAfterDelete = await getFolderContent({
-    ownerId: userId,
+  const dataAfterDelete = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: null,
   });
@@ -154,7 +170,7 @@ test("New activity starts out private, then delete it", async () => {
   expect(dataAfterDelete.content.length).toBe(0);
 });
 
-test("getFolderContent returns both public and private content only for owner", async () => {
+test("getMyFolderContent returns both public and private content, getPublicFolderContent returns only public", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
@@ -237,11 +253,12 @@ test("getFolderContent returns both public and private content only for owner", 
     ownerId,
   });
 
-  let ownerContent = await getFolderContent({
-    ownerId,
+  let ownerContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
+  expect(ownerContent.notMe).eq(false);
+  expect(ownerContent.folder).eq(null);
   expect(ownerContent.content.length).eq(4);
   expect(ownerContent).toMatchObject({
     content: expect.arrayContaining([
@@ -264,30 +281,40 @@ test("getFolderContent returns both public and private content only for owner", 
     ]),
   });
 
-  let userContent = await getFolderContent({
+  // public folder content of base directory
+  // also includes orphaned public content,
+  // i.e., public content inside a private folder
+  let publicContent = await getPublicFolderContent({
     ownerId,
-    loggedInUserId: userId,
     folderId: null,
   });
-  expect(userContent.content.length).eq(2);
-  expect(userContent).toMatchObject({
+  expect(publicContent.folder).eq(null);
+  expect(publicContent.content.length).eq(4);
+
+  expect(publicContent).toMatchObject({
     content: expect.arrayContaining([
       expect.objectContaining({
         id: publicActivity1Id,
-        isPublic: true,
       }),
       expect.objectContaining({
         id: publicFolder1Id,
-        isPublic: true,
+      }),
+      expect.objectContaining({
+        id: publicActivity3Id,
+      }),
+      expect.objectContaining({
+        id: publicFolder3Id,
       }),
     ]),
   });
 
-  ownerContent = await getFolderContent({
-    ownerId,
+  ownerContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: publicFolder1Id,
   });
+  expect(ownerContent.notMe).eq(false);
+  expect(ownerContent.folder?.id).eq(publicFolder1Id);
+  expect(ownerContent.folder?.parentFolder).eq(null);
   expect(ownerContent.content.length).eq(4);
   expect(ownerContent).toMatchObject({
     content: expect.arrayContaining([
@@ -310,30 +337,40 @@ test("getFolderContent returns both public and private content only for owner", 
     ]),
   });
 
-  userContent = await getFolderContent({
+  publicContent = await getPublicFolderContent({
     ownerId,
-    loggedInUserId: userId,
     folderId: publicFolder1Id,
   });
-  expect(userContent.content.length).eq(2);
-  expect(userContent).toMatchObject({
+  expect(publicContent.content.length).eq(2);
+  expect(publicContent.folder?.id).eq(publicFolder1Id);
+  expect(publicContent.folder?.parentFolder).eq(null);
+  expect(publicContent).toMatchObject({
     content: expect.arrayContaining([
       expect.objectContaining({
         id: publicActivity2Id,
-        isPublic: true,
       }),
       expect.objectContaining({
         id: publicFolder2Id,
-        isPublic: true,
       }),
     ]),
   });
 
-  ownerContent = await getFolderContent({
-    ownerId,
+  // If other user tries to access folder as if it were their own,
+  // no content is returned and notMe is true
+  let otherUserContent = await getMyFolderContent({
+    loggedInUserId: userId,
+    folderId: publicFolder1Id,
+  });
+  expect(otherUserContent.notMe).eq(true);
+  expect(otherUserContent.content.length).eq(0);
+
+  ownerContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: privateFolder1Id,
   });
+  expect(ownerContent.notMe).eq(false);
+  expect(ownerContent.folder?.id).eq(privateFolder1Id);
+  expect(ownerContent.folder?.parentFolder).eq(null);
   expect(ownerContent.content.length).eq(4);
   expect(ownerContent).toMatchObject({
     content: expect.arrayContaining([
@@ -357,12 +394,46 @@ test("getFolderContent returns both public and private content only for owner", 
   });
 
   await expect(
-    getFolderContent({
+    getPublicFolderContent({
       ownerId,
-      loggedInUserId: userId,
       folderId: privateFolder1Id,
     }),
   ).rejects.toThrow("No content found");
+
+  // If other user tries to access folder as if it were their own,
+  // no content is returned and notMe is true
+  otherUserContent = await getMyFolderContent({
+    loggedInUserId: userId,
+    folderId: privateFolder1Id,
+  });
+  expect(otherUserContent.notMe).eq(true);
+  expect(otherUserContent.content.length).eq(0);
+
+  ownerContent = await getMyFolderContent({
+    loggedInUserId: ownerId,
+    folderId: publicFolder3Id,
+  });
+  expect(ownerContent.notMe).eq(false);
+  expect(ownerContent.folder?.id).eq(publicFolder3Id);
+  expect(ownerContent.folder?.parentFolder?.id).eq(privateFolder1Id);
+  expect(ownerContent.content.length).eq(0);
+
+  publicContent = await getPublicFolderContent({
+    ownerId,
+    folderId: publicFolder3Id,
+  });
+  expect(publicContent.folder?.id).eq(publicFolder3Id);
+  expect(publicContent.folder?.parentFolder).eq(null);
+  expect(publicContent.content.length).eq(0);
+
+  // If other user tries to access folder as if it were their own,
+  // no content is returned and notMe is true
+  otherUserContent = await getMyFolderContent({
+    loggedInUserId: userId,
+    folderId: publicFolder3Id,
+  });
+  expect(otherUserContent.notMe).eq(true);
+  expect(otherUserContent.content.length).eq(0);
 });
 
 test("Test updating various activity properties", async () => {
@@ -462,44 +533,37 @@ test("deleteFolder marks a folder and all its sub content as deleted and prevent
   );
 
   // items can be retrieved
-  let baseContent = await getFolderContent({
-    ownerId: userId,
+  let baseContent = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: null,
   });
   expect(baseContent.content.length).eq(2);
-  let folder1Content = await getFolderContent({
-    ownerId: userId,
+  let folder1Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder1Id,
   });
   expect(folder1Content.content.length).eq(2);
-  let folder2Content = await getFolderContent({
-    ownerId: userId,
+  let folder2Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder2Id,
   });
   expect(folder2Content.content.length).eq(2);
-  let folder3Content = await getFolderContent({
-    ownerId: userId,
+  let folder3Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder3Id,
   });
   expect(folder3Content.content.length).eq(1);
-  let folder4Content = await getFolderContent({
-    ownerId: userId,
+  let folder4Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder4Id,
   });
   expect(folder4Content.content.length).eq(2);
-  let folder5Content = await getFolderContent({
-    ownerId: userId,
+  let folder5Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder5Id,
   });
   expect(folder5Content.content.length).eq(2);
-  let folder6Content = await getFolderContent({
-    ownerId: userId,
+  let folder6Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder6Id,
   });
@@ -522,47 +586,40 @@ test("deleteFolder marks a folder and all its sub content as deleted and prevent
   let deleteResult = await deleteFolder(folder1Id, userId);
   expect(deleteResult.isDeleted).eq(true);
 
-  baseContent = await getFolderContent({
-    ownerId: userId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: null,
   });
   expect(baseContent.content.length).eq(1);
   await expect(
-    getFolderContent({
-      ownerId: userId,
+    getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder1Id,
     }),
   ).rejects.toThrow("No content found");
   await expect(
-    getFolderContent({
-      ownerId: userId,
+    getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder2Id,
     }),
   ).rejects.toThrow("No content found");
   await expect(
-    getFolderContent({
-      ownerId: userId,
+    getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder3Id,
     }),
   ).rejects.toThrow("No content found");
-  folder4Content = await getFolderContent({
-    ownerId: userId,
+  folder4Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder4Id,
   });
   expect(folder4Content.content.length).eq(2);
-  folder5Content = await getFolderContent({
-    ownerId: userId,
+  folder5Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder5Id,
   });
   expect(folder5Content.content.length).eq(2);
-  folder6Content = await getFolderContent({
-    ownerId: userId,
+  folder6Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder6Id,
   });
@@ -585,28 +642,24 @@ test("deleteFolder marks a folder and all its sub content as deleted and prevent
   deleteResult = await deleteFolder(folder5Id, userId);
   expect(deleteResult.isDeleted).eq(true);
 
-  baseContent = await getFolderContent({
-    ownerId: userId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: null,
   });
   expect(baseContent.content.length).eq(1);
-  folder4Content = await getFolderContent({
-    ownerId: userId,
+  folder4Content = await getMyFolderContent({
     loggedInUserId: userId,
     folderId: folder4Id,
   });
   expect(folder4Content.content.length).eq(1);
   await expect(
-    getFolderContent({
-      ownerId: userId,
+    getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder5Id,
     }),
   ).rejects.toThrow("No content found");
   await expect(
-    getFolderContent({
-      ownerId: userId,
+    getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder6Id,
     }),
@@ -632,8 +685,7 @@ test("non-owner cannot delete folder", async () => {
   );
 
   // folder is still around
-  getFolderContent({
-    ownerId,
+  getMyFolderContent({
     loggedInUserId: ownerId,
     folderId,
   });
@@ -666,23 +718,19 @@ test("move content to different locations", async () => {
   const { folderId: folder2Id } = await createFolder(ownerId, folder1Id);
   const { folderId: folder3Id } = await createFolder(ownerId, null);
 
-  let baseContent = await getFolderContent({
-    ownerId,
+  let baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
-  let folder1Content = await getFolderContent({
-    ownerId,
+  let folder1Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder1Id,
   });
-  let folder2Content = await getFolderContent({
-    ownerId,
+  let folder2Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder2Id,
   });
-  let folder3Content = await getFolderContent({
-    ownerId,
+  let folder3Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder3Id,
   });
@@ -707,8 +755,7 @@ test("move content to different locations", async () => {
     desiredPosition: 1,
     ownerId,
   });
-  baseContent = await getFolderContent({
-    ownerId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
@@ -725,8 +772,7 @@ test("move content to different locations", async () => {
     desiredPosition: 0,
     ownerId,
   });
-  baseContent = await getFolderContent({
-    ownerId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
@@ -743,8 +789,7 @@ test("move content to different locations", async () => {
     desiredPosition: 10,
     ownerId,
   });
-  baseContent = await getFolderContent({
-    ownerId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
@@ -761,8 +806,7 @@ test("move content to different locations", async () => {
     desiredPosition: -10,
     ownerId,
   });
-  baseContent = await getFolderContent({
-    ownerId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
@@ -779,13 +823,11 @@ test("move content to different locations", async () => {
     desiredPosition: 0,
     ownerId,
   });
-  baseContent = await getFolderContent({
-    ownerId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
-  folder1Content = await getFolderContent({
-    ownerId,
+  folder1Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder1Id,
   });
@@ -806,13 +848,11 @@ test("move content to different locations", async () => {
     desiredPosition: 2,
     ownerId,
   });
-  baseContent = await getFolderContent({
-    ownerId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
-  folder1Content = await getFolderContent({
-    ownerId,
+  folder1Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder1Id,
   });
@@ -833,13 +873,11 @@ test("move content to different locations", async () => {
     desiredPosition: 2,
     ownerId,
   });
-  folder1Content = await getFolderContent({
-    ownerId,
+  folder1Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder1Id,
   });
-  folder3Content = await getFolderContent({
-    ownerId,
+  folder3Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder3Id,
   });
@@ -858,18 +896,15 @@ test("move content to different locations", async () => {
     desiredPosition: 1,
     ownerId,
   });
-  baseContent = await getFolderContent({
-    ownerId,
+  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
-  folder2Content = await getFolderContent({
-    ownerId,
+  folder2Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder2Id,
   });
-  folder3Content = await getFolderContent({
-    ownerId,
+  folder3Content = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: folder3Id,
   });
@@ -998,8 +1033,7 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
     });
   }
 
-  let contentList = await getFolderContent({
-    ownerId,
+  let contentList = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
@@ -1029,8 +1063,7 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
     ownerId,
   });
 
-  contentList = await getFolderContent({
-    ownerId,
+  contentList = await getMyFolderContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
@@ -1135,36 +1168,177 @@ test("copyActivityToFolder remixes correct versions", async () => {
   expect(contribHist3[0].prevDocVersionNum).eq(2);
 });
 
-// TODO: add folders
-test("searchPublicContent returns activities matching the query", async () => {
+test("searchPublicContent returns public activities and folders matching the query", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId } = await createActivity(ownerId, null);
-  // Make the document public and give it a unique name for the test
-  const uniqueName = "UniqueNameForSearchTest";
+
+  // Create unique session number for names in this test
+  const sessionNumber = Date.now().toString();
+
+  const publicActivityName = `public activity ${sessionNumber}`;
+  const privateActivityName = `private activity ${sessionNumber}`;
+  const publicFolderName = `public folder ${sessionNumber}`;
+  const privateFolderName = `private folder ${sessionNumber}`;
+
+  const { activityId: publicActivityId } = await createActivity(ownerId, null);
   await updateContent({
-    id: activityId,
-    name: uniqueName,
+    id: publicActivityId,
+    name: publicActivityName,
     isPublic: true,
     ownerId,
   });
-  const searchResults = await searchPublicContent(uniqueName);
-  expect(searchResults).toEqual(
-    expect.arrayContaining([
-      expect.objectContaining({
-        name: uniqueName,
-      }),
-    ]),
+
+  const { activityId: privateActivityId } = await createActivity(ownerId, null);
+  await updateContent({
+    id: privateActivityId,
+    name: privateActivityName,
+    ownerId,
+  });
+
+  const { folderId: publicFolderId } = await createFolder(ownerId, null);
+  await updateContent({
+    id: publicFolderId,
+    name: publicFolderName,
+    isPublic: true,
+    ownerId,
+  });
+
+  const { folderId: privateFolderId } = await createFolder(ownerId, null);
+  await updateContent({
+    id: privateFolderId,
+    name: privateFolderName,
+    ownerId,
+  });
+
+  const searchResults = await searchPublicContent(sessionNumber);
+  expect(searchResults.length).eq(2);
+
+  const namesInOrder = searchResults
+    .sort((a, b) => a.id - b.id)
+    .map((c) => c.name);
+
+  expect(namesInOrder).eqls([publicActivityName, publicFolderName]);
+});
+
+test("searchPublicContent returns public folders and public content even in a private folder", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  // Create unique session number for names in this test
+  const sessionNumber = Date.now().toString();
+
+  const { folderId: parentFolderId } = await createFolder(ownerId, null);
+
+  const publicActivityName = `public activity ${sessionNumber}`;
+  const privateActivityName = `private activity ${sessionNumber}`;
+  const publicFolderName = `public folder ${sessionNumber}`;
+  const privateFolderName = `private folder ${sessionNumber}`;
+
+  const { activityId: publicActivityId } = await createActivity(
+    ownerId,
+    parentFolderId,
   );
+  await updateContent({
+    id: publicActivityId,
+    name: publicActivityName,
+    isPublic: true,
+    ownerId,
+  });
+
+  const { activityId: privateActivityId } = await createActivity(
+    ownerId,
+    parentFolderId,
+  );
+  await updateContent({
+    id: privateActivityId,
+    name: privateActivityName,
+    ownerId,
+  });
+
+  const { folderId: publicFolderId } = await createFolder(
+    ownerId,
+    parentFolderId,
+  );
+  await updateContent({
+    id: publicFolderId,
+    name: publicFolderName,
+    isPublic: true,
+    ownerId,
+  });
+
+  const { folderId: privateFolderId } = await createFolder(
+    ownerId,
+    parentFolderId,
+  );
+  await updateContent({
+    id: privateFolderId,
+    name: privateFolderName,
+    ownerId,
+  });
+
+  const searchResults = await searchPublicContent(sessionNumber);
+  expect(searchResults.length).eq(2);
+
+  const namesInOrder = searchResults
+    .sort((a, b) => a.id - b.id)
+    .map((c) => c.name);
+
+  expect(namesInOrder).eqls([publicActivityName, publicFolderName]);
+});
+
+test("searchUsersWithPublicContent returns only users with public content", async () => {
+  // owner 1 has only private content
+  const owner1 = await createTestUser();
+  const owner1Id = owner1.userId;
+
+  await createActivity(owner1Id, null);
+  await createActivity(owner1Id, null);
+  const { folderId: folder1aId } = await createFolder(owner1Id, null);
+  await createActivity(owner1Id, folder1aId);
+
+  // owner 2 has a public activity
+  const owner2 = await createTestUser();
+  const owner2Id = owner2.userId;
+
+  const { folderId: folder2aId } = await createFolder(owner2Id, null);
+  const { activityId: activity2aId } = await createActivity(
+    owner2Id,
+    folder2aId,
+  );
+  await updateContent({ id: activity2aId, ownerId: owner2Id, isPublic: true });
+
+  // owner 3 has a public folder
+  const owner3 = await createTestUser();
+  const owner3Id = owner3.userId;
+
+  const { folderId: folder3aId } = await createFolder(owner3Id, null);
+  await updateContent({ id: folder3aId, ownerId: owner3Id, isPublic: true });
+
+  // cannot find owner1
+  let searchResults = await searchUsersWithPublicContent(owner1.lastNames);
+  expect(searchResults.length).eq(0);
+
+  // can find owner2
+  searchResults = await searchUsersWithPublicContent(owner2.lastNames);
+  expect(searchResults.length).eq(1);
+  expect(searchResults[0].firstNames).eq(owner2.firstNames);
+  expect(searchResults[0].lastNames).eq(owner2.lastNames);
+
+  // can find owner3
+  searchResults = await searchUsersWithPublicContent(owner3.lastNames);
+  expect(searchResults.length).eq(1);
+  expect(searchResults[0].firstNames).eq(owner3.firstNames);
+  expect(searchResults[0].lastNames).eq(owner3.lastNames);
 });
 
 test("findOrCreateUser finds an existing user or creates a new one", async () => {
   const email = `unique-${Date.now()}@example.com`;
-  const name = "vitest user";
-  const user = await findOrCreateUser(email, name);
+  const firstNames = "vitest";
+  const lastNames = "user";
+  const user = await findOrCreateUser({ email, firstNames, lastNames });
   expect(user.userId).toBeTypeOf("number");
   // Attempt to find the same user again
-  const sameUser = await findOrCreateUser(email, name);
+  const sameUser = await findOrCreateUser({ email, firstNames, lastNames });
   expect(sameUser).toStrictEqual(user);
 });
 
@@ -1198,7 +1372,7 @@ test("updateContent does not update properties when passed undefined values", as
 });
 
 test("add and remove promoted content", async () => {
-  const { userId, name: userName } = await createTestAdminUser();
+  const { userId, firstNames, lastNames } = await createTestAdminUser();
 
   // Can create new promoted content group
   const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
@@ -1600,20 +1774,14 @@ test("open and close assignment with code", async () => {
     ownerId,
   });
 
-  await assignActivity(activityId, ownerId);
-  let assignment = await getAssignment(activityId, ownerId);
-
-  expect(assignment.classCode).eq(null);
-  expect(assignment.codeValidUntil).eq(null);
-
-  // open assignment generates code
+  // open assignment assigns activity and generates code
   let closeAt = DateTime.now().plus({ days: 1 });
   const { classCode } = await openAssignmentWithCode(
     activityId,
     closeAt,
     ownerId,
   );
-  assignment = await getAssignment(activityId, ownerId);
+  let assignment = await getAssignment(activityId, ownerId);
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
 
@@ -1624,10 +1792,11 @@ test("open and close assignment with code", async () => {
     "Some content",
   );
 
+  // close assignment completely unassigns since there is no data
   await closeAssignmentWithCode(activityId, ownerId);
-  assignment = await getAssignment(activityId, ownerId);
-  expect(assignment.classCode).eq(classCode);
-  expect(assignment.codeValidUntil).eqls(null);
+  await expect(getAssignment(activityId, ownerId)).rejects.toThrow(
+    "No content found",
+  );
 
   assignmentData = await getAssignmentDataFromCode(classCode, true);
   expect(assignmentData.assignmentFound).eq(false);
@@ -1658,6 +1827,36 @@ test("open and close assignment with code", async () => {
   assignmentData = await getAssignmentDataFromCode(classCode, true);
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
+
+  // reopen with future date
+  closeAt = DateTime.now().plus({ years: 1 });
+  await openAssignmentWithCode(activityId, closeAt, ownerId);
+  const { classCode: classCode3 } = await openAssignmentWithCode(
+    activityId,
+    closeAt,
+    ownerId,
+  );
+  expect(classCode3).eq(classCode);
+  assignment = await getAssignment(activityId, ownerId);
+  expect(assignment.classCode).eq(classCode);
+  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+
+  // add some data
+  await saveScoreAndState({
+    activityId,
+    docId: activity.documents[0].id,
+    docVersionNum: 1,
+    userId: ownerId,
+    score: 0.3,
+    onSubmission: true,
+    state: "document state",
+  });
+
+  // closing assignment doesn't close completely due to the data
+  await closeAssignmentWithCode(activityId, ownerId);
+  assignment = await getAssignment(activityId, ownerId);
+  expect(assignment.classCode).eq(classCode);
+  expect(assignment.codeValidUntil).eqls(null);
 });
 
 test("open and unassign assignment with code", async () => {
@@ -1758,22 +1957,31 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
     openAssignmentWithCode(activityId, closeAt, userId2),
   ).rejects.toThrow("No content found");
 
-  const { classCode } = await openAssignmentWithCode(
+  const { codeValidUntil } = await openAssignmentWithCode(
     activityId,
     closeAt,
     ownerId,
   );
+
+  expect(codeValidUntil).eqls(closeAt.toJSDate());
+
+  let newCloseAt = DateTime.now().plus({ days: 2 });
+
+  await expect(
+    updateAssignmentSettings(activityId, newCloseAt, userId2),
+  ).rejects.toThrow("Record to update not found");
+  assignment = await getAssignment(activityId, ownerId);
+  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+
+  updateAssignmentSettings(activityId, newCloseAt, ownerId);
+  assignment = await getAssignment(activityId, ownerId);
+  expect(assignment.codeValidUntil).eqls(newCloseAt.toJSDate());
 
   await expect(closeAssignmentWithCode(activityId, userId2)).rejects.toThrow(
     "Record to update not found",
   );
 
   await closeAssignmentWithCode(activityId, ownerId);
-
-  await expect(unassignActivity(activityId, userId2)).rejects.toThrow(
-    "Record to update not found",
-  );
-  await unassignActivity(activityId, ownerId);
 });
 
 test("create anonymous users", async () => {
@@ -1857,9 +2065,14 @@ test("get assignment data from anonymous users", async () => {
   let newUser1 = assignmentData.newAnonymousUser;
   newUser1 = await updateUser({
     userId: newUser1!.userId,
-    name: "Zoe Zaborowski",
+    firstNames: "Zoe",
+    lastNames: "Zaborowski",
   });
-  const userData1 = { userId: newUser1!.userId, name: newUser1!.name };
+  const userData1 = {
+    userId: newUser1!.userId,
+    firstNames: newUser1!.firstNames,
+    lastNames: newUser1!.lastNames,
+  };
 
   await saveScoreAndState({
     activityId,
@@ -1904,7 +2117,7 @@ test("get assignment data from anonymous users", async () => {
         },
       ],
     },
-    user: { name: "Zoe Zaborowski" },
+    user: { firstNames: "Zoe", lastNames: "Zaborowski" },
     documentScores: [
       {
         docId,
@@ -1957,7 +2170,7 @@ test("get assignment data from anonymous users", async () => {
         },
       ],
     },
-    user: { name: "Zoe Zaborowski" },
+    user: { firstNames: "Zoe", lastNames: "Zaborowski" },
     documentScores: [
       {
         docId,
@@ -2016,7 +2229,7 @@ test("get assignment data from anonymous users", async () => {
         },
       ],
     },
-    user: { name: "Zoe Zaborowski" },
+    user: { firstNames: "Zoe", lastNames: "Zaborowski" },
     documentScores: [
       {
         docId,
@@ -2033,9 +2246,14 @@ test("get assignment data from anonymous users", async () => {
   let newUser2 = assignmentData.newAnonymousUser;
   newUser2 = await updateUser({
     userId: newUser2!.userId,
-    name: "Arya Abbas",
+    firstNames: "Arya",
+    lastNames: "Abbas",
   });
-  const userData2 = { userId: newUser2!.userId, name: newUser2!.name };
+  const userData2 = {
+    userId: newUser2!.userId,
+    firstNames: newUser2!.firstNames,
+    lastNames: newUser2!.lastNames,
+  };
 
   // assignment scores still unchanged
   assignmentWithScores = await getAssignmentScoreData({
@@ -2094,7 +2312,7 @@ test("get assignment data from anonymous users", async () => {
         },
       ],
     },
-    user: { name: "Arya Abbas" },
+    user: { firstNames: "Arya", lastNames: "Abbas" },
     documentScores: [
       {
         docId,
@@ -2125,7 +2343,8 @@ test("can't get assignment data if other user, but student can get their own dat
   let newUser1 = assignmentData.newAnonymousUser;
   newUser1 = await updateUser({
     userId: newUser1!.userId,
-    name: "Zoe Zaborowski",
+    firstNames: "Zoe",
+    lastNames: "Zaborowski",
   });
 
   await saveScoreAndState({
@@ -2186,7 +2405,7 @@ test("can't get assignment data if other user, but student can get their own dat
   ).eqls(studentData);
 });
 
-test("can't get assignment data if unassigned", async () => {
+test("can't unassign if have data", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const { activityId, docId } = await createActivity(ownerId, null);
@@ -2203,7 +2422,8 @@ test("can't get assignment data if unassigned", async () => {
   let newUser1 = assignmentData.newAnonymousUser;
   newUser1 = await updateUser({
     userId: newUser1!.userId,
-    name: "Zoe Zaborowski",
+    firstNames: "Zoe",
+    lastNames: "Zaborowski",
   });
 
   await saveScoreAndState({
@@ -2227,22 +2447,9 @@ test("can't get assignment data if unassigned", async () => {
     studentId: newUser1!.userId,
   });
 
-  await unassignActivity(activityId, ownerId);
-
-  await expect(
-    getAssignmentScoreData({
-      activityId,
-      ownerId,
-    }),
-  ).rejects.toThrow("No content found");
-
-  await expect(
-    getAssignmentStudentData({
-      activityId,
-      loggedInUserId: ownerId,
-      studentId: newUser1!.userId,
-    }),
-  ).rejects.toThrow("No assignmentScores found");
+  await expect(unassignActivity(activityId, ownerId)).rejects.toThrow(
+    "Record to update not found",
+  );
 });
 
 test("get activity editor data only if owner", async () => {
@@ -2259,55 +2466,71 @@ test("get activity editor data only if owner", async () => {
   );
 });
 
-test("activity editor data before and after assigned", async () => {
+test("get public activity editor data only if public", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId, docId } = await createActivity(ownerId, null);
+
+  await expect(getPublicEditorData(activityId)).rejects.toThrow(
+    "No content found",
+  );
+
+  await updateContent({
+    id: activityId,
+    isPublic: true,
+    ownerId,
+    name: "Some content",
+  });
+  const doenetML = "hi!";
+  await updateDoc({ id: docId, source: doenetML, ownerId });
+
+  const publicData = await getPublicEditorData(activityId);
+
+  expect(publicData.name).eq("Some content");
+  expect(publicData.documents[0].source).eq(doenetML);
+});
+
+test.only("activity editor data and my folder contents before and after assigned", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const { activityId, docId } = await createActivity(ownerId, null);
 
   const preAssignedData = await getActivityEditorData(activityId, ownerId);
-
-  expect(preAssignedData).eqls({
+  let expectedData: ActivityStructure = {
+    id: activityId,
     name: "Untitled Activity",
+    ownerId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
     isAssigned: false,
-    stillOpen: false,
+    assignmentStatus: "Unassigned",
     classCode: null,
     codeValidUntil: null,
     documents: [
       {
         id: docId,
-        versionNum: null,
         source: "",
         name: "Untitled Document",
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
+    notMe: false,
+    hasScoreData: false,
+  };
+  expect(preAssignedData).eqls(expectedData);
+
+  // get my folder content returns same data, with differences in some optional fields
+  let folderData = await getMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
   });
+  delete expectedData.documents[0].name;
+  delete expectedData.documents[0].source;
+  expectedData.isFolder = false;
+  delete expectedData.notMe;
+  expect(folderData.content).eqls([expectedData]);
 
-  await assignActivity(activityId, ownerId);
-
-  const assignedData = await getActivityEditorData(activityId, ownerId);
-
-  expect(assignedData).eqls({
-    name: "Untitled Activity",
-    imagePath: "/activity_default.jpg",
-    isPublic: false,
-    isAssigned: true,
-    stillOpen: false,
-    classCode: null,
-    codeValidUntil: null,
-    documents: [
-      {
-        id: docId,
-        versionNum: 1,
-        source: "",
-        name: "Untitled Document",
-        doenetmlVersion: currentDoenetmlVersion,
-      },
-    ],
-  });
-
+  // Opening assignment also assigns the activity
   let closeAt = DateTime.now().plus({ days: 1 });
   const { classCode } = await openAssignmentWithCode(
     activityId,
@@ -2316,13 +2539,14 @@ test("activity editor data before and after assigned", async () => {
   );
 
   const openedData = await getActivityEditorData(activityId, ownerId);
-
-  expect(openedData).eqls({
+  expectedData = {
+    id: activityId,
     name: "Untitled Activity",
+    ownerId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
     isAssigned: true,
-    stillOpen: true,
+    assignmentStatus: "Open",
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     documents: [
@@ -2334,18 +2558,170 @@ test("activity editor data before and after assigned", async () => {
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
+    notMe: false,
+    hasScoreData: false,
+  };
+
+  expect(openedData).eqls(expectedData);
+
+  // get my folder content returns same data, with differences in some optional fields
+  folderData = await getMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
   });
+  delete expectedData.documents[0].name;
+  delete expectedData.documents[0].source;
+  delete expectedData.documents[0].versionNum;
+  expectedData.isFolder = false;
+  delete expectedData.notMe;
+  expect(folderData.content).eqls([expectedData]);
 
+  // closing the assignment without data also unassigns it
   await closeAssignmentWithCode(activityId, ownerId);
-
   const closedData = await getActivityEditorData(activityId, ownerId);
-
-  expect(closedData).eqls({
+  expectedData = {
+    id: activityId,
     name: "Untitled Activity",
+    ownerId,
+    imagePath: "/activity_default.jpg",
+    isPublic: false,
+    isAssigned: false,
+    assignmentStatus: "Unassigned",
+    classCode,
+    codeValidUntil: null,
+    documents: [
+      {
+        id: docId,
+        source: "",
+        name: "Untitled Document",
+        doenetmlVersion: currentDoenetmlVersion,
+      },
+    ],
+    notMe: false,
+    hasScoreData: false,
+  };
+
+  expect(closedData).eqls(expectedData);
+
+  // get my folder content returns same data, with differences in some optional fields
+  folderData = await getMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
+  });
+  delete expectedData.documents[0].name;
+  delete expectedData.documents[0].source;
+  expectedData.isFolder = false;
+  delete expectedData.notMe;
+  expect(folderData.content).eqls([expectedData]);
+
+  // re-opening, re-assigns with same code
+  closeAt = DateTime.now().plus({ days: 1 });
+  let { classCode: newClassCode } = await openAssignmentWithCode(
+    activityId,
+    closeAt,
+    ownerId,
+  );
+
+  expect(newClassCode).eq(classCode);
+
+  const openedData2 = await getActivityEditorData(activityId, ownerId);
+  expectedData = {
+    id: activityId,
+    name: "Untitled Activity",
+    ownerId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
     isAssigned: true,
-    stillOpen: false,
+    assignmentStatus: "Open",
+    classCode,
+    codeValidUntil: closeAt.toJSDate(),
+    documents: [
+      {
+        id: docId,
+        versionNum: 1,
+        source: "",
+        name: "Untitled Document",
+        doenetmlVersion: currentDoenetmlVersion,
+      },
+    ],
+    notMe: false,
+    hasScoreData: false,
+  };
+
+  expect(openedData2).eqls(expectedData);
+
+  // get my folder content returns same data, with differences in some optional fields
+  folderData = await getMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
+  });
+  delete expectedData.documents[0].name;
+  delete expectedData.documents[0].source;
+  delete expectedData.documents[0].versionNum;
+  expectedData.isFolder = false;
+  delete expectedData.notMe;
+  expect(folderData.content).eqls([expectedData]);
+
+  // just add some data (doesn't matter that it is owner themselves)
+  await saveScoreAndState({
+    activityId,
+    docId,
+    docVersionNum: 1,
+    userId: ownerId,
+    score: 0.5,
+    onSubmission: true,
+    state: "document state 1",
+  });
+
+  const openedData3 = await getActivityEditorData(activityId, ownerId);
+  expectedData = {
+    id: activityId,
+    name: "Untitled Activity",
+    ownerId,
+    imagePath: "/activity_default.jpg",
+    isPublic: false,
+    isAssigned: true,
+    assignmentStatus: "Open",
+    classCode,
+    codeValidUntil: closeAt.toJSDate(),
+    documents: [
+      {
+        id: docId,
+        versionNum: 1,
+        source: "",
+        name: "Untitled Document",
+        doenetmlVersion: currentDoenetmlVersion,
+      },
+    ],
+    notMe: false,
+    hasScoreData: true,
+  };
+
+  expect(openedData3).eqls(expectedData);
+
+  // get my folder content returns same data, with differences in some optional fields
+  folderData = await getMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
+  });
+  delete expectedData.documents[0].name;
+  delete expectedData.documents[0].source;
+  delete expectedData.documents[0].versionNum;
+  expectedData.isFolder = false;
+  delete expectedData.notMe;
+  expect(folderData.content).eqls([expectedData]);
+
+  // now closing does not unassign
+  await closeAssignmentWithCode(activityId, ownerId);
+  const closedData2 = await getActivityEditorData(activityId, ownerId);
+  expectedData = {
+    id: activityId,
+    name: "Untitled Activity",
+    ownerId,
+    imagePath: "/activity_default.jpg",
+    isPublic: false,
+    isAssigned: true,
+    assignmentStatus: "Closed",
     classCode,
     codeValidUntil: null,
     documents: [
@@ -2357,30 +2733,28 @@ test("activity editor data before and after assigned", async () => {
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
+    notMe: false,
+    hasScoreData: true,
+  };
+
+  expect(closedData2).eqls(expectedData);
+
+  // get my folder content returns same data, with differences in some optional fields
+  folderData = await getMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
   });
+  delete expectedData.documents[0].name;
+  delete expectedData.documents[0].source;
+  delete expectedData.documents[0].versionNum;
+  expectedData.isFolder = false;
+  delete expectedData.notMe;
+  expect(folderData.content).eqls([expectedData]);
 
-  await unassignActivity(activityId, ownerId);
-
-  const unAssignedData = await getActivityEditorData(activityId, ownerId);
-
-  expect(unAssignedData).eqls({
-    name: "Untitled Activity",
-    imagePath: "/activity_default.jpg",
-    isPublic: false,
-    isAssigned: false,
-    stillOpen: false,
-    classCode,
-    codeValidUntil: null,
-    documents: [
-      {
-        id: docId,
-        versionNum: null,
-        source: "",
-        name: "Untitled Document",
-        doenetmlVersion: currentDoenetmlVersion,
-      },
-    ],
-  });
+  // explicitly unassigning fails due to the presence of data
+  await expect(unassignActivity(activityId, ownerId)).rejects.toThrow(
+    "Record to update not found",
+  );
 });
 
 test("only user and assignment owner can load document state", async () => {
@@ -2613,7 +2987,11 @@ test("record submitted events and get responses", async () => {
   // create new anonymous user
   let assignmentData = await getAssignmentDataFromCode(classCode, false);
   let newUser = assignmentData.newAnonymousUser;
-  let userData = { userId: newUser!.userId, name: newUser!.name };
+  let userData = {
+    userId: newUser!.userId,
+    firstNames: newUser!.firstNames,
+    lastNames: newUser!.lastNames,
+  };
 
   let answerId1 = "answer1";
   let answerId2 = "answer2";
@@ -2688,7 +3066,8 @@ test("record submitted events and get responses", async () => {
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
-      userName: newUser!.name,
+      firstNames: newUser!.firstNames,
+      lastNames: newUser!.lastNames,
       bestResponse: "Answer result 1",
       bestCreditAchieved: 0.4,
       latestResponse: "Answer result 1",
@@ -2751,7 +3130,8 @@ test("record submitted events and get responses", async () => {
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
-      userName: newUser!.name,
+      firstNames: newUser!.firstNames,
+      lastNames: newUser!.lastNames,
       bestResponse: "Answer result 2",
       bestCreditAchieved: 0.8,
       latestResponse: "Answer result 2",
@@ -2830,7 +3210,8 @@ test("record submitted events and get responses", async () => {
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
-      userName: newUser!.name,
+      firstNames: newUser!.firstNames,
+      lastNames: newUser!.lastNames,
       bestResponse: "Answer result 2",
       bestCreditAchieved: 0.8,
       latestResponse: "Answer result 2",
@@ -2870,7 +3251,8 @@ test("record submitted events and get responses", async () => {
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
-      userName: newUser!.name,
+      firstNames: newUser!.firstNames,
+      lastNames: newUser!.lastNames,
       bestResponse: "Answer result 3",
       bestCreditAchieved: 0.2,
       latestResponse: "Answer result 3",
@@ -2898,7 +3280,11 @@ test("record submitted events and get responses", async () => {
   // response for a second user
   assignmentData = await getAssignmentDataFromCode(classCode, false);
   let newUser2 = assignmentData.newAnonymousUser;
-  let userData2 = { userId: newUser2!.userId, name: newUser2!.name };
+  let userData2 = {
+    userId: newUser2!.userId,
+    firstNames: newUser2!.firstNames,
+    lastNames: newUser2!.lastNames,
+  };
   await recordSubmittedEvent({
     activityId,
     docId,
@@ -2946,7 +3332,8 @@ test("record submitted events and get responses", async () => {
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
-      userName: newUser!.name,
+      firstNames: newUser!.firstNames,
+      lastNames: newUser!.lastNames,
       bestResponse: "Answer result 2",
       bestCreditAchieved: 0.8,
       latestResponse: "Answer result 2",
@@ -2955,7 +3342,8 @@ test("record submitted events and get responses", async () => {
     },
     {
       userId: newUser2!.userId,
-      userName: newUser2!.name,
+      firstNames: newUser2!.firstNames,
+      lastNames: newUser2!.lastNames,
       bestResponse: "Answer result 4",
       bestCreditAchieved: 1,
       latestResponse: "Answer result 4",
@@ -3012,7 +3400,8 @@ test("record submitted events and get responses", async () => {
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
-      userName: newUser!.name,
+      firstNames: newUser!.firstNames,
+      lastNames: newUser!.lastNames,
       bestResponse: "Answer result 3",
       bestCreditAchieved: 0.2,
       latestResponse: "Answer result 3",
@@ -3094,7 +3483,8 @@ test("record submitted events and get responses", async () => {
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
-      userName: newUser!.name,
+      firstNames: newUser!.firstNames,
+      lastNames: newUser!.lastNames,
       bestResponse: "Answer result 2",
       bestCreditAchieved: 0.8,
       latestResponse: "Answer result 2",
@@ -3103,7 +3493,8 @@ test("record submitted events and get responses", async () => {
     },
     {
       userId: newUser2!.userId,
-      userName: newUser2!.name,
+      firstNames: newUser2!.firstNames,
+      lastNames: newUser2!.lastNames,
       bestResponse: "Answer result 4",
       bestCreditAchieved: 1,
       latestResponse: "Answer result 5",
@@ -3157,7 +3548,11 @@ test("only owner can get submitted responses", async () => {
   // create new anonymous user
   let assignmentData = await getAssignmentDataFromCode(classCode, false);
   let newUser = assignmentData.newAnonymousUser;
-  let userData = { userId: newUser!.userId, name: newUser!.name };
+  let userData = {
+    userId: newUser!.userId,
+    firstNames: newUser!.firstNames,
+    lastNames: newUser!.lastNames,
+  };
 
   let answerId1 = "answer1";
 
@@ -3199,7 +3594,8 @@ test("only owner can get submitted responses", async () => {
   expect(submittedResponses).toMatchObject([
     {
       userId: newUser!.userId,
-      userName: newUser!.name,
+      firstNames: newUser!.firstNames,
+      lastNames: newUser!.lastNames,
       bestResponse: "Answer result 1",
       bestCreditAchieved: 1,
       latestResponse: "Answer result 1",
@@ -3327,12 +3723,10 @@ test("list assigned and get assigned scores get student assignments and scores",
     { activityId: activityId2, activityName: "Activity 2", score: 0.5 },
   ]);
 
-  // unassigning activity removes them from list
-  await unassignActivity(activityId2, user2Id);
-  assignmentList = await listUserAssigned(user1Id);
-  expect(assignmentList.assignments).eqls([]);
-  studentData = await getAssignedScores(user1Id);
-  expect(studentData.orderedActivityScores).eqls([]);
+  // cannot unassign
+  await expect(unassignActivity(activityId2, user2Id)).rejects.toThrow(
+    "Record to update not found",
+  );
 });
 
 test("get all assignment data from anonymous user", async () => {
@@ -3362,7 +3756,8 @@ test("get all assignment data from anonymous user", async () => {
   let newUser1 = assignmentData.newAnonymousUser;
   newUser1 = await updateUser({
     userId: newUser1!.userId,
-    name: "Zoe Zaborowski",
+    firstNames: "Zoe",
+    lastNames: "Zaborowski",
   });
 
   await saveScoreAndState({
@@ -3384,7 +3779,8 @@ test("get all assignment data from anonymous user", async () => {
   expect(userWithScores).eqls({
     userData: {
       userId: newUser1!.userId,
-      name: newUser1!.name,
+      firstNames: newUser1!.firstNames,
+      lastNames: newUser1!.lastNames,
     },
     orderedActivityScores: [
       {
@@ -3415,7 +3811,8 @@ test("get all assignment data from anonymous user", async () => {
   expect(userWithScores).eqls({
     userData: {
       userId: newUser1!.userId,
-      name: newUser1!.name,
+      firstNames: newUser1!.firstNames,
+      lastNames: newUser1!.lastNames,
     },
     orderedActivityScores: [
       {
@@ -3445,7 +3842,8 @@ test("get all assignment data from anonymous user", async () => {
   expect(userWithScores).eqls({
     userData: {
       userId: newUser1!.userId,
-      name: newUser1!.name,
+      firstNames: newUser1!.firstNames,
+      lastNames: newUser1!.lastNames,
     },
     orderedActivityScores: [
       {
@@ -3709,7 +4107,8 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   let newUser1 = assignmentData.newAnonymousUser;
   newUser1 = await updateUser({
     userId: newUser1!.userId,
-    name: "Zoe Zaborowski",
+    firstNames: "Zoe",
+    lastNames: "Zaborowski",
   });
 
   await saveScoreAndState({
@@ -3738,7 +4137,10 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
       activityId: activityId,
       userId: newUser1!.userId,
       score: 0.5,
-      user: { name: newUser1!.name },
+      user: {
+        firstNames: newUser1!.firstNames,
+        lastNames: newUser1!.lastNames,
+      },
     },
   ]);
 
@@ -3769,7 +4171,10 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
       activityId: activityId,
       userId: newUser1!.userId,
       score: 0.5,
-      user: { name: newUser1!.name },
+      user: {
+        firstNames: newUser1!.firstNames,
+        lastNames: newUser1!.lastNames,
+      },
     },
   ]);
 
@@ -3778,7 +4183,8 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   let newUser2 = assignmentData.newAnonymousUser;
   newUser2 = await updateUser({
     userId: newUser2!.userId,
-    name: "Arya Abbas",
+    firstNames: "Arya",
+    lastNames: "Abbas",
   });
 
   await saveScoreAndState({
@@ -3817,13 +4223,19 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
       activityId: activityId,
       userId: newUser1!.userId,
       score: 0.7,
-      user: { name: newUser1!.name },
+      user: {
+        firstNames: newUser1!.firstNames,
+        lastNames: newUser1!.lastNames,
+      },
     },
     {
       activityId: activityId,
       userId: newUser2!.userId,
       score: 0.3,
-      user: { name: newUser2!.name },
+      user: {
+        firstNames: newUser2!.firstNames,
+        lastNames: newUser2!.lastNames,
+      },
     },
   ]);
 
@@ -3856,7 +4268,8 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   let newUser3 = assignmentData.newAnonymousUser;
   newUser3 = await updateUser({
     userId: newUser3!.userId,
-    name: "Arya Abbas",
+    firstNames: "Nyla",
+    lastNames: "Nyquist",
   });
 
   await saveScoreAndState({
@@ -3889,19 +4302,28 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
       activityId: activityId,
       userId: newUser1!.userId,
       score: 0.7,
-      user: { name: newUser1!.name },
+      user: {
+        firstNames: newUser1!.firstNames,
+        lastNames: newUser1!.lastNames,
+      },
     },
     {
       activityId: activityId,
       userId: newUser2!.userId,
       score: 0.3,
-      user: { name: newUser2!.name },
+      user: {
+        firstNames: newUser2!.firstNames,
+        lastNames: newUser2!.lastNames,
+      },
     },
     {
       activityId: activity2Id,
       userId: newUser3!.userId,
       score: 0.9,
-      user: { name: newUser3!.name },
+      user: {
+        firstNames: newUser3!.firstNames,
+        lastNames: newUser3!.lastNames,
+      },
     },
   ]);
 });

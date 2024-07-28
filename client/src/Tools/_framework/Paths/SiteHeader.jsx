@@ -26,6 +26,7 @@ import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import RouterLogo from "../RouterLogo";
 import { ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import axios from "axios";
+import { createFullName } from "../../../_utils/names";
 
 export async function loader() {
   //Check if signedIn
@@ -34,24 +35,18 @@ export async function loader() {
   if (profileInfo.cookieRemoved) {
     signedIn = false;
   }
-  let userId = null;
-  let name = "";
-  let email = "";
-  let anonymous = false;
+  let user = null;
   let isAdmin = false;
   if (signedIn) {
     const response = await axios.get("/api/getUser");
     let { data } = response;
-    userId = data.userId;
-    email = data.email;
-    name = data.name;
-    anonymous = data.anonymous;
+    user = data;
 
     const isAdminResponse = await axios.get(`/api/checkForCommunityAdmin`);
     let { data: isAdminData } = isAdminResponse;
     isAdmin = isAdminData.isAdmin;
   }
-  return { signedIn, userId, isAdmin, name, email, anonymous };
+  return { signedIn, user, isAdmin };
 }
 
 function NavLinkTab({ to, children, dataTest }) {
@@ -127,7 +122,7 @@ function NavLinkDropdownTab({ to, children, dataTest }) {
 }
 
 export function SiteHeader(props) {
-  let { signedIn, userId, isAdmin, name, email, anonymous } = useLoaderData();
+  let { signedIn, user, isAdmin } = useLoaderData();
   const { childComponent } = props;
 
   let location = useLocation();
@@ -201,15 +196,15 @@ export function SiteHeader(props) {
                   <NavLinkTab to="community" dataTest="Community">
                     Community
                   </NavLinkTab>
-                  {!signedIn || anonymous ? (
-                    <NavLinkTab to="classCode" dataTest="Class Code">
+                  {!signedIn || user.anonymous ? (
+                    <NavLinkTab to="code" dataTest="Class Code">
                       Class Code
                     </NavLinkTab>
                   ) : null}
-                  {signedIn && !anonymous && (
+                  {signedIn && !user.anonymous && (
                     <>
                       <NavLinkTab
-                        to={`activities/${userId}`}
+                        to={`activities/${user.userId}`}
                         dataTest="Activities"
                       >
                         Activities
@@ -270,13 +265,13 @@ export function SiteHeader(props) {
                   <Center h="40px" mr="10px">
                     <Menu>
                       <MenuButton>
-                        <Avatar size="sm" name={`${name}`} />
+                        <Avatar size="sm" name={`${createFullName(user)}`} />
                       </MenuButton>
                       <MenuList>
                         <VStack mb="20px">
-                          <Avatar size="xl" name={`${name}`} />
-                          <Text>{name}</Text>
-                          <Text>{anonymous ? "" : email}</Text>
+                          <Avatar size="xl" name={`${createFullName(user)}`} />
+                          <Text>{createFullName(user)}</Text>
+                          <Text>{user.anonymous ? "" : user.email}</Text>
                         </VStack>
                         <MenuItem as="a" href="/signOut">
                           Sign Out
@@ -309,18 +304,15 @@ export function SiteHeader(props) {
                         <NavLinkDropdownTab to="community" dataTest="Community">
                           Community
                         </NavLinkDropdownTab>
-                        {!signedIn || anonymous ? (
-                          <NavLinkDropdownTab
-                            to="classCode"
-                            dataTest="Class Code"
-                          >
+                        {!signedIn || user.anonymous ? (
+                          <NavLinkDropdownTab to="code" dataTest="Class Code">
                             Class Code
                           </NavLinkDropdownTab>
                         ) : null}
-                        {signedIn && !anonymous && (
+                        {signedIn && !user.anonymous && (
                           <>
                             <NavLinkDropdownTab
-                              to={`activities/${userId}`}
+                              to={`activities/${user.userId}`}
                               dataTest="Activities"
                             >
                               Activities
@@ -346,8 +338,7 @@ export function SiteHeader(props) {
             </GridItem>
           </Grid>
         </GridItem>
-        <GridItem area="main" as="main" margin="0" overflowY="scroll">
-          {/* <Box>test</Box> */}
+        <GridItem area="main" as="main" margin="0" overflowY="auto">
           {childComponent ? childComponent : <Outlet context={{ signedIn }} />}
         </GridItem>
       </Grid>

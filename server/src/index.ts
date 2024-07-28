@@ -1,4 +1,5 @@
 import express, { Express, NextFunction, Request, Response } from "express";
+import * as path from "path";
 import bodyParser from "body-parser";
 
 import dotenv from "dotenv";
@@ -48,12 +49,17 @@ import {
   movePromotedContentGroup,
   InvalidRequestError,
   moveContent,
-  getFolderContent,
+  getMyFolderContent,
   getAssignedScores,
   addClassification,
   removeClassification,
   getClassifications,
   searchPossibleClassifications,
+  getPublicFolderContent,
+  searchUsersWithPublicContent,
+  getPublicEditorData,
+  unassignActivity,
+  updateAssignmentSettings,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -72,7 +78,7 @@ app.use(
 
 const port = process.env.PORT || 3000;
 
-app.use(express.static("public"));
+app.use(express.static(path.resolve(__dirname, "../public")));
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
@@ -105,10 +111,12 @@ app.post("/api/updateUser", async (req: Request, res: Response) => {
   if (signedIn) {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
-    const name = body.name;
-    await updateUser({ userId: loggedInUserId, name });
-    res.cookie("name", name);
-    res.send({ name });
+    const firstNames = body.firstNames;
+    const lastNames = body.lastNames;
+    await updateUser({ userId: loggedInUserId, firstNames, lastNames });
+    res.cookie("firstNames", firstNames);
+    res.cookie("lastNames", lastNames);
+    res.send({ firstNames, lastNames });
   } else {
     res.send({});
   }
@@ -125,98 +133,6 @@ app.get(
   async (req: Request, res: Response) => {
     const docs = await getAllRecentPublicActivities();
     res.send(docs);
-  },
-);
-
-app.get(
-  "/api/getContent/:userId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
-    const userId = Number(req.params.userId);
-    try {
-      const contentData = await getFolderContent({
-        ownerId: userId,
-        loggedInUserId,
-        folderId: null,
-      });
-      const allDoenetmlVersions = await getAllDoenetmlVersions();
-      res.send({ allDoenetmlVersions, ...contentData });
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.status(404).send("No content found");
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
-  "/api/getContent/:userId/:folderId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
-    const folderId = Number(req.params.folderId);
-    const userId = Number(req.params.userId);
-    try {
-      const contentData = await getFolderContent({
-        ownerId: userId,
-        loggedInUserId,
-        folderId,
-      });
-      const allDoenetmlVersions = await getAllDoenetmlVersions();
-      res.send({ allDoenetmlVersions, ...contentData });
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.status(404).send("No content found");
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
-  "/api/getPublicContent/:userId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const userId = Number(req.params.userId);
-    try {
-      // send 0 as the logged in content to make sure get only public content
-      const contentData = await getFolderContent({
-        ownerId: userId,
-        loggedInUserId: 0,
-        folderId: null,
-      });
-      res.send(contentData);
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.status(404).send("No content found");
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
-  "/api/getPublicContent/:userId/:folderId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const userId = Number(req.params.userId);
-    const folderId = Number(req.params.folderId);
-    try {
-      // send 0 as the logged in content to make sure get only public content
-      const contentData = await getFolderContent({
-        ownerId: userId,
-        loggedInUserId: 0,
-        folderId,
-      });
-      res.send(contentData);
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.status(404).send("No content found");
-      } else {
-        next(e);
-      }
-    }
   },
 );
 
@@ -257,10 +173,15 @@ app.get(
 app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
   const email: string = req.query.emailaddress as string;
   // TODO: add the ability to give a name after logging in or creating an account
-  const user = await findOrCreateUser(email, email);
+  const user = await findOrCreateUser({
+    email,
+    firstNames: null,
+    lastNames: "",
+  });
   res.cookie("email", email);
   res.cookie("userId", String(user.userId));
-  res.cookie("name", String(user.name));
+  res.cookie("firstNames", String(user.firstNames));
+  res.cookie("lastNames", String(user.lastNames));
   res.send({});
 });
 
@@ -370,7 +291,10 @@ app.post(
       await updateContent({ id, name, ownerId: loggedInUserId });
       res.send({});
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2025"
+      ) {
         res.sendStatus(403);
       } else {
         next(e);
@@ -428,7 +352,7 @@ app.get(
 app.get("/api/searchPublicContent", async (req: Request, res: Response) => {
   const query = req.query.q as string;
   res.send({
-    users: [], // TODO - this
+    users: await searchUsersWithPublicContent(query),
     content: await searchPublicContent(query),
   });
 });
@@ -639,7 +563,30 @@ app.get(
       );
       res.send(editorData);
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2025"
+      ) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getPublicEditorData/:activityId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const activityId = Number(req.params.activityId);
+    try {
+      const editorData = await getPublicEditorData(activityId);
+      res.send(editorData);
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2001"
+      ) {
         res.sendStatus(404);
       } else {
         next(e);
@@ -683,19 +630,23 @@ app.get(
 
     let assignmentData = await getAssignmentDataFromCode(code, signedIn);
 
-    let name: string;
+    let firstNames: string | null;
+    let lastNames: string;
     if (assignmentData.newAnonymousUser) {
       const anonymousUser = assignmentData.newAnonymousUser;
       // create a user with random name and email
       res.cookie("email", anonymousUser.email);
       res.cookie("userId", String(anonymousUser.userId));
-      res.cookie("name", String(anonymousUser.name));
-      name = anonymousUser.name;
+      res.cookie("firstNames", String(anonymousUser.firstNames));
+      res.cookie("lastNames", String(anonymousUser.lastNames));
+      firstNames = anonymousUser.firstNames;
+      lastNames = anonymousUser.lastNames;
     } else {
-      name = req.cookies.name;
+      firstNames = req.cookies.firstNames;
+      lastNames = req.cookies.lastNames;
     }
 
-    res.send({ name, ...assignmentData });
+    res.send({ student: { firstNames, lastNames }, ...assignmentData });
   },
 );
 
@@ -829,7 +780,7 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
-    const activityId = Number(body.assignmentId);
+    const activityId = Number(body.activityId);
     const closeAt = DateTime.fromISO(body.closeAt);
 
     try {
@@ -850,6 +801,27 @@ app.post(
 );
 
 app.post(
+  "/api/updateAssignmentSettings",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const body = req.body;
+    const activityId = Number(body.activityId);
+    const closeAt = DateTime.fromISO(body.closeAt);
+
+    try {
+      await updateAssignmentSettings(activityId, closeAt, loggedInUserId);
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
   "/api/closeAssignmentWithCode",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
@@ -858,6 +830,26 @@ app.post(
 
     try {
       await closeAssignmentWithCode(activityId, loggedInUserId);
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/unassignActivity",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const body = req.body;
+    const activityId = Number(body.activityId);
+
+    try {
+      await unassignActivity(activityId, loggedInUserId);
       res.send({});
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -1207,19 +1199,18 @@ app.get(
 );
 
 app.get(
-  "/api/getFolderContent/",
+  "/api/getMyFolderContent/",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = req.cookies.userId ? Number(req.cookies.userId) : 0;
 
     try {
-      const folder = await getFolderContent({
-        ownerId: loggedInUserId,
+      const contentData = await getMyFolderContent({
         folderId: null,
         loggedInUserId,
       });
 
       const allDoenetmlVersions = await getAllDoenetmlVersions();
-      res.send({ allDoenetmlVersions, folder });
+      res.send({ allDoenetmlVersions, ...contentData });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
@@ -1231,22 +1222,64 @@ app.get(
 );
 
 app.get(
-  "/api/getFolderContent/:folderId",
+  "/api/getMyFolderContent/:folderId",
   async (req: Request, res: Response, next: NextFunction) => {
     const folderId = Number(req.params.folderId);
     const loggedInUserId = Number(req.cookies.userId);
 
     try {
-      const folder = await getFolderContent({
-        ownerId: loggedInUserId,
+      const contentData = await getMyFolderContent({
         folderId,
         loggedInUserId,
       });
       const allDoenetmlVersions = await getAllDoenetmlVersions();
-      res.send({ allDoenetmlVersions, folder });
+      res.send({ allDoenetmlVersions, ...contentData });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.sendStatus(204);
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getPublicFolderContent/:ownerId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const ownerId = Number(req.params.ownerId);
+    try {
+      // send 0 as the logged in content to make sure get only public content
+      const contentData = await getPublicFolderContent({
+        ownerId,
+        folderId: null,
+      });
+      res.send(contentData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.status(404).send("No content found");
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getPublicFolderContent/:ownerId/:folderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const ownerId = Number(req.params.ownerId);
+    const folderId = Number(req.params.folderId);
+    try {
+      // send 0 as the logged in content to make sure get only public content
+      const contentData = await getPublicFolderContent({
+        ownerId,
+        folderId,
+      });
+      res.send(contentData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.status(404).send("No content found");
       } else {
         next(e);
       }
@@ -1314,7 +1347,10 @@ app.get(
     try {
       const { activityId } = req.body;
       const loggedInUserId = Number(req.cookies.userId);
-      const classifications = await getClassifications(activityId, loggedInUserId);
+      const classifications = await getClassifications(
+        activityId,
+        loggedInUserId,
+      );
       res.send(classifications);
     } catch (e) {
       if (e instanceof InvalidRequestError) {
@@ -1325,7 +1361,6 @@ app.get(
     }
   },
 );
-
 app.get(
   "/api/searchPossibleClassifications",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -1341,6 +1376,12 @@ app.get(
     }
   },
 );
+
+// handle every other route with index.html, which will contain
+// a script tag to your application's JavaScript file(s).
+app.get("*", function (request, response) {
+  response.sendFile(path.resolve(__dirname, "../public/index.html"));
+});
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);

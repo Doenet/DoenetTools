@@ -38,11 +38,6 @@ export async function action({ params, request }) {
     // TODO: do not navigate to editor
     // Instead, navigate to activities with newly created activity highlighted
     return redirect(`/activityEditor/${newActivityId}`);
-  } else if (formObj?._action == "create assignment") {
-    const { data } = await axios.post(`/api/assignActivity`, {
-      activityId: Number(params.activityId),
-    });
-    return redirect(`/assignments`);
   }
 
   return null;
@@ -66,7 +61,7 @@ export async function loader({ params }) {
       // If docId was not supplied in the url,
       // then use the first docId from the activity.
       // TODO: what happens if activity has no documents?
-      docId = activityData.activity.documents[0].docId;
+      docId = activityData.activity.documents[0].id;
     }
 
     const doenetML = activityData.activity.documents[0].source;
@@ -201,7 +196,6 @@ export function ActivityViewer() {
                             data-test="Copy to Activities Button"
                             size="xs"
                             colorScheme="blue"
-                            marginRight="10px"
                             onClick={() => {
                               fetcher.submit(
                                 {
@@ -212,22 +206,6 @@ export function ActivityViewer() {
                             }}
                           >
                             Copy to Activities
-                          </Button>
-
-                          <Button
-                            data-test="Create Assignment"
-                            size="xs"
-                            colorScheme="blue"
-                            onClick={() => {
-                              fetcher.submit(
-                                {
-                                  _action: "create assignment",
-                                },
-                                { method: "post" },
-                              );
-                            }}
-                          >
-                            Create Assignment
                           </Button>
                         </HeaderSectionRight>
                       ) : (

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie"; // import Textinput from "../imports/Textinput";
 import axios from "axios";
-import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
-import Textfield from "../../../_reactComponents/PanelHeaderComponents/Textfield";
-import Checkbox from "../../../_reactComponents/PanelHeaderComponents/Checkbox";
+import Button from "../../../PanelHeaderComponents/Button";
+import Textfield from "../../../PanelHeaderComponents/Textfield";
+import Checkbox from "../../../PanelHeaderComponents/Checkbox";
 
 export default function SignIn(props) {
   let [email, setEmail] = useState("");
