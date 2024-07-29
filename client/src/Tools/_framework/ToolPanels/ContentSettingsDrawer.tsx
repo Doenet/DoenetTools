@@ -1,7 +1,6 @@
 import React, { RefObject, useEffect, useState } from "react";
 import {
   Box,
-  Center,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -14,20 +13,27 @@ import {
   TabPanels,
   Tabs,
   Text,
+  Tooltip,
 } from "@chakra-ui/react";
 import { FetcherWithComponents } from "react-router-dom";
-import { GeneralActivityControls } from "./GeneralActivityControls";
+import { GeneralContentControls } from "./GeneralContentControls";
 import { SupportFilesControls } from "./SupportFilesControls";
-import { ActivityStructure, DoenetmlVersion } from "../Paths/ActivityEditor";
+import {
+  ContentStructure,
+  DoenetmlVersion,
+  License,
+} from "../Paths/ActivityEditor";
 import { AssignActivityControls } from "./AssignActivityControls";
+import { SharingControls } from "./SharingControls";
 
-export function ActivitySettingsDrawer({
+export function ContentSettingsDrawer({
   isOpen,
   onClose,
   finalFocusRef,
-  activityId,
-  activityData,
+  id,
+  contentData,
   allDoenetmlVersions,
+  allLicenses,
   supportingFileData,
   fetcher,
   displayTab = "general",
@@ -35,16 +41,17 @@ export function ActivitySettingsDrawer({
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  activityId: number;
-  activityData: ActivityStructure;
+  id: number;
+  contentData: ContentStructure;
   allDoenetmlVersions: DoenetmlVersion[];
+  allLicenses: License[];
   supportingFileData?: any;
   fetcher: FetcherWithComponents<any>;
-  displayTab?: "general" | "files" | "assignment";
+  displayTab?: "general" | "share" | "files" | "assignment";
 }) {
   const haveSupportingFiles = Boolean(supportingFileData);
-  const isFolder: boolean = Boolean(activityData.isFolder);
-  const numTabs = haveSupportingFiles ? (isFolder ? 2 : 3) : isFolder ? 1 : 2;
+  const isFolder: boolean = Boolean(contentData.isFolder);
+  const numTabs = haveSupportingFiles ? (isFolder ? 3 : 4) : isFolder ? 2 : 3;
 
   let initialTabIndex: number;
   switch (displayTab) {
@@ -52,12 +59,16 @@ export function ActivitySettingsDrawer({
       initialTabIndex = 0;
       break;
     }
+    case "share": {
+      initialTabIndex = 1;
+      break;
+    }
     case "files": {
-      initialTabIndex = haveSupportingFiles ? 1 : 0;
+      initialTabIndex = haveSupportingFiles ? 2 : 1;
       break;
     }
     case "assignment": {
-      initialTabIndex = haveSupportingFiles ? 2 : 1;
+      initialTabIndex = haveSupportingFiles ? 3 : 2;
       break;
     }
   }
@@ -81,50 +92,62 @@ export function ActivitySettingsDrawer({
       <DrawerContent>
         <DrawerCloseButton data-test="Close Settings Button" />
         <DrawerHeader textAlign="center" height="70px">
-          {activityData.isFolder ? "Folder" : "Activity"} Controls
-          <Text fontSize="smaller">{activityData.name}</Text>
+          {contentData.isFolder ? "Folder" : "Activity"} Controls
+          <Tooltip label={contentData.name}>
+            <Text fontSize="smaller" noOfLines={1}>
+              {contentData.name}
+            </Text>
+          </Tooltip>
         </DrawerHeader>
 
         <DrawerBody>
           <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)}>
             <TabList>
               <Tab data-test="General Tab">General</Tab>
+              <Tab data-test="Share Tab">Share</Tab>
               {haveSupportingFiles ? (
                 <Tab data-test="Files Tab">Support Files</Tab>
               ) : null}
-              {!activityData.isFolder ? (
+              {!contentData.isFolder ? (
                 <Tab data-test="Assignment Tab">
-                  {activityData.isAssigned
-                    ? "Manage Assignment"
-                    : "Assign Activity"}
+                  {contentData.assignmentStatus === "Unassigned"
+                    ? "Assign Activity"
+                    : "Manage Assignment"}
                 </Tab>
               ) : null}
             </TabList>
             <Box overflowY="auto" height="calc(100vh - 130px)">
               <TabPanels>
                 <TabPanel>
-                  <GeneralActivityControls
+                  <GeneralContentControls
                     fetcher={fetcher}
-                    activityId={activityId}
-                    activityData={activityData}
+                    id={id}
+                    contentData={contentData}
                     allDoenetmlVersions={allDoenetmlVersions}
+                  />
+                </TabPanel>
+                <TabPanel>
+                  <SharingControls
+                    fetcher={fetcher}
+                    contentData={contentData}
+                    allLicenses={allLicenses}
                   />
                 </TabPanel>
                 {haveSupportingFiles ? (
                   <TabPanel>
                     <SupportFilesControls
                       fetcher={fetcher}
-                      activityId={activityId}
+                      activityId={id}
                       supportingFileData={supportingFileData}
                     />
                   </TabPanel>
                 ) : null}
-                {!activityData.isFolder ? (
+                {!contentData.isFolder ? (
                   <TabPanel>
                     <AssignActivityControls
                       fetcher={fetcher}
-                      activityId={activityId}
-                      activityData={activityData}
+                      activityId={id}
+                      activityData={contentData}
                       openTabIndex={tabIndex}
                     />
                   </TabPanel>

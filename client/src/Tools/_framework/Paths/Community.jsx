@@ -28,12 +28,12 @@ import {
   FormLabel,
 } from "@chakra-ui/react";
 import { useLoaderData } from "react-router";
-import { Carousel } from "../../../PanelHeaderComponents/Carousel";
-import Searchbar from "../../../PanelHeaderComponents/SearchBar";
+import { Carousel } from "../../../Widgets/Carousel";
+import Searchbar from "../../../Widgets/SearchBar";
 import { Form, useFetcher } from "react-router-dom";
 import { RiEmotionSadLine } from "react-icons/ri";
-import ContentCard from "../../../PanelHeaderComponents/ContentCard";
-import AuthorCard from "../../../PanelHeaderComponents/AuthorCard";
+import ContentCard from "../../../Widgets/ContentCard";
+import AuthorCard from "../../../Widgets/AuthorCard";
 import { createFullName } from "../../../_utils/names";
 
 export async function action({ request }) {
@@ -403,12 +403,12 @@ export function Community() {
       if (itemObj?.type == "content") {
         const { id, imagePath, name, owner, isFolder } = itemObj;
         if (isFolder) {
-          const imageLink = `/publicActivities/${owner.userId}/${id}`;
+          const cardLink = `/publicActivities/${owner.userId}/${id}`;
 
           return (
             <ContentCard
               key={`ContentCard${id}`}
-              imageLink={imageLink}
+              cardLink={cardLink}
               title={name}
               imagePath={imagePath}
               ownerName={createFullName(owner)}
@@ -426,12 +426,12 @@ export function Community() {
             />
           );
         } else {
-          const imageLink = `/activityViewer/${id}`;
+          const cardLink = `/activityViewer/${id}`;
 
           return (
             <ContentCard
               key={`ContentCard${id}`}
-              imageLink={imageLink}
+              cardLink={cardLink}
               title={name}
               imagePath={imagePath}
               ownerName={createFullName(owner)}
@@ -450,13 +450,13 @@ export function Community() {
           );
         }
       } else if (itemObj?.type == "author") {
-        const imageLink = `/publicActivities/${itemObj.userId}`;
+        const cardLink = `/publicActivities/${itemObj.userId}`;
 
         return (
           <AuthorCard
             key={itemObj.userId}
             authorName={createFullName(itemObj)}
-            imageLink={imageLink}
+            cardLink={cardLink}
           />
         );
       }
@@ -745,7 +745,7 @@ export function Community() {
                         imagePath={cardObj.imagePath}
                         title={cardObj.name}
                         ownerName={createFullName(cardObj.owner)}
-                        imageLink={`/activityViewer/${cardObj.activityId}`}
+                        cardLink={`/activityViewer/${cardObj.activityId}`}
                         showStatus={false}
                         menuItems={
                           <>

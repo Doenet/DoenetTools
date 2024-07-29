@@ -20,7 +20,7 @@ import { AssignmentStatus } from "../Tools/_framework/Paths/ActivityEditor";
 
 export default forwardRef(function ContentCard(
   {
-    imageLink = "",
+    cardLink = "",
     id,
     imagePath,
     assignmentStatus,
@@ -35,7 +35,7 @@ export default forwardRef(function ContentCard(
     autoFocusTitle = false,
     showStatus = true,
   }: {
-    imageLink?: string;
+    cardLink?: string;
     id: number;
     imagePath: string | null;
     assignmentStatus: AssignmentStatus;
@@ -43,7 +43,7 @@ export default forwardRef(function ContentCard(
     isPublic: boolean;
     title: string;
     ownerName?: string;
-    menuItems: ReactElement;
+    menuItems?: ReactElement;
     suppressAvatar?: boolean;
     showOwnerName?: boolean;
     editableTitle?: boolean;
@@ -58,6 +58,8 @@ export default forwardRef(function ContentCard(
   const [cardTitle, setCardTitle] = useState(title);
   const fetcher = useFetcher();
 
+  const fullCardLink = menuItems === undefined && !editableTitle;
+
   useEffect(() => {
     setCardTitle(title);
   }, [title]);
@@ -71,21 +73,27 @@ export default forwardRef(function ContentCard(
     }
   }
 
+  let image = (
+    <Image
+      data-test="Card Image Link"
+      height="120px"
+      width="180px"
+      src={imagePath}
+      alt="Activity Card Image"
+      borderTopRadius="md"
+      objectFit="cover"
+      cursor="pointer"
+    />
+  );
+
+  if (!fullCardLink) {
+    image = <Link to={cardLink}>{image}</Link>;
+  }
+
   //Note: when we have a menu width 140px becomes 120px
-  return (
+  let card = (
     <Card width="180px" height="180px" p="0" m="0" data-test="Activity Card">
-      <Link to={imageLink}>
-        <Image
-          data-test="Card Image Link"
-          height="120px"
-          width="180px"
-          src={imagePath}
-          alt="Activity Card Image"
-          borderTopRadius="md"
-          objectFit="cover"
-          cursor="pointer"
-        />
-      </Link>
+      {image}
       <CardBody p="1">
         <Flex columnGap="2px">
           {suppressAvatar ? null : (
@@ -174,4 +182,10 @@ export default forwardRef(function ContentCard(
       </CardBody>
     </Card>
   );
+
+  if (fullCardLink) {
+    card = <Link to={cardLink}>{card}</Link>;
+  }
+
+  return card;
 });

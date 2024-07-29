@@ -20,7 +20,7 @@ import {
 import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
-import ContentCard from "../../../PanelHeaderComponents/ContentCard";
+import ContentCard from "../../../Widgets/ContentCard";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
 
@@ -129,7 +129,7 @@ export function Assigned() {
                       imagePath={assignment.imagePath}
                       title={assignment.name}
                       ownerName={"Quick assign activity"}
-                      imageLink={`/code/${assignment.classCode}`}
+                      cardLink={`/code/${assignment.classCode}`}
                       suppressAvatar={true}
                       showStatus={false}
                     />

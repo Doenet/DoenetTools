@@ -3,7 +3,7 @@ import { Box, Text, Wrap } from "@chakra-ui/react";
 import React from "react";
 import { useLoaderData } from "react-router-dom";
 import styled from "styled-components";
-import ContentCard from "../../../PanelHeaderComponents/ContentCard";
+import ContentCard from "../../../Widgets/ContentCard";
 import { MoveToGroupMenuItem } from "./Community";
 import { createFullName } from "../../../_utils/names";
 
@@ -78,12 +78,12 @@ export function Admin() {
             ) : (
               <>
                 {publicActivities.map((activity) => {
-                  const imageLink = `/activityViewer/${activity.id}`;
+                  const cardLink = `/activityViewer/${activity.id}`;
 
                   return (
                     <ContentCard
                       key={`ContentCard${activity.id}`}
-                      imageLink={imageLink}
+                      cardLink={cardLink}
                       title={activity.name}
                       imagePath={activity.imagePath}
                       ownerName={createFullName(activity.owner)}

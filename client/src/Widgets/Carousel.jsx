@@ -116,7 +116,7 @@ export function Carousel({ title = "", data = [] }) {
                     imagePath={cardObj.imagePath}
                     title={cardObj.name}
                     ownerName={createFullName(cardObj.owner)}
-                    imageLink={`/activityViewer/${cardObj.activityId}`}
+                    cardLink={`/activityViewer/${cardObj.activityId}`}
                     showStatus={false}
                   />
                 </SwiperSlide>

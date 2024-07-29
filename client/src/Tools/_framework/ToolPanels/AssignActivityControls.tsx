@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { DateTime } from "luxon";
-import { ActivityStructure } from "../Paths/ActivityEditor";
+import { ContentStructure } from "../Paths/ActivityEditor";
 import { AssignmentInvitation } from "./AssignmentInvitation";
 import { MdOutlineContentCopy } from "react-icons/md";
 
@@ -25,7 +25,7 @@ export function AssignActivityControls({
 }: {
   fetcher: FetcherWithComponents<any>;
   activityId: number;
-  activityData: ActivityStructure;
+  activityData: ContentStructure;
   openTabIndex: number;
 }) {
   // duration for how long to open assignment

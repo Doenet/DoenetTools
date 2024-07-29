@@ -31,7 +31,7 @@ import { FaCog } from "react-icons/fa";
 import { useFetcher } from "react-router-dom";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router";
-import { ActivitySettingsDrawer } from "../ToolPanels/ActivitySettingsDrawer";
+import { ContentSettingsDrawer } from "../ToolPanels/ContentSettingsDrawer";
 import { DateTime } from "luxon";
 import { InfoIcon } from "@chakra-ui/icons";
 import { AssignmentInvitation } from "../ToolPanels/AssignmentInvitation";
@@ -46,19 +46,39 @@ export type DoenetmlVersion = {
   deprecationMessage: string;
 };
 
+export type LicenseCode = "CCDUAL" | "CCBYSA" | "CCBYNCSA";
+
+export type License = {
+  code: LicenseCode;
+  name: string;
+  description: string;
+  imageURL: string | null;
+  smallImageURL: string | null;
+  licenseURL: string | null;
+  isComposition: boolean;
+  composedOf: {
+    code: LicenseCode;
+    name: string;
+    description: string;
+    imageURL: string | null;
+    smallImageURL: string | null;
+    licenseURL: string | null;
+  }[];
+};
+
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
-export type ActivityStructure = {
+export type ContentStructure = {
   id: number;
   ownerId: number;
   name: string;
   imagePath: string | null;
-  isAssigned: boolean;
+  assignmentStatus: AssignmentStatus;
   isFolder?: boolean;
   classCode: string | null;
-  // Note: on server, codeValidUntil is Date, but it has been converted to a string, here
-  codeValidUntil: string | null;
+  codeValidUntil: Date | null;
   isPublic: boolean;
+  license: License | null;
   documents: {
     id: number;
     versionNum?: number;
@@ -66,9 +86,12 @@ export type ActivityStructure = {
     source?: string;
     doenetmlVersion: DoenetmlVersion;
   }[];
-  assignmentStatus: AssignmentStatus;
   hasScoreData: boolean;
-  notMe?: boolean;
+  parentFolder: {
+    id: number;
+    name: string;
+    isPublic: boolean;
+  } | null;
 };
 
 export async function action({ params, request }) {
@@ -94,16 +117,10 @@ export async function action({ params, request }) {
     if (formObj.learningOutcomes) {
       learningOutcomes = JSON.parse(formObj.learningOutcomes);
     }
-    let isPublic;
-
-    if (formObj.isPublic) {
-      isPublic = formObj.isPublic === "true";
-    }
 
     await axios.post("/api/updateContentSettings", {
       name,
       imagePath: formObj.imagePath,
-      isPublic,
       id: Number(params.activityId),
       learningOutcomes,
     });
@@ -177,6 +194,20 @@ export async function action({ params, request }) {
     return true;
   }
 
+  if (formObj._action == "make content public") {
+    await axios.post("/api/makeContentPublic", {
+      id: Number(formObj.id),
+      licenseCode: formObj.licenseCode,
+    });
+    return true;
+  }
+  if (formObj._action == "make content private") {
+    await axios.post("/api/makeContentPrivate", {
+      id: Number(formObj.id),
+    });
+    return true;
+  }
+
   if (formObj._action == "go to data") {
     return redirect(`/assignmentData/${params.activityId}`);
   }
@@ -185,11 +216,11 @@ export async function action({ params, request }) {
 }
 
 export async function loader({ params }) {
-  const { data: activityData } = await axios.get(
-    `/api/getActivityEditorData/${params.activityId}`,
-  );
+  const {
+    data: { notMe, activity: activityData },
+  } = await axios.get(`/api/getActivityEditorData/${params.activityId}`);
 
-  if (activityData.notMe) {
+  if (notMe) {
     return redirect(
       `/publicEditor/${params.activityId}${params.docId ? "/" + params.docId : ""}`,
     );
@@ -241,6 +272,8 @@ export async function loader({ params }) {
     "/api/getAllDoenetmlVersions",
   );
 
+  const { data: allLicenses } = await axios.get("/api/getAllLicenses");
+
   return {
     platform,
     activityData,
@@ -250,6 +283,7 @@ export async function loader({ params }) {
     activityId,
     supportingFileData,
     allDoenetmlVersions,
+    allLicenses,
   };
 }
 
@@ -307,14 +341,16 @@ export function ActivityEditor() {
     docId,
     activityData,
     allDoenetmlVersions,
+    allLicenses,
   } = useLoaderData() as {
     platform: "Win" | "Mac" | "Linux";
     activityId: number;
     doenetML: string;
     doenetmlVersion: DoenetmlVersion;
     docId: number;
-    activityData: ActivityStructure;
+    activityData: ContentStructure;
     allDoenetmlVersions: DoenetmlVersion[];
+    allLicenses: License[];
   };
 
   const {
@@ -432,14 +468,15 @@ export function ActivityEditor() {
 
   return (
     <>
-      <ActivitySettingsDrawer
+      <ContentSettingsDrawer
         isOpen={settingsAreOpen}
         onClose={settingsOnClose}
         finalFocusRef={controlsBtnRef}
         fetcher={fetcher}
-        activityId={activityId}
-        activityData={activityData}
+        id={activityId}
+        contentData={activityData}
         allDoenetmlVersions={allDoenetmlVersions}
+        allLicenses={allLicenses}
         displayTab={displaySettingsTab}
       />
       <AssignmentInvitation
@@ -544,9 +581,7 @@ export function ActivityEditor() {
 
                   <Tooltip
                     hasArrow
-                    label={
-                      platform == "Mac" ? "Open Settings" : "Open Settings"
-                    }
+                    label="Open Settings"
                     placement="bottom-end"
                   >
                     <Button

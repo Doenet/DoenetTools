@@ -13,18 +13,22 @@ import {
   Heading,
   IconButton,
   HStack,
+  useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useFetcher } from "react-router-dom";
-import { ActivityStructure } from "../Paths/ActivityEditor";
+import { ContentStructure, LicenseCode } from "../Paths/ActivityEditor";
 import { MdFolder, MdOutlineInsertDriveFile } from "react-icons/md";
+import MoveToPublicAlert from "./MoveToPublicAlert";
 
 type ActiveView = {
   // If folder name and id are null, the active view is the root
   // If parentFolderId is null, then the parent of active view is the root
   folderId: number | null;
   folderName: string | null;
+  folderIsPublic: boolean;
+  folderLicenseCode: LicenseCode | null;
   parentFolderId: number | null;
   contents: {
     isFolder: boolean;
@@ -37,18 +41,29 @@ export default function MoveContentToFolder({
   isOpen,
   onClose,
   id,
+  isPublic,
+  licenseCode,
   currentParentId,
   finalFocusRef,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  id: number | null;
+  id: number;
+  isPublic: boolean;
+  licenseCode: LicenseCode | null;
   currentParentId: number | null;
   finalFocusRef: RefObject<HTMLElement>;
 }) {
   // Set when the modal opens
   const [parentId, setParentId] = useState<number | null>(null);
   const [contentName, setContentName] = useState<string>("");
+
+  const {
+    isOpen: publicAlertIsOpen,
+    onOpen: publicAlertOnOpen,
+    onClose: publicAlertOnClose,
+  } = useDisclosure();
+
   useEffect(() => {
     if (isOpen) {
       updateActiveView(currentParentId, true);
@@ -58,10 +73,13 @@ export default function MoveContentToFolder({
   // Set whenever the user navigates to another folder
   const [activeView, setActiveView] = useState<ActiveView>({
     folderName: null,
+    folderIsPublic: false,
+    folderLicenseCode: null,
     folderId: null,
     parentFolderId: null,
     contents: [],
   });
+
   async function updateActiveView(
     newActiveFolderId: number | null,
     modalJustOpened: boolean = false,
@@ -70,9 +88,12 @@ export default function MoveContentToFolder({
       `/api/getMyFolderContent/${newActiveFolderId ?? ""}`,
     );
 
-    const folderName: string | null = data.folder?.name ?? null;
-    const parentFolderId: number | null = data.folder?.parentFolder?.id ?? null;
-    const contentFromApi: ActivityStructure[] = data.content;
+    let folder: ContentStructure | null = data.folder;
+    const folderName: string | null = folder?.name ?? null;
+    const folderIsPublic: boolean = folder?.isPublic ?? false;
+    const folderLicenseCode: LicenseCode | null = folder?.license?.code ?? null;
+    const parentFolderId: number | null = folder?.parentFolder?.id ?? null;
+    const contentFromApi: ContentStructure[] = data.content;
 
     const content = contentFromApi
       .map((item) => {
@@ -95,6 +116,8 @@ export default function MoveContentToFolder({
     setActiveView({
       folderId: newActiveFolderId,
       folderName,
+      folderIsPublic,
+      folderLicenseCode,
       parentFolderId,
       contents: content,
     });
@@ -114,6 +137,14 @@ export default function MoveContentToFolder({
 
   return (
     <>
+      <MoveToPublicAlert
+        isOpen={publicAlertIsOpen}
+        onClose={publicAlertOnClose}
+        performMove={performMove}
+        folderName={activeView.folderName}
+        contentIsPublic={isPublic}
+        licenseChange={licenseCode !== activeView.folderLicenseCode}
+      />
       <Modal
         isOpen={isOpen}
         onClose={onClose}
@@ -188,16 +219,14 @@ export default function MoveContentToFolder({
                   activeView.folderId === parentId)
               }
               onClick={() => {
-                fetcher.submit(
-                  {
-                    _action: "Move",
-                    id,
-                    folderId: activeView.folderId,
-                    desiredPosition: activeView.contents.length, // place it as the last item
-                  },
-                  { method: "post" },
-                );
-                onClose();
+                if (
+                  activeView.folderIsPublic &&
+                  (!isPublic || licenseCode !== activeView.folderLicenseCode)
+                ) {
+                  publicAlertOnOpen();
+                } else {
+                  performMove();
+                }
               }}
             >
               <Text noOfLines={1}>
@@ -209,4 +238,17 @@ export default function MoveContentToFolder({
       </Modal>
     </>
   );
+
+  function performMove() {
+    fetcher.submit(
+      {
+        _action: "Move",
+        id,
+        folderId: activeView.folderId,
+        desiredPosition: activeView.contents.length, // place it as the last item
+      },
+      { method: "post" },
+    );
+    onClose();
+  }
 }
