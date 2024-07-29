@@ -57,9 +57,11 @@ import {
   unassignActivity,
   updateAssignmentSettings,
   getAllLicenses,
-  makeContentPrivate,
-  makeContentPublic,
+  makeActivityPrivate,
+  makeActivityPublic,
   LicenseCode,
+  makeFolderPublic,
+  makeFolderPrivate,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -304,31 +306,29 @@ app.post(
 );
 
 app.post(
-  "/api/makeContentPublic",
+  "/api/makeActivityPublic",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
     const id = Number(body.id);
 
-    let licenseCode: LicenseCode | undefined;
+    let licenseCode: LicenseCode;
 
-    if (body.licenseCode) {
-      let requestedCode: string = body.licenseCode;
-      switch (requestedCode) {
-        case "CCDUAL":
-        case "CCBYSA":
-        case "CCBYNCSA": {
-          licenseCode = requestedCode;
-          break;
-        }
-        default: {
-          return res.status(400).send("Invalid license code");
-        }
+    let requestedCode: string = body.licenseCode;
+    switch (requestedCode) {
+      case "CCDUAL":
+      case "CCBYSA":
+      case "CCBYNCSA": {
+        licenseCode = requestedCode;
+        break;
+      }
+      default: {
+        return res.status(400).send("Invalid license code");
       }
     }
 
     try {
-      let data = await makeContentPublic({
+      let data = await makeActivityPublic({
         id,
         ownerId: loggedInUserId,
         licenseCode,
@@ -345,13 +345,71 @@ app.post(
 );
 
 app.post(
-  "/api/makeContentPrivate",
+  "/api/makeActivityPrivate",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
     const id = Number(body.id);
     try {
-      let data = await makeContentPrivate({ id, ownerId: loggedInUserId });
+      let data = await makeActivityPrivate({ id, ownerId: loggedInUserId });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/makeFolderPublic",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const body = req.body;
+    const id = Number(body.id);
+
+    let licenseCode: LicenseCode;
+
+    let requestedCode: string = body.licenseCode;
+    switch (requestedCode) {
+      case "CCDUAL":
+      case "CCBYSA":
+      case "CCBYNCSA": {
+        licenseCode = requestedCode;
+        break;
+      }
+      default: {
+        return res.status(400).send("Invalid license code");
+      }
+    }
+
+    try {
+      let data = await makeFolderPublic({
+        id,
+        ownerId: loggedInUserId,
+        licenseCode,
+      });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/makeFolderPrivate",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const body = req.body;
+    const id = Number(body.id);
+    try {
+      let data = await makeFolderPrivate({ id, ownerId: loggedInUserId });
       res.send(data);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
