@@ -34,6 +34,7 @@ import {
   ContentStructure,
   DoenetmlVersion,
   License,
+  LicenseCode,
 } from "./ActivityEditor";
 import { DateTime } from "luxon";
 import { FaCog } from "react-icons/fa";
@@ -247,9 +248,11 @@ export function Activities() {
 
   const navigate = useNavigate();
 
-  const [moveToFolderContentId, setMoveToFolderContentId] = useState<
-    number | null
-  >(null);
+  const [moveToFolderContent, setMoveToFolderContent] = useState<{
+    id: number;
+    isPublic: boolean;
+    licenseCode: LicenseCode | null;
+  }>({ id: -1, isPublic: false, licenseCode: null });
 
   const {
     isOpen: moveToFolderIsOpen,
@@ -278,12 +281,16 @@ export function Activities() {
     numCards,
     assignmentStatus,
     isFolder,
+    isPublic,
+    licenseCode,
   }: {
     id: number;
     position: number;
     numCards: number;
     assignmentStatus: AssignmentStatus;
     isFolder?: boolean;
+    isPublic: boolean;
+    licenseCode: LicenseCode | null;
   }) {
     return (
       <>
@@ -307,7 +314,12 @@ export function Activities() {
             data-test="Move Left Menu Item"
             onClick={() => {
               fetcher.submit(
-                { _action: "Move", id, desiredPosition: position - 1 },
+                {
+                  _action: "Move",
+                  id,
+                  desiredPosition: position - 1,
+                  folderId,
+                },
                 { method: "post" },
               );
             }}
@@ -320,7 +332,12 @@ export function Activities() {
             data-test="Move Right Menu Item"
             onClick={() => {
               fetcher.submit(
-                { _action: "Move", id, desiredPosition: position + 1 },
+                {
+                  _action: "Move",
+                  id,
+                  desiredPosition: position + 1,
+                  folderId,
+                },
                 { method: "post" },
               );
             }}
@@ -331,7 +348,7 @@ export function Activities() {
         <MenuItem
           data-test="Move to Folder"
           onClick={() => {
-            setMoveToFolderContentId(id);
+            setMoveToFolderContent({ id, isPublic, licenseCode });
             moveToFolderOnOpen();
           }}
         >
@@ -432,7 +449,9 @@ export function Activities() {
       <MoveContentToFolder
         isOpen={moveToFolderIsOpen}
         onClose={moveToFolderOnClose}
-        id={moveToFolderContentId}
+        id={moveToFolderContent.id}
+        isPublic={moveToFolderContent.isPublic}
+        licenseCode={moveToFolderContent.licenseCode}
         currentParentId={folderId}
         finalFocusRef={finalFocusRef}
       />
@@ -559,6 +578,8 @@ export function Activities() {
                       numCards: content.length,
                       assignmentStatus: activity.assignmentStatus,
                       isFolder: activity.isFolder,
+                      isPublic: activity.isPublic,
+                      licenseCode: activity.license?.code ?? null,
                     })}
                     suppressAvatar={true}
                     showOwnerName={false}
