@@ -35,6 +35,7 @@ export type ActivityStructure = {
   assignmentStatus: AssignmentStatus;
   hasScoreData: boolean;
   notMe?: boolean;
+  parentIsPublic: boolean;
 };
 
 export type LicenseCode = "CCDUAL" | "CCBYSA" | "CCBYNCSA";
@@ -844,6 +845,7 @@ export async function getActivityEditorData(
       assignmentStatus: "Unassigned",
       hasScoreData: false,
       notMe: true,
+      parentIsPublic: false,
     };
     return activity;
   }
@@ -894,6 +896,7 @@ export async function getActivityEditorData(
           // TODO: implement ability to allow users to order the documents within an activity
           orderBy: { id: "asc" },
         },
+        parentFolder: { select: { isPublic: true } },
         _count: { select: { assignmentScores: true } },
       },
     });
@@ -924,6 +927,7 @@ export async function getActivityEditorData(
       assignmentStatus: isOpen ? "Open" : "Closed",
       hasScoreData: assignedActivity._count.assignmentScores > 0,
       notMe: false,
+      parentIsPublic: Boolean(assignedActivity.parentFolder?.isPublic),
     };
   } else {
     let unassignedActivity = await prisma.content.findUniqueOrThrow({
@@ -960,17 +964,21 @@ export async function getActivityEditorData(
           // TODO: implement ability to allow users to order the documents within an activity
           orderBy: { id: "asc" },
         },
+        parentFolder: { select: { isPublic: true } },
       },
     });
 
+    let { parentFolder, ...unassignedActivity2 } = unassignedActivity;
+
     activity = {
-      ...unassignedActivity,
-      license: unassignedActivity.license
-        ? processLicense(unassignedActivity.license)
+      ...unassignedActivity2,
+      license: unassignedActivity2.license
+        ? processLicense(unassignedActivity2.license)
         : null,
       assignmentStatus: "Unassigned",
       hasScoreData: false,
       notMe: false,
+      parentIsPublic: Boolean(parentFolder?.isPublic),
     };
   }
 
@@ -2778,13 +2786,14 @@ export async function getMyFolderContent({
         },
       },
       documents: { select: { id: true, doenetmlVersion: true } },
+      parentFolder: { select: { isPublic: true } },
       _count: { select: { assignmentScores: true } },
     },
     orderBy: { sortIndex: "asc" },
   });
 
   let content: ActivityStructure[] = preliminaryContent.map((obj) => {
-    let { _count, ...activity } = obj;
+    let { _count, parentFolder, ...activity } = obj;
     let isOpen = obj.codeValidUntil
       ? DateTime.now() <= DateTime.fromJSDate(obj.codeValidUntil)
       : false;
@@ -2798,6 +2807,7 @@ export async function getMyFolderContent({
       license: activity.license ? processLicense(activity.license) : null,
       assignmentStatus,
       hasScoreData: _count.assignmentScores > 0,
+      parentIsPublic: Boolean(parentFolder?.isPublic),
     };
   });
 

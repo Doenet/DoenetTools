@@ -147,6 +147,7 @@ test("New activity starts out private, then delete it", async () => {
     ],
     hasScoreData: false,
     notMe: false,
+    parentIsPublic: false,
   };
   expect(activityContent.license?.code).eq("CCDUAL");
 
@@ -284,18 +285,22 @@ test("getMyFolderContent returns both public and private content, getPublicFolde
       expect.objectContaining({
         id: publicActivity1Id,
         isPublic: true,
+        parentIsPublic: false,
       }),
       expect.objectContaining({
         id: privateActivity1Id,
         isPublic: false,
+        parentIsPublic: false,
       }),
       expect.objectContaining({
         id: publicFolder1Id,
         isPublic: true,
+        parentIsPublic: false,
       }),
       expect.objectContaining({
         id: privateFolder1Id,
         isPublic: false,
+        parentIsPublic: false,
       }),
     ]),
   });
@@ -340,18 +345,22 @@ test("getMyFolderContent returns both public and private content, getPublicFolde
       expect.objectContaining({
         id: publicActivity2Id,
         isPublic: true,
+        parentIsPublic: true,
       }),
       expect.objectContaining({
         id: privateActivity2Id,
         isPublic: false,
+        parentIsPublic: true,
       }),
       expect.objectContaining({
         id: publicFolder2Id,
         isPublic: true,
+        parentIsPublic: true,
       }),
       expect.objectContaining({
         id: privateFolder2Id,
         isPublic: false,
+        parentIsPublic: true,
       }),
     ]),
   });
@@ -396,18 +405,22 @@ test("getMyFolderContent returns both public and private content, getPublicFolde
       expect.objectContaining({
         id: publicActivity3Id,
         isPublic: true,
+        parentIsPublic: false,
       }),
       expect.objectContaining({
         id: privateActivity3Id,
         isPublic: false,
+        parentIsPublic: false,
       }),
       expect.objectContaining({
         id: publicFolder3Id,
         isPublic: true,
+        parentIsPublic: false,
       }),
       expect.objectContaining({
         id: privateFolder3Id,
         isPublic: false,
+        parentIsPublic: false,
       }),
     ]),
   });
@@ -2876,6 +2889,7 @@ test("activity editor data and my folder contents before and after assigned", as
     ],
     notMe: false,
     hasScoreData: false,
+    parentIsPublic: false,
   };
   preAssignedData.license = null; // skip trying to check big license object
   expect(preAssignedData).eqls(expectedData);
@@ -2923,6 +2937,7 @@ test("activity editor data and my folder contents before and after assigned", as
     ],
     notMe: false,
     hasScoreData: false,
+    parentIsPublic: false,
   };
 
   openedData.license = null; // skip trying to check big license object
@@ -2965,6 +2980,7 @@ test("activity editor data and my folder contents before and after assigned", as
     ],
     notMe: false,
     hasScoreData: false,
+    parentIsPublic: false,
   };
 
   closedData.license = null; // skip trying to check big license object
@@ -3015,6 +3031,7 @@ test("activity editor data and my folder contents before and after assigned", as
     ],
     notMe: false,
     hasScoreData: false,
+    parentIsPublic: false,
   };
 
   openedData2.license = null; // skip trying to check big license object
@@ -3067,6 +3084,7 @@ test("activity editor data and my folder contents before and after assigned", as
     ],
     notMe: false,
     hasScoreData: true,
+    parentIsPublic: false,
   };
 
   openedData3.license = null; // skip trying to check big license object
@@ -3110,6 +3128,7 @@ test("activity editor data and my folder contents before and after assigned", as
     ],
     notMe: false,
     hasScoreData: true,
+    parentIsPublic: false,
   };
 
   closedData2.license = null; // skip trying to check big license object
@@ -3132,6 +3151,58 @@ test("activity editor data and my folder contents before and after assigned", as
   await expect(unassignActivity(activityId, ownerId)).rejects.toThrow(
     "Record to update not found",
   );
+});
+
+test("activity editor data show its parent folder is public", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  const { activityId } = await createActivity(ownerId, null);
+
+  let data = await getActivityEditorData(activityId, ownerId);
+  expect(data.isPublic).eq(false);
+  expect(data.parentIsPublic).eq(false);
+
+  await makeActivityPublic({ id: activityId, ownerId, licenseCode: "CCBYSA" });
+  data = await getActivityEditorData(activityId, ownerId);
+  expect(data.isPublic).eq(true);
+  expect(data.license?.code).eq("CCBYSA");
+  expect(data.parentIsPublic).eq(false);
+
+  let { folderId } = await createFolder(ownerId, null);
+  await moveContent({
+    id: activityId,
+    desiredParentFolderId: folderId,
+    desiredPosition: 0,
+    ownerId,
+  });
+
+  data = await getActivityEditorData(activityId, ownerId);
+  expect(data.isPublic).eq(true);
+  expect(data.license?.code).eq("CCBYSA");
+  expect(data.parentIsPublic).eq(false);
+
+  await makeFolderPublic({ id: folderId, ownerId, licenseCode: "CCBYNCSA" });
+  data = await getActivityEditorData(activityId, ownerId);
+  expect(data.isPublic).eq(true);
+  expect(data.license?.code).eq("CCBYNCSA");
+  expect(data.parentIsPublic).eq(true);
+
+  await makeFolderPrivate({ id: folderId, ownerId });
+  data = await getActivityEditorData(activityId, ownerId);
+  expect(data.isPublic).eq(false);
+  expect(data.parentIsPublic).eq(false);
+
+  await makeFolderPublic({ id: folderId, ownerId, licenseCode: "CCDUAL" });
+  data = await getActivityEditorData(activityId, ownerId);
+  expect(data.isPublic).eq(true);
+  expect(data.license?.code).eq("CCDUAL");
+  expect(data.parentIsPublic).eq(true);
+
+  await makeActivityPrivate({ id: activityId, ownerId });
+  data = await getActivityEditorData(activityId, ownerId);
+  expect(data.isPublic).eq(false);
+  expect(data.parentIsPublic).eq(true);
 });
 
 test("only user and assignment owner can load document state", async () => {
