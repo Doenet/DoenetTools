@@ -14,6 +14,7 @@ import {
   TabPanels,
   Tabs,
   Text,
+  Tooltip,
 } from "@chakra-ui/react";
 import { FetcherWithComponents } from "react-router-dom";
 import { GeneralActivityControls } from "./GeneralActivityControls";
@@ -93,14 +94,18 @@ export function ActivitySettingsDrawer({
         <DrawerCloseButton data-test="Close Settings Button" />
         <DrawerHeader textAlign="center" height="70px">
           {activityData.isFolder ? "Folder" : "Activity"} Controls
-          <Text fontSize="smaller">{activityData.name}</Text>
+          <Tooltip label={activityData.name}>
+            <Text fontSize="smaller" noOfLines={1}>
+              {activityData.name}
+            </Text>
+          </Tooltip>
         </DrawerHeader>
 
         <DrawerBody>
           <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)}>
             <TabList>
               <Tab data-test="General Tab">General</Tab>
-              <Tab data-test="Sharing Tab">Sharing</Tab>
+              <Tab data-test="Share Tab">Share</Tab>
               {haveSupportingFiles ? (
                 <Tab data-test="Files Tab">Support Files</Tab>
               ) : null}

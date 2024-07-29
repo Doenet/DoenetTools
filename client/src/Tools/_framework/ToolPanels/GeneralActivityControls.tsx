@@ -102,7 +102,7 @@ export function GeneralActivityControls({
       {
         _action: "update general",
         activityId,
-        docId: activityData.documents[0].id,
+        docId: activityData.documents?.[0]?.id,
         ...data,
       },
       { method: "post" },

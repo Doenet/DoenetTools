@@ -148,15 +148,28 @@ export async function action({ request, params }) {
     }
     return true;
   } else if (formObj._action == "make content public") {
-    await axios.post("/api/makeContentPublic", {
-      id: Number(formObj.id),
-      licenseCode: formObj.licenseCode,
-    });
+    if (formObj.isFolder === "true") {
+      await axios.post("/api/makeFolderPublic", {
+        id: Number(formObj.id),
+        licenseCode: formObj.licenseCode,
+      });
+    } else {
+      await axios.post("/api/makeActivityPublic", {
+        id: Number(formObj.id),
+        licenseCode: formObj.licenseCode,
+      });
+    }
     return true;
   } else if (formObj._action == "make content private") {
-    await axios.post("/api/makeContentPrivate", {
-      id: Number(formObj.id),
-    });
+    if (formObj.isFolder === "true") {
+      await axios.post("/api/makeFolderPrivate", {
+        id: Number(formObj.id),
+      });
+    } else {
+      await axios.post("/api/makeActivityPrivate", {
+        id: Number(formObj.id),
+      });
+    }
     return true;
   } else if (formObj._action == "go to data") {
     return redirect(`/assignmentData/${formObj.activityId}`);

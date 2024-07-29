@@ -52,6 +52,8 @@ export function SharingControls({
 
   let placeholder = missingLicense ? "Select license" : undefined;
 
+  let contentType = activityData.isFolder ? "Folder" : "Activity";
+
   return (
     <>
       <Box>
@@ -70,11 +72,6 @@ export function SharingControls({
             ) : (
               <p>Activity is private.</p>
             )
-          ) : activityData.isFolder ? (
-            <p>
-              Folder is shared publicly. Users can view the folder and any
-              public content contained within it.
-            </p>
           ) : license === null ? (
             <Box
               marginTop="10px"
@@ -82,15 +79,15 @@ export function SharingControls({
               background="orange.100"
               padding="5px"
             >
-              <InfoIcon color="orange.500" mr="2px" /> Activity is publicly
+              <InfoIcon color="orange.500" mr="2px" /> {contentType} is publicly
               shared without specifying a license. Please select a license below
-              to inform other how they can use your activity.
+              to inform other how they can use your content.
             </Box>
           ) : (
             <>
               {license.isComposition ? (
                 <>
-                  <p>Activity is shared publicly with these licenses:</p>
+                  <p>{contentType} is shared publicly with these licenses:</p>
                   <List spacing="20px" marginTop="10px">
                     {license.composedOf.map((comp) => (
                       <DisplayLicenseItem licenseItem={comp} key={comp.code} />
@@ -102,7 +99,7 @@ export function SharingControls({
                 </>
               ) : (
                 <>
-                  <p>Activity is shared publicly using the license:</p>
+                  <p>{contentType} is shared publicly using the license:</p>
                   <List marginTop="10px">
                     <DisplayLicenseItem licenseItem={license} />
                   </List>
@@ -118,18 +115,9 @@ export function SharingControls({
           Sharing publicly
         </Heading>
 
-        {activityData.isFolder ? (
-          <p style={{ marginTop: "10px" }}>
-            Sharing a folder publicly allows other to find the folder and view
-            its public contents. It does <em>not</em> automatically make the
-            folder contents public; you must individually make items within the
-            folder public to share them.
-          </p>
-        ) : (
-          <p style={{ marginTop: "10px" }}>
-            Sharing an activity publicly allows other to find it and adapt it.
-          </p>
-        )}
+        <p style={{ marginTop: "10px" }}>
+          Sharing an content publicly allows other to find it and adapt it.
+        </p>
 
         <Checkbox
           marginTop="10px"
@@ -140,6 +128,7 @@ export function SharingControls({
                 {
                   _action: "make content private",
                   id: activityData.id,
+                  isFolder: Boolean(activityData.isFolder),
                 },
                 { method: "post" },
               );
@@ -150,6 +139,7 @@ export function SharingControls({
                   _action: "make content public",
                   id: activityData.id,
                   licenseCode: selectedLicenseCode ?? "CCDUAL",
+                  isFolder: Boolean(activityData.isFolder),
                 },
                 { method: "post" },
               );
@@ -159,7 +149,7 @@ export function SharingControls({
         >
           Make public
         </Checkbox>
-        <FormControl isInvalid={missingLicense} hidden={activityData.isFolder}>
+        <FormControl isInvalid={missingLicense}>
           <FormLabel mt="16px">License</FormLabel>
           <Select
             placeholder={placeholder}
@@ -173,6 +163,7 @@ export function SharingControls({
                   _action: "make content public",
                   id: activityData.id,
                   licenseCode: newLicenseCode,
+                  isFolder: Boolean(activityData.isFolder),
                 },
                 { method: "post" },
               );
