@@ -583,7 +583,7 @@ export function Activities() {
                     })}
                     suppressAvatar={true}
                     showOwnerName={false}
-                    imageLink={
+                    cardLink={
                       activity.isFolder
                         ? `/activities/${activity.ownerId}/${activity.id}`
                         : `/activityEditor/${activity.id}`

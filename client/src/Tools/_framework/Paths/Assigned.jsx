@@ -129,7 +129,7 @@ export function Assigned() {
                       imagePath={assignment.imagePath}
                       title={assignment.name}
                       ownerName={"Quick assign activity"}
-                      imageLink={`/code/${assignment.classCode}`}
+                      cardLink={`/code/${assignment.classCode}`}
                       suppressAvatar={true}
                       showStatus={false}
                     />

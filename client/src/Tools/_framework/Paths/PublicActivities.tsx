@@ -1,4 +1,3 @@
-// import axios from 'axios';
 import {
   Box,
   Icon,
@@ -138,7 +137,7 @@ export function PublicActivities() {
                     title={item.name}
                     ownerName={createFullName(owner)}
                     showStatus={false}
-                    imageLink={
+                    cardLink={
                       item.isFolder
                         ? `/publicActivities/${item.ownerId}/${item.id}`
                         : `/activityViewer/${item.id}`

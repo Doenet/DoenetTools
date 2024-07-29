@@ -78,12 +78,12 @@ export function Admin() {
             ) : (
               <>
                 {publicActivities.map((activity) => {
-                  const imageLink = `/activityViewer/${activity.id}`;
+                  const cardLink = `/activityViewer/${activity.id}`;
 
                   return (
                     <ContentCard
                       key={`ContentCard${activity.id}`}
-                      imageLink={imageLink}
+                      cardLink={cardLink}
                       title={activity.name}
                       imagePath={activity.imagePath}
                       ownerName={createFullName(activity.owner)}
