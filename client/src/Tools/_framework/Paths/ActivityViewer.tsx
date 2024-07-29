@@ -5,7 +5,6 @@ import {
   useNavigate,
   useLocation,
 } from "react-router";
-import styled from "styled-components";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
 import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
@@ -15,12 +14,17 @@ import {
   Flex,
   Grid,
   GridItem,
+  HStack,
+  Image,
+  Spacer,
   Text,
+  Tooltip,
   VStack,
 } from "@chakra-ui/react";
 import axios from "axios";
-import ContributorsMenu from "../ChakraBasedComponents/ContributorsMenu";
-import { useFetcher } from "react-router-dom";
+import ContributorsMenu from "../ToolPanels/ContributorsMenu";
+import { Link, useFetcher } from "react-router-dom";
+import { ContentStructure, DoenetmlVersion, License } from "./ActivityEditor";
 
 export async function action({ params, request }) {
   // TODO: it is confusing that the one "action" of this viewer is to duplicate.
@@ -66,16 +70,18 @@ export async function loader({ params }) {
 
     const doenetML = activityData.activity.documents[0].source;
 
+    const doenetmlVersion: DoenetmlVersion =
+      activityData.activity.documents[0].doenetmlVersion;
+
     return {
       activityId,
       doenetML,
       signedIn,
-      name: activityData.activity.name,
-      owner: activityData.activity.owner,
-      contributorHistory: activityData.doc.contributorHistory,
+      activity: activityData.activity,
+      owner: activityData.owner,
       docId,
-      doenetmlVersion:
-        activityData.activity.documents[0].doenetmlVersion.fullVersion,
+      contributorHistory: activityData.doc.contributorHistory,
+      doenetmlVersion,
     };
   } catch (e) {
     if (e.response.status === 404) {
@@ -86,22 +92,31 @@ export async function loader({ params }) {
   }
 }
 
-const HeaderSectionRight = styled.div`
-  display: flex;
-  justify-content: flex-end;
-`;
-
 export function ActivityViewer() {
   const {
+    activityId,
     doenetML,
     signedIn,
-    name,
-    activityId,
-    docId,
+    activity,
     owner,
+    docId,
     contributorHistory,
     doenetmlVersion,
-  } = useLoaderData();
+  } = useLoaderData() as {
+    activityId: number;
+    doenetML: string;
+    signedIn: boolean;
+    activity: ContentStructure;
+    owner: {
+      userId: number;
+      email: string;
+      firstNames: string | null;
+      lastNames: string;
+    };
+    docId: number;
+    contributorHistory: any;
+    doenetmlVersion: DoenetmlVersion;
+  };
 
   const fetcher = useFetcher();
 
@@ -110,15 +125,17 @@ export function ActivityViewer() {
 
   let navigateTo = useRef("");
 
+  // TODO: fix this navigation
   if (navigateTo.current != "") {
     const newHref = navigateTo.current;
     navigateTo.current = "";
+    //@ts-ignore
     location.href = newHref;
   }
 
   useEffect(() => {
-    document.title = `${name} - Doenet`;
-  }, [name]);
+    document.title = `${activity.name} - Doenet`;
+  }, [activity.name]);
 
   return (
     <>
@@ -131,8 +148,8 @@ export function ActivityViewer() {
         >
           <Grid
             templateAreas={`"header"
-      "centerContent"
-      `}
+            "centerContent"
+            `}
             templateRows="100px calc(100% - 100px)"
             width="100%"
             maxWidth="850px"
@@ -156,71 +173,69 @@ export function ActivityViewer() {
                   background="doenet.mainGray"
                 ></GridItem>
                 <GridItem area="headerContent" maxWidth="800px" width="100%">
-                  <Flex justifyContent="space-between">
-                    <Flex
-                      flexDirection="column"
-                      alignItems="flex-start"
-                      mt="10px"
-                    >
-                      <Text
-                        fontSize="1.4em"
-                        fontWeight="bold"
-                        maxWidth="500px"
-                        overflow="hidden"
-                        textOverflow="ellipsis"
-                        whiteSpace="nowrap"
-                      >
-                        {name}
+                  <Flex
+                    flexDirection="column"
+                    alignItems="flex-start"
+                    mt="10px"
+                  >
+                    <Flex width="100%">
+                      <Text fontSize="1.4em" fontWeight="bold" noOfLines={1}>
+                        {activity.name}
                       </Text>
-                      <Box mt="10px">
-                        <ContributorsMenu
-                          owner={owner}
-                          contributorHistory={contributorHistory}
-                        />
-                      </Box>
+                      <Spacer />
+                      {activity.license ? (
+                        <LicenseBadges license={activity.license} />
+                      ) : null}
                     </Flex>
-                    <VStack mt="20px" alignItems="flex-end" spacing="4">
-                      <Button
-                        size="xs"
-                        colorScheme="blue"
-                        data-test="See Inside"
-                        onClick={() => {
-                          navigate(`/publicEditor/${activityId}/${docId}`);
-                        }}
-                      >
-                        See Inside
-                      </Button>
-                      {signedIn ? (
-                        <HeaderSectionRight>
+                    <Flex mt="10px" width="100%">
+                      <ContributorsMenu
+                        owner={owner}
+                        contributorHistory={contributorHistory}
+                      />
+                      <Spacer />
+                      <VStack mt="10px" alignItems="flex-end" spacing="4">
+                        <HStack>
                           <Button
-                            data-test="Copy to Activities Button"
                             size="xs"
                             colorScheme="blue"
+                            data-test="See Inside"
                             onClick={() => {
-                              fetcher.submit(
-                                {
-                                  _action: "copy to activities",
-                                },
-                                { method: "post" },
-                              );
+                              navigate(`/publicEditor/${activityId}/${docId}`);
                             }}
                           >
-                            Copy to Activities
+                            See Inside
                           </Button>
-                        </HeaderSectionRight>
-                      ) : (
-                        <Button
-                          dataTest="Nav to signIn"
-                          colorScheme="blue"
-                          size="xs"
-                          onClick={() => {
-                            navigateTo.current = "/signIn";
-                          }}
-                        >
-                          Sign In To Copy to Activities
-                        </Button>
-                      )}
-                    </VStack>
+                          {signedIn ? (
+                            <Button
+                              data-test="Copy to Activities Button"
+                              size="xs"
+                              colorScheme="blue"
+                              onClick={() => {
+                                fetcher.submit(
+                                  {
+                                    _action: "copy to activities",
+                                  },
+                                  { method: "post" },
+                                );
+                              }}
+                            >
+                              Copy to Activities
+                            </Button>
+                          ) : (
+                            <Button
+                              data-test="Nav to signIn"
+                              colorScheme="blue"
+                              size="xs"
+                              onClick={() => {
+                                navigateTo.current = "/signIn";
+                              }}
+                            >
+                              Sign In To Copy to Activities
+                            </Button>
+                          )}
+                        </HStack>
+                      </VStack>
+                    </Flex>
                   </Flex>
                 </GridItem>
               </Grid>
@@ -231,7 +246,7 @@ export function ActivityViewer() {
                   <DoenetViewer
                     key={`HPpageViewer`}
                     doenetML={doenetML}
-                    doenetmlVersion={doenetmlVersion}
+                    doenetmlVersion={doenetmlVersion.fullVersion}
                     flags={{
                       showCorrectness: true,
                       solutionDisplayMode: "button",
@@ -270,4 +285,54 @@ export function ActivityViewer() {
       </Box>
     </>
   );
+}
+
+function LicenseBadges({ license }: { license: License }) {
+  if (license.isComposition) {
+    return (
+      <VStack spacing={1}>
+        {license.composedOf.map((comp) => (
+          <DisplayLicenseBadge licenseItem={comp} key={comp.code} />
+        ))}
+      </VStack>
+    );
+  } else {
+    return <DisplayLicenseBadge licenseItem={license} />;
+  }
+}
+
+function DisplayLicenseBadge({
+  licenseItem,
+}: {
+  licenseItem: {
+    name: string;
+    description: string;
+    imageURL: string | null;
+    smallImageURL: string | null;
+    licenseURL: string | null;
+  };
+}) {
+  let badge: React.JSX.Element | null = null;
+  let imageURL = licenseItem.smallImageURL ?? licenseItem.imageURL;
+  if (imageURL) {
+    badge = (
+      <Tooltip label={licenseItem.name} placement="bottom-end">
+        <Image
+          src={imageURL}
+          alt={`Badge for license: ${licenseItem.name}`}
+          height="15px"
+        />
+      </Tooltip>
+    );
+  }
+
+  if (licenseItem.licenseURL) {
+    badge = (
+      <Link to={licenseItem.licenseURL} target="_blank">
+        {badge}
+      </Link>
+    );
+  }
+
+  return badge;
 }

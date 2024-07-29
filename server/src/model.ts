@@ -47,6 +47,7 @@ export type License = {
   name: string;
   description: string;
   imageURL: string | null;
+  smallImageURL: string | null;
   licenseURL: string | null;
   isComposition: boolean;
   composedOf: {
@@ -54,6 +55,7 @@ export type License = {
     name: string;
     description: string;
     imageURL: string | null;
+    smallImageURL: string | null;
     licenseURL: string | null;
   }[];
 };
@@ -1019,7 +1021,7 @@ export async function getActivityViewerData(
   activityId: number,
   userId: number,
 ) {
-  const activity = await prisma.content.findUniqueOrThrow({
+  const preliminaryActivity = await prisma.content.findUniqueOrThrow({
     where: {
       id: activityId,
       isDeleted: false,
@@ -1029,6 +1031,29 @@ export async function getActivityViewerData(
     select: {
       id: true,
       name: true,
+      ownerId: true,
+      isPublic: true,
+      imagePath: true,
+      license: {
+        include: {
+          composedOf: {
+            select: { composedOf: true },
+            orderBy: { composedOf: { sortIndex: "asc" } },
+          },
+        },
+      },
+      documents: {
+        where: { isDeleted: false },
+        select: {
+          name: true,
+          id: true,
+          source: true,
+          doenetmlVersion: true,
+        },
+        // TODO: implement ability to allow users to order the documents within an activity
+        orderBy: { id: "asc" },
+      },
+      parentFolder: { select: { id: true, name: true, isPublic: true } },
       owner: {
         select: {
           userId: true,
@@ -1037,18 +1062,23 @@ export async function getActivityViewerData(
           lastNames: true,
         },
       },
-      documents: {
-        where: { isDeleted: false },
-        select: {
-          id: true,
-          source: true,
-          doenetmlVersion: {
-            select: { fullVersion: true },
-          },
-        },
-      },
     },
   });
+
+  let { owner, ...preliminaryActivity2 } = preliminaryActivity;
+
+  let activity: ContentStructure = {
+    ...preliminaryActivity2,
+    isFolder: false,
+    license: preliminaryActivity2.license
+      ? processLicense(preliminaryActivity2.license)
+      : null,
+    classCode: null,
+    codeValidUntil: null,
+    assignmentStatus: "Unassigned",
+    hasScoreData: false,
+  };
+
   const docId = activity.documents[0].id;
 
   let doc = await prisma.documents.findUniqueOrThrow({
@@ -1086,6 +1116,7 @@ export async function getActivityViewerData(
   return {
     activity,
     doc,
+    owner,
   };
 }
 
@@ -3015,6 +3046,7 @@ function processLicense(
         name: string;
         description: string;
         imageURL: string | null;
+        smallImageURL: string | null;
         licenseURL: string | null;
         sortIndex: number;
       };
@@ -3024,6 +3056,7 @@ function processLicense(
     name: string;
     description: string;
     imageURL: string | null;
+    smallImageURL: string | null;
     licenseURL: string | null;
     sortIndex: number;
   },
@@ -3034,6 +3067,7 @@ function processLicense(
       name: preliminary_license.name,
       description: preliminary_license.description,
       imageURL: null,
+      smallImageURL: null,
       licenseURL: null,
       isComposition: true,
       composedOf: preliminary_license.composedOf.map((comp) => ({
@@ -3041,6 +3075,7 @@ function processLicense(
         name: comp.composedOf.name,
         description: comp.composedOf.description,
         imageURL: comp.composedOf.imageURL,
+        smallImageURL: comp.composedOf.smallImageURL,
         licenseURL: comp.composedOf.licenseURL,
       })),
     };
@@ -3050,6 +3085,7 @@ function processLicense(
       name: preliminary_license.name,
       description: preliminary_license.description,
       imageURL: preliminary_license.imageURL,
+      smallImageURL: preliminary_license.smallImageURL,
       licenseURL: preliminary_license.licenseURL,
       isComposition: false,
       composedOf: [],

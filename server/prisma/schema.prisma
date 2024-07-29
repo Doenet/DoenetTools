@@ -75,15 +75,16 @@ model documentVersions {
 }
 
 model licenses {
-  code        String                @id @db.VarChar(10)
-  name        String
-  description String                @db.Text
-  imageURL    String?
-  licenseURL  String?
-  composedOf  licenseCompositions[] @relation("composeOf")
-  includedIn  licenseCompositions[] @relation("includedIn")
-  content     content[]
-  sortIndex   Int
+  code          String                @id @db.VarChar(10)
+  name          String
+  description   String                @db.Text
+  imageURL      String?
+  smallImageURL String?
+  licenseURL    String?
+  composedOf    licenseCompositions[] @relation("composeOf")
+  includedIn    licenseCompositions[] @relation("includedIn")
+  content       content[]
+  sortIndex     Int
 }
 
 model licenseCompositions {

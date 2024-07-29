@@ -53,6 +53,7 @@ export type License = {
   name: string;
   description: string;
   imageURL: string | null;
+  smallImageURL: string | null;
   licenseURL: string | null;
   isComposition: boolean;
   composedOf: {
@@ -60,6 +61,7 @@ export type License = {
     name: string;
     description: string;
     imageURL: string | null;
+    smallImageURL: string | null;
     licenseURL: string | null;
   }[];
 };
