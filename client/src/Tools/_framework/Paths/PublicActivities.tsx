@@ -6,6 +6,8 @@ import {
   Wrap,
   Heading,
   Tooltip,
+  List,
+  Spacer,
 } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import {
@@ -14,13 +16,14 @@ import {
   useFetcher,
   Link,
 } from "react-router-dom";
-import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../Widgets/ContentCard";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
 import { ContentStructure } from "./ActivityEditor";
+import { DisplayLicenseItem } from "../ToolPanels/SharingControls";
+import { SmallLicenseBadges } from "./ActivityViewer";
 
 export async function loader({ params }) {
   const { data } = await axios.get(
@@ -35,17 +38,6 @@ export async function loader({ params }) {
     folder: data.folder,
   };
 }
-
-//@ts-ignore
-const ActivitiesSection = styled.div`
-  padding: 10px;
-  margin: 0px;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  background: var(--lightBlue);
-  height: 100vh;
-`;
 
 export function PublicActivities() {
   let context: any = useOutletContext();
@@ -95,7 +87,16 @@ export function PublicActivities() {
         </Tooltip>
       </Box>
       {folder ? (
-        <Box style={{ marginLeft: "15px", marginTop: "-30px", float: "left" }}>
+        <Flex
+          width="100%"
+          paddingLeft="15px"
+          paddingRight="15px"
+          paddingBottom="5px"
+          boxSizing="border-box"
+          marginTop="-30px"
+          height="40px"
+          alignItems="center"
+        >
           <Link
             to={`/publicActivities/${ownerId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
             style={{
@@ -108,9 +109,20 @@ export function PublicActivities() {
               ? folder.parentFolder.name
               : `Public Activities of ${createFullName(owner)}`}
           </Link>
-        </Box>
+          <Spacer />
+          {folder.license ? (
+            <SmallLicenseBadges license={folder.license} />
+          ) : null}
+        </Flex>
       ) : null}
-      <ActivitiesSection data-test="Public Activities">
+      <Box
+        data-test="Public Activities"
+        padding="10px"
+        width="100%"
+        margin="0px"
+        background="var(--lightBlue)"
+        minHeight="calc(80vh - 130px)"
+      >
         <Wrap p="10px" overflow="visible">
           {content.length < 1 ? (
             <Flex
@@ -148,7 +160,50 @@ export function PublicActivities() {
             </>
           )}
         </Wrap>
-      </ActivitiesSection>
+      </Box>
+      <Box
+        background="gray"
+        width="100%"
+        color="var(--canvas)"
+        padding="20px"
+        minHeight="20vh"
+      >
+        {folder ? (
+          folder.license ? (
+            folder.license.isComposition ? (
+              <>
+                <p>
+                  <strong>{folder.name}</strong> by {owner.firstNames}{" "}
+                  {owner.lastNames} is shared publicly with these licenses:
+                </p>
+                <List spacing="20px" marginTop="10px">
+                  {folder.license.composedOf.map((comp) => (
+                    <DisplayLicenseItem licenseItem={comp} key={comp.code} />
+                  ))}
+                </List>
+                <p style={{ marginTop: "10px" }}></p>
+              </>
+            ) : (
+              <>
+                <p>
+                  <strong>{folder.name}</strong> by {owner.firstNames}{" "}
+                  {owner.lastNames} is shared publicly using the license:
+                </p>
+                <List marginTop="10px">
+                  <DisplayLicenseItem licenseItem={folder.license} />
+                </List>
+              </>
+            )
+          ) : (
+            <p>
+              <strong>{folder.name}</strong> by {owner.firstNames}{" "}
+              {owner.lastNames} is shared publicly, but a license was not
+              specified. Contact the author to determine in what ways you can
+              reuse this activity.
+            </p>
+          )
+        ) : null}
+      </Box>
     </>
   );
 }

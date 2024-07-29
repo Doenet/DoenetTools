@@ -22,7 +22,6 @@ import {
   useFetcher,
   Link,
 } from "react-router-dom";
-import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../Widgets/ContentCard";
@@ -37,7 +36,6 @@ import {
   LicenseCode,
 } from "./ActivityEditor";
 import { DateTime } from "luxon";
-import { FaCog } from "react-icons/fa";
 
 // what is a better solution than this?
 let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching id
@@ -210,17 +208,6 @@ export async function loader({ params }) {
     folder: data.folder,
   };
 }
-
-//@ts-ignore
-const ActivitiesSection = styled.div`
-  padding: 10px;
-  margin: 0px;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  background: var(--lightBlue);
-  height: 100vh;
-`;
 
 export function Activities() {
   let context: any = useOutletContext();
@@ -543,7 +530,14 @@ export function Activities() {
           </Link>
         </Box>
       ) : null}
-      <ActivitiesSection data-test="Activities">
+      <Box
+        data-test="Activities"
+        padding="10px"
+        margin="0px"
+        width="100%"
+        background="var(--lightBlue)"
+        minHeight="calc(100vh - 120px)"
+      >
         <Wrap p="10px" overflow="visible">
           {content.length < 1 ? (
             <Flex
@@ -596,7 +590,7 @@ export function Activities() {
             </>
           )}
         </Wrap>
-      </ActivitiesSection>
+      </Box>
     </>
   );
 }

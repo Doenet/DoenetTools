@@ -197,7 +197,7 @@ export function SharingControls({
   );
 }
 
-function DisplayLicenseItem({
+export function DisplayLicenseItem({
   licenseItem,
 }: {
   licenseItem: {

@@ -16,6 +16,7 @@ import {
   GridItem,
   HStack,
   Image,
+  List,
   Spacer,
   Text,
   Tooltip,
@@ -25,6 +26,7 @@ import axios from "axios";
 import ContributorsMenu from "../ToolPanels/ContributorsMenu";
 import { Link, useFetcher } from "react-router-dom";
 import { ContentStructure, DoenetmlVersion, License } from "./ActivityEditor";
+import { DisplayLicenseItem } from "../ToolPanels/SharingControls";
 
 export async function action({ params, request }) {
   // TODO: it is confusing that the one "action" of this viewer is to duplicate.
@@ -184,7 +186,7 @@ export function ActivityViewer() {
                       </Text>
                       <Spacer />
                       {activity.license ? (
-                        <LicenseBadges license={activity.license} />
+                        <SmallLicenseBadges license={activity.license} />
                       ) : null}
                     </Flex>
                     <Flex mt="10px" width="100%">
@@ -273,11 +275,57 @@ export function ActivityViewer() {
                 </Box>
                 <Box
                   width="100%"
-                  height="50vh"
+                  height="30vh"
                   background="var(--canvas)"
                   padding="0px"
                   margin="0px"
                 />
+                <Box
+                  background="gray"
+                  width="100%"
+                  color="var(--canvas)"
+                  padding="20px"
+                  minHeight="20vh"
+                >
+                  {activity.license ? (
+                    activity.license.isComposition ? (
+                      <>
+                        <p>
+                          <strong>{activity.name}</strong> by {owner.firstNames}{" "}
+                          {owner.lastNames} is shared publicly with these
+                          licenses:
+                        </p>
+                        <List spacing="20px" marginTop="10px">
+                          {activity.license.composedOf.map((comp) => (
+                            <DisplayLicenseItem
+                              licenseItem={comp}
+                              key={comp.code}
+                            />
+                          ))}
+                        </List>
+                        <p style={{ marginTop: "10px" }}></p>
+                      </>
+                    ) : (
+                      <>
+                        <p>
+                          <strong>{activity.name}</strong> by {owner.firstNames}{" "}
+                          {owner.lastNames} is shared publicly using the
+                          license:
+                        </p>
+                        <List marginTop="10px">
+                          <DisplayLicenseItem licenseItem={activity.license} />
+                        </List>
+                      </>
+                    )
+                  ) : (
+                    <p>
+                      <strong>{activity.name}</strong> by {owner.firstNames}{" "}
+                      {owner.lastNames} is shared publicly, but a license was
+                      not specified. Contact the author to determine in what
+                      ways you can reuse this activity.
+                    </p>
+                  )}
+                </Box>
               </VStack>
             </GridItem>
           </Grid>
@@ -287,21 +335,21 @@ export function ActivityViewer() {
   );
 }
 
-function LicenseBadges({ license }: { license: License }) {
+export function SmallLicenseBadges({ license }: { license: License }) {
   if (license.isComposition) {
     return (
       <VStack spacing={1}>
         {license.composedOf.map((comp) => (
-          <DisplayLicenseBadge licenseItem={comp} key={comp.code} />
+          <DisplaySmallLicenseBadge licenseItem={comp} key={comp.code} />
         ))}
       </VStack>
     );
   } else {
-    return <DisplayLicenseBadge licenseItem={license} />;
+    return <DisplaySmallLicenseBadge licenseItem={license} />;
   }
 }
 
-function DisplayLicenseBadge({
+function DisplaySmallLicenseBadge({
   licenseItem,
 }: {
   licenseItem: {
