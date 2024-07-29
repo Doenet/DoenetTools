@@ -2841,11 +2841,11 @@ export async function getPublicFolderContent({
   ownerId: number;
   folderId: number | null;
 }) {
-  let folder = null;
+  let folder: ContentStructure | null = null;
 
   if (folderId !== null) {
-    // if ask for a folder, make sure it exists and is public
-    folder = await prisma.content.findUniqueOrThrow({
+    // if ask for a folder, make sure it exists and is owned by logged in user
+    let preliminaryFolder = await prisma.content.findUniqueOrThrow({
       where: {
         ownerId,
         id: folderId,
@@ -2853,20 +2853,44 @@ export async function getPublicFolderContent({
         isPublic: true,
       },
       select: {
-        name: true,
         id: true,
+        ownerId: true,
+        name: true,
+        imagePath: true,
+        license: {
+          include: {
+            composedOf: {
+              select: { composedOf: true },
+              orderBy: { composedOf: { sortIndex: "asc" } },
+            },
+          },
+        },
         parentFolder: { select: { id: true, name: true, isPublic: true } },
       },
     });
 
     // If parent folder is not public,
     // make it look like it doesn't have a parent folder.
-    if (!folder.parentFolder?.isPublic) {
-      folder.parentFolder = null;
+    if (!preliminaryFolder.parentFolder?.isPublic) {
+      preliminaryFolder.parentFolder = null;
     }
+
+    folder = {
+      ...preliminaryFolder,
+      isPublic: true,
+      isFolder: true,
+      assignmentStatus: "Unassigned",
+      classCode: null,
+      codeValidUntil: null,
+      documents: [],
+      hasScoreData: false,
+      license: preliminaryFolder.license
+        ? processLicense(preliminaryFolder.license)
+        : null,
+    };
   }
 
-  const publicContent = await prisma.content.findMany({
+  const preliminaryPublicContent = await prisma.content.findMany({
     where: {
       ownerId,
       isDeleted: false,
@@ -2879,8 +2903,15 @@ export async function getPublicFolderContent({
       ownerId: true,
       name: true,
       imagePath: true,
-      createdAt: true,
-      lastEdited: true,
+      license: {
+        include: {
+          composedOf: {
+            select: { composedOf: true },
+            orderBy: { composedOf: { sortIndex: "asc" } },
+          },
+        },
+      },
+      parentFolder: { select: { id: true, name: true, isPublic: true } },
     },
     orderBy: { sortIndex: "asc" },
   });
@@ -2904,13 +2935,35 @@ export async function getPublicFolderContent({
         ownerId: true,
         name: true,
         imagePath: true,
-        createdAt: true,
-        lastEdited: true,
+        license: {
+          include: {
+            composedOf: {
+              select: { composedOf: true },
+              orderBy: { composedOf: { sortIndex: "asc" } },
+            },
+          },
+        },
+        parentFolder: { select: { id: true, name: true, isPublic: true } },
       },
       orderBy: { sortIndex: "asc" },
     });
-    publicContent.push(...orphanedPublicContent);
+    preliminaryPublicContent.push(...orphanedPublicContent);
   }
+
+  let publicContent: ContentStructure[] = preliminaryPublicContent.map(
+    (content) => {
+      return {
+        ...content,
+        isPublic: true,
+        documents: [],
+        license: content.license ? processLicense(content.license) : null,
+        classCode: null,
+        codeValidUntil: null,
+        assignmentStatus: "Unassigned",
+        hasScoreData: false,
+      };
+    },
+  );
 
   const owner = await prisma.users.findUniqueOrThrow({
     where: { userId: ownerId },

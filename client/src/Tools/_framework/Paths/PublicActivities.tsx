@@ -21,6 +21,7 @@ import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../PanelHeaderComponents/ContentCard";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
+import { ContentStructure } from "./ActivityEditor";
 
 export async function loader({ params }) {
   const { data } = await axios.get(
@@ -36,6 +37,7 @@ export async function loader({ params }) {
   };
 }
 
+//@ts-ignore
 const ActivitiesSection = styled.div`
   padding: 10px;
   margin: 0px;
@@ -47,8 +49,17 @@ const ActivitiesSection = styled.div`
 `;
 
 export function PublicActivities() {
-  let context = useOutletContext();
-  let { folderId, content, ownerId, owner, folder } = useLoaderData();
+  let context: any = useOutletContext();
+  let { folderId, content, ownerId, owner, folder } = useLoaderData() as {
+    folderId: number | null;
+    content: ContentStructure[];
+    ownerId: number;
+    owner: {
+      firstNames: string | null;
+      lastNames: string;
+    };
+    folder: ContentStructure | null;
+  };
 
   useEffect(() => {
     document.title = folderId
@@ -63,13 +74,11 @@ export function PublicActivities() {
     return null;
   }
 
-  let headingText;
-
-  if (folder) {
-    headingText = <>Folder: {folder.name}</>;
-  } else {
-    headingText = `Public Activities of ${createFullName(owner)}`;
-  }
+  let headingText = folder ? (
+    <>Folder: {folder.name}</>
+  ) : (
+    `Public Activities of ${createFullName(owner)}`
+  );
 
   return (
     <>
@@ -121,18 +130,18 @@ export function PublicActivities() {
             </Flex>
           ) : (
             <>
-              {content.map((activity, position) => {
+              {content.map((item) => {
                 return (
                   <ContentCard
-                    key={`Card${activity.id}`}
-                    {...activity}
-                    title={activity.name}
+                    key={`Card${item.id}`}
+                    {...item}
+                    title={item.name}
                     ownerName={createFullName(owner)}
                     showStatus={false}
                     imageLink={
-                      activity.isFolder
-                        ? `/publicActivities/${activity.ownerId}/${activity.id}`
-                        : `/activityViewer/${activity.id}`
+                      item.isFolder
+                        ? `/publicActivities/${item.ownerId}/${item.id}`
+                        : `/activityViewer/${item.id}`
                     }
                   />
                 );
