@@ -25,7 +25,7 @@ import {
 import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
-import ContentCard from "../../../PanelHeaderComponents/ContentCard";
+import ContentCard from "../../../Widgets/ContentCard";
 import axios from "axios";
 import MoveContentToFolder from "../ToolPanels/MoveContentToFolder";
 import { ContentSettingsDrawer } from "../ToolPanels/ContentSettingsDrawer";

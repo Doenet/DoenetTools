@@ -2,7 +2,7 @@ import React, { lazy, Suspense, useEffect } from "react";
 import { useLoaderData, useOutletContext } from "react-router";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
-import { Carousel } from "../../../PanelHeaderComponents/Carousel";
+import { Carousel } from "../../../Widgets/Carousel";
 import {
   Box,
   Center,

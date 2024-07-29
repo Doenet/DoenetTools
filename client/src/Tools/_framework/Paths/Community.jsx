@@ -28,12 +28,12 @@ import {
   FormLabel,
 } from "@chakra-ui/react";
 import { useLoaderData } from "react-router";
-import { Carousel } from "../../../PanelHeaderComponents/Carousel";
-import Searchbar from "../../../PanelHeaderComponents/SearchBar";
+import { Carousel } from "../../../Widgets/Carousel";
+import Searchbar from "../../../Widgets/SearchBar";
 import { Form, useFetcher } from "react-router-dom";
 import { RiEmotionSadLine } from "react-icons/ri";
-import ContentCard from "../../../PanelHeaderComponents/ContentCard";
-import AuthorCard from "../../../PanelHeaderComponents/AuthorCard";
+import ContentCard from "../../../Widgets/ContentCard";
+import AuthorCard from "../../../Widgets/AuthorCard";
 import { createFullName } from "../../../_utils/names";
 
 export async function action({ request }) {
