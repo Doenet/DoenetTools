@@ -17,7 +17,7 @@ import {
   ListIcon,
 } from "@chakra-ui/react";
 import {
-  ActivityStructure,
+  ContentStructure,
   License,
   LicenseCode,
 } from "../Paths/ActivityEditor";
@@ -26,17 +26,17 @@ import { MdCircle } from "react-icons/md";
 
 export function SharingControls({
   fetcher,
-  activityData,
+  contentData,
   allLicenses,
 }: {
   fetcher: FetcherWithComponents<any>;
-  activityData: ActivityStructure;
+  contentData: ContentStructure;
   allLicenses: License[];
 }) {
-  let license = activityData.license;
+  let license = contentData.license;
 
   const [selectedIsPublic, setSelectedIsPublic] = useState(
-    activityData.isPublic,
+    contentData.isPublic,
   );
   const [selectedLicenseCode, setSelectedLicenseCode] = useState(license?.code);
 
@@ -45,14 +45,15 @@ export function SharingControls({
   }, [license?.code]);
 
   useEffect(() => {
-    setSelectedIsPublic(activityData.isPublic);
-  }, [activityData.isPublic]);
+    setSelectedIsPublic(contentData.isPublic);
+  }, [contentData.isPublic]);
 
   let missingLicense = selectedIsPublic && selectedLicenseCode === undefined;
 
   let placeholder = missingLicense ? "Select license" : undefined;
 
-  let contentType = activityData.isFolder ? "Folder" : "Activity";
+  let contentType = contentData.isFolder ? "Folder" : "Activity";
+  let contentTypeLower = contentData.isFolder ? "folder" : "activity";
 
   return (
     <>
@@ -63,8 +64,8 @@ export function SharingControls({
           background="lightgray"
           padding="10px"
         >
-          {!activityData.isPublic ? (
-            activityData.isFolder ? (
+          {!contentData.isPublic ? (
+            contentData.isFolder ? (
               <p>
                 Folder is private. However, public items within the folder can
                 still be found.
@@ -110,76 +111,88 @@ export function SharingControls({
         </Box>
       </Box>
 
-      <Box>
-        <Heading size="md" marginTop="10px">
-          Sharing publicly
-        </Heading>
+      {contentData.parentFolder?.isPublic ? (
+        <Box>
+          <Heading size="md" marginTop="10px">
+            Sharing publicly
+          </Heading>
+          <p style={{ marginTop: "10px" }}>
+            This {contentTypeLower} is inside a public folder and is shared
+            publicly using that folder's license.
+          </p>
+        </Box>
+      ) : (
+        <Box>
+          <Heading size="md" marginTop="10px">
+            Sharing publicly
+          </Heading>
 
-        <p style={{ marginTop: "10px" }}>
-          Sharing an content publicly allows other to find it and adapt it.
-        </p>
+          <p style={{ marginTop: "10px" }}>
+            Sharing content publicly allows others to find it and adapt it.
+          </p>
 
-        <Checkbox
-          marginTop="10px"
-          isChecked={selectedIsPublic}
-          onChange={() => {
-            if (activityData.isPublic) {
-              fetcher.submit(
-                {
-                  _action: "make content private",
-                  id: activityData.id,
-                  isFolder: Boolean(activityData.isFolder),
-                },
-                { method: "post" },
-              );
-              setSelectedIsPublic(false);
-            } else {
-              fetcher.submit(
-                {
-                  _action: "make content public",
-                  id: activityData.id,
-                  licenseCode: selectedLicenseCode ?? "CCDUAL",
-                  isFolder: Boolean(activityData.isFolder),
-                },
-                { method: "post" },
-              );
-              setSelectedIsPublic(true);
-            }
-          }}
-        >
-          Make public
-        </Checkbox>
-        <FormControl isInvalid={missingLicense}>
-          <FormLabel mt="16px">License</FormLabel>
-          <Select
-            placeholder={placeholder}
-            value={selectedLicenseCode}
-            disabled={!selectedIsPublic}
-            onChange={(e) => {
-              let newLicenseCode = e.target.value as LicenseCode;
-              setSelectedLicenseCode(newLicenseCode);
-              fetcher.submit(
-                {
-                  _action: "make content public",
-                  id: activityData.id,
-                  licenseCode: newLicenseCode,
-                  isFolder: Boolean(activityData.isFolder),
-                },
-                { method: "post" },
-              );
+          <Checkbox
+            marginTop="10px"
+            isChecked={selectedIsPublic}
+            onChange={() => {
+              if (contentData.isPublic) {
+                fetcher.submit(
+                  {
+                    _action: "make content private",
+                    id: contentData.id,
+                    isFolder: Boolean(contentData.isFolder),
+                  },
+                  { method: "post" },
+                );
+                setSelectedIsPublic(false);
+              } else {
+                fetcher.submit(
+                  {
+                    _action: "make content public",
+                    id: contentData.id,
+                    licenseCode: selectedLicenseCode ?? "CCDUAL",
+                    isFolder: Boolean(contentData.isFolder),
+                  },
+                  { method: "post" },
+                );
+                setSelectedIsPublic(true);
+              }
             }}
           >
-            {allLicenses.map((license) => (
-              <option value={license.code} key={license.code}>
-                {license.name}
-              </option>
-            ))}
-          </Select>
-          <FormErrorMessage>
-            A license is required to make public.
-          </FormErrorMessage>
-        </FormControl>
-      </Box>
+            Make public
+          </Checkbox>
+          <FormControl isInvalid={missingLicense}>
+            <FormLabel mt="16px">License</FormLabel>
+            <Select
+              placeholder={placeholder}
+              value={selectedLicenseCode}
+              disabled={!selectedIsPublic}
+              onChange={(e) => {
+                let newLicenseCode = e.target.value as LicenseCode;
+                setSelectedLicenseCode(newLicenseCode);
+                fetcher.submit(
+                  {
+                    _action: "make content public",
+                    id: contentData.id,
+                    licenseCode: newLicenseCode,
+                    isFolder: Boolean(contentData.isFolder),
+                  },
+                  { method: "post" },
+                );
+              }}
+            >
+              {allLicenses.map((license) => (
+                <option value={license.code} key={license.code}>
+                  {license.name}
+                </option>
+              ))}
+            </Select>
+            <FormErrorMessage>
+              A license is required to make public.
+            </FormErrorMessage>
+          </FormControl>
+        </Box>
+      )}
     </>
   );
 }

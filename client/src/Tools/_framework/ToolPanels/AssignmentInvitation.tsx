@@ -10,7 +10,7 @@ import {
   Button,
   Center,
 } from "@chakra-ui/react";
-import { ActivityStructure } from "../Paths/ActivityEditor";
+import { ContentStructure } from "../Paths/ActivityEditor";
 import { QRCode } from "react-qrcode-logo";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { MdOutlineContentCopy } from "react-icons/md";
@@ -24,7 +24,7 @@ export function AssignmentInvitation({
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  activityData: ActivityStructure;
+  activityData: ContentStructure;
 }) {
   const [urlCopied, setUrlCopied] = useState(false);
 

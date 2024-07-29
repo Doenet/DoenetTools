@@ -23,20 +23,20 @@ import {
 import { FaFileImage } from "react-icons/fa";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
 import { readAndCompressImage } from "browser-image-resizer";
-import { ActivityStructure, DoenetmlVersion } from "../Paths/ActivityEditor";
+import { ContentStructure, DoenetmlVersion } from "../Paths/ActivityEditor";
 
-export function GeneralActivityControls({
+export function GeneralContentControls({
   fetcher,
-  activityId,
-  activityData,
+  id,
+  contentData,
   allDoenetmlVersions,
 }: {
   fetcher: FetcherWithComponents<any>;
-  activityId: number;
-  activityData: ActivityStructure;
+  id: number;
+  contentData: ContentStructure;
   allDoenetmlVersions: DoenetmlVersion[];
 }) {
-  let { name, imagePath: dataImagePath } = activityData;
+  let { name, imagePath: dataImagePath } = contentData;
 
   let numberOfFilesUploading = useRef(0);
   let [imagePath, setImagePath] = useState(dataImagePath);
@@ -52,9 +52,9 @@ export function GeneralActivityControls({
   // (And same for other variables using this pattern)
   // It appears this file is using optimistic UI without a recourse
   // should the optimism be unmerited.
-  let doenetmlVersionInit: DoenetmlVersion | null = activityData.isFolder
+  let doenetmlVersionInit: DoenetmlVersion | null = contentData.isFolder
     ? null
-    : activityData.documents[0].doenetmlVersion;
+    : contentData.documents[0].doenetmlVersion;
 
   let [nameValue, setName] = useState(name);
   let lastAcceptedNameValue = useRef(name);
@@ -62,6 +62,9 @@ export function GeneralActivityControls({
 
   //   let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
   let [doenetmlVersion, setDoenetmlVersion] = useState(doenetmlVersionInit);
+
+  let contentType = contentData.isFolder ? "Folder" : "Activity";
+  let contentTypeLower = contentData.isFolder ? "folder" : "activity";
 
   function saveDataToServer({
     nextLearningOutcomes,
@@ -101,8 +104,8 @@ export function GeneralActivityControls({
     fetcher.submit(
       {
         _action: "update general",
-        activityId,
-        docId: activityData.documents?.[0]?.id,
+        id,
+        docId: contentData.documents?.[0]?.id,
         ...data,
       },
       { method: "post" },
@@ -151,7 +154,7 @@ export function GeneralActivityControls({
         const uploadData = new FormData();
         // uploadData.append('file',file);
         uploadData.append("file", image);
-        uploadData.append("activityId", activityId.toString());
+        uploadData.append("activityId", id.toString());
 
         axios.post("/api/activityThumbnailUpload", uploadData).then((resp) => {
           let { data } = resp;
@@ -184,7 +187,7 @@ export function GeneralActivityControls({
         });
       };
     },
-    [activityId],
+    [id],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
@@ -251,8 +254,8 @@ export function GeneralActivityControls({
             size="sm"
             // width="392px"
             width="100%"
-            placeholder="Activity 1"
-            data-test="Activity Name"
+            placeholder={`${contentType} 1`}
+            data-test="Content Name"
             value={nameValue}
             onChange={(e) => {
               setName(e.target.value);
@@ -265,7 +268,7 @@ export function GeneralActivityControls({
             }}
           />
           <FormErrorMessage>
-            Error - A name for the activity is required.
+            Error - A name for the {contentTypeLower} is required.
           </FormErrorMessage>
         </FormControl>
         {/* {!activityData.isFolder ? (
@@ -349,12 +352,12 @@ export function GeneralActivityControls({
             </Flex>
           </FormControl>
         ) : null} */}
-        {!activityData.isFolder ? (
+        {!contentData.isFolder ? (
           <FormControl>
             <FormLabel mt="16px">DoenetML version</FormLabel>
             <Select
               value={doenetmlVersion?.id}
-              disabled={activityData.assignmentStatus !== "Unassigned"}
+              disabled={contentData.assignmentStatus !== "Unassigned"}
               onChange={(e) => {
                 // TODO: do we worry about this pattern?
                 // If saveDataToServer is unsuccessful, the client doenetmlVersion
@@ -378,7 +381,7 @@ export function GeneralActivityControls({
             </Select>
           </FormControl>
         ) : null}
-        {activityData.assignmentStatus !== "Unassigned" ? (
+        {contentData.assignmentStatus !== "Unassigned" ? (
           <p>
             <strong>Note</strong>: Cannot modify DoenetML version since activity
             is assigned.
@@ -393,7 +396,7 @@ export function GeneralActivityControls({
         )}
         <input type="hidden" name="imagePath" value={imagePath ?? undefined} />
         <input type="hidden" name="_action" value="update general" />
-        <input type="hidden" name="activityId" value={activityId} />
+        <input type="hidden" name="id" value={id} />
       </Form>
     </>
   );

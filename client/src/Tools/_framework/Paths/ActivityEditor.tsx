@@ -31,7 +31,7 @@ import { FaCog } from "react-icons/fa";
 import { useFetcher } from "react-router-dom";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router";
-import { ActivitySettingsDrawer } from "../ToolPanels/ActivitySettingsDrawer";
+import { ContentSettingsDrawer } from "../ToolPanels/ContentSettingsDrawer";
 import { DateTime } from "luxon";
 import { InfoIcon } from "@chakra-ui/icons";
 import { AssignmentInvitation } from "../ToolPanels/AssignmentInvitation";
@@ -66,16 +66,15 @@ export type License = {
 
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
-export type ActivityStructure = {
+export type ContentStructure = {
   id: number;
   ownerId: number;
   name: string;
   imagePath: string | null;
-  isAssigned: boolean;
+  assignmentStatus: AssignmentStatus;
   isFolder?: boolean;
   classCode: string | null;
-  // Note: on server, codeValidUntil is Date, but it has been converted to a string, here
-  codeValidUntil: string | null;
+  codeValidUntil: Date | null;
   isPublic: boolean;
   license: License | null;
   documents: {
@@ -85,9 +84,12 @@ export type ActivityStructure = {
     source?: string;
     doenetmlVersion: DoenetmlVersion;
   }[];
-  assignmentStatus: AssignmentStatus;
   hasScoreData: boolean;
-  notMe?: boolean;
+  parentFolder: {
+    id: number;
+    name: string;
+    isPublic: boolean;
+  } | null;
 };
 
 export async function action({ params, request }) {
@@ -212,11 +214,11 @@ export async function action({ params, request }) {
 }
 
 export async function loader({ params }) {
-  const { data: activityData } = await axios.get(
-    `/api/getActivityEditorData/${params.activityId}`,
-  );
+  const {
+    data: { notMe, activity: activityData },
+  } = await axios.get(`/api/getActivityEditorData/${params.activityId}`);
 
-  if (activityData.notMe) {
+  if (notMe) {
     return redirect(
       `/publicEditor/${params.activityId}${params.docId ? "/" + params.docId : ""}`,
     );
@@ -344,7 +346,7 @@ export function ActivityEditor() {
     doenetML: string;
     doenetmlVersion: DoenetmlVersion;
     docId: number;
-    activityData: ActivityStructure;
+    activityData: ContentStructure;
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
   };
@@ -464,13 +466,13 @@ export function ActivityEditor() {
 
   return (
     <>
-      <ActivitySettingsDrawer
+      <ContentSettingsDrawer
         isOpen={settingsAreOpen}
         onClose={settingsOnClose}
         finalFocusRef={controlsBtnRef}
         fetcher={fetcher}
-        activityId={activityId}
-        activityData={activityData}
+        id={activityId}
+        contentData={activityData}
         allDoenetmlVersions={allDoenetmlVersions}
         allLicenses={allLicenses}
         displayTab={displaySettingsTab}
@@ -577,9 +579,7 @@ export function ActivityEditor() {
 
                   <Tooltip
                     hasArrow
-                    label={
-                      platform == "Mac" ? "Open Settings" : "Open Settings"
-                    }
+                    label="Open Settings"
                     placement="bottom-end"
                   >
                     <Button

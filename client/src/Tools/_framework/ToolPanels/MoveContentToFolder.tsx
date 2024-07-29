@@ -17,7 +17,7 @@ import {
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useFetcher } from "react-router-dom";
-import { ActivityStructure } from "../Paths/ActivityEditor";
+import { ContentStructure } from "../Paths/ActivityEditor";
 import { MdFolder, MdOutlineInsertDriveFile } from "react-icons/md";
 
 type ActiveView = {
@@ -72,7 +72,7 @@ export default function MoveContentToFolder({
 
     const folderName: string | null = data.folder?.name ?? null;
     const parentFolderId: number | null = data.folder?.parentFolder?.id ?? null;
-    const contentFromApi: ActivityStructure[] = data.content;
+    const contentFromApi: ContentStructure[] = data.content;
 
     const content = contentFromApi
       .map((item) => {

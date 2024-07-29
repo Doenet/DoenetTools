@@ -9,6 +9,9 @@ import {
   MenuItem,
   Heading,
   Tooltip,
+  Menu,
+  MenuButton,
+  MenuList,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -25,12 +28,18 @@ import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../PanelHeaderComponents/ContentCard";
 import axios from "axios";
 import MoveContentToFolder from "../ToolPanels/MoveContentToFolder";
-import { ActivitySettingsDrawer } from "../ToolPanels/ActivitySettingsDrawer";
-import { ActivityStructure, DoenetmlVersion, License } from "./ActivityEditor";
+import { ContentSettingsDrawer } from "../ToolPanels/ContentSettingsDrawer";
+import {
+  AssignmentStatus,
+  ContentStructure,
+  DoenetmlVersion,
+  License,
+} from "./ActivityEditor";
 import { DateTime } from "luxon";
+import { FaCog } from "react-icons/fa";
 
 // what is a better solution than this?
-let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching activity/folder id
+let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching id
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -51,7 +60,7 @@ export async function action({ request, params }) {
     await axios.post("/api/updateContentSettings", {
       name,
       imagePath: formObj.imagePath,
-      id: formObj.activityId,
+      id: formObj.id,
       learningOutcomes,
     });
 
@@ -217,13 +226,13 @@ export function Activities() {
   let { folderId, content, allDoenetmlVersions, allLicenses, userId, folder } =
     useLoaderData() as {
       folderId: number | null;
-      content: ActivityStructure[];
+      content: ContentStructure[];
       allDoenetmlVersions: DoenetmlVersion[];
       allLicenses: License[];
       userId: number;
-      folder: any;
+      folder: ContentStructure | null;
     };
-  const [settingsActivityId, setSettingsActivityId] = useState<number | null>(
+  const [settingsContentId, setSettingsContentId] = useState<number | null>(
     null,
   );
   const {
@@ -233,11 +242,12 @@ export function Activities() {
   } = useDisclosure();
 
   const contentCardRefs = useRef(new Array());
-  const currentCardRef = useRef(null);
+  const folderSettingsRef = useRef(null);
+  const finalFocusRef = useRef(null);
 
   const navigate = useNavigate();
 
-  const [moveToFolderActivityId, setMoveToFolderActivityId] = useState<
+  const [moveToFolderContentId, setMoveToFolderContentId] = useState<
     number | null
   >(null);
 
@@ -262,14 +272,19 @@ export function Activities() {
     return null;
   }
 
-  function getCardMenuList(
-    isPublic: boolean,
-    id: number,
-    position: number,
-    numCards: number,
-    isAssigned: boolean,
-    isFolder?: boolean,
-  ) {
+  function getCardMenuList({
+    id,
+    position,
+    numCards,
+    assignmentStatus,
+    isFolder,
+  }: {
+    id: number;
+    position: number;
+    numCards: number;
+    assignmentStatus: AssignmentStatus;
+    isFolder?: boolean;
+  }) {
     return (
       <>
         {!isFolder ? (
@@ -316,7 +331,7 @@ export function Activities() {
         <MenuItem
           data-test="Move to Folder"
           onClick={() => {
-            setMoveToFolderActivityId(id);
+            setMoveToFolderContentId(id);
             moveToFolderOnOpen();
           }}
         >
@@ -333,20 +348,24 @@ export function Activities() {
         >
           Delete
         </MenuItem>
-        <MenuItem
-          data-test="Assign Activity Menu Item"
-          onClick={() => {
-            setSettingsActivityId(id);
-            setSettingsDisplayTab("assignment");
-            settingsOnOpen();
-          }}
-        >
-          {isAssigned ? "Manage Assignment" : "Assign Activity"}
-        </MenuItem>
+        {!isFolder ? (
+          <MenuItem
+            data-test="Assign Activity Menu Item"
+            onClick={() => {
+              setSettingsContentId(id);
+              setSettingsDisplayTab("assignment");
+              settingsOnOpen();
+            }}
+          >
+            {assignmentStatus === "Unassigned"
+              ? "Assign Activity"
+              : "Manage Assignment"}
+          </MenuItem>
+        ) : null}
         <MenuItem
           data-test="Share Menu Item"
           onClick={() => {
-            setSettingsActivityId(id);
+            setSettingsContentId(id);
             setSettingsDisplayTab("share");
             settingsOnOpen();
           }}
@@ -356,7 +375,7 @@ export function Activities() {
         <MenuItem
           data-test="Settings Menu Item"
           onClick={() => {
-            setSettingsActivityId(id);
+            setSettingsContentId(id);
             setSettingsDisplayTab("general");
             settingsOnOpen();
           }}
@@ -367,35 +386,40 @@ export function Activities() {
     );
   }
 
-  let headingText;
+  let headingText = folder ? (
+    <>
+      {folder.isPublic ? "Public " : ""}Folder: {folder.name}
+    </>
+  ) : (
+    `My Activities`
+  );
 
-  if (folder) {
-    headingText = <>Folder: {folder.name}</>;
-  } else {
-    headingText = `My Activities`;
-  }
-
-  let activityData: ActivityStructure | undefined;
-  if (settingsActivityId) {
-    let index = content.findIndex((obj) => obj.id == settingsActivityId);
-    if (index != -1) {
-      activityData = content[index];
-      currentCardRef.current = contentCardRefs.current[index];
+  let contentData: ContentStructure | undefined;
+  if (settingsContentId) {
+    if (folder && settingsContentId === folderId) {
+      contentData = folder;
+      finalFocusRef.current = folderSettingsRef.current;
     } else {
-      //Throw error not found
+      let index = content.findIndex((obj) => obj.id == settingsContentId);
+      if (index != -1) {
+        contentData = content[index];
+        finalFocusRef.current = contentCardRefs.current[index];
+      } else {
+        //Throw error not found
+      }
     }
   }
 
   let settings_drawer =
-    activityData && settingsActivityId ? (
-      <ActivitySettingsDrawer
+    contentData && settingsContentId ? (
+      <ContentSettingsDrawer
         isOpen={settingsAreOpen}
         onClose={settingsOnClose}
-        activityId={settingsActivityId}
-        activityData={activityData}
+        id={settingsContentId}
+        contentData={contentData}
         allDoenetmlVersions={allDoenetmlVersions}
         allLicenses={allLicenses}
-        finalFocusRef={currentCardRef}
+        finalFocusRef={finalFocusRef}
         fetcher={fetcher}
         displayTab={displaySettingsTab}
       />
@@ -408,9 +432,9 @@ export function Activities() {
       <MoveContentToFolder
         isOpen={moveToFolderIsOpen}
         onClose={moveToFolderOnClose}
-        id={moveToFolderActivityId}
+        id={moveToFolderContentId}
         currentParentId={folderId}
-        finalFocusRef={currentCardRef}
+        finalFocusRef={finalFocusRef}
       />
 
       <Box
@@ -426,40 +450,57 @@ export function Activities() {
           </Heading>
         </Tooltip>
         <div style={{ float: "right" }}>
-          <Button
-            margin="3px"
-            size="xs"
-            colorScheme="blue"
-            onClick={async () => {
-              fetcher.submit({ _action: "Add Folder" }, { method: "post" });
-            }}
-          >
-            + Add Folder
-          </Button>
-          <Button
-            margin="3px"
-            data-test="Add Activity"
-            size="xs"
-            colorScheme="blue"
-            onClick={async () => {
-              //Create an activity and redirect to the editor for it
-              // let { data } = await axios.post("/api/createActivity");
-              // let { activityId } = data;
-              // navigate(`/activityEditor/${activityId}`);
+          <Menu>
+            <MenuButton as={Button} size="xs">
+              New
+            </MenuButton>
+            <MenuList>
+              <MenuItem
+                onClick={async () => {
+                  //Create an activity and redirect to the editor for it
+                  // let { data } = await axios.post("/api/createActivity");
+                  // let { activityId } = data;
+                  // navigate(`/activityEditor/${activityId}`);
 
-              // TODO - review this, elsewhere the fetcher is being used, and
-              // there was code up in the action() method for this action
-              // that was unused. This appears to work okay though? And it
-              // would make it consistent with how API requests are done elsewhere
-              fetcher.submit({ _action: "Add Activity" }, { method: "post" });
-            }}
-          >
-            + Add Activity
-          </Button>
+                  // TODO - review this, elsewhere the fetcher is being used, and
+                  // there was code up in the action() method for this action
+                  // that was unused. This appears to work okay though? And it
+                  // would make it consistent with how API requests are done elsewhere
+                  fetcher.submit(
+                    { _action: "Add Activity" },
+                    { method: "post" },
+                  );
+                }}
+              >
+                Activity
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  fetcher.submit({ _action: "Add Folder" }, { method: "post" });
+                }}
+              >
+                Folder
+              </MenuItem>
+            </MenuList>
+          </Menu>
+
+          {folderId !== null ? (
+            <Button
+              margin="3px"
+              size="xs"
+              ref={folderSettingsRef}
+              onClick={() => {
+                setSettingsContentId(folderId);
+                setSettingsDisplayTab("share");
+                settingsOnOpen();
+              }}
+            >
+              Share
+            </Button>
+          ) : null}
           <Button
             margin="3px"
             size="xs"
-            colorScheme="blue"
             onClick={() =>
               navigate(`/allAssignmentScores${folderId ? "/" + folderId : ""}`)
             }
@@ -476,9 +517,10 @@ export function Activities() {
               color: "var(--mainBlue)",
             }}
           >
-            {" "}
-            &lt; Back to{" "}
-            {folder.parentFolder ? folder.parentFolder.name : `My Activities`}
+            <Text noOfLines={1}>
+              &lt; Back to{" "}
+              {folder.parentFolder ? folder.parentFolder.name : `My Activities`}
+            </Text>
           </Link>
         </Box>
       ) : null}
@@ -511,14 +553,13 @@ export function Activities() {
                     ref={getCardRef}
                     {...activity}
                     title={activity.name}
-                    menuItems={getCardMenuList(
-                      activity.isPublic,
-                      activity.id,
+                    menuItems={getCardMenuList({
+                      id: activity.id,
                       position,
-                      content.length,
-                      activity.isAssigned,
-                      activity.isFolder,
-                    )}
+                      numCards: content.length,
+                      assignmentStatus: activity.assignmentStatus,
+                      isFolder: activity.isFolder,
+                    })}
                     suppressAvatar={true}
                     showOwnerName={false}
                     imageLink={

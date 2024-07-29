@@ -49,7 +49,7 @@ import {
   getPublicFolderContent,
   getPublicEditorData,
   searchUsersWithPublicContent,
-  ActivityStructure,
+  ContentStructure,
   updateAssignmentSettings,
   getLicense,
   getAllLicenses,
@@ -125,14 +125,16 @@ test("New activity starts out private, then delete it", async () => {
   const user = await createTestUser();
   const userId = user.userId;
   const { activityId, docId } = await createActivity(userId, null);
-  const activityContent = await getActivityEditorData(activityId, userId);
-  const expectedContent: ActivityStructure = {
+  const { activity: activityContent } = await getActivityEditorData(
+    activityId,
+    userId,
+  );
+  const expectedContent: ContentStructure = {
     id: activityId,
     name: "Untitled Activity",
     ownerId: userId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
-    isAssigned: false,
     assignmentStatus: "Unassigned",
     classCode: null,
     codeValidUntil: null,
@@ -146,8 +148,7 @@ test("New activity starts out private, then delete it", async () => {
       },
     ],
     hasScoreData: false,
-    notMe: false,
-    parentIsPublic: false,
+    parentFolder: null,
   };
   expect(activityContent.license?.code).eq("CCDUAL");
 
@@ -163,7 +164,7 @@ test("New activity starts out private, then delete it", async () => {
 
   expect(data.content.length).toBe(1);
   expect(data.content[0].isPublic).eq(false);
-  expect(data.content[0].isAssigned).eq(false);
+  expect(data.content[0].assignmentStatus).eq("Unassigned");
 
   await deleteActivity(activityId, userId);
 
@@ -285,22 +286,22 @@ test("getMyFolderContent returns both public and private content, getPublicFolde
       expect.objectContaining({
         id: publicActivity1Id,
         isPublic: true,
-        parentIsPublic: false,
+        parentFolder: null,
       }),
       expect.objectContaining({
         id: privateActivity1Id,
         isPublic: false,
-        parentIsPublic: false,
+        parentFolder: null,
       }),
       expect.objectContaining({
         id: publicFolder1Id,
         isPublic: true,
-        parentIsPublic: false,
+        parentFolder: null,
       }),
       expect.objectContaining({
         id: privateFolder1Id,
         isPublic: false,
-        parentIsPublic: false,
+        parentFolder: null,
       }),
     ]),
   });
@@ -345,22 +346,38 @@ test("getMyFolderContent returns both public and private content, getPublicFolde
       expect.objectContaining({
         id: publicActivity2Id,
         isPublic: true,
-        parentIsPublic: true,
+        parentFolder: {
+          id: publicFolder1Id,
+          isPublic: true,
+          name: ownerContent.folder?.name,
+        },
       }),
       expect.objectContaining({
         id: privateActivity2Id,
         isPublic: false,
-        parentIsPublic: true,
+        parentFolder: {
+          id: publicFolder1Id,
+          isPublic: true,
+          name: ownerContent.folder?.name,
+        },
       }),
       expect.objectContaining({
         id: publicFolder2Id,
         isPublic: true,
-        parentIsPublic: true,
+        parentFolder: {
+          id: publicFolder1Id,
+          isPublic: true,
+          name: ownerContent.folder?.name,
+        },
       }),
       expect.objectContaining({
         id: privateFolder2Id,
         isPublic: false,
-        parentIsPublic: true,
+        parentFolder: {
+          id: publicFolder1Id,
+          isPublic: true,
+          name: ownerContent.folder?.name,
+        },
       }),
     ]),
   });
@@ -405,22 +422,38 @@ test("getMyFolderContent returns both public and private content, getPublicFolde
       expect.objectContaining({
         id: publicActivity3Id,
         isPublic: true,
-        parentIsPublic: false,
+        parentFolder: {
+          id: privateFolder1Id,
+          isPublic: false,
+          name: ownerContent.folder?.name,
+        },
       }),
       expect.objectContaining({
         id: privateActivity3Id,
         isPublic: false,
-        parentIsPublic: false,
+        parentFolder: {
+          id: privateFolder1Id,
+          isPublic: false,
+          name: ownerContent.folder?.name,
+        },
       }),
       expect.objectContaining({
         id: publicFolder3Id,
         isPublic: true,
-        parentIsPublic: false,
+        parentFolder: {
+          id: privateFolder1Id,
+          isPublic: false,
+          name: ownerContent.folder?.name,
+        },
       }),
       expect.objectContaining({
         id: privateFolder3Id,
         isPublic: false,
-        parentIsPublic: false,
+        parentFolder: {
+          id: privateFolder1Id,
+          isPublic: false,
+          name: ownerContent.folder?.name,
+        },
       }),
     ]),
   });
@@ -768,12 +801,18 @@ test("Test updating various activity properties", async () => {
   const { activityId } = await createActivity(userId, null);
   const activityName = "Test Name";
   await updateContent({ id: activityId, name: activityName, ownerId: userId });
-  const activityContent = await getActivityEditorData(activityId, userId);
+  const { activity: activityContent } = await getActivityEditorData(
+    activityId,
+    userId,
+  );
   const docId = activityContent.documents[0].id;
   expect(activityContent.name).toBe(activityName);
   const source = "Here comes some content, I made you some content";
   await updateDoc({ id: docId, source, ownerId: userId });
-  const activityContent2 = await getActivityEditorData(activityId, userId);
+  const { activity: activityContent2 } = await getActivityEditorData(
+    activityId,
+    userId,
+  );
   expect(activityContent2.documents[0].source).toBe(source);
 
   const activityViewerContent = await getActivityViewerData(activityId, userId);
@@ -2375,8 +2414,6 @@ test("assignment data with code create anonymous user when not signed in", async
     ownerId,
   });
 
-  await assignActivity(activityId, ownerId);
-
   // open assignment generates code
   let closeAt = DateTime.now().plus({ days: 1 });
   const { classCode } = await openAssignmentWithCode(
@@ -2418,8 +2455,6 @@ test("get assignment data from anonymous users", async () => {
     source: "Some content",
     ownerId,
   });
-
-  await assignActivity(activityId, ownerId);
 
   // open assignment generates code
   let closeAt = DateTime.now().plus({ days: 1 });
@@ -2698,7 +2733,6 @@ test("can't get assignment data if other user, but student can get their own dat
   const otherUser = await createTestUser();
   const otherUserId = otherUser.userId;
   const { activityId, docId } = await createActivity(ownerId, null);
-  await assignActivity(activityId, ownerId);
 
   let closeAt = DateTime.now().plus({ days: 1 });
   const { classCode } = await openAssignmentWithCode(
@@ -2777,7 +2811,6 @@ test("can't unassign if have data", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const { activityId, docId } = await createActivity(ownerId, null);
-  await assignActivity(activityId, ownerId);
 
   let closeAt = DateTime.now().plus({ days: 1 });
   const { classCode } = await openAssignmentWithCode(
@@ -2820,7 +2853,7 @@ test("can't unassign if have data", async () => {
   );
 });
 
-test("get activity editor data only if owner", async () => {
+test("get activity editor data only if owner or limited data for public", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const otherUser = await createTestUser();
@@ -2832,6 +2865,32 @@ test("get activity editor data only if owner", async () => {
   await expect(getActivityEditorData(activityId, otherUserId)).rejects.toThrow(
     "No content found",
   );
+
+  await makeActivityPublic({ id: activityId, ownerId, licenseCode: "CCDUAL" });
+
+  let closeAt = DateTime.now().plus({ days: 1 });
+  await openAssignmentWithCode(activityId, closeAt, ownerId);
+
+  let data = await getActivityEditorData(activityId, ownerId);
+  expect(data.notMe).eq(false);
+  expect(data.activity.assignmentStatus).eq("Open");
+
+  data = await getActivityEditorData(activityId, otherUserId);
+  expect(data.notMe).eq(true);
+  expect(data.activity).eqls({
+    id: activityId,
+    name: "",
+    ownerId,
+    imagePath: null,
+    assignmentStatus: "Unassigned",
+    classCode: null,
+    codeValidUntil: null,
+    isPublic: true,
+    license: null,
+    documents: [],
+    hasScoreData: false,
+    parentFolder: null,
+  });
 });
 
 test("get public activity editor data only if public", async () => {
@@ -2867,14 +2926,16 @@ test("activity editor data and my folder contents before and after assigned", as
   const ownerId = owner.userId;
   const { activityId, docId } = await createActivity(ownerId, null);
 
-  const preAssignedData = await getActivityEditorData(activityId, ownerId);
-  let expectedData: ActivityStructure = {
+  const { activity: preAssignedData } = await getActivityEditorData(
+    activityId,
+    ownerId,
+  );
+  let expectedData: ContentStructure = {
     id: activityId,
     name: "Untitled Activity",
     ownerId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
-    isAssigned: false,
     assignmentStatus: "Unassigned",
     classCode: null,
     codeValidUntil: null,
@@ -2887,9 +2948,8 @@ test("activity editor data and my folder contents before and after assigned", as
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
-    notMe: false,
     hasScoreData: false,
-    parentIsPublic: false,
+    parentFolder: null,
   };
   preAssignedData.license = null; // skip trying to check big license object
   expect(preAssignedData).eqls(expectedData);
@@ -2902,7 +2962,6 @@ test("activity editor data and my folder contents before and after assigned", as
   delete expectedData.documents[0].name;
   delete expectedData.documents[0].source;
   expectedData.isFolder = false;
-  delete expectedData.notMe;
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
@@ -2914,14 +2973,16 @@ test("activity editor data and my folder contents before and after assigned", as
     ownerId,
   );
 
-  const openedData = await getActivityEditorData(activityId, ownerId);
+  const { activity: openedData } = await getActivityEditorData(
+    activityId,
+    ownerId,
+  );
   expectedData = {
     id: activityId,
     name: "Untitled Activity",
     ownerId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
-    isAssigned: true,
     assignmentStatus: "Open",
     classCode,
     codeValidUntil: closeAt.toJSDate(),
@@ -2935,9 +2996,8 @@ test("activity editor data and my folder contents before and after assigned", as
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
-    notMe: false,
     hasScoreData: false,
-    parentIsPublic: false,
+    parentFolder: null,
   };
 
   openedData.license = null; // skip trying to check big license object
@@ -2952,20 +3012,21 @@ test("activity editor data and my folder contents before and after assigned", as
   delete expectedData.documents[0].source;
   delete expectedData.documents[0].versionNum;
   expectedData.isFolder = false;
-  delete expectedData.notMe;
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
   // closing the assignment without data also unassigns it
   await closeAssignmentWithCode(activityId, ownerId);
-  const closedData = await getActivityEditorData(activityId, ownerId);
+  const { activity: closedData } = await getActivityEditorData(
+    activityId,
+    ownerId,
+  );
   expectedData = {
     id: activityId,
     name: "Untitled Activity",
     ownerId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
-    isAssigned: false,
     assignmentStatus: "Unassigned",
     classCode,
     codeValidUntil: null,
@@ -2978,9 +3039,8 @@ test("activity editor data and my folder contents before and after assigned", as
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
-    notMe: false,
     hasScoreData: false,
-    parentIsPublic: false,
+    parentFolder: null,
   };
 
   closedData.license = null; // skip trying to check big license object
@@ -2994,7 +3054,6 @@ test("activity editor data and my folder contents before and after assigned", as
   delete expectedData.documents[0].name;
   delete expectedData.documents[0].source;
   expectedData.isFolder = false;
-  delete expectedData.notMe;
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
@@ -3008,14 +3067,16 @@ test("activity editor data and my folder contents before and after assigned", as
 
   expect(newClassCode).eq(classCode);
 
-  const openedData2 = await getActivityEditorData(activityId, ownerId);
+  const { activity: openedData2 } = await getActivityEditorData(
+    activityId,
+    ownerId,
+  );
   expectedData = {
     id: activityId,
     name: "Untitled Activity",
     ownerId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
-    isAssigned: true,
     assignmentStatus: "Open",
     classCode,
     codeValidUntil: closeAt.toJSDate(),
@@ -3029,9 +3090,8 @@ test("activity editor data and my folder contents before and after assigned", as
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
-    notMe: false,
     hasScoreData: false,
-    parentIsPublic: false,
+    parentFolder: null,
   };
 
   openedData2.license = null; // skip trying to check big license object
@@ -3046,7 +3106,6 @@ test("activity editor data and my folder contents before and after assigned", as
   delete expectedData.documents[0].source;
   delete expectedData.documents[0].versionNum;
   expectedData.isFolder = false;
-  delete expectedData.notMe;
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
@@ -3061,14 +3120,16 @@ test("activity editor data and my folder contents before and after assigned", as
     state: "document state 1",
   });
 
-  const openedData3 = await getActivityEditorData(activityId, ownerId);
+  const { activity: openedData3 } = await getActivityEditorData(
+    activityId,
+    ownerId,
+  );
   expectedData = {
     id: activityId,
     name: "Untitled Activity",
     ownerId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
-    isAssigned: true,
     assignmentStatus: "Open",
     classCode,
     codeValidUntil: closeAt.toJSDate(),
@@ -3082,9 +3143,8 @@ test("activity editor data and my folder contents before and after assigned", as
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
-    notMe: false,
     hasScoreData: true,
-    parentIsPublic: false,
+    parentFolder: null,
   };
 
   openedData3.license = null; // skip trying to check big license object
@@ -3099,20 +3159,21 @@ test("activity editor data and my folder contents before and after assigned", as
   delete expectedData.documents[0].source;
   delete expectedData.documents[0].versionNum;
   expectedData.isFolder = false;
-  delete expectedData.notMe;
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
   // now closing does not unassign
   await closeAssignmentWithCode(activityId, ownerId);
-  const closedData2 = await getActivityEditorData(activityId, ownerId);
+  const { activity: closedData2 } = await getActivityEditorData(
+    activityId,
+    ownerId,
+  );
   expectedData = {
     id: activityId,
     name: "Untitled Activity",
     ownerId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
-    isAssigned: true,
     assignmentStatus: "Closed",
     classCode,
     codeValidUntil: null,
@@ -3126,9 +3187,8 @@ test("activity editor data and my folder contents before and after assigned", as
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
-    notMe: false,
     hasScoreData: true,
-    parentIsPublic: false,
+    parentFolder: null,
   };
 
   closedData2.license = null; // skip trying to check big license object
@@ -3143,7 +3203,6 @@ test("activity editor data and my folder contents before and after assigned", as
   delete expectedData.documents[0].source;
   delete expectedData.documents[0].versionNum;
   expectedData.isFolder = false;
-  delete expectedData.notMe;
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
@@ -3153,21 +3212,21 @@ test("activity editor data and my folder contents before and after assigned", as
   );
 });
 
-test("activity editor data show its parent folder is public", async () => {
+test("activity editor data shows its parent folder is public", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
   const { activityId } = await createActivity(ownerId, null);
 
-  let data = await getActivityEditorData(activityId, ownerId);
+  let { activity: data } = await getActivityEditorData(activityId, ownerId);
   expect(data.isPublic).eq(false);
-  expect(data.parentIsPublic).eq(false);
+  expect(data.parentFolder).eq(null);
 
   await makeActivityPublic({ id: activityId, ownerId, licenseCode: "CCBYSA" });
-  data = await getActivityEditorData(activityId, ownerId);
+  ({ activity: data } = await getActivityEditorData(activityId, ownerId));
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCBYSA");
-  expect(data.parentIsPublic).eq(false);
+  expect(data.parentFolder).eq(null);
 
   let { folderId } = await createFolder(ownerId, null);
   await moveContent({
@@ -3177,39 +3236,38 @@ test("activity editor data show its parent folder is public", async () => {
     ownerId,
   });
 
-  data = await getActivityEditorData(activityId, ownerId);
+  ({ activity: data } = await getActivityEditorData(activityId, ownerId));
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCBYSA");
-  expect(data.parentIsPublic).eq(false);
+  expect(data.parentFolder?.isPublic).eq(false);
 
   await makeFolderPublic({ id: folderId, ownerId, licenseCode: "CCBYNCSA" });
-  data = await getActivityEditorData(activityId, ownerId);
+  ({ activity: data } = await getActivityEditorData(activityId, ownerId));
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCBYNCSA");
-  expect(data.parentIsPublic).eq(true);
+  expect(data.parentFolder?.isPublic).eq(true);
 
   await makeFolderPrivate({ id: folderId, ownerId });
-  data = await getActivityEditorData(activityId, ownerId);
+  ({ activity: data } = await getActivityEditorData(activityId, ownerId));
   expect(data.isPublic).eq(false);
-  expect(data.parentIsPublic).eq(false);
+  expect(data.parentFolder?.isPublic).eq(false);
 
   await makeFolderPublic({ id: folderId, ownerId, licenseCode: "CCDUAL" });
-  data = await getActivityEditorData(activityId, ownerId);
+  ({ activity: data } = await getActivityEditorData(activityId, ownerId));
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCDUAL");
-  expect(data.parentIsPublic).eq(true);
+  expect(data.parentFolder?.isPublic).eq(true);
 
   await makeActivityPrivate({ id: activityId, ownerId });
-  data = await getActivityEditorData(activityId, ownerId);
+  ({ activity: data } = await getActivityEditorData(activityId, ownerId));
   expect(data.isPublic).eq(false);
-  expect(data.parentIsPublic).eq(true);
+  expect(data.parentFolder?.isPublic).eq(true);
 });
 
 test("only user and assignment owner can load document state", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const { activityId, docId } = await createActivity(ownerId, null);
-  await assignActivity(activityId, ownerId);
 
   // open assignment generates code
   let closeAt = DateTime.now().plus({ days: 1 });
@@ -3276,7 +3334,6 @@ test("load document state based on withMaxScore", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const { activityId, docId } = await createActivity(ownerId, null);
-  await assignActivity(activityId, ownerId);
 
   // open assignment generates code
   let closeAt = DateTime.now().plus({ days: 1 });
@@ -3422,7 +3479,6 @@ test("record submitted events and get responses", async () => {
   const ownerId = owner.userId;
   const { activityId, docId } = await createActivity(ownerId, null);
   await updateContent({ id: activityId, name: "My Activity", ownerId });
-  await assignActivity(activityId, ownerId);
 
   // open assignment generates code
   let closeAt = DateTime.now().plus({ days: 1 });
@@ -3980,7 +4036,6 @@ test("only owner can get submitted responses", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const { activityId, docId } = await createActivity(ownerId, null);
-  await assignActivity(activityId, ownerId);
 
   const user2 = await createTestUser();
   const userId2 = user2.userId;
@@ -4188,8 +4243,6 @@ test("get all assignment data from anonymous user", async () => {
     source: "Some content",
     ownerId,
   });
-
-  await assignActivity(activityId, ownerId);
 
   // open assignment generates code
   let closeAt = DateTime.now().plus({ days: 1 });
@@ -4527,8 +4580,6 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     ownerId,
   });
 
-  await assignActivity(activityId, ownerId);
-
   // open assignment generates code
   let closeAt = DateTime.now().plus({ days: 1 });
   const { classCode } = await openAssignmentWithCode(
@@ -4702,10 +4753,8 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     ownerId,
   });
 
-  await assignActivity(activity2Id, ownerId);
-
   const { classCode: classCode2 } = await openAssignmentWithCode(
-    activityId,
+    activity2Id,
     closeAt,
     ownerId,
   );
@@ -4828,7 +4877,10 @@ test("set license to make public", async () => {
     ownerId,
     licenseCode: "CCBYSA",
   });
-  let activityData = await getActivityEditorData(activityId, ownerId);
+  let { activity: activityData } = await getActivityEditorData(
+    activityId,
+    ownerId,
+  );
   expect(activityData.isPublic).eq(true);
 
   expect(activityData.license?.code).eq("CCBYSA");
@@ -4842,7 +4894,10 @@ test("set license to make public", async () => {
 
   // make private
   await makeActivityPrivate({ id: activityId, ownerId });
-  activityData = await getActivityEditorData(activityId, ownerId);
+  ({ activity: activityData } = await getActivityEditorData(
+    activityId,
+    ownerId,
+  ));
   expect(activityData.isPublic).eq(false);
 
   // make public with CCBYNCSA license
@@ -4851,7 +4906,10 @@ test("set license to make public", async () => {
     ownerId,
     licenseCode: "CCBYNCSA",
   });
-  activityData = await getActivityEditorData(activityId, ownerId);
+  ({ activity: activityData } = await getActivityEditorData(
+    activityId,
+    ownerId,
+  ));
   expect(activityData.isPublic).eq(true);
 
   expect(activityData.license?.code).eq("CCBYNCSA");
@@ -4870,7 +4928,10 @@ test("set license to make public", async () => {
     licenseCode: "CCDUAL",
   });
 
-  activityData = await getActivityEditorData(activityId, ownerId);
+  ({ activity: activityData } = await getActivityEditorData(
+    activityId,
+    ownerId,
+  ));
   expect(activityData.isPublic).eq(true);
 
   expect(activityData.license?.code).eq("CCDUAL");
