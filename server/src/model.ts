@@ -43,8 +43,16 @@ export type License = {
   code: LicenseCode;
   name: string;
   description: string;
-  imageUrls: string[];
-  licenseUrls: string[];
+  imageURL: string | null;
+  licenseURL: string | null;
+  isComposition: boolean;
+  composedOf: {
+    code: LicenseCode;
+    name: string;
+    description: string;
+    imageURL: string | null;
+    licenseURL: string | null;
+  }[];
 };
 
 export class InvalidRequestError extends Error {
@@ -2878,24 +2886,26 @@ function processLicense(
       code: preliminary_license.code as LicenseCode,
       name: preliminary_license.name,
       description: preliminary_license.description,
-      imageUrls: preliminary_license.composedOf
-        .map((comp) => comp.composedOf.imageURL)
-        .filter((comp) => comp !== null),
-      licenseUrls: preliminary_license.composedOf
-        .map((comp) => comp.composedOf.licenseURL)
-        .filter((comp) => comp !== null),
+      imageURL: null,
+      licenseURL: null,
+      isComposition: true,
+      composedOf: preliminary_license.composedOf.map((comp) => ({
+        code: comp.composedOf.code as LicenseCode,
+        name: comp.composedOf.name,
+        description: comp.composedOf.description,
+        imageURL: comp.composedOf.imageURL,
+        licenseURL: comp.composedOf.licenseURL,
+      })),
     };
   } else {
     return {
       code: preliminary_license.code as LicenseCode,
       name: preliminary_license.name,
       description: preliminary_license.description,
-      imageUrls: preliminary_license.imageURL
-        ? [preliminary_license.imageURL]
-        : [],
-      licenseUrls: preliminary_license.licenseURL
-        ? [preliminary_license.licenseURL]
-        : [],
+      imageURL: preliminary_license.imageURL,
+      licenseURL: preliminary_license.licenseURL,
+      isComposition: false,
+      composedOf: [],
     };
   }
 }

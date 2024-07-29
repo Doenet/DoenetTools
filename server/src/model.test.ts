@@ -147,6 +147,11 @@ test("New activity starts out private, then delete it", async () => {
     hasScoreData: false,
     notMe: false,
   };
+  expect(activityContent.license?.code).eq("CCDUAL");
+
+  // set license to null as it is too long to compare in its entirety.
+  activityContent.license = null;
+
   expect(activityContent).toStrictEqual(expectedContent);
 
   const data = await getMyFolderContent({
@@ -2019,7 +2024,7 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
   assignment = await getAssignment(activityId, ownerId);
   expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
 
-  updateAssignmentSettings(activityId, newCloseAt, ownerId);
+  await updateAssignmentSettings(activityId, newCloseAt, ownerId);
   assignment = await getAssignment(activityId, ownerId);
   expect(assignment.codeValidUntil).eqls(newCloseAt.toJSDate());
 
@@ -2568,6 +2573,7 @@ test("activity editor data and my folder contents before and after assigned", as
     notMe: false,
     hasScoreData: false,
   };
+  preAssignedData.license = null; // skip trying to check big license object
   expect(preAssignedData).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
@@ -2579,6 +2585,7 @@ test("activity editor data and my folder contents before and after assigned", as
   delete expectedData.documents[0].source;
   expectedData.isFolder = false;
   delete expectedData.notMe;
+  folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
   // Opening assignment also assigns the activity
@@ -2614,6 +2621,7 @@ test("activity editor data and my folder contents before and after assigned", as
     hasScoreData: false,
   };
 
+  openedData.license = null; // skip trying to check big license object
   expect(openedData).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
@@ -2626,6 +2634,7 @@ test("activity editor data and my folder contents before and after assigned", as
   delete expectedData.documents[0].versionNum;
   expectedData.isFolder = false;
   delete expectedData.notMe;
+  folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
   // closing the assignment without data also unassigns it
@@ -2654,6 +2663,7 @@ test("activity editor data and my folder contents before and after assigned", as
     hasScoreData: false,
   };
 
+  closedData.license = null; // skip trying to check big license object
   expect(closedData).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
@@ -2665,6 +2675,7 @@ test("activity editor data and my folder contents before and after assigned", as
   delete expectedData.documents[0].source;
   expectedData.isFolder = false;
   delete expectedData.notMe;
+  folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
   // re-opening, re-assigns with same code
@@ -2702,6 +2713,7 @@ test("activity editor data and my folder contents before and after assigned", as
     hasScoreData: false,
   };
 
+  openedData2.license = null; // skip trying to check big license object
   expect(openedData2).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
@@ -2714,6 +2726,7 @@ test("activity editor data and my folder contents before and after assigned", as
   delete expectedData.documents[0].versionNum;
   expectedData.isFolder = false;
   delete expectedData.notMe;
+  folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
   // just add some data (doesn't matter that it is owner themselves)
@@ -2752,6 +2765,7 @@ test("activity editor data and my folder contents before and after assigned", as
     hasScoreData: true,
   };
 
+  openedData3.license = null; // skip trying to check big license object
   expect(openedData3).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
@@ -2764,6 +2778,7 @@ test("activity editor data and my folder contents before and after assigned", as
   delete expectedData.documents[0].versionNum;
   expectedData.isFolder = false;
   delete expectedData.notMe;
+  folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
   // now closing does not unassign
@@ -2793,6 +2808,7 @@ test("activity editor data and my folder contents before and after assigned", as
     hasScoreData: true,
   };
 
+  closedData2.license = null; // skip trying to check big license object
   expect(closedData2).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
@@ -2805,6 +2821,7 @@ test("activity editor data and my folder contents before and after assigned", as
   delete expectedData.documents[0].versionNum;
   expectedData.isFolder = false;
   delete expectedData.notMe;
+  folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
   // explicitly unassigning fails due to the presence of data
@@ -4387,32 +4404,39 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 test("get licenses", async () => {
   let cc_by_sa = await getLicense("CCBYSA");
   expect(cc_by_sa.name).eq("Creative Commons Attribution-ShareAlike");
-  expect(cc_by_sa.imageUrls).eqls(["/creative_commons_by_sa.png"]);
-  expect(cc_by_sa.licenseUrls).eqls([
+  expect(cc_by_sa.imageURL).eq("/creative_commons_by_sa.png");
+  expect(cc_by_sa.licenseURL).eq(
     "https://creativecommons.org/licenses/by-sa/4.0/",
-  ]);
+  );
 
   let cc_by_nc_sa = await getLicense("CCBYNCSA");
   expect(cc_by_nc_sa.name).eq(
     "Creative Commons Attribution-NonCommercial-ShareAlike",
   );
-  expect(cc_by_nc_sa.imageUrls).eqls(["/creative_commons_by_nc_sa.png"]);
-  expect(cc_by_nc_sa.licenseUrls).eqls([
+  expect(cc_by_nc_sa.imageURL).eq("/creative_commons_by_nc_sa.png");
+  expect(cc_by_nc_sa.licenseURL).eq(
     "https://creativecommons.org/licenses/by-nc-sa/4.0/",
-  ]);
+  );
 
   let cc_dual = await getLicense("CCDUAL");
   expect(cc_dual.name).eq(
     "Dual license Creative Commons Attribution-ShareAlike OR Attribution-NonCommercial-ShareAlike",
   );
-  expect(cc_dual.imageUrls).eqls([
-    "/creative_commons_by_sa.png",
-    "/creative_commons_by_nc_sa.png",
-  ]);
-  expect(cc_dual.licenseUrls).eqls([
+
+  expect(cc_dual.composedOf[0].name).eq(
+    "Creative Commons Attribution-ShareAlike",
+  );
+  expect(cc_dual.composedOf[0].imageURL).eq("/creative_commons_by_sa.png");
+  expect(cc_dual.composedOf[0].licenseURL).eq(
     "https://creativecommons.org/licenses/by-sa/4.0/",
+  );
+  expect(cc_dual.composedOf[1].name).eq(
+    "Creative Commons Attribution-NonCommercial-ShareAlike",
+  );
+  expect(cc_dual.composedOf[1].imageURL).eq("/creative_commons_by_nc_sa.png");
+  expect(cc_dual.composedOf[1].licenseURL).eq(
     "https://creativecommons.org/licenses/by-nc-sa/4.0/",
-  ]);
+  );
 
   let all = await getAllLicenses();
   expect(all.map((x) => x.code)).eqls(["CCDUAL", "CCBYSA", "CCBYNCSA"]);
@@ -4446,10 +4470,10 @@ test("set license to make public", async () => {
   expect(activityData.license?.name).eq(
     "Creative Commons Attribution-ShareAlike",
   );
-  expect(activityData.license?.licenseUrls).eqls([
+  expect(activityData.license?.licenseURL).eq(
     "https://creativecommons.org/licenses/by-sa/4.0/",
-  ]);
-  expect(activityData.license?.imageUrls).eqls(["/creative_commons_by_sa.png"]);
+  );
+  expect(activityData.license?.imageURL).eq("/creative_commons_by_sa.png");
 
   // make private
   await makeContentPrivate({ id: activityId, ownerId });
@@ -4469,12 +4493,10 @@ test("set license to make public", async () => {
   expect(activityData.license?.name).eq(
     "Creative Commons Attribution-NonCommercial-ShareAlike",
   );
-  expect(activityData.license?.licenseUrls).eqls([
+  expect(activityData.license?.licenseURL).eq(
     "https://creativecommons.org/licenses/by-nc-sa/4.0/",
-  ]);
-  expect(activityData.license?.imageUrls).eqls([
-    "/creative_commons_by_nc_sa.png",
-  ]);
+  );
+  expect(activityData.license?.imageURL).eq("/creative_commons_by_nc_sa.png");
 
   // switch license to dual
   await makeContentPublic({
@@ -4490,12 +4512,26 @@ test("set license to make public", async () => {
   expect(activityData.license?.name).eq(
     "Dual license Creative Commons Attribution-ShareAlike OR Attribution-NonCommercial-ShareAlike",
   );
-  expect(activityData.license?.licenseUrls).eqls([
+
+  expect(activityData.license?.composedOf[0].code).eq("CCBYSA");
+  expect(activityData.license?.composedOf[0].name).eq(
+    "Creative Commons Attribution-ShareAlike",
+  );
+  expect(activityData.license?.composedOf[0].licenseURL).eq(
     "https://creativecommons.org/licenses/by-sa/4.0/",
-    "https://creativecommons.org/licenses/by-nc-sa/4.0/",
-  ]);
-  expect(activityData.license?.imageUrls).eqls([
+  );
+  expect(activityData.license?.composedOf[0].imageURL).eq(
     "/creative_commons_by_sa.png",
+  );
+
+  expect(activityData.license?.composedOf[1].code).eq("CCBYNCSA");
+  expect(activityData.license?.composedOf[1].name).eq(
+    "Creative Commons Attribution-NonCommercial-ShareAlike",
+  );
+  expect(activityData.license?.composedOf[1].licenseURL).eq(
+    "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  );
+  expect(activityData.license?.composedOf[1].imageURL).eq(
     "/creative_commons_by_nc_sa.png",
-  ]);
+  );
 });

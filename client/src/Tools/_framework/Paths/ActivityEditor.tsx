@@ -46,6 +46,24 @@ export type DoenetmlVersion = {
   deprecationMessage: string;
 };
 
+export type LicenseCode = "CCDUAL" | "CCBYSA" | "CCBYNCSA";
+
+export type License = {
+  code: LicenseCode;
+  name: string;
+  description: string;
+  imageURL: string | null;
+  licenseURL: string | null;
+  isComposition: boolean;
+  composedOf: {
+    code: LicenseCode;
+    name: string;
+    description: string;
+    imageURL: string | null;
+    licenseURL: string | null;
+  }[];
+};
+
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
 export type ActivityStructure = {
@@ -59,6 +77,7 @@ export type ActivityStructure = {
   // Note: on server, codeValidUntil is Date, but it has been converted to a string, here
   codeValidUntil: string | null;
   isPublic: boolean;
+  license: License | null;
   documents: {
     id: number;
     versionNum?: number;
@@ -94,16 +113,10 @@ export async function action({ params, request }) {
     if (formObj.learningOutcomes) {
       learningOutcomes = JSON.parse(formObj.learningOutcomes);
     }
-    let isPublic;
-
-    if (formObj.isPublic) {
-      isPublic = formObj.isPublic === "true";
-    }
 
     await axios.post("/api/updateContentSettings", {
       name,
       imagePath: formObj.imagePath,
-      isPublic,
       id: Number(params.activityId),
       learningOutcomes,
     });
@@ -177,6 +190,20 @@ export async function action({ params, request }) {
     return true;
   }
 
+  if (formObj._action == "make content public") {
+    await axios.post("/api/makeContentPublic", {
+      id: Number(formObj.id),
+      licenseCode: formObj.licenseCode,
+    });
+    return true;
+  }
+  if (formObj._action == "make content private") {
+    await axios.post("/api/makeContentPrivate", {
+      id: Number(formObj.id),
+    });
+    return true;
+  }
+
   if (formObj._action == "go to data") {
     return redirect(`/assignmentData/${params.activityId}`);
   }
@@ -241,6 +268,8 @@ export async function loader({ params }) {
     "/api/getAllDoenetmlVersions",
   );
 
+  const { data: allLicenses } = await axios.get("/api/getAllLicenses");
+
   return {
     platform,
     activityData,
@@ -250,6 +279,7 @@ export async function loader({ params }) {
     activityId,
     supportingFileData,
     allDoenetmlVersions,
+    allLicenses,
   };
 }
 
@@ -307,6 +337,7 @@ export function ActivityEditor() {
     docId,
     activityData,
     allDoenetmlVersions,
+    allLicenses,
   } = useLoaderData() as {
     platform: "Win" | "Mac" | "Linux";
     activityId: number;
@@ -315,6 +346,7 @@ export function ActivityEditor() {
     docId: number;
     activityData: ActivityStructure;
     allDoenetmlVersions: DoenetmlVersion[];
+    allLicenses: License[];
   };
 
   const {
@@ -440,6 +472,7 @@ export function ActivityEditor() {
         activityId={activityId}
         activityData={activityData}
         allDoenetmlVersions={allDoenetmlVersions}
+        allLicenses={allLicenses}
         displayTab={displaySettingsTab}
       />
       <AssignmentInvitation

@@ -26,7 +26,7 @@ import ContentCard from "../../../PanelHeaderComponents/ContentCard";
 import axios from "axios";
 import MoveContentToFolder from "../ToolPanels/MoveContentToFolder";
 import { ActivitySettingsDrawer } from "../ToolPanels/ActivitySettingsDrawer";
-import { ActivityStructure, DoenetmlVersion } from "./ActivityEditor";
+import { ActivityStructure, DoenetmlVersion, License } from "./ActivityEditor";
 import { DateTime } from "luxon";
 
 // what is a better solution than this?
@@ -48,15 +48,9 @@ export async function action({ request, params }) {
       learningOutcomes = JSON.parse(formObj.learningOutcomes);
     }
 
-    let isPublic = false;
-    if (formObj.isPublic) {
-      isPublic = formObj.isPublic === "true";
-    }
-
     await axios.post("/api/updateContentSettings", {
       name,
       imagePath: formObj.imagePath,
-      isPublic,
       id: formObj.activityId,
       learningOutcomes,
     });
@@ -94,13 +88,6 @@ export async function action({ request, params }) {
   } else if (formObj?._action == "Delete Folder") {
     await axios.post(`/api/deleteFolder`, {
       folderId: formObj.id === "null" ? null : formObj.id,
-    });
-
-    return true;
-  } else if (formObj?._action == "Update Public") {
-    await axios.post(`/api/updateIsPublicContent`, {
-      id: formObj.id,
-      isPublic: !(formObj.isPublic === "true"),
     });
 
     return true;
@@ -160,6 +147,17 @@ export async function action({ request, params }) {
       alert("Unable to unassign activity");
     }
     return true;
+  } else if (formObj._action == "make content public") {
+    await axios.post("/api/makeContentPublic", {
+      id: Number(formObj.id),
+      licenseCode: formObj.licenseCode,
+    });
+    return true;
+  } else if (formObj._action == "make content private") {
+    await axios.post("/api/makeContentPrivate", {
+      id: Number(formObj.id),
+    });
+    return true;
   } else if (formObj._action == "go to data") {
     return redirect(`/assignmentData/${formObj.activityId}`);
   } else if (formObj?._action == "noop") {
@@ -184,6 +182,7 @@ export async function loader({ params }) {
     folderId: params.folderId ? Number(params.folderId) : null,
     content: data.content,
     allDoenetmlVersions: data.allDoenetmlVersions,
+    allLicenses: data.allLicenses,
     userId: params.userId,
     folder: data.folder,
   };
@@ -202,11 +201,12 @@ const ActivitiesSection = styled.div`
 
 export function Activities() {
   let context: any = useOutletContext();
-  let { folderId, content, allDoenetmlVersions, userId, folder } =
+  let { folderId, content, allDoenetmlVersions, allLicenses, userId, folder } =
     useLoaderData() as {
       folderId: number | null;
       content: ActivityStructure[];
       allDoenetmlVersions: DoenetmlVersion[];
+      allLicenses: License[];
       userId: number;
       folder: any;
     };
@@ -235,7 +235,7 @@ export function Activities() {
   } = useDisclosure();
 
   const [displaySettingsTab, setSettingsDisplayTab] = useState<
-    "general" | "assignment"
+    "general" | "share" | "assignment"
   >("general");
 
   useEffect(() => {
@@ -259,17 +259,6 @@ export function Activities() {
   ) {
     return (
       <>
-        <MenuItem
-          data-test={`Make ${isPublic ? "Private" : "Public"} Menu Item`}
-          onClick={() => {
-            fetcher.submit(
-              { _action: "Update Public", isPublic, id },
-              { method: "post" },
-            );
-          }}
-        >
-          Make {isPublic ? "Private" : "Public"}
-        </MenuItem>
         {!isFolder ? (
           <>
             <MenuItem
@@ -342,6 +331,16 @@ export function Activities() {
           {isAssigned ? "Manage Assignment" : "Assign Activity"}
         </MenuItem>
         <MenuItem
+          data-test="Share Menu Item"
+          onClick={() => {
+            setSettingsActivityId(id);
+            setSettingsDisplayTab("share");
+            settingsOnOpen();
+          }}
+        >
+          Share
+        </MenuItem>
+        <MenuItem
           data-test="Settings Menu Item"
           onClick={() => {
             setSettingsActivityId(id);
@@ -382,6 +381,7 @@ export function Activities() {
         activityId={settingsActivityId}
         activityData={activityData}
         allDoenetmlVersions={allDoenetmlVersions}
+        allLicenses={allLicenses}
         finalFocusRef={currentCardRef}
         fetcher={fetcher}
         displayTab={displaySettingsTab}

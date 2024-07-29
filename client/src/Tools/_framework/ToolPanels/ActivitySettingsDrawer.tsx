@@ -18,8 +18,13 @@ import {
 import { FetcherWithComponents } from "react-router-dom";
 import { GeneralActivityControls } from "./GeneralActivityControls";
 import { SupportFilesControls } from "./SupportFilesControls";
-import { ActivityStructure, DoenetmlVersion } from "../Paths/ActivityEditor";
+import {
+  ActivityStructure,
+  DoenetmlVersion,
+  License,
+} from "../Paths/ActivityEditor";
 import { AssignActivityControls } from "./AssignActivityControls";
+import { SharingControls } from "./SharingControls";
 
 export function ActivitySettingsDrawer({
   isOpen,
@@ -28,6 +33,7 @@ export function ActivitySettingsDrawer({
   activityId,
   activityData,
   allDoenetmlVersions,
+  allLicenses,
   supportingFileData,
   fetcher,
   displayTab = "general",
@@ -38,13 +44,14 @@ export function ActivitySettingsDrawer({
   activityId: number;
   activityData: ActivityStructure;
   allDoenetmlVersions: DoenetmlVersion[];
+  allLicenses: License[];
   supportingFileData?: any;
   fetcher: FetcherWithComponents<any>;
-  displayTab?: "general" | "files" | "assignment";
+  displayTab?: "general" | "share" | "files" | "assignment";
 }) {
   const haveSupportingFiles = Boolean(supportingFileData);
   const isFolder: boolean = Boolean(activityData.isFolder);
-  const numTabs = haveSupportingFiles ? (isFolder ? 2 : 3) : isFolder ? 1 : 2;
+  const numTabs = haveSupportingFiles ? (isFolder ? 3 : 4) : isFolder ? 2 : 3;
 
   let initialTabIndex: number;
   switch (displayTab) {
@@ -52,12 +59,16 @@ export function ActivitySettingsDrawer({
       initialTabIndex = 0;
       break;
     }
+    case "share": {
+      initialTabIndex = 1;
+      break;
+    }
     case "files": {
-      initialTabIndex = haveSupportingFiles ? 1 : 0;
+      initialTabIndex = haveSupportingFiles ? 2 : 1;
       break;
     }
     case "assignment": {
-      initialTabIndex = haveSupportingFiles ? 2 : 1;
+      initialTabIndex = haveSupportingFiles ? 3 : 2;
       break;
     }
   }
@@ -89,6 +100,7 @@ export function ActivitySettingsDrawer({
           <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)}>
             <TabList>
               <Tab data-test="General Tab">General</Tab>
+              <Tab data-test="Sharing Tab">Sharing</Tab>
               {haveSupportingFiles ? (
                 <Tab data-test="Files Tab">Support Files</Tab>
               ) : null}
@@ -108,6 +120,13 @@ export function ActivitySettingsDrawer({
                     activityId={activityId}
                     activityData={activityData}
                     allDoenetmlVersions={allDoenetmlVersions}
+                  />
+                </TabPanel>
+                <TabPanel>
+                  <SharingControls
+                    fetcher={fetcher}
+                    activityData={activityData}
+                    allLicenses={allLicenses}
                   />
                 </TabPanel>
                 {haveSupportingFiles ? (

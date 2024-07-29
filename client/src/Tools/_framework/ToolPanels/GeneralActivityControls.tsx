@@ -36,7 +36,7 @@ export function GeneralActivityControls({
   activityData: ActivityStructure;
   allDoenetmlVersions: DoenetmlVersion[];
 }) {
-  let { isPublic, name, imagePath: dataImagePath } = activityData;
+  let { name, imagePath: dataImagePath } = activityData;
 
   let numberOfFilesUploading = useRef(0);
   let [imagePath, setImagePath] = useState(dataImagePath);
@@ -61,30 +61,22 @@ export function GeneralActivityControls({
   let [nameIsInvalid, setNameIsInvalid] = useState(false);
 
   //   let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
-  let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
   let [doenetmlVersion, setDoenetmlVersion] = useState(doenetmlVersionInit);
 
   function saveDataToServer({
     nextLearningOutcomes,
-    nextIsPublic,
     nextDoenetmlVersionId,
   }: {
     nextLearningOutcomes?: any[];
-    nextIsPublic?: boolean;
     nextDoenetmlVersionId?: number;
   } = {}) {
     let data: {
       learningOutcomes?: string;
-      isPublic?: boolean;
       name?: string;
       doenetmlVersionId?: number;
     } = {};
     if (nextLearningOutcomes) {
       data.learningOutcomes = JSON.stringify(nextLearningOutcomes);
-    }
-
-    if (nextIsPublic != undefined) {
-      data.isPublic = nextIsPublic;
     }
 
     // Turn on/off name error messages and
@@ -357,26 +349,6 @@ export function GeneralActivityControls({
             </Flex>
           </FormControl>
         ) : null} */}
-        <FormControl>
-          <FormLabel mt="16px">Visibility</FormLabel>
-          <Checkbox
-            size="lg"
-            data-test="Public Checkbox"
-            name="public"
-            value="on"
-            isChecked={checkboxIsPublic}
-            onChange={(e) => {
-              let nextIsPublic = false;
-              if (e.target.checked) {
-                nextIsPublic = true;
-              }
-              setCheckboxIsPublic(nextIsPublic);
-              saveDataToServer({ nextIsPublic });
-            }}
-          >
-            Public
-          </Checkbox>
-        </FormControl>
         {!activityData.isFolder ? (
           <FormControl>
             <FormLabel mt="16px">DoenetML version</FormLabel>
