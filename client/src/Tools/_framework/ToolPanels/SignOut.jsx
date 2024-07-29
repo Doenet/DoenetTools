@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import Button from "../../../PanelHeaderComponents/Button";
 import {
   checkIfUserClearedOut,
   clearUsersInformationFromTheBrowser,
 } from "../../../_utils/applicationUtils";
 import { useNavigate } from "react-router";
-
+import { Button } from "@chakra-ui/react";
 export default function SignOut() {
   const [isSignedOut, setIsSignedOut] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -63,11 +62,9 @@ export default function SignOut() {
             }}
           >
             <h2>You are Signed Out!</h2>
-            <Button
-              dataTest="homepage button"
-              value="Homepage"
-              onClick={() => navigate("/")}
-            />
+            <Button dataTest="homepage button" onClick={() => navigate("/")}>
+              Homepage
+            </Button>
           </div>
         </div>
       </div>

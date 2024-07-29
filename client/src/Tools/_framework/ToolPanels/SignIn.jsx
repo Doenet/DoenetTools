@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie"; // import Textinput from "../imports/Textinput";
 import axios from "axios";
-import Button from "../../../PanelHeaderComponents/Button";
-import Textfield from "../../../PanelHeaderComponents/Textfield";
-import Checkbox from "../../../PanelHeaderComponents/Checkbox";
+import { Button, Checkbox, Input } from "@chakra-ui/react";
 
 export default function SignIn(props) {
   let [email, setEmail] = useState("");
@@ -318,7 +316,7 @@ export default function SignIn(props) {
             </p>
           </div>
           <p>
-            <Textfield
+            <Input
               label="Code (9 digit code):"
               // type="text"
               ref={codeRef}
@@ -327,7 +325,7 @@ export default function SignIn(props) {
               alert={signInAlert}
               onKeyDown={(e) => {
                 // Trying to make it so the user can copy and paste a correct code --> enable sign-in button
-                // Basically trying to make it so the valid/invalid email is detected when the cursor is still within the textfield
+                // Basically trying to make it so the valid/invalid email is detected when the cursor is still within the Input
 
                 // if (((e.key === 'Enter') || ((e.ctrlKey || e.metaKey) && e.keyCode == 86)) && validCode) {
                 if (e.key === "Enter" && validCode) {
@@ -345,7 +343,7 @@ export default function SignIn(props) {
               onChange={(e) => {
                 setNineCode(e.target.value);
               }}
-            ></Textfield>
+            ></Input>
           </p>
           <Button
             disabled={signInDisabled}
@@ -355,8 +353,9 @@ export default function SignIn(props) {
               }
             }}
             dataTest="signInButton"
-            value="Sign In"
-          ></Button>
+          >
+            Sign In
+          </Button>
         </div>
       </div>
     );
@@ -388,7 +387,7 @@ export default function SignIn(props) {
           />
           <div>
             <p style={{ marginLeft: "2px" }}>
-              <Textfield
+              <Input
                 dataTest="email input"
                 label="Email Address:"
                 // type="text"
@@ -412,11 +411,11 @@ export default function SignIn(props) {
                 onChange={(e) => {
                   setEmail(e.target.value);
                 }}
-              ></Textfield>
+              ></Input>
             </p>
             <p style={{ fontSize: "14px" }}>
               <Checkbox
-                checked={stay}
+                isChecked={stay}
                 onClick={(e) => {
                   if (!stay) {
                     // console.log('stay');
