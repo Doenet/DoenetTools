@@ -354,6 +354,12 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
+        path: "studentData/:userId/:folderId",
+        loader: studentDataLoader,
+        element: <StudentData />,
+        errorElement: <ErrorPage />,
+      },
+      {
         path: "code",
         loader: enterClassCodeLoader,
         action: enterClassCodeAction,

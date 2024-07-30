@@ -156,12 +156,16 @@ export function DoenetHeading(props) {
       height="40px"
       flexShrink={0}
     >
-      <Heading as="h2" size="lg">
-        {props.heading}
-      </Heading>
-      <Heading as="h3" size="md">
-        {props.subheading}
-      </Heading>
+      {props.heading ? (
+        <Heading as="h2" size="lg" noOfLines={1}>
+          {props.heading}
+        </Heading>
+      ) : null}
+      {props.subheading ? (
+        <Heading as="h3" size="md" noOfLines={1}>
+          {props.subheading}
+        </Heading>
+      ) : null}
     </Flex>
   );
 }

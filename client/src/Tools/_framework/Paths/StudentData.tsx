@@ -26,30 +26,40 @@ type OrderedActivityScore = {
   score: number;
 };
 
+type Folder = {
+  id: number;
+  name: string;
+};
+
+// loader for when an instructor gets data about a student
 export async function loader({ params }) {
   let { data } = await axios.get(
-    `/api/getStudentData/${Number(params.userId)}`,
+    `/api/getStudentData/${Number(params.userId)}/${params.folderId ?? ""}`,
   );
 
   const userData = data.userData;
   const scores = data.orderedActivityScores;
+  const folder = data.folder;
 
-  return { userData, scores, isAssignedData: false };
+  return { userData, scores, folder, isAssignedData: false };
 }
 
+// loader for when a student gets their own data
 export async function assignedDataloader() {
   let { data } = await axios.get(`/api/getAssignedScores`);
 
   const userData = data.userData;
   const scores = data.orderedActivityScores;
+  const folder = data.folder;
 
-  return { userData, scores, isAssignedData: true };
+  return { userData, scores, folder, isAssignedData: true };
 }
 
 export function StudentData() {
-  const { userData, scores, isAssignedData } = useLoaderData() as {
+  const { userData, scores, folder, isAssignedData } = useLoaderData() as {
     userData: UserData;
     scores: OrderedActivityScore[];
+    folder: Folder | null;
     isAssignedData: boolean;
   };
 
@@ -66,7 +76,12 @@ export function StudentData() {
     <>
       <Heading heading={`${createFullName(userData)}'s Assignments`} />
 
-      <Heading subheading="Score summary" />
+      {folder ? (
+        <Heading subheading={`${folder.name}`} />
+      ) : (
+        <Heading subheading="Score summary" />
+      )}
+
       <TableContainer>
         <Table>
           <Thead>

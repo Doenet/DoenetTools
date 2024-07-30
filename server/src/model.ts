@@ -2280,6 +2280,11 @@ export async function getAllAssignmentScores({
 }) {
   let orderedActivities;
 
+  let folder: {
+    id: number;
+    name: string;
+  } | null = null;
+
   // NOTE: the string after `Prisma.sql` is NOT interpreted as a regular string,
   // but it does special processing with the template variables.
   // For this reason, one cannot have an operator such as "=" or "IS" as a template variable
@@ -2335,6 +2340,11 @@ export async function getAllAssignmentScores({
     ON ct.id = c.id
     WHERE ct.isFolder = FALSE ORDER BY path
   `);
+
+    folder = await prisma.content.findUniqueOrThrow({
+      where: { id: parentFolderId, ownerId, isDeleted: false, isFolder: true },
+      select: { id: true, name: true },
+    });
   }
 
   const assignmentScores = await prisma.assignmentScores.findMany({
@@ -2354,7 +2364,7 @@ export async function getAllAssignmentScores({
     },
   });
 
-  return { orderedActivities, assignmentScores };
+  return { orderedActivities, assignmentScores, folder };
 }
 
 /**
@@ -2391,6 +2401,11 @@ export async function getStudentData({
 
   let orderedActivityScores;
 
+  let folder: {
+    id: number;
+    name: string;
+  } | null = null;
+
   // NOTE: the string after `Prisma.sql` is NOT interpreted as a regular string,
   // but it does special processing with the template variables.
   // For this reason, one cannot have an operator such as "=" or "IS" as a template variable
@@ -2456,9 +2471,14 @@ export async function getStudentData({
     ON s.activityId  = c.id 
     WHERE ct.isFolder = FALSE ORDER BY path
   `);
+
+    folder = await prisma.content.findUniqueOrThrow({
+      where: { id: parentFolderId, ownerId, isDeleted: false, isFolder: true },
+      select: { id: true, name: true },
+    });
   }
 
-  return { userData, orderedActivityScores };
+  return { userData, orderedActivityScores, folder };
 }
 
 export async function getAssignedScores(loggedInUserId: number) {

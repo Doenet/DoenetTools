@@ -42,6 +42,11 @@ type StudentStructure = {
   }[];
 };
 
+type Folder = {
+  id: number;
+  name: string;
+};
+
 export async function loader({ params }) {
   const { data } = await axios.get(
     `/api/getAllAssignmentScores/${params.folderId ?? ""}`,
@@ -75,15 +80,18 @@ export async function loader({ params }) {
     assignments: data.orderedActivities,
     students: studentData,
     studentIdsOrdered,
+    folder: data.folder,
   };
 }
 
 export function AllAssignmentScores() {
-  const { assignments, students, studentIdsOrdered } = useLoaderData() as {
-    assignments: OrderedActivity[];
-    students: Record<string, StudentStructure>;
-    studentIdsOrdered: number[];
-  };
+  const { assignments, students, studentIdsOrdered, folder } =
+    useLoaderData() as {
+      assignments: OrderedActivity[];
+      students: Record<string, StudentStructure>;
+      studentIdsOrdered: number[];
+      folder: Folder | null;
+    };
 
   useEffect(() => {
     document.title = "My Assignments";
@@ -96,9 +104,18 @@ export function AllAssignmentScores() {
 
   return (
     <>
-      <Heading heading={"My Assignments"} />
+      {folder ? (
+        <>
+          <Heading heading={"Assignment Scores"} />
+          <Heading subheading={`${folder.name}`} />
+        </>
+      ) : (
+        <>
+          <Heading heading={"My Assignments"} />
+          <Heading subheading="Score summary" />
+        </>
+      )}
 
-      <Heading subheading="Score summary" />
       <TableContainer>
         <Table>
           <Thead>
@@ -142,7 +159,7 @@ export function AllAssignmentScores() {
                 <Td>
                   <ChakraLink
                     as={ReactRouterLink}
-                    to={`/studentData/${studentId}`}
+                    to={`/studentData/${studentId}${folder ? "/" + folder.id : ""}`}
                     style={linkStyle}
                   >
                     {lastNameFirst(students[studentId])}

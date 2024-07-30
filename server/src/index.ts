@@ -161,7 +161,7 @@ app.get(
     const loggedInUserId = Number(req.cookies.userId);
     try {
       const scoreData = await getAssignedScores(loggedInUserId);
-      res.send(scoreData);
+      res.send({ ...scoreData, folder: null });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
@@ -1149,7 +1149,7 @@ app.get(
 );
 
 app.get(
-  "/api/getStudentData/:userId",
+  "/api/getStudentData/:userId/",
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = Number(req.params.userId);
     const loggedInUserId = Number(req.cookies.userId);
