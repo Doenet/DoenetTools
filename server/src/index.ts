@@ -141,7 +141,7 @@ app.get('/login/cb',
        );
 
 app.get("/api/getQuickCheckSignedIn", (req: Request, res: Response) => {
-  const signedIn = req.user.email ? true : false;
+  const signedIn = req.user ? true : false;
   res.send({ signedIn: signedIn });
 });
 
@@ -444,9 +444,14 @@ app.get(
   "/api/loadPromotedContent",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const loggedInUserId = Number(req.user.userId);
-      const content = await loadPromotedContent(loggedInUserId);
-      res.send(content);
+      if (req.user) {
+	const loggedInUserId = Number(req.user.userId);
+	const content = await loadPromotedContent(loggedInUserId);
+	res.send(content);
+      } else {
+	const content = await loadPromotedContent(0);
+	res.send(content);
+      }
     } catch (e) {
       if (e instanceof InvalidRequestError) {
         res.status(e.errorCode).send(e.message);
