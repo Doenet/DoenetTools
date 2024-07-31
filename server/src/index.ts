@@ -86,7 +86,7 @@ const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
 passport.use(new GoogleStrategy({
   clientID: googleClientId,
   clientSecret: googleClientSecret,
-  callbackURL: 'http://localhost:3000/login/cb',
+  callbackURL: process.env.LOGIN_CALLBACK_URL || ''
 },
                                 (accessToken : any, refreshToken : any, profile : any, done : any) => {
                                   done(null, profile);
@@ -133,10 +133,10 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server" + JSON.stringify(req?.user));
 });
 
-app.get('/auth/google',
+app.get('/api/auth/google',
   passport.authenticate('google', { scope: ['profile'] }));
 
-app.get('/login/cb',
+app.get('/api/login/google',
         passport.authenticate('google', { successRedirect: '/', failureRedirect: '/login' })
        );
 
