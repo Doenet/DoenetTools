@@ -22,10 +22,12 @@ model content {
   isPublic         Boolean            @default(false)
   isDeleted        Boolean            @default(false)
   sortIndex        BigInt
+  licenseCode      String?            @db.VarChar(10)
   owner            users              @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   parentFolder     content?           @relation("folderStructure", fields: [parentFolderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   subFolders       content[]          @relation("folderStructure")
   documents        documents[]
+  license          licenses?          @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
   assignmentScores assignmentScores[]
   promotedContent  promotedContent[]
 
@@ -70,6 +72,28 @@ model documentVersions {
   @@id([docId, versionNum])
   @@unique([docId, cid])
   @@index([docId])
+}
+
+model licenses {
+  code          String                @id @db.VarChar(10)
+  name          String
+  description   String                @db.Text
+  imageURL      String?
+  smallImageURL String?
+  licenseURL    String?
+  composedOf    licenseCompositions[] @relation("composeOf")
+  includedIn    licenseCompositions[] @relation("includedIn")
+  content       content[]
+  sortIndex     Int
+}
+
+model licenseCompositions {
+  composedOfCode String   @db.VarChar(10)
+  composedOf     licenses @relation("includedIn", fields: [composedOfCode], references: [code])
+  includedInCode String   @db.VarChar(10)
+  includedIn     licenses @relation("composeOf", fields: [includedInCode], references: [code])
+
+  @@id([composedOfCode, includedInCode])
 }
 
 model contributorHistory {

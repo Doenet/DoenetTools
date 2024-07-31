@@ -197,7 +197,7 @@ export function SiteHeader(props) {
                     Community
                   </NavLinkTab>
                   {!signedIn || user.anonymous ? (
-                    <NavLinkTab to="classCode" dataTest="Class Code">
+                    <NavLinkTab to="code" dataTest="Class Code">
                       Class Code
                     </NavLinkTab>
                   ) : null}
@@ -309,10 +309,7 @@ export function SiteHeader(props) {
                           Community
                         </NavLinkDropdownTab>
                         {!signedIn || user.anonymous ? (
-                          <NavLinkDropdownTab
-                            to="classCode"
-                            dataTest="Class Code"
-                          >
+                          <NavLinkDropdownTab to="code" dataTest="Class Code">
                             Class Code
                           </NavLinkDropdownTab>
                         ) : null}
@@ -345,8 +342,7 @@ export function SiteHeader(props) {
             </GridItem>
           </Grid>
         </GridItem>
-        <GridItem area="main" as="main" margin="0" overflowY="scroll">
-          {/* <Box>test</Box> */}
+        <GridItem area="main" as="main" margin="0" overflowY="auto">
           {childComponent ? childComponent : <Outlet context={{ signedIn }} />}
         </GridItem>
       </Grid>

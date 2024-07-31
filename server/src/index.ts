@@ -54,6 +54,14 @@ import {
   getPublicFolderContent,
   searchUsersWithPublicContent,
   getPublicEditorData,
+  unassignActivity,
+  updateAssignmentSettings,
+  getAllLicenses,
+  makeActivityPrivate,
+  makeActivityPublic,
+  LicenseCode,
+  makeFolderPublic,
+  makeFolderPrivate,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -222,7 +230,7 @@ app.get(
     const loggedInUserId = Number(req.user.userId);
     try {
       const scoreData = await getAssignedScores(loggedInUserId);
-      res.send(scoreData);
+      res.send({ ...scoreData, folder: null });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
@@ -367,15 +375,111 @@ app.post(
 );
 
 app.post(
-  "/api/updateIsPublicContent",
+  "/api/makeActivityPublic",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.user.userId);
     const body = req.body;
     const id = Number(body.id);
-    const isPublic = Boolean(body.isPublic);
+
+    let licenseCode: LicenseCode;
+
+    let requestedCode: string = body.licenseCode;
+    switch (requestedCode) {
+      case "CCDUAL":
+      case "CCBYSA":
+      case "CCBYNCSA": {
+        licenseCode = requestedCode;
+        break;
+      }
+      default: {
+        return res.status(400).send("Invalid license code");
+      }
+    }
+
     try {
-      await updateContent({ id, isPublic, ownerId: loggedInUserId });
-      res.send({});
+      let data = await makeActivityPublic({
+        id,
+        ownerId: loggedInUserId,
+        licenseCode,
+      });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/makeActivityPrivate",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const body = req.body;
+    const id = Number(body.id);
+    try {
+      let data = await makeActivityPrivate({ id, ownerId: loggedInUserId });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/makeFolderPublic",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const body = req.body;
+    const id = Number(body.id);
+
+    let licenseCode: LicenseCode;
+
+    let requestedCode: string = body.licenseCode;
+    switch (requestedCode) {
+      case "CCDUAL":
+      case "CCBYSA":
+      case "CCBYNCSA": {
+        licenseCode = requestedCode;
+        break;
+      }
+      default: {
+        return res.status(400).send("Invalid license code");
+      }
+    }
+
+    try {
+      let data = await makeFolderPublic({
+        id,
+        ownerId: loggedInUserId,
+        licenseCode,
+      });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/makeFolderPrivate",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const body = req.body;
+    const id = Number(body.id);
+    try {
+      let data = await makeFolderPrivate({ id, ownerId: loggedInUserId });
+      res.send(data);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(403);
@@ -631,7 +735,10 @@ app.get(
       );
       res.send(editorData);
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2025"
+      ) {
         res.sendStatus(404);
       } else {
         next(e);
@@ -663,6 +770,11 @@ app.get(
 app.get("/api/getAllDoenetmlVersions", async (req: Request, res: Response) => {
   const allDoenetmlVersions = await getAllDoenetmlVersions();
   res.send(allDoenetmlVersions);
+});
+
+app.get("/api/getAllLicenses", async (req: Request, res: Response) => {
+  const allLicenses = await getAllLicenses();
+  res.send(allLicenses);
 });
 
 app.get(
@@ -749,13 +861,11 @@ app.post(
     const name = body.name;
     // TODO - deal with learning outcomes
     const learningOutcomes = body.learningOutcomes;
-    const isPublic = body.isPublic;
     try {
       await updateContent({
         id,
         imagePath,
         name,
-        isPublic,
         ownerId: loggedInUserId,
       });
       res.send({});
@@ -845,7 +955,7 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.user.userId);
     const body = req.body;
-    const activityId = Number(body.assignmentId);
+    const activityId = Number(body.activityId);
     const closeAt = DateTime.fromISO(body.closeAt);
 
     try {
@@ -866,6 +976,27 @@ app.post(
 );
 
 app.post(
+  "/api/updateAssignmentSettings",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const body = req.body;
+    const activityId = Number(body.activityId);
+    const closeAt = DateTime.fromISO(body.closeAt);
+
+    try {
+      await updateAssignmentSettings(activityId, closeAt, loggedInUserId);
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
   "/api/closeAssignmentWithCode",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.user.userId);
@@ -874,6 +1005,26 @@ app.post(
 
     try {
       await closeAssignmentWithCode(activityId, loggedInUserId);
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/unassignActivity",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const body = req.body;
+    const activityId = Number(body.activityId);
+
+    try {
+      await unassignActivity(activityId, loggedInUserId);
       res.send({});
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -1072,7 +1223,7 @@ app.get(
 );
 
 app.get(
-  "/api/getStudentData/:userId",
+  "/api/getStudentData/:userId/",
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = Number(req.params.userId);
     const loggedInUserId = Number(req.user.userId);
@@ -1234,7 +1385,8 @@ app.get(
       });
 
       const allDoenetmlVersions = await getAllDoenetmlVersions();
-      res.send({ allDoenetmlVersions, ...contentData });
+      const allLicenses = await getAllLicenses();
+      res.send({ allDoenetmlVersions, allLicenses, ...contentData });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
@@ -1257,7 +1409,8 @@ app.get(
         loggedInUserId,
       });
       const allDoenetmlVersions = await getAllDoenetmlVersions();
-      res.send({ allDoenetmlVersions, ...contentData });
+      const allLicenses = await getAllLicenses();
+      res.send({ allDoenetmlVersions, allLicenses, ...contentData });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
