@@ -12,6 +12,8 @@ node_modules
 
 **/.env
 
+.vite
+
 # misc
 .DS_Store
 .env.local

@@ -1,26 +1,26 @@
-const { defineConfig } = require("cypress");
+import { defineConfig } from "cypress";
 
-// This is for db data testing/checking (CANNOT GET DATA AND CHECK VIA CYPRESS)
-//For connecting to SQL Server
-const mysql = require("mysql2");
-function queryTestDb(query, config) {
-  // creates a new mysql connection using credentials from cypress.json env's
-  const connection = mysql.createConnection(config.env.db);
-  // start connection to db
-  connection.connect();
-  // exec query + disconnect to db as a Promise
-  return new Promise((resolve, reject) => {
-    connection.query(query, (error, results) => {
-      if (error) reject(error);
-      else {
-        connection.end();
-        return resolve(results);
-      }
-    });
-  });
-}
+// // This is for db data testing/checking (CANNOT GET DATA AND CHECK VIA CYPRESS)
+// //For connecting to SQL Server
+// const mysql = require("mysql2");
+// function queryTestDb(query, config) {
+//   // creates a new mysql connection using credentials from cypress.json env's
+//   const connection = mysql.createConnection(config.env.db);
+//   // start connection to db
+//   connection.connect();
+//   // exec query + disconnect to db as a Promise
+//   return new Promise((resolve, reject) => {
+//     connection.query(query, (error, results) => {
+//       if (error) reject(error);
+//       else {
+//         connection.end();
+//         return resolve(results);
+//       }
+//     });
+//   });
+// }
 
-module.exports = defineConfig({
+export default defineConfig({
   numTestsKeptInMemory: 20,
   defaultCommandTimeout: 30000,
   e2e: {
@@ -32,14 +32,14 @@ module.exports = defineConfig({
 
         return launchOptions;
       });
-      on("task", {
-        queryDb: (query) => {
-          return queryTestDb(query, config);
-        },
-      }); //For running sql query
+      // on("task", {
+      //   queryDb: (query) => {
+      //     return queryTestDb(query, config);
+      //   },
+      // }); //For running sql query
     },
 
-    baseUrl: "http://localhost:8080",
+    baseUrl: "http://localhost:8000",
   },
   env: {
     db: {

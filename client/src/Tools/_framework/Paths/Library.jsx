@@ -15,7 +15,7 @@ import {
   SimpleGrid,
   Flex,
 } from "@chakra-ui/react";
-import Searchbar from "../../../PanelHeaderComponents/SearchBar";
+import Searchbar from "../../../Widgets/SearchBar";
 import { Form, useFetcher } from "react-router-dom";
 
 export async function loader() {
