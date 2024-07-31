@@ -670,7 +670,7 @@ export async function copyActivityToFolder(
 
   let newActivity = await prisma.content.create({
     data: {
-      name: origActivity.name,
+      name: `Copy of ${origActivity.name}`,
       isFolder: false,
       imagePath: origActivity.imagePath,
       ownerId: userId,
@@ -2999,6 +2999,7 @@ export async function searchMyFolderContent({
       )
     ).map((obj) => obj.id);
 
+    // TODO: combine this query with above recursive query
     preliminaryResults = await prisma.content.findMany({
       where: {
         AND: query_words.map((qw) => ({ name: { contains: "%" + qw + "%" } })),
