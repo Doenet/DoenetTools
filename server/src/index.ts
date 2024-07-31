@@ -86,15 +86,21 @@ const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
 passport.use(new GoogleStrategy({
   clientID: googleClientId,
   clientSecret: googleClientSecret,
-  callbackURL: (process.env.LOGIN_CALLBACK_ROOT || '') + 'api/login/google'
+  callbackURL: (process.env.LOGIN_CALLBACK_ROOT || '') + 'api/login/google',
+  scope: [ 'profile', 'email' ]
 },
                                 (accessToken : any, refreshToken : any, profile : any, done : any) => {
                                   done(null, profile);
                                 }));
 
 passport.serializeUser<any, any>(async (req, user : any, done) => {
+
+  var email = user.id + "@google.com";
+  if (user.emails[0].verified)
+    email = user.emails[0].value;
+  
   const u = await findOrCreateUser({
-    email: user.id + "@google.com",
+    email,
     firstNames: user.name.givenName,
     lastNames: user.name.familyName
   });
@@ -134,7 +140,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.get('/api/auth/google',
-  passport.authenticate('google', { scope: ['profile'] }));
+	passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 app.get('/api/login/google',
         passport.authenticate('google', { successRedirect: '/', failureRedirect: '/login' })
