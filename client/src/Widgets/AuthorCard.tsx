@@ -2,7 +2,13 @@ import React from "react";
 import { Avatar, Text, Card, CardBody, Center } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
-export default function AuthorCard({ cardLink, authorName }) {
+export default function AuthorCard({
+  cardLink,
+  authorName,
+}: {
+  cardLink: string;
+  authorName: string;
+}) {
   return (
     <Link to={cardLink}>
       <Card width="180px" height="180px" p="0" m="0">

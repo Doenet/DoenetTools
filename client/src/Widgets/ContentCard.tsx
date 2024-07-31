@@ -35,6 +35,7 @@ export default forwardRef(function ContentCard(
     autoFocusTitle = false,
     showAssignmentStatus = true,
     showPublicStatus = true,
+    closeTime,
   }: {
     cardLink?: string;
     id?: number;
@@ -51,6 +52,7 @@ export default forwardRef(function ContentCard(
     autoFocusTitle?: boolean;
     showAssignmentStatus?: boolean;
     showPublicStatus?: boolean;
+    closeTime?: string;
   },
   ref: React.ForwardedRef<HTMLButtonElement>,
 ) {
@@ -68,6 +70,21 @@ export default forwardRef(function ContentCard(
 
   if (isFolder) {
     showAssignmentStatus = false;
+  }
+  let assignmentStatusString: string = assignmentStatus;
+  if (assignmentStatus === "Open" && closeTime !== undefined) {
+    assignmentStatusString = assignmentStatusString + " until " + closeTime;
+  }
+
+  let statusString = "";
+  if (showPublicStatus) {
+    statusString += isPublic ? "Public" : "Private";
+    if (showAssignmentStatus) {
+      statusString += " / ";
+    }
+  }
+  if (showAssignmentStatus) {
+    statusString += assignmentStatusString;
   }
 
   function saveUpdatedTitle() {
@@ -159,16 +176,16 @@ export default forwardRef(function ContentCard(
               </Tooltip>
             ) : null}
             {showAssignmentStatus || showPublicStatus ? (
-              <Text
-                fontSize="xs"
-                noOfLines={1}
-                textAlign="left"
-                //data-test="Card Full Name"
-              >
-                {showPublicStatus ? (isPublic ? "Public" : "Private") : null}
-                {showPublicStatus && showAssignmentStatus ? " / " : null}
-                {showAssignmentStatus ? assignmentStatus : null}
-              </Text>
+              <Tooltip label={statusString}>
+                <Text
+                  fontSize="xs"
+                  noOfLines={1}
+                  textAlign="left"
+                  //data-test="Card Full Name"
+                >
+                  {statusString}
+                </Text>
+              </Tooltip>
             ) : null}
           </Box>
 

@@ -23,6 +23,7 @@ import ContentCard from "../../../Widgets/ContentCard";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
 import { ContentStructure } from "./ActivityEditor";
+import { DateTime } from "luxon";
 
 export async function loader({ params }) {
   const { data: assignmentData } = await axios.get(`/api/getAssigned`);
@@ -119,6 +120,57 @@ export function Assigned() {
           ) : (
             <>
               {assignments.map((assignment) => {
+                let closes: string | undefined;
+                if (assignment.codeValidUntil !== null) {
+                  const sameDay = (a: DateTime, b: DateTime): boolean => {
+                    return (
+                      a.hasSame(b, "day") &&
+                      a.hasSame(b, "month") &&
+                      a.hasSame(b, "year")
+                    );
+                  };
+
+                  let closeDateTime = DateTime.fromISO(
+                    assignment.codeValidUntil,
+                  );
+                  let now = DateTime.now();
+                  let tomorrow = now.plus({ day: 1 });
+
+                  if (sameDay(closeDateTime, now)) {
+                    if (closeDateTime.minute === 0) {
+                      closes = `today, ${closeDateTime.toLocaleString({ hour: "2-digit" })}`;
+                    } else {
+                      closes = `today, ${closeDateTime.toLocaleString({ hour: "2-digit", minute: "2-digit" })}`;
+                    }
+                  } else if (sameDay(closeDateTime, tomorrow)) {
+                    if (closeDateTime.minute === 0) {
+                      closes = `tomorrow, ${closeDateTime.toLocaleString({ hour: "2-digit" })}`;
+                    } else {
+                      closes = `tomorrow, ${closeDateTime.toLocaleString({ hour: "2-digit", minute: "2-digit" })}`;
+                    }
+                  } else if (closeDateTime.year === now.year) {
+                    if (closeDateTime.minute === 0) {
+                      closes = closeDateTime.toLocaleString({
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                      });
+                    } else {
+                      closes = closeDateTime.toLocaleString({
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      });
+                    }
+                  } else {
+                    closes = closeDateTime.toLocaleString(
+                      DateTime.DATETIME_MED,
+                    );
+                  }
+                }
                 return (
                   <ContentCard
                     key={`Card${assignment.id}`}
@@ -135,6 +187,7 @@ export function Assigned() {
                     showPublicStatus={false}
                     showAssignmentStatus={true}
                     assignmentStatus={assignment.assignmentStatus}
+                    closeTime={closes}
                   />
                 );
               })}
