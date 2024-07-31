@@ -12,6 +12,8 @@ import {
   Menu,
   MenuButton,
   MenuList,
+  IconButton,
+  Input,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -36,6 +38,7 @@ import {
   LicenseCode,
 } from "./ActivityEditor";
 import { DateTime } from "luxon";
+import { MdOutlineSearch } from "react-icons/md";
 
 // what is a better solution than this?
 let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching id
@@ -232,6 +235,17 @@ export function Activities() {
   const contentCardRefs = useRef(new Array());
   const folderSettingsRef = useRef(null);
   const finalFocusRef = useRef(null);
+
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchString, setSearchString] = useState("");
+  const searchRef = useRef<HTMLInputElement>(null);
+  const searchBlurTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
+
+  useEffect(() => {
+    if (searchOpen) {
+      searchRef.current?.focus();
+    }
+  }, [searchOpen]);
 
   const navigate = useNavigate();
 
@@ -455,9 +469,9 @@ export function Activities() {
             {headingText}
           </Heading>
         </Tooltip>
-        <div style={{ float: "right" }}>
+        <Flex float="right">
           <Menu>
-            <MenuButton as={Button} size="xs">
+            <MenuButton as={Button} size="xs" margin="3px" hidden={searchOpen}>
               New
             </MenuButton>
             <MenuList>
@@ -500,6 +514,7 @@ export function Activities() {
                 setSettingsDisplayTab("share");
                 settingsOnOpen();
               }}
+              hidden={searchOpen}
             >
               Share
             </Button>
@@ -510,13 +525,64 @@ export function Activities() {
             onClick={() =>
               navigate(`/allAssignmentScores${folderId ? "/" + folderId : ""}`)
             }
+            hidden={searchOpen}
           >
             See Scores
           </Button>
-        </div>
+          <Flex>
+            <Input
+              type="search"
+              hidden={!searchOpen}
+              size="xs"
+              margin="3px"
+              width="300px"
+              ref={searchRef}
+              placeholder={folder ? `Search in folder` : `Search my activities`}
+              value={searchString}
+              onInput={(e) => {
+                setSearchString((e.target as HTMLInputElement).value);
+              }}
+              onKeyDown={(e) => {
+                if (e.key == "Enter") {
+                  performSearch();
+                }
+              }}
+              onBlur={() => {
+                searchBlurTimeout.current = setTimeout(() => {
+                  setSearchOpen(false);
+                }, 200);
+              }}
+            />
+            <Tooltip
+              label={folder ? `Search in folder` : `Search my activities`}
+              placement="bottom-end"
+            >
+              <IconButton
+                size="xs"
+                margin="3px"
+                icon={<MdOutlineSearch />}
+                aria-label={
+                  folder ? `Search in folder` : `Search my activities`
+                }
+                onClick={() => {
+                  if (searchOpen) {
+                    clearTimeout(searchBlurTimeout.current);
+                    searchRef.current?.focus();
+                    performSearch();
+                  } else {
+                    setSearchOpen(true);
+                  }
+                }}
+              />
+            </Tooltip>
+          </Flex>
+        </Flex>
       </Box>
       {folder ? (
-        <Box style={{ marginLeft: "15px", marginTop: "-30px", float: "left" }}>
+        <Box
+          style={{ marginLeft: "15px", marginTop: "-30px", float: "left" }}
+          hidden={searchOpen}
+        >
           <Link
             to={`/activities/${userId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
             style={{
@@ -594,4 +660,8 @@ export function Activities() {
       </Flex>
     </>
   );
+
+  function performSearch() {
+    console.log("perform search with", searchString);
+  }
 }

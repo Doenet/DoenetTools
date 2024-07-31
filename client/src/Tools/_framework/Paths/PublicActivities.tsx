@@ -31,7 +31,6 @@ export async function loader({ params }) {
   );
 
   return {
-    folderId: params.folderId ?? null,
     content: data.content,
     ownerId: params.ownerId,
     owner: data.owner,
@@ -41,8 +40,7 @@ export async function loader({ params }) {
 
 export function PublicActivities() {
   let context: any = useOutletContext();
-  let { folderId, content, ownerId, owner, folder } = useLoaderData() as {
-    folderId: number | null;
+  let { content, ownerId, owner, folder } = useLoaderData() as {
     content: ContentStructure[];
     ownerId: number;
     owner: {
@@ -53,10 +51,10 @@ export function PublicActivities() {
   };
 
   useEffect(() => {
-    document.title = folderId
-      ? `Folder ${folderId}`
+    document.title = folder
+      ? `Folder ${folder.name}`
       : `Public Activities of ${createFullName(owner)} - Doenet`;
-  }, [folderId]);
+  }, [folder]);
 
   const fetcher = useFetcher();
 
@@ -182,7 +180,9 @@ export function PublicActivities() {
                     <DisplayLicenseItem licenseItem={comp} key={comp.code} />
                   ))}
                 </List>
-                <p style={{ marginTop: "10px" }}></p>
+                <p style={{ marginTop: "10px" }}>
+                  You are free to use either license when reusing this work.
+                </p>
               </>
             ) : (
               <>
