@@ -86,7 +86,7 @@ const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
 passport.use(new GoogleStrategy({
   clientID: googleClientId,
   clientSecret: googleClientSecret,
-  callbackURL: process.env.LOGIN_CALLBACK_URL || ''
+  callbackURL: (process.env.LOGIN_CALLBACK_ROOT || '') + 'api/login/google'
 },
                                 (accessToken : any, refreshToken : any, profile : any, done : any) => {
                                   done(null, profile);
@@ -139,6 +139,13 @@ app.get('/api/auth/google',
 app.get('/api/login/google',
         passport.authenticate('google', { successRedirect: '/', failureRedirect: '/login' })
        );
+
+app.get('/api/logout', function(req, res, next){
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect('/');
+  });
+});
 
 app.get("/api/getQuickCheckSignedIn", (req: Request, res: Response) => {
   const signedIn = req.user ? true : false;
