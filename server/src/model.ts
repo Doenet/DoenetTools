@@ -2901,6 +2901,164 @@ export async function getMyFolderContent({
   };
 }
 
+export async function searchMyFolderContent({
+  folderId,
+  loggedInUserId,
+  query,
+}: {
+  folderId: number | null;
+  loggedInUserId: number;
+  query: string;
+}) {
+  let folder: ContentStructure | null = null;
+
+  if (folderId !== null) {
+    // if ask for a folder, make sure it exists and is owned by logged in user
+    let preliminaryFolder = await prisma.content.findUniqueOrThrow({
+      where: {
+        id: folderId,
+        isDeleted: false,
+        isFolder: true,
+        ownerId: loggedInUserId,
+      },
+      select: {
+        id: true,
+        ownerId: true,
+        name: true,
+        imagePath: true,
+        isPublic: true,
+        license: {
+          include: {
+            composedOf: {
+              select: { composedOf: true },
+              orderBy: { composedOf: { sortIndex: "asc" } },
+            },
+          },
+        },
+        parentFolder: { select: { id: true, name: true, isPublic: true } },
+      },
+    });
+
+    folder = {
+      ...preliminaryFolder,
+      isFolder: true,
+      assignmentStatus: "Unassigned",
+      classCode: null,
+      codeValidUntil: null,
+      documents: [],
+      hasScoreData: false,
+      license: preliminaryFolder.license
+        ? processLicense(preliminaryFolder.license)
+        : null,
+    };
+  }
+
+  let query_words = query.split(" ");
+
+  let preliminaryResults;
+
+  if (folderId === null) {
+    preliminaryResults = await prisma.content.findMany({
+      where: {
+        AND: query_words.map((qw) => ({ name: { contains: "%" + qw + "%" } })),
+        ownerId: loggedInUserId,
+        isDeleted: false,
+      },
+      select: {
+        id: true,
+        isFolder: true,
+        ownerId: true,
+        name: true,
+        imagePath: true,
+        isPublic: true,
+        isAssigned: true,
+        classCode: true,
+        codeValidUntil: true,
+        license: {
+          include: {
+            composedOf: {
+              select: { composedOf: true },
+              orderBy: { composedOf: { sortIndex: "asc" } },
+            },
+          },
+        },
+        documents: { select: { id: true, doenetmlVersion: true } },
+        parentFolder: { select: { id: true, name: true, isPublic: true } },
+        _count: { select: { assignmentScores: true } },
+      },
+    });
+  } else {
+    let ids = (
+      await prisma.$queryRaw<{ id: number }[]>(
+        Prisma.sql`
+    WITH RECURSIVE content_tree(id) AS (
+      SELECT id FROM content
+      WHERE parentFolderId = ${folderId} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
+      UNION ALL
+      SELECT content.id FROM content
+      INNER JOIN content_tree AS ft
+      ON content.parentFolderId = ft.id
+      WHERE content.isDeleted = FALSE
+    )
+    SELECT id from content_tree;
+    `,
+      )
+    ).map((obj) => obj.id);
+
+    preliminaryResults = await prisma.content.findMany({
+      where: {
+        AND: query_words.map((qw) => ({ name: { contains: "%" + qw + "%" } })),
+        id: { in: ids },
+      },
+      select: {
+        id: true,
+        isFolder: true,
+        ownerId: true,
+        name: true,
+        imagePath: true,
+        isPublic: true,
+        isAssigned: true,
+        classCode: true,
+        codeValidUntil: true,
+        license: {
+          include: {
+            composedOf: {
+              select: { composedOf: true },
+              orderBy: { composedOf: { sortIndex: "asc" } },
+            },
+          },
+        },
+        documents: { select: { id: true, doenetmlVersion: true } },
+        parentFolder: { select: { id: true, name: true, isPublic: true } },
+        _count: { select: { assignmentScores: true } },
+      },
+    });
+  }
+
+  let content: ContentStructure[] = preliminaryResults.map((obj) => {
+    let { _count, isAssigned, ...activity } = obj;
+    let isOpen = obj.codeValidUntil
+      ? DateTime.now() <= DateTime.fromJSDate(obj.codeValidUntil)
+      : false;
+    let assignmentStatus: AssignmentStatus = !obj.isAssigned
+      ? "Unassigned"
+      : !isOpen
+        ? "Closed"
+        : "Open";
+    return {
+      ...activity,
+      license: activity.license ? processLicense(activity.license) : null,
+      assignmentStatus,
+      hasScoreData: _count.assignmentScores > 0,
+    };
+  });
+
+  return {
+    content,
+    folder,
+  };
+}
+
 export async function getPublicFolderContent({
   ownerId,
   folderId,

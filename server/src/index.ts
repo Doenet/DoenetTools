@@ -62,6 +62,7 @@ import {
   LicenseCode,
   makeFolderPublic,
   makeFolderPrivate,
+  searchMyFolderContent,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -1333,6 +1334,58 @@ app.get(
       const contentData = await getMyFolderContent({
         folderId,
         loggedInUserId,
+      });
+      const allDoenetmlVersions = await getAllDoenetmlVersions();
+      const allLicenses = await getAllLicenses();
+      res.send({ allDoenetmlVersions, allLicenses, ...contentData });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/searchMyFolderContent/",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = req.cookies.userId ? Number(req.cookies.userId) : 0;
+    const query = req.query.q as string;
+
+    try {
+      const contentData = await searchMyFolderContent({
+        folderId: null,
+        loggedInUserId,
+        query,
+      });
+
+      const allDoenetmlVersions = await getAllDoenetmlVersions();
+      const allLicenses = await getAllLicenses();
+      res.send({ allDoenetmlVersions, allLicenses, ...contentData });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/searchMyFolderContent/:folderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const folderId = Number(req.params.folderId);
+    const loggedInUserId = Number(req.cookies.userId);
+    const query = req.query.q as string;
+
+    try {
+      const contentData = await searchMyFolderContent({
+        folderId,
+        loggedInUserId,
+        query,
       });
       const allDoenetmlVersions = await getAllDoenetmlVersions();
       const allLicenses = await getAllLicenses();
