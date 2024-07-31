@@ -15,6 +15,7 @@ import {
   IconButton,
   Input,
   Spacer,
+  Show,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -260,7 +261,7 @@ export function Activities() {
   const finalFocusRef = useRef(null);
 
   const [searchOpen, setSearchOpen] = useState(false);
-  const [searchString, setSearchString] = useState("");
+  const [searchString, setSearchString] = useState(query ?? "");
   const searchRef = useRef<HTMLInputElement>(null);
   const searchBlurTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
   const haveQuery = Boolean(query);
@@ -308,6 +309,7 @@ export function Activities() {
     isFolder,
     isPublic,
     licenseCode,
+    parentFolderId,
   }: {
     id: number;
     position: number;
@@ -316,6 +318,7 @@ export function Activities() {
     isFolder?: boolean;
     isPublic: boolean;
     licenseCode: LicenseCode | null;
+    parentFolderId: number | null;
   }) {
     return (
       <>
@@ -334,7 +337,7 @@ export function Activities() {
             </MenuItem>
           </>
         ) : null}
-        {position > 0 ? (
+        {position > 0 && !haveQuery ? (
           <MenuItem
             data-test="Move Left Menu Item"
             onClick={() => {
@@ -352,7 +355,7 @@ export function Activities() {
             Move Left
           </MenuItem>
         ) : null}
-        {position < numCards - 1 ? (
+        {position < numCards - 1 && !haveQuery ? (
           <MenuItem
             data-test="Move Right Menu Item"
             onClick={() => {
@@ -370,15 +373,17 @@ export function Activities() {
             Move Right
           </MenuItem>
         ) : null}
-        <MenuItem
-          data-test="Move to Folder"
-          onClick={() => {
-            setMoveToFolderContent({ id, isPublic, licenseCode });
-            moveToFolderOnOpen();
-          }}
-        >
-          Move to Folder
-        </MenuItem>
+        {haveQuery ? null : (
+          <MenuItem
+            data-test="Move to Folder"
+            onClick={() => {
+              setMoveToFolderContent({ id, isPublic, licenseCode });
+              moveToFolderOnOpen();
+            }}
+          >
+            Move to Folder
+          </MenuItem>
+        )}
         <MenuItem
           data-test="Delete Menu Item"
           onClick={() => {
@@ -424,6 +429,18 @@ export function Activities() {
         >
           Settings
         </MenuItem>
+        {haveQuery ? (
+          <MenuItem
+            data-test="Go to containing folder"
+            onClick={() => {
+              navigate(
+                `/activities/${userId}${parentFolderId ? "/" + parentFolderId : ""}`,
+              );
+            }}
+          >
+            Go to containing folder
+          </MenuItem>
+        ) : null}
       </>
     );
   }
@@ -565,13 +582,12 @@ export function Activities() {
                 hidden={!searchOpen}
                 size="xs"
                 margin="3px"
-                width="300px"
+                width="250px"
                 ref={searchRef}
                 placeholder={
                   folder ? `Search in folder` : `Search my activities`
                 }
                 value={searchString}
-                defaultValue={query ?? undefined}
                 name="q"
                 onInput={(e) => {
                   setSearchString((e.target as HTMLInputElement).value);
@@ -613,20 +629,22 @@ export function Activities() {
           </Flex>
         </Flex>
       </Box>
-      {folder ? (
-        <Box
-          style={{ marginLeft: "15px", marginTop: "-30px", float: "left" }}
-          hidden={searchOpen || haveQuery}
-        >
+      {folder && !haveQuery ? (
+        <Box style={{ marginLeft: "15px", marginTop: "-30px", float: "left" }}>
           <Link
             to={`/activities/${userId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
             style={{
               color: "var(--mainBlue)",
             }}
           >
-            <Text noOfLines={1}>
-              &lt; Back to{" "}
-              {folder.parentFolder ? folder.parentFolder.name : `My Activities`}
+            <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
+              <Show above="sm">
+                &lt; Back to{" "}
+                {folder.parentFolder
+                  ? folder.parentFolder.name
+                  : `My Activities`}
+              </Show>
+              <Show below="sm">&lt; Back</Show>
             </Text>
           </Link>
         </Box>
@@ -705,6 +723,7 @@ export function Activities() {
                       isFolder: activity.isFolder,
                       isPublic: activity.isPublic,
                       licenseCode: activity.license?.code ?? null,
+                      parentFolderId: activity.parentFolder?.id ?? null,
                     })}
                     suppressAvatar={true}
                     showOwnerName={false}
