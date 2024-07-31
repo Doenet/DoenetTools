@@ -200,12 +200,12 @@ export async function loader({ params, request }) {
   let data;
   if (q) {
     let results = await axios.get(
-      `/api/searchMyFolderContent/${params.folderId ?? ""}?q=${q}`,
+      `/api/searchMyFolderContent/${params.userId}/${params.folderId ?? ""}?q=${q}`,
     );
     data = results.data;
   } else {
     let results = await axios.get(
-      `/api/getMyFolderContent/${params.folderId ?? ""}`,
+      `/api/getMyFolderContent/${params.userId}/${params.folderId ?? ""}`,
     );
     data = results.data;
 

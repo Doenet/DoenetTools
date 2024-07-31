@@ -2806,6 +2806,7 @@ export async function getMyFolderContent({
         id: folderId,
         isDeleted: false,
         isFolder: true,
+        ownerId: loggedInUserId,
       },
       select: {
         id: true,
@@ -2824,12 +2825,6 @@ export async function getMyFolderContent({
         parentFolder: { select: { id: true, name: true, isPublic: true } },
       },
     });
-
-    if (preliminaryFolder.ownerId !== loggedInUserId) {
-      // Folder exists, but it not owned by logged in user.
-      // Return this information
-      return { notMe: true, content: [], folder: null };
-    }
 
     folder = {
       ...preliminaryFolder,
@@ -2897,7 +2892,6 @@ export async function getMyFolderContent({
   return {
     content,
     folder,
-    notMe: false,
   };
 }
 

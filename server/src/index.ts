@@ -1301,9 +1301,14 @@ app.get(
 );
 
 app.get(
-  "/api/getMyFolderContent/",
+  "/api/getMyFolderContent/:ownerId/",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.cookies.userId ? Number(req.cookies.userId) : 0;
+    const ownerId = Number(req.params.ownerId);
+    const loggedInUserId = Number(req.cookies.userId);
+
+    if (ownerId !== loggedInUserId) {
+      return res.send({ notMe: true });
+    }
 
     try {
       const contentData = await getMyFolderContent({
@@ -1325,10 +1330,15 @@ app.get(
 );
 
 app.get(
-  "/api/getMyFolderContent/:folderId",
+  "/api/getMyFolderContent/:ownerId/:folderId",
   async (req: Request, res: Response, next: NextFunction) => {
+    const ownerId = Number(req.params.ownerId);
     const folderId = Number(req.params.folderId);
     const loggedInUserId = Number(req.cookies.userId);
+
+    if (ownerId !== loggedInUserId) {
+      return res.send({ notMe: true });
+    }
 
     try {
       const contentData = await getMyFolderContent({
@@ -1349,10 +1359,15 @@ app.get(
 );
 
 app.get(
-  "/api/searchMyFolderContent/",
+  "/api/searchMyFolderContent/:ownerId",
   async (req: Request, res: Response, next: NextFunction) => {
+    const ownerId = Number(req.params.ownerId);
     const loggedInUserId = req.cookies.userId ? Number(req.cookies.userId) : 0;
     const query = req.query.q as string;
+
+    if (ownerId !== loggedInUserId) {
+      return res.send({ notMe: true });
+    }
 
     try {
       const contentData = await searchMyFolderContent({
@@ -1375,11 +1390,16 @@ app.get(
 );
 
 app.get(
-  "/api/searchMyFolderContent/:folderId",
+  "/api/searchMyFolderContent/:ownerId/:folderId",
   async (req: Request, res: Response, next: NextFunction) => {
+    const ownerId = Number(req.params.ownerId);
     const folderId = Number(req.params.folderId);
     const loggedInUserId = Number(req.cookies.userId);
     const query = req.query.q as string;
+
+    if (ownerId !== loggedInUserId) {
+      return res.send({ notMe: true });
+    }
 
     try {
       const contentData = await searchMyFolderContent({
