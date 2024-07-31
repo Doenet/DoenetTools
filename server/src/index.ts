@@ -63,11 +63,12 @@ import {
   makeFolderPublic,
   makeFolderPrivate,
 } from "./model";
-import { Prisma } from "@prisma/client";
+import session from "express-session";
+import { PrismaSessionStore } from "@quixo3/prisma-session-store";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import session from "express-session";
 
 dotenv.config();
 
@@ -122,12 +123,19 @@ passport.deserializeUser(async (id: string, done) => {
   done(null, u);
 });
 
-// TODO: this will need to be configured to use Redis or something else
 app.use(
   session({
+    cookie: {
+      maxAge: 7 * 24 * 60 * 60 * 1000, // ms
+    },
     secret: process.env.SESSION_SECRET || "",
-    resave: false,
+    resave: true,
     saveUninitialized: true,
+    store: new PrismaSessionStore(new PrismaClient(), {
+      checkPeriod: 2 * 60 * 1000, //ms
+      dbRecordIdIsSessionId: true,
+      dbRecordIdFunction: undefined,
+    }),
   }),
 );
 

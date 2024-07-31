@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.17.0",
+    "@quixo3/prisma-session-store": "^3.1.13",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
