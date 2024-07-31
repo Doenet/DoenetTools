@@ -1,17 +1,7 @@
 // import axios from 'axios';
-import {
-  Button,
-  Box,
-  Icon,
-  Text,
-  Flex,
-  Wrap,
-  MenuItem,
-  Heading,
-} from "@chakra-ui/react";
+import { Button, Box, Icon, Text, Flex, Wrap, Heading } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import {
-  redirect,
   useOutletContext,
   useLoaderData,
   useNavigate,

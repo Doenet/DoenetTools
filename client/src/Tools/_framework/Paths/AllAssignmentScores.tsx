@@ -11,8 +11,9 @@ import {
   Td,
   Link as ChakraLink,
   Tooltip,
+  Box,
 } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 import { lastNameFirst } from "../../../_utils/names";
@@ -97,6 +98,8 @@ export function AllAssignmentScores() {
     document.title = "My Assignments";
   });
 
+  let navigate = useNavigate();
+
   const linkStyle = {
     display: "block",
     color: "var(--mainBlue)",
@@ -104,6 +107,22 @@ export function AllAssignmentScores() {
 
   return (
     <>
+      <Box style={{ marginTop: 15, marginLeft: 15 }}>
+        <ChakraLink
+          as={ReactRouterLink}
+          to={".."}
+          style={{
+            color: "var(--mainBlue)",
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(-1);
+          }}
+        >
+          {" "}
+          &lt; Back
+        </ChakraLink>
+      </Box>
       {folder ? (
         <>
           <Heading heading={"Assignment Scores"} />

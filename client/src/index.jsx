@@ -50,7 +50,6 @@ import {
 } from "./Tools/_framework/Paths/Assigned";
 import {
   loader as assignmentDataLoader,
-  action as assignmentDataAction,
   AssignmentData,
 } from "./Tools/_framework/Paths/AssignmentData";
 import {
@@ -310,7 +309,6 @@ const router = createBrowserRouter([
       {
         path: "assignmentData/:activityId",
         loader: assignmentDataLoader,
-        action: assignmentDataAction,
         element: <AssignmentData />,
         errorElement: <ErrorPage />,
       },

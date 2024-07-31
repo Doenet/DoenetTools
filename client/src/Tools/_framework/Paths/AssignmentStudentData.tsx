@@ -5,7 +5,11 @@ import { DoenetViewer } from "@doenet/doenetml-iframe";
 import { Button, Box, Link as ChakraLink } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
-import { Link as ReactRouterLink, useFetcher } from "react-router-dom";
+import {
+  Link as ReactRouterLink,
+  useFetcher,
+  useNavigate,
+} from "react-router-dom";
 import { createFullName } from "../../../_utils/names";
 
 export async function action({ params, request }) {
@@ -39,7 +43,9 @@ export async function loader({ params, request, isAssignedData = false }) {
   const doenetmlVersion =
     assignment.documents[0].assignedVersion.doenetmlVersion.fullVersion;
   const numStatesSaved = assignmentData.documentScores.length;
-  let documentScores = { latest: assignmentData.documentScores[0].score };
+  let documentScores: { latest: number; maxScore?: number } = {
+    latest: assignmentData.documentScores[0].score,
+  };
   if (numStatesSaved === 2) {
     documentScores.maxScore = assignmentData.documentScores[1].score;
   }
@@ -76,13 +82,26 @@ export function AssignmentStudentData() {
     numStatesSaved,
     documentScores,
     isAssignedData,
-  } = useLoaderData();
+  } = useLoaderData() as {
+    activityId: string;
+    assignment: any;
+    userId: number;
+    user: any;
+    score: number;
+    doenetML: string;
+    doenetmlVersion: string;
+    withMaxScore: boolean;
+    numStatesSaved: number;
+    documentScores: { latest: number; maxScore?: number };
+    isAssignedData: boolean;
+  };
 
   useEffect(() => {
     document.title = `${assignment?.name} - Doenet`;
   }, [assignment?.name]);
 
   const fetcher = useFetcher();
+  let navigate = useNavigate();
 
   useEffect(() => {
     let messageListener = async function (event) {
@@ -137,15 +156,17 @@ export function AssignmentStudentData() {
       <Box style={{ marginTop: 15, marginLeft: 15 }}>
         <ChakraLink
           as={ReactRouterLink}
-          to={
-            isAssignedData ? `/assignedData` : `/assignmentData/${activityId}`
-          }
+          to={".."}
           style={{
             color: "var(--mainBlue)",
           }}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(-1);
+          }}
         >
           {" "}
-          &lt; Back to assignment data
+          &lt; Back
         </ChakraLink>
       </Box>
       <Heading heading={createFullName(user)} />
@@ -161,7 +182,7 @@ export function AssignmentStudentData() {
           <>
             <p>
               Best score achieved:{" "}
-              {Math.round(documentScores.maxScore * 1000) / 1000} (Latest work
+              {Math.round(documentScores.maxScore! * 1000) / 1000} (Latest work
               has a score of {Math.round(documentScores.latest * 1000) / 1000}.{" "}
               <Button
                 colorScheme="blue"
@@ -188,7 +209,7 @@ export function AssignmentStudentData() {
               Score achieved with latest work:{" "}
               {Math.round(documentScores.latest * 1000) / 1000} (Earlier work
               achieved the best score of{" "}
-              {Math.round(documentScores.maxScore * 1000) / 1000}.{" "}
+              {Math.round(documentScores.maxScore! * 1000) / 1000}.{" "}
               <Button
                 colorScheme="blue"
                 mt="8px"

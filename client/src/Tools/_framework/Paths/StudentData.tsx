@@ -1,5 +1,6 @@
-import React, { useEffect, FunctionComponent } from "react";
+import React, { useEffect } from "react";
 import { useLoaderData } from "react-router";
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import {
   TableContainer,
   Table,
@@ -10,6 +11,8 @@ import {
   Td,
   Link,
   Text,
+  Box,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
@@ -67,6 +70,8 @@ export function StudentData() {
     document.title = `${createFullName(userData)}'s Assignments`;
   });
 
+  let navigate = useNavigate();
+
   const linkStyle = {
     display: "block",
     color: "var(--mainBlue)",
@@ -74,6 +79,22 @@ export function StudentData() {
 
   return (
     <>
+      <Box style={{ marginTop: 15, marginLeft: 15 }}>
+        <ChakraLink
+          as={ReactRouterLink}
+          to={".."}
+          style={{
+            color: "var(--mainBlue)",
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(-1);
+          }}
+        >
+          {" "}
+          &lt; Back
+        </ChakraLink>
+      </Box>
       <Heading heading={`${createFullName(userData)}'s Assignments`} />
 
       {folder ? (

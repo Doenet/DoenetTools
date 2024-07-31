@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import { createFullName } from "../../../_utils/names";
 
 export async function action({ params, request }) {
@@ -25,6 +25,10 @@ export async function action({ params, request }) {
 export async function loader({ params, request }) {
   const url = new URL(request.url);
   const answerId = url.searchParams.get("answerId");
+
+  if (answerId === null) {
+    throw Error("Must supply answerId parameters");
+  }
 
   const { data } = await axios.get(
     `/api/getSubmittedResponses/${params.activityId}/${params.docId}/${
@@ -68,13 +72,24 @@ export function AssignmentAnswerResponses() {
     answerId,
     activityName,
     responseData,
-  } = useLoaderData();
+  } = useLoaderData() as {
+    activityId: number;
+    docId: number;
+    docVersionNum: number;
+    answerId: string;
+    activityName: string;
+    responseData: any;
+  };
 
   useEffect(() => {
     document.title = `${activityName} - Doenet`;
   }, [activityName]);
 
-  const [responses, setResponses] = useState([]);
+  let navigate = useNavigate();
+
+  const [responses, setResponses] = useState<
+    { latestResponse: React.JSX.Element; bestResponse: React.JSX.Element }[]
+  >([]);
   const [showNames, setShowNames] = useState(false);
   const [useBest, setUseBest] = useState(true);
 
@@ -95,13 +110,17 @@ export function AssignmentAnswerResponses() {
       <Box style={{ marginTop: 15, marginLeft: 15 }}>
         <ChakraLink
           as={ReactRouterLink}
-          to={`/assignmentData/${activityId}`}
+          to={".."}
           style={{
             color: "var(--mainBlue)",
           }}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(-1);
+          }}
         >
           {" "}
-          &lt; Back to assignment data
+          &lt; Back
         </ChakraLink>
       </Box>
       <Heading heading={activityName} />
@@ -182,7 +201,7 @@ export function AssignmentAnswerResponses() {
   );
 }
 
-export function parseAndFormatResponse(response) {
+export function parseAndFormatResponse(response: string): React.JSX.Element {
   let parsedResp = JSON.parse(response);
 
   return parsedResp.response.map((v, i) => {
@@ -192,7 +211,10 @@ export function parseAndFormatResponse(response) {
       return (
         <div>
           <MathJax hideUntilTypeset={"first"} inline dynamic key={i}>
-            {"\\(" + expr.toLatex() + "\\)"}
+            {
+              //@ts-ignore
+              "\\(" + expr.toLatex() + "\\)"
+            }
           </MathJax>
         </div>
       );

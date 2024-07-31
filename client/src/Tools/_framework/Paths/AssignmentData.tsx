@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLoaderData } from "react-router";
 
 import {
@@ -24,12 +24,8 @@ import { DoenetHeading as Heading } from "./Community";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Label } from "recharts";
 import AssignmentPreview from "../ToolPanels/AssignmentPreview";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import { createFullName } from "../../../_utils/names";
-
-export async function action({ params, request }) {
-  return null;
-}
 
 export async function loader({ params }) {
   const { data } = await axios.get(
@@ -54,19 +50,27 @@ export async function loader({ params }) {
 
 export function AssignmentData() {
   const { activityId, assignmentData, answerList, doenetML, doenetmlVersion } =
-    useLoaderData();
+    useLoaderData() as {
+      activityId: number;
+      assignmentData: any;
+      answerList: any;
+      doenetML: string;
+      doenetmlVersion: string;
+    };
 
   useEffect(() => {
     document.title = `${assignmentData.name} - Doenet`;
   }, [assignmentData.name]);
 
-  const [scoreData, setScoreData] = useState([]);
+  let navigate = useNavigate();
+
+  const [scoreData, setScoreData] = useState<
+    { count: number; score: number }[]
+  >([]);
 
   const [activatePreview, setActivatePreview] = useState(false);
 
-  // TODO: delete previewKey if it turns out we no longer need to reload the DoenetViewer
-  // (The reload is currently disabled)
-  const [previewKey, setPreviewKey] = useState(1);
+  const lastTabIndex = useRef(0);
 
   useEffect(() => {
     const minScore = 0;
@@ -93,13 +97,17 @@ export function AssignmentData() {
       <Box style={{ marginTop: 15, marginLeft: 15 }}>
         <ChakraLink
           as={ReactRouterLink}
-          to={`/activityEditor/${activityId}`}
+          to={".."}
           style={{
             color: "var(--mainBlue)",
           }}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(-1);
+          }}
         >
           {" "}
-          &lt; Back to activity editor
+          &lt; Back
         </ChakraLink>
       </Box>
       <Heading heading={assignmentData.name} />
@@ -121,19 +129,24 @@ export function AssignmentData() {
           <Label value="Maximum Score" offset={0} position="insideBottom" />
         </XAxis>
         <YAxis>
-          <Label value="Number of students" angle="-90" position="insideLeft" />
+          <Label value="Number of students" angle={-90} position="insideLeft" />
         </YAxis>
         <Bar dataKey="count" fill="#8884d8" />
       </BarChart>
 
-      <Tabs>
+      <Tabs defaultIndex={lastTabIndex.current}>
         <TabList>
-          <Tab>Individual scores</Tab>
+          <Tab
+            onClick={() => {
+              lastTabIndex.current = 0;
+            }}
+          >
+            Individual scores
+          </Tab>
           <Tab
             onClick={() => {
               setActivatePreview(true);
-              // TODO: delete this commented out refresh if it turns out it is no longer needed
-              // setPreviewKey(previewKey + 1);
+              lastTabIndex.current = 1;
             }}
           >
             Item summary
@@ -203,7 +216,6 @@ export function AssignmentData() {
                   doenetML={doenetML}
                   doenetmlVersion={doenetmlVersion}
                   active={activatePreview}
-                  key={`preview${previewKey}`}
                 />
               </VStack>
               <Box>
