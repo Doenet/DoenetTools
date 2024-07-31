@@ -281,9 +281,13 @@ export function SiteHeader(props) {
                   </Center>
                 ) : (
                   <Center h="40px" mr="10px">
-                    <NavLinkTab to="/signIn" dataTest="signIn">
+                    <a href="/api/auth/google">Sign In</a>
+                    {/* <NavLinkTab
+                      to="http://localhost:8000/api/auth/google"
+                      dataTest="signIn"
+                    >
                       Sign In
-                    </NavLinkTab>
+                    </NavLinkTab> */}
                   </Center>
                 )}
                 <Show below="md">
