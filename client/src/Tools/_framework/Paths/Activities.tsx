@@ -14,6 +14,7 @@ import {
   MenuList,
   IconButton,
   Input,
+  Spacer,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -23,6 +24,7 @@ import {
   useNavigate,
   useFetcher,
   Link,
+  Form,
 } from "react-router-dom";
 
 import { RiEmotionSadLine } from "react-icons/ri";
@@ -38,7 +40,7 @@ import {
   LicenseCode,
 } from "./ActivityEditor";
 import { DateTime } from "luxon";
-import { MdOutlineSearch } from "react-icons/md";
+import { MdClose, MdOutlineSearch } from "react-icons/md";
 
 // what is a better solution than this?
 let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching id
@@ -191,15 +193,27 @@ export async function action({ request, params }) {
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
-export async function loader({ params }) {
-  const { data } = await axios.get(
-    `/api/getMyFolderContent/${params.folderId ?? ""}`,
-  );
+export async function loader({ params, request }) {
+  const url = new URL(request.url);
+  const q = url.searchParams.get("q");
 
-  if (data.notMe) {
-    return redirect(
-      `/publicActivities/${params.userId}${params.folderId ? "/" + params.folderId : ""}`,
+  let data;
+  if (q) {
+    let results = await axios.get(
+      `/api/searchMyFolderContent/${params.folderId ?? ""}?q=${q}`,
     );
+    data = results.data;
+  } else {
+    let results = await axios.get(
+      `/api/getMyFolderContent/${params.folderId ?? ""}`,
+    );
+    data = results.data;
+
+    if (data.notMe) {
+      return redirect(
+        `/publicActivities/${params.userId}${params.folderId ? "/" + params.folderId : ""}`,
+      );
+    }
   }
 
   return {
@@ -209,20 +223,29 @@ export async function loader({ params }) {
     allLicenses: data.allLicenses,
     userId: params.userId,
     folder: data.folder,
+    query: q,
   };
 }
 
 export function Activities() {
   let context: any = useOutletContext();
-  let { folderId, content, allDoenetmlVersions, allLicenses, userId, folder } =
-    useLoaderData() as {
-      folderId: number | null;
-      content: ContentStructure[];
-      allDoenetmlVersions: DoenetmlVersion[];
-      allLicenses: License[];
-      userId: number;
-      folder: ContentStructure | null;
-    };
+  let {
+    folderId,
+    content,
+    allDoenetmlVersions,
+    allLicenses,
+    userId,
+    folder,
+    query,
+  } = useLoaderData() as {
+    folderId: number | null;
+    content: ContentStructure[];
+    allDoenetmlVersions: DoenetmlVersion[];
+    allLicenses: License[];
+    userId: number;
+    folder: ContentStructure | null;
+    query: string | null;
+  };
   const [settingsContentId, setSettingsContentId] = useState<number | null>(
     null,
   );
@@ -240,6 +263,7 @@ export function Activities() {
   const [searchString, setSearchString] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
   const searchBlurTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
+  const haveQuery = Boolean(query);
 
   useEffect(() => {
     if (searchOpen) {
@@ -471,7 +495,12 @@ export function Activities() {
         </Tooltip>
         <Flex float="right">
           <Menu>
-            <MenuButton as={Button} size="xs" margin="3px" hidden={searchOpen}>
+            <MenuButton
+              as={Button}
+              size="xs"
+              margin="3px"
+              hidden={searchOpen || haveQuery}
+            >
               New
             </MenuButton>
             <MenuList>
@@ -514,7 +543,7 @@ export function Activities() {
                 setSettingsDisplayTab("share");
                 settingsOnOpen();
               }}
-              hidden={searchOpen}
+              hidden={searchOpen || haveQuery}
             >
               Share
             </Button>
@@ -525,63 +554,69 @@ export function Activities() {
             onClick={() =>
               navigate(`/allAssignmentScores${folderId ? "/" + folderId : ""}`)
             }
-            hidden={searchOpen}
+            hidden={searchOpen || haveQuery}
           >
             See Scores
           </Button>
           <Flex>
-            <Input
-              type="search"
-              hidden={!searchOpen}
-              size="xs"
-              margin="3px"
-              width="300px"
-              ref={searchRef}
-              placeholder={folder ? `Search in folder` : `Search my activities`}
-              value={searchString}
-              onInput={(e) => {
-                setSearchString((e.target as HTMLInputElement).value);
-              }}
-              onKeyDown={(e) => {
-                if (e.key == "Enter") {
-                  performSearch();
-                }
-              }}
-              onBlur={() => {
-                searchBlurTimeout.current = setTimeout(() => {
-                  setSearchOpen(false);
-                }, 200);
-              }}
-            />
-            <Tooltip
-              label={folder ? `Search in folder` : `Search my activities`}
-              placement="bottom-end"
-            >
-              <IconButton
+            <Form>
+              <Input
+                type="search"
+                hidden={!searchOpen}
                 size="xs"
                 margin="3px"
-                icon={<MdOutlineSearch />}
-                aria-label={
+                width="300px"
+                ref={searchRef}
+                placeholder={
                   folder ? `Search in folder` : `Search my activities`
                 }
-                onClick={() => {
-                  if (searchOpen) {
-                    clearTimeout(searchBlurTimeout.current);
-                    searchRef.current?.focus();
-                    performSearch();
-                  } else {
-                    setSearchOpen(true);
+                value={searchString}
+                defaultValue={query ?? undefined}
+                name="q"
+                onInput={(e) => {
+                  setSearchString((e.target as HTMLInputElement).value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key == "Enter") {
                   }
                 }}
+                onBlur={() => {
+                  searchBlurTimeout.current = setTimeout(() => {
+                    setSearchOpen(false);
+                  }, 200);
+                }}
               />
-            </Tooltip>
+              <Tooltip
+                label={folder ? `Search in folder` : `Search my activities`}
+                placement="bottom-end"
+              >
+                <IconButton
+                  size="xs"
+                  margin="3px"
+                  icon={<MdOutlineSearch />}
+                  aria-label={
+                    folder ? `Search in folder` : `Search my activities`
+                  }
+                  type="submit"
+                  onClick={(e) => {
+                    if (searchOpen) {
+                      clearTimeout(searchBlurTimeout.current);
+                      searchRef.current?.focus();
+                    } else {
+                      setSearchOpen(true);
+                      e.preventDefault();
+                    }
+                  }}
+                />
+              </Tooltip>
+            </Form>
           </Flex>
         </Flex>
       </Box>
       {folder ? (
         <Box
           style={{ marginLeft: "15px", marginTop: "-30px", float: "left" }}
-          hidden={searchOpen}
+          hidden={searchOpen || haveQuery}
         >
           <Link
             to={`/activities/${userId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
@@ -595,6 +630,33 @@ export function Activities() {
             </Text>
           </Link>
         </Box>
+      ) : null}
+      {haveQuery ? (
+        <Flex
+          width="100%"
+          background="lightgray"
+          fontSize="large"
+          justifyContent="center"
+          alignItems="center"
+          padding="5px"
+        >
+          <Spacer />
+          Search results for: {query}
+          <Spacer />
+          <Form>
+            <Tooltip label="Close search results" placement="bottom-end">
+              <IconButton
+                icon={<MdClose />}
+                background="lightgray"
+                aria-label="Close search results"
+                type="submit"
+                onClick={() => {
+                  setSearchString("");
+                }}
+              />
+            </Tooltip>
+          </Form>
+        </Flex>
       ) : null}
       <Flex
         data-test="Activities"
@@ -619,7 +681,9 @@ export function Activities() {
               backgroundColor="transparent"
             >
               <Icon fontSize="48pt" as={RiEmotionSadLine} />
-              <Text fontSize="36pt">No Activities Yet</Text>
+              <Text fontSize="36pt">
+                {haveQuery ? "No Results Found" : "No Activities Yet"}
+              </Text>
             </Flex>
           ) : (
             <>
@@ -660,8 +724,4 @@ export function Activities() {
       </Flex>
     </>
   );
-
-  function performSearch() {
-    console.log("perform search with", searchString);
-  }
 }
