@@ -25,7 +25,8 @@
     "hi-base32": "^0.5.1",
     "luxon": "^3.4.4",
     "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0"
+    "passport-google-oauth20": "^2.0.0",
+    "passport-magic-link": "^2.1.1"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.7",
