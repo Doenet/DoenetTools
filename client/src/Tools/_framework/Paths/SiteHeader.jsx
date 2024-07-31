@@ -273,7 +273,7 @@ export function SiteHeader(props) {
                           <Text>{createFullName(user)}</Text>
                           <Text>{user.anonymous ? "" : user.email}</Text>
                         </VStack>
-                        <MenuItem as="a" href="/signOut">
+                        <MenuItem as="a" href="/api/logout">
                           Sign Out
                         </MenuItem>
                       </MenuList>
@@ -281,13 +281,9 @@ export function SiteHeader(props) {
                   </Center>
                 ) : (
                   <Center h="40px" mr="10px">
-                    <a href="/api/auth/google">Sign In</a>
-                    {/* <NavLinkTab
-                      to="http://localhost:8000/api/auth/google"
-                      dataTest="signIn"
-                    >
+                    <NavLinkTab to="/signIn" dataTest="signIn">
                       Sign In
-                    </NavLinkTab> */}
+                    </NavLinkTab>
                   </Center>
                 )}
                 <Show below="md">
