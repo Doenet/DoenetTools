@@ -1231,14 +1231,8 @@ export async function searchUsersWithPublicContent(query: string) {
   return usersWithPublic;
 }
 
-/**
- * Lists the content inside `folderId` where the user has an assignment score record.
- *
- * @param userId
- * @param folderId
- */
 export async function listUserAssigned(userId: number) {
-  const assignments = await prisma.content.findMany({
+  const preliminaryAssignments = await prisma.content.findMany({
     where: {
       isDeleted: false,
       isAssigned: true,
@@ -1250,12 +1244,34 @@ export async function listUserAssigned(userId: number) {
       ownerId: true,
       name: true,
       imagePath: true,
-      createdAt: true,
-      lastEdited: true,
       isPublic: true,
       classCode: true,
+      codeValidUntil: true,
+      license: {
+        include: {
+          composedOf: {
+            select: { composedOf: true },
+            orderBy: { composedOf: { sortIndex: "asc" } },
+          },
+        },
+      },
+      parentFolder: { select: { id: true, name: true, isPublic: true } },
     },
     orderBy: { createdAt: "asc" },
+  });
+
+  let assignments: ContentStructure[] = preliminaryAssignments.map((obj) => {
+    let isOpen = obj.codeValidUntil
+      ? DateTime.now() <= DateTime.fromJSDate(obj.codeValidUntil)
+      : false;
+    let assignmentStatus: AssignmentStatus = !isOpen ? "Closed" : "Open";
+    return {
+      ...obj,
+      license: obj.license ? processLicense(obj.license) : null,
+      assignmentStatus,
+      documents: [],
+      hasScoreData: false,
+    };
   });
 
   const user = await prisma.users.findUniqueOrThrow({

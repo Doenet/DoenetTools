@@ -172,7 +172,7 @@ export function DoenetHeading(props) {
 
 export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const btnRef = React.useRef();
+  const btnRef = React.useRef(null);
   const fetcher = useFetcher();
 
   if (!carouselGroups) {
@@ -370,7 +370,13 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
 
 export function Community() {
   const { carouselData, q, searchResults, carouselGroups, isAdmin } =
-    useLoaderData();
+    useLoaderData() as {
+      carouselData: any;
+      q: string;
+      searchResults: any;
+      carouselGroups: any;
+      isAdmin: boolean;
+    };
   const [currentTab, setCurrentTab] = useState(0);
   const fetcher = useFetcher();
 
@@ -416,7 +422,8 @@ export function Community() {
               title={name}
               imagePath={imagePath}
               ownerName={createFullName(owner)}
-              showStatus={false}
+              showPublicStatus={false}
+              showAssignmentStatus={false}
               menuItems={
                 isAdmin ? (
                   <>
@@ -425,7 +432,7 @@ export function Community() {
                       carouselGroups={carouselGroups}
                     />
                   </>
-                ) : null
+                ) : undefined
               }
             />
           );
@@ -439,7 +446,8 @@ export function Community() {
               title={name}
               imagePath={imagePath}
               ownerName={createFullName(owner)}
-              showStatus={false}
+              showPublicStatus={false}
+              showAssignmentStatus={false}
               menuItems={
                 isAdmin ? (
                   <>
@@ -448,7 +456,7 @@ export function Community() {
                       carouselGroups={carouselGroups}
                     />
                   </>
-                ) : null
+                ) : undefined
               }
             />
           );
@@ -537,7 +545,7 @@ export function Community() {
                   </Flex>
                 </Tab>
                 <Box
-                  display={currentTab !== index && "none"}
+                  display={currentTab !== index ? "none" : undefined}
                   position="absolute"
                   right={0}
                   top={0}
@@ -750,7 +758,8 @@ export function Community() {
                         title={cardObj.name}
                         ownerName={createFullName(cardObj.owner)}
                         cardLink={`/activityViewer/${cardObj.activityId}`}
-                        showStatus={false}
+                        showPublicStatus={false}
+                        showAssignmentStatus={false}
                         menuItems={
                           <>
                             <MenuItem

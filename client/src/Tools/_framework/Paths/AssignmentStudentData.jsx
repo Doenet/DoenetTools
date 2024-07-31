@@ -148,7 +148,8 @@ export function AssignmentStudentData() {
           &lt; Back to assignment data
         </ChakraLink>
       </Box>
-      <Heading heading={createFullName(user)} subheading={assignment.name} />
+      <Heading heading={createFullName(user)} />
+      <Heading subheading={assignment.name} />
 
       <Box style={{ margin: 20 }}>
         {numStatesSaved === 1 ? (

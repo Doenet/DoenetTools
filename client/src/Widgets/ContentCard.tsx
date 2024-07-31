@@ -23,9 +23,9 @@ export default forwardRef(function ContentCard(
     cardLink = "",
     id,
     imagePath,
-    assignmentStatus,
+    assignmentStatus = "Unassigned",
     isFolder,
-    isPublic,
+    isPublic = false,
     title,
     ownerName,
     menuItems,
@@ -33,14 +33,15 @@ export default forwardRef(function ContentCard(
     showOwnerName = true,
     editableTitle = false,
     autoFocusTitle = false,
-    showStatus = true,
+    showAssignmentStatus = true,
+    showPublicStatus = true,
   }: {
     cardLink?: string;
-    id: number;
+    id?: number;
     imagePath: string | null;
-    assignmentStatus: AssignmentStatus;
+    assignmentStatus?: AssignmentStatus;
     isFolder?: boolean;
-    isPublic: boolean;
+    isPublic?: boolean;
     title: string;
     ownerName?: string;
     menuItems?: ReactElement;
@@ -48,7 +49,8 @@ export default forwardRef(function ContentCard(
     showOwnerName?: boolean;
     editableTitle?: boolean;
     autoFocusTitle?: boolean;
-    showStatus?: boolean;
+    showAssignmentStatus?: boolean;
+    showPublicStatus?: boolean;
   },
   ref: React.ForwardedRef<HTMLButtonElement>,
 ) {
@@ -64,8 +66,12 @@ export default forwardRef(function ContentCard(
     setCardTitle(title);
   }, [title]);
 
+  if (isFolder) {
+    showAssignmentStatus = false;
+  }
+
   function saveUpdatedTitle() {
-    if (cardTitle !== title) {
+    if (cardTitle !== title && id !== undefined) {
       fetcher.submit(
         { _action: "update title", id, cardTitle, isFolder: Boolean(isFolder) },
         { method: "post" },
@@ -152,15 +158,16 @@ export default forwardRef(function ContentCard(
                 </Text>
               </Tooltip>
             ) : null}
-            {showStatus ? (
+            {showAssignmentStatus || showPublicStatus ? (
               <Text
                 fontSize="xs"
                 noOfLines={1}
                 textAlign="left"
                 //data-test="Card Full Name"
               >
-                {isPublic ? "Public" : "Private"}
-                {isFolder ? "" : " / " + assignmentStatus}
+                {showPublicStatus ? (isPublic ? "Public" : "Private") : null}
+                {showPublicStatus && showAssignmentStatus ? " / " : null}
+                {showAssignmentStatus ? assignmentStatus : null}
               </Text>
             ) : null}
           </Box>
