@@ -76,7 +76,7 @@ export type ContentStructure = {
   assignmentStatus: AssignmentStatus;
   isFolder?: boolean;
   classCode: string | null;
-  codeValidUntil: Date | null;
+  codeValidUntil: string | null;
   isPublic: boolean;
   license: License | null;
   documents: {

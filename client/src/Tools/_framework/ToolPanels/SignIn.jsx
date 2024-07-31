@@ -436,8 +436,9 @@ export default function SignIn(props) {
                 }
               }}
               dataTest="sendEmailButton"
-              value="Send Email"
-            ></Button>
+            >
+              Send Email
+            </Button>
           </div>
         </div>
       </div>

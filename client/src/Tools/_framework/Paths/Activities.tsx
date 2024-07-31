@@ -530,11 +530,12 @@ export function Activities() {
           </Link>
         </Box>
       ) : null}
-      <Box
+      <Flex
         data-test="Activities"
         padding="10px"
         margin="0px"
         width="100%"
+        justifyContent="center"
         background="var(--lightBlue)"
         minHeight="calc(100vh - 120px)"
       >
@@ -590,7 +591,7 @@ export function Activities() {
             </>
           )}
         </Wrap>
-      </Box>
+      </Flex>
     </>
   );
 }

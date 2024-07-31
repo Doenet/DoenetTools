@@ -23,9 +23,9 @@ export default forwardRef(function ContentCard(
     cardLink = "",
     id,
     imagePath,
-    assignmentStatus,
+    assignmentStatus = "Unassigned",
     isFolder,
-    isPublic,
+    isPublic = false,
     title,
     ownerName,
     menuItems,
@@ -33,14 +33,16 @@ export default forwardRef(function ContentCard(
     showOwnerName = true,
     editableTitle = false,
     autoFocusTitle = false,
-    showStatus = true,
+    showAssignmentStatus = true,
+    showPublicStatus = true,
+    closeTime,
   }: {
     cardLink?: string;
-    id: number;
+    id?: number;
     imagePath: string | null;
-    assignmentStatus: AssignmentStatus;
+    assignmentStatus?: AssignmentStatus;
     isFolder?: boolean;
-    isPublic: boolean;
+    isPublic?: boolean;
     title: string;
     ownerName?: string;
     menuItems?: ReactElement;
@@ -48,7 +50,9 @@ export default forwardRef(function ContentCard(
     showOwnerName?: boolean;
     editableTitle?: boolean;
     autoFocusTitle?: boolean;
-    showStatus?: boolean;
+    showAssignmentStatus?: boolean;
+    showPublicStatus?: boolean;
+    closeTime?: string;
   },
   ref: React.ForwardedRef<HTMLButtonElement>,
 ) {
@@ -64,8 +68,27 @@ export default forwardRef(function ContentCard(
     setCardTitle(title);
   }, [title]);
 
+  if (isFolder) {
+    showAssignmentStatus = false;
+  }
+  let assignmentStatusString: string = assignmentStatus;
+  if (assignmentStatus === "Open" && closeTime !== undefined) {
+    assignmentStatusString = assignmentStatusString + " until " + closeTime;
+  }
+
+  let statusString = "";
+  if (showPublicStatus) {
+    statusString += isPublic ? "Public" : "Private";
+    if (showAssignmentStatus) {
+      statusString += " / ";
+    }
+  }
+  if (showAssignmentStatus) {
+    statusString += assignmentStatusString;
+  }
+
   function saveUpdatedTitle() {
-    if (cardTitle !== title) {
+    if (cardTitle !== title && id !== undefined) {
       fetcher.submit(
         { _action: "update title", id, cardTitle, isFolder: Boolean(isFolder) },
         { method: "post" },
@@ -152,16 +175,17 @@ export default forwardRef(function ContentCard(
                 </Text>
               </Tooltip>
             ) : null}
-            {showStatus ? (
-              <Text
-                fontSize="xs"
-                noOfLines={1}
-                textAlign="left"
-                //data-test="Card Full Name"
-              >
-                {isPublic ? "Public" : "Private"}
-                {isFolder ? "" : " / " + assignmentStatus}
-              </Text>
+            {showAssignmentStatus || showPublicStatus ? (
+              <Tooltip label={statusString}>
+                <Text
+                  fontSize="xs"
+                  noOfLines={1}
+                  textAlign="left"
+                  //data-test="Card Full Name"
+                >
+                  {statusString}
+                </Text>
+              </Tooltip>
             ) : null}
           </Box>
 

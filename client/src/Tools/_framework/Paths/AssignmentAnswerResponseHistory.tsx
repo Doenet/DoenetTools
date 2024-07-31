@@ -18,7 +18,7 @@ import {
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 import { parseAndFormatResponse } from "./AssignmentAnswerResponses";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import { createFullName } from "../../../_utils/names";
 
 export async function action({ params, request }) {
@@ -27,6 +27,10 @@ export async function action({ params, request }) {
 export async function loader({ params, request }) {
   const url = new URL(request.url);
   const answerId = url.searchParams.get("answerId");
+
+  if (answerId === null) {
+    throw Error("Must supply answerId parameters");
+  }
 
   const { data } = await axios.get(
     `/api/getSubmittedResponseHistory/${params.activityId}/${params.docId}/${
@@ -66,11 +70,21 @@ export function AssignmentAnswerResponseHistory() {
     activityName,
     responseData,
     maxCredit,
-  } = useLoaderData();
+  } = useLoaderData() as {
+    activityId: number;
+    docId: number;
+    docVersionNum: number;
+    answerId: string;
+    activityName: string;
+    responseData: any;
+    maxCredit: number;
+  };
 
   useEffect(() => {
     document.title = `${activityName} - Doenet`;
   }, [activityName]);
+
+  let navigate = useNavigate();
 
   const [responses, setResponses] = useState([]);
 
@@ -83,15 +97,17 @@ export function AssignmentAnswerResponseHistory() {
       <Box style={{ marginTop: 15, marginLeft: 15 }}>
         <ChakraLink
           as={ReactRouterLink}
-          to={`/assignmentAnswerResponses/${activityId}/${docId}/${docVersionNum}?answerId=${encodeURIComponent(
-            answerId,
-          )}`}
+          to={".."}
           style={{
             color: "var(--mainBlue)",
           }}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(-1);
+          }}
         >
           {" "}
-          &lt; Back to answer responses
+          &lt; Back
         </ChakraLink>
       </Box>
 

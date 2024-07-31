@@ -91,7 +91,7 @@ let doenetML = `
 
 export function Home() {
   let context = useOutletContext();
-  const { favorites } = useLoaderData();
+  const { favorites } = useLoaderData() as { favorites: any };
 
   useEffect(() => {
     document.title = `Home - Doenet`;
@@ -104,6 +104,7 @@ export function Home() {
   const textColor = useColorModeValue("doenet.canvas", "doenet.canvastext");
 
   //Don't do more processing if we don't know if we are signed in or not
+  //@ts-ignore
   if (context.signedIn == null) {
     return null;
   }
@@ -540,6 +541,7 @@ export function Home() {
                 colorScheme="blue"
                 size="sm"
                 fontSize="16pt"
+                aria-label="Email Doenet"
                 icon={<HiOutlineMail />}
               />
             </Tooltip>
@@ -551,6 +553,7 @@ export function Home() {
                 colorScheme="blue"
                 size="sm"
                 fontSize="16pt"
+                aria-label="Doenet GitHub"
                 icon={<BsGithub />}
               />
             </Tooltip>
@@ -561,6 +564,7 @@ export function Home() {
                 colorScheme="blue"
                 size="sm"
                 fontSize="16pt"
+                aria-label="Doenet Discord"
                 icon={<BsDiscord />}
               />
             </Tooltip>

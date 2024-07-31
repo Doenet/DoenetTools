@@ -1,5 +1,6 @@
-import React, { useEffect, FunctionComponent } from "react";
+import React, { useEffect } from "react";
 import { useLoaderData } from "react-router";
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import {
   TableContainer,
   Table,
@@ -10,6 +11,8 @@ import {
   Td,
   Link,
   Text,
+  Box,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
@@ -26,36 +29,48 @@ type OrderedActivityScore = {
   score: number;
 };
 
+type Folder = {
+  id: number;
+  name: string;
+};
+
+// loader for when an instructor gets data about a student
 export async function loader({ params }) {
   let { data } = await axios.get(
-    `/api/getStudentData/${Number(params.userId)}`,
+    `/api/getStudentData/${Number(params.userId)}/${params.folderId ?? ""}`,
   );
 
   const userData = data.userData;
   const scores = data.orderedActivityScores;
+  const folder = data.folder;
 
-  return { userData, scores, isAssignedData: false };
+  return { userData, scores, folder, isAssignedData: false };
 }
 
+// loader for when a student gets their own data
 export async function assignedDataloader() {
   let { data } = await axios.get(`/api/getAssignedScores`);
 
   const userData = data.userData;
   const scores = data.orderedActivityScores;
+  const folder = data.folder;
 
-  return { userData, scores, isAssignedData: true };
+  return { userData, scores, folder, isAssignedData: true };
 }
 
 export function StudentData() {
-  const { userData, scores, isAssignedData } = useLoaderData() as {
+  const { userData, scores, folder, isAssignedData } = useLoaderData() as {
     userData: UserData;
     scores: OrderedActivityScore[];
+    folder: Folder | null;
     isAssignedData: boolean;
   };
 
   useEffect(() => {
     document.title = `${createFullName(userData)}'s Assignments`;
   });
+
+  let navigate = useNavigate();
 
   const linkStyle = {
     display: "block",
@@ -64,9 +79,30 @@ export function StudentData() {
 
   return (
     <>
+      <Box style={{ marginTop: 15, marginLeft: 15 }}>
+        <ChakraLink
+          as={ReactRouterLink}
+          to={".."}
+          style={{
+            color: "var(--mainBlue)",
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(-1);
+          }}
+        >
+          {" "}
+          &lt; Back
+        </ChakraLink>
+      </Box>
       <Heading heading={`${createFullName(userData)}'s Assignments`} />
 
-      <Heading subheading="Score summary" />
+      {folder ? (
+        <Heading subheading={`${folder.name}`} />
+      ) : (
+        <Heading subheading="Score summary" />
+      )}
+
       <TableContainer>
         <Table>
           <Thead>

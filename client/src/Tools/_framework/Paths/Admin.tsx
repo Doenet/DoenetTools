@@ -27,6 +27,7 @@ export async function loader() {
   };
 }
 
+//@ts-ignore
 const PublicActivitiesSection = styled.div`
   grid-row: 2/3;
   display: flex;
@@ -40,6 +41,7 @@ const PublicActivitiesSection = styled.div`
   background: var(--lightBlue);
 `;
 
+//@ts-ignore
 const ActivitiesGrid = styled.div`
   display: grid;
   grid-template-rows: 80px auto;
@@ -47,7 +49,10 @@ const ActivitiesGrid = styled.div`
 `;
 
 export function Admin() {
-  const { carouselGroups, publicActivities } = useLoaderData();
+  const { carouselGroups, publicActivities } = useLoaderData() as {
+    carouselGroups: any;
+    publicActivities: any;
+  };
 
   return (
     <>
@@ -87,7 +92,8 @@ export function Admin() {
                       title={activity.name}
                       imagePath={activity.imagePath}
                       ownerName={createFullName(activity.owner)}
-                      showStatus={false}
+                      showPublicStatus={false}
+                      showAssignmentStatus={false}
                       menuItems={
                         <MoveToGroupMenuItem
                           activityId={activity.id}

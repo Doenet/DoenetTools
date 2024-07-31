@@ -7,7 +7,7 @@ import SwiperCore, {
   Pagination,
   A11y,
 } from "swiper";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { Swiper, SwiperRef, SwiperSlide } from "swiper/react";
 
 // Import Swiper styles
 import "swiper/css";
@@ -23,8 +23,14 @@ import { createFullName } from "../_utils/names";
 
 SwiperCore.use([Keyboard, Mousewheel]);
 
-export function Carousel({ title = "", data = [] }) {
-  const swiperElRef = useRef(null);
+export function Carousel({
+  title = "",
+  data = [],
+}: {
+  title: string;
+  data: any[];
+}) {
+  const swiperElRef = useRef<SwiperRef>(null);
 
   const pagination = {
     clickable: true,
@@ -68,9 +74,10 @@ export function Carousel({ title = "", data = [] }) {
             colorScheme="blue"
             borderRadius="lg"
             variant="ghost"
+            aria-label="previous"
             icon={<ChevronLeftIcon fontSize="50px" color="black" />}
             onClick={() => {
-              swiperElRef.current.swiper.slidePrev();
+              swiperElRef.current?.swiper.slidePrev();
             }}
           />
 
@@ -117,7 +124,8 @@ export function Carousel({ title = "", data = [] }) {
                     title={cardObj.name}
                     ownerName={createFullName(cardObj.owner)}
                     cardLink={`/activityViewer/${cardObj.activityId}`}
-                    showStatus={false}
+                    showPublicStatus={false}
+                    showAssignmentStatus={false}
                   />
                 </SwiperSlide>
               );
@@ -132,9 +140,10 @@ export function Carousel({ title = "", data = [] }) {
             colorScheme="blue"
             borderRadius="lg"
             variant="ghost"
+            aria-label="next"
             icon={<ChevronRightIcon fontSize="50px" color="black" />}
             onClick={() => {
-              swiperElRef.current.swiper.slideNext();
+              swiperElRef.current?.swiper.slideNext();
             }}
           />
         </Flex>

@@ -148,7 +148,8 @@ export function PublicActivities() {
                     {...item}
                     title={item.name}
                     ownerName={createFullName(owner)}
-                    showStatus={false}
+                    showPublicStatus={false}
+                    showAssignmentStatus={false}
                     cardLink={
                       item.isFolder
                         ? `/publicActivities/${item.ownerId}/${item.id}`
