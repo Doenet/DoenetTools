@@ -35,6 +35,7 @@ import { ContentSettingsDrawer } from "../ToolPanels/ContentSettingsDrawer";
 import { DateTime } from "luxon";
 import { InfoIcon } from "@chakra-ui/icons";
 import { AssignmentInvitation } from "../ToolPanels/AssignmentInvitation";
+import { AssignmentSettingsDrawer } from "../ToolPanels/AssignmentSettingsDrawer";
 
 export type DoenetmlVersion = {
   id: number;
@@ -360,6 +361,12 @@ export function ActivityEditor() {
   } = useDisclosure();
 
   const {
+    isOpen: assignmentSettingsAreOpen,
+    onOpen: assignmentSettingsOnOpen,
+    onClose: assignmentSettingsOnClose,
+  } = useDisclosure();
+
+  const {
     isOpen: invitationIsOpen,
     onOpen: invitationOnOpen,
     onClose: invitationOnClose,
@@ -455,9 +462,8 @@ export function ActivityEditor() {
   }, [activityData.name]);
 
   const controlsBtnRef = useRef<HTMLButtonElement>(null);
-  const [displaySettingsTab, setSettingsDisplayTab] = useState<
-    "general" | "assignment"
-  >("general");
+  const [displaySettingsTab, setSettingsDisplayTab] =
+    useState<"general">("general");
 
   const fetcher = useFetcher();
 
@@ -478,6 +484,14 @@ export function ActivityEditor() {
         allDoenetmlVersions={allDoenetmlVersions}
         allLicenses={allLicenses}
         displayTab={displaySettingsTab}
+      />
+      <AssignmentSettingsDrawer
+        isOpen={assignmentSettingsAreOpen}
+        onClose={assignmentSettingsOnClose}
+        finalFocusRef={controlsBtnRef}
+        fetcher={fetcher}
+        id={activityId}
+        contentData={activityData}
       />
       <AssignmentInvitation
         isOpen={invitationIsOpen}
@@ -571,8 +585,7 @@ export function ActivityEditor() {
                       pr={{ base: "0px", md: "10px" }}
                       leftIcon={<MdOutlineAssignment />}
                       onClick={() => {
-                        setSettingsDisplayTab("assignment");
-                        settingsOnOpen();
+                        assignmentSettingsOnOpen();
                       }}
                     >
                       <Show above="md">Assign</Show>

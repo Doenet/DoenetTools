@@ -42,6 +42,7 @@ import {
 } from "./ActivityEditor";
 import { DateTime } from "luxon";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
+import { AssignmentSettingsDrawer } from "../ToolPanels/AssignmentSettingsDrawer";
 
 // what is a better solution than this?
 let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching id
@@ -256,6 +257,12 @@ export function Activities() {
     onClose: settingsOnClose,
   } = useDisclosure();
 
+  const {
+    isOpen: assignmentSettingsAreOpen,
+    onOpen: assignmentSettingsOnOpen,
+    onClose: assignmentSettingsOnClose,
+  } = useDisclosure();
+
   const contentCardRefs = useRef(new Array());
   const folderSettingsRef = useRef(null);
   const finalFocusRef = useRef(null);
@@ -287,7 +294,7 @@ export function Activities() {
   } = useDisclosure();
 
   const [displaySettingsTab, setSettingsDisplayTab] = useState<
-    "general" | "share" | "assignment"
+    "general" | "share"
   >("general");
 
   useEffect(() => {
@@ -400,8 +407,7 @@ export function Activities() {
             data-test="Assign Activity Menu Item"
             onClick={() => {
               setSettingsContentId(id);
-              setSettingsDisplayTab("assignment");
-              settingsOnOpen();
+              assignmentSettingsOnOpen();
             }}
           >
             {assignmentStatus === "Unassigned"
@@ -469,7 +475,7 @@ export function Activities() {
     }
   }
 
-  let settings_drawer =
+  let settingsDrawer =
     contentData && settingsContentId ? (
       <ContentSettingsDrawer
         isOpen={settingsAreOpen}
@@ -483,10 +489,21 @@ export function Activities() {
         displayTab={displaySettingsTab}
       />
     ) : null;
-
+  let assignmentDrawer =
+    contentData && settingsContentId ? (
+      <AssignmentSettingsDrawer
+        isOpen={assignmentSettingsAreOpen}
+        onClose={assignmentSettingsOnClose}
+        id={settingsContentId}
+        contentData={contentData}
+        finalFocusRef={finalFocusRef}
+        fetcher={fetcher}
+      />
+    ) : null;
   return (
     <>
-      {settings_drawer}
+      {settingsDrawer}
+      {assignmentDrawer}
 
       <MoveContentToFolder
         isOpen={moveToFolderIsOpen}
