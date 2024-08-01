@@ -158,9 +158,14 @@ export async function action({ params, request }) {
   }
 
   if (formObj._action == "open assignment") {
-    const closeAt = DateTime.fromSeconds(
-      Math.round(DateTime.now().toSeconds() / 60) * 60,
-    ).plus(JSON.parse(formObj.duration));
+    let closeAt: DateTime;
+    if (formObj.duration === "custom") {
+      closeAt = DateTime.fromISO(formObj.customCloseAt);
+    } else {
+      closeAt = DateTime.fromSeconds(
+        Math.round(DateTime.now().toSeconds() / 60) * 60,
+      ).plus(JSON.parse(formObj.duration));
+    }
     await axios.post("/api/openAssignmentWithCode", {
       activityId: Number(params.activityId),
       closeAt,
