@@ -246,7 +246,7 @@ export function GeneralContentControls({
           </Box>
         </FormControl>
 
-        <FormControl isRequired isInvalid={nameIsInvalid}>
+        <FormControl isInvalid={nameIsInvalid}>
           <FormLabel mt="16px">Name</FormLabel>
 
           <Input
