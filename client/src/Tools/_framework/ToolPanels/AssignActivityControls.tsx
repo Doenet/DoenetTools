@@ -32,7 +32,15 @@ export function AssignActivityControls({
   // duration for how long to open assignment
   const [duration, setDuration] = useState(JSON.stringify({ hours: 48 }));
   const [closeAt, setCloseAt] = useState(activityData.codeValidUntil);
-  const [customCloseAt, setCustomCloseAt] = useState("");
+  const [customCloseAt, setCustomCloseAt] = useState(
+    DateTime.fromSeconds(Math.round(DateTime.now().toSeconds() / 60) * 60)
+      .plus({ weeks: 2 })
+      .toISO({
+        includeOffset: false,
+        suppressSeconds: true,
+        suppressMilliseconds: true,
+      }),
+  );
   const [urlCopied, setUrlCopied] = useState(false);
 
   useEffect(() => {
@@ -203,21 +211,11 @@ export function AssignActivityControls({
                     step="60"
                     width="220px"
                     value={
-                      customCloseAt
-                        ? DateTime.fromISO(customCloseAt).toISO({
-                            includeOffset: false,
-                            suppressSeconds: true,
-                            suppressMilliseconds: true,
-                          })!
-                        : DateTime.fromSeconds(
-                            Math.round(DateTime.now().toSeconds() / 60) * 60,
-                          )
-                            .plus({ weeks: 2 })
-                            .toISO({
-                              includeOffset: false,
-                              suppressSeconds: true,
-                              suppressMilliseconds: true,
-                            })!
+                      DateTime.fromISO(customCloseAt).toISO({
+                        includeOffset: false,
+                        suppressSeconds: true,
+                        suppressMilliseconds: true,
+                      })!
                     }
                     onChange={(e) => {
                       setCustomCloseAt(e.target.value);
