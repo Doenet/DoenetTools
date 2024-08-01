@@ -113,11 +113,12 @@ export function PublicActivities() {
           ) : null}
         </Flex>
       ) : null}
-      <Box
+      <Flex
         data-test="Public Activities"
         padding="10px"
         width="100%"
         margin="0px"
+        justifyContent="center"
         background="var(--lightBlue)"
         minHeight="calc(80vh - 130px)"
       >
@@ -159,7 +160,7 @@ export function PublicActivities() {
             </>
           )}
         </Wrap>
-      </Box>
+      </Flex>
       <Box
         background="gray"
         width="100%"
