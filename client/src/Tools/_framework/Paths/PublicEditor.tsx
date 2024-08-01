@@ -8,10 +8,20 @@ import {
 
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 
-import { Button, Center, Grid, GridItem, HStack, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Center,
+  Grid,
+  GridItem,
+  HStack,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
 import { BsPlayBtnFill } from "react-icons/bs";
+import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
 import axios from "axios";
+import { ContentStructure, DoenetmlVersion } from "./ActivityEditor";
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);
@@ -19,8 +29,6 @@ export async function loader({ params, request }) {
 
   if (!params.activityId) {
     return {
-      activityData: { name: "Public Editor" },
-      // lastKnownCid,
       doenetML: queryParamDoenetML,
     };
   }
@@ -28,7 +36,6 @@ export async function loader({ params, request }) {
     `/api/getPublicEditorData/${params.activityId}`,
   );
 
-  let activityId = Number(params.activityId);
   let docId = Number(params.docId);
   if (!docId) {
     // If docId was not supplied in the url,
@@ -45,40 +52,59 @@ export async function loader({ params, request }) {
   }
 
   const doenetML = activityData.documents[docInOrder].source;
-  const doenetmlVersion =
-    activityData.documents[docInOrder].doenetmlVersion.fullVersion;
+  const doenetmlVersion: DoenetmlVersion =
+    activityData.documents[docInOrder].doenetmlVersion;
 
   return {
     activityData,
-    docId,
     doenetML,
     doenetmlVersion,
-    activityId,
   };
 }
 
 export function PublicEditor() {
-  const { activityId, doenetML, doenetmlVersion, docId, activityData } =
-    useLoaderData();
+  const { doenetML, doenetmlVersion, activityData } = useLoaderData() as {
+    doenetML: string;
+    doenetmlVersion?: DoenetmlVersion;
+    activityData?: ContentStructure;
+  };
 
+  const {
+    isOpen: copyActivityIsOpen,
+    onOpen: copyActivityOnOpen,
+    onClose: copyActivityOnClose,
+  } = useDisclosure();
+
+  //@ts-ignore
   const { signedIn } = useOutletContext();
   const navigate = useNavigate();
   const location = useLocation();
 
   let navigateTo = useRef("");
 
+  // TODO: fix this navigation
   if (navigateTo.current != "") {
     const newHref = navigateTo.current;
     navigateTo.current = "";
+    //@ts-ignore
     location.href = newHref;
   }
 
+  const label = activityData?.name ?? "Public Editor";
+
   useEffect(() => {
-    document.title = `${activityData.name} - Doenet`;
-  }, [activityData.name]);
+    document.title = `${label} - Doenet`;
+  }, [label]);
 
   return (
     <>
+      {activityData ? (
+        <CopyActivityAndReportFinish
+          isOpen={copyActivityIsOpen}
+          onClose={copyActivityOnClose}
+          activityData={activityData}
+        />
+      ) : null}
       <Grid
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height
@@ -105,23 +131,25 @@ export function PublicEditor() {
             >
               <GridItem area="leftControls">
                 <HStack ml="10px" mt="4px">
-                  <Button
-                    data-test="View Navigation Button"
-                    ml="10px"
-                    size="sm"
-                    variant="outline"
-                    leftIcon={<BsPlayBtnFill />}
-                    onClick={() => {
-                      navigate(`/activityViewer/${activityId}`);
-                    }}
-                  >
-                    View
-                  </Button>
+                  {activityData !== undefined ? (
+                    <Button
+                      data-test="View Navigation Button"
+                      ml="10px"
+                      size="sm"
+                      variant="outline"
+                      leftIcon={<BsPlayBtnFill />}
+                      onClick={() => {
+                        navigate(`/activityViewer/${activityData.id}`);
+                      }}
+                    >
+                      View
+                    </Button>
+                  ) : null}
                 </HStack>
               </GridItem>
               <GridItem area="label">
                 <Text width="400px" mt="8px" textAlign="center">
-                  {activityData.name}
+                  {label}
                 </Text>
               </GridItem>
               <GridItem
@@ -142,7 +170,7 @@ export function PublicEditor() {
 
                 Assume if there is no activity ID, the user is exploring a short and editable example and will not be saved.
                 */}
-                {!activityId ? (
+                {!activityData ? (
                   <Center background="orange.100" pl="10px" pr="6px">
                     <WarningIcon color="orange.500" mr="6px" />
 
@@ -166,17 +194,7 @@ export function PublicEditor() {
                         size="xs"
                         colorScheme="blue"
                         onClick={async () => {
-                          let { data } = await axios.post(
-                            `/api/duplicateActivity`,
-                            {
-                              activityId,
-                            },
-                          );
-                          const { newActivityId } = data;
-
-                          // TODO: do not navigate to editor
-                          // Instead, navigate to Activities page with newly created activity highlighted
-                          navigate(`/activityEditor/${newActivityId}`);
+                          copyActivityOnOpen();
                         }}
                       >
                         Copy to Activities
@@ -205,8 +223,8 @@ export function PublicEditor() {
             height={`calc(100vh - 110px)`}
             width="100%"
             doenetML={doenetML}
-            readOnly={Boolean(activityId)}
-            doenetmlVersion={doenetmlVersion}
+            readOnly={activityData !== undefined}
+            doenetmlVersion={doenetmlVersion?.fullVersion}
             border="none"
           />
         </GridItem>

@@ -20,34 +20,15 @@ import {
   Spacer,
   Text,
   Tooltip,
+  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import axios from "axios";
 import ContributorsMenu from "../ToolPanels/ContributorsMenu";
-import { Link, useFetcher } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ContentStructure, DoenetmlVersion, License } from "./ActivityEditor";
 import { DisplayLicenseItem } from "../ToolPanels/SharingControls";
-
-export async function action({ params, request }) {
-  // TODO: it is confusing that the one "action" of this viewer is to duplicate.
-
-  const formData = await request.formData();
-  let formObj = Object.fromEntries(formData);
-
-  if (formObj._action == "copy to activities") {
-    let { data } = await axios.post(`/api/duplicateActivity`, {
-      activityId: Number(params.activityId),
-    });
-
-    const { newActivityId } = data;
-
-    // TODO: do not navigate to editor
-    // Instead, navigate to activities with newly created activity highlighted
-    return redirect(`/activityEditor/${newActivityId}`);
-  }
-
-  return null;
-}
+import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
 
 export async function loader({ params }) {
   //Check if signedIn
@@ -120,7 +101,11 @@ export function ActivityViewer() {
     doenetmlVersion: DoenetmlVersion;
   };
 
-  const fetcher = useFetcher();
+  const {
+    isOpen: copyDialogIsOpen,
+    onOpen: copyDialogOnOpen,
+    onClose: copyDialogOnClose,
+  } = useDisclosure();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -141,6 +126,11 @@ export function ActivityViewer() {
 
   return (
     <>
+      <CopyActivityAndReportFinish
+        isOpen={copyDialogIsOpen}
+        onClose={copyDialogOnClose}
+        activityData={activity}
+      />
       <Box background="doenet.lightBlue" height="100%">
         <Flex
           background="doenet.lightBlue"
@@ -213,12 +203,7 @@ export function ActivityViewer() {
                               size="xs"
                               colorScheme="blue"
                               onClick={() => {
-                                fetcher.submit(
-                                  {
-                                    _action: "copy to activities",
-                                  },
-                                  { method: "post" },
-                                );
+                                copyDialogOnOpen();
                               }}
                             >
                               Copy to Activities
