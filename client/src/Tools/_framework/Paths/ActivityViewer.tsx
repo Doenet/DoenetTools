@@ -303,7 +303,10 @@ export function ActivityViewer() {
                             />
                           ))}
                         </List>
-                        <p style={{ marginTop: "10px" }}></p>
+                        <p style={{ marginTop: "10px" }}>
+                          You are free to use either license when reusing this
+                          work.
+                        </p>
                       </>
                     ) : (
                       <>
