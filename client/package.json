@@ -91,7 +91,7 @@
   },
   "optionalDependencies": {
     "@esbuild/linux-arm64": "^0.17.19",
-    "cypress": "^13.13.1",
+    "cypress": "^13.13.2",
     "cypress-file-upload": "^5.0.8",
     "cypress-parallel": "^0.14.0",
     "cypress-plugin-tab": "^1.0.5",

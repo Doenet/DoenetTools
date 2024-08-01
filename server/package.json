@@ -27,12 +27,12 @@
     "@types/cookie-parser": "^1.4.7",
     "@types/express": "^4.17.21",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^22.0.0",
+    "@types/node": "^22.0.2",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3",
     "prisma": "^5.17.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4",
-    "vitest": "^2.0.4"
+    "vitest": "^2.0.5"
   }
 }
