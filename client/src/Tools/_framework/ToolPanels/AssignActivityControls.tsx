@@ -10,6 +10,7 @@ import {
   Input,
   FormLabel,
   useDisclosure,
+  FormControl,
 } from "@chakra-ui/react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { DateTime } from "luxon";
@@ -31,6 +32,7 @@ export function AssignActivityControls({
   // duration for how long to open assignment
   const [duration, setDuration] = useState(JSON.stringify({ hours: 48 }));
   const [closeAt, setCloseAt] = useState(activityData.codeValidUntil);
+  const [customCloseAt, setCustomCloseAt] = useState("");
   const [urlCopied, setUrlCopied] = useState(false);
 
   useEffect(() => {
@@ -183,8 +185,46 @@ export function AssignActivityControls({
                   <Radio value={JSON.stringify({ hours: 48 })}>48 Hours</Radio>
                   <Radio value={JSON.stringify({ weeks: 2 })}>2 Weeks</Radio>
                   <Radio value={JSON.stringify({ years: 1 })}>1 Year</Radio>
+                  <Radio value={"custom"}>Custom</Radio>
                 </Stack>
               </RadioGroup>
+              <Box
+                hidden={duration !== "custom"}
+                background="#F9F9F9"
+                padding="10px"
+                marginTop="2px"
+                borderRadius="4"
+              >
+                <FormControl>
+                  <FormLabel>Custom close time</FormLabel>
+                  <Input
+                    type="datetime-local"
+                    size="sm"
+                    step="60"
+                    width="220px"
+                    value={
+                      customCloseAt
+                        ? DateTime.fromISO(customCloseAt).toISO({
+                            includeOffset: false,
+                            suppressSeconds: true,
+                            suppressMilliseconds: true,
+                          })!
+                        : DateTime.fromSeconds(
+                            Math.round(DateTime.now().toSeconds() / 60) * 60,
+                          )
+                            .plus({ weeks: 2 })
+                            .toISO({
+                              includeOffset: false,
+                              suppressSeconds: true,
+                              suppressMilliseconds: true,
+                            })!
+                    }
+                    onChange={(e) => {
+                      setCustomCloseAt(e.target.value);
+                    }}
+                  />
+                </FormControl>
+              </Box>
               <Button
                 type="submit"
                 colorScheme="blue"
@@ -193,7 +233,12 @@ export function AssignActivityControls({
                 size="xs"
                 onClick={() => {
                   fetcher.submit(
-                    { _action: "open assignment", duration, activityId },
+                    {
+                      _action: "open assignment",
+                      duration,
+                      activityId,
+                      customCloseAt,
+                    },
                     { method: "post" },
                   );
                 }}
@@ -218,8 +263,46 @@ export function AssignActivityControls({
                   <Radio value={JSON.stringify({ hours: 48 })}>48 Hours</Radio>
                   <Radio value={JSON.stringify({ weeks: 2 })}>2 Weeks</Radio>
                   <Radio value={JSON.stringify({ years: 1 })}>1 Year</Radio>
+                  <Radio value={"custom"}>Custom</Radio>
                 </Stack>
               </RadioGroup>
+              <Box
+                hidden={duration !== "custom"}
+                background="#F9F9F9"
+                padding="10px"
+                marginTop="2px"
+                borderRadius="4"
+              >
+                <FormControl>
+                  <FormLabel>Custom close time</FormLabel>
+                  <Input
+                    type="datetime-local"
+                    size="sm"
+                    step="60"
+                    width="220px"
+                    value={
+                      customCloseAt
+                        ? DateTime.fromISO(customCloseAt).toISO({
+                            includeOffset: false,
+                            suppressSeconds: true,
+                            suppressMilliseconds: true,
+                          })!
+                        : DateTime.fromSeconds(
+                            Math.round(DateTime.now().toSeconds() / 60) * 60,
+                          )
+                            .plus({ weeks: 2 })
+                            .toISO({
+                              includeOffset: false,
+                              suppressSeconds: true,
+                              suppressMilliseconds: true,
+                            })!
+                    }
+                    onChange={(e) => {
+                      setCustomCloseAt(e.target.value);
+                    }}
+                  />
+                </FormControl>
+              </Box>
               <Button
                 type="submit"
                 colorScheme="blue"
@@ -228,7 +311,12 @@ export function AssignActivityControls({
                 size="xs"
                 onClick={() => {
                   fetcher.submit(
-                    { _action: "open assignment", duration, activityId },
+                    {
+                      _action: "open assignment",
+                      duration,
+                      activityId,
+                      customCloseAt,
+                    },
                     { method: "post" },
                   );
                 }}
