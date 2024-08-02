@@ -136,7 +136,7 @@ async function main() {
     },
     create: {
       code: "CCDUAL",
-      name: "Creative Commons Attribution-NonCommercial-ShareAlike",
+      name: "Creative Commons Attribution-NonCommercial-ShareAlike OR Attribution-NonCommercial-ShareAlike",
       description:
         "Allow reusers to use either the Creative Commons Attribution-ShareAlike license or the Creative Commons Attribution-NonCommercial-ShareAlike license.",
       sortIndex: 1,
