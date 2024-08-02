@@ -273,7 +273,7 @@ export function SiteHeader(props) {
                           <Text>{createFullName(user)}</Text>
                           <Text>{user.anonymous ? "" : user.email}</Text>
                         </VStack>
-                        <MenuItem as="a" href="/signOut">
+                        <MenuItem as="a" href="/api/logout">
                           Sign Out
                         </MenuItem>
                       </MenuList>

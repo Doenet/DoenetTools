@@ -64,12 +64,81 @@ import {
   makeFolderPrivate,
   searchMyFolderContent,
 } from "./model";
-import { Prisma } from "@prisma/client";
+import session from "express-session";
+import { PrismaSessionStore } from "@quixo3/prisma-session-store";
+import { Prisma, PrismaClient } from "@prisma/client";
+
+import passport from "passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 dotenv.config();
 
+interface User {
+  userId: Number;
+  firstNames: string;
+  lastNames: string;
+  email: string;
+}
+
+declare module "express-serve-static-core" {
+  interface Request {
+    user: User;
+  }
+}
+
 const app: Express = express();
 app.use(cookieParser());
+
+const googleClientId = process.env.GOOGLE_CLIENT_ID || "";
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
+
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: googleClientId,
+      clientSecret: googleClientSecret,
+      callbackURL: (process.env.LOGIN_CALLBACK_ROOT || "") + "api/login/google",
+      scope: ["profile", "email"],
+    },
+    (accessToken: any, refreshToken: any, profile: any, done: any) => {
+      done(null, profile);
+    },
+  ),
+);
+
+passport.serializeUser<any, any>(async (req, user: any, done) => {
+  var email = user.id + "@google.com";
+  if (user.emails[0].verified) email = user.emails[0].value;
+
+  const u = await findOrCreateUser({
+    email,
+    firstNames: user.name.givenName,
+    lastNames: user.name.familyName,
+  });
+
+  done(undefined, u.email);
+});
+
+passport.deserializeUser(async (id: string, done) => {
+  const u = await getUserInfo(id);
+  done(null, u);
+});
+
+app.use(
+  session({
+    cookie: {
+      maxAge: 365 * 7 * 24 * 60 * 60 * 1000, // ms
+    },
+    secret: process.env.SESSION_SECRET || "",
+    resave: true,
+    saveUninitialized: true,
+    store: new PrismaSessionStore(new PrismaClient(), {
+      checkPeriod: 2 * 60 * 1000, //ms
+      dbRecordIdIsSessionId: true,
+      dbRecordIdFunction: undefined,
+    }),
+  }),
+);
 
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(
@@ -79,26 +148,51 @@ app.use(
   }),
 );
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 const port = process.env.PORT || 3000;
 
 app.use(express.static(path.resolve(__dirname, "../public")));
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Express + TypeScript Server");
+  res.send("Express + TypeScript Server" + JSON.stringify(req?.user));
+});
+
+app.get(
+  "/api/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] }),
+);
+
+app.get(
+  "/api/login/google",
+  passport.authenticate("google", {
+    successRedirect: "/",
+    failureRedirect: "/login",
+  }),
+);
+
+app.get("/api/logout", function (req, res, next) {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  });
 });
 
 app.get("/api/getQuickCheckSignedIn", (req: Request, res: Response) => {
-  const signedIn = req.cookies.email ? true : false;
+  const signedIn = req.user ? true : false;
   res.send({ signedIn: signedIn });
 });
 
 app.get(
   "/api/getUser",
   async (req: Request, res: Response, next: NextFunction) => {
-    const signedIn = req.cookies.email ? true : false;
+    const signedIn = req.user ? true : false;
     if (signedIn) {
       try {
-        let userInfo = await getUserInfo(req.cookies.email);
+        let userInfo = await getUserInfo(req.user.email);
         res.send(userInfo);
       } catch (e) {
         next(e);
@@ -110,9 +204,9 @@ app.get(
 );
 
 app.post("/api/updateUser", async (req: Request, res: Response) => {
-  const signedIn = req.cookies.email ? true : false;
+  const signedIn = req.user ? true : false;
   if (signedIn) {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user.userId);
     const body = req.body;
     const firstNames = body.firstNames;
     const lastNames = body.lastNames;
@@ -126,7 +220,7 @@ app.post("/api/updateUser", async (req: Request, res: Response) => {
 });
 
 app.get("/api/checkForCommunityAdmin", async (req: Request, res: Response) => {
-  const loggedInUserId = Number(req.cookies.userId);
+  const loggedInUserId = Number(req.user?.userId);
   const isAdmin = loggedInUserId ? await getIsAdmin(loggedInUserId) : false;
   res.send({ isAdmin });
 });
@@ -142,7 +236,7 @@ app.get(
 app.get(
   "/api/getAssigned",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     try {
       const assignedData = await listUserAssigned(loggedInUserId);
       res.send(assignedData);
@@ -159,7 +253,7 @@ app.get(
 app.get(
   "/api/getAssignedScores",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     try {
       const scoreData = await getAssignedScores(loggedInUserId);
       res.send({ ...scoreData, folder: null });
@@ -191,7 +285,7 @@ app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
 app.post(
   "/api/deleteActivity",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     const body = req.body;
     const id = Number(body.activityId);
     try {
@@ -210,7 +304,7 @@ app.post(
 app.post(
   "/api/deleteFolder",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     const body = req.body;
     const folderId = Number(body.folderId);
     try {
@@ -229,7 +323,7 @@ app.post(
 app.post(
   "/api/createActivity/",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     try {
       const { activityId, docId } = await createActivity(loggedInUserId, null);
       res.send({ activityId, docId });
@@ -242,7 +336,7 @@ app.post(
 app.post(
   "/api/createActivity/:parentFolderId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     const parentFolderId = Number(req.params.parentFolderId);
     try {
       const { activityId, docId } = await createActivity(
@@ -259,7 +353,7 @@ app.post(
 app.post(
   "/api/createFolder/",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     try {
       const { folderId } = await createFolder(loggedInUserId, null);
       res.send({ folderId });
@@ -272,7 +366,7 @@ app.post(
 app.post(
   "/api/createFolder/:parentFolderId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     const parentFolderId = Number(req.params.parentFolderId);
     try {
       const { folderId } = await createFolder(loggedInUserId, parentFolderId);
@@ -286,7 +380,7 @@ app.post(
 app.post(
   "/api/updateContentName",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     const body = req.body;
     const id = Number(body.id);
     const name = body.name;
@@ -309,7 +403,7 @@ app.post(
 app.post(
   "/api/makeActivityPublic",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     const body = req.body;
     const id = Number(body.id);
 
@@ -437,7 +531,7 @@ app.get(
 );
 
 app.get("/api/checkCredentials", (req: Request, res: Response) => {
-  const loggedIn = req.cookies.email ? true : false;
+  const loggedIn = req.user ? true : false;
   res.send({ loggedIn });
 });
 
@@ -460,7 +554,7 @@ app.post(
   "/api/addPromotedContent",
   async (req: Request, res: Response, next: NextFunction) => {
     const { groupId, activityId } = req.body;
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     try {
       await addPromotedContent(groupId, activityId, loggedInUserId);
       res.send({});
@@ -487,7 +581,7 @@ app.get(
   "/api/loadPromotedContent",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const loggedInUserId = Number(req.cookies.userId);
+      const loggedInUserId = Number(req.user?.userId);
       const content = await loadPromotedContent(loggedInUserId);
       res.send(content);
     } catch (e) {
@@ -506,7 +600,7 @@ app.post(
     try {
       const groupId = Number(req.body.groupId);
       const activityId = Number(req.body.activityId);
-      const loggedInUserId = Number(req.cookies.userId);
+      const loggedInUserId = Number(req.user?.userId);
 
       await removePromotedContent(groupId, activityId, loggedInUserId);
       res.send({});
@@ -532,7 +626,7 @@ app.post(
       const groupId = Number(req.body.groupId);
       const activityId = Number(req.body.activityId);
       const desiredPosition = Number(req.body.desiredPosition);
-      const loggedInUserId = Number(req.cookies.userId);
+      const loggedInUserId = Number(req.user?.userId);
 
       await movePromotedContent(
         groupId,
@@ -561,7 +655,7 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { groupName } = req.body;
-      const loggedInUserId = Number(req.cookies.userId);
+      const loggedInUserId = Number(req.user?.userId);
       const id = await addPromotedContentGroup(groupName, loggedInUserId);
       res.send({ id });
     } catch (e) {
@@ -584,7 +678,7 @@ app.post(
   "/api/updatePromotedContentGroup",
   async (req: Request, res: Response, next: NextFunction) => {
     const { groupId, newGroupName, homepage, currentlyFeatured } = req.body;
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     try {
       await updatePromotedContentGroup(
         Number(groupId),
@@ -615,7 +709,7 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { groupId } = req.body;
-      const loggedInUserId = Number(req.cookies.userId);
+      const loggedInUserId = Number(req.user?.userId);
       await deletePromotedContentGroup(Number(groupId), loggedInUserId);
       res.send({});
     } catch (e) {
@@ -633,7 +727,7 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { groupId, desiredPosition } = req.body;
-      const loggedInUserId = Number(req.cookies.userId);
+      const loggedInUserId = Number(req.user?.userId);
       await movePromotedContentGroup(
         Number(groupId),
         loggedInUserId,
@@ -654,7 +748,7 @@ app.get(
   "/api/getActivityEditorData/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
     const activityId = Number(req.params.activityId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     try {
       const editorData = await getActivityEditorData(
         activityId,
@@ -707,7 +801,7 @@ app.get("/api/getAllLicenses", async (req: Request, res: Response) => {
 app.get(
   "/api/getActivityView/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.cookies.userId ? Number(req.cookies.userId) : 0;
+    const loggedInUserId = Number(req.user?.userId);
     const activityId = Number(req.params.activityId);
 
     try {
@@ -730,7 +824,7 @@ app.get(
   "/api/getAssignmentDataFromCode/:code",
   async (req: Request, res: Response) => {
     const code = req.params.code;
-    const signedIn = req.cookies.email ? true : false;
+    const signedIn = req.user ? true : false;
 
     let assignmentData = await getAssignmentDataFromCode(code, signedIn);
 
@@ -746,8 +840,8 @@ app.get(
       firstNames = anonymousUser.firstNames;
       lastNames = anonymousUser.lastNames;
     } else {
-      firstNames = req.cookies.firstNames;
-      lastNames = req.cookies.lastNames;
+      firstNames = req.user.firstNames;
+      lastNames = req.user.lastNames;
     }
 
     res.send({ student: { firstNames, lastNames }, ...assignmentData });
@@ -757,7 +851,7 @@ app.get(
 app.post(
   "/api/saveDoenetML",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     const body = req.body;
     const doenetML = body.doenetML;
     const docId = Number(body.docId);
@@ -781,7 +875,7 @@ app.post(
 app.post(
   "/api/updateContentSettings",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     const body = req.body;
     const id = Number(body.id);
     const imagePath = body.imagePath;
@@ -809,7 +903,7 @@ app.post(
 app.post(
   "/api/updateDocumentSettings",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     const body = req.body;
     const docId = Number(body.docId);
     const name = body.name;
@@ -840,7 +934,7 @@ app.post("/api/moveContent", async (req: Request, res: Response) => {
     ? Number(req.body.desiredParentFolderId)
     : null;
   const desiredPosition = Number(req.body.desiredPosition);
-  const loggedInUserId = Number(req.cookies.userId);
+  const loggedInUserId = Number(req.user?.userId);
 
   await moveContent({
     id,
@@ -857,7 +951,7 @@ app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
   const desiredParentFolderId = req.body.desiredParentFolderId
     ? Number(req.body.desiredParentFolderId)
     : null;
-  const loggedInUserId = Number(req.cookies.userId);
+  const loggedInUserId = Number(req.user?.userId);
 
   let newActivityId = await copyActivityToFolder(
     targetActivityId,
@@ -870,7 +964,7 @@ app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
 
 app.post("/api/assignActivity", async (req: Request, res: Response) => {
   const activityId = Number(req.body.id);
-  const loggedInUserId = Number(req.cookies.userId);
+  const loggedInUserId = Number(req.user?.userId);
 
   await assignActivity(activityId, loggedInUserId);
 
@@ -880,7 +974,7 @@ app.post("/api/assignActivity", async (req: Request, res: Response) => {
 app.post(
   "/api/openAssignmentWithCode",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     const body = req.body;
     const activityId = Number(body.activityId);
     const closeAt = DateTime.fromISO(body.closeAt);
@@ -926,7 +1020,7 @@ app.post(
 app.post(
   "/api/closeAssignmentWithCode",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     const body = req.body;
     const activityId = Number(body.activityId);
 
@@ -970,7 +1064,7 @@ app.post(
     const activityId = Number(body.activityId);
     const docId = Number(body.docId);
     const docVersionNum = Number(body.docVersionNum);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     const score = Number(body.score);
     const onSubmission = body.onSubmission as boolean;
     const state = body.state;
@@ -1005,8 +1099,8 @@ app.get(
     const activityId = Number(req.query.activityId);
     const docId = Number(req.query.docId);
     const docVersionNum = Number(req.query.docVersionNum);
-    const requestedUserId = Number(req.query.userId || req.cookies.userId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const requestedUserId = Number(req.query.userId || req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId);
     const withMaxScore = req.query.withMaxScore === "1";
 
     try {
@@ -1033,7 +1127,7 @@ app.get(
   "/api/getAssignmentData/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
     const activityId = Number(req.params.activityId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
 
     try {
       const assignmentData = await getAssignmentScoreData({
@@ -1063,7 +1157,7 @@ app.get(
   "/api/getAssignmentStudentData/:activityId/",
   async (req: Request, res: Response, next: NextFunction) => {
     const activityId = Number(req.params.activityId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
 
     try {
       const assignmentData = await getAssignmentStudentData({
@@ -1087,7 +1181,7 @@ app.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const activityId = Number(req.params.activityId);
     const userId = Number(req.params.userId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
 
     try {
       const assignmentData = await getAssignmentStudentData({
@@ -1109,7 +1203,7 @@ app.get(
 app.get(
   "/api/getAllAssignmentScores/",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
 
     try {
       const data = await getAllAssignmentScores({
@@ -1131,7 +1225,7 @@ app.get(
   "/api/getAllAssignmentScores/:parentFolderId",
   async (req: Request, res: Response, next: NextFunction) => {
     const folderId = Number(req.params.parentFolderId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
 
     try {
       const data = await getAllAssignmentScores({
@@ -1153,7 +1247,7 @@ app.get(
   "/api/getStudentData/:userId/",
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = Number(req.params.userId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
 
     try {
       const data = await getStudentData({
@@ -1176,7 +1270,7 @@ app.get(
   "/api/getStudentData/:userId/:parentFolderId",
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = Number(req.params.userId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     const parentFolderId = Number(req.params.parentFolderId);
 
     try {
@@ -1204,7 +1298,7 @@ app.post(
     const docId = Number(body.docId);
     const docVersionNum = Number(body.docVersionNum);
     const answerId = body.answerId as string;
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
     const response = body.result.response as string;
     const itemNumber = Number(body.result.itemNumber);
     const creditAchieved = Number(body.result.creditAchieved);
@@ -1249,7 +1343,7 @@ app.get(
     const docId = Number(req.params.docId);
     const docVersionNum = Number(req.params.docVersionNum);
     const answerId = req.query.answerId as string;
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
 
     try {
       const responseData = await getDocumentSubmittedResponses({
@@ -1278,7 +1372,7 @@ app.get(
     const docVersionNum = Number(req.params.docVersionNum);
     const userId = Number(req.params.userId);
     const answerId = req.query.answerId as string;
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
 
     try {
       const responseData = await getDocumentSubmittedResponseHistory({
@@ -1304,7 +1398,7 @@ app.get(
   "/api/getMyFolderContent/:ownerId/",
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = Number(req.params.ownerId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
 
     if (ownerId !== loggedInUserId) {
       return res.send({ notMe: true });
@@ -1334,7 +1428,7 @@ app.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = Number(req.params.ownerId);
     const folderId = Number(req.params.folderId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId);
 
     if (ownerId !== loggedInUserId) {
       return res.send({ notMe: true });
