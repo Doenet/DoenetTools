@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { DateTime } from "luxon";
 import {
+  prisma,
   copyActivityToFolder,
   createActivity,
   createFolder,
@@ -70,6 +71,8 @@ import { Prisma, PrismaClient } from "@prisma/client";
 
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+//@ts-ignore
+import { Strategy as AnonymIdStrategy } from "passport-anonym-uuid";
 
 dotenv.config();
 
@@ -89,6 +92,16 @@ declare module "express-serve-static-core" {
 const app: Express = express();
 app.use(cookieParser());
 
+// make sure that when log out, it doesn't use old cached pages
+app.use(function (req, res, next) {
+  if (!req.user) {
+    res.header("Cache-Control", "private, no-cache, no-store, must-revalidate");
+    res.header("Expires", "-1");
+    res.header("Pragma", "no-cache");
+  }
+  next();
+});
+
 const googleClientId = process.env.GOOGLE_CLIENT_ID || "";
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
 
@@ -106,17 +119,28 @@ passport.use(
   ),
 );
 
+passport.use(new AnonymIdStrategy());
+
 passport.serializeUser<any, any>(async (req, user: any, done) => {
-  var email = user.id + "@google.com";
-  if (user.emails[0].verified) email = user.emails[0].value;
+  if (user.provider === "google") {
+    var email = user.id + "@google.com";
+    if (user.emails[0].verified) email = user.emails[0].value;
 
-  const u = await findOrCreateUser({
-    email,
-    firstNames: user.name.givenName,
-    lastNames: user.name.familyName,
-  });
-
-  done(undefined, u.email);
+    const u = await findOrCreateUser({
+      email,
+      firstNames: user.name.givenName,
+      lastNames: user.name.familyName,
+    });
+    return done(undefined, u.email);
+  } else if (user.uuid) {
+    const u = await findOrCreateUser({
+      email: user.uuid + "@anonymous.doenet.org",
+      lastNames: "",
+      firstNames: null,
+      isAnonymous: true,
+    });
+    return done(undefined, u.email);
+  }
 });
 
 passport.deserializeUser(async (id: string, done) => {
@@ -127,12 +151,12 @@ passport.deserializeUser(async (id: string, done) => {
 app.use(
   session({
     cookie: {
-      maxAge: 365 * 7 * 24 * 60 * 60 * 1000, // ms
+      maxAge: 365 * 24 * 60 * 60 * 1000, // ms
     },
     secret: process.env.SESSION_SECRET || "",
     resave: true,
     saveUninitialized: true,
-    store: new PrismaSessionStore(new PrismaClient(), {
+    store: new PrismaSessionStore(prisma, {
       checkPeriod: 2 * 60 * 1000, //ms
       dbRecordIdIsSessionId: true,
       dbRecordIdFunction: undefined,
@@ -158,6 +182,18 @@ app.use(express.static(path.resolve(__dirname, "../public")));
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server" + JSON.stringify(req?.user));
 });
+
+// An anonymous login that will be redirected to
+// when going to getAssignmentDataFromCode without being logged in.
+// Redirect back to that page after anonymous user is created and logged in.
+app.get(
+  "/api/login/anonymId/:code",
+  passport.authenticate("anonymId"),
+  (req: Request, res: Response) => {
+    const code = req.params.code;
+    res.redirect(`/api/getAssignmentDataFromCode/${code}`);
+  },
+);
 
 app.get(
   "/api/auth/google",
@@ -220,7 +256,7 @@ app.post("/api/updateUser", async (req: Request, res: Response) => {
 });
 
 app.get("/api/checkForCommunityAdmin", async (req: Request, res: Response) => {
-  const loggedInUserId = Number(req.user?.userId);
+  const loggedInUserId = Number(req.user?.userId ?? 0);
   const isAdmin = loggedInUserId ? await getIsAdmin(loggedInUserId) : false;
   res.send({ isAdmin });
 });
@@ -236,7 +272,7 @@ app.get(
 app.get(
   "/api/getAssigned",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
       const assignedData = await listUserAssigned(loggedInUserId);
       res.send(assignedData);
@@ -253,7 +289,7 @@ app.get(
 app.get(
   "/api/getAssignedScores",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
       const scoreData = await getAssignedScores(loggedInUserId);
       res.send({ ...scoreData, folder: null });
@@ -285,7 +321,7 @@ app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
 app.post(
   "/api/deleteActivity",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const id = Number(body.activityId);
     try {
@@ -304,7 +340,7 @@ app.post(
 app.post(
   "/api/deleteFolder",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const folderId = Number(body.folderId);
     try {
@@ -323,7 +359,7 @@ app.post(
 app.post(
   "/api/createActivity/",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
       const { activityId, docId } = await createActivity(loggedInUserId, null);
       res.send({ activityId, docId });
@@ -336,7 +372,7 @@ app.post(
 app.post(
   "/api/createActivity/:parentFolderId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const parentFolderId = Number(req.params.parentFolderId);
     try {
       const { activityId, docId } = await createActivity(
@@ -353,7 +389,7 @@ app.post(
 app.post(
   "/api/createFolder/",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
       const { folderId } = await createFolder(loggedInUserId, null);
       res.send({ folderId });
@@ -366,7 +402,7 @@ app.post(
 app.post(
   "/api/createFolder/:parentFolderId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const parentFolderId = Number(req.params.parentFolderId);
     try {
       const { folderId } = await createFolder(loggedInUserId, parentFolderId);
@@ -380,7 +416,7 @@ app.post(
 app.post(
   "/api/updateContentName",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const id = Number(body.id);
     const name = body.name;
@@ -403,7 +439,7 @@ app.post(
 app.post(
   "/api/makeActivityPublic",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const id = Number(body.id);
 
@@ -554,7 +590,7 @@ app.post(
   "/api/addPromotedContent",
   async (req: Request, res: Response, next: NextFunction) => {
     const { groupId, activityId } = req.body;
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
       await addPromotedContent(groupId, activityId, loggedInUserId);
       res.send({});
@@ -581,7 +617,7 @@ app.get(
   "/api/loadPromotedContent",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const loggedInUserId = Number(req.user?.userId);
+      const loggedInUserId = Number(req.user?.userId ?? 0);
       const content = await loadPromotedContent(loggedInUserId);
       res.send(content);
     } catch (e) {
@@ -600,7 +636,7 @@ app.post(
     try {
       const groupId = Number(req.body.groupId);
       const activityId = Number(req.body.activityId);
-      const loggedInUserId = Number(req.user?.userId);
+      const loggedInUserId = Number(req.user?.userId ?? 0);
 
       await removePromotedContent(groupId, activityId, loggedInUserId);
       res.send({});
@@ -626,7 +662,7 @@ app.post(
       const groupId = Number(req.body.groupId);
       const activityId = Number(req.body.activityId);
       const desiredPosition = Number(req.body.desiredPosition);
-      const loggedInUserId = Number(req.user?.userId);
+      const loggedInUserId = Number(req.user?.userId ?? 0);
 
       await movePromotedContent(
         groupId,
@@ -655,7 +691,7 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { groupName } = req.body;
-      const loggedInUserId = Number(req.user?.userId);
+      const loggedInUserId = Number(req.user?.userId ?? 0);
       const id = await addPromotedContentGroup(groupName, loggedInUserId);
       res.send({ id });
     } catch (e) {
@@ -678,7 +714,7 @@ app.post(
   "/api/updatePromotedContentGroup",
   async (req: Request, res: Response, next: NextFunction) => {
     const { groupId, newGroupName, homepage, currentlyFeatured } = req.body;
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
       await updatePromotedContentGroup(
         Number(groupId),
@@ -709,7 +745,7 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { groupId } = req.body;
-      const loggedInUserId = Number(req.user?.userId);
+      const loggedInUserId = Number(req.user?.userId ?? 0);
       await deletePromotedContentGroup(Number(groupId), loggedInUserId);
       res.send({});
     } catch (e) {
@@ -727,7 +763,7 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { groupId, desiredPosition } = req.body;
-      const loggedInUserId = Number(req.user?.userId);
+      const loggedInUserId = Number(req.user?.userId ?? 0);
       await movePromotedContentGroup(
         Number(groupId),
         loggedInUserId,
@@ -748,7 +784,7 @@ app.get(
   "/api/getActivityEditorData/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
     const activityId = Number(req.params.activityId);
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
       const editorData = await getActivityEditorData(
         activityId,
@@ -801,7 +837,7 @@ app.get("/api/getAllLicenses", async (req: Request, res: Response) => {
 app.get(
   "/api/getActivityView/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const activityId = Number(req.params.activityId);
 
     try {
@@ -822,27 +858,20 @@ app.get(
 
 app.get(
   "/api/getAssignmentDataFromCode/:code",
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const code = req.params.code;
-    const signedIn = req.user ? true : false;
 
-    let assignmentData = await getAssignmentDataFromCode(code, signedIn);
-
-    let firstNames: string | null;
-    let lastNames: string;
-    if (assignmentData.newAnonymousUser) {
-      const anonymousUser = assignmentData.newAnonymousUser;
-      // create a user with random name and email
-      res.cookie("email", anonymousUser.email);
-      res.cookie("userId", String(anonymousUser.userId));
-      res.cookie("firstNames", String(anonymousUser.firstNames));
-      res.cookie("lastNames", String(anonymousUser.lastNames));
-      firstNames = anonymousUser.firstNames;
-      lastNames = anonymousUser.lastNames;
-    } else {
-      firstNames = req.user.firstNames;
-      lastNames = req.user.lastNames;
+    if (!req.user) {
+      // If not logged in, then redirect to log in anonymously,
+      // which will redirect back here with the anonymous user
+      // logged in.
+      return res.redirect(`/api/login/anonymId/${code}`);
     }
+
+    let assignmentData = await getAssignmentDataFromCode(code);
+
+    let firstNames: string | null = req.user.firstNames;
+    let lastNames: string = req.user.lastNames;
 
     res.send({ student: { firstNames, lastNames }, ...assignmentData });
   },
@@ -851,7 +880,7 @@ app.get(
 app.post(
   "/api/saveDoenetML",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const doenetML = body.doenetML;
     const docId = Number(body.docId);
@@ -875,7 +904,7 @@ app.post(
 app.post(
   "/api/updateContentSettings",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const id = Number(body.id);
     const imagePath = body.imagePath;
@@ -903,7 +932,7 @@ app.post(
 app.post(
   "/api/updateDocumentSettings",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const docId = Number(body.docId);
     const name = body.name;
@@ -934,7 +963,7 @@ app.post("/api/moveContent", async (req: Request, res: Response) => {
     ? Number(req.body.desiredParentFolderId)
     : null;
   const desiredPosition = Number(req.body.desiredPosition);
-  const loggedInUserId = Number(req.user?.userId);
+  const loggedInUserId = Number(req.user?.userId ?? 0);
 
   await moveContent({
     id,
@@ -951,7 +980,7 @@ app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
   const desiredParentFolderId = req.body.desiredParentFolderId
     ? Number(req.body.desiredParentFolderId)
     : null;
-  const loggedInUserId = Number(req.user?.userId);
+  const loggedInUserId = Number(req.user?.userId ?? 0);
 
   let newActivityId = await copyActivityToFolder(
     targetActivityId,
@@ -964,7 +993,7 @@ app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
 
 app.post("/api/assignActivity", async (req: Request, res: Response) => {
   const activityId = Number(req.body.id);
-  const loggedInUserId = Number(req.user?.userId);
+  const loggedInUserId = Number(req.user?.userId ?? 0);
 
   await assignActivity(activityId, loggedInUserId);
 
@@ -974,7 +1003,7 @@ app.post("/api/assignActivity", async (req: Request, res: Response) => {
 app.post(
   "/api/openAssignmentWithCode",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const activityId = Number(body.activityId);
     const closeAt = DateTime.fromISO(body.closeAt);
@@ -1020,7 +1049,7 @@ app.post(
 app.post(
   "/api/closeAssignmentWithCode",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const activityId = Number(body.activityId);
 
@@ -1064,7 +1093,7 @@ app.post(
     const activityId = Number(body.activityId);
     const docId = Number(body.docId);
     const docVersionNum = Number(body.docVersionNum);
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const score = Number(body.score);
     const onSubmission = body.onSubmission as boolean;
     const state = body.state;
@@ -1099,8 +1128,8 @@ app.get(
     const activityId = Number(req.query.activityId);
     const docId = Number(req.query.docId);
     const docVersionNum = Number(req.query.docVersionNum);
-    const requestedUserId = Number(req.query.userId || req.user?.userId);
-    const loggedInUserId = Number(req.user?.userId);
+    const requestedUserId = Number((req.query.userId || req.user?.userId) ?? 0);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const withMaxScore = req.query.withMaxScore === "1";
 
     try {
@@ -1127,7 +1156,7 @@ app.get(
   "/api/getAssignmentData/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
     const activityId = Number(req.params.activityId);
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     try {
       const assignmentData = await getAssignmentScoreData({
@@ -1157,7 +1186,7 @@ app.get(
   "/api/getAssignmentStudentData/:activityId/",
   async (req: Request, res: Response, next: NextFunction) => {
     const activityId = Number(req.params.activityId);
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     try {
       const assignmentData = await getAssignmentStudentData({
@@ -1181,7 +1210,7 @@ app.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const activityId = Number(req.params.activityId);
     const userId = Number(req.params.userId);
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     try {
       const assignmentData = await getAssignmentStudentData({
@@ -1203,7 +1232,7 @@ app.get(
 app.get(
   "/api/getAllAssignmentScores/",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     try {
       const data = await getAllAssignmentScores({
@@ -1225,7 +1254,7 @@ app.get(
   "/api/getAllAssignmentScores/:parentFolderId",
   async (req: Request, res: Response, next: NextFunction) => {
     const folderId = Number(req.params.parentFolderId);
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     try {
       const data = await getAllAssignmentScores({
@@ -1247,7 +1276,7 @@ app.get(
   "/api/getStudentData/:userId/",
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = Number(req.params.userId);
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     try {
       const data = await getStudentData({
@@ -1270,7 +1299,7 @@ app.get(
   "/api/getStudentData/:userId/:parentFolderId",
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = Number(req.params.userId);
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const parentFolderId = Number(req.params.parentFolderId);
 
     try {
@@ -1298,7 +1327,7 @@ app.post(
     const docId = Number(body.docId);
     const docVersionNum = Number(body.docVersionNum);
     const answerId = body.answerId as string;
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const response = body.result.response as string;
     const itemNumber = Number(body.result.itemNumber);
     const creditAchieved = Number(body.result.creditAchieved);
@@ -1343,7 +1372,7 @@ app.get(
     const docId = Number(req.params.docId);
     const docVersionNum = Number(req.params.docVersionNum);
     const answerId = req.query.answerId as string;
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     try {
       const responseData = await getDocumentSubmittedResponses({
@@ -1372,7 +1401,7 @@ app.get(
     const docVersionNum = Number(req.params.docVersionNum);
     const userId = Number(req.params.userId);
     const answerId = req.query.answerId as string;
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     try {
       const responseData = await getDocumentSubmittedResponseHistory({
@@ -1398,7 +1427,7 @@ app.get(
   "/api/getMyFolderContent/:ownerId/",
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = Number(req.params.ownerId);
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     if (ownerId !== loggedInUserId) {
       return res.send({ notMe: true });
@@ -1428,7 +1457,7 @@ app.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = Number(req.params.ownerId);
     const folderId = Number(req.params.folderId);
-    const loggedInUserId = Number(req.user?.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     if (ownerId !== loggedInUserId) {
       return res.send({ notMe: true });

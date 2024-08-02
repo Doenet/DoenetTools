@@ -196,12 +196,12 @@ export function SiteHeader(props) {
                   <NavLinkTab to="community" dataTest="Community">
                     Community
                   </NavLinkTab>
-                  {!signedIn || user.anonymous ? (
+                  {!signedIn || user.isAnonymous ? (
                     <NavLinkTab to="code" dataTest="Class Code">
                       Class Code
                     </NavLinkTab>
                   ) : null}
-                  {signedIn && !user.anonymous && (
+                  {signedIn && !user.isAnonymous && (
                     <>
                       <NavLinkTab
                         to={`activities/${user.userId}`}
@@ -271,7 +271,7 @@ export function SiteHeader(props) {
                         <VStack mb="20px">
                           <Avatar size="xl" name={`${createFullName(user)}`} />
                           <Text>{createFullName(user)}</Text>
-                          <Text>{user.anonymous ? "" : user.email}</Text>
+                          <Text>{user.isAnonymous ? "" : user.email}</Text>
                         </VStack>
                         <MenuItem as="a" href="/api/logout">
                           Sign Out
@@ -304,12 +304,12 @@ export function SiteHeader(props) {
                         <NavLinkDropdownTab to="community" dataTest="Community">
                           Community
                         </NavLinkDropdownTab>
-                        {!signedIn || user.anonymous ? (
+                        {!signedIn || user.isAnonymous ? (
                           <NavLinkDropdownTab to="code" dataTest="Class Code">
                             Class Code
                           </NavLinkDropdownTab>
                         ) : null}
-                        {signedIn && !user.anonymous && (
+                        {signedIn && !user.isAnonymous && (
                           <>
                             <NavLinkDropdownTab
                               to={`activities/${user.userId}`}
