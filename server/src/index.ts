@@ -69,6 +69,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 
 import passport from "passport";
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+
 import { Strategy as MagicLinkStrategy } from 'passport-magic-link';
 
 dotenv.config();
@@ -105,6 +106,27 @@ passport.use(
     },
   ),
 );
+
+passport.use(new MagicLinkStrategy({
+  secret: process.env.MAGIC_LINK_SECRET || "",
+  allowReuse: true,
+    userFields: ['email'],
+    tokenField: 'token'
+}, async (user, token) => {
+  console.log( user, token );
+  /*
+    return MailService.sendMail({
+     to: user.email,
+     token
+     })
+  */
+}, async (user : any) => {
+   return await findOrCreateUser({
+     email: user.email as string,
+     firstNames: null,
+     lastNames: "",
+   });
+ }))
 
 passport.serializeUser<any, any>(async (req, user: any, done) => {
   var email = user.id + "@google.com";
@@ -171,6 +193,19 @@ app.get(
     failureRedirect: "/login",
   }),
 );
+
+app.post("/api/auth/magiclink",
+	passport.authenticate("magiclink", { action : 'requestToken' }),
+	(req, res) => res.redirect('/')
+	);
+
+app.get('/api/login/magiclink',
+  passport.authenticate('magiclink', {
+    action : 'acceptToken',
+    userPrimaryKey: 'email'
+   }),
+  (req, res) => res.redirect('/')
+)
 
 app.get("/api/logout", function (req, res, next) {
   req.logout(function (err) {
