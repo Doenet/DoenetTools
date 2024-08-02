@@ -43,6 +43,7 @@ export default function MoveContentToFolder({
   id,
   isPublic,
   licenseCode,
+  userId,
   currentParentId,
   finalFocusRef,
 }: {
@@ -51,6 +52,7 @@ export default function MoveContentToFolder({
   id: number;
   isPublic: boolean;
   licenseCode: LicenseCode | null;
+  userId: number;
   currentParentId: number | null;
   finalFocusRef: RefObject<HTMLElement>;
 }) {
@@ -85,7 +87,7 @@ export default function MoveContentToFolder({
     modalJustOpened: boolean = false,
   ) {
     const { data } = await axios.get(
-      `/api/getMyFolderContent/${newActiveFolderId ?? ""}`,
+      `/api/getMyFolderContent/${userId}/${newActiveFolderId ?? ""}`,
     );
 
     let folder: ContentStructure | null = data.folder;
