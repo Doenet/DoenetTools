@@ -11,7 +11,7 @@ model Session {
   id        String   @id
   sid       String   @unique
   data      String
-  expiresAt   DateTime
+  expiresAt DateTime
 }
 
 model content {
@@ -182,11 +182,11 @@ model documentSubmittedResponses {
 
 model users {
   userId                     Int                          @id @default(autoincrement())
-  email                      String                       @unique @db.VarChar(45)
+  email                      String                       @unique
   firstNames                 String?
   lastNames                  String
   isAdmin                    Boolean                      @default(false)
-  anonymous                  Boolean                      @default(false)
+  isAnonymous                Boolean                      @default(false)
   content                    content[]
   assignmentScores           assignmentScores[]
   documentState              documentState[]

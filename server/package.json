@@ -25,6 +25,7 @@
     "hi-base32": "^0.5.1",
     "luxon": "^3.4.4",
     "passport": "^0.7.0",
+    "passport-anonym-uuid": "^1.0.3",
     "passport-google-oauth20": "^2.0.0"
   },
   "devDependencies": {
