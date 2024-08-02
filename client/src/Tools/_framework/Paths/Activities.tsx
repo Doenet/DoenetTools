@@ -516,6 +516,7 @@ export function Activities() {
         id={moveToFolderContent.id}
         isPublic={moveToFolderContent.isPublic}
         licenseCode={moveToFolderContent.licenseCode}
+        userId={userId}
         currentParentId={folderId}
         finalFocusRef={finalFocusRef}
       />
