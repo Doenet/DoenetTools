@@ -7,104 +7,109 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model activities {
-  activityId  Int           @id @unique() @default(autoincrement())
-  ownerId     Int
-  name        String
-  createdAt   DateTime      @default(now())
-  lastEdited  DateTime      @default(now())
-  imagePath   String?
-  isPublic    Boolean       @default(false)
-  isDeleted   Boolean       @default(false)
-  owner       users         @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  assignments assignments[]
-  documents   documents[]
+model content {
+  id               Int                @id @unique() @default(autoincrement())
+  ownerId          Int
+  isFolder         Boolean
+  parentFolderId   Int?
+  name             String
+  createdAt        DateTime           @default(now())
+  lastEdited       DateTime           @default(now())
+  imagePath        String?
+  isAssigned       Boolean            @default(false)
+  classCode        String?            @db.VarChar(45)
+  codeValidUntil   DateTime?
+  isPublic         Boolean            @default(false)
+  isDeleted        Boolean            @default(false)
+  sortIndex        BigInt
+  licenseCode      String?            @db.VarChar(10)
+  owner            users              @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  parentFolder     content?           @relation("folderStructure", fields: [parentFolderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subFolders       content[]          @relation("folderStructure")
+  documents        documents[]
+  license          licenses?          @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  assignmentScores assignmentScores[]
+  promotedContent  promotedContent[]
 
-  @@index([ownerId])
-}
-
-model assignmentDocuments {
-  assignmentId               Int
-  docId                      Int
-  docVersionId               Int
-  assignment                 assignments                  @relation(fields: [assignmentId], references: [assignmentId], onDelete: NoAction, onUpdate: NoAction)
-  documentVersion            documentVersions             @relation(fields: [docId, docVersionId], references: [docId, version], onDelete: NoAction, onUpdate: NoAction)
-  documentState              documentState[]
-  documentSubmittedResponses documentSubmittedResponses[]
-
-  @@id([assignmentId, docId, docVersionId])
-  @@index([assignmentId])
-  @@index([docId, docVersionId])
-}
-
-model assignments {
-  assignmentId        Int                   @id @unique @default(autoincrement())
-  classCode           String?               @db.VarChar(45)
-  codeValidUntil      DateTime?
-  activityId          Int
-  ownerId             Int
-  name                String
-  imagePath           String?
-  createdAt           DateTime              @default(now())
-  isDeleted           Boolean               @default(false)
-  assignmentDocuments assignmentDocuments[]
-  activity            activities            @relation(fields: [activityId], references: [activityId], onDelete: NoAction, onUpdate: NoAction)
-  owner               users                 @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  assignmentScores    assignmentScores[]
-
-  @@index([activityId])
-  @@index([ownerId])
+  @@index([ownerId, parentFolderId, sortIndex])
   @@index([classCode])
-}
-
-model documentVersions {
-  docId               Int
-  version             Int
-  cid                 String
-  name                String
-  activityName        String
-  content             String                @db.MediumText
-  createdAt           DateTime              @default(now())
-  doenetmlVersionId   Int
-  assignmentDocuments assignmentDocuments[]
-  document            documents             @relation(fields: [docId], references: [docId], onDelete: NoAction, onUpdate: NoAction)
-  doenetmlVersion     doenetmlVersions      @relation(fields: [doenetmlVersionId], references: [versionId], onDelete: NoAction, onUpdate: NoAction)
-  contributorHistory  contributorHistory[]
-
-  @@id([docId, version])
-  @@unique([docId, cid])
-  @@index([docId])
+  @@index([parentFolderId, isFolder])
 }
 
 model documents {
-  docId              Int                  @id @unique @default(autoincrement())
+  id                 Int                  @id @unique @default(autoincrement())
   activityId         Int
-  content            String               @db.MediumText
+  source             String               @db.MediumText
   createdAt          DateTime             @default(now())
   lastEdited         DateTime             @default(now())
   name               String
   isDeleted          Boolean              @default(false)
+  assignedVersionNum Int?
   doenetmlVersionId  Int
+  assignedVersion    documentVersions?    @relation("assignedVersion", fields: [id, assignedVersionNum], references: [docId, versionNum], onDelete: NoAction, onUpdate: NoAction)
   documentVersions   documentVersions[]
-  activity           activities           @relation(fields: [activityId], references: [activityId], onDelete: NoAction, onUpdate: NoAction)
-  doenetmlVersion    doenetmlVersions     @relation(fields: [doenetmlVersionId], references: [versionId], onDelete: NoAction, onUpdate: NoAction)
+  activity           content              @relation(fields: [activityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  doenetmlVersion    doenetmlVersions     @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   contributorHistory contributorHistory[]
+
+  @@unique([id, assignedVersionNum]) // needed for the 1-1 relation "assignedVersion" with documentVersions
+}
+
+model documentVersions {
+  docId                      Int
+  versionNum                 Int
+  cid                        String
+  source                     String                       @db.MediumText
+  createdAt                  DateTime                     @default(now())
+  doenetmlVersionId          Int
+  document                   documents                    @relation(fields: [docId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  doenetmlVersion            doenetmlVersions             @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  contributorHistory         contributorHistory[]
+  documentState              documentState[]
+  documentSubmittedResponses documentSubmittedResponses[]
+  assignedDocument           documents?                   @relation("assignedVersion")
+
+  @@id([docId, versionNum])
+  @@unique([docId, cid])
+  @@index([docId])
+}
+
+model licenses {
+  code          String                @id @db.VarChar(10)
+  name          String
+  description   String                @db.Text
+  imageURL      String?
+  smallImageURL String?
+  licenseURL    String?
+  composedOf    licenseCompositions[] @relation("composeOf")
+  includedIn    licenseCompositions[] @relation("includedIn")
+  content       content[]
+  sortIndex     Int
+}
+
+model licenseCompositions {
+  composedOfCode String   @db.VarChar(10)
+  composedOf     licenses @relation("includedIn", fields: [composedOfCode], references: [code])
+  includedInCode String   @db.VarChar(10)
+  includedIn     licenses @relation("composeOf", fields: [includedInCode], references: [code])
+
+  @@id([composedOfCode, includedInCode])
 }
 
 model contributorHistory {
-  docId          Int
-  prevDocId      Int
-  prevDocVersion Int
-  timestamp      DateTime         @default(now())
-  document       documents        @relation(fields: [docId], references: [docId], onDelete: NoAction, onUpdate: NoAction)
-  prevDoc        documentVersions @relation(fields: [prevDocId, prevDocVersion], references: [docId, version], onDelete: NoAction, onUpdate: NoAction)
+  docId             Int
+  prevDocId         Int
+  prevDocVersionNum Int
+  timestamp         DateTime         @default(now())
+  document          documents        @relation(fields: [docId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  prevDoc           documentVersions @relation(fields: [prevDocId, prevDocVersionNum], references: [docId, versionNum], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([docId, prevDocId])
-  @@index([prevDocId, prevDocVersion])
+  @@index([prevDocId, prevDocVersionNum])
 }
 
 model doenetmlVersions {
-  versionId          Int                @id @unique @default(autoincrement())
+  id                 Int                @id @unique @default(autoincrement())
   displayedVersion   String             @unique
   fullVersion        String
   default            Boolean            @default(false)
@@ -116,67 +121,86 @@ model doenetmlVersions {
 }
 
 model assignmentScores {
-  assignmentId  Int
+  activityId    Int
   userId        Int
   score         Float           @default(0)
-  assignment    assignments     @relation(fields: [assignmentId], references: [assignmentId], onDelete: NoAction, onUpdate: NoAction)
+  activity      content         @relation(fields: [activityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user          users           @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   documentState documentState[]
 
-  @@id([assignmentId, userId])
-  @@index([assignmentId])
+  @@id([activityId, userId])
+  @@index([activityId])
   @@index([userId])
 }
 
 model documentState {
-  assignmentId       Int
-  docId              Int
-  docVersionId       Int
-  userId             Int
-  isLatest           Boolean             @default(true)
-  hasMaxScore        Boolean             @default(false)
-  state              String?             @db.MediumText
-  score              Float               @default(0)
-  assignmentScore    assignmentScores    @relation(fields: [assignmentId, userId], references: [assignmentId, userId], onDelete: NoAction, onUpdate: NoAction)
-  assignmentDocument assignmentDocuments @relation(fields: [assignmentId, docId, docVersionId], references: [assignmentId, docId, docVersionId], onDelete: NoAction, onUpdate: NoAction)
-  user               users               @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  activityId      Int
+  docId           Int
+  docVersionNum   Int
+  userId          Int
+  isLatest        Boolean          @default(true)
+  hasMaxScore     Boolean          @default(false)
+  state           String?          @db.MediumText
+  score           Float            @default(0)
+  assignmentScore assignmentScores @relation(fields: [activityId, userId], references: [activityId, userId], onDelete: NoAction, onUpdate: NoAction)
+  documentVersion documentVersions @relation(fields: [docId, docVersionNum], references: [docId, versionNum], onDelete: NoAction, onUpdate: NoAction)
+  user            users            @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
-  @@id([assignmentId, docId, docVersionId, userId, isLatest])
-  @@unique([assignmentId, docId, docVersionId, userId, hasMaxScore])
-  @@index([assignmentId, docId, docVersionId])
+  @@id([activityId, docId, docVersionNum, userId, isLatest])
+  @@unique([activityId, docId, docVersionNum, userId, hasMaxScore])
+  @@index([activityId, docId, docVersionNum])
   @@index([userId])
 }
 
 model documentSubmittedResponses {
-  id                     Int                 @id @default(autoincrement())
-  assignmentId           Int
+  id                     Int              @id @default(autoincrement())
+  activityId             Int
   docId                  Int
-  docVersionId           Int
+  docVersionNum          Int
   userId                 Int
   answerId               String
-  response               String              @db.Text
+  response               String           @db.Text
   answerNumber           Int?
   itemNumber             Int
   creditAchieved         Float
   itemCreditAchieved     Float
   documentCreditAchieved Float
-  submittedAt            DateTime            @default(now())
-  assignmentDocument     assignmentDocuments @relation(fields: [assignmentId, docId, docVersionId], references: [assignmentId, docId, docVersionId], onDelete: NoAction, onUpdate: NoAction)
-  user                   users               @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  submittedAt            DateTime         @default(now())
+  documentVersion        documentVersions @relation(fields: [docId, docVersionNum], references: [docId, versionNum], onDelete: NoAction, onUpdate: NoAction)
+  user                   users            @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
-  @@index([assignmentId, docId, docVersionId, answerId])
+  @@index([activityId, docId, docVersionNum, answerId])
   @@index([userId])
 }
 
 model users {
   userId                     Int                          @id @default(autoincrement())
   email                      String                       @unique @db.VarChar(45)
-  name                       String
+  firstNames                 String?
+  lastNames                  String
   isAdmin                    Boolean                      @default(false)
   anonymous                  Boolean                      @default(false)
-  activities                 activities[]
-  assignments                assignments[]
+  content                    content[]
   assignmentScores           assignmentScores[]
   documentState              documentState[]
   documentSubmittedResponses documentSubmittedResponses[]
+}
+
+model promotedContentGroups {
+  promotedGroupId   Int               @id @default(autoincrement())
+  groupName         String            @unique
+  currentlyFeatured Boolean           @default(false)
+  homepage          Boolean           @default(false)
+  sortIndex         BigInt
+  promotedContent   promotedContent[]
+}
+
+model promotedContent {
+  activityId      Int
+  promotedGroupId Int
+  sortIndex       BigInt
+  activity        content               @relation(fields: [activityId], references: [id])
+  promotedGroup   promotedContentGroups @relation(fields: [promotedGroupId], references: [promotedGroupId])
+
+  @@id([activityId, promotedGroupId])
 }

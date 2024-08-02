@@ -1,13 +1,13 @@
 import React from "react";
 
-import "@doenet/doenetml/style.css";
-
 import {
   createBrowserRouter,
   redirect,
   RouterProvider,
 } from "react-router-dom";
 import { createRoot } from "react-dom/client";
+
+import "@doenet/doenetml-iframe/style.css";
 
 import { MathJaxContext } from "better-react-mathjax";
 import {
@@ -31,32 +31,24 @@ import {
 } from "./Tools/_framework/Paths/Home";
 
 import {
-  loader as portfolioLoader,
-  action as portfolioAction,
-  Portfolio,
-} from "./Tools/_framework/Paths/Portfolio";
+  loader as activitiesLoader,
+  action as activitiesAction,
+  Activities,
+} from "./Tools/_framework/Paths/Activities";
 import {
-  loader as publicPortfolioLoader,
-  PublicPortfolio,
-} from "./Tools/_framework/Paths/PublicPortfolio";
+  loader as publicActivitiesLoader,
+  PublicActivities,
+} from "./Tools/_framework/Paths/PublicActivities";
 import {
   loader as activityViewerLoader,
-  action as activityViewerAction,
   ActivityViewer,
 } from "./Tools/_framework/Paths/ActivityViewer";
 import {
-  loader as assignmentsLoader,
-  action as assignmentsAction,
-  Assignments,
-} from "./Tools/_framework/Paths/Assignments";
-import {
-  loader as assignmentEditorLoader,
-  action as assignmentEditorAction,
-  AssignmentEditor,
-} from "./Tools/_framework/Paths/AssignmentEditor";
+  loader as assignedLoader,
+  Assigned,
+} from "./Tools/_framework/Paths/Assigned";
 import {
   loader as assignmentDataLoader,
-  action as assignmentDataAction,
   AssignmentData,
 } from "./Tools/_framework/Paths/AssignmentData";
 import {
@@ -73,6 +65,7 @@ import {
   loader as assignmentStudentDataLoader,
   action as assignmentStudentDataAction,
   AssignmentStudentData,
+  assignedAssignmentDataloader,
 } from "./Tools/_framework/Paths/AssignmentStudentData";
 import {
   loader as enterClassCodeLoader,
@@ -84,6 +77,15 @@ import {
   action as assignmentViewerAction,
   AssignmentViewer,
 } from "./Tools/_framework/Paths/AssignmentViewer";
+import {
+  loader as allAssignmentScoresLoader,
+  AllAssignmentScores,
+} from "./Tools/_framework/Paths/AllAssignmentScores";
+import {
+  loader as studentDataLoader,
+  StudentData,
+  assignedDataloader,
+} from "./Tools/_framework/Paths/StudentData";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 import ErrorPage from "./Tools/_framework/Paths/ErrorPage";
@@ -98,7 +100,7 @@ import {
   PublicEditor,
   loader as publicEditorLoader,
 } from "./Tools/_framework/Paths/PublicEditor";
-import { mathjaxConfig } from "@doenet/doenetml";
+import { mathjaxConfig } from "@doenet/doenetml-iframe";
 import SignIn from "./Tools/_framework/ToolPanels/SignIn";
 import SignOut from "./Tools/_framework/ToolPanels/SignOut";
 
@@ -219,22 +221,34 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "portfolio/:userId",
-        loader: portfolioLoader,
-        action: portfolioAction,
-        element: <Portfolio />,
+        path: "activities/:userId",
+        loader: activitiesLoader,
+        action: activitiesAction,
+        element: <Activities />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "publicPortfolio/:userId",
-        loader: publicPortfolioLoader,
+        path: "activities/:userId/:folderId",
+        loader: activitiesLoader,
+        action: activitiesAction,
+        element: <Activities />,
         errorElement: <ErrorPage />,
-        element: <PublicPortfolio />,
+      },
+      {
+        path: "publicActivities/:ownerId",
+        loader: publicActivitiesLoader,
+        element: <PublicActivities />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "publicActivities/:ownerId/:folderId",
+        loader: publicActivitiesLoader,
+        element: <PublicActivities />,
+        errorElement: <ErrorPage />,
       },
       {
         path: "activityViewer/:activityId",
         loader: activityViewerLoader,
-        action: activityViewerAction,
         errorElement: <ErrorPage />,
         element: <ActivityViewer />,
       },
@@ -272,56 +286,84 @@ const router = createBrowserRouter([
         element: <PublicEditor />,
       },
       {
-        path: "assignments",
-        loader: assignmentsLoader,
-        action: assignmentsAction,
-        element: <Assignments />,
+        path: "assigned",
+        loader: assignedLoader,
+        element: <Assigned />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentEditor/:assignmentId",
-        loader: assignmentEditorLoader,
-        action: assignmentEditorAction,
-        element: <AssignmentEditor />,
+        path: "assignedData",
+        loader: assignedDataloader,
+        element: <StudentData />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentData/:assignmentId",
+        path: "assignedData/:activityId",
+        action: assignmentStudentDataAction,
+        loader: assignedAssignmentDataloader,
+        element: <AssignmentStudentData />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "assignmentData/:activityId",
         loader: assignmentDataLoader,
-        action: assignmentDataAction,
         element: <AssignmentData />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentAnswerResponses/:assignmentId/:docId/:docVersionId",
+        path: "assignmentAnswerResponses/:activityId/:docId/:docVersionNum",
         loader: assignmentAnswerResponsesLoader,
         action: assignmentAnswerResponsesAction,
         element: <AssignmentAnswerResponses />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentAnswerResponseHistory/:assignmentId/:docId/:docVersionId/:userId",
+        path: "assignmentAnswerResponseHistory/:activityId/:docId/:docVersionNum/:userId",
         loader: assignmentAnswerResponseHistoryLoader,
         action: assignmentAnswerResponseHistoryAction,
         element: <AssignmentAnswerResponseHistory />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentData/:assignmentId/:userId",
-        loader: assignmentStudentDataLoader,
+        path: "assignmentData/:activityId/:userId",
         action: assignmentStudentDataAction,
+        loader: assignmentStudentDataLoader,
         element: <AssignmentStudentData />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "classCode",
+        path: "allAssignmentScores",
+        loader: allAssignmentScoresLoader,
+        element: <AllAssignmentScores />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "allAssignmentScores/:folderId",
+        loader: allAssignmentScoresLoader,
+        element: <AllAssignmentScores />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "studentData/:userId",
+        loader: studentDataLoader,
+        element: <StudentData />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "studentData/:userId/:folderId",
+        loader: studentDataLoader,
+        element: <StudentData />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "code",
         loader: enterClassCodeLoader,
         action: enterClassCodeAction,
         element: <EnterClassCode />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "classCode/:classCode",
+        path: "code/:classCode",
         loader: assignmentViewerLoader,
         action: assignmentViewerAction,
         element: <AssignmentViewer />,

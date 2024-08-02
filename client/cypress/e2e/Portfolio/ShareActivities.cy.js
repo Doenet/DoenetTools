@@ -1,7 +1,6 @@
-
 import { cesc2 } from "../../../src/_utils/url";
 
-describe("Share Activities Using Portfolio", function () {
+describe("Share Activities Using Activities Page", function () {
   const userId = "cyuserId";
   const userId2 = "cyuserId2";
 
@@ -143,12 +142,12 @@ describe("Share Activities Using Portfolio", function () {
     cy.get('[data-test="contributors menu"]').click();
     cy.get('[data-test="contributors menu item 0"]').click({ force: true });
     cy.get('[data-test="heading1"]').contains(user1FullName);
-    cy.get('[data-test="heading2"]').contains("User Portfolio");
+    cy.get('[data-test="heading2"]').contains("User Activities");
     cy.go("back");
 
     cy.get('[data-test="Remix Button"]').click();
 
-    cy.log("label the third activity and examine public portfolio info");
+    cy.log("label the third activity and examine public activities info");
 
     cy.get('[data-test="Controls Button"]').click();
 
@@ -180,20 +179,20 @@ describe("Share Activities Using Portfolio", function () {
     cy.get('[data-test="contributors menu"]').click();
     cy.get('[data-test="contributors menu item 1"]').click({ force: true });
     cy.get('[data-test="heading1"]').contains(user1FullName);
-    cy.get('[data-test="heading2"]').contains("User Portfolio");
+    cy.get('[data-test="heading2"]').contains("User Activities");
     cy.go("back");
 
     cy.get('[data-test="contributors menu"]').click();
     cy.get('[data-test="contributors menu item 0"]').click({ force: true });
     cy.get('[data-test="heading1"]').contains(user2FullName);
-    cy.get('[data-test="heading2"]').contains("User Portfolio");
+    cy.get('[data-test="heading2"]').contains("User Activities");
   });
 
-  it("Portfolio Settings Menu", () => {
-    const label = "ShareActivites Portfolio Settings Menu";
-    cy.deletePortfolioActivity({ userId, label });
+  it("Activities Settings Menu", () => {
+    const label = "ShareActivites Activities Settings Menu";
+    cy.deleteActivity({ userId, label });
 
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
 
     cy.log("Create an activity");
     cy.get('[data-test="Add Activity"]').click();
@@ -209,7 +208,7 @@ describe("Share Activities Using Portfolio", function () {
       .type(label)
       .blur();
 
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
 
     cy.get('[data-test="Private Activities"]').contains(label);
     cy.get('[data-test="Public Activities"]').should("not.contain", label);
@@ -251,7 +250,7 @@ describe("Share Activities Using Portfolio", function () {
     cy.clearAllOfAUsersActivities({ userId: user1 });
     cy.clearAllOfAUsersActivities({ userId: user2 });
 
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
 
     cy.get(
       '[data-test="Public Activities"] [data-test="Activity Card"]',
@@ -267,7 +266,7 @@ describe("Share Activities Using Portfolio", function () {
       `<p>What is your name? <textinput name="name" /></p>{enter}`,
     );
     cy.get('[data-test="Viewer Update Button"]').click();
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
 
     cy.get(
       '[data-test="Private Activities"] [data-test="Activity Card"]',
@@ -295,7 +294,7 @@ describe("Share Activities Using Portfolio", function () {
 
     cy.get(cesc2("#/_p2")).should("have.text", "Hello, !");
 
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
 
     cy.get(
       '[data-test="Private Activities"] [data-test="Activity Card"]',
@@ -343,7 +342,7 @@ describe("Share Activities Using Portfolio", function () {
     cy.get('[data-test="Viewer Update Button"]').click();
     cy.get(cesc2("#/draft")).should("have.text", "Draft content");
 
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
 
     cy.log("Create a private activity");
     cy.get('[data-test="Add Activity"]').click();
@@ -359,7 +358,7 @@ describe("Share Activities Using Portfolio", function () {
       .blur();
     cy.get(".chakra-modal__close-btn").click();
 
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
 
     cy.get(
       '[data-test="Private Activities"] [data-test="Activity Card"]',
@@ -437,8 +436,8 @@ describe("Share Activities Using Portfolio", function () {
     cy.get('[data-test="Viewer Update Button"]').click();
     cy.get(cesc2("#/actual_change")).should("have.text", "Actual change");
 
-    cy.log("Find activity in portfolio");
-    cy.get('[data-test="Portfolio"]').click();
+    cy.log("Find activity in Activities");
+    cy.get('[data-test="Activities"]').click();
 
     cy.get(
       '[data-test="Public Activities"] [data-test="Activity Card"]',
@@ -465,7 +464,7 @@ describe("Share Activities Using Portfolio", function () {
     cy.visit(`/`);
 
     cy.log("Verify activity is unchanged with draft content");
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
     cy.get('[data-test="Public Activities"] [data-test="Card Image Link"] ')
       .eq(0)
       .click();
@@ -516,8 +515,8 @@ describe("Share Activities Using Portfolio", function () {
     cy.get('[data-test="Viewer Update Button"]').click();
     cy.get(cesc2("#/change2")).should("have.text", "New change");
 
-    cy.log("Find both activities in portfolio");
-    cy.get('[data-test="Portfolio"]').click();
+    cy.log("Find both activities in Activities");
+    cy.get('[data-test="Activities"]').click();
 
     cy.get(
       '[data-test="Public Activities"] [data-test="Activity Card"]',
@@ -538,7 +537,7 @@ describe("Share Activities Using Portfolio", function () {
     cy.get(cesc2("#/change2")).should("have.text", "New change");
 
     cy.log("View the first remixed activity");
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
 
     cy.get('[data-test="Private Activities"] [data-test="Card Image Link"] ')
       .eq(1)
@@ -551,11 +550,11 @@ describe("Share Activities Using Portfolio", function () {
     cy.get(cesc2("#/change2")).should("not.exist");
   });
 
-  it("View solution in portfolio", () => {
-    const label = "View solution in portfolio";
-    cy.deletePortfolioActivity({ userId, label });
+  it("View solution in Activities", () => {
+    const label = "View solution in Activities";
+    cy.deleteActivity({ userId, label });
 
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
 
     cy.log("Create an activity with a solution");
     cy.get('[data-test="Add Activity"]').click();
@@ -586,7 +585,7 @@ describe("Share Activities Using Portfolio", function () {
     cy.get(cesc2("#/sol_button")).click();
     cy.get(cesc2("#/ans")).should("not.exist");
 
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
 
     cy.get('[data-test="Private Activities"]')
       .contains(label)
@@ -629,13 +628,13 @@ describe("Share Activities Using Portfolio", function () {
     cy.get(cesc2("#/ans")).should("not.exist");
   });
 
-  it("Links in portfolios", () => {
-    const label1 = "Links in portfolios: linking page";
-    const label2 = "Links in portfolios: linked page";
-    cy.deletePortfolioActivity({ userId, label: label1 });
-    cy.deletePortfolioActivity({ userId, label: label2 });
+  it("Links in Activities", () => {
+    const label1 = "Links in Activities: linking page";
+    const label2 = "Links in Activities: linked page";
+    cy.deleteActivity({ userId, label: label1 });
+    cy.deleteActivity({ userId, label: label2 });
 
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
 
     cy.log("Create an activity that will be linked to");
     cy.get('[data-test="Add Activity"]').click();
@@ -645,7 +644,7 @@ describe("Share Activities Using Portfolio", function () {
     let linkedDoenetId;
 
     cy.url().then((url) => {
-      linkedDoenetId = url.match(/portfolioeditor\/(\w*)/)[1];
+      linkedDoenetId = url.match(/activitieseditor\/(\w*)/)[1];
     });
 
     cy.get(
@@ -655,7 +654,7 @@ describe("Share Activities Using Portfolio", function () {
       .type(label2)
       .blur();
 
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
 
     cy.get('[data-test="Private Activities"]')
       .contains(label2)
@@ -690,18 +689,18 @@ describe("Share Activities Using Portfolio", function () {
     cy.get('[data-test="Viewer Update Button"]').click();
 
     cy.get(cesc2("#/toDoc")).invoke("removeAttr", "target").click();
-    cy.url().should("contain", "portfolioviewer");
+    cy.url().should("contain", "activitiesviewer");
     cy.get(cesc2("#/theP")).should("have.text", "Link to this page!");
 
     cy.go("back");
 
     cy.get(cesc2("#/toDocEdit")).invoke("removeAttr", "target").click();
-    cy.url().should("contain", "portfolioeditor");
+    cy.url().should("contain", "activitieseditor");
     cy.get(cesc2("#/theP")).should("have.text", "Link to this page!");
 
     cy.go("back");
 
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
 
     cy.get('[data-test="Private Activities"]')
       .contains(label1)
@@ -724,13 +723,13 @@ describe("Share Activities Using Portfolio", function () {
       .click();
 
     cy.get(cesc2("#/toDoc")).invoke("removeAttr", "target").click();
-    cy.url().should("contain", "portfolioviewer");
+    cy.url().should("contain", "activitiesviewer");
     cy.get(cesc2("#/theP")).should("have.text", "Link to this page!");
 
     cy.go("back");
 
     cy.get(cesc2("#/toDocEdit")).invoke("removeAttr", "target").click();
-    cy.url().should("contain", "portfolioeditor");
+    cy.url().should("contain", "activitieseditor");
     cy.get(cesc2("#/theP")).should("have.text", "Link to this page!");
 
     cy.log("Log on as other user");
@@ -749,7 +748,7 @@ describe("Share Activities Using Portfolio", function () {
       .click();
 
     cy.get(cesc2("#/toDoc")).invoke("removeAttr", "target").click();
-    cy.url().should("contain", "portfolioviewer");
+    cy.url().should("contain", "activitiesviewer");
     cy.get(cesc2("#/theP")).should("have.text", "Link to this page!");
 
     cy.go("back");
