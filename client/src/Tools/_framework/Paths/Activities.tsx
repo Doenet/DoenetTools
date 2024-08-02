@@ -516,6 +516,7 @@ export function Activities() {
         id={moveToFolderContent.id}
         isPublic={moveToFolderContent.isPublic}
         licenseCode={moveToFolderContent.licenseCode}
+        userId={userId}
         currentParentId={folderId}
         finalFocusRef={finalFocusRef}
       />
@@ -533,6 +534,58 @@ export function Activities() {
           </Heading>
         </Tooltip>
         <Flex float="right">
+          <Flex>
+            <Form>
+              <Input
+                type="search"
+                hidden={!searchOpen}
+                size="xs"
+                margin="3px"
+                width="250px"
+                ref={searchRef}
+                placeholder={
+                  folder ? `Search in folder` : `Search my activities`
+                }
+                value={searchString}
+                name="q"
+                onInput={(e) => {
+                  setSearchString((e.target as HTMLInputElement).value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key == "Enter") {
+                  }
+                }}
+                onBlur={() => {
+                  searchBlurTimeout.current = setTimeout(() => {
+                    setSearchOpen(false);
+                  }, 200);
+                }}
+              />
+              <Tooltip
+                label={folder ? `Search in folder` : `Search my activities`}
+                placement="bottom-end"
+              >
+                <IconButton
+                  size="xs"
+                  margin="3px"
+                  icon={<MdOutlineSearch />}
+                  aria-label={
+                    folder ? `Search in folder` : `Search my activities`
+                  }
+                  type="submit"
+                  onClick={(e) => {
+                    if (searchOpen) {
+                      clearTimeout(searchBlurTimeout.current);
+                      searchRef.current?.focus();
+                    } else {
+                      setSearchOpen(true);
+                      e.preventDefault();
+                    }
+                  }}
+                />
+              </Tooltip>
+            </Form>
+          </Flex>
           <Menu>
             <MenuButton
               as={Button}
@@ -597,58 +650,6 @@ export function Activities() {
           >
             See Scores
           </Button>
-          <Flex>
-            <Form>
-              <Input
-                type="search"
-                hidden={!searchOpen}
-                size="xs"
-                margin="3px"
-                width="250px"
-                ref={searchRef}
-                placeholder={
-                  folder ? `Search in folder` : `Search my activities`
-                }
-                value={searchString}
-                name="q"
-                onInput={(e) => {
-                  setSearchString((e.target as HTMLInputElement).value);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key == "Enter") {
-                  }
-                }}
-                onBlur={() => {
-                  searchBlurTimeout.current = setTimeout(() => {
-                    setSearchOpen(false);
-                  }, 200);
-                }}
-              />
-              <Tooltip
-                label={folder ? `Search in folder` : `Search my activities`}
-                placement="bottom-end"
-              >
-                <IconButton
-                  size="xs"
-                  margin="3px"
-                  icon={<MdOutlineSearch />}
-                  aria-label={
-                    folder ? `Search in folder` : `Search my activities`
-                  }
-                  type="submit"
-                  onClick={(e) => {
-                    if (searchOpen) {
-                      clearTimeout(searchBlurTimeout.current);
-                      searchRef.current?.focus();
-                    } else {
-                      setSearchOpen(true);
-                      e.preventDefault();
-                    }
-                  }}
-                />
-              </Tooltip>
-            </Form>
-          </Flex>
         </Flex>
       </Box>
       {folder && !haveQuery ? (
