@@ -990,7 +990,7 @@ export async function getActivityEditorData(
 export async function getPublicEditorData(activityId: number) {
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
 
-  let activity = await prisma.content.findUniqueOrThrow({
+  const preliminaryActivity = await prisma.content.findUniqueOrThrow({
     where: {
       id: activityId,
       isDeleted: false,
@@ -998,6 +998,9 @@ export async function getPublicEditorData(activityId: number) {
       isPublic: true,
     },
     select: {
+      id: true,
+      isFolder: true,
+      ownerId: true,
       name: true,
       imagePath: true,
       documents: {
@@ -1010,8 +1013,29 @@ export async function getPublicEditorData(activityId: number) {
         // TODO: implement ability to allow users to order the documents within an activity
         orderBy: { id: "asc" },
       },
+      license: {
+        include: {
+          composedOf: {
+            select: { composedOf: true },
+            orderBy: { composedOf: { sortIndex: "asc" } },
+          },
+        },
+      },
+      parentFolder: { select: { id: true, name: true, isPublic: true } },
     },
   });
+
+  let activity: ContentStructure = {
+    ...preliminaryActivity,
+    isPublic: true,
+    license: preliminaryActivity.license
+      ? processLicense(preliminaryActivity.license)
+      : null,
+    classCode: null,
+    codeValidUntil: null,
+    assignmentStatus: "Unassigned",
+    hasScoreData: false,
+  };
 
   return activity;
 }

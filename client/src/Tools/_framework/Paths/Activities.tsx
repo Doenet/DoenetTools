@@ -42,6 +42,7 @@ import {
 } from "./ActivityEditor";
 import { DateTime } from "luxon";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
+import { AssignmentSettingsDrawer } from "../ToolPanels/AssignmentSettingsDrawer";
 
 // what is a better solution than this?
 let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching id
@@ -132,9 +133,14 @@ export async function action({ request, params }) {
     });
     return true;
   } else if (formObj._action == "open assignment") {
-    const closeAt = DateTime.fromSeconds(
-      Math.round(DateTime.now().toSeconds() / 60) * 60,
-    ).plus(JSON.parse(formObj.duration));
+    let closeAt: DateTime;
+    if (formObj.duration === "custom") {
+      closeAt = DateTime.fromISO(formObj.customCloseAt);
+    } else {
+      closeAt = DateTime.fromSeconds(
+        Math.round(DateTime.now().toSeconds() / 60) * 60,
+      ).plus(JSON.parse(formObj.duration));
+    }
     await axios.post("/api/openAssignmentWithCode", {
       activityId: Number(formObj.activityId),
       closeAt,
@@ -256,6 +262,12 @@ export function Activities() {
     onClose: settingsOnClose,
   } = useDisclosure();
 
+  const {
+    isOpen: assignmentSettingsAreOpen,
+    onOpen: assignmentSettingsOnOpen,
+    onClose: assignmentSettingsOnClose,
+  } = useDisclosure();
+
   const contentCardRefs = useRef(new Array());
   const folderSettingsRef = useRef(null);
   const finalFocusRef = useRef(null);
@@ -287,7 +299,7 @@ export function Activities() {
   } = useDisclosure();
 
   const [displaySettingsTab, setSettingsDisplayTab] = useState<
-    "general" | "share" | "assignment"
+    "general" | "share"
   >("general");
 
   useEffect(() => {
@@ -400,8 +412,7 @@ export function Activities() {
             data-test="Assign Activity Menu Item"
             onClick={() => {
               setSettingsContentId(id);
-              setSettingsDisplayTab("assignment");
-              settingsOnOpen();
+              assignmentSettingsOnOpen();
             }}
           >
             {assignmentStatus === "Unassigned"
@@ -469,7 +480,7 @@ export function Activities() {
     }
   }
 
-  let settings_drawer =
+  let settingsDrawer =
     contentData && settingsContentId ? (
       <ContentSettingsDrawer
         isOpen={settingsAreOpen}
@@ -483,10 +494,21 @@ export function Activities() {
         displayTab={displaySettingsTab}
       />
     ) : null;
-
+  let assignmentDrawer =
+    contentData && settingsContentId ? (
+      <AssignmentSettingsDrawer
+        isOpen={assignmentSettingsAreOpen}
+        onClose={assignmentSettingsOnClose}
+        id={settingsContentId}
+        contentData={contentData}
+        finalFocusRef={finalFocusRef}
+        fetcher={fetcher}
+      />
+    ) : null;
   return (
     <>
-      {settings_drawer}
+      {settingsDrawer}
+      {assignmentDrawer}
 
       <MoveContentToFolder
         isOpen={moveToFolderIsOpen}
@@ -494,6 +516,7 @@ export function Activities() {
         id={moveToFolderContent.id}
         isPublic={moveToFolderContent.isPublic}
         licenseCode={moveToFolderContent.licenseCode}
+        userId={userId}
         currentParentId={folderId}
         finalFocusRef={finalFocusRef}
       />
@@ -511,6 +534,58 @@ export function Activities() {
           </Heading>
         </Tooltip>
         <Flex float="right">
+          <Flex>
+            <Form>
+              <Input
+                type="search"
+                hidden={!searchOpen}
+                size="xs"
+                margin="3px"
+                width="250px"
+                ref={searchRef}
+                placeholder={
+                  folder ? `Search in folder` : `Search my activities`
+                }
+                value={searchString}
+                name="q"
+                onInput={(e) => {
+                  setSearchString((e.target as HTMLInputElement).value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key == "Enter") {
+                  }
+                }}
+                onBlur={() => {
+                  searchBlurTimeout.current = setTimeout(() => {
+                    setSearchOpen(false);
+                  }, 200);
+                }}
+              />
+              <Tooltip
+                label={folder ? `Search in folder` : `Search my activities`}
+                placement="bottom-end"
+              >
+                <IconButton
+                  size="xs"
+                  margin="3px"
+                  icon={<MdOutlineSearch />}
+                  aria-label={
+                    folder ? `Search in folder` : `Search my activities`
+                  }
+                  type="submit"
+                  onClick={(e) => {
+                    if (searchOpen) {
+                      clearTimeout(searchBlurTimeout.current);
+                      searchRef.current?.focus();
+                    } else {
+                      setSearchOpen(true);
+                      e.preventDefault();
+                    }
+                  }}
+                />
+              </Tooltip>
+            </Form>
+          </Flex>
           <Menu>
             <MenuButton
               as={Button}
@@ -575,58 +650,6 @@ export function Activities() {
           >
             See Scores
           </Button>
-          <Flex>
-            <Form>
-              <Input
-                type="search"
-                hidden={!searchOpen}
-                size="xs"
-                margin="3px"
-                width="250px"
-                ref={searchRef}
-                placeholder={
-                  folder ? `Search in folder` : `Search my activities`
-                }
-                value={searchString}
-                name="q"
-                onInput={(e) => {
-                  setSearchString((e.target as HTMLInputElement).value);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key == "Enter") {
-                  }
-                }}
-                onBlur={() => {
-                  searchBlurTimeout.current = setTimeout(() => {
-                    setSearchOpen(false);
-                  }, 200);
-                }}
-              />
-              <Tooltip
-                label={folder ? `Search in folder` : `Search my activities`}
-                placement="bottom-end"
-              >
-                <IconButton
-                  size="xs"
-                  margin="3px"
-                  icon={<MdOutlineSearch />}
-                  aria-label={
-                    folder ? `Search in folder` : `Search my activities`
-                  }
-                  type="submit"
-                  onClick={(e) => {
-                    if (searchOpen) {
-                      clearTimeout(searchBlurTimeout.current);
-                      searchRef.current?.focus();
-                    } else {
-                      setSearchOpen(true);
-                      e.preventDefault();
-                    }
-                  }}
-                />
-              </Tooltip>
-            </Form>
-          </Flex>
         </Flex>
       </Box>
       {folder && !haveQuery ? (

@@ -959,7 +959,7 @@ app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
     desiredParentFolderId,
   );
 
-  res.send({ newActivityId });
+  res.send({ newActivityId, userId: loggedInUserId });
 });
 
 app.post("/api/assignActivity", async (req: Request, res: Response) => {
