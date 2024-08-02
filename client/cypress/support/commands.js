@@ -26,7 +26,6 @@
 
 import "cypress-wait-until";
 import "cypress-file-upload";
-import { clear as idb_clear } from "idb-keyval";
 
 Cypress.Commands.add(
   "createUserRole",
@@ -142,25 +141,28 @@ Cypress.Commands.add("clearCoursePeople", ({ courseId }) => {
   // })
 });
 
-Cypress.Commands.add("createCourse", ({ userId, courseId, studentUserId, label }) => {
-  cy.request("POST", `/cyapi/cypressCreateCourse.php`, {
-    userId,
-    courseId,
-    studentUserId,
-    label
-  });
-  // .then((resp)=>{
-  //   cy.log(resp.body)
-  // })
-});
+Cypress.Commands.add(
+  "createCourse",
+  ({ userId, courseId, studentUserId, label }) => {
+    cy.request("POST", `/cyapi/cypressCreateCourse.php`, {
+      userId,
+      courseId,
+      studentUserId,
+      label,
+    });
+    // .then((resp)=>{
+    //   cy.log(resp.body)
+    // })
+  },
+);
 
-Cypress.Commands.add('assertValueCopiedToClipboard', value => {
-  cy.window().then(win => {
-    win.navigator.clipboard.readText().then(text => {
-      expect(text).to.eq(value)
-    })
-  })
-})
+Cypress.Commands.add("assertValueCopiedToClipboard", (value) => {
+  cy.window().then((win) => {
+    win.navigator.clipboard.readText().then((text) => {
+      expect(text).to.eq(value);
+    });
+  });
+});
 
 Cypress.Commands.add("deleteCourseDBRows", ({ courseId }) => {
   cy.task(
@@ -169,7 +171,7 @@ Cypress.Commands.add("deleteCourseDBRows", ({ courseId }) => {
     DELETE FROM course_user 
     WHERE courseId="${courseId}"
     `,
-  )
+  );
   cy.task(
     "queryDb",
     `
@@ -183,14 +185,14 @@ Cypress.Commands.add("deleteCourseDBRows", ({ courseId }) => {
     DELETE FROM course_role 
     WHERE courseId="${courseId}"
     `,
-  )
+  );
   cy.task(
     "queryDb",
     `
     DELETE FROM course 
     WHERE courseId="${courseId}"
     `,
-  )
+  );
 });
 
 Cypress.Commands.add("deleteCourse", ({ label, courseId }) => {
@@ -213,35 +215,38 @@ Cypress.Commands.add("deleteCourse", ({ label, courseId }) => {
     `,
     );
   }
-
-
 });
 
-Cypress.Commands.add(
-  "deletePortfolioActivity",
-  ({ userId, label }) => {
-    cy.task(
-      "queryDb",
-      `DELETE
+Cypress.Commands.add("deleteActivity", ({ userId, label }) => {
+  cy.task(
+    "queryDb",
+    `DELETE
       FROM course_content 
       WHERE label = '${label}'
       `,
-    );
-    // cy.task(
-    //   "queryDb",
-    //   `DELETE cc
-    //   FROM course_content AS cc
-    //   LEFT JOIN course AS c
-    //   ON cc.courseId = c.courseId
-    //   WHERE cc.label = '${label}'
-    //   AND c.portfolioCourseForUserId = '${userId}'
-    //   `,
-    // );
-  });
+  );
+  // cy.task(
+  //   "queryDb",
+  //   `DELETE cc
+  //   FROM course_content AS cc
+  //   LEFT JOIN course AS c
+  //   ON cc.courseId = c.courseId
+  //   WHERE cc.label = '${label}'
+  //   AND c.portfolioCourseForUserId = '${userId}'
+  //   `,
+  // );
+});
 
 Cypress.Commands.add(
   "createActivity",
-  ({ courseId, doenetId, parentDoenetId, pageDoenetId, doenetML = "", label = "Cypress Activity" }) => {
+  ({
+    courseId,
+    doenetId,
+    parentDoenetId,
+    pageDoenetId,
+    doenetML = "",
+    label = "Cypress Activity",
+  }) => {
     cy.request("POST", `/cyapi/cypressCreateActivity.php`, {
       courseId,
       doenetId,
@@ -313,7 +318,3 @@ Cypress.Commands.add(
     // })
   },
 );
-
-Cypress.Commands.add("clearIndexedDB", () => {
-  return idb_clear();
-});

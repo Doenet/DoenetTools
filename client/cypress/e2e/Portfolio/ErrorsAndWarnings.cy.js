@@ -18,11 +18,11 @@ describe("Porfolio Errors and Warnings ", function () {
     return false;
   });
 
-  it("Errors and Warnings in Portfolio Editor", () => {
+  it("Errors and Warnings in Activities Editor", () => {
     const label = "Errors Warnings PE";
-    cy.deletePortfolioActivity({ userId, label });
+    cy.deleteActivity({ userId, label });
 
-    cy.get('[data-test="Portfolio"]').click();
+    cy.get('[data-test="Activities"]').click();
 
     cy.log("Create an activity");
     cy.get('[data-test="Add Activity"]').click();

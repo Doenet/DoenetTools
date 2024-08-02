@@ -6,7 +6,6 @@ describe("Public activity tests", function () {
   const userId = "cyuserId";
   // const userId = "devuserId";
 
-
   const headerPixels = 40;
 
   before(() => {
@@ -38,10 +37,9 @@ describe("Public activity tests", function () {
     const doenetId = "tpuactivity1id";
     const pageDoenetId = "_tpupage1id";
 
-    cy.deleteCourseDBRows({ courseId })
+    cy.deleteCourseDBRows({ courseId });
 
     cy.createCourse({ userId, courseId, label: courseLabel });
-
 
     cy.createActivity({
       courseId,
@@ -49,7 +47,7 @@ describe("Public activity tests", function () {
       parentDoenetId: courseId,
       pageDoenetId,
       doenetML,
-      label
+      label,
     });
 
     cy.visit(`/course?tool=navigation&courseId=${courseId}`);
@@ -66,11 +64,16 @@ describe("Public activity tests", function () {
     cy.get('[data-test="Main Panel"]').should("contain.text", "not found");
 
     cy.visit(`/publiceditor/${doenetId}/${pageDoenetId}`);
-    cy.get('[data-test="Error Message"]').should("contain.text", "Activity not public");
+    cy.get('[data-test="Error Message"]').should(
+      "contain.text",
+      "Activity not public",
+    );
 
     cy.visit(`/publiceditor/${doenetId}/${pageDoenetId}`);
-    cy.get('[data-test="Error Message"]').should("contain.text", "Activity not public");
-
+    cy.get('[data-test="Error Message"]').should(
+      "contain.text",
+      "Activity not public",
+    );
 
     cy.log("make publicly visible");
     cy.visit(`/course?tool=navigation&courseId=${courseId}`);
@@ -78,8 +81,8 @@ describe("Public activity tests", function () {
     cy.get('[data-test="Make Publicly Visible"]').click();
     cy.wait(1000);
 
-    cy.log(`Search for "${label}"`)
-    cy.visit(`community?q=${label}`)
+    cy.log(`Search for "${label}"`);
+    cy.visit(`community?q=${label}`);
 
     cy.get('[data-test="Results All Matches"]')
       .contains(label)
@@ -101,9 +104,7 @@ describe("Public activity tests", function () {
 
     cy.title().should("contain", label);
 
-    cy.get(".cm-content").type(
-      "{moveToEnd}<p>A new paragraph</p>{enter}",
-    );
+    cy.get(".cm-content").type("{moveToEnd}<p>A new paragraph</p>{enter}");
 
     cy.get('[data-test="Viewer Update Button"]').click();
 
@@ -132,9 +133,9 @@ describe("Public activity tests", function () {
     const doenetId = "rssactivity1id";
     const pageDoenetId = "_rsspage1id";
 
-    // cy.deletePortfolioActivity({ userId, label })
+    // cy.deleteActivity({ userId, label })
 
-    cy.deleteCourseDBRows({ courseId })
+    cy.deleteCourseDBRows({ courseId });
 
     cy.createCourse({ userId, courseId, label: courseLabel });
 
@@ -144,7 +145,7 @@ describe("Public activity tests", function () {
       parentDoenetId: courseId,
       pageDoenetId,
       doenetML,
-      label
+      label,
     });
 
     cy.visit(`/course?tool=navigation&courseId=${courseId}`);

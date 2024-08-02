@@ -6,8 +6,7 @@ describe("Single page activity tests", function () {
 
   const headerPixels = 40;
 
-  before(() => {
-  });
+  before(() => {});
 
   beforeEach(() => {
     cy.signin({ userId });
@@ -42,7 +41,6 @@ describe("Single page activity tests", function () {
     const courseId = "spa_courseid1";
     const doenetId = "spa_activity1id";
     const pageDoenetId = "spa_page1id";
-
 
     cy.deleteCourseDBRows({ courseId });
     cy.createCourse({ userId, courseId, studentUserId });
@@ -133,7 +131,6 @@ describe("Single page activity tests", function () {
     const courseId = "spa_courseid2";
     const doenetId = "spa_activity2id";
     const pageDoenetId = "spa_page2id";
-
 
     cy.deleteCourseDBRows({ courseId });
     cy.createCourse({ userId, courseId, studentUserId });
@@ -709,8 +706,7 @@ describe("Single page activity tests", function () {
     cy.get('[data-test="View Activity"]').click();
     cy.wait(2000);
 
-    cy.get(cesc("#\\/ans") + " textarea")
-      .type("2{enter}", { force: true });
+    cy.get(cesc("#\\/ans") + " textarea").type("2{enter}", { force: true });
 
     cy.get(cesc("#\\/credit")).should("have.text", "1");
     cy.get('[data-test="Attempt Percent"]').should("have.text", "100%");
@@ -819,7 +815,6 @@ describe("Single page activity tests", function () {
       "{moveToEnd}{enter}<p>What is 1+3? <answer name='ans3'>4</answer></p>{enter}{ctrl+s}",
     );
 
-
     cy.go("back");
     cy.get(".navigationRow").eq(0).click();
     cy.get('[data-test="Assign Activity"]').click();
@@ -920,7 +915,7 @@ describe("Single page activity tests", function () {
     cy.go("back");
     cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.wait(1500)
+    cy.wait(1500);
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -986,7 +981,7 @@ describe("Single page activity tests", function () {
     cy.go("back");
     cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Assign Activity"]').click();
-    cy.wait(1500)
+    cy.wait(1500);
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -1065,7 +1060,6 @@ describe("Single page activity tests", function () {
     cy.get(".cm-content").type(
       "{moveToEnd}{enter}<p>What is 1+2? <answer name='ans2'>3</answer></p>{enter}{ctrl+s}",
     );
-
 
     cy.go("back");
     cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
@@ -1175,7 +1169,6 @@ describe("Single page activity tests", function () {
       "{moveToEnd}{enter}<p>What is 1+4? <answer name='ans4'>5</answer></p>{enter}{ctrl+s}",
     );
 
-
     cy.go("back");
     cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Assign Activity"]').click();
@@ -1212,7 +1205,6 @@ describe("Single page activity tests", function () {
     cy.get(".cm-content").type(
       "{moveToEnd}{enter}<p>What is 1+5? <answer name='ans5'>6</answer></p>{enter}{ctrl+s}",
     );
-
 
     cy.go("back");
     cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
@@ -1268,7 +1260,6 @@ describe("Single page activity tests", function () {
       pageDoenetId,
       doenetML,
     });
-
 
     cy.visit(`/course?tool=navigation&courseId=${courseId}`);
 
@@ -1336,7 +1327,6 @@ describe("Single page activity tests", function () {
     cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
     cy.get('[data-test="Assign Activity"]').click();
     cy.wait(1500);
-
 
     cy.get('[data-test="RoleDropDown"] > div:nth-child(2)')
       .click()
@@ -1456,7 +1446,6 @@ describe("Single page activity tests", function () {
     cy.get(".cm-content").type(
       "{moveToEnd}{enter}<p>What is 1+4? <answer name='ans4'>5</answer></p>{enter}{ctrl+s}",
     );
-
 
     cy.go("back");
     cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
