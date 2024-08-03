@@ -113,7 +113,7 @@ passport.use(new MagicLinkStrategy({
     userFields: ['email'],
     tokenField: 'token'
 }, async (user, token) => {
-  console.log( user, token );
+  console.log( "email:", user, token );
   /*
     return MailService.sendMail({
      to: user.email,
@@ -121,16 +121,19 @@ passport.use(new MagicLinkStrategy({
      })
   */
 }, async (user : any) => {
-   return await findOrCreateUser({
-     email: user.email as string,
-     firstNames: null,
-     lastNames: "",
-   });
+  return {
+    emails: [
+      { value: user.email as string,
+	verified: true
+      }
+    ],
+    name: { givenName: "", familyName: "" }
+  };
  }))
 
 passport.serializeUser<any, any>(async (req, user: any, done) => {
-  var email = user.id + "@google.com";
-  if (user.emails[0].verified) email = user.emails[0].value;
+  var email = user.id;
+  if (user.emails && user.emails[0].verified) email = user.emails[0].value;
 
   const u = await findOrCreateUser({
     email,
