@@ -69,7 +69,7 @@ export class InvalidRequestError extends Error {
   }
 }
 
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 
 async function mustBeAdmin(
   userId: number,
@@ -670,7 +670,7 @@ export async function copyActivityToFolder(
 
   let newActivity = await prisma.content.create({
     data: {
-      name: origActivity.name,
+      name: `Copy of ${origActivity.name}`,
       isFolder: false,
       imagePath: origActivity.imagePath,
       ownerId: userId,
@@ -990,7 +990,7 @@ export async function getActivityEditorData(
 export async function getPublicEditorData(activityId: number) {
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
 
-  let activity = await prisma.content.findUniqueOrThrow({
+  const preliminaryActivity = await prisma.content.findUniqueOrThrow({
     where: {
       id: activityId,
       isDeleted: false,
@@ -998,6 +998,9 @@ export async function getPublicEditorData(activityId: number) {
       isPublic: true,
     },
     select: {
+      id: true,
+      isFolder: true,
+      ownerId: true,
       name: true,
       imagePath: true,
       documents: {
@@ -1010,8 +1013,29 @@ export async function getPublicEditorData(activityId: number) {
         // TODO: implement ability to allow users to order the documents within an activity
         orderBy: { id: "asc" },
       },
+      license: {
+        include: {
+          composedOf: {
+            select: { composedOf: true },
+            orderBy: { composedOf: { sortIndex: "asc" } },
+          },
+        },
+      },
+      parentFolder: { select: { id: true, name: true, isPublic: true } },
     },
   });
+
+  let activity: ContentStructure = {
+    ...preliminaryActivity,
+    isPublic: true,
+    license: preliminaryActivity.license
+      ? processLicense(preliminaryActivity.license)
+      : null,
+    classCode: null,
+    codeValidUntil: null,
+    assignmentStatus: "Unassigned",
+    hasScoreData: false,
+  };
 
   return activity;
 }
@@ -1120,10 +1144,7 @@ export async function getActivityViewerData(
   };
 }
 
-export async function getAssignmentDataFromCode(
-  code: string,
-  signedIn: boolean,
-) {
+export async function getAssignmentDataFromCode(code: string) {
   let assignment;
 
   try {
@@ -1163,7 +1184,6 @@ export async function getAssignmentDataFromCode(
     ) {
       return {
         assignmentFound: false,
-        newAnonymousUser: null,
         assignment: null,
       };
     } else {
@@ -1171,9 +1191,7 @@ export async function getAssignmentDataFromCode(
     }
   }
 
-  let newAnonymousUser = signedIn ? null : await createAnonymousUser();
-
-  return { assignmentFound: true, newAnonymousUser, assignment };
+  return { assignmentFound: true, assignment };
 }
 
 export async function searchPublicContent(query: string) {
@@ -1213,7 +1231,7 @@ export async function searchUsersWithPublicContent(query: string) {
           { lastNames: { contains: "%" + qw + "%" } },
         ],
       })),
-      anonymous: false,
+      isAnonymous: false,
       content: {
         some: {
           isPublic: true,
@@ -1290,48 +1308,19 @@ export async function findOrCreateUser({
   firstNames,
   lastNames,
   isAdmin = false,
+  isAnonymous = false,
 }: {
   email: string;
   firstNames: string | null;
   lastNames: string;
   isAdmin?: boolean;
+  isAnonymous?: boolean;
 }) {
-  const user = await prisma.users.findUnique({ where: { email } });
-  if (user) {
-    return user;
-  } else {
-    return createUser({ email, firstNames, lastNames, isAdmin });
-  }
-}
-
-export async function createUser({
-  email,
-  firstNames,
-  lastNames,
-  isAdmin,
-}: {
-  email: string;
-  firstNames: string | null;
-  lastNames: string;
-  isAdmin: boolean;
-}) {
-  const result = await prisma.users.create({
-    data: { email, firstNames, lastNames, isAdmin },
+  return await prisma.users.upsert({
+    where: { email },
+    update: {},
+    create: { email, firstNames, lastNames, isAdmin, isAnonymous },
   });
-  return result;
-}
-
-export async function createAnonymousUser() {
-  const array = new Uint32Array(1);
-  crypto.getRandomValues(array);
-  const random_number = array[0];
-  const lastNames = ``;
-  const email = `anonymous${random_number}@example.com`;
-  const result = await prisma.users.create({
-    data: { email, lastNames, anonymous: true },
-  });
-
-  return result;
 }
 
 export async function getUserInfo(email: string) {
@@ -1342,7 +1331,7 @@ export async function getUserInfo(email: string) {
       email: true,
       firstNames: true,
       lastNames: true,
-      anonymous: true,
+      isAnonymous: true,
     },
   });
   return user;
@@ -2137,6 +2126,14 @@ export async function loadState({
   userId: number;
   withMaxScore: boolean;
 }) {
+  console.log("load state", {
+    activityId,
+    docId,
+    docVersionNum,
+    requestedUserId,
+    userId,
+    withMaxScore,
+  });
   if (requestedUserId !== userId) {
     // If user isn't the requested user, then user is allowed to load requested users state
     // only if they are the owner of the assignment.
@@ -2806,6 +2803,7 @@ export async function getMyFolderContent({
         id: folderId,
         isDeleted: false,
         isFolder: true,
+        ownerId: loggedInUserId,
       },
       select: {
         id: true,
@@ -2824,12 +2822,6 @@ export async function getMyFolderContent({
         parentFolder: { select: { id: true, name: true, isPublic: true } },
       },
     });
-
-    if (preliminaryFolder.ownerId !== loggedInUserId) {
-      // Folder exists, but it not owned by logged in user.
-      // Return this information
-      return { notMe: true, content: [], folder: null };
-    }
 
     folder = {
       ...preliminaryFolder,
@@ -2897,7 +2889,165 @@ export async function getMyFolderContent({
   return {
     content,
     folder,
-    notMe: false,
+  };
+}
+
+export async function searchMyFolderContent({
+  folderId,
+  loggedInUserId,
+  query,
+}: {
+  folderId: number | null;
+  loggedInUserId: number;
+  query: string;
+}) {
+  let folder: ContentStructure | null = null;
+
+  if (folderId !== null) {
+    // if ask for a folder, make sure it exists and is owned by logged in user
+    let preliminaryFolder = await prisma.content.findUniqueOrThrow({
+      where: {
+        id: folderId,
+        isDeleted: false,
+        isFolder: true,
+        ownerId: loggedInUserId,
+      },
+      select: {
+        id: true,
+        ownerId: true,
+        name: true,
+        imagePath: true,
+        isPublic: true,
+        license: {
+          include: {
+            composedOf: {
+              select: { composedOf: true },
+              orderBy: { composedOf: { sortIndex: "asc" } },
+            },
+          },
+        },
+        parentFolder: { select: { id: true, name: true, isPublic: true } },
+      },
+    });
+
+    folder = {
+      ...preliminaryFolder,
+      isFolder: true,
+      assignmentStatus: "Unassigned",
+      classCode: null,
+      codeValidUntil: null,
+      documents: [],
+      hasScoreData: false,
+      license: preliminaryFolder.license
+        ? processLicense(preliminaryFolder.license)
+        : null,
+    };
+  }
+
+  let query_words = query.split(" ");
+
+  let preliminaryResults;
+
+  if (folderId === null) {
+    preliminaryResults = await prisma.content.findMany({
+      where: {
+        AND: query_words.map((qw) => ({ name: { contains: "%" + qw + "%" } })),
+        ownerId: loggedInUserId,
+        isDeleted: false,
+      },
+      select: {
+        id: true,
+        isFolder: true,
+        ownerId: true,
+        name: true,
+        imagePath: true,
+        isPublic: true,
+        isAssigned: true,
+        classCode: true,
+        codeValidUntil: true,
+        license: {
+          include: {
+            composedOf: {
+              select: { composedOf: true },
+              orderBy: { composedOf: { sortIndex: "asc" } },
+            },
+          },
+        },
+        documents: { select: { id: true, doenetmlVersion: true } },
+        parentFolder: { select: { id: true, name: true, isPublic: true } },
+        _count: { select: { assignmentScores: true } },
+      },
+    });
+  } else {
+    let ids = (
+      await prisma.$queryRaw<{ id: number }[]>(
+        Prisma.sql`
+    WITH RECURSIVE content_tree(id) AS (
+      SELECT id FROM content
+      WHERE parentFolderId = ${folderId} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
+      UNION ALL
+      SELECT content.id FROM content
+      INNER JOIN content_tree AS ft
+      ON content.parentFolderId = ft.id
+      WHERE content.isDeleted = FALSE
+    )
+    SELECT id from content_tree;
+    `,
+      )
+    ).map((obj) => obj.id);
+
+    // TODO: combine this query with above recursive query
+    preliminaryResults = await prisma.content.findMany({
+      where: {
+        AND: query_words.map((qw) => ({ name: { contains: "%" + qw + "%" } })),
+        id: { in: ids },
+      },
+      select: {
+        id: true,
+        isFolder: true,
+        ownerId: true,
+        name: true,
+        imagePath: true,
+        isPublic: true,
+        isAssigned: true,
+        classCode: true,
+        codeValidUntil: true,
+        license: {
+          include: {
+            composedOf: {
+              select: { composedOf: true },
+              orderBy: { composedOf: { sortIndex: "asc" } },
+            },
+          },
+        },
+        documents: { select: { id: true, doenetmlVersion: true } },
+        parentFolder: { select: { id: true, name: true, isPublic: true } },
+        _count: { select: { assignmentScores: true } },
+      },
+    });
+  }
+
+  let content: ContentStructure[] = preliminaryResults.map((obj) => {
+    let { _count, isAssigned, ...activity } = obj;
+    let isOpen = obj.codeValidUntil
+      ? DateTime.now() <= DateTime.fromJSDate(obj.codeValidUntil)
+      : false;
+    let assignmentStatus: AssignmentStatus = !obj.isAssigned
+      ? "Unassigned"
+      : !isOpen
+        ? "Closed"
+        : "Open";
+    return {
+      ...activity,
+      license: activity.license ? processLicense(activity.license) : null,
+      assignmentStatus,
+      hasScoreData: _count.assignmentScores > 0,
+    };
+  });
+
+  return {
+    content,
+    folder,
   };
 }
 

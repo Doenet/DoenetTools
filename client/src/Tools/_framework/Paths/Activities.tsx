@@ -12,6 +12,10 @@ import {
   Menu,
   MenuButton,
   MenuList,
+  IconButton,
+  Input,
+  Spacer,
+  Show,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -21,6 +25,7 @@ import {
   useNavigate,
   useFetcher,
   Link,
+  Form,
 } from "react-router-dom";
 
 import { RiEmotionSadLine } from "react-icons/ri";
@@ -36,6 +41,8 @@ import {
   LicenseCode,
 } from "./ActivityEditor";
 import { DateTime } from "luxon";
+import { MdClose, MdOutlineSearch } from "react-icons/md";
+import { AssignmentSettingsDrawer } from "../ToolPanels/AssignmentSettingsDrawer";
 
 // what is a better solution than this?
 let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching id
@@ -126,9 +133,14 @@ export async function action({ request, params }) {
     });
     return true;
   } else if (formObj._action == "open assignment") {
-    const closeAt = DateTime.fromSeconds(
-      Math.round(DateTime.now().toSeconds() / 60) * 60,
-    ).plus(JSON.parse(formObj.duration));
+    let closeAt: DateTime;
+    if (formObj.duration === "custom") {
+      closeAt = DateTime.fromISO(formObj.customCloseAt);
+    } else {
+      closeAt = DateTime.fromSeconds(
+        Math.round(DateTime.now().toSeconds() / 60) * 60,
+      ).plus(JSON.parse(formObj.duration));
+    }
     await axios.post("/api/openAssignmentWithCode", {
       activityId: Number(formObj.activityId),
       closeAt,
@@ -188,15 +200,27 @@ export async function action({ request, params }) {
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
-export async function loader({ params }) {
-  const { data } = await axios.get(
-    `/api/getMyFolderContent/${params.folderId ?? ""}`,
-  );
+export async function loader({ params, request }) {
+  const url = new URL(request.url);
+  const q = url.searchParams.get("q");
 
-  if (data.notMe) {
-    return redirect(
-      `/publicActivities/${params.userId}${params.folderId ? "/" + params.folderId : ""}`,
+  let data;
+  if (q) {
+    let results = await axios.get(
+      `/api/searchMyFolderContent/${params.userId}/${params.folderId ?? ""}?q=${q}`,
     );
+    data = results.data;
+  } else {
+    let results = await axios.get(
+      `/api/getMyFolderContent/${params.userId}/${params.folderId ?? ""}`,
+    );
+    data = results.data;
+
+    if (data.notMe) {
+      return redirect(
+        `/publicActivities/${params.userId}${params.folderId ? "/" + params.folderId : ""}`,
+      );
+    }
   }
 
   return {
@@ -206,20 +230,29 @@ export async function loader({ params }) {
     allLicenses: data.allLicenses,
     userId: params.userId,
     folder: data.folder,
+    query: q,
   };
 }
 
 export function Activities() {
   let context: any = useOutletContext();
-  let { folderId, content, allDoenetmlVersions, allLicenses, userId, folder } =
-    useLoaderData() as {
-      folderId: number | null;
-      content: ContentStructure[];
-      allDoenetmlVersions: DoenetmlVersion[];
-      allLicenses: License[];
-      userId: number;
-      folder: ContentStructure | null;
-    };
+  let {
+    folderId,
+    content,
+    allDoenetmlVersions,
+    allLicenses,
+    userId,
+    folder,
+    query,
+  } = useLoaderData() as {
+    folderId: number | null;
+    content: ContentStructure[];
+    allDoenetmlVersions: DoenetmlVersion[];
+    allLicenses: License[];
+    userId: number;
+    folder: ContentStructure | null;
+    query: string | null;
+  };
   const [settingsContentId, setSettingsContentId] = useState<number | null>(
     null,
   );
@@ -229,9 +262,27 @@ export function Activities() {
     onClose: settingsOnClose,
   } = useDisclosure();
 
+  const {
+    isOpen: assignmentSettingsAreOpen,
+    onOpen: assignmentSettingsOnOpen,
+    onClose: assignmentSettingsOnClose,
+  } = useDisclosure();
+
   const contentCardRefs = useRef(new Array());
   const folderSettingsRef = useRef(null);
   const finalFocusRef = useRef(null);
+
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchString, setSearchString] = useState(query ?? "");
+  const searchRef = useRef<HTMLInputElement>(null);
+  const searchBlurTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
+  const haveQuery = Boolean(query);
+
+  useEffect(() => {
+    if (searchOpen) {
+      searchRef.current?.focus();
+    }
+  }, [searchOpen]);
 
   const navigate = useNavigate();
 
@@ -248,7 +299,7 @@ export function Activities() {
   } = useDisclosure();
 
   const [displaySettingsTab, setSettingsDisplayTab] = useState<
-    "general" | "share" | "assignment"
+    "general" | "share"
   >("general");
 
   useEffect(() => {
@@ -270,6 +321,7 @@ export function Activities() {
     isFolder,
     isPublic,
     licenseCode,
+    parentFolderId,
   }: {
     id: number;
     position: number;
@@ -278,6 +330,7 @@ export function Activities() {
     isFolder?: boolean;
     isPublic: boolean;
     licenseCode: LicenseCode | null;
+    parentFolderId: number | null;
   }) {
     return (
       <>
@@ -296,7 +349,7 @@ export function Activities() {
             </MenuItem>
           </>
         ) : null}
-        {position > 0 ? (
+        {position > 0 && !haveQuery ? (
           <MenuItem
             data-test="Move Left Menu Item"
             onClick={() => {
@@ -314,7 +367,7 @@ export function Activities() {
             Move Left
           </MenuItem>
         ) : null}
-        {position < numCards - 1 ? (
+        {position < numCards - 1 && !haveQuery ? (
           <MenuItem
             data-test="Move Right Menu Item"
             onClick={() => {
@@ -332,15 +385,17 @@ export function Activities() {
             Move Right
           </MenuItem>
         ) : null}
-        <MenuItem
-          data-test="Move to Folder"
-          onClick={() => {
-            setMoveToFolderContent({ id, isPublic, licenseCode });
-            moveToFolderOnOpen();
-          }}
-        >
-          Move to Folder
-        </MenuItem>
+        {haveQuery ? null : (
+          <MenuItem
+            data-test="Move to Folder"
+            onClick={() => {
+              setMoveToFolderContent({ id, isPublic, licenseCode });
+              moveToFolderOnOpen();
+            }}
+          >
+            Move to Folder
+          </MenuItem>
+        )}
         <MenuItem
           data-test="Delete Menu Item"
           onClick={() => {
@@ -357,8 +412,7 @@ export function Activities() {
             data-test="Assign Activity Menu Item"
             onClick={() => {
               setSettingsContentId(id);
-              setSettingsDisplayTab("assignment");
-              settingsOnOpen();
+              assignmentSettingsOnOpen();
             }}
           >
             {assignmentStatus === "Unassigned"
@@ -386,6 +440,18 @@ export function Activities() {
         >
           Settings
         </MenuItem>
+        {haveQuery ? (
+          <MenuItem
+            data-test="Go to containing folder"
+            onClick={() => {
+              navigate(
+                `/activities/${userId}${parentFolderId ? "/" + parentFolderId : ""}`,
+              );
+            }}
+          >
+            Go to containing folder
+          </MenuItem>
+        ) : null}
       </>
     );
   }
@@ -414,7 +480,7 @@ export function Activities() {
     }
   }
 
-  let settings_drawer =
+  let settingsDrawer =
     contentData && settingsContentId ? (
       <ContentSettingsDrawer
         isOpen={settingsAreOpen}
@@ -428,10 +494,21 @@ export function Activities() {
         displayTab={displaySettingsTab}
       />
     ) : null;
-
+  let assignmentDrawer =
+    contentData && settingsContentId ? (
+      <AssignmentSettingsDrawer
+        isOpen={assignmentSettingsAreOpen}
+        onClose={assignmentSettingsOnClose}
+        id={settingsContentId}
+        contentData={contentData}
+        finalFocusRef={finalFocusRef}
+        fetcher={fetcher}
+      />
+    ) : null;
   return (
     <>
-      {settings_drawer}
+      {settingsDrawer}
+      {assignmentDrawer}
 
       <MoveContentToFolder
         isOpen={moveToFolderIsOpen}
@@ -439,6 +516,7 @@ export function Activities() {
         id={moveToFolderContent.id}
         isPublic={moveToFolderContent.isPublic}
         licenseCode={moveToFolderContent.licenseCode}
+        userId={userId}
         currentParentId={folderId}
         finalFocusRef={finalFocusRef}
       />
@@ -455,9 +533,66 @@ export function Activities() {
             {headingText}
           </Heading>
         </Tooltip>
-        <div style={{ float: "right" }}>
+        <Flex float="right">
+          <Flex>
+            <Form>
+              <Input
+                type="search"
+                hidden={!searchOpen}
+                size="xs"
+                margin="3px"
+                width="250px"
+                ref={searchRef}
+                placeholder={
+                  folder ? `Search in folder` : `Search my activities`
+                }
+                value={searchString}
+                name="q"
+                onInput={(e) => {
+                  setSearchString((e.target as HTMLInputElement).value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key == "Enter") {
+                  }
+                }}
+                onBlur={() => {
+                  searchBlurTimeout.current = setTimeout(() => {
+                    setSearchOpen(false);
+                  }, 200);
+                }}
+              />
+              <Tooltip
+                label={folder ? `Search in folder` : `Search my activities`}
+                placement="bottom-end"
+              >
+                <IconButton
+                  size="xs"
+                  margin="3px"
+                  icon={<MdOutlineSearch />}
+                  aria-label={
+                    folder ? `Search in folder` : `Search my activities`
+                  }
+                  type="submit"
+                  onClick={(e) => {
+                    if (searchOpen) {
+                      clearTimeout(searchBlurTimeout.current);
+                      searchRef.current?.focus();
+                    } else {
+                      setSearchOpen(true);
+                      e.preventDefault();
+                    }
+                  }}
+                />
+              </Tooltip>
+            </Form>
+          </Flex>
           <Menu>
-            <MenuButton as={Button} size="xs">
+            <MenuButton
+              as={Button}
+              size="xs"
+              margin="3px"
+              hidden={searchOpen || haveQuery}
+            >
               New
             </MenuButton>
             <MenuList>
@@ -500,6 +635,7 @@ export function Activities() {
                 setSettingsDisplayTab("share");
                 settingsOnOpen();
               }}
+              hidden={searchOpen || haveQuery}
             >
               Share
             </Button>
@@ -510,12 +646,13 @@ export function Activities() {
             onClick={() =>
               navigate(`/allAssignmentScores${folderId ? "/" + folderId : ""}`)
             }
+            hidden={searchOpen || haveQuery}
           >
             See Scores
           </Button>
-        </div>
+        </Flex>
       </Box>
-      {folder ? (
+      {folder && !haveQuery ? (
         <Box style={{ marginLeft: "15px", marginTop: "-30px", float: "left" }}>
           <Link
             to={`/activities/${userId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
@@ -523,12 +660,44 @@ export function Activities() {
               color: "var(--mainBlue)",
             }}
           >
-            <Text noOfLines={1}>
-              &lt; Back to{" "}
-              {folder.parentFolder ? folder.parentFolder.name : `My Activities`}
+            <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
+              <Show above="sm">
+                &lt; Back to{" "}
+                {folder.parentFolder
+                  ? folder.parentFolder.name
+                  : `My Activities`}
+              </Show>
+              <Show below="sm">&lt; Back</Show>
             </Text>
           </Link>
         </Box>
+      ) : null}
+      {haveQuery ? (
+        <Flex
+          width="100%"
+          background="lightgray"
+          fontSize="large"
+          justifyContent="center"
+          alignItems="center"
+          padding="5px"
+        >
+          <Spacer />
+          Search results for: {query}
+          <Spacer />
+          <Form>
+            <Tooltip label="Close search results" placement="bottom-end">
+              <IconButton
+                icon={<MdClose />}
+                background="lightgray"
+                aria-label="Close search results"
+                type="submit"
+                onClick={() => {
+                  setSearchString("");
+                }}
+              />
+            </Tooltip>
+          </Form>
+        </Flex>
       ) : null}
       <Flex
         data-test="Activities"
@@ -553,7 +722,9 @@ export function Activities() {
               backgroundColor="transparent"
             >
               <Icon fontSize="48pt" as={RiEmotionSadLine} />
-              <Text fontSize="36pt">No Activities Yet</Text>
+              <Text fontSize="36pt">
+                {haveQuery ? "No Results Found" : "No Activities Yet"}
+              </Text>
             </Flex>
           ) : (
             <>
@@ -575,6 +746,7 @@ export function Activities() {
                       isFolder: activity.isFolder,
                       isPublic: activity.isPublic,
                       licenseCode: activity.license?.code ?? null,
+                      parentFolderId: activity.parentFolder?.id ?? null,
                     })}
                     suppressAvatar={true}
                     showOwnerName={false}
