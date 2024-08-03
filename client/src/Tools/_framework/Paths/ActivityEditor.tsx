@@ -69,6 +69,17 @@ export type License = {
 
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
+export type ContentClassification = {
+  id: number;
+  code: string;
+  grade: string | null;
+  description: string;
+  system: {
+    id: number;
+    name: string;
+  };
+};
+
 export type ContentStructure = {
   id: number;
   ownerId: number;
@@ -80,6 +91,7 @@ export type ContentStructure = {
   codeValidUntil: string | null;
   isPublic: boolean;
   license: License | null;
+  contentClassifications: ContentClassification[];
   documents: {
     id: number;
     versionNum?: number;

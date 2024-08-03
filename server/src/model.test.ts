@@ -143,6 +143,7 @@ test("New activity starts out private, then delete it", async () => {
     classCode: null,
     codeValidUntil: null,
     license: null,
+    contentClassifications: [],
     documents: [
       {
         id: docId,
@@ -2937,6 +2938,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode: null,
     codeValidUntil: null,
     license: null,
+    contentClassifications: [],
     documents: [
       {
         id: docId,
@@ -2984,6 +2986,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
+    contentClassifications: [],
     documents: [
       {
         id: docId,
@@ -3028,6 +3031,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: null,
     license: null,
+    contentClassifications: [],
     documents: [
       {
         id: docId,
@@ -3078,6 +3082,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
+    contentClassifications: [],
     documents: [
       {
         id: docId,
@@ -3131,6 +3136,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
+    contentClassifications: [],
     documents: [
       {
         id: docId,
@@ -3175,6 +3181,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: null,
     license: null,
+    contentClassifications: [],
     documents: [
       {
         id: docId,
@@ -5133,7 +5140,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 test("Content classifications can only be edited by activity owner", async () => {
   const { userId } = await createTestUser();
   const { userId: otherId } = await createTestUser();
-  const allClassifications = await searchPossibleClassifications();
+  const allClassifications = await searchPossibleClassifications("");
   const { id: classificationId } = allClassifications.find(
     (k) => k.code === "K.CC.1",
   )!;
@@ -5166,7 +5173,7 @@ test("Content classifications can only be edited by activity owner", async () =>
 });
 
 test("Get classifications of public activity", async () => {
-  const allClassifications = await searchPossibleClassifications();
+  const allClassifications = await searchPossibleClassifications("");
   const { id: classId1 } = allClassifications.find((k) => k.code === "K.CC.1")!;
   const { id: classId2 } = allClassifications.find(
     (k) => k.code === "8.2.1.5",
@@ -5193,6 +5200,41 @@ test("Get classifications of public activity", async () => {
   });
   const classifications = await getClassifications(activityId, viewerId);
   expect(classifications.length).toBe(2);
+});
+
+test("Search for content classifications", async () => {
+  {
+    // Code
+    const results = await searchPossibleClassifications("CC.1");
+    expect(results.find((i) => i.code === "K.CC.1")).toBeDefined();
+  }
+  {
+    // Category
+    const results = await searchPossibleClassifications("nonlinear functions");
+    expect(results.find((i) => i.code === "8.2.1.5")).toBeDefined();
+  }
+  {
+    // Grade
+    const results = await searchPossibleClassifications("Kind");
+    expect(results.find((i) => i.code === "K.CC.1")).toBeDefined();
+  }
+  {
+    // Description
+    const results = await searchPossibleClassifications("exponents");
+    expect(results.find((i) => i.code === "A.SSE.3 c.")).toBeDefined();
+  }
+  {
+    // System name
+    const results = await searchPossibleClassifications("coMMoN cOrE");
+    expect(results.find((i) => i.code === "A.SSE.3 c.")).toBeDefined();
+  }
+  {
+    // Combination of fields
+    const results = await searchPossibleClassifications(
+      "mention addition SUBTRACTION kindergarten OA operations",
+    );
+    expect(results.find((i) => i.code === "K.OA.1")).toBeDefined();
+  }
 });
 
 test("search my folder content searches all subfolders", async () => {

@@ -14,6 +14,17 @@ export type DoenetmlVersion = {
 
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
+export type ContentClassification = {
+  id: number;
+  code: string;
+  grade: string | null;
+  description: string;
+  system: {
+    id: number;
+    name: string;
+  };
+};
+
 export type ContentStructure = {
   id: number;
   ownerId: number;
@@ -25,6 +36,7 @@ export type ContentStructure = {
   codeValidUntil: Date | null;
   isPublic: boolean;
   license: License | null;
+  contentClassifications: ContentClassification[];
   documents: {
     id: number;
     versionNum?: number;
@@ -845,6 +857,7 @@ export async function getActivityEditorData(
       codeValidUntil: null,
       isPublic: contentCheck.isPublic,
       license: null,
+      contentClassifications: [],
       documents: [],
       hasScoreData: false,
       parentFolder: null,
@@ -880,6 +893,25 @@ export async function getActivityEditorData(
             composedOf: {
               select: { composedOf: true },
               orderBy: { composedOf: { sortIndex: "asc" } },
+            },
+          },
+        },
+        classifications: {
+          select: {
+            classification: {
+              select: {
+                id: true,
+                grade: true,
+                code: true,
+                category: true,
+                description: true,
+                system: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
             },
           },
         },
@@ -919,6 +951,9 @@ export async function getActivityEditorData(
       license: assignedActivity.license
         ? processLicense(assignedActivity.license)
         : null,
+      contentClassifications: assignedActivity.classifications.map(
+        (c) => c.classification,
+      ),
       documents: assignedActivity.documents.map((doc) => ({
         id: doc.id,
         versionNum: doc.assignedVersion!.versionNum,
@@ -953,6 +988,25 @@ export async function getActivityEditorData(
             },
           },
         },
+        classifications: {
+          select: {
+            classification: {
+              select: {
+                id: true,
+                grade: true,
+                code: true,
+                category: true,
+                description: true,
+                system: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
         documents: {
           select: {
             name: true,
@@ -972,6 +1026,9 @@ export async function getActivityEditorData(
       license: unassignedActivity.license
         ? processLicense(unassignedActivity.license)
         : null,
+      contentClassifications: unassignedActivity.classifications.map(
+        (c) => c.classification,
+      ),
       assignmentStatus: "Unassigned",
       hasScoreData: false,
     };
@@ -1021,6 +1078,25 @@ export async function getPublicEditorData(activityId: number) {
           },
         },
       },
+      classifications: {
+        select: {
+          classification: {
+            select: {
+              id: true,
+              grade: true,
+              code: true,
+              category: true,
+              description: true,
+              system: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
       parentFolder: { select: { id: true, name: true, isPublic: true } },
     },
   });
@@ -1031,6 +1107,9 @@ export async function getPublicEditorData(activityId: number) {
     license: preliminaryActivity.license
       ? processLicense(preliminaryActivity.license)
       : null,
+    contentClassifications: preliminaryActivity.classifications.map(
+      (c) => c.classification,
+    ),
     classCode: null,
     codeValidUntil: null,
     assignmentStatus: "Unassigned",
@@ -1066,6 +1145,26 @@ export async function getActivityViewerData(
           },
         },
       },
+
+      classifications: {
+        select: {
+          classification: {
+            select: {
+              id: true,
+              grade: true,
+              code: true,
+              category: true,
+              description: true,
+              system: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
       documents: {
         where: { isDeleted: false },
         select: {
@@ -1097,6 +1196,9 @@ export async function getActivityViewerData(
     license: preliminaryActivity2.license
       ? processLicense(preliminaryActivity2.license)
       : null,
+    contentClassifications: preliminaryActivity.classifications.map(
+      (c) => c.classification,
+    ),
     classCode: null,
     codeValidUntil: null,
     assignmentStatus: "Unassigned",
@@ -1203,8 +1305,8 @@ export async function getAssignmentDataFromCode(
 export async function searchPublicContent(query: string) {
   // TODO: how should we sort these?
 
-  let query_words = query.split(" ");
-  let content = await prisma.content.findMany({
+  const query_words = query.split(" ");
+  const content = await prisma.content.findMany({
     where: {
       AND: query_words.map((qw) => ({ name: { contains: "%" + qw + "%" } })),
       isPublic: true,
@@ -1228,8 +1330,8 @@ export async function searchPublicContent(query: string) {
 export async function searchUsersWithPublicContent(query: string) {
   // TODO: how should we sort these?
 
-  let query_words = query.split(" ");
-  let usersWithPublic = await prisma.users.findMany({
+  const query_words = query.split(" ");
+  const usersWithPublic = await prisma.users.findMany({
     where: {
       AND: query_words.map((qw) => ({
         OR: [
@@ -1292,6 +1394,7 @@ export async function listUserAssigned(userId: number) {
     return {
       ...obj,
       license: obj.license ? processLicense(obj.license) : null,
+      contentClassifications: [],
       assignmentStatus,
       documents: [],
       hasScoreData: false,
@@ -2861,6 +2964,7 @@ export async function getMyFolderContent({
       license: preliminaryFolder.license
         ? processLicense(preliminaryFolder.license)
         : null,
+      contentClassifications: [],
     };
   }
 
@@ -2888,6 +2992,24 @@ export async function getMyFolderContent({
           },
         },
       },
+      classifications: {
+        select: {
+          classification: {
+            select: {
+              id: true,
+              code: true,
+              grade: true,
+              description: true,
+              system: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
       documents: { select: { id: true, doenetmlVersion: true } },
       parentFolder: { select: { id: true, name: true, isPublic: true } },
       _count: { select: { assignmentScores: true } },
@@ -2905,9 +3027,13 @@ export async function getMyFolderContent({
       : !isOpen
         ? "Closed"
         : "Open";
+    let contentClassifications = obj.classifications.map(
+      (c) => c.classification,
+    );
     return {
       ...activity,
       license: activity.license ? processLicense(activity.license) : null,
+      contentClassifications,
       assignmentStatus,
       hasScoreData: _count.assignmentScores > 0,
     };
@@ -2932,7 +3058,7 @@ export async function searchMyFolderContent({
 
   if (folderId !== null) {
     // if ask for a folder, make sure it exists and is owned by logged in user
-    let preliminaryFolder = await prisma.content.findUniqueOrThrow({
+    const preliminaryFolder = await prisma.content.findUniqueOrThrow({
       where: {
         id: folderId,
         isDeleted: false,
@@ -2968,10 +3094,11 @@ export async function searchMyFolderContent({
       license: preliminaryFolder.license
         ? processLicense(preliminaryFolder.license)
         : null,
+      contentClassifications: [],
     };
   }
 
-  let query_words = query.split(" ");
+  const query_words = query.split(" ");
 
   let preliminaryResults;
 
@@ -2997,6 +3124,24 @@ export async function searchMyFolderContent({
             composedOf: {
               select: { composedOf: true },
               orderBy: { composedOf: { sortIndex: "asc" } },
+            },
+          },
+        },
+        classifications: {
+          select: {
+            classification: {
+              select: {
+                id: true,
+                code: true,
+                grade: true,
+                description: true,
+                system: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
             },
           },
         },
@@ -3047,6 +3192,24 @@ export async function searchMyFolderContent({
             },
           },
         },
+        classifications: {
+          select: {
+            classification: {
+              select: {
+                id: true,
+                code: true,
+                grade: true,
+                description: true,
+                system: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
         documents: { select: { id: true, doenetmlVersion: true } },
         parentFolder: { select: { id: true, name: true, isPublic: true } },
         _count: { select: { assignmentScores: true } },
@@ -3064,9 +3227,14 @@ export async function searchMyFolderContent({
       : !isOpen
         ? "Closed"
         : "Open";
+    let contentClassifications = obj.classifications.map(
+      (c) => c.classification,
+    );
+
     return {
       ...activity,
       license: activity.license ? processLicense(activity.license) : null,
+      contentClassifications,
       assignmentStatus,
       hasScoreData: _count.assignmentScores > 0,
     };
@@ -3131,6 +3299,7 @@ export async function getPublicFolderContent({
       license: preliminaryFolder.license
         ? processLicense(preliminaryFolder.license)
         : null,
+      contentClassifications: [],
     };
   }
 
@@ -3154,11 +3323,13 @@ export async function getPublicFolderContent({
           classification: {
             select: {
               id: true,
+              grade: true,
               code: true,
               category: true,
               description: true,
               system: {
                 select: {
+                  id: true,
                   name: true,
                 },
               },
@@ -3205,11 +3376,13 @@ export async function getPublicFolderContent({
             classification: {
               select: {
                 id: true,
+                grade: true,
                 code: true,
                 category: true,
                 description: true,
                 system: {
                   select: {
+                    id: true,
                     name: true,
                   },
                 },
@@ -3239,6 +3412,9 @@ export async function getPublicFolderContent({
         isPublic: true,
         documents: [],
         license: content.license ? processLicense(content.license) : null,
+        contentClassifications: content.classifications.map(
+          (c) => c.classification,
+        ),
         classCode: null,
         codeValidUntil: null,
         assignmentStatus: "Unassigned",
@@ -3259,19 +3435,32 @@ export async function getPublicFolderContent({
   };
 }
 
-// TODO: filter by an input query. For now, just returns everything.
-export async function searchPossibleClassifications() {
+export async function searchPossibleClassifications(query: string) {
+  const query_words = query.split(" ");
   return await prisma.classifications.findMany({
+    where: {
+      AND: query_words.map((query_word) => ({
+        OR: [
+          { code: { contains: query_word } },
+          { grade: { contains: query_word } },
+          { category: { contains: query_word } },
+          { description: { contains: query_word } },
+          { system: { name: { contains: query_word } } },
+        ],
+      })),
+    },
     select: {
       id: true,
-      system: {
-        select: {
-          name: true,
-        },
-      },
+      grade: true,
       code: true,
       category: true,
       description: true,
+      system: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
     },
   });
 }

@@ -397,6 +397,49 @@ export function GeneralContentControls({
         <input type="hidden" name="imagePath" value={imagePath ?? undefined} />
         <input type="hidden" name="_action" value="update general" />
         <input type="hidden" name="id" value={id} />
+
+        {!contentData.isFolder ? (
+          <FormControl>
+            <Flex flexDirection="column" width="100%" rowGap={6}>
+              <FormLabel mt="16px">Content Classifications</FormLabel>
+              {contentData.contentClassifications.map((classification, i) => (
+                <Text key={`contentClassification#${i}`}>
+                  {classification.code}
+                </Text>
+              ))}
+
+              <Input
+                size="sm"
+                onChange={(e) => {}}
+                onBlur={() => {
+                  // saveDataToServer(learningOutcomes, undefined, undefined)
+                  fetcher.submit(
+                    {
+                      _action: "add keyword",
+                      id,
+                      //TODO: keyword id
+                    },
+                    { method: "post" },
+                  );
+                }}
+                onKeyDown={(e) => {
+                  if (e.key == "Enter") {
+                    // saveDataToServer(learningOutcomes, undefined, undefined);
+                    fetcher.submit(
+                      {
+                        _action: "add keyword",
+                        id,
+                        //TODO: keyword id
+                      },
+                      { method: "post" },
+                    );
+                  }
+                }}
+                placeholder={`Add a classification`}
+              ></Input>
+            </Flex>
+          </FormControl>
+        ) : null}
       </Form>
     </>
   );

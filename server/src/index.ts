@@ -1545,7 +1545,8 @@ app.get(
   "/api/searchPossibleClassifications",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const searchResults = await searchPossibleClassifications();
+      const query: string = req.body.query;
+      const searchResults = await searchPossibleClassifications(query);
       res.send(searchResults);
     } catch (e) {
       if (e instanceof InvalidRequestError) {
