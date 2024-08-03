@@ -9,8 +9,10 @@ import {
   ModalFooter,
   Button,
   Center,
+  Box,
+  Flex,
 } from "@chakra-ui/react";
-import { ActivityStructure } from "../Paths/ActivityEditor";
+import { ContentStructure } from "../Paths/ActivityEditor";
 import { QRCode } from "react-qrcode-logo";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { MdOutlineContentCopy } from "react-icons/md";
@@ -24,7 +26,7 @@ export function AssignmentInvitation({
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  activityData: ActivityStructure;
+  activityData: ContentStructure;
 }) {
   const [urlCopied, setUrlCopied] = useState(false);
 
@@ -47,29 +49,31 @@ export function AssignmentInvitation({
         <ModalCloseButton />
         <ModalBody fontSize={30}>
           {activityData.assignmentStatus === "Open" ? (
-            <>
-              <p>To view this activity, go to </p>
-              <Center marginTop="10px" fontSize={40}>
-                <code>doenet.org/code</code>
-              </Center>
-              <p>and enter the code</p>
-              <Center marginTop="10px" fontSize={40}>
-                <code>{activityData.classCode}</code>
-              </Center>
-              <p>or scan the QR code.</p>
-              <Center>
-                <QRCode
-                  value={`https://doenet.org/code/${activityData.classCode}`}
-                  logoImage={"/Doenet_Logo_Frontpage.png"}
-                  removeQrCodeBehindLogo
-                  logoPaddingStyle="circle"
-                  logoWidth={100}
-                  size={300}
-                  style={{ maxWidth: "100%", marginTop: "30px" }}
-                  ecLevel="Q"
-                />
-              </Center>
-            </>
+            <Flex justifyContent="center">
+              <Box width="500px">
+                <p>To view this activity, go to </p>
+                <Center marginTop="10px" fontSize={40}>
+                  <code>doenet.org/code</code>
+                </Center>
+                <p>and enter the code</p>
+                <Center marginTop="10px" fontSize={40}>
+                  <code>{activityData.classCode}</code>
+                </Center>
+                <p>or scan the QR code.</p>
+                <Center>
+                  <QRCode
+                    value={`https://doenet.org/code/${activityData.classCode}`}
+                    logoImage={"/Doenet_Logo_Frontpage.png"}
+                    removeQrCodeBehindLogo
+                    logoPaddingStyle="circle"
+                    logoWidth={100}
+                    size={300}
+                    style={{ maxWidth: "100%", marginTop: "30px" }}
+                    ecLevel="Q"
+                  />
+                </Center>
+              </Box>
+            </Flex>
           ) : (
             <p>The activity is not available.</p>
           )}

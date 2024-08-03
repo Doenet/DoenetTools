@@ -60,6 +60,13 @@ import {
   getPublicEditorData,
   unassignActivity,
   updateAssignmentSettings,
+  getAllLicenses,
+  makeActivityPrivate,
+  makeActivityPublic,
+  LicenseCode,
+  makeFolderPublic,
+  makeFolderPrivate,
+  searchMyFolderContent,
 } from "./model";
 import { Prisma } from "@prisma/client";
 
@@ -159,7 +166,7 @@ app.get(
     const loggedInUserId = Number(req.cookies.userId);
     try {
       const scoreData = await getAssignedScores(loggedInUserId);
-      res.send(scoreData);
+      res.send({ ...scoreData, folder: null });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
@@ -304,15 +311,111 @@ app.post(
 );
 
 app.post(
-  "/api/updateIsPublicContent",
+  "/api/makeActivityPublic",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.cookies.userId);
     const body = req.body;
     const id = Number(body.id);
-    const isPublic = Boolean(body.isPublic);
+
+    let licenseCode: LicenseCode;
+
+    let requestedCode: string = body.licenseCode;
+    switch (requestedCode) {
+      case "CCDUAL":
+      case "CCBYSA":
+      case "CCBYNCSA": {
+        licenseCode = requestedCode;
+        break;
+      }
+      default: {
+        return res.status(400).send("Invalid license code");
+      }
+    }
+
     try {
-      await updateContent({ id, isPublic, ownerId: loggedInUserId });
-      res.send({});
+      let data = await makeActivityPublic({
+        id,
+        ownerId: loggedInUserId,
+        licenseCode,
+      });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/makeActivityPrivate",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const body = req.body;
+    const id = Number(body.id);
+    try {
+      let data = await makeActivityPrivate({ id, ownerId: loggedInUserId });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/makeFolderPublic",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const body = req.body;
+    const id = Number(body.id);
+
+    let licenseCode: LicenseCode;
+
+    let requestedCode: string = body.licenseCode;
+    switch (requestedCode) {
+      case "CCDUAL":
+      case "CCBYSA":
+      case "CCBYNCSA": {
+        licenseCode = requestedCode;
+        break;
+      }
+      default: {
+        return res.status(400).send("Invalid license code");
+      }
+    }
+
+    try {
+      let data = await makeFolderPublic({
+        id,
+        ownerId: loggedInUserId,
+        licenseCode,
+      });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/makeFolderPrivate",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.cookies.userId);
+    const body = req.body;
+    const id = Number(body.id);
+    try {
+      let data = await makeFolderPrivate({ id, ownerId: loggedInUserId });
+      res.send(data);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(403);
@@ -600,6 +703,11 @@ app.get("/api/getAllDoenetmlVersions", async (req: Request, res: Response) => {
   res.send(allDoenetmlVersions);
 });
 
+app.get("/api/getAllLicenses", async (req: Request, res: Response) => {
+  const allLicenses = await getAllLicenses();
+  res.send(allLicenses);
+});
+
 app.get(
   "/api/getActivityView/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -684,13 +792,11 @@ app.post(
     const name = body.name;
     // TODO - deal with learning outcomes
     const learningOutcomes = body.learningOutcomes;
-    const isPublic = body.isPublic;
     try {
       await updateContent({
         id,
         imagePath,
         name,
-        isPublic,
         ownerId: loggedInUserId,
       });
       res.send({});
@@ -763,7 +869,7 @@ app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
     desiredParentFolderId,
   );
 
-  res.send({ newActivityId });
+  res.send({ newActivityId, userId: loggedInUserId });
 });
 
 app.post("/api/assignActivity", async (req: Request, res: Response) => {
@@ -1048,7 +1154,7 @@ app.get(
 );
 
 app.get(
-  "/api/getStudentData/:userId",
+  "/api/getStudentData/:userId/",
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = Number(req.params.userId);
     const loggedInUserId = Number(req.cookies.userId);
@@ -1199,9 +1305,14 @@ app.get(
 );
 
 app.get(
-  "/api/getMyFolderContent/",
+  "/api/getMyFolderContent/:ownerId/",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.cookies.userId ? Number(req.cookies.userId) : 0;
+    const ownerId = Number(req.params.ownerId);
+    const loggedInUserId = Number(req.cookies.userId);
+
+    if (ownerId !== loggedInUserId) {
+      return res.send({ notMe: true });
+    }
 
     try {
       const contentData = await getMyFolderContent({
@@ -1210,7 +1321,8 @@ app.get(
       });
 
       const allDoenetmlVersions = await getAllDoenetmlVersions();
-      res.send({ allDoenetmlVersions, ...contentData });
+      const allLicenses = await getAllLicenses();
+      res.send({ allDoenetmlVersions, allLicenses, ...contentData });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
@@ -1222,10 +1334,15 @@ app.get(
 );
 
 app.get(
-  "/api/getMyFolderContent/:folderId",
+  "/api/getMyFolderContent/:ownerId/:folderId",
   async (req: Request, res: Response, next: NextFunction) => {
+    const ownerId = Number(req.params.ownerId);
     const folderId = Number(req.params.folderId);
     const loggedInUserId = Number(req.cookies.userId);
+
+    if (ownerId !== loggedInUserId) {
+      return res.send({ notMe: true });
+    }
 
     try {
       const contentData = await getMyFolderContent({
@@ -1233,7 +1350,70 @@ app.get(
         loggedInUserId,
       });
       const allDoenetmlVersions = await getAllDoenetmlVersions();
-      res.send({ allDoenetmlVersions, ...contentData });
+      const allLicenses = await getAllLicenses();
+      res.send({ allDoenetmlVersions, allLicenses, ...contentData });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/searchMyFolderContent/:ownerId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const ownerId = Number(req.params.ownerId);
+    const loggedInUserId = req.cookies.userId ? Number(req.cookies.userId) : 0;
+    const query = req.query.q as string;
+
+    if (ownerId !== loggedInUserId) {
+      return res.send({ notMe: true });
+    }
+
+    try {
+      const contentData = await searchMyFolderContent({
+        folderId: null,
+        loggedInUserId,
+        query,
+      });
+
+      const allDoenetmlVersions = await getAllDoenetmlVersions();
+      const allLicenses = await getAllLicenses();
+      res.send({ allDoenetmlVersions, allLicenses, ...contentData });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/searchMyFolderContent/:ownerId/:folderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const ownerId = Number(req.params.ownerId);
+    const folderId = Number(req.params.folderId);
+    const loggedInUserId = Number(req.cookies.userId);
+    const query = req.query.q as string;
+
+    if (ownerId !== loggedInUserId) {
+      return res.send({ notMe: true });
+    }
+
+    try {
+      const contentData = await searchMyFolderContent({
+        folderId,
+        loggedInUserId,
+        query,
+      });
+      const allDoenetmlVersions = await getAllDoenetmlVersions();
+      const allLicenses = await getAllLicenses();
+      res.send({ allDoenetmlVersions, allLicenses, ...contentData });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);

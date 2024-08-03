@@ -11,8 +11,9 @@ import {
   Td,
   Link as ChakraLink,
   Tooltip,
+  Box,
 } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 import { lastNameFirst } from "../../../_utils/names";
@@ -40,6 +41,11 @@ type StudentStructure = {
       score: number;
     };
   }[];
+};
+
+type Folder = {
+  id: number;
+  name: string;
 };
 
 export async function loader({ params }) {
@@ -75,19 +81,24 @@ export async function loader({ params }) {
     assignments: data.orderedActivities,
     students: studentData,
     studentIdsOrdered,
+    folder: data.folder,
   };
 }
 
 export function AllAssignmentScores() {
-  const { assignments, students, studentIdsOrdered } = useLoaderData() as {
-    assignments: OrderedActivity[];
-    students: Record<string, StudentStructure>;
-    studentIdsOrdered: number[];
-  };
+  const { assignments, students, studentIdsOrdered, folder } =
+    useLoaderData() as {
+      assignments: OrderedActivity[];
+      students: Record<string, StudentStructure>;
+      studentIdsOrdered: number[];
+      folder: Folder | null;
+    };
 
   useEffect(() => {
     document.title = "My Assignments";
   });
+
+  let navigate = useNavigate();
 
   const linkStyle = {
     display: "block",
@@ -96,9 +107,34 @@ export function AllAssignmentScores() {
 
   return (
     <>
-      <Heading heading={"My Assignments"} />
+      <Box style={{ marginTop: 15, marginLeft: 15 }}>
+        <ChakraLink
+          as={ReactRouterLink}
+          to={".."}
+          style={{
+            color: "var(--mainBlue)",
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(-1);
+          }}
+        >
+          {" "}
+          &lt; Back
+        </ChakraLink>
+      </Box>
+      {folder ? (
+        <>
+          <Heading heading={"Assignment Scores"} />
+          <Heading subheading={`${folder.name}`} />
+        </>
+      ) : (
+        <>
+          <Heading heading={"My Assignments"} />
+          <Heading subheading="Score summary" />
+        </>
+      )}
 
-      <Heading subheading="Score summary" />
       <TableContainer>
         <Table>
           <Thead>
@@ -142,7 +178,7 @@ export function AllAssignmentScores() {
                 <Td>
                   <ChakraLink
                     as={ReactRouterLink}
-                    to={`/studentData/${studentId}`}
+                    to={`/studentData/${studentId}${folder ? "/" + folder.id : ""}`}
                     style={linkStyle}
                   >
                     {lastNameFirst(students[studentId])}

@@ -41,7 +41,6 @@ import {
 } from "./Tools/_framework/Paths/PublicActivities";
 import {
   loader as activityViewerLoader,
-  action as activityViewerAction,
   ActivityViewer,
 } from "./Tools/_framework/Paths/ActivityViewer";
 import {
@@ -50,7 +49,6 @@ import {
 } from "./Tools/_framework/Paths/Assigned";
 import {
   loader as assignmentDataLoader,
-  action as assignmentDataAction,
   AssignmentData,
 } from "./Tools/_framework/Paths/AssignmentData";
 import {
@@ -251,7 +249,6 @@ const router = createBrowserRouter([
       {
         path: "activityViewer/:activityId",
         loader: activityViewerLoader,
-        action: activityViewerAction,
         errorElement: <ErrorPage />,
         element: <ActivityViewer />,
       },
@@ -310,7 +307,6 @@ const router = createBrowserRouter([
       {
         path: "assignmentData/:activityId",
         loader: assignmentDataLoader,
-        action: assignmentDataAction,
         element: <AssignmentData />,
         errorElement: <ErrorPage />,
       },
@@ -349,6 +345,12 @@ const router = createBrowserRouter([
       },
       {
         path: "studentData/:userId",
+        loader: studentDataLoader,
+        element: <StudentData />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "studentData/:userId/:folderId",
         loader: studentDataLoader,
         element: <StudentData />,
         errorElement: <ErrorPage />,

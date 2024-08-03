@@ -1,3 +1,8 @@
+import axios from "axios";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { Alert, AlertQueue } from "./AlertQueue";
+import { FetcherWithComponents, Form } from "react-router-dom";
 import {
   Box,
   FormControl,
@@ -15,68 +20,66 @@ import {
   Checkbox,
   Select,
 } from "@chakra-ui/react";
-import axios from "axios";
-import React, { useEffect } from "react";
-import { useCallback, useRef, useState } from "react";
-import { useDropzone } from "react-dropzone";
+import { FaFileImage } from "react-icons/fa";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
-
-import { Form } from "react-router-dom";
-
-import { AlertQueue } from "../ChakraBasedComponents/AlertQueue";
+import { readAndCompressImage } from "browser-image-resizer";
+import { ContentStructure, DoenetmlVersion } from "../Paths/ActivityEditor";
 
 export function GeneralContentControls({
   fetcher,
-  activityId,
-  docId,
-  activityData,
+  id,
+  contentData,
   allDoenetmlVersions,
+}: {
+  fetcher: FetcherWithComponents<any>;
+  id: number;
+  contentData: ContentStructure;
+  allDoenetmlVersions: DoenetmlVersion[];
 }) {
-  let {
-    isPublic,
-    name,
-    imagePath: dataImagePath,
-    contentClassifications: classifications,
-  } = activityData;
+  let { name, imagePath: dataImagePath } = contentData;
 
   let numberOfFilesUploading = useRef(0);
   let [imagePath, setImagePath] = useState(dataImagePath);
-  let [alerts, setAlerts] = useState([]);
+  let [alerts, setAlerts] = useState<Alert[]>([]);
 
-  let learningOutcomesInit = activityData.learningOutcomes;
-  if (learningOutcomesInit == null) {
-    learningOutcomesInit = [""];
-  }
+  //   let learningOutcomesInit = activityData.learningOutcomes;
+  //   if (learningOutcomesInit == null) {
+  //     learningOutcomesInit = [""];
+  //   }
 
   // TODO: if saveDataToServer is unsuccessful, then doenetmlVersion from the server
   // will not match doenetmlVersion on the client and the client will not be notified.
   // (And same for other variables using this pattern)
   // It appears this file is using optimistic UI without a recourse
   // should the optimism be unmerited.
-  let doenetmlVersionInit = activityData.isFolder
-    ? 0
-    : activityData.documents[0].doenetmlVersion;
+  let doenetmlVersionInit: DoenetmlVersion | null = contentData.isFolder
+    ? null
+    : contentData.documents[0].doenetmlVersion;
 
   let [nameValue, setName] = useState(name);
   let lastAcceptedNameValue = useRef(name);
   let [nameIsInvalid, setNameIsInvalid] = useState(false);
 
-  let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
-  let [checkboxIsPublic, setCheckboxIsPublic] = useState(isPublic);
+  //   let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
   let [doenetmlVersion, setDoenetmlVersion] = useState(doenetmlVersionInit);
 
-  function saveDataToServer(
+  let contentType = contentData.isFolder ? "Folder" : "Activity";
+  let contentTypeLower = contentData.isFolder ? "folder" : "activity";
+
+  function saveDataToServer({
     nextLearningOutcomes,
-    nextIsPublic: boolean | undefined,
     nextDoenetmlVersionId,
-  ) {
-    let data: any = {};
+  }: {
+    nextLearningOutcomes?: any[];
+    nextDoenetmlVersionId?: number;
+  } = {}) {
+    let data: {
+      learningOutcomes?: string;
+      name?: string;
+      doenetmlVersionId?: number;
+    } = {};
     if (nextLearningOutcomes) {
       data.learningOutcomes = JSON.stringify(nextLearningOutcomes);
-    }
-
-    if (nextIsPublic != undefined) {
-      data.isPublic = nextIsPublic;
     }
 
     // Turn on/off name error messages and
@@ -101,97 +104,96 @@ export function GeneralContentControls({
     fetcher.submit(
       {
         _action: "update general",
-        activityId,
-        docId,
+        id,
+        docId: contentData.documents?.[0]?.id,
         ...data,
       },
       { method: "post" },
     );
   }
 
-  // const onDrop = useCallback(
-  //   async (files) => {
-  //     let success = true;
-  //     const file = files[0];
-  //     if (files.length > 1) {
-  //       success = false;
-  //       //Should we just grab the first one and ignore the rest
-  //       console.log("Only one file upload allowed!");
-  //     }
+  const onDrop = useCallback(
+    async (files: File[]) => {
+      let success = true;
+      const file = files[0];
+      if (files.length > 1) {
+        success = false;
+        //Should we just grab the first one and ignore the rest
+        console.log("Only one file upload allowed!");
+      }
 
-  //     //Only upload one batch at a time
-  //     if (numberOfFilesUploading.current > 0) {
-  //       console.log(
-  //         "Already uploading files.  Please wait before sending more.",
-  //       );
-  //       success = false;
-  //     }
+      //Only upload one batch at a time
+      if (numberOfFilesUploading.current > 0) {
+        console.log(
+          "Already uploading files.  Please wait before sending more.",
+        );
+        success = false;
+      }
 
-  //     //If any settings aren't right then abort
-  //     if (!success) {
-  //       return;
-  //     }
+      //If any settings aren't right then abort
+      if (!success) {
+        return;
+      }
 
-  //     numberOfFilesUploading.current = 1;
+      numberOfFilesUploading.current = 1;
 
-  //     // let image = await window.BrowserImageResizer.readAndCompressImage(file, {
-  //     //   quality: 0.9,
-  //     //   maxWidth: 350,
-  //     //   maxHeight: 234,
-  //     //   debug: true,
-  //     // });
-  //     let image = await window.createImageBitmap(file, {
-  //       resizeWidth: 350,
-  //       resizeHeight: 234,
-  //     });
+      let image = await readAndCompressImage(file, {
+        quality: 0.9,
+        maxWidth: 350,
+        maxHeight: 234,
+        debug: true,
+      });
 
-  //     //Upload files
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(image); //This one could be used with image source to preview image
+      //Upload files
+      const reader = new FileReader();
+      reader.readAsDataURL(image); //This one could be used with image source to preview image
 
-  //     reader.onabort = () => {};
-  //     reader.onerror = () => {};
-  //     reader.onload = () => {
-  //       const uploadData = new FormData();
-  //       // uploadData.append('file',file);
-  //       uploadData.append("file", image);
-  //       uploadData.append("activityId", activityId);
+      reader.onabort = () => {};
+      reader.onerror = () => {};
+      reader.onload = () => {
+        const uploadData = new FormData();
+        // uploadData.append('file',file);
+        uploadData.append("file", image);
+        uploadData.append("activityId", id.toString());
 
-  //       axios.post("/api/activityThumbnailUpload", uploadData).then((resp) => {
-  //         let { data } = resp;
+        axios.post("/api/activityThumbnailUpload", uploadData).then((resp) => {
+          let { data } = resp;
 
-  //         //uploads are finished clear it out
-  //         numberOfFilesUploading.current = 0;
-  //         let { success, cid, msg, asFileName } = data;
-  //         if (success) {
-  //           setImagePath(`/media/${cid}.jpg`);
-  //           //Refresh images in activities
-  //           fetcher.submit(
-  //             {
-  //               _action: "noop",
-  //             },
-  //             { method: "post" },
-  //           );
-  //           setAlerts([
-  //             {
-  //               type: "success",
-  //               id: cid,
-  //               title: "Activity thumbnail updated!",
-  //             },
-  //           ]);
-  //         } else {
-  //           setAlerts([{ type: "error", id: cid, title: msg }]);
-  //         }
-  //       });
-  //     };
-  //   },
-  //   [activityId],
-  // );
+          //uploads are finished clear it out
+          numberOfFilesUploading.current = 0;
+          let { success, cid, msg, asFileName } = data;
+          if (success) {
+            setImagePath(`/media/${cid}.jpg`);
+            //Refresh images in activities
+            fetcher.submit(
+              {
+                _action: "noop",
+              },
+              { method: "post" },
+            );
+            setAlerts([
+              {
+                type: "success",
+                id: cid,
+                title: "Activity thumbnail updated!",
+                description: "",
+              },
+            ]);
+          } else {
+            setAlerts([
+              { type: "error", id: cid, title: msg, description: "" },
+            ]);
+          }
+        });
+      };
+    },
+    [id],
+  );
 
-  // const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   //TODO: Cypress is opening the drawer so fast
-  //the activitiesData is out of date
+  //the activityData is out of date
   //We need something like this. But this code sets learningOutcomes too often
   // useEffect(() => {
   //   setLearningOutcomes(learningOutcomesInit);
@@ -201,9 +203,9 @@ export function GeneralContentControls({
     <>
       <AlertQueue alerts={alerts} />
       <Form method="post">
-        {/* <FormControl> */}
-        {/* <FormLabel>Thumbnail</FormLabel> */}
-        {/* <Box>
+        <FormControl>
+          <FormLabel>Thumbnail</FormLabel>
+          <Box>
             {isDragActive ? (
               <VStack
                 spacing={4}
@@ -234,82 +236,42 @@ export function GeneralContentControls({
                 <Image
                   height="120px"
                   maxWidth="180px"
-                  src={imagePath}
+                  src={imagePath ?? ""}
                   alt="Activity Card Image"
                   borderTopRadius="md"
                   objectFit="cover"
                 />
               </Card>
             )}
-          </Box> */}
-        {/* </FormControl> */}
+          </Box>
+        </FormControl>
 
-        <FormControl isRequired isInvalid={nameIsInvalid}>
+        <FormControl isInvalid={nameIsInvalid}>
           <FormLabel mt="16px">Name</FormLabel>
 
           <Input
             name="name"
             size="sm"
+            // width="392px"
             width="100%"
-            placeholder="Activity 1"
-            data-test="Activity Name"
+            placeholder={`${contentType} 1`}
+            data-test="Content Name"
             value={nameValue}
             onChange={(e) => {
               setName(e.target.value);
             }}
-            onBlur={() => saveDataToServer(undefined, undefined, undefined)}
+            onBlur={() => saveDataToServer()}
             onKeyDown={(e) => {
               if (e.key == "Enter") {
-                saveDataToServer(undefined, undefined, undefined);
+                saveDataToServer();
               }
             }}
           />
           <FormErrorMessage>
-            Error - A name for the activity is required.
+            Error - A name for the {contentTypeLower} is required.
           </FormErrorMessage>
         </FormControl>
-
-        {!activityData.isFolder ? (
-          <FormControl>
-            <Flex flexDirection="column" width="100%" rowGap={6}>
-              <FormLabel mt="16px">Classifications</FormLabel>
-              {classifications.map((c, i) => (
-                <Text key={`classification#${i}`}>{c.code}</Text>
-              ))}
-
-              <Input
-                size="sm"
-                onChange={(e) => {}}
-                onBlur={() => {
-                  // saveDataToServer(learningOutcomes, undefined, undefined)
-                  fetcher.submit(
-                    {
-                      _action: "add classification",
-                      id: activityId,
-                      //TODO: classification id
-                    },
-                    { method: "post" },
-                  );
-                }}
-                onKeyDown={(e) => {
-                  if (e.key == "Enter") {
-                    // saveDataToServer(learningOutcomes, undefined, undefined);
-                    fetcher.submit(
-                      {
-                        _action: "add classification",
-                        id: activityId,
-                        //TODO: classification id
-                      },
-                      { method: "post" },
-                    );
-                  }
-                }}
-                placeholder={`Enter a classification`}
-              ></Input>
-            </Flex>
-          </FormControl>
-        ) : null}
-        {!activityData.isFolder ? (
+        {/* {!activityData.isFolder ? (
           <FormControl>
             <Flex flexDirection="column" width="100%" rowGap={6}>
               <FormLabel mt="16px">Learning Outcomes</FormLabel>
@@ -329,15 +291,15 @@ export function GeneralContentControls({
                         });
                       }}
                       onBlur={() =>
-                        saveDataToServer(learningOutcomes, undefined, undefined)
+                        saveDataToServer({
+                          nextLearningOutcomes: learningOutcomes,
+                        })
                       }
                       onKeyDown={(e) => {
                         if (e.key == "Enter") {
-                          saveDataToServer(
-                            learningOutcomes,
-                            undefined,
-                            undefined,
-                          );
+                          saveDataToServer({
+                            nextLearningOutcomes: learningOutcomes,
+                          });
                         }
                       }}
                       placeholder={`Learning Outcome #${i + 1}`}
@@ -349,6 +311,7 @@ export function GeneralContentControls({
                       size="sm"
                       color="doenet.mainRed"
                       borderColor="doenet.mainRed"
+                      aria-label="delete learning outcome"
                       // background="doenet.mainRed"
                       icon={<HiOutlineX />}
                       onClick={() => {
@@ -360,13 +323,8 @@ export function GeneralContentControls({
                         }
 
                         setLearningOutcomes(nextLearningOutcomes);
-                        saveDataToServer(
-                          nextLearningOutcomes,
-                          undefined,
-                          undefined,
-                        );
+                        saveDataToServer({ nextLearningOutcomes });
                       }}
-                      aria-label="Delete learning outcome"
                     />
                   </Flex>
                 );
@@ -386,74 +344,59 @@ export function GeneralContentControls({
                     }
 
                     setLearningOutcomes(nextLearningOutcomes);
-                    saveDataToServer(
-                      nextLearningOutcomes,
-                      undefined,
-                      undefined,
-                    );
+                    saveDataToServer({ nextLearningOutcomes });
                   }}
-                  aria-label="Add learning outcome"
+                  aria-label={""}
                 />
               </Center>
             </Flex>
           </FormControl>
-        ) : null}
-        <FormControl>
-          <FormLabel mt="16px">Visibility</FormLabel>
-          <Checkbox
-            size="lg"
-            data-test="Public Checkbox"
-            name="public"
-            value="on"
-            isChecked={checkboxIsPublic}
-            onChange={(e) => {
-              let nextIsPublic = false;
-              if (e.target.checked) {
-                nextIsPublic = true;
-              }
-              setCheckboxIsPublic(nextIsPublic);
-              saveDataToServer(undefined, nextIsPublic, undefined);
-            }}
-          >
-            Public
-          </Checkbox>
-        </FormControl>
-        {!activityData.isFolder ? (
+        ) : null} */}
+        {!contentData.isFolder ? (
           <FormControl>
             <FormLabel mt="16px">DoenetML version</FormLabel>
             <Select
-              value={doenetmlVersion.versionId}
+              value={doenetmlVersion?.id}
+              disabled={contentData.assignmentStatus !== "Unassigned"}
               onChange={(e) => {
                 // TODO: do we worry about this pattern?
                 // If saveDataToServer is unsuccessful, the client doenetmlVersion
                 // will no match what's on the server.
                 // (See TODO from near where doenetmlVersion is defined)
-                let nextDoenetmlVersionId = e.target.value;
+                let nextDoenetmlVersionId = Number(e.target.value);
                 let nextDoenetmlVersion = allDoenetmlVersions.find(
-                  (v) => v.versionId == nextDoenetmlVersionId,
+                  (v) => v.id == nextDoenetmlVersionId,
                 );
-                setDoenetmlVersion(nextDoenetmlVersion);
-                saveDataToServer(nextDoenetmlVersionId, undefined, undefined);
+                if (nextDoenetmlVersion) {
+                  setDoenetmlVersion(nextDoenetmlVersion);
+                  saveDataToServer({ nextDoenetmlVersionId });
+                }
               }}
             >
-              {allDoenetmlVersions.map((version, i) => (
-                <option value={version.versionId} key={`doenetMLVersion#${i}`}>
+              {allDoenetmlVersions.map((version) => (
+                <option value={version.id} key={version.id}>
                   {version.displayedVersion}
                 </option>
               ))}
             </Select>
           </FormControl>
         ) : null}
-        {doenetmlVersion.deprecated && (
+        {contentData.assignmentStatus !== "Unassigned" ? (
+          <p>
+            <strong>Note</strong>: Cannot modify DoenetML version since activity
+            is assigned.
+          </p>
+        ) : null}
+        {doenetmlVersion?.deprecated && (
           <p>
             <strong>Warning</strong>: DoenetML version{" "}
             {doenetmlVersion.displayedVersion} is deprecated.{" "}
             {doenetmlVersion.deprecationMessage}
           </p>
         )}
-        <input type="hidden" name="imagePath" value={imagePath} />
+        <input type="hidden" name="imagePath" value={imagePath ?? undefined} />
         <input type="hidden" name="_action" value="update general" />
-        <input type="hidden" name="activityId" value={activityId} />
+        <input type="hidden" name="id" value={id} />
       </Form>
     </>
   );

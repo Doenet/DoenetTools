@@ -9,6 +9,13 @@ import {
   MenuItem,
   Heading,
   Tooltip,
+  Menu,
+  MenuButton,
+  MenuList,
+  IconButton,
+  Input,
+  Spacer,
+  Show,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -18,19 +25,27 @@ import {
   useNavigate,
   useFetcher,
   Link,
+  Form,
 } from "react-router-dom";
-import styled from "styled-components";
 
 import { RiEmotionSadLine } from "react-icons/ri";
-import ContentCard from "../../../PanelHeaderComponents/ContentCard";
+import ContentCard from "../../../Widgets/ContentCard";
 import axios from "axios";
 import MoveContentToFolder from "../ToolPanels/MoveContentToFolder";
-import { ActivitySettingsDrawer } from "../ToolPanels/ActivitySettingsDrawer";
-import { ActivityStructure, DoenetmlVersion } from "./ActivityEditor";
+import { ContentSettingsDrawer } from "../ToolPanels/ContentSettingsDrawer";
+import {
+  AssignmentStatus,
+  ContentStructure,
+  DoenetmlVersion,
+  License,
+  LicenseCode,
+} from "./ActivityEditor";
 import { DateTime } from "luxon";
+import { MdClose, MdOutlineSearch } from "react-icons/md";
+import { AssignmentSettingsDrawer } from "../ToolPanels/AssignmentSettingsDrawer";
 
 // what is a better solution than this?
-let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching activity/folder id
+let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching id
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -48,16 +63,10 @@ export async function action({ request, params }) {
       learningOutcomes = JSON.parse(formObj.learningOutcomes);
     }
 
-    let isPublic = false;
-    if (formObj.isPublic) {
-      isPublic = formObj.isPublic === "true";
-    }
-
     await axios.post("/api/updateContentSettings", {
-      id: formObj.activityId,
       name,
       imagePath: formObj.imagePath,
-      isPublic,
+      id: formObj.id,
       learningOutcomes,
     });
 
@@ -97,13 +106,6 @@ export async function action({ request, params }) {
     });
 
     return true;
-  } else if (formObj?._action == "Update Public") {
-    await axios.post(`/api/updateIsPublicContent`, {
-      id: formObj.id,
-      isPublic: !(formObj.isPublic === "true"),
-    });
-
-    return true;
   } else if (formObj?._action == "Duplicate Activity") {
     await axios.post(`/api/duplicateActivity`, {
       activityId: formObj.id,
@@ -137,9 +139,14 @@ export async function action({ request, params }) {
     });
     return true;
   } else if (formObj._action == "open assignment") {
-    const closeAt = DateTime.fromSeconds(
-      Math.round(DateTime.now().toSeconds() / 60) * 60,
-    ).plus(JSON.parse(formObj.duration));
+    let closeAt: DateTime;
+    if (formObj.duration === "custom") {
+      closeAt = DateTime.fromISO(formObj.customCloseAt);
+    } else {
+      closeAt = DateTime.fromSeconds(
+        Math.round(DateTime.now().toSeconds() / 60) * 60,
+      ).plus(JSON.parse(formObj.duration));
+    }
     await axios.post("/api/openAssignmentWithCode", {
       activityId: Number(formObj.activityId),
       closeAt,
@@ -166,6 +173,30 @@ export async function action({ request, params }) {
       alert("Unable to unassign activity");
     }
     return true;
+  } else if (formObj._action == "make content public") {
+    if (formObj.isFolder === "true") {
+      await axios.post("/api/makeFolderPublic", {
+        id: Number(formObj.id),
+        licenseCode: formObj.licenseCode,
+      });
+    } else {
+      await axios.post("/api/makeActivityPublic", {
+        id: Number(formObj.id),
+        licenseCode: formObj.licenseCode,
+      });
+    }
+    return true;
+  } else if (formObj._action == "make content private") {
+    if (formObj.isFolder === "true") {
+      await axios.post("/api/makeFolderPrivate", {
+        id: Number(formObj.id),
+      });
+    } else {
+      await axios.post("/api/makeActivityPrivate", {
+        id: Number(formObj.id),
+      });
+    }
+    return true;
   } else if (formObj._action == "go to data") {
     return redirect(`/assignmentData/${formObj.activityId}`);
   } else if (formObj?._action == "noop") {
@@ -175,48 +206,60 @@ export async function action({ request, params }) {
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
-export async function loader({ params }) {
-  const { data } = await axios.get(
-    `/api/getMyFolderContent/${params.folderId ?? ""}`,
-  );
+export async function loader({ params, request }) {
+  const url = new URL(request.url);
+  const q = url.searchParams.get("q");
 
-  if (data.notMe) {
-    return redirect(
-      `/publicActivities/${params.userId}${params.folderId ? "/" + params.folderId : ""}`,
+  let data;
+  if (q) {
+    let results = await axios.get(
+      `/api/searchMyFolderContent/${params.userId}/${params.folderId ?? ""}?q=${q}`,
     );
+    data = results.data;
+  } else {
+    let results = await axios.get(
+      `/api/getMyFolderContent/${params.userId}/${params.folderId ?? ""}`,
+    );
+    data = results.data;
+
+    if (data.notMe) {
+      return redirect(
+        `/publicActivities/${params.userId}${params.folderId ? "/" + params.folderId : ""}`,
+      );
+    }
   }
 
   return {
     folderId: params.folderId ? Number(params.folderId) : null,
     content: data.content,
     allDoenetmlVersions: data.allDoenetmlVersions,
+    allLicenses: data.allLicenses,
     userId: params.userId,
     folder: data.folder,
+    query: q,
   };
 }
 
-//@ts-ignore
-const ActivitiesSection = styled.div`
-  padding: 10px;
-  margin: 0px;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  background: var(--lightBlue);
-  height: 100vh;
-`;
-
 export function Activities() {
   let context: any = useOutletContext();
-  let { folderId, content, allDoenetmlVersions, userId, folder } =
-    useLoaderData() as {
-      folderId: number | null;
-      content: ActivityStructure[];
-      allDoenetmlVersions: DoenetmlVersion[];
-      userId: number;
-      folder: any;
-    };
-  const [settingsActivityId, setSettingsActivityId] = useState<number | null>(
+  let {
+    folderId,
+    content,
+    allDoenetmlVersions,
+    allLicenses,
+    userId,
+    folder,
+    query,
+  } = useLoaderData() as {
+    folderId: number | null;
+    content: ContentStructure[];
+    allDoenetmlVersions: DoenetmlVersion[];
+    allLicenses: License[];
+    userId: number;
+    folder: ContentStructure | null;
+    query: string | null;
+  };
+  const [settingsContentId, setSettingsContentId] = useState<number | null>(
     null,
   );
   const {
@@ -225,14 +268,35 @@ export function Activities() {
     onClose: settingsOnClose,
   } = useDisclosure();
 
+  const {
+    isOpen: assignmentSettingsAreOpen,
+    onOpen: assignmentSettingsOnOpen,
+    onClose: assignmentSettingsOnClose,
+  } = useDisclosure();
+
   const contentCardRefs = useRef(new Array());
-  const currentCardRef = useRef(null);
+  const folderSettingsRef = useRef(null);
+  const finalFocusRef = useRef(null);
+
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchString, setSearchString] = useState(query ?? "");
+  const searchRef = useRef<HTMLInputElement>(null);
+  const searchBlurTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
+  const haveQuery = Boolean(query);
+
+  useEffect(() => {
+    if (searchOpen) {
+      searchRef.current?.focus();
+    }
+  }, [searchOpen]);
 
   const navigate = useNavigate();
 
-  const [moveToFolderActivityId, setMoveToFolderActivityId] = useState<
-    number | null
-  >(null);
+  const [moveToFolderContent, setMoveToFolderContent] = useState<{
+    id: number;
+    isPublic: boolean;
+    licenseCode: LicenseCode | null;
+  }>({ id: -1, isPublic: false, licenseCode: null });
 
   const {
     isOpen: moveToFolderIsOpen,
@@ -241,7 +305,7 @@ export function Activities() {
   } = useDisclosure();
 
   const [displaySettingsTab, setSettingsDisplayTab] = useState<
-    "general" | "assignment"
+    "general" | "share"
   >("general");
 
   useEffect(() => {
@@ -255,27 +319,27 @@ export function Activities() {
     return null;
   }
 
-  function getCardMenuList(
-    isPublic: boolean,
-    id: number,
-    position: number,
-    numCards: number,
-    isAssigned: boolean,
-    isFolder?: boolean,
-  ) {
+  function getCardMenuList({
+    id,
+    position,
+    numCards,
+    assignmentStatus,
+    isFolder,
+    isPublic,
+    licenseCode,
+    parentFolderId,
+  }: {
+    id: number;
+    position: number;
+    numCards: number;
+    assignmentStatus: AssignmentStatus;
+    isFolder?: boolean;
+    isPublic: boolean;
+    licenseCode: LicenseCode | null;
+    parentFolderId: number | null;
+  }) {
     return (
       <>
-        <MenuItem
-          data-test={`Make ${isPublic ? "Private" : "Public"} Menu Item`}
-          onClick={() => {
-            fetcher.submit(
-              { _action: "Update Public", isPublic, id },
-              { method: "post" },
-            );
-          }}
-        >
-          Make {isPublic ? "Private" : "Public"}
-        </MenuItem>
         {!isFolder ? (
           <>
             <MenuItem
@@ -291,12 +355,17 @@ export function Activities() {
             </MenuItem>
           </>
         ) : null}
-        {position > 0 ? (
+        {position > 0 && !haveQuery ? (
           <MenuItem
             data-test="Move Left Menu Item"
             onClick={() => {
               fetcher.submit(
-                { _action: "Move", id, desiredPosition: position - 1 },
+                {
+                  _action: "Move",
+                  id,
+                  desiredPosition: position - 1,
+                  folderId,
+                },
                 { method: "post" },
               );
             }}
@@ -304,12 +373,17 @@ export function Activities() {
             Move Left
           </MenuItem>
         ) : null}
-        {position < numCards - 1 ? (
+        {position < numCards - 1 && !haveQuery ? (
           <MenuItem
             data-test="Move Right Menu Item"
             onClick={() => {
               fetcher.submit(
-                { _action: "Move", id, desiredPosition: position + 1 },
+                {
+                  _action: "Move",
+                  id,
+                  desiredPosition: position + 1,
+                  folderId,
+                },
                 { method: "post" },
               );
             }}
@@ -317,15 +391,17 @@ export function Activities() {
             Move Right
           </MenuItem>
         ) : null}
-        <MenuItem
-          data-test="Move to Folder"
-          onClick={() => {
-            setMoveToFolderActivityId(id);
-            moveToFolderOnOpen();
-          }}
-        >
-          Move to Folder
-        </MenuItem>
+        {haveQuery ? null : (
+          <MenuItem
+            data-test="Move to Folder"
+            onClick={() => {
+              setMoveToFolderContent({ id, isPublic, licenseCode });
+              moveToFolderOnOpen();
+            }}
+          >
+            Move to Folder
+          </MenuItem>
+        )}
         <MenuItem
           data-test="Delete Menu Item"
           onClick={() => {
@@ -337,73 +413,118 @@ export function Activities() {
         >
           Delete
         </MenuItem>
+        {!isFolder ? (
+          <MenuItem
+            data-test="Assign Activity Menu Item"
+            onClick={() => {
+              setSettingsContentId(id);
+              assignmentSettingsOnOpen();
+            }}
+          >
+            {assignmentStatus === "Unassigned"
+              ? "Assign Activity"
+              : "Manage Assignment"}
+          </MenuItem>
+        ) : null}
         <MenuItem
-          data-test="Assign Activity Menu Item"
+          data-test="Share Menu Item"
           onClick={() => {
-            setSettingsActivityId(id);
-            setSettingsDisplayTab("assignment");
+            setSettingsContentId(id);
+            setSettingsDisplayTab("share");
             settingsOnOpen();
           }}
         >
-          {isAssigned ? "Manage Assignment" : "Assign Activity"}
+          Share
         </MenuItem>
         <MenuItem
           data-test="Settings Menu Item"
           onClick={() => {
-            setSettingsActivityId(id);
+            setSettingsContentId(id);
             setSettingsDisplayTab("general");
             settingsOnOpen();
           }}
         >
           Settings
         </MenuItem>
+        {haveQuery ? (
+          <MenuItem
+            data-test="Go to containing folder"
+            onClick={() => {
+              navigate(
+                `/activities/${userId}${parentFolderId ? "/" + parentFolderId : ""}`,
+              );
+            }}
+          >
+            Go to containing folder
+          </MenuItem>
+        ) : null}
       </>
     );
   }
 
-  let headingText;
+  let headingText = folder ? (
+    <>
+      {folder.isPublic ? "Public " : ""}Folder: {folder.name}
+    </>
+  ) : (
+    `My Activities`
+  );
 
-  if (folder) {
-    headingText = <>Folder: {folder.name}</>;
-  } else {
-    headingText = `My Activities`;
-  }
-
-  let activityData: ActivityStructure | undefined;
-  if (settingsActivityId) {
-    let index = content.findIndex((obj) => obj.id == settingsActivityId);
-    if (index != -1) {
-      activityData = content[index];
-      currentCardRef.current = contentCardRefs.current[index];
+  let contentData: ContentStructure | undefined;
+  if (settingsContentId) {
+    if (folder && settingsContentId === folderId) {
+      contentData = folder;
+      finalFocusRef.current = folderSettingsRef.current;
     } else {
-      //Throw error not found
+      let index = content.findIndex((obj) => obj.id == settingsContentId);
+      if (index != -1) {
+        contentData = content[index];
+        finalFocusRef.current = contentCardRefs.current[index];
+      } else {
+        //Throw error not found
+      }
     }
   }
 
-  let settings_drawer =
-    activityData && settingsActivityId ? (
-      <ActivitySettingsDrawer
+  let settingsDrawer =
+    contentData && settingsContentId ? (
+      <ContentSettingsDrawer
         isOpen={settingsAreOpen}
         onClose={settingsOnClose}
-        activityId={settingsActivityId}
-        activityData={activityData}
+        id={settingsContentId}
+        contentData={contentData}
         allDoenetmlVersions={allDoenetmlVersions}
-        finalFocusRef={currentCardRef}
+        allLicenses={allLicenses}
+        finalFocusRef={finalFocusRef}
         fetcher={fetcher}
         displayTab={displaySettingsTab}
       />
     ) : null;
-
+  let assignmentDrawer =
+    contentData && settingsContentId ? (
+      <AssignmentSettingsDrawer
+        isOpen={assignmentSettingsAreOpen}
+        onClose={assignmentSettingsOnClose}
+        id={settingsContentId}
+        contentData={contentData}
+        finalFocusRef={finalFocusRef}
+        fetcher={fetcher}
+      />
+    ) : null;
   return (
     <>
-      {settings_drawer}
+      {settingsDrawer}
+      {assignmentDrawer}
 
       <MoveContentToFolder
         isOpen={moveToFolderIsOpen}
         onClose={moveToFolderOnClose}
-        id={moveToFolderActivityId}
+        id={moveToFolderContent.id}
+        isPublic={moveToFolderContent.isPublic}
+        licenseCode={moveToFolderContent.licenseCode}
+        userId={userId}
         currentParentId={folderId}
-        finalFocusRef={currentCardRef}
+        finalFocusRef={finalFocusRef}
       />
 
       <Box
@@ -418,50 +539,126 @@ export function Activities() {
             {headingText}
           </Heading>
         </Tooltip>
-        <div style={{ float: "right" }}>
-          <Button
-            margin="3px"
-            size="xs"
-            colorScheme="blue"
-            onClick={async () => {
-              fetcher.submit({ _action: "Add Folder" }, { method: "post" });
-            }}
-          >
-            + Add Folder
-          </Button>
-          <Button
-            margin="3px"
-            data-test="Add Activity"
-            size="xs"
-            colorScheme="blue"
-            onClick={async () => {
-              //Create an activity and redirect to the editor for it
-              // let { data } = await axios.post("/api/createActivity");
-              // let { activityId } = data;
-              // navigate(`/activityEditor/${activityId}`);
+        <Flex float="right">
+          <Flex>
+            <Form>
+              <Input
+                type="search"
+                hidden={!searchOpen}
+                size="xs"
+                margin="3px"
+                width="250px"
+                ref={searchRef}
+                placeholder={
+                  folder ? `Search in folder` : `Search my activities`
+                }
+                value={searchString}
+                name="q"
+                onInput={(e) => {
+                  setSearchString((e.target as HTMLInputElement).value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key == "Enter") {
+                  }
+                }}
+                onBlur={() => {
+                  searchBlurTimeout.current = setTimeout(() => {
+                    setSearchOpen(false);
+                  }, 200);
+                }}
+              />
+              <Tooltip
+                label={folder ? `Search in folder` : `Search my activities`}
+                placement="bottom-end"
+              >
+                <IconButton
+                  size="xs"
+                  margin="3px"
+                  icon={<MdOutlineSearch />}
+                  aria-label={
+                    folder ? `Search in folder` : `Search my activities`
+                  }
+                  type="submit"
+                  onClick={(e) => {
+                    if (searchOpen) {
+                      clearTimeout(searchBlurTimeout.current);
+                      searchRef.current?.focus();
+                    } else {
+                      setSearchOpen(true);
+                      e.preventDefault();
+                    }
+                  }}
+                />
+              </Tooltip>
+            </Form>
+          </Flex>
+          <Menu>
+            <MenuButton
+              as={Button}
+              size="xs"
+              margin="3px"
+              hidden={searchOpen || haveQuery}
+            >
+              New
+            </MenuButton>
+            <MenuList>
+              <MenuItem
+                onClick={async () => {
+                  //Create an activity and redirect to the editor for it
+                  // let { data } = await axios.post("/api/createActivity");
+                  // let { activityId } = data;
+                  // navigate(`/activityEditor/${activityId}`);
 
-              // TODO - review this, elsewhere the fetcher is being used, and
-              // there was code up in the action() method for this action
-              // that was unused. This appears to work okay though? And it
-              // would make it consistent with how API requests are done elsewhere
-              fetcher.submit({ _action: "Add Activity" }, { method: "post" });
-            }}
-          >
-            + Add Activity
-          </Button>
+                  // TODO - review this, elsewhere the fetcher is being used, and
+                  // there was code up in the action() method for this action
+                  // that was unused. This appears to work okay though? And it
+                  // would make it consistent with how API requests are done elsewhere
+                  fetcher.submit(
+                    { _action: "Add Activity" },
+                    { method: "post" },
+                  );
+                }}
+              >
+                Activity
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  fetcher.submit({ _action: "Add Folder" }, { method: "post" });
+                }}
+              >
+                Folder
+              </MenuItem>
+            </MenuList>
+          </Menu>
+
+          {folderId !== null ? (
+            <Button
+              margin="3px"
+              size="xs"
+              ref={folderSettingsRef}
+              onClick={() => {
+                setSettingsContentId(folderId);
+                setSettingsDisplayTab("share");
+                settingsOnOpen();
+              }}
+              hidden={searchOpen || haveQuery}
+            >
+              Share
+            </Button>
+          ) : null}
           <Button
             margin="3px"
             size="xs"
-            colorScheme="blue"
             onClick={() =>
               navigate(`/allAssignmentScores${folderId ? "/" + folderId : ""}`)
             }
+            hidden={searchOpen || haveQuery}
           >
             See Scores
           </Button>
-        </div>
+        </Flex>
       </Box>
-      {folder ? (
+      {folder && !haveQuery ? (
         <Box style={{ marginLeft: "15px", marginTop: "-30px", float: "left" }}>
           <Link
             to={`/activities/${userId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
@@ -469,13 +666,54 @@ export function Activities() {
               color: "var(--mainBlue)",
             }}
           >
-            {" "}
-            &lt; Back to{" "}
-            {folder.parentFolder ? folder.parentFolder.name : `My Activities`}
+            <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
+              <Show above="sm">
+                &lt; Back to{" "}
+                {folder.parentFolder
+                  ? folder.parentFolder.name
+                  : `My Activities`}
+              </Show>
+              <Show below="sm">&lt; Back</Show>
+            </Text>
           </Link>
         </Box>
       ) : null}
-      <ActivitiesSection data-test="Activities">
+      {haveQuery ? (
+        <Flex
+          width="100%"
+          background="lightgray"
+          fontSize="large"
+          justifyContent="center"
+          alignItems="center"
+          padding="5px"
+        >
+          <Spacer />
+          Search results for: {query}
+          <Spacer />
+          <Form>
+            <Tooltip label="Close search results" placement="bottom-end">
+              <IconButton
+                icon={<MdClose />}
+                background="lightgray"
+                aria-label="Close search results"
+                type="submit"
+                onClick={() => {
+                  setSearchString("");
+                }}
+              />
+            </Tooltip>
+          </Form>
+        </Flex>
+      ) : null}
+      <Flex
+        data-test="Activities"
+        padding="10px"
+        margin="0px"
+        width="100%"
+        justifyContent="center"
+        background="var(--lightBlue)"
+        minHeight="calc(100vh - 120px)"
+      >
         <Wrap p="10px" overflow="visible">
           {content.length < 1 ? (
             <Flex
@@ -490,7 +728,9 @@ export function Activities() {
               backgroundColor="transparent"
             >
               <Icon fontSize="48pt" as={RiEmotionSadLine} />
-              <Text fontSize="36pt">No Activities Yet</Text>
+              <Text fontSize="36pt">
+                {haveQuery ? "No Results Found" : "No Activities Yet"}
+              </Text>
             </Flex>
           ) : (
             <>
@@ -504,17 +744,19 @@ export function Activities() {
                     ref={getCardRef}
                     {...activity}
                     title={activity.name}
-                    menuItems={getCardMenuList(
-                      activity.isPublic,
-                      activity.id,
+                    menuItems={getCardMenuList({
+                      id: activity.id,
                       position,
-                      content.length,
-                      activity.isAssigned,
-                      activity.isFolder,
-                    )}
+                      numCards: content.length,
+                      assignmentStatus: activity.assignmentStatus,
+                      isFolder: activity.isFolder,
+                      isPublic: activity.isPublic,
+                      licenseCode: activity.license?.code ?? null,
+                      parentFolderId: activity.parentFolder?.id ?? null,
+                    })}
                     suppressAvatar={true}
                     showOwnerName={false}
-                    imageLink={
+                    cardLink={
                       activity.isFolder
                         ? `/activities/${activity.ownerId}/${activity.id}`
                         : `/activityEditor/${activity.id}`
@@ -527,7 +769,7 @@ export function Activities() {
             </>
           )}
         </Wrap>
-      </ActivitiesSection>
+      </Flex>
     </>
   );
 }
