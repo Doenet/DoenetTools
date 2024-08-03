@@ -22,12 +22,12 @@ model content {
   isPublic         Boolean                  @default(false)
   isDeleted        Boolean                  @default(false)
   sortIndex        BigInt
-  licenseCode      String?            @db.VarChar(10)
-  owner            users              @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  parentFolder     content?           @relation("folderStructure", fields: [parentFolderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  subFolders       content[]          @relation("folderStructure")
+  licenseCode      String?                  @db.VarChar(10)
+  owner            users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  parentFolder     content?                 @relation("folderStructure", fields: [parentFolderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subFolders       content[]                @relation("folderStructure")
   documents        documents[]
-  license          licenses?          @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  license          licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
   assignmentScores assignmentScores[]
   promotedContent  promotedContent[]
   classifications  contentClassifications[]
@@ -221,6 +221,7 @@ model classifications {
   systemId               Int
   category               String                   @db.TinyText
   description            String                   @db.Text
+  grade                  String?
   system                 classificationSystems    @relation(fields: [systemId], references: [id])
   contentClassifications contentClassifications[]
 

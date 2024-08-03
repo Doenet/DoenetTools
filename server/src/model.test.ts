@@ -5134,34 +5134,31 @@ test("Content classifications can only be edited by activity owner", async () =>
   const { userId } = await createTestUser();
   const { userId: otherId } = await createTestUser();
   const allClassifications = await searchPossibleClassifications();
-  const { id: classificationAlgebraId } = allClassifications.find(
-    (k) => k.code === "Add and subtract multiples of x",
+  const { id: classificationId } = allClassifications.find(
+    (k) => k.code === "K.CC.1",
   )!;
   const { activityId } = await createActivity(userId, null);
 
   // Add
   await expect(() =>
-    addClassification(activityId, classificationAlgebraId, otherId),
+    addClassification(activityId, classificationId, otherId),
   ).rejects.toThrowError();
-  await addClassification(activityId, classificationAlgebraId, userId);
+  await addClassification(activityId, classificationId, userId);
   {
     const classifications = await getClassifications(activityId, userId);
     expect(classifications.length).toBe(1);
-    expect(classifications[0].classification).toHaveProperty(
-      "code",
-      "Add and subtract multiples of x",
-    );
+    expect(classifications[0].classification).toHaveProperty("code", "K.CC.1");
     expect(classifications[0].classification).toHaveProperty(
       "id",
-      classificationAlgebraId,
+      classificationId,
     );
   }
 
   // Remove
   await expect(() =>
-    removeClassification(activityId, classificationAlgebraId, otherId),
+    removeClassification(activityId, classificationId, otherId),
   ).rejects.toThrowError();
-  await removeClassification(activityId, classificationAlgebraId, userId);
+  await removeClassification(activityId, classificationId, userId);
   {
     const classifications = await getClassifications(activityId, userId);
     expect(classifications).toEqual([]);
@@ -5170,17 +5167,15 @@ test("Content classifications can only be edited by activity owner", async () =>
 
 test("Get classifications of public activity", async () => {
   const allClassifications = await searchPossibleClassifications();
-  const { id: classificationAlgebraId } = allClassifications.find(
-    (k) => k.code === "Add and subtract multiples of x",
-  )!;
-  const { id: classificationComplexNumId } = allClassifications.find(
-    (k) => k.code === "Adding complex numbers",
+  const { id: classId1 } = allClassifications.find((k) => k.code === "K.CC.1")!;
+  const { id: classId2 } = allClassifications.find(
+    (k) => k.code === "8.2.1.5",
   )!;
   const { userId: ownerId } = await createTestUser();
   const { activityId } = await createActivity(ownerId, null);
 
-  await addClassification(activityId, classificationAlgebraId, ownerId);
-  await addClassification(activityId, classificationComplexNumId, ownerId);
+  await addClassification(activityId, classId1, ownerId);
+  await addClassification(activityId, classId2, ownerId);
 
   const { userId: viewerId } = await createTestUser();
   await expect(() =>

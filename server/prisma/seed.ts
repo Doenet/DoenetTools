@@ -81,59 +81,151 @@ async function main() {
   });
 
   const classificationSystem = await prisma.classificationSystems.upsert({
-    where: { name: "Test System" },
-    update: { name: "Test System" },
-    create: { name: "Test System" },
+    where: { name: "Common Core" },
+    update: { name: "Common Core" },
+    create: { name: "Common Core" },
   });
-  const { id: systemId } = await prisma.classificationSystems.findUniqueOrThrow(
-    {
-      where: { name: "Test System" },
+  const { id: commonCoreId } =
+    await prisma.classificationSystems.findUniqueOrThrow({
+      where: { name: "Common Core" },
       select: {
         id: true,
       },
-    },
-  );
+    });
 
   const classification1 = await prisma.classifications.upsert({
     where: {
       code_systemId: {
-        code: "Add and subtract multiples of x",
-        systemId: systemId,
+        code: "K.CC.1",
+        systemId: commonCoreId,
       },
     },
     update: {
-      code: "Add and subtract multiples of x",
-      category: "Algebra",
-      description:
-        "Used for content that involves learning elementary algebra.",
-      systemId,
+      code: "K.CC.1",
+      grade: "Kindergarten",
+      category:
+        "Counting and Cardinality: Know number names and the count sequence.",
+      description: "Count to 100 by ones and by tens.",
+      systemId: commonCoreId,
     },
     create: {
-      code: "Add and subtract multiples of x",
-      category: "Algebra",
-      description:
-        "Used for content that involves learning elementary algebra.",
-      systemId,
+      code: "K.CC.1",
+      grade: "Kindergarten",
+      category:
+        "Counting and Cardinality: Know number names and the count sequence.",
+      description: "Count to 100 by ones and by tens.",
+      systemId: commonCoreId,
     },
   });
 
   const classification2 = await prisma.classifications.upsert({
     where: {
-      code_systemId: { code: "Adding complex numbers", systemId: systemId },
+      code_systemId: { code: "K.OA.1", systemId: commonCoreId },
     },
     update: {
-      code: "Adding complex numbers",
-      category: "Pre-Calculus",
+      code: "K.OA.1",
+      grade: "Kindergarten",
+      category:
+        "Operations and Algebraic Thinking: Understand addition as putting together and adding to, and understand subtraction as taking apart and taking from.",
       description:
-        "Some description about learning to use complex numbers in 10th grade or so.",
-      systemId,
+        "Represent addition and subtraction with objects, fingers, mental images, drawings (Drawings need not show details, but should show the mathematics in the problem.(This applies wherever drawings are mentioned in the Standards.)), sounds (e.g., claps), acting out situations, verbal explanations, expressions, or equations.",
+      systemId: commonCoreId,
     },
     create: {
-      code: "Adding complex numbers",
-      category: "Pre-Calculus",
+      code: "K.OA.1",
+      grade: "Kindergarten",
+      category:
+        "Operations and Algebraic Thinking: Understand addition as putting together and adding to, and understand subtraction as taking apart and taking from.",
       description:
-        "Some description about learning to use complex numbers in 10th grade or so.",
-      systemId,
+        "Represent addition and subtraction with objects, fingers, mental images, drawings (Drawings need not show details, but should show the mathematics in the problem.(This applies wherever drawings are mentioned in the Standards.)), sounds (e.g., claps), acting out situations, verbal explanations, expressions, or equations.",
+      systemId: commonCoreId,
+    },
+  });
+
+  const classification3 = await prisma.classifications.upsert({
+    where: {
+      code_systemId: { code: "A.SSE.3 c.", systemId: commonCoreId },
+    },
+    update: {
+      code: "A.SSE.3 c.",
+      grade: "HS",
+      category:
+        "Seeing Structure in Expressions: Write expressions in equivalent forms to solve problems.",
+      description:
+        "Use the properties of exponents to transform expressions for exponential functions.  For example the expression 1.15t can be rewritten as (1.151/12)12t ≈1.01212t to reveal the approximate equivalent monthly interest rate if the annual rate is 15%.",
+      systemId: commonCoreId,
+    },
+    create: {
+      code: "A.SSE.3 c.",
+      grade: "HS",
+      category:
+        "Seeing Structure in Expressions: Write expressions in equivalent forms to solve problems.",
+      description:
+        "Use the properties of exponents to transform expressions for exponential functions.  For example the expression 1.15t can be rewritten as (1.151/12)12t ≈1.01212t to reveal the approximate equivalent monthly interest rate if the annual rate is 15%.",
+      systemId: commonCoreId,
+    },
+  });
+
+  const classificationSystem2 = await prisma.classificationSystems.upsert({
+    where: { name: "Minnesota Academic Standards in Math" },
+    update: { name: "Minnesota Academic Standards in Math" },
+    create: { name: "Minnesota Academic Standards in Math" },
+  });
+  const { id: minnesotaMathId } =
+    await prisma.classificationSystems.findUniqueOrThrow({
+      where: { name: "Minnesota Academic Standards in Math" },
+      select: {
+        id: true,
+      },
+    });
+
+  const minnesotaClassification1 = await prisma.classifications.upsert({
+    where: {
+      code_systemId: {
+        code: "8.2.1.5",
+        systemId: minnesotaMathId,
+      },
+    },
+    update: {
+      code: "8.2.1.5",
+      category:
+        "Understand the concept of function in real-world and mathematical situations, and distinguish between linear and nonlinear functions.",
+      description:
+        "Understand that a geometric sequence is a non-linear function that can be expressed in the form f(x) = ab^x, where x = 0, 1, 2, 3,….",
+      systemId: minnesotaMathId,
+    },
+    create: {
+      code: "8.2.1.5",
+      category:
+        "Understand the concept of function in real-world and mathematical situations, and distinguish between linear and nonlinear functions.",
+      description:
+        "Understand that a geometric sequence is a non-linear function that can be expressed in the form f(x) = ab^x, where x = 0, 1, 2, 3,….",
+      systemId: minnesotaMathId,
+    },
+  });
+
+  const minnesotaClassification2 = await prisma.classifications.upsert({
+    where: {
+      code_systemId: {
+        code: "9.4.3.9",
+        systemId: minnesotaMathId,
+      },
+    },
+    update: {
+      code: "9.4.3.9",
+      category:
+        "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
+      description:
+        "Use the relationship between conditional probabilities and relative frequencies in contingency tables.",
+      systemId: minnesotaMathId,
+    },
+    create: {
+      code: "9.4.3.9",
+      category:
+        "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
+      description:
+        "Use the relationship between conditional probabilities and relative frequencies in contingency tables.",
+      systemId: minnesotaMathId,
     },
   });
 
