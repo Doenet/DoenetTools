@@ -20,12 +20,23 @@ import {
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
-import { Outlet, useLoaderData, useLocation, useNavigate } from "react-router";
+import { Outlet, useLoaderData } from "react-router";
 import { NavLink } from "react-router-dom";
 import RouterLogo from "../RouterLogo";
 import { ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
+
+export type User =
+  | {
+      email: string;
+      userId: number;
+      firstNames: string | null;
+      lastNames: string;
+      isAnonymous: boolean;
+      isAdmin: boolean;
+    }
+  | undefined;
 
 export async function loader() {
   const {
@@ -107,24 +118,8 @@ function NavLinkDropdownTab({ to, children, dataTest }) {
   );
 }
 
-export function SiteHeader(props) {
-  let { user } = useLoaderData() as {
-    user:
-      | {
-          email: string;
-          userId: number;
-          firstNames: string | null;
-          lastNames: string;
-          isAnonymous: boolean;
-          isAdmin: boolean;
-        }
-      | undefined;
-  };
-  const { childComponent } = props;
-
-  let location = useLocation();
-
-  const navigate = useNavigate();
+export function SiteHeader() {
+  let { user } = useLoaderData() as { user: User };
 
   const helpMenuShouldFocusFirst = useBreakpointValue(
     { base: false, md: true },
@@ -327,11 +322,7 @@ export function SiteHeader(props) {
           </Grid>
         </GridItem>
         <GridItem area="main" as="main" margin="0" overflowY="auto">
-          {childComponent ? (
-            childComponent
-          ) : (
-            <Outlet context={{ signedIn: Boolean(user) }} />
-          )}
+          <Outlet context={user} />
         </GridItem>
       </Grid>
     </>

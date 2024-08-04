@@ -8,8 +8,14 @@ import {
   Input,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { Form, useLoaderData, useNavigate } from "react-router-dom";
+import {
+  Form,
+  useLoaderData,
+  useNavigate,
+  useOutletContext,
+} from "react-router-dom";
 import axios from "axios";
+import { User } from "./SiteHeader";
 
 export async function action({
   params,
@@ -37,20 +43,17 @@ export async function action({
 }
 
 export async function loader({ params, request }) {
-  let {
-    data: { user },
-  } = await axios.get("/api/getUser");
-
   const navigateTo = "/";
 
-  return { user, navigateTo };
+  return { navigateTo };
 }
 
 export function ChangeName() {
-  const { user, navigateTo } = useLoaderData() as {
-    user: { firstNames: string | null; lastNames: string } | undefined;
+  const { navigateTo } = useLoaderData() as {
     navigateTo: string | undefined;
   };
+
+  const user = useOutletContext<User>();
 
   let navigate = useNavigate();
 
@@ -58,11 +61,8 @@ export function ChangeName() {
   const [lastNames, setLastNames] = useState(user?.lastNames ?? "");
   const [submitted, setSubmitted] = useState(false);
 
-  console.log("navigateTo", navigateTo);
-
   useEffect(() => {
     if (navigateTo && submitted) {
-      console.log("we shouldn't navigate anywhere!");
       setTimeout(() => {
         navigate(navigateTo);
       }, 100);

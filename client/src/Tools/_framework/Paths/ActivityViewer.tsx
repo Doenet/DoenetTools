@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import {
-  redirect,
   useLoaderData,
   useNavigate,
   useLocation,
+  useOutletContext,
 } from "react-router";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
@@ -28,12 +28,9 @@ import { Link } from "react-router-dom";
 import { ContentStructure, DoenetmlVersion, License } from "./ActivityEditor";
 import { DisplayLicenseItem } from "../ToolPanels/SharingControls";
 import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
+import { User } from "./SiteHeader";
 
 export async function loader({ params }) {
-  const {
-    data: { signedIn },
-  } = await axios.get("/api/getSignedIn");
-
   try {
     const { data: activityData } = await axios.get(
       `/api/getActivityView/${params.activityId}`,
@@ -56,7 +53,6 @@ export async function loader({ params }) {
     return {
       activityId,
       doenetML,
-      signedIn,
       activity: activityData.activity,
       owner: activityData.owner,
       docId,
@@ -76,7 +72,6 @@ export function ActivityViewer() {
   const {
     activityId,
     doenetML,
-    signedIn,
     activity,
     owner,
     docId,
@@ -85,7 +80,6 @@ export function ActivityViewer() {
   } = useLoaderData() as {
     activityId: number;
     doenetML: string;
-    signedIn: boolean;
     activity: ContentStructure;
     owner: {
       userId: number;
@@ -106,6 +100,8 @@ export function ActivityViewer() {
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  const user = useOutletContext<User>();
 
   useEffect(() => {
     document.title = `${activity.name} - Doenet`;
@@ -184,7 +180,7 @@ export function ActivityViewer() {
                           >
                             See Inside
                           </Button>
-                          {signedIn ? (
+                          {user ? (
                             <Button
                               data-test="Copy to Activities Button"
                               size="xs"

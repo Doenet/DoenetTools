@@ -265,7 +265,7 @@ app.get("/api/logout", function (req, res, next) {
 
 app.get("/api/getSignedIn", (req: Request, res: Response) => {
   const signedIn = req.user ? true : false;
-  res.send({ signedIn: signedIn });
+  res.send({ signedIn });
 });
 
 app.get(
