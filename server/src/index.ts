@@ -67,7 +67,7 @@ import {
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
