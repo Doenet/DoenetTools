@@ -11,8 +11,19 @@ import {
   Input,
 } from "@chakra-ui/react";
 
-export async function action({ params, request }) {
-  const formData = await request.formData();
+export async function action({
+  params,
+  request,
+  formData,
+}: {
+  params: any;
+  request: any;
+  formData?: any;
+}) {
+  if (!formData) {
+    formData = await request.formData();
+  }
+
   let formObj = Object.fromEntries(formData);
 
   if (formObj._action == "submit code") {

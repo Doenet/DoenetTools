@@ -7,7 +7,6 @@ import {
 } from "react-router";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
-import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import {
   Box,
   Button,
@@ -31,12 +30,10 @@ import { DisplayLicenseItem } from "../ToolPanels/SharingControls";
 import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
 
 export async function loader({ params }) {
-  //Check if signedIn
-  const profileInfo = await checkIfUserClearedOut();
-  let signedIn = true;
-  if (profileInfo.cookieRemoved) {
-    signedIn = false;
-  }
+  const {
+    data: { signedIn },
+  } = await axios.get("/api/getSignedIn");
+
   try {
     const { data: activityData } = await axios.get(
       `/api/getActivityView/${params.activityId}`,
@@ -109,16 +106,6 @@ export function ActivityViewer() {
 
   const navigate = useNavigate();
   const location = useLocation();
-
-  let navigateTo = useRef("");
-
-  // TODO: fix this navigation
-  if (navigateTo.current != "") {
-    const newHref = navigateTo.current;
-    navigateTo.current = "";
-    //@ts-ignore
-    location.href = newHref;
-  }
 
   useEffect(() => {
     document.title = `${activity.name} - Doenet`;
@@ -214,7 +201,7 @@ export function ActivityViewer() {
                               colorScheme="blue"
                               size="xs"
                               onClick={() => {
-                                navigateTo.current = "/signIn";
+                                navigate("/signIn");
                               }}
                             >
                               Sign In To Copy to Activities

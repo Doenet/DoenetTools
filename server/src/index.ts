@@ -70,8 +70,8 @@ import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import { Prisma, PrismaClient } from "@prisma/client";
 
 import passport from "passport";
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { Strategy as MagicLinkStrategy } from 'passport-magic-link';
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Strategy as MagicLinkStrategy } from "passport-magic-link";
 //@ts-ignore
 import { Strategy as AnonymIdStrategy } from "passport-anonym-uuid";
 
@@ -120,35 +120,37 @@ passport.use(
   ),
 );
 
-passport.use(new MagicLinkStrategy({
-  secret: process.env.MAGIC_LINK_SECRET || "",
-  allowReuse: true,
-    userFields: ['email'],
-    tokenField: 'token'
-}, async (user, token) => {
-  console.log( "email:", user, token );
-  /*
+passport.use(
+  new MagicLinkStrategy(
+    {
+      secret: process.env.MAGIC_LINK_SECRET || "",
+      allowReuse: true,
+      userFields: ["email"],
+      tokenField: "token",
+    },
+    async (user, token) => {
+      console.log(`go to link: localhost:8000/confirmSignIn?token=${token}`);
+      /*
     return MailService.sendMail({
      to: user.email,
      token
      })
   */
-}, async (user : any) => {
-  return {
-    provider: "magiclink",
-    emails: [
-      { value: user.email as string,
-	verified: true
-      }
-    ],
-    name: { givenName: "", familyName: "" }
-  };
- }))
+    },
+    async (user: any) => {
+      return {
+        provider: "magiclink",
+        emails: [{ value: user.email as string, verified: true }],
+        name: { givenName: "", familyName: "" },
+      };
+    },
+  ),
+);
 
 passport.use(new AnonymIdStrategy());
 
 passport.serializeUser<any, any>(async (req, user: any, done) => {
-  if ((user.provider === "google") || (user.provider === "magiclink")) {
+  if (user.provider === "google" || user.provider === "magiclink") {
     var email = user.id + "@google.com";
     if (user.emails[0].verified) email = user.emails[0].value;
 
@@ -234,18 +236,23 @@ app.get(
   }),
 );
 
-app.post("/api/auth/magiclink",
-	passport.authenticate("magiclink", { action : 'requestToken' }),
-	(req, res) => res.redirect('/')
-	);
+app.post(
+  "/api/auth/magiclink",
+  passport.authenticate("magiclink", { action: "requestToken" }),
+  (req, res) => res.redirect("/"),
+);
 
-app.get('/api/login/magiclink',
-  passport.authenticate('magiclink', {
-    action : 'acceptToken',
-    userPrimaryKey: 'email'
-   }),
-  (req, res) => res.redirect('/')
-)
+app.get(
+  "/api/login/magiclink",
+  passport.authenticate("magiclink", {
+    action: "acceptToken",
+    userPrimaryKey: "email",
+  }),
+  async (req: Request, res: Response) => {
+    let user = await getUserInfo((req.user as any).emails[0].value);
+    res.send({ user });
+  },
+);
 
 app.get("/api/logout", function (req, res, next) {
   req.logout(function (err) {
@@ -256,7 +263,7 @@ app.get("/api/logout", function (req, res, next) {
   });
 });
 
-app.get("/api/getQuickCheckSignedIn", (req: Request, res: Response) => {
+app.get("/api/getSignedIn", (req: Request, res: Response) => {
   const signedIn = req.user ? true : false;
   res.send({ signedIn: signedIn });
 });
@@ -267,8 +274,8 @@ app.get(
     const signedIn = req.user ? true : false;
     if (signedIn) {
       try {
-        let userInfo = await getUserInfo(req.user.email);
-        res.send(userInfo);
+        let user = await getUserInfo(req.user.email);
+        res.send({ user });
       } catch (e) {
         next(e);
       }
@@ -286,8 +293,6 @@ app.post("/api/updateUser", async (req: Request, res: Response) => {
     const firstNames = body.firstNames;
     const lastNames = body.lastNames;
     await updateUser({ userId: loggedInUserId, firstNames, lastNames });
-    res.cookie("firstNames", firstNames);
-    res.cookie("lastNames", lastNames);
     res.send({ firstNames, lastNames });
   } else {
     res.send({});
@@ -341,21 +346,6 @@ app.get(
     }
   },
 );
-
-app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
-  const email: string = req.query.emailaddress as string;
-  // TODO: add the ability to give a name after logging in or creating an account
-  const user = await findOrCreateUser({
-    email,
-    firstNames: null,
-    lastNames: "",
-  });
-  res.cookie("email", email);
-  res.cookie("userId", String(user.userId));
-  res.cookie("firstNames", String(user.firstNames));
-  res.cookie("lastNames", String(user.lastNames));
-  res.send({});
-});
 
 app.post(
   "/api/deleteActivity",
@@ -604,11 +594,6 @@ app.get(
     });
   },
 );
-
-app.get("/api/checkCredentials", (req: Request, res: Response) => {
-  const loggedIn = req.user ? true : false;
-  res.send({ loggedIn });
-});
 
 app.get(
   "/api/getCoursePermissionsAndSettings",

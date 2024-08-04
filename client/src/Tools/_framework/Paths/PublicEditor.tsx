@@ -80,16 +80,6 @@ export function PublicEditor() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  let navigateTo = useRef("");
-
-  // TODO: fix this navigation
-  if (navigateTo.current != "") {
-    const newHref = navigateTo.current;
-    navigateTo.current = "";
-    //@ts-ignore
-    location.href = newHref;
-  }
-
   const label = activityData?.name ?? "Public Editor";
 
   useEffect(() => {
@@ -205,7 +195,7 @@ export function PublicEditor() {
                         size="xs"
                         colorScheme="blue"
                         onClick={() => {
-                          navigateTo.current = "/signIn";
+                          navigate("/signIn");
                         }}
                       >
                         Sign In To Copy to Activities
