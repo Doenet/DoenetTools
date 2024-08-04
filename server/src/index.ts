@@ -1545,7 +1545,7 @@ app.get(
   "/api/searchPossibleClassifications",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const query: string = req.body.query;
+      const query = req.query.q as string;
       const searchResults = await searchPossibleClassifications(query);
       res.send(searchResults);
     } catch (e) {

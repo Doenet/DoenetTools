@@ -15,15 +15,21 @@ import {
   Input,
   FormErrorMessage,
   Flex,
-  IconButton,
-  Center,
-  Checkbox,
   Select,
+  Heading,
+  Tag,
+  Highlight,
+  Spacer,
 } from "@chakra-ui/react";
+import AsyncSelect from "react-select/async";
 import { FaFileImage } from "react-icons/fa";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
 import { readAndCompressImage } from "browser-image-resizer";
-import { ContentStructure, DoenetmlVersion } from "../Paths/ActivityEditor";
+import {
+  ContentClassification,
+  ContentStructure,
+  DoenetmlVersion,
+} from "../Paths/ActivityEditor";
 
 export function GeneralContentControls({
   fetcher,
@@ -41,6 +47,20 @@ export function GeneralContentControls({
   let numberOfFilesUploading = useRef(0);
   let [imagePath, setImagePath] = useState(dataImagePath);
   let [alerts, setAlerts] = useState<Alert[]>([]);
+
+  let [classifySelectorInput, setClassifySelectorInput] = useState<string>("");
+
+  const getClassificationOptions = async (inputValue: string) => {
+    let results = await axios.get(
+      `/api/searchPossibleClassifications?q=${inputValue}`,
+    );
+    let classifications: ContentClassification[] = results.data;
+    let options = classifications.map((c) => ({
+      value: c.code,
+      label: c,
+    }));
+    return options;
+  };
 
   //   let learningOutcomesInit = activityData.learningOutcomes;
   //   if (learningOutcomesInit == null) {
@@ -402,14 +422,67 @@ export function GeneralContentControls({
           <FormControl>
             <Flex flexDirection="column" width="100%" rowGap={6}>
               <FormLabel mt="16px">Content Classifications</FormLabel>
-              {contentData.contentClassifications.map((classification, i) => (
+              {contentData.classifications.map((classification, i) => (
                 <Text key={`contentClassification#${i}`}>
                   {classification.code}
                 </Text>
               ))}
 
+              <AsyncSelect
+                cacheOptions
+                defaultOptions
+                isClearable
+                loadOptions={getClassificationOptions}
+                onInputChange={(newVal) => {
+                  setClassifySelectorInput(newVal);
+                }}
+                formatOptionLabel={({ label }) => (
+                  <Box>
+                    <Flex>
+                      <Heading size="sm">
+                        <Highlight
+                          query={classifySelectorInput.split(" ")}
+                          styles={{ fontWeight: 900 }}
+                        >
+                          {`${label.code} ${label.grade ? label.grade : ""}`}
+                        </Highlight>
+                      </Heading>
+                      <Spacer />
+                      <Tag>
+                        <Highlight
+                          query={classifySelectorInput.split(" ")}
+                          styles={{ fontWeight: "bold" }}
+                        >
+                          {label.system.name}
+                        </Highlight>
+                      </Tag>
+                    </Flex>
+                    <Text>
+                      <Text as="i">Category:</Text>{" "}
+                      <Highlight
+                        query={classifySelectorInput.split(" ")}
+                        styles={{ fontWeight: "bold" }}
+                      >
+                        {label.category}
+                      </Highlight>
+                    </Text>
+                    <Text>
+                      <Text as="i">Description: </Text>
+                      <Highlight
+                        query={classifySelectorInput.split(" ")}
+                        styles={{ fontWeight: "bold" }}
+                      >
+                        {label.description}
+                      </Highlight>
+                    </Text>
+                  </Box>
+                )}
+              />
+
               <Input
                 size="sm"
+                placeholder={`Add a classification`}
+                type="search"
                 onChange={(e) => {}}
                 onBlur={() => {
                   // saveDataToServer(learningOutcomes, undefined, undefined)
@@ -435,7 +508,6 @@ export function GeneralContentControls({
                     );
                   }
                 }}
-                placeholder={`Add a classification`}
               ></Input>
             </Flex>
           </FormControl>

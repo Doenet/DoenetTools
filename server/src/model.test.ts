@@ -143,7 +143,7 @@ test("New activity starts out private, then delete it", async () => {
     classCode: null,
     codeValidUntil: null,
     license: null,
-    contentClassifications: [],
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -2885,6 +2885,7 @@ test("get activity editor data only if owner or limited data for public", async 
     codeValidUntil: null,
     isPublic: true,
     license: null,
+    classifications: [],
     documents: [],
     hasScoreData: false,
     parentFolder: null,
@@ -2938,7 +2939,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode: null,
     codeValidUntil: null,
     license: null,
-    contentClassifications: [],
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -2986,7 +2987,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
-    contentClassifications: [],
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -3031,7 +3032,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: null,
     license: null,
-    contentClassifications: [],
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -3082,7 +3083,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
-    contentClassifications: [],
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -3136,7 +3137,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
-    contentClassifications: [],
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -3181,7 +3182,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: null,
     license: null,
-    contentClassifications: [],
+    classifications: [],
     documents: [
       {
         id: docId,

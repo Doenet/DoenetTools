@@ -73,6 +73,7 @@ export type ContentClassification = {
   id: number;
   code: string;
   grade: string | null;
+  category: string;
   description: string;
   system: {
     id: number;
@@ -91,7 +92,7 @@ export type ContentStructure = {
   codeValidUntil: string | null;
   isPublic: boolean;
   license: License | null;
-  contentClassifications: ContentClassification[];
+  classifications: ContentClassification[];
   documents: {
     id: number;
     versionNum?: number;
