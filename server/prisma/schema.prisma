@@ -10,8 +10,8 @@ datasource db {
 model Session {
   id        String   @id
   sid       String   @unique
-  data      String
-  expiresAt   DateTime
+  data      String   @db.Text
+  expiresAt DateTime
 }
 
 model content {
