@@ -37,6 +37,7 @@ model content {
   license          licenses?          @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
   assignmentScores assignmentScores[]
   promotedContent  promotedContent[]
+  sharedWith       contentShares[]
 
   @@index([ownerId, parentFolderId, sortIndex])
   @@index([classCode])
@@ -82,16 +83,17 @@ model documentVersions {
 }
 
 model licenses {
-  code          String                @id @db.VarChar(10)
-  name          String
-  description   String                @db.Text
-  imageURL      String?
-  smallImageURL String?
-  licenseURL    String?
-  composedOf    licenseCompositions[] @relation("composeOf")
-  includedIn    licenseCompositions[] @relation("includedIn")
-  content       content[]
-  sortIndex     Int
+  code               String                @id @db.VarChar(10)
+  name               String
+  description        String                @db.Text
+  imageURL           String?
+  smallImageURL      String?
+  licenseURL         String?
+  composedOf         licenseCompositions[] @relation("composeOf")
+  includedIn         licenseCompositions[] @relation("includedIn")
+  content            content[]
+  sortIndex          Int
+  contributorHistory contributorHistory[]
 }
 
 model licenseCompositions {
@@ -107,12 +109,24 @@ model contributorHistory {
   docId             Int
   prevDocId         Int
   prevDocVersionNum Int
+  withLicenseCode   String?          @db.VarChar(10)
   timestamp         DateTime         @default(now())
   document          documents        @relation(fields: [docId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   prevDoc           documentVersions @relation(fields: [prevDocId, prevDocVersionNum], references: [docId, versionNum], onDelete: NoAction, onUpdate: NoAction)
+  withLicense       licenses?        @relation(fields: [withLicenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([docId, prevDocId])
   @@index([prevDocId, prevDocVersionNum])
+}
+
+model contentShares {
+  contentId Int
+  userId    Int
+  content   content @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user      users   @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([contentId, userId])
+  @@index([userId])
 }
 
 model doenetmlVersions {
@@ -191,6 +205,7 @@ model users {
   assignmentScores           assignmentScores[]
   documentState              documentState[]
   documentSubmittedResponses documentSubmittedResponses[]
+  sharedWithMe               contentShares[]
 }
 
 model promotedContentGroups {

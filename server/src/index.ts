@@ -20,7 +20,7 @@ import {
   getIsAdmin,
   getUserInfo,
   updateDoc,
-  searchPublicContent,
+  searchSharedContent,
   updateContent,
   getDoc,
   assignActivity,
@@ -52,9 +52,9 @@ import {
   moveContent,
   getMyFolderContent,
   getAssignedScores,
-  getPublicFolderContent,
-  searchUsersWithPublicContent,
-  getPublicEditorData,
+  getSharedFolderContent,
+  searchUsersWithSharedContent,
+  getSharedEditorData,
   unassignActivity,
   updateAssignmentSettings,
   getAllLicenses,
@@ -626,11 +626,12 @@ app.get(
   },
 );
 
-app.get("/api/searchPublicContent", async (req: Request, res: Response) => {
+app.get("/api/searchSharedContent", async (req: Request, res: Response) => {
   const query = req.query.q as string;
+  const loggedInUserId = Number(req.user?.userId ?? 0);
   res.send({
-    users: await searchUsersWithPublicContent(query),
-    content: await searchPublicContent(query),
+    users: await searchUsersWithSharedContent(query, loggedInUserId),
+    content: await searchSharedContent(query, loggedInUserId),
   });
 });
 
@@ -856,8 +857,9 @@ app.get(
   "/api/getPublicEditorData/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
     const activityId = Number(req.params.activityId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
-      const editorData = await getPublicEditorData(activityId);
+      const editorData = await getSharedEditorData(activityId, loggedInUserId);
       res.send(editorData);
     } catch (e) {
       if (
@@ -1592,14 +1594,16 @@ app.get(
 );
 
 app.get(
-  "/api/getPublicFolderContent/:ownerId",
+  "/api/getSharedFolderContent/:ownerId",
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = Number(req.params.ownerId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
       // send 0 as the logged in content to make sure get only public content
-      const contentData = await getPublicFolderContent({
+      const contentData = await getSharedFolderContent({
         ownerId,
         folderId: null,
+        loggedInUserId,
       });
       res.send(contentData);
     } catch (e) {
@@ -1613,15 +1617,17 @@ app.get(
 );
 
 app.get(
-  "/api/getPublicFolderContent/:ownerId/:folderId",
+  "/api/getSharedFolderContent/:ownerId/:folderId",
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = Number(req.params.ownerId);
     const folderId = Number(req.params.folderId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
       // send 0 as the logged in content to make sure get only public content
-      const contentData = await getPublicFolderContent({
+      const contentData = await getSharedFolderContent({
         ownerId,
         folderId,
+        loggedInUserId,
       });
       res.send(contentData);
     } catch (e) {

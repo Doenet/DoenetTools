@@ -24,6 +24,13 @@ export type ContentStructure = {
   classCode: string | null;
   codeValidUntil: Date | null;
   isPublic: boolean;
+  isShared: boolean;
+  sharedWith: {
+    userId: number;
+    email: string;
+    firstNames: string | null;
+    lastNames: string;
+  }[];
   license: License | null;
   documents: {
     id: number;
@@ -111,15 +118,27 @@ export async function createActivity(
 
   let isPublic = false;
   let licenseCode = "CCDUAL";
+  let sharedWith: number[] = [];
 
-  // If parent folder isn't null, check if it is public and get its license
+  // If parent folder isn't null, check if it is shared and get its license
   if (parentFolderId !== null) {
     let parentFolder = await prisma.content.findUniqueOrThrow({
       where: { id: parentFolderId, isFolder: true, isDeleted: false, ownerId },
-      select: { isPublic: true, licenseCode: true },
+      select: {
+        isPublic: true,
+        licenseCode: true,
+        contentShares: { select: { userId: true } },
+      },
     });
     if (parentFolder.isPublic) {
       isPublic = true;
+      if (parentFolder.licenseCode) {
+        licenseCode = parentFolder.licenseCode;
+      }
+    }
+
+    if (parentFolder.contentShares.length > 0) {
+      sharedWith = parentFolder.contentShares.map((cs) => cs.userId);
       if (parentFolder.licenseCode) {
         licenseCode = parentFolder.licenseCode;
       }
@@ -145,6 +164,9 @@ export async function createActivity(
           },
         ],
       },
+      contentShares: {
+        createMany: { data: sharedWith.map((userId) => ({ userId })) },
+      },
     },
   });
 
@@ -168,15 +190,26 @@ export async function createFolder(
 
   let isPublic = false;
   let licenseCode = "CCDUAL";
+  let sharedWith: number[] = [];
 
-  // If parent folder isn't null, check if it is public and get its license
+  // If parent folder isn't null, check if it is shared and get its license
   if (parentFolderId !== null) {
     let parentFolder = await prisma.content.findUniqueOrThrow({
       where: { id: parentFolderId, isFolder: true, isDeleted: false, ownerId },
-      select: { isPublic: true, licenseCode: true },
+      select: {
+        isPublic: true,
+        licenseCode: true,
+        contentShares: { select: { userId: true } },
+      },
     });
     if (parentFolder.isPublic) {
       isPublic = true;
+      if (parentFolder.licenseCode) {
+        licenseCode = parentFolder.licenseCode;
+      }
+    }
+    if (parentFolder.contentShares.length > 0) {
+      sharedWith = parentFolder.contentShares.map((cs) => cs.userId);
       if (parentFolder.licenseCode) {
         licenseCode = parentFolder.licenseCode;
       }
@@ -193,6 +226,9 @@ export async function createFolder(
       isPublic,
       licenseCode,
       sortIndex,
+      contentShares: {
+        createMany: { data: sharedWith.map((userId) => ({ userId })) },
+      },
     },
   });
 
@@ -430,6 +466,7 @@ export async function moveContent({
 
   let desiredFolderIsPublic = false;
   let desiredFolderLicenseCode: LicenseCode = "CCDUAL";
+  let desiredFolderShares: number[] = [];
 
   if (desiredParentFolderId !== null) {
     // if desired parent folder is specified, make sure it exists and is owned by `ownerId`
@@ -440,13 +477,23 @@ export async function moveContent({
         isDeleted: false,
         isFolder: true,
       },
-      select: { isPublic: true, licenseCode: true },
+      select: {
+        isPublic: true,
+        licenseCode: true,
+        contentShares: { select: { userId: true } },
+      },
     });
 
-    // If the parent folder is public, then we'll need to make the resulting content public, as well,
+    // If the parent folder is shared, then we'll need to share the resulting content, as well,
     // with the same license.
     if (parentFolder.isPublic) {
       desiredFolderIsPublic = true;
+      if (parentFolder.licenseCode) {
+        desiredFolderLicenseCode = parentFolder.licenseCode as LicenseCode;
+      }
+    }
+    if (parentFolder.contentShares.length > 0) {
+      desiredFolderShares = parentFolder.contentShares.map((cs) => cs.userId);
       if (parentFolder.licenseCode) {
         desiredFolderLicenseCode = parentFolder.licenseCode as LicenseCode;
       }
@@ -553,6 +600,24 @@ export async function moveContent({
       });
     }
   }
+
+  if (desiredFolderShares.length > 0) {
+    if (content.isFolder) {
+      await shareFolder({
+        id: content.id,
+        ownerId,
+        licenseCode: desiredFolderLicenseCode,
+        users: desiredFolderShares,
+      });
+    } else {
+      await shareActivity({
+        id: content.id,
+        ownerId,
+        licenseCode: desiredFolderLicenseCode,
+        users: desiredFolderShares,
+      });
+    }
+  }
 }
 
 /**
@@ -639,7 +704,6 @@ async function calculateNewSortIndex(
  * Adds `origActivityId` and its contributor history to the contributor history of the new activity.
  *
  * Throws an error if `userId` doesn't have access to `origActivityId`
- * (currently means a non-public activity with a different owner)
  *
  * Return the id of the newly created activity
  *
@@ -657,7 +721,11 @@ export async function copyActivityToFolder(
       id: origActivityId,
       isDeleted: false,
       isFolder: false,
-      OR: [{ ownerId: userId }, { isPublic: true }],
+      OR: [
+        { ownerId: userId },
+        { isPublic: true },
+        { contentShares: { some: { userId } } },
+      ],
     },
     include: {
       documents: {
@@ -827,13 +895,17 @@ export async function getActivityEditorData(
       id: activityId,
       isDeleted: false,
       isFolder: false,
-      OR: [{ ownerId: loggedInUserId }, { isPublic: true }],
+      OR: [
+        { ownerId: loggedInUserId },
+        { isPublic: true },
+        { contentShares: { some: { userId: loggedInUserId } } },
+      ],
     },
-    select: { isAssigned: true, ownerId: true, isPublic: true },
+    select: { isAssigned: true, ownerId: true },
   });
 
   if (contentCheck.ownerId !== loggedInUserId) {
-    // activity is public but not owned by the logged in user
+    // activity is public or shared but not owned by the logged in user
 
     let activity: ContentStructure = {
       id: activityId,
@@ -843,7 +915,9 @@ export async function getActivityEditorData(
       assignmentStatus: "Unassigned",
       classCode: null,
       codeValidUntil: null,
-      isPublic: contentCheck.isPublic,
+      isPublic: false,
+      isShared: false,
+      sharedWith: [],
       license: null,
       documents: [],
       hasScoreData: false,
@@ -875,6 +949,18 @@ export async function getActivityEditorData(
         classCode: true,
         codeValidUntil: true,
         isPublic: true,
+        contentShares: {
+          select: {
+            user: {
+              select: {
+                userId: true,
+                email: true,
+                firstNames: true,
+                lastNames: true,
+              },
+            },
+          },
+        },
         license: {
           include: {
             composedOf: {
@@ -916,6 +1002,8 @@ export async function getActivityEditorData(
       classCode: assignedActivity.classCode,
       codeValidUntil: assignedActivity.codeValidUntil,
       isPublic: assignedActivity.isPublic,
+      isShared: assignedActivity.contentShares.length > 0,
+      sharedWith: assignedActivity.contentShares.map((cs) => cs.user),
       license: assignedActivity.license
         ? processLicense(assignedActivity.license)
         : null,
@@ -945,6 +1033,18 @@ export async function getActivityEditorData(
         classCode: true,
         codeValidUntil: true,
         isPublic: true,
+        contentShares: {
+          select: {
+            user: {
+              select: {
+                userId: true,
+                email: true,
+                firstNames: true,
+                lastNames: true,
+              },
+            },
+          },
+        },
         license: {
           include: {
             composedOf: {
@@ -967,11 +1067,14 @@ export async function getActivityEditorData(
       },
     });
 
+    const { contentShares, license, ...unassignedActivity2 } =
+      unassignedActivity;
+
     activity = {
-      ...unassignedActivity,
-      license: unassignedActivity.license
-        ? processLicense(unassignedActivity.license)
-        : null,
+      ...unassignedActivity2,
+      isShared: contentShares.length > 0,
+      sharedWith: contentShares.map((cs) => cs.user),
+      license: license ? processLicense(license) : null,
       assignmentStatus: "Unassigned",
       hasScoreData: false,
     };
@@ -987,7 +1090,10 @@ export async function getActivityEditorData(
  *
  * @param activityId
  */
-export async function getPublicEditorData(activityId: number) {
+export async function getSharedEditorData(
+  activityId: number,
+  loggedInUserId: number,
+) {
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
 
   const preliminaryActivity = await prisma.content.findUniqueOrThrow({
@@ -995,7 +1101,11 @@ export async function getPublicEditorData(activityId: number) {
       id: activityId,
       isDeleted: false,
       isFolder: false,
-      isPublic: true,
+      OR: [
+        { ownerId: loggedInUserId },
+        { isPublic: true },
+        { contentShares: { some: { userId: loggedInUserId } } },
+      ],
     },
     select: {
       id: true,
@@ -1003,6 +1113,12 @@ export async function getPublicEditorData(activityId: number) {
       ownerId: true,
       name: true,
       imagePath: true,
+      isPublic: true,
+      contentShares: {
+        select: {
+          userId: true,
+        },
+      },
       documents: {
         select: {
           name: true,
@@ -1025,12 +1141,16 @@ export async function getPublicEditorData(activityId: number) {
     },
   });
 
+  let { license, contentShares, ...preliminaryActivity2 } = preliminaryActivity;
+
+  let isSharedWithMe =
+    contentShares.findIndex((cs) => cs.userId === loggedInUserId) !== -1;
+
   let activity: ContentStructure = {
-    ...preliminaryActivity,
-    isPublic: true,
-    license: preliminaryActivity.license
-      ? processLicense(preliminaryActivity.license)
-      : null,
+    ...preliminaryActivity2,
+    isShared: isSharedWithMe,
+    sharedWith: [],
+    license: license ? processLicense(license) : null,
     classCode: null,
     codeValidUntil: null,
     assignmentStatus: "Unassigned",
@@ -1050,14 +1170,23 @@ export async function getActivityViewerData(
       id: activityId,
       isDeleted: false,
       isFolder: false,
-      OR: [{ ownerId: userId }, { isPublic: true }],
+      OR: [
+        { ownerId: userId },
+        { isPublic: true },
+        { contentShares: { some: { userId } } },
+      ],
     },
     select: {
       id: true,
       name: true,
       ownerId: true,
-      isPublic: true,
       imagePath: true,
+      isPublic: true,
+      contentShares: {
+        select: {
+          userId: true,
+        },
+      },
       license: {
         include: {
           composedOf: {
@@ -1089,14 +1218,18 @@ export async function getActivityViewerData(
     },
   });
 
-  let { owner, ...preliminaryActivity2 } = preliminaryActivity;
+  let { owner, license, contentShares, ...preliminaryActivity2 } =
+    preliminaryActivity;
+
+  let isSharedWithMe =
+    contentShares.findIndex((cs) => cs.userId === userId) !== -1;
 
   let activity: ContentStructure = {
     ...preliminaryActivity2,
     isFolder: false,
-    license: preliminaryActivity2.license
-      ? processLicense(preliminaryActivity2.license)
-      : null,
+    isShared: isSharedWithMe,
+    sharedWith: [],
+    license: license ? processLicense(license) : null,
     classCode: null,
     codeValidUntil: null,
     assignmentStatus: "Unassigned",
@@ -1194,15 +1327,22 @@ export async function getAssignmentDataFromCode(code: string) {
   return { assignmentFound: true, assignment };
 }
 
-export async function searchPublicContent(query: string) {
+export async function searchSharedContent(
+  query: string,
+  loggedInUserId: number,
+) {
   // TODO: how should we sort these?
 
   let query_words = query.split(" ");
-  let content = await prisma.content.findMany({
+
+  const preliminaryPublicContent = await prisma.content.findMany({
     where: {
       AND: query_words.map((qw) => ({ name: { contains: "%" + qw + "%" } })),
-      isPublic: true,
       isDeleted: false,
+      OR: [
+        { isPublic: true },
+        { contentShares: { some: { userId: loggedInUserId } } },
+      ],
     },
     select: {
       id: true,
@@ -1210,16 +1350,51 @@ export async function searchPublicContent(query: string) {
       ownerId: true,
       name: true,
       imagePath: true,
-      createdAt: true,
-      lastEdited: true,
-      owner: true,
+      isPublic: true,
+      contentShares: {
+        select: {
+          userId: true,
+        },
+      },
+      license: {
+        include: {
+          composedOf: {
+            select: { composedOf: true },
+            orderBy: { composedOf: { sortIndex: "asc" } },
+          },
+        },
+      },
+      parentFolder: { select: { id: true, name: true, isPublic: true } },
     },
   });
 
-  return content;
+  let publicContent: ContentStructure[] = preliminaryPublicContent.map(
+    (content) => {
+      let { license, contentShares, ...content2 } = content;
+      let isSharedWithMe =
+        contentShares.findIndex((cs) => cs.userId === loggedInUserId) !== -1;
+
+      return {
+        ...content2,
+        isShared: isSharedWithMe,
+        sharedWith: [],
+        documents: [],
+        license: license ? processLicense(license) : null,
+        classCode: null,
+        codeValidUntil: null,
+        assignmentStatus: "Unassigned",
+        hasScoreData: false,
+      };
+    },
+  );
+
+  return publicContent;
 }
 
-export async function searchUsersWithPublicContent(query: string) {
+export async function searchUsersWithSharedContent(
+  query: string,
+  loggedInUserId: number,
+) {
   // TODO: how should we sort these?
 
   let query_words = query.split(" ");
@@ -1234,8 +1409,11 @@ export async function searchUsersWithPublicContent(query: string) {
       isAnonymous: false,
       content: {
         some: {
-          isPublic: true,
           isDeleted: false,
+          OR: [
+            { isPublic: true },
+            { contentShares: { some: { userId: loggedInUserId } } },
+          ],
         },
       },
     },
@@ -1285,6 +1463,8 @@ export async function listUserAssigned(userId: number) {
     let assignmentStatus: AssignmentStatus = !isOpen ? "Closed" : "Open";
     return {
       ...obj,
+      isShared: false,
+      sharedWith: [],
       license: obj.license ? processLicense(obj.license) : null,
       assignmentStatus,
       documents: [],
@@ -2828,6 +3008,18 @@ export async function getMyFolderContent({
         name: true,
         imagePath: true,
         isPublic: true,
+        contentShares: {
+          select: {
+            user: {
+              select: {
+                userId: true,
+                email: true,
+                firstNames: true,
+                lastNames: true,
+              },
+            },
+          },
+        },
         license: {
           include: {
             composedOf: {
@@ -2840,17 +3032,19 @@ export async function getMyFolderContent({
       },
     });
 
+    let { contentShares, license, ...preliminaryFolder2 } = preliminaryFolder;
+
     folder = {
-      ...preliminaryFolder,
+      ...preliminaryFolder2,
       isFolder: true,
+      isShared: contentShares.length > 0,
+      sharedWith: contentShares.map((cs) => cs.user),
       assignmentStatus: "Unassigned",
       classCode: null,
       codeValidUntil: null,
       documents: [],
       hasScoreData: false,
-      license: preliminaryFolder.license
-        ? processLicense(preliminaryFolder.license)
-        : null,
+      license: license ? processLicense(license) : null,
     };
   }
 
@@ -2867,6 +3061,18 @@ export async function getMyFolderContent({
       name: true,
       imagePath: true,
       isPublic: true,
+      contentShares: {
+        select: {
+          user: {
+            select: {
+              userId: true,
+              email: true,
+              firstNames: true,
+              lastNames: true,
+            },
+          },
+        },
+      },
       isAssigned: true,
       classCode: true,
       codeValidUntil: true,
@@ -2886,7 +3092,7 @@ export async function getMyFolderContent({
   });
 
   let content: ContentStructure[] = preliminaryContent.map((obj) => {
-    let { _count, isAssigned, ...activity } = obj;
+    let { _count, isAssigned, contentShares, license, ...activity } = obj;
     let isOpen = obj.codeValidUntil
       ? DateTime.now() <= DateTime.fromJSDate(obj.codeValidUntil)
       : false;
@@ -2897,7 +3103,9 @@ export async function getMyFolderContent({
         : "Open";
     return {
       ...activity,
-      license: activity.license ? processLicense(activity.license) : null,
+      isShared: contentShares.length > 0,
+      sharedWith: contentShares.map((cs) => cs.user),
+      license: license ? processLicense(license) : null,
       assignmentStatus,
       hasScoreData: _count.assignmentScores > 0,
     };
@@ -2935,6 +3143,18 @@ export async function searchMyFolderContent({
         name: true,
         imagePath: true,
         isPublic: true,
+        contentShares: {
+          select: {
+            user: {
+              select: {
+                userId: true,
+                email: true,
+                firstNames: true,
+                lastNames: true,
+              },
+            },
+          },
+        },
         license: {
           include: {
             composedOf: {
@@ -2947,17 +3167,19 @@ export async function searchMyFolderContent({
       },
     });
 
+    let { contentShares, license, ...preliminaryFolder2 } = preliminaryFolder;
+
     folder = {
-      ...preliminaryFolder,
+      ...preliminaryFolder2,
       isFolder: true,
+      isShared: contentShares.length > 0,
+      sharedWith: contentShares.map((cs) => cs.user),
       assignmentStatus: "Unassigned",
       classCode: null,
       codeValidUntil: null,
       documents: [],
       hasScoreData: false,
-      license: preliminaryFolder.license
-        ? processLicense(preliminaryFolder.license)
-        : null,
+      license: license ? processLicense(license) : null,
     };
   }
 
@@ -2979,6 +3201,18 @@ export async function searchMyFolderContent({
         name: true,
         imagePath: true,
         isPublic: true,
+        contentShares: {
+          select: {
+            user: {
+              select: {
+                userId: true,
+                email: true,
+                firstNames: true,
+                lastNames: true,
+              },
+            },
+          },
+        },
         isAssigned: true,
         classCode: true,
         codeValidUntil: true,
@@ -3026,6 +3260,18 @@ export async function searchMyFolderContent({
         name: true,
         imagePath: true,
         isPublic: true,
+        contentShares: {
+          select: {
+            user: {
+              select: {
+                userId: true,
+                email: true,
+                firstNames: true,
+                lastNames: true,
+              },
+            },
+          },
+        },
         isAssigned: true,
         classCode: true,
         codeValidUntil: true,
@@ -3045,7 +3291,7 @@ export async function searchMyFolderContent({
   }
 
   let content: ContentStructure[] = preliminaryResults.map((obj) => {
-    let { _count, isAssigned, ...activity } = obj;
+    let { _count, isAssigned, contentShares, license, ...activity } = obj;
     let isOpen = obj.codeValidUntil
       ? DateTime.now() <= DateTime.fromJSDate(obj.codeValidUntil)
       : false;
@@ -3056,7 +3302,9 @@ export async function searchMyFolderContent({
         : "Open";
     return {
       ...activity,
-      license: activity.license ? processLicense(activity.license) : null,
+      isShared: contentShares.length > 0,
+      sharedWith: contentShares.map((cs) => cs.user),
+      license: license ? processLicense(license) : null,
       assignmentStatus,
       hasScoreData: _count.assignmentScores > 0,
     };
@@ -3068,12 +3316,14 @@ export async function searchMyFolderContent({
   };
 }
 
-export async function getPublicFolderContent({
+export async function getSharedFolderContent({
   ownerId,
   folderId,
+  loggedInUserId,
 }: {
   ownerId: number;
   folderId: number | null;
+  loggedInUserId: number;
 }) {
   let folder: ContentStructure | null = null;
 
@@ -3084,13 +3334,22 @@ export async function getPublicFolderContent({
         ownerId,
         id: folderId,
         isDeleted: false,
-        isPublic: true,
+        OR: [
+          { isPublic: true },
+          { contentShares: { some: { userId: loggedInUserId } } },
+        ],
       },
       select: {
         id: true,
         ownerId: true,
         name: true,
         imagePath: true,
+        isPublic: true,
+        contentShares: {
+          select: {
+            userId: true,
+          },
+        },
         license: {
           include: {
             composedOf: {
@@ -3099,37 +3358,63 @@ export async function getPublicFolderContent({
             },
           },
         },
-        parentFolder: { select: { id: true, name: true, isPublic: true } },
+        parentFolder: {
+          select: {
+            id: true,
+            name: true,
+            isPublic: true,
+            contentShares: {
+              select: {
+                userId: true,
+              },
+            },
+          },
+        },
       },
     });
 
-    // If parent folder is not public,
+    // If parent folder is not public or not shared with me,
     // make it look like it doesn't have a parent folder.
-    if (!preliminaryFolder.parentFolder?.isPublic) {
+    if (
+      !(
+        preliminaryFolder.parentFolder &&
+        (preliminaryFolder.parentFolder.isPublic ||
+          preliminaryFolder.parentFolder.contentShares.findIndex(
+            (cs) => cs.userId === loggedInUserId,
+          ) !== -1)
+      )
+    ) {
       preliminaryFolder.parentFolder = null;
     }
 
+    const { license, contentShares, ...preliminaryFolder2 } = preliminaryFolder;
+
+    let isSharedWithMe =
+      contentShares.findIndex((cs) => cs.userId === loggedInUserId) !== -1;
+
     folder = {
-      ...preliminaryFolder,
-      isPublic: true,
+      ...preliminaryFolder2,
       isFolder: true,
+      isShared: isSharedWithMe,
+      sharedWith: [],
       assignmentStatus: "Unassigned",
       classCode: null,
       codeValidUntil: null,
       documents: [],
       hasScoreData: false,
-      license: preliminaryFolder.license
-        ? processLicense(preliminaryFolder.license)
-        : null,
+      license: license ? processLicense(license) : null,
     };
   }
 
-  const preliminaryPublicContent = await prisma.content.findMany({
+  const preliminarySharedContent = await prisma.content.findMany({
     where: {
       ownerId,
       isDeleted: false,
-      isPublic: true,
       parentFolderId: folderId,
+      OR: [
+        { isPublic: true },
+        { contentShares: { some: { userId: loggedInUserId } } },
+      ],
     },
     select: {
       id: true,
@@ -3137,6 +3422,12 @@ export async function getPublicFolderContent({
       ownerId: true,
       name: true,
       imagePath: true,
+      isPublic: true,
+      contentShares: {
+        select: {
+          userId: true,
+        },
+      },
       license: {
         include: {
           composedOf: {
@@ -3151,17 +3442,25 @@ export async function getPublicFolderContent({
   });
 
   // If looking in the base folder,
-  // also include orphaned public content,
-  // i.e., public content that is inside a private folder.
-  // That way, users can navigate to all of the owner's public content
+  // also include orphaned shared content,
+  // i.e., shared content that is inside a non-shared folder.
+  // That way, users can navigate to all of the owner's shared content
   // when start at the base folder
   if (folderId === null) {
-    let orphanedPublicContent = await prisma.content.findMany({
+    let orphanedSharedContent = await prisma.content.findMany({
       where: {
         ownerId,
         isDeleted: false,
-        isPublic: true,
-        parentFolder: { isPublic: false },
+        parentFolder: {
+          AND: [
+            { isPublic: false },
+            { contentShares: { none: { userId: loggedInUserId } } },
+          ],
+        },
+        OR: [
+          { isPublic: true },
+          { contentShares: { some: { userId: loggedInUserId } } },
+        ],
       },
       select: {
         id: true,
@@ -3169,6 +3468,12 @@ export async function getPublicFolderContent({
         ownerId: true,
         name: true,
         imagePath: true,
+        isPublic: true,
+        contentShares: {
+          select: {
+            userId: true,
+          },
+        },
         license: {
           include: {
             composedOf: {
@@ -3181,16 +3486,21 @@ export async function getPublicFolderContent({
       },
       orderBy: { sortIndex: "asc" },
     });
-    preliminaryPublicContent.push(...orphanedPublicContent);
+    preliminarySharedContent.push(...orphanedSharedContent);
   }
 
-  let publicContent: ContentStructure[] = preliminaryPublicContent.map(
+  let publicContent: ContentStructure[] = preliminarySharedContent.map(
     (content) => {
+      const { license, contentShares, ...content2 } = content;
+      let isSharedWithMe =
+        contentShares.findIndex((cs) => cs.userId === loggedInUserId) !== -1;
+
       return {
-        ...content,
-        isPublic: true,
+        ...content2,
+        isShared: isSharedWithMe,
+        sharedWith: [],
         documents: [],
-        license: content.license ? processLicense(content.license) : null,
+        license: license ? processLicense(license) : null,
         classCode: null,
         codeValidUntil: null,
         assignmentStatus: "Unassigned",
@@ -3328,6 +3638,52 @@ export async function makeActivityPrivate({
   return { id: updated.id, isPublic: updated.isPublic };
 }
 
+export async function shareActivity({
+  id,
+  ownerId,
+  licenseCode,
+  users,
+}: {
+  id: number;
+  ownerId: number;
+  licenseCode: LicenseCode;
+  users: number[];
+}) {
+  const updated = await prisma.content.update({
+    where: { id, isDeleted: false, ownerId: ownerId, isFolder: false },
+    data: {
+      licenseCode,
+      contentShares: {
+        createMany: {
+          data: users.map((userId) => ({ userId })),
+          skipDuplicates: true,
+        },
+      },
+    },
+  });
+
+  return { id: updated.id };
+}
+
+export async function unshareActivity({
+  id,
+  ownerId,
+  users,
+}: {
+  id: number;
+  ownerId: number;
+  users: number[];
+}) {
+  await prisma.contentShares.deleteMany({
+    where: {
+      content: { id, isDeleted: false, ownerId, isFolder: false },
+      OR: users.map((userId) => ({ userId })),
+    },
+  });
+
+  return { id };
+}
+
 export async function makeFolderPublic({
   id,
   ownerId,
@@ -3394,4 +3750,102 @@ export async function makeFolderPrivate({
       SET content.isPublic = FALSE
       WHERE content.id IN (SELECT id from content_tree);
     `);
+}
+
+export async function shareFolder({
+  id,
+  ownerId,
+  licenseCode,
+  users,
+}: {
+  id: number;
+  ownerId: number;
+  licenseCode: LicenseCode;
+  users: number[];
+}) {
+  // Share the folder `id` to users along with all the content inside it,
+  // recursing to subfolders.
+
+  // Verify the folder exists
+  await prisma.content.findUniqueOrThrow({
+    where: { id, ownerId, isFolder: true, isDeleted: false },
+    select: { id: true },
+  });
+
+  let contentIds = (
+    await prisma.$queryRaw<{ id: number }[]>(Prisma.sql`
+    WITH RECURSIVE content_tree(id) AS (
+      SELECT id FROM content
+      WHERE id = ${id} AND ownerId = ${ownerId} AND isDeleted = FALSE
+      UNION ALL
+      SELECT content.id FROM content
+      INNER JOIN content_tree AS ft
+      ON content.parentFolderId = ft.id
+      WHERE content.isDeleted = FALSE
+    )
+
+    SELECT id from content_tree;
+    `)
+  ).map((obj) => obj.id);
+
+  // TODO: combine queries?
+
+  await prisma.content.updateMany({
+    where: { id: { in: contentIds } },
+    data: {
+      licenseCode,
+    },
+  });
+
+  await prisma.contentShares.createMany({
+    data: users.flatMap((userId) =>
+      contentIds.map((contentId) => ({ userId, contentId })),
+    ),
+    skipDuplicates: true,
+  });
+}
+
+export async function unshareFolder({
+  id,
+  ownerId,
+  users,
+}: {
+  id: number;
+  ownerId: number;
+  users: number[];
+}) {
+  // Stop the folder `id` along with all the content inside it,
+  // recursing to subfolders.
+
+  // Verify the folder exists
+  await prisma.content.findUniqueOrThrow({
+    where: { id, ownerId, isFolder: true, isDeleted: false },
+    select: { id: true },
+  });
+
+  let contentIds = (
+    await prisma.$queryRaw<{ id: number }[]>(Prisma.sql`
+    WITH RECURSIVE content_tree(id) AS (
+      SELECT id FROM content
+      WHERE id = ${id} AND ownerId = ${ownerId} AND isDeleted = FALSE
+      UNION ALL
+      SELECT content.id FROM content
+      INNER JOIN content_tree AS ft
+      ON content.parentFolderId = ft.id
+      WHERE content.isDeleted = FALSE
+    )
+
+    SELECT id from content_tree;
+    `)
+  ).map((obj) => obj.id);
+
+  // TODO: combine queries?
+
+  await prisma.contentShares.deleteMany({
+    where: {
+      OR: users.flatMap((userId) =>
+        contentIds.map((contentId) => ({ userId, contentId })),
+      ),
+    },
+  });
 }
