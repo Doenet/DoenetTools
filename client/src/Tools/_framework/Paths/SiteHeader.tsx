@@ -119,7 +119,7 @@ function NavLinkDropdownTab({ to, children, dataTest }) {
 }
 
 export function SiteHeader() {
-  let { user } = useLoaderData() as { user: User };
+  const { user } = useLoaderData() as { user: User };
 
   const helpMenuShouldFocusFirst = useBreakpointValue(
     { base: false, md: true },
@@ -254,7 +254,14 @@ export function SiteHeader() {
                         <VStack mb="20px">
                           <Avatar size="xl" name={`${createFullName(user)}`} />
                           <Text>{createFullName(user)}</Text>
-                          <Text>{user.isAnonymous ? "" : user.email}</Text>
+                          <Text>
+                            {user.isAnonymous ? "(anonymous)" : user.email}
+                          </Text>
+                          {user.isAnonymous ? (
+                            <Link href={`/signIn?fromAnonymous=${user.userId}`}>
+                              Sign in to save work
+                            </Link>
+                          ) : null}
                         </VStack>
                         <MenuItem as="a" href="/api/logout">
                           Log Out

@@ -42,7 +42,7 @@ export async function action({
   return null;
 }
 
-export async function loader({ params, request }) {
+export async function loader() {
   const navigateTo = "/";
 
   return { navigateTo };
@@ -62,12 +62,15 @@ export function ChangeName() {
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    if (navigateTo && submitted) {
-      setTimeout(() => {
-        navigate(navigateTo);
-      }, 100);
+    if (
+      navigateTo &&
+      submitted &&
+      user?.firstNames === firstNames &&
+      user.lastNames === lastNames
+    ) {
+      navigate(navigateTo);
     }
-  }, [submitted, navigateTo]);
+  }, [submitted, navigateTo, user]);
 
   return (
     <Box margin="20px">

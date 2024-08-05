@@ -1347,6 +1347,21 @@ export async function getUserInfo(email: string) {
   return user;
 }
 
+export async function upgradeAnonymousUser({
+  userId,
+  email,
+}: {
+  userId: number;
+  email: string;
+}) {
+  const user = await prisma.users.update({
+    where: { userId, isAnonymous: true },
+    data: { isAnonymous: false, email },
+  });
+
+  return user;
+}
+
 export async function updateUser({
   userId,
   firstNames,

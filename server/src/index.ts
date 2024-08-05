@@ -64,6 +64,7 @@ import {
   makeFolderPublic,
   makeFolderPrivate,
   searchMyFolderContent,
+  upgradeAnonymousUser,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -125,7 +126,7 @@ passport.use(
     {
       secret: process.env.MAGIC_LINK_SECRET || "",
       allowReuse: true,
-      userFields: ["email"],
+      userFields: ["email", "fromAnonymous"],
       tokenField: "token",
     },
     async (user, token) => {
@@ -140,7 +141,8 @@ passport.use(
     async (user: any) => {
       return {
         provider: "magiclink",
-        emails: [{ value: user.email as string, verified: true }],
+        email: user.email as string,
+        fromAnonymous: Number(user.fromAnonymous) || 0,
         name: { givenName: "", familyName: "" },
       };
     },
@@ -150,7 +152,30 @@ passport.use(
 passport.use(new AnonymIdStrategy());
 
 passport.serializeUser<any, any>(async (req, user: any, done) => {
-  if (user.provider === "google" || user.provider === "magiclink") {
+  if (user.provider === "magiclink") {
+    const email: string = user.email;
+    const fromAnonymous: number = user.fromAnonymous;
+
+    let u;
+
+    if (fromAnonymous > 0) {
+      try {
+        u = await upgradeAnonymousUser({ userId: fromAnonymous, email });
+      } catch (e) {
+        /// ignore any error
+      }
+    }
+
+    if (!u) {
+      u = await findOrCreateUser({
+        email,
+        firstNames: null,
+        lastNames: "",
+      });
+    }
+
+    return done(undefined, u.email);
+  } else if (user.provider === "google") {
     var email = user.id + "@google.com";
     if (user.emails[0].verified) email = user.emails[0].value;
 
@@ -249,7 +274,7 @@ app.get(
     userPrimaryKey: "email",
   }),
   async (req: Request, res: Response) => {
-    let user = await getUserInfo((req.user as any).emails[0].value);
+    let user = await getUserInfo((req.user as any).email);
     res.send({ user });
   },
 );
