@@ -183,7 +183,7 @@ export function AssignmentViewer() {
   }
 
   if (!user.lastNames) {
-    return <ChangeName />;
+    return <ChangeName hideHomeButton />;
   }
 
   return (

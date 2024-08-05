@@ -258,11 +258,12 @@ export function SiteHeader() {
                             {user.isAnonymous ? "(anonymous)" : user.email}
                           </Text>
                           {user.isAnonymous ? (
-                            <Link href={`/signIn?fromAnonymous=${user.userId}`}>
-                              Sign in to save work
-                            </Link>
+                            <Link href={`/signIn`}>Sign in to save work</Link>
                           ) : null}
                         </VStack>
+                        <MenuItem as={Link} href="/changeName">
+                          Update name
+                        </MenuItem>
                         <MenuItem as="a" href="/api/logout">
                           Log Out
                         </MenuItem>

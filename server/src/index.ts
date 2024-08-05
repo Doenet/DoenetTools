@@ -143,7 +143,6 @@ passport.use(
         provider: "magiclink",
         email: user.email as string,
         fromAnonymous: Number(user.fromAnonymous) || 0,
-        name: { givenName: "", familyName: "" },
       };
     },
   ),

@@ -45,7 +45,7 @@ export function ConfirmSignIn() {
         document.body.style.cursor = "default";
 
         if (data.user.lastNames === "") {
-          navigate("/changeName");
+          navigate("/changeName?redirect=/");
         } else {
           navigate("/");
         }

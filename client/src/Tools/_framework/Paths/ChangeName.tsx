@@ -42,15 +42,20 @@ export async function action({
   return null;
 }
 
-export async function loader() {
-  const navigateTo = "/";
+export async function loader({ request }) {
+  const url = new URL(request.url);
+  const redirectTo = url.searchParams.get("redirect");
 
-  return { navigateTo };
+  return { redirectTo };
 }
 
-export function ChangeName() {
-  const { navigateTo } = useLoaderData() as {
-    navigateTo: string | undefined;
+export function ChangeName({
+  hideHomeButton = false,
+}: {
+  hideHomeButton?: boolean;
+}) {
+  const { redirectTo } = useLoaderData() as {
+    redirectTo: string | undefined;
   };
 
   const user = useOutletContext<User>();
@@ -63,14 +68,14 @@ export function ChangeName() {
 
   useEffect(() => {
     if (
-      navigateTo &&
+      redirectTo &&
       submitted &&
       user?.firstNames === firstNames &&
       user.lastNames === lastNames
     ) {
-      navigate(navigateTo);
+      navigate(redirectTo);
     }
-  }, [submitted, navigateTo, user]);
+  }, [submitted, redirectTo, user]);
 
   return (
     <Box margin="20px">
@@ -112,6 +117,19 @@ export function ChangeName() {
         <Button type="submit" colorScheme="blue" mt="8px" mr="12px" size="xs">
           Submit
         </Button>
+        {!redirectTo && !hideHomeButton ? (
+          <Button
+            colorScheme="blue"
+            mt="8px"
+            mr="12px"
+            size="xs"
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            Go to home
+          </Button>
+        ) : null}
         <input type="hidden" name="_action" value="change user name" />
       </Form>
     </Box>
