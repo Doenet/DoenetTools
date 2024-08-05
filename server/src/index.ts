@@ -531,7 +531,7 @@ app.post(
 app.post(
   "/api/makeActivityPrivate",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const id = Number(body.id);
     try {
@@ -550,7 +550,7 @@ app.post(
 app.post(
   "/api/makeFolderPublic",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const id = Number(body.id);
 
@@ -589,7 +589,7 @@ app.post(
 app.post(
   "/api/makeFolderPrivate",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const id = Number(body.id);
     try {
@@ -1076,7 +1076,7 @@ app.post(
 app.post(
   "/api/updateAssignmentSettings",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const activityId = Number(body.activityId);
     const closeAt = DateTime.fromISO(body.closeAt);
@@ -1117,7 +1117,7 @@ app.post(
 app.post(
   "/api/unassignActivity",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const activityId = Number(body.activityId);
 
@@ -1533,7 +1533,7 @@ app.get(
   "/api/searchMyFolderContent/:ownerId",
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = Number(req.params.ownerId);
-    const loggedInUserId = req.cookies.userId ? Number(req.cookies.userId) : 0;
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const query = req.query.q as string;
 
     if (ownerId !== loggedInUserId) {
@@ -1565,7 +1565,7 @@ app.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = Number(req.params.ownerId);
     const folderId = Number(req.params.folderId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const query = req.query.q as string;
 
     if (ownerId !== loggedInUserId) {
