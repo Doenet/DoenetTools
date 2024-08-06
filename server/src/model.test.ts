@@ -1663,6 +1663,33 @@ test("searchPublicContent returns public folders and public content even in a pr
   expect(namesInOrder).eqls([publicActivityName, publicFolderName]);
 });
 
+test("searchPublicContent includes public content where a classification matches", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId } = await createActivity(ownerId, null);
+  await makeActivityPublic({
+    id: activityId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  const initialResults = await searchPublicContent("K.CC.1 comMMon cOREe");
+  expect(initialResults.filter((r) => r.id === activityId)).toHaveLength(0);
+
+  const {id: classifyId} = (await searchPossibleClassifications("K.CC.1 common core"))
+    .find((k) => k.code === "K.CC.1")!;
+
+  await addClassification(activityId, classifyId, ownerId);
+  // With code
+  const resultsCode = await searchPublicContent("K.C");
+  expect(resultsCode.filter((r) => r.id === activityId)).toHaveLength(1);
+  // With system
+  const resultsSystem = await searchPublicContent("  CORE");
+  expect(resultsSystem.filter((r) => r.id === activityId)).toHaveLength(1);
+  // With both
+  const resultsBoth = await searchPublicContent("common C.1");
+  expect(resultsBoth.filter((r) => r.id === activityId)).toHaveLength(1);
+});
+
 test("searchUsersWithPublicContent returns only users with public content", async () => {
   // owner 1 has only private content
   const owner1 = await createTestUser();

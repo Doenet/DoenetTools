@@ -1309,7 +1309,31 @@ export async function searchPublicContent(query: string) {
   const query_words = query.split(" ");
   const content = await prisma.content.findMany({
     where: {
-      AND: query_words.map((qw) => ({ name: { contains: "%" + qw + "%" } })),
+      AND: query_words.map((qw) => ({
+        OR: [
+          { name: { contains: "%" + qw + "%" } },
+          {
+            classifications: {
+              some: {
+                classification: {
+                  code: { contains: "%" + qw + "%" },
+                },
+              },
+            },
+          },
+          {
+            classifications: {
+              some: {
+                classification: {
+                  system: {
+                    name: { contains: "%" + qw + "%" },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      })),
       isPublic: true,
       isDeleted: false,
     },
@@ -3029,9 +3053,7 @@ export async function getMyFolderContent({
       : !isOpen
         ? "Closed"
         : "Open";
-    let classifications = obj.classifications.map(
-      (c) => c.classification,
-    );
+    let classifications = obj.classifications.map((c) => c.classification);
     return {
       ...activity,
       license: activity.license ? processLicense(activity.license) : null,
@@ -3231,9 +3253,7 @@ export async function searchMyFolderContent({
       : !isOpen
         ? "Closed"
         : "Open";
-    let classifications = obj.classifications.map(
-      (c) => c.classification,
-    );
+    let classifications = obj.classifications.map((c) => c.classification);
 
     return {
       ...activity,
@@ -3416,9 +3436,7 @@ export async function getPublicFolderContent({
         isPublic: true,
         documents: [],
         license: content.license ? processLicense(content.license) : null,
-        classifications: content.classifications.map(
-          (c) => c.classification,
-        ),
+        classifications: content.classifications.map((c) => c.classification),
         classCode: null,
         codeValidUntil: null,
         assignmentStatus: "Unassigned",
@@ -3441,32 +3459,33 @@ export async function getPublicFolderContent({
 
 export async function searchPossibleClassifications(query: string) {
   const query_words = query.split(" ");
-  const results: ContentClassification[] = await prisma.classifications.findMany({
-    where: {
-      AND: query_words.map((query_word) => ({
-        OR: [
-          { code: { contains: query_word } },
-          { grade: { contains: query_word } },
-          { category: { contains: query_word } },
-          { description: { contains: query_word } },
-          { system: { name: { contains: query_word } } },
-        ],
-      })),
-    },
-    select: {
-      id: true,
-      grade: true,
-      code: true,
-      category: true,
-      description: true,
-      system: {
-        select: {
-          id: true,
-          name: true,
+  const results: ContentClassification[] =
+    await prisma.classifications.findMany({
+      where: {
+        AND: query_words.map((query_word) => ({
+          OR: [
+            { code: { contains: query_word } },
+            { grade: { contains: query_word } },
+            { category: { contains: query_word } },
+            { description: { contains: query_word } },
+            { system: { name: { contains: query_word } } },
+          ],
+        })),
+      },
+      select: {
+        id: true,
+        grade: true,
+        code: true,
+        category: true,
+        description: true,
+        system: {
+          select: {
+            id: true,
+            name: true,
+          },
         },
       },
-    },
-  });
+    });
   return results;
 }
 
