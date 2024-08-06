@@ -61,6 +61,8 @@ import {
   shareFolder,
   unshareActivity,
   unshareFolder,
+  shareFolderWithEmail,
+  shareActivityWithEmail,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -358,6 +360,8 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
         parentFolder: {
           id: publicFolder1Id,
           isPublic: true,
+          isShared: false,
+          sharedWith: [],
           name: ownerContent.folder?.name,
         },
       }),
@@ -367,6 +371,8 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
         parentFolder: {
           id: publicFolder1Id,
           isPublic: true,
+          isShared: false,
+          sharedWith: [],
           name: ownerContent.folder?.name,
         },
       }),
@@ -376,6 +382,8 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
         parentFolder: {
           id: publicFolder1Id,
           isPublic: true,
+          isShared: false,
+          sharedWith: [],
           name: ownerContent.folder?.name,
         },
       }),
@@ -385,6 +393,8 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
         parentFolder: {
           id: publicFolder1Id,
           isPublic: true,
+          isShared: false,
+          sharedWith: [],
           name: ownerContent.folder?.name,
         },
       }),
@@ -433,6 +443,8 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
         parentFolder: {
           id: privateFolder1Id,
           isPublic: false,
+          isShared: false,
+          sharedWith: [],
           name: ownerContent.folder?.name,
         },
       }),
@@ -442,6 +454,8 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
         parentFolder: {
           id: privateFolder1Id,
           isPublic: false,
+          isShared: false,
+          sharedWith: [],
           name: ownerContent.folder?.name,
         },
       }),
@@ -451,6 +465,8 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
         parentFolder: {
           id: privateFolder1Id,
           isPublic: false,
+          isShared: false,
+          sharedWith: [],
           name: ownerContent.folder?.name,
         },
       }),
@@ -460,6 +476,8 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
         parentFolder: {
           id: privateFolder1Id,
           isPublic: false,
+          isShared: false,
+          sharedWith: [],
           name: ownerContent.folder?.name,
         },
       }),
@@ -508,399 +526,458 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
   ).rejects.toThrow("No content found");
 });
 
-test("getMyFolderContent returns both public and private content, getSharedFolderContent returns only shared", async () => {
-  const owner = await createTestUser();
-  const ownerId = owner.userId;
+test(
+  "getMyFolderContent returns both public and private content, getSharedFolderContent returns only shared",
+  { timeout: 30000 },
+  async () => {
+    const owner = await createTestUser();
+    const ownerId = owner.userId;
 
-  const user1 = await createTestUser();
-  const user1Id = user1.userId;
-  const user2 = await createTestUser();
-  const user2Id = user2.userId;
-  const user3 = await createTestUser();
-  const user3Id = user3.userId;
+    let user1 = await createTestUser();
+    const user1Id = user1.userId;
+    user1 = await updateUser({
+      userId: user1Id,
+      firstNames: "Zoe",
+      lastNames: "Zaborowski",
+    });
+    const {
+      isAdmin: _isAdmin1,
+      isAnonymous: _isAnonymous1,
+      ...userFields1
+    } = user1;
+    let user2 = await createTestUser();
+    const user2Id = user2.userId;
+    user2 = await updateUser({
+      userId: user2Id,
+      firstNames: "Arya",
+      lastNames: "Abbas",
+    });
+    const {
+      isAdmin: _isAdmin2,
+      isAnonymous: _isAnonymous2,
+      ...userFields2
+    } = user2;
+    const user3 = await createTestUser();
+    const user3Id = user3.userId;
 
-  const { activityId: sharedActivity1Id } = await createActivity(ownerId, null);
-  const { activityId: privateActivity1Id } = await createActivity(
-    ownerId,
-    null,
-  );
-
-  const { folderId: sharedFolder1Id } = await createFolder(ownerId, null);
-  const { folderId: privateFolder1Id } = await createFolder(ownerId, null);
-
-  const { activityId: sharedActivity2Id } = await createActivity(
-    ownerId,
-    sharedFolder1Id,
-  );
-  const { activityId: privateActivity2Id } = await createActivity(
-    ownerId,
-    sharedFolder1Id,
-  );
-  const { folderId: sharedFolder2Id } = await createFolder(
-    ownerId,
-    sharedFolder1Id,
-  );
-  const { folderId: privateFolder2Id } = await createFolder(
-    ownerId,
-    sharedFolder1Id,
-  );
-
-  const { activityId: sharedActivity3Id } = await createActivity(
-    ownerId,
-    privateFolder1Id,
-  );
-  const { activityId: privateActivity3Id } = await createActivity(
-    ownerId,
-    privateFolder1Id,
-  );
-  const { folderId: sharedFolder3Id } = await createFolder(
-    ownerId,
-    privateFolder1Id,
-  );
-  const { folderId: privateFolder3Id } = await createFolder(
-    ownerId,
-    privateFolder1Id,
-  );
-
-  // Share
-
-  // share activity 1
-  await shareActivity({
-    id: sharedActivity1Id,
-    licenseCode: "CCDUAL",
-    ownerId,
-    users: [user1Id, user2Id],
-  });
-
-  // sure folder 1 and all items in folder 1
-  await shareFolder({
-    id: sharedFolder1Id,
-    licenseCode: "CCDUAL",
-    ownerId,
-    users: [user1Id, user2Id],
-  });
-
-  // private activity 2 is in shared folder 1,
-  // so we need to undo the fact that it was shared
-  await unshareActivity({
-    id: privateActivity2Id,
-    ownerId,
-    users: [user1Id, user2Id],
-  });
-
-  // private folder 2 is in shared folder 1,
-  // so we need to undo the fact that it was shared
-  await unshareFolder({
-    id: privateFolder2Id,
-    ownerId,
-    users: [user1Id, user2Id],
-  });
-
-  // shared content inside private folder 1
-  // has to be shared explicitly
-  await shareActivity({
-    id: sharedActivity3Id,
-    licenseCode: "CCDUAL",
-    ownerId,
-    users: [user1Id, user2Id],
-  });
-  await shareFolder({
-    id: sharedFolder3Id,
-    licenseCode: "CCDUAL",
-    ownerId,
-    users: [user1Id, user2Id],
-  });
-
-  let ownerContent = await getMyFolderContent({
-    loggedInUserId: ownerId,
-    folderId: null,
-  });
-  expect(ownerContent.folder).eq(null);
-  expect(ownerContent.content.length).eq(4);
-  expect(ownerContent).toMatchObject({
-    content: expect.arrayContaining([
-      expect.objectContaining({
-        id: sharedActivity1Id,
-        isShared: true,
-        parentFolder: null,
-      }),
-      expect.objectContaining({
-        id: privateActivity1Id,
-        isShared: false,
-        parentFolder: null,
-      }),
-      expect.objectContaining({
-        id: sharedFolder1Id,
-        isShared: true,
-        parentFolder: null,
-      }),
-      expect.objectContaining({
-        id: privateFolder1Id,
-        isShared: false,
-        parentFolder: null,
-      }),
-    ]),
-  });
-
-  // shared folder content of base directory
-  // also includes orphaned shared content,
-  // i.e., shared content inside a private folder
-  let sharedContent = await getSharedFolderContent({
-    ownerId,
-    folderId: null,
-    loggedInUserId: user1Id,
-  });
-  expect(sharedContent.folder).eq(null);
-  expect(sharedContent.content.length).eq(4);
-
-  expect(sharedContent).toMatchObject({
-    content: expect.arrayContaining([
-      expect.objectContaining({
-        id: sharedActivity1Id,
-      }),
-      expect.objectContaining({
-        id: sharedFolder1Id,
-      }),
-      expect.objectContaining({
-        id: sharedActivity3Id,
-      }),
-      expect.objectContaining({
-        id: sharedFolder3Id,
-      }),
-    ]),
-  });
-
-  // also shared with user 2
-  sharedContent = await getSharedFolderContent({
-    ownerId,
-    folderId: null,
-    loggedInUserId: user2Id,
-  });
-  expect(sharedContent.folder).eq(null);
-  expect(sharedContent.content.length).eq(4);
-
-  expect(sharedContent).toMatchObject({
-    content: expect.arrayContaining([
-      expect.objectContaining({
-        id: sharedActivity1Id,
-      }),
-      expect.objectContaining({
-        id: sharedFolder1Id,
-      }),
-      expect.objectContaining({
-        id: sharedActivity3Id,
-      }),
-      expect.objectContaining({
-        id: sharedFolder3Id,
-      }),
-    ]),
-  });
-
-  // not shared with user 3
-  sharedContent = await getSharedFolderContent({
-    ownerId,
-    folderId: null,
-    loggedInUserId: user3Id,
-  });
-  expect(sharedContent.folder).eq(null);
-  expect(sharedContent.content.length).eq(0);
-
-  ownerContent = await getMyFolderContent({
-    loggedInUserId: ownerId,
-    folderId: sharedFolder1Id,
-  });
-  expect(ownerContent.folder?.id).eq(sharedFolder1Id);
-  expect(ownerContent.folder?.parentFolder).eq(null);
-  expect(ownerContent.content.length).eq(4);
-  expect(ownerContent).toMatchObject({
-    content: expect.arrayContaining([
-      expect.objectContaining({
-        id: sharedActivity2Id,
-        isShared: true,
-        parentFolder: {
-          id: sharedFolder1Id,
-          isPublic: false,
-          // isShared: true,
-          name: ownerContent.folder?.name,
-        },
-      }),
-      expect.objectContaining({
-        id: privateActivity2Id,
-        isShared: false,
-        parentFolder: {
-          id: sharedFolder1Id,
-          isPublic: false,
-          // isShared: true,
-          name: ownerContent.folder?.name,
-        },
-      }),
-      expect.objectContaining({
-        id: sharedFolder2Id,
-        isShared: true,
-        parentFolder: {
-          id: sharedFolder1Id,
-          isPublic: false,
-          // isShared: true,
-          name: ownerContent.folder?.name,
-        },
-      }),
-      expect.objectContaining({
-        id: privateFolder2Id,
-        isShared: false,
-        parentFolder: {
-          id: sharedFolder1Id,
-          isPublic: false,
-          // isShared: true,
-          name: ownerContent.folder?.name,
-        },
-      }),
-    ]),
-  });
-
-  sharedContent = await getSharedFolderContent({
-    ownerId,
-    folderId: sharedFolder1Id,
-    loggedInUserId: user1Id,
-  });
-  expect(sharedContent.content.length).eq(2);
-  expect(sharedContent.folder?.id).eq(sharedFolder1Id);
-  expect(sharedContent.folder?.parentFolder).eq(null);
-  expect(sharedContent).toMatchObject({
-    content: expect.arrayContaining([
-      expect.objectContaining({
-        id: sharedActivity2Id,
-      }),
-      expect.objectContaining({
-        id: sharedFolder2Id,
-      }),
-    ]),
-  });
-
-  sharedContent = await getSharedFolderContent({
-    ownerId,
-    folderId: sharedFolder1Id,
-    loggedInUserId: user2Id,
-  });
-  expect(sharedContent.content.length).eq(2);
-  expect(sharedContent.folder?.id).eq(sharedFolder1Id);
-  expect(sharedContent.folder?.parentFolder).eq(null);
-  expect(sharedContent).toMatchObject({
-    content: expect.arrayContaining([
-      expect.objectContaining({
-        id: sharedActivity2Id,
-      }),
-      expect.objectContaining({
-        id: sharedFolder2Id,
-      }),
-    ]),
-  });
-
-  // not shared with user 3
-  await expect(
-    getSharedFolderContent({
+    const { activityId: sharedActivity1Id } = await createActivity(
       ownerId,
-      folderId: sharedFolder1Id,
+      null,
+    );
+    const { activityId: privateActivity1Id } = await createActivity(
+      ownerId,
+      null,
+    );
+
+    const { folderId: sharedFolder1Id } = await createFolder(ownerId, null);
+    const { folderId: privateFolder1Id } = await createFolder(ownerId, null);
+
+    const { activityId: sharedActivity2Id } = await createActivity(
+      ownerId,
+      sharedFolder1Id,
+    );
+    const { activityId: privateActivity2Id } = await createActivity(
+      ownerId,
+      sharedFolder1Id,
+    );
+    const { folderId: sharedFolder2Id } = await createFolder(
+      ownerId,
+      sharedFolder1Id,
+    );
+    const { folderId: privateFolder2Id } = await createFolder(
+      ownerId,
+      sharedFolder1Id,
+    );
+
+    const { activityId: sharedActivity3Id } = await createActivity(
+      ownerId,
+      privateFolder1Id,
+    );
+    const { activityId: privateActivity3Id } = await createActivity(
+      ownerId,
+      privateFolder1Id,
+    );
+    const { folderId: sharedFolder3Id } = await createFolder(
+      ownerId,
+      privateFolder1Id,
+    );
+    const { folderId: privateFolder3Id } = await createFolder(
+      ownerId,
+      privateFolder1Id,
+    );
+
+    // Share
+
+    // share activity 1
+    await shareActivityWithEmail({
+      id: sharedActivity1Id,
+      licenseCode: "CCDUAL",
+      ownerId,
+      email: user1.email,
+    });
+    await shareActivityWithEmail({
+      id: sharedActivity1Id,
+      licenseCode: "CCDUAL",
+      ownerId,
+      email: user2.email,
+    });
+
+    // sure folder 1 and all items in folder 1
+    await shareFolder({
+      id: sharedFolder1Id,
+      licenseCode: "CCDUAL",
+      ownerId,
+      users: [user1Id, user2Id],
+    });
+
+    // private activity 2 is in shared folder 1,
+    // so we need to undo the fact that it was shared
+    await unshareActivity({
+      id: privateActivity2Id,
+      ownerId,
+      users: [user1Id, user2Id],
+    });
+
+    // private folder 2 is in shared folder 1,
+    // so we need to undo the fact that it was shared
+    await unshareFolder({
+      id: privateFolder2Id,
+      ownerId,
+      users: [user1Id, user2Id],
+    });
+
+    // shared content inside private folder 1
+    // has to be shared explicitly
+    await shareActivity({
+      id: sharedActivity3Id,
+      licenseCode: "CCDUAL",
+      ownerId,
+      users: [user1Id, user2Id],
+    });
+    await shareFolderWithEmail({
+      id: sharedFolder3Id,
+      licenseCode: "CCDUAL",
+      ownerId,
+      email: user2.email,
+    });
+    await shareFolderWithEmail({
+      id: sharedFolder3Id,
+      licenseCode: "CCDUAL",
+      ownerId,
+      email: user1.email,
+    });
+
+    let ownerContent = await getMyFolderContent({
+      loggedInUserId: ownerId,
+      folderId: null,
+    });
+    expect(ownerContent.folder).eq(null);
+    expect(ownerContent.content.length).eq(4);
+    expect(ownerContent).toMatchObject({
+      content: expect.arrayContaining([
+        expect.objectContaining({
+          id: sharedActivity1Id,
+          isShared: true,
+          parentFolder: null,
+        }),
+        expect.objectContaining({
+          id: privateActivity1Id,
+          isShared: false,
+          parentFolder: null,
+        }),
+        expect.objectContaining({
+          id: sharedFolder1Id,
+          isShared: true,
+          parentFolder: null,
+        }),
+        expect.objectContaining({
+          id: privateFolder1Id,
+          isShared: false,
+          parentFolder: null,
+        }),
+      ]),
+    });
+
+    // shared folder content of base directory
+    // also includes orphaned shared content,
+    // i.e., shared content inside a private folder
+    let sharedContent = await getSharedFolderContent({
+      ownerId,
+      folderId: null,
+      loggedInUserId: user1Id,
+    });
+    expect(sharedContent.folder).eq(null);
+    expect(sharedContent.content.length).eq(4);
+
+    expect(sharedContent).toMatchObject({
+      content: expect.arrayContaining([
+        expect.objectContaining({
+          id: sharedActivity1Id,
+        }),
+        expect.objectContaining({
+          id: sharedFolder1Id,
+        }),
+        expect.objectContaining({
+          id: sharedActivity3Id,
+        }),
+        expect.objectContaining({
+          id: sharedFolder3Id,
+        }),
+      ]),
+    });
+
+    // also shared with user 2
+    sharedContent = await getSharedFolderContent({
+      ownerId,
+      folderId: null,
+      loggedInUserId: user2Id,
+    });
+    expect(sharedContent.folder).eq(null);
+    expect(sharedContent.content.length).eq(4);
+
+    expect(sharedContent).toMatchObject({
+      content: expect.arrayContaining([
+        expect.objectContaining({
+          id: sharedActivity1Id,
+        }),
+        expect.objectContaining({
+          id: sharedFolder1Id,
+        }),
+        expect.objectContaining({
+          id: sharedActivity3Id,
+        }),
+        expect.objectContaining({
+          id: sharedFolder3Id,
+        }),
+      ]),
+    });
+
+    // not shared with user 3
+    sharedContent = await getSharedFolderContent({
+      ownerId,
+      folderId: null,
       loggedInUserId: user3Id,
-    }),
-  ).rejects.toThrow("No content found");
+    });
+    expect(sharedContent.folder).eq(null);
+    expect(sharedContent.content.length).eq(0);
 
-  // If other user tries to access folder via my folder, throws error
-  await expect(
-    getMyFolderContent({
-      loggedInUserId: user1Id,
+    ownerContent = await getMyFolderContent({
+      loggedInUserId: ownerId,
       folderId: sharedFolder1Id,
-    }),
-  ).rejects.toThrow("No content found");
+    });
+    expect(ownerContent.folder?.id).eq(sharedFolder1Id);
+    expect(ownerContent.folder?.parentFolder).eq(null);
+    expect(ownerContent.content.length).eq(4);
+    expect(ownerContent).toMatchObject({
+      content: expect.arrayContaining([
+        expect.objectContaining({
+          id: sharedActivity2Id,
+          isShared: true,
+          sharedWith: [userFields2, userFields1],
+          parentFolder: {
+            id: sharedFolder1Id,
+            isPublic: false,
+            isShared: true,
+            sharedWith: [userFields2, userFields1],
+            name: ownerContent.folder?.name,
+          },
+        }),
+        expect.objectContaining({
+          id: privateActivity2Id,
+          isShared: false,
+          sharedWith: [],
+          parentFolder: {
+            id: sharedFolder1Id,
+            isPublic: false,
+            isShared: true,
+            sharedWith: [userFields2, userFields1],
+            name: ownerContent.folder?.name,
+          },
+        }),
+        expect.objectContaining({
+          id: sharedFolder2Id,
+          isShared: true,
+          sharedWith: [userFields2, userFields1],
+          parentFolder: {
+            id: sharedFolder1Id,
+            isPublic: false,
+            isShared: true,
+            sharedWith: [userFields2, userFields1],
+            name: ownerContent.folder?.name,
+          },
+        }),
+        expect.objectContaining({
+          id: privateFolder2Id,
+          isShared: false,
+          sharedWith: [],
+          parentFolder: {
+            id: sharedFolder1Id,
+            isPublic: false,
+            isShared: true,
+            sharedWith: [userFields2, userFields1],
+            name: ownerContent.folder?.name,
+          },
+        }),
+      ]),
+    });
 
-  ownerContent = await getMyFolderContent({
-    loggedInUserId: ownerId,
-    folderId: privateFolder1Id,
-  });
-  expect(ownerContent.folder?.id).eq(privateFolder1Id);
-  expect(ownerContent.folder?.parentFolder).eq(null);
-  expect(ownerContent.content.length).eq(4);
-  expect(ownerContent).toMatchObject({
-    content: expect.arrayContaining([
-      expect.objectContaining({
-        id: sharedActivity3Id,
-        isShared: true,
-        parentFolder: {
-          id: privateFolder1Id,
-          isPublic: false,
-          name: ownerContent.folder?.name,
-        },
-      }),
-      expect.objectContaining({
-        id: privateActivity3Id,
-        isShared: false,
-        parentFolder: {
-          id: privateFolder1Id,
-          isPublic: false,
-          name: ownerContent.folder?.name,
-        },
-      }),
-      expect.objectContaining({
-        id: sharedFolder3Id,
-        isShared: true,
-        parentFolder: {
-          id: privateFolder1Id,
-          isPublic: false,
-          name: ownerContent.folder?.name,
-        },
-      }),
-      expect.objectContaining({
-        id: privateFolder3Id,
-        isShared: false,
-        parentFolder: {
-          id: privateFolder1Id,
-          isPublic: false,
-          name: ownerContent.folder?.name,
-        },
-      }),
-    ]),
-  });
-
-  await expect(
-    getSharedFolderContent({
+    sharedContent = await getSharedFolderContent({
       ownerId,
+      folderId: sharedFolder1Id,
+      loggedInUserId: user1Id,
+    });
+    expect(sharedContent.content.length).eq(2);
+    expect(sharedContent.folder?.id).eq(sharedFolder1Id);
+    expect(sharedContent.folder?.parentFolder).eq(null);
+    expect(sharedContent).toMatchObject({
+      content: expect.arrayContaining([
+        expect.objectContaining({
+          id: sharedActivity2Id,
+        }),
+        expect.objectContaining({
+          id: sharedFolder2Id,
+        }),
+      ]),
+    });
+
+    sharedContent = await getSharedFolderContent({
+      ownerId,
+      folderId: sharedFolder1Id,
+      loggedInUserId: user2Id,
+    });
+    expect(sharedContent.content.length).eq(2);
+    expect(sharedContent.folder?.id).eq(sharedFolder1Id);
+    expect(sharedContent.folder?.parentFolder).eq(null);
+    expect(sharedContent).toMatchObject({
+      content: expect.arrayContaining([
+        expect.objectContaining({
+          id: sharedActivity2Id,
+        }),
+        expect.objectContaining({
+          id: sharedFolder2Id,
+        }),
+      ]),
+    });
+
+    // not shared with user 3
+    await expect(
+      getSharedFolderContent({
+        ownerId,
+        folderId: sharedFolder1Id,
+        loggedInUserId: user3Id,
+      }),
+    ).rejects.toThrow("No content found");
+
+    // If other user tries to access folder via my folder, throws error
+    await expect(
+      getMyFolderContent({
+        loggedInUserId: user1Id,
+        folderId: sharedFolder1Id,
+      }),
+    ).rejects.toThrow("No content found");
+
+    ownerContent = await getMyFolderContent({
+      loggedInUserId: ownerId,
       folderId: privateFolder1Id,
-      loggedInUserId: user1Id,
-    }),
-  ).rejects.toThrow("No content found");
+    });
+    expect(ownerContent.folder?.id).eq(privateFolder1Id);
+    expect(ownerContent.folder?.parentFolder).eq(null);
+    expect(ownerContent.content.length).eq(4);
+    expect(ownerContent).toMatchObject({
+      content: expect.arrayContaining([
+        expect.objectContaining({
+          id: sharedActivity3Id,
+          isShared: true,
+          sharedWith: [userFields2, userFields1],
+          parentFolder: {
+            id: privateFolder1Id,
+            isPublic: false,
+            isShared: false,
+            sharedWith: [],
+            name: ownerContent.folder?.name,
+          },
+        }),
+        expect.objectContaining({
+          id: privateActivity3Id,
+          isShared: false,
+          sharedWith: [],
+          parentFolder: {
+            id: privateFolder1Id,
+            isPublic: false,
+            isShared: false,
+            sharedWith: [],
+            name: ownerContent.folder?.name,
+          },
+        }),
+        expect.objectContaining({
+          id: sharedFolder3Id,
+          isShared: true,
+          sharedWith: [userFields2, userFields1],
+          parentFolder: {
+            id: privateFolder1Id,
+            isPublic: false,
+            isShared: false,
+            sharedWith: [],
+            name: ownerContent.folder?.name,
+          },
+        }),
+        expect.objectContaining({
+          id: privateFolder3Id,
+          isShared: false,
+          sharedWith: [],
+          parentFolder: {
+            id: privateFolder1Id,
+            isPublic: false,
+            isShared: false,
+            sharedWith: [],
+            name: ownerContent.folder?.name,
+          },
+        }),
+      ]),
+    });
 
-  // If other user tries to access folder, throws error
-  await expect(
-    getMyFolderContent({
-      loggedInUserId: user1Id,
-      folderId: privateFolder1Id,
-    }),
-  ).rejects.toThrow("No content found");
+    await expect(
+      getSharedFolderContent({
+        ownerId,
+        folderId: privateFolder1Id,
+        loggedInUserId: user1Id,
+      }),
+    ).rejects.toThrow("No content found");
 
-  ownerContent = await getMyFolderContent({
-    loggedInUserId: ownerId,
-    folderId: sharedFolder3Id,
-  });
-  expect(ownerContent.folder?.id).eq(sharedFolder3Id);
-  expect(ownerContent.folder?.parentFolder?.id).eq(privateFolder1Id);
-  expect(ownerContent.content.length).eq(0);
+    // If other user tries to access folder, throws error
+    await expect(
+      getMyFolderContent({
+        loggedInUserId: user1Id,
+        folderId: privateFolder1Id,
+      }),
+    ).rejects.toThrow("No content found");
 
-  sharedContent = await getSharedFolderContent({
-    ownerId,
-    folderId: sharedFolder3Id,
-    loggedInUserId: user1Id,
-  });
-  expect(sharedContent.folder?.id).eq(sharedFolder3Id);
-  expect(sharedContent.folder?.parentFolder).eq(null);
-  expect(sharedContent.content.length).eq(0);
-
-  // If other user tries to access folder, throws error
-  await expect(
-    getMyFolderContent({
-      loggedInUserId: user1Id,
+    ownerContent = await getMyFolderContent({
+      loggedInUserId: ownerId,
       folderId: sharedFolder3Id,
-    }),
-  ).rejects.toThrow("No content found");
-});
+    });
+    expect(ownerContent.folder?.id).eq(sharedFolder3Id);
+    expect(ownerContent.folder?.parentFolder?.id).eq(privateFolder1Id);
+    expect(ownerContent.content.length).eq(0);
+
+    sharedContent = await getSharedFolderContent({
+      ownerId,
+      folderId: sharedFolder3Id,
+      loggedInUserId: user1Id,
+    });
+    expect(sharedContent.folder?.id).eq(sharedFolder3Id);
+    expect(sharedContent.folder?.parentFolder).eq(null);
+    expect(sharedContent.content.length).eq(0);
+
+    // If other user tries to access folder, throws error
+    await expect(
+      getMyFolderContent({
+        loggedInUserId: user1Id,
+        folderId: sharedFolder3Id,
+      }),
+    ).rejects.toThrow("No content found");
+  },
+);
 
 test("content in public folder is created as public", async () => {
   const owner = await createTestUser();
@@ -1093,34 +1170,45 @@ test("making folder public/private also makes its content public/private", async
 test("making sharing/unsharing a folder also shares/unshares its content", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const user1 = await createTestUser();
+  let user1 = await createTestUser();
   const user1Id = user1.userId;
+  user1 = await updateUser({
+    userId: user1Id,
+    firstNames: "Zoe",
+    lastNames: "Zaborowski",
+  });
   const {
     isAdmin: _isAdmin1,
     isAnonymous: _isAnonymous1,
     ...userFields1
   } = user1;
-  const user2 = await createTestUser();
+  let user2 = await createTestUser();
   const user2Id = user2.userId;
+  user2 = await updateUser({
+    userId: user2Id,
+    firstNames: "Arya",
+    lastNames: "Abbas",
+  });
   const {
     isAdmin: _isAdmin2,
     isAnonymous: _isAnonymous2,
     ...userFields2
   } = user2;
-  const user3 = await createTestUser();
+  let user3 = await createTestUser();
   const user3Id = user3.userId;
+  user3 = await updateUser({
+    userId: user3Id,
+    firstNames: "Nyla",
+    lastNames: "Nyquist",
+  });
   const {
     isAdmin: _isAdmin3,
     isAnonymous: _isAnonymous3,
     ...userFields3
   } = user3;
 
-  const sharedUserFields = [userFields1, userFields2].sort(
-    (a, b) => a.userId - b.userId,
-  );
-  const sharedUserFields23 = [userFields2, userFields3].sort(
-    (a, b) => a.userId - b.userId,
-  );
+  const sharedUserFields = [userFields2, userFields1];
+  const sharedUserFields23 = [userFields2, userFields3];
 
   const { folderId: sharedFolderId } = await createFolder(ownerId, null);
 
@@ -1168,11 +1256,17 @@ test("making sharing/unsharing a folder also shares/unshares its content", async
   expect(content[0].sharedWith).eqls([]);
   expect(content[0].license?.code).eq("CCDUAL");
 
-  await shareFolder({
+  await shareFolderWithEmail({
     id: sharedFolderId,
     licenseCode: "CCBYSA",
     ownerId,
-    users: [user1Id, user2Id],
+    email: user2.email,
+  });
+  await shareFolderWithEmail({
+    id: sharedFolderId,
+    licenseCode: "CCBYSA",
+    ownerId,
+    email: user1.email,
   });
 
   results = await getMyFolderContent({
@@ -1183,15 +1277,11 @@ test("making sharing/unsharing a folder also shares/unshares its content", async
 
   expect(content[0].id).eq(activity1Id);
   expect(content[0].isShared).eq(true);
-  expect(content[0].sharedWith.sort((a, b) => a.userId - b.userId)).eqls(
-    sharedUserFields,
-  );
+  expect(content[0].sharedWith).eqls(sharedUserFields);
   expect(content[0].license?.code).eq("CCBYSA");
   expect(content[1].id).eq(folder1Id);
   expect(content[1].isShared).eq(true);
-  expect(content[1].sharedWith.sort((a, b) => a.userId - b.userId)).eqls(
-    sharedUserFields,
-  );
+  expect(content[1].sharedWith).eqls(sharedUserFields);
   expect(content[1].license?.code).eq("CCBYSA");
 
   results = await getMyFolderContent({
@@ -1201,9 +1291,7 @@ test("making sharing/unsharing a folder also shares/unshares its content", async
   content = results.content;
   expect(content[0].id).eq(folder2Id);
   expect(content[0].isShared).eq(true);
-  expect(content[0].sharedWith.sort((a, b) => a.userId - b.userId)).eqls(
-    sharedUserFields,
-  );
+  expect(content[0].sharedWith).eqls(sharedUserFields);
   expect(content[0].license?.code).eq("CCBYSA");
 
   results = await getMyFolderContent({
@@ -1213,9 +1301,7 @@ test("making sharing/unsharing a folder also shares/unshares its content", async
   content = results.content;
   expect(content[0].id).eq(activity2Id);
   expect(content[0].isShared).eq(true);
-  expect(content[0].sharedWith.sort((a, b) => a.userId - b.userId)).eqls(
-    sharedUserFields,
-  );
+  expect(content[0].sharedWith).eqls(sharedUserFields);
   expect(content[0].license?.code).eq("CCBYSA");
 
   // unshare with user 1
@@ -1290,9 +1376,7 @@ test("making sharing/unsharing a folder also shares/unshares its content", async
   content = results.content;
   expect(content[0].id).eq(folder2Id);
   expect(content[0].isShared).eq(true);
-  expect(content[0].sharedWith.sort((a, b) => a.userId - b.userId)).eqls(
-    sharedUserFields23,
-  );
+  expect(content[0].sharedWith).eqls(sharedUserFields23);
   expect(content[0].license?.code).eq("CCBYNCSA");
 
   results = await getMyFolderContent({
@@ -1302,9 +1386,7 @@ test("making sharing/unsharing a folder also shares/unshares its content", async
   content = results.content;
   expect(content[0].id).eq(activity2Id);
   expect(content[0].isShared).eq(true);
-  expect(content[0].sharedWith.sort((a, b) => a.userId - b.userId)).eqls(
-    sharedUserFields23,
-  );
+  expect(content[0].sharedWith).eqls(sharedUserFields23);
   expect(content[0].license?.code).eq("CCBYNCSA");
 
   // unshare with user 2
@@ -1717,181 +1799,185 @@ test("only owner can delete an activity", async () => {
   expect(deleteResult.isDeleted).toBe(true);
 });
 
-test("deleteFolder marks a folder and all its sub content as deleted and prevents its retrieval", async () => {
-  const user = await createTestUser();
-  const userId = user.userId;
+test(
+  "deleteFolder marks a folder and all its sub content as deleted and prevents its retrieval",
+  { timeout: 30000 },
+  async () => {
+    const user = await createTestUser();
+    const userId = user.userId;
 
-  const { folderId: folder1Id } = await createFolder(userId, null);
+    const { folderId: folder1Id } = await createFolder(userId, null);
 
-  const { activityId: activity1Id, docId: doc1Id } = await createActivity(
-    userId,
-    folder1Id,
-  );
-  const { folderId: folder2Id } = await createFolder(userId, folder1Id);
-  const { activityId: activity2Id, docId: doc2Id } = await createActivity(
-    userId,
-    folder2Id,
-  );
-  const { folderId: folder3Id } = await createFolder(userId, folder2Id);
-  const { activityId: activity3Id, docId: doc3Id } = await createActivity(
-    userId,
-    folder3Id,
-  );
+    const { activityId: activity1Id, docId: doc1Id } = await createActivity(
+      userId,
+      folder1Id,
+    );
+    const { folderId: folder2Id } = await createFolder(userId, folder1Id);
+    const { activityId: activity2Id, docId: doc2Id } = await createActivity(
+      userId,
+      folder2Id,
+    );
+    const { folderId: folder3Id } = await createFolder(userId, folder2Id);
+    const { activityId: activity3Id, docId: doc3Id } = await createActivity(
+      userId,
+      folder3Id,
+    );
 
-  const { folderId: folder4Id } = await createFolder(userId, null);
-  const { activityId: activity4Id, docId: doc4Id } = await createActivity(
-    userId,
-    folder4Id,
-  );
-  const { folderId: folder5Id } = await createFolder(userId, folder4Id);
-  const { activityId: activity5Id, docId: doc5Id } = await createActivity(
-    userId,
-    folder5Id,
-  );
-  const { folderId: folder6Id } = await createFolder(userId, folder5Id);
-  const { activityId: activity6Id, docId: doc6Id } = await createActivity(
-    userId,
-    folder6Id,
-  );
+    const { folderId: folder4Id } = await createFolder(userId, null);
+    const { activityId: activity4Id, docId: doc4Id } = await createActivity(
+      userId,
+      folder4Id,
+    );
+    const { folderId: folder5Id } = await createFolder(userId, folder4Id);
+    const { activityId: activity5Id, docId: doc5Id } = await createActivity(
+      userId,
+      folder5Id,
+    );
+    const { folderId: folder6Id } = await createFolder(userId, folder5Id);
+    const { activityId: activity6Id, docId: doc6Id } = await createActivity(
+      userId,
+      folder6Id,
+    );
 
-  // items can be retrieved
-  let baseContent = await getMyFolderContent({
-    loggedInUserId: userId,
-    folderId: null,
-  });
-  expect(baseContent.content.length).eq(2);
-  let folder1Content = await getMyFolderContent({
-    loggedInUserId: userId,
-    folderId: folder1Id,
-  });
-  expect(folder1Content.content.length).eq(2);
-  let folder2Content = await getMyFolderContent({
-    loggedInUserId: userId,
-    folderId: folder2Id,
-  });
-  expect(folder2Content.content.length).eq(2);
-  let folder3Content = await getMyFolderContent({
-    loggedInUserId: userId,
-    folderId: folder3Id,
-  });
-  expect(folder3Content.content.length).eq(1);
-  let folder4Content = await getMyFolderContent({
-    loggedInUserId: userId,
-    folderId: folder4Id,
-  });
-  expect(folder4Content.content.length).eq(2);
-  let folder5Content = await getMyFolderContent({
-    loggedInUserId: userId,
-    folderId: folder5Id,
-  });
-  expect(folder5Content.content.length).eq(2);
-  let folder6Content = await getMyFolderContent({
-    loggedInUserId: userId,
-    folderId: folder6Id,
-  });
-  expect(folder6Content.content.length).eq(1);
-
-  await getActivity(activity1Id);
-  await getActivity(activity2Id);
-  await getActivity(activity3Id);
-  await getActivity(activity4Id);
-  await getActivity(activity5Id);
-  await getActivity(activity6Id);
-  await getDoc(doc1Id);
-  await getDoc(doc2Id);
-  await getDoc(doc3Id);
-  await getDoc(doc4Id);
-  await getDoc(doc5Id);
-  await getDoc(doc6Id);
-
-  // delete the entire folder 1 and all its content
-  await deleteFolder(folder1Id, userId);
-
-  baseContent = await getMyFolderContent({
-    loggedInUserId: userId,
-    folderId: null,
-  });
-  expect(baseContent.content.length).eq(1);
-  await expect(
-    getMyFolderContent({
+    // items can be retrieved
+    let baseContent = await getMyFolderContent({
+      loggedInUserId: userId,
+      folderId: null,
+    });
+    expect(baseContent.content.length).eq(2);
+    let folder1Content = await getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder1Id,
-    }),
-  ).rejects.toThrow("No content found");
-  await expect(
-    getMyFolderContent({
+    });
+    expect(folder1Content.content.length).eq(2);
+    let folder2Content = await getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder2Id,
-    }),
-  ).rejects.toThrow("No content found");
-  await expect(
-    getMyFolderContent({
+    });
+    expect(folder2Content.content.length).eq(2);
+    let folder3Content = await getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder3Id,
-    }),
-  ).rejects.toThrow("No content found");
-  folder4Content = await getMyFolderContent({
-    loggedInUserId: userId,
-    folderId: folder4Id,
-  });
-  expect(folder4Content.content.length).eq(2);
-  folder5Content = await getMyFolderContent({
-    loggedInUserId: userId,
-    folderId: folder5Id,
-  });
-  expect(folder5Content.content.length).eq(2);
-  folder6Content = await getMyFolderContent({
-    loggedInUserId: userId,
-    folderId: folder6Id,
-  });
-  expect(folder6Content.content.length).eq(1);
-
-  await expect(getActivity(activity1Id)).rejects.toThrow("No content found");
-  await expect(getActivity(activity2Id)).rejects.toThrow("No content found");
-  await expect(getActivity(activity3Id)).rejects.toThrow("No content found");
-  await getActivity(activity4Id);
-  await getActivity(activity5Id);
-  await getActivity(activity6Id);
-  await expect(getDoc(doc1Id)).rejects.toThrow("No documents found");
-  await expect(getDoc(doc2Id)).rejects.toThrow("No documents found");
-  await expect(getDoc(doc3Id)).rejects.toThrow("No documents found");
-  await getDoc(doc4Id);
-  await getDoc(doc5Id);
-  await getDoc(doc6Id);
-
-  // delete folder 5 and its content
-  await deleteFolder(folder5Id, userId);
-
-  baseContent = await getMyFolderContent({
-    loggedInUserId: userId,
-    folderId: null,
-  });
-  expect(baseContent.content.length).eq(1);
-  folder4Content = await getMyFolderContent({
-    loggedInUserId: userId,
-    folderId: folder4Id,
-  });
-  expect(folder4Content.content.length).eq(1);
-  await expect(
-    getMyFolderContent({
+    });
+    expect(folder3Content.content.length).eq(1);
+    let folder4Content = await getMyFolderContent({
+      loggedInUserId: userId,
+      folderId: folder4Id,
+    });
+    expect(folder4Content.content.length).eq(2);
+    let folder5Content = await getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder5Id,
-    }),
-  ).rejects.toThrow("No content found");
-  await expect(
-    getMyFolderContent({
+    });
+    expect(folder5Content.content.length).eq(2);
+    let folder6Content = await getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder6Id,
-    }),
-  ).rejects.toThrow("No content found");
+    });
+    expect(folder6Content.content.length).eq(1);
 
-  await getActivity(activity4Id);
-  await expect(getActivity(activity5Id)).rejects.toThrow("No content found");
-  await expect(getActivity(activity6Id)).rejects.toThrow("No content found");
-  await getDoc(doc4Id);
-  await expect(getDoc(doc5Id)).rejects.toThrow("No documents found");
-  await expect(getDoc(doc6Id)).rejects.toThrow("No documents found");
-});
+    await getActivity(activity1Id);
+    await getActivity(activity2Id);
+    await getActivity(activity3Id);
+    await getActivity(activity4Id);
+    await getActivity(activity5Id);
+    await getActivity(activity6Id);
+    await getDoc(doc1Id);
+    await getDoc(doc2Id);
+    await getDoc(doc3Id);
+    await getDoc(doc4Id);
+    await getDoc(doc5Id);
+    await getDoc(doc6Id);
+
+    // delete the entire folder 1 and all its content
+    await deleteFolder(folder1Id, userId);
+
+    baseContent = await getMyFolderContent({
+      loggedInUserId: userId,
+      folderId: null,
+    });
+    expect(baseContent.content.length).eq(1);
+    await expect(
+      getMyFolderContent({
+        loggedInUserId: userId,
+        folderId: folder1Id,
+      }),
+    ).rejects.toThrow("No content found");
+    await expect(
+      getMyFolderContent({
+        loggedInUserId: userId,
+        folderId: folder2Id,
+      }),
+    ).rejects.toThrow("No content found");
+    await expect(
+      getMyFolderContent({
+        loggedInUserId: userId,
+        folderId: folder3Id,
+      }),
+    ).rejects.toThrow("No content found");
+    folder4Content = await getMyFolderContent({
+      loggedInUserId: userId,
+      folderId: folder4Id,
+    });
+    expect(folder4Content.content.length).eq(2);
+    folder5Content = await getMyFolderContent({
+      loggedInUserId: userId,
+      folderId: folder5Id,
+    });
+    expect(folder5Content.content.length).eq(2);
+    folder6Content = await getMyFolderContent({
+      loggedInUserId: userId,
+      folderId: folder6Id,
+    });
+    expect(folder6Content.content.length).eq(1);
+
+    await expect(getActivity(activity1Id)).rejects.toThrow("No content found");
+    await expect(getActivity(activity2Id)).rejects.toThrow("No content found");
+    await expect(getActivity(activity3Id)).rejects.toThrow("No content found");
+    await getActivity(activity4Id);
+    await getActivity(activity5Id);
+    await getActivity(activity6Id);
+    await expect(getDoc(doc1Id)).rejects.toThrow("No documents found");
+    await expect(getDoc(doc2Id)).rejects.toThrow("No documents found");
+    await expect(getDoc(doc3Id)).rejects.toThrow("No documents found");
+    await getDoc(doc4Id);
+    await getDoc(doc5Id);
+    await getDoc(doc6Id);
+
+    // delete folder 5 and its content
+    await deleteFolder(folder5Id, userId);
+
+    baseContent = await getMyFolderContent({
+      loggedInUserId: userId,
+      folderId: null,
+    });
+    expect(baseContent.content.length).eq(1);
+    folder4Content = await getMyFolderContent({
+      loggedInUserId: userId,
+      folderId: folder4Id,
+    });
+    expect(folder4Content.content.length).eq(1);
+    await expect(
+      getMyFolderContent({
+        loggedInUserId: userId,
+        folderId: folder5Id,
+      }),
+    ).rejects.toThrow("No content found");
+    await expect(
+      getMyFolderContent({
+        loggedInUserId: userId,
+        folderId: folder6Id,
+      }),
+    ).rejects.toThrow("No content found");
+
+    await getActivity(activity4Id);
+    await expect(getActivity(activity5Id)).rejects.toThrow("No content found");
+    await expect(getActivity(activity6Id)).rejects.toThrow("No content found");
+    await getDoc(doc4Id);
+    await expect(getDoc(doc5Id)).rejects.toThrow("No documents found");
+    await expect(getDoc(doc6Id)).rejects.toThrow("No documents found");
+  },
+);
 
 test("non-owner cannot delete folder", async () => {
   const owner = await createTestUser();
@@ -2466,11 +2552,11 @@ test("searchSharedContent returns public/shared activities and folders matching 
     name: sharedActivityName,
     ownerId,
   });
-  await shareActivity({
+  await shareActivityWithEmail({
     id: sharedActivityId,
     licenseCode: "CCDUAL",
     ownerId,
-    users: [userId],
+    email: user.email,
   });
 
   const { folderId: publicFolderId } = await createFolder(ownerId, null);
@@ -2791,6 +2877,53 @@ test("searchUsersWithSharedContent returns only users with public/shared content
   // user2 cannot find owner5
   searchResults = await searchUsersWithSharedContent(owner5.lastNames, user2Id);
   expect(searchResults.length).eq(0);
+});
+
+test("share with email throws error when no match", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  const user = await createTestUser();
+  const userId = user.userId;
+
+  const otherEmail = `unique-${Date.now()}@example.com`;
+
+  const { folderId } = await createFolder(ownerId, null);
+  const { activityId } = await createActivity(ownerId, null);
+
+  await expect(
+    shareActivityWithEmail({
+      id: activityId,
+      ownerId,
+      licenseCode: "CCBYSA",
+      email: otherEmail,
+    }),
+  ).rejects.toThrow("User with email not found");
+
+  let result = await shareActivityWithEmail({
+    id: activityId,
+    ownerId,
+    licenseCode: "CCBYSA",
+    email: user.email,
+  });
+  expect(result.id).eq(activityId);
+
+  await expect(
+    shareFolderWithEmail({
+      id: folderId,
+      ownerId,
+      licenseCode: "CCBYSA",
+      email: otherEmail,
+    }),
+  ).rejects.toThrow("User with email not found");
+
+  result = await shareFolderWithEmail({
+    id: folderId,
+    ownerId,
+    licenseCode: "CCBYSA",
+    email: user.email,
+  });
+  expect(result.id).eq(folderId);
 });
 
 test("findOrCreateUser finds an existing user or creates a new one", async () => {

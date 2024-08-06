@@ -60,9 +60,15 @@ import {
   getAllLicenses,
   makeActivityPrivate,
   makeActivityPublic,
-  LicenseCode,
   makeFolderPublic,
   makeFolderPrivate,
+  shareActivityWithEmail,
+  unshareActivity,
+  shareFolderWithEmail,
+  unshareFolder,
+  LicenseCode,
+  setActivityLicense,
+  setFolderLicense,
   searchMyFolderContent,
   upgradeAnonymousUser,
 } from "./model";
@@ -490,6 +496,84 @@ app.post(
 );
 
 app.post(
+  "/api/setActivityLicense",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.user?.userId ?? 0);
+    const body = req.body;
+    const id = Number(body.id);
+
+    let licenseCode: LicenseCode;
+
+    let requestedCode: string = body.licenseCode;
+    switch (requestedCode) {
+      case "CCDUAL":
+      case "CCBYSA":
+      case "CCBYNCSA": {
+        licenseCode = requestedCode;
+        break;
+      }
+      default: {
+        return res.status(400).send("Invalid license code");
+      }
+    }
+
+    try {
+      let data = await setActivityLicense({
+        id,
+        ownerId: loggedInUserId,
+        licenseCode,
+      });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/setFolderLicense",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.user?.userId ?? 0);
+    const body = req.body;
+    const id = Number(body.id);
+
+    let licenseCode: LicenseCode;
+
+    let requestedCode: string = body.licenseCode;
+    switch (requestedCode) {
+      case "CCDUAL":
+      case "CCBYSA":
+      case "CCBYNCSA": {
+        licenseCode = requestedCode;
+        break;
+      }
+      default: {
+        return res.status(400).send("Invalid license code");
+      }
+    }
+
+    try {
+      let data = await setFolderLicense({
+        id,
+        ownerId: loggedInUserId,
+        licenseCode,
+      });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
   "/api/makeActivityPublic",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = Number(req.user?.userId ?? 0);
@@ -594,6 +678,142 @@ app.post(
     const id = Number(body.id);
     try {
       let data = await makeFolderPrivate({ id, ownerId: loggedInUserId });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/shareActivity",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.user?.userId ?? 0);
+    const body = req.body;
+    const id = Number(body.id);
+    const email: string = body.email;
+
+    let licenseCode: LicenseCode;
+
+    let requestedCode: string = body.licenseCode;
+    switch (requestedCode) {
+      case "CCDUAL":
+      case "CCBYSA":
+      case "CCBYNCSA": {
+        licenseCode = requestedCode;
+        break;
+      }
+      default: {
+        return res.status(400).send("Invalid license code");
+      }
+    }
+
+    try {
+      let data = await shareActivityWithEmail({
+        id,
+        ownerId: loggedInUserId,
+        licenseCode,
+        email,
+      });
+      res.send(data);
+    } catch (e) {
+      console.log("error", e);
+      if ((e as any).message === "User with email not found") {
+        res.status(404).send("User with email not found");
+      } else if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/unshareActivity",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.user?.userId ?? 0);
+    const body = req.body;
+    const id = Number(body.id);
+    const userId = Number(body.userId);
+    try {
+      let data = await unshareActivity({
+        id,
+        ownerId: loggedInUserId,
+        users: [userId],
+      });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/shareFolder",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.user?.userId ?? 0);
+    const body = req.body;
+    const id = Number(body.id);
+    const email: string = body.email;
+
+    let licenseCode: LicenseCode;
+
+    let requestedCode: string = body.licenseCode;
+    switch (requestedCode) {
+      case "CCDUAL":
+      case "CCBYSA":
+      case "CCBYNCSA": {
+        licenseCode = requestedCode;
+        break;
+      }
+      default: {
+        return res.status(400).send("Invalid license code");
+      }
+    }
+
+    try {
+      let data = await shareFolderWithEmail({
+        id,
+        ownerId: loggedInUserId,
+        licenseCode,
+        email,
+      });
+      res.send(data);
+    } catch (e) {
+      console.log("error", e);
+      if ((e as any).message === "User with email not found") {
+        res.status(404).send("User with email not found");
+      } else if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/unshareFolder",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.user?.userId ?? 0);
+    const body = req.body;
+    const id = Number(body.id);
+    const userId = Number(body.userId);
+    try {
+      let data = await unshareFolder({
+        id,
+        ownerId: loggedInUserId,
+        users: [userId],
+      });
       res.send(data);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -854,7 +1074,7 @@ app.get(
 );
 
 app.get(
-  "/api/getPublicEditorData/:activityId",
+  "/api/getSharedEditorData/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
     const activityId = Number(req.params.activityId);
     const loggedInUserId = Number(req.user?.userId ?? 0);
