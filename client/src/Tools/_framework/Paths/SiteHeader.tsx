@@ -17,6 +17,8 @@ import {
   VStack,
   Show,
   useBreakpointValue,
+  SkipNavLink,
+  SkipNavContent,
   Hide,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
@@ -129,6 +131,7 @@ export function SiteHeader() {
 
   return (
     <>
+      <SkipNavLink zIndex="2000">Skip to content</SkipNavLink>
       <Grid
         templateAreas={`"siteHeader"
         "main"`}
@@ -149,7 +152,7 @@ export function SiteHeader() {
             height="40px"
             position="fixed"
             top="0"
-            zIndex="1200"
+            zIndex="1000"
             borderBottom="1px solid var(--mainGray)"
             // paddingBottom="2px"
             width="100%"
@@ -331,6 +334,7 @@ export function SiteHeader() {
           </Grid>
         </GridItem>
         <GridItem area="main" as="main" margin="0" overflowY="auto">
+          <SkipNavContent />
           <Outlet context={user} />
         </GridItem>
       </Grid>
