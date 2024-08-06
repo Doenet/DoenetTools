@@ -122,7 +122,7 @@ export async function createActivity(
   });
 
   let isPublic = false;
-  let licenseCode = "CCDUAL";
+  let licenseCode = undefined;
   let sharedWith: number[] = [];
 
   // If parent folder isn't null, check if it is shared and get its license
@@ -132,7 +132,7 @@ export async function createActivity(
       select: {
         isPublic: true,
         licenseCode: true,
-        contentShares: { select: { userId: true } },
+        sharedWith: { select: { userId: true } },
       },
     });
     if (parentFolder.isPublic) {
@@ -142,8 +142,8 @@ export async function createActivity(
       }
     }
 
-    if (parentFolder.contentShares.length > 0) {
-      sharedWith = parentFolder.contentShares.map((cs) => cs.userId);
+    if (parentFolder.sharedWith.length > 0) {
+      sharedWith = parentFolder.sharedWith.map((cs) => cs.userId);
       if (parentFolder.licenseCode) {
         licenseCode = parentFolder.licenseCode;
       }
@@ -169,7 +169,7 @@ export async function createActivity(
           },
         ],
       },
-      contentShares: {
+      sharedWith: {
         createMany: { data: sharedWith.map((userId) => ({ userId })) },
       },
     },
@@ -194,7 +194,7 @@ export async function createFolder(
   const sortIndex = await getNextSortIndexForFolder(ownerId, parentFolderId);
 
   let isPublic = false;
-  let licenseCode = "CCDUAL";
+  let licenseCode = undefined;
   let sharedWith: number[] = [];
 
   // If parent folder isn't null, check if it is shared and get its license
@@ -204,7 +204,7 @@ export async function createFolder(
       select: {
         isPublic: true,
         licenseCode: true,
-        contentShares: { select: { userId: true } },
+        sharedWith: { select: { userId: true } },
       },
     });
     if (parentFolder.isPublic) {
@@ -213,8 +213,8 @@ export async function createFolder(
         licenseCode = parentFolder.licenseCode;
       }
     }
-    if (parentFolder.contentShares.length > 0) {
-      sharedWith = parentFolder.contentShares.map((cs) => cs.userId);
+    if (parentFolder.sharedWith.length > 0) {
+      sharedWith = parentFolder.sharedWith.map((cs) => cs.userId);
       if (parentFolder.licenseCode) {
         licenseCode = parentFolder.licenseCode;
       }
@@ -231,7 +231,7 @@ export async function createFolder(
       isPublic,
       licenseCode,
       sortIndex,
-      contentShares: {
+      sharedWith: {
         createMany: { data: sharedWith.map((userId) => ({ userId })) },
       },
     },
@@ -485,7 +485,7 @@ export async function moveContent({
       select: {
         isPublic: true,
         licenseCode: true,
-        contentShares: { select: { userId: true } },
+        sharedWith: { select: { userId: true } },
       },
     });
 
@@ -497,8 +497,8 @@ export async function moveContent({
         desiredFolderLicenseCode = parentFolder.licenseCode as LicenseCode;
       }
     }
-    if (parentFolder.contentShares.length > 0) {
-      desiredFolderShares = parentFolder.contentShares.map((cs) => cs.userId);
+    if (parentFolder.sharedWith.length > 0) {
+      desiredFolderShares = parentFolder.sharedWith.map((cs) => cs.userId);
       if (parentFolder.licenseCode) {
         desiredFolderLicenseCode = parentFolder.licenseCode as LicenseCode;
       }
@@ -729,7 +729,7 @@ export async function copyActivityToFolder(
       OR: [
         { ownerId: userId },
         { isPublic: true },
-        { contentShares: { some: { userId } } },
+        { sharedWith: { some: { userId } } },
       ],
     },
     include: {
@@ -903,7 +903,7 @@ export async function getActivityEditorData(
       OR: [
         { ownerId: loggedInUserId },
         { isPublic: true },
-        { contentShares: { some: { userId: loggedInUserId } } },
+        { sharedWith: { some: { userId: loggedInUserId } } },
       ],
     },
     select: { isAssigned: true, ownerId: true },
@@ -954,7 +954,7 @@ export async function getActivityEditorData(
         classCode: true,
         codeValidUntil: true,
         isPublic: true,
-        contentShares: {
+        sharedWith: {
           select: {
             user: {
               select: {
@@ -994,7 +994,7 @@ export async function getActivityEditorData(
             id: true,
             name: true,
             isPublic: true,
-            contentShares: {
+            sharedWith: {
               select: {
                 user: {
                   select: {
@@ -1016,8 +1016,8 @@ export async function getActivityEditorData(
       ? DateTime.now() <= DateTime.fromJSDate(assignedActivity.codeValidUntil)
       : false;
 
-    const { isShared, sharedWith } = processContentShares(
-      assignedActivity.contentShares,
+    const { isShared, sharedWith } = processSharedWith(
+      assignedActivity.sharedWith,
     );
 
     activity = {
@@ -1060,7 +1060,7 @@ export async function getActivityEditorData(
         classCode: true,
         codeValidUntil: true,
         isPublic: true,
-        contentShares: {
+        sharedWith: {
           select: {
             user: {
               select: {
@@ -1095,7 +1095,7 @@ export async function getActivityEditorData(
             id: true,
             name: true,
             isPublic: true,
-            contentShares: {
+            sharedWith: {
               select: {
                 user: {
                   select: {
@@ -1112,10 +1112,14 @@ export async function getActivityEditorData(
       },
     });
 
-    const { contentShares, license, parentFolder, ...unassignedActivity2 } =
-      unassignedActivity;
+    const {
+      sharedWith: sharedWithOrig,
+      license,
+      parentFolder,
+      ...unassignedActivity2
+    } = unassignedActivity;
 
-    const { isShared, sharedWith } = processContentShares(contentShares);
+    const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
 
     activity = {
       ...unassignedActivity2,
@@ -1152,7 +1156,7 @@ export async function getSharedEditorData(
       OR: [
         { ownerId: loggedInUserId },
         { isPublic: true },
-        { contentShares: { some: { userId: loggedInUserId } } },
+        { sharedWith: { some: { userId: loggedInUserId } } },
       ],
     },
     select: {
@@ -1162,7 +1166,7 @@ export async function getSharedEditorData(
       name: true,
       imagePath: true,
       isPublic: true,
-      contentShares: {
+      sharedWith: {
         select: {
           userId: true,
         },
@@ -1190,7 +1194,7 @@ export async function getSharedEditorData(
           id: true,
           name: true,
           isPublic: true,
-          contentShares: {
+          sharedWith: {
             select: {
               userId: true,
             },
@@ -1200,11 +1204,15 @@ export async function getSharedEditorData(
     },
   });
 
-  const { license, contentShares, parentFolder, ...preliminaryActivity2 } =
-    preliminaryActivity;
+  const {
+    license,
+    sharedWith: sharedWithOrig,
+    parentFolder,
+    ...preliminaryActivity2
+  } = preliminaryActivity;
 
-  const { isShared, sharedWith } = processContentSharesForUser(
-    contentShares,
+  const { isShared, sharedWith } = processSharedWithForUser(
+    sharedWithOrig,
     loggedInUserId,
   );
 
@@ -1236,7 +1244,7 @@ export async function getActivityViewerData(
       OR: [
         { ownerId: userId },
         { isPublic: true },
-        { contentShares: { some: { userId } } },
+        { sharedWith: { some: { userId } } },
       ],
     },
     select: {
@@ -1245,7 +1253,7 @@ export async function getActivityViewerData(
       ownerId: true,
       imagePath: true,
       isPublic: true,
-      contentShares: {
+      sharedWith: {
         select: {
           userId: true,
         },
@@ -1274,7 +1282,7 @@ export async function getActivityViewerData(
           id: true,
           name: true,
           isPublic: true,
-          contentShares: {
+          sharedWith: {
             select: {
               userId: true,
             },
@@ -1295,13 +1303,13 @@ export async function getActivityViewerData(
   const {
     owner,
     license,
-    contentShares,
+    sharedWith: sharedWithOrig,
     parentFolder,
     ...preliminaryActivity2
   } = preliminaryActivity;
 
-  const { isShared, sharedWith } = processContentSharesForUser(
-    contentShares,
+  const { isShared, sharedWith } = processSharedWithForUser(
+    sharedWithOrig,
     userId,
   );
 
@@ -1423,7 +1431,7 @@ export async function searchSharedContent(
       isDeleted: false,
       OR: [
         { isPublic: true },
-        { contentShares: { some: { userId: loggedInUserId } } },
+        { sharedWith: { some: { userId: loggedInUserId } } },
       ],
     },
     select: {
@@ -1441,7 +1449,7 @@ export async function searchSharedContent(
       name: true,
       imagePath: true,
       isPublic: true,
-      contentShares: {
+      sharedWith: {
         select: {
           userId: true,
         },
@@ -1459,7 +1467,7 @@ export async function searchSharedContent(
           id: true,
           name: true,
           isPublic: true,
-          contentShares: {
+          sharedWith: {
             select: {
               userId: true,
             },
@@ -1471,10 +1479,15 @@ export async function searchSharedContent(
 
   const publicContent: ContentStructure[] = preliminaryPublicContent.map(
     (content) => {
-      const { license, contentShares, parentFolder, ...content2 } = content;
+      const {
+        license,
+        sharedWith: sharedWithOrig,
+        parentFolder,
+        ...content2
+      } = content;
 
-      const { isShared, sharedWith } = processContentSharesForUser(
-        contentShares,
+      const { isShared, sharedWith } = processSharedWithForUser(
+        sharedWithOrig,
         loggedInUserId,
       );
 
@@ -1517,7 +1530,7 @@ export async function searchUsersWithSharedContent(
           isDeleted: false,
           OR: [
             { isPublic: true },
-            { contentShares: { some: { userId: loggedInUserId } } },
+            { sharedWith: { some: { userId: loggedInUserId } } },
           ],
         },
       },
@@ -3114,7 +3127,7 @@ export async function getMyFolderContent({
         name: true,
         imagePath: true,
         isPublic: true,
-        contentShares: {
+        sharedWith: {
           select: {
             user: {
               select: {
@@ -3139,7 +3152,7 @@ export async function getMyFolderContent({
             id: true,
             name: true,
             isPublic: true,
-            contentShares: {
+            sharedWith: {
               select: {
                 user: {
                   select: {
@@ -3156,10 +3169,14 @@ export async function getMyFolderContent({
       },
     });
 
-    const { contentShares, license, parentFolder, ...preliminaryFolder2 } =
-      preliminaryFolder;
+    const {
+      sharedWith: sharedWithOrig,
+      license,
+      parentFolder,
+      ...preliminaryFolder2
+    } = preliminaryFolder;
 
-    const { isShared, sharedWith } = processContentShares(contentShares);
+    const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
 
     folder = {
       ...preliminaryFolder2,
@@ -3189,7 +3206,7 @@ export async function getMyFolderContent({
       name: true,
       imagePath: true,
       isPublic: true,
-      contentShares: {
+      sharedWith: {
         select: {
           user: {
             select: {
@@ -3218,7 +3235,7 @@ export async function getMyFolderContent({
           id: true,
           name: true,
           isPublic: true,
-          contentShares: {
+          sharedWith: {
             select: {
               user: {
                 select: {
@@ -3241,7 +3258,7 @@ export async function getMyFolderContent({
     const {
       _count,
       isAssigned,
-      contentShares,
+      sharedWith: sharedWithOrig,
       license,
       parentFolder,
       ...activity
@@ -3254,7 +3271,7 @@ export async function getMyFolderContent({
       : !isOpen
         ? "Closed"
         : "Open";
-    const { isShared, sharedWith } = processContentShares(contentShares);
+    const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
 
     return {
       ...activity,
@@ -3299,7 +3316,7 @@ export async function searchMyFolderContent({
         name: true,
         imagePath: true,
         isPublic: true,
-        contentShares: {
+        sharedWith: {
           select: {
             user: {
               select: {
@@ -3324,7 +3341,7 @@ export async function searchMyFolderContent({
             id: true,
             name: true,
             isPublic: true,
-            contentShares: {
+            sharedWith: {
               select: {
                 user: {
                   select: {
@@ -3341,9 +3358,13 @@ export async function searchMyFolderContent({
       },
     });
 
-    const { contentShares, license, parentFolder, ...preliminaryFolder2 } =
-      preliminaryFolder;
-    const { isShared, sharedWith } = processContentShares(contentShares);
+    const {
+      sharedWith: sharedWithOrig,
+      license,
+      parentFolder,
+      ...preliminaryFolder2
+    } = preliminaryFolder;
+    const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
 
     folder = {
       ...preliminaryFolder2,
@@ -3378,7 +3399,7 @@ export async function searchMyFolderContent({
         name: true,
         imagePath: true,
         isPublic: true,
-        contentShares: {
+        sharedWith: {
           select: {
             user: {
               select: {
@@ -3437,7 +3458,7 @@ export async function searchMyFolderContent({
         name: true,
         imagePath: true,
         isPublic: true,
-        contentShares: {
+        sharedWith: {
           select: {
             user: {
               select: {
@@ -3466,7 +3487,7 @@ export async function searchMyFolderContent({
             id: true,
             name: true,
             isPublic: true,
-            contentShares: {
+            sharedWith: {
               select: {
                 user: {
                   select: {
@@ -3489,7 +3510,7 @@ export async function searchMyFolderContent({
     const {
       _count,
       isAssigned,
-      contentShares,
+      sharedWith: sharedWithOrig,
       license,
       parentFolder,
       ...activity
@@ -3502,7 +3523,7 @@ export async function searchMyFolderContent({
       : !isOpen
         ? "Closed"
         : "Open";
-    const { isShared, sharedWith } = processContentShares(contentShares);
+    const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
 
     return {
       ...activity,
@@ -3541,7 +3562,7 @@ export async function getSharedFolderContent({
         isDeleted: false,
         OR: [
           { isPublic: true },
-          { contentShares: { some: { userId: loggedInUserId } } },
+          { sharedWith: { some: { userId: loggedInUserId } } },
         ],
       },
       select: {
@@ -3550,7 +3571,7 @@ export async function getSharedFolderContent({
         name: true,
         imagePath: true,
         isPublic: true,
-        contentShares: {
+        sharedWith: {
           select: {
             userId: true,
           },
@@ -3568,7 +3589,7 @@ export async function getSharedFolderContent({
             id: true,
             name: true,
             isPublic: true,
-            contentShares: {
+            sharedWith: {
               select: {
                 userId: true,
               },
@@ -3584,7 +3605,7 @@ export async function getSharedFolderContent({
       !(
         preliminaryFolder.parentFolder &&
         (preliminaryFolder.parentFolder.isPublic ||
-          preliminaryFolder.parentFolder.contentShares.findIndex(
+          preliminaryFolder.parentFolder.sharedWith.findIndex(
             (cs) => cs.userId === loggedInUserId,
           ) !== -1)
       )
@@ -3592,11 +3613,15 @@ export async function getSharedFolderContent({
       preliminaryFolder.parentFolder = null;
     }
 
-    const { license, contentShares, parentFolder, ...preliminaryFolder2 } =
-      preliminaryFolder;
+    const {
+      license,
+      sharedWith: sharedWithOrig,
+      parentFolder,
+      ...preliminaryFolder2
+    } = preliminaryFolder;
 
-    const { isShared, sharedWith } = processContentSharesForUser(
-      contentShares,
+    const { isShared, sharedWith } = processSharedWithForUser(
+      sharedWithOrig,
       loggedInUserId,
     );
 
@@ -3622,7 +3647,7 @@ export async function getSharedFolderContent({
       parentFolderId: folderId,
       OR: [
         { isPublic: true },
-        { contentShares: { some: { userId: loggedInUserId } } },
+        { sharedWith: { some: { userId: loggedInUserId } } },
       ],
     },
     select: {
@@ -3632,7 +3657,7 @@ export async function getSharedFolderContent({
       name: true,
       imagePath: true,
       isPublic: true,
-      contentShares: {
+      sharedWith: {
         select: {
           userId: true,
         },
@@ -3650,7 +3675,7 @@ export async function getSharedFolderContent({
           id: true,
           name: true,
           isPublic: true,
-          contentShares: {
+          sharedWith: {
             select: {
               userId: true,
             },
@@ -3674,12 +3699,12 @@ export async function getSharedFolderContent({
         parentFolder: {
           AND: [
             { isPublic: false },
-            { contentShares: { none: { userId: loggedInUserId } } },
+            { sharedWith: { none: { userId: loggedInUserId } } },
           ],
         },
         OR: [
           { isPublic: true },
-          { contentShares: { some: { userId: loggedInUserId } } },
+          { sharedWith: { some: { userId: loggedInUserId } } },
         ],
       },
       select: {
@@ -3689,7 +3714,7 @@ export async function getSharedFolderContent({
         name: true,
         imagePath: true,
         isPublic: true,
-        contentShares: {
+        sharedWith: {
           select: {
             userId: true,
           },
@@ -3707,7 +3732,7 @@ export async function getSharedFolderContent({
             id: true,
             name: true,
             isPublic: true,
-            contentShares: {
+            sharedWith: {
               select: {
                 userId: true,
               },
@@ -3722,10 +3747,15 @@ export async function getSharedFolderContent({
 
   const publicContent: ContentStructure[] = preliminarySharedContent.map(
     (content) => {
-      const { license, contentShares, parentFolder, ...content2 } = content;
+      const {
+        license,
+        sharedWith: sharedWithOrig,
+        parentFolder,
+        ...content2
+      } = content;
 
-      const { isShared, sharedWith } = processContentSharesForUser(
-        contentShares,
+      const { isShared, sharedWith } = processSharedWithForUser(
+        sharedWithOrig,
         loggedInUserId,
       );
 
@@ -3787,27 +3817,27 @@ export async function getAllLicenses() {
 }
 
 /**
- * Process a list of user info from the ContentShares table
+ * Process a list of user info from the SharedWith table
  *
  * Returns:
- * - isShared: true if there were any ContentShares items
+ * - isShared: true if there were any SharedWith items
  * - sharedWith: an array of UserInfo sorted by last names, then first names, then email.
  */
-function processContentShares(
-  contentShares:
+function processSharedWith(
+  sharedWithOrig:
     | {
         user: UserInfo;
       }[]
     | null
     | undefined,
 ): { isShared: boolean; sharedWith: UserInfo[] } {
-  if (contentShares === null || contentShares === undefined) {
+  if (sharedWithOrig === null || sharedWithOrig === undefined) {
     return { isShared: false, sharedWith: [] };
   }
 
-  let isShared = contentShares.length > 0;
+  let isShared = sharedWithOrig.length > 0;
 
-  let sharedWith = contentShares
+  let sharedWith = sharedWithOrig
     .map((cs) => cs.user)
     .sort(
       (a, b) =>
@@ -3820,28 +3850,27 @@ function processContentShares(
 }
 
 /**
- * Process a list of userIds from the ContentShares table to determine
+ * Process a list of userIds from the SharedWith table to determine
  * if the content was shared with `determineSharedToUser`
  *
  * Returns:
  * - isShared: true if `determineSharedToUser` is in the list of userIds
  * - sharedWith: any empty array of UserInfo
  *
- * @param contentShareIds
+ * @param sharedWithIds
  * @param determineSharedToUser
  * @returns
  */
-function processContentSharesForUser(
-  contentShareIds: { userId: number }[] | null | undefined,
+function processSharedWithForUser(
+  sharedWithIds: { userId: number }[] | null | undefined,
   determineSharedToUser: number,
 ): { isShared: boolean; sharedWith: UserInfo[] } {
-  if (contentShareIds === null || contentShareIds === undefined) {
+  if (sharedWithIds === null || sharedWithIds === undefined) {
     return { isShared: false, sharedWith: [] };
   }
 
   const isShared =
-    contentShareIds.findIndex((cs) => cs.userId === determineSharedToUser) !==
-    -1;
+    sharedWithIds.findIndex((cs) => cs.userId === determineSharedToUser) !== -1;
 
   const sharedWith: {
     userId: number;
@@ -3861,7 +3890,7 @@ function processParentFolder(
     id: number;
     name: string;
     isPublic: boolean;
-    contentShares?: {
+    sharedWith?: {
       user: UserInfo;
     }[];
   } | null,
@@ -3870,9 +3899,7 @@ function processParentFolder(
     return null;
   }
 
-  const { isShared, sharedWith } = processContentShares(
-    parentFolder.contentShares,
-  );
+  const { isShared, sharedWith } = processSharedWith(parentFolder.sharedWith);
 
   return {
     id: parentFolder.id,
@@ -3892,7 +3919,7 @@ function processParentFolderForUser(
     id: number;
     name: string;
     isPublic: boolean;
-    contentShares: { userId: number }[];
+    sharedWith: { userId: number }[];
   } | null,
   determineSharedToUser: number,
 ) {
@@ -3900,8 +3927,8 @@ function processParentFolderForUser(
     return null;
   }
 
-  const { isShared, sharedWith } = processContentSharesForUser(
-    parentFolder.contentShares,
+  const { isShared, sharedWith } = processSharedWithForUser(
+    parentFolder.sharedWith,
     determineSharedToUser,
   );
 
@@ -4033,7 +4060,7 @@ export async function shareActivity({
     where: { id, isDeleted: false, ownerId: ownerId, isFolder: false },
     data: {
       licenseCode,
-      contentShares: {
+      sharedWith: {
         createMany: {
           data: users.map((userId) => ({ userId })),
           skipDuplicates: true,

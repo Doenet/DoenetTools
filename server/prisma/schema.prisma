@@ -29,7 +29,7 @@ model content {
   isPublic         Boolean            @default(false)
   isDeleted        Boolean            @default(false)
   sortIndex        BigInt
-  licenseCode      String?            @db.VarChar(10)
+  licenseCode      String?            @default("CCDUAL") @db.VarChar(10)
   owner            users              @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   parentFolder     content?           @relation("folderStructure", fields: [parentFolderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   subFolders       content[]          @relation("folderStructure")

@@ -1,4 +1,7 @@
 -- AlterTable
+ALTER TABLE `content` MODIFY `licenseCode` VARCHAR(10) NULL DEFAULT 'CCDUAL';
+
+-- AlterTable
 ALTER TABLE `contributorHistory` ADD COLUMN `withLicenseCode` VARCHAR(10) NULL;
 
 -- CreateTable

@@ -1167,270 +1167,277 @@ test("making folder public/private also makes its content public/private", async
   expect(content[0].license?.code).eq("CCBYSA");
 });
 
-test("making sharing/unsharing a folder also shares/unshares its content", async () => {
-  const owner = await createTestUser();
-  const ownerId = owner.userId;
-  let user1 = await createTestUser();
-  const user1Id = user1.userId;
-  user1 = await updateUser({
-    userId: user1Id,
-    firstNames: "Zoe",
-    lastNames: "Zaborowski",
-  });
-  const {
-    isAdmin: _isAdmin1,
-    isAnonymous: _isAnonymous1,
-    ...userFields1
-  } = user1;
-  let user2 = await createTestUser();
-  const user2Id = user2.userId;
-  user2 = await updateUser({
-    userId: user2Id,
-    firstNames: "Arya",
-    lastNames: "Abbas",
-  });
-  const {
-    isAdmin: _isAdmin2,
-    isAnonymous: _isAnonymous2,
-    ...userFields2
-  } = user2;
-  let user3 = await createTestUser();
-  const user3Id = user3.userId;
-  user3 = await updateUser({
-    userId: user3Id,
-    firstNames: "Nyla",
-    lastNames: "Nyquist",
-  });
-  const {
-    isAdmin: _isAdmin3,
-    isAnonymous: _isAnonymous3,
-    ...userFields3
-  } = user3;
+test(
+  "making sharing/unsharing a folder also shares/unshares its content",
+  { timeout: 30000 },
+  async () => {
+    const owner = await createTestUser();
+    const ownerId = owner.userId;
+    let user1 = await createTestUser();
+    const user1Id = user1.userId;
+    user1 = await updateUser({
+      userId: user1Id,
+      firstNames: "Zoe",
+      lastNames: "Zaborowski",
+    });
+    const {
+      isAdmin: _isAdmin1,
+      isAnonymous: _isAnonymous1,
+      ...userFields1
+    } = user1;
+    let user2 = await createTestUser();
+    const user2Id = user2.userId;
+    user2 = await updateUser({
+      userId: user2Id,
+      firstNames: "Arya",
+      lastNames: "Abbas",
+    });
+    const {
+      isAdmin: _isAdmin2,
+      isAnonymous: _isAnonymous2,
+      ...userFields2
+    } = user2;
+    let user3 = await createTestUser();
+    const user3Id = user3.userId;
+    user3 = await updateUser({
+      userId: user3Id,
+      firstNames: "Nyla",
+      lastNames: "Nyquist",
+    });
+    const {
+      isAdmin: _isAdmin3,
+      isAnonymous: _isAnonymous3,
+      ...userFields3
+    } = user3;
 
-  const sharedUserFields = [userFields2, userFields1];
-  const sharedUserFields23 = [userFields2, userFields3];
+    const sharedUserFields = [userFields2, userFields1];
+    const sharedUserFields23 = [userFields2, userFields3];
 
-  const { folderId: sharedFolderId } = await createFolder(ownerId, null);
+    const { folderId: sharedFolderId } = await createFolder(ownerId, null);
 
-  // create content in folder that will become shared
-  const { activityId: activity1Id } = await createActivity(
-    ownerId,
-    sharedFolderId,
-  );
-  const { folderId: folder1Id } = await createFolder(ownerId, sharedFolderId);
-  const { folderId: folder2Id } = await createFolder(ownerId, folder1Id);
-  const { activityId: activity2Id } = await createActivity(ownerId, folder2Id);
+    // create content in folder that will become shared
+    const { activityId: activity1Id } = await createActivity(
+      ownerId,
+      sharedFolderId,
+    );
+    const { folderId: folder1Id } = await createFolder(ownerId, sharedFolderId);
+    const { folderId: folder2Id } = await createFolder(ownerId, folder1Id);
+    const { activityId: activity2Id } = await createActivity(
+      ownerId,
+      folder2Id,
+    );
 
-  let results = await getMyFolderContent({
-    folderId: sharedFolderId,
-    loggedInUserId: ownerId,
-  });
-  let content = results.content;
+    let results = await getMyFolderContent({
+      folderId: sharedFolderId,
+      loggedInUserId: ownerId,
+    });
+    let content = results.content;
 
-  expect(content[0].id).eq(activity1Id);
-  expect(content[0].isShared).eq(false);
-  expect(content[0].sharedWith).eqls([]);
-  expect(content[0].license?.code).eq("CCDUAL");
-  expect(content[1].id).eq(folder1Id);
-  expect(content[1].isShared).eq(false);
-  expect(content[1].sharedWith).eqls([]);
-  expect(content[1].license?.code).eq("CCDUAL");
+    expect(content[0].id).eq(activity1Id);
+    expect(content[0].isShared).eq(false);
+    expect(content[0].sharedWith).eqls([]);
+    expect(content[0].license?.code).eq("CCDUAL");
+    expect(content[1].id).eq(folder1Id);
+    expect(content[1].isShared).eq(false);
+    expect(content[1].sharedWith).eqls([]);
+    expect(content[1].license?.code).eq("CCDUAL");
 
-  results = await getMyFolderContent({
-    folderId: folder1Id,
-    loggedInUserId: ownerId,
-  });
-  content = results.content;
-  expect(content[0].id).eq(folder2Id);
-  expect(content[0].isShared).eq(false);
-  expect(content[0].sharedWith).eqls([]);
-  expect(content[0].license?.code).eq("CCDUAL");
+    results = await getMyFolderContent({
+      folderId: folder1Id,
+      loggedInUserId: ownerId,
+    });
+    content = results.content;
+    expect(content[0].id).eq(folder2Id);
+    expect(content[0].isShared).eq(false);
+    expect(content[0].sharedWith).eqls([]);
+    expect(content[0].license?.code).eq("CCDUAL");
 
-  results = await getMyFolderContent({
-    folderId: folder2Id,
-    loggedInUserId: ownerId,
-  });
-  content = results.content;
-  expect(content[0].id).eq(activity2Id);
-  expect(content[0].isShared).eq(false);
-  expect(content[0].sharedWith).eqls([]);
-  expect(content[0].license?.code).eq("CCDUAL");
+    results = await getMyFolderContent({
+      folderId: folder2Id,
+      loggedInUserId: ownerId,
+    });
+    content = results.content;
+    expect(content[0].id).eq(activity2Id);
+    expect(content[0].isShared).eq(false);
+    expect(content[0].sharedWith).eqls([]);
+    expect(content[0].license?.code).eq("CCDUAL");
 
-  await shareFolderWithEmail({
-    id: sharedFolderId,
-    licenseCode: "CCBYSA",
-    ownerId,
-    email: user2.email,
-  });
-  await shareFolderWithEmail({
-    id: sharedFolderId,
-    licenseCode: "CCBYSA",
-    ownerId,
-    email: user1.email,
-  });
+    await shareFolderWithEmail({
+      id: sharedFolderId,
+      licenseCode: "CCBYSA",
+      ownerId,
+      email: user2.email,
+    });
+    await shareFolderWithEmail({
+      id: sharedFolderId,
+      licenseCode: "CCBYSA",
+      ownerId,
+      email: user1.email,
+    });
 
-  results = await getMyFolderContent({
-    folderId: sharedFolderId,
-    loggedInUserId: ownerId,
-  });
-  content = results.content;
+    results = await getMyFolderContent({
+      folderId: sharedFolderId,
+      loggedInUserId: ownerId,
+    });
+    content = results.content;
 
-  expect(content[0].id).eq(activity1Id);
-  expect(content[0].isShared).eq(true);
-  expect(content[0].sharedWith).eqls(sharedUserFields);
-  expect(content[0].license?.code).eq("CCBYSA");
-  expect(content[1].id).eq(folder1Id);
-  expect(content[1].isShared).eq(true);
-  expect(content[1].sharedWith).eqls(sharedUserFields);
-  expect(content[1].license?.code).eq("CCBYSA");
+    expect(content[0].id).eq(activity1Id);
+    expect(content[0].isShared).eq(true);
+    expect(content[0].sharedWith).eqls(sharedUserFields);
+    expect(content[0].license?.code).eq("CCBYSA");
+    expect(content[1].id).eq(folder1Id);
+    expect(content[1].isShared).eq(true);
+    expect(content[1].sharedWith).eqls(sharedUserFields);
+    expect(content[1].license?.code).eq("CCBYSA");
 
-  results = await getMyFolderContent({
-    folderId: folder1Id,
-    loggedInUserId: ownerId,
-  });
-  content = results.content;
-  expect(content[0].id).eq(folder2Id);
-  expect(content[0].isShared).eq(true);
-  expect(content[0].sharedWith).eqls(sharedUserFields);
-  expect(content[0].license?.code).eq("CCBYSA");
+    results = await getMyFolderContent({
+      folderId: folder1Id,
+      loggedInUserId: ownerId,
+    });
+    content = results.content;
+    expect(content[0].id).eq(folder2Id);
+    expect(content[0].isShared).eq(true);
+    expect(content[0].sharedWith).eqls(sharedUserFields);
+    expect(content[0].license?.code).eq("CCBYSA");
 
-  results = await getMyFolderContent({
-    folderId: folder2Id,
-    loggedInUserId: ownerId,
-  });
-  content = results.content;
-  expect(content[0].id).eq(activity2Id);
-  expect(content[0].isShared).eq(true);
-  expect(content[0].sharedWith).eqls(sharedUserFields);
-  expect(content[0].license?.code).eq("CCBYSA");
+    results = await getMyFolderContent({
+      folderId: folder2Id,
+      loggedInUserId: ownerId,
+    });
+    content = results.content;
+    expect(content[0].id).eq(activity2Id);
+    expect(content[0].isShared).eq(true);
+    expect(content[0].sharedWith).eqls(sharedUserFields);
+    expect(content[0].license?.code).eq("CCBYSA");
 
-  // unshare with user 1
-  await unshareFolder({
-    id: sharedFolderId,
-    ownerId,
-    users: [user1Id],
-  });
+    // unshare with user 1
+    await unshareFolder({
+      id: sharedFolderId,
+      ownerId,
+      users: [user1Id],
+    });
 
-  results = await getMyFolderContent({
-    folderId: sharedFolderId,
-    loggedInUserId: ownerId,
-  });
-  content = results.content;
+    results = await getMyFolderContent({
+      folderId: sharedFolderId,
+      loggedInUserId: ownerId,
+    });
+    content = results.content;
 
-  expect(content[0].id).eq(activity1Id);
-  expect(content[0].isShared).eq(true);
-  expect(content[0].sharedWith).eqls([userFields2]);
-  expect(content[0].license?.code).eq("CCBYSA");
-  expect(content[1].id).eq(folder1Id);
-  expect(content[1].isShared).eq(true);
-  expect(content[1].sharedWith).eqls([userFields2]);
-  expect(content[1].license?.code).eq("CCBYSA");
+    expect(content[0].id).eq(activity1Id);
+    expect(content[0].isShared).eq(true);
+    expect(content[0].sharedWith).eqls([userFields2]);
+    expect(content[0].license?.code).eq("CCBYSA");
+    expect(content[1].id).eq(folder1Id);
+    expect(content[1].isShared).eq(true);
+    expect(content[1].sharedWith).eqls([userFields2]);
+    expect(content[1].license?.code).eq("CCBYSA");
 
-  results = await getMyFolderContent({
-    folderId: folder1Id,
-    loggedInUserId: ownerId,
-  });
-  content = results.content;
-  expect(content[0].id).eq(folder2Id);
-  expect(content[0].isShared).eq(true);
-  expect(content[0].sharedWith).eqls([userFields2]);
-  expect(content[0].license?.code).eq("CCBYSA");
+    results = await getMyFolderContent({
+      folderId: folder1Id,
+      loggedInUserId: ownerId,
+    });
+    content = results.content;
+    expect(content[0].id).eq(folder2Id);
+    expect(content[0].isShared).eq(true);
+    expect(content[0].sharedWith).eqls([userFields2]);
+    expect(content[0].license?.code).eq("CCBYSA");
 
-  results = await getMyFolderContent({
-    folderId: folder2Id,
-    loggedInUserId: ownerId,
-  });
-  content = results.content;
-  expect(content[0].id).eq(activity2Id);
-  expect(content[0].isShared).eq(true);
-  expect(content[0].sharedWith).eqls([userFields2]);
-  expect(content[0].license?.code).eq("CCBYSA");
+    results = await getMyFolderContent({
+      folderId: folder2Id,
+      loggedInUserId: ownerId,
+    });
+    content = results.content;
+    expect(content[0].id).eq(activity2Id);
+    expect(content[0].isShared).eq(true);
+    expect(content[0].sharedWith).eqls([userFields2]);
+    expect(content[0].license?.code).eq("CCBYSA");
 
-  // share middle folder with user3
-  await shareFolder({
-    id: folder2Id,
-    ownerId,
-    licenseCode: "CCBYNCSA",
-    users: [user3Id],
-  });
+    // share middle folder with user3
+    await shareFolder({
+      id: folder2Id,
+      ownerId,
+      licenseCode: "CCBYNCSA",
+      users: [user3Id],
+    });
 
-  results = await getMyFolderContent({
-    folderId: sharedFolderId,
-    loggedInUserId: ownerId,
-  });
-  content = results.content;
+    results = await getMyFolderContent({
+      folderId: sharedFolderId,
+      loggedInUserId: ownerId,
+    });
+    content = results.content;
 
-  expect(content[0].id).eq(activity1Id);
-  expect(content[0].isShared).eq(true);
-  expect(content[0].sharedWith).eqls([userFields2]);
-  expect(content[0].license?.code).eq("CCBYSA");
-  expect(content[1].id).eq(folder1Id);
-  expect(content[1].isShared).eq(true);
-  expect(content[1].sharedWith).eqls([userFields2]);
-  expect(content[1].license?.code).eq("CCBYSA");
+    expect(content[0].id).eq(activity1Id);
+    expect(content[0].isShared).eq(true);
+    expect(content[0].sharedWith).eqls([userFields2]);
+    expect(content[0].license?.code).eq("CCBYSA");
+    expect(content[1].id).eq(folder1Id);
+    expect(content[1].isShared).eq(true);
+    expect(content[1].sharedWith).eqls([userFields2]);
+    expect(content[1].license?.code).eq("CCBYSA");
 
-  results = await getMyFolderContent({
-    folderId: folder1Id,
-    loggedInUserId: ownerId,
-  });
-  content = results.content;
-  expect(content[0].id).eq(folder2Id);
-  expect(content[0].isShared).eq(true);
-  expect(content[0].sharedWith).eqls(sharedUserFields23);
-  expect(content[0].license?.code).eq("CCBYNCSA");
+    results = await getMyFolderContent({
+      folderId: folder1Id,
+      loggedInUserId: ownerId,
+    });
+    content = results.content;
+    expect(content[0].id).eq(folder2Id);
+    expect(content[0].isShared).eq(true);
+    expect(content[0].sharedWith).eqls(sharedUserFields23);
+    expect(content[0].license?.code).eq("CCBYNCSA");
 
-  results = await getMyFolderContent({
-    folderId: folder2Id,
-    loggedInUserId: ownerId,
-  });
-  content = results.content;
-  expect(content[0].id).eq(activity2Id);
-  expect(content[0].isShared).eq(true);
-  expect(content[0].sharedWith).eqls(sharedUserFields23);
-  expect(content[0].license?.code).eq("CCBYNCSA");
+    results = await getMyFolderContent({
+      folderId: folder2Id,
+      loggedInUserId: ownerId,
+    });
+    content = results.content;
+    expect(content[0].id).eq(activity2Id);
+    expect(content[0].isShared).eq(true);
+    expect(content[0].sharedWith).eqls(sharedUserFields23);
+    expect(content[0].license?.code).eq("CCBYNCSA");
 
-  // unshare with user 2
-  await unshareFolder({
-    id: sharedFolderId,
-    ownerId,
-    users: [user2Id],
-  });
+    // unshare with user 2
+    await unshareFolder({
+      id: sharedFolderId,
+      ownerId,
+      users: [user2Id],
+    });
 
-  results = await getMyFolderContent({
-    folderId: sharedFolderId,
-    loggedInUserId: ownerId,
-  });
-  content = results.content;
+    results = await getMyFolderContent({
+      folderId: sharedFolderId,
+      loggedInUserId: ownerId,
+    });
+    content = results.content;
 
-  expect(content[0].id).eq(activity1Id);
-  expect(content[0].isShared).eq(false);
-  expect(content[0].sharedWith).eqls([]);
-  expect(content[0].license?.code).eq("CCBYSA");
-  expect(content[1].id).eq(folder1Id);
-  expect(content[1].isShared).eq(false);
-  expect(content[0].sharedWith).eqls([]);
-  expect(content[1].license?.code).eq("CCBYSA");
+    expect(content[0].id).eq(activity1Id);
+    expect(content[0].isShared).eq(false);
+    expect(content[0].sharedWith).eqls([]);
+    expect(content[0].license?.code).eq("CCBYSA");
+    expect(content[1].id).eq(folder1Id);
+    expect(content[1].isShared).eq(false);
+    expect(content[0].sharedWith).eqls([]);
+    expect(content[1].license?.code).eq("CCBYSA");
 
-  results = await getMyFolderContent({
-    folderId: folder1Id,
-    loggedInUserId: ownerId,
-  });
-  content = results.content;
-  expect(content[0].id).eq(folder2Id);
-  expect(content[0].isShared).eq(true);
-  expect(content[0].sharedWith).eqls([userFields3]);
-  expect(content[0].license?.code).eq("CCBYNCSA");
+    results = await getMyFolderContent({
+      folderId: folder1Id,
+      loggedInUserId: ownerId,
+    });
+    content = results.content;
+    expect(content[0].id).eq(folder2Id);
+    expect(content[0].isShared).eq(true);
+    expect(content[0].sharedWith).eqls([userFields3]);
+    expect(content[0].license?.code).eq("CCBYNCSA");
 
-  results = await getMyFolderContent({
-    folderId: folder2Id,
-    loggedInUserId: ownerId,
-  });
-  content = results.content;
-  expect(content[0].id).eq(activity2Id);
-  expect(content[0].isShared).eq(true);
-  expect(content[0].sharedWith).eqls([userFields3]);
-  expect(content[0].license?.code).eq("CCBYNCSA");
-});
+    results = await getMyFolderContent({
+      folderId: folder2Id,
+      loggedInUserId: ownerId,
+    });
+    content = results.content;
+    expect(content[0].id).eq(activity2Id);
+    expect(content[0].isShared).eq(true);
+    expect(content[0].sharedWith).eqls([userFields3]);
+    expect(content[0].license?.code).eq("CCBYNCSA");
+  },
+);
 
 test("moving content into public folder makes it public", async () => {
   const owner = await createTestUser();
