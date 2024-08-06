@@ -20,6 +20,13 @@ import {
   Tag,
   Highlight,
   Spacer,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+  CloseButton,
+  HStack,
 } from "@chakra-ui/react";
 import AsyncSelect from "react-select/async";
 import { FaFileImage } from "react-icons/fa";
@@ -49,16 +56,21 @@ export function GeneralContentControls({
   let [alerts, setAlerts] = useState<Alert[]>([]);
 
   let [classifySelectorInput, setClassifySelectorInput] = useState<string>("");
+  const classificationsAlreadyAdded = contentData.classifications.map(
+    (c2) => c2.id,
+  );
 
   const getClassificationOptions = async (inputValue: string) => {
     let results = await axios.get(
       `/api/searchPossibleClassifications?q=${inputValue}`,
     );
     let classifications: ContentClassification[] = results.data;
-    let options = classifications.map((c) => ({
-      value: c.code,
-      label: c,
-    }));
+    let options = classifications
+      .filter((c) => !classificationsAlreadyAdded.includes(c.id))
+      .map((c) => ({
+        value: c.id,
+        label: c,
+      }));
     return options;
   };
 
@@ -422,93 +434,117 @@ export function GeneralContentControls({
           <FormControl>
             <Flex flexDirection="column" width="100%" rowGap={6}>
               <FormLabel mt="16px">Content Classifications</FormLabel>
-              {contentData.classifications.map((classification, i) => (
-                <Text key={`contentClassification#${i}`}>
-                  {classification.code}
-                </Text>
-              ))}
+
+              <Accordion allowMultiple>
+                {contentData.classifications.map((classification, i) => (
+                  <AccordionItem key={`classification${i}`}>
+                    <HStack>
+                      <h2>
+                        <AccordionButton>
+                          <HStack flex="1" textAlign="left" direction={"row"}>
+                            ;<Text as="b">{classification.code}</Text>
+                            <Text fontSize={"small"} pt="2px">
+                              {classification.system.name}
+                            </Text>
+                          </HStack>
+                          <AccordionIcon marginLeft="7px" />
+                        </AccordionButton>
+                      </h2>
+                      <Spacer />
+                      <CloseButton
+                        onClick={() => {
+                          fetcher.submit(
+                            {
+                              _action: "remove content classification",
+                              activityId: id,
+                              classificationId: classification.id,
+                            },
+                            { method: "post" },
+                          );
+                        }}
+                      />
+                    </HStack>
+                    <AccordionPanel>
+                      <Text as="b">Category: </Text>
+                      <Text>{classification.category}</Text>
+                      <Text as="b">Description: </Text>
+                      <Text>{classification.description}</Text>
+                    </AccordionPanel>
+                  </AccordionItem>
+                ))}
+              </Accordion>
 
               <AsyncSelect
-                cacheOptions
+                key={`addClassification_${contentData.classifications.map((c) => c.id).join(",")}`} // force this component to reload when classifications change
+                placeholder="Add a classification"
                 defaultOptions
                 isClearable
+                value={null}
                 loadOptions={getClassificationOptions}
                 onInputChange={(newVal) => {
                   setClassifySelectorInput(newVal);
                 }}
-                formatOptionLabel={({ label }) => (
-                  <Box>
-                    <Flex>
-                      <Heading size="sm">
-                        <Highlight
-                          query={classifySelectorInput.split(" ")}
-                          styles={{ fontWeight: 900 }}
-                        >
-                          {`${label.code} ${label.grade ? label.grade : ""}`}
-                        </Highlight>
-                      </Heading>
-                      <Spacer />
-                      <Tag>
-                        <Highlight
-                          query={classifySelectorInput.split(" ")}
-                          styles={{ fontWeight: "bold" }}
-                        >
-                          {label.system.name}
-                        </Highlight>
-                      </Tag>
-                    </Flex>
-                    <Text>
-                      <Text as="i">Category:</Text>{" "}
-                      <Highlight
-                        query={classifySelectorInput.split(" ")}
-                        styles={{ fontWeight: "bold" }}
-                      >
-                        {label.category}
-                      </Highlight>
-                    </Text>
-                    <Text>
-                      <Text as="i">Description: </Text>
-                      <Highlight
-                        query={classifySelectorInput.split(" ")}
-                        styles={{ fontWeight: "bold" }}
-                      >
-                        {label.description}
-                      </Highlight>
-                    </Text>
-                  </Box>
-                )}
-              />
-
-              <Input
-                size="sm"
-                placeholder={`Add a classification`}
-                type="search"
-                onChange={(e) => {}}
-                onBlur={() => {
-                  // saveDataToServer(learningOutcomes, undefined, undefined)
-                  fetcher.submit(
-                    {
-                      _action: "add keyword",
-                      id,
-                      //TODO: keyword id
-                    },
-                    { method: "post" },
-                  );
-                }}
-                onKeyDown={(e) => {
-                  if (e.key == "Enter") {
-                    // saveDataToServer(learningOutcomes, undefined, undefined);
+                onChange={(newValueLabel) => {
+                  if (newValueLabel) {
                     fetcher.submit(
                       {
-                        _action: "add keyword",
-                        id,
-                        //TODO: keyword id
+                        _action: "add content classification",
+                        activityId: id,
+                        classificationId: newValueLabel.value,
                       },
                       { method: "post" },
                     );
                   }
+
+                  // setClassifySelection(newValueLabel?.value ?? null);
                 }}
-              ></Input>
+                formatOptionLabel={(val) =>
+                  val ? (
+                    <Box>
+                      <Flex>
+                        <Heading size="sm">
+                          <Highlight
+                            query={classifySelectorInput.split(" ")}
+                            styles={{ fontWeight: 900 }}
+                          >
+                            {val.label.code +
+                              (val.label.grade
+                                ? " (" + val.label.grade + ")"
+                                : "")}
+                          </Highlight>
+                        </Heading>
+                        <Spacer />
+                        <Tag>
+                          <Highlight
+                            query={classifySelectorInput.split(" ")}
+                            styles={{ fontWeight: "bold" }}
+                          >
+                            {val.label.system.name}
+                          </Highlight>
+                        </Tag>
+                      </Flex>
+                      <Text>
+                        <Text as="i">Category:</Text>{" "}
+                        <Highlight
+                          query={classifySelectorInput.split(" ")}
+                          styles={{ fontWeight: "bold" }}
+                        >
+                          {val.label.category}
+                        </Highlight>
+                      </Text>
+                      <Text>
+                        <Text as="i">Description: </Text>
+                        <Highlight
+                          query={classifySelectorInput.split(" ")}
+                          styles={{ fontWeight: "bold" }}
+                        >
+                          {val.label.description}
+                        </Highlight>
+                      </Text>
+                    </Box>
+                  ) : null
+                }
+              />
             </Flex>
           </FormControl>
         ) : null}

@@ -1504,7 +1504,7 @@ app.post(
       const activityId = Number(req.body.activityId);
       const loggedInUserId = Number(req.cookies.userId);
 
-      await removeClassification(classificationId, activityId, loggedInUserId);
+      await removeClassification(activityId, classificationId, loggedInUserId);
       res.send({});
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
