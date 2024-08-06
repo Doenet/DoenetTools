@@ -25,7 +25,12 @@ import {
 import axios from "axios";
 import ContributorsMenu from "../ToolPanels/ContributorsMenu";
 import { Link } from "react-router-dom";
-import { ContentStructure, DoenetmlVersion, License } from "./ActivityEditor";
+import {
+  ContentStructure,
+  DoenetmlVersion,
+  License,
+  UserInfo,
+} from "./ActivityEditor";
 import { DisplayLicenseItem } from "../ToolPanels/SharingControls";
 import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
 import { User } from "./SiteHeader";
@@ -81,12 +86,7 @@ export function ActivityViewer() {
     activityId: number;
     doenetML: string;
     activity: ContentStructure;
-    owner: {
-      userId: number;
-      email: string;
-      firstNames: string | null;
-      lastNames: string;
-    };
+    owner: UserInfo;
     docId: number;
     contributorHistory: any;
     doenetmlVersion: DoenetmlVersion;
@@ -260,8 +260,7 @@ export function ActivityViewer() {
                       <>
                         <p>
                           <strong>{activity.name}</strong> by {owner.firstNames}{" "}
-                          {owner.lastNames} is shared publicly with these
-                          licenses:
+                          {owner.lastNames} is shared with these licenses:
                         </p>
                         <List spacing="20px" marginTop="10px">
                           {activity.license.composedOf.map((comp) => (
@@ -280,8 +279,7 @@ export function ActivityViewer() {
                       <>
                         <p>
                           <strong>{activity.name}</strong> by {owner.firstNames}{" "}
-                          {owner.lastNames} is shared publicly using the
-                          license:
+                          {owner.lastNames} is shared using the license:
                         </p>
                         <List marginTop="10px">
                           <DisplayLicenseItem licenseItem={activity.license} />
@@ -291,9 +289,9 @@ export function ActivityViewer() {
                   ) : (
                     <p>
                       <strong>{activity.name}</strong> by {owner.firstNames}{" "}
-                      {owner.lastNames} is shared publicly, but a license was
-                      not specified. Contact the author to determine in what
-                      ways you can reuse this activity.
+                      {owner.lastNames} is shared, but a license was not
+                      specified. Contact the author to determine in what ways
+                      you can reuse this activity.
                     </p>
                   )}
                 </Box>
@@ -335,7 +333,10 @@ function DisplaySmallLicenseBadge({
   let imageURL = licenseItem.smallImageURL ?? licenseItem.imageURL;
   if (imageURL) {
     badge = (
-      <Tooltip label={licenseItem.name} placement="bottom-end">
+      <Tooltip
+        label={`Shared with ${licenseItem.name} license`}
+        placement="bottom-end"
+      >
         <Image
           src={imageURL}
           alt={`Badge for license: ${licenseItem.name}`}

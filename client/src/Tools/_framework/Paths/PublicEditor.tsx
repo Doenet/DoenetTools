@@ -29,7 +29,7 @@ export async function loader({ params, request }) {
     };
   }
   const { data: activityData } = await axios.get(
-    `/api/getPublicEditorData/${params.activityId}`,
+    `/api/getSharedEditorData/${params.activityId}`,
   );
 
   let docId = Number(params.docId);

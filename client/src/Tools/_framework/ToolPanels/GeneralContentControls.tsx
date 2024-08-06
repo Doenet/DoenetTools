@@ -25,6 +25,35 @@ import { HiOutlineX, HiPlus } from "react-icons/hi";
 import { readAndCompressImage } from "browser-image-resizer";
 import { ContentStructure, DoenetmlVersion } from "../Paths/ActivityEditor";
 
+export async function generalContentActions({ formObj }: { [k: string]: any }) {
+  if (formObj._action == "update general") {
+    let learningOutcomes;
+    if (formObj.learningOutcomes) {
+      learningOutcomes = JSON.parse(formObj.learningOutcomes);
+    }
+
+    await axios.post("/api/updateContentSettings", {
+      name,
+      imagePath: formObj.imagePath,
+      id: formObj.id,
+      learningOutcomes,
+    });
+
+    if (formObj.doenetmlVersionId) {
+      // TODO: handle other updates to just a document
+      await axios.post("/api/updateDocumentSettings", {
+        docId: formObj.docId,
+        doenetmlVersionId: formObj.doenetmlVersionId,
+      });
+    }
+    return true;
+  } else if (formObj?._action == "noop") {
+    return true;
+  }
+
+  return null;
+}
+
 export function GeneralContentControls({
   fetcher,
   id,

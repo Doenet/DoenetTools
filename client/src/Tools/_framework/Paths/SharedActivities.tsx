@@ -22,7 +22,7 @@ import { SmallLicenseBadges } from "./ActivityViewer";
 
 export async function loader({ params }) {
   const { data } = await axios.get(
-    `/api/getPublicFolderContent/${params.ownerId}/${params.folderId ?? ""}`,
+    `/api/getSharedFolderContent/${params.ownerId}/${params.folderId ?? ""}`,
   );
 
   return {
@@ -33,7 +33,7 @@ export async function loader({ params }) {
   };
 }
 
-export function PublicActivities() {
+export function SharedActivities() {
   let { content, ownerId, owner, folder } = useLoaderData() as {
     content: ContentStructure[];
     ownerId: number;
@@ -47,7 +47,7 @@ export function PublicActivities() {
   useEffect(() => {
     document.title = folder
       ? `Folder ${folder.name}`
-      : `Public Activities of ${createFullName(owner)} - Doenet`;
+      : `Shared Activities of ${createFullName(owner)} - Doenet`;
   }, [folder]);
 
   const fetcher = useFetcher();
@@ -55,7 +55,7 @@ export function PublicActivities() {
   let headingText = folder ? (
     <>Folder: {folder.name}</>
   ) : (
-    `Public Activities of ${createFullName(owner)}`
+    `Shared Activities of ${createFullName(owner)}`
   );
 
   return (
@@ -85,7 +85,7 @@ export function PublicActivities() {
           alignItems="center"
         >
           <Link
-            to={`/publicActivities/${ownerId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
+            to={`/sharedActivities/${ownerId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
             style={{
               color: "var(--mainBlue)",
             }}
@@ -94,7 +94,7 @@ export function PublicActivities() {
             &lt; Back to{" "}
             {folder.parentFolder
               ? folder.parentFolder.name
-              : `Public Activities of ${createFullName(owner)}`}
+              : `Shared Activities of ${createFullName(owner)}`}
           </Link>
           <Spacer />
           {folder.license ? (
@@ -103,7 +103,7 @@ export function PublicActivities() {
         </Flex>
       ) : null}
       <Flex
-        data-test="Public Activities"
+        data-test="Shared Activities"
         padding="10px"
         width="100%"
         margin="0px"
@@ -140,7 +140,7 @@ export function PublicActivities() {
                     showAssignmentStatus={false}
                     cardLink={
                       item.isFolder
-                        ? `/publicActivities/${item.ownerId}/${item.id}`
+                        ? `/sharedActivities/${item.ownerId}/${item.id}`
                         : `/activityViewer/${item.id}`
                     }
                   />
@@ -163,7 +163,7 @@ export function PublicActivities() {
               <>
                 <p>
                   <strong>{folder.name}</strong> by {owner.firstNames}{" "}
-                  {owner.lastNames} is shared publicly with these licenses:
+                  {owner.lastNames} is shared with these licenses:
                 </p>
                 <List spacing="20px" marginTop="10px">
                   {folder.license.composedOf.map((comp) => (
@@ -178,7 +178,7 @@ export function PublicActivities() {
               <>
                 <p>
                   <strong>{folder.name}</strong> by {owner.firstNames}{" "}
-                  {owner.lastNames} is shared publicly using the license:
+                  {owner.lastNames} is shared using the license:
                 </p>
                 <List marginTop="10px">
                   <DisplayLicenseItem licenseItem={folder.license} />
@@ -188,9 +188,9 @@ export function PublicActivities() {
           ) : (
             <p>
               <strong>{folder.name}</strong> by {owner.firstNames}{" "}
-              {owner.lastNames} is shared publicly, but a license was not
-              specified. Contact the author to determine in what ways you can
-              reuse this activity.
+              {owner.lastNames} is shared, but a license was not specified.
+              Contact the author to determine in what ways you can reuse this
+              activity.
             </p>
           )
         ) : null}

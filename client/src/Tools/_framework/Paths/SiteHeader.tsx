@@ -17,6 +17,7 @@ import {
   VStack,
   Show,
   useBreakpointValue,
+  Hide,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
@@ -277,7 +278,7 @@ export function SiteHeader() {
                     </NavLinkTab>
                   </Center>
                 )}
-                <Show below="md">
+                <Hide above="md">
                   <Center h="40px" mr="10px">
                     <Menu autoSelect={false}>
                       <MenuButton
@@ -324,7 +325,7 @@ export function SiteHeader() {
                       </MenuList>
                     </Menu>
                   </Center>
-                </Show>
+                </Hide>
               </Flex>
             </GridItem>
           </Grid>

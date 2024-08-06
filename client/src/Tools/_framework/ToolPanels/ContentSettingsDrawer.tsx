@@ -16,14 +16,42 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { FetcherWithComponents } from "react-router-dom";
-import { GeneralContentControls } from "./GeneralContentControls";
-import { SupportFilesControls } from "./SupportFilesControls";
+import {
+  generalContentActions,
+  GeneralContentControls,
+} from "./GeneralContentControls";
+import {
+  supportFilesActions,
+  SupportFilesControls,
+} from "./SupportFilesControls";
 import {
   ContentStructure,
   DoenetmlVersion,
   License,
 } from "../Paths/ActivityEditor";
-import { SharingControls } from "./SharingControls";
+import { sharingActions, SharingControls } from "./SharingControls";
+
+export async function contentSettingsActions({
+  formObj,
+}: {
+  [k: string]: any;
+}) {
+  let result = await sharingActions({ formObj });
+  if (result) {
+    return result;
+  }
+
+  result = await generalContentActions({ formObj });
+  if (result) {
+    return result;
+  }
+
+  let result2 = await supportFilesActions({ formObj });
+  if (result2) {
+    return result2;
+  }
+  return null;
+}
 
 export function ContentSettingsDrawer({
   isOpen,
