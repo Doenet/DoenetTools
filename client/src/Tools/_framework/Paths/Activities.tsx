@@ -17,6 +17,7 @@ import {
   Spacer,
   Show,
   Hide,
+  Spinner,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -197,6 +198,8 @@ export function Activities() {
   const folderSettingsRef = useRef(null);
   const finalFocusRef = useRef(null);
 
+  const [haveContentSpinner, setHaveContentSpinner] = useState(false);
+
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchString, setSearchString] = useState(query ?? "");
   const searchRef = useRef<HTMLInputElement>(null);
@@ -208,6 +211,10 @@ export function Activities() {
       searchRef.current?.focus();
     }
   }, [searchOpen]);
+
+  useEffect(() => {
+    setHaveContentSpinner(false);
+  }, [content]);
 
   const navigate = useNavigate();
 
@@ -533,11 +540,12 @@ export function Activities() {
               margin="3px"
               hidden={searchOpen || haveQuery}
             >
-              New
+              {haveContentSpinner ? <Spinner size="sm" /> : "New"}
             </MenuButton>
             <MenuList>
               <MenuItem
                 onClick={async () => {
+                  setHaveContentSpinner(true);
                   //Create an activity and redirect to the editor for it
                   // let { data } = await axios.post("/api/createActivity");
                   // let { activityId } = data;
@@ -557,6 +565,7 @@ export function Activities() {
               </MenuItem>
               <MenuItem
                 onClick={() => {
+                  setHaveContentSpinner(true);
                   fetcher.submit({ _action: "Add Folder" }, { method: "post" });
                 }}
               >

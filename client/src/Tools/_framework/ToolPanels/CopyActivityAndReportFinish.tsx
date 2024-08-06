@@ -8,6 +8,9 @@ import {
   ModalCloseButton,
   ModalFooter,
   Button,
+  HStack,
+  Text,
+  Spinner,
 } from "@chakra-ui/react";
 import { ContentStructure } from "../Paths/ActivityEditor";
 import axios from "axios";
@@ -73,7 +76,10 @@ export function CopyActivityAndReportFinish({
         {newActivityData !== null ? <ModalCloseButton /> : null}
         <ModalBody>
           {newActivityData === null ? (
-            `Copying...`
+            <HStack>
+              <Text>Copying...</Text>
+              <Spinner />
+            </HStack>
           ) : (
             <>
               The activity <strong>{activityData.name}</strong> has been copied
