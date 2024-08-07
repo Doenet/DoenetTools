@@ -34,6 +34,18 @@ import {
 import { DisplayLicenseItem } from "../ToolPanels/SharingControls";
 import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
 import { User } from "./SiteHeader";
+import { createFullName } from "../../../_utils/names";
+
+export type DocHistoryItem = {
+  docId: number;
+  prevDocId: number;
+  prevDocVersionNum: number;
+  withLicenseCode: string | null;
+  timestamp: Date;
+  activityId: number;
+  activityName: string;
+  owner: UserInfo;
+};
 
 export async function loader({ params }) {
   try {
@@ -55,17 +67,28 @@ export async function loader({ params }) {
     const doenetmlVersion: DoenetmlVersion =
       activityData.activity.documents[0].doenetmlVersion;
 
+    const contributorHistory =
+      activityData.docHistories[0].contributorHistory.map((ch) => {
+        const { prevDoc, ...historyItem } = ch;
+        let prevActivity = prevDoc.document.activity;
+        return {
+          ...historyItem,
+          activityId: prevActivity.id,
+          activityName: prevActivity.name,
+          owner: prevActivity.owner,
+        };
+      });
+
     return {
       activityId,
       doenetML,
       activity: activityData.activity,
-      owner: activityData.owner,
       docId,
-      contributorHistory: activityData.doc.contributorHistory,
+      contributorHistory,
       doenetmlVersion,
     };
   } catch (e) {
-    if (e.response.status === 404) {
+    if (e.response?.status === 404) {
       throw Error("Activity not found");
     } else {
       throw e;
@@ -78,7 +101,6 @@ export function ActivityViewer() {
     activityId,
     doenetML,
     activity,
-    owner,
     docId,
     contributorHistory,
     doenetmlVersion,
@@ -86,9 +108,8 @@ export function ActivityViewer() {
     activityId: number;
     doenetML: string;
     activity: ContentStructure;
-    owner: UserInfo;
     docId: number;
-    contributorHistory: any;
+    contributorHistory: DocHistoryItem[];
     doenetmlVersion: DoenetmlVersion;
   };
 
@@ -164,7 +185,7 @@ export function ActivityViewer() {
                     </Flex>
                     <Flex mt="10px" width="100%">
                       <ContributorsMenu
-                        owner={owner}
+                        activity={activity}
                         contributorHistory={contributorHistory}
                       />
                       <Spacer />
@@ -259,8 +280,9 @@ export function ActivityViewer() {
                     activity.license.isComposition ? (
                       <>
                         <p>
-                          <strong>{activity.name}</strong> by {owner.firstNames}{" "}
-                          {owner.lastNames} is shared with these licenses:
+                          <strong>{activity.name}</strong> by{" "}
+                          {createFullName(activity.owner!)} is shared with these
+                          licenses:
                         </p>
                         <List spacing="20px" marginTop="10px">
                           {activity.license.composedOf.map((comp) => (
@@ -278,8 +300,9 @@ export function ActivityViewer() {
                     ) : (
                       <>
                         <p>
-                          <strong>{activity.name}</strong> by {owner.firstNames}{" "}
-                          {owner.lastNames} is shared using the license:
+                          <strong>{activity.name}</strong> by{" "}
+                          {createFullName(activity.owner!)} is shared using the
+                          license:
                         </p>
                         <List marginTop="10px">
                           <DisplayLicenseItem licenseItem={activity.license} />
@@ -288,10 +311,10 @@ export function ActivityViewer() {
                     )
                   ) : (
                     <p>
-                      <strong>{activity.name}</strong> by {owner.firstNames}{" "}
-                      {owner.lastNames} is shared, but a license was not
-                      specified. Contact the author to determine in what ways
-                      you can reuse this activity.
+                      <strong>{activity.name}</strong> by{" "}
+                      {createFullName(activity.owner!)} is shared, but a license
+                      was not specified. Contact the author to determine in what
+                      ways you can reuse this activity.
                     </p>
                   )}
                 </Box>

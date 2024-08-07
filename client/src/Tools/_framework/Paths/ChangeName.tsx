@@ -16,6 +16,7 @@ import {
 } from "react-router-dom";
 import axios from "axios";
 import { User } from "./SiteHeader";
+import { createFullName } from "../../../_utils/names";
 
 export async function action({
   params,
@@ -65,21 +66,36 @@ export function ChangeName({
   const [firstNames, setFirstNames] = useState(user?.firstNames ?? "");
   const [lastNames, setLastNames] = useState(user?.lastNames ?? "");
   const [submitted, setSubmitted] = useState(false);
+  const [statusText, setStatusText] = useState("");
 
   useEffect(() => {
-    if (
-      redirectTo &&
-      submitted &&
-      user?.firstNames === firstNames &&
-      user.lastNames === lastNames
-    ) {
-      navigate(redirectTo);
+    if (submitted && user !== undefined) {
+      setStatusText(`Name changed to ${createFullName(user)}`);
+      if (
+        redirectTo &&
+        user.firstNames === firstNames &&
+        user.lastNames === lastNames
+      ) {
+        navigate(redirectTo);
+      }
     }
   }, [submitted, redirectTo, user]);
 
   return (
     <Box margin="20px">
       <Heading size="lg">Enter your name</Heading>
+      {statusText !== "" ? (
+        <Box
+          border="solid 1px lightgray"
+          borderRadius="5px"
+          padding="5px 10px"
+          marginTop="10px"
+          backgroundColor="orange.100"
+        >
+          {statusText}
+        </Box>
+      ) : null}
+
       <Form
         method="post"
         onSubmit={() => {

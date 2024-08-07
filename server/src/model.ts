@@ -796,6 +796,7 @@ export async function copyActivityToFolder(
     docId,
     prevDocId: origActivity.documents[i].id,
     prevDocVersionNum: documentsToAdd[i].originalDocVersion.versionNum,
+    withLicenseCode: origActivity.licenseCode,
   }));
   await prisma.contributorHistory.createMany({
     data: contribHistoryInfo,
@@ -804,7 +805,8 @@ export async function copyActivityToFolder(
   // Create contributor history linking each newly created document
   // to the contributor history of the corresponding document from origActivity.
   // Note: we copy all history rather than using a linked list
-  // due to inefficient queries necessary to traverse link lists.
+  // so that this history is fixed even if the original documents
+  // are modified to change their history.
   for (let [i, origDoc] of origActivity.documents.entries()) {
     const previousHistory = await prisma.contributorHistory.findMany({
       where: {
@@ -818,6 +820,7 @@ export async function copyActivityToFolder(
         docId: newDocIds[i],
         prevDocId: hist.prevDocId,
         prevDocVersionNum: hist.prevDocVersionNum,
+        withLicenseCode: hist.withLicenseCode,
         timestamp: hist.timestamp,
       })),
     });
@@ -1234,7 +1237,7 @@ export async function getSharedEditorData(
 // TODO: generalize this to multi-document activities
 export async function getActivityViewerData(
   activityId: number,
-  userId: number,
+  loggedInUserId: number,
 ) {
   const preliminaryActivity = await prisma.content.findUniqueOrThrow({
     where: {
@@ -1242,9 +1245,9 @@ export async function getActivityViewerData(
       isDeleted: false,
       isFolder: false,
       OR: [
-        { ownerId: userId },
+        { ownerId: loggedInUserId },
         { isPublic: true },
-        { sharedWith: { some: { userId } } },
+        { sharedWith: { some: { userId: loggedInUserId } } },
       ],
     },
     select: {
@@ -1301,7 +1304,6 @@ export async function getActivityViewerData(
   });
 
   const {
-    owner,
     license,
     sharedWith: sharedWithOrig,
     parentFolder,
@@ -1310,7 +1312,7 @@ export async function getActivityViewerData(
 
   const { isShared, sharedWith } = processSharedWithForUser(
     sharedWithOrig,
-    userId,
+    loggedInUserId,
   );
 
   const activity: ContentStructure = {
@@ -1323,15 +1325,58 @@ export async function getActivityViewerData(
     codeValidUntil: null,
     assignmentStatus: "Unassigned",
     hasScoreData: false,
-    parentFolder: processParentFolderForUser(parentFolder, userId),
+    parentFolder: processParentFolderForUser(parentFolder, loggedInUserId),
   };
 
   const docId = activity.documents[0].id;
 
-  let doc = await prisma.documents.findUniqueOrThrow({
-    where: { id: docId, isDeleted: false },
-    include: {
+  const docHistories = await getDocumentContributorHistories({
+    docIds: activity.documents.map((doc) => doc.id),
+    loggedInUserId,
+  });
+
+  return {
+    activity,
+    docHistories,
+  };
+}
+
+export async function getDocumentContributorHistories({
+  docIds,
+  loggedInUserId,
+}: {
+  docIds: number[];
+  loggedInUserId: number;
+}) {
+  let docHistories = await prisma.documents.findMany({
+    where: {
+      id: { in: docIds },
+      isDeleted: false,
+      activity: {
+        OR: [
+          { ownerId: loggedInUserId },
+          { isPublic: true },
+          { sharedWith: { some: { userId: loggedInUserId } } },
+        ],
+      },
+    },
+    select: {
+      id: true,
       contributorHistory: {
+        where: {
+          prevDoc: {
+            document: {
+              activity: {
+                OR: [
+                  { ownerId: loggedInUserId },
+                  { isPublic: true },
+                  { sharedWith: { some: { userId: loggedInUserId } } },
+                ],
+              },
+            },
+          },
+        },
+        orderBy: { timestamp: "desc" },
         include: {
           prevDoc: {
             select: {
@@ -1360,11 +1405,7 @@ export async function getActivityViewerData(
     },
   });
 
-  return {
-    activity,
-    doc,
-    owner,
-  };
+  return docHistories;
 }
 
 export async function getAssignmentDataFromCode(code: string) {

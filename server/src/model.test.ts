@@ -63,6 +63,7 @@ import {
   unshareFolder,
   shareFolderWithEmail,
   shareActivityWithEmail,
+  getDocumentContributorHistories,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -1763,7 +1764,7 @@ test("Test updating various activity properties", async () => {
 
   const activityViewerContent = await getActivityViewerData(activityId, userId);
   expect(activityViewerContent.activity.name).toBe(activityName);
-  expect(activityViewerContent.doc.source).toBe(source);
+  expect(activityViewerContent.activity.documents[0].source).toBe(source);
 });
 
 test("deleteActivity marks a activity and document as deleted and prevents its retrieval", async () => {
@@ -2018,7 +2019,7 @@ test("updateDoc updates document properties", async () => {
   });
   const activityViewerContent = await getActivityViewerData(activityId, userId);
   expect(activityViewerContent.activity.name).toBe(newName);
-  expect(activityViewerContent.doc.source).toBe(newContent);
+  expect(activityViewerContent.activity.documents[0].source).toBe(newContent);
 });
 
 test("move content to different locations", async () => {
@@ -2416,7 +2417,7 @@ test("copyActivityToFolder copies a public document to a new owner", async () =>
 
   const activityData = await getActivityViewerData(newActivityId, newOwnerId);
 
-  const contribHist = activityData.doc.contributorHistory;
+  const contribHist = activityData.docHistories[0].contributorHistory;
   expect(contribHist.length).eq(1);
 
   expect(contribHist[0].prevDocId).eq(docId);
@@ -2452,7 +2453,7 @@ test("copyActivityToFolder copies a shared document to a new owner", async () =>
 
   expect(activityData.activity.isShared).eq(false);
 
-  const contribHist = activityData.doc.contributorHistory;
+  const contribHist = activityData.docHistories[0].contributorHistory;
   expect(contribHist.length).eq(1);
 
   expect(contribHist[0].prevDocId).eq(docId);
@@ -2489,7 +2490,7 @@ test("copyActivityToFolder remixes correct versions", async () => {
 
   // history should be version 1 of activity 1
   const activityData2 = await getActivityViewerData(activityId2, ownerId2);
-  const contribHist2 = activityData2.doc.contributorHistory;
+  const contribHist2 = activityData2.docHistories[0].contributorHistory;
   expect(contribHist2.length).eq(1);
   expect(contribHist2[0].prevDocId).eq(docId1);
   expect(contribHist2[0].prevDocVersionNum).eq(1);
@@ -2511,10 +2512,87 @@ test("copyActivityToFolder remixes correct versions", async () => {
 
   // history should be version 2 of activity 1
   const activityData3 = await getActivityViewerData(activityId3, ownerId3);
-  const contribHist3 = activityData3.doc.contributorHistory;
+  const contribHist3 = activityData3.docHistories[0].contributorHistory;
   expect(contribHist3.length).eq(1);
   expect(contribHist3[0].prevDocId).eq(docId1);
   expect(contribHist3[0].prevDocVersionNum).eq(2);
+});
+
+test("contributor history shows only documents user can view", async () => {
+  const ownerId1 = (await createTestUser()).userId;
+  const ownerId2 = (await createTestUser()).userId;
+  const ownerId3 = (await createTestUser()).userId;
+
+  // create public activity 1 by owner 1
+  const { activityId: activityId1, docId: docId1 } = await createActivity(
+    ownerId1,
+    null,
+  );
+  await makeActivityPublic({
+    id: activityId1,
+    ownerId: ownerId1,
+    licenseCode: "CCDUAL",
+  });
+
+  // owner 2 copies it to activity 2 and shares it with owner 3
+  const activityId2 = await copyActivityToFolder(activityId1, ownerId2, null);
+  const docId2 = (await getActivity(activityId2)).documents[0].id;
+  await shareActivity({
+    id: activityId2,
+    ownerId: ownerId2,
+    licenseCode: "CCBYSA",
+    users: [ownerId3],
+  });
+
+  // owner 3 copies it to activity 3, and then copies that to public activity 4
+  const activityId3 = await copyActivityToFolder(activityId2, ownerId3, null);
+  const docId3 = (await getActivity(activityId3)).documents[0].id;
+  const activityId4 = await copyActivityToFolder(activityId3, ownerId3, null);
+  const docId4 = (await getActivity(activityId4)).documents[0].id;
+  await makeActivityPublic({
+    id: activityId4,
+    ownerId: ownerId3,
+    licenseCode: "CCBYNCSA",
+  });
+
+  // owner1 just sees activity 1 in history
+  let docHistory = (
+    await getDocumentContributorHistories({
+      docIds: [docId4],
+      loggedInUserId: ownerId1,
+    })
+  )[0].contributorHistory;
+  expect(docHistory.length).eq(1);
+  expect(docHistory[0].prevDocId).eq(docId1);
+  expect(docHistory[0].prevDoc.document.activity.id).eq(activityId1);
+
+  // owner2 just sees activity 1 and 2 in history
+  docHistory = (
+    await getDocumentContributorHistories({
+      docIds: [docId4],
+      loggedInUserId: ownerId2,
+    })
+  )[0].contributorHistory;
+  expect(docHistory.length).eq(2);
+  expect(docHistory[0].prevDocId).eq(docId2);
+  expect(docHistory[0].prevDoc.document.activity.id).eq(activityId2);
+  expect(docHistory[1].prevDocId).eq(docId1);
+  expect(docHistory[1].prevDoc.document.activity.id).eq(activityId1);
+
+  // owner3 sees activity 1, 2 and 3 in history
+  docHistory = (
+    await getDocumentContributorHistories({
+      docIds: [docId4],
+      loggedInUserId: ownerId3,
+    })
+  )[0].contributorHistory;
+  expect(docHistory.length).eq(3);
+  expect(docHistory[0].prevDocId).eq(docId3);
+  expect(docHistory[0].prevDoc.document.activity.id).eq(activityId3);
+  expect(docHistory[1].prevDocId).eq(docId2);
+  expect(docHistory[1].prevDoc.document.activity.id).eq(activityId2);
+  expect(docHistory[2].prevDocId).eq(docId1);
+  expect(docHistory[2].prevDoc.document.activity.id).eq(activityId1);
 });
 
 test("searchSharedContent returns public/shared activities and folders matching the query", async () => {
