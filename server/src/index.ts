@@ -76,6 +76,10 @@ import { Strategy as MagicLinkStrategy } from "passport-magic-link";
 //@ts-ignore
 import { Strategy as AnonymIdStrategy } from "passport-anonym-uuid";
 
+import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+
+const client = new SESClient({ region: "us-east-2" });
+
 dotenv.config();
 
 interface User {
@@ -137,6 +141,41 @@ passport.use(
      token
      })
   */
+
+      const params = {
+        Source: "info@doenet.org",
+        Destination: {
+          ToAddresses: [
+            user.email, // replace with the recipient's email
+          ],
+        },
+        Message: {
+          Subject: {
+            Data: "Test Email",
+          },
+          Body: {
+            Text: {
+              Data: "This is a test email sent with Amazon SES using the AWS SDK for JavaScript.",
+            },
+            Html: {
+              Data: "<h4>hi!</h4> message",
+            },
+          },
+        },
+      };
+
+      // Send the email
+      const sendEmail = async () => {
+        try {
+          const command = new SendEmailCommand(params);
+          const response = await client.send(command);
+          console.log("Email sent successfully", response);
+        } catch (error) {
+          console.error("Error sending email", error);
+        }
+      };
+
+      sendEmail();
     },
     async (user: any) => {
       return {
