@@ -802,6 +802,13 @@ export async function copyActivityToFolder(
     data: contribHistoryInfo,
   });
 
+  // Get the time stamp created in the previous query
+  const timestampDoc = (
+    await prisma.contributorHistory.findFirst({
+      where: { docId: newDocIds[0] },
+    })
+  )?.timestampDoc;
+
   // Create contributor history linking each newly created document
   // to the contributor history of the corresponding document from origActivity.
   // Note: we copy all history rather than using a linked list
@@ -812,16 +819,23 @@ export async function copyActivityToFolder(
       where: {
         docId: origDoc.id,
       },
-      orderBy: { timestamp: "desc" },
     });
 
+    // Note: contributorHistory has two timestamps:
+    // - timestampPrevDoc: the time when prevDocId was remixed into a new activity
+    // - timestampDoc: this time when docId was created by remixing
+    // Each record we create below corresponds to an indirect path from prevDocId to docId
+    // so the two timestamps will be different:
+    // - timestampPrevDoc is copied from the original source to get the original remix time from prevDocId
+    // - timestampDoc is copied from the create query just run (so is essentially now)
     await prisma.contributorHistory.createMany({
       data: previousHistory.map((hist) => ({
         docId: newDocIds[i],
         prevDocId: hist.prevDocId,
         prevDocVersionNum: hist.prevDocVersionNum,
         withLicenseCode: hist.withLicenseCode,
-        timestamp: hist.timestamp,
+        timestampPrevDoc: hist.timestampPrevDoc,
+        timestampDoc: timestampDoc,
       })),
     });
   }
@@ -1341,6 +1355,37 @@ export async function getActivityViewerData(
   };
 }
 
+export async function getActivityContributorHistory({
+  activityId,
+  loggedInUserId,
+}: {
+  activityId: number;
+  loggedInUserId: number;
+}) {
+  const activity = await prisma.content.findUniqueOrThrow({
+    where: {
+      id: activityId,
+      isDeleted: false,
+      isFolder: false,
+      OR: [
+        { ownerId: loggedInUserId },
+        { isPublic: true },
+        { sharedWith: { some: { userId: loggedInUserId } } },
+      ],
+    },
+    select: { documents: { select: { id: true } } },
+  });
+
+  const docId = activity.documents[0].id;
+
+  const docHistories = await getDocumentContributorHistories({
+    docIds: activity.documents.map((doc) => doc.id),
+    loggedInUserId,
+  });
+
+  return { docHistories };
+}
+
 export async function getDocumentContributorHistories({
   docIds,
   loggedInUserId,
@@ -1376,7 +1421,7 @@ export async function getDocumentContributorHistories({
             },
           },
         },
-        orderBy: { timestamp: "desc" },
+        orderBy: { timestampPrevDoc: "desc" },
         include: {
           prevDoc: {
             select: {
@@ -1406,6 +1451,172 @@ export async function getDocumentContributorHistories({
   });
 
   return docHistories;
+}
+
+export async function getActivityRemixes({
+  activityId,
+  loggedInUserId,
+}: {
+  activityId: number;
+  loggedInUserId: number;
+}) {
+  const activity = await prisma.content.findUniqueOrThrow({
+    where: {
+      id: activityId,
+      isDeleted: false,
+      isFolder: false,
+      OR: [
+        { ownerId: loggedInUserId },
+        { isPublic: true },
+        { sharedWith: { some: { userId: loggedInUserId } } },
+      ],
+    },
+    select: { documents: { select: { id: true } } },
+  });
+
+  const docId = activity.documents[0].id;
+
+  const docHistories = await getDocumentRemixes({
+    docIds: activity.documents.map((doc) => doc.id),
+    loggedInUserId,
+  });
+
+  return { docHistories };
+}
+
+export async function getDocumentDirectRemixes({
+  docIds,
+  loggedInUserId,
+}: {
+  docIds: number[];
+  loggedInUserId: number;
+}) {
+  let docRemixes = await prisma.documents.findMany({
+    where: {
+      id: { in: docIds },
+      isDeleted: false,
+      activity: {
+        OR: [
+          { ownerId: loggedInUserId },
+          { isPublic: true },
+          { sharedWith: { some: { userId: loggedInUserId } } },
+        ],
+      },
+    },
+    select: {
+      id: true,
+      documentVersions: {
+        select: {
+          versionNum: true,
+          contributorHistory: {
+            where: {
+              document: {
+                activity: {
+                  OR: [
+                    { ownerId: loggedInUserId },
+                    { isPublic: true },
+                    { sharedWith: { some: { userId: loggedInUserId } } },
+                  ],
+                },
+              },
+              timestampDoc: {
+                equals: prisma.contributorHistory.fields.timestampPrevDoc,
+              },
+            },
+            orderBy: { timestampDoc: "desc" },
+            include: {
+              document: {
+                select: {
+                  activity: {
+                    select: {
+                      id: true,
+                      name: true,
+                      owner: {
+                        select: {
+                          userId: true,
+                          email: true,
+                          firstNames: true,
+                          lastNames: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return docRemixes;
+}
+
+export async function getDocumentRemixes({
+  docIds,
+  loggedInUserId,
+}: {
+  docIds: number[];
+  loggedInUserId: number;
+}) {
+  let docRemixes = await prisma.documents.findMany({
+    where: {
+      id: { in: docIds },
+      isDeleted: false,
+      activity: {
+        OR: [
+          { ownerId: loggedInUserId },
+          { isPublic: true },
+          { sharedWith: { some: { userId: loggedInUserId } } },
+        ],
+      },
+    },
+    select: {
+      id: true,
+      documentVersions: {
+        select: {
+          versionNum: true,
+          contributorHistory: {
+            where: {
+              document: {
+                activity: {
+                  OR: [
+                    { ownerId: loggedInUserId },
+                    { isPublic: true },
+                    { sharedWith: { some: { userId: loggedInUserId } } },
+                  ],
+                },
+              },
+            },
+            orderBy: { timestampDoc: "desc" },
+            include: {
+              document: {
+                select: {
+                  activity: {
+                    select: {
+                      id: true,
+                      name: true,
+                      owner: {
+                        select: {
+                          userId: true,
+                          email: true,
+                          firstNames: true,
+                          lastNames: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return docRemixes;
 }
 
 export async function getAssignmentDataFromCode(code: string) {

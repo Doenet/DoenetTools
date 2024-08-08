@@ -64,6 +64,8 @@ import {
   shareFolderWithEmail,
   shareActivityWithEmail,
   getDocumentContributorHistories,
+  getDocumentRemixes,
+  getDocumentDirectRemixes,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -2518,7 +2520,7 @@ test("copyActivityToFolder remixes correct versions", async () => {
   expect(contribHist3[0].prevDocVersionNum).eq(2);
 });
 
-test("contributor history shows only documents user can view", async () => {
+test.only("contributor history shows only documents user can view", async () => {
   const ownerId1 = (await createTestUser()).userId;
   const ownerId2 = (await createTestUser()).userId;
   const ownerId3 = (await createTestUser()).userId;
@@ -2534,7 +2536,7 @@ test("contributor history shows only documents user can view", async () => {
     licenseCode: "CCDUAL",
   });
 
-  // owner 2 copies it to activity 2 and shares it with owner 3
+  // owner 2 copies activity 1 to activity 2 and shares it with owner 3
   const activityId2 = await copyActivityToFolder(activityId1, ownerId2, null);
   const docId2 = (await getActivity(activityId2)).documents[0].id;
   await shareActivity({
@@ -2544,7 +2546,7 @@ test("contributor history shows only documents user can view", async () => {
     users: [ownerId3],
   });
 
-  // owner 3 copies it to activity 3, and then copies that to public activity 4
+  // owner 3 copies activity 2 to activity 3, and then copies that to public activity 4
   const activityId3 = await copyActivityToFolder(activityId2, ownerId3, null);
   const docId3 = (await getActivity(activityId3)).documents[0].id;
   const activityId4 = await copyActivityToFolder(activityId3, ownerId3, null);
@@ -2555,7 +2557,17 @@ test("contributor history shows only documents user can view", async () => {
     licenseCode: "CCBYNCSA",
   });
 
-  // owner1 just sees activity 1 in history
+  // owner 3 copies activity 1 to activity 5 and shares it with owner 1
+  const activityId5 = await copyActivityToFolder(activityId1, ownerId3, null);
+  const docId5 = (await getActivity(activityId5)).documents[0].id;
+  await shareActivity({
+    id: activityId5,
+    ownerId: ownerId3,
+    licenseCode: "CCBYSA",
+    users: [ownerId1],
+  });
+
+  // owner1 just sees activity 1 in history of activity 4
   let docHistory = (
     await getDocumentContributorHistories({
       docIds: [docId4],
@@ -2565,8 +2577,36 @@ test("contributor history shows only documents user can view", async () => {
   expect(docHistory.length).eq(1);
   expect(docHistory[0].prevDocId).eq(docId1);
   expect(docHistory[0].prevDoc.document.activity.id).eq(activityId1);
+  expect(docHistory[0].withLicenseCode).eq("CCDUAL");
 
-  // owner2 just sees activity 1 and 2 in history
+  // owner 1 just sees activity 4 and 5 in remixes of activity 1
+  let docRemixes = (
+    await getDocumentRemixes({
+      docIds: [docId1],
+      loggedInUserId: ownerId1,
+    })
+  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  expect(docRemixes.length).eq(2);
+  expect(docRemixes[0].docId).eq(docId5);
+  expect(docRemixes[0].document.activity.id).eq(activityId5);
+  expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
+  expect(docRemixes[1].docId).eq(docId4);
+  expect(docRemixes[1].document.activity.id).eq(activityId4);
+  expect(docRemixes[1].withLicenseCode).eq("CCDUAL");
+
+  // owner 1 just sees direct remix from activity 1 into activity 5
+  docRemixes = (
+    await getDocumentDirectRemixes({
+      docIds: [docId1],
+      loggedInUserId: ownerId1,
+    })
+  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  expect(docRemixes.length).eq(1);
+  expect(docRemixes[0].docId).eq(docId5);
+  expect(docRemixes[0].document.activity.id).eq(activityId5);
+  expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
+
+  // owner2 just sees activity 1 and 2 in history of activity 4
   docHistory = (
     await getDocumentContributorHistories({
       docIds: [docId4],
@@ -2576,10 +2616,39 @@ test("contributor history shows only documents user can view", async () => {
   expect(docHistory.length).eq(2);
   expect(docHistory[0].prevDocId).eq(docId2);
   expect(docHistory[0].prevDoc.document.activity.id).eq(activityId2);
+  expect(docHistory[0].withLicenseCode).eq("CCBYSA");
   expect(docHistory[1].prevDocId).eq(docId1);
   expect(docHistory[1].prevDoc.document.activity.id).eq(activityId1);
+  expect(docHistory[1].withLicenseCode).eq("CCDUAL");
 
-  // owner3 sees activity 1, 2 and 3 in history
+  // owner 2 just sees activity 4 and 2 in remixes of activity 1
+  docRemixes = (
+    await getDocumentRemixes({
+      docIds: [docId1],
+      loggedInUserId: ownerId2,
+    })
+  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  expect(docRemixes.length).eq(2);
+  expect(docRemixes[0].docId).eq(docId4);
+  expect(docRemixes[0].document.activity.id).eq(activityId4);
+  expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
+  expect(docRemixes[1].docId).eq(docId2);
+  expect(docRemixes[1].document.activity.id).eq(activityId2);
+  expect(docRemixes[1].withLicenseCode).eq("CCDUAL");
+
+  // owner 2 sees direct remix of activity 1 into 2
+  docRemixes = (
+    await getDocumentDirectRemixes({
+      docIds: [docId1],
+      loggedInUserId: ownerId2,
+    })
+  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  expect(docRemixes.length).eq(1);
+  expect(docRemixes[0].docId).eq(docId2);
+  expect(docRemixes[0].document.activity.id).eq(activityId2);
+  expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
+
+  // owner3 sees activity 1, 2 and 3 in history of activity 4
   docHistory = (
     await getDocumentContributorHistories({
       docIds: [docId4],
@@ -2589,10 +2658,49 @@ test("contributor history shows only documents user can view", async () => {
   expect(docHistory.length).eq(3);
   expect(docHistory[0].prevDocId).eq(docId3);
   expect(docHistory[0].prevDoc.document.activity.id).eq(activityId3);
+  expect(docHistory[0].withLicenseCode).eq("CCDUAL");
   expect(docHistory[1].prevDocId).eq(docId2);
   expect(docHistory[1].prevDoc.document.activity.id).eq(activityId2);
+  expect(docHistory[1].withLicenseCode).eq("CCBYSA");
   expect(docHistory[2].prevDocId).eq(docId1);
   expect(docHistory[2].prevDoc.document.activity.id).eq(activityId1);
+  expect(docHistory[2].withLicenseCode).eq("CCDUAL");
+
+  // owner 3 sees activity 5, 4, 3 and 2 in remixes of activity 1
+  docRemixes = (
+    await getDocumentRemixes({
+      docIds: [docId1],
+      loggedInUserId: ownerId3,
+    })
+  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  expect(docRemixes.length).eq(4);
+  expect(docRemixes[0].docId).eq(docId5);
+  expect(docRemixes[0].document.activity.id).eq(activityId5);
+  expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
+  expect(docRemixes[1].docId).eq(docId4);
+  expect(docRemixes[1].document.activity.id).eq(activityId4);
+  expect(docRemixes[1].withLicenseCode).eq("CCDUAL");
+  expect(docRemixes[2].docId).eq(docId3);
+  expect(docRemixes[2].document.activity.id).eq(activityId3);
+  expect(docRemixes[2].withLicenseCode).eq("CCDUAL");
+  expect(docRemixes[3].docId).eq(docId2);
+  expect(docRemixes[3].document.activity.id).eq(activityId2);
+  expect(docRemixes[3].withLicenseCode).eq("CCDUAL");
+
+  // owner 3 sees direct remixes of activity 1 into 2 and 5
+  docRemixes = (
+    await getDocumentDirectRemixes({
+      docIds: [docId1],
+      loggedInUserId: ownerId3,
+    })
+  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  expect(docRemixes.length).eq(2);
+  expect(docRemixes[0].docId).eq(docId5);
+  expect(docRemixes[0].document.activity.id).eq(activityId5);
+  expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
+  expect(docRemixes[1].docId).eq(docId2);
+  expect(docRemixes[1].document.activity.id).eq(activityId2);
+  expect(docRemixes[1].withLicenseCode).eq("CCDUAL");
 });
 
 test("searchSharedContent returns public/shared activities and folders matching the query", async () => {

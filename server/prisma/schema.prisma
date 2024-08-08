@@ -110,7 +110,8 @@ model contributorHistory {
   prevDocId         Int
   prevDocVersionNum Int
   withLicenseCode   String?          @db.VarChar(10)
-  timestamp         DateTime         @default(now())
+  timestampDoc      DateTime         @default(now())
+  timestampPrevDoc  DateTime         @default(now())
   document          documents        @relation(fields: [docId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   prevDoc           documentVersions @relation(fields: [prevDocId, prevDocVersionNum], references: [docId, versionNum], onDelete: NoAction, onUpdate: NoAction)
   withLicense       licenses?        @relation(fields: [withLicenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)

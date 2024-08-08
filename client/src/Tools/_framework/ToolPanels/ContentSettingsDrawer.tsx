@@ -30,26 +30,34 @@ import {
   License,
 } from "../Paths/ActivityEditor";
 import { sharingActions, SharingControls } from "./SharingControls";
+import { historyActions, HistoryControls } from "./HistoryControls";
+import { DocHistoryItem } from "../Paths/ActivityViewer";
 
 export async function contentSettingsActions({
   formObj,
 }: {
   [k: string]: any;
 }) {
-  let result = await sharingActions({ formObj });
-  if (result) {
-    return result;
+  let result1 = await sharingActions({ formObj });
+  if (result1) {
+    return result1;
   }
 
-  result = await generalContentActions({ formObj });
-  if (result) {
-    return result;
-  }
-
-  let result2 = await supportFilesActions({ formObj });
+  let result2 = await generalContentActions({ formObj });
   if (result2) {
     return result2;
   }
+
+  let result3 = await supportFilesActions({ formObj });
+  if (result3) {
+    return result3;
+  }
+
+  let result4 = await historyActions({ formObj });
+  if (result4) {
+    return result4;
+  }
+
   return null;
 }
 
@@ -74,10 +82,10 @@ export function ContentSettingsDrawer({
   allLicenses: License[];
   supportingFileData?: any;
   fetcher: FetcherWithComponents<any>;
-  displayTab?: "general" | "share" | "files";
+  displayTab?: "general" | "share" | "history" | "files";
 }) {
   const haveSupportingFiles = Boolean(supportingFileData);
-  const numTabs = haveSupportingFiles ? 3 : 2;
+  const numTabs = haveSupportingFiles ? 4 : 3;
 
   let initialTabIndex: number;
   switch (displayTab) {
@@ -89,8 +97,12 @@ export function ContentSettingsDrawer({
       initialTabIndex = 1;
       break;
     }
+    case "history": {
+      initialTabIndex = 2;
+      break;
+    }
     case "files": {
-      initialTabIndex = haveSupportingFiles ? 2 : 1;
+      initialTabIndex = haveSupportingFiles ? 3 : 2;
       break;
     }
   }
@@ -127,6 +139,7 @@ export function ContentSettingsDrawer({
             <TabList>
               <Tab data-test="General Tab">General</Tab>
               <Tab data-test="Share Tab">Share</Tab>
+              <Tab data-test="History Tab">History</Tab>
               {haveSupportingFiles ? (
                 <Tab data-test="Files Tab">Support Files</Tab>
               ) : null}
@@ -147,6 +160,9 @@ export function ContentSettingsDrawer({
                     contentData={contentData}
                     allLicenses={allLicenses}
                   />
+                </TabPanel>
+                <TabPanel>
+                  <HistoryControls contentData={contentData} />
                 </TabPanel>
                 {haveSupportingFiles ? (
                   <TabPanel>

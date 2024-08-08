@@ -35,17 +35,32 @@ import { DisplayLicenseItem } from "../ToolPanels/SharingControls";
 import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
 import { User } from "./SiteHeader";
 import { createFullName } from "../../../_utils/names";
+import { DateTime } from "luxon";
 
 export type DocHistoryItem = {
   docId: number;
   prevDocId: number;
   prevDocVersionNum: number;
   withLicenseCode: string | null;
-  timestamp: Date;
+  timestamp: DateTime;
   activityId: number;
   activityName: string;
   owner: UserInfo;
 };
+
+export function processContributorHistory(hist): DocHistoryItem[] {
+  return hist.map((ch) => {
+    const { prevDoc, ...historyItem } = ch;
+    let prevActivity = prevDoc.document.activity;
+    return {
+      ...historyItem,
+      timestamp: DateTime.fromISO(ch.timestamp),
+      activityId: prevActivity.id,
+      activityName: prevActivity.name,
+      owner: prevActivity.owner,
+    };
+  });
+}
 
 export async function loader({ params }) {
   try {
@@ -67,17 +82,9 @@ export async function loader({ params }) {
     const doenetmlVersion: DoenetmlVersion =
       activityData.activity.documents[0].doenetmlVersion;
 
-    const contributorHistory =
-      activityData.docHistories[0].contributorHistory.map((ch) => {
-        const { prevDoc, ...historyItem } = ch;
-        let prevActivity = prevDoc.document.activity;
-        return {
-          ...historyItem,
-          activityId: prevActivity.id,
-          activityName: prevActivity.name,
-          owner: prevActivity.owner,
-        };
-      });
+    const contributorHistory = processContributorHistory(
+      activityData.docHistories[0].contributorHistory,
+    );
 
     return {
       activityId,

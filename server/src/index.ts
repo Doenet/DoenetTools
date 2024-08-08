@@ -71,6 +71,7 @@ import {
   setFolderLicense,
   searchMyFolderContent,
   upgradeAnonymousUser,
+  getActivityContributorHistory,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -1116,6 +1117,28 @@ app.get(
         loggedInUserId,
       );
       res.send(viewerData);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getContributorHistory/:activityId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.user?.userId ?? 0);
+    const activityId = Number(req.params.activityId);
+
+    try {
+      const data = await getActivityContributorHistory({
+        activityId,
+        loggedInUserId,
+      });
+      res.send(data);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
