@@ -132,12 +132,6 @@ export async function action({ request, params }) {
       name,
     });
     return true;
-  } else if (formObj._action == "add classification") {
-    await axios.post(`/api/addClassification`, {
-      activityId: Number(formObj.id),
-      classificationId: 2,
-    });
-    return true;
   } else if (formObj._action == "open assignment") {
     let closeAt: DateTime;
     if (formObj.duration === "custom") {

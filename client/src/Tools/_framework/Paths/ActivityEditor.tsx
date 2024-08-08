@@ -241,6 +241,25 @@ export async function action({ params, request }) {
     return true;
   }
 
+  if (formObj._action == "add content classification") {
+    if (formObj.isFolder !== "true") {
+      await axios.post("/api/addClassification", {
+        activityId: Number(formObj.activityId),
+        classificationId: Number(formObj.classificationId),
+      });
+      return true;
+    }
+  }
+  if (formObj._action == "remove content classification") {
+    if (formObj.isFolder !== "true") {
+      await axios.post("/api/removeClassification", {
+        activityId: Number(formObj.activityId),
+        classificationId: Number(formObj.classificationId),
+      });
+      return true;
+    }
+  }
+
   if (formObj._action == "go to data") {
     return redirect(`/assignmentData/${params.activityId}`);
   }

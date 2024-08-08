@@ -1316,18 +1316,20 @@ export async function searchPublicContent(query: string) {
             classifications: {
               some: {
                 classification: {
-                  code: { contains: "%" + qw + "%" },
-                },
-              },
-            },
-          },
-          {
-            classifications: {
-              some: {
-                classification: {
-                  system: {
-                    name: { contains: "%" + qw + "%" },
-                  },
+                  OR: [
+                    {
+                      code: { contains: "%" + qw + "%" },
+                    },
+                    {
+                      system: { name: { contains: "%" + qw + "%" } },
+                    },
+                    {
+                      category: { contains: "%" + qw + "%" },
+                    },
+                    {
+                      description: { contains: "%" + qw + "%" },
+                    },
+                  ],
                 },
               },
             },
@@ -3340,8 +3342,6 @@ export async function getPublicFolderContent({
       ownerId: true,
       name: true,
       imagePath: true,
-      createdAt: true,
-      lastEdited: true,
       classifications: {
         select: {
           classification: {
@@ -3393,8 +3393,6 @@ export async function getPublicFolderContent({
         ownerId: true,
         name: true,
         imagePath: true,
-        createdAt: true,
-        lastEdited: true,
         classifications: {
           select: {
             classification: {

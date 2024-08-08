@@ -80,19 +80,11 @@ async function main() {
     },
   });
 
-  const classificationSystem = await prisma.classificationSystems.upsert({
+  const { id: commonCoreId } = await prisma.classificationSystems.upsert({
     where: { name: "Common Core" },
     update: { name: "Common Core" },
     create: { name: "Common Core" },
   });
-  const { id: commonCoreId } =
-    await prisma.classificationSystems.findUniqueOrThrow({
-      where: { name: "Common Core" },
-      select: {
-        id: true,
-      },
-    });
-
   const classification1 = await prisma.classifications.upsert({
     where: {
       code_systemId: {
@@ -166,18 +158,11 @@ async function main() {
     },
   });
 
-  const classificationSystem2 = await prisma.classificationSystems.upsert({
+  const { id: minnesotaMathId } = await prisma.classificationSystems.upsert({
     where: { name: "Minnesota Academic Standards in Math" },
     update: { name: "Minnesota Academic Standards in Math" },
     create: { name: "Minnesota Academic Standards in Math" },
   });
-  const { id: minnesotaMathId } =
-    await prisma.classificationSystems.findUniqueOrThrow({
-      where: { name: "Minnesota Academic Standards in Math" },
-      select: {
-        id: true,
-      },
-    });
 
   const minnesotaClassification1 = await prisma.classifications.upsert({
     where: {

@@ -27,6 +27,7 @@ import {
   AccordionIcon,
   CloseButton,
   HStack,
+  Tooltip,
 } from "@chakra-ui/react";
 import AsyncSelect from "react-select/async";
 import { FaFileImage } from "react-icons/fa";
@@ -451,18 +452,23 @@ export function GeneralContentControls({
                         </AccordionButton>
                       </h2>
                       <Spacer />
-                      <CloseButton
-                        onClick={() => {
-                          fetcher.submit(
-                            {
-                              _action: "remove content classification",
-                              activityId: id,
-                              classificationId: classification.id,
-                            },
-                            { method: "post" },
-                          );
-                        }}
-                      />
+                      <Tooltip
+                        label={`Remove classification ${classification.code}`}
+                      >
+                        <CloseButton
+                          aria-label={`Remove classification ${classification.code}`}
+                          onClick={() => {
+                            fetcher.submit(
+                              {
+                                _action: "remove content classification",
+                                activityId: id,
+                                classificationId: classification.id,
+                              },
+                              { method: "post" },
+                            );
+                          }}
+                        />
+                      </Tooltip>
                     </HStack>
                     <AccordionPanel>
                       <Text as="b">Category: </Text>
