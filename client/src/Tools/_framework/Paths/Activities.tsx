@@ -16,6 +16,7 @@ import {
   Input,
   Spacer,
   Show,
+  HStack,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -29,7 +30,10 @@ import {
 } from "react-router-dom";
 
 import { RiEmotionSadLine } from "react-icons/ri";
+import { FaListAlt, FaRegListAlt } from "react-icons/fa";
+import { BsFillGrid3X3GapFill, BsGrid3X3Gap } from "react-icons/bs";
 import ContentCard from "../../../Widgets/ContentCard";
+import ActivityTable from "../../../Widgets/ActivityTable";
 import axios from "axios";
 import MoveContentToFolder from "../ToolPanels/MoveContentToFolder";
 import { ContentSettingsDrawer } from "../ToolPanels/ContentSettingsDrawer";
@@ -286,6 +290,8 @@ export function Activities() {
 
   const navigate = useNavigate();
 
+  const [listView, setListView] = useState(true);
+
   const [moveToFolderContent, setMoveToFolderContent] = useState<{
     id: number;
     isPublic: boolean;
@@ -364,7 +370,7 @@ export function Activities() {
               );
             }}
           >
-            Move Left
+            Move Up
           </MenuItem>
         ) : null}
         {position < numCards - 1 && !haveQuery ? (
@@ -382,7 +388,7 @@ export function Activities() {
               );
             }}
           >
-            Move Right
+            Move Down
           </MenuItem>
         ) : null}
         {haveQuery ? null : (
@@ -528,11 +534,9 @@ export function Activities() {
         width="100%"
         textAlign="center"
       >
-        <Tooltip label={headingText}>
-          <Heading as="h2" size="lg" paddingTop=".5em" noOfLines={1}>
-            {headingText}
-          </Heading>
-        </Tooltip>
+        <Heading as="h2" size="lg" paddingTop=".5em" noOfLines={1}>
+          <Tooltip label={headingText}>{headingText}</Tooltip>
+        </Heading>
         <Flex float="right">
           <Flex>
             <Form>
@@ -672,6 +676,28 @@ export function Activities() {
           </Link>
         </Box>
       ) : null}
+      <HStack spacing="5px" margin="10px" verticalAlign="baseline">
+        <Tooltip label="Toggle List View">
+          <Box>
+            <Icon
+              as={listView ? FaListAlt : FaRegListAlt}
+              boxSize={8}
+              cursor="pointer"
+              onClick={() => setListView(true)}
+            />
+          </Box>
+        </Tooltip>
+        <Tooltip label="Toggle Card View">
+          <Box>
+            <Icon
+              as={listView ? BsGrid3X3Gap : BsFillGrid3X3GapFill}
+              boxSize={8}
+              cursor="pointer"
+              onClick={() => setListView(false)}
+            />
+          </Box>
+        </Tooltip>
+      </HStack>
       {haveQuery ? (
         <Flex
           width="100%"
@@ -701,68 +727,96 @@ export function Activities() {
       ) : null}
       <Flex
         data-test="Activities"
-        padding="10px"
+        padding="0 10px"
         margin="0px"
         width="100%"
-        justifyContent="center"
-        background="var(--lightBlue)"
+        background={listView ? "white" : "var(--lightBlue)"}
         minHeight="calc(100vh - 120px)"
+        direction="column"
       >
-        <Wrap p="10px" overflow="visible">
-          {content.length < 1 ? (
-            <Flex
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-              alignContent="center"
-              minHeight={200}
-              background="doenet.canvas"
-              padding={20}
-              width="100%"
-              backgroundColor="transparent"
-            >
-              <Icon fontSize="48pt" as={RiEmotionSadLine} />
-              <Text fontSize="36pt">
-                {haveQuery ? "No Results Found" : "No Activities Yet"}
-              </Text>
-            </Flex>
-          ) : (
-            <>
-              {content.map((activity, position) => {
-                const getCardRef = (element) => {
-                  contentCardRefs.current[position] = element;
-                };
-                return (
-                  <ContentCard
-                    key={`Card${activity.id}`}
-                    ref={getCardRef}
-                    {...activity}
-                    title={activity.name}
-                    menuItems={getCardMenuList({
-                      id: activity.id,
-                      position,
-                      numCards: content.length,
-                      assignmentStatus: activity.assignmentStatus,
-                      isFolder: activity.isFolder,
-                      isPublic: activity.isPublic,
-                      licenseCode: activity.license?.code ?? null,
-                      parentFolderId: activity.parentFolder?.id ?? null,
-                    })}
-                    suppressAvatar={true}
-                    showOwnerName={false}
-                    cardLink={
-                      activity.isFolder
-                        ? `/activities/${activity.ownerId}/${activity.id}`
-                        : `/activityEditor/${activity.id}`
-                    }
-                    editableTitle={true}
-                    autoFocusTitle={folderJustCreated === activity.id}
-                  />
-                );
-              })}
-            </>
-          )}
-        </Wrap>
+        {content.length < 1 ? (
+          <Flex
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            alignContent="center"
+            minHeight={200}
+            background="doenet.canvas"
+            padding={20}
+            width="100%"
+            backgroundColor="transparent"
+          >
+            <Icon fontSize="48pt" as={RiEmotionSadLine} />
+            <Text fontSize="36pt">
+              {haveQuery ? "No Results Found" : "No Activities Yet"}
+            </Text>
+          </Flex>
+        ) : listView ? (
+          <ActivityTable
+            content={content.map((activity, position) => {
+              const getCardRef = (element) => {
+                contentCardRefs.current[position] = element;
+              };
+              return {
+                ref: getCardRef,
+                ...activity,
+                title: activity.name,
+                menuItems: getCardMenuList({
+                  id: activity.id,
+                  position,
+                  numCards: content.length,
+                  assignmentStatus: activity.assignmentStatus,
+                  isFolder: activity.isFolder,
+                  isPublic: activity.isPublic,
+                  licenseCode: activity.license?.code ?? null,
+                  parentFolderId: activity.parentFolder?.id ?? null,
+                }),
+                suppressAvatar: true,
+                showOwnerName: false,
+                cardLink: activity.isFolder
+                  ? `/activities/${activity.ownerId}/${activity.id}`
+                  : `/activityEditor/${activity.id}`,
+                editableTitle: true,
+                autoFocusTitle: folderJustCreated === activity.id,
+              };
+            })}
+          />
+        ) : (
+          <Wrap p="10px" overflow="visible">
+            {content.map((activity, position) => {
+              const getCardRef = (element) => {
+                contentCardRefs.current[position] = element;
+              };
+              return (
+                <ContentCard
+                  key={`Card${activity.id}`}
+                  ref={getCardRef}
+                  {...activity}
+                  title={activity.name}
+                  menuItems={getCardMenuList({
+                    id: activity.id,
+                    position,
+                    numCards: content.length,
+                    assignmentStatus: activity.assignmentStatus,
+                    isFolder: activity.isFolder,
+                    isPublic: activity.isPublic,
+                    licenseCode: activity.license?.code ?? null,
+                    parentFolderId: activity.parentFolder?.id ?? null,
+                  })}
+                  suppressAvatar={true}
+                  showOwnerName={false}
+                  cardLink={
+                    activity.isFolder
+                      ? `/activities/${activity.ownerId}/${activity.id}`
+                      : `/activityEditor/${activity.id}`
+                  }
+                  editableTitle={true}
+                  autoFocusTitle={folderJustCreated === activity.id}
+                />
+              );
+            })}
+          </Wrap>
+        )}
       </Flex>
     </>
   );
