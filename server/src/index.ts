@@ -83,6 +83,12 @@ import { Strategy as MagicLinkStrategy } from "passport-magic-link";
 //@ts-ignore
 import { Strategy as AnonymIdStrategy } from "passport-anonym-uuid";
 
+import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+
+import * as fs from "fs/promises";
+
+const client = new SESClient({ region: "us-east-2" });
+
 dotenv.config();
 
 interface User {
@@ -137,13 +143,53 @@ passport.use(
       tokenField: "token",
     },
     async (user, token) => {
-      console.log(`go to link: localhost:8000/confirmSignIn?token=${token}`);
-      /*
-    return MailService.sendMail({
-     to: user.email,
-     token
-     })
-  */
+      const confirmURL = `${process.env.CONFIRM_SIGNIN_URL}?token=${token}`;
+
+      let email_html: string = "";
+
+      try {
+        const filePath = path.resolve(__dirname, "signin_email.html");
+
+        email_html = await fs.readFile(filePath, { encoding: "utf8" });
+      } catch (err) {
+        console.log(err);
+        throw Error("Could not send email");
+      }
+
+      email_html = email_html.replace(/CONFIRM_LINK/g, confirmURL);
+
+      const params = {
+        Source: "Doenet Accounts <info@doenet.org>",
+        Destination: {
+          ToAddresses: [user.email],
+        },
+        Message: {
+          Subject: {
+            Data: "Finish log into Doenet",
+          },
+          Body: {
+            Text: {
+              Data: `To finish your login into Doenet, go to the URL: ${confirmURL}`,
+            },
+            Html: {
+              Data: email_html,
+            },
+          },
+        },
+      };
+
+      // Send the email
+      const sendEmail = async () => {
+        try {
+          const command = new SendEmailCommand(params);
+          const response = await client.send(command);
+          console.log("Email sent successfully", response);
+        } catch (error) {
+          console.error("Error sending email", error);
+        }
+      };
+
+      sendEmail();
     },
     async (user: any) => {
       return {
