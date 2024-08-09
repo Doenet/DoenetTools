@@ -134,31 +134,25 @@ passport.use(
       tokenField: "token",
     },
     async (user, token) => {
-      console.log(`go to link: localhost:8000/confirmSignIn?token=${token}`);
-      /*
-    return MailService.sendMail({
-     to: user.email,
-     token
-     })
-  */
+      const confirmURL = `${process.env.CONFIRM_SIGNIN_URL}?token=${token}`;
+
+      console.log(`go to link: ${confirmURL}`);
 
       const params = {
         Source: "info@doenet.org",
         Destination: {
-          ToAddresses: [
-            user.email, // replace with the recipient's email
-          ],
+          ToAddresses: [user.email],
         },
         Message: {
           Subject: {
-            Data: "Test Email",
+            Data: "Finish log into Doenet",
           },
           Body: {
             Text: {
-              Data: "This is a test email sent with Amazon SES using the AWS SDK for JavaScript.",
+              Data: `To finish your login into Doenet, go to the URL: ${confirmURL}`,
             },
             Html: {
-              Data: "<h4>hi!</h4> message",
+              Data: `<h4>Finish log into Doenet</h4> <p>To finish your login into Doenet, click <a href="${confirmURL}">this link</a>.</p>`,
             },
           },
         },
