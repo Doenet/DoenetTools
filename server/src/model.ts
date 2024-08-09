@@ -1316,11 +1316,20 @@ export async function findOrCreateUser({
   isAdmin?: boolean;
   isAnonymous?: boolean;
 }) {
-  return await prisma.users.upsert({
+  let user = await prisma.users.upsert({
     where: { email },
     update: {},
     create: { email, firstNames, lastNames, isAdmin, isAnonymous },
   });
+
+  if (lastNames !== "" && user.lastNames == "") {
+    user = await prisma.users.update({
+      where: { email },
+      data: { firstNames, lastNames },
+    });
+  }
+
+  return user;
 }
 
 export async function getUserInfo(email: string) {
@@ -1332,8 +1341,24 @@ export async function getUserInfo(email: string) {
       firstNames: true,
       lastNames: true,
       isAnonymous: true,
+      isAdmin: true,
     },
   });
+  return user;
+}
+
+export async function upgradeAnonymousUser({
+  userId,
+  email,
+}: {
+  userId: number;
+  email: string;
+}) {
+  const user = await prisma.users.update({
+    where: { userId, isAnonymous: true },
+    data: { isAnonymous: false, email },
+  });
+
   return user;
 }
 
@@ -2126,14 +2151,6 @@ export async function loadState({
   userId: number;
   withMaxScore: boolean;
 }) {
-  console.log("load state", {
-    activityId,
-    docId,
-    docVersionNum,
-    requestedUserId,
-    userId,
-    withMaxScore,
-  });
   if (requestedUserId !== userId) {
     // If user isn't the requested user, then user is allowed to load requested users state
     // only if they are the owner of the assignment.

@@ -1,10 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import {
-  useLoaderData,
-  useNavigate,
-  useLocation,
-  useOutletContext,
-} from "react-router";
+import { useLoaderData, useNavigate, useOutletContext } from "react-router";
 
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 
@@ -22,6 +17,7 @@ import { BsPlayBtnFill } from "react-icons/bs";
 import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
 import axios from "axios";
 import { ContentStructure, DoenetmlVersion } from "./ActivityEditor";
+import { User } from "./SiteHeader";
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);
@@ -75,20 +71,8 @@ export function PublicEditor() {
     onClose: copyActivityOnClose,
   } = useDisclosure();
 
-  //@ts-ignore
-  const { signedIn } = useOutletContext();
+  const user = useOutletContext<User>();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  let navigateTo = useRef("");
-
-  // TODO: fix this navigation
-  if (navigateTo.current != "") {
-    const newHref = navigateTo.current;
-    navigateTo.current = "";
-    //@ts-ignore
-    location.href = newHref;
-  }
 
   const label = activityData?.name ?? "Public Editor";
 
@@ -188,7 +172,7 @@ export function PublicEditor() {
                         Copy to Activities to make your own edits.
                       </Text>
                     </Center>
-                    {signedIn ? (
+                    {user ? (
                       <Button
                         data-test="Copy to Activities Button"
                         size="xs"
@@ -205,7 +189,7 @@ export function PublicEditor() {
                         size="xs"
                         colorScheme="blue"
                         onClick={() => {
-                          navigateTo.current = "/signIn";
+                          navigate("/signIn");
                         }}
                       >
                         Sign In To Copy to Activities

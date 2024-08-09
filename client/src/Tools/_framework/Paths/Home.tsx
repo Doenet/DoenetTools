@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect } from "react";
-import { useLoaderData, useOutletContext } from "react-router";
+import { useLoaderData } from "react-router";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
 import { Carousel } from "../../../Widgets/Carousel";
@@ -90,7 +90,6 @@ let doenetML = `
 `;
 
 export function Home() {
-  let context = useOutletContext();
   const { favorites } = useLoaderData() as { favorites: any };
 
   useEffect(() => {
@@ -102,12 +101,6 @@ export function Home() {
   const blackColor = "black";
   const whiteColor = useColorModeValue("white", "gray.900");
   const textColor = useColorModeValue("doenet.canvas", "doenet.canvastext");
-
-  //Don't do more processing if we don't know if we are signed in or not
-  //@ts-ignore
-  if (context.signedIn == null) {
-    return null;
-  }
 
   const heroTextAndActions = () => {
     return (

@@ -56,6 +56,7 @@ import {
   makeFolderPublic,
   makeFolderPrivate,
   searchMyFolderContent,
+  upgradeAnonymousUser,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -2385,6 +2386,28 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
   );
 
   await closeAssignmentWithCode(activityId, ownerId);
+});
+
+test("upgrade anonymous user", async () => {
+  let anonUser = await createTestAnonymousUser();
+  anonUser = await updateUser({
+    userId: anonUser.userId,
+    firstNames: "Zoe",
+    lastNames: "Zaborowski",
+  });
+
+  expect(anonUser.isAnonymous).eq(true);
+
+  const id = Date.now().toString();
+  const realEmail = `real${id}@vitest.test`;
+
+  const upgraded = await upgradeAnonymousUser({
+    userId: anonUser.userId,
+    email: realEmail,
+  });
+
+  expect(upgraded.isAnonymous).eq(false);
+  expect(upgraded.email).eq(realEmail);
 });
 
 test("get assignment data from anonymous users", async () => {

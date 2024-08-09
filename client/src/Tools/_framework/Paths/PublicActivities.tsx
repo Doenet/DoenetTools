@@ -10,12 +10,7 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import React, { useEffect } from "react";
-import {
-  useOutletContext,
-  useLoaderData,
-  useFetcher,
-  Link,
-} from "react-router-dom";
+import { useLoaderData, useFetcher, Link } from "react-router-dom";
 
 import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../Widgets/ContentCard";
@@ -39,7 +34,6 @@ export async function loader({ params }) {
 }
 
 export function PublicActivities() {
-  let context: any = useOutletContext();
   let { content, ownerId, owner, folder } = useLoaderData() as {
     content: ContentStructure[];
     ownerId: number;
@@ -57,11 +51,6 @@ export function PublicActivities() {
   }, [folder]);
 
   const fetcher = useFetcher();
-
-  //Don't do more processing if we don't know if we are signed in or not
-  if (context.signedIn == null) {
-    return null;
-  }
 
   let headingText = folder ? (
     <>Folder: {folder.name}</>

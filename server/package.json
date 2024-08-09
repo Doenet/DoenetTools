@@ -16,6 +16,7 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.624.0",
     "@prisma/client": "^5.17.0",
     "@quixo3/prisma-session-store": "^3.1.13",
     "cookie-parser": "^1.4.6",
@@ -26,7 +27,8 @@
     "luxon": "^3.4.4",
     "passport": "^0.7.0",
     "passport-anonym-uuid": "^1.0.3",
-    "passport-google-oauth20": "^2.0.0"
+    "passport-google-oauth20": "^2.0.0",
+    "passport-magic-link": "^2.1.1"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.7",

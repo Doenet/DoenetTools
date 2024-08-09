@@ -20,7 +20,6 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import {
   redirect,
-  useOutletContext,
   useLoaderData,
   useNavigate,
   useFetcher,
@@ -235,7 +234,6 @@ export async function loader({ params, request }) {
 }
 
 export function Activities() {
-  let context: any = useOutletContext();
   let {
     folderId,
     content,
@@ -307,11 +305,6 @@ export function Activities() {
   }, []);
 
   const fetcher = useFetcher();
-
-  //Don't do more processing if we don't know if we are signed in or not
-  if (context.signedIn == null) {
-    return null;
-  }
 
   function getCardMenuList({
     id,

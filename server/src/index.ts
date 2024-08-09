@@ -64,15 +64,23 @@ import {
   makeFolderPublic,
   makeFolderPrivate,
   searchMyFolderContent,
+  upgradeAnonymousUser,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Strategy as MagicLinkStrategy } from "passport-magic-link";
 //@ts-ignore
 import { Strategy as AnonymIdStrategy } from "passport-anonym-uuid";
+
+import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+
+import * as fs from "fs/promises";
+
+const client = new SESClient({ region: "us-east-2" });
 
 dotenv.config();
 
@@ -119,10 +127,100 @@ passport.use(
   ),
 );
 
+passport.use(
+  new MagicLinkStrategy(
+    {
+      secret: process.env.MAGIC_LINK_SECRET || "",
+      allowReuse: true,
+      userFields: ["email", "fromAnonymous"],
+      tokenField: "token",
+    },
+    async (user, token) => {
+      const confirmURL = `${process.env.CONFIRM_SIGNIN_URL}?token=${token}`;
+
+      let email_html: string = "";
+
+      try {
+        const filePath = path.resolve(__dirname, "signin_email.html");
+
+        email_html = await fs.readFile(filePath, { encoding: "utf8" });
+      } catch (err) {
+        console.log(err);
+        throw Error("Could not send email");
+      }
+
+      email_html = email_html.replace(/CONFIRM_LINK/g, confirmURL);
+
+      const params = {
+        Source: "Doenet Accounts <info@doenet.org>",
+        Destination: {
+          ToAddresses: [user.email],
+        },
+        Message: {
+          Subject: {
+            Data: "Finish log into Doenet",
+          },
+          Body: {
+            Text: {
+              Data: `To finish your login into Doenet, go to the URL: ${confirmURL}`,
+            },
+            Html: {
+              Data: email_html,
+            },
+          },
+        },
+      };
+
+      // Send the email
+      const sendEmail = async () => {
+        try {
+          const command = new SendEmailCommand(params);
+          const response = await client.send(command);
+          console.log("Email sent successfully", response);
+        } catch (error) {
+          console.error("Error sending email", error);
+        }
+      };
+
+      sendEmail();
+    },
+    async (user: any) => {
+      return {
+        provider: "magiclink",
+        email: user.email as string,
+        fromAnonymous: Number(user.fromAnonymous) || 0,
+      };
+    },
+  ),
+);
+
 passport.use(new AnonymIdStrategy());
 
 passport.serializeUser<any, any>(async (req, user: any, done) => {
-  if (user.provider === "google") {
+  if (user.provider === "magiclink") {
+    const email: string = user.email;
+    const fromAnonymous: number = user.fromAnonymous;
+
+    let u;
+
+    if (fromAnonymous > 0) {
+      try {
+        u = await upgradeAnonymousUser({ userId: fromAnonymous, email });
+      } catch (e) {
+        /// ignore any error
+      }
+    }
+
+    if (!u) {
+      u = await findOrCreateUser({
+        email,
+        firstNames: null,
+        lastNames: "",
+      });
+    }
+
+    return done(undefined, u.email);
+  } else if (user.provider === "google") {
     var email = user.id + "@google.com";
     if (user.emails[0].verified) email = user.emails[0].value;
 
@@ -208,6 +306,24 @@ app.get(
   }),
 );
 
+app.post(
+  "/api/auth/magiclink",
+  passport.authenticate("magiclink", { action: "requestToken" }),
+  (req, res) => res.redirect("/"),
+);
+
+app.get(
+  "/api/login/magiclink",
+  passport.authenticate("magiclink", {
+    action: "acceptToken",
+    userPrimaryKey: "email",
+  }),
+  async (req: Request, res: Response) => {
+    let user = await getUserInfo((req.user as any).email);
+    res.send({ user });
+  },
+);
+
 app.get("/api/logout", function (req, res, next) {
   req.logout(function (err) {
     if (err) {
@@ -217,9 +333,9 @@ app.get("/api/logout", function (req, res, next) {
   });
 });
 
-app.get("/api/getQuickCheckSignedIn", (req: Request, res: Response) => {
+app.get("/api/getSignedIn", (req: Request, res: Response) => {
   const signedIn = req.user ? true : false;
-  res.send({ signedIn: signedIn });
+  res.send({ signedIn });
 });
 
 app.get(
@@ -228,8 +344,8 @@ app.get(
     const signedIn = req.user ? true : false;
     if (signedIn) {
       try {
-        let userInfo = await getUserInfo(req.user.email);
-        res.send(userInfo);
+        let user = await getUserInfo(req.user.email);
+        res.send({ user });
       } catch (e) {
         next(e);
       }
@@ -247,8 +363,6 @@ app.post("/api/updateUser", async (req: Request, res: Response) => {
     const firstNames = body.firstNames;
     const lastNames = body.lastNames;
     await updateUser({ userId: loggedInUserId, firstNames, lastNames });
-    res.cookie("firstNames", firstNames);
-    res.cookie("lastNames", lastNames);
     res.send({ firstNames, lastNames });
   } else {
     res.send({});
@@ -302,21 +416,6 @@ app.get(
     }
   },
 );
-
-app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
-  const email: string = req.query.emailaddress as string;
-  // TODO: add the ability to give a name after logging in or creating an account
-  const user = await findOrCreateUser({
-    email,
-    firstNames: null,
-    lastNames: "",
-  });
-  res.cookie("email", email);
-  res.cookie("userId", String(user.userId));
-  res.cookie("firstNames", String(user.firstNames));
-  res.cookie("lastNames", String(user.lastNames));
-  res.send({});
-});
 
 app.post(
   "/api/deleteActivity",
@@ -478,7 +577,7 @@ app.post(
 app.post(
   "/api/makeActivityPrivate",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const id = Number(body.id);
     try {
@@ -497,7 +596,7 @@ app.post(
 app.post(
   "/api/makeFolderPublic",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const id = Number(body.id);
 
@@ -536,7 +635,7 @@ app.post(
 app.post(
   "/api/makeFolderPrivate",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const id = Number(body.id);
     try {
@@ -565,11 +664,6 @@ app.get(
     });
   },
 );
-
-app.get("/api/checkCredentials", (req: Request, res: Response) => {
-  const loggedIn = req.user ? true : false;
-  res.send({ loggedIn });
-});
 
 app.get(
   "/api/getCoursePermissionsAndSettings",
@@ -1028,7 +1122,7 @@ app.post(
 app.post(
   "/api/updateAssignmentSettings",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const activityId = Number(body.activityId);
     const closeAt = DateTime.fromISO(body.closeAt);
@@ -1069,7 +1163,7 @@ app.post(
 app.post(
   "/api/unassignActivity",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const activityId = Number(body.activityId);
 
@@ -1485,7 +1579,7 @@ app.get(
   "/api/searchMyFolderContent/:ownerId",
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = Number(req.params.ownerId);
-    const loggedInUserId = req.cookies.userId ? Number(req.cookies.userId) : 0;
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const query = req.query.q as string;
 
     if (ownerId !== loggedInUserId) {
@@ -1517,7 +1611,7 @@ app.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = Number(req.params.ownerId);
     const folderId = Number(req.params.folderId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const query = req.query.q as string;
 
     if (ownerId !== loggedInUserId) {
