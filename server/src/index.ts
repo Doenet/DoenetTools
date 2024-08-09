@@ -78,6 +78,8 @@ import { Strategy as AnonymIdStrategy } from "passport-anonym-uuid";
 
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
+import * as fs from "fs/promises";
+
 const client = new SESClient({ region: "us-east-2" });
 
 dotenv.config();
@@ -136,10 +138,21 @@ passport.use(
     async (user, token) => {
       const confirmURL = `${process.env.CONFIRM_SIGNIN_URL}?token=${token}`;
 
-      console.log(`go to link: ${confirmURL}`);
+      let email_html: string = "";
+
+      try {
+        const filePath = path.resolve(__dirname, "signin_email.html");
+
+        email_html = await fs.readFile(filePath, { encoding: "utf8" });
+      } catch (err) {
+        console.log(err);
+        throw Error("Could not send email");
+      }
+
+      email_html = email_html.replace(/CONFIRM_LINK/g, confirmURL);
 
       const params = {
-        Source: "info@doenet.org",
+        Source: "Doenet Accounts <info@doenet.org>",
         Destination: {
           ToAddresses: [user.email],
         },
@@ -152,7 +165,7 @@ passport.use(
               Data: `To finish your login into Doenet, go to the URL: ${confirmURL}`,
             },
             Html: {
-              Data: `<h4>Finish log into Doenet</h4> <p>To finish your login into Doenet, click <a href="${confirmURL}">this link</a>.</p>`,
+              Data: email_html,
             },
           },
         },
