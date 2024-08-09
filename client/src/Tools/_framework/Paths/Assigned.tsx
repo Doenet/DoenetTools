@@ -1,12 +1,7 @@
 // import axios from 'axios';
 import { Button, Box, Icon, Text, Flex, Wrap, Heading } from "@chakra-ui/react";
 import React, { useEffect } from "react";
-import {
-  useOutletContext,
-  useLoaderData,
-  useNavigate,
-  useFetcher,
-} from "react-router-dom";
+import { useLoaderData, useNavigate, useFetcher } from "react-router-dom";
 
 import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../Widgets/ContentCard";
@@ -25,7 +20,6 @@ export async function loader({ params }) {
 }
 
 export function Assigned() {
-  let context = useOutletContext();
   let { user, assignments } = useLoaderData() as {
     user: {
       userId: number;
@@ -42,12 +36,6 @@ export function Assigned() {
   }, []);
 
   const fetcher = useFetcher();
-
-  //Don't do more processing if we don't know if we are signed in or not
-  //@ts-ignore
-  if (context.signedIn == null) {
-    return null;
-  }
 
   return (
     <>

@@ -7,6 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String   @db.Text
+  expiresAt DateTime
+}
+
 model content {
   id               Int                @id @unique() @default(autoincrement())
   ownerId          Int
@@ -175,11 +182,11 @@ model documentSubmittedResponses {
 
 model users {
   userId                     Int                          @id @default(autoincrement())
-  email                      String                       @unique @db.VarChar(45)
+  email                      String                       @unique
   firstNames                 String?
   lastNames                  String
   isAdmin                    Boolean                      @default(false)
-  anonymous                  Boolean                      @default(false)
+  isAnonymous                Boolean                      @default(false)
   content                    content[]
   assignmentScores           assignmentScores[]
   documentState              documentState[]

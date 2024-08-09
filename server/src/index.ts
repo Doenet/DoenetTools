@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { DateTime } from "luxon";
 import {
+  prisma,
   copyActivityToFolder,
   createActivity,
   createFolder,
@@ -63,13 +64,203 @@ import {
   makeFolderPublic,
   makeFolderPrivate,
   searchMyFolderContent,
+  upgradeAnonymousUser,
 } from "./model";
+import session from "express-session";
+import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import { Prisma } from "@prisma/client";
+
+import passport from "passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Strategy as MagicLinkStrategy } from "passport-magic-link";
+//@ts-ignore
+import { Strategy as AnonymIdStrategy } from "passport-anonym-uuid";
+
+import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+
+import * as fs from "fs/promises";
+
+const client = new SESClient({ region: "us-east-2" });
 
 dotenv.config();
 
+interface User {
+  userId: Number;
+  firstNames: string;
+  lastNames: string;
+  email: string;
+}
+
+declare module "express-serve-static-core" {
+  interface Request {
+    user: User;
+  }
+}
+
 const app: Express = express();
 app.use(cookieParser());
+
+// make sure that when log out, it doesn't use old cached pages
+app.use(function (req, res, next) {
+  if (!req.user) {
+    res.header("Cache-Control", "private, no-cache, no-store, must-revalidate");
+    res.header("Expires", "-1");
+    res.header("Pragma", "no-cache");
+  }
+  next();
+});
+
+const googleClientId = process.env.GOOGLE_CLIENT_ID || "";
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
+
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: googleClientId,
+      clientSecret: googleClientSecret,
+      callbackURL: (process.env.LOGIN_CALLBACK_ROOT || "") + "api/login/google",
+      scope: ["profile", "email"],
+    },
+    (accessToken: any, refreshToken: any, profile: any, done: any) => {
+      done(null, profile);
+    },
+  ),
+);
+
+passport.use(
+  new MagicLinkStrategy(
+    {
+      secret: process.env.MAGIC_LINK_SECRET || "",
+      allowReuse: true,
+      userFields: ["email", "fromAnonymous"],
+      tokenField: "token",
+    },
+    async (user, token) => {
+      const confirmURL = `${process.env.CONFIRM_SIGNIN_URL}?token=${token}`;
+
+      let email_html: string = "";
+
+      try {
+        const filePath = path.resolve(__dirname, "signin_email.html");
+
+        email_html = await fs.readFile(filePath, { encoding: "utf8" });
+      } catch (err) {
+        console.log(err);
+        throw Error("Could not send email");
+      }
+
+      email_html = email_html.replace(/CONFIRM_LINK/g, confirmURL);
+
+      const params = {
+        Source: "Doenet Accounts <info@doenet.org>",
+        Destination: {
+          ToAddresses: [user.email],
+        },
+        Message: {
+          Subject: {
+            Data: "Finish log into Doenet",
+          },
+          Body: {
+            Text: {
+              Data: `To finish your login into Doenet, go to the URL: ${confirmURL}`,
+            },
+            Html: {
+              Data: email_html,
+            },
+          },
+        },
+      };
+
+      // Send the email
+      const sendEmail = async () => {
+        try {
+          const command = new SendEmailCommand(params);
+          const response = await client.send(command);
+          console.log("Email sent successfully", response);
+        } catch (error) {
+          console.error("Error sending email", error);
+        }
+      };
+
+      sendEmail();
+    },
+    async (user: any) => {
+      return {
+        provider: "magiclink",
+        email: user.email as string,
+        fromAnonymous: Number(user.fromAnonymous) || 0,
+      };
+    },
+  ),
+);
+
+passport.use(new AnonymIdStrategy());
+
+passport.serializeUser<any, any>(async (req, user: any, done) => {
+  if (user.provider === "magiclink") {
+    const email: string = user.email;
+    const fromAnonymous: number = user.fromAnonymous;
+
+    let u;
+
+    if (fromAnonymous > 0) {
+      try {
+        u = await upgradeAnonymousUser({ userId: fromAnonymous, email });
+      } catch (e) {
+        /// ignore any error
+      }
+    }
+
+    if (!u) {
+      u = await findOrCreateUser({
+        email,
+        firstNames: null,
+        lastNames: "",
+      });
+    }
+
+    return done(undefined, u.email);
+  } else if (user.provider === "google") {
+    var email = user.id + "@google.com";
+    if (user.emails[0].verified) email = user.emails[0].value;
+
+    const u = await findOrCreateUser({
+      email,
+      firstNames: user.name.givenName,
+      lastNames: user.name.familyName,
+    });
+    return done(undefined, u.email);
+  } else if (user.uuid) {
+    const u = await findOrCreateUser({
+      email: user.uuid + "@anonymous.doenet.org",
+      lastNames: "",
+      firstNames: null,
+      isAnonymous: true,
+    });
+    return done(undefined, u.email);
+  }
+});
+
+passport.deserializeUser(async (id: string, done) => {
+  const u = await getUserInfo(id);
+  done(null, u);
+});
+
+app.use(
+  session({
+    cookie: {
+      maxAge: 365 * 24 * 60 * 60 * 1000, // ms
+    },
+    secret: process.env.SESSION_SECRET || "",
+    resave: true,
+    saveUninitialized: true,
+    store: new PrismaSessionStore(prisma, {
+      checkPeriod: 2 * 60 * 1000, //ms
+      dbRecordIdIsSessionId: true,
+      dbRecordIdFunction: undefined,
+    }),
+  }),
+);
 
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(
@@ -79,27 +270,82 @@ app.use(
   }),
 );
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 const port = process.env.PORT || 3000;
 
 app.use(express.static(path.resolve(__dirname, "../public")));
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Express + TypeScript Server");
+  res.send("Express + TypeScript Server" + JSON.stringify(req?.user));
 });
 
-app.get("/api/getQuickCheckSignedIn", (req: Request, res: Response) => {
-  const signedIn = req.cookies.email ? true : false;
-  res.send({ signedIn: signedIn });
+// An anonymous login that will be redirected to
+// when going to getAssignmentDataFromCode without being logged in.
+// Redirect back to that page after anonymous user is created and logged in.
+app.get(
+  "/api/login/anonymId/:code",
+  passport.authenticate("anonymId"),
+  (req: Request, res: Response) => {
+    const code = req.params.code;
+    res.redirect(`/api/getAssignmentDataFromCode/${code}`);
+  },
+);
+
+app.get(
+  "/api/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] }),
+);
+
+app.get(
+  "/api/login/google",
+  passport.authenticate("google", {
+    successRedirect: "/",
+    failureRedirect: "/login",
+  }),
+);
+
+app.post(
+  "/api/auth/magiclink",
+  passport.authenticate("magiclink", { action: "requestToken" }),
+  (req, res) => res.redirect("/"),
+);
+
+app.get(
+  "/api/login/magiclink",
+  passport.authenticate("magiclink", {
+    action: "acceptToken",
+    userPrimaryKey: "email",
+  }),
+  async (req: Request, res: Response) => {
+    let user = await getUserInfo((req.user as any).email);
+    res.send({ user });
+  },
+);
+
+app.get("/api/logout", function (req, res, next) {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  });
+});
+
+app.get("/api/getSignedIn", (req: Request, res: Response) => {
+  const signedIn = req.user ? true : false;
+  res.send({ signedIn });
 });
 
 app.get(
   "/api/getUser",
   async (req: Request, res: Response, next: NextFunction) => {
-    const signedIn = req.cookies.email ? true : false;
+    const signedIn = req.user ? true : false;
     if (signedIn) {
       try {
-        let userInfo = await getUserInfo(req.cookies.email);
-        res.send(userInfo);
+        let user = await getUserInfo(req.user.email);
+        res.send({ user });
       } catch (e) {
         next(e);
       }
@@ -110,15 +356,13 @@ app.get(
 );
 
 app.post("/api/updateUser", async (req: Request, res: Response) => {
-  const signedIn = req.cookies.email ? true : false;
+  const signedIn = req.user ? true : false;
   if (signedIn) {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user.userId);
     const body = req.body;
     const firstNames = body.firstNames;
     const lastNames = body.lastNames;
     await updateUser({ userId: loggedInUserId, firstNames, lastNames });
-    res.cookie("firstNames", firstNames);
-    res.cookie("lastNames", lastNames);
     res.send({ firstNames, lastNames });
   } else {
     res.send({});
@@ -126,7 +370,7 @@ app.post("/api/updateUser", async (req: Request, res: Response) => {
 });
 
 app.get("/api/checkForCommunityAdmin", async (req: Request, res: Response) => {
-  const loggedInUserId = Number(req.cookies.userId);
+  const loggedInUserId = Number(req.user?.userId ?? 0);
   const isAdmin = loggedInUserId ? await getIsAdmin(loggedInUserId) : false;
   res.send({ isAdmin });
 });
@@ -142,7 +386,7 @@ app.get(
 app.get(
   "/api/getAssigned",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
       const assignedData = await listUserAssigned(loggedInUserId);
       res.send(assignedData);
@@ -159,7 +403,7 @@ app.get(
 app.get(
   "/api/getAssignedScores",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
       const scoreData = await getAssignedScores(loggedInUserId);
       res.send({ ...scoreData, folder: null });
@@ -173,25 +417,10 @@ app.get(
   },
 );
 
-app.get("/api/sendSignInEmail", async (req: Request, res: Response) => {
-  const email: string = req.query.emailaddress as string;
-  // TODO: add the ability to give a name after logging in or creating an account
-  const user = await findOrCreateUser({
-    email,
-    firstNames: null,
-    lastNames: "",
-  });
-  res.cookie("email", email);
-  res.cookie("userId", String(user.userId));
-  res.cookie("firstNames", String(user.firstNames));
-  res.cookie("lastNames", String(user.lastNames));
-  res.send({});
-});
-
 app.post(
   "/api/deleteActivity",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const id = Number(body.activityId);
     try {
@@ -210,7 +439,7 @@ app.post(
 app.post(
   "/api/deleteFolder",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const folderId = Number(body.folderId);
     try {
@@ -229,7 +458,7 @@ app.post(
 app.post(
   "/api/createActivity/",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
       const { activityId, docId } = await createActivity(loggedInUserId, null);
       res.send({ activityId, docId });
@@ -242,7 +471,7 @@ app.post(
 app.post(
   "/api/createActivity/:parentFolderId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const parentFolderId = Number(req.params.parentFolderId);
     try {
       const { activityId, docId } = await createActivity(
@@ -259,7 +488,7 @@ app.post(
 app.post(
   "/api/createFolder/",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
       const { folderId } = await createFolder(loggedInUserId, null);
       res.send({ folderId });
@@ -272,7 +501,7 @@ app.post(
 app.post(
   "/api/createFolder/:parentFolderId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const parentFolderId = Number(req.params.parentFolderId);
     try {
       const { folderId } = await createFolder(loggedInUserId, parentFolderId);
@@ -286,7 +515,7 @@ app.post(
 app.post(
   "/api/updateContentName",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const id = Number(body.id);
     const name = body.name;
@@ -309,7 +538,7 @@ app.post(
 app.post(
   "/api/makeActivityPublic",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const id = Number(body.id);
 
@@ -348,7 +577,7 @@ app.post(
 app.post(
   "/api/makeActivityPrivate",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const id = Number(body.id);
     try {
@@ -367,7 +596,7 @@ app.post(
 app.post(
   "/api/makeFolderPublic",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const id = Number(body.id);
 
@@ -406,7 +635,7 @@ app.post(
 app.post(
   "/api/makeFolderPrivate",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const id = Number(body.id);
     try {
@@ -436,11 +665,6 @@ app.get(
   },
 );
 
-app.get("/api/checkCredentials", (req: Request, res: Response) => {
-  const loggedIn = req.cookies.email ? true : false;
-  res.send({ loggedIn });
-});
-
 app.get(
   "/api/getCoursePermissionsAndSettings",
   (req: Request, res: Response) => {
@@ -460,7 +684,7 @@ app.post(
   "/api/addPromotedContent",
   async (req: Request, res: Response, next: NextFunction) => {
     const { groupId, activityId } = req.body;
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
       await addPromotedContent(groupId, activityId, loggedInUserId);
       res.send({});
@@ -487,7 +711,7 @@ app.get(
   "/api/loadPromotedContent",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const loggedInUserId = Number(req.cookies.userId);
+      const loggedInUserId = Number(req.user?.userId ?? 0);
       const content = await loadPromotedContent(loggedInUserId);
       res.send(content);
     } catch (e) {
@@ -506,7 +730,7 @@ app.post(
     try {
       const groupId = Number(req.body.groupId);
       const activityId = Number(req.body.activityId);
-      const loggedInUserId = Number(req.cookies.userId);
+      const loggedInUserId = Number(req.user?.userId ?? 0);
 
       await removePromotedContent(groupId, activityId, loggedInUserId);
       res.send({});
@@ -532,7 +756,7 @@ app.post(
       const groupId = Number(req.body.groupId);
       const activityId = Number(req.body.activityId);
       const desiredPosition = Number(req.body.desiredPosition);
-      const loggedInUserId = Number(req.cookies.userId);
+      const loggedInUserId = Number(req.user?.userId ?? 0);
 
       await movePromotedContent(
         groupId,
@@ -561,7 +785,7 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { groupName } = req.body;
-      const loggedInUserId = Number(req.cookies.userId);
+      const loggedInUserId = Number(req.user?.userId ?? 0);
       const id = await addPromotedContentGroup(groupName, loggedInUserId);
       res.send({ id });
     } catch (e) {
@@ -584,7 +808,7 @@ app.post(
   "/api/updatePromotedContentGroup",
   async (req: Request, res: Response, next: NextFunction) => {
     const { groupId, newGroupName, homepage, currentlyFeatured } = req.body;
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
       await updatePromotedContentGroup(
         Number(groupId),
@@ -615,7 +839,7 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { groupId } = req.body;
-      const loggedInUserId = Number(req.cookies.userId);
+      const loggedInUserId = Number(req.user?.userId ?? 0);
       await deletePromotedContentGroup(Number(groupId), loggedInUserId);
       res.send({});
     } catch (e) {
@@ -633,7 +857,7 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { groupId, desiredPosition } = req.body;
-      const loggedInUserId = Number(req.cookies.userId);
+      const loggedInUserId = Number(req.user?.userId ?? 0);
       await movePromotedContentGroup(
         Number(groupId),
         loggedInUserId,
@@ -654,7 +878,7 @@ app.get(
   "/api/getActivityEditorData/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
     const activityId = Number(req.params.activityId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
       const editorData = await getActivityEditorData(
         activityId,
@@ -707,7 +931,7 @@ app.get("/api/getAllLicenses", async (req: Request, res: Response) => {
 app.get(
   "/api/getActivityView/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.cookies.userId ? Number(req.cookies.userId) : 0;
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const activityId = Number(req.params.activityId);
 
     try {
@@ -728,27 +952,20 @@ app.get(
 
 app.get(
   "/api/getAssignmentDataFromCode/:code",
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const code = req.params.code;
-    const signedIn = req.cookies.email ? true : false;
 
-    let assignmentData = await getAssignmentDataFromCode(code, signedIn);
-
-    let firstNames: string | null;
-    let lastNames: string;
-    if (assignmentData.newAnonymousUser) {
-      const anonymousUser = assignmentData.newAnonymousUser;
-      // create a user with random name and email
-      res.cookie("email", anonymousUser.email);
-      res.cookie("userId", String(anonymousUser.userId));
-      res.cookie("firstNames", String(anonymousUser.firstNames));
-      res.cookie("lastNames", String(anonymousUser.lastNames));
-      firstNames = anonymousUser.firstNames;
-      lastNames = anonymousUser.lastNames;
-    } else {
-      firstNames = req.cookies.firstNames;
-      lastNames = req.cookies.lastNames;
+    if (!req.user) {
+      // If not logged in, then redirect to log in anonymously,
+      // which will redirect back here with the anonymous user
+      // logged in.
+      return res.redirect(`/api/login/anonymId/${code}`);
     }
+
+    let assignmentData = await getAssignmentDataFromCode(code);
+
+    let firstNames: string | null = req.user.firstNames;
+    let lastNames: string = req.user.lastNames;
 
     res.send({ student: { firstNames, lastNames }, ...assignmentData });
   },
@@ -757,7 +974,7 @@ app.get(
 app.post(
   "/api/saveDoenetML",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const doenetML = body.doenetML;
     const docId = Number(body.docId);
@@ -781,7 +998,7 @@ app.post(
 app.post(
   "/api/updateContentSettings",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const id = Number(body.id);
     const imagePath = body.imagePath;
@@ -809,7 +1026,7 @@ app.post(
 app.post(
   "/api/updateDocumentSettings",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const docId = Number(body.docId);
     const name = body.name;
@@ -840,7 +1057,7 @@ app.post("/api/moveContent", async (req: Request, res: Response) => {
     ? Number(req.body.desiredParentFolderId)
     : null;
   const desiredPosition = Number(req.body.desiredPosition);
-  const loggedInUserId = Number(req.cookies.userId);
+  const loggedInUserId = Number(req.user?.userId ?? 0);
 
   await moveContent({
     id,
@@ -857,7 +1074,7 @@ app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
   const desiredParentFolderId = req.body.desiredParentFolderId
     ? Number(req.body.desiredParentFolderId)
     : null;
-  const loggedInUserId = Number(req.cookies.userId);
+  const loggedInUserId = Number(req.user?.userId ?? 0);
 
   let newActivityId = await copyActivityToFolder(
     targetActivityId,
@@ -870,7 +1087,7 @@ app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
 
 app.post("/api/assignActivity", async (req: Request, res: Response) => {
   const activityId = Number(req.body.id);
-  const loggedInUserId = Number(req.cookies.userId);
+  const loggedInUserId = Number(req.user?.userId ?? 0);
 
   await assignActivity(activityId, loggedInUserId);
 
@@ -880,7 +1097,7 @@ app.post("/api/assignActivity", async (req: Request, res: Response) => {
 app.post(
   "/api/openAssignmentWithCode",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const activityId = Number(body.activityId);
     const closeAt = DateTime.fromISO(body.closeAt);
@@ -905,7 +1122,7 @@ app.post(
 app.post(
   "/api/updateAssignmentSettings",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const activityId = Number(body.activityId);
     const closeAt = DateTime.fromISO(body.closeAt);
@@ -926,7 +1143,7 @@ app.post(
 app.post(
   "/api/closeAssignmentWithCode",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const activityId = Number(body.activityId);
 
@@ -946,7 +1163,7 @@ app.post(
 app.post(
   "/api/unassignActivity",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const body = req.body;
     const activityId = Number(body.activityId);
 
@@ -970,7 +1187,7 @@ app.post(
     const activityId = Number(body.activityId);
     const docId = Number(body.docId);
     const docVersionNum = Number(body.docVersionNum);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const score = Number(body.score);
     const onSubmission = body.onSubmission as boolean;
     const state = body.state;
@@ -1005,8 +1222,8 @@ app.get(
     const activityId = Number(req.query.activityId);
     const docId = Number(req.query.docId);
     const docVersionNum = Number(req.query.docVersionNum);
-    const requestedUserId = Number(req.query.userId || req.cookies.userId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const requestedUserId = Number((req.query.userId || req.user?.userId) ?? 0);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const withMaxScore = req.query.withMaxScore === "1";
 
     try {
@@ -1033,7 +1250,7 @@ app.get(
   "/api/getAssignmentData/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
     const activityId = Number(req.params.activityId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     try {
       const assignmentData = await getAssignmentScoreData({
@@ -1063,7 +1280,7 @@ app.get(
   "/api/getAssignmentStudentData/:activityId/",
   async (req: Request, res: Response, next: NextFunction) => {
     const activityId = Number(req.params.activityId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     try {
       const assignmentData = await getAssignmentStudentData({
@@ -1087,7 +1304,7 @@ app.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const activityId = Number(req.params.activityId);
     const userId = Number(req.params.userId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     try {
       const assignmentData = await getAssignmentStudentData({
@@ -1109,7 +1326,7 @@ app.get(
 app.get(
   "/api/getAllAssignmentScores/",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     try {
       const data = await getAllAssignmentScores({
@@ -1131,7 +1348,7 @@ app.get(
   "/api/getAllAssignmentScores/:parentFolderId",
   async (req: Request, res: Response, next: NextFunction) => {
     const folderId = Number(req.params.parentFolderId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     try {
       const data = await getAllAssignmentScores({
@@ -1153,7 +1370,7 @@ app.get(
   "/api/getStudentData/:userId/",
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = Number(req.params.userId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     try {
       const data = await getStudentData({
@@ -1176,7 +1393,7 @@ app.get(
   "/api/getStudentData/:userId/:parentFolderId",
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = Number(req.params.userId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const parentFolderId = Number(req.params.parentFolderId);
 
     try {
@@ -1204,7 +1421,7 @@ app.post(
     const docId = Number(body.docId);
     const docVersionNum = Number(body.docVersionNum);
     const answerId = body.answerId as string;
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const response = body.result.response as string;
     const itemNumber = Number(body.result.itemNumber);
     const creditAchieved = Number(body.result.creditAchieved);
@@ -1249,7 +1466,7 @@ app.get(
     const docId = Number(req.params.docId);
     const docVersionNum = Number(req.params.docVersionNum);
     const answerId = req.query.answerId as string;
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     try {
       const responseData = await getDocumentSubmittedResponses({
@@ -1278,7 +1495,7 @@ app.get(
     const docVersionNum = Number(req.params.docVersionNum);
     const userId = Number(req.params.userId);
     const answerId = req.query.answerId as string;
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     try {
       const responseData = await getDocumentSubmittedResponseHistory({
@@ -1304,7 +1521,7 @@ app.get(
   "/api/getMyFolderContent/:ownerId/",
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = Number(req.params.ownerId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     if (ownerId !== loggedInUserId) {
       return res.send({ notMe: true });
@@ -1334,7 +1551,7 @@ app.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = Number(req.params.ownerId);
     const folderId = Number(req.params.folderId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
 
     if (ownerId !== loggedInUserId) {
       return res.send({ notMe: true });
@@ -1362,7 +1579,7 @@ app.get(
   "/api/searchMyFolderContent/:ownerId",
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = Number(req.params.ownerId);
-    const loggedInUserId = req.cookies.userId ? Number(req.cookies.userId) : 0;
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const query = req.query.q as string;
 
     if (ownerId !== loggedInUserId) {
@@ -1394,7 +1611,7 @@ app.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = Number(req.params.ownerId);
     const folderId = Number(req.params.folderId);
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     const query = req.query.q as string;
 
     if (ownerId !== loggedInUserId) {
