@@ -519,8 +519,6 @@ export function GeneralContentControls({
                           { method: "post" },
                         );
                       }
-
-                      // setClassifySelection(newValueLabel?.value ?? null);
                     }}
                     formatOptionLabel={(val) =>
                       val ? (
