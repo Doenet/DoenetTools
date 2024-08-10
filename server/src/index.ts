@@ -145,6 +145,14 @@ passport.use(
     async (user, token) => {
       const confirmURL = `${process.env.CONFIRM_SIGNIN_URL}?token=${token}`;
 
+      if (
+        process.env.CONSOLE_LOG_EMAIL &&
+        process.env.CONSOLE_LOG_EMAIL.toLocaleLowerCase() !== "false"
+      ) {
+        console.log(`Confirm email link: ${confirmURL}`);
+        return;
+      }
+
       let email_html: string = "";
 
       try {
@@ -182,8 +190,8 @@ passport.use(
       const sendEmail = async () => {
         try {
           const command = new SendEmailCommand(params);
-          const response = await client.send(command);
-          console.log("Email sent successfully", response);
+          await client.send(command);
+          console.log("Email sent successfully");
         } catch (error) {
           console.error("Error sending email", error);
         }
