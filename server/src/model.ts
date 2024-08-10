@@ -82,7 +82,7 @@ export class InvalidRequestError extends Error {
   }
 }
 
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 
 async function mustBeAdmin(
   userId: number,
@@ -1247,10 +1247,7 @@ export async function getActivityViewerData(
   };
 }
 
-export async function getAssignmentDataFromCode(
-  code: string,
-  signedIn: boolean,
-) {
+export async function getAssignmentDataFromCode(code: string) {
   let assignment;
 
   try {
@@ -1290,7 +1287,6 @@ export async function getAssignmentDataFromCode(
     ) {
       return {
         assignmentFound: false,
-        newAnonymousUser: null,
         assignment: null,
       };
     } else {
@@ -1298,9 +1294,7 @@ export async function getAssignmentDataFromCode(
     }
   }
 
-  let newAnonymousUser = signedIn ? null : await createAnonymousUser();
-
-  return { assignmentFound: true, newAnonymousUser, assignment };
+  return { assignmentFound: true, assignment };
 }
 
 export async function searchPublicContent(query: string) {
@@ -1366,7 +1360,7 @@ export async function searchUsersWithPublicContent(query: string) {
           { lastNames: { contains: "%" + qw + "%" } },
         ],
       })),
-      anonymous: false,
+      isAnonymous: false,
       content: {
         some: {
           isPublic: true,
@@ -1444,48 +1438,28 @@ export async function findOrCreateUser({
   firstNames,
   lastNames,
   isAdmin = false,
+  isAnonymous = false,
 }: {
   email: string;
   firstNames: string | null;
   lastNames: string;
   isAdmin?: boolean;
+  isAnonymous?: boolean;
 }) {
-  const user = await prisma.users.findUnique({ where: { email } });
-  if (user) {
-    return user;
-  } else {
-    return createUser({ email, firstNames, lastNames, isAdmin });
+  let user = await prisma.users.upsert({
+    where: { email },
+    update: {},
+    create: { email, firstNames, lastNames, isAdmin, isAnonymous },
+  });
+
+  if (lastNames !== "" && user.lastNames == "") {
+    user = await prisma.users.update({
+      where: { email },
+      data: { firstNames, lastNames },
+    });
   }
-}
 
-export async function createUser({
-  email,
-  firstNames,
-  lastNames,
-  isAdmin,
-}: {
-  email: string;
-  firstNames: string | null;
-  lastNames: string;
-  isAdmin: boolean;
-}) {
-  const result = await prisma.users.create({
-    data: { email, firstNames, lastNames, isAdmin },
-  });
-  return result;
-}
-
-export async function createAnonymousUser() {
-  const array = new Uint32Array(1);
-  crypto.getRandomValues(array);
-  const random_number = array[0];
-  const lastNames = ``;
-  const email = `anonymous${random_number}@example.com`;
-  const result = await prisma.users.create({
-    data: { email, lastNames, anonymous: true },
-  });
-
-  return result;
+  return user;
 }
 
 export async function getUserInfo(email: string) {
@@ -1496,9 +1470,25 @@ export async function getUserInfo(email: string) {
       email: true,
       firstNames: true,
       lastNames: true,
-      anonymous: true,
+      isAnonymous: true,
+      isAdmin: true,
     },
   });
+  return user;
+}
+
+export async function upgradeAnonymousUser({
+  userId,
+  email,
+}: {
+  userId: number;
+  email: string;
+}) {
+  const user = await prisma.users.update({
+    where: { userId, isAnonymous: true },
+    data: { isAnonymous: false, email },
+  });
+
   return user;
 }
 

@@ -1,42 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { redirect, useLoaderData } from "react-router";
+import React, { useEffect } from "react";
+import { useLoaderData } from "react-router";
 
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
-import {
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  Grid,
-  GridItem,
-  Heading,
-  Input,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Grid, GridItem, VStack } from "@chakra-ui/react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router";
-import { EnterClassCode } from "./EnterClassCode";
-import { Form, useFetcher } from "react-router-dom";
+import {
+  EnterClassCode,
+  action as enterClassCodeAction,
+} from "./EnterClassCode";
+import { ChangeName, action as changeNameAction } from "./ChangeName";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
-  let formObj = Object.fromEntries(formData);
-  // console.log({ formObj });
 
-  if (formObj._action == "submit code") {
-    let code: string = formObj.classCode.trim();
-    while (code[code.length - 1] === ".") {
-      code = code.substring(0, code.length - 1);
-    }
-    return redirect(`/code/${code}`);
-  } else if (formObj._action == "submit user name") {
-    await axios.post(`/api/updateUser`, {
-      firstNames: formObj.firstNames,
-      lastNames: formObj.lastNames,
-    });
-    return true;
+  let codeResults = await enterClassCodeAction({ params, request, formData });
+  if (codeResults !== null) {
+    return codeResults;
+  }
+
+  let changeNameResults = await changeNameAction({ params, request, formData });
+  if (changeNameResults !== null) {
+    return changeNameResults;
   }
 
   return null;
@@ -44,7 +30,7 @@ export async function action({ params, request }) {
 
 export async function loader({ params }) {
   let assignment;
-  let student;
+  let user;
 
   // TODO: need to select variant for each student (just once)
 
@@ -68,7 +54,7 @@ export async function loader({ params }) {
     }
 
     assignment = data.assignment;
-    student = data.student;
+    user = data.student;
   }
 
   // TODO: what happens if assignment has no documents?
@@ -86,7 +72,7 @@ export async function loader({ params }) {
     docVersionNum,
     doenetML,
     doenetmlVersion,
-    student,
+    user,
   };
 }
 
@@ -95,7 +81,7 @@ export function AssignmentViewer() {
     doenetML,
     assignment,
     assignmentFound,
-    student,
+    user,
     docId,
     docVersionNum,
     doenetmlVersion,
@@ -103,7 +89,7 @@ export function AssignmentViewer() {
     doenetML: string;
     assignment: any;
     assignmentFound: boolean;
-    student: any;
+    user: any;
     docId: number;
     docVersionNum: number;
     doenetmlVersion: string;
@@ -192,44 +178,12 @@ export function AssignmentViewer() {
     };
   }, [assignment]);
 
-  const fetcher = useFetcher();
-
   if (!assignmentFound) {
     return <EnterClassCode />;
   }
 
-  if (!student.lastNames) {
-    return (
-      <Box margin="20px">
-        <Heading size="lg">Enter your name</Heading>
-        <Form method="post">
-          <Flex width="400px">
-            <FormControl>
-              <FormLabel mt="16px">First name(s):</FormLabel>
-              <Input
-                placeholder="First Name(s)"
-                name="firstNames"
-                size="sm"
-                width={40}
-              />
-            </FormControl>
-            <FormControl isRequired>
-              <FormLabel mt="16px">Last name(s):</FormLabel>
-              <Input
-                placeholder="Last Names"
-                name="lastNames"
-                size="sm"
-                width={40}
-              />
-            </FormControl>
-          </Flex>
-          <Button type="submit" colorScheme="blue" mt="8px" mr="12px" size="xs">
-            Start assignment
-          </Button>
-          <input type="hidden" name="_action" value="submit user name" />
-        </Form>
-      </Box>
-    );
+  if (!user.lastNames) {
+    return <ChangeName hideHomeButton />;
   }
 
   return (
