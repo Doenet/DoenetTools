@@ -1,0 +1,29 @@
+name: Server CI
+on:
+  push:
+    branches: [main, ci-tests]
+  pull_request:
+    branches: main
+jobs:
+  test-server:
+    runs-on: ubuntu-latest
+    env:
+      DB_DATABASE: test_db
+      DB_USER: root
+      DB_PASSWORD: root
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        working-directory: ./server
+      - name: Start MySQL
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;" -u$DB_USER -p$DB_PASSWORD
+      - name: Seed database
+        run: npx prisma db seed
+        working-directory: ./server
+      - name: Run tests
+        run: npm run test
+        working-directory: ./server
