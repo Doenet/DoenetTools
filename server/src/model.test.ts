@@ -44,6 +44,10 @@ import {
   moveContent,
   deleteFolder,
   getAssignedScores,
+  searchPossibleClassifications,
+  addClassification,
+  getClassifications,
+  removeClassification,
   getSharedFolderContent,
   getSharedEditorData,
   searchUsersWithSharedContent,
@@ -154,6 +158,7 @@ test("New activity starts out private, then delete it", async () => {
     classCode: null,
     codeValidUntil: null,
     license: null,
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -2915,6 +2920,40 @@ test("searchSharedContent returns public/shared activities and folders even in a
   ]);
 });
 
+test("searchSharedContent includes public content where a classification matches", async () => {
+  const user = await createTestUser();
+  const userId = user.userId;
+
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId } = await createActivity(ownerId, null);
+  await makeActivityPublic({
+    id: activityId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  const initialResults = await searchSharedContent(
+    "K.CC.1 comMMon cOREe",
+    userId,
+  );
+  expect(initialResults.filter((r) => r.id === activityId)).toHaveLength(0);
+
+  const { id: classifyId } = (
+    await searchPossibleClassifications("K.CC.1 common core")
+  ).find((k) => k.code === "K.CC.1")!;
+
+  await addClassification(activityId, classifyId, ownerId);
+  // With code
+  const resultsCode = await searchSharedContent("K.C", userId);
+  expect(resultsCode.filter((r) => r.id === activityId)).toHaveLength(1);
+  // With system
+  const resultsSystem = await searchSharedContent("  CORE", userId);
+  expect(resultsSystem.filter((r) => r.id === activityId)).toHaveLength(1);
+  // With both
+  const resultsBoth = await searchSharedContent("common C.1", userId);
+  expect(resultsBoth.filter((r) => r.id === activityId)).toHaveLength(1);
+});
+
 test("searchUsersWithSharedContent returns only users with public/shared content", async () => {
   const user1 = await createTestUser();
   const user1Id = user1.userId;
@@ -4267,6 +4306,7 @@ test("get activity editor data only if owner or limited data for public/shared",
     isShared: false,
     sharedWith: [],
     license: null,
+    classifications: [],
     documents: [],
     hasScoreData: false,
     parentFolder: null,
@@ -4385,6 +4425,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode: null,
     codeValidUntil: null,
     license: null,
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -4434,6 +4475,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -4480,6 +4522,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: null,
     license: null,
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -4532,6 +4575,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -4587,6 +4631,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -4633,6 +4678,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: null,
     license: null,
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -6573,6 +6619,106 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
       },
     },
   ]);
+});
+
+test("Content classifications can only be edited by activity owner", async () => {
+  const { userId } = await createTestUser();
+  const { userId: otherId } = await createTestUser();
+  const allClassifications = await searchPossibleClassifications("");
+  const { id: classificationId } = allClassifications.find(
+    (k) => k.code === "K.CC.1",
+  )!;
+  const { activityId } = await createActivity(userId, null);
+
+  // Add
+  await expect(() =>
+    addClassification(activityId, classificationId, otherId),
+  ).rejects.toThrowError();
+  await addClassification(activityId, classificationId, userId);
+  {
+    const classifications = await getClassifications(activityId, userId);
+    expect(classifications.length).toBe(1);
+    expect(classifications[0].classification).toHaveProperty("code", "K.CC.1");
+    expect(classifications[0].classification).toHaveProperty(
+      "id",
+      classificationId,
+    );
+  }
+
+  // Remove
+  await expect(() =>
+    removeClassification(activityId, classificationId, otherId),
+  ).rejects.toThrowError();
+  await removeClassification(activityId, classificationId, userId);
+  {
+    const classifications = await getClassifications(activityId, userId);
+    expect(classifications).toEqual([]);
+  }
+});
+
+test("Get classifications of public activity", async () => {
+  const allClassifications = await searchPossibleClassifications("");
+  const { id: classId1 } = allClassifications.find((k) => k.code === "K.CC.1")!;
+  const { id: classId2 } = allClassifications.find(
+    (k) => k.code === "8.2.1.5",
+  )!;
+  const { userId: ownerId } = await createTestUser();
+  const { activityId } = await createActivity(ownerId, null);
+
+  await addClassification(activityId, classId1, ownerId);
+  await addClassification(activityId, classId2, ownerId);
+
+  const { userId: viewerId } = await createTestUser();
+  await expect(() =>
+    getClassifications(activityId, viewerId),
+  ).rejects.toThrowError("cannot be accessed");
+
+  await updateContent({
+    id: activityId,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activityId,
+    ownerId,
+    licenseCode: "CCDUAL",
+  });
+  const classifications = await getClassifications(activityId, viewerId);
+  expect(classifications.length).toBe(2);
+});
+
+test("Search for content classifications", async () => {
+  {
+    // Code
+    const results = await searchPossibleClassifications("CC.1");
+    expect(results.find((i) => i.code === "K.CC.1")).toBeDefined();
+  }
+  {
+    // Category
+    const results = await searchPossibleClassifications("nonlinear functions");
+    expect(results.find((i) => i.code === "8.2.1.5")).toBeDefined();
+  }
+  {
+    // Grade
+    const results = await searchPossibleClassifications("Kind");
+    expect(results.find((i) => i.code === "K.CC.1")).toBeDefined();
+  }
+  {
+    // Description
+    const results = await searchPossibleClassifications("exponents");
+    expect(results.find((i) => i.code === "A.SSE.3 c.")).toBeDefined();
+  }
+  {
+    // System name
+    const results = await searchPossibleClassifications("coMMoN cOrE");
+    expect(results.find((i) => i.code === "A.SSE.3 c.")).toBeDefined();
+  }
+  {
+    // Combination of fields
+    const results = await searchPossibleClassifications(
+      "mention addition SUBTRACTION kindergarten OA operations",
+    );
+    expect(results.find((i) => i.code === "K.OA.1")).toBeDefined();
+  }
 });
 
 test("search my folder content searches all subfolders", async () => {

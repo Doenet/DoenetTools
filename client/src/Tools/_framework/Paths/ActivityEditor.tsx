@@ -84,6 +84,18 @@ export type UserInfo = {
   email: string;
 };
 
+export type ContentClassification = {
+  id: number;
+  code: string;
+  grade: string | null;
+  category: string;
+  description: string;
+  system: {
+    id: number;
+    name: string;
+  };
+};
+
 export type ContentStructure = {
   id: number;
   ownerId: number;
@@ -98,6 +110,7 @@ export type ContentStructure = {
   isShared: boolean;
   sharedWith: UserInfo[];
   license: License | null;
+  classifications: ContentClassification[];
   documents: {
     id: number;
     versionNum?: number;
@@ -146,6 +159,25 @@ export async function action({ params, request }) {
   let resultAS = await assignmentSettingsActions({ formObj });
   if (resultAS) {
     return resultAS;
+  }
+
+  if (formObj._action == "add content classification") {
+    if (formObj.isFolder !== "true") {
+      await axios.post("/api/addClassification", {
+        activityId: Number(formObj.activityId),
+        classificationId: Number(formObj.classificationId),
+      });
+      return true;
+    }
+  }
+  if (formObj._action == "remove content classification") {
+    if (formObj.isFolder !== "true") {
+      await axios.post("/api/removeClassification", {
+        activityId: Number(formObj.activityId),
+        classificationId: Number(formObj.classificationId),
+      });
+      return true;
+    }
   }
 
   if (formObj._action == "go to data") {

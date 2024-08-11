@@ -15,15 +15,30 @@ import {
   Input,
   FormErrorMessage,
   Flex,
-  IconButton,
-  Center,
-  Checkbox,
   Select,
+  Heading,
+  Tag,
+  Highlight,
+  Spacer,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+  CloseButton,
+  HStack,
+  Tooltip,
+  Spinner,
 } from "@chakra-ui/react";
+import AsyncSelect from "react-select/async";
 import { FaFileImage } from "react-icons/fa";
 import { HiOutlineX, HiPlus } from "react-icons/hi";
 import { readAndCompressImage } from "browser-image-resizer";
-import { ContentStructure, DoenetmlVersion } from "../Paths/ActivityEditor";
+import {
+  ContentClassification,
+  ContentStructure,
+  DoenetmlVersion,
+} from "../Paths/ActivityEditor";
 
 export async function generalContentActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "update general") {
@@ -71,6 +86,25 @@ export function GeneralContentControls({
   let [imagePath, setImagePath] = useState(dataImagePath);
   let [alerts, setAlerts] = useState<Alert[]>([]);
 
+  let [classifySelectorInput, setClassifySelectorInput] = useState<string>("");
+  const classificationsAlreadyAdded = contentData.classifications.map(
+    (c2) => c2.id,
+  );
+
+  const getClassificationOptions = async (inputValue: string) => {
+    let results = await axios.get(
+      `/api/searchPossibleClassifications?q=${inputValue}`,
+    );
+    let classifications: ContentClassification[] = results.data;
+    let options = classifications
+      .filter((c) => !classificationsAlreadyAdded.includes(c.id))
+      .map((c) => ({
+        value: c.id,
+        label: c,
+      }));
+    return options;
+  };
+
   //   let learningOutcomesInit = activityData.learningOutcomes;
   //   if (learningOutcomesInit == null) {
   //     learningOutcomesInit = [""];
@@ -91,6 +125,13 @@ export function GeneralContentControls({
 
   //   let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
   let [doenetmlVersion, setDoenetmlVersion] = useState(doenetmlVersionInit);
+
+  let [classifySpinnerHidden, setClassifySpinnerHidden] = useState(true);
+  let [classifyItemRemoveSpinner, setClassifyItemRemoveSpinner] = useState(0);
+  useEffect(() => {
+    setClassifySpinnerHidden(true);
+    setClassifyItemRemoveSpinner(0);
+  }, [contentData]);
 
   let contentType = contentData.isFolder ? "Folder" : "Activity";
   let contentTypeLower = contentData.isFolder ? "folder" : "activity";
@@ -426,6 +467,141 @@ export function GeneralContentControls({
         <input type="hidden" name="imagePath" value={imagePath ?? undefined} />
         <input type="hidden" name="_action" value="update general" />
         <input type="hidden" name="id" value={id} />
+
+        {!contentData.isFolder ? (
+          <FormControl>
+            <Flex flexDirection="column" width="100%" rowGap={6}>
+              <FormLabel mt="16px">Content Classifications</FormLabel>
+
+              <Accordion allowMultiple>
+                {contentData.classifications.map((classification, i) => (
+                  <AccordionItem key={`classification${i}`}>
+                    <HStack>
+                      <h2>
+                        <AccordionButton>
+                          <HStack flex="1" textAlign="left" direction={"row"}>
+                            ;<Text as="b">{classification.code}</Text>
+                            <Text fontSize={"small"} pt="2px">
+                              {classification.system.name}
+                            </Text>
+                          </HStack>
+                          <AccordionIcon marginLeft="7px" />
+                        </AccordionButton>
+                      </h2>
+                      <Spacer />
+                      <Tooltip
+                        label={`Remove classification ${classification.code}`}
+                      >
+                        <CloseButton
+                          aria-label={`Remove classification ${classification.code}`}
+                          hidden={
+                            classifyItemRemoveSpinner === classification.id
+                          }
+                          onClick={() => {
+                            setClassifyItemRemoveSpinner(classification.id);
+                            fetcher.submit(
+                              {
+                                _action: "remove content classification",
+                                activityId: id,
+                                classificationId: classification.id,
+                              },
+                              { method: "post" },
+                            );
+                          }}
+                        />
+                      </Tooltip>
+                      <Spinner
+                        hidden={classifyItemRemoveSpinner !== classification.id}
+                      />
+                    </HStack>
+                    <AccordionPanel>
+                      <Text as="b">Category: </Text>
+                      <Text>{classification.category}</Text>
+                      <Text as="b">Description: </Text>
+                      <Text>{classification.description}</Text>
+                    </AccordionPanel>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+
+              <HStack>
+                <Box flex={1} pr="10px">
+                  <AsyncSelect
+                    key={`addClassification_${contentData.classifications.map((c) => c.id).join(",")}`} // force this component to reload when classifications change
+                    placeholder="Add a classification"
+                    defaultOptions
+                    isClearable
+                    value={null}
+                    loadOptions={getClassificationOptions}
+                    onInputChange={(newVal) => {
+                      setClassifySelectorInput(newVal);
+                    }}
+                    onChange={(newValueLabel) => {
+                      if (newValueLabel) {
+                        setClassifySpinnerHidden(false);
+                        fetcher.submit(
+                          {
+                            _action: "add content classification",
+                            activityId: id,
+                            classificationId: newValueLabel.value,
+                          },
+                          { method: "post" },
+                        );
+                      }
+                    }}
+                    formatOptionLabel={(val) =>
+                      val ? (
+                        <Box>
+                          <Flex>
+                            <Heading size="sm">
+                              <Highlight
+                                query={classifySelectorInput.split(" ")}
+                                styles={{ fontWeight: 900 }}
+                              >
+                                {val.label.code +
+                                  (val.label.grade
+                                    ? " (" + val.label.grade + ")"
+                                    : "")}
+                              </Highlight>
+                            </Heading>
+                            <Spacer />
+                            <Tag>
+                              <Highlight
+                                query={classifySelectorInput.split(" ")}
+                                styles={{ fontWeight: "bold" }}
+                              >
+                                {val.label.system.name}
+                              </Highlight>
+                            </Tag>
+                          </Flex>
+                          <Text>
+                            <Text as="i">Category:</Text>{" "}
+                            <Highlight
+                              query={classifySelectorInput.split(" ")}
+                              styles={{ fontWeight: "bold" }}
+                            >
+                              {val.label.category}
+                            </Highlight>
+                          </Text>
+                          <Text>
+                            <Text as="i">Description: </Text>
+                            <Highlight
+                              query={classifySelectorInput.split(" ")}
+                              styles={{ fontWeight: "bold" }}
+                            >
+                              {val.label.description}
+                            </Highlight>
+                          </Text>
+                        </Box>
+                      ) : null
+                    }
+                  />
+                </Box>
+                <Spinner hidden={classifySpinnerHidden} />
+              </HStack>
+            </Flex>
+          </FormControl>
+        ) : null}
       </Form>
     </>
   );

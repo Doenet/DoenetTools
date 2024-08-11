@@ -22,7 +22,6 @@ import {
   updateDoc,
   searchSharedContent,
   updateContent,
-  getDoc,
   assignActivity,
   listUserAssigned,
   getAssignmentDataFromCode,
@@ -52,6 +51,10 @@ import {
   moveContent,
   getMyFolderContent,
   getAssignedScores,
+  addClassification,
+  removeClassification,
+  getClassifications,
+  searchPossibleClassifications,
   getSharedFolderContent,
   searchUsersWithSharedContent,
   getSharedEditorData,
@@ -1956,6 +1959,97 @@ app.get(
       } else {
         next(e);
       }
+    }
+  },
+);
+
+app.post(
+  "/api/addClassification",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { classificationId, activityId } = req.body;
+    const loggedInUserId = Number(req.user?.userId ?? 0);
+    try {
+      await addClassification(activityId, classificationId, loggedInUserId);
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        if (e.code === "P2002") {
+          res
+            .status(400)
+            .send("This activity already has that classification.");
+          return;
+        } else if (e.code === "P2003") {
+          res.status(400).send("That classification does not exist.");
+          return;
+        }
+      } else if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/removeClassification",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const classificationId = Number(req.body.classificationId);
+      const activityId = Number(req.body.activityId);
+      const loggedInUserId = Number(req.user?.userId ?? 0);
+
+      await removeClassification(activityId, classificationId, loggedInUserId);
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === "P2025") {
+          res.status(400).send("That classification does not exist.");
+          return;
+        }
+      } else if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.get(
+  "/api/getClassifications",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { activityId } = req.body;
+      const loggedInUserId = Number(req.user?.userId ?? 0);
+      const classifications = await getClassifications(
+        activityId,
+        loggedInUserId,
+      );
+      res.send(classifications);
+    } catch (e) {
+      if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+app.get(
+  "/api/searchPossibleClassifications",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const query = req.query.q as string;
+      const searchResults = await searchPossibleClassifications(query);
+      res.send(searchResults);
+    } catch (e) {
+      if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
     }
   },
 );
