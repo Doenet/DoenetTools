@@ -5,22 +5,70 @@ on:
   pull_request:
     branches: main
 jobs:
+  build-server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Npm install
+        run: npm install
+        working-directory: ./server
+      - name: Build
+        run: npm run build
+        working-directory: ./server
+
+  lint-server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Npm install
+        run: npm install
+        working-directory: ./server
+      - name: Lint
+        run: npx eslint
+        working-directory: ./server
+
+  prettier-server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Npm install
+        run: npm install
+        working-directory: ./server
+      - name: Prettier
+        run: npx prettier . --check
+        working-directory: ./server
+
   test-server:
     runs-on: ubuntu-latest
     env:
-      DB_DATABASE: test_db
-      DB_USER: root
-      DB_PASSWORD: root
+      PORT: 3306
+      DATABASE_URL: mysql://root:root@localhost:3306/db
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setup Node
         uses: actions/setup-node@v4
-        working-directory: ./server
+        with:
+          node-version: 20
       - name: Start MySQL
         run: |
           sudo /etc/init.d/mysql start
-          mysql -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;" -u$DB_USER -p$DB_PASSWORD
+          mysql -e "CREATE DATABASE IF NOT EXISTS db;" -uroot -proot
+      - name: Npm install
+        run: npm install
+        working-directory: ./server
+      - name: Apply migrations
+        run: npx prisma migrate dev
+        working-directory: ./server
       - name: Seed database
         run: npx prisma db seed
         working-directory: ./server

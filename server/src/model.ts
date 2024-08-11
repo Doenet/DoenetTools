@@ -2633,18 +2633,18 @@ export async function getAnswersThatHaveSubmittedResponses({
       count: number;
     }[]
   >(Prisma.sql`
-    SELECT "docId", "docVersionNum", "answerId", "answerNumber", 
-    COUNT("userId") as "count", AVG("maxCredit") as "averageCredit"
+    SELECT docId, docVersionNum, answerId, answerNumber, 
+    COUNT(userId) as count, AVG(maxCredit) as averageCredit
     FROM (
-      SELECT "activityId", "docId", "docVersionNum", "answerId", "answerNumber", "userId", MAX("creditAchieved") as "maxCredit"
-      FROM "documentSubmittedResponses"
-      WHERE "activityId" = ${activityId}
-      GROUP BY "activityId", "docId", "docVersionNum", "answerId", "answerNumber", "userId" 
-    ) as "dsr"
-    INNER JOIN "content" on "dsr"."activityId" = "content"."id" 
-    WHERE "content"."id"=${activityId} and "ownerId" = ${ownerId} and "isAssigned"=true and "isFolder"=false
-    GROUP BY "docId", "docVersionNum", "answerId", "answerNumber"
-    ORDER BY "answerNumber"
+      SELECT activityId, docId, docVersionNum, answerId, answerNumber, userId, MAX(creditAchieved) as maxCredit
+      FROM documentSubmittedResponses
+      WHERE activityId = ${activityId}
+      GROUP BY activityId, docId, docVersionNum, answerId, answerNumber, userId 
+    ) as dsr
+    INNER JOIN content on dsr.activityId = content.id 
+    WHERE content.id=${activityId} and ownerId = ${ownerId} and isAssigned=true and isFolder=false
+    GROUP BY docId, docVersionNum, answerId, answerNumber
+    ORDER BY answerNumber
     `);
 
   // The query returns a BigInt for count, which TypeScript doesn't know how to serialize,
@@ -2698,15 +2698,15 @@ export async function getDocumentSubmittedResponses({
       numResponses: bigint;
     }[]
   >(Prisma.sql`
-select "dsr"."userId", "users"."firstNames", "users"."lastNames", "response", "creditAchieved", "submittedAt",
-    	MAX("creditAchieved") over (partition by "dsr"."userId") as "maxCredit",
-    	COUNT("creditAchieved") over (partition by "dsr"."userId") as "numResponses"
-    	from "documentSubmittedResponses" as dsr
-      INNER JOIN "content" on "dsr"."activityId" = "content"."id" 
-      INNER JOIN "users" on "dsr"."userId" = "users"."userId" 
-      WHERE "content"."id"=${activityId} and "ownerId" = ${ownerId} and "isAssigned"=true and "isFolder"=false
-    	and "docId" = ${docId} and "docVersionNum" = ${docVersionNum} and "answerId" = ${answerId}
-    	order by "dsr"."userId" asc, "submittedAt" desc
+select dsr.userId, users.firstNames, users.lastNames, response, creditAchieved, submittedAt,
+    	MAX(creditAchieved) over (partition by dsr.userId) as maxCredit,
+    	COUNT(creditAchieved) over (partition by dsr.userId) as numResponses
+    	from documentSubmittedResponses as dsr
+      INNER JOIN content on dsr.activityId = content.id 
+      INNER JOIN users on dsr.userId = users.userId 
+      WHERE content.id=${activityId} and ownerId = ${ownerId} and isAssigned=true and isFolder=false
+    	and docId = ${docId} and docVersionNum = ${docVersionNum} and answerId = ${answerId}
+    	order by dsr.userId asc, submittedAt desc
   `);
 
   let submittedResponses = [];
