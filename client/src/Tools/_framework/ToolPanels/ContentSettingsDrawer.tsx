@@ -24,25 +24,13 @@ import {
   supportFilesActions,
   SupportFilesControls,
 } from "./SupportFilesControls";
-import {
-  ContentStructure,
-  DoenetmlVersion,
-  License,
-} from "../Paths/ActivityEditor";
-import { sharingActions, SharingControls } from "./SharingControls";
-import { historyActions, HistoryControls } from "./HistoryControls";
-import { DocHistoryItem } from "../Paths/ActivityViewer";
+import { ContentStructure, DoenetmlVersion } from "../Paths/ActivityEditor";
 
 export async function contentSettingsActions({
   formObj,
 }: {
   [k: string]: any;
 }) {
-  let result1 = await sharingActions({ formObj });
-  if (result1) {
-    return result1;
-  }
-
   let result2 = await generalContentActions({ formObj });
   if (result2) {
     return result2;
@@ -51,11 +39,6 @@ export async function contentSettingsActions({
   let result3 = await supportFilesActions({ formObj });
   if (result3) {
     return result3;
-  }
-
-  let result4 = await historyActions({ formObj });
-  if (result4) {
-    return result4;
   }
 
   return null;
@@ -68,7 +51,6 @@ export function ContentSettingsDrawer({
   id,
   contentData,
   allDoenetmlVersions,
-  allLicenses,
   supportingFileData,
   fetcher,
   displayTab = "general",
@@ -79,10 +61,9 @@ export function ContentSettingsDrawer({
   id: number;
   contentData: ContentStructure;
   allDoenetmlVersions: DoenetmlVersion[];
-  allLicenses: License[];
   supportingFileData?: any;
   fetcher: FetcherWithComponents<any>;
-  displayTab?: "general" | "share" | "history" | "files";
+  displayTab?: "general" | "files";
 }) {
   const haveSupportingFiles = Boolean(supportingFileData);
   const numTabs = haveSupportingFiles ? 4 : 3;
@@ -93,16 +74,8 @@ export function ContentSettingsDrawer({
       initialTabIndex = 0;
       break;
     }
-    case "share": {
-      initialTabIndex = 1;
-      break;
-    }
-    case "history": {
-      initialTabIndex = 2;
-      break;
-    }
     case "files": {
-      initialTabIndex = haveSupportingFiles ? 3 : 2;
+      initialTabIndex = haveSupportingFiles ? 1 : 0;
       break;
     }
   }
@@ -138,8 +111,6 @@ export function ContentSettingsDrawer({
           <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)}>
             <TabList>
               <Tab data-test="General Tab">General</Tab>
-              <Tab data-test="Share Tab">Share</Tab>
-              <Tab data-test="History Tab">History</Tab>
               {haveSupportingFiles ? (
                 <Tab data-test="Files Tab">Support Files</Tab>
               ) : null}
@@ -153,16 +124,6 @@ export function ContentSettingsDrawer({
                     contentData={contentData}
                     allDoenetmlVersions={allDoenetmlVersions}
                   />
-                </TabPanel>
-                <TabPanel>
-                  <SharingControls
-                    fetcher={fetcher}
-                    contentData={contentData}
-                    allLicenses={allLicenses}
-                  />
-                </TabPanel>
-                <TabPanel>
-                  <HistoryControls contentData={contentData} />
                 </TabPanel>
                 {haveSupportingFiles ? (
                   <TabPanel>

@@ -1,11 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  DocHistoryItem,
+  DocRemixItem,
   processContributorHistory,
+  processRemixes,
 } from "../Paths/ActivityViewer";
 import {
+  Flex,
   Hide,
   Show,
+  Spinner,
   Table,
   TableContainer,
   Tbody,
@@ -21,38 +24,48 @@ import { ContentStructure } from "../Paths/ActivityEditor";
 import axios from "axios";
 import { DateTime } from "luxon";
 
-export async function historyActions({ formObj }: { [k: string]: any }) {
+export async function remixesActions({ formObj }: { [k: string]: any }) {
   return null;
 }
 
-export function HistoryControls({
-  contentData,
-}: {
-  contentData: ContentStructure;
-}) {
-  const [contributorHistory, setContributorHistory] = useState<
-    DocHistoryItem[]
-  >([]);
+export function Remixes({ contentData }: { contentData: ContentStructure }) {
+  const [remixes, setRemixes] = useState<DocRemixItem[] | null>(null);
+  const [directRemixes, setDirectRemixes] = useState<DocRemixItem[] | null>(
+    null,
+  );
 
   useEffect(() => {
-    async function getHistory() {
-      const { data } = await axios.get(
-        `/api/getContributorHistory/${contentData.id}`,
-      );
+    async function getRemixes() {
+      const { data } = await axios.get(`/api/getRemixes/${contentData.id}`);
 
       console.log(data);
-      const hist = processContributorHistory(
-        data.docHistories[0].contributorHistory,
+      console.log(
+        data.docRemixes[0].documentVersions.flatMap(
+          (x) => x.contributorHistory,
+        ),
       );
+      const doc0Remixes = processRemixes(data.docRemixes[0]);
 
-      console.log(hist);
-      setContributorHistory(hist);
+      console.log({ doc0Remixes });
+      setRemixes(doc0Remixes);
     }
 
-    getHistory();
+    getRemixes();
   }, [contentData.id]);
 
-  let historyTable = (
+  if (remixes === null) {
+    return (
+      <Flex>
+        <Text marginRight="5px">Loading...</Text> <Spinner size="sm" />
+      </Flex>
+    );
+  }
+
+  if (remixes.length === 0) {
+    return <Text>No remixes of this activity (yet!)</Text>;
+  }
+
+  let remixTable = (
     <TableContainer
       maxHeight="200px"
       overflowY="auto"
@@ -82,7 +95,7 @@ export function HistoryControls({
           </Tr>
         </Thead>
         <Tbody>
-          {contributorHistory.map((ch, i) => {
+          {remixes.map((ch, i) => {
             return (
               <Tr key={`ch${i}`}>
                 <Show above="sm">
@@ -99,7 +112,10 @@ export function HistoryControls({
                 </Hide>
                 <Td>{ch.withLicenseCode}</Td>
                 <Show above="sm">
-                  <Td>{ch.timestamp.toLocaleString(DateTime.DATE_MED)}</Td>
+                  {/* Note: use timestampPrevDoc as what the timestamp from when the previous was mixed, not when this doc was created */}
+                  <Td>
+                    {ch.timestampPrevDoc.toLocaleString(DateTime.DATE_MED)}
+                  </Td>
                 </Show>
               </Tr>
             );
@@ -109,5 +125,5 @@ export function HistoryControls({
     </TableContainer>
   );
 
-  return historyTable;
+  return remixTable;
 }

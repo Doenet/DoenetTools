@@ -31,7 +31,7 @@ import {
   License,
   UserInfo,
 } from "./ActivityEditor";
-import { DisplayLicenseItem } from "../ToolPanels/SharingControls";
+import { DisplayLicenseItem } from "../ToolPanels/ShareSettings";
 import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
 import { User } from "./SiteHeader";
 import { createFullName } from "../../../_utils/names";
@@ -42,7 +42,20 @@ export type DocHistoryItem = {
   prevDocId: number;
   prevDocVersionNum: number;
   withLicenseCode: string | null;
-  timestamp: DateTime;
+  timestampDoc: DateTime;
+  timestampPrevDoc: DateTime;
+  prevActivityId: number;
+  prevActivityName: string;
+  prevOwner: UserInfo;
+};
+
+export type DocRemixItem = {
+  docId: number;
+  prevDocId: number;
+  prevDocVersionNum: number;
+  withLicenseCode: string | null;
+  timestampDoc: DateTime;
+  timestampPrevDoc: DateTime;
   activityId: number;
   activityName: string;
   owner: UserInfo;
@@ -50,16 +63,36 @@ export type DocHistoryItem = {
 
 export function processContributorHistory(hist): DocHistoryItem[] {
   return hist.map((ch) => {
+    console.log("ch", ch);
     const { prevDoc, ...historyItem } = ch;
     let prevActivity = prevDoc.document.activity;
     return {
       ...historyItem,
-      timestamp: DateTime.fromISO(ch.timestamp),
-      activityId: prevActivity.id,
-      activityName: prevActivity.name,
-      owner: prevActivity.owner,
+      timestampDoc: DateTime.fromISO(ch.timestampDoc),
+      timestampPrevDoc: DateTime.fromISO(ch.timestampPrevDoc),
+      prevActivityId: prevActivity.id,
+      prevActivityName: prevActivity.name,
+      prevOwner: prevActivity.owner,
     };
   });
+}
+
+export function processRemixes(remixes): DocRemixItem[] {
+  return remixes.documentVersions.flatMap((dv) =>
+    dv.contributorHistory.map((ch) => {
+      console.log("ch", ch);
+      const { document, ...remixItem } = ch;
+      let activity = document.activity;
+      return {
+        ...remixItem,
+        timestampDoc: DateTime.fromISO(ch.timestampDoc),
+        timestampPrevDoc: DateTime.fromISO(ch.timestampPrevDoc),
+        activityId: activity.id,
+        activityName: activity.name,
+        owner: activity.owner,
+      };
+    }),
+  );
 }
 
 export async function loader({ params }) {

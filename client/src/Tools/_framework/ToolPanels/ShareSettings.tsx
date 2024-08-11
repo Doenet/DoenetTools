@@ -123,7 +123,7 @@ export async function sharingActions({ formObj }: { [k: string]: any }) {
   return null;
 }
 
-export function SharingControls({
+export function ShareSettings({
   fetcher,
   contentData,
   allLicenses,

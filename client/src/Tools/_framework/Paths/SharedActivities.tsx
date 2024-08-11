@@ -17,7 +17,7 @@ import ContentCard from "../../../Widgets/ContentCard";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
 import { ContentStructure } from "./ActivityEditor";
-import { DisplayLicenseItem } from "../ToolPanels/SharingControls";
+import { DisplayLicenseItem } from "../ToolPanels/ShareSettings";
 import { SmallLicenseBadges } from "./ActivityViewer";
 
 export async function loader({ params }) {

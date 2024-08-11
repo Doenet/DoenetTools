@@ -72,6 +72,7 @@ import {
   searchMyFolderContent,
   upgradeAnonymousUser,
   getActivityContributorHistory,
+  getActivityRemixes,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -1189,6 +1190,28 @@ app.get(
 
     try {
       const data = await getActivityContributorHistory({
+        activityId,
+        loggedInUserId,
+      });
+      res.send(data);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getRemixes/:activityId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = Number(req.user?.userId ?? 0);
+    const activityId = Number(req.params.activityId);
+
+    try {
+      const data = await getActivityRemixes({
         activityId,
         loggedInUserId,
       });

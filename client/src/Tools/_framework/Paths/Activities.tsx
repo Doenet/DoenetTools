@@ -53,6 +53,7 @@ import {
 } from "./ActivityEditor";
 import { DateTime } from "luxon";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
+import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 
 // what is a better solution than this?
 let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching id
@@ -61,23 +62,28 @@ export async function action({ request, params }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
 
-  let result = await contentSettingsActions({ formObj });
-  if (result) {
-    return result;
-  }
-  let result2 = await assignmentSettingsActions({ formObj });
-  if (result2) {
-    return result2;
+  let resultCS = await contentSettingsActions({ formObj });
+  if (resultCS) {
+    return resultCS;
   }
 
-  let result3 = await contentCardActions({ formObj });
-  if (result3) {
-    return result3;
+  let resultSD = await shareDrawerActions({ formObj });
+  if (resultSD) {
+    return resultSD;
+  }
+  let resultAS = await assignmentSettingsActions({ formObj });
+  if (resultAS) {
+    return resultAS;
   }
 
-  let result4 = await moveContentActions({ formObj });
-  if (result4) {
-    return result4;
+  let resultCC = await contentCardActions({ formObj });
+  if (resultCC) {
+    return resultCC;
+  }
+
+  let resultMC = await moveContentActions({ formObj });
+  if (resultMC) {
+    return resultMC;
   }
 
   if (formObj?._action == "Add Activity") {
@@ -189,6 +195,12 @@ export function Activities() {
   } = useDisclosure();
 
   const {
+    isOpen: sharingIsOpen,
+    onOpen: sharingOnOpen,
+    onClose: sharingOnClose,
+  } = useDisclosure();
+
+  const {
     isOpen: assignmentSettingsAreOpen,
     onOpen: assignmentSettingsOnOpen,
     onClose: assignmentSettingsOnClose,
@@ -238,9 +250,8 @@ export function Activities() {
     onClose: moveToFolderOnClose,
   } = useDisclosure();
 
-  const [displaySettingsTab, setSettingsDisplayTab] = useState<
-    "general" | "share"
-  >("general");
+  const [displaySettingsTab, setSettingsDisplayTab] =
+    useState<"general">("general");
 
   useEffect(() => {
     document.title = `Activities - Doenet`;
@@ -369,8 +380,7 @@ export function Activities() {
           data-test="Share Menu Item"
           onClick={() => {
             setSettingsContentId(id);
-            setSettingsDisplayTab("share");
-            settingsOnOpen();
+            sharingOnOpen();
           }}
         >
           Share
@@ -433,10 +443,21 @@ export function Activities() {
         id={settingsContentId}
         contentData={contentData}
         allDoenetmlVersions={allDoenetmlVersions}
-        allLicenses={allLicenses}
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
         displayTab={displaySettingsTab}
+      />
+    ) : null;
+
+  let shareDrawer =
+    contentData && settingsContentId ? (
+      <ShareDrawer
+        isOpen={sharingIsOpen}
+        onClose={sharingOnClose}
+        contentData={contentData}
+        allLicenses={allLicenses}
+        finalFocusRef={finalFocusRef}
+        fetcher={fetcher}
       />
     ) : null;
   let assignmentDrawer =
@@ -453,6 +474,7 @@ export function Activities() {
   return (
     <>
       {settingsDrawer}
+      {shareDrawer}
       {assignmentDrawer}
 
       <MoveContentToFolder
@@ -581,8 +603,7 @@ export function Activities() {
               ref={folderSettingsRef}
               onClick={() => {
                 setSettingsContentId(folderId);
-                setSettingsDisplayTab("share");
-                settingsOnOpen();
+                sharingOnOpen();
               }}
               hidden={searchOpen || haveQuery}
             >

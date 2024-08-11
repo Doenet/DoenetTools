@@ -42,6 +42,8 @@ import {
   assignmentSettingsActions,
   AssignmentSettingsDrawer,
 } from "../ToolPanels/AssignmentSettingsDrawer";
+import { ShareDrawer } from "../ToolPanels/ShareDrawer";
+import { sharingActions } from "../ToolPanels/ShareSettings";
 
 export type DoenetmlVersion = {
   id: number;
@@ -131,14 +133,19 @@ export async function action({ params, request }) {
     return true;
   }
 
-  let result = await contentSettingsActions({ formObj });
-  if (result) {
-    return result;
+  let resultCS = await contentSettingsActions({ formObj });
+  if (resultCS) {
+    return resultCS;
   }
 
-  let result2 = await assignmentSettingsActions({ formObj });
-  if (result2) {
-    return result2;
+  let resultSA = await sharingActions({ formObj });
+  if (resultSA) {
+    return resultSA;
+  }
+
+  let resultAS = await assignmentSettingsActions({ formObj });
+  if (resultAS) {
+    return resultAS;
   }
 
   if (formObj._action == "go to data") {
@@ -293,6 +300,12 @@ export function ActivityEditor() {
   } = useDisclosure();
 
   const {
+    isOpen: sharingIsOpen,
+    onOpen: sharingOnOpen,
+    onClose: sharingOnClose,
+  } = useDisclosure();
+
+  const {
     isOpen: assignmentSettingsAreOpen,
     onOpen: assignmentSettingsOnOpen,
     onClose: assignmentSettingsOnClose,
@@ -414,8 +427,15 @@ export function ActivityEditor() {
         id={activityId}
         contentData={activityData}
         allDoenetmlVersions={allDoenetmlVersions}
-        allLicenses={allLicenses}
         displayTab={displaySettingsTab}
+      />
+      <ShareDrawer
+        isOpen={sharingIsOpen}
+        onClose={sharingOnClose}
+        finalFocusRef={controlsBtnRef}
+        fetcher={fetcher}
+        contentData={activityData}
+        allLicenses={allLicenses}
       />
       <AssignmentSettingsDrawer
         isOpen={assignmentSettingsAreOpen}
@@ -521,6 +541,25 @@ export function ActivityEditor() {
                       }}
                     >
                       <Show above="md">Assign</Show>
+                    </Button>
+                  </Tooltip>
+
+                  <Tooltip
+                    hasArrow
+                    label="Open Sharing Controls"
+                    placement="bottom-end"
+                  >
+                    <Button
+                      data-test="Sharing Button"
+                      size="sm"
+                      pr={{ base: "0px", md: "10px" }}
+                      leftIcon={<FaCog />}
+                      onClick={() => {
+                        sharingOnOpen();
+                      }}
+                      ref={controlsBtnRef}
+                    >
+                      <Show above="md">Share</Show>
                     </Button>
                   </Tooltip>
 

@@ -1342,8 +1342,6 @@ export async function getActivityViewerData(
     parentFolder: processParentFolderForUser(parentFolder, loggedInUserId),
   };
 
-  const docId = activity.documents[0].id;
-
   const docHistories = await getDocumentContributorHistories({
     docIds: activity.documents.map((doc) => doc.id),
     loggedInUserId,
@@ -1375,8 +1373,6 @@ export async function getActivityContributorHistory({
     },
     select: { documents: { select: { id: true } } },
   });
-
-  const docId = activity.documents[0].id;
 
   const docHistories = await getDocumentContributorHistories({
     docIds: activity.documents.map((doc) => doc.id),
@@ -1474,14 +1470,17 @@ export async function getActivityRemixes({
     select: { documents: { select: { id: true } } },
   });
 
-  const docId = activity.documents[0].id;
-
-  const docHistories = await getDocumentRemixes({
+  const docRemixes = await getDocumentRemixes({
     docIds: activity.documents.map((doc) => doc.id),
     loggedInUserId,
   });
 
-  return { docHistories };
+  const docDirectRemixes = await getDocumentDirectRemixes({
+    docIds: activity.documents.map((doc) => doc.id),
+    loggedInUserId,
+  });
+
+  return { docRemixes, docDirectRemixes };
 }
 
 export async function getDocumentDirectRemixes({
