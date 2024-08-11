@@ -22,7 +22,6 @@ import {
   updateDoc,
   searchPublicContent,
   updateContent,
-  getDoc,
   assignActivity,
   listUserAssigned,
   getAssignmentDataFromCode,
@@ -1688,7 +1687,7 @@ app.post(
   "/api/addClassification",
   async (req: Request, res: Response, next: NextFunction) => {
     const { classificationId, activityId } = req.body;
-    const loggedInUserId = Number(req.cookies.userId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
     try {
       await addClassification(activityId, classificationId, loggedInUserId);
       res.send({});
@@ -1719,7 +1718,7 @@ app.post(
     try {
       const classificationId = Number(req.body.classificationId);
       const activityId = Number(req.body.activityId);
-      const loggedInUserId = Number(req.cookies.userId);
+      const loggedInUserId = Number(req.user?.userId ?? 0);
 
       await removeClassification(activityId, classificationId, loggedInUserId);
       res.send({});
@@ -1743,7 +1742,7 @@ app.get(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { activityId } = req.body;
-      const loggedInUserId = Number(req.cookies.userId);
+      const loggedInUserId = Number(req.user?.userId ?? 0);
       const classifications = await getClassifications(
         activityId,
         loggedInUserId,

@@ -14,7 +14,6 @@ CREATE TABLE `content` (
     `isPublic` BOOLEAN NOT NULL DEFAULT false,
     `isDeleted` BOOLEAN NOT NULL DEFAULT false,
     `sortIndex` BIGINT NOT NULL,
-    `licenseCode` VARCHAR(10) NULL,
 
     UNIQUE INDEX `content_id_key`(`id`),
     INDEX `content_ownerId_parentFolderId_sortIndex_idx`(`ownerId`, `parentFolderId`, `sortIndex`),
@@ -52,27 +51,6 @@ CREATE TABLE `documentVersions` (
     INDEX `documentVersions_docId_idx`(`docId`),
     UNIQUE INDEX `documentVersions_docId_cid_key`(`docId`, `cid`),
     PRIMARY KEY (`docId`, `versionNum`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `licenses` (
-    `code` VARCHAR(10) NOT NULL,
-    `name` VARCHAR(191) NOT NULL,
-    `description` TEXT NOT NULL,
-    `imageURL` VARCHAR(191) NULL,
-    `smallImageURL` VARCHAR(191) NULL,
-    `licenseURL` VARCHAR(191) NULL,
-    `sortIndex` INTEGER NOT NULL,
-
-    PRIMARY KEY (`code`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `licenseCompositions` (
-    `composedOfCode` VARCHAR(10) NOT NULL,
-    `includedInCode` VARCHAR(10) NOT NULL,
-
-    PRIMARY KEY (`composedOfCode`, `includedInCode`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -154,8 +132,7 @@ CREATE TABLE `documentSubmittedResponses` (
 CREATE TABLE `users` (
     `userId` INTEGER NOT NULL AUTO_INCREMENT,
     `email` VARCHAR(45) NOT NULL,
-    `firstNames` VARCHAR(191) NULL,
-    `lastNames` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
     `isAdmin` BOOLEAN NOT NULL DEFAULT false,
     `anonymous` BOOLEAN NOT NULL DEFAULT false,
 
@@ -169,7 +146,7 @@ CREATE TABLE `promotedContentGroups` (
     `groupName` VARCHAR(191) NOT NULL,
     `currentlyFeatured` BOOLEAN NOT NULL DEFAULT false,
     `homepage` BOOLEAN NOT NULL DEFAULT false,
-    `sortIndex` BIGINT NOT NULL,
+    `sortOrder` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `promotedContentGroups_groupName_key`(`groupName`),
     PRIMARY KEY (`promotedGroupId`)
@@ -179,39 +156,9 @@ CREATE TABLE `promotedContentGroups` (
 CREATE TABLE `promotedContent` (
     `activityId` INTEGER NOT NULL,
     `promotedGroupId` INTEGER NOT NULL,
-    `sortIndex` BIGINT NOT NULL,
+    `sortOrder` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`activityId`, `promotedGroupId`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `contentClassifications` (
-    `contentId` INTEGER NOT NULL,
-    `classificationId` INTEGER NOT NULL,
-
-    PRIMARY KEY (`contentId`, `classificationId`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `classifications` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `code` VARCHAR(191) NOT NULL,
-    `systemId` INTEGER NOT NULL,
-    `category` TINYTEXT NOT NULL,
-    `description` TEXT NOT NULL,
-    `grade` VARCHAR(191) NULL,
-
-    UNIQUE INDEX `classifications_code_systemId_key`(`code`, `systemId`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `classificationSystems` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(191) NOT NULL,
-
-    UNIQUE INDEX `classificationSystems_name_key`(`name`),
-    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
@@ -219,9 +166,6 @@ ALTER TABLE `content` ADD CONSTRAINT `content_ownerId_fkey` FOREIGN KEY (`ownerI
 
 -- AddForeignKey
 ALTER TABLE `content` ADD CONSTRAINT `content_parentFolderId_fkey` FOREIGN KEY (`parentFolderId`) REFERENCES `content`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE `content` ADD CONSTRAINT `content_licenseCode_fkey` FOREIGN KEY (`licenseCode`) REFERENCES `licenses`(`code`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE `documents` ADD CONSTRAINT `documents_id_assignedVersionNum_fkey` FOREIGN KEY (`id`, `assignedVersionNum`) REFERENCES `documentVersions`(`docId`, `versionNum`) ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -237,12 +181,6 @@ ALTER TABLE `documentVersions` ADD CONSTRAINT `documentVersions_docId_fkey` FORE
 
 -- AddForeignKey
 ALTER TABLE `documentVersions` ADD CONSTRAINT `documentVersions_doenetmlVersionId_fkey` FOREIGN KEY (`doenetmlVersionId`) REFERENCES `doenetmlVersions`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE `licenseCompositions` ADD CONSTRAINT `licenseCompositions_composedOfCode_fkey` FOREIGN KEY (`composedOfCode`) REFERENCES `licenses`(`code`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `licenseCompositions` ADD CONSTRAINT `licenseCompositions_includedInCode_fkey` FOREIGN KEY (`includedInCode`) REFERENCES `licenses`(`code`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `contributorHistory` ADD CONSTRAINT `contributorHistory_docId_fkey` FOREIGN KEY (`docId`) REFERENCES `documents`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -276,12 +214,3 @@ ALTER TABLE `promotedContent` ADD CONSTRAINT `promotedContent_activityId_fkey` F
 
 -- AddForeignKey
 ALTER TABLE `promotedContent` ADD CONSTRAINT `promotedContent_promotedGroupId_fkey` FOREIGN KEY (`promotedGroupId`) REFERENCES `promotedContentGroups`(`promotedGroupId`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `contentClassifications` ADD CONSTRAINT `contentClassifications_contentId_fkey` FOREIGN KEY (`contentId`) REFERENCES `content`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `contentClassifications` ADD CONSTRAINT `contentClassifications_classificationId_fkey` FOREIGN KEY (`classificationId`) REFERENCES `classifications`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `classifications` ADD CONSTRAINT `classifications_systemId_fkey` FOREIGN KEY (`systemId`) REFERENCES `classificationSystems`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
