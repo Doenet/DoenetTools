@@ -69,6 +69,18 @@ export type License = {
 
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
+export type ContentClassification = {
+  id: number;
+  code: string;
+  grade: string | null;
+  category: string;
+  description: string;
+  system: {
+    id: number;
+    name: string;
+  };
+};
+
 export type ContentStructure = {
   id: number;
   ownerId: number;
@@ -80,6 +92,7 @@ export type ContentStructure = {
   codeValidUntil: string | null;
   isPublic: boolean;
   license: License | null;
+  classifications: ContentClassification[];
   documents: {
     id: number;
     versionNum?: number;
@@ -201,17 +214,50 @@ export async function action({ params, request }) {
   }
 
   if (formObj._action == "make content public") {
-    await axios.post("/api/makeContentPublic", {
-      id: Number(formObj.id),
-      licenseCode: formObj.licenseCode,
-    });
+    if (formObj.isFolder === "true") {
+      await axios.post("/api/makeFolderPublic", {
+        id: Number(formObj.id),
+        licenseCode: formObj.licenseCode,
+      });
+    } else {
+      await axios.post("/api/makeActivityPublic", {
+        id: Number(formObj.id),
+        licenseCode: formObj.licenseCode,
+      });
+    }
     return true;
   }
+
   if (formObj._action == "make content private") {
-    await axios.post("/api/makeContentPrivate", {
-      id: Number(formObj.id),
-    });
+    if (formObj.isFolder === "true") {
+      await axios.post("/api/makeFolderPrivate", {
+        id: Number(formObj.id),
+      });
+    } else {
+      await axios.post("/api/makeActivityPrivate", {
+        id: Number(formObj.id),
+      });
+    }
     return true;
+  }
+
+  if (formObj._action == "add content classification") {
+    if (formObj.isFolder !== "true") {
+      await axios.post("/api/addClassification", {
+        activityId: Number(formObj.activityId),
+        classificationId: Number(formObj.classificationId),
+      });
+      return true;
+    }
+  }
+  if (formObj._action == "remove content classification") {
+    if (formObj.isFolder !== "true") {
+      await axios.post("/api/removeClassification", {
+        activityId: Number(formObj.activityId),
+        classificationId: Number(formObj.classificationId),
+      });
+      return true;
+    }
   }
 
   if (formObj._action == "go to data") {
