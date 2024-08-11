@@ -279,7 +279,7 @@ function EditableName({ dataTest }) {
         <EditablePreview data-test="Editable Preview" noOfLines={1} />
       </Tooltip>
       <EditableInput
-        width={{ base: "200px", sm: "300px", md: "350px", lg: "450px" }}
+        width={{ base: "100%", md: "350px", lg: "450px" }}
         data-test="Editable Input"
       />
     </Editable>
@@ -484,15 +484,15 @@ export function ActivityEditor() {
           <Grid
             templateAreas={`"leftControls label rightControls"`}
             templateColumns={{
-              base: "1fr 200px 1fr",
-              sm: "1fr 300px 1fr",
+              base: "82px calc(100% - 197px) 115px",
+              sm: "87px calc(100% - 217px) 120px",
               md: "1fr 350px 1fr",
               lg: "1fr 450px 1fr",
             }}
             width="100%"
           >
             <GridItem area="leftControls">
-              <HStack ml="10px" mt="4px">
+              <HStack ml={{ base: "5px", sm: "10px" }} mt="4px">
                 <ButtonGroup size="sm" isAttached variant="outline">
                   <Tooltip hasArrow label="View Activity">
                     <Button
@@ -535,7 +535,7 @@ export function ActivityEditor() {
               display="flex"
               justifyContent="flex-end"
             >
-              <HStack mr="10px">
+              <HStack mr={{ base: "5px", sm: "10px" }}>
                 <ButtonGroup size="sm" isAttached variant="outline">
                   <Tooltip
                     hasArrow
