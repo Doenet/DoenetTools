@@ -52,16 +52,16 @@ export default function ContributorsMenu({
       <>
         remixed from{" "}
         <Tooltip
-          label={`Go to ${contributorHistory[0].activityName}`}
+          label={`Go to ${contributorHistory[0].prevActivityName}`}
           openDelay={1000}
         >
           <ChakraLink
             as={ReactRouterLink}
-            to={`/activityViewer/${contributorHistory[0].activityId}`}
-            aria-label={`Go to ${contributorHistory[0].activityName}`}
+            to={`/activityViewer/${contributorHistory[0].prevActivityId}`}
+            aria-label={`Go to ${contributorHistory[0].prevActivityName}`}
           >
-            {contributorHistory[0].activityName} by
-            {createFullName(contributorHistory[0].owner)}
+            {contributorHistory[0].prevActivityName} by
+            {createFullName(contributorHistory[0].prevOwner)}
           </ChakraLink>
         </Tooltip>
       </>
@@ -85,7 +85,7 @@ export default function ContributorsMenu({
         margin="6px 12px"
         border="0"
         size="sm"
-        name={createFullName(contrib_hist.owner)}
+        name={createFullName(contrib_hist.prevOwner)}
       />
     )),
   );
@@ -128,11 +128,11 @@ export default function ContributorsMenu({
             </Text>
           </MenuItem>
           {contributorHistory.map((contrib_hist, i) => {
-            let menuText = `${contrib_hist.activityName} by ${createFullName(contrib_hist.owner)}`;
-            const activityRef = `/activityViewer/${contrib_hist.activityId}`;
-            const activityLabel = `Go to ${contrib_hist.activityName}`;
-            const userRef = `/sharedActivities/${contrib_hist.owner.userId}`;
-            const userLabel = `Go to ${createFullName(contrib_hist.owner)}'s shared activities`;
+            let menuText = `${contrib_hist.prevActivityName} by ${createFullName(contrib_hist.prevOwner)}`;
+            const activityRef = `/activityViewer/${contrib_hist.prevActivityId}`;
+            const activityLabel = `Go to ${contrib_hist.prevActivityName}`;
+            const userRef = `/sharedActivities/${contrib_hist.prevOwner.userId}`;
+            const userLabel = `Go to ${createFullName(contrib_hist.prevOwner)}'s shared activities`;
             return (
               <MenuItem
                 key={`mi${i}`}

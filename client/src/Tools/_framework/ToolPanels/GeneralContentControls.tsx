@@ -62,6 +62,22 @@ export async function generalContentActions({ formObj }: { [k: string]: any }) {
       });
     }
     return true;
+  } else if (formObj._action == "add content classification") {
+    if (formObj.isFolder !== "true") {
+      await axios.post("/api/addClassification", {
+        activityId: Number(formObj.activityId),
+        classificationId: Number(formObj.classificationId),
+      });
+      return true;
+    }
+  } else if (formObj._action == "remove content classification") {
+    if (formObj.isFolder !== "true") {
+      await axios.post("/api/removeClassification", {
+        activityId: Number(formObj.activityId),
+        classificationId: Number(formObj.classificationId),
+      });
+      return true;
+    }
   } else if (formObj?._action == "noop") {
     return true;
   }

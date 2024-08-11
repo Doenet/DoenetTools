@@ -128,22 +128,6 @@ export async function action({ request, params }) {
       desiredPosition: formObj.desiredPosition,
     });
     return true;
-  } else if (formObj._action == "add content classification") {
-    if (formObj.isFolder !== "true") {
-      await axios.post("/api/addClassification", {
-        activityId: Number(formObj.activityId),
-        classificationId: Number(formObj.classificationId),
-      });
-      return true;
-    }
-  } else if (formObj._action == "remove content classification") {
-    if (formObj.isFolder !== "true") {
-      await axios.post("/api/removeClassification", {
-        activityId: Number(formObj.activityId),
-        classificationId: Number(formObj.classificationId),
-      });
-      return true;
-    }
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);

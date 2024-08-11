@@ -26,6 +26,7 @@ import {
   MdModeEditOutline,
   MdOutlineAssignment,
   MdOutlineEditOff,
+  MdOutlineGroup,
 } from "react-icons/md";
 import { FaCog } from "react-icons/fa";
 import { useFetcher } from "react-router-dom";
@@ -161,25 +162,6 @@ export async function action({ params, request }) {
     return resultAS;
   }
 
-  if (formObj._action == "add content classification") {
-    if (formObj.isFolder !== "true") {
-      await axios.post("/api/addClassification", {
-        activityId: Number(formObj.activityId),
-        classificationId: Number(formObj.classificationId),
-      });
-      return true;
-    }
-  }
-  if (formObj._action == "remove content classification") {
-    if (formObj.isFolder !== "true") {
-      await axios.post("/api/removeClassification", {
-        activityId: Number(formObj.activityId),
-        classificationId: Number(formObj.classificationId),
-      });
-      return true;
-    }
-  }
-
   if (formObj._action == "go to data") {
     return redirect(`/assignmentData/${params.activityId}`);
   }
@@ -297,7 +279,7 @@ function EditableName({ dataTest }) {
         <EditablePreview data-test="Editable Preview" noOfLines={1} />
       </Tooltip>
       <EditableInput
-        width={{ base: "200px", sm: "300px", md: "400px" }}
+        width={{ base: "200px", sm: "300px", md: "350px", lg: "450px" }}
         data-test="Editable Input"
       />
     </Editable>
@@ -504,7 +486,8 @@ export function ActivityEditor() {
             templateColumns={{
               base: "1fr 200px 1fr",
               sm: "1fr 300px 1fr",
-              md: "1fr 400px 1fr",
+              md: "1fr 350px 1fr",
+              lg: "1fr 450px 1fr",
             }}
             width="100%"
           >
@@ -585,7 +568,7 @@ export function ActivityEditor() {
                       data-test="Sharing Button"
                       size="sm"
                       pr={{ base: "0px", md: "10px" }}
-                      leftIcon={<FaCog />}
+                      leftIcon={<MdOutlineGroup />}
                       onClick={() => {
                         sharingOnOpen();
                       }}
