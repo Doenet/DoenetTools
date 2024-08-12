@@ -242,7 +242,7 @@ model classifications {
   id                     Int                      @id @default(autoincrement())
   code                   String
   systemId               Int
-  category               String                   @db.TinyText
+  category               String                   @db.Text
   description            String                   @db.Text
   grade                  String?
   system                 classificationSystems    @relation(fields: [systemId], references: [id])
