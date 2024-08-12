@@ -1814,35 +1814,35 @@ export async function searchSharedContent(
     }[]
   >(Prisma.sql`
   SELECT
-    "content"."id",
-    SUM((MATCH("content"."name") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
-    (MATCH("documents"."source") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
-    MATCH("users"."firstNames", "users"."lastNames") AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH("classifications"."code", "classifications"."category", "classifications"."description") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    content.id,
+    SUM((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
+    (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
+    MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     ) as relevance
   FROM
-    "content"
+    content
   LEFT JOIN
-    (SELECT * from "documents" WHERE "isDeleted" = FALSE) AS documents ON "content"."id" = "documents"."activityId"
+    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
   LEFT JOIN
-    "users" ON "content"."ownerId" = "users"."userId"
+    users ON content.ownerId = users.userId
   LEFT JOIN
-    "contentClassifications" ON "content"."id" = "contentClassifications"."contentId"
+    contentClassifications ON content.id = contentClassifications.contentId
   LEFT JOIN
-    "classifications" ON "contentClassifications"."classificationId" = "classifications"."id"
+    classifications ON contentClassifications.classificationId = classifications.id
   WHERE
-    "content"."isDeleted" = FALSE
+    content.isDeleted = FALSE
     AND (
-       "content"."isPublic" = TRUE
-       OR "content"."id" IN (SELECT "contentId" FROM "contentShares" WHERE "userId" = ${loggedInUserId})
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
     )
     AND
-    (MATCH("content"."name") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH("documents"."source") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH("users"."firstNames", "users"."lastNames") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH("classifications"."code", "classifications"."category", "classifications"."description") AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+    (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
   GROUP BY
-    "content"."id"
+    content.id
   ORDER BY
     relevance DESC
   LIMIT 100
@@ -1973,22 +1973,22 @@ export async function searchUsersWithSharedContent(
     }[]
   >(Prisma.sql`
   SELECT
-    "users"."userId", "users"."firstNames", "users"."lastNames",
-    MATCH("users"."firstNames", "users"."lastNames") AGAINST(${query_as_prefixes} IN BOOLEAN MODE) as relevance
+    users.userId, users.firstNames, users.lastNames,
+    MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) as relevance
   FROM
-    "users"
+    users
   WHERE
-    "users"."isAnonymous" = FALSE
-    AND "users"."userId" IN (
-      SELECT "ownerId" FROM "content" WHERE "isDeleted" = FALSE AND (
-        "isPublic" = TRUE
-        OR "id" IN (
-          SELECT "contentId" FROM "contentShares" WHERE "userId" = ${loggedInUserId}
+    users.isAnonymous = FALSE
+    AND users.userId IN (
+      SELECT ownerId FROM content WHERE isDeleted = FALSE AND (
+        isPublic = TRUE
+        OR id IN (
+          SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId}
         )
       )
     )
     AND
-    MATCH("users"."firstNames", "users"."lastNames") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
   ORDER BY
     relevance DESC
   LIMIT 100
@@ -3385,18 +3385,18 @@ export async function getAnswersThatHaveSubmittedResponses({
       count: number;
     }[]
   >(Prisma.sql`
-    SELECT "docId", "docVersionNum", "answerId", "answerNumber", 
-    COUNT("userId") as "count", AVG("maxCredit") as "averageCredit"
+    SELECT docId, docVersionNum, answerId, answerNumber, 
+    COUNT(userId) as count, AVG(maxCredit) as averageCredit
     FROM (
-      SELECT "activityId", "docId", "docVersionNum", "answerId", "answerNumber", "userId", MAX("creditAchieved") as "maxCredit"
-      FROM "documentSubmittedResponses"
-      WHERE "activityId" = ${activityId}
-      GROUP BY "activityId", "docId", "docVersionNum", "answerId", "answerNumber", "userId" 
-    ) as "dsr"
-    INNER JOIN "content" on "dsr"."activityId" = "content"."id" 
-    WHERE "content"."id"=${activityId} and "ownerId" = ${ownerId} and "isAssigned"=true and "isFolder"=false
-    GROUP BY "docId", "docVersionNum", "answerId", "answerNumber"
-    ORDER BY "answerNumber"
+      SELECT activityId, docId, docVersionNum, answerId, answerNumber, userId, MAX(creditAchieved) as maxCredit
+      FROM documentSubmittedResponses
+      WHERE activityId = ${activityId}
+      GROUP BY activityId, docId, docVersionNum, answerId, answerNumber, userId 
+    ) as dsr
+    INNER JOIN content on dsr.activityId = content.id 
+    WHERE content.id=${activityId} and ownerId = ${ownerId} and isAssigned=true and isFolder=false
+    GROUP BY docId, docVersionNum, answerId, answerNumber
+    ORDER BY answerNumber
     `);
 
   // The query returns a BigInt for count, which TypeScript doesn't know how to serialize,
@@ -3450,15 +3450,15 @@ export async function getDocumentSubmittedResponses({
       numResponses: bigint;
     }[]
   >(Prisma.sql`
-select "dsr"."userId", "users"."firstNames", "users"."lastNames", "response", "creditAchieved", "submittedAt",
-    	MAX("creditAchieved") over (partition by "dsr"."userId") as "maxCredit",
-    	COUNT("creditAchieved") over (partition by "dsr"."userId") as "numResponses"
-    	from "documentSubmittedResponses" as dsr
-      INNER JOIN "content" on "dsr"."activityId" = "content"."id" 
-      INNER JOIN "users" on "dsr"."userId" = "users"."userId" 
-      WHERE "content"."id"=${activityId} and "ownerId" = ${ownerId} and "isAssigned"=true and "isFolder"=false
-    	and "docId" = ${docId} and "docVersionNum" = ${docVersionNum} and "answerId" = ${answerId}
-    	order by "dsr"."userId" asc, "submittedAt" desc
+select dsr.userId, users.firstNames, users.lastNames, response, creditAchieved, submittedAt,
+    	MAX(creditAchieved) over (partition by dsr.userId) as maxCredit,
+    	COUNT(creditAchieved) over (partition by dsr.userId) as numResponses
+    	from documentSubmittedResponses as dsr
+      INNER JOIN content on dsr.activityId = content.id 
+      INNER JOIN users on dsr.userId = users.userId 
+      WHERE content.id=${activityId} and ownerId = ${ownerId} and isAssigned=true and isFolder=false
+    	and docId = ${docId} and docVersionNum = ${docVersionNum} and answerId = ${answerId}
+    	order by dsr.userId asc, submittedAt desc
   `);
 
   let submittedResponses = [];
@@ -3878,28 +3878,28 @@ export async function searchMyFolderContent({
       }[]
     >(Prisma.sql`
   SELECT
-    "content"."id",
-    SUM((MATCH("content"."name") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
-    (MATCH("documents"."source") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
-    MATCH("classifications"."code", "classifications"."category", "classifications"."description") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    content.id,
+    SUM((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
+    (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
+    MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     ) as relevance
   FROM
-    "content"
+    content
   LEFT JOIN
-    (SELECT * from "documents" WHERE "isDeleted" = FALSE) AS documents ON "content"."id" = "documents"."activityId"
+    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
   LEFT JOIN
-    "contentClassifications" ON "content"."id" = "contentClassifications"."contentId"
+    contentClassifications ON content.id = contentClassifications.contentId
   LEFT JOIN
-    "classifications" ON "contentClassifications"."classificationId" = "classifications"."id"
+    classifications ON contentClassifications.classificationId = classifications.id
   WHERE
-    "content"."ownerId" = ${loggedInUserId}
-    AND "content"."isDeleted" = FALSE
+    content.ownerId = ${loggedInUserId}
+    AND content.isDeleted = FALSE
     AND
-    (MATCH("content"."name") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH("documents"."source") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH("classifications"."code", "classifications"."category", "classifications"."description") AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+    (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
   GROUP BY
-    "content"."id"
+    content.id
   ORDER BY
     relevance DESC
   LIMIT 100
@@ -3923,27 +3923,27 @@ export async function searchMyFolderContent({
     )
 
     SELECT
-      "content"."id",
-      SUM((MATCH("content"."name") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
-      (MATCH("documents"."source") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
-      MATCH("classifications"."code", "classifications"."category", "classifications"."description") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      content.id,
+      SUM((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
+      (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
+      MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       ) as relevance
     FROM
-      "content"
+      content
     LEFT JOIN
-      (SELECT * from "documents" WHERE "isDeleted" = FALSE) AS documents ON "content"."id" = "documents"."activityId"
+      (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
     LEFT JOIN
-      "contentClassifications" ON "content"."id" = "contentClassifications"."contentId"
+      contentClassifications ON content.id = contentClassifications.contentId
     LEFT JOIN
-      "classifications" ON "contentClassifications"."classificationId" = "classifications"."id"
+      classifications ON contentClassifications.classificationId = classifications.id
     WHERE
-      "content"."id" IN (SELECT id from content_tree)
+      content.id IN (SELECT id from content_tree)
       AND
-      (MATCH("content"."name") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH("documents"."source") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH("classifications"."code", "classifications"."category", "classifications"."description") AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+      (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
     GROUP BY
-      "content"."id"
+      content.id
     ORDER BY
       relevance DESC
     LIMIT 100
