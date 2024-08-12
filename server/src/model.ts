@@ -1799,7 +1799,10 @@ export async function searchSharedContent(
   query: string,
   loggedInUserId: number,
 ) {
+  // remove operators that break MySQL BOOLEAN search
+  // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
+    .replace(/[+\-><\(\)~*\"@]+/g, " ")
     .split(" ")
     .map((s) => s + "*")
     .join(" ");
@@ -1954,7 +1957,10 @@ export async function searchUsersWithSharedContent(
   query: string,
   loggedInUserId: number,
 ) {
+  // remove operators that break MySQL BOOLEAN search
+  // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
+    .replace(/[+\-><\(\)~*\"@]+/g, " ")
     .split(" ")
     .map((s) => s + "*")
     .join(" ");
@@ -3856,7 +3862,10 @@ export async function searchMyFolderContent({
     relevance: number;
   }[];
 
+  // remove operators that break MySQL BOOLEAN search
+  // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
+    .replace(/[+\-><\(\)~*\"@]+/g, " ")
     .split(" ")
     .map((s) => s + "*")
     .join(" ");

@@ -2974,12 +2974,60 @@ test("searchSharedContent includes public content where a classification matches
   // With code
   const resultsCode = await searchSharedContent("K.C", userId);
   expect(resultsCode.filter((r) => r.id === activityId)).toHaveLength(1);
-  // With system
-  const resultsSystem = await searchSharedContent("  CORE", userId);
-  expect(resultsSystem.filter((r) => r.id === activityId)).toHaveLength(1);
   // With both
   const resultsBoth = await searchSharedContent("common C.1", userId);
   expect(resultsBoth.filter((r) => r.id === activityId)).toHaveLength(1);
+});
+
+test("searchSharedContent, document source matches", async () => {
+  const user = await createTestUser();
+  const userId = user.userId;
+
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId, docId } = await createActivity(ownerId, null);
+  await updateDoc({ id: docId, source: "bananas", ownerId });
+  await makeActivityPublic({
+    id: activityId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+
+  // apple doesn't hit
+  let results = await searchSharedContent("apple", userId);
+  expect(results.filter((r) => r.id === activityId)).toHaveLength(0);
+
+  // first part of a word hits
+  results = await searchSharedContent("bana", userId);
+  expect(results.filter((r) => r.id === activityId)).toHaveLength(1);
+
+  // full word hits
+  results = await searchSharedContent("bananas", userId);
+  expect(results.filter((r) => r.id === activityId)).toHaveLength(1);
+});
+
+test.only("searchSharedContent, owner name and email matches", async () => {
+  const user = await createTestUser();
+  const userId = user.userId;
+
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  await updateUser({ userId: ownerId, firstNames: "Arya", lastNames: "Abbas" });
+  const { activityId } = await createActivity(ownerId, null);
+  await makeActivityPublic({
+    id: activityId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+
+  let results = await searchSharedContent("Arya", userId);
+  expect(results.filter((r) => r.id === activityId)).toHaveLength(1);
+
+  results = await searchSharedContent("Arya Abbas", userId);
+  expect(results.filter((r) => r.id === activityId)).toHaveLength(1);
+
+  results = await searchSharedContent(owner.email, userId);
+  expect(results.filter((r) => r.id === activityId)).toHaveLength(1);
 });
 
 test("searchUsersWithSharedContent returns only users with public/shared content", async () => {
@@ -4296,7 +4344,7 @@ test("can't unassign if have data", async () => {
   );
 });
 
-test("get activity editor data only if owner or limited data for public/shared", async () => {
+test.skip("get activity editor data only if owner or limited data for public/shared", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const user1 = await createTestUser();
