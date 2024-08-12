@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextIndex"]
 }
 
 datasource db {
@@ -43,6 +44,7 @@ model content {
   @@index([ownerId, parentFolderId, sortIndex])
   @@index([classCode])
   @@index([parentFolderId, isFolder])
+  @@fulltext([name])
 }
 
 model documents {
@@ -62,6 +64,7 @@ model documents {
   contributorHistory contributorHistory[]
 
   @@unique([id, assignedVersionNum]) // needed for the 1-1 relation "assignedVersion" with documentVersions
+  @@fulltext([source])
 }
 
 model documentVersions {
@@ -208,6 +211,8 @@ model users {
   documentState              documentState[]
   documentSubmittedResponses documentSubmittedResponses[]
   sharedWithMe               contentShares[]
+
+  @@fulltext([firstNames, lastNames, email])
 }
 
 model promotedContentGroups {
@@ -249,6 +254,7 @@ model classifications {
   contentClassifications contentClassifications[]
 
   @@unique([code, systemId])
+  @@fulltext([code, category, description])
 }
 
 model classificationSystems {
