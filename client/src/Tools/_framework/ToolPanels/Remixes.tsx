@@ -1,9 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  DocRemixItem,
-  processContributorHistory,
-  processRemixes,
-} from "../Paths/ActivityViewer";
+import React from "react";
+import { DocRemixItem } from "../Paths/ActivityViewer";
 import {
   Flex,
   Hide,
@@ -20,39 +16,13 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { createFullName } from "../../../_utils/names";
-import { ContentStructure } from "../Paths/ActivityEditor";
-import axios from "axios";
 import { DateTime } from "luxon";
 
 export async function remixesActions({ formObj }: { [k: string]: any }) {
   return null;
 }
 
-export function Remixes({ contentData }: { contentData: ContentStructure }) {
-  const [remixes, setRemixes] = useState<DocRemixItem[] | null>(null);
-  const [directRemixes, setDirectRemixes] = useState<DocRemixItem[] | null>(
-    null,
-  );
-
-  useEffect(() => {
-    async function getRemixes() {
-      const { data } = await axios.get(`/api/getRemixes/${contentData.id}`);
-
-      console.log(data);
-      console.log(
-        data.docRemixes[0].documentVersions.flatMap(
-          (x) => x.contributorHistory,
-        ),
-      );
-      const doc0Remixes = processRemixes(data.docRemixes[0]);
-
-      console.log({ doc0Remixes });
-      setRemixes(doc0Remixes);
-    }
-
-    getRemixes();
-  }, [contentData.id]);
-
+export function Remixes({ remixes }: { remixes: DocRemixItem[] | null }) {
   if (remixes === null) {
     return (
       <Flex>
@@ -116,6 +86,7 @@ export function Remixes({ contentData }: { contentData: ContentStructure }) {
                   <Td>
                     {ch.timestampPrevDoc.toLocaleString(DateTime.DATE_MED)}
                   </Td>
+                  <Td>{ch.isDirect.toString()}</Td>
                 </Show>
               </Tr>
             );

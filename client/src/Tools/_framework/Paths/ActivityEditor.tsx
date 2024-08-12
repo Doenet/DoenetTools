@@ -331,7 +331,6 @@ export function ActivityEditor() {
     onClose: invitationOnClose,
   } = useDisclosure();
 
-  const initializeEditorDoenetML = useRef(doenetML);
   const textEditorDoenetML = useRef(doenetML);
   const savedDoenetML = useRef(doenetML);
 
@@ -450,6 +449,7 @@ export function ActivityEditor() {
         fetcher={fetcher}
         contentData={activityData}
         allLicenses={allLicenses}
+        currentDoenetML={textEditorDoenetML}
       />
       <AssignmentSettingsDrawer
         isOpen={assignmentSettingsAreOpen}
@@ -516,8 +516,6 @@ export function ActivityEditor() {
                       pr={{ base: "0px", md: "10px" }}
                       leftIcon={editIcon}
                       onClick={() => {
-                        initializeEditorDoenetML.current =
-                          textEditorDoenetML.current;
                         setMode("Edit");
                       }}
                     >

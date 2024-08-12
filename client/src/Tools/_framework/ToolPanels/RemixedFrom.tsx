@@ -1,8 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  DocHistoryItem,
-  processContributorHistory,
-} from "../Paths/ActivityViewer";
+import React from "react";
 import {
   Flex,
   Hide,
@@ -19,41 +15,20 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { createFullName } from "../../../_utils/names";
-import { ContentStructure } from "../Paths/ActivityEditor";
-import axios from "axios";
 import { DateTime } from "luxon";
+import { DocHistoryItem } from "../Paths/ActivityViewer";
 
 export async function remixedFromActions({ formObj }: { [k: string]: any }) {
   return null;
 }
 
 export function RemixedFrom({
-  contentData,
+  contributorHistory,
+  thisCid,
 }: {
-  contentData: ContentStructure;
+  contributorHistory: DocHistoryItem[] | null;
+  thisCid: string | null;
 }) {
-  const [contributorHistory, setContributorHistory] = useState<
-    DocHistoryItem[] | null
-  >(null);
-
-  useEffect(() => {
-    async function getHistory() {
-      const { data } = await axios.get(
-        `/api/getContributorHistory/${contentData.id}`,
-      );
-
-      console.log(data);
-      const hist = processContributorHistory(
-        data.docHistories[0].contributorHistory,
-      );
-
-      console.log(hist);
-      setContributorHistory(hist);
-    }
-
-    getHistory();
-  }, [contentData.id]);
-
   if (contributorHistory === null) {
     return (
       <Flex>
@@ -97,6 +72,21 @@ export function RemixedFrom({
         </Thead>
         <Tbody>
           {contributorHistory.map((ch, i) => {
+            let changeText = "";
+            if (ch.prevChanged) {
+              // The previous doc changed since it was remixed.
+              // Check if this activity's doc change since then
+              let thisActivityDocChanged = thisCid !== ch.prevCid;
+              if (thisActivityDocChanged) {
+                changeText =
+                  "The original doc changed and so did this one, so would have to merge changes";
+              } else {
+                changeText =
+                  "The original doc changed but this one did not, so could just copy over changes.";
+              }
+            } else {
+              changeText = "The original doc is unchanged";
+            }
             return (
               <Tr key={`ch${i}`}>
                 <Show above="sm">
@@ -118,6 +108,16 @@ export function RemixedFrom({
                     {ch.timestampPrevDoc.toLocaleString(DateTime.DATE_MED)}
                   </Td>
                 </Show>
+                <Td width="100px">
+                  <Text
+                    width="100px"
+                    flexWrap="wrap"
+                    wordBreak="break-word"
+                    whiteSpace="normal"
+                  >
+                    {changeText}
+                  </Text>
+                </Td>
               </Tr>
             );
           })}

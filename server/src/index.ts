@@ -76,6 +76,7 @@ import {
   upgradeAnonymousUser,
   getActivityContributorHistory,
   getActivityRemixes,
+  getDocumentSource,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -1140,6 +1141,27 @@ app.get(
     try {
       const editorData = await getSharedEditorData(activityId, loggedInUserId);
       res.send(editorData);
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2001"
+      ) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getDocumentSource/:docId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const docId = Number(req.params.docId);
+    const loggedInUserId = Number(req.user?.userId ?? 0);
+    try {
+      const sourceData = await getDocumentSource(docId, loggedInUserId);
+      res.send(sourceData);
     } catch (e) {
       if (
         e instanceof Prisma.PrismaClientKnownRequestError &&

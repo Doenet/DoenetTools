@@ -20,6 +20,14 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { Remixes } from "./Remixes";
+import {
+  DocHistoryItem,
+  DocRemixItem,
+  processContributorHistory,
+  processRemixes,
+} from "../Paths/ActivityViewer";
+import axios from "axios";
+import { cidFromText } from "../../../_utils/cid";
 
 export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
   let result1 = await sharingActions({ formObj });
@@ -42,6 +50,7 @@ export function ShareDrawer({
   fetcher,
   contentData,
   allLicenses,
+  currentDoenetML,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -49,7 +58,68 @@ export function ShareDrawer({
   fetcher: FetcherWithComponents<any>;
   contentData: ContentStructure;
   allLicenses: License[];
+  currentDoenetML?: React.MutableRefObject<string>;
 }) {
+  const [contributorHistory, setContributorHistory] = useState<
+    DocHistoryItem[] | null
+  >(null);
+  const [haveChangedHistoryItem, setHaveChangedHistoryItem] = useState(false);
+  const [remixes, setRemixes] = useState<DocRemixItem[] | null>(null);
+  const [thisCid, setThisCid] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function getHistoryAndRemixes() {
+      const { data } = await axios.get(
+        `/api/getContributorHistory/${contentData.id}`,
+      );
+
+      const hist = await processContributorHistory(data.docHistories[0]);
+      setContributorHistory(hist);
+
+      let haveChanged = hist.some((dhi) => dhi.prevChanged);
+
+      setHaveChangedHistoryItem(haveChanged);
+
+      const { data: data2 } = await axios.get(
+        `/api/getRemixes/${contentData.id}`,
+      );
+
+      const doc0Remixes = processRemixes(data2.docRemixes[0]);
+      setRemixes(doc0Remixes);
+    }
+
+    getHistoryAndRemixes();
+  }, [contentData]);
+
+  useEffect(() => {
+    async function getRemixes() {}
+
+    getRemixes();
+  }, [contentData.id]);
+
+  useEffect(() => {
+    async function recalculateThisCid() {
+      let cid: string | null = null;
+      if (haveChangedHistoryItem) {
+        let thisSource =
+          currentDoenetML?.current || contentData.documents[0].source;
+
+        if (thisSource === undefined) {
+          const { data: sourceData } = await axios.get(
+            `/api/getDocumentSource/${contentData.documents[0].id}`,
+          );
+
+          thisSource = sourceData.source as string;
+        }
+        cid = await cidFromText(thisSource);
+      }
+
+      setThisCid(cid);
+    }
+
+    recalculateThisCid();
+  }, [haveChangedHistoryItem, currentDoenetML?.current]);
+
   return (
     <Drawer
       isOpen={isOpen}
@@ -74,8 +144,16 @@ export function ShareDrawer({
           <Tabs>
             <TabList>
               <Tab data-test="Share Tab">Share</Tab>
-              <Tab data-test="Remixed From Tab">Remixed From</Tab>
-              <Tab data-test="Remixes Tab">Remixes</Tab>
+              <Tab data-test="Remixed From Tab">
+                Remixed From{" "}
+                {contributorHistory !== null
+                  ? `(${contributorHistory.length})`
+                  : null}
+                {haveChangedHistoryItem ? "*" : null}
+              </Tab>
+              <Tab data-test="Remixes Tab">
+                Remixes {remixes !== null ? `(${remixes.length})` : null}
+              </Tab>
             </TabList>
             <Box overflowY="auto" height="calc(100vh - 130px)">
               <TabPanels>
@@ -87,10 +165,13 @@ export function ShareDrawer({
                   />
                 </TabPanel>
                 <TabPanel>
-                  <RemixedFrom contentData={contentData} />
+                  <RemixedFrom
+                    contributorHistory={contributorHistory}
+                    thisCid={thisCid}
+                  />
                 </TabPanel>
                 <TabPanel>
-                  <Remixes contentData={contentData} />
+                  <Remixes remixes={remixes} />
                 </TabPanel>
               </TabPanels>
             </Box>

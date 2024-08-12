@@ -36,6 +36,7 @@ import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReport
 import { User } from "./SiteHeader";
 import { createFullName } from "../../../_utils/names";
 import { DateTime } from "luxon";
+import { cidFromText } from "../../../_utils/cid";
 
 export type DocHistoryItem = {
   docId: number;
@@ -47,6 +48,8 @@ export type DocHistoryItem = {
   prevActivityId: number;
   prevActivityName: string;
   prevOwner: UserInfo;
+  prevChanged: boolean;
+  prevCid: string;
 };
 
 export type DocRemixItem = {
@@ -54,6 +57,7 @@ export type DocRemixItem = {
   prevDocId: number;
   prevDocVersionNum: number;
   withLicenseCode: string | null;
+  isDirect: boolean;
   timestampDoc: DateTime;
   timestampPrevDoc: DateTime;
   activityId: number;
@@ -61,38 +65,55 @@ export type DocRemixItem = {
   owner: UserInfo;
 };
 
-export function processContributorHistory(hist): DocHistoryItem[] {
-  return hist.map((ch) => {
-    console.log("ch", ch);
+export async function processContributorHistory(hist: {
+  contributorHistory: any[];
+}) {
+  let historyItems: DocHistoryItem[] = [];
+
+  for (let ch of hist.contributorHistory) {
     const { prevDoc, ...historyItem } = ch;
     let prevActivity = prevDoc.document.activity;
-    return {
+    let prevCid = prevDoc.cid;
+    let prevDocCurrentCid = await cidFromText(prevDoc.document.source);
+
+    historyItems.push({
       ...historyItem,
       timestampDoc: DateTime.fromISO(ch.timestampDoc),
       timestampPrevDoc: DateTime.fromISO(ch.timestampPrevDoc),
       prevActivityId: prevActivity.id,
       prevActivityName: prevActivity.name,
       prevOwner: prevActivity.owner,
-    };
-  });
+      prevChanged: prevDocCurrentCid !== prevCid,
+      prevCid,
+    });
+  }
+
+  return historyItems;
 }
 
-export function processRemixes(remixes): DocRemixItem[] {
-  return remixes.documentVersions.flatMap((dv) =>
-    dv.contributorHistory.map((ch) => {
-      console.log("ch", ch);
-      const { document, ...remixItem } = ch;
-      let activity = document.activity;
-      return {
-        ...remixItem,
-        timestampDoc: DateTime.fromISO(ch.timestampDoc),
-        timestampPrevDoc: DateTime.fromISO(ch.timestampPrevDoc),
-        activityId: activity.id,
-        activityName: activity.name,
-        owner: activity.owner,
-      };
-    }),
-  );
+export function processRemixes(remixes: {
+  documentVersions: { contributorHistory: any[] }[];
+}): DocRemixItem[] {
+  let items = remixes.documentVersions
+    .flatMap((dv) =>
+      dv.contributorHistory.map((ch) => {
+        const { document, ...item } = ch;
+        const activity = document.activity;
+        const remixItem: DocRemixItem = {
+          ...item,
+          isDirect: ch.timestampDoc === ch.timestampPrevDoc,
+          timestampDoc: DateTime.fromISO(ch.timestampDoc),
+          timestampPrevDoc: DateTime.fromISO(ch.timestampPrevDoc),
+          activityId: activity.id,
+          activityName: activity.name,
+          owner: activity.owner,
+        };
+        return remixItem;
+      }),
+    )
+    .sort((a, b) => (a.isDirect === b.isDirect ? 0 : a.isDirect ? -1 : 1));
+
+  return items;
 }
 
 export async function loader({ params }) {
@@ -115,8 +136,8 @@ export async function loader({ params }) {
     const doenetmlVersion: DoenetmlVersion =
       activityData.activity.documents[0].doenetmlVersion;
 
-    const contributorHistory = processContributorHistory(
-      activityData.docHistories[0].contributorHistory,
+    const contributorHistory = await processContributorHistory(
+      activityData.docHistories[0],
     );
 
     return {

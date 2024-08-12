@@ -1452,6 +1452,25 @@ export async function getActivityViewerData(
   };
 }
 
+export async function getDocumentSource(docId: number, loggedInUserId: number) {
+  let document = await prisma.documents.findUniqueOrThrow({
+    where: {
+      id: docId,
+      isDeleted: false,
+      activity: {
+        OR: [
+          { ownerId: loggedInUserId },
+          { isPublic: true },
+          { sharedWith: { some: { userId: loggedInUserId } } },
+        ],
+      },
+    },
+    select: { source: true },
+  });
+
+  return { source: document.source };
+}
+
 export async function getActivityContributorHistory({
   activityId,
   loggedInUserId,
@@ -1520,8 +1539,11 @@ export async function getDocumentContributorHistories({
         include: {
           prevDoc: {
             select: {
+              cid: true,
+              versionNum: true,
               document: {
                 select: {
+                  source: true,
                   activity: {
                     select: {
                       id: true,
@@ -1574,12 +1596,12 @@ export async function getActivityRemixes({
     loggedInUserId,
   });
 
-  const docDirectRemixes = await getDocumentDirectRemixes({
-    docIds: activity.documents.map((doc) => doc.id),
-    loggedInUserId,
-  });
+  // const docDirectRemixes = await getDocumentDirectRemixes({
+  //   docIds: activity.documents.map((doc) => doc.id),
+  //   loggedInUserId,
+  // });
 
-  return { docRemixes, docDirectRemixes };
+  return { docRemixes };
 }
 
 export async function getDocumentDirectRemixes({

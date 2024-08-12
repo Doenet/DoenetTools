@@ -40,6 +40,7 @@
     "browser-image-resizer": "^2.4.1",
     "copy-to-clipboard": "^3.3.3",
     "cssesc": "^3.0.0",
+    "hi-base32": "^0.5.1",
     "js-cookie": "^3.0.5",
     "luxon": "^3.4.4",
     "math-expressions": "^2.0.0-alpha64",
