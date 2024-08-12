@@ -1817,7 +1817,7 @@ export async function searchSharedContent(
     "content"."id",
     SUM((MATCH("content"."name") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
     (MATCH("documents"."source") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
-    MATCH("users"."firstNames", "users"."lastNames", "users"."email") AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH("users"."firstNames", "users"."lastNames") AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
     MATCH("classifications"."code", "classifications"."category", "classifications"."description") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     ) as relevance
   FROM
@@ -1839,7 +1839,7 @@ export async function searchSharedContent(
     AND
     (MATCH("content"."name") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH("documents"."source") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH("users"."firstNames", "users"."lastNames", "users"."email") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH("users"."firstNames", "users"."lastNames") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH("classifications"."code", "classifications"."category", "classifications"."description") AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
   GROUP BY
     "content"."id"
@@ -1974,7 +1974,7 @@ export async function searchUsersWithSharedContent(
   >(Prisma.sql`
   SELECT
     "users"."userId", "users"."firstNames", "users"."lastNames",
-    MATCH("users"."firstNames", "users"."lastNames", "users"."email") AGAINST(${query_as_prefixes} IN BOOLEAN MODE) as relevance
+    MATCH("users"."firstNames", "users"."lastNames") AGAINST(${query_as_prefixes} IN BOOLEAN MODE) as relevance
   FROM
     "users"
   WHERE
@@ -1988,7 +1988,7 @@ export async function searchUsersWithSharedContent(
       )
     )
     AND
-    MATCH("users"."firstNames", "users"."lastNames", "users"."email") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    MATCH("users"."firstNames", "users"."lastNames") AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
   ORDER BY
     relevance DESC
   LIMIT 100

@@ -212,7 +212,7 @@ model users {
   documentSubmittedResponses documentSubmittedResponses[]
   sharedWithMe               contentShares[]
 
-  @@fulltext([firstNames, lastNames, email])
+  @@fulltext([firstNames, lastNames])
 }
 
 model promotedContentGroups {

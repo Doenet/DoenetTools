@@ -8,4 +8,4 @@ CREATE FULLTEXT INDEX `content_name_idx` ON `content`(`name`);
 CREATE FULLTEXT INDEX `documents_source_idx` ON `documents`(`source`);
 
 -- CreateIndex
-CREATE FULLTEXT INDEX `users_firstNames_lastNames_email_idx` ON `users`(`firstNames`, `lastNames`, `email`);
+CREATE FULLTEXT INDEX `users_firstNames_lastNames_idx` ON `users`(`firstNames`, `lastNames`);
