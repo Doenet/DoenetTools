@@ -20,33 +20,30 @@ import {
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
-import { Outlet, useLoaderData, useLocation, useNavigate } from "react-router";
+import { Outlet, useLoaderData } from "react-router";
 import { NavLink } from "react-router-dom";
-import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import RouterLogo from "../RouterLogo";
 import { ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
 
-export async function loader() {
-  //Check if signedIn
-  const profileInfo = await checkIfUserClearedOut();
-  let signedIn = true;
-  if (profileInfo.cookieRemoved) {
-    signedIn = false;
-  }
-  let user = null;
-  let isAdmin = false;
-  if (signedIn) {
-    const response = await axios.get("/api/getUser");
-    let { data } = response;
-    user = data;
+export type User =
+  | {
+      email: string;
+      userId: number;
+      firstNames: string | null;
+      lastNames: string;
+      isAnonymous: boolean;
+      isAdmin: boolean;
+    }
+  | undefined;
 
-    const isAdminResponse = await axios.get(`/api/checkForCommunityAdmin`);
-    let { data: isAdminData } = isAdminResponse;
-    isAdmin = isAdminData.isAdmin;
-  }
-  return { signedIn, user, isAdmin };
+export async function loader() {
+  const {
+    data: { user },
+  } = await axios.get("/api/getUser");
+
+  return { user };
 }
 
 function NavLinkTab({ to, children, dataTest }) {
@@ -59,7 +56,7 @@ function NavLinkTab({ to, children, dataTest }) {
         //   spinner = <Spinner size="sm" />;
         // }
         let color = "doenet.canvastext";
-        let borderBottomStyle = "none";
+        let borderBottomStyle: "none" | "solid" = "none";
         let borderBottomWidth = "0px";
         if (isActive) {
           color = "doenet.mainBlue";
@@ -121,27 +118,13 @@ function NavLinkDropdownTab({ to, children, dataTest }) {
   );
 }
 
-export function SiteHeader(props) {
-  let { signedIn, user, isAdmin } = useLoaderData();
-  const { childComponent } = props;
-
-  let location = useLocation();
-
-  const navigate = useNavigate();
-
-  let navigateTo = useRef("");
+export function SiteHeader() {
+  const { user } = useLoaderData() as { user: User };
 
   const helpMenuShouldFocusFirst = useBreakpointValue(
     { base: false, md: true },
     { ssr: false },
   );
-
-  if (navigateTo.current != "") {
-    const newHref = navigateTo.current;
-    navigateTo.current = "";
-    location.href = newHref;
-    navigate(newHref);
-  }
 
   return (
     <>
@@ -196,12 +179,12 @@ export function SiteHeader(props) {
                   <NavLinkTab to="community" dataTest="Community">
                     Community
                   </NavLinkTab>
-                  {!signedIn || user.anonymous ? (
+                  {!user || user.isAnonymous ? (
                     <NavLinkTab to="code" dataTest="Class Code">
                       Class Code
                     </NavLinkTab>
                   ) : null}
-                  {signedIn && !user.anonymous && (
+                  {user && !user.isAnonymous && (
                     <>
                       <NavLinkTab
                         to={`activities/${user.userId}`}
@@ -212,7 +195,7 @@ export function SiteHeader(props) {
                       <NavLinkTab to={`assigned`} dataTest="Assigned">
                         Assigned
                       </NavLinkTab>
-                      {isAdmin && (
+                      {user.isAdmin && (
                         <NavLinkTab to="admin" dataTest="Admin">
                           Admin
                         </NavLinkTab>
@@ -261,7 +244,7 @@ export function SiteHeader(props) {
                   </MenuList>
                 </Menu>
 
-                {signedIn ? (
+                {user ? (
                   <Center h="40px" mr="10px">
                     <Menu>
                       <MenuButton>
@@ -271,10 +254,18 @@ export function SiteHeader(props) {
                         <VStack mb="20px">
                           <Avatar size="xl" name={`${createFullName(user)}`} />
                           <Text>{createFullName(user)}</Text>
-                          <Text>{user.anonymous ? "" : user.email}</Text>
+                          <Text>
+                            {user.isAnonymous ? "(anonymous)" : user.email}
+                          </Text>
+                          {user.isAnonymous ? (
+                            <Link href={`/signIn`}>Sign in to save work</Link>
+                          ) : null}
                         </VStack>
-                        <MenuItem as="a" href="/signOut">
-                          Sign Out
+                        <MenuItem as={Link} href="/changeName">
+                          Update name
+                        </MenuItem>
+                        <MenuItem as="a" href="/api/logout">
+                          Log Out
                         </MenuItem>
                       </MenuList>
                     </Menu>
@@ -282,7 +273,7 @@ export function SiteHeader(props) {
                 ) : (
                   <Center h="40px" mr="10px">
                     <NavLinkTab to="/signIn" dataTest="signIn">
-                      Sign In
+                      Log In
                     </NavLinkTab>
                   </Center>
                 )}
@@ -304,12 +295,12 @@ export function SiteHeader(props) {
                         <NavLinkDropdownTab to="community" dataTest="Community">
                           Community
                         </NavLinkDropdownTab>
-                        {!signedIn || user.anonymous ? (
+                        {!user || user.isAnonymous ? (
                           <NavLinkDropdownTab to="code" dataTest="Class Code">
                             Class Code
                           </NavLinkDropdownTab>
                         ) : null}
-                        {signedIn && !user.anonymous && (
+                        {user && !user.isAnonymous && (
                           <>
                             <NavLinkDropdownTab
                               to={`activities/${user.userId}`}
@@ -323,7 +314,7 @@ export function SiteHeader(props) {
                             >
                               Assigned
                             </NavLinkDropdownTab>
-                            {isAdmin && (
+                            {user.isAdmin && (
                               <NavLinkDropdownTab to="admin" dataTest="Admin">
                                 Admin
                               </NavLinkDropdownTab>
@@ -339,7 +330,7 @@ export function SiteHeader(props) {
           </Grid>
         </GridItem>
         <GridItem area="main" as="main" margin="0" overflowY="auto">
-          {childComponent ? childComponent : <Outlet context={{ signedIn }} />}
+          <Outlet context={user} />
         </GridItem>
       </Grid>
     </>

@@ -80,6 +80,140 @@ async function main() {
     },
   });
 
+  const { id: commonCoreId } = await prisma.classificationSystems.upsert({
+    where: { name: "Common Core" },
+    update: { name: "Common Core" },
+    create: { name: "Common Core" },
+  });
+  const classification1 = await prisma.classifications.upsert({
+    where: {
+      code_systemId: {
+        code: "K.CC.1",
+        systemId: commonCoreId,
+      },
+    },
+    update: {
+      code: "K.CC.1",
+      grade: "Kindergarten",
+      category:
+        "Counting and Cardinality: Know number names and the count sequence.",
+      description: "Count to 100 by ones and by tens.",
+      systemId: commonCoreId,
+    },
+    create: {
+      code: "K.CC.1",
+      grade: "Kindergarten",
+      category:
+        "Counting and Cardinality: Know number names and the count sequence.",
+      description: "Count to 100 by ones and by tens.",
+      systemId: commonCoreId,
+    },
+  });
+
+  const classification2 = await prisma.classifications.upsert({
+    where: {
+      code_systemId: { code: "K.OA.1", systemId: commonCoreId },
+    },
+    update: {
+      code: "K.OA.1",
+      grade: "Kindergarten",
+      category:
+        "Operations and Algebraic Thinking: Understand addition as putting together and adding to, and understand subtraction as taking apart and taking from.",
+      description:
+        "Represent addition and subtraction with objects, fingers, mental images, drawings (Drawings need not show details, but should show the mathematics in the problem.(This applies wherever drawings are mentioned in the Standards.)), sounds (e.g., claps), acting out situations, verbal explanations, expressions, or equations.",
+      systemId: commonCoreId,
+    },
+    create: {
+      code: "K.OA.1",
+      grade: "Kindergarten",
+      category:
+        "Operations and Algebraic Thinking: Understand addition as putting together and adding to, and understand subtraction as taking apart and taking from.",
+      description:
+        "Represent addition and subtraction with objects, fingers, mental images, drawings (Drawings need not show details, but should show the mathematics in the problem.(This applies wherever drawings are mentioned in the Standards.)), sounds (e.g., claps), acting out situations, verbal explanations, expressions, or equations.",
+      systemId: commonCoreId,
+    },
+  });
+
+  const classification3 = await prisma.classifications.upsert({
+    where: {
+      code_systemId: { code: "A.SSE.3 c.", systemId: commonCoreId },
+    },
+    update: {
+      code: "A.SSE.3 c.",
+      grade: "HS",
+      category:
+        "Seeing Structure in Expressions: Write expressions in equivalent forms to solve problems.",
+      description:
+        "Use the properties of exponents to transform expressions for exponential functions.  For example the expression 1.15t can be rewritten as (1.151/12)12t ≈1.01212t to reveal the approximate equivalent monthly interest rate if the annual rate is 15%.",
+      systemId: commonCoreId,
+    },
+    create: {
+      code: "A.SSE.3 c.",
+      grade: "HS",
+      category:
+        "Seeing Structure in Expressions: Write expressions in equivalent forms to solve problems.",
+      description:
+        "Use the properties of exponents to transform expressions for exponential functions.  For example the expression 1.15t can be rewritten as (1.151/12)12t ≈1.01212t to reveal the approximate equivalent monthly interest rate if the annual rate is 15%.",
+      systemId: commonCoreId,
+    },
+  });
+
+  const { id: minnesotaMathId } = await prisma.classificationSystems.upsert({
+    where: { name: "Minnesota Academic Standards in Math" },
+    update: { name: "Minnesota Academic Standards in Math" },
+    create: { name: "Minnesota Academic Standards in Math" },
+  });
+
+  const minnesotaClassification1 = await prisma.classifications.upsert({
+    where: {
+      code_systemId: {
+        code: "8.2.1.5",
+        systemId: minnesotaMathId,
+      },
+    },
+    update: {
+      code: "8.2.1.5",
+      category:
+        "Understand the concept of function in real-world and mathematical situations, and distinguish between linear and nonlinear functions.",
+      description:
+        "Understand that a geometric sequence is a non-linear function that can be expressed in the form f(x) = ab^x, where x = 0, 1, 2, 3,….",
+      systemId: minnesotaMathId,
+    },
+    create: {
+      code: "8.2.1.5",
+      category:
+        "Understand the concept of function in real-world and mathematical situations, and distinguish between linear and nonlinear functions.",
+      description:
+        "Understand that a geometric sequence is a non-linear function that can be expressed in the form f(x) = ab^x, where x = 0, 1, 2, 3,….",
+      systemId: minnesotaMathId,
+    },
+  });
+
+  const minnesotaClassification2 = await prisma.classifications.upsert({
+    where: {
+      code_systemId: {
+        code: "9.4.3.9",
+        systemId: minnesotaMathId,
+      },
+    },
+    update: {
+      code: "9.4.3.9",
+      category:
+        "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
+      description:
+        "Use the relationship between conditional probabilities and relative frequencies in contingency tables.",
+      systemId: minnesotaMathId,
+    },
+    create: {
+      code: "9.4.3.9",
+      category:
+        "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
+      description:
+        "Use the relationship between conditional probabilities and relative frequencies in contingency tables.",
+      systemId: minnesotaMathId,
+    },
+  });
+
   await prisma.licenses.upsert({
     where: { code: "CCBYSA" },
     update: {
@@ -136,7 +270,7 @@ async function main() {
     },
     create: {
       code: "CCDUAL",
-      name: "Creative Commons Attribution-NonCommercial-ShareAlike",
+      name: "Creative Commons Attribution-NonCommercial-ShareAlike OR Attribution-NonCommercial-ShareAlike",
       description:
         "Allow reusers to use either the Creative Commons Attribution-ShareAlike license or the Creative Commons Attribution-NonCommercial-ShareAlike license.",
       sortIndex: 1,

@@ -2,7 +2,6 @@ import { expect, test, vi } from "vitest";
 import {
   copyActivityToFolder,
   createActivity,
-  createUser,
   deleteActivity,
   findOrCreateUser,
   getAllDoenetmlVersions,
@@ -19,7 +18,6 @@ import {
   openAssignmentWithCode,
   closeAssignmentWithCode,
   getAssignmentDataFromCode,
-  createAnonymousUser,
   updateUser,
   getUserInfo,
   saveScoreAndState,
@@ -46,6 +44,10 @@ import {
   moveContent,
   deleteFolder,
   getAssignedScores,
+  searchPossibleClassifications,
+  addClassification,
+  getClassifications,
+  removeClassification,
   getPublicFolderContent,
   getPublicEditorData,
   searchUsersWithPublicContent,
@@ -58,6 +60,7 @@ import {
   makeFolderPublic,
   makeFolderPrivate,
   searchMyFolderContent,
+  upgradeAnonymousUser,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -75,7 +78,7 @@ const currentDoenetmlVersion = {
 };
 
 // create an isolated user for each test, will allow tests to be run in parallel
-async function createTestUser(isAdmin = false) {
+async function createTestUser(isAdmin = false, isAnonymous = false) {
   const id = Date.now().toString();
   const email = `vitest${id}@vitest.test`;
   const firstNames = `vitest`;
@@ -85,12 +88,17 @@ async function createTestUser(isAdmin = false) {
     firstNames,
     lastNames,
     isAdmin,
+    isAnonymous,
   });
   return user;
 }
 
 async function createTestAdminUser() {
   return await createTestUser(true);
+}
+
+async function createTestAnonymousUser() {
+  return await createTestUser(false, true);
 }
 
 test("New user has no content", async () => {
@@ -139,6 +147,7 @@ test("New activity starts out private, then delete it", async () => {
     classCode: null,
     codeValidUntil: null,
     license: null,
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -1658,6 +1667,33 @@ test("searchPublicContent returns public folders and public content even in a pr
   expect(namesInOrder).eqls([publicActivityName, publicFolderName]);
 });
 
+test("searchPublicContent includes public content where a classification matches", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId } = await createActivity(ownerId, null);
+  await makeActivityPublic({
+    id: activityId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  const initialResults = await searchPublicContent("K.CC.1 comMMon cOREe");
+  expect(initialResults.filter((r) => r.id === activityId)).toHaveLength(0);
+
+  const {id: classifyId} = (await searchPossibleClassifications("K.CC.1 common core"))
+    .find((k) => k.code === "K.CC.1")!;
+
+  await addClassification(activityId, classifyId, ownerId);
+  // With code
+  const resultsCode = await searchPublicContent("K.C");
+  expect(resultsCode.filter((r) => r.id === activityId)).toHaveLength(1);
+  // With system
+  const resultsSystem = await searchPublicContent("  CORE");
+  expect(resultsSystem.filter((r) => r.id === activityId)).toHaveLength(1);
+  // With both
+  const resultsBoth = await searchPublicContent("common C.1");
+  expect(resultsBoth.filter((r) => r.id === activityId)).toHaveLength(1);
+});
+
 test("searchUsersWithPublicContent returns only users with public content", async () => {
   // owner 1 has only private content
   const owner1 = await createTestUser();
@@ -2185,7 +2221,7 @@ test("open and close assignment with code", async () => {
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
 
-  let assignmentData = await getAssignmentDataFromCode(classCode, true);
+  let assignmentData = await getAssignmentDataFromCode(classCode);
   expect(assignmentData.assignmentFound).eq(true);
   expect(assignmentData.assignment!.id).eq(activityId);
   expect(assignmentData.assignment!.documents[0].assignedVersion!.source).eq(
@@ -2198,7 +2234,7 @@ test("open and close assignment with code", async () => {
     "No content found",
   );
 
-  assignmentData = await getAssignmentDataFromCode(classCode, true);
+  assignmentData = await getAssignmentDataFromCode(classCode);
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
 
@@ -2214,7 +2250,7 @@ test("open and close assignment with code", async () => {
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
 
-  assignmentData = await getAssignmentDataFromCode(classCode, true);
+  assignmentData = await getAssignmentDataFromCode(classCode);
   expect(assignmentData.assignmentFound).eq(true);
   expect(assignmentData.assignment!.id).eq(activityId);
 
@@ -2224,7 +2260,7 @@ test("open and close assignment with code", async () => {
   // then this should still retrieve data for those students.
   closeAt = DateTime.now().plus({ seconds: -7 });
   await openAssignmentWithCode(activityId, closeAt, ownerId);
-  assignmentData = await getAssignmentDataFromCode(classCode, true);
+  assignmentData = await getAssignmentDataFromCode(classCode);
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
 
@@ -2284,7 +2320,7 @@ test("open and unassign assignment with code", async () => {
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
 
-  let assignmentData = await getAssignmentDataFromCode(classCode, true);
+  let assignmentData = await getAssignmentDataFromCode(classCode);
   expect(assignmentData.assignment!.id).eq(activityId);
 
   // unassign activity
@@ -2294,7 +2330,7 @@ test("open and unassign assignment with code", async () => {
   );
 
   // Getting deleted assignment by code fails
-  assignmentData = await getAssignmentDataFromCode(classCode, true);
+  assignmentData = await getAssignmentDataFromCode(classCode);
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
 
@@ -2384,58 +2420,26 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
   await closeAssignmentWithCode(activityId, ownerId);
 });
 
-test("create anonymous users", async () => {
-  // create an anonymous user
-  const user1 = await createAnonymousUser();
-  expect(user1.anonymous).eq(true);
-
-  // create another anonymous user
-  const user2 = await createAnonymousUser();
-  expect(user2.anonymous).eq(true);
-  expect(user1.userId).not.eq(user2.userId);
-});
-
-test("assignment data with code create anonymous user when not signed in", async () => {
-  const owner = await createTestUser();
-  const ownerId = owner.userId;
-  const { activityId } = await createActivity(ownerId, null);
-  const activity = await getActivity(activityId);
-  await updateContent({ id: activityId, name: "Activity 1", ownerId });
-  await updateDoc({
-    id: activity.documents[0].id,
-    source: "Some content",
-    ownerId,
+test("upgrade anonymous user", async () => {
+  let anonUser = await createTestAnonymousUser();
+  anonUser = await updateUser({
+    userId: anonUser.userId,
+    firstNames: "Zoe",
+    lastNames: "Zaborowski",
   });
 
-  // open assignment generates code
-  let closeAt = DateTime.now().plus({ days: 1 });
-  const { classCode } = await openAssignmentWithCode(
-    activityId,
-    closeAt,
-    ownerId,
-  );
+  expect(anonUser.isAnonymous).eq(true);
 
-  let assignmentData = await getAssignmentDataFromCode(classCode, false);
-  expect(assignmentData.assignmentFound).eq(true);
+  const id = Date.now().toString();
+  const realEmail = `real${id}@vitest.test`;
 
-  // created new anonymous user since weren't logged in
-  const newUser1 = assignmentData.newAnonymousUser;
-  expect(newUser1!.anonymous).eq(true);
+  const upgraded = await upgradeAnonymousUser({
+    userId: anonUser.userId,
+    email: realEmail,
+  });
 
-  // don't get new user if assignment is closed
-  await closeAssignmentWithCode(activityId, ownerId);
-  assignmentData = await getAssignmentDataFromCode(classCode, false);
-  expect(assignmentData.assignmentFound).eq(false);
-  expect(assignmentData.newAnonymousUser).eq(null);
-
-  // reopen and get another user if load again when not logged in
-  closeAt = DateTime.now().plus({ weeks: 3 });
-  await openAssignmentWithCode(activityId, closeAt, ownerId);
-  assignmentData = await getAssignmentDataFromCode(classCode, false);
-  expect(assignmentData.assignmentFound).eq(true);
-  const newUser2 = assignmentData.newAnonymousUser;
-  expect(newUser2!.anonymous).eq(true);
-  expect(newUser2!.userId).not.eq(newUser1!.userId);
+  expect(upgraded.isAnonymous).eq(false);
+  expect(upgraded.email).eq(realEmail);
 });
 
 test("get assignment data from anonymous users", async () => {
@@ -2457,24 +2461,23 @@ test("get assignment data from anonymous users", async () => {
     ownerId,
   );
 
-  let assignmentData = await getAssignmentDataFromCode(classCode, false);
-  let newUser1 = assignmentData.newAnonymousUser;
+  let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
   const userData1 = {
-    userId: newUser1!.userId,
-    firstNames: newUser1!.firstNames,
-    lastNames: newUser1!.lastNames,
+    userId: newUser1.userId,
+    firstNames: newUser1.firstNames,
+    lastNames: newUser1.lastNames,
   };
 
   await saveScoreAndState({
     activityId,
     docId,
     docVersionNum: 1,
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     score: 0.5,
     onSubmission: true,
     state: "document state 1",
@@ -2493,12 +2496,12 @@ test("get assignment data from anonymous users", async () => {
   let assignmentStudentData = await getAssignmentStudentData({
     activityId,
     loggedInUserId: ownerId,
-    studentId: newUser1!.userId,
+    studentId: newUser1.userId,
   });
 
   expect(assignmentStudentData).eqls({
     activityId,
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     score: 0.5,
     activity: {
       name: "Activity 1",
@@ -2529,7 +2532,7 @@ test("get assignment data from anonymous users", async () => {
     activityId,
     docId,
     docVersionNum: 1,
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     score: 0.2,
     onSubmission: true,
     state: "document state 2",
@@ -2546,12 +2549,12 @@ test("get assignment data from anonymous users", async () => {
   assignmentStudentData = await getAssignmentStudentData({
     activityId,
     loggedInUserId: ownerId,
-    studentId: newUser1!.userId,
+    studentId: newUser1.userId,
   });
 
   expect(assignmentStudentData).eqls({
     activityId,
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     score: 0.5,
     activity: {
       name: "Activity 1",
@@ -2588,7 +2591,7 @@ test("get assignment data from anonymous users", async () => {
     activityId,
     docId,
     docVersionNum: 1,
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     score: 0.7,
     onSubmission: true,
     state: "document state 3",
@@ -2605,12 +2608,12 @@ test("get assignment data from anonymous users", async () => {
   assignmentStudentData = await getAssignmentStudentData({
     activityId,
     loggedInUserId: ownerId,
-    studentId: newUser1!.userId,
+    studentId: newUser1.userId,
   });
 
   expect(assignmentStudentData).eqls({
     activityId,
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     score: 0.7,
     activity: {
       name: "Activity 1",
@@ -2637,18 +2640,16 @@ test("get assignment data from anonymous users", async () => {
   });
 
   // second user opens assignment
-  assignmentData = await getAssignmentDataFromCode(classCode, false);
-
-  let newUser2 = assignmentData.newAnonymousUser;
+  let newUser2 = await createTestAnonymousUser();
   newUser2 = await updateUser({
-    userId: newUser2!.userId,
+    userId: newUser2.userId,
     firstNames: "Arya",
     lastNames: "Abbas",
   });
   const userData2 = {
-    userId: newUser2!.userId,
-    firstNames: newUser2!.firstNames,
-    lastNames: newUser2!.lastNames,
+    userId: newUser2.userId,
+    firstNames: newUser2.firstNames,
+    lastNames: newUser2.lastNames,
   };
 
   // assignment scores still unchanged
@@ -2666,7 +2667,7 @@ test("get assignment data from anonymous users", async () => {
     activityId,
     docId,
     docVersionNum: 1,
-    userId: newUser2!.userId,
+    userId: newUser2.userId,
     score: 0.3,
     onSubmission: true,
     state: "document state 4",
@@ -2688,12 +2689,12 @@ test("get assignment data from anonymous users", async () => {
   assignmentStudentData = await getAssignmentStudentData({
     activityId,
     loggedInUserId: ownerId,
-    studentId: newUser2!.userId,
+    studentId: newUser2.userId,
   });
 
   expect(assignmentStudentData).eqls({
     activityId,
-    userId: newUser2!.userId,
+    userId: newUser2.userId,
     score: 0.3,
     activity: {
       name: "Activity 1",
@@ -2734,10 +2735,9 @@ test("can't get assignment data if other user, but student can get their own dat
     ownerId,
   );
 
-  let assignmentData = await getAssignmentDataFromCode(classCode, false);
-  let newUser1 = assignmentData.newAnonymousUser;
+  let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
@@ -2746,7 +2746,7 @@ test("can't get assignment data if other user, but student can get their own dat
     activityId,
     docId,
     docVersionNum: 1,
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     score: 0.5,
     onSubmission: true,
     state: "document state 1",
@@ -2770,7 +2770,7 @@ test("can't get assignment data if other user, but student can get their own dat
   await expect(
     getAssignmentScoreData({
       activityId,
-      ownerId: newUser1!.userId,
+      ownerId: newUser1.userId,
     }),
   ).rejects.toThrow("No content found");
 
@@ -2778,7 +2778,7 @@ test("can't get assignment data if other user, but student can get their own dat
   const studentData = await getAssignmentStudentData({
     activityId,
     loggedInUserId: ownerId,
-    studentId: newUser1!.userId,
+    studentId: newUser1.userId,
   });
 
   // another user cannot get data on student
@@ -2786,7 +2786,7 @@ test("can't get assignment data if other user, but student can get their own dat
     getAssignmentStudentData({
       activityId,
       loggedInUserId: otherUserId,
-      studentId: newUser1!.userId,
+      studentId: newUser1.userId,
     }),
   ).rejects.toThrow("No assignmentScores found");
 
@@ -2794,8 +2794,8 @@ test("can't get assignment data if other user, but student can get their own dat
   expect(
     await getAssignmentStudentData({
       activityId,
-      loggedInUserId: newUser1!.userId,
-      studentId: newUser1!.userId,
+      loggedInUserId: newUser1.userId,
+      studentId: newUser1.userId,
     }),
   ).eqls(studentData);
 });
@@ -2812,10 +2812,9 @@ test("can't unassign if have data", async () => {
     ownerId,
   );
 
-  let assignmentData = await getAssignmentDataFromCode(classCode, false);
-  let newUser1 = assignmentData.newAnonymousUser;
+  let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
@@ -2824,7 +2823,7 @@ test("can't unassign if have data", async () => {
     activityId,
     docId,
     docVersionNum: 1,
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     score: 0.5,
     onSubmission: true,
     state: "document state 1",
@@ -2838,7 +2837,7 @@ test("can't unassign if have data", async () => {
   await getAssignmentStudentData({
     activityId,
     loggedInUserId: ownerId,
-    studentId: newUser1!.userId,
+    studentId: newUser1.userId,
   });
 
   await expect(unassignActivity(activityId, ownerId)).rejects.toThrow(
@@ -2880,6 +2879,7 @@ test("get activity editor data only if owner or limited data for public", async 
     codeValidUntil: null,
     isPublic: true,
     license: null,
+    classifications: [],
     documents: [],
     hasScoreData: false,
     parentFolder: null,
@@ -2933,6 +2933,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode: null,
     codeValidUntil: null,
     license: null,
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -2980,6 +2981,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -3024,6 +3026,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: null,
     license: null,
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -3074,6 +3077,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -3127,6 +3131,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -3171,6 +3176,7 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: null,
     license: null,
+    classifications: [],
     documents: [
       {
         id: docId,
@@ -3271,8 +3277,7 @@ test("only user and assignment owner can load document state", async () => {
   );
 
   // create new anonymous user
-  let assignmentData = await getAssignmentDataFromCode(classCode, false);
-  let newUser = assignmentData.newAnonymousUser;
+  let newUser = await createTestAnonymousUser();
 
   await saveScoreAndState({
     activityId,
@@ -3337,8 +3342,7 @@ test("load document state based on withMaxScore", async () => {
   );
 
   // create new anonymous user
-  let assignmentData = await getAssignmentDataFromCode(classCode, false);
-  let newUser = assignmentData.newAnonymousUser;
+  let newUser = await createTestAnonymousUser();
 
   await saveScoreAndState({
     activityId,
@@ -3482,8 +3486,7 @@ test("record submitted events and get responses", async () => {
   );
 
   // create new anonymous user
-  let assignmentData = await getAssignmentDataFromCode(classCode, false);
-  let newUser = assignmentData.newAnonymousUser;
+  let newUser = await createTestAnonymousUser();
   let userData = {
     userId: newUser!.userId,
     firstNames: newUser!.firstNames,
@@ -3775,18 +3778,17 @@ test("record submitted events and get responses", async () => {
   ]);
 
   // response for a second user
-  assignmentData = await getAssignmentDataFromCode(classCode, false);
-  let newUser2 = assignmentData.newAnonymousUser;
+  let newUser2 = await createTestAnonymousUser();
   let userData2 = {
-    userId: newUser2!.userId,
-    firstNames: newUser2!.firstNames,
-    lastNames: newUser2!.lastNames,
+    userId: newUser2.userId,
+    firstNames: newUser2.firstNames,
+    lastNames: newUser2.lastNames,
   };
   await recordSubmittedEvent({
     activityId,
     docId,
     docVersionNum: 1,
-    userId: newUser2!.userId,
+    userId: newUser2.userId,
     answerId: answerId1,
     response: "Answer result 4",
     answerNumber: 1,
@@ -3838,9 +3840,9 @@ test("record submitted events and get responses", async () => {
       numResponses: 2,
     },
     {
-      userId: newUser2!.userId,
-      firstNames: newUser2!.firstNames,
-      lastNames: newUser2!.lastNames,
+      userId: newUser2.userId,
+      firstNames: newUser2.firstNames,
+      lastNames: newUser2.lastNames,
       bestResponse: "Answer result 4",
       bestCreditAchieved: 1,
       latestResponse: "Answer result 4",
@@ -3877,7 +3879,7 @@ test("record submitted events and get responses", async () => {
       docVersionNum: 1,
       ownerId,
       answerId: answerId1,
-      userId: newUser2!.userId,
+      userId: newUser2.userId,
     }));
   expect(submittedResponseHistory).toMatchObject([
     {
@@ -3929,7 +3931,7 @@ test("record submitted events and get responses", async () => {
       docVersionNum: 1,
       ownerId,
       answerId: answerId2,
-      userId: newUser2!.userId,
+      userId: newUser2.userId,
     }));
   expect(submittedResponseHistory).eqls([]);
 
@@ -3938,7 +3940,7 @@ test("record submitted events and get responses", async () => {
     activityId,
     docId,
     docVersionNum: 1,
-    userId: newUser2!.userId,
+    userId: newUser2.userId,
     answerId: answerId1,
     response: "Answer result 5",
     answerNumber: 1,
@@ -3955,7 +3957,7 @@ test("record submitted events and get responses", async () => {
       docVersionNum: 1,
       ownerId,
       answerId: answerId1,
-      userId: newUser2!.userId,
+      userId: newUser2.userId,
     }));
   expect(submittedResponseHistory).toMatchObject([
     {
@@ -3989,9 +3991,9 @@ test("record submitted events and get responses", async () => {
       numResponses: 2,
     },
     {
-      userId: newUser2!.userId,
-      firstNames: newUser2!.firstNames,
-      lastNames: newUser2!.lastNames,
+      userId: newUser2.userId,
+      firstNames: newUser2.firstNames,
+      lastNames: newUser2.lastNames,
       bestResponse: "Answer result 4",
       bestCreditAchieved: 1,
       latestResponse: "Answer result 5",
@@ -4042,8 +4044,7 @@ test("only owner can get submitted responses", async () => {
   );
 
   // create new anonymous user
-  let assignmentData = await getAssignmentDataFromCode(classCode, false);
-  let newUser = assignmentData.newAnonymousUser;
+  let newUser = await createTestAnonymousUser();
   let userData = {
     userId: newUser!.userId,
     firstNames: newUser!.firstNames,
@@ -4245,11 +4246,9 @@ test("get all assignment data from anonymous user", async () => {
     ownerId,
   );
 
-  let assignmentData = await getAssignmentDataFromCode(classCode, false);
-
-  let newUser1 = assignmentData.newAnonymousUser;
+  let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
@@ -4258,23 +4257,23 @@ test("get all assignment data from anonymous user", async () => {
     activityId,
     docId,
     docVersionNum: 1,
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     score: 0.5,
     onSubmission: true,
     state: "document state 1",
   });
 
   let userWithScores = await getStudentData({
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     ownerId,
     parentFolderId: null,
   });
 
   expect(userWithScores).eqls({
     userData: {
-      userId: newUser1!.userId,
-      firstNames: newUser1!.firstNames,
-      lastNames: newUser1!.lastNames,
+      userId: newUser1.userId,
+      firstNames: newUser1.firstNames,
+      lastNames: newUser1.lastNames,
     },
     orderedActivityScores: [
       {
@@ -4291,23 +4290,23 @@ test("get all assignment data from anonymous user", async () => {
     activityId,
     docId,
     docVersionNum: 1,
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     score: 0.2,
     onSubmission: true,
     state: "document state 2",
   });
 
   userWithScores = await getStudentData({
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     ownerId,
     parentFolderId: null,
   });
 
   expect(userWithScores).eqls({
     userData: {
-      userId: newUser1!.userId,
-      firstNames: newUser1!.firstNames,
-      lastNames: newUser1!.lastNames,
+      userId: newUser1.userId,
+      firstNames: newUser1.firstNames,
+      lastNames: newUser1.lastNames,
     },
     orderedActivityScores: [
       {
@@ -4323,23 +4322,23 @@ test("get all assignment data from anonymous user", async () => {
     activityId,
     docId,
     docVersionNum: 1,
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     score: 0.7,
     onSubmission: true,
     state: "document state 3",
   });
 
   userWithScores = await getStudentData({
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     ownerId,
     parentFolderId: null,
   });
 
   expect(userWithScores).eqls({
     userData: {
-      userId: newUser1!.userId,
-      firstNames: newUser1!.firstNames,
-      lastNames: newUser1!.lastNames,
+      userId: newUser1.userId,
+      firstNames: newUser1.firstNames,
+      lastNames: newUser1.lastNames,
     },
     orderedActivityScores: [
       {
@@ -4547,9 +4546,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     ownerId,
   );
 
-  let assignmentData = await getAssignmentDataFromCode(classCode1a, false);
-
-  let newUser = assignmentData.newAnonymousUser;
+  let newUser = await createTestAnonymousUser();
   newUser = await updateUser({
     userId: newUser!.userId,
     firstNames: "Arya",
@@ -4903,10 +4900,9 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   ]);
   expect(scoreData.assignmentScores).eqls([]);
 
-  let assignmentData = await getAssignmentDataFromCode(classCode, false);
-  let newUser1 = assignmentData.newAnonymousUser;
+  let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
@@ -4915,7 +4911,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     activityId,
     docId,
     docVersionNum: 1,
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     score: 0.5,
     onSubmission: true,
     state: "document state 1",
@@ -4935,11 +4931,11 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   expect(scoreData.assignmentScores).eqls([
     {
       activityId: activityId,
-      userId: newUser1!.userId,
+      userId: newUser1.userId,
       score: 0.5,
       user: {
-        firstNames: newUser1!.firstNames,
-        lastNames: newUser1!.lastNames,
+        firstNames: newUser1.firstNames,
+        lastNames: newUser1.lastNames,
       },
     },
   ]);
@@ -4949,7 +4945,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     activityId,
     docId,
     docVersionNum: 1,
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     score: 0.2,
     onSubmission: true,
     state: "document state 2",
@@ -4969,20 +4965,18 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   expect(scoreData.assignmentScores).eqls([
     {
       activityId: activityId,
-      userId: newUser1!.userId,
+      userId: newUser1.userId,
       score: 0.5,
       user: {
-        firstNames: newUser1!.firstNames,
-        lastNames: newUser1!.lastNames,
+        firstNames: newUser1.firstNames,
+        lastNames: newUser1.lastNames,
       },
     },
   ]);
 
-  assignmentData = await getAssignmentDataFromCode(classCode, false);
-
-  let newUser2 = assignmentData.newAnonymousUser;
+  let newUser2 = await createTestAnonymousUser();
   newUser2 = await updateUser({
-    userId: newUser2!.userId,
+    userId: newUser2.userId,
     firstNames: "Arya",
     lastNames: "Abbas",
   });
@@ -4991,7 +4985,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     activityId,
     docId,
     docVersionNum: 1,
-    userId: newUser2!.userId,
+    userId: newUser2.userId,
     score: 0.3,
     onSubmission: true,
     state: "document state 3",
@@ -5001,7 +4995,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     activityId,
     docId,
     docVersionNum: 1,
-    userId: newUser1!.userId,
+    userId: newUser1.userId,
     score: 0.7,
     onSubmission: true,
     state: "document state 4",
@@ -5021,20 +5015,20 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   expect(scoreData.assignmentScores).eqls([
     {
       activityId: activityId,
-      userId: newUser1!.userId,
+      userId: newUser1.userId,
       score: 0.7,
       user: {
-        firstNames: newUser1!.firstNames,
-        lastNames: newUser1!.lastNames,
+        firstNames: newUser1.firstNames,
+        lastNames: newUser1.lastNames,
       },
     },
     {
       activityId: activityId,
-      userId: newUser2!.userId,
+      userId: newUser2.userId,
       score: 0.3,
       user: {
-        firstNames: newUser2!.firstNames,
-        lastNames: newUser2!.lastNames,
+        firstNames: newUser2.firstNames,
+        lastNames: newUser2.lastNames,
       },
     },
   ]);
@@ -5061,11 +5055,10 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   );
 
   // identical name to user 2
-  assignmentData = await getAssignmentDataFromCode(classCode2, false);
 
-  let newUser3 = assignmentData.newAnonymousUser;
+  let newUser3 = await createTestAnonymousUser();
   newUser3 = await updateUser({
-    userId: newUser3!.userId,
+    userId: newUser3.userId,
     firstNames: "Nyla",
     lastNames: "Nyquist",
   });
@@ -5074,7 +5067,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     activityId: activity2Id,
     docId: doc2Id,
     docVersionNum: 1,
-    userId: newUser3!.userId,
+    userId: newUser3.userId,
     score: 0.9,
     onSubmission: true,
     state: "document state 1",
@@ -5098,32 +5091,132 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   expect(scoreData.assignmentScores).eqls([
     {
       activityId: activityId,
-      userId: newUser1!.userId,
+      userId: newUser1.userId,
       score: 0.7,
       user: {
-        firstNames: newUser1!.firstNames,
-        lastNames: newUser1!.lastNames,
+        firstNames: newUser1.firstNames,
+        lastNames: newUser1.lastNames,
       },
     },
     {
       activityId: activityId,
-      userId: newUser2!.userId,
+      userId: newUser2.userId,
       score: 0.3,
       user: {
-        firstNames: newUser2!.firstNames,
-        lastNames: newUser2!.lastNames,
+        firstNames: newUser2.firstNames,
+        lastNames: newUser2.lastNames,
       },
     },
     {
       activityId: activity2Id,
-      userId: newUser3!.userId,
+      userId: newUser3.userId,
       score: 0.9,
       user: {
-        firstNames: newUser3!.firstNames,
-        lastNames: newUser3!.lastNames,
+        firstNames: newUser3.firstNames,
+        lastNames: newUser3.lastNames,
       },
     },
   ]);
+});
+
+test("Content classifications can only be edited by activity owner", async () => {
+  const { userId } = await createTestUser();
+  const { userId: otherId } = await createTestUser();
+  const allClassifications = await searchPossibleClassifications("");
+  const { id: classificationId } = allClassifications.find(
+    (k) => k.code === "K.CC.1",
+  )!;
+  const { activityId } = await createActivity(userId, null);
+
+  // Add
+  await expect(() =>
+    addClassification(activityId, classificationId, otherId),
+  ).rejects.toThrowError();
+  await addClassification(activityId, classificationId, userId);
+  {
+    const classifications = await getClassifications(activityId, userId);
+    expect(classifications.length).toBe(1);
+    expect(classifications[0].classification).toHaveProperty("code", "K.CC.1");
+    expect(classifications[0].classification).toHaveProperty(
+      "id",
+      classificationId,
+    );
+  }
+
+  // Remove
+  await expect(() =>
+    removeClassification(activityId, classificationId, otherId),
+  ).rejects.toThrowError();
+  await removeClassification(activityId, classificationId, userId);
+  {
+    const classifications = await getClassifications(activityId, userId);
+    expect(classifications).toEqual([]);
+  }
+});
+
+test("Get classifications of public activity", async () => {
+  const allClassifications = await searchPossibleClassifications("");
+  const { id: classId1 } = allClassifications.find((k) => k.code === "K.CC.1")!;
+  const { id: classId2 } = allClassifications.find(
+    (k) => k.code === "8.2.1.5",
+  )!;
+  const { userId: ownerId } = await createTestUser();
+  const { activityId } = await createActivity(ownerId, null);
+
+  await addClassification(activityId, classId1, ownerId);
+  await addClassification(activityId, classId2, ownerId);
+
+  const { userId: viewerId } = await createTestUser();
+  await expect(() =>
+    getClassifications(activityId, viewerId),
+  ).rejects.toThrowError("cannot be accessed");
+
+  await updateContent({
+    id: activityId,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activityId,
+    ownerId,
+    licenseCode: "CCDUAL",
+  });
+  const classifications = await getClassifications(activityId, viewerId);
+  expect(classifications.length).toBe(2);
+});
+
+test("Search for content classifications", async () => {
+  {
+    // Code
+    const results = await searchPossibleClassifications("CC.1");
+    expect(results.find((i) => i.code === "K.CC.1")).toBeDefined();
+  }
+  {
+    // Category
+    const results = await searchPossibleClassifications("nonlinear functions");
+    expect(results.find((i) => i.code === "8.2.1.5")).toBeDefined();
+  }
+  {
+    // Grade
+    const results = await searchPossibleClassifications("Kind");
+    expect(results.find((i) => i.code === "K.CC.1")).toBeDefined();
+  }
+  {
+    // Description
+    const results = await searchPossibleClassifications("exponents");
+    expect(results.find((i) => i.code === "A.SSE.3 c.")).toBeDefined();
+  }
+  {
+    // System name
+    const results = await searchPossibleClassifications("coMMoN cOrE");
+    expect(results.find((i) => i.code === "A.SSE.3 c.")).toBeDefined();
+  }
+  {
+    // Combination of fields
+    const results = await searchPossibleClassifications(
+      "mention addition SUBTRACTION kindergarten OA operations",
+    );
+    expect(results.find((i) => i.code === "K.OA.1")).toBeDefined();
+  }
 });
 
 test("search my folder content searches all subfolders", async () => {

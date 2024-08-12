@@ -1,16 +1,16 @@
 .snowpack
 build
 dist_local
+dist
 node_modules
 
 
 # production
 # /dist
 
-# local build files
-/dist_local
-
 **/.env
+
+.vite
 
 # misc
 .DS_Store

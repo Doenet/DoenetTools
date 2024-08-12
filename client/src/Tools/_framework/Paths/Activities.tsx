@@ -21,7 +21,6 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import {
   redirect,
-  useOutletContext,
   useLoaderData,
   useNavigate,
   useFetcher,
@@ -195,6 +194,22 @@ export async function action({ request, params }) {
       });
     }
     return true;
+  } else if (formObj._action == "add content classification") {
+    if (formObj.isFolder !== "true") {
+      await axios.post("/api/addClassification", {
+        activityId: Number(formObj.activityId),
+        classificationId: Number(formObj.classificationId),
+      });
+      return true;
+    }
+  } else if (formObj._action == "remove content classification") {
+    if (formObj.isFolder !== "true") {
+      await axios.post("/api/removeClassification", {
+        activityId: Number(formObj.activityId),
+        classificationId: Number(formObj.classificationId),
+      });
+      return true;
+    }
   } else if (formObj._action == "go to data") {
     return redirect(`/assignmentData/${formObj.activityId}`);
   } else if (formObj?._action == "noop") {
@@ -239,7 +254,6 @@ export async function loader({ params, request }) {
 }
 
 export function Activities() {
-  let context: any = useOutletContext();
   let {
     folderId,
     content,
@@ -313,11 +327,6 @@ export function Activities() {
   }, []);
 
   const fetcher = useFetcher();
-
-  //Don't do more processing if we don't know if we are signed in or not
-  if (context.signedIn == null) {
-    return null;
-  }
 
   function getCardMenuList({
     id,
