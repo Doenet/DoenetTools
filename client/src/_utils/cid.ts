@@ -1,5 +1,5 @@
-// Copied from doenetml utils
-// Currently also duplicated in client.
+// Copied from doenetml utils.
+// Currently also duplicated in server.
 
 import base32 from "hi-base32";
 

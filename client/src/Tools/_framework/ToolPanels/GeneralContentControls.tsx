@@ -40,6 +40,51 @@ import {
   DoenetmlVersion,
 } from "../Paths/ActivityEditor";
 
+export async function generalContentActions({ formObj }: { [k: string]: any }) {
+  if (formObj._action == "update general") {
+    let learningOutcomes;
+    if (formObj.learningOutcomes) {
+      learningOutcomes = JSON.parse(formObj.learningOutcomes);
+    }
+
+    await axios.post("/api/updateContentSettings", {
+      name,
+      imagePath: formObj.imagePath,
+      id: formObj.id,
+      learningOutcomes,
+    });
+
+    if (formObj.doenetmlVersionId) {
+      // TODO: handle other updates to just a document
+      await axios.post("/api/updateDocumentSettings", {
+        docId: formObj.docId,
+        doenetmlVersionId: formObj.doenetmlVersionId,
+      });
+    }
+    return true;
+  } else if (formObj._action == "add content classification") {
+    if (formObj.isFolder !== "true") {
+      await axios.post("/api/addClassification", {
+        activityId: Number(formObj.activityId),
+        classificationId: Number(formObj.classificationId),
+      });
+      return true;
+    }
+  } else if (formObj._action == "remove content classification") {
+    if (formObj.isFolder !== "true") {
+      await axios.post("/api/removeClassification", {
+        activityId: Number(formObj.activityId),
+        classificationId: Number(formObj.classificationId),
+      });
+      return true;
+    }
+  } else if (formObj?._action == "noop") {
+    return true;
+  }
+
+  return null;
+}
+
 export function GeneralContentControls({
   fetcher,
   id,
