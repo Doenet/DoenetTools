@@ -1799,44 +1799,60 @@ export async function searchSharedContent(
   query: string,
   loggedInUserId: number,
 ) {
-  // TODO: how should we sort these?
+  // remove operators that break MySQL BOOLEAN search
+  // and add * at the end of every word so that match beginning of words
+  const query_as_prefixes = query
+    .replace(/[+\-><\(\)~*\"@]+/g, " ")
+    .split(" ")
+    .map((s) => s + "*")
+    .join(" ");
 
-  const query_words = query.split(" ");
+  let matches = await prisma.$queryRaw<
+    {
+      id: number;
+      relevance: number;
+    }[]
+  >(Prisma.sql`
+  SELECT
+    content.id,
+    AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
+    (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
+    MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    ) as relevance
+  FROM
+    content
+  LEFT JOIN
+    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  LEFT JOIN
+    users ON content.ownerId = users.userId
+  LEFT JOIN
+    contentClassifications ON content.id = contentClassifications.contentId
+  LEFT JOIN
+    classifications ON contentClassifications.classificationId = classifications.id
+  WHERE
+    content.isDeleted = FALSE
+    AND (
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+    )
+    AND
+    (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+  GROUP BY
+    content.id
+  ORDER BY
+    relevance DESC
+  LIMIT 100
+  `);
+
+  // TODO: combine queries
+
   const preliminaryPublicContent = await prisma.content.findMany({
     where: {
-      AND: query_words.map((qw) => ({
-        OR: [
-          { name: { contains: "%" + qw + "%" } },
-          {
-            classifications: {
-              some: {
-                classification: {
-                  OR: [
-                    {
-                      code: { contains: "%" + qw + "%" },
-                    },
-                    {
-                      system: { name: { contains: "%" + qw + "%" } },
-                    },
-                    {
-                      category: { contains: "%" + qw + "%" },
-                    },
-                    {
-                      description: { contains: "%" + qw + "%" },
-                    },
-                  ],
-                },
-              },
-            },
-          },
-        ],
-      })),
-      isPublic: true,
-      isDeleted: false,
-      OR: [
-        { isPublic: true },
-        { sharedWith: { some: { userId: loggedInUserId } } },
-      ],
+      id: { in: matches.map((m) => m.id) },
     },
     select: {
       id: true,
@@ -1900,8 +1916,12 @@ export async function searchSharedContent(
     },
   });
 
-  const publicContent: ContentStructure[] = preliminaryPublicContent.map(
-    (content) => {
+  // TODO: better way to sort! (For free if combine queries)
+  const relevance = Object.fromEntries(matches.map((m) => [m.id, m.relevance]));
+
+  const publicContent: ContentStructure[] = preliminaryPublicContent
+    .sort((a, b) => relevance[b.id] - relevance[a.id])
+    .map((content) => {
       const {
         license,
         classifications,
@@ -1928,8 +1948,7 @@ export async function searchSharedContent(
         hasScoreData: false,
         parentFolder: processParentFolderForUser(parentFolder, loggedInUserId),
       };
-    },
-  );
+    });
 
   return publicContent;
 }
@@ -1938,34 +1957,42 @@ export async function searchUsersWithSharedContent(
   query: string,
   loggedInUserId: number,
 ) {
-  // TODO: how should we sort these?
+  // remove operators that break MySQL BOOLEAN search
+  // and add * at the end of every word so that match beginning of words
+  const query_as_prefixes = query
+    .replace(/[+\-><\(\)~*\"@]+/g, " ")
+    .split(" ")
+    .map((s) => s + "*")
+    .join(" ");
 
-  const query_words = query.split(" ");
-  const usersWithPublic = await prisma.users.findMany({
-    where: {
-      AND: query_words.map((qw) => ({
-        OR: [
-          { firstNames: { contains: "%" + qw + "%" } },
-          { lastNames: { contains: "%" + qw + "%" } },
-        ],
-      })),
-      isAnonymous: false,
-      content: {
-        some: {
-          isDeleted: false,
-          OR: [
-            { isPublic: true },
-            { sharedWith: { some: { userId: loggedInUserId } } },
-          ],
-        },
-      },
-    },
-    select: {
-      userId: true,
-      firstNames: true,
-      lastNames: true,
-    },
-  });
+  const usersWithPublic = await prisma.$queryRaw<
+    {
+      userId: number;
+      firstNames: string | null;
+      lastNames: string;
+    }[]
+  >(Prisma.sql`
+  SELECT
+    users.userId, users.firstNames, users.lastNames,
+    MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) as relevance
+  FROM
+    users
+  WHERE
+    users.isAnonymous = FALSE
+    AND users.userId IN (
+      SELECT ownerId FROM content WHERE isDeleted = FALSE AND (
+        isPublic = TRUE
+        OR id IN (
+          SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId}
+        )
+      )
+    )
+    AND
+    MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  ORDER BY
+    relevance DESC
+  LIMIT 100
+  `);
 
   return usersWithPublic;
 }
@@ -3358,18 +3385,18 @@ export async function getAnswersThatHaveSubmittedResponses({
       count: number;
     }[]
   >(Prisma.sql`
-    SELECT "docId", "docVersionNum", "answerId", "answerNumber", 
-    COUNT("userId") as "count", AVG("maxCredit") as "averageCredit"
+    SELECT docId, docVersionNum, answerId, answerNumber, 
+    COUNT(userId) as count, AVG(maxCredit) as averageCredit
     FROM (
-      SELECT "activityId", "docId", "docVersionNum", "answerId", "answerNumber", "userId", MAX("creditAchieved") as "maxCredit"
-      FROM "documentSubmittedResponses"
-      WHERE "activityId" = ${activityId}
-      GROUP BY "activityId", "docId", "docVersionNum", "answerId", "answerNumber", "userId" 
-    ) as "dsr"
-    INNER JOIN "content" on "dsr"."activityId" = "content"."id" 
-    WHERE "content"."id"=${activityId} and "ownerId" = ${ownerId} and "isAssigned"=true and "isFolder"=false
-    GROUP BY "docId", "docVersionNum", "answerId", "answerNumber"
-    ORDER BY "answerNumber"
+      SELECT activityId, docId, docVersionNum, answerId, answerNumber, userId, MAX(creditAchieved) as maxCredit
+      FROM documentSubmittedResponses
+      WHERE activityId = ${activityId}
+      GROUP BY activityId, docId, docVersionNum, answerId, answerNumber, userId 
+    ) as dsr
+    INNER JOIN content on dsr.activityId = content.id 
+    WHERE content.id=${activityId} and ownerId = ${ownerId} and isAssigned=true and isFolder=false
+    GROUP BY docId, docVersionNum, answerId, answerNumber
+    ORDER BY answerNumber
     `);
 
   // The query returns a BigInt for count, which TypeScript doesn't know how to serialize,
@@ -3423,15 +3450,15 @@ export async function getDocumentSubmittedResponses({
       numResponses: bigint;
     }[]
   >(Prisma.sql`
-select "dsr"."userId", "users"."firstNames", "users"."lastNames", "response", "creditAchieved", "submittedAt",
-    	MAX("creditAchieved") over (partition by "dsr"."userId") as "maxCredit",
-    	COUNT("creditAchieved") over (partition by "dsr"."userId") as "numResponses"
-    	from "documentSubmittedResponses" as dsr
-      INNER JOIN "content" on "dsr"."activityId" = "content"."id" 
-      INNER JOIN "users" on "dsr"."userId" = "users"."userId" 
-      WHERE "content"."id"=${activityId} and "ownerId" = ${ownerId} and "isAssigned"=true and "isFolder"=false
-    	and "docId" = ${docId} and "docVersionNum" = ${docVersionNum} and "answerId" = ${answerId}
-    	order by "dsr"."userId" asc, "submittedAt" desc
+select dsr.userId, users.firstNames, users.lastNames, response, creditAchieved, submittedAt,
+    	MAX(creditAchieved) over (partition by dsr.userId) as maxCredit,
+    	COUNT(creditAchieved) over (partition by dsr.userId) as numResponses
+    	from documentSubmittedResponses as dsr
+      INNER JOIN content on dsr.activityId = content.id 
+      INNER JOIN users on dsr.userId = users.userId 
+      WHERE content.id=${activityId} and ownerId = ${ownerId} and isAssigned=true and isFolder=false
+    	and docId = ${docId} and docVersionNum = ${docVersionNum} and answerId = ${answerId}
+    	order by dsr.userId asc, submittedAt desc
   `);
 
   let submittedResponses = [];
@@ -3830,75 +3857,61 @@ export async function searchMyFolderContent({
     };
   }
 
-  const query_words = query.split(" ");
+  let matches: {
+    id: number;
+    relevance: number;
+  }[];
 
-  let preliminaryResults;
+  // remove operators that break MySQL BOOLEAN search
+  // and add * at the end of every word so that match beginning of words
+  const query_as_prefixes = query
+    .replace(/[+\-><\(\)~*\"@]+/g, " ")
+    .split(" ")
+    .map((s) => s + "*")
+    .join(" ");
 
   if (folderId === null) {
-    preliminaryResults = await prisma.content.findMany({
-      where: {
-        AND: query_words.map((qw) => ({ name: { contains: "%" + qw + "%" } })),
-        ownerId: loggedInUserId,
-        isDeleted: false,
-      },
-      select: {
-        id: true,
-        isFolder: true,
-        ownerId: true,
-        name: true,
-        imagePath: true,
-        isPublic: true,
-        sharedWith: {
-          select: {
-            user: {
-              select: {
-                userId: true,
-                email: true,
-                firstNames: true,
-                lastNames: true,
-              },
-            },
-          },
-        },
-        isAssigned: true,
-        classCode: true,
-        codeValidUntil: true,
-        license: {
-          include: {
-            composedOf: {
-              select: { composedOf: true },
-              orderBy: { composedOf: { sortIndex: "asc" } },
-            },
-          },
-        },
-        classifications: {
-          select: {
-            classification: {
-              select: {
-                id: true,
-                code: true,
-                category: true,
-                grade: true,
-                description: true,
-                system: {
-                  select: {
-                    id: true,
-                    name: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        documents: { select: { id: true, doenetmlVersion: true } },
-        parentFolder: { select: { id: true, name: true, isPublic: true } },
-        _count: { select: { assignmentScores: true } },
-      },
-    });
+    matches = await prisma.$queryRaw<
+      {
+        id: number;
+        relevance: number;
+      }[]
+    >(Prisma.sql`
+  SELECT
+    content.id,
+    AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
+    (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
+    MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    ) as relevance
+  FROM
+    content
+  LEFT JOIN
+    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  LEFT JOIN
+    contentClassifications ON content.id = contentClassifications.contentId
+  LEFT JOIN
+    classifications ON contentClassifications.classificationId = classifications.id
+  WHERE
+    content.ownerId = ${loggedInUserId}
+    AND content.isDeleted = FALSE
+    AND
+    (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+  GROUP BY
+    content.id
+  ORDER BY
+    relevance DESC
+  LIMIT 100
+  `);
   } else {
-    let ids = (
-      await prisma.$queryRaw<{ id: number }[]>(
-        Prisma.sql`
+    matches = await prisma.$queryRaw<
+      {
+        id: number;
+        relevance: number;
+      }[]
+    >(
+      Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
       WHERE parentFolderId = ${folderId} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
@@ -3908,122 +3921,151 @@ export async function searchMyFolderContent({
       ON content.parentFolderId = ft.id
       WHERE content.isDeleted = FALSE
     )
-    SELECT id from content_tree;
-    `,
-      )
-    ).map((obj) => obj.id);
 
-    // TODO: combine this query with above recursive query
-    preliminaryResults = await prisma.content.findMany({
-      where: {
-        AND: query_words.map((qw) => ({ name: { contains: "%" + qw + "%" } })),
-        id: { in: ids },
-      },
-      select: {
-        id: true,
-        isFolder: true,
-        ownerId: true,
-        name: true,
-        imagePath: true,
-        isPublic: true,
-        sharedWith: {
-          select: {
-            user: {
-              select: {
-                userId: true,
-                email: true,
-                firstNames: true,
-                lastNames: true,
-              },
-            },
-          },
-        },
-        isAssigned: true,
-        classCode: true,
-        codeValidUntil: true,
-        license: {
-          include: {
-            composedOf: {
-              select: { composedOf: true },
-              orderBy: { composedOf: { sortIndex: "asc" } },
-            },
-          },
-        },
-        classifications: {
-          select: {
-            classification: {
-              select: {
-                id: true,
-                code: true,
-                grade: true,
-                category: true,
-                description: true,
-                system: {
-                  select: {
-                    id: true,
-                    name: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        documents: { select: { id: true, doenetmlVersion: true } },
-        parentFolder: {
-          select: {
-            id: true,
-            name: true,
-            isPublic: true,
-            sharedWith: {
-              select: {
-                user: {
-                  select: {
-                    userId: true,
-                    email: true,
-                    firstNames: true,
-                    lastNames: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        _count: { select: { assignmentScores: true } },
-      },
-    });
+    SELECT
+      content.id,
+      AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
+      (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
+      MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      ) as relevance
+    FROM
+      content
+    LEFT JOIN
+      (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+    LEFT JOIN
+      contentClassifications ON content.id = contentClassifications.contentId
+    LEFT JOIN
+      classifications ON contentClassifications.classificationId = classifications.id
+    WHERE
+      content.id IN (SELECT id from content_tree)
+      AND
+      (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+    GROUP BY
+      content.id
+    ORDER BY
+      relevance DESC
+    LIMIT 100
+    `,
+    );
   }
 
-  const content: ContentStructure[] = preliminaryResults.map((obj) => {
-    const {
-      _count,
-      isAssigned,
-      sharedWith: sharedWithOrig,
-      license,
-      classifications,
-      parentFolder,
-      ...activity
-    } = obj;
-    const isOpen = obj.codeValidUntil
-      ? DateTime.now() <= DateTime.fromJSDate(obj.codeValidUntil)
-      : false;
-    const assignmentStatus: AssignmentStatus = !obj.isAssigned
-      ? "Unassigned"
-      : !isOpen
-        ? "Closed"
-        : "Open";
-    const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
+  // TODO: combine queries
 
-    return {
-      ...activity,
-      isShared,
-      sharedWith,
-      license: license ? processLicense(license) : null,
-      classifications: classifications.map((c) => c.classification),
-      assignmentStatus,
-      hasScoreData: _count.assignmentScores > 0,
-      parentFolder: processParentFolder(parentFolder),
-    };
+  const preliminaryResults = await prisma.content.findMany({
+    where: {
+      id: { in: matches.map((m) => m.id) },
+    },
+    select: {
+      id: true,
+      isFolder: true,
+      ownerId: true,
+      name: true,
+      imagePath: true,
+      isPublic: true,
+      sharedWith: {
+        select: {
+          user: {
+            select: {
+              userId: true,
+              email: true,
+              firstNames: true,
+              lastNames: true,
+            },
+          },
+        },
+      },
+      isAssigned: true,
+      classCode: true,
+      codeValidUntil: true,
+      license: {
+        include: {
+          composedOf: {
+            select: { composedOf: true },
+            orderBy: { composedOf: { sortIndex: "asc" } },
+          },
+        },
+      },
+      classifications: {
+        select: {
+          classification: {
+            select: {
+              id: true,
+              code: true,
+              grade: true,
+              category: true,
+              description: true,
+              system: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      documents: { select: { id: true, doenetmlVersion: true } },
+      parentFolder: {
+        select: {
+          id: true,
+          name: true,
+          isPublic: true,
+          sharedWith: {
+            select: {
+              user: {
+                select: {
+                  userId: true,
+                  email: true,
+                  firstNames: true,
+                  lastNames: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      _count: { select: { assignmentScores: true } },
+    },
   });
+
+  // TODO: better way to sort! (For free if combine queries)
+  const relevance = Object.fromEntries(matches.map((m) => [m.id, m.relevance]));
+
+  const content: ContentStructure[] = preliminaryResults
+    .sort((a, b) => relevance[b.id] - relevance[a.id])
+    .map((obj) => {
+      const {
+        _count,
+        isAssigned,
+        sharedWith: sharedWithOrig,
+        license,
+        classifications,
+        parentFolder,
+        ...activity
+      } = obj;
+      const isOpen = obj.codeValidUntil
+        ? DateTime.now() <= DateTime.fromJSDate(obj.codeValidUntil)
+        : false;
+      const assignmentStatus: AssignmentStatus = !obj.isAssigned
+        ? "Unassigned"
+        : !isOpen
+          ? "Closed"
+          : "Open";
+      const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
+
+      return {
+        ...activity,
+        isShared,
+        sharedWith,
+        license: license ? processLicense(license) : null,
+        classifications: classifications.map((c) => c.classification),
+        assignmentStatus,
+        hasScoreData: _count.assignmentScores > 0,
+        parentFolder: processParentFolder(parentFolder),
+      };
+    });
 
   return {
     content,

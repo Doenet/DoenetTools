@@ -70,6 +70,7 @@ import {
   getDocumentContributorHistories,
   getDocumentRemixes,
   getDocumentDirectRemixes,
+  getDocumentSource,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -1784,6 +1785,7 @@ test("deleteActivity marks a activity and document as deleted and prevents its r
   await getActivityViewerData(activityId, userId);
   await getActivityEditorData(activityId, userId);
   await getDoc(docId);
+  await getDocumentSource(docId, userId);
 
   const deleteResult = await deleteActivity(activityId, userId);
   expect(deleteResult.isDeleted).toBe(true);
@@ -1797,6 +1799,9 @@ test("deleteActivity marks a activity and document as deleted and prevents its r
     "No content found",
   );
   await expect(getDoc(docId)).rejects.toThrow("No documents found");
+  await expect(getDocumentSource(docId, userId)).rejects.toThrow(
+    "No documents found",
+  );
 });
 
 test("only owner can delete an activity", async () => {
@@ -2974,12 +2979,181 @@ test("searchSharedContent includes public content where a classification matches
   // With code
   const resultsCode = await searchSharedContent("K.C", userId);
   expect(resultsCode.filter((r) => r.id === activityId)).toHaveLength(1);
-  // With system
-  const resultsSystem = await searchSharedContent("  CORE", userId);
-  expect(resultsSystem.filter((r) => r.id === activityId)).toHaveLength(1);
   // With both
   const resultsBoth = await searchSharedContent("common C.1", userId);
   expect(resultsBoth.filter((r) => r.id === activityId)).toHaveLength(1);
+});
+
+test("searchSharedContent, document source matches", async () => {
+  const user = await createTestUser();
+  const userId = user.userId;
+
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId, docId } = await createActivity(ownerId, null);
+  await updateDoc({ id: docId, source: "bananas", ownerId });
+  await makeActivityPublic({
+    id: activityId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+
+  // apple doesn't hit
+  let results = await searchSharedContent("apple", userId);
+  expect(results.filter((r) => r.id === activityId)).toHaveLength(0);
+
+  // first part of a word hits
+  results = await searchSharedContent("bana", userId);
+  expect(results.filter((r) => r.id === activityId)).toHaveLength(1);
+
+  // full word hits
+  results = await searchSharedContent("bananas", userId);
+  expect(results.filter((r) => r.id === activityId)).toHaveLength(1);
+});
+
+test("searchSharedContent, owner name matches", async () => {
+  const user = await createTestUser();
+  const userId = user.userId;
+
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  await updateUser({ userId: ownerId, firstNames: "Arya", lastNames: "Abbas" });
+  const { activityId } = await createActivity(ownerId, null);
+  await makeActivityPublic({
+    id: activityId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+
+  let results = await searchSharedContent("Arya", userId);
+  expect(results.filter((r) => r.id === activityId)).toHaveLength(1);
+
+  results = await searchSharedContent("Arya Abbas", userId);
+  expect(results.filter((r) => r.id === activityId)).toHaveLength(1);
+});
+
+test("searchSharedContent, document source is more relevant than classification", async () => {
+  const user = await createTestUser();
+  const userId = user.userId;
+
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  // unique code to distinguish content added in this test
+  const code = `${Date.now()}`;
+  const { activityId: activity1Id, docId: doc1Id } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: doc1Id,
+    source: `banana${code} muffin${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activity1Id,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+
+  const { activityId: activity2Id, docId: doc2Id } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: doc2Id,
+    source: `apple${code} muffin${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activity2Id,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+
+  const { id: classify1Id } = (
+    await searchPossibleClassifications("K.CC.1 common core")
+  ).find((k) => k.code === "K.CC.1")!;
+  await addClassification(activity2Id, classify1Id, ownerId);
+
+  const { id: classify2Id } = (
+    await searchPossibleClassifications("K.OA.1 common core")
+  ).find((k) => k.code === "K.OA.1")!;
+  await addClassification(activity2Id, classify2Id, ownerId);
+
+  const { id: classify3Id } = (
+    await searchPossibleClassifications("A.SSE.3")
+  ).find((k) => k.code === "A.SSE.3 c.")!;
+  await addClassification(activity2Id, classify3Id, ownerId);
+
+  // First make sure irrelevant classifications don't help relevance
+  // (as they did when summed over records rather than taking average)
+  let results = await searchSharedContent(
+    `banana${code} muffin${code}`,
+    userId,
+  );
+
+  expect(results[0].id).eq(activity1Id);
+  expect(results[1].id).eq(activity2Id);
+
+  // Even adding in three matching classifications doesn't put the match in first
+  results = await searchSharedContent(
+    `K.CC.1 K.OA.1 A.SSE.3 c. banana${code} muffin${code}`,
+    userId,
+  );
+
+  expect(results[0].id).eq(activity1Id);
+  expect(results[1].id).eq(activity2Id);
+});
+
+test("searchSharedContent, classification increases relevance", async () => {
+  const user = await createTestUser();
+  const userId = user.userId;
+
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  const { id: classifyId } = (
+    await searchPossibleClassifications("K.CC.1 common core")
+  ).find((k) => k.code === "K.CC.1")!;
+
+  // unique code to distinguish content added in this test
+  const code = `${Date.now()}`;
+  const { activityId: activity1Id, docId: doc1Id } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: doc1Id,
+    source: `banana${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activity1Id,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+
+  const { activityId: activity2Id, docId: doc2Id } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: doc2Id,
+    source: `banana${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activity2Id,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  await addClassification(activity2Id, classifyId, ownerId);
+
+  let results = await searchSharedContent(`K.CC.1 banana${code}`, userId);
+
+  expect(results[0].id).eq(activity2Id);
+  expect(results[1].id).eq(activity1Id);
 });
 
 test("searchUsersWithSharedContent returns only users with public/shared content", async () => {
@@ -4296,19 +4470,27 @@ test("can't unassign if have data", async () => {
   );
 });
 
-test("get activity editor data only if owner or limited data for public/shared", async () => {
+test("get activity/document data only if owner or limited data for public/shared", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const user1 = await createTestUser();
   const user1Id = user1.userId;
   const user2 = await createTestUser();
   const user2Id = user2.userId;
-  const { activityId } = await createActivity(ownerId, null);
+  const { activityId, docId } = await createActivity(ownerId, null);
 
   await getActivityEditorData(activityId, ownerId);
+  await getActivityViewerData(activityId, ownerId);
+  await getDocumentSource(docId, ownerId);
 
   await expect(getActivityEditorData(activityId, user1Id)).rejects.toThrow(
     "No content found",
+  );
+  await expect(getActivityViewerData(activityId, user1Id)).rejects.toThrow(
+    "No content found",
+  );
+  await expect(getDocumentSource(docId, user1Id)).rejects.toThrow(
+    "No documents found",
   );
 
   await makeActivityPublic({ id: activityId, ownerId, licenseCode: "CCDUAL" });
@@ -4340,9 +4522,18 @@ test("get activity editor data only if owner or limited data for public/shared",
     parentFolder: null,
   });
 
+  await getActivityViewerData(activityId, user1Id);
+  await getDocumentSource(docId, user1Id);
+
   await makeActivityPrivate({ id: activityId, ownerId });
   await expect(getActivityEditorData(activityId, user1Id)).rejects.toThrow(
     "No content found",
+  );
+  await expect(getActivityViewerData(activityId, user1Id)).rejects.toThrow(
+    "No content found",
+  );
+  await expect(getDocumentSource(docId, user1Id)).rejects.toThrow(
+    "No documents found",
   );
 
   await shareActivity({
@@ -4365,13 +4556,23 @@ test("get activity editor data only if owner or limited data for public/shared",
     isShared: false,
     sharedWith: [],
     license: null,
+    classifications: [],
     documents: [],
     hasScoreData: false,
     parentFolder: null,
   });
 
+  await getActivityViewerData(activityId, user1Id);
+  await getDocumentSource(docId, user1Id);
+
   await expect(getActivityEditorData(activityId, user2Id)).rejects.toThrow(
     "No content found",
+  );
+  await expect(getActivityViewerData(activityId, user2Id)).rejects.toThrow(
+    "No content found",
+  );
+  await expect(getDocumentSource(docId, user2Id)).rejects.toThrow(
+    "No documents found",
   );
 });
 
@@ -4791,6 +4992,16 @@ test("activity editor data shows its parent folder is public", async () => {
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
   expect(data.isPublic).eq(false);
   expect(data.parentFolder?.isPublic).eq(true);
+});
+
+test("getDocumentSource gets source", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId, docId } = await createActivity(ownerId, null);
+  await updateDoc({ id: docId, source: "some content", ownerId });
+
+  const documentSource = await getDocumentSource(docId, ownerId);
+  expect(documentSource.source).eq("some content");
 });
 
 test("only user and assignment owner can load document state", async () => {
@@ -6935,6 +7146,82 @@ test("search my folder content searches all subfolders", async () => {
   expect(searchResults.folder?.id).eq(folder1cId);
   content = searchResults.content;
   expect(content.length).eq(0);
+});
+
+test("searchMyFolderContent, document source matches", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId, docId } = await createActivity(ownerId, null);
+  await updateDoc({ id: docId, source: "bananas", ownerId });
+  await makeActivityPublic({
+    id: activityId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+
+  // apple doesn't hit
+  let searchResults = await searchMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
+    query: "apple",
+  });
+  let content = searchResults.content;
+  expect(content.length).eq(0);
+
+  // first part of a word hits
+  searchResults = await searchMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
+    query: "bana",
+  });
+  content = searchResults.content;
+  expect(content.length).eq(1);
+
+  // full word hits
+  searchResults = await searchMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
+    query: "bananas",
+  });
+  content = searchResults.content;
+  expect(content.length).eq(1);
+});
+
+test("searchMyFolderContent, classification matches", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId } = await createActivity(ownerId, null);
+
+  let searchResults = await searchMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
+    query: "K.CC.1 comMMon cOREe",
+  });
+  let content = searchResults.content;
+  expect(content.length).eq(0);
+
+  const { id: classifyId } = (
+    await searchPossibleClassifications("K.CC.1 common core")
+  ).find((k) => k.code === "K.CC.1")!;
+
+  await addClassification(activityId, classifyId, ownerId);
+  // With code
+  searchResults = await searchMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
+    query: "K.C",
+  });
+  content = searchResults.content;
+  expect(content.length).eq(1);
+
+  // With both
+  searchResults = await searchMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
+    query: "common C.1",
+  });
+  content = searchResults.content;
+  expect(content.length).eq(1);
 });
 
 test("get licenses", async () => {

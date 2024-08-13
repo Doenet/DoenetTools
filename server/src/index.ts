@@ -1898,7 +1898,10 @@ app.get(
       const allLicenses = await getAllLicenses();
       res.send({ allDoenetmlVersions, allLicenses, ...contentData });
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2001"
+      ) {
         res.sendStatus(404);
       } else {
         next(e);
