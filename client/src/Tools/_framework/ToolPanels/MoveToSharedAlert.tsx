@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
 
-export default function MoveToPublicAlert({
+export default function MoveToSharedAlert({
   isOpen,
   onClose,
   performMove,
@@ -35,7 +35,7 @@ export default function MoveToPublicAlert({
         <ModalContent>
           <ModalHeader>
             <Heading noOfLines={1} size="lg">
-              <WarningIcon color="orange.500" /> Confirm move to public folder
+              <WarningIcon color="orange.500" /> Confirm move to shared folder
             </Heading>
           </ModalHeader>
           <ModalCloseButton />
@@ -50,13 +50,13 @@ export default function MoveToPublicAlert({
               >
                 {folderName}
               </Text>
-              is a public folder
+              is a shared folder
               {contentIsPublic ? " with a different license" : ""}.
             </p>
             <p style={{ marginTop: "10px" }}>
               {" "}
-              Moving to this folder will make the content public with the same
-              license.
+              Moving to this folder will make the share the content with the
+              same people and with the same license.
             </p>
           </ModalBody>
           <ModalFooter>

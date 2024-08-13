@@ -9,6 +9,7 @@ import {
   HStack,
   Image,
   Show,
+  Spinner,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router";
 import { action as changeNameAction } from "./ChangeName";
@@ -92,7 +93,7 @@ export function ConfirmSignIn() {
   } else {
     content = (
       <Heading fontSize="large" marginBottom="20px" textAlign="center">
-        Verifying sign up/log in...
+        <Spinner size="sm" marginRight="10px" /> Verifying sign up/log in...
       </Heading>
     );
   }

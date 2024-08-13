@@ -6,6 +6,7 @@ import {
   FormLabel,
   Heading,
   Input,
+  Spinner,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import {
@@ -16,6 +17,7 @@ import {
 } from "react-router-dom";
 import axios from "axios";
 import { User } from "./SiteHeader";
+import { createFullName } from "../../../_utils/names";
 
 export async function action({
   params,
@@ -65,28 +67,72 @@ export function ChangeName({
   const [firstNames, setFirstNames] = useState(user?.firstNames ?? "");
   const [lastNames, setLastNames] = useState(user?.lastNames ?? "");
   const [submitted, setSubmitted] = useState(false);
+  const [statusText, setStatusText] = useState("");
 
   useEffect(() => {
-    if (
-      redirectTo &&
-      submitted &&
-      user?.firstNames === firstNames &&
-      user.lastNames === lastNames
-    ) {
-      navigate(redirectTo);
+    if (submitted && user !== undefined) {
+      setStatusText(`Name changed to ${createFullName(user)}`);
+      if (
+        redirectTo &&
+        user.firstNames === firstNames &&
+        user.lastNames === lastNames
+      ) {
+        navigate(redirectTo);
+      } else {
+        setSubmitted(false);
+      }
     }
-  }, [submitted, redirectTo, user]);
+  }, [user]);
+
+  if (!user) {
+    return (
+      <Box margin="20px">
+        <Box
+          border="solid 1px lightgray"
+          borderRadius="5px"
+          padding="5px 10px"
+          marginTop="10px"
+          backgroundColor="orange.100"
+        >
+          Cannot change name; no user logged in.
+        </Box>
+        <Button
+          colorScheme="blue"
+          mr="12px"
+          mt="8px"
+          size="xs"
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          Go to home
+        </Button>
+      </Box>
+    );
+  }
 
   return (
     <Box margin="20px">
       <Heading size="lg">Enter your name</Heading>
+      {statusText !== "" ? (
+        <Box
+          border="solid 1px lightgray"
+          borderRadius="5px"
+          padding="5px 10px"
+          marginTop="10px"
+          backgroundColor="orange.100"
+        >
+          {statusText}
+        </Box>
+      ) : null}
+
       <Form
         method="post"
         onSubmit={() => {
           setSubmitted(true);
         }}
       >
-        <Flex width="400px">
+        <Flex width="400px" maxWidth="100%">
           <FormControl>
             <FormLabel mt="16px">First name(s):</FormLabel>
             <Input
@@ -94,6 +140,7 @@ export function ChangeName({
               name="firstNames"
               size="sm"
               width={40}
+              marginRight="5px"
               value={firstNames ?? ""}
               onChange={(e) => {
                 setFirstNames(e.target.value);
@@ -114,22 +161,30 @@ export function ChangeName({
             />
           </FormControl>
         </Flex>
-        <Button type="submit" colorScheme="blue" mt="8px" mr="12px" size="xs">
-          Submit
-        </Button>
-        {!redirectTo && !hideHomeButton ? (
+        <Flex marginTop="8px">
           <Button
+            type="submit"
             colorScheme="blue"
-            mt="8px"
             mr="12px"
             size="xs"
-            onClick={() => {
-              navigate("/");
-            }}
+            isDisabled={submitted}
           >
-            Go to home
+            Submit
           </Button>
-        ) : null}
+          {!redirectTo && !hideHomeButton ? (
+            <Button
+              colorScheme="blue"
+              mr="12px"
+              size="xs"
+              onClick={() => {
+                navigate("/");
+              }}
+            >
+              Go to home
+            </Button>
+          ) : null}
+          <Spinner hidden={!submitted} />
+        </Flex>
         <input type="hidden" name="_action" value="change user name" />
       </Form>
     </Box>

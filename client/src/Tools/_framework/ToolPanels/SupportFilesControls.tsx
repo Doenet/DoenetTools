@@ -40,6 +40,33 @@ import { GoKebabVertical } from "react-icons/go";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { BsClipboardPlus } from "react-icons/bs";
 
+export async function supportFilesActions({ formObj }: { [k: string]: any }) {
+  if (formObj._action == "update description") {
+    await axios.get("/api/updateFileDescription", {
+      params: {
+        activityId: formObj.activityId,
+        cid: formObj.cid,
+        description: formObj.description,
+      },
+    });
+    return true;
+  } else if (formObj._action == "remove file") {
+    let resp = await axios.get("/api/deleteFile", {
+      params: { activityId: formObj.activityId, cid: formObj.cid },
+    });
+
+    return {
+      _action: formObj._action,
+      fileRemovedCid: formObj.cid,
+      success: resp.data.success,
+    };
+  } else if (formObj?._action == "noop") {
+    return true;
+  }
+
+  return null;
+}
+
 export function SupportFilesControls({
   supportingFileData,
   activityId,
@@ -332,6 +359,7 @@ export function SupportFilesControls({
                                     {
                                       _action: "remove file",
                                       cid: file.cid,
+                                      activityId,
                                     },
                                     { method: "post" },
                                   );
@@ -365,6 +393,7 @@ export function SupportFilesControls({
                                   _action: "update description",
                                   cid: file.cid,
                                   description: e.target.value,
+                                  activityId,
                                 },
                                 { method: "post" },
                               );
@@ -377,6 +406,7 @@ export function SupportFilesControls({
                                     cid: file.cid,
                                     description: (e.target as HTMLInputElement)
                                       .value,
+                                    activityId,
                                   },
                                   { method: "post" },
                                 );
@@ -446,6 +476,7 @@ export function SupportFilesControls({
                                 _action: "update description",
                                 description: value,
                                 cid: file.cid,
+                                activityId,
                               },
                               { method: "post" },
                             );
@@ -505,6 +536,7 @@ export function SupportFilesControls({
                                   {
                                     _action: "remove file",
                                     cid: file.cid,
+                                    activityId,
                                   },
                                   { method: "post" },
                                 );

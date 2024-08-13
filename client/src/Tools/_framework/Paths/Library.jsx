@@ -66,7 +66,7 @@ export async function loader() {
   };
 }
 
-const PublicActivitiesSection = styled.div`
+const SharedActivitiesSection = styled.div`
   grid-row: 2/3;
   display: flex;
   flex-direction: column;
@@ -349,7 +349,7 @@ export function Library() {
             </Box>
           </Box>
         </Box>
-        <PublicActivitiesSection>
+        <SharedActivitiesSection>
           {libraryData.length < 1 ? (
             <Text fontSize="28px">
               No Matching Library Activities Found
@@ -377,7 +377,7 @@ export function Library() {
               })}
             </SimpleGrid>
           )}
-        </PublicActivitiesSection>
+        </SharedActivitiesSection>
       </ActivitiesGrid>
     </>
   );
