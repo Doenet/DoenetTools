@@ -17,6 +17,24 @@ import {
 import { GoKebabVertical } from "react-icons/go";
 import { Link, useFetcher } from "react-router-dom";
 import { AssignmentStatus } from "../Tools/_framework/Paths/ActivityEditor";
+import axios from "axios";
+
+export async function contentCardActions({ formObj }: { [k: string]: any }) {
+  if (formObj._action == "update title") {
+    //Don't let name be blank
+    let name = formObj?.cardTitle?.trim();
+    if (name == "") {
+      name = "Untitled " + (formObj.isFolder ? "Folder" : "Activity");
+    }
+    await axios.post(`/api/updateContentName`, {
+      id: Number(formObj.id),
+      name,
+    });
+    return true;
+  }
+
+  return null;
+}
 
 export default forwardRef(function ContentCard(
   {

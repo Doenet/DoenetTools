@@ -25,10 +25,96 @@ import {
 import axios from "axios";
 import ContributorsMenu from "../ToolPanels/ContributorsMenu";
 import { Link } from "react-router-dom";
-import { ContentStructure, DoenetmlVersion, License } from "./ActivityEditor";
-import { DisplayLicenseItem } from "../ToolPanels/SharingControls";
+import {
+  ContentStructure,
+  DoenetmlVersion,
+  License,
+  UserInfo,
+} from "./ActivityEditor";
+import { DisplayLicenseItem } from "../ToolPanels/ShareSettings";
 import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
 import { User } from "./SiteHeader";
+import { createFullName } from "../../../_utils/names";
+import { DateTime } from "luxon";
+import { cidFromText } from "../../../_utils/cid";
+
+export type DocHistoryItem = {
+  docId: number;
+  prevDocId: number;
+  prevDocVersionNum: number;
+  withLicenseCode: string | null;
+  timestampDoc: DateTime;
+  timestampPrevDoc: DateTime;
+  prevActivityId: number;
+  prevActivityName: string;
+  prevOwner: UserInfo;
+  prevChanged: boolean;
+  prevCid: string;
+};
+
+export type DocRemixItem = {
+  docId: number;
+  prevDocId: number;
+  prevDocVersionNum: number;
+  withLicenseCode: string | null;
+  isDirect: boolean;
+  timestampDoc: DateTime;
+  timestampPrevDoc: DateTime;
+  activityId: number;
+  activityName: string;
+  owner: UserInfo;
+};
+
+export async function processContributorHistory(hist: {
+  contributorHistory: any[];
+}) {
+  let historyItems: DocHistoryItem[] = [];
+
+  for (let ch of hist.contributorHistory) {
+    const { prevDoc, ...historyItem } = ch;
+    let prevActivity = prevDoc.document.activity;
+    let prevCid = prevDoc.cid;
+    let prevDocCurrentCid = await cidFromText(prevDoc.document.source);
+
+    historyItems.push({
+      ...historyItem,
+      timestampDoc: DateTime.fromISO(ch.timestampDoc),
+      timestampPrevDoc: DateTime.fromISO(ch.timestampPrevDoc),
+      prevActivityId: prevActivity.id,
+      prevActivityName: prevActivity.name,
+      prevOwner: prevActivity.owner,
+      prevChanged: prevDocCurrentCid !== prevCid,
+      prevCid,
+    });
+  }
+
+  return historyItems;
+}
+
+export function processRemixes(remixes: {
+  documentVersions: { contributorHistory: any[] }[];
+}): DocRemixItem[] {
+  let items = remixes.documentVersions
+    .flatMap((dv) =>
+      dv.contributorHistory.map((ch) => {
+        const { document, ...item } = ch;
+        const activity = document.activity;
+        const remixItem: DocRemixItem = {
+          ...item,
+          isDirect: ch.timestampDoc === ch.timestampPrevDoc,
+          timestampDoc: DateTime.fromISO(ch.timestampDoc),
+          timestampPrevDoc: DateTime.fromISO(ch.timestampPrevDoc),
+          activityId: activity.id,
+          activityName: activity.name,
+          owner: activity.owner,
+        };
+        return remixItem;
+      }),
+    )
+    .sort((a, b) => (a.isDirect === b.isDirect ? 0 : a.isDirect ? -1 : 1));
+
+  return items;
+}
 
 export async function loader({ params }) {
   try {
@@ -50,17 +136,20 @@ export async function loader({ params }) {
     const doenetmlVersion: DoenetmlVersion =
       activityData.activity.documents[0].doenetmlVersion;
 
+    const contributorHistory = await processContributorHistory(
+      activityData.docHistories[0],
+    );
+
     return {
       activityId,
       doenetML,
       activity: activityData.activity,
-      owner: activityData.owner,
       docId,
-      contributorHistory: activityData.doc.contributorHistory,
+      contributorHistory,
       doenetmlVersion,
     };
   } catch (e) {
-    if (e.response.status === 404) {
+    if (e.response?.status === 404) {
       throw Error("Activity not found");
     } else {
       throw e;
@@ -73,7 +162,6 @@ export function ActivityViewer() {
     activityId,
     doenetML,
     activity,
-    owner,
     docId,
     contributorHistory,
     doenetmlVersion,
@@ -81,14 +169,8 @@ export function ActivityViewer() {
     activityId: number;
     doenetML: string;
     activity: ContentStructure;
-    owner: {
-      userId: number;
-      email: string;
-      firstNames: string | null;
-      lastNames: string;
-    };
     docId: number;
-    contributorHistory: any;
+    contributorHistory: DocHistoryItem[];
     doenetmlVersion: DoenetmlVersion;
   };
 
@@ -164,7 +246,7 @@ export function ActivityViewer() {
                     </Flex>
                     <Flex mt="10px" width="100%">
                       <ContributorsMenu
-                        owner={owner}
+                        activity={activity}
                         contributorHistory={contributorHistory}
                       />
                       <Spacer />
@@ -259,8 +341,8 @@ export function ActivityViewer() {
                     activity.license.isComposition ? (
                       <>
                         <p>
-                          <strong>{activity.name}</strong> by {owner.firstNames}{" "}
-                          {owner.lastNames} is shared publicly with these
+                          <strong>{activity.name}</strong> by{" "}
+                          {createFullName(activity.owner!)} is shared with these
                           licenses:
                         </p>
                         <List spacing="20px" marginTop="10px">
@@ -279,8 +361,8 @@ export function ActivityViewer() {
                     ) : (
                       <>
                         <p>
-                          <strong>{activity.name}</strong> by {owner.firstNames}{" "}
-                          {owner.lastNames} is shared publicly using the
+                          <strong>{activity.name}</strong> by{" "}
+                          {createFullName(activity.owner!)} is shared using the
                           license:
                         </p>
                         <List marginTop="10px">
@@ -290,9 +372,9 @@ export function ActivityViewer() {
                     )
                   ) : (
                     <p>
-                      <strong>{activity.name}</strong> by {owner.firstNames}{" "}
-                      {owner.lastNames} is shared publicly, but a license was
-                      not specified. Contact the author to determine in what
+                      <strong>{activity.name}</strong> by{" "}
+                      {createFullName(activity.owner!)} is shared, but a license
+                      was not specified. Contact the author to determine in what
                       ways you can reuse this activity.
                     </p>
                   )}
@@ -335,7 +417,10 @@ function DisplaySmallLicenseBadge({
   let imageURL = licenseItem.smallImageURL ?? licenseItem.imageURL;
   if (imageURL) {
     badge = (
-      <Tooltip label={licenseItem.name} placement="bottom-end">
+      <Tooltip
+        label={`Shared with ${licenseItem.name} license`}
+        placement="bottom-end"
+      >
         <Image
           src={imageURL}
           alt={`Badge for license: ${licenseItem.name}`}

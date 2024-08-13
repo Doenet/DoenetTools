@@ -20,6 +20,7 @@ import {
   HStack,
   Show,
   SimpleGrid,
+  Hide,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
@@ -198,7 +199,7 @@ export function Home() {
             </GridItem>
           </Grid>
         </Show>
-        <Show below="sm">
+        <Hide above="sm">
           <SimpleGrid columns={[1, 1, 2, 2, 2]} spacing="10px">
             <Suspense fallback={"Loading..."}>
               {/* Does this lazy loading do anything? */}
@@ -208,7 +209,7 @@ export function Home() {
             </Suspense>
             {heroTextAndActions()}
           </SimpleGrid>
-        </Show>
+        </Hide>
       </Flex>
       <Center w="100%" bg={grayColor} pl="10px" pr="10px">
         <VStack maxWidth="900px" w="100%" spacing={4} marginBottom={"30px"}>

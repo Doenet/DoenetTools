@@ -29,7 +29,7 @@ model content {
   isPublic         Boolean                  @default(false)
   isDeleted        Boolean                  @default(false)
   sortIndex        BigInt
-  licenseCode      String?                  @db.VarChar(10)
+  licenseCode      String?                  @default("CCDUAL") @db.VarChar(10)
   owner            users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   parentFolder     content?                 @relation("folderStructure", fields: [parentFolderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   subFolders       content[]                @relation("folderStructure")
@@ -37,6 +37,7 @@ model content {
   license          licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
   assignmentScores assignmentScores[]
   promotedContent  promotedContent[]
+  sharedWith       contentShares[]
   classifications  contentClassifications[]
 
   @@index([ownerId, parentFolderId, sortIndex])
@@ -83,16 +84,17 @@ model documentVersions {
 }
 
 model licenses {
-  code          String                @id @db.VarChar(10)
-  name          String
-  description   String                @db.Text
-  imageURL      String?
-  smallImageURL String?
-  licenseURL    String?
-  composedOf    licenseCompositions[] @relation("composeOf")
-  includedIn    licenseCompositions[] @relation("includedIn")
-  content       content[]
-  sortIndex     Int
+  code               String                @id @db.VarChar(10)
+  name               String
+  description        String                @db.Text
+  imageURL           String?
+  smallImageURL      String?
+  licenseURL         String?
+  composedOf         licenseCompositions[] @relation("composeOf")
+  includedIn         licenseCompositions[] @relation("includedIn")
+  content            content[]
+  sortIndex          Int
+  contributorHistory contributorHistory[]
 }
 
 model licenseCompositions {
@@ -108,12 +110,25 @@ model contributorHistory {
   docId             Int
   prevDocId         Int
   prevDocVersionNum Int
-  timestamp         DateTime         @default(now())
+  withLicenseCode   String?          @db.VarChar(10)
+  timestampDoc      DateTime         @default(now())
+  timestampPrevDoc  DateTime         @default(now())
   document          documents        @relation(fields: [docId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   prevDoc           documentVersions @relation(fields: [prevDocId, prevDocVersionNum], references: [docId, versionNum], onDelete: NoAction, onUpdate: NoAction)
+  withLicense       licenses?        @relation(fields: [withLicenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([docId, prevDocId])
   @@index([prevDocId, prevDocVersionNum])
+}
+
+model contentShares {
+  contentId Int
+  userId    Int
+  content   content @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user      users   @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([contentId, userId])
+  @@index([userId])
 }
 
 model doenetmlVersions {
@@ -192,6 +207,7 @@ model users {
   assignmentScores           assignmentScores[]
   documentState              documentState[]
   documentSubmittedResponses documentSubmittedResponses[]
+  sharedWithMe               contentShares[]
 }
 
 model promotedContentGroups {
@@ -226,7 +242,7 @@ model classifications {
   id                     Int                      @id @default(autoincrement())
   code                   String
   systemId               Int
-  category               String                   @db.TinyText
+  category               String                   @db.Text
   description            String                   @db.Text
   grade                  String?
   system                 classificationSystems    @relation(fields: [systemId], references: [id])
