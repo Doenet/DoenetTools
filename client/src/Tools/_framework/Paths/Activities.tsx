@@ -17,6 +17,8 @@ import {
   Spacer,
   Show,
   HStack,
+  ButtonGroup,
+  VStack,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -31,6 +33,7 @@ import {
 import { RiEmotionSadLine } from "react-icons/ri";
 import { FaListAlt, FaRegListAlt } from "react-icons/fa";
 import { BsFillGrid3X3GapFill, BsGrid3X3Gap } from "react-icons/bs";
+import { IoGrid, IoGridOutline } from "react-icons/io5";
 import ContentCard from "../../../Widgets/ContentCard";
 import ActivityTable from "../../../Widgets/ActivityTable";
 import axios from "axios";
@@ -543,127 +546,163 @@ export function Activities() {
         width="100%"
         textAlign="center"
       >
-        <Heading as="h2" size="lg" paddingTop=".5em" noOfLines={1}>
+        <Heading as="h2" size="lg" padding=".5em 0" noOfLines={1}>
           <Tooltip label={headingText}>{headingText}</Tooltip>
         </Heading>
-        <Flex float="right">
-          <Flex>
-            <Form>
-              <Input
-                type="search"
-                hidden={!searchOpen}
-                size="xs"
-                margin="3px"
-                width="250px"
-                ref={searchRef}
-                placeholder={
-                  folder ? `Search in folder` : `Search my activities`
-                }
-                value={searchString}
-                name="q"
-                onInput={(e) => {
-                  setSearchString((e.target as HTMLInputElement).value);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key == "Enter") {
-                  }
-                }}
-                onBlur={() => {
-                  searchBlurTimeout.current = setTimeout(() => {
-                    setSearchOpen(false);
-                  }, 200);
-                }}
-              />
-              <Tooltip
-                label={folder ? `Search in folder` : `Search my activities`}
-                placement="bottom-end"
-              >
-                <IconButton
-                  size="xs"
+        <VStack float="right">
+          <HStack>
+            <Flex>
+              <Form>
+                <Input
+                  type="search"
+                  hidden={!searchOpen}
+                  size="sm"
                   margin="3px"
-                  icon={<MdOutlineSearch />}
-                  aria-label={
+                  width="250px"
+                  ref={searchRef}
+                  placeholder={
                     folder ? `Search in folder` : `Search my activities`
                   }
-                  type="submit"
-                  onClick={(e) => {
-                    if (searchOpen) {
-                      clearTimeout(searchBlurTimeout.current);
-                      searchRef.current?.focus();
-                    } else {
-                      setSearchOpen(true);
-                      e.preventDefault();
+                  value={searchString}
+                  name="q"
+                  onInput={(e) => {
+                    setSearchString((e.target as HTMLInputElement).value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key == "Enter") {
                     }
                   }}
+                  onBlur={() => {
+                    searchBlurTimeout.current = setTimeout(() => {
+                      setSearchOpen(false);
+                    }, 200);
+                  }}
                 />
-              </Tooltip>
-            </Form>
-          </Flex>
-          <Menu>
-            <MenuButton
-              as={Button}
-              size="xs"
-              margin="3px"
-              hidden={searchOpen || haveQuery}
-            >
-              New
-            </MenuButton>
-            <MenuList>
-              <MenuItem
-                onClick={async () => {
-                  //Create an activity and redirect to the editor for it
-                  // let { data } = await axios.post("/api/createActivity");
-                  // let { activityId } = data;
-                  // navigate(`/activityEditor/${activityId}`);
-
-                  // TODO - review this, elsewhere the fetcher is being used, and
-                  // there was code up in the action() method for this action
-                  // that was unused. This appears to work okay though? And it
-                  // would make it consistent with how API requests are done elsewhere
-                  fetcher.submit(
-                    { _action: "Add Activity" },
-                    { method: "post" },
-                  );
-                }}
+                <Tooltip
+                  label={folder ? `Search in folder` : `Search my activities`}
+                  placement="bottom-end"
+                >
+                  <IconButton
+                    size="sm"
+                    margin="3px"
+                    icon={<MdOutlineSearch />}
+                    aria-label={
+                      folder ? `Search in folder` : `Search my activities`
+                    }
+                    type="submit"
+                    onClick={(e) => {
+                      if (searchOpen) {
+                        clearTimeout(searchBlurTimeout.current);
+                        searchRef.current?.focus();
+                      } else {
+                        setSearchOpen(true);
+                        e.preventDefault();
+                      }
+                    }}
+                  />
+                </Tooltip>
+              </Form>
+            </Flex>
+            <Menu>
+              <MenuButton
+                as={Button}
+                size="sm"
+                margin="3px"
+                hidden={searchOpen || haveQuery}
               >
-                Activity
-              </MenuItem>
-              <MenuItem
+                New
+              </MenuButton>
+              <MenuList>
+                <MenuItem
+                  onClick={async () => {
+                    //Create an activity and redirect to the editor for it
+                    // let { data } = await axios.post("/api/createActivity");
+                    // let { activityId } = data;
+                    // navigate(`/activityEditor/${activityId}`);
+
+                    // TODO - review this, elsewhere the fetcher is being used, and
+                    // there was code up in the action() method for this action
+                    // that was unused. This appears to work okay though? And it
+                    // would make it consistent with how API requests are done elsewhere
+                    fetcher.submit(
+                      { _action: "Add Activity" },
+                      { method: "post" },
+                    );
+                  }}
+                >
+                  Activity
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    fetcher.submit(
+                      { _action: "Add Folder" },
+                      { method: "post" },
+                    );
+                  }}
+                >
+                  Folder
+                </MenuItem>
+              </MenuList>
+            </Menu>
+
+            {folderId !== null ? (
+              <Button
+                margin="3px"
+                size="sm"
+                ref={folderSettingsRef}
                 onClick={() => {
-                  fetcher.submit({ _action: "Add Folder" }, { method: "post" });
+                  setSettingsContentId(folderId);
+                  setSettingsDisplayTab("share");
+                  settingsOnOpen();
                 }}
+                hidden={searchOpen || haveQuery}
               >
-                Folder
-              </MenuItem>
-            </MenuList>
-          </Menu>
-
-          {folderId !== null ? (
+                Share
+              </Button>
+            ) : null}
             <Button
               margin="3px"
-              size="xs"
-              ref={folderSettingsRef}
-              onClick={() => {
-                setSettingsContentId(folderId);
-                setSettingsDisplayTab("share");
-                settingsOnOpen();
-              }}
+              size="sm"
+              onClick={() =>
+                navigate(
+                  `/allAssignmentScores${folderId ? "/" + folderId : ""}`,
+                )
+              }
               hidden={searchOpen || haveQuery}
             >
-              Share
+              See Scores
             </Button>
-          ) : null}
-          <Button
-            margin="3px"
-            size="xs"
-            onClick={() =>
-              navigate(`/allAssignmentScores${folderId ? "/" + folderId : ""}`)
-            }
-            hidden={searchOpen || haveQuery}
+          </HStack>
+          <ButtonGroup
+            size="sm"
+            isAttached
+            variant="outline"
+            marginBottom=".5em"
           >
-            See Scores
-          </Button>
-        </Flex>
+            <Tooltip label="Toggle List View">
+              <Button isActive={listView === true}>
+                <Icon
+                  as={listView ? FaListAlt : FaRegListAlt}
+                  boxSize={10}
+                  p=".5em"
+                  cursor="pointer"
+                  onClick={() => setListView(true)}
+                />
+              </Button>
+            </Tooltip>
+            <Tooltip label="Toggle Card View">
+              <Button isActive={listView === false}>
+                <Icon
+                  as={listView ? IoGridOutline : IoGrid}
+                  boxSize={10}
+                  p=".5em"
+                  cursor="pointer"
+                  onClick={() => setListView(false)}
+                />
+              </Button>
+            </Tooltip>
+          </ButtonGroup>
+        </VStack>
       </Box>
       {folder && !haveQuery ? (
         <Box style={{ marginLeft: "15px", marginTop: "-30px", float: "left" }}>
@@ -685,28 +724,6 @@ export function Activities() {
           </Link>
         </Box>
       ) : null}
-      <HStack spacing="5px" margin="10px" verticalAlign="baseline">
-        <Tooltip label="Toggle List View">
-          <Box>
-            <Icon
-              as={listView ? FaListAlt : FaRegListAlt}
-              boxSize={8}
-              cursor="pointer"
-              onClick={() => setListView(true)}
-            />
-          </Box>
-        </Tooltip>
-        <Tooltip label="Toggle Card View">
-          <Box>
-            <Icon
-              as={listView ? BsGrid3X3Gap : BsFillGrid3X3GapFill}
-              boxSize={8}
-              cursor="pointer"
-              onClick={() => setListView(false)}
-            />
-          </Box>
-        </Tooltip>
-      </HStack>
       {haveQuery ? (
         <Flex
           width="100%"
@@ -787,6 +804,7 @@ export function Activities() {
                   : `/activityEditor/${activity.id}`,
                 editableTitle: true,
                 autoFocusTitle: folderJustCreated === activity.id,
+                showAssignmentStatus: true,
               };
             })}
           />

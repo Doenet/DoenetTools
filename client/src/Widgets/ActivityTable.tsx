@@ -87,7 +87,11 @@ export default forwardRef(function ActivityTable(
             }
 
             let assignmentStatusString: string =
-              activity.assignmentStatus ?? "";
+              activity.assignmentStatus !== null &&
+              activity.assignmentStatus !== undefined &&
+              activity.assignmentStatus !== "Unassigned"
+                ? activity.assignmentStatus
+                : "";
 
             if (
               activity.assignmentStatus === "Open" &&
@@ -128,10 +132,12 @@ export default forwardRef(function ActivityTable(
                         ? activity.isPublic
                           ? "Folder / Public"
                           : "Folder / Private"
-                        : "Assignment / " + (activity.assignmentStatus ?? "")
+                        : activity.assignmentStatus === "Unassigned"
+                          ? "Activity / " + (activity.assignmentStatus ?? "")
+                          : "Assignment / " + (activity.assignmentStatus ?? "")
                     }
                   >
-                    <Box paddingRight="1em">
+                    <Box paddingRight="1em" m="0">
                       <Icon
                         as={
                           activity.isFolder
@@ -152,35 +158,37 @@ export default forwardRef(function ActivityTable(
                         boxSize={12}
                         paddingLeft="1em"
                       />
-                      {activity.isPublic ? (
-                        <Icon
-                          as={BsPeopleFill}
-                          color="#666699"
-                          boxSize={4}
-                          verticalAlign="baseline"
-                        />
-                      ) : null}
                     </Box>
                   </Tooltip>
                 </Td>
                 <Td>
-                  <Editable
-                    defaultValue={activity.title}
-                    startWithEditView={activity.autoFocusTitle}
-                    isDisabled={!activity.editableTitle}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <EditablePreview />
-                    <EditableInput
-                      maxLength={191}
-                      onBlur={(e) => saveUpdatedTitle(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key == "Enter") {
-                          (e.target as HTMLElement).blur();
-                        }
-                      }}
-                    />
-                  </Editable>
+                  <HStack>
+                    <Editable
+                      defaultValue={activity.title}
+                      startWithEditView={activity.autoFocusTitle}
+                      isDisabled={!activity.editableTitle}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <EditablePreview />
+                      <EditableInput
+                        maxLength={191}
+                        onBlur={(e) => saveUpdatedTitle(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key == "Enter") {
+                            (e.target as HTMLElement).blur();
+                          }
+                        }}
+                      />
+                    </Editable>
+                    {activity.isPublic ? (
+                      <Icon
+                        as={BsPeopleFill}
+                        color="#666699"
+                        boxSize={5}
+                        verticalAlign="baseline"
+                      />
+                    ) : null}
+                  </HStack>
                 </Td>
                 {activity.showPublicStatus ? (
                   <Td>{activity.isPublic ? "Public" : "Private"}</Td>
