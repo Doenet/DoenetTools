@@ -1,0 +1,48 @@
+name: Client CI
+on:
+  push:
+    branches: [main, ci-tests]
+  pull_request:
+    branches: main
+jobs:
+  build-client:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Npm install
+        run: npm install
+        working-directory: ./client
+      - name: Build
+        run: npm run build
+        working-directory: ./client
+
+  lint-client:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Npm install
+        run: npm install
+        working-directory: ./client
+      - name: Lint
+        run: npx eslint
+        working-directory: ./client
+
+  prettier-client:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Npm install
+        run: npm install
+        working-directory: ./client
+      - name: Prettier
+        run: npx prettier . --check
+        working-directory: ./client
