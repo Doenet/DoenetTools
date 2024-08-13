@@ -228,7 +228,7 @@ export default forwardRef(function ActivityTable(
                           paddingRight="1em"
                         />
                       </MenuButton>
-                      <MenuList zIndex="1000">{activity.menuItems}</MenuList>
+                      <MenuList zIndex="1000" onClick={(e) => e.stopPropagation()}>{activity.menuItems}</MenuList>
                     </Menu>
                   ) : null}
                 </Td>

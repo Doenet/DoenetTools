@@ -26,12 +26,17 @@ import {
   VStack,
   Checkbox,
   FormLabel,
+  ButtonGroup,
+  Tooltip,
+
 } from "@chakra-ui/react";
 import { useLoaderData } from "react-router";
 import { Carousel } from "../../../Widgets/Carousel";
 import Searchbar from "../../../Widgets/SearchBar";
 import { Form, useFetcher } from "react-router-dom";
 import { RiEmotionSadLine } from "react-icons/ri";
+import { FaListAlt, FaRegListAlt } from "react-icons/fa";
+import { IoGrid, IoGridOutline } from "react-icons/io5";
 import ContentCard from "../../../Widgets/ContentCard";
 import AuthorCard from "../../../Widgets/AuthorCard";
 import { createFullName } from "../../../_utils/names";
@@ -380,6 +385,8 @@ export function Community() {
   const [currentTab, setCurrentTab] = useState(0);
   const fetcher = useFetcher();
 
+  const [listView, setListView] = useState(true);
+
   useEffect(() => {
     document.title = `Community - Doenet`;
   }, []);
@@ -512,6 +519,39 @@ export function Community() {
               {q}
             </Text>
           </Text>
+          <Box width="100%">
+            <ButtonGroup
+              size="sm"
+              isAttached
+              variant="outline"
+              marginBottom=".5em"
+              marginRight=".5em"
+              float="right"
+            >
+              <Tooltip label="Toggle List View">
+                <Button isActive={listView === true}>
+                  <Icon
+                    as={listView ? FaListAlt : FaRegListAlt}
+                    boxSize={10}
+                    p=".5em"
+                    cursor="pointer"
+                    onClick={() => setListView(true)}
+                  />
+                </Button>
+              </Tooltip>
+              <Tooltip label="Toggle Card View">
+                <Button isActive={listView === false}>
+                  <Icon
+                    as={listView ? IoGridOutline : IoGrid}
+                    boxSize={10}
+                    p=".5em"
+                    cursor="pointer"
+                    onClick={() => setListView(false)}
+                  />
+                </Button>
+              </Tooltip>
+            </ButtonGroup>
+          </Box>
         </Box>
         <Tabs
           orientation="vertical"
@@ -595,7 +635,7 @@ export function Community() {
                 alignItems="center"
                 data-test="Results Activities"
               >
-                {contentMatches.map(displayCard)}
+                {listView ? contentMatches.map(displayCard) : contentMatches.map(displayCard)}
                 {contentMatches.length == 0 ? (
                   <Flex
                     flexDirection="column"
