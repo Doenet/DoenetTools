@@ -554,6 +554,7 @@ test(
     const {
       isAdmin: _isAdmin1,
       isAnonymous: _isAnonymous1,
+      cardView: _cardView1,
       ...userFields1
     } = user1;
     let user2 = await createTestUser();
@@ -566,6 +567,7 @@ test(
     const {
       isAdmin: _isAdmin2,
       isAnonymous: _isAnonymous2,
+      cardView: _cardView2,
       ...userFields2
     } = user2;
     const user3 = await createTestUser();
@@ -1026,7 +1028,7 @@ test("content in shared folder is created shared", async () => {
   const ownerId = owner.userId;
   const user = await createTestUser();
   const userId = user.userId;
-  const { isAdmin, isAnonymous, ...userFields } = user;
+  const { isAdmin, isAnonymous, cardView, ...userFields } = user;
 
   const { folderId: publicFolderId } = await createFolder(ownerId, null);
 
@@ -1194,6 +1196,7 @@ test(
     const {
       isAdmin: _isAdmin1,
       isAnonymous: _isAnonymous1,
+      cardView: _cardView1,
       ...userFields1
     } = user1;
     let user2 = await createTestUser();
@@ -1206,6 +1209,7 @@ test(
     const {
       isAdmin: _isAdmin2,
       isAnonymous: _isAnonymous2,
+      cardView: _cardView2,
       ...userFields2
     } = user2;
     let user3 = await createTestUser();
@@ -1218,6 +1222,7 @@ test(
     const {
       isAdmin: _isAdmin3,
       isAnonymous: _isAnonymous3,
+      cardView: _cardView3,
       ...userFields3
     } = user3;
 
@@ -1598,7 +1603,12 @@ test("moving content into shared folder shares it", async () => {
   const ownerId = owner.userId;
   const user = await createTestUser();
   const userId = user.userId;
-  const { isAdmin: _isAdmin, isAnonymous: _isAnonymous, ...userFields } = user;
+  const {
+    isAdmin: _isAdmin,
+    isAnonymous: _isAnonymous,
+    cardView: _cardView,
+    ...userFields
+  } = user;
 
   const { folderId: sharedFolderId } = await createFolder(ownerId, null);
   await shareFolder({
