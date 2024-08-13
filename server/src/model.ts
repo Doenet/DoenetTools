@@ -5109,3 +5109,21 @@ export async function unshareFolder({
     },
   });
 }
+
+export async function setPreferredFolderView(
+  loggedInUserId: number,
+  cardView: boolean,
+) {
+  return await prisma.users.update({
+    where: { userId: loggedInUserId },
+    data: { cardView },
+    select: { cardView: true },
+  });
+}
+
+export async function getPreferredFolderView(loggedInUserId: number) {
+  return await prisma.users.findUniqueOrThrow({
+    where: { userId: loggedInUserId },
+    select: { cardView: true },
+  });
+}

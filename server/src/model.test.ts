@@ -71,6 +71,8 @@ import {
   getDocumentRemixes,
   getDocumentDirectRemixes,
   getDocumentSource,
+  getPreferredFolderView,
+  setPreferredFolderView,
 } from "./model";
 import { DateTime } from "luxon";
 
@@ -7402,4 +7404,18 @@ test("set license to make public", async () => {
   expect(activityData.license?.composedOf[1].imageURL).eq(
     "/creative_commons_by_nc_sa.png",
   );
+});
+
+test("set and get preferred folder view", async () => {
+  const user = await createTestUser();
+  const userId = user.userId;
+
+  let result = await getPreferredFolderView(userId);
+  expect(result).eqls({ cardView: false });
+
+  result = await setPreferredFolderView(userId, true);
+  expect(result).eqls({ cardView: true });
+
+  result = await getPreferredFolderView(userId);
+  expect(result).eqls({ cardView: true });
 });
