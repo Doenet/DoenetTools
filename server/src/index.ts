@@ -77,6 +77,8 @@ import {
   getActivityContributorHistory,
   getActivityRemixes,
   getDocumentSource,
+  setPreferredFolderView,
+  getPreferredFolderView,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -91,6 +93,7 @@ import { Strategy as AnonymIdStrategy } from "passport-anonym-uuid";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
 import * as fs from "fs/promises";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const client = new SESClient({ region: "us-east-2" });
 
@@ -2062,6 +2065,7 @@ app.get(
     }
   },
 );
+
 app.get(
   "/api/searchPossibleClassifications",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -2072,6 +2076,43 @@ app.get(
     } catch (e) {
       if (e instanceof InvalidRequestError) {
         res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/setPreferredFolderView",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const loggedInUserId = Number(req.user?.userId ?? 0);
+      const cardView = req.body.cardView as boolean;
+
+      let results = await setPreferredFolderView(loggedInUserId, cardView);
+      res.send(results);
+    } catch (e) {
+      if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
+        res.status(404).send("Not logged in");
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.get(
+  "/api/getPreferredFolderView",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const loggedInUserId = Number(req.user?.userId ?? 0);
+
+      let results = await getPreferredFolderView(loggedInUserId);
+      res.send(results);
+    } catch (e) {
+      if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
+        res.status(404).send("Not logged in");
         return;
       }
       next(e);
