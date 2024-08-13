@@ -1804,6 +1804,7 @@ export async function searchSharedContent(
   const query_as_prefixes = query
     .replace(/[+\-><\(\)~*\"@]+/g, " ")
     .split(" ")
+    .filter((s) => s)
     .map((s) => s + "*")
     .join(" ");
 
@@ -1962,6 +1963,7 @@ export async function searchUsersWithSharedContent(
   const query_as_prefixes = query
     .replace(/[+\-><\(\)~*\"@]+/g, " ")
     .split(" ")
+    .filter((s) => s)
     .map((s) => s + "*")
     .join(" ");
 
@@ -3867,6 +3869,7 @@ export async function searchMyFolderContent({
   const query_as_prefixes = query
     .replace(/[+\-><\(\)~*\"@]+/g, " ")
     .split(" ")
+    .filter((s) => s)
     .map((s) => s + "*")
     .join(" ");
 
