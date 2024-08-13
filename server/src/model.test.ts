@@ -3156,6 +3156,25 @@ test("searchSharedContent, classification increases relevance", async () => {
   expect(results[1].id).eq(activity1Id);
 });
 
+test("searchSharedContent, handle tags in search", async () => {
+  const user = await createTestUser();
+  const userId = user.userId;
+
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  const { activityId, docId } = await createActivity(ownerId, null);
+  await updateDoc({ id: docId, source: "point", ownerId });
+  await makeActivityPublic({
+    id: activityId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+
+  let results = await searchSharedContent(`<point>`, userId);
+  expect(results.length).gte(1);
+});
+
 test("searchUsersWithSharedContent returns only users with public/shared content", async () => {
   const user1 = await createTestUser();
   const user1Id = user1.userId;
@@ -7221,6 +7240,22 @@ test("searchMyFolderContent, classification matches", async () => {
     query: "common C.1",
   });
   content = searchResults.content;
+  expect(content.length).eq(1);
+});
+
+test("searchMyFolderContent, handle tags in search", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const { activityId, docId } = await createActivity(ownerId, null);
+
+  await updateDoc({ id: docId, source: "point", ownerId });
+
+  let searchResults = await searchMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
+    query: "<point>",
+  });
+  let content = searchResults.content;
   expect(content.length).eq(1);
 });
 
