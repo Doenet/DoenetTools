@@ -749,6 +749,7 @@ export async function copyActivityToFolder(
       documents: {
         where: { isDeleted: false },
       },
+      classifications: true,
     },
   });
 
@@ -762,6 +763,11 @@ export async function copyActivityToFolder(
       ownerId: userId,
       parentFolderId: folderId,
       sortIndex,
+      classifications: {
+        create: origActivity.classifications.map((c) => ({
+          classificationId: c.classificationId,
+        })),
+      },
     },
   });
 

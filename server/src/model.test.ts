@@ -2525,7 +2525,35 @@ test("copyActivityToFolder remixes correct versions", async () => {
   expect(contribHist3[0].prevDocVersionNum).eq(2);
 });
 
-test.only("contributor history shows only documents user can view", async () => {
+test("copyActivityToFolder copies content classifications", async () => {
+  const originalOwnerId = (await createTestUser()).userId;
+  const newOwnerId = (await createTestUser()).userId;
+  const { activityId, docId } = await createActivity(originalOwnerId, null);
+
+  const { id: classifyId } = (
+    await searchPossibleClassifications("K.CC.1 common core")
+  ).find((k) => k.code === "K.CC.1")!;
+
+  await addClassification(activityId, classifyId, originalOwnerId);
+
+  await makeActivityPublic({
+    id: activityId,
+    ownerId: originalOwnerId,
+    licenseCode: "CCDUAL",
+  });
+  const newActivityId = await copyActivityToFolder(
+    activityId,
+    newOwnerId,
+    null,
+  );
+
+  const activityData = await getActivityViewerData(newActivityId, newOwnerId);
+
+  expect(activityData.activity.classifications).toHaveLength(1);
+  expect(activityData.activity.classifications[0].id).eq(classifyId);
+});
+
+test("contributor history shows only documents user can view", async () => {
   const ownerId1 = (await createTestUser()).userId;
   const ownerId2 = (await createTestUser()).userId;
   const ownerId3 = (await createTestUser()).userId;
