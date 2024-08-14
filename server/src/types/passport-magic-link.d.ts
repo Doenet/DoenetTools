@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Strategy as PassportStrategy } from "passport";
 
 declare module "passport-magic-link" {
@@ -62,9 +63,11 @@ declare module "passport" {
   }
 
   interface Authenticator<
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     InitializeRet = express.Handler,
     AuthenticateRet = any,
     AuthorizeRet = AuthenticateRet,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     AuthorizeOptions = passport.AuthenticateOptions,
   > {
     authenticate(
