@@ -646,7 +646,7 @@ export function Activities() {
                   boxSize={10}
                   p=".5em"
                   cursor="pointer"
-                  onClick={function() {
+                  onClick={function () {
                     setListView(true);
                     //setPreferredFolderView(true);
                   }}
@@ -750,7 +750,7 @@ export function Activities() {
                 contentCardRefs.current[position] = element;
               };
               const justCreated = folderJustCreated === activity.id;
-              if(justCreated) {
+              if (justCreated) {
                 folderJustCreated = -1;
               }
               return {
@@ -778,46 +778,52 @@ export function Activities() {
             })}
           />
         ) : (
-          <Wrap p="10px" overflow="visible">
-            {content.map((activity, position) => {
-              const getCardRef = (element) => {
-                contentCardRefs.current[position] = element;
-              };
-              const justCreated = folderJustCreated === activity.id;
-              if(justCreated) {
-                folderJustCreated = -1;
-              }
-              return (
-                <ContentCard
-                  key={`Card${activity.id}`}
-                  ref={getCardRef}
-                  {...activity}
-                  title={activity.name}
-                  menuItems={getCardMenuList({
-                    id: activity.id,
-                    position,
-                    numCards: content.length,
-                    assignmentStatus: activity.assignmentStatus,
-                    isFolder: activity.isFolder,
-                    isPublic: activity.isPublic,
-                    isShared: activity.isShared,
-                    sharedWith: activity.sharedWith,
-                    licenseCode: activity.license?.code ?? null,
-                    parentFolderId: activity.parentFolder?.id ?? null,
-                  })}
-                  suppressAvatar={true}
-                  showOwnerName={false}
-                  cardLink={
-                    activity.isFolder
-                      ? `/activities/${activity.ownerId}/${activity.id}`
-                      : `/activityEditor/${activity.id}`
-                  }
-                  editableTitle={true}
-                  autoFocusTitle={justCreated}
-                />
-              );
-            })}
-          </Wrap>
+          <Flex
+            justifyContent="center"
+            alignItems="center"
+            alignContent="center"
+          >
+            <Wrap p="10px" overflow="visible">
+              {content.map((activity, position) => {
+                const getCardRef = (element) => {
+                  contentCardRefs.current[position] = element;
+                };
+                const justCreated = folderJustCreated === activity.id;
+                if (justCreated) {
+                  folderJustCreated = -1;
+                }
+                return (
+                  <ContentCard
+                    key={`Card${activity.id}`}
+                    ref={getCardRef}
+                    {...activity}
+                    title={activity.name}
+                    menuItems={getCardMenuList({
+                      id: activity.id,
+                      position,
+                      numCards: content.length,
+                      assignmentStatus: activity.assignmentStatus,
+                      isFolder: activity.isFolder,
+                      isPublic: activity.isPublic,
+                      isShared: activity.isShared,
+                      sharedWith: activity.sharedWith,
+                      licenseCode: activity.license?.code ?? null,
+                      parentFolderId: activity.parentFolder?.id ?? null,
+                    })}
+                    suppressAvatar={true}
+                    showOwnerName={false}
+                    cardLink={
+                      activity.isFolder
+                        ? `/activities/${activity.ownerId}/${activity.id}`
+                        : `/activityEditor/${activity.id}`
+                    }
+                    editableTitle={true}
+                    autoFocusTitle={justCreated}
+                  />
+                );
+              })}
+            </Wrap>
+          </Flex>
         )}
       </Flex>
     </>

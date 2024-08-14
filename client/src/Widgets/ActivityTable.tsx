@@ -49,6 +49,7 @@ export default forwardRef(function ActivityTable(
       editableTitle?: boolean;
       autoFocusTitle?: boolean;
       closeTime?: string;
+      authorRow?: boolean;
     }[];
     suppressAvatar?: boolean;
     showOwnerName?: boolean;
@@ -67,21 +68,9 @@ export default forwardRef(function ActivityTable(
           <Tr borderBottom="2px solid gray">
             <Th></Th>
             <Th></Th>
-            {showPublicStatus ? (
-              <Th>Visibility</Th>
-            ) : (
-              <Th></Th>
-            )}
-            {showAssignmentStatus ? (
-              <Th>Assignment Status</Th>
-            ) : (
-              <Th></Th>
-            )}
-            {showOwnerName || !suppressAvatar ? (
-              <Th>Owner</Th>
-            ) : (
-              <Th></Th>
-            )}
+            {showPublicStatus ? <Th>Visibility</Th> : <Th></Th>}
+            <Th></Th>
+            {showOwnerName || !suppressAvatar ? <Th>Owner</Th> : <Th></Th>}
             <Th></Th>
           </Tr>
         </Thead>
@@ -143,26 +132,36 @@ export default forwardRef(function ActivityTable(
                     }
                   >
                     <Box paddingRight="1em" m="0">
-                      <Icon
-                        as={
-                          activity.isFolder
-                            ? FaFolder
-                            : activity.assignmentStatus === "Unassigned"
-                              ? RiDraftFill
-                              : MdAssignment
-                        }
-                        color={
-                          activity.isFolder
-                            ? "#e6b800"
-                            : activity.assignmentStatus === "Unassigned"
-                              ? "#ff6600"
-                              : activity.assignmentStatus === "Open"
-                                ? "#009933"
-                                : "#cc3399"
-                        }
-                        boxSize={12}
-                        paddingLeft="1em"
-                      />
+                      {activity.authorRow ? (
+                        <Tooltip label={activity.ownerName}>
+                          <Avatar
+                            size="sm"
+                            name={activity.ownerName}
+                            marginLeft="1em"
+                          />
+                        </Tooltip>
+                      ) : (
+                        <Icon
+                          as={
+                            activity.isFolder
+                              ? FaFolder
+                              : activity.assignmentStatus === "Unassigned"
+                                ? RiDraftFill
+                                : MdAssignment
+                          }
+                          color={
+                            activity.isFolder
+                              ? "#e6b800"
+                              : activity.assignmentStatus === "Unassigned"
+                                ? "#ff6600"
+                                : activity.assignmentStatus === "Open"
+                                  ? "#009933"
+                                  : "#cc3399"
+                          }
+                          boxSize={12}
+                          paddingLeft="1em"
+                        />
+                      )}
                     </Box>
                   </Tooltip>
                 </Td>
@@ -207,14 +206,12 @@ export default forwardRef(function ActivityTable(
                 )}
                 <Td>
                   <HStack>
-                    {suppressAvatar ? null : (
+                    {suppressAvatar || activity.authorRow ? null : (
                       <Tooltip label={activity.ownerName}>
                         <Avatar size="sm" name={activity.ownerName} />
                       </Tooltip>
                     )}
-                    {showOwnerName ? (
-                      <Text>{activity.ownerName}</Text>
-                    ) : null}
+                    {showOwnerName ? <Text>{activity.ownerName}</Text> : null}
                   </HStack>
                 </Td>
                 <Td p="0" m="0" textAlign="right">
@@ -227,13 +224,14 @@ export default forwardRef(function ActivityTable(
                         padding="1em"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <Icon
-                          color="black"
-                          as={GoKebabVertical}
-                          boxSize={6}
-                        />
+                        <Icon color="black" as={GoKebabVertical} boxSize={6} />
                       </MenuButton>
-                      <MenuList zIndex="1000" onClick={(e) => e.stopPropagation()}>{activity.menuItems}</MenuList>
+                      <MenuList
+                        zIndex="1000"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {activity.menuItems}
+                      </MenuList>
                     </Menu>
                   ) : null}
                 </Td>

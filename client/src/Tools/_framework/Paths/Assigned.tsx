@@ -1,5 +1,17 @@
 // import axios from 'axios';
-import { Button, Box, Icon, Text, Flex, Wrap, Heading, ButtonGroup, Tooltip, VStack, HStack } from "@chakra-ui/react";
+import {
+  Button,
+  Box,
+  Icon,
+  Text,
+  Flex,
+  Wrap,
+  Heading,
+  ButtonGroup,
+  Tooltip,
+  VStack,
+  HStack,
+} from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useLoaderData, useNavigate, useFetcher } from "react-router-dom";
 
@@ -41,22 +53,16 @@ export function Assigned() {
   }, []);
 
   function formatTime(time: string | null) {
-
     let timeFormatted: string | undefined;
 
-    if(time !== null) {
-
+    if (time !== null) {
       const sameDay = (a: DateTime, b: DateTime): boolean => {
         return (
-          a.hasSame(b, "day") &&
-          a.hasSame(b, "month") &&
-          a.hasSame(b, "year")
+          a.hasSame(b, "day") && a.hasSame(b, "month") && a.hasSame(b, "year")
         );
       };
 
-      let closeDateTime = DateTime.fromISO(
-        time,
-      );
+      let closeDateTime = DateTime.fromISO(time);
       let now = DateTime.now();
       let tomorrow = now.plus({ day: 1 });
 
@@ -90,9 +96,7 @@ export function Assigned() {
           });
         }
       } else {
-        timeFormatted = closeDateTime.toLocaleString(
-          DateTime.DATETIME_MED,
-        );
+        timeFormatted = closeDateTime.toLocaleString(DateTime.DATETIME_MED);
       }
     }
 
@@ -186,47 +190,53 @@ export function Assigned() {
             <Text fontSize="36pt">Nothing Assigned</Text>
           </Flex>
         ) : listView ? (
-            <ActivityTable
-              suppressAvatar={true}
-              showPublicStatus={false}
-              showAssignmentStatus={true}
-              content={assignments.map((assignment) => {
-                return {
-                  id: assignment.id,
-                  title: assignment.name,
-                  cardLink:
-                    assignment.assignmentStatus === "Open"
-                      ? `/code/${assignment.classCode}`
-                      : `/assignedData/${assignment.id}`,
-                  assignmentStatus: assignment.assignmentStatus,
-                  closeTime: formatTime(assignment.codeValidUntil)
-                };
-              })}
-            />
-          ) : (
-          <>
-            {assignments.map((assignment) => {
-              return (
-                <ContentCard
-                  key={`Card${assignment.id}`}
-                  id={assignment.id}
-                  imagePath={assignment.imagePath}
-                  title={assignment.name}
-                  ownerName={"Quick assign activity"}
-                  cardLink={
-                    assignment.assignmentStatus === "Open"
-                      ? `/code/${assignment.classCode}`
-                      : `/assignedData/${assignment.id}`
-                  }
-                  suppressAvatar={true}
-                  showPublicStatus={false}
-                  showAssignmentStatus={true}
-                  assignmentStatus={assignment.assignmentStatus}
-                  closeTime={formatTime(assignment.codeValidUntil)}
-                />
-              );
+          <ActivityTable
+            suppressAvatar={true}
+            showPublicStatus={false}
+            showAssignmentStatus={true}
+            content={assignments.map((assignment) => {
+              return {
+                id: assignment.id,
+                title: assignment.name,
+                cardLink:
+                  assignment.assignmentStatus === "Open"
+                    ? `/code/${assignment.classCode}`
+                    : `/assignedData/${assignment.id}`,
+                assignmentStatus: assignment.assignmentStatus,
+                closeTime: formatTime(assignment.codeValidUntil),
+              };
             })}
-          </>
+          />
+        ) : (
+          <Flex
+            justifyContent="center"
+            alignItems="center"
+            alignContent="center"
+          >
+            <Wrap p="10px" overflow="visible">
+              {assignments.map((assignment) => {
+                return (
+                  <ContentCard
+                    key={`Card${assignment.id}`}
+                    id={assignment.id}
+                    imagePath={assignment.imagePath}
+                    title={assignment.name}
+                    ownerName={"Quick assign activity"}
+                    cardLink={
+                      assignment.assignmentStatus === "Open"
+                        ? `/code/${assignment.classCode}`
+                        : `/assignedData/${assignment.id}`
+                    }
+                    suppressAvatar={true}
+                    showPublicStatus={false}
+                    showAssignmentStatus={true}
+                    assignmentStatus={assignment.assignmentStatus}
+                    closeTime={formatTime(assignment.codeValidUntil)}
+                  />
+                );
+              })}
+            </Wrap>
+          </Flex>
         )}
       </Flex>
     </>

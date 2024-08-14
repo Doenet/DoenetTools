@@ -28,7 +28,6 @@ import {
   FormLabel,
   ButtonGroup,
   Tooltip,
-
 } from "@chakra-ui/react";
 import { useLoaderData } from "react-router";
 import { Carousel } from "../../../Widgets/Carousel";
@@ -503,41 +502,48 @@ export function Community() {
     }
 
     function displayResultsTable(allMatches: SearchMatch[]) {
-      return <ActivityTable
-        suppressAvatar={false}
-        showPublicStatus={false}
-        showAssignmentStatus={false}
-        showOwnerName={true}
-        content={allMatches.map((itemObj) => {
-          if(itemObj.type === "content") {
+      return (
+        <ActivityTable
+          suppressAvatar={false}
+          showPublicStatus={false}
+          showAssignmentStatus={false}
+          showOwnerName={true}
+          content={allMatches.map((itemObj) => {
+            if (itemObj.type === "content") {
+              const { id, imagePath, name, owner, isFolder } = itemObj;
+              const cardLink =
+                isFolder && owner != undefined
+                  ? `/sharedActivities/${owner.userId}/${id}`
+                  : `/activityViewer/${id}`;
 
-            const { id, imagePath, name, owner, isFolder } = itemObj;
-            const cardLink = isFolder && owner != undefined ? `/sharedActivities/${owner.userId}/${id}` : `/activityViewer/${id}`;
-
-            return {
-              id: Number(id),
-              title: name,
-              ownerName: owner != undefined ? createFullName(owner) : "",
-              cardLink,
-              menuItems:
-                isAdmin ? (
+              return {
+                id: Number(id),
+                title: name,
+                ownerName: owner != undefined ? createFullName(owner) : "",
+                cardLink,
+                menuItems: isAdmin ? (
                   <>
                     <MoveToGroupMenuItem
                       activityId={id}
                       carouselGroups={carouselGroups}
                     />
                   </>
-                ) : undefined
+                ) : undefined,
+              };
+            } else if (itemObj?.type == "author") {
+              const cardLink = `/sharedActivities/${itemObj.userId}`;
+              return {
+                id: itemObj.userId,
+                title: createFullName(itemObj),
+                cardLink,
+                authorRow: true,
+              };
+            } else {
+              return { id: 0, title: "" };
             }
-          }
-          else {
-            return {id: 0, title: ""};
-          }
-          /* else if (itemObj?.type == "author") {
-            
-          } */
-        })}
-      />
+          })}
+        />
+      );
     }
 
     return (
@@ -665,9 +671,6 @@ export function Community() {
                 width="100%"
                 data-test="Results All Matches"
               >
-                {listView ? 
-                displayResultsTable(allMatches)
-                : <Wrap>{allMatches.map(displayCard)}</Wrap>}
                 {allMatches.length == 0 ? (
                   <Flex
                     flexDirection="column"
@@ -680,19 +683,26 @@ export function Community() {
                     <Icon fontSize="48pt" as={RiEmotionSadLine} />
                     <Text fontSize="36pt">No Matches Found!</Text>
                   </Flex>
-                ) : null}
+                ) : listView ? (
+                  displayResultsTable(allMatches)
+                ) : (
+                  <Flex
+                    justifyContent="center"
+                    alignItems="center"
+                    alignContent="center"
+                  >
+                    <Wrap>{allMatches.map(displayCard)}</Wrap>
+                  </Flex>
+                )}
               </Flex>
             </TabPanel>
             <TabPanel>
-              <Wrap
-                p={10}
-                m={0}
+              <Flex
                 display="flex"
-                justifyContent="center"
-                alignItems="center"
+                direction="column"
+                width="100%"
                 data-test="Results Activities"
               >
-                {listView ? contentMatches.map(displayCard) : contentMatches.map(displayCard)}
                 {contentMatches.length == 0 ? (
                   <Flex
                     flexDirection="column"
@@ -706,20 +716,26 @@ export function Community() {
                     <Icon fontSize="48pt" as={RiEmotionSadLine} />
                     <Text fontSize="36pt">No Matching Activities Found!</Text>
                   </Flex>
-                ) : null}
-                {/* </Box> */}
-              </Wrap>
+                ) : listView ? (
+                  displayResultsTable(contentMatches)
+                ) : (
+                  <Flex
+                    justifyContent="center"
+                    alignItems="center"
+                    alignContent="center"
+                  >
+                    <Wrap>{contentMatches.map(displayCard)}</Wrap>
+                  </Flex>
+                )}
+              </Flex>
             </TabPanel>
             <TabPanel>
-              <Wrap
-                p={10}
-                m={0}
+              <Flex
                 display="flex"
-                justifyContent="center"
-                alignItems="center"
-                data-test="Results Authors"
+                direction="column"
+                width="100%"
+                data-test="Results Activities"
               >
-                {authorMatches.map(displayCard)}
                 {searchResults?.users?.length == 0 ? (
                   <Flex
                     flexDirection="column"
@@ -733,8 +749,18 @@ export function Community() {
                     <Icon fontSize="48pt" as={RiEmotionSadLine} />
                     <Text fontSize="36pt">No Matching Authors Found!</Text>
                   </Flex>
-                ) : null}
-              </Wrap>
+                ) : listView ? (
+                  displayResultsTable(authorMatches)
+                ) : (
+                  <Flex
+                    justifyContent="center"
+                    alignItems="center"
+                    alignContent="center"
+                  >
+                    <Wrap>{authorMatches.map(displayCard)}</Wrap>
+                  </Flex>
+                )}
+              </Flex>
             </TabPanel>
           </TabPanels>
         </Tabs>
