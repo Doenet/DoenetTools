@@ -159,12 +159,12 @@ export async function loader({ params, request }) {
       `/api/getMyFolderContent/${params.userId}/${params.folderId ?? ""}`,
     );
     data = results.data;
+  }
 
-    if (data.notMe) {
-      return redirect(
-        `/sharedActivities/${params.userId}${params.folderId ? "/" + params.folderId : ""}`,
-      );
-    }
+  if (data.notMe) {
+    return redirect(
+      `/sharedActivities/${params.userId}${params.folderId ? "/" + params.folderId : ""}`,
+    );
   }
 
   let prefData = await axios.get(`/api/getPreferredFolderView`);
