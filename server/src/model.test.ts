@@ -3071,6 +3071,11 @@ test("searchSharedContent, document source is more relevant than classification"
     licenseCode: "CCDUAL",
   });
 
+  // create a third activity, in case this is the first test run on a reset database,
+  // just to make sure `banana${code}` is a relevant search term,
+  // i.e., it appears in fewer than half the records
+  await createActivity(ownerId, null);
+
   const { id: classify1Id } = (
     await searchPossibleClassifications("K.CC.1 common core")
   ).find((k) => k.code === "K.CC.1")!;
