@@ -173,7 +173,7 @@ export function Assigned() {
         margin="0"
         width="100%"
         background={listView ? "white" : "var(--lightBlue)"}
-        minHeight="calc(100vh - 120px)"
+        minHeight="calc(100vh - 188px)"
         flexDirection="column"
       >
         {assignments.length < 1 ? (

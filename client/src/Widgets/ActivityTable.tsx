@@ -123,9 +123,15 @@ export default forwardRef(function ActivityTable(
                   <Tooltip
                     label={
                       activity.isFolder
-                        ? (activity.isPublic || activity.isShared ? "Folder / Public" : "Folder / Private")
-                        : (activity.authorRow ? activity.ownerName : "Activity" + (activity.assignmentStatus ? " / " + activity.assignmentStatus : "")
-                        )
+                        ? activity.isPublic || activity.isShared
+                          ? "Folder / Public"
+                          : "Folder / Private"
+                        : activity.authorRow
+                          ? activity.ownerName
+                          : "Activity" +
+                            (activity.assignmentStatus
+                              ? " / " + activity.assignmentStatus
+                              : "")
                     }
                   >
                     <Box paddingRight="1em" m="0">
@@ -163,7 +169,9 @@ export default forwardRef(function ActivityTable(
                 <Td>
                   <HStack>
                     <Editable
-                      defaultValue={activity.authorRow ? activity.ownerName : activity.title}
+                      defaultValue={
+                        activity.authorRow ? activity.ownerName : activity.title
+                      }
                       startWithEditView={activity.autoFocusTitle}
                       isDisabled={!activity.editableTitle}
                       onClick={(e) => e.stopPropagation()}
@@ -206,7 +214,9 @@ export default forwardRef(function ActivityTable(
                         <Avatar size="sm" name={activity.ownerName} />
                       </Tooltip>
                     )}
-                    {showOwnerName && !activity.authorRow ? <Text>{activity.ownerName}</Text> : null}
+                    {showOwnerName && !activity.authorRow ? (
+                      <Text>{activity.ownerName}</Text>
+                    ) : null}
                   </HStack>
                 </Td>
                 <Td p="0" m="0" textAlign="right">

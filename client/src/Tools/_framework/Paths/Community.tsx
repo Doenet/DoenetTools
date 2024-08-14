@@ -621,7 +621,7 @@ export function Community() {
         </Box>
         <Tabs
           orientation="vertical"
-          minHeight="calc(100vh - 150px)"
+          minHeight="calc(100vh - 188px)"
           variant="line"
         >
           <TabList background="doenet.canvas" w={240}>
