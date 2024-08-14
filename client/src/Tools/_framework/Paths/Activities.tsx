@@ -479,7 +479,6 @@ export function Activities() {
         fetcher={fetcher}
       />
     ) : null;
-    console.log(folderJustCreated);
   return (
     <>
       {settingsDrawer}
@@ -750,6 +749,10 @@ export function Activities() {
               const getCardRef = (element) => {
                 contentCardRefs.current[position] = element;
               };
+              const justCreated = folderJustCreated === activity.id;
+              if(justCreated) {
+                folderJustCreated = -1;
+              }
               return {
                 ref: getCardRef,
                 ...activity,
@@ -770,7 +773,7 @@ export function Activities() {
                   ? `/activities/${activity.ownerId}/${activity.id}`
                   : `/activityEditor/${activity.id}`,
                 editableTitle: true,
-                autoFocusTitle: folderJustCreated === activity.id,
+                autoFocusTitle: justCreated,
               };
             })}
           />
@@ -780,6 +783,10 @@ export function Activities() {
               const getCardRef = (element) => {
                 contentCardRefs.current[position] = element;
               };
+              const justCreated = folderJustCreated === activity.id;
+              if(justCreated) {
+                folderJustCreated = -1;
+              }
               return (
                 <ContentCard
                   key={`Card${activity.id}`}
@@ -806,7 +813,7 @@ export function Activities() {
                       : `/activityEditor/${activity.id}`
                   }
                   editableTitle={true}
-                  autoFocusTitle={folderJustCreated === activity.id}
+                  autoFocusTitle={justCreated}
                 />
               );
             })}
