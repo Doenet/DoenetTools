@@ -85,7 +85,7 @@ async function main() {
     update: { name: "Common Core" },
     create: { name: "Common Core" },
   });
-  const classification1 = await prisma.classifications.upsert({
+  await prisma.classifications.upsert({
     where: {
       code_systemId: {
         code: "K.CC.1",
@@ -110,7 +110,7 @@ async function main() {
     },
   });
 
-  const classification2 = await prisma.classifications.upsert({
+  await prisma.classifications.upsert({
     where: {
       code_systemId: { code: "K.OA.1", systemId: commonCoreId },
     },
@@ -134,7 +134,7 @@ async function main() {
     },
   });
 
-  const classification3 = await prisma.classifications.upsert({
+  await prisma.classifications.upsert({
     where: {
       code_systemId: { code: "A.SSE.3 c.", systemId: commonCoreId },
     },
@@ -164,7 +164,7 @@ async function main() {
     create: { name: "Minnesota Academic Standards in Math" },
   });
 
-  const minnesotaClassification1 = await prisma.classifications.upsert({
+  await prisma.classifications.upsert({
     where: {
       code_systemId: {
         code: "8.2.1.5",
@@ -189,7 +189,7 @@ async function main() {
     },
   });
 
-  const minnesotaClassification2 = await prisma.classifications.upsert({
+  await prisma.classifications.upsert({
     where: {
       code_systemId: {
         code: "9.4.3.9",

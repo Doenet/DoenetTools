@@ -85,7 +85,7 @@ import { Prisma } from "@prisma/client";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as MagicLinkStrategy } from "passport-magic-link";
-//@ts-ignore
+//@ts-expect-error no declaration file
 import { Strategy as AnonymIdStrategy } from "passport-anonym-uuid";
 
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
@@ -97,7 +97,7 @@ const client = new SESClient({ region: "us-east-2" });
 dotenv.config();
 
 interface User {
-  userId: Number;
+  userId: number;
   firstNames: string;
   lastNames: string;
   email: string;
@@ -133,7 +133,8 @@ passport.use(
       callbackURL: (process.env.LOGIN_CALLBACK_ROOT || "") + "api/login/google",
       scope: ["profile", "email"],
     },
-    (accessToken: any, refreshToken: any, profile: any, done: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (_accessToken: any, _refreshToken: any, profile: any, done: any) => {
       done(null, profile);
     },
   ),
@@ -204,7 +205,7 @@ passport.use(
 
       sendEmail();
     },
-    async (user: any) => {
+    async (user: { email: string; fromAnonymous: string | number }) => {
       return {
         provider: "magiclink",
         email: user.email as string,
@@ -216,7 +217,8 @@ passport.use(
 
 passport.use(new AnonymIdStrategy());
 
-passport.serializeUser<any, any>(async (req, user: any, done) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+passport.serializeUser<any, any>(async (_req, user: any, done) => {
   if (user.provider === "magiclink") {
     const email: string = user.email;
     const fromAnonymous: number = user.fromAnonymous;
@@ -226,6 +228,7 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
     if (fromAnonymous > 0) {
       try {
         u = await upgradeAnonymousUser({ userId: fromAnonymous, email });
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (e) {
         /// ignore any error
       }
@@ -241,8 +244,10 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
 
     return done(undefined, u.email);
   } else if (user.provider === "google") {
-    var email = user.id + "@google.com";
-    if (user.emails[0].verified) email = user.emails[0].value;
+    let email = user.id + "@google.com";
+    if (user.emails[0].verified) {
+      email = user.emails[0].value;
+    }
 
     const u = await findOrCreateUser({
       email,
@@ -329,7 +334,7 @@ app.get(
 app.post(
   "/api/auth/magiclink",
   passport.authenticate("magiclink", { action: "requestToken" }),
-  (req, res) => res.redirect("/"),
+  (_req, res) => res.redirect("/"),
 );
 
 app.get(
@@ -339,7 +344,7 @@ app.get(
     userPrimaryKey: "email",
   }),
   async (req: Request, res: Response) => {
-    let user = await getUserInfo((req.user as any).email);
+    const user = await getUserInfo((req.user as { email: string }).email);
     res.send({ user });
   },
 );
@@ -364,7 +369,7 @@ app.get(
     const signedIn = req.user ? true : false;
     if (signedIn) {
       try {
-        let user = await getUserInfo(req.user.email);
+        const user = await getUserInfo(req.user.email);
         res.send({ user });
       } catch (e) {
         next(e);
@@ -397,7 +402,7 @@ app.get("/api/checkForCommunityAdmin", async (req: Request, res: Response) => {
 
 app.get(
   "/api/getAllRecentPublicActivities",
-  async (req: Request, res: Response) => {
+  async (_req: Request, res: Response) => {
     const docs = await getAllRecentPublicActivities();
     res.send(docs);
   },
@@ -564,7 +569,7 @@ app.post(
 
     let licenseCode: LicenseCode;
 
-    let requestedCode: string = body.licenseCode;
+    const requestedCode: string = body.licenseCode;
     switch (requestedCode) {
       case "CCDUAL":
       case "CCBYSA":
@@ -578,7 +583,7 @@ app.post(
     }
 
     try {
-      let data = await setActivityLicense({
+      const data = await setActivityLicense({
         id,
         ownerId: loggedInUserId,
         licenseCode,
@@ -603,7 +608,7 @@ app.post(
 
     let licenseCode: LicenseCode;
 
-    let requestedCode: string = body.licenseCode;
+    const requestedCode: string = body.licenseCode;
     switch (requestedCode) {
       case "CCDUAL":
       case "CCBYSA":
@@ -617,7 +622,7 @@ app.post(
     }
 
     try {
-      let data = await setFolderLicense({
+      const data = await setFolderLicense({
         id,
         ownerId: loggedInUserId,
         licenseCode,
@@ -642,7 +647,7 @@ app.post(
 
     let licenseCode: LicenseCode;
 
-    let requestedCode: string = body.licenseCode;
+    const requestedCode: string = body.licenseCode;
     switch (requestedCode) {
       case "CCDUAL":
       case "CCBYSA":
@@ -656,7 +661,7 @@ app.post(
     }
 
     try {
-      let data = await makeActivityPublic({
+      const data = await makeActivityPublic({
         id,
         ownerId: loggedInUserId,
         licenseCode,
@@ -679,7 +684,7 @@ app.post(
     const body = req.body;
     const id = Number(body.id);
     try {
-      let data = await makeActivityPrivate({ id, ownerId: loggedInUserId });
+      const data = await makeActivityPrivate({ id, ownerId: loggedInUserId });
       res.send(data);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -700,7 +705,7 @@ app.post(
 
     let licenseCode: LicenseCode;
 
-    let requestedCode: string = body.licenseCode;
+    const requestedCode: string = body.licenseCode;
     switch (requestedCode) {
       case "CCDUAL":
       case "CCBYSA":
@@ -714,7 +719,7 @@ app.post(
     }
 
     try {
-      let data = await makeFolderPublic({
+      const data = await makeFolderPublic({
         id,
         ownerId: loggedInUserId,
         licenseCode,
@@ -737,7 +742,7 @@ app.post(
     const body = req.body;
     const id = Number(body.id);
     try {
-      let data = await makeFolderPrivate({ id, ownerId: loggedInUserId });
+      const data = await makeFolderPrivate({ id, ownerId: loggedInUserId });
       res.send(data);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -759,7 +764,7 @@ app.post(
 
     let licenseCode: LicenseCode;
 
-    let requestedCode: string = body.licenseCode;
+    const requestedCode: string = body.licenseCode;
     switch (requestedCode) {
       case "CCDUAL":
       case "CCBYSA":
@@ -773,7 +778,7 @@ app.post(
     }
 
     try {
-      let data = await shareActivityWithEmail({
+      const data = await shareActivityWithEmail({
         id,
         ownerId: loggedInUserId,
         licenseCode,
@@ -782,7 +787,7 @@ app.post(
       res.send(data);
     } catch (e) {
       console.log("error", e);
-      if ((e as any).message === "User with email not found") {
+      if ((e as { message: string }).message === "User with email not found") {
         res.status(404).send("User with email not found");
       } else if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(403);
@@ -801,7 +806,7 @@ app.post(
     const id = Number(body.id);
     const userId = Number(body.userId);
     try {
-      let data = await unshareActivity({
+      const data = await unshareActivity({
         id,
         ownerId: loggedInUserId,
         users: [userId],
@@ -827,7 +832,7 @@ app.post(
 
     let licenseCode: LicenseCode;
 
-    let requestedCode: string = body.licenseCode;
+    const requestedCode: string = body.licenseCode;
     switch (requestedCode) {
       case "CCDUAL":
       case "CCBYSA":
@@ -841,7 +846,7 @@ app.post(
     }
 
     try {
-      let data = await shareFolderWithEmail({
+      const data = await shareFolderWithEmail({
         id,
         ownerId: loggedInUserId,
         licenseCode,
@@ -850,7 +855,7 @@ app.post(
       res.send(data);
     } catch (e) {
       console.log("error", e);
-      if ((e as any).message === "User with email not found") {
+      if ((e as { message: string }).message === "User with email not found") {
         res.status(404).send("User with email not found");
       } else if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(403);
@@ -869,7 +874,7 @@ app.post(
     const id = Number(body.id);
     const userId = Number(body.userId);
     try {
-      let data = await unshareFolder({
+      const data = await unshareFolder({
         id,
         ownerId: loggedInUserId,
         users: [userId],
@@ -887,8 +892,8 @@ app.post(
 
 app.get(
   "/api/loadSupportingFileInfo/:activityId",
-  (req: Request, res: Response) => {
-    const activityId = Number(req.params.activityId as string);
+  (_req: Request, res: Response) => {
+    // const activityId = Number(req.params.activityId as string);
     res.send({
       success: true,
       supportingFiles: [],
@@ -901,7 +906,7 @@ app.get(
 
 app.get(
   "/api/getCoursePermissionsAndSettings",
-  (req: Request, res: Response) => {
+  (_req: Request, res: Response) => {
     res.send({});
   },
 );
@@ -1175,12 +1180,12 @@ app.get(
   },
 );
 
-app.get("/api/getAllDoenetmlVersions", async (req: Request, res: Response) => {
+app.get("/api/getAllDoenetmlVersions", async (_req: Request, res: Response) => {
   const allDoenetmlVersions = await getAllDoenetmlVersions();
   res.send(allDoenetmlVersions);
 });
 
-app.get("/api/getAllLicenses", async (req: Request, res: Response) => {
+app.get("/api/getAllLicenses", async (_req: Request, res: Response) => {
   const allLicenses = await getAllLicenses();
   res.send(allLicenses);
 });
@@ -1263,12 +1268,16 @@ app.get(
       return res.redirect(`/api/login/anonymId/${code}`);
     }
 
-    let assignmentData = await getAssignmentDataFromCode(code);
+    try {
+      const assignmentData = await getAssignmentDataFromCode(code);
 
-    let firstNames: string | null = req.user.firstNames;
-    let lastNames: string = req.user.lastNames;
+      const firstNames: string | null = req.user.firstNames;
+      const lastNames: string = req.user.lastNames;
 
-    res.send({ student: { firstNames, lastNames }, ...assignmentData });
+      res.send({ student: { firstNames, lastNames }, ...assignmentData });
+    } catch (e) {
+      next(e);
+    }
   },
 );
 
@@ -1305,7 +1314,7 @@ app.post(
     const imagePath = body.imagePath;
     const name = body.name;
     // TODO - deal with learning outcomes
-    const learningOutcomes = body.learningOutcomes;
+    // const learningOutcomes = body.learningOutcomes;
     try {
       await updateContent({
         id,
@@ -1332,7 +1341,7 @@ app.post(
     const docId = Number(body.docId);
     const name = body.name;
     // TODO - deal with learning outcomes
-    const learningOutcomes = body.learningOutcomes;
+    // const learningOutcomes = body.learningOutcomes;
     const doenetmlVersionId = Number(body.doenetmlVersionId);
     try {
       await updateDoc({
@@ -1377,7 +1386,7 @@ app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
     : null;
   const loggedInUserId = Number(req.user?.userId ?? 0);
 
-  let newActivityId = await copyActivityToFolder(
+  const newActivityId = await copyActivityToFolder(
     targetActivityId,
     loggedInUserId,
     desiredParentFolderId,
@@ -2081,7 +2090,7 @@ app.get(
 
 // handle every other route with index.html, which will contain
 // a script tag to your application's JavaScript file(s).
-app.get("*", function (request, response) {
+app.get("*", function (_request, response) {
   response.sendFile(path.resolve(__dirname, "../public/index.html"));
 });
 

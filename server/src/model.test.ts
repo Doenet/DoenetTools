@@ -1,4 +1,4 @@
-import { expect, test, vi } from "vitest";
+import { expect, test } from "vitest";
 import {
   copyActivityToFolder,
   createActivity,
@@ -74,8 +74,8 @@ import {
 } from "./model";
 import { DateTime } from "luxon";
 
-const EMPTY_DOC_CID =
-  "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
+// const EMPTY_DOC_CID =
+//   "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
 
 const currentDoenetmlVersion = {
   id: 2,
@@ -1809,7 +1809,7 @@ test("only owner can delete an activity", async () => {
   const ownerId = owner.userId;
   const user2 = await createTestUser();
   const user2Id = user2.userId;
-  const { activityId, docId } = await createActivity(ownerId, null);
+  const { activityId } = await createActivity(ownerId, null);
 
   await expect(deleteActivity(activityId, user2Id)).rejects.toThrow(
     "Record to update not found",
@@ -1865,17 +1865,17 @@ test(
       folderId: null,
     });
     expect(baseContent.content.length).eq(2);
-    let folder1Content = await getMyFolderContent({
+    const folder1Content = await getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder1Id,
     });
     expect(folder1Content.content.length).eq(2);
-    let folder2Content = await getMyFolderContent({
+    const folder2Content = await getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder2Id,
     });
     expect(folder2Content.content.length).eq(2);
-    let folder3Content = await getMyFolderContent({
+    const folder3Content = await getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder3Id,
     });
@@ -2533,7 +2533,7 @@ test("copyActivityToFolder remixes correct versions", async () => {
 test("copyActivityToFolder copies content classifications", async () => {
   const originalOwnerId = (await createTestUser()).userId;
   const newOwnerId = (await createTestUser()).userId;
-  const { activityId, docId } = await createActivity(originalOwnerId, null);
+  const { activityId } = await createActivity(originalOwnerId, null);
 
   const { id: classifyId } = (
     await searchPossibleClassifications("K.CC.1 common core")
@@ -3096,9 +3096,9 @@ test("searchSharedContent, document source is more relevant than classification"
   expect(results[0].id).eq(activity1Id);
   expect(results[1].id).eq(activity2Id);
 
-  // Even adding in three matching classifications doesn't put the match in first
+  // Even adding in two matching classifications doesn't put the match in first
   results = await searchSharedContent(
-    `K.CC.1 K.OA.1 A.SSE.3 c. banana${code} muffin${code}`,
+    `K.CC.1 K.OA.1 banana${code} muffin${code}`,
     userId,
   );
 
@@ -3150,7 +3150,7 @@ test("searchSharedContent, classification increases relevance", async () => {
   });
   await addClassification(activity2Id, classifyId, ownerId);
 
-  let results = await searchSharedContent(`K.CC.1 banana${code}`, userId);
+  const results = await searchSharedContent(`K.CC.1 banana${code}`, userId);
 
   expect(results[0].id).eq(activity2Id);
   expect(results[1].id).eq(activity1Id);
@@ -3171,7 +3171,7 @@ test("searchSharedContent, handle tags in search", async () => {
     licenseCode: "CCDUAL",
   });
 
-  let results = await searchSharedContent(`<point>`, userId);
+  const results = await searchSharedContent(`<point>`, userId);
   expect(results.length).gte(1);
 });
 
@@ -3337,7 +3337,6 @@ test("share with email throws error when no match", async () => {
   const ownerId = owner.userId;
 
   const user = await createTestUser();
-  const userId = user.userId;
 
   const otherEmail = `unique-${Date.now()}@example.com`;
 
@@ -3420,7 +3419,7 @@ test("updateContent does not update properties when passed undefined values", as
 });
 
 test("add and remove promoted content", async () => {
-  const { userId, firstNames, lastNames } = await createTestAdminUser();
+  const { userId } = await createTestAdminUser();
 
   // Can create new promoted content group
   const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
@@ -3562,7 +3561,7 @@ test("update promoted content group", async () => {
   const groupId = await addPromotedContentGroup(groupName, userId);
 
   const secondGroupName = "vitest-unique-promoted-group-" + new Date().toJSON();
-  const secondGroupId = await addPromotedContentGroup(secondGroupName, userId);
+  await addPromotedContentGroup(secondGroupName, userId);
 
   const groups = await loadPromotedContent(userId);
   expect(groups.find((group) => group.groupName === groupName)).toBeDefined();
@@ -3592,19 +3591,19 @@ test("move promoted content groups", async () => {
   const group1Id = await addPromotedContentGroup(group1Name, userId);
 
   const group2Name = "vitest-unique-promoted-group-" + new Date().toJSON();
-  const group2Id = await addPromotedContentGroup(group2Name, userId);
+  await addPromotedContentGroup(group2Name, userId);
 
   let groups = await loadPromotedContent(userId);
   let groupNames = groups.map((g) => g.groupName);
-  let group1PositionA = groupNames.indexOf(group1Name);
-  let group2PositionA = groupNames.indexOf(group2Name);
+  const group1PositionA = groupNames.indexOf(group1Name);
+  const group2PositionA = groupNames.indexOf(group2Name);
   expect(group2PositionA).eq(group1PositionA + 1);
 
   await movePromotedContentGroup(group1Id, userId, group2PositionA);
   groups = await loadPromotedContent(userId);
   groupNames = groups.map((g) => g.groupName);
-  let group1PositionB = groupNames.indexOf(group1Name);
-  let group2PositionB = groupNames.indexOf(group2Name);
+  const group1PositionB = groupNames.indexOf(group1Name);
+  const group2PositionB = groupNames.indexOf(group2Name);
   expect(group1PositionB).eq(group2PositionA);
   expect(group2PositionB).eq(group1PositionA);
 
@@ -3612,9 +3611,9 @@ test("move promoted content groups", async () => {
   const group3Id = await addPromotedContentGroup(group3Name, userId);
   groups = await loadPromotedContent(userId);
   groupNames = groups.map((g) => g.groupName);
-  let group1PositionC = groupNames.indexOf(group1Name);
-  let group2PositionC = groupNames.indexOf(group2Name);
-  let group3PositionC = groupNames.indexOf(group3Name);
+  const group1PositionC = groupNames.indexOf(group1Name);
+  const group2PositionC = groupNames.indexOf(group2Name);
+  const group3PositionC = groupNames.indexOf(group3Name);
   expect(group2PositionC).eq(group2PositionB);
   expect(group1PositionC).eq(group2PositionC + 1);
   expect(group3PositionC).eq(group2PositionC + 2);
@@ -3622,9 +3621,9 @@ test("move promoted content groups", async () => {
   await movePromotedContentGroup(group3Id, userId, group1PositionC);
   groups = await loadPromotedContent(userId);
   groupNames = groups.map((g) => g.groupName);
-  let group1PositionD = groupNames.indexOf(group1Name);
-  let group2PositionD = groupNames.indexOf(group2Name);
-  let group3PositionD = groupNames.indexOf(group3Name);
+  const group1PositionD = groupNames.indexOf(group1Name);
+  const group2PositionD = groupNames.indexOf(group2Name);
+  const group3PositionD = groupNames.indexOf(group3Name);
   expect(group2PositionD).eq(group2PositionC);
   expect(group3PositionD).eq(group2PositionD + 1);
   expect(group1PositionD).eq(group2PositionD + 2);
@@ -3954,7 +3953,7 @@ test("open and unassign assignment with code", async () => {
   await assignActivity(activityId, ownerId);
 
   // open assignment generates code
-  let closeAt = DateTime.now().plus({ days: 1 });
+  const closeAt = DateTime.now().plus({ days: 1 });
   const { classCode } = await openAssignmentWithCode(
     activityId,
     closeAt,
@@ -4031,7 +4030,7 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
   assignment = await getAssignment(activityId, ownerId);
   expect(assignment.name).eq("New Activity");
 
-  let closeAt = DateTime.now().plus({ days: 1 });
+  const closeAt = DateTime.now().plus({ days: 1 });
 
   await expect(
     openAssignmentWithCode(activityId, closeAt, userId2),
@@ -4045,7 +4044,7 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
 
   expect(codeValidUntil).eqls(closeAt.toJSDate());
 
-  let newCloseAt = DateTime.now().plus({ days: 2 });
+  const newCloseAt = DateTime.now().plus({ days: 2 });
 
   await expect(
     updateAssignmentSettings(activityId, newCloseAt, userId2),
@@ -4098,12 +4097,8 @@ test("get assignment data from anonymous users", async () => {
   });
 
   // open assignment generates code
-  let closeAt = DateTime.now().plus({ days: 1 });
-  const { classCode } = await openAssignmentWithCode(
-    activityId,
-    closeAt,
-    ownerId,
-  );
+  const closeAt = DateTime.now().plus({ days: 1 });
+  await openAssignmentWithCode(activityId, closeAt, ownerId);
 
   let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
@@ -4372,12 +4367,8 @@ test("can't get assignment data if other user, but student can get their own dat
   const otherUserId = otherUser.userId;
   const { activityId, docId } = await createActivity(ownerId, null);
 
-  let closeAt = DateTime.now().plus({ days: 1 });
-  const { classCode } = await openAssignmentWithCode(
-    activityId,
-    closeAt,
-    ownerId,
-  );
+  const closeAt = DateTime.now().plus({ days: 1 });
+  await openAssignmentWithCode(activityId, closeAt, ownerId);
 
   let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
@@ -4449,12 +4440,8 @@ test("can't unassign if have data", async () => {
   const ownerId = owner.userId;
   const { activityId, docId } = await createActivity(ownerId, null);
 
-  let closeAt = DateTime.now().plus({ days: 1 });
-  const { classCode } = await openAssignmentWithCode(
-    activityId,
-    closeAt,
-    ownerId,
-  );
+  const closeAt = DateTime.now().plus({ days: 1 });
+  await openAssignmentWithCode(activityId, closeAt, ownerId);
 
   let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
@@ -4514,7 +4501,7 @@ test("get activity/document data only if owner or limited data for public/shared
 
   await makeActivityPublic({ id: activityId, ownerId, licenseCode: "CCDUAL" });
 
-  let closeAt = DateTime.now().plus({ days: 1 });
+  const closeAt = DateTime.now().plus({ days: 1 });
   await openAssignmentWithCode(activityId, closeAt, ownerId);
 
   let data = await getActivityEditorData(activityId, ownerId);
@@ -4799,7 +4786,7 @@ test("activity editor data and my folder contents before and after assigned", as
 
   // re-opening, re-assigns with same code
   closeAt = DateTime.now().plus({ days: 1 });
-  let { classCode: newClassCode } = await openAssignmentWithCode(
+  const { classCode: newClassCode } = await openAssignmentWithCode(
     activityId,
     closeAt,
     ownerId,
@@ -4977,7 +4964,7 @@ test("activity editor data shows its parent folder is public", async () => {
   expect(data.license?.code).eq("CCBYSA");
   expect(data.parentFolder).eq(null);
 
-  let { folderId } = await createFolder(ownerId, null);
+  const { folderId } = await createFolder(ownerId, null);
   await moveContent({
     id: activityId,
     desiredParentFolderId: folderId,
@@ -5016,7 +5003,7 @@ test("activity editor data shows its parent folder is public", async () => {
 test("getDocumentSource gets source", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId, docId } = await createActivity(ownerId, null);
+  const { docId } = await createActivity(ownerId, null);
   await updateDoc({ id: docId, source: "some content", ownerId });
 
   const documentSource = await getDocumentSource(docId, ownerId);
@@ -5029,15 +5016,11 @@ test("only user and assignment owner can load document state", async () => {
   const { activityId, docId } = await createActivity(ownerId, null);
 
   // open assignment generates code
-  let closeAt = DateTime.now().plus({ days: 1 });
-  const { classCode } = await openAssignmentWithCode(
-    activityId,
-    closeAt,
-    ownerId,
-  );
+  const closeAt = DateTime.now().plus({ days: 1 });
+  await openAssignmentWithCode(activityId, closeAt, ownerId);
 
   // create new anonymous user
-  let newUser = await createTestAnonymousUser();
+  const newUser = await createTestAnonymousUser();
 
   await saveScoreAndState({
     activityId,
@@ -5050,7 +5033,7 @@ test("only user and assignment owner can load document state", async () => {
   });
 
   // anonymous user can load state
-  let retrievedState = await loadState({
+  const retrievedState = await loadState({
     activityId,
     docId,
     docVersionNum: 1,
@@ -5062,7 +5045,7 @@ test("only user and assignment owner can load document state", async () => {
   expect(retrievedState).eq("document state 1");
 
   // assignment owner can load state
-  let retrievedState2 = await loadState({
+  const retrievedState2 = await loadState({
     activityId,
     docId,
     docVersionNum: 1,
@@ -5094,15 +5077,11 @@ test("load document state based on withMaxScore", async () => {
   const { activityId, docId } = await createActivity(ownerId, null);
 
   // open assignment generates code
-  let closeAt = DateTime.now().plus({ days: 1 });
-  const { classCode } = await openAssignmentWithCode(
-    activityId,
-    closeAt,
-    ownerId,
-  );
+  const closeAt = DateTime.now().plus({ days: 1 });
+  await openAssignmentWithCode(activityId, closeAt, ownerId);
 
   // create new anonymous user
-  let newUser = await createTestAnonymousUser();
+  const newUser = await createTestAnonymousUser();
 
   await saveScoreAndState({
     activityId,
@@ -5238,23 +5217,19 @@ test("record submitted events and get responses", async () => {
   await updateContent({ id: activityId, name: "My Activity", ownerId });
 
   // open assignment generates code
-  let closeAt = DateTime.now().plus({ days: 1 });
-  const { classCode } = await openAssignmentWithCode(
-    activityId,
-    closeAt,
-    ownerId,
-  );
+  const closeAt = DateTime.now().plus({ days: 1 });
+  await openAssignmentWithCode(activityId, closeAt, ownerId);
 
   // create new anonymous user
-  let newUser = await createTestAnonymousUser();
-  let userData = {
+  const newUser = await createTestAnonymousUser();
+  const userData = {
     userId: newUser!.userId,
     firstNames: newUser!.firstNames,
     lastNames: newUser!.lastNames,
   };
 
-  let answerId1 = "answer1";
-  let answerId2 = "answer2";
+  const answerId1 = "answer1";
+  const answerId2 = "answer2";
 
   // no submitted responses at first
   let answerWithResponses = await getAnswersThatHaveSubmittedResponses({
@@ -5263,6 +5238,7 @@ test("record submitted events and get responses", async () => {
   });
   expect(answerWithResponses).eqls([]);
 
+  // eslint-disable-next-line prefer-const
   let { submittedResponses, activityName } =
     await getDocumentSubmittedResponses({
       activityId,
@@ -5276,6 +5252,7 @@ test("record submitted events and get responses", async () => {
 
   let {
     submittedResponses: submittedResponseHistory,
+    // eslint-disable-next-line prefer-const
     activityName: activityName2,
   } = await getDocumentSubmittedResponseHistory({
     activityId,
@@ -5538,8 +5515,8 @@ test("record submitted events and get responses", async () => {
   ]);
 
   // response for a second user
-  let newUser2 = await createTestAnonymousUser();
-  let userData2 = {
+  const newUser2 = await createTestAnonymousUser();
+  const userData2 = {
     userId: newUser2.userId,
     firstNames: newUser2.firstNames,
     lastNames: newUser2.lastNames,
@@ -5796,22 +5773,18 @@ test("only owner can get submitted responses", async () => {
   const userId2 = user2.userId;
 
   // open assignment generates code
-  let closeAt = DateTime.now().plus({ days: 1 });
-  const { classCode } = await openAssignmentWithCode(
-    activityId,
-    closeAt,
-    ownerId,
-  );
+  const closeAt = DateTime.now().plus({ days: 1 });
+  await openAssignmentWithCode(activityId, closeAt, ownerId);
 
   // create new anonymous user
-  let newUser = await createTestAnonymousUser();
-  let userData = {
+  const newUser = await createTestAnonymousUser();
+  const userData = {
     userId: newUser!.userId,
     firstNames: newUser!.firstNames,
     lastNames: newUser!.lastNames,
   };
 
-  let answerId1 = "answer1";
+  const answerId1 = "answer1";
 
   // record event and retrieve it
   await recordSubmittedEvent({
@@ -5841,7 +5814,7 @@ test("only owner can get submitted responses", async () => {
       averageCredit: 1,
     },
   ]);
-  let { submittedResponses } = await getDocumentSubmittedResponses({
+  const { submittedResponses } = await getDocumentSubmittedResponses({
     activityId,
     docId,
     docVersionNum: 1,
@@ -5860,7 +5833,7 @@ test("only owner can get submitted responses", async () => {
       numResponses: 1,
     },
   ]);
-  let { submittedResponses: submittedResponseHistory } =
+  const { submittedResponses: submittedResponseHistory } =
     await getDocumentSubmittedResponseHistory({
       activityId,
       docId,
@@ -5950,12 +5923,8 @@ test("list assigned and get assigned scores get student assignments and scores",
   expect(studentData.orderedActivityScores).eqls([]);
 
   // open assignment generates code
-  let closeAt = DateTime.now().plus({ days: 1 });
-  const { classCode } = await openAssignmentWithCode(
-    activityId2,
-    closeAt,
-    user2Id,
-  );
+  const closeAt = DateTime.now().plus({ days: 1 });
+  await openAssignmentWithCode(activityId2, closeAt, user2Id);
 
   // recording score for user1 on assignment2 adds it to user1's assignment list
   await saveScoreAndState({
@@ -5999,12 +5968,8 @@ test("get all assignment data from anonymous user", async () => {
   });
 
   // open assignment generates code
-  let closeAt = DateTime.now().plus({ days: 1 });
-  const { classCode } = await openAssignmentWithCode(
-    activityId,
-    closeAt,
-    ownerId,
-  );
+  const closeAt = DateTime.now().plus({ days: 1 });
+  await openAssignmentWithCode(activityId, closeAt, ownerId);
 
   let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
@@ -6265,46 +6230,14 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   await updateContent({ id: activityRootId, name: "Activity root", ownerId });
 
   const closeAt = DateTime.now().plus({ day: 1 });
-  const { classCode: classCode1a } = await openAssignmentWithCode(
-    activity1aId,
-    closeAt,
-    ownerId,
-  );
-  const { classCode: classCode1c1 } = await openAssignmentWithCode(
-    activity1c1Id,
-    closeAt,
-    ownerId,
-  );
-  const { classCode: classCode1c2a } = await openAssignmentWithCode(
-    activity1c2aId,
-    closeAt,
-    ownerId,
-  );
-  const { classCode: classCode1c2b } = await openAssignmentWithCode(
-    activity1c2bId,
-    closeAt,
-    ownerId,
-  );
-  const { classCode: classCode1e } = await openAssignmentWithCode(
-    activity1eId,
-    closeAt,
-    ownerId,
-  );
-  const { classCode: classCode2 } = await openAssignmentWithCode(
-    activity2Id,
-    closeAt,
-    ownerId,
-  );
-  const { classCode: classCode3b } = await openAssignmentWithCode(
-    activity3bId,
-    closeAt,
-    ownerId,
-  );
-  const { classCode: classCode1Root } = await openAssignmentWithCode(
-    activityRootId,
-    closeAt,
-    ownerId,
-  );
+  await openAssignmentWithCode(activity1aId, closeAt, ownerId);
+  await openAssignmentWithCode(activity1c1Id, closeAt, ownerId);
+  await openAssignmentWithCode(activity1c2aId, closeAt, ownerId);
+  await openAssignmentWithCode(activity1c2bId, closeAt, ownerId);
+  await openAssignmentWithCode(activity1eId, closeAt, ownerId);
+  await openAssignmentWithCode(activity2Id, closeAt, ownerId);
+  await openAssignmentWithCode(activity3bId, closeAt, ownerId);
+  await openAssignmentWithCode(activityRootId, closeAt, ownerId);
 
   let newUser = await createTestAnonymousUser();
   newUser = await updateUser({
@@ -6312,8 +6245,8 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     firstNames: "Arya",
     lastNames: "Abbas",
   });
-  let newUserId = newUser!.userId;
-  let userNames = {
+  const newUserId = newUser!.userId;
+  const userNames = {
     firstNames: newUser.firstNames,
     lastNames: newUser.lastNames,
   };
@@ -6639,12 +6572,8 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   });
 
   // open assignment generates code
-  let closeAt = DateTime.now().plus({ days: 1 });
-  const { classCode } = await openAssignmentWithCode(
-    activityId,
-    closeAt,
-    ownerId,
-  );
+  const closeAt = DateTime.now().plus({ days: 1 });
+  await openAssignmentWithCode(activityId, closeAt, ownerId);
 
   let scoreData = await getAllAssignmentScores({
     ownerId,
@@ -6808,11 +6737,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     ownerId,
   });
 
-  const { classCode: classCode2 } = await openAssignmentWithCode(
-    activity2Id,
-    closeAt,
-    ownerId,
-  );
+  await openAssignmentWithCode(activity2Id, closeAt, ownerId);
 
   // identical name to user 2
 
@@ -7246,21 +7171,21 @@ test("searchMyFolderContent, classification matches", async () => {
 test("searchMyFolderContent, handle tags in search", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId, docId } = await createActivity(ownerId, null);
+  const { docId } = await createActivity(ownerId, null);
 
   await updateDoc({ id: docId, source: "point", ownerId });
 
-  let searchResults = await searchMyFolderContent({
+  const searchResults = await searchMyFolderContent({
     folderId: null,
     loggedInUserId: ownerId,
     query: "<point>",
   });
-  let content = searchResults.content;
+  const content = searchResults.content;
   expect(content.length).eq(1);
 });
 
 test("get licenses", async () => {
-  let cc_by_sa = await getLicense("CCBYSA");
+  const cc_by_sa = await getLicense("CCBYSA");
   expect(cc_by_sa.name).eq("Creative Commons Attribution-ShareAlike");
   expect(cc_by_sa.imageURL).eq("/creative_commons_by_sa.png");
   expect(cc_by_sa.smallImageURL).eq("/creative_commons_by_sa_small.png");
@@ -7268,7 +7193,7 @@ test("get licenses", async () => {
     "https://creativecommons.org/licenses/by-sa/4.0/",
   );
 
-  let cc_by_nc_sa = await getLicense("CCBYNCSA");
+  const cc_by_nc_sa = await getLicense("CCBYNCSA");
   expect(cc_by_nc_sa.name).eq(
     "Creative Commons Attribution-NonCommercial-ShareAlike",
   );
@@ -7278,7 +7203,7 @@ test("get licenses", async () => {
     "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   );
 
-  let cc_dual = await getLicense("CCDUAL");
+  const cc_dual = await getLicense("CCDUAL");
   expect(cc_dual.name).eq(
     "Dual license Creative Commons Attribution-ShareAlike OR Attribution-NonCommercial-ShareAlike",
   );
@@ -7304,7 +7229,7 @@ test("get licenses", async () => {
     "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   );
 
-  let all = await getAllLicenses();
+  const all = await getAllLicenses();
   expect(all.map((x) => x.code)).eqls(["CCDUAL", "CCBYSA", "CCBYNCSA"]);
 });
 

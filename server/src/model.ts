@@ -130,9 +130,11 @@ export async function createActivity(
 ) {
   const sortIndex = await getNextSortIndexForFolder(ownerId, parentFolderId);
 
-  let defaultDoenetmlVersion = await prisma.doenetmlVersions.findFirstOrThrow({
-    where: { default: true },
-  });
+  const defaultDoenetmlVersion = await prisma.doenetmlVersions.findFirstOrThrow(
+    {
+      where: { default: true },
+    },
+  );
 
   let isPublic = false;
   let licenseCode = undefined;
@@ -140,7 +142,7 @@ export async function createActivity(
 
   // If parent folder isn't null, check if it is shared and get its license
   if (parentFolderId !== null) {
-    let parentFolder = await prisma.content.findUniqueOrThrow({
+    const parentFolder = await prisma.content.findUniqueOrThrow({
       where: { id: parentFolderId, isFolder: true, isDeleted: false, ownerId },
       select: {
         isPublic: true,
@@ -188,14 +190,14 @@ export async function createActivity(
     },
   });
 
-  let activityId = activity.id;
+  const activityId = activity.id;
 
   const activityWithDoc = await prisma.content.findUniqueOrThrow({
     where: { id: activityId },
     select: { documents: { select: { id: true } } },
   });
 
-  let docId = activityWithDoc.documents[0].id;
+  const docId = activityWithDoc.documents[0].id;
 
   return { activityId, docId };
 }
@@ -212,7 +214,7 @@ export async function createFolder(
 
   // If parent folder isn't null, check if it is shared and get its license
   if (parentFolderId !== null) {
-    let parentFolder = await prisma.content.findUniqueOrThrow({
+    const parentFolder = await prisma.content.findUniqueOrThrow({
       where: { id: parentFolderId, isFolder: true, isDeleted: false, ownerId },
       select: {
         isPublic: true,
@@ -488,7 +490,7 @@ export async function moveContent({
 
   if (desiredParentFolderId !== null) {
     // if desired parent folder is specified, make sure it exists and is owned by `ownerId`
-    let parentFolder = await prisma.content.findUniqueOrThrow({
+    const parentFolder = await prisma.content.findUniqueOrThrow({
       where: {
         id: desiredParentFolderId,
         ownerId,
@@ -525,7 +527,7 @@ export async function moveContent({
         throw Error("Cannot move folder into itself");
       }
 
-      let subfolders = await prisma.$queryRaw<
+      const subfolders = await prisma.$queryRaw<
         {
           id: number;
         }[]
@@ -755,7 +757,7 @@ export async function copyActivityToFolder(
 
   const sortIndex = await getNextSortIndexForFolder(userId, folderId);
 
-  let newActivity = await prisma.content.create({
+  const newActivity = await prisma.content.create({
     data: {
       name: `Copy of ${origActivity.name}`,
       isFolder: false,
@@ -771,11 +773,11 @@ export async function copyActivityToFolder(
     },
   });
 
-  let documentsToAdd = await Promise.all(
+  const documentsToAdd = await Promise.all(
     origActivity.documents.map(async (doc) => {
       // For each of the original documents, create a document version (i.e., a frozen snapshot)
       // that we will link to when creating contributor history, below.
-      let originalDocVersion = await createDocumentVersion(doc.id);
+      const originalDocVersion = await createDocumentVersion(doc.id);
 
       // document to create with new activityId (to associate it with newly created activity)
       // ignoring the docId, lastEdited, createdAt fields
@@ -811,7 +813,7 @@ export async function copyActivityToFolder(
 
   // Create contributor history linking each newly created document
   // to the corresponding versioned document from origActivity.
-  let contribHistoryInfo = newDocIds.map((docId, i) => ({
+  const contribHistoryInfo = newDocIds.map((docId, i) => ({
     docId,
     prevDocId: origActivity.documents[i].id,
     prevDocVersionNum: documentsToAdd[i].originalDocVersion.versionNum,
@@ -833,7 +835,7 @@ export async function copyActivityToFolder(
   // Note: we copy all history rather than using a linked list
   // so that this history is fixed even if the original documents
   // are modified to change their history.
-  for (let [i, origDoc] of origActivity.documents.entries()) {
+  for (const [i, origDoc] of origActivity.documents.entries()) {
     const previousHistory = await prisma.contributorHistory.findMany({
       where: {
         docId: origDoc.id,
@@ -931,7 +933,7 @@ export async function getActivityEditorData(
 ) {
   // TODO: is there a way to combine these queries and avoid any race condition?
 
-  let contentCheck = await prisma.content.findUniqueOrThrow({
+  const contentCheck = await prisma.content.findUniqueOrThrow({
     where: {
       id: activityId,
       isDeleted: false,
@@ -948,7 +950,7 @@ export async function getActivityEditorData(
   if (contentCheck.ownerId !== loggedInUserId) {
     // activity is public or shared but not owned by the logged in user
 
-    let activity: ContentStructure = {
+    const activity: ContentStructure = {
       id: activityId,
       name: "",
       ownerId: contentCheck.ownerId,
@@ -968,14 +970,14 @@ export async function getActivityEditorData(
     return { notMe: true, activity };
   }
 
-  let isAssigned = contentCheck.isAssigned;
+  const isAssigned = contentCheck.isAssigned;
 
   let activity: ContentStructure;
 
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
 
   if (isAssigned) {
-    let assignedActivity = await prisma.content.findUniqueOrThrow({
+    const assignedActivity = await prisma.content.findUniqueOrThrow({
       where: {
         id: activityId,
         isDeleted: false,
@@ -1068,7 +1070,7 @@ export async function getActivityEditorData(
       },
     });
 
-    let isOpen = assignedActivity.codeValidUntil
+    const isOpen = assignedActivity.codeValidUntil
       ? DateTime.now() <= DateTime.fromJSDate(assignedActivity.codeValidUntil)
       : false;
 
@@ -1104,7 +1106,7 @@ export async function getActivityEditorData(
       parentFolder: processParentFolder(assignedActivity.parentFolder),
     };
   } else {
-    let unassignedActivity = await prisma.content.findUniqueOrThrow({
+    const unassignedActivity = await prisma.content.findUniqueOrThrow({
       where: {
         id: activityId,
         isDeleted: false,
@@ -1459,7 +1461,7 @@ export async function getActivityViewerData(
 }
 
 export async function getDocumentSource(docId: number, loggedInUserId: number) {
-  let document = await prisma.documents.findUniqueOrThrow({
+  const document = await prisma.documents.findUniqueOrThrow({
     where: {
       id: docId,
       isDeleted: false,
@@ -1513,7 +1515,7 @@ export async function getDocumentContributorHistories({
   docIds: number[];
   loggedInUserId: number;
 }) {
-  let docHistories = await prisma.documents.findMany({
+  const docHistories = await prisma.documents.findMany({
     where: {
       id: { in: docIds },
       isDeleted: false,
@@ -1617,7 +1619,7 @@ export async function getDocumentDirectRemixes({
   docIds: number[];
   loggedInUserId: number;
 }) {
-  let docRemixes = await prisma.documents.findMany({
+  const docRemixes = await prisma.documents.findMany({
     where: {
       id: { in: docIds },
       isDeleted: false,
@@ -1686,7 +1688,7 @@ export async function getDocumentRemixes({
   docIds: number[];
   loggedInUserId: number;
 }) {
-  let docRemixes = await prisma.documents.findMany({
+  const docRemixes = await prisma.documents.findMany({
     where: {
       id: { in: docIds },
       isDeleted: false,
@@ -1802,13 +1804,13 @@ export async function searchSharedContent(
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
-    .replace(/[+\-><\(\)~*\"@]+/g, " ")
+    .replace(/[+\-><()~*"@]+/g, " ")
     .split(" ")
     .filter((s) => s)
     .map((s) => s + "*")
     .join(" ");
 
-  let matches = await prisma.$queryRaw<
+  const matches = await prisma.$queryRaw<
     {
       id: number;
       relevance: number;
@@ -1961,7 +1963,7 @@ export async function searchUsersWithSharedContent(
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
-    .replace(/[+\-><\(\)~*\"@]+/g, " ")
+    .replace(/[+\-><()~*"@]+/g, " ")
     .split(" ")
     .filter((s) => s)
     .map((s) => s + "*")
@@ -2028,11 +2030,11 @@ export async function listUserAssigned(userId: number) {
     orderBy: { createdAt: "asc" },
   });
 
-  let assignments: ContentStructure[] = preliminaryAssignments.map((obj) => {
-    let isOpen = obj.codeValidUntil
+  const assignments: ContentStructure[] = preliminaryAssignments.map((obj) => {
+    const isOpen = obj.codeValidUntil
       ? DateTime.now() <= DateTime.fromJSDate(obj.codeValidUntil)
       : false;
-    let assignmentStatus: AssignmentStatus = !isOpen ? "Closed" : "Open";
+    const assignmentStatus: AssignmentStatus = !isOpen ? "Closed" : "Open";
     return {
       ...obj,
       isShared: false,
@@ -2317,7 +2319,7 @@ export async function movePromotedContentGroup(
 
 export async function loadPromotedContent(userId: number) {
   const isAdmin = userId ? await getIsAdmin(userId) : false;
-  let content = await prisma.promotedContentGroups.findMany({
+  const content = await prisma.promotedContentGroups.findMany({
     where: {
       // If admin, also include groups not featured
       currentlyFeatured: isAdmin ? undefined : true,
@@ -2571,8 +2573,8 @@ export async function assignActivity(activityId: number, userId: number) {
     },
   });
 
-  for (let doc of origActivity.documents) {
-    let docVersion = await createDocumentVersion(doc.id);
+  for (const doc of origActivity.documents) {
+    const docVersion = await createDocumentVersion(doc.id);
     await prisma.documents.update({
       where: { id: doc.id },
       data: { assignedVersionNum: docVersion.versionNum },
@@ -2589,7 +2591,7 @@ export async function openAssignmentWithCode(
   closeAt: DateTime,
   loggedInUserId: number,
 ) {
-  let initialActivity = await prisma.content.findUniqueOrThrow({
+  const initialActivity = await prisma.content.findUniqueOrThrow({
     where: { id: activityId, ownerId: loggedInUserId, isFolder: false },
     select: { classCode: true, isAssigned: true },
   });
@@ -2695,7 +2697,7 @@ export async function unassignActivity(activityId: number, userId: number) {
 // Note: this function returns `sortIndex` (which is a bigint)
 // so the data shouldn't be sent unchanged to the response
 export async function getAssignment(activityId: number, ownerId: number) {
-  let assignment = await prisma.content.findUniqueOrThrow({
+  const assignment = await prisma.content.findUniqueOrThrow({
     where: {
       id: activityId,
       ownerId,
@@ -3440,7 +3442,7 @@ export async function getDocumentSubmittedResponses({
   // TODO: gave up figuring out to do find the best response and the latest response in a SQL query,
   // so just create in via JS based on this one query.
   // Can we come up with a better solution?
-  let rawResponses = await prisma.$queryRaw<
+  const rawResponses = await prisma.$queryRaw<
     {
       userId: number;
       firstNames: string | null;
@@ -3463,11 +3465,11 @@ select dsr.userId, users.firstNames, users.lastNames, response, creditAchieved, 
     	order by dsr.userId asc, submittedAt desc
   `);
 
-  let submittedResponses = [];
+  const submittedResponses = [];
   let newResponse;
   let lastUserId = 0;
 
-  for (let respObj of rawResponses) {
+  for (const respObj of rawResponses) {
     if (respObj.userId > lastUserId) {
       lastUserId = respObj.userId;
       if (newResponse) {
@@ -3529,7 +3531,7 @@ export async function getDocumentSubmittedResponseHistory({
 
   // for each combination of ["activityId", "docId", "docVersionNum", "answerId", "userId"],
   // find the latest submitted response
-  let submittedResponses = await prisma.documentSubmittedResponses.findMany({
+  const submittedResponses = await prisma.documentSubmittedResponses.findMany({
     where: {
       activityId,
       docVersionNum,
@@ -3569,7 +3571,7 @@ export async function getMyFolderContent({
 
   if (folderId !== null) {
     // if ask for a folder, make sure it exists and is owned by logged in user
-    let preliminaryFolder = await prisma.content.findUniqueOrThrow({
+    const preliminaryFolder = await prisma.content.findUniqueOrThrow({
       where: {
         id: folderId,
         isDeleted: false,
@@ -3649,7 +3651,7 @@ export async function getMyFolderContent({
     };
   }
 
-  let preliminaryContent = await prisma.content.findMany({
+  const preliminaryContent = await prisma.content.findMany({
     where: {
       ownerId: loggedInUserId,
       isDeleted: false,
@@ -3867,7 +3869,7 @@ export async function searchMyFolderContent({
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
-    .replace(/[+\-><\(\)~*\"@]+/g, " ")
+    .replace(/[+\-><()~*"@]+/g, " ")
     .split(" ")
     .filter((s) => s)
     .map((s) => s + "*")
@@ -4089,7 +4091,7 @@ export async function getSharedFolderContent({
 
   if (folderId !== null) {
     // if ask for a folder, make sure it exists and is owned by logged in user
-    let preliminaryFolder = await prisma.content.findUniqueOrThrow({
+    const preliminaryFolder = await prisma.content.findUniqueOrThrow({
       where: {
         ownerId,
         id: folderId,
@@ -4246,7 +4248,7 @@ export async function getSharedFolderContent({
   // That way, users can navigate to all of the owner's shared content
   // when start at the base folder
   if (folderId === null) {
-    let orphanedSharedContent = await prisma.content.findMany({
+    const orphanedSharedContent = await prisma.content.findMany({
       where: {
         ownerId,
         isDeleted: false,
@@ -4573,9 +4575,9 @@ function processSharedWith(
     return { isShared: false, sharedWith: [] };
   }
 
-  let isShared = sharedWithOrig.length > 0;
+  const isShared = sharedWithOrig.length > 0;
 
-  let sharedWith = sharedWithOrig
+  const sharedWith = sharedWithOrig
     .map((cs) => cs.user)
     .sort(
       (a, b) =>
@@ -4991,7 +4993,7 @@ export async function shareFolder({
     select: { id: true },
   });
 
-  let contentIds = (
+  const contentIds = (
     await prisma.$queryRaw<{ id: number }[]>(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
@@ -5083,7 +5085,7 @@ export async function unshareFolder({
     select: { id: true },
   });
 
-  let contentIds = (
+  const contentIds = (
     await prisma.$queryRaw<{ id: number }[]>(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content

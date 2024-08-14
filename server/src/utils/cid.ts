@@ -4,16 +4,16 @@
 import base32 from "hi-base32";
 
 export async function cidFromText(text: string) {
-  let encoder = new TextEncoder();
-  let data = encoder.encode(text);
+  const encoder = new TextEncoder();
+  const data = encoder.encode(text);
 
   return await cidFromArrayBuffer(data);
 }
 
 export async function cidFromArrayBuffer(data: Uint8Array) {
-  let hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
 
-  let cidArray = new Uint8Array(36);
+  const cidArray = new Uint8Array(36);
 
   // 0x01: cidV1
   // 0x55: raw binary IPLD
@@ -26,7 +26,7 @@ export async function cidFromArrayBuffer(data: Uint8Array) {
   // b: prefix for base 32
   // base32: hi-base uses RFC 4648 encoding
   // cid uses lowercase letter and does not include the padding at the end
-  let cid = "b" + base32.encode(cidArray).toLowerCase().replace(/=+/, "");
+  const cid = "b" + base32.encode(cidArray).toLowerCase().replace(/=+/, "");
 
   return cid;
 }
