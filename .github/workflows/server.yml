@@ -12,8 +12,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Npm install
-        run: npm install
+      - name: Npm clean install
+        run: npm ci
         working-directory: ./server
       - name: Build
         run: npm run build
@@ -26,8 +26,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Npm install
-        run: npm install
+      - name: Npm clean install
+        run: npm ci
         working-directory: ./server
       - name: Lint
         run: npx eslint
@@ -40,8 +40,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Npm install
-        run: npm install
+      - name: Npm clean install
+        run: npm ci
         working-directory: ./server
       - name: Prettier
         run: npx prettier . --check
@@ -63,8 +63,8 @@ jobs:
         run: |
           sudo /etc/init.d/mysql start
           mysql -e "CREATE DATABASE IF NOT EXISTS db;" -uroot -proot
-      - name: Npm install
-        run: npm install
+      - name: Npm clean install
+        run: npm ci
         working-directory: ./server
       - name: Apply migrations
         run: npx prisma migrate dev

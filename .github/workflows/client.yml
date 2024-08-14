@@ -12,8 +12,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Npm install
-        run: npm install
+      - name: Npm clean install
+        run: npm ci
         working-directory: ./client
       - name: Build
         run: npm run build
@@ -26,8 +26,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Npm install
-        run: npm install
+      - name: Npm clean install
+        run: npm ci
         working-directory: ./client
       - name: Lint
         run: npx eslint
@@ -40,8 +40,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Npm install
-        run: npm install
+      - name: Npm clean install
+        run: npm ci
         working-directory: ./client
       - name: Prettier
         run: npx prettier . --check
