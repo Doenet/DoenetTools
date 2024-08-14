@@ -136,7 +136,7 @@ test("Update user name", async () => {
   expect(user.firstNames).eq("New");
   expect(user.lastNames).eq("Name");
 
-  const userInfo = await getUserInfo(user.email);
+  const userInfo = await getUserInfo(user.userId);
   expect(userInfo.firstNames).eq("New");
   expect(userInfo.lastNames).eq("Name");
 });

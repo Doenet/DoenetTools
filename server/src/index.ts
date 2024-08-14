@@ -19,6 +19,7 @@ import {
   getAllRecentPublicActivities,
   getIsAdmin,
   getUserInfo,
+  getUserInfoFromEmail,
   updateDoc,
   searchSharedContent,
   updateContent,
@@ -245,7 +246,7 @@ passport.serializeUser<any, any>(async (_req, user: any, done) => {
       });
     }
 
-    return done(undefined, u.email);
+    return done(undefined, u.userId);
   } else if (user.provider === "google") {
     let email = user.id + "@google.com";
     if (user.emails[0].verified) {
@@ -257,20 +258,41 @@ passport.serializeUser<any, any>(async (_req, user: any, done) => {
       firstNames: user.name.givenName,
       lastNames: user.name.familyName,
     });
-    return done(undefined, u.email);
+    return done(undefined, u.userId);
   } else if (user.uuid) {
+    let email = user.uuid + "@anonymous.doenet.org";
+    let lastNames = "";
+    let firstNames: string | null = null;
+    let isAnonymous = true;
+
+    if (
+      process.env.ALLOW_TEST_LOGIN &&
+      process.env.ALLOW_TEST_LOGIN.toLocaleLowerCase() !== "false"
+    ) {
+      if (req.body.email) {
+        email = req.body.email;
+      }
+      if (req.body.firstNames) {
+        firstNames = req.body.firstNames;
+      }
+      if (req.body.lastNames) {
+        lastNames = req.body.lastNames;
+      }
+      isAnonymous = false;
+    }
+
     const u = await findOrCreateUser({
-      email: user.uuid + "@anonymous.doenet.org",
-      lastNames: "",
-      firstNames: null,
-      isAnonymous: true,
+      email,
+      lastNames,
+      firstNames,
+      isAnonymous,
     });
-    return done(undefined, u.email);
+    return done(undefined, u.userId);
   }
 });
 
-passport.deserializeUser(async (id: string, done) => {
-  const u = await getUserInfo(id);
+passport.deserializeUser(async (userId: number, done) => {
+  const u = await getUserInfo(userId);
   done(null, u);
 });
 
@@ -321,6 +343,19 @@ app.get(
   },
 );
 
+if (
+  process.env.ALLOW_TEST_LOGIN &&
+  process.env.ALLOW_TEST_LOGIN.toLocaleLowerCase() !== "false"
+) {
+  app.post(
+    "/api/login/createOrLoginAsTest",
+    passport.authenticate("anonymId"),
+    (req: Request, res: Response) => {
+      res.send({});
+    },
+  );
+}
+
 app.get(
   "/api/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] }),
@@ -347,7 +382,9 @@ app.get(
     userPrimaryKey: "email",
   }),
   async (req: Request, res: Response) => {
-    const user = await getUserInfo((req.user as { email: string }).email);
+    const user = await getUserInfoFromEmail(
+      (req.user as { email: string }).email,
+    );
     res.send({ user });
   },
 );
@@ -372,7 +409,7 @@ app.get(
     const signedIn = req.user ? true : false;
     if (signedIn) {
       try {
-        const user = await getUserInfo(req.user.email);
+        let user = await getUserInfo(req.user.userId);
         res.send({ user });
       } catch (e) {
         next(e);
@@ -1228,7 +1265,10 @@ app.get(
       });
       res.send(data);
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2025"
+      ) {
         res.sendStatus(404);
       } else {
         next(e);
