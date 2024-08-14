@@ -115,6 +115,7 @@ export default forwardRef(function ActivityTable(
             return (
               <Tr
                 key={(activity.authorRow ? "author" : "activity") + activity.id}
+                data-test="Activity Link"
                 cursor="pointer"
                 _hover={{ backgroundColor: "#eeeeee" }}
                 borderBottom="2px solid gray"
@@ -177,6 +178,7 @@ export default forwardRef(function ActivityTable(
                       defaultValue={
                         activity.authorRow ? activity.ownerName : activity.title
                       }
+                      data-test="Editable Title"
                       startWithEditView={activity.autoFocusTitle}
                       isDisabled={!activity.editableTitle}
                       onClick={(e) =>

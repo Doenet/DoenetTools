@@ -22,7 +22,7 @@ import { defineConfig } from "cypress";
 
 export default defineConfig({
   numTestsKeptInMemory: 20,
-  defaultCommandTimeout: 30000,
+  defaultCommandTimeout: 10000,
   e2e: {
     setupNodeEvents(on, config) {
       on("before:browser:launch", (browser = {}, launchOptions) => {
@@ -41,12 +41,12 @@ export default defineConfig({
 
     baseUrl: "http://localhost:8000",
   },
-  env: {
-    db: {
-      host: "localhost",
-      user: "root",
-      password: "helloworld",
-      database: "doenet_local",
-    },
-  },
+  // env: {
+  //   db: {
+  //     host: "localhost",
+  //     user: "root",
+  //     password: "helloworld",
+  //     database: "doenet_local",
+  //   },
+  // },
 });

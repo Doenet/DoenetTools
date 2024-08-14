@@ -259,6 +259,7 @@ export function ShareSettings({
 
         {statusText !== "" ? (
           <Box
+            data-test="Status message"
             border="solid 1px lightgray"
             borderRadius="5px"
             padding="5px 10px"
@@ -450,6 +451,7 @@ export function ShareSettings({
                 name="email"
                 placeholder="Email address"
                 value={shareWithEmail}
+                data-test="Email address"
                 onChange={(e) => setShareWithEmail(e.target.value)}
                 width="90%"
               />

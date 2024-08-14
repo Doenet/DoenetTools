@@ -660,7 +660,7 @@ export function ActivityEditor() {
               <DoenetEditor
                 height={`calc(100vh - ${readOnly ? 120 : 80}px)`}
                 width="100%"
-                doenetML={textEditorDoenetML.current}
+                doenetML={doenetML}
                 doenetmlChangeCallback={handleSaveDoc}
                 immediateDoenetmlChangeCallback={(newDoenetML: string) => {
                   textEditorDoenetML.current = newDoenetML;
