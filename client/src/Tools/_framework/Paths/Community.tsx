@@ -41,6 +41,7 @@ import ContentCard from "../../../Widgets/ContentCard";
 import AuthorCard from "../../../Widgets/AuthorCard";
 import { createFullName } from "../../../_utils/names";
 import { ContentStructure } from "./ActivityEditor";
+import ActivityTable from "../../../Widgets/ActivityTable";
 
 type SearchMatch =
   | (ContentStructure & { type: "content" })
@@ -501,6 +502,44 @@ export function Community() {
       }
     }
 
+    function displayResultsTable(allMatches: SearchMatch[]) {
+      return <ActivityTable
+        suppressAvatar={false}
+        showPublicStatus={false}
+        showAssignmentStatus={false}
+        showOwnerName={true}
+        content={allMatches.map((itemObj) => {
+          if(itemObj.type === "content") {
+
+            const { id, imagePath, name, owner, isFolder } = itemObj;
+            const cardLink = isFolder && owner != undefined ? `/sharedActivities/${owner.userId}/${id}` : `/activityViewer/${id}`;
+
+            return {
+              id: Number(id),
+              title: name,
+              ownerName: owner != undefined ? createFullName(owner) : "",
+              cardLink,
+              menuItems:
+                isAdmin ? (
+                  <>
+                    <MoveToGroupMenuItem
+                      activityId={id}
+                      carouselGroups={carouselGroups}
+                    />
+                  </>
+                ) : undefined
+            }
+          }
+          else {
+            return {id: 0, title: ""};
+          }
+          /* else if (itemObj?.type == "author") {
+            
+          } */
+        })}
+      />
+    }
+
     return (
       <>
         <Flex
@@ -620,15 +659,15 @@ export function Community() {
 
           <TabPanels background="doenet.mainGray" data-test="Search Results">
             <TabPanel>
-              <Wrap
-                p={10}
-                m={0}
+              <Flex
                 display="flex"
-                justifyContent="center"
-                alignItems="center"
+                direction="column"
+                width="100%"
                 data-test="Results All Matches"
               >
-                {allMatches.map(displayCard)}
+                {listView ? 
+                displayResultsTable(allMatches)
+                : <Wrap>{allMatches.map(displayCard)}</Wrap>}
                 {allMatches.length == 0 ? (
                   <Flex
                     flexDirection="column"
@@ -636,15 +675,13 @@ export function Community() {
                     alignItems="center"
                     alignContent="center"
                     minHeight={200}
-                    background="doenet.canvas"
                     padding={20}
-                    // border="1px solid var(--canvastext)"
                   >
                     <Icon fontSize="48pt" as={RiEmotionSadLine} />
                     <Text fontSize="36pt">No Matches Found!</Text>
                   </Flex>
                 ) : null}
-              </Wrap>
+              </Flex>
             </TabPanel>
             <TabPanel>
               <Wrap
@@ -663,7 +700,6 @@ export function Community() {
                     alignItems="center"
                     alignContent="center"
                     minHeight={200}
-                    background="doenet.canvas"
                     padding={20}
                     // border="1px solid var(--canvastext)"
                   >
@@ -691,7 +727,6 @@ export function Community() {
                     alignItems="center"
                     alignContent="center"
                     minHeight={200}
-                    background="doenet.canvas"
                     padding={20}
                     // border="1px solid var(--canvastext)"
                   >

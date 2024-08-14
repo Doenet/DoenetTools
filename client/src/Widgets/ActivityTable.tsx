@@ -31,6 +31,10 @@ import { AssignmentStatus } from "../Tools/_framework/Paths/ActivityEditor";
 export default forwardRef(function ActivityTable(
   {
     content,
+    suppressAvatar,
+    showOwnerName,
+    showAssignmentStatus,
+    showPublicStatus,
   }: {
     content: {
       cardLink?: string;
@@ -38,17 +42,18 @@ export default forwardRef(function ActivityTable(
       assignmentStatus?: AssignmentStatus;
       isFolder?: boolean;
       isPublic?: boolean;
+      isShared?: boolean;
       title: string;
       ownerName?: string;
       menuItems?: ReactElement;
-      suppressAvatar?: boolean;
-      showOwnerName?: boolean;
       editableTitle?: boolean;
       autoFocusTitle?: boolean;
-      showAssignmentStatus?: boolean;
-      showPublicStatus?: boolean;
       closeTime?: string;
     }[];
+    suppressAvatar?: boolean;
+    showOwnerName?: boolean;
+    showAssignmentStatus?: boolean;
+    showPublicStatus?: boolean;
   },
   ref: React.ForwardedRef<HTMLButtonElement>,
 ) {
@@ -62,17 +67,17 @@ export default forwardRef(function ActivityTable(
           <Tr borderBottom="2px solid gray">
             <Th></Th>
             <Th></Th>
-            {content.some((act) => act.showPublicStatus) ? (
+            {showPublicStatus ? (
               <Th>Visibility</Th>
             ) : (
               <Th></Th>
             )}
-            {content.some((act) => act.showAssignmentStatus) ? (
+            {showAssignmentStatus ? (
               <Th>Assignment Status</Th>
             ) : (
               <Th></Th>
             )}
-            {content.some((act) => act.showOwnerName || !act.suppressAvatar) ? (
+            {showOwnerName || !suppressAvatar ? (
               <Th>Owner</Th>
             ) : (
               <Th></Th>
@@ -83,7 +88,7 @@ export default forwardRef(function ActivityTable(
         <Tbody>
           {content.map(function (activity) {
             if (activity.isFolder) {
-              activity.showAssignmentStatus = false;
+              showAssignmentStatus = false;
             }
 
             let assignmentStatusString: string =
@@ -129,7 +134,7 @@ export default forwardRef(function ActivityTable(
                   <Tooltip
                     label={
                       activity.isFolder
-                        ? activity.isPublic
+                        ? activity.isPublic || activity.isShared
                           ? "Folder / Public"
                           : "Folder / Private"
                         : activity.assignmentStatus === "Unassigned"
@@ -180,7 +185,7 @@ export default forwardRef(function ActivityTable(
                         }}
                       />
                     </Editable>
-                    {activity.isPublic ? (
+                    {activity.isPublic || activity.isShared ? (
                       <Icon
                         as={BsPeopleFill}
                         color="#666699"
@@ -190,24 +195,24 @@ export default forwardRef(function ActivityTable(
                     ) : null}
                   </HStack>
                 </Td>
-                {activity.showPublicStatus ? (
+                {showPublicStatus ? (
                   <Td>{activity.isPublic ? "Public" : "Private"}</Td>
                 ) : (
                   <Td></Td>
                 )}
-                {activity.showAssignmentStatus ? (
+                {showAssignmentStatus ? (
                   <Td>{assignmentStatusString}</Td>
                 ) : (
                   <Td></Td>
                 )}
                 <Td>
                   <HStack>
-                    {activity.suppressAvatar ? null : (
+                    {suppressAvatar ? null : (
                       <Tooltip label={activity.ownerName}>
                         <Avatar size="sm" name={activity.ownerName} />
                       </Tooltip>
                     )}
-                    {activity.showOwnerName ? (
+                    {showOwnerName ? (
                       <Text>{activity.ownerName}</Text>
                     ) : null}
                   </HStack>
@@ -219,13 +224,13 @@ export default forwardRef(function ActivityTable(
                         data-test="Card Menu Button"
                         _focus={{ boxShadow: "outline" }}
                         ref={ref}
+                        padding="1em"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Icon
                           color="black"
                           as={GoKebabVertical}
                           boxSize={6}
-                          paddingRight="1em"
                         />
                       </MenuButton>
                       <MenuList zIndex="1000" onClick={(e) => e.stopPropagation()}>{activity.menuItems}</MenuList>

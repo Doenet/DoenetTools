@@ -34,7 +34,6 @@ import {
 
 import { RiEmotionSadLine } from "react-icons/ri";
 import { FaListAlt, FaRegListAlt } from "react-icons/fa";
-import { BsFillGrid3X3GapFill, BsGrid3X3Gap } from "react-icons/bs";
 import { IoGrid, IoGridOutline } from "react-icons/io5";
 import ContentCard, { contentCardActions } from "../../../Widgets/ContentCard";
 import ActivityTable from "../../../Widgets/ActivityTable";
@@ -323,7 +322,7 @@ export function Activities() {
               );
             }}
           >
-            Move Up
+            {listView ? "Move Up" : "Move Left"}
           </MenuItem>
         ) : null}
         {position < numCards - 1 && !haveQuery ? (
@@ -341,7 +340,7 @@ export function Activities() {
               );
             }}
           >
-            Move Down
+            {listView ? "Move Down" : "Move Right"}
           </MenuItem>
         ) : null}
         {haveQuery ? null : (
@@ -480,6 +479,7 @@ export function Activities() {
         fetcher={fetcher}
       />
     ) : null;
+    console.log(folderJustCreated);
   return (
     <>
       {settingsDrawer}
@@ -509,7 +509,7 @@ export function Activities() {
         <Heading as="h2" size="lg" padding=".5em 0" noOfLines={1}>
           <Tooltip label={headingText}>{headingText}</Tooltip>
         </Heading>
-        <VStack float="right">
+        <VStack align="flex-end" float="right" marginRight=".5em">
           <HStack>
             <Flex>
               <Form>
@@ -517,7 +517,7 @@ export function Activities() {
                   type="search"
                   hidden={!searchOpen}
                   size="sm"
-                  margin="3px"
+                  colorScheme="blue"
                   width="250px"
                   ref={searchRef}
                   placeholder={
@@ -544,7 +544,7 @@ export function Activities() {
                 >
                   <IconButton
                     size="sm"
-                    margin="3px"
+                    colorScheme="blue"
                     icon={<MdOutlineSearch />}
                     aria-label={
                       folder ? `Search in folder` : `Search my activities`
@@ -567,7 +567,7 @@ export function Activities() {
               <MenuButton
                 as={Button}
                 size="sm"
-                margin="3px"
+                colorScheme="blue"
                 hidden={searchOpen || haveQuery}
               >
                 {haveContentSpinner ? <Spinner size="sm" /> : "New"}
@@ -609,7 +609,7 @@ export function Activities() {
 
             {folderId !== null ? (
               <Button
-                margin="3px"
+                colorScheme="blue"
                 size="sm"
                 ref={folderSettingsRef}
                 onClick={() => {
@@ -622,7 +622,7 @@ export function Activities() {
               </Button>
             ) : null}
             <Button
-              margin="3px"
+              colorScheme="blue"
               size="sm"
               onClick={() =>
                 navigate(
@@ -647,7 +647,10 @@ export function Activities() {
                   boxSize={10}
                   p=".5em"
                   cursor="pointer"
-                  onClick={() => setListView(true)}
+                  onClick={function() {
+                    setListView(true);
+                    //setPreferredFolderView(true);
+                  }}
                 />
               </Button>
             </Tooltip>
@@ -740,6 +743,9 @@ export function Activities() {
           </Flex>
         ) : listView ? (
           <ActivityTable
+            suppressAvatar={true}
+            showOwnerName={false}
+            showAssignmentStatus={true}
             content={content.map((activity, position) => {
               const getCardRef = (element) => {
                 contentCardRefs.current[position] = element;
@@ -760,14 +766,11 @@ export function Activities() {
                   licenseCode: activity.license?.code ?? null,
                   parentFolderId: activity.parentFolder?.id ?? null,
                 }),
-                suppressAvatar: true,
-                showOwnerName: false,
                 cardLink: activity.isFolder
                   ? `/activities/${activity.ownerId}/${activity.id}`
                   : `/activityEditor/${activity.id}`,
                 editableTitle: true,
                 autoFocusTitle: folderJustCreated === activity.id,
-                showAssignmentStatus: true,
               };
             })}
           />
