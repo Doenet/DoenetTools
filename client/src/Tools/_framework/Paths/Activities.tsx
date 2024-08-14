@@ -134,6 +134,11 @@ export async function action({ request, params }) {
       desiredPosition: formObj.desiredPosition,
     });
     return true;
+  } else if (formObj?._action == "Set List View Preferred") {
+    await axios.post(`/api/setPreferredFolderView`, {
+      cardView: formObj.listViewPref === "false",
+    });
+    return true;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
@@ -162,6 +167,9 @@ export async function loader({ params, request }) {
     }
   }
 
+  let prefData = await axios.get(`/api/getPreferredFolderView`);
+  let listViewPref = !prefData.data.cardView;
+
   return {
     folderId: params.folderId ? Number(params.folderId) : null,
     content: data.content,
@@ -169,6 +177,7 @@ export async function loader({ params, request }) {
     allLicenses: data.allLicenses,
     userId: params.userId,
     folder: data.folder,
+    listViewPref,
     query: q,
   };
 }
@@ -181,6 +190,7 @@ export function Activities() {
     allLicenses,
     userId,
     folder,
+    listViewPref,
     query,
   } = useLoaderData() as {
     folderId: number | null;
@@ -189,6 +199,7 @@ export function Activities() {
     allLicenses: License[];
     userId: number;
     folder: ContentStructure | null;
+    listViewPref: Boolean;
     query: string | null;
   };
   const [settingsContentId, setSettingsContentId] = useState<number | null>(
@@ -236,7 +247,7 @@ export function Activities() {
 
   const navigate = useNavigate();
 
-  const [listView, setListView] = useState(true);
+  const [listView, setListView] = useState(listViewPref);
 
   const [moveToFolderContent, setMoveToFolderContent] = useState<{
     id: number;
@@ -646,9 +657,17 @@ export function Activities() {
                   boxSize={10}
                   p=".5em"
                   cursor="pointer"
-                  onClick={function () {
-                    setListView(true);
-                    //setPreferredFolderView(true);
+                  onClick={() => {
+                    if (listView === false) {
+                      setListView(true);
+                      fetcher.submit(
+                        {
+                          _action: "Set List View Preferred",
+                          listViewPref: true,
+                        },
+                        { method: "post" },
+                      );
+                    }
                   }}
                 />
               </Button>
@@ -660,7 +679,18 @@ export function Activities() {
                   boxSize={10}
                   p=".5em"
                   cursor="pointer"
-                  onClick={() => setListView(false)}
+                  onClick={() => {
+                    if (listView === true) {
+                      setListView(false);
+                      fetcher.submit(
+                        {
+                          _action: "Set List View Preferred",
+                          listViewPref: false,
+                        },
+                        { method: "post" },
+                      );
+                    }
+                  }}
                 />
               </Button>
             </Tooltip>

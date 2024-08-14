@@ -25,28 +25,48 @@ import { ContentStructure } from "./ActivityEditor";
 import { DateTime } from "luxon";
 import ActivityTable from "../../../Widgets/ActivityTable";
 
+export async function action({ request }) {
+  const formData = await request.formData();
+  let formObj = Object.fromEntries(formData);
+
+  if (formObj?._action == "Set List View Preferred") {
+    await axios.post(`/api/setPreferredFolderView`, {
+      cardView: formObj.listViewPref === "false",
+    });
+    return true;
+  }
+
+  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
+}
+
 export async function loader({ params }) {
   const { data: assignmentData } = await axios.get(`/api/getAssigned`);
+
+  let prefData = await axios.get(`/api/getPreferredFolderView`);
+  let listViewPref = !prefData.data.cardView;
 
   return {
     user: assignmentData.user,
     assignments: assignmentData.assignments,
+    listViewPref,
   };
 }
 
 export function Assigned() {
-  let { user, assignments } = useLoaderData() as {
+  let { user, assignments, listViewPref } = useLoaderData() as {
     user: {
       userId: number;
       firstNames: string | null;
       lastNames: string;
     };
     assignments: ContentStructure[];
+    listViewPref: Boolean;
   };
 
   const navigate = useNavigate();
+  const fetcher = useFetcher();
 
-  const [listView, setListView] = useState(true);
+  const [listView, setListView] = useState(listViewPref);
 
   useEffect(() => {
     document.title = `Assigned - Doenet`;
@@ -149,7 +169,18 @@ export function Assigned() {
                   boxSize={10}
                   p=".5em"
                   cursor="pointer"
-                  onClick={() => setListView(true)}
+                  onClick={() => {
+                    if (listView === false) {
+                      setListView(true);
+                      fetcher.submit(
+                        {
+                          _action: "Set List View Preferred",
+                          listViewPref: true,
+                        },
+                        { method: "post" },
+                      );
+                    }
+                  }}
                 />
               </Button>
             </Tooltip>
@@ -160,7 +191,18 @@ export function Assigned() {
                   boxSize={10}
                   p=".5em"
                   cursor="pointer"
-                  onClick={() => setListView(false)}
+                  onClick={() => {
+                    if (listView === true) {
+                      setListView(false);
+                      fetcher.submit(
+                        {
+                          _action: "Set List View Preferred",
+                          listViewPref: false,
+                        },
+                        { method: "post" },
+                      );
+                    }
+                  }}
                 />
               </Button>
             </Tooltip>

@@ -62,6 +62,7 @@ export async function action({ request }) {
     groupId,
     currentlyFeatured,
     homepage,
+    listViewPref,
   } = formObj;
 
   // TODO: should this function exist?
@@ -121,12 +122,20 @@ export async function action({ request }) {
         groupId,
       });
     }
+    case "Set List View Preferred": {
+      return postApiAlertOnError(`/api/setPreferredFolderView`, {
+        cardView: listViewPref === "false",
+      });
+    }
   }
 }
 
 export async function loader({ request }) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
+
+  let prefData = await axios.get(`/api/getPreferredFolderView`);
+  let listViewPref = !prefData.data.cardView;
 
   if (q) {
     //Show search results
@@ -151,6 +160,7 @@ export async function loader({ request }) {
       searchResults: searchData,
       carouselGroups,
       isAdmin,
+      listViewPref,
     };
   } else {
     const { data: isAdminData } = await axios.get(
@@ -158,7 +168,7 @@ export async function loader({ request }) {
     );
     const isAdmin = isAdminData.isAdmin;
     const { data: carouselData } = await axios.get("/api/loadPromotedContent");
-    return { carouselData, isAdmin };
+    return { carouselData, isAdmin, listViewPref };
   }
 }
 
@@ -384,25 +394,32 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
 }
 
 export function Community() {
-  const { carouselData, q, searchResults, carouselGroups, isAdmin } =
-    useLoaderData() as {
-      carouselData: any;
-      q: string;
-      searchResults: {
-        content: ContentStructure[];
-        users: {
-          userId: number;
-          firstNames: string | null;
-          lastNames: string;
-        }[];
-      };
-      carouselGroups: any;
-      isAdmin: boolean;
+  const {
+    carouselData,
+    q,
+    searchResults,
+    carouselGroups,
+    isAdmin,
+    listViewPref,
+  } = useLoaderData() as {
+    carouselData: any;
+    q: string;
+    searchResults: {
+      content: ContentStructure[];
+      users: {
+        userId: number;
+        firstNames: string | null;
+        lastNames: string;
+      }[];
     };
+    carouselGroups: any;
+    isAdmin: boolean;
+    listViewPref: boolean;
+  };
   const [currentTab, setCurrentTab] = useState(0);
   const fetcher = useFetcher();
 
-  const [listView, setListView] = useState(true);
+  const [listView, setListView] = useState(listViewPref);
 
   useEffect(() => {
     document.title = `Community - Doenet`;
@@ -601,7 +618,18 @@ export function Community() {
                     boxSize={10}
                     p=".5em"
                     cursor="pointer"
-                    onClick={() => setListView(true)}
+                    onClick={() => {
+                      if (listView === false) {
+                        setListView(true);
+                        fetcher.submit(
+                          {
+                            _action: "Set List View Preferred",
+                            listViewPref: true,
+                          },
+                          { method: "post" },
+                        );
+                      }
+                    }}
                   />
                 </Button>
               </Tooltip>
@@ -612,7 +640,18 @@ export function Community() {
                     boxSize={10}
                     p=".5em"
                     cursor="pointer"
-                    onClick={() => setListView(false)}
+                    onClick={() => {
+                      if (listView === true) {
+                        setListView(false);
+                        fetcher.submit(
+                          {
+                            _action: "Set List View Preferred",
+                            listViewPref: false,
+                          },
+                          { method: "post" },
+                        );
+                      }
+                    }}
                   />
                 </Button>
               </Tooltip>

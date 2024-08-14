@@ -45,6 +45,7 @@ import {
 } from "./Tools/_framework/Paths/ActivityViewer";
 import {
   loader as assignedLoader,
+  action as assignedAction,
   Assigned,
 } from "./Tools/_framework/Paths/Assigned";
 import {
@@ -295,6 +296,7 @@ const router = createBrowserRouter([
       },
       {
         path: "assigned",
+        action: assignedAction,
         loader: assignedLoader,
         element: <Assigned />,
         errorElement: <ErrorPage />,
