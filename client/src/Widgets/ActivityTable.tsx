@@ -174,9 +174,13 @@ export default forwardRef(function ActivityTable(
                       }
                       startWithEditView={activity.autoFocusTitle}
                       isDisabled={!activity.editableTitle}
-                      onClick={(e) => activity.editableTitle ? e.stopPropagation() : null}
+                      onClick={(e) =>
+                        activity.editableTitle ? e.stopPropagation() : null
+                      }
                     >
-                      <EditablePreview cursor={activity.editableTitle ? "auto" : "pointer"}/>
+                      <EditablePreview
+                        cursor={activity.editableTitle ? "auto" : "pointer"}
+                      />
                       <EditableInput
                         maxLength={191}
                         onBlur={(e) => saveUpdatedTitle(e.target.value)}
