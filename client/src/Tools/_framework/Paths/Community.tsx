@@ -535,6 +535,7 @@ export function Community() {
               return {
                 id: itemObj.userId,
                 title: createFullName(itemObj),
+                ownerName: createFullName(itemObj),
                 cardLink,
                 authorRow: true,
               };
