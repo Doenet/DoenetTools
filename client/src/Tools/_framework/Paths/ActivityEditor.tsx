@@ -26,16 +26,25 @@ import {
   MdModeEditOutline,
   MdOutlineAssignment,
   MdOutlineEditOff,
+  MdOutlineGroup,
 } from "react-icons/md";
 import { FaCog } from "react-icons/fa";
 import { useFetcher } from "react-router-dom";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router";
-import { ContentSettingsDrawer } from "../ToolPanels/ContentSettingsDrawer";
+import {
+  contentSettingsActions,
+  ContentSettingsDrawer,
+} from "../ToolPanels/ContentSettingsDrawer";
 import { DateTime } from "luxon";
 import { InfoIcon } from "@chakra-ui/icons";
 import { AssignmentInvitation } from "../ToolPanels/AssignmentInvitation";
-import { AssignmentSettingsDrawer } from "../ToolPanels/AssignmentSettingsDrawer";
+import {
+  assignmentSettingsActions,
+  AssignmentSettingsDrawer,
+} from "../ToolPanels/AssignmentSettingsDrawer";
+import { ShareDrawer } from "../ToolPanels/ShareDrawer";
+import { sharingActions } from "../ToolPanels/ShareSettings";
 
 export type DoenetmlVersion = {
   id: number;
@@ -69,9 +78,29 @@ export type License = {
 
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
+export type UserInfo = {
+  userId: number;
+  firstNames: string | null;
+  lastNames: string;
+  email: string;
+};
+
+export type ContentClassification = {
+  id: number;
+  code: string;
+  grade: string | null;
+  category: string;
+  description: string;
+  system: {
+    id: number;
+    name: string;
+  };
+};
+
 export type ContentStructure = {
   id: number;
   ownerId: number;
+  owner?: UserInfo;
   name: string;
   imagePath: string | null;
   assignmentStatus: AssignmentStatus;
@@ -79,7 +108,10 @@ export type ContentStructure = {
   classCode: string | null;
   codeValidUntil: string | null;
   isPublic: boolean;
+  isShared: boolean;
+  sharedWith: UserInfo[];
   license: License | null;
+  classifications: ContentClassification[];
   documents: {
     id: number;
     versionNum?: number;
@@ -92,6 +124,8 @@ export type ContentStructure = {
     id: number;
     name: string;
     isPublic: boolean;
+    isShared: boolean;
+    sharedWith: UserInfo[];
   } | null;
 };
 
@@ -113,105 +147,19 @@ export async function action({ params, request }) {
     return true;
   }
 
-  if (formObj._action == "update general") {
-    let learningOutcomes;
-    if (formObj.learningOutcomes) {
-      learningOutcomes = JSON.parse(formObj.learningOutcomes);
-    }
-
-    await axios.post("/api/updateContentSettings", {
-      name,
-      imagePath: formObj.imagePath,
-      id: Number(params.activityId),
-      learningOutcomes,
-    });
-
-    if (formObj.doenetmlVersionId) {
-      // TODO: handle other updates to just a document
-      await axios.post("/api/updateDocumentSettings", {
-        docId: formObj.docId,
-        doenetmlVersionId: formObj.doenetmlVersionId,
-      });
-    }
-    return true;
-  }
-  if (formObj._action == "update description") {
-    await axios.get("/api/updateFileDescription", {
-      params: {
-        activityId: Number(params.activityId),
-        cid: formObj.cid,
-        description: formObj.description,
-      },
-    });
-    return true;
-  }
-  if (formObj._action == "remove file") {
-    let resp = await axios.get("/api/deleteFile", {
-      params: { activityId: Number(params.activityId), cid: formObj.cid },
-    });
-
-    return {
-      _action: formObj._action,
-      fileRemovedCid: formObj.cid,
-      success: resp.data.success,
-    };
+  let resultCS = await contentSettingsActions({ formObj });
+  if (resultCS) {
+    return resultCS;
   }
 
-  if (formObj._action == "open assignment") {
-    let closeAt: DateTime;
-    if (formObj.duration === "custom") {
-      closeAt = DateTime.fromISO(formObj.customCloseAt);
-    } else {
-      closeAt = DateTime.fromSeconds(
-        Math.round(DateTime.now().toSeconds() / 60) * 60,
-      ).plus(JSON.parse(formObj.duration));
-    }
-    await axios.post("/api/openAssignmentWithCode", {
-      activityId: Number(params.activityId),
-      closeAt,
-    });
-    return true;
+  let resultSA = await sharingActions({ formObj });
+  if (resultSA) {
+    return resultSA;
   }
 
-  if (formObj._action == "update assignment close time") {
-    const closeAt = DateTime.fromISO(formObj.closeAt);
-    await axios.post("/api/updateAssignmentSettings", {
-      activityId: Number(params.activityId),
-      closeAt,
-    });
-    return true;
-  }
-
-  if (formObj._action == "close assignment") {
-    await axios.post("/api/closeAssignmentWithCode", {
-      activityId: Number(params.activityId),
-    });
-    return true;
-  }
-
-  if (formObj._action == "unassign activity") {
-    try {
-      await axios.post("/api/unassignActivity", {
-        activityId: Number(formObj.activityId),
-      });
-    } catch (e) {
-      alert("Unable to unassign activity");
-    }
-    return true;
-  }
-
-  if (formObj._action == "make content public") {
-    await axios.post("/api/makeContentPublic", {
-      id: Number(formObj.id),
-      licenseCode: formObj.licenseCode,
-    });
-    return true;
-  }
-  if (formObj._action == "make content private") {
-    await axios.post("/api/makeContentPrivate", {
-      id: Number(formObj.id),
-    });
-    return true;
+  let resultAS = await assignmentSettingsActions({ formObj });
+  if (resultAS) {
+    return resultAS;
   }
 
   if (formObj._action == "go to data") {
@@ -331,7 +279,7 @@ function EditableName({ dataTest }) {
         <EditablePreview data-test="Editable Preview" noOfLines={1} />
       </Tooltip>
       <EditableInput
-        width={{ base: "200px", sm: "300px", md: "400px" }}
+        width={{ base: "100%", md: "350px", lg: "450px" }}
         data-test="Editable Input"
       />
     </Editable>
@@ -366,6 +314,12 @@ export function ActivityEditor() {
   } = useDisclosure();
 
   const {
+    isOpen: sharingIsOpen,
+    onOpen: sharingOnOpen,
+    onClose: sharingOnClose,
+  } = useDisclosure();
+
+  const {
     isOpen: assignmentSettingsAreOpen,
     onOpen: assignmentSettingsOnOpen,
     onClose: assignmentSettingsOnClose,
@@ -377,7 +331,6 @@ export function ActivityEditor() {
     onClose: invitationOnClose,
   } = useDisclosure();
 
-  const initializeEditorDoenetML = useRef(doenetML);
   const textEditorDoenetML = useRef(doenetML);
   const savedDoenetML = useRef(doenetML);
 
@@ -487,8 +440,16 @@ export function ActivityEditor() {
         id={activityId}
         contentData={activityData}
         allDoenetmlVersions={allDoenetmlVersions}
-        allLicenses={allLicenses}
         displayTab={displaySettingsTab}
+      />
+      <ShareDrawer
+        isOpen={sharingIsOpen}
+        onClose={sharingOnClose}
+        finalFocusRef={controlsBtnRef}
+        fetcher={fetcher}
+        contentData={activityData}
+        allLicenses={allLicenses}
+        currentDoenetML={textEditorDoenetML}
       />
       <AssignmentSettingsDrawer
         isOpen={assignmentSettingsAreOpen}
@@ -523,14 +484,15 @@ export function ActivityEditor() {
           <Grid
             templateAreas={`"leftControls label rightControls"`}
             templateColumns={{
-              base: "1fr 200px 1fr",
-              sm: "1fr 300px 1fr",
-              md: "1fr 400px 1fr",
+              base: "82px calc(100% - 197px) 115px",
+              sm: "87px calc(100% - 217px) 120px",
+              md: "1fr 350px 1fr",
+              lg: "1fr 450px 1fr",
             }}
             width="100%"
           >
             <GridItem area="leftControls">
-              <HStack ml="10px" mt="4px">
+              <HStack ml={{ base: "5px", sm: "10px" }} mt="4px">
                 <ButtonGroup size="sm" isAttached variant="outline">
                   <Tooltip hasArrow label="View Activity">
                     <Button
@@ -554,8 +516,6 @@ export function ActivityEditor() {
                       pr={{ base: "0px", md: "10px" }}
                       leftIcon={editIcon}
                       onClick={() => {
-                        initializeEditorDoenetML.current =
-                          textEditorDoenetML.current;
                         setMode("Edit");
                       }}
                     >
@@ -573,7 +533,7 @@ export function ActivityEditor() {
               display="flex"
               justifyContent="flex-end"
             >
-              <HStack mr="10px">
+              <HStack mr={{ base: "5px", sm: "10px" }}>
                 <ButtonGroup size="sm" isAttached variant="outline">
                   <Tooltip
                     hasArrow
@@ -594,6 +554,25 @@ export function ActivityEditor() {
                       }}
                     >
                       <Show above="md">Assign</Show>
+                    </Button>
+                  </Tooltip>
+
+                  <Tooltip
+                    hasArrow
+                    label="Open Sharing Controls"
+                    placement="bottom-end"
+                  >
+                    <Button
+                      data-test="Sharing Button"
+                      size="sm"
+                      pr={{ base: "0px", md: "10px" }}
+                      leftIcon={<MdOutlineGroup />}
+                      onClick={() => {
+                        sharingOnOpen();
+                      }}
+                      ref={controlsBtnRef}
+                    >
+                      <Show above="md">Share</Show>
                     </Button>
                   </Tooltip>
 

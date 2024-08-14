@@ -35,6 +35,16 @@ import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../Widgets/ContentCard";
 import AuthorCard from "../../../Widgets/AuthorCard";
 import { createFullName } from "../../../_utils/names";
+import { ContentStructure } from "./ActivityEditor";
+
+type SearchMatch =
+  | (ContentStructure & { type: "content" })
+  | {
+      type: "author";
+      userId: number;
+      firstNames: string | null;
+      lastNames: string;
+    };
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -116,7 +126,7 @@ export async function loader({ request }) {
   if (q) {
     //Show search results
     const { data: searchData } = await axios.get(
-      `/api/searchPublicContent?q=${q}`,
+      `/api/searchSharedContent?q=${q}`,
     );
 
     const {
@@ -373,7 +383,14 @@ export function Community() {
     useLoaderData() as {
       carouselData: any;
       q: string;
-      searchResults: any;
+      searchResults: {
+        content: ContentStructure[];
+        users: {
+          userId: number;
+          firstNames: string | null;
+          lastNames: string;
+        }[];
+      };
       carouselGroups: any;
       isAdmin: boolean;
     };
@@ -385,15 +402,15 @@ export function Community() {
   }, []);
 
   if (searchResults) {
-    let contentMatches = searchResults.content.map((c) => ({
+    let contentMatches: SearchMatch[] = searchResults.content.map((c) => ({
       type: "content",
       ...c,
     }));
-    let authorMatches = searchResults.users.map((u) => ({
+    let authorMatches: SearchMatch[] = searchResults.users.map((u) => ({
       type: "author",
       ...u,
     }));
-    let allMatches = [...contentMatches, ...authorMatches];
+    let allMatches: SearchMatch[] = [...contentMatches, ...authorMatches];
     const tabs = [
       {
         label: "All Matches",
@@ -409,11 +426,14 @@ export function Community() {
       },
     ];
 
-    function displayCard(itemObj) {
-      if (itemObj?.type == "content") {
+    function displayCard(itemObj: SearchMatch) {
+      if (itemObj.type == "content") {
         const { id, imagePath, name, owner, isFolder } = itemObj;
+        if (!owner) {
+          return null;
+        }
         if (isFolder) {
-          const cardLink = `/publicActivities/${owner.userId}/${id}`;
+          const cardLink = `/sharedActivities/${owner.userId}/${id}`;
 
           return (
             <ContentCard
@@ -462,7 +482,7 @@ export function Community() {
           );
         }
       } else if (itemObj?.type == "author") {
-        const cardLink = `/publicActivities/${itemObj.userId}`;
+        const cardLink = `/sharedActivities/${itemObj.userId}`;
 
         return (
           <AuthorCard

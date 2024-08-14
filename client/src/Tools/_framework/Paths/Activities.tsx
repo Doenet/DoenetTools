@@ -16,6 +16,8 @@ import {
   Input,
   Spacer,
   Show,
+  Hide,
+  Spinner,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -28,20 +30,30 @@ import {
 } from "react-router-dom";
 
 import { RiEmotionSadLine } from "react-icons/ri";
-import ContentCard from "../../../Widgets/ContentCard";
+import ContentCard, { contentCardActions } from "../../../Widgets/ContentCard";
 import axios from "axios";
-import MoveContentToFolder from "../ToolPanels/MoveContentToFolder";
-import { ContentSettingsDrawer } from "../ToolPanels/ContentSettingsDrawer";
+import MoveContentToFolder, {
+  moveContentActions,
+} from "../ToolPanels/MoveContentToFolder";
+import {
+  contentSettingsActions,
+  ContentSettingsDrawer,
+} from "../ToolPanels/ContentSettingsDrawer";
+import {
+  assignmentSettingsActions,
+  AssignmentSettingsDrawer,
+} from "../ToolPanels/AssignmentSettingsDrawer";
 import {
   AssignmentStatus,
   ContentStructure,
   DoenetmlVersion,
   License,
   LicenseCode,
+  UserInfo,
 } from "./ActivityEditor";
 import { DateTime } from "luxon";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
-import { AssignmentSettingsDrawer } from "../ToolPanels/AssignmentSettingsDrawer";
+import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 
 // what is a better solution than this?
 let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching id
@@ -50,35 +62,31 @@ export async function action({ request, params }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
 
-  if (formObj._action == "update general") {
-    //Don't let name be blank
-    let name = formObj?.name?.trim();
-    if (name == "") {
-      name = "Untitled";
-    }
+  let resultCS = await contentSettingsActions({ formObj });
+  if (resultCS) {
+    return resultCS;
+  }
 
-    let learningOutcomes;
-    if (formObj.learningOutcomes) {
-      learningOutcomes = JSON.parse(formObj.learningOutcomes);
-    }
+  let resultSD = await shareDrawerActions({ formObj });
+  if (resultSD) {
+    return resultSD;
+  }
+  let resultAS = await assignmentSettingsActions({ formObj });
+  if (resultAS) {
+    return resultAS;
+  }
 
-    await axios.post("/api/updateContentSettings", {
-      name,
-      imagePath: formObj.imagePath,
-      id: formObj.id,
-      learningOutcomes,
-    });
+  let resultCC = await contentCardActions({ formObj });
+  if (resultCC) {
+    return resultCC;
+  }
 
-    if (formObj.doenetmlVersionId) {
-      // TODO: handle other updates to just a document
-      await axios.post("/api/updateDocumentSettings", {
-        docId: formObj.docId,
-        doenetmlVersionId: formObj.doenetmlVersionId,
-      });
-    }
+  let resultMC = await moveContentActions({ formObj });
+  if (resultMC) {
+    return resultMC;
+  }
 
-    return true;
-  } else if (formObj?._action == "Add Activity") {
+  if (formObj?._action == "Add Activity") {
     //Create an activity and redirect to the editor for it
     let { data } = await axios.post(
       `/api/createActivity/${params.folderId ?? ""}`,
@@ -120,80 +128,6 @@ export async function action({ request, params }) {
       desiredPosition: formObj.desiredPosition,
     });
     return true;
-  } else if (formObj._action == "update title") {
-    //Don't let name be blank
-    let name = formObj?.cardTitle?.trim();
-    if (name == "") {
-      name = "Untitled " + (formObj.isFolder ? "Folder" : "Activity");
-    }
-    await axios.post(`/api/updateContentName`, {
-      id: Number(formObj.id),
-      name,
-    });
-    return true;
-  } else if (formObj._action == "open assignment") {
-    let closeAt: DateTime;
-    if (formObj.duration === "custom") {
-      closeAt = DateTime.fromISO(formObj.customCloseAt);
-    } else {
-      closeAt = DateTime.fromSeconds(
-        Math.round(DateTime.now().toSeconds() / 60) * 60,
-      ).plus(JSON.parse(formObj.duration));
-    }
-    await axios.post("/api/openAssignmentWithCode", {
-      activityId: Number(formObj.activityId),
-      closeAt,
-    });
-    return true;
-  } else if (formObj._action == "update assignment close time") {
-    const closeAt = DateTime.fromISO(formObj.closeAt);
-    await axios.post("/api/updateAssignmentSettings", {
-      activityId: Number(formObj.activityId),
-      closeAt,
-    });
-    return true;
-  } else if (formObj._action == "close assignment") {
-    await axios.post("/api/closeAssignmentWithCode", {
-      activityId: Number(formObj.activityId),
-    });
-    return true;
-  } else if (formObj._action == "unassign activity") {
-    try {
-      await axios.post("/api/unassignActivity", {
-        activityId: Number(formObj.activityId),
-      });
-    } catch (e) {
-      alert("Unable to unassign activity");
-    }
-    return true;
-  } else if (formObj._action == "make content public") {
-    if (formObj.isFolder === "true") {
-      await axios.post("/api/makeFolderPublic", {
-        id: Number(formObj.id),
-        licenseCode: formObj.licenseCode,
-      });
-    } else {
-      await axios.post("/api/makeActivityPublic", {
-        id: Number(formObj.id),
-        licenseCode: formObj.licenseCode,
-      });
-    }
-    return true;
-  } else if (formObj._action == "make content private") {
-    if (formObj.isFolder === "true") {
-      await axios.post("/api/makeFolderPrivate", {
-        id: Number(formObj.id),
-      });
-    } else {
-      await axios.post("/api/makeActivityPrivate", {
-        id: Number(formObj.id),
-      });
-    }
-    return true;
-  } else if (formObj._action == "go to data") {
-    return redirect(`/assignmentData/${formObj.activityId}`);
-  } else if (formObj?._action == "noop") {
-    return true;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
@@ -217,7 +151,7 @@ export async function loader({ params, request }) {
 
     if (data.notMe) {
       return redirect(
-        `/publicActivities/${params.userId}${params.folderId ? "/" + params.folderId : ""}`,
+        `/sharedActivities/${params.userId}${params.folderId ? "/" + params.folderId : ""}`,
       );
     }
   }
@@ -261,6 +195,12 @@ export function Activities() {
   } = useDisclosure();
 
   const {
+    isOpen: sharingIsOpen,
+    onOpen: sharingOnOpen,
+    onClose: sharingOnClose,
+  } = useDisclosure();
+
+  const {
     isOpen: assignmentSettingsAreOpen,
     onOpen: assignmentSettingsOnOpen,
     onClose: assignmentSettingsOnClose,
@@ -269,6 +209,8 @@ export function Activities() {
   const contentCardRefs = useRef(new Array());
   const folderSettingsRef = useRef(null);
   const finalFocusRef = useRef(null);
+
+  const [haveContentSpinner, setHaveContentSpinner] = useState(false);
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchString, setSearchString] = useState(query ?? "");
@@ -282,13 +224,25 @@ export function Activities() {
     }
   }, [searchOpen]);
 
+  useEffect(() => {
+    setHaveContentSpinner(false);
+  }, [content]);
+
   const navigate = useNavigate();
 
   const [moveToFolderContent, setMoveToFolderContent] = useState<{
     id: number;
     isPublic: boolean;
+    isShared: boolean;
+    sharedWith: UserInfo[];
     licenseCode: LicenseCode | null;
-  }>({ id: -1, isPublic: false, licenseCode: null });
+  }>({
+    id: -1,
+    isPublic: false,
+    isShared: false,
+    sharedWith: [],
+    licenseCode: null,
+  });
 
   const {
     isOpen: moveToFolderIsOpen,
@@ -296,9 +250,8 @@ export function Activities() {
     onClose: moveToFolderOnClose,
   } = useDisclosure();
 
-  const [displaySettingsTab, setSettingsDisplayTab] = useState<
-    "general" | "share"
-  >("general");
+  const [displaySettingsTab, setSettingsDisplayTab] =
+    useState<"general">("general");
 
   useEffect(() => {
     document.title = `Activities - Doenet`;
@@ -313,6 +266,8 @@ export function Activities() {
     assignmentStatus,
     isFolder,
     isPublic,
+    isShared,
+    sharedWith,
     licenseCode,
     parentFolderId,
   }: {
@@ -322,6 +277,8 @@ export function Activities() {
     assignmentStatus: AssignmentStatus;
     isFolder?: boolean;
     isPublic: boolean;
+    isShared: boolean;
+    sharedWith: UserInfo[];
     licenseCode: LicenseCode | null;
     parentFolderId: number | null;
   }) {
@@ -382,7 +339,13 @@ export function Activities() {
           <MenuItem
             data-test="Move to Folder"
             onClick={() => {
-              setMoveToFolderContent({ id, isPublic, licenseCode });
+              setMoveToFolderContent({
+                id,
+                isPublic,
+                isShared,
+                sharedWith,
+                licenseCode,
+              });
               moveToFolderOnOpen();
             }}
           >
@@ -417,8 +380,7 @@ export function Activities() {
           data-test="Share Menu Item"
           onClick={() => {
             setSettingsContentId(id);
-            setSettingsDisplayTab("share");
-            settingsOnOpen();
+            sharingOnOpen();
           }}
         >
           Share
@@ -481,10 +443,21 @@ export function Activities() {
         id={settingsContentId}
         contentData={contentData}
         allDoenetmlVersions={allDoenetmlVersions}
-        allLicenses={allLicenses}
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
         displayTab={displaySettingsTab}
+      />
+    ) : null;
+
+  let shareDrawer =
+    contentData && settingsContentId ? (
+      <ShareDrawer
+        isOpen={sharingIsOpen}
+        onClose={sharingOnClose}
+        contentData={contentData}
+        allLicenses={allLicenses}
+        finalFocusRef={finalFocusRef}
+        fetcher={fetcher}
       />
     ) : null;
   let assignmentDrawer =
@@ -501,6 +474,7 @@ export function Activities() {
   return (
     <>
       {settingsDrawer}
+      {shareDrawer}
       {assignmentDrawer}
 
       <MoveContentToFolder
@@ -508,6 +482,8 @@ export function Activities() {
         onClose={moveToFolderOnClose}
         id={moveToFolderContent.id}
         isPublic={moveToFolderContent.isPublic}
+        isShared={moveToFolderContent.isShared}
+        sharedWith={moveToFolderContent.sharedWith}
         licenseCode={moveToFolderContent.licenseCode}
         userId={userId}
         currentParentId={folderId}
@@ -586,11 +562,12 @@ export function Activities() {
               margin="3px"
               hidden={searchOpen || haveQuery}
             >
-              New
+              {haveContentSpinner ? <Spinner size="sm" /> : "New"}
             </MenuButton>
             <MenuList>
               <MenuItem
                 onClick={async () => {
+                  setHaveContentSpinner(true);
                   //Create an activity and redirect to the editor for it
                   // let { data } = await axios.post("/api/createActivity");
                   // let { activityId } = data;
@@ -610,6 +587,7 @@ export function Activities() {
               </MenuItem>
               <MenuItem
                 onClick={() => {
+                  setHaveContentSpinner(true);
                   fetcher.submit({ _action: "Add Folder" }, { method: "post" });
                 }}
               >
@@ -625,8 +603,7 @@ export function Activities() {
               ref={folderSettingsRef}
               onClick={() => {
                 setSettingsContentId(folderId);
-                setSettingsDisplayTab("share");
-                settingsOnOpen();
+                sharingOnOpen();
               }}
               hidden={searchOpen || haveQuery}
             >
@@ -660,7 +637,7 @@ export function Activities() {
                   ? folder.parentFolder.name
                   : `My Activities`}
               </Show>
-              <Show below="sm">&lt; Back</Show>
+              <Hide above="sm">&lt; Back</Hide>
             </Text>
           </Link>
         </Box>
@@ -738,6 +715,8 @@ export function Activities() {
                       assignmentStatus: activity.assignmentStatus,
                       isFolder: activity.isFolder,
                       isPublic: activity.isPublic,
+                      isShared: activity.isShared,
+                      sharedWith: activity.sharedWith,
                       licenseCode: activity.license?.code ?? null,
                       parentFolderId: activity.parentFolder?.id ?? null,
                     })}
