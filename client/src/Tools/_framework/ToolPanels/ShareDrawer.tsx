@@ -171,17 +171,17 @@ export function ShareDrawer({
                   />
                 </TabPanel>
                 {!contentData.isFolder ? (
-                  <>
-                    <TabPanel>
-                      <RemixedFrom
-                        contributorHistory={contributorHistory}
-                        thisCid={thisCid}
-                      />
-                    </TabPanel>
-                    <TabPanel>
-                      <Remixes remixes={remixes} />
-                    </TabPanel>
-                  </>
+                  <TabPanel>
+                    <RemixedFrom
+                      contributorHistory={contributorHistory}
+                      thisCid={thisCid}
+                    />
+                  </TabPanel>
+                ) : null}
+                {!contentData.isFolder ? (
+                  <TabPanel>
+                    <Remixes remixes={remixes} />
+                  </TabPanel>
                 ) : null}
               </TabPanels>
             </Box>
