@@ -2086,9 +2086,16 @@ app.get(
 app.post(
   "/api/setPreferredFolderView",
   async (req: Request, res: Response, next: NextFunction) => {
+    const cardView = req.body.cardView as boolean;
+
+    if (!req.user) {
+      // if not signed in, then don't set anything and report back their choice
+      res.send({ cardView });
+      return;
+    }
+
     try {
-      const loggedInUserId = Number(req.user?.userId ?? 0);
-      const cardView = req.body.cardView as boolean;
+      const loggedInUserId = Number(req.user.userId);
 
       let results = await setPreferredFolderView(loggedInUserId, cardView);
       res.send(results);
@@ -2105,8 +2112,14 @@ app.post(
 app.get(
   "/api/getPreferredFolderView",
   async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      // if not signed in, just have the default behavior
+      res.send({ cardView: false });
+      return;
+    }
+
     try {
-      const loggedInUserId = Number(req.user?.userId ?? 0);
+      const loggedInUserId = Number(req.user.userId);
 
       let results = await getPreferredFolderView(loggedInUserId);
       res.send(results);
