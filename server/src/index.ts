@@ -2086,11 +2086,18 @@ app.get(
 app.post(
   "/api/setPreferredFolderView",
   async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const loggedInUserId = Number(req.user?.userId ?? 0);
-      const cardView = req.body.cardView as boolean;
+    const cardView = req.body.cardView as boolean;
 
-      let results = await setPreferredFolderView(loggedInUserId, cardView);
+    if (!req.user) {
+      // if not signed in, then don't set anything and report back their choice
+      res.send({ cardView });
+      return;
+    }
+
+    try {
+      const loggedInUserId = Number(req.user.userId);
+
+      const results = await setPreferredFolderView(loggedInUserId, cardView);
       res.send(results);
     } catch (e) {
       if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
@@ -2105,10 +2112,16 @@ app.post(
 app.get(
   "/api/getPreferredFolderView",
   async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const loggedInUserId = Number(req.user?.userId ?? 0);
+    if (!req.user) {
+      // if not signed in, just have the default behavior
+      res.send({ cardView: false });
+      return;
+    }
 
-      let results = await getPreferredFolderView(loggedInUserId);
+    try {
+      const loggedInUserId = Number(req.user.userId);
+
+      const results = await getPreferredFolderView(loggedInUserId);
       res.send(results);
     } catch (e) {
       if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
