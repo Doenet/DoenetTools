@@ -2097,7 +2097,7 @@ app.post(
     try {
       const loggedInUserId = Number(req.user.userId);
 
-      let results = await setPreferredFolderView(loggedInUserId, cardView);
+      const results = await setPreferredFolderView(loggedInUserId, cardView);
       res.send(results);
     } catch (e) {
       if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
@@ -2121,7 +2121,7 @@ app.get(
     try {
       const loggedInUserId = Number(req.user.userId);
 
-      let results = await getPreferredFolderView(loggedInUserId);
+      const results = await getPreferredFolderView(loggedInUserId);
       res.send(results);
     } catch (e) {
       if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
