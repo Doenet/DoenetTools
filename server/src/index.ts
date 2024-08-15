@@ -797,7 +797,12 @@ app.post(
 app.post(
   "/api/shareActivity",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId ?? 0);
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+
+    const loggedInUserId = Number(req.user.userId);
     const body = req.body;
     const id = Number(body.id);
     const email: string = body.email;
@@ -829,6 +834,8 @@ app.post(
       console.log("error", e);
       if ((e as { message: string }).message === "User with email not found") {
         res.status(404).send("User with email not found");
+      } else if ((e as any).message === "Cannot share with self") {
+        res.send({ noSelfShare: true });
       } else if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(403);
       } else {
@@ -865,7 +872,12 @@ app.post(
 app.post(
   "/api/shareFolder",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId ?? 0);
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+
+    const loggedInUserId = Number(req.user.userId);
     const body = req.body;
     const id = Number(body.id);
     const email: string = body.email;
@@ -897,6 +909,8 @@ app.post(
       console.log("error", e);
       if ((e as { message: string }).message === "User with email not found") {
         res.status(404).send("User with email not found");
+      } else if ((e as any).message === "Cannot share with self") {
+        res.send({ noSelfShare: true });
       } else if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(403);
       } else {

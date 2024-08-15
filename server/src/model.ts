@@ -4859,8 +4859,8 @@ export async function shareActivityWithEmail({
   }
 
   if (userId === ownerId) {
-    // don't need to share with self
-    return { id };
+    // cannot share with self
+    throw Error("Cannot share with self");
   }
 
   return await shareActivity({ id, ownerId, licenseCode, users: [userId] });
@@ -5075,8 +5075,8 @@ export async function shareFolderWithEmail({
   }
 
   if (userId === ownerId) {
-    // don't need to share with self
-    return { id };
+    // cannot share with self
+    throw Error("Cannot share with self");
   }
 
   return await shareFolder({ id, ownerId, licenseCode, users: [userId] });

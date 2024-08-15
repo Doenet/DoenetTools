@@ -3395,6 +3395,50 @@ test("share with email throws error when no match", async () => {
   expect(result.id).eq(folderId);
 });
 
+test("share with email throws error when share with self", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  const user = await createTestUser();
+
+  const { folderId } = await createFolder(ownerId, null);
+  const { activityId } = await createActivity(ownerId, null);
+
+  await expect(
+    shareActivityWithEmail({
+      id: activityId,
+      ownerId,
+      licenseCode: "CCBYSA",
+      email: owner.email,
+    }),
+  ).rejects.toThrow("Cannot share with self");
+
+  let result = await shareActivityWithEmail({
+    id: activityId,
+    ownerId,
+    licenseCode: "CCBYSA",
+    email: user.email,
+  });
+  expect(result.id).eq(activityId);
+
+  await expect(
+    shareFolderWithEmail({
+      id: folderId,
+      ownerId,
+      licenseCode: "CCBYSA",
+      email: owner.email,
+    }),
+  ).rejects.toThrow("Cannot share with self");
+
+  result = await shareFolderWithEmail({
+    id: folderId,
+    ownerId,
+    licenseCode: "CCBYSA",
+    email: user.email,
+  });
+  expect(result.id).eq(folderId);
+});
+
 test("findOrCreateUser finds an existing user or creates a new one", async () => {
   const email = `unique-${Date.now()}@example.com`;
   const firstNames = "vitest";

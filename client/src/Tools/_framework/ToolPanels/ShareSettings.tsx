@@ -32,6 +32,7 @@ import {
   Show,
   VStack,
   Hide,
+  Button,
 } from "@chakra-ui/react";
 import {
   ContentStructure,
@@ -69,19 +70,22 @@ export async function sharingActions({ formObj }: { [k: string]: any }) {
     }
     return true;
   } else if (formObj._action === "share content") {
+    let noSelfShare = false;
     try {
       if (formObj.isFolder === "true") {
-        await axios.post("/api/shareFolder", {
+        const { data } = await axios.post("/api/shareFolder", {
           id: Number(formObj.id),
           licenseCode: formObj.licenseCode,
           email: formObj.email,
         });
+        noSelfShare = Boolean(data.noSelfShare);
       } else {
-        await axios.post("/api/shareActivity", {
+        const { data } = await axios.post("/api/shareActivity", {
           id: Number(formObj.id),
           licenseCode: formObj.licenseCode,
           email: formObj.email,
         });
+        noSelfShare = Boolean(data.noSelfShare);
       }
     } catch (e) {
       if (e.response?.data === "User with email not found") {
@@ -90,7 +94,11 @@ export async function sharingActions({ formObj }: { [k: string]: any }) {
         throw e;
       }
     }
-    return { status: "Added", email: formObj.email };
+    if (noSelfShare) {
+      return { status: "No self share" };
+    } else {
+      return { status: "Added", email: formObj.email };
+    }
   } else if (formObj._action === "unshare content") {
     if (formObj.isFolder === "true") {
       await axios.post("/api/unshareFolder", {
@@ -150,6 +158,7 @@ export function ShareSettings({
   const [errorMessage, setErrorMessage] = useState("");
 
   const initialActionResult = useRef(true);
+  const shareSubmitButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     setSelectedLicenseCode(license?.code);
@@ -172,14 +181,22 @@ export function ShareSettings({
     if (actionResult?.status === "Added") {
       setShareWithEmail("");
       setErrorMessage("");
-    } else if (actionResult?.status === "Not found") {
+    } else if (
+      actionResult?.status === "Not found" ||
+      actionResult?.status === "No self share"
+    ) {
       nextStatusText.current = "";
       setStatusText("");
       setShowSpinner(null);
 
       // Need this check so don't get old error message when reopening the controls
       if (!initialActionResult.current) {
-        setErrorMessage(`User with email ${actionResult.email} not found`);
+        if (actionResult)
+          if (actionResult.status === "No self share") {
+            setErrorMessage("Cannot share with yourself");
+          } else {
+            setErrorMessage(`User with email ${actionResult.email} not found`);
+          }
       }
     } else {
       setErrorMessage("");
@@ -454,6 +471,11 @@ export function ShareSettings({
                 data-test="Email address"
                 onChange={(e) => setShareWithEmail(e.target.value)}
                 width="90%"
+                onBlur={(e) => {
+                  if (e.target.value) {
+                    shareSubmitButton.current?.click();
+                  }
+                }}
               />
               <Spinner hidden={showSpinner?.type !== "emailShare"} />
             </HStack>
@@ -469,6 +491,7 @@ export function ShareSettings({
               name="licenseCode"
               value={selectedLicenseCode ?? "CCDUAL"}
             />
+            <Button type="submit" ref={shareSubmitButton} hidden={true} />
             {errorMessage !== "" ? (
               <FormErrorMessage>{errorMessage}</FormErrorMessage>
             ) : null}
