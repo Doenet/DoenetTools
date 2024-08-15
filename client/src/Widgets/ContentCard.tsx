@@ -158,7 +158,17 @@ export default forwardRef(function ContentCard(
                   autoFocus={autoFocusTitle}
                   onFocus={(e) => e.target.select()}
                   onChange={(e) => setCardTitle(e.target.value)}
-                  onBlur={saveUpdatedTitle}
+                  onBlur={(e) => {
+                    saveUpdatedTitle();
+                    document.addEventListener(
+                      "click",
+                      (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      },
+                      { capture: true, once: true },
+                    );
+                  }}
                   onKeyDown={(e) => {
                     if (e.key == "Enter") {
                       (e.target as HTMLElement).blur();

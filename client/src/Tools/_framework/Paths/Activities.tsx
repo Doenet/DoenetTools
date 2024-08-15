@@ -749,7 +749,9 @@ export function Activities() {
         padding="0 10px"
         margin="0px"
         width="100%"
-        background={listView ? "white" : "var(--lightBlue)"}
+        background={
+          listView && content.length > 0 ? "white" : "var(--lightBlue)"
+        }
         minHeight="calc(100vh - 186px)"
         direction="column"
       >

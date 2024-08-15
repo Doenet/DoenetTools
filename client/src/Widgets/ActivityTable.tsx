@@ -1,4 +1,4 @@
-import React, { forwardRef, ReactElement } from "react";
+import React, { forwardRef, ReactElement, useState } from "react";
 import {
   Avatar,
   Text,
@@ -69,17 +69,13 @@ export default forwardRef(function ActivityTable(
             <Th></Th>
             <Th></Th>
             {showPublicStatus ? <Th>Visibility</Th> : <Th></Th>}
-            <Th></Th>
+            {showAssignmentStatus ? <Th>Assignment Status</Th> : <Th></Th>}
             {showOwnerName || !suppressAvatar ? <Th>Owner</Th> : <Th></Th>}
             <Th></Th>
           </Tr>
         </Thead>
         <Tbody>
           {content.map(function (activity) {
-            if (activity.isFolder) {
-              showAssignmentStatus = false;
-            }
-
             let assignmentStatusString: string =
               activity.assignmentStatus !== null &&
               activity.assignmentStatus !== undefined &&
@@ -111,7 +107,7 @@ export default forwardRef(function ActivityTable(
 
             return (
               <Tr
-                key={activity.id + "_row"}
+                key={(activity.authorRow ? "author" : "activity") + activity.id}
                 cursor="pointer"
                 _hover={{ backgroundColor: "#eeeeee" }}
                 borderBottom="2px solid gray"
@@ -183,11 +179,16 @@ export default forwardRef(function ActivityTable(
                       />
                       <EditableInput
                         maxLength={191}
-                        onBlur={(e) => saveUpdatedTitle(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key == "Enter") {
-                            (e.target as HTMLElement).blur();
-                          }
+                        onBlur={(e) => {
+                          saveUpdatedTitle(e.target.value);
+                          document.addEventListener(
+                            "click",
+                            (e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            },
+                            { capture: true, once: true },
+                          );
                         }}
                       />
                     </Editable>

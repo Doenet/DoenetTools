@@ -214,7 +214,9 @@ export function Assigned() {
         padding=".5em 10px"
         margin="0"
         width="100%"
-        background={listView ? "white" : "var(--lightBlue)"}
+        background={
+          listView && assignments.length > 0 ? "white" : "var(--lightBlue)"
+        }
         minHeight="calc(100vh - 188px)"
         flexDirection="column"
       >
