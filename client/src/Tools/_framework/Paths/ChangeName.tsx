@@ -70,46 +70,23 @@ export function ChangeName({
   const [statusText, setStatusText] = useState("");
 
   useEffect(() => {
-    if (submitted && user !== undefined) {
-      setStatusText(`Name changed to ${createFullName(user)}`);
-      if (
-        redirectTo &&
-        user.firstNames === firstNames &&
-        user.lastNames === lastNames
-      ) {
-        navigate(redirectTo);
+    if (submitted) {
+      if (user === undefined) {
+        setStatusText("Cannot change name; no user logged in.");
       } else {
-        setSubmitted(false);
+        setStatusText(`Name changed to ${createFullName(user)}`);
+        if (
+          redirectTo &&
+          user.firstNames === firstNames &&
+          user.lastNames === lastNames
+        ) {
+          navigate(redirectTo);
+        } else {
+          setSubmitted(false);
+        }
       }
     }
   }, [user]);
-
-  if (!user) {
-    return (
-      <Box margin="20px">
-        <Box
-          border="solid 1px lightgray"
-          borderRadius="5px"
-          padding="5px 10px"
-          marginTop="10px"
-          backgroundColor="orange.100"
-        >
-          Cannot change name; no user logged in.
-        </Box>
-        <Button
-          colorScheme="blue"
-          mr="12px"
-          mt="8px"
-          size="xs"
-          onClick={() => {
-            navigate("/");
-          }}
-        >
-          Go to home
-        </Button>
-      </Box>
-    );
-  }
 
   return (
     <Box margin="20px">

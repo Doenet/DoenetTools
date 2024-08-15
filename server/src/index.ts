@@ -271,14 +271,14 @@ passport.serializeUser<any, any>(async (_req, user: any, done) => {
     ) {
       if (req.body.email) {
         email = req.body.email;
+        if (req.body.firstNames) {
+          firstNames = req.body.firstNames;
+        }
+        if (req.body.lastNames) {
+          lastNames = req.body.lastNames;
+        }
+        isAnonymous = false;
       }
-      if (req.body.firstNames) {
-        firstNames = req.body.firstNames;
-      }
-      if (req.body.lastNames) {
-        lastNames = req.body.lastNames;
-      }
-      isAnonymous = false;
     }
 
     const u = await findOrCreateUser({
