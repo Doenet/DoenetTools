@@ -60,6 +60,7 @@ export default forwardRef(function ActivityTable(
 ) {
   const navigate = useNavigate();
   const fetcher = useFetcher();
+  const [titleBeingEdited, setTitleBeingEdited] = useState(false);
 
   return (
     <TableContainer>
@@ -112,7 +113,9 @@ export default forwardRef(function ActivityTable(
                 _hover={{ backgroundColor: "#eeeeee" }}
                 borderBottom="2px solid gray"
                 onClick={() =>
-                  activity.cardLink ? navigate(activity.cardLink) : null
+                  activity.cardLink && !titleBeingEdited
+                    ? navigate(activity.cardLink)
+                    : null
                 }
               >
                 <Td p="0" m="0" width="20px">
@@ -173,6 +176,7 @@ export default forwardRef(function ActivityTable(
                       onClick={(e) =>
                         activity.editableTitle ? e.stopPropagation() : null
                       }
+                      onEdit={() => setTitleBeingEdited(true)}
                     >
                       <EditablePreview
                         cursor={activity.editableTitle ? "auto" : "pointer"}
@@ -181,6 +185,8 @@ export default forwardRef(function ActivityTable(
                         maxLength={191}
                         onBlur={(e) => {
                           saveUpdatedTitle(e.target.value);
+                          setTitleBeingEdited(false);
+                          // prevent click default/propagation behavior one time (aka right now as user is clicking to blur input)
                           document.addEventListener(
                             "click",
                             (e) => {
