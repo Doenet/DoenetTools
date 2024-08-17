@@ -19,6 +19,7 @@ import {
   Menu,
   MenuButton,
   MenuList,
+  Show,
 } from "@chakra-ui/react";
 import { GoKebabVertical } from "react-icons/go";
 import { FaFolder } from "react-icons/fa";
@@ -60,6 +61,9 @@ export default forwardRef(function ActivityTable(
 ) {
   const navigate = useNavigate();
   const fetcher = useFetcher();
+
+  // this state does not do much; its purpose is to prevent the edge case of someone clicking to select the text input, and,
+  // without letting go, dragging it on top of a link so that the link is triggered
   const [titleBeingEdited, setTitleBeingEdited] = useState(false);
 
   return (
@@ -69,9 +73,12 @@ export default forwardRef(function ActivityTable(
           <Tr borderBottom="2px solid gray">
             <Th></Th>
             <Th></Th>
-            {showPublicStatus ? <Th>Visibility</Th> : <Th></Th>}
-            {showAssignmentStatus ? <Th>Assignment Status</Th> : <Th></Th>}
-            {showOwnerName || !suppressAvatar ? <Th>Owner</Th> : <Th></Th>}
+            {showPublicStatus ? <Th>Visibility</Th> : null}
+            <Show above="md">
+              {" "}
+              {showAssignmentStatus ? <Th>Assignment Status</Th> : null}{" "}
+            </Show>
+            {showOwnerName || !suppressAvatar ? <Th>Owner</Th> : null}
             <Th></Th>
           </Tr>
         </Thead>
@@ -165,7 +172,7 @@ export default forwardRef(function ActivityTable(
                     </Box>
                   </Tooltip>
                 </Td>
-                <Td>
+                <Td p="0" whiteSpace="normal">
                   <HStack>
                     <Editable
                       defaultValue={
@@ -180,9 +187,12 @@ export default forwardRef(function ActivityTable(
                     >
                       <EditablePreview
                         cursor={activity.editableTitle ? "auto" : "pointer"}
+                        noOfLines={1}
+                        maxHeight="1.5em"
                       />
                       <EditableInput
                         maxLength={191}
+                        noOfLines={1}
                         onBlur={(e) => {
                           saveUpdatedTitle(e.target.value);
                           setTitleBeingEdited(false);
@@ -207,29 +217,35 @@ export default forwardRef(function ActivityTable(
                       />
                     ) : null}
                   </HStack>
+                  <Show below="md">
+                    {showAssignmentStatus ? (
+                      <Text>{assignmentStatusString}</Text>
+                    ) : null}
+                  </Show>
                 </Td>
                 {showPublicStatus ? (
                   <Td>{activity.isPublic ? "Public" : "Private"}</Td>
-                ) : (
-                  <Td></Td>
-                )}
-                {showAssignmentStatus ? (
-                  <Td>{assignmentStatusString}</Td>
-                ) : (
-                  <Td></Td>
-                )}
-                <Td>
-                  <HStack>
-                    {suppressAvatar || activity.authorRow ? null : (
-                      <Tooltip label={activity.ownerName}>
-                        <Avatar size="sm" name={activity.ownerName} />
-                      </Tooltip>
-                    )}
-                    {showOwnerName && !activity.authorRow ? (
-                      <Text>{activity.ownerName}</Text>
-                    ) : null}
-                  </HStack>
-                </Td>
+                ) : null}
+                <Show above="md">
+                  {showAssignmentStatus ? (
+                    <Td>{assignmentStatusString}</Td>
+                  ) : null}
+                </Show>
+                {(!suppressAvatar && !activity.authorRow) ||
+                (showOwnerName && !activity.authorRow) ? (
+                  <Td>
+                    <HStack>
+                      {suppressAvatar || activity.authorRow ? null : (
+                        <Tooltip label={activity.ownerName}>
+                          <Avatar size="sm" name={activity.ownerName} />
+                        </Tooltip>
+                      )}
+                      {showOwnerName && !activity.authorRow ? (
+                        <Text>{activity.ownerName}</Text>
+                      ) : null}
+                    </HStack>
+                  </Td>
+                ) : null}
                 <Td p="0" m="0" textAlign="right">
                   {activity.menuItems ? (
                     <Menu>
@@ -237,7 +253,7 @@ export default forwardRef(function ActivityTable(
                         data-test="Card Menu Button"
                         _focus={{ boxShadow: "outline" }}
                         ref={ref}
-                        padding="1em"
+                        padding="10px"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Icon color="black" as={GoKebabVertical} boxSize={6} />

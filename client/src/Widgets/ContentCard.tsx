@@ -160,6 +160,7 @@ export default forwardRef(function ContentCard(
                   onChange={(e) => setCardTitle(e.target.value)}
                   onBlur={(e) => {
                     saveUpdatedTitle();
+                    // prevent click default/propagation behavior one time (aka right now as user is clicking to blur input)
                     document.addEventListener(
                       "click",
                       (e) => {

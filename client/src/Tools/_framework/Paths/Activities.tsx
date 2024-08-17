@@ -516,7 +516,14 @@ export function Activities() {
         width="100%"
         textAlign="center"
       >
-        <Heading as="h2" size="lg" padding=".5em 0" noOfLines={1}>
+        <Heading
+          as="h2"
+          size="lg"
+          margin=".5em"
+          noOfLines={1}
+          maxHeight="1.5em"
+          lineHeight="normal"
+        >
           <Tooltip label={headingText}>{headingText}</Tooltip>
         </Heading>
         <VStack align="flex-end" float="right" marginRight=".5em">
@@ -752,7 +759,7 @@ export function Activities() {
         background={
           listView && content.length > 0 ? "white" : "var(--lightBlue)"
         }
-        minHeight="calc(100vh - 186px)"
+        minHeight="calc(100vh - 189px)"
         direction="column"
       >
         {content.length < 1 ? (
