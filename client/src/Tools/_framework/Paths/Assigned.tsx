@@ -21,9 +21,9 @@ import { IoGrid, IoGridOutline } from "react-icons/io5";
 import ContentCard from "../../../Widgets/ContentCard";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
-import { ContentStructure } from "./ActivityEditor";
 import { DateTime } from "luxon";
 import ActivityTable from "../../../Widgets/ActivityTable";
+import { ContentStructure, UserInfo } from "../../../_utils/types";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -54,11 +54,7 @@ export async function loader({ params }) {
 
 export function Assigned() {
   let { user, assignments, listViewPref } = useLoaderData() as {
-    user: {
-      userId: number;
-      firstNames: string | null;
-      lastNames: string;
-    };
+    user: UserInfo;
     assignments: ContentStructure[];
     listViewPref: Boolean;
   };

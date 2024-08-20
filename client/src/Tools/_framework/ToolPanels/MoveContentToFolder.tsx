@@ -18,28 +18,24 @@ import {
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useFetcher } from "react-router-dom";
-import {
-  ContentStructure,
-  LicenseCode,
-  UserInfo,
-} from "../Paths/ActivityEditor";
 import { MdFolder, MdOutlineInsertDriveFile } from "react-icons/md";
 import MoveToSharedAlert from "./MoveToSharedAlert";
+import { ContentStructure, LicenseCode, UserInfo } from "../../../_utils/types";
 
 type ActiveView = {
   // If folder name and id are null, the active view is the root
   // If parentFolderId is null, then the parent of active view is the root
-  folderId: number | null;
+  folderId: string | null;
   folderName: string | null;
   folderIsPublic: boolean;
   folderIsShared: boolean;
   folderSharedWith: UserInfo[];
   folderLicenseCode: LicenseCode | null;
-  parentFolderId: number | null;
+  parentFolderId: string | null;
   contents: {
     isFolder: boolean;
     name: string;
-    id: number;
+    id: string;
   }[];
 };
 
@@ -71,17 +67,17 @@ export default function MoveContentToFolder({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  id: number;
+  id: string;
   isPublic: boolean;
   isShared: boolean;
   sharedWith: UserInfo[];
   licenseCode: LicenseCode | null;
-  userId: number;
-  currentParentId: number | null;
+  userId: string;
+  currentParentId: string | null;
   finalFocusRef: RefObject<HTMLElement>;
 }) {
   // Set when the modal opens
-  const [parentId, setParentId] = useState<number | null>(null);
+  const [parentId, setParentId] = useState<string | null>(null);
   const [contentName, setContentName] = useState<string>("");
 
   const {
@@ -109,7 +105,7 @@ export default function MoveContentToFolder({
   });
 
   async function updateActiveView(
-    newActiveFolderId: number | null,
+    newActiveFolderId: string | null,
     modalJustOpened: boolean = false,
   ) {
     const { data } = await axios.get(
@@ -122,7 +118,7 @@ export default function MoveContentToFolder({
     const folderIsShared: boolean = folder?.isShared ?? false;
     const folderSharedWith: UserInfo[] = folder?.sharedWith ?? [];
     const folderLicenseCode: LicenseCode | null = folder?.license?.code ?? null;
-    const parentFolderId: number | null = folder?.parentFolder?.id ?? null;
+    const parentFolderId: string | null = folder?.parentFolder?.id ?? null;
     const contentFromApi: ContentStructure[] = data.content;
 
     const content = contentFromApi

@@ -14,107 +14,29 @@ import {
   Grid,
   GridItem,
   HStack,
-  Image,
   List,
   Spacer,
   Text,
-  Tooltip,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import axios from "axios";
 import ContributorsMenu from "../ToolPanels/ContributorsMenu";
-import { Link } from "react-router-dom";
-import {
-  ContentStructure,
-  DoenetmlVersion,
-  License,
-  UserInfo,
-} from "./ActivityEditor";
-import { DisplayLicenseItem } from "../ToolPanels/ShareSettings";
+
 import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
 import { User } from "./SiteHeader";
 import { createFullName } from "../../../_utils/names";
-import { DateTime } from "luxon";
-import { cidFromText } from "../../../_utils/cid";
-
-export type DocHistoryItem = {
-  docId: number;
-  prevDocId: number;
-  prevDocVersionNum: number;
-  withLicenseCode: string | null;
-  timestampDoc: DateTime;
-  timestampPrevDoc: DateTime;
-  prevActivityId: number;
-  prevActivityName: string;
-  prevOwner: UserInfo;
-  prevChanged: boolean;
-  prevCid: string;
-};
-
-export type DocRemixItem = {
-  docId: number;
-  prevDocId: number;
-  prevDocVersionNum: number;
-  withLicenseCode: string | null;
-  isDirect: boolean;
-  timestampDoc: DateTime;
-  timestampPrevDoc: DateTime;
-  activityId: number;
-  activityName: string;
-  owner: UserInfo;
-};
-
-export async function processContributorHistory(hist: {
-  contributorHistory: any[];
-}) {
-  let historyItems: DocHistoryItem[] = [];
-
-  for (let ch of hist.contributorHistory) {
-    const { prevDoc, ...historyItem } = ch;
-    let prevActivity = prevDoc.document.activity;
-    let prevCid = prevDoc.cid;
-    let prevDocCurrentCid = await cidFromText(prevDoc.document.source);
-
-    historyItems.push({
-      ...historyItem,
-      timestampDoc: DateTime.fromISO(ch.timestampDoc),
-      timestampPrevDoc: DateTime.fromISO(ch.timestampPrevDoc),
-      prevActivityId: prevActivity.id,
-      prevActivityName: prevActivity.name,
-      prevOwner: prevActivity.owner,
-      prevChanged: prevDocCurrentCid !== prevCid,
-      prevCid,
-    });
-  }
-
-  return historyItems;
-}
-
-export function processRemixes(remixes: {
-  documentVersions: { contributorHistory: any[] }[];
-}): DocRemixItem[] {
-  let items = remixes.documentVersions
-    .flatMap((dv) =>
-      dv.contributorHistory.map((ch) => {
-        const { document, ...item } = ch;
-        const activity = document.activity;
-        const remixItem: DocRemixItem = {
-          ...item,
-          isDirect: ch.timestampDoc === ch.timestampPrevDoc,
-          timestampDoc: DateTime.fromISO(ch.timestampDoc),
-          timestampPrevDoc: DateTime.fromISO(ch.timestampPrevDoc),
-          activityId: activity.id,
-          activityName: activity.name,
-          owner: activity.owner,
-        };
-        return remixItem;
-      }),
-    )
-    .sort((a, b) => (a.isDirect === b.isDirect ? 0 : a.isDirect ? -1 : 1));
-
-  return items;
-}
+import {
+  ContentStructure,
+  DocHistoryItem,
+  DoenetmlVersion,
+  License,
+} from "../../../_utils/types";
+import { processContributorHistory } from "../../../_utils/processRemixes";
+import {
+  DisplayLicenseItem,
+  SmallLicenseBadges,
+} from "../../../Widgets/Licenses";
 
 export async function loader({ params }) {
   try {
@@ -122,8 +44,8 @@ export async function loader({ params }) {
       `/api/getActivityView/${params.activityId}`,
     );
 
-    let activityId = Number(params.activityId);
-    let docId = Number(params.docId);
+    let activityId = params.activityId;
+    let docId = params.docId;
     if (!docId) {
       // If docId was not supplied in the url,
       // then use the first docId from the activity.
@@ -166,10 +88,10 @@ export function ActivityViewer() {
     contributorHistory,
     doenetmlVersion,
   } = useLoaderData() as {
-    activityId: number;
+    activityId: string;
     doenetML: string;
     activity: ContentStructure;
-    docId: number;
+    docId: string;
     contributorHistory: DocHistoryItem[];
     doenetmlVersion: DoenetmlVersion;
   };
@@ -386,57 +308,4 @@ export function ActivityViewer() {
       </Box>
     </>
   );
-}
-
-export function SmallLicenseBadges({ license }: { license: License }) {
-  if (license.isComposition) {
-    return (
-      <VStack spacing={1}>
-        {license.composedOf.map((comp) => (
-          <DisplaySmallLicenseBadge licenseItem={comp} key={comp.code} />
-        ))}
-      </VStack>
-    );
-  } else {
-    return <DisplaySmallLicenseBadge licenseItem={license} />;
-  }
-}
-
-function DisplaySmallLicenseBadge({
-  licenseItem,
-}: {
-  licenseItem: {
-    name: string;
-    description: string;
-    imageURL: string | null;
-    smallImageURL: string | null;
-    licenseURL: string | null;
-  };
-}) {
-  let badge: React.JSX.Element | null = null;
-  let imageURL = licenseItem.smallImageURL ?? licenseItem.imageURL;
-  if (imageURL) {
-    badge = (
-      <Tooltip
-        label={`Shared with ${licenseItem.name} license`}
-        placement="bottom-end"
-      >
-        <Image
-          src={imageURL}
-          alt={`Badge for license: ${licenseItem.name}`}
-          height="15px"
-        />
-      </Tooltip>
-    );
-  }
-
-  if (licenseItem.licenseURL) {
-    badge = (
-      <Link to={licenseItem.licenseURL} target="_blank">
-        {badge}
-      </Link>
-    );
-  }
-
-  return badge;
 }

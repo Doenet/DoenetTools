@@ -1,5 +1,4 @@
 import React from "react";
-import { DocRemixItem } from "../Paths/ActivityViewer";
 import {
   Flex,
   Hide,
@@ -17,6 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { createFullName } from "../../../_utils/names";
 import { DateTime } from "luxon";
+import { DocRemixItem } from "../../../_utils/types";
 
 export async function remixesActions({ formObj }: { [k: string]: any }) {
   return null;

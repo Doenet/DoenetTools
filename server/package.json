@@ -28,7 +28,8 @@
     "passport": "^0.7.0",
     "passport-anonym-uuid": "^1.0.3",
     "passport-google-oauth20": "^2.0.0",
-    "passport-magic-link": "^2.1.1"
+    "passport-magic-link": "^2.1.1",
+    "short-uuid": "^5.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

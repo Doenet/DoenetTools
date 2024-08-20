@@ -14,8 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router-dom";
 import { createFullName } from "../../../_utils/names";
-import { ContentStructure, UserInfo } from "../Paths/ActivityEditor";
-import { DocHistoryItem } from "../Paths/ActivityViewer";
+import { ContentStructure, DocHistoryItem } from "../../../_utils/types";
 
 export default function ContributorsMenu({
   contributorHistory,

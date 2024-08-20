@@ -24,7 +24,7 @@ import {
   supportFilesActions,
   SupportFilesControls,
 } from "./SupportFilesControls";
-import { ContentStructure, DoenetmlVersion } from "../Paths/ActivityEditor";
+import { ContentStructure, DoenetmlVersion } from "../../../_utils/types";
 
 export async function contentSettingsActions({
   formObj,
@@ -58,7 +58,7 @@ export function ContentSettingsDrawer({
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  id: number;
+  id: string;
   contentData: ContentStructure;
   allDoenetmlVersions: DoenetmlVersion[];
   supportingFileData?: any;

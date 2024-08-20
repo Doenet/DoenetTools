@@ -26,18 +26,18 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Label } from "recharts";
 import AssignmentPreview from "../ToolPanels/AssignmentPreview";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import { createFullName } from "../../../_utils/names";
+import { UserInfo } from "../../../_utils/types";
 
 export async function loader({ params }) {
   const { data } = await axios.get(
     `/api/getAssignmentData/${params.activityId}`,
   );
 
-  let activityId = Number(params.activityId);
+  let activityId = params.activityId;
 
   // TODO: address case where don't have one document
-  const doenetML = data.assignmentContent[0].assignedVersion.source;
-  const doenetmlVersion =
-    data.assignmentContent[0].assignedVersion.doenetmlVersion.fullVersion;
+  const doenetML = data.assignmentContent[0].source;
+  const doenetmlVersion = data.assignmentContent[0].doenetmlVersion.fullVersion;
 
   return {
     assignmentData: data.assignmentData,
@@ -51,9 +51,22 @@ export async function loader({ params }) {
 export function AssignmentData() {
   const { activityId, assignmentData, answerList, doenetML, doenetmlVersion } =
     useLoaderData() as {
-      activityId: number;
-      assignmentData: any;
-      answerList: any;
+      activityId: string;
+      assignmentData: {
+        name: string;
+        assignmentScores: {
+          score: number;
+          user: UserInfo;
+        }[];
+      };
+      answerList: {
+        docId: string;
+        docVersionNum: number;
+        answerId: string;
+        answerNumber: number | null;
+        count: number;
+        averageCredit: number;
+      }[];
       doenetML: string;
       doenetmlVersion: string;
     };

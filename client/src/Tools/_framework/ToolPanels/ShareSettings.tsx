@@ -12,13 +12,10 @@ import {
   Checkbox,
   FormControl,
   FormErrorMessage,
-  Image,
   Tooltip,
   Text,
   HStack,
   List,
-  ListItem,
-  ListIcon,
   Input,
   Spinner,
   TableContainer,
@@ -34,26 +31,22 @@ import {
   Hide,
   Button,
 } from "@chakra-ui/react";
-import {
-  ContentStructure,
-  License,
-  LicenseCode,
-} from "../Paths/ActivityEditor";
 import { InfoIcon } from "@chakra-ui/icons";
-import { MdCircle } from "react-icons/md";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
+import { ContentStructure, License, LicenseCode } from "../../../_utils/types";
+import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 
 export async function sharingActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "make content public") {
     if (formObj.isFolder === "true") {
       await axios.post("/api/makeFolderPublic", {
-        id: Number(formObj.id),
+        id: formObj.id,
         licenseCode: formObj.licenseCode,
       });
     } else {
       await axios.post("/api/makeActivityPublic", {
-        id: Number(formObj.id),
+        id: formObj.id,
         licenseCode: formObj.licenseCode,
       });
     }
@@ -61,11 +54,11 @@ export async function sharingActions({ formObj }: { [k: string]: any }) {
   } else if (formObj._action == "make content private") {
     if (formObj.isFolder === "true") {
       await axios.post("/api/makeFolderPrivate", {
-        id: Number(formObj.id),
+        id: formObj.id,
       });
     } else {
       await axios.post("/api/makeActivityPrivate", {
-        id: Number(formObj.id),
+        id: formObj.id,
       });
     }
     return true;
@@ -74,14 +67,14 @@ export async function sharingActions({ formObj }: { [k: string]: any }) {
     try {
       if (formObj.isFolder === "true") {
         const { data } = await axios.post("/api/shareFolder", {
-          id: Number(formObj.id),
+          id: formObj.id,
           licenseCode: formObj.licenseCode,
           email: formObj.email,
         });
         noSelfShare = Boolean(data.noSelfShare);
       } else {
         const { data } = await axios.post("/api/shareActivity", {
-          id: Number(formObj.id),
+          id: formObj.id,
           licenseCode: formObj.licenseCode,
           email: formObj.email,
         });
@@ -102,12 +95,12 @@ export async function sharingActions({ formObj }: { [k: string]: any }) {
   } else if (formObj._action === "unshare content") {
     if (formObj.isFolder === "true") {
       await axios.post("/api/unshareFolder", {
-        id: Number(formObj.id),
+        id: formObj.id,
         userId: formObj.userId,
       });
     } else {
       await axios.post("/api/unshareActivity", {
-        id: Number(formObj.id),
+        id: formObj.id,
         userId: formObj.userId,
       });
     }
@@ -116,12 +109,12 @@ export async function sharingActions({ formObj }: { [k: string]: any }) {
   } else if (formObj._action == "set license") {
     if (formObj.isFolder === "true") {
       await axios.post("/api/setFolderLicense", {
-        id: Number(formObj.id),
+        id: formObj.id,
         licenseCode: formObj.licenseCode,
       });
     } else {
       await axios.post("/api/setActivityLicense", {
-        id: Number(formObj.id),
+        id: formObj.id,
         licenseCode: formObj.licenseCode,
       });
     }
@@ -150,7 +143,7 @@ export function ShareSettings({
   const [shareWithEmail, setShareWithEmail] = useState("");
   const [showSpinner, setShowSpinner] = useState<{
     type: string;
-    id?: number;
+    id?: string;
   } | null>(null);
 
   const [statusText, setStatusText] = useState("");
@@ -344,8 +337,7 @@ export function ShareSettings({
                                 nextStatusText.current =
                                   "Stopped sharing publicly";
                                 setShowSpinner({
-                                  type: "unshare",
-                                  id: 0,
+                                  type: "unpublic",
                                 });
                                 fetcher.submit(
                                   {
@@ -361,12 +353,7 @@ export function ShareSettings({
                         )}
                       </Td>
                       <Td width="60px">
-                        <Spinner
-                          hidden={
-                            showSpinner?.type !== "unshare" ||
-                            showSpinner.id !== 0
-                          }
-                        />
+                        <Spinner hidden={showSpinner?.type !== "unpublic"} />
                       </Td>
                     </Tr>
                   ) : null}
@@ -375,6 +362,11 @@ export function ShareSettings({
                       (contentData.parentFolder?.sharedWith.findIndex(
                         (cs) => cs.userId === user.userId,
                       ) ?? -1) !== -1;
+                    console.log({
+                      sharedViaFolder,
+                      sharedWith: contentData.parentFolder?.sharedWith,
+                      user,
+                    });
                     return (
                       <Tr key={user.userId}>
                         <Show above="sm">
@@ -583,52 +575,5 @@ export function ShareSettings({
         )}
       </Box>
     </>
-  );
-}
-
-export function DisplayLicenseItem({
-  licenseItem,
-}: {
-  licenseItem: {
-    name: string;
-    description: string;
-    imageURL: string | null;
-    licenseURL: string | null;
-  };
-}) {
-  let image: React.JSX.Element | null = null;
-  if (licenseItem.imageURL) {
-    image = (
-      <Image
-        src={licenseItem.imageURL}
-        alt={`Badge for license: ${licenseItem.name}`}
-        width="100px"
-      />
-    );
-  }
-
-  let item = (
-    <Tooltip label={licenseItem.description}>
-      <HStack>
-        {image}
-        <Text>{licenseItem.name}</Text>
-      </HStack>
-    </Tooltip>
-  );
-  if (licenseItem.licenseURL) {
-    item = (
-      <Link to={licenseItem.licenseURL} target="_blank">
-        {item}
-      </Link>
-    );
-  }
-
-  return (
-    <ListItem>
-      <HStack>
-        <ListIcon as={MdCircle} margin="0px" />
-        {item}
-      </HStack>
-    </ListItem>
   );
 }

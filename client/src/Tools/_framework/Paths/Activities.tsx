@@ -56,13 +56,12 @@ import {
   License,
   LicenseCode,
   UserInfo,
-} from "./ActivityEditor";
-import { DateTime } from "luxon";
+} from "./../../../_utils/types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 
 // what is a better solution than this?
-let folderJustCreated = -1; // if a folder was just created, set autoFocusName true for the card with the matching id
+let folderJustCreated = ""; // if a folder was just created, set autoFocusName true for the card with the matching id
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -171,7 +170,7 @@ export async function loader({ params, request }) {
   let listViewPref = !prefData.data.cardView;
 
   return {
-    folderId: params.folderId ? Number(params.folderId) : null,
+    folderId: params.folderId ? params.folderId : null,
     content: data.content,
     allDoenetmlVersions: data.allDoenetmlVersions,
     allLicenses: data.allLicenses,
@@ -193,16 +192,16 @@ export function Activities() {
     listViewPref,
     query,
   } = useLoaderData() as {
-    folderId: number | null;
+    folderId: string | null;
     content: ContentStructure[];
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
-    userId: number;
+    userId: string;
     folder: ContentStructure | null;
     listViewPref: Boolean;
     query: string | null;
   };
-  const [settingsContentId, setSettingsContentId] = useState<number | null>(
+  const [settingsContentId, setSettingsContentId] = useState<string | null>(
     null,
   );
   const {
@@ -250,13 +249,13 @@ export function Activities() {
   const [listView, setListView] = useState(listViewPref);
 
   const [moveToFolderContent, setMoveToFolderContent] = useState<{
-    id: number;
+    id: string;
     isPublic: boolean;
     isShared: boolean;
     sharedWith: UserInfo[];
     licenseCode: LicenseCode | null;
   }>({
-    id: -1,
+    id: "",
     isPublic: false,
     isShared: false,
     sharedWith: [],
@@ -290,7 +289,7 @@ export function Activities() {
     licenseCode,
     parentFolderId,
   }: {
-    id: number;
+    id: string;
     position: number;
     numCards: number;
     assignmentStatus: AssignmentStatus;
@@ -299,7 +298,7 @@ export function Activities() {
     isShared: boolean;
     sharedWith: UserInfo[];
     licenseCode: LicenseCode | null;
-    parentFolderId: number | null;
+    parentFolderId: string | null;
   }) {
     return (
       <>
@@ -793,7 +792,7 @@ export function Activities() {
               };
               const justCreated = folderJustCreated === activity.id;
               if (justCreated) {
-                folderJustCreated = -1;
+                folderJustCreated = "";
               }
               return {
                 ref: getCardRef,
@@ -832,7 +831,7 @@ export function Activities() {
                 };
                 const justCreated = folderJustCreated === activity.id;
                 if (justCreated) {
-                  folderJustCreated = -1;
+                  folderJustCreated = "";
                 }
                 return (
                   <ContentCard

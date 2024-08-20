@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { createFullName } from "../../../_utils/names";
 import { DateTime } from "luxon";
-import { DocHistoryItem } from "../Paths/ActivityViewer";
+import { DocHistoryItem } from "../../../_utils/types";
 
 export async function remixedFromActions({ formObj }: { [k: string]: any }) {
   return null;
