@@ -350,7 +350,7 @@ if (
   app.post(
     "/api/login/createOrLoginAsTest",
     passport.authenticate("anonymId"),
-    (req: Request, res: Response) => {
+    (_req: Request, res: Response) => {
       res.send({});
     },
   );
@@ -409,7 +409,7 @@ app.get(
     const signedIn = req.user ? true : false;
     if (signedIn) {
       try {
-        let user = await getUserInfo(req.user.userId);
+        const user = await getUserInfo(req.user.userId);
         res.send({ user });
       } catch (e) {
         next(e);
@@ -834,6 +834,7 @@ app.post(
       console.log("error", e);
       if ((e as { message: string }).message === "User with email not found") {
         res.status(404).send("User with email not found");
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } else if ((e as any).message === "Cannot share with self") {
         res.send({ noSelfShare: true });
       } else if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -909,6 +910,7 @@ app.post(
       console.log("error", e);
       if ((e as { message: string }).message === "User with email not found") {
         res.status(404).send("User with email not found");
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } else if ((e as any).message === "Cannot share with self") {
         res.send({ noSelfShare: true });
       } else if (e instanceof Prisma.PrismaClientKnownRequestError) {
