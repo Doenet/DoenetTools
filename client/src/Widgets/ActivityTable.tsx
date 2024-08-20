@@ -75,8 +75,7 @@ export default forwardRef(function ActivityTable(
             <Th></Th>
             {showPublicStatus ? <Th>Visibility</Th> : null}
             <Show above="md">
-              {" "}
-              {showAssignmentStatus ? <Th>Assignment Status</Th> : null}{" "}
+              {showAssignmentStatus ? <Th>Assignment Status</Th> : null}
             </Show>
             {showOwnerName || !suppressAvatar ? <Th>Owner</Th> : null}
             <Th></Th>
