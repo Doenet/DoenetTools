@@ -16,10 +16,10 @@ model Session {
 }
 
 model content {
-  id               Int                      @id @unique() @default(autoincrement())
-  ownerId          Int
+  id               Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
+  ownerId          Bytes                    @db.Binary(16)
   isFolder         Boolean
-  parentFolderId   Int?
+  parentFolderId   Bytes?                   @db.Binary(16)
   name             String
   createdAt        DateTime                 @default(now())
   lastEdited       DateTime                 @default(now())
@@ -48,8 +48,8 @@ model content {
 }
 
 model documents {
-  id                 Int                  @id @unique @default(autoincrement())
-  activityId         Int
+  id                 Bytes                @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
+  activityId         Bytes                @db.Binary(16)
   source             String               @db.MediumText
   createdAt          DateTime             @default(now())
   lastEdited         DateTime             @default(now())
@@ -68,7 +68,7 @@ model documents {
 }
 
 model documentVersions {
-  docId                      Int
+  docId                      Bytes                        @db.Binary(16)
   versionNum                 Int
   cid                        String
   source                     String                       @db.MediumText
@@ -110,8 +110,8 @@ model licenseCompositions {
 }
 
 model contributorHistory {
-  docId             Int
-  prevDocId         Int
+  docId             Bytes            @db.Binary(16)
+  prevDocId         Bytes            @db.Binary(16)
   prevDocVersionNum Int
   withLicenseCode   String?          @db.VarChar(10)
   timestampDoc      DateTime         @default(now())
@@ -125,8 +125,8 @@ model contributorHistory {
 }
 
 model contentShares {
-  contentId Int
-  userId    Int
+  contentId Bytes   @db.Binary(16)
+  userId    Bytes   @db.Binary(16)
   content   content @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user      users   @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
@@ -147,8 +147,8 @@ model doenetmlVersions {
 }
 
 model assignmentScores {
-  activityId    Int
-  userId        Int
+  activityId    Bytes           @db.Binary(16)
+  userId        Bytes           @db.Binary(16)
   score         Float           @default(0)
   activity      content         @relation(fields: [activityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user          users           @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
@@ -160,10 +160,10 @@ model assignmentScores {
 }
 
 model documentState {
-  activityId      Int
-  docId           Int
+  activityId      Bytes            @db.Binary(16)
+  docId           Bytes            @db.Binary(16)
   docVersionNum   Int
-  userId          Int
+  userId          Bytes            @db.Binary(16)
   isLatest        Boolean          @default(true)
   hasMaxScore     Boolean          @default(false)
   state           String?          @db.MediumText
@@ -179,11 +179,11 @@ model documentState {
 }
 
 model documentSubmittedResponses {
-  id                     Int              @id @default(autoincrement())
-  activityId             Int
-  docId                  Int
+  id                     Bytes            @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
+  activityId             Bytes            @db.Binary(16)
+  docId                  Bytes            @db.Binary(16)
   docVersionNum          Int
-  userId                 Int
+  userId                 Bytes            @db.Binary(16)
   answerId               String
   response               String           @db.Text
   answerNumber           Int?
@@ -200,7 +200,7 @@ model documentSubmittedResponses {
 }
 
 model users {
-  userId                     Int                          @id @default(autoincrement())
+  userId                     Bytes                        @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
   email                      String                       @unique
   firstNames                 String?
   lastNames                  String
@@ -226,7 +226,7 @@ model promotedContentGroups {
 }
 
 model promotedContent {
-  activityId      Int
+  activityId      Bytes                 @db.Binary(16)
   promotedGroupId Int
   sortIndex       BigInt
   activity        content               @relation(fields: [activityId], references: [id])
@@ -236,7 +236,7 @@ model promotedContent {
 }
 
 model contentClassifications {
-  contentId        Int
+  contentId        Bytes           @db.Binary(16)
   classificationId Int
   content          content         @relation(fields: [contentId], references: [id])
   classification   classifications @relation(fields: [classificationId], references: [id])

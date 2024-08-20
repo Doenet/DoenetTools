@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useOutletContext } from "react-router";
 
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
@@ -11,6 +11,7 @@ import {
   action as enterClassCodeAction,
 } from "./EnterClassCode";
 import { ChangeName, action as changeNameAction } from "./ChangeName";
+import { User } from "./SiteHeader";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -30,7 +31,6 @@ export async function action({ params, request }) {
 
 export async function loader({ params }) {
   let assignment;
-  let user;
 
   // TODO: need to select variant for each student (just once)
 
@@ -54,7 +54,6 @@ export async function loader({ params }) {
     }
 
     assignment = data.assignment;
-    user = data.student;
   }
 
   // TODO: what happens if assignment has no documents?
@@ -72,7 +71,6 @@ export async function loader({ params }) {
     docVersionNum,
     doenetML,
     doenetmlVersion,
-    user,
   };
 }
 
@@ -81,7 +79,6 @@ export function AssignmentViewer() {
     doenetML,
     assignment,
     assignmentFound,
-    user,
     docId,
     docVersionNum,
     doenetmlVersion,
@@ -89,11 +86,12 @@ export function AssignmentViewer() {
     doenetML: string;
     assignment: any;
     assignmentFound: boolean;
-    user: any;
-    docId: number;
+    docId: string;
     docVersionNum: number;
     doenetmlVersion: string;
   };
+
+  const user = useOutletContext<User>();
 
   let navigate = useNavigate();
   let location = useLocation();
@@ -182,7 +180,7 @@ export function AssignmentViewer() {
     return <EnterClassCode />;
   }
 
-  if (!user.lastNames) {
+  if (!user?.lastNames) {
     return <ChangeName hideHomeButton />;
   }
 

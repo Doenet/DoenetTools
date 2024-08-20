@@ -33,7 +33,7 @@ import { createFullName } from "../../../_utils/names";
 export type User =
   | {
       email: string;
-      userId: number;
+      userId: string;
       firstNames: string | null;
       lastNames: string;
       isAnonymous: boolean;

@@ -20,6 +20,7 @@ import { DoenetHeading as Heading } from "./Community";
 import { parseAndFormatResponse } from "./AssignmentAnswerResponses";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import { createFullName } from "../../../_utils/names";
+import { UserInfo } from "../../../_utils/types";
 
 export async function action({ params, request }) {
   return null;
@@ -38,10 +39,10 @@ export async function loader({ params, request }) {
     }/${params.userId}?answerId=${encodeURIComponent(answerId)}`,
   );
 
-  const activityId = Number(params.activityId);
-  const docId = Number(params.docId);
+  const activityId = params.activityId;
+  const docId = params.docId;
   const docVersionNum = Number(params.docVersionNum);
-  const userId = Number(params.userId);
+  const userId = params.userId;
   const activityName = data.activityName;
   const responseData = data.submittedResponses;
   const maxCredit = responseData.reduce(
@@ -71,12 +72,17 @@ export function AssignmentAnswerResponseHistory() {
     responseData,
     maxCredit,
   } = useLoaderData() as {
-    activityId: number;
-    docId: number;
+    activityId: string;
+    docId: string;
     docVersionNum: number;
     answerId: string;
     activityName: string;
-    responseData: any;
+    responseData: {
+      user: UserInfo;
+      response: string;
+      creditAchieved: number;
+      submittedAt: string;
+    }[];
     maxCredit: number;
   };
 
@@ -86,7 +92,7 @@ export function AssignmentAnswerResponseHistory() {
 
   let navigate = useNavigate();
 
-  const [responses, setResponses] = useState([]);
+  const [responses, setResponses] = useState<React.JSX.Element[]>([]);
 
   useEffect(() => {
     setResponses(responseData.map((sr) => parseAndFormatResponse(sr.response)));

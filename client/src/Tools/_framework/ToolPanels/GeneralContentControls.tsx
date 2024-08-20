@@ -38,7 +38,7 @@ import {
   ContentClassification,
   ContentStructure,
   DoenetmlVersion,
-} from "../Paths/ActivityEditor";
+} from "../../../_utils/types";
 
 export async function generalContentActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "update general") {
@@ -65,7 +65,7 @@ export async function generalContentActions({ formObj }: { [k: string]: any }) {
   } else if (formObj._action == "add content classification") {
     if (formObj.isFolder !== "true") {
       await axios.post("/api/addClassification", {
-        activityId: Number(formObj.activityId),
+        activityId: formObj.activityId,
         classificationId: Number(formObj.classificationId),
       });
       return true;
@@ -73,7 +73,7 @@ export async function generalContentActions({ formObj }: { [k: string]: any }) {
   } else if (formObj._action == "remove content classification") {
     if (formObj.isFolder !== "true") {
       await axios.post("/api/removeClassification", {
-        activityId: Number(formObj.activityId),
+        activityId: formObj.activityId,
         classificationId: Number(formObj.classificationId),
       });
       return true;
@@ -92,7 +92,7 @@ export function GeneralContentControls({
   allDoenetmlVersions,
 }: {
   fetcher: FetcherWithComponents<any>;
-  id: number;
+  id: string;
   contentData: ContentStructure;
   allDoenetmlVersions: DoenetmlVersion[];
 }) {

@@ -16,8 +16,8 @@ import {
 } from "@chakra-ui/react";
 import { GoKebabVertical } from "react-icons/go";
 import { Link, useFetcher } from "react-router-dom";
-import { AssignmentStatus } from "../Tools/_framework/Paths/ActivityEditor";
 import axios from "axios";
+import { AssignmentStatus } from "../_utils/types";
 
 export async function contentCardActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "update title") {
@@ -27,7 +27,7 @@ export async function contentCardActions({ formObj }: { [k: string]: any }) {
       name = "Untitled " + (formObj.isFolder ? "Folder" : "Activity");
     }
     await axios.post(`/api/updateContentName`, {
-      id: Number(formObj.id),
+      id: formObj.id,
       name,
     });
     return true;
@@ -56,7 +56,7 @@ export default forwardRef(function ContentCard(
     closeTime,
   }: {
     cardLink?: string;
-    id?: number;
+    id?: string;
     imagePath: string | null;
     assignmentStatus?: AssignmentStatus;
     isFolder?: boolean;

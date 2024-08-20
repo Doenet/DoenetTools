@@ -16,11 +16,11 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { FetcherWithComponents } from "react-router-dom";
-import { ContentStructure } from "../Paths/ActivityEditor";
 import {
   assignActivityActions,
   AssignActivityControls,
 } from "./AssignActivityControls";
+import { ContentStructure } from "../../../_utils/types";
 
 export async function assignmentSettingsActions({
   formObj,
@@ -47,7 +47,7 @@ export function AssignmentSettingsDrawer({
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  id: number;
+  id: string;
   contentData: ContentStructure;
   fetcher: FetcherWithComponents<any>;
   displayTab?: "assignment";

@@ -73,7 +73,7 @@ export function SupportFilesControls({
   fetcher,
 }: {
   supportingFileData: any;
-  activityId: number;
+  activityId: string;
   fetcher: FetcherWithComponents<any>;
 }) {
   const { supportingFiles, userQuotaBytesAvailable, quotaBytes } =

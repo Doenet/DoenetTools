@@ -2,7 +2,6 @@ import React, { RefObject, useEffect, useState } from "react";
 import { sharingActions, ShareSettings } from "./ShareSettings";
 import { remixedFromActions, RemixedFrom } from "./RemixedFrom";
 import { FetcherWithComponents } from "react-router-dom";
-import { ContentStructure, License } from "../Paths/ActivityEditor";
 import {
   Box,
   Drawer,
@@ -21,13 +20,17 @@ import {
 } from "@chakra-ui/react";
 import { Remixes } from "./Remixes";
 import {
+  ContentStructure,
   DocHistoryItem,
   DocRemixItem,
-  processContributorHistory,
-  processRemixes,
-} from "../Paths/ActivityViewer";
+  License,
+} from "../../../_utils/types";
 import axios from "axios";
 import { cidFromText } from "../../../_utils/cid";
+import {
+  processContributorHistory,
+  processRemixes,
+} from "../../../_utils/processRemixes";
 
 export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
   let result1 = await sharingActions({ formObj });

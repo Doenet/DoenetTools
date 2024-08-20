@@ -27,7 +27,7 @@ import { RiDraftFill } from "react-icons/ri";
 import { MdAssignment } from "react-icons/md";
 import { BsPeopleFill } from "react-icons/bs";
 import { useFetcher, useNavigate } from "react-router-dom";
-import { AssignmentStatus } from "../Tools/_framework/Paths/ActivityEditor";
+import { AssignmentStatus } from "../_utils/types";
 
 export default forwardRef(function ActivityTable(
   {
@@ -39,7 +39,7 @@ export default forwardRef(function ActivityTable(
   }: {
     content: {
       cardLink?: string;
-      id: number;
+      id: string;
       assignmentStatus?: AssignmentStatus;
       isFolder?: boolean;
       isPublic?: boolean;

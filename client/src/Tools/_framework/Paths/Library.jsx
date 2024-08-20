@@ -13,10 +13,8 @@ import {
   Divider,
   Link,
   SimpleGrid,
-  Flex,
 } from "@chakra-ui/react";
 import Searchbar from "../../../Widgets/SearchBar";
-import { Form, useFetcher } from "react-router-dom";
 
 export async function loader() {
   let libraryContent = axios.get(`/library_content.csv`, {

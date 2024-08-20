@@ -39,14 +39,14 @@ import { IoGrid, IoGridOutline } from "react-icons/io5";
 import ContentCard from "../../../Widgets/ContentCard";
 import AuthorCard from "../../../Widgets/AuthorCard";
 import { createFullName } from "../../../_utils/names";
-import { ContentStructure } from "./ActivityEditor";
 import ActivityTable from "../../../Widgets/ActivityTable";
+import { ContentStructure } from "../../../_utils/types";
 
 type SearchMatch =
   | (ContentStructure & { type: "content" })
   | {
       type: "author";
-      userId: number;
+      userId: string;
       firstNames: string | null;
       lastNames: string;
     };
@@ -407,7 +407,7 @@ export function Community() {
     searchResults: {
       content: ContentStructure[];
       users: {
-        userId: number;
+        userId: string;
         firstNames: string | null;
         lastNames: string;
       }[];
@@ -534,7 +534,7 @@ export function Community() {
                   : `/activityViewer/${id}`;
 
               return {
-                id: Number(id),
+                id,
                 title: name,
                 ownerName: owner != undefined ? createFullName(owner) : "",
                 cardLink,
@@ -557,7 +557,7 @@ export function Community() {
                 authorRow: true,
               };
             } else {
-              return { id: 0, title: "" };
+              return { id: "", title: "" };
             }
           })}
         />

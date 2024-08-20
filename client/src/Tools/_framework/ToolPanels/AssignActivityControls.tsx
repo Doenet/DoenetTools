@@ -14,10 +14,10 @@ import {
 } from "@chakra-ui/react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { DateTime } from "luxon";
-import { ContentStructure } from "../Paths/ActivityEditor";
 import { AssignmentInvitation } from "./AssignmentInvitation";
 import { MdOutlineContentCopy } from "react-icons/md";
 import axios from "axios";
+import { ContentStructure } from "../../../_utils/types";
 
 export async function assignActivityActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "open assignment") {
@@ -30,26 +30,26 @@ export async function assignActivityActions({ formObj }: { [k: string]: any }) {
       ).plus(JSON.parse(formObj.duration));
     }
     await axios.post("/api/openAssignmentWithCode", {
-      activityId: Number(formObj.activityId),
+      activityId: formObj.activityId,
       closeAt,
     });
     return true;
   } else if (formObj._action == "update assignment close time") {
     const closeAt = DateTime.fromISO(formObj.closeAt);
     await axios.post("/api/updateAssignmentSettings", {
-      activityId: Number(formObj.activityId),
+      activityId: formObj.activityId,
       closeAt,
     });
     return true;
   } else if (formObj._action == "close assignment") {
     await axios.post("/api/closeAssignmentWithCode", {
-      activityId: Number(formObj.activityId),
+      activityId: formObj.activityId,
     });
     return true;
   } else if (formObj._action == "unassign activity") {
     try {
       await axios.post("/api/unassignActivity", {
-        activityId: Number(formObj.activityId),
+        activityId: formObj.activityId,
       });
     } catch (e) {
       alert("Unable to unassign activity");
@@ -69,7 +69,7 @@ export function AssignActivityControls({
   openTabIndex,
 }: {
   fetcher: FetcherWithComponents<any>;
-  activityId: number;
+  activityId: string;
   activityData: ContentStructure;
   openTabIndex: number;
 }) {

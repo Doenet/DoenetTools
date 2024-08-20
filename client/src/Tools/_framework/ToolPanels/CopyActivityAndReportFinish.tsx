@@ -12,9 +12,9 @@ import {
   Text,
   Spinner,
 } from "@chakra-ui/react";
-import { ContentStructure } from "../Paths/ActivityEditor";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { ContentStructure } from "../../../_utils/types";
 
 /**
  * A modal that immediately upon opening copies an activity into a user's Activities.
@@ -33,8 +33,8 @@ export function CopyActivityAndReportFinish({
   activityData: ContentStructure;
 }) {
   const [newActivityData, setNewActivityData] = useState<{
-    newActivityId: number;
-    userId: number;
+    newActivityId: string;
+    userId: string;
   } | null>(null);
 
   const navigate = useNavigate();

@@ -17,7 +17,8 @@ import {
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
-import { createFullName } from "../../../_utils/names";
+import { createFullName, lastNameFirst } from "../../../_utils/names";
+import { UserInfo } from "../../../_utils/types";
 
 export async function action({ params, request }) {
   return null;
@@ -36,15 +37,15 @@ export async function loader({ params, request }) {
     }?answerId=${encodeURIComponent(answerId)}`,
   );
 
-  let activityId = Number(params.activityId);
-  let docId = Number(params.docId);
+  let activityId = params.activityId;
+  let docId = params.docId;
   let docVersionNum = Number(params.docVersionNum);
   let activityName = data.activityName;
 
   // sort response data by user name
   let responseData = data.submittedResponses.toSorted((a, b) => {
-    const name1 = createFullName(a).toLowerCase();
-    const name2 = createFullName(b).toLowerCase();
+    const name1 = lastNameFirst(a.user).toLowerCase();
+    const name2 = lastNameFirst(b.user).toLowerCase();
     if (name1 > name2) {
       return 1;
     }
@@ -73,12 +74,19 @@ export function AssignmentAnswerResponses() {
     activityName,
     responseData,
   } = useLoaderData() as {
-    activityId: number;
-    docId: number;
+    activityId: string;
+    docId: string;
     docVersionNum: number;
     answerId: string;
     activityName: string;
-    responseData: any;
+    responseData: {
+      user: UserInfo;
+      latestResponse: string;
+      latestCreditAchieved: number;
+      bestCreditAchieved: number;
+      numResponses: number;
+      bestResponse: string;
+    }[];
   };
 
   useEffect(() => {
@@ -176,7 +184,7 @@ export function AssignmentAnswerResponses() {
               return (
                 <Tr key={i}>
                   <Td>
-                    {showNames ? createFullName(data) : `Student ${i + 1}`}
+                    {showNames ? lastNameFirst(data.user) : `Student ${i + 1}`}
                   </Td>
                   <Td>{response}</Td>
                   <Td>{Math.round(creditAchieved * 1000) / 10}%</Td>
@@ -185,7 +193,7 @@ export function AssignmentAnswerResponses() {
                       as={ReactRouterLink}
                       style={{ display: "block", color: "var(--mainBlue)" }}
                       to={`/assignmentAnswerResponseHistory/${activityId}/${docId}/${docVersionNum}/${
-                        data.userId
+                        data.user.userId
                       }?answerId=${encodeURIComponent(answerId)}`}
                     >
                       {data.numResponses}

@@ -36,7 +36,6 @@ import {
   contentSettingsActions,
   ContentSettingsDrawer,
 } from "../ToolPanels/ContentSettingsDrawer";
-import { DateTime } from "luxon";
 import { InfoIcon } from "@chakra-ui/icons";
 import { AssignmentInvitation } from "../ToolPanels/AssignmentInvitation";
 import {
@@ -45,89 +44,11 @@ import {
 } from "../ToolPanels/AssignmentSettingsDrawer";
 import { ShareDrawer } from "../ToolPanels/ShareDrawer";
 import { sharingActions } from "../ToolPanels/ShareSettings";
-
-export type DoenetmlVersion = {
-  id: number;
-  displayedVersion: string;
-  fullVersion: string;
-  default: boolean;
-  deprecated: boolean;
-  removed: boolean;
-  deprecationMessage: string;
-};
-
-export type LicenseCode = "CCDUAL" | "CCBYSA" | "CCBYNCSA";
-
-export type License = {
-  code: LicenseCode;
-  name: string;
-  description: string;
-  imageURL: string | null;
-  smallImageURL: string | null;
-  licenseURL: string | null;
-  isComposition: boolean;
-  composedOf: {
-    code: LicenseCode;
-    name: string;
-    description: string;
-    imageURL: string | null;
-    smallImageURL: string | null;
-    licenseURL: string | null;
-  }[];
-};
-
-export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
-
-export type UserInfo = {
-  userId: number;
-  firstNames: string | null;
-  lastNames: string;
-  email: string;
-};
-
-export type ContentClassification = {
-  id: number;
-  code: string;
-  grade: string | null;
-  category: string;
-  description: string;
-  system: {
-    id: number;
-    name: string;
-  };
-};
-
-export type ContentStructure = {
-  id: number;
-  ownerId: number;
-  owner?: UserInfo;
-  name: string;
-  imagePath: string | null;
-  assignmentStatus: AssignmentStatus;
-  isFolder?: boolean;
-  classCode: string | null;
-  codeValidUntil: string | null;
-  isPublic: boolean;
-  isShared: boolean;
-  sharedWith: UserInfo[];
-  license: License | null;
-  classifications: ContentClassification[];
-  documents: {
-    id: number;
-    versionNum?: number;
-    name?: string;
-    source?: string;
-    doenetmlVersion: DoenetmlVersion;
-  }[];
-  hasScoreData: boolean;
-  parentFolder: {
-    id: number;
-    name: string;
-    isPublic: boolean;
-    isShared: boolean;
-    sharedWith: UserInfo[];
-  } | null;
-};
+import {
+  ContentStructure,
+  DoenetmlVersion,
+  License,
+} from "../../../_utils/types";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -141,7 +62,7 @@ export async function action({ params, request }) {
 
   if (formObj._action == "update name") {
     await axios.post(`/api/updateContentName`, {
-      id: Number(params.activityId),
+      id: params.activityId,
       name,
     });
     return true;
@@ -180,8 +101,8 @@ export async function loader({ params }) {
     );
   }
 
-  let activityId = Number(params.activityId);
-  let docId = Number(params.docId);
+  let activityId = params.activityId;
+  let docId = params.docId;
   if (!docId) {
     // If docId was not supplied in the url,
     // then use the first docId from the activity.
@@ -298,10 +219,10 @@ export function ActivityEditor() {
     allLicenses,
   } = useLoaderData() as {
     platform: "Win" | "Mac" | "Linux";
-    activityId: number;
+    activityId: string;
     doenetML: string;
     doenetmlVersion: DoenetmlVersion;
-    docId: number;
+    docId: string;
     activityData: ContentStructure;
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];

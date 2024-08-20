@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { useLoaderData, useNavigate, useOutletContext } from "react-router";
 
 import { DoenetEditor } from "@doenet/doenetml-iframe";
@@ -16,8 +16,8 @@ import { WarningIcon } from "@chakra-ui/icons";
 import { BsPlayBtnFill } from "react-icons/bs";
 import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
 import axios from "axios";
-import { ContentStructure, DoenetmlVersion } from "./ActivityEditor";
 import { User } from "./SiteHeader";
+import { ContentStructure, DoenetmlVersion } from "../../../_utils/types";
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);
@@ -32,7 +32,7 @@ export async function loader({ params, request }) {
     `/api/getSharedEditorData/${params.activityId}`,
   );
 
-  let docId = Number(params.docId);
+  let docId = params.docId;
   if (!docId) {
     // If docId was not supplied in the url,
     // then use the first docId from the activity.

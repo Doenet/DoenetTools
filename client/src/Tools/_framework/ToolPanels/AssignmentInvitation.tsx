@@ -12,10 +12,10 @@ import {
   Box,
   Flex,
 } from "@chakra-ui/react";
-import { ContentStructure } from "../Paths/ActivityEditor";
 import { QRCode } from "react-qrcode-logo";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { MdOutlineContentCopy } from "react-icons/md";
+import { ContentStructure } from "../../../_utils/types";
 
 export function AssignmentInvitation({
   isOpen,

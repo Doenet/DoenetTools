@@ -16,9 +16,11 @@ import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../Widgets/ContentCard";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
-import { ContentStructure } from "./ActivityEditor";
-import { DisplayLicenseItem } from "../ToolPanels/ShareSettings";
-import { SmallLicenseBadges } from "./ActivityViewer";
+import { ContentStructure } from "../../../_utils/types";
+import {
+  DisplayLicenseItem,
+  SmallLicenseBadges,
+} from "../../../Widgets/Licenses";
 
 export async function loader({ params }) {
   const { data } = await axios.get(
@@ -36,7 +38,7 @@ export async function loader({ params }) {
 export function SharedActivities() {
   let { content, ownerId, owner, folder } = useLoaderData() as {
     content: ContentStructure[];
-    ownerId: number;
+    ownerId: string;
     owner: {
       firstNames: string | null;
       lastNames: string;
