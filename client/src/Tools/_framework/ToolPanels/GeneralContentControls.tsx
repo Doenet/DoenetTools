@@ -48,7 +48,7 @@ export async function generalContentActions({ formObj }: { [k: string]: any }) {
     }
 
     await axios.post("/api/updateContentSettings", {
-      name,
+      name: formObj.name,
       imagePath: formObj.imagePath,
       id: formObj.id,
       learningOutcomes,

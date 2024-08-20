@@ -206,6 +206,7 @@ model users {
   lastNames                  String
   isAdmin                    Boolean                      @default(false)
   isAnonymous                Boolean                      @default(false)
+  cardView                   Boolean                      @default(false)
   content                    content[]
   assignmentScores           assignmentScores[]
   documentState              documentState[]

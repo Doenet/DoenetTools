@@ -16,6 +16,9 @@ import {
   Input,
   Spacer,
   Show,
+  HStack,
+  ButtonGroup,
+  VStack,
   Hide,
   Spinner,
 } from "@chakra-ui/react";
@@ -30,7 +33,10 @@ import {
 } from "react-router-dom";
 
 import { RiEmotionSadLine } from "react-icons/ri";
+import { FaListAlt, FaRegListAlt } from "react-icons/fa";
+import { IoGrid, IoGridOutline } from "react-icons/io5";
 import ContentCard, { contentCardActions } from "../../../Widgets/ContentCard";
+import ActivityTable from "../../../Widgets/ActivityTable";
 import axios from "axios";
 import MoveContentToFolder, {
   moveContentActions,
@@ -128,6 +134,11 @@ export async function action({ request, params }) {
       desiredPosition: formObj.desiredPosition,
     });
     return true;
+  } else if (formObj?._action == "Set List View Preferred") {
+    await axios.post(`/api/setPreferredFolderView`, {
+      cardView: formObj.listViewPref === "false",
+    });
+    return true;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
@@ -156,6 +167,9 @@ export async function loader({ params, request }) {
     }
   }
 
+  let prefData = await axios.get(`/api/getPreferredFolderView`);
+  let listViewPref = !prefData.data.cardView;
+
   return {
     folderId: params.folderId ? Number(params.folderId) : null,
     content: data.content,
@@ -163,6 +177,7 @@ export async function loader({ params, request }) {
     allLicenses: data.allLicenses,
     userId: params.userId,
     folder: data.folder,
+    listViewPref,
     query: q,
   };
 }
@@ -175,6 +190,7 @@ export function Activities() {
     allLicenses,
     userId,
     folder,
+    listViewPref,
     query,
   } = useLoaderData() as {
     folderId: number | null;
@@ -183,6 +199,7 @@ export function Activities() {
     allLicenses: License[];
     userId: number;
     folder: ContentStructure | null;
+    listViewPref: Boolean;
     query: string | null;
   };
   const [settingsContentId, setSettingsContentId] = useState<number | null>(
@@ -229,6 +246,8 @@ export function Activities() {
   }, [content]);
 
   const navigate = useNavigate();
+
+  const [listView, setListView] = useState(listViewPref);
 
   const [moveToFolderContent, setMoveToFolderContent] = useState<{
     id: number;
@@ -314,7 +333,7 @@ export function Activities() {
               );
             }}
           >
-            Move Left
+            {listView ? "Move Up" : "Move Left"}
           </MenuItem>
         ) : null}
         {position < numCards - 1 && !haveQuery ? (
@@ -332,7 +351,7 @@ export function Activities() {
               );
             }}
           >
-            Move Right
+            {listView ? "Move Down" : "Move Right"}
           </MenuItem>
         ) : null}
         {haveQuery ? null : (
@@ -497,130 +516,193 @@ export function Activities() {
         width="100%"
         textAlign="center"
       >
-        <Tooltip label={headingText}>
-          <Heading as="h2" size="lg" paddingTop=".5em" noOfLines={1}>
-            {headingText}
-          </Heading>
-        </Tooltip>
-        <Flex float="right">
-          <Flex>
-            <Form>
-              <Input
-                type="search"
-                hidden={!searchOpen}
-                size="xs"
-                margin="3px"
-                width="250px"
-                ref={searchRef}
-                placeholder={
-                  folder ? `Search in folder` : `Search my activities`
-                }
-                value={searchString}
-                name="q"
-                onInput={(e) => {
-                  setSearchString((e.target as HTMLInputElement).value);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key == "Enter") {
-                  }
-                }}
-                onBlur={() => {
-                  searchBlurTimeout.current = setTimeout(() => {
-                    setSearchOpen(false);
-                  }, 200);
-                }}
-              />
-              <Tooltip
-                label={folder ? `Search in folder` : `Search my activities`}
-                placement="bottom-end"
-              >
-                <IconButton
-                  size="xs"
-                  margin="3px"
-                  icon={<MdOutlineSearch />}
-                  aria-label={
+        <Heading
+          as="h2"
+          size="lg"
+          margin=".5em"
+          noOfLines={1}
+          maxHeight="1.5em"
+          lineHeight="normal"
+        >
+          <Tooltip label={headingText}>{headingText}</Tooltip>
+        </Heading>
+        <VStack align="flex-end" float="right" marginRight=".5em">
+          <HStack>
+            <Flex>
+              <Form>
+                <Input
+                  type="search"
+                  hidden={!searchOpen}
+                  size="sm"
+                  colorScheme="blue"
+                  width="250px"
+                  ref={searchRef}
+                  placeholder={
                     folder ? `Search in folder` : `Search my activities`
                   }
-                  type="submit"
-                  onClick={(e) => {
-                    if (searchOpen) {
-                      clearTimeout(searchBlurTimeout.current);
-                      searchRef.current?.focus();
-                    } else {
-                      setSearchOpen(true);
-                      e.preventDefault();
+                  value={searchString}
+                  name="q"
+                  onInput={(e) => {
+                    setSearchString((e.target as HTMLInputElement).value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key == "Enter") {
+                    }
+                  }}
+                  onBlur={() => {
+                    searchBlurTimeout.current = setTimeout(() => {
+                      setSearchOpen(false);
+                    }, 200);
+                  }}
+                />
+                <Tooltip
+                  label={folder ? `Search in folder` : `Search my activities`}
+                  placement="bottom-end"
+                >
+                  <IconButton
+                    size="sm"
+                    colorScheme="blue"
+                    icon={<MdOutlineSearch />}
+                    aria-label={
+                      folder ? `Search in folder` : `Search my activities`
+                    }
+                    type="submit"
+                    onClick={(e) => {
+                      if (searchOpen) {
+                        clearTimeout(searchBlurTimeout.current);
+                        searchRef.current?.focus();
+                      } else {
+                        setSearchOpen(true);
+                        e.preventDefault();
+                      }
+                    }}
+                  />
+                </Tooltip>
+              </Form>
+            </Flex>
+            <Menu>
+              <MenuButton
+                as={Button}
+                size="sm"
+                colorScheme="blue"
+                hidden={searchOpen || haveQuery}
+              >
+                {haveContentSpinner ? <Spinner size="sm" /> : "New"}
+              </MenuButton>
+              <MenuList>
+                <MenuItem
+                  onClick={async () => {
+                    setHaveContentSpinner(true);
+                    //Create an activity and redirect to the editor for it
+                    // let { data } = await axios.post("/api/createActivity");
+                    // let { activityId } = data;
+                    // navigate(`/activityEditor/${activityId}`);
+
+                    // TODO - review this, elsewhere the fetcher is being used, and
+                    // there was code up in the action() method for this action
+                    // that was unused. This appears to work okay though? And it
+                    // would make it consistent with how API requests are done elsewhere
+                    fetcher.submit(
+                      { _action: "Add Activity" },
+                      { method: "post" },
+                    );
+                  }}
+                >
+                  Activity
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setHaveContentSpinner(true);
+                    fetcher.submit(
+                      { _action: "Add Folder" },
+                      { method: "post" },
+                    );
+                  }}
+                >
+                  Folder
+                </MenuItem>
+              </MenuList>
+            </Menu>
+
+            {folderId !== null ? (
+              <Button
+                colorScheme="blue"
+                size="sm"
+                ref={folderSettingsRef}
+                onClick={() => {
+                  setSettingsContentId(folderId);
+                  sharingOnOpen();
+                }}
+                hidden={searchOpen || haveQuery}
+              >
+                Share
+              </Button>
+            ) : null}
+            <Button
+              colorScheme="blue"
+              size="sm"
+              onClick={() =>
+                navigate(
+                  `/allAssignmentScores${folderId ? "/" + folderId : ""}`,
+                )
+              }
+              hidden={searchOpen || haveQuery}
+            >
+              See Scores
+            </Button>
+          </HStack>
+          <ButtonGroup
+            size="sm"
+            isAttached
+            variant="outline"
+            marginBottom=".5em"
+          >
+            <Tooltip label="Toggle List View">
+              <Button isActive={listView === true}>
+                <Icon
+                  as={listView ? FaListAlt : FaRegListAlt}
+                  boxSize={10}
+                  p=".5em"
+                  cursor="pointer"
+                  onClick={() => {
+                    if (listView === false) {
+                      setListView(true);
+                      fetcher.submit(
+                        {
+                          _action: "Set List View Preferred",
+                          listViewPref: true,
+                        },
+                        { method: "post" },
+                      );
                     }
                   }}
                 />
-              </Tooltip>
-            </Form>
-          </Flex>
-          <Menu>
-            <MenuButton
-              as={Button}
-              size="xs"
-              margin="3px"
-              hidden={searchOpen || haveQuery}
-            >
-              {haveContentSpinner ? <Spinner size="sm" /> : "New"}
-            </MenuButton>
-            <MenuList>
-              <MenuItem
-                onClick={async () => {
-                  setHaveContentSpinner(true);
-                  //Create an activity and redirect to the editor for it
-                  // let { data } = await axios.post("/api/createActivity");
-                  // let { activityId } = data;
-                  // navigate(`/activityEditor/${activityId}`);
-
-                  // TODO - review this, elsewhere the fetcher is being used, and
-                  // there was code up in the action() method for this action
-                  // that was unused. This appears to work okay though? And it
-                  // would make it consistent with how API requests are done elsewhere
-                  fetcher.submit(
-                    { _action: "Add Activity" },
-                    { method: "post" },
-                  );
-                }}
-              >
-                Activity
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  setHaveContentSpinner(true);
-                  fetcher.submit({ _action: "Add Folder" }, { method: "post" });
-                }}
-              >
-                Folder
-              </MenuItem>
-            </MenuList>
-          </Menu>
-
-          {folderId !== null ? (
-            <Button
-              margin="3px"
-              size="xs"
-              ref={folderSettingsRef}
-              onClick={() => {
-                setSettingsContentId(folderId);
-                sharingOnOpen();
-              }}
-              hidden={searchOpen || haveQuery}
-            >
-              Share
-            </Button>
-          ) : null}
-          <Button
-            margin="3px"
-            size="xs"
-            onClick={() =>
-              navigate(`/allAssignmentScores${folderId ? "/" + folderId : ""}`)
-            }
-            hidden={searchOpen || haveQuery}
-          >
-            See Scores
-          </Button>
-        </Flex>
+              </Button>
+            </Tooltip>
+            <Tooltip label="Toggle Card View">
+              <Button isActive={listView === false}>
+                <Icon
+                  as={listView ? IoGridOutline : IoGrid}
+                  boxSize={10}
+                  p=".5em"
+                  cursor="pointer"
+                  onClick={() => {
+                    if (listView === true) {
+                      setListView(false);
+                      fetcher.submit(
+                        {
+                          _action: "Set List View Preferred",
+                          listViewPref: false,
+                        },
+                        { method: "post" },
+                      );
+                    }
+                  }}
+                />
+              </Button>
+            </Tooltip>
+          </ButtonGroup>
+        </VStack>
       </Box>
       {folder && !haveQuery ? (
         <Box style={{ marginLeft: "15px", marginTop: "-30px", float: "left" }}>
@@ -671,37 +753,84 @@ export function Activities() {
       ) : null}
       <Flex
         data-test="Activities"
-        padding="10px"
+        padding="0 10px"
         margin="0px"
         width="100%"
-        justifyContent="center"
-        background="var(--lightBlue)"
-        minHeight="calc(100vh - 120px)"
+        background={
+          listView && content.length > 0 ? "white" : "var(--lightBlue)"
+        }
+        minHeight="calc(100vh - 189px)"
+        direction="column"
       >
-        <Wrap p="10px" overflow="visible">
-          {content.length < 1 ? (
-            <Flex
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-              alignContent="center"
-              minHeight={200}
-              background="doenet.canvas"
-              padding={20}
-              width="100%"
-              backgroundColor="transparent"
-            >
-              <Icon fontSize="48pt" as={RiEmotionSadLine} />
-              <Text fontSize="36pt">
-                {haveQuery ? "No Results Found" : "No Activities Yet"}
-              </Text>
-            </Flex>
-          ) : (
-            <>
+        {content.length < 1 ? (
+          <Flex
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            alignContent="center"
+            minHeight={200}
+            background="doenet.canvas"
+            padding={20}
+            width="100%"
+            backgroundColor="transparent"
+          >
+            <Icon fontSize="48pt" as={RiEmotionSadLine} />
+            <Text fontSize="36pt">
+              {haveQuery ? "No Results Found" : "No Activities Yet"}
+            </Text>
+          </Flex>
+        ) : listView ? (
+          <ActivityTable
+            suppressAvatar={true}
+            showOwnerName={false}
+            showAssignmentStatus={true}
+            content={content.map((activity, position) => {
+              const getCardRef = (element) => {
+                contentCardRefs.current[position] = element;
+              };
+              const justCreated = folderJustCreated === activity.id;
+              if (justCreated) {
+                folderJustCreated = -1;
+              }
+              return {
+                ref: getCardRef,
+                ...activity,
+                title: activity.name,
+                menuItems: getCardMenuList({
+                  id: activity.id,
+                  position,
+                  numCards: content.length,
+                  assignmentStatus: activity.assignmentStatus,
+                  isFolder: activity.isFolder,
+                  isPublic: activity.isPublic,
+                  isShared: activity.isShared,
+                  sharedWith: activity.sharedWith,
+                  licenseCode: activity.license?.code ?? null,
+                  parentFolderId: activity.parentFolder?.id ?? null,
+                }),
+                cardLink: activity.isFolder
+                  ? `/activities/${activity.ownerId}/${activity.id}`
+                  : `/activityEditor/${activity.id}`,
+                editableTitle: true,
+                autoFocusTitle: justCreated,
+              };
+            })}
+          />
+        ) : (
+          <Flex
+            justifyContent="center"
+            alignItems="center"
+            alignContent="center"
+          >
+            <Wrap p="10px" overflow="visible">
               {content.map((activity, position) => {
                 const getCardRef = (element) => {
                   contentCardRefs.current[position] = element;
                 };
+                const justCreated = folderJustCreated === activity.id;
+                if (justCreated) {
+                  folderJustCreated = -1;
+                }
                 return (
                   <ContentCard
                     key={`Card${activity.id}`}
@@ -728,13 +857,13 @@ export function Activities() {
                         : `/activityEditor/${activity.id}`
                     }
                     editableTitle={true}
-                    autoFocusTitle={folderJustCreated === activity.id}
+                    autoFocusTitle={justCreated}
                   />
                 );
               })}
-            </>
-          )}
-        </Wrap>
+            </Wrap>
+          </Flex>
+        )}
       </Flex>
     </>
   );
