@@ -155,6 +155,7 @@ export default forwardRef(function ContentCard(
                   margin="0"
                   height="1em"
                   fontWeight="bold"
+                  data-test="Editable Title"
                   autoFocus={autoFocusTitle}
                   onFocus={(e) => e.target.select()}
                   onChange={(e) => setCardTitle(e.target.value)}

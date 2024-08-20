@@ -194,10 +194,10 @@ export function SiteHeader() {
                         to={`activities/${user.userId}`}
                         dataTest="Activities"
                       >
-                        Activities
+                        My Activities
                       </NavLinkTab>
                       <NavLinkTab to={`assigned`} dataTest="Assigned">
-                        Assigned
+                        Assigned to Me
                       </NavLinkTab>
                       {user.isAdmin && (
                         <NavLinkTab to="admin" dataTest="Admin">

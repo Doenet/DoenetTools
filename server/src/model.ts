@@ -2088,7 +2088,22 @@ export async function findOrCreateUser({
   return user;
 }
 
-export async function getUserInfo(email: string) {
+export async function getUserInfo(userId: number) {
+  const user = await prisma.users.findUniqueOrThrow({
+    where: { userId },
+    select: {
+      userId: true,
+      email: true,
+      firstNames: true,
+      lastNames: true,
+      isAnonymous: true,
+      isAdmin: true,
+    },
+  });
+  return user;
+}
+
+export async function getUserInfoFromEmail(email: string) {
   const user = await prisma.users.findUniqueOrThrow({
     where: { email },
     select: {
@@ -4844,8 +4859,8 @@ export async function shareActivityWithEmail({
   }
 
   if (userId === ownerId) {
-    // don't need to share with self
-    return { id };
+    // cannot share with self
+    throw Error("Cannot share with self");
   }
 
   return await shareActivity({ id, ownerId, licenseCode, users: [userId] });
@@ -5060,8 +5075,8 @@ export async function shareFolderWithEmail({
   }
 
   if (userId === ownerId) {
-    // don't need to share with self
-    return { id };
+    // cannot share with self
+    throw Error("Cannot share with self");
   }
 
   return await shareFolder({ id, ownerId, licenseCode, users: [userId] });

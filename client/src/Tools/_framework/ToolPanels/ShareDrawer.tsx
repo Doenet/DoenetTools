@@ -88,7 +88,9 @@ export function ShareDrawer({
       setRemixes(doc0Remixes);
     }
 
-    getHistoryAndRemixes();
+    if (!contentData.isFolder) {
+      getHistoryAndRemixes();
+    }
   }, [contentData]);
 
   useEffect(() => {
@@ -144,16 +146,20 @@ export function ShareDrawer({
           <Tabs>
             <TabList>
               <Tab data-test="Share Tab">Share</Tab>
-              <Tab data-test="Remixed From Tab">
-                Remixed From{" "}
-                {contributorHistory !== null
-                  ? `(${contributorHistory.length})`
-                  : null}
-                {haveChangedHistoryItem ? "*" : null}
-              </Tab>
-              <Tab data-test="Remixes Tab">
-                Remixes {remixes !== null ? `(${remixes.length})` : null}
-              </Tab>
+              {!contentData.isFolder ? (
+                <>
+                  <Tab data-test="Remixed From Tab">
+                    Remixed From{" "}
+                    {contributorHistory !== null
+                      ? `(${contributorHistory.length})`
+                      : null}
+                    {haveChangedHistoryItem ? "*" : null}
+                  </Tab>
+                  <Tab data-test="Remixes Tab">
+                    Remixes {remixes !== null ? `(${remixes.length})` : null}
+                  </Tab>
+                </>
+              ) : null}
             </TabList>
             <Box overflowY="auto" height="calc(100vh - 130px)">
               <TabPanels>
@@ -164,15 +170,19 @@ export function ShareDrawer({
                     allLicenses={allLicenses}
                   />
                 </TabPanel>
-                <TabPanel>
-                  <RemixedFrom
-                    contributorHistory={contributorHistory}
-                    thisCid={thisCid}
-                  />
-                </TabPanel>
-                <TabPanel>
-                  <Remixes remixes={remixes} />
-                </TabPanel>
+                {!contentData.isFolder ? (
+                  <TabPanel>
+                    <RemixedFrom
+                      contributorHistory={contributorHistory}
+                      thisCid={thisCid}
+                    />
+                  </TabPanel>
+                ) : null}
+                {!contentData.isFolder ? (
+                  <TabPanel>
+                    <Remixes remixes={remixes} />
+                  </TabPanel>
+                ) : null}
               </TabPanels>
             </Box>
           </Tabs>

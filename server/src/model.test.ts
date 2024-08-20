@@ -136,7 +136,7 @@ test("Update user name", async () => {
   expect(user.firstNames).eq("New");
   expect(user.lastNames).eq("Name");
 
-  const userInfo = await getUserInfo(user.email);
+  const userInfo = await getUserInfo(user.userId);
   expect(userInfo.firstNames).eq("New");
   expect(userInfo.lastNames).eq("Name");
 });
@@ -3385,6 +3385,50 @@ test("share with email throws error when no match", async () => {
       email: otherEmail,
     }),
   ).rejects.toThrow("User with email not found");
+
+  result = await shareFolderWithEmail({
+    id: folderId,
+    ownerId,
+    licenseCode: "CCBYSA",
+    email: user.email,
+  });
+  expect(result.id).eq(folderId);
+});
+
+test("share with email throws error when share with self", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  const user = await createTestUser();
+
+  const { folderId } = await createFolder(ownerId, null);
+  const { activityId } = await createActivity(ownerId, null);
+
+  await expect(
+    shareActivityWithEmail({
+      id: activityId,
+      ownerId,
+      licenseCode: "CCBYSA",
+      email: owner.email,
+    }),
+  ).rejects.toThrow("Cannot share with self");
+
+  let result = await shareActivityWithEmail({
+    id: activityId,
+    ownerId,
+    licenseCode: "CCBYSA",
+    email: user.email,
+  });
+  expect(result.id).eq(activityId);
+
+  await expect(
+    shareFolderWithEmail({
+      id: folderId,
+      ownerId,
+      licenseCode: "CCBYSA",
+      email: owner.email,
+    }),
+  ).rejects.toThrow("Cannot share with self");
 
   result = await shareFolderWithEmail({
     id: folderId,

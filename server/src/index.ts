@@ -19,6 +19,7 @@ import {
   getAllRecentPublicActivities,
   getIsAdmin,
   getUserInfo,
+  getUserInfoFromEmail,
   updateDoc,
   searchSharedContent,
   updateContent,
@@ -221,7 +222,7 @@ passport.use(
 passport.use(new AnonymIdStrategy());
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-passport.serializeUser<any, any>(async (_req, user: any, done) => {
+passport.serializeUser<any, any>(async (req, user: any, done) => {
   if (user.provider === "magiclink") {
     const email: string = user.email;
     const fromAnonymous: number = user.fromAnonymous;
@@ -245,7 +246,7 @@ passport.serializeUser<any, any>(async (_req, user: any, done) => {
       });
     }
 
-    return done(undefined, u.email);
+    return done(undefined, u.userId);
   } else if (user.provider === "google") {
     let email = user.id + "@google.com";
     if (user.emails[0].verified) {
@@ -257,20 +258,41 @@ passport.serializeUser<any, any>(async (_req, user: any, done) => {
       firstNames: user.name.givenName,
       lastNames: user.name.familyName,
     });
-    return done(undefined, u.email);
+    return done(undefined, u.userId);
   } else if (user.uuid) {
+    let email = user.uuid + "@anonymous.doenet.org";
+    let lastNames = "";
+    let firstNames: string | null = null;
+    let isAnonymous = true;
+
+    if (
+      process.env.ALLOW_TEST_LOGIN &&
+      process.env.ALLOW_TEST_LOGIN.toLocaleLowerCase() !== "false"
+    ) {
+      if (req.body.email) {
+        email = req.body.email;
+        if (req.body.firstNames) {
+          firstNames = req.body.firstNames;
+        }
+        if (req.body.lastNames) {
+          lastNames = req.body.lastNames;
+        }
+        isAnonymous = false;
+      }
+    }
+
     const u = await findOrCreateUser({
-      email: user.uuid + "@anonymous.doenet.org",
-      lastNames: "",
-      firstNames: null,
-      isAnonymous: true,
+      email,
+      lastNames,
+      firstNames,
+      isAnonymous,
     });
-    return done(undefined, u.email);
+    return done(undefined, u.userId);
   }
 });
 
-passport.deserializeUser(async (id: string, done) => {
-  const u = await getUserInfo(id);
+passport.deserializeUser(async (userId: number, done) => {
+  const u = await getUserInfo(userId);
   done(null, u);
 });
 
@@ -321,6 +343,19 @@ app.get(
   },
 );
 
+if (
+  process.env.ALLOW_TEST_LOGIN &&
+  process.env.ALLOW_TEST_LOGIN.toLocaleLowerCase() !== "false"
+) {
+  app.post(
+    "/api/login/createOrLoginAsTest",
+    passport.authenticate("anonymId"),
+    (_req: Request, res: Response) => {
+      res.send({});
+    },
+  );
+}
+
 app.get(
   "/api/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] }),
@@ -347,7 +382,9 @@ app.get(
     userPrimaryKey: "email",
   }),
   async (req: Request, res: Response) => {
-    const user = await getUserInfo((req.user as { email: string }).email);
+    const user = await getUserInfoFromEmail(
+      (req.user as { email: string }).email,
+    );
     res.send({ user });
   },
 );
@@ -372,7 +409,7 @@ app.get(
     const signedIn = req.user ? true : false;
     if (signedIn) {
       try {
-        const user = await getUserInfo(req.user.email);
+        const user = await getUserInfo(req.user.userId);
         res.send({ user });
       } catch (e) {
         next(e);
@@ -760,7 +797,12 @@ app.post(
 app.post(
   "/api/shareActivity",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId ?? 0);
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+
+    const loggedInUserId = Number(req.user.userId);
     const body = req.body;
     const id = Number(body.id);
     const email: string = body.email;
@@ -792,6 +834,9 @@ app.post(
       console.log("error", e);
       if ((e as { message: string }).message === "User with email not found") {
         res.status(404).send("User with email not found");
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } else if ((e as any).message === "Cannot share with self") {
+        res.send({ noSelfShare: true });
       } else if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(403);
       } else {
@@ -828,7 +873,12 @@ app.post(
 app.post(
   "/api/shareFolder",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = Number(req.user?.userId ?? 0);
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+
+    const loggedInUserId = Number(req.user.userId);
     const body = req.body;
     const id = Number(body.id);
     const email: string = body.email;
@@ -860,6 +910,9 @@ app.post(
       console.log("error", e);
       if ((e as { message: string }).message === "User with email not found") {
         res.status(404).send("User with email not found");
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } else if ((e as any).message === "Cannot share with self") {
+        res.send({ noSelfShare: true });
       } else if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(403);
       } else {
@@ -1228,7 +1281,10 @@ app.get(
       });
       res.send(data);
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2025"
+      ) {
         res.sendStatus(404);
       } else {
         next(e);

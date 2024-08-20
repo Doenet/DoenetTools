@@ -74,6 +74,7 @@
     "@vitejs/plugin-react": "^4.3.1",
     "@web/test-runner": "^0.18.2",
     "chai": "^5.1.1",
+    "cypress-iframe": "^1.0.1",
     "esbuild": "^0.14.54",
     "eslint": "^8.14.0",
     "eslint-config-prettier": "^8.2.0",

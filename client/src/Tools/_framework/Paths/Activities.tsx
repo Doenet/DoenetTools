@@ -159,12 +159,12 @@ export async function loader({ params, request }) {
       `/api/getMyFolderContent/${params.userId}/${params.folderId ?? ""}`,
     );
     data = results.data;
+  }
 
-    if (data.notMe) {
-      return redirect(
-        `/sharedActivities/${params.userId}${params.folderId ? "/" + params.folderId : ""}`,
-      );
-    }
+  if (data.notMe) {
+    return redirect(
+      `/sharedActivities/${params.userId}${params.folderId ? "/" + params.folderId : ""}`,
+    );
   }
 
   let prefData = await axios.get(`/api/getPreferredFolderView`);
@@ -586,11 +586,13 @@ export function Activities() {
                 size="sm"
                 colorScheme="blue"
                 hidden={searchOpen || haveQuery}
+                data-test="New Button"
               >
                 {haveContentSpinner ? <Spinner size="sm" /> : "New"}
               </MenuButton>
               <MenuList>
                 <MenuItem
+                  data-test="Add Activity Button"
                   onClick={async () => {
                     setHaveContentSpinner(true);
                     //Create an activity and redirect to the editor for it
@@ -611,6 +613,7 @@ export function Activities() {
                   Activity
                 </MenuItem>
                 <MenuItem
+                  data-test="Add Folder Button"
                   onClick={() => {
                     setHaveContentSpinner(true);
                     fetcher.submit(
