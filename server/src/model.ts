@@ -1,7 +1,7 @@
 import { PrismaClient, Prisma } from "@prisma/client";
 import { cidFromText } from "./utils/cid";
 import { DateTime } from "luxon";
-import { fromUUID, toUUID } from "./utils/uuid";
+import { fromUUID } from "./utils/uuid";
 import {
   AssignmentStatus,
   ContentClassification,
@@ -1929,7 +1929,7 @@ export async function searchUsersWithSharedContent(
   LIMIT 100
   `);
 
-  let usersWithPublic2: UserInfo[] = usersWithPublic.map((u) => ({
+  const usersWithPublic2: UserInfo[] = usersWithPublic.map((u) => ({
     ...u,
     email: "",
   }));

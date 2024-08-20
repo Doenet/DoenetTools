@@ -25,10 +25,10 @@ export function contentStructureConvertUUID(content: ContentStructure) {
       }
     : null;
 
-  let owner = content.owner ? userConvertUUID(content.owner) : undefined;
+  const owner = content.owner ? userConvertUUID(content.owner) : undefined;
 
-  let sharedWith = content.sharedWith.map(userConvertUUID);
-  let documents = content.documents.map((doc) => ({
+  const sharedWith = content.sharedWith.map(userConvertUUID);
+  const documents = content.documents.map((doc) => ({
     ...doc,
     id: fromUUID(doc.id),
   }));
@@ -52,8 +52,8 @@ export function docHistoryConvertUUID(docHistory: DocHistory) {
   return {
     id: fromUUID(docHistory.id),
     contributorHistory: docHistory.contributorHistory.map((ch) => {
-      let activityOrig = ch.prevDoc.document.activity;
-      let activity = {
+      const activityOrig = ch.prevDoc.document.activity;
+      const activity = {
         name: activityOrig.name,
         id: fromUUID(activityOrig.id),
         owner: userConvertUUID(activityOrig.owner),

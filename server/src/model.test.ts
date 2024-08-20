@@ -6067,7 +6067,7 @@ test("get all assignment data from anonymous user", async () => {
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
-  let newUser1Info = userConvertUUID({
+  const newUser1Info = userConvertUUID({
     userId: newUser1.userId,
     email: newUser1.email,
     firstNames: newUser1.firstNames,
@@ -6700,7 +6700,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
-  let newUser1Info = userConvertUUID({
+  const newUser1Info = userConvertUUID({
     userId: newUser1.userId,
     email: newUser1.email,
     firstNames: newUser1.firstNames,
@@ -6776,7 +6776,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     firstNames: "Arya",
     lastNames: "Abbas",
   });
-  let newUser2Info = userConvertUUID({
+  const newUser2Info = userConvertUUID({
     userId: newUser2.userId,
     email: newUser2.email,
     firstNames: newUser2.firstNames,
@@ -6854,7 +6854,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     firstNames: "Nyla",
     lastNames: "Nyquist",
   });
-  let newUser3Info = userConvertUUID({
+  const newUser3Info = userConvertUUID({
     userId: newUser3.userId,
     email: newUser3.email,
     firstNames: newUser3.firstNames,

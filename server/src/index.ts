@@ -239,7 +239,7 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
           userId: toUUID(fromAnonymous),
           email,
         });
-      } catch (e) {
+      } catch (_e) {
         /// ignore any error
       }
     }
