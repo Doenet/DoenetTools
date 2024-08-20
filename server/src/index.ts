@@ -222,7 +222,7 @@ passport.use(
 passport.use(new AnonymIdStrategy());
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-passport.serializeUser<any, any>(async (_req, user: any, done) => {
+passport.serializeUser<any, any>(async (req, user: any, done) => {
   if (user.provider === "magiclink") {
     const email: string = user.email;
     const fromAnonymous: number = user.fromAnonymous;
