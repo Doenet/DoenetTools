@@ -36,15 +36,16 @@ import {
   Activities,
 } from "./Tools/_framework/Paths/Activities";
 import {
-  loader as publicActivitiesLoader,
-  PublicActivities,
-} from "./Tools/_framework/Paths/PublicActivities";
+  loader as sharedActivitiesLoader,
+  SharedActivities,
+} from "./Tools/_framework/Paths/SharedActivities";
 import {
   loader as activityViewerLoader,
   ActivityViewer,
 } from "./Tools/_framework/Paths/ActivityViewer";
 import {
   loader as assignedLoader,
+  action as assignedAction,
   Assigned,
 } from "./Tools/_framework/Paths/Assigned";
 import {
@@ -101,12 +102,20 @@ import {
   loader as publicEditorLoader,
 } from "./Tools/_framework/Paths/PublicEditor";
 import { mathjaxConfig } from "@doenet/doenetml-iframe";
-import SignIn from "./Tools/_framework/ToolPanels/SignIn";
-import SignOut from "./Tools/_framework/ToolPanels/SignOut";
-
-{
-  /* <Button colorScheme="doenet_blue">TESTING 123</Button> */
-}
+import {
+  SignIn,
+  action as signInAction,
+} from "./Tools/_framework/Paths/SignIn";
+import {
+  ConfirmSignIn,
+  loader as confirmSignInLoader,
+  action as confirmSignInAction,
+} from "./Tools/_framework/Paths/ConfirmSignIn";
+import {
+  ChangeName,
+  loader as changeNameLoader,
+  action as changeNameAction,
+} from "./Tools/_framework/Paths/ChangeName";
 
 const theme = extendTheme({
   fonts: {
@@ -235,15 +244,15 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "publicActivities/:ownerId",
-        loader: publicActivitiesLoader,
-        element: <PublicActivities />,
+        path: "sharedActivities/:ownerId",
+        loader: sharedActivitiesLoader,
+        element: <SharedActivities />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "publicActivities/:ownerId/:folderId",
-        loader: publicActivitiesLoader,
-        element: <PublicActivities />,
+        path: "sharedActivities/:ownerId/:folderId",
+        loader: sharedActivitiesLoader,
+        element: <SharedActivities />,
         errorElement: <ErrorPage />,
       },
       {
@@ -287,6 +296,7 @@ const router = createBrowserRouter([
       },
       {
         path: "assigned",
+        action: assignedAction,
         loader: assignedLoader,
         element: <Assigned />,
         errorElement: <ErrorPage />,
@@ -371,17 +381,27 @@ const router = createBrowserRouter([
       },
       {
         path: "signIn",
+        action: signInAction,
         errorElement: <ErrorPage />,
         element: <SignIn />,
       },
       {
-        path: "signOut",
+        path: "confirmSignIn",
+        loader: confirmSignInLoader,
+        action: confirmSignInAction,
         errorElement: <ErrorPage />,
-        element: <SignOut />,
+        element: <ConfirmSignIn />,
+      },
+      {
+        path: "changeName",
+        loader: changeNameLoader,
+        action: changeNameAction,
+        errorElement: <ErrorPage />,
+        element: <ChangeName />,
       },
     ],
   },
 ]);
 
-const root = createRoot(document.getElementById("root"));
+const root = createRoot(document.getElementById("root")!);
 root.render(<RouterProvider router={router} />);

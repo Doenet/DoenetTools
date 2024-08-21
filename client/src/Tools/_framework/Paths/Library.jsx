@@ -13,10 +13,8 @@ import {
   Divider,
   Link,
   SimpleGrid,
-  Flex,
 } from "@chakra-ui/react";
 import Searchbar from "../../../Widgets/SearchBar";
-import { Form, useFetcher } from "react-router-dom";
 
 export async function loader() {
   let libraryContent = axios.get(`/library_content.csv`, {
@@ -66,7 +64,7 @@ export async function loader() {
   };
 }
 
-const PublicActivitiesSection = styled.div`
+const SharedActivitiesSection = styled.div`
   grid-row: 2/3;
   display: flex;
   flex-direction: column;
@@ -349,7 +347,7 @@ export function Library() {
             </Box>
           </Box>
         </Box>
-        <PublicActivitiesSection>
+        <SharedActivitiesSection>
           {libraryData.length < 1 ? (
             <Text fontSize="28px">
               No Matching Library Activities Found
@@ -377,7 +375,7 @@ export function Library() {
               })}
             </SimpleGrid>
           )}
-        </PublicActivitiesSection>
+        </SharedActivitiesSection>
       </ActivitiesGrid>
     </>
   );

@@ -1,13 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import {
-  redirect,
   useLoaderData,
   useNavigate,
   useLocation,
+  useOutletContext,
 } from "react-router";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
-import { checkIfUserClearedOut } from "../../../_utils/applicationUtils";
 import {
   Box,
   Button,
@@ -15,35 +14,38 @@ import {
   Grid,
   GridItem,
   HStack,
-  Image,
   List,
   Spacer,
   Text,
-  Tooltip,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import axios from "axios";
 import ContributorsMenu from "../ToolPanels/ContributorsMenu";
-import { Link } from "react-router-dom";
-import { ContentStructure, DoenetmlVersion, License } from "./ActivityEditor";
-import { DisplayLicenseItem } from "../ToolPanels/SharingControls";
+
 import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
+import { User } from "./SiteHeader";
+import { createFullName } from "../../../_utils/names";
+import {
+  ContentStructure,
+  DocHistoryItem,
+  DoenetmlVersion,
+  License,
+} from "../../../_utils/types";
+import { processContributorHistory } from "../../../_utils/processRemixes";
+import {
+  DisplayLicenseItem,
+  SmallLicenseBadges,
+} from "../../../Widgets/Licenses";
 
 export async function loader({ params }) {
-  //Check if signedIn
-  const profileInfo = await checkIfUserClearedOut();
-  let signedIn = true;
-  if (profileInfo.cookieRemoved) {
-    signedIn = false;
-  }
   try {
     const { data: activityData } = await axios.get(
       `/api/getActivityView/${params.activityId}`,
     );
 
-    let activityId = Number(params.activityId);
-    let docId = Number(params.docId);
+    let activityId = params.activityId;
+    let docId = params.docId;
     if (!docId) {
       // If docId was not supplied in the url,
       // then use the first docId from the activity.
@@ -56,18 +58,20 @@ export async function loader({ params }) {
     const doenetmlVersion: DoenetmlVersion =
       activityData.activity.documents[0].doenetmlVersion;
 
+    const contributorHistory = await processContributorHistory(
+      activityData.docHistories[0],
+    );
+
     return {
       activityId,
       doenetML,
-      signedIn,
       activity: activityData.activity,
-      owner: activityData.owner,
       docId,
-      contributorHistory: activityData.doc.contributorHistory,
+      contributorHistory,
       doenetmlVersion,
     };
   } catch (e) {
-    if (e.response.status === 404) {
+    if (e.response?.status === 404) {
       throw Error("Activity not found");
     } else {
       throw e;
@@ -79,25 +83,16 @@ export function ActivityViewer() {
   const {
     activityId,
     doenetML,
-    signedIn,
     activity,
-    owner,
     docId,
     contributorHistory,
     doenetmlVersion,
   } = useLoaderData() as {
-    activityId: number;
+    activityId: string;
     doenetML: string;
-    signedIn: boolean;
     activity: ContentStructure;
-    owner: {
-      userId: number;
-      email: string;
-      firstNames: string | null;
-      lastNames: string;
-    };
-    docId: number;
-    contributorHistory: any;
+    docId: string;
+    contributorHistory: DocHistoryItem[];
     doenetmlVersion: DoenetmlVersion;
   };
 
@@ -110,15 +105,7 @@ export function ActivityViewer() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  let navigateTo = useRef("");
-
-  // TODO: fix this navigation
-  if (navigateTo.current != "") {
-    const newHref = navigateTo.current;
-    navigateTo.current = "";
-    //@ts-ignore
-    location.href = newHref;
-  }
+  const user = useOutletContext<User>();
 
   useEffect(() => {
     document.title = `${activity.name} - Doenet`;
@@ -181,7 +168,7 @@ export function ActivityViewer() {
                     </Flex>
                     <Flex mt="10px" width="100%">
                       <ContributorsMenu
-                        owner={owner}
+                        activity={activity}
                         contributorHistory={contributorHistory}
                       />
                       <Spacer />
@@ -197,7 +184,7 @@ export function ActivityViewer() {
                           >
                             See Inside
                           </Button>
-                          {signedIn ? (
+                          {user ? (
                             <Button
                               data-test="Copy to Activities Button"
                               size="xs"
@@ -214,7 +201,7 @@ export function ActivityViewer() {
                               colorScheme="blue"
                               size="xs"
                               onClick={() => {
-                                navigateTo.current = "/signIn";
+                                navigate("/signIn");
                               }}
                             >
                               Sign In To Copy to Activities
@@ -276,8 +263,8 @@ export function ActivityViewer() {
                     activity.license.isComposition ? (
                       <>
                         <p>
-                          <strong>{activity.name}</strong> by {owner.firstNames}{" "}
-                          {owner.lastNames} is shared publicly with these
+                          <strong>{activity.name}</strong> by{" "}
+                          {createFullName(activity.owner!)} is shared with these
                           licenses:
                         </p>
                         <List spacing="20px" marginTop="10px">
@@ -296,8 +283,8 @@ export function ActivityViewer() {
                     ) : (
                       <>
                         <p>
-                          <strong>{activity.name}</strong> by {owner.firstNames}{" "}
-                          {owner.lastNames} is shared publicly using the
+                          <strong>{activity.name}</strong> by{" "}
+                          {createFullName(activity.owner!)} is shared using the
                           license:
                         </p>
                         <List marginTop="10px">
@@ -307,9 +294,9 @@ export function ActivityViewer() {
                     )
                   ) : (
                     <p>
-                      <strong>{activity.name}</strong> by {owner.firstNames}{" "}
-                      {owner.lastNames} is shared publicly, but a license was
-                      not specified. Contact the author to determine in what
+                      <strong>{activity.name}</strong> by{" "}
+                      {createFullName(activity.owner!)} is shared, but a license
+                      was not specified. Contact the author to determine in what
                       ways you can reuse this activity.
                     </p>
                   )}
@@ -321,54 +308,4 @@ export function ActivityViewer() {
       </Box>
     </>
   );
-}
-
-export function SmallLicenseBadges({ license }: { license: License }) {
-  if (license.isComposition) {
-    return (
-      <VStack spacing={1}>
-        {license.composedOf.map((comp) => (
-          <DisplaySmallLicenseBadge licenseItem={comp} key={comp.code} />
-        ))}
-      </VStack>
-    );
-  } else {
-    return <DisplaySmallLicenseBadge licenseItem={license} />;
-  }
-}
-
-function DisplaySmallLicenseBadge({
-  licenseItem,
-}: {
-  licenseItem: {
-    name: string;
-    description: string;
-    imageURL: string | null;
-    smallImageURL: string | null;
-    licenseURL: string | null;
-  };
-}) {
-  let badge: React.JSX.Element | null = null;
-  let imageURL = licenseItem.smallImageURL ?? licenseItem.imageURL;
-  if (imageURL) {
-    badge = (
-      <Tooltip label={licenseItem.name} placement="bottom-end">
-        <Image
-          src={imageURL}
-          alt={`Badge for license: ${licenseItem.name}`}
-          height="15px"
-        />
-      </Tooltip>
-    );
-  }
-
-  if (licenseItem.licenseURL) {
-    badge = (
-      <Link to={licenseItem.licenseURL} target="_blank">
-        {badge}
-      </Link>
-    );
-  }
-
-  return badge;
 }

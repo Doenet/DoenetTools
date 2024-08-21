@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { redirect, useLoaderData } from "react-router";
+import { redirect, replace, useLoaderData } from "react-router";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
 import { Button, Box, Link as ChakraLink } from "@chakra-ui/react";
@@ -11,10 +11,13 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { createFullName } from "../../../_utils/names";
+import { UserInfo } from "../../../_utils/types";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
   let formObj = Object.fromEntries(formData);
+
+  // Note: currently not using these actions but using navigate directly to avoid adding to browser history
 
   if (formObj._action == "view max") {
     return redirect("?withMaxScore=1");
@@ -34,14 +37,12 @@ export async function loader({ params, request, isAssignedData = false }) {
   );
 
   const assignment = assignmentData.activity;
-  const userId = assignmentData.userId;
   const user = assignmentData.user;
   const score = assignmentData.score;
 
   // TODO: deal with case where don't have exactly 1 document
-  const doenetML = assignment.documents[0].assignedVersion.source;
-  const doenetmlVersion =
-    assignment.documents[0].assignedVersion.doenetmlVersion.fullVersion;
+  const doenetML = assignment.documents[0].source;
+  const doenetmlVersion = assignment.documents[0].doenetmlVersion.fullVersion;
   const numStatesSaved = assignmentData.documentScores.length;
   let documentScores: { latest: number; maxScore?: number } = {
     latest: assignmentData.documentScores[0].score,
@@ -51,9 +52,7 @@ export async function loader({ params, request, isAssignedData = false }) {
   }
 
   return {
-    activityId: assignmentData.activityId,
     assignment,
-    userId,
     user,
     score,
     doenetML,
@@ -71,9 +70,7 @@ export async function assignedAssignmentDataloader({ params, request }) {
 
 export function AssignmentStudentData() {
   const {
-    activityId,
     assignment,
-    userId,
     user,
     score,
     doenetML,
@@ -83,10 +80,19 @@ export function AssignmentStudentData() {
     documentScores,
     isAssignedData,
   } = useLoaderData() as {
-    activityId: string;
-    assignment: any;
-    userId: number;
-    user: any;
+    assignment: {
+      name: string;
+      id: string;
+      documents: ({
+        docId: string;
+        source: string;
+        doenetmlVersion: {
+          fullVersion: string;
+        };
+        versionNum: number;
+      } | null)[];
+    };
+    user: UserInfo;
     score: number;
     doenetML: string;
     doenetmlVersion: string;
@@ -109,10 +115,10 @@ export function AssignmentStudentData() {
         try {
           let { data } = await axios.get("/api/loadState", {
             params: {
-              activityId,
-              docId: assignment.documents[0].assignedVersion.docId,
-              docVersionNum: assignment.documents[0].assignedVersion.versionNum,
-              userId,
+              activityId: assignment.id,
+              docId: assignment.documents[0]!.docId,
+              docVersionNum: assignment.documents[0]!.versionNum,
+              userId: user.userId,
               withMaxScore,
             },
           });
@@ -190,10 +196,13 @@ export function AssignmentStudentData() {
                 mr="12px"
                 size="xs"
                 onClick={() => {
-                  fetcher.submit(
-                    { _action: "view current" },
-                    { method: "post" },
-                  );
+                  // Using navigate rather than action so doesn't add to history.
+                  // TODO: is there a way to use action and not add to history?
+                  navigate("?withMaxScore=0", { replace: true });
+                  // fetcher.submit(
+                  //   { _action: "view current" },
+                  //   { method: "post" },
+                  // );
                 }}
               >
                 Switch to latest work
@@ -216,7 +225,10 @@ export function AssignmentStudentData() {
                 mr="12px"
                 size="xs"
                 onClick={() => {
-                  fetcher.submit({ _action: "view max" }, { method: "post" });
+                  // Using navigate rather than action so doesn't add to history.
+                  // TODO: is there a way to use action and not add to history?
+                  navigate("?withMaxScore=1", { replace: true });
+                  // fetcher.submit({ _action: "view max" }, { method: "post" });
                 }}
               >
                 Switch to best work

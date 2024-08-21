@@ -19,25 +19,25 @@ import { DoenetHeading as Heading } from "./Community";
 import { createFullName } from "../../../_utils/names";
 
 type UserData = {
-  userId: number;
+  userId: string;
   firstNames: string | null;
   lastNames: string;
 };
 type OrderedActivityScore = {
-  activityId: number;
+  activityId: string;
   activityName: string;
   score: number;
 };
 
 type Folder = {
-  id: number;
+  id: string;
   name: string;
 };
 
 // loader for when an instructor gets data about a student
 export async function loader({ params }) {
   let { data } = await axios.get(
-    `/api/getStudentData/${Number(params.userId)}/${params.folderId ?? ""}`,
+    `/api/getStudentData/${params.userId}/${params.folderId ?? ""}`,
   );
 
   const userData = data.userData;

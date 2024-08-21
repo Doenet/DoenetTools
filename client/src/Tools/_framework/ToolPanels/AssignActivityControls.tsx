@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FetcherWithComponents } from "react-router-dom";
+import { FetcherWithComponents, redirect } from "react-router-dom";
 import {
   Box,
   Heading,
@@ -14,9 +14,53 @@ import {
 } from "@chakra-ui/react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { DateTime } from "luxon";
-import { ContentStructure } from "../Paths/ActivityEditor";
 import { AssignmentInvitation } from "./AssignmentInvitation";
 import { MdOutlineContentCopy } from "react-icons/md";
+import axios from "axios";
+import { ContentStructure } from "../../../_utils/types";
+
+export async function assignActivityActions({ formObj }: { [k: string]: any }) {
+  if (formObj._action == "open assignment") {
+    let closeAt: DateTime;
+    if (formObj.duration === "custom") {
+      closeAt = DateTime.fromISO(formObj.customCloseAt);
+    } else {
+      closeAt = DateTime.fromSeconds(
+        Math.round(DateTime.now().toSeconds() / 60) * 60,
+      ).plus(JSON.parse(formObj.duration));
+    }
+    await axios.post("/api/openAssignmentWithCode", {
+      activityId: formObj.activityId,
+      closeAt,
+    });
+    return true;
+  } else if (formObj._action == "update assignment close time") {
+    const closeAt = DateTime.fromISO(formObj.closeAt);
+    await axios.post("/api/updateAssignmentSettings", {
+      activityId: formObj.activityId,
+      closeAt,
+    });
+    return true;
+  } else if (formObj._action == "close assignment") {
+    await axios.post("/api/closeAssignmentWithCode", {
+      activityId: formObj.activityId,
+    });
+    return true;
+  } else if (formObj._action == "unassign activity") {
+    try {
+      await axios.post("/api/unassignActivity", {
+        activityId: formObj.activityId,
+      });
+    } catch (e) {
+      alert("Unable to unassign activity");
+    }
+    return true;
+  } else if (formObj._action == "go to data") {
+    return redirect(`/assignmentData/${formObj.activityId}`);
+  }
+
+  return null;
+}
 
 export function AssignActivityControls({
   fetcher,
@@ -25,7 +69,7 @@ export function AssignActivityControls({
   openTabIndex,
 }: {
   fetcher: FetcherWithComponents<any>;
-  activityId: number;
+  activityId: string;
   activityData: ContentStructure;
   openTabIndex: number;
 }) {

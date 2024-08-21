@@ -16,14 +16,33 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { FetcherWithComponents } from "react-router-dom";
-import { GeneralContentControls } from "./GeneralContentControls";
-import { SupportFilesControls } from "./SupportFilesControls";
 import {
-  ContentStructure,
-  DoenetmlVersion,
-  License,
-} from "../Paths/ActivityEditor";
-import { SharingControls } from "./SharingControls";
+  generalContentActions,
+  GeneralContentControls,
+} from "./GeneralContentControls";
+import {
+  supportFilesActions,
+  SupportFilesControls,
+} from "./SupportFilesControls";
+import { ContentStructure, DoenetmlVersion } from "../../../_utils/types";
+
+export async function contentSettingsActions({
+  formObj,
+}: {
+  [k: string]: any;
+}) {
+  let result2 = await generalContentActions({ formObj });
+  if (result2) {
+    return result2;
+  }
+
+  let result3 = await supportFilesActions({ formObj });
+  if (result3) {
+    return result3;
+  }
+
+  return null;
+}
 
 export function ContentSettingsDrawer({
   isOpen,
@@ -32,7 +51,6 @@ export function ContentSettingsDrawer({
   id,
   contentData,
   allDoenetmlVersions,
-  allLicenses,
   supportingFileData,
   fetcher,
   displayTab = "general",
@@ -40,16 +58,15 @@ export function ContentSettingsDrawer({
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  id: number;
+  id: string;
   contentData: ContentStructure;
   allDoenetmlVersions: DoenetmlVersion[];
-  allLicenses: License[];
   supportingFileData?: any;
   fetcher: FetcherWithComponents<any>;
-  displayTab?: "general" | "share" | "files";
+  displayTab?: "general" | "files";
 }) {
   const haveSupportingFiles = Boolean(supportingFileData);
-  const numTabs = haveSupportingFiles ? 3 : 2;
+  const numTabs = haveSupportingFiles ? 4 : 3;
 
   let initialTabIndex: number;
   switch (displayTab) {
@@ -57,12 +74,8 @@ export function ContentSettingsDrawer({
       initialTabIndex = 0;
       break;
     }
-    case "share": {
-      initialTabIndex = 1;
-      break;
-    }
     case "files": {
-      initialTabIndex = haveSupportingFiles ? 2 : 1;
+      initialTabIndex = haveSupportingFiles ? 1 : 0;
       break;
     }
   }
@@ -98,7 +111,6 @@ export function ContentSettingsDrawer({
           <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)}>
             <TabList>
               <Tab data-test="General Tab">General</Tab>
-              <Tab data-test="Share Tab">Share</Tab>
               {haveSupportingFiles ? (
                 <Tab data-test="Files Tab">Support Files</Tab>
               ) : null}
@@ -111,13 +123,6 @@ export function ContentSettingsDrawer({
                     id={id}
                     contentData={contentData}
                     allDoenetmlVersions={allDoenetmlVersions}
-                  />
-                </TabPanel>
-                <TabPanel>
-                  <SharingControls
-                    fetcher={fetcher}
-                    contentData={contentData}
-                    allLicenses={allLicenses}
                   />
                 </TabPanel>
                 {haveSupportingFiles ? (

@@ -16,7 +16,25 @@ import {
 } from "@chakra-ui/react";
 import { GoKebabVertical } from "react-icons/go";
 import { Link, useFetcher } from "react-router-dom";
-import { AssignmentStatus } from "../Tools/_framework/Paths/ActivityEditor";
+import axios from "axios";
+import { AssignmentStatus } from "../_utils/types";
+
+export async function contentCardActions({ formObj }: { [k: string]: any }) {
+  if (formObj._action == "update title") {
+    //Don't let name be blank
+    let name = formObj?.cardTitle?.trim();
+    if (name == "") {
+      name = "Untitled " + (formObj.isFolder ? "Folder" : "Activity");
+    }
+    await axios.post(`/api/updateContentName`, {
+      id: formObj.id,
+      name,
+    });
+    return true;
+  }
+
+  return null;
+}
 
 export default forwardRef(function ContentCard(
   {
@@ -38,7 +56,7 @@ export default forwardRef(function ContentCard(
     closeTime,
   }: {
     cardLink?: string;
-    id?: number;
+    id?: string;
     imagePath: string | null;
     assignmentStatus?: AssignmentStatus;
     isFolder?: boolean;
@@ -137,10 +155,22 @@ export default forwardRef(function ContentCard(
                   margin="0"
                   height="1em"
                   fontWeight="bold"
+                  data-test="Editable Title"
                   autoFocus={autoFocusTitle}
                   onFocus={(e) => e.target.select()}
                   onChange={(e) => setCardTitle(e.target.value)}
-                  onBlur={saveUpdatedTitle}
+                  onBlur={(e) => {
+                    saveUpdatedTitle();
+                    // prevent click default/propagation behavior one time (aka right now as user is clicking to blur input)
+                    document.addEventListener(
+                      "click",
+                      (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      },
+                      { capture: true, once: true },
+                    );
+                  }}
                   onKeyDown={(e) => {
                     if (e.key == "Enter") {
                       (e.target as HTMLElement).blur();

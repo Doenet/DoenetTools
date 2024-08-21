@@ -18,30 +18,48 @@ import {
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useFetcher } from "react-router-dom";
-import { ContentStructure, LicenseCode } from "../Paths/ActivityEditor";
 import { MdFolder, MdOutlineInsertDriveFile } from "react-icons/md";
-import MoveToPublicAlert from "./MoveToPublicAlert";
+import MoveToSharedAlert from "./MoveToSharedAlert";
+import { ContentStructure, LicenseCode, UserInfo } from "../../../_utils/types";
 
 type ActiveView = {
   // If folder name and id are null, the active view is the root
   // If parentFolderId is null, then the parent of active view is the root
-  folderId: number | null;
+  folderId: string | null;
   folderName: string | null;
   folderIsPublic: boolean;
+  folderIsShared: boolean;
+  folderSharedWith: UserInfo[];
   folderLicenseCode: LicenseCode | null;
-  parentFolderId: number | null;
+  parentFolderId: string | null;
   contents: {
     isFolder: boolean;
     name: string;
-    id: number;
+    id: string;
   }[];
 };
+
+export async function moveContentActions({ formObj }: { [k: string]: any }) {
+  if (formObj?._action == "Move to folder") {
+    await axios.post(`/api/moveContent`, {
+      id: formObj.id,
+      desiredParentFolderId:
+        formObj.folderId === "null" ? null : formObj.folderId,
+      desiredPosition: formObj.desiredPosition,
+    });
+    return true;
+  }
+
+  return null;
+}
 
 export default function MoveContentToFolder({
   isOpen,
   onClose,
   id,
   isPublic,
+  isShared,
+  sharedWith,
   licenseCode,
   userId,
   currentParentId,
@@ -49,21 +67,23 @@ export default function MoveContentToFolder({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  id: number;
+  id: string;
   isPublic: boolean;
+  isShared: boolean;
+  sharedWith: UserInfo[];
   licenseCode: LicenseCode | null;
-  userId: number;
-  currentParentId: number | null;
+  userId: string;
+  currentParentId: string | null;
   finalFocusRef: RefObject<HTMLElement>;
 }) {
   // Set when the modal opens
-  const [parentId, setParentId] = useState<number | null>(null);
+  const [parentId, setParentId] = useState<string | null>(null);
   const [contentName, setContentName] = useState<string>("");
 
   const {
-    isOpen: publicAlertIsOpen,
-    onOpen: publicAlertOnOpen,
-    onClose: publicAlertOnClose,
+    isOpen: sharedAlertIsOpen,
+    onOpen: sharedAlertOnOpen,
+    onClose: sharedAlertOnClose,
   } = useDisclosure();
 
   useEffect(() => {
@@ -76,6 +96,8 @@ export default function MoveContentToFolder({
   const [activeView, setActiveView] = useState<ActiveView>({
     folderName: null,
     folderIsPublic: false,
+    folderIsShared: false,
+    folderSharedWith: [],
     folderLicenseCode: null,
     folderId: null,
     parentFolderId: null,
@@ -83,7 +105,7 @@ export default function MoveContentToFolder({
   });
 
   async function updateActiveView(
-    newActiveFolderId: number | null,
+    newActiveFolderId: string | null,
     modalJustOpened: boolean = false,
   ) {
     const { data } = await axios.get(
@@ -93,8 +115,10 @@ export default function MoveContentToFolder({
     let folder: ContentStructure | null = data.folder;
     const folderName: string | null = folder?.name ?? null;
     const folderIsPublic: boolean = folder?.isPublic ?? false;
+    const folderIsShared: boolean = folder?.isShared ?? false;
+    const folderSharedWith: UserInfo[] = folder?.sharedWith ?? [];
     const folderLicenseCode: LicenseCode | null = folder?.license?.code ?? null;
-    const parentFolderId: number | null = folder?.parentFolder?.id ?? null;
+    const parentFolderId: string | null = folder?.parentFolder?.id ?? null;
     const contentFromApi: ContentStructure[] = data.content;
 
     const content = contentFromApi
@@ -119,6 +143,8 @@ export default function MoveContentToFolder({
       folderId: newActiveFolderId,
       folderName,
       folderIsPublic,
+      folderIsShared,
+      folderSharedWith,
       folderLicenseCode,
       parentFolderId,
       contents: content,
@@ -139,9 +165,9 @@ export default function MoveContentToFolder({
 
   return (
     <>
-      <MoveToPublicAlert
-        isOpen={publicAlertIsOpen}
-        onClose={publicAlertOnClose}
+      <MoveToSharedAlert
+        isOpen={sharedAlertIsOpen}
+        onClose={sharedAlertOnClose}
         performMove={performMove}
         folderName={activeView.folderName}
         contentIsPublic={isPublic}
@@ -222,10 +248,20 @@ export default function MoveContentToFolder({
               }
               onClick={() => {
                 if (
-                  activeView.folderIsPublic &&
-                  (!isPublic || licenseCode !== activeView.folderLicenseCode)
+                  (activeView.folderIsPublic &&
+                    (!isPublic ||
+                      licenseCode !== activeView.folderLicenseCode)) ||
+                  (activeView.folderIsShared &&
+                    (!isShared ||
+                      activeView.folderSharedWith.some(
+                        (folderUser) =>
+                          sharedWith.findIndex(
+                            (u) => u.userId === folderUser.userId,
+                          ) === -1,
+                      ) ||
+                      licenseCode !== activeView.folderLicenseCode))
                 ) {
-                  publicAlertOnOpen();
+                  sharedAlertOnOpen();
                 } else {
                   performMove();
                 }
@@ -244,7 +280,7 @@ export default function MoveContentToFolder({
   function performMove() {
     fetcher.submit(
       {
-        _action: "Move",
+        _action: "Move to folder",
         id,
         folderId: activeView.folderId,
         desiredPosition: activeView.contents.length, // place it as the last item

@@ -1,10 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import {
-  useLoaderData,
-  useNavigate,
-  useLocation,
-  useOutletContext,
-} from "react-router";
+import React, { useEffect } from "react";
+import { useLoaderData, useNavigate, useOutletContext } from "react-router";
 
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 
@@ -21,7 +16,8 @@ import { WarningIcon } from "@chakra-ui/icons";
 import { BsPlayBtnFill } from "react-icons/bs";
 import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
 import axios from "axios";
-import { ContentStructure, DoenetmlVersion } from "./ActivityEditor";
+import { User } from "./SiteHeader";
+import { ContentStructure, DoenetmlVersion } from "../../../_utils/types";
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);
@@ -33,10 +29,10 @@ export async function loader({ params, request }) {
     };
   }
   const { data: activityData } = await axios.get(
-    `/api/getPublicEditorData/${params.activityId}`,
+    `/api/getSharedEditorData/${params.activityId}`,
   );
 
-  let docId = Number(params.docId);
+  let docId = params.docId;
   if (!docId) {
     // If docId was not supplied in the url,
     // then use the first docId from the activity.
@@ -75,20 +71,8 @@ export function PublicEditor() {
     onClose: copyActivityOnClose,
   } = useDisclosure();
 
-  //@ts-ignore
-  const { signedIn } = useOutletContext();
+  const user = useOutletContext<User>();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  let navigateTo = useRef("");
-
-  // TODO: fix this navigation
-  if (navigateTo.current != "") {
-    const newHref = navigateTo.current;
-    navigateTo.current = "";
-    //@ts-ignore
-    location.href = newHref;
-  }
 
   const label = activityData?.name ?? "Public Editor";
 
@@ -188,7 +172,7 @@ export function PublicEditor() {
                         Copy to Activities to make your own edits.
                       </Text>
                     </Center>
-                    {signedIn ? (
+                    {user ? (
                       <Button
                         data-test="Copy to Activities Button"
                         size="xs"
@@ -205,7 +189,7 @@ export function PublicEditor() {
                         size="xs"
                         colorScheme="blue"
                         onClick={() => {
-                          navigateTo.current = "/signIn";
+                          navigate("/signIn");
                         }}
                       >
                         Sign In To Copy to Activities

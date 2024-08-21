@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect } from "react";
-import { useLoaderData, useOutletContext } from "react-router";
+import { useLoaderData } from "react-router";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
 import { Carousel } from "../../../Widgets/Carousel";
@@ -20,6 +20,7 @@ import {
   HStack,
   Show,
   SimpleGrid,
+  Hide,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
@@ -33,7 +34,7 @@ export async function loader() {
 
 const HomeIntroVideo = lazy(() => import("./HomeIntroVideo"));
 
-let doenetmlVersion = "0.7.0-alpha9";
+let doenetmlVersion = "0.7.0-alpha18";
 let doenetML = `
 <example>
 <setup>
@@ -90,7 +91,6 @@ let doenetML = `
 `;
 
 export function Home() {
-  let context = useOutletContext();
   const { favorites } = useLoaderData() as { favorites: any };
 
   useEffect(() => {
@@ -102,12 +102,6 @@ export function Home() {
   const blackColor = "black";
   const whiteColor = useColorModeValue("white", "gray.900");
   const textColor = useColorModeValue("doenet.canvas", "doenet.canvastext");
-
-  //Don't do more processing if we don't know if we are signed in or not
-  //@ts-ignore
-  if (context.signedIn == null) {
-    return null;
-  }
 
   const heroTextAndActions = () => {
     return (
@@ -205,7 +199,7 @@ export function Home() {
             </GridItem>
           </Grid>
         </Show>
-        <Show below="sm">
+        <Hide above="sm">
           <SimpleGrid columns={[1, 1, 2, 2, 2]} spacing="10px">
             <Suspense fallback={"Loading..."}>
               {/* Does this lazy loading do anything? */}
@@ -215,7 +209,7 @@ export function Home() {
             </Suspense>
             {heroTextAndActions()}
           </SimpleGrid>
-        </Show>
+        </Hide>
       </Flex>
       <Center w="100%" bg={grayColor} pl="10px" pr="10px">
         <VStack maxWidth="900px" w="100%" spacing={4} marginBottom={"30px"}>

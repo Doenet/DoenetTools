@@ -26,15 +26,30 @@ import {
   VStack,
   Checkbox,
   FormLabel,
+  ButtonGroup,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useLoaderData } from "react-router";
 import { Carousel } from "../../../Widgets/Carousel";
 import Searchbar from "../../../Widgets/SearchBar";
 import { Form, useFetcher } from "react-router-dom";
 import { RiEmotionSadLine } from "react-icons/ri";
+import { FaListAlt, FaRegListAlt } from "react-icons/fa";
+import { IoGrid, IoGridOutline } from "react-icons/io5";
 import ContentCard from "../../../Widgets/ContentCard";
 import AuthorCard from "../../../Widgets/AuthorCard";
 import { createFullName } from "../../../_utils/names";
+import ActivityTable from "../../../Widgets/ActivityTable";
+import { ContentStructure } from "../../../_utils/types";
+
+type SearchMatch =
+  | (ContentStructure & { type: "content" })
+  | {
+      type: "author";
+      userId: string;
+      firstNames: string | null;
+      lastNames: string;
+    };
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -47,6 +62,7 @@ export async function action({ request }) {
     groupId,
     currentlyFeatured,
     homepage,
+    listViewPref,
   } = formObj;
 
   // TODO: should this function exist?
@@ -106,6 +122,11 @@ export async function action({ request }) {
         groupId,
       });
     }
+    case "Set List View Preferred": {
+      return postApiAlertOnError(`/api/setPreferredFolderView`, {
+        cardView: listViewPref === "false",
+      });
+    }
   }
 }
 
@@ -113,10 +134,13 @@ export async function loader({ request }) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
 
+  let prefData = await axios.get(`/api/getPreferredFolderView`);
+  let listViewPref = !prefData.data.cardView;
+
   if (q) {
     //Show search results
     const { data: searchData } = await axios.get(
-      `/api/searchPublicContent?q=${q}`,
+      `/api/searchSharedContent?q=${q}`,
     );
 
     const {
@@ -136,6 +160,7 @@ export async function loader({ request }) {
       searchResults: searchData,
       carouselGroups,
       isAdmin,
+      listViewPref,
     };
   } else {
     const { data: isAdminData } = await axios.get(
@@ -143,7 +168,7 @@ export async function loader({ request }) {
     );
     const isAdmin = isAdminData.isAdmin;
     const { data: carouselData } = await axios.get("/api/loadPromotedContent");
-    return { carouselData, isAdmin };
+    return { carouselData, isAdmin, listViewPref };
   }
 }
 
@@ -369,31 +394,47 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
 }
 
 export function Community() {
-  const { carouselData, q, searchResults, carouselGroups, isAdmin } =
-    useLoaderData() as {
-      carouselData: any;
-      q: string;
-      searchResults: any;
-      carouselGroups: any;
-      isAdmin: boolean;
+  const {
+    carouselData,
+    q,
+    searchResults,
+    carouselGroups,
+    isAdmin,
+    listViewPref,
+  } = useLoaderData() as {
+    carouselData: any;
+    q: string;
+    searchResults: {
+      content: ContentStructure[];
+      users: {
+        userId: string;
+        firstNames: string | null;
+        lastNames: string;
+      }[];
     };
+    carouselGroups: any;
+    isAdmin: boolean;
+    listViewPref: boolean;
+  };
   const [currentTab, setCurrentTab] = useState(0);
   const fetcher = useFetcher();
+
+  const [listView, setListView] = useState(listViewPref);
 
   useEffect(() => {
     document.title = `Community - Doenet`;
   }, []);
 
   if (searchResults) {
-    let contentMatches = searchResults.content.map((c) => ({
+    let contentMatches: SearchMatch[] = searchResults.content.map((c) => ({
       type: "content",
       ...c,
     }));
-    let authorMatches = searchResults.users.map((u) => ({
+    let authorMatches: SearchMatch[] = searchResults.users.map((u) => ({
       type: "author",
       ...u,
     }));
-    let allMatches = [...contentMatches, ...authorMatches];
+    let allMatches: SearchMatch[] = [...contentMatches, ...authorMatches];
     const tabs = [
       {
         label: "All Matches",
@@ -409,11 +450,14 @@ export function Community() {
       },
     ];
 
-    function displayCard(itemObj) {
-      if (itemObj?.type == "content") {
+    function displayCard(itemObj: SearchMatch) {
+      if (itemObj.type == "content") {
         const { id, imagePath, name, owner, isFolder } = itemObj;
+        if (!owner) {
+          return null;
+        }
         if (isFolder) {
-          const cardLink = `/publicActivities/${owner.userId}/${id}`;
+          const cardLink = `/sharedActivities/${owner.userId}/${id}`;
 
           return (
             <ContentCard
@@ -462,7 +506,7 @@ export function Community() {
           );
         }
       } else if (itemObj?.type == "author") {
-        const cardLink = `/publicActivities/${itemObj.userId}`;
+        const cardLink = `/sharedActivities/${itemObj.userId}`;
 
         return (
           <AuthorCard
@@ -472,6 +516,52 @@ export function Community() {
           />
         );
       }
+    }
+
+    function displayResultsTable(allMatches: SearchMatch[]) {
+      return (
+        <ActivityTable
+          suppressAvatar={false}
+          showPublicStatus={false}
+          showAssignmentStatus={false}
+          showOwnerName={true}
+          content={allMatches.map((itemObj) => {
+            if (itemObj.type === "content") {
+              const { id, imagePath, name, owner, isFolder } = itemObj;
+              const cardLink =
+                isFolder && owner != undefined
+                  ? `/sharedActivities/${owner.userId}/${id}`
+                  : `/activityViewer/${id}`;
+
+              return {
+                id,
+                title: name,
+                ownerName: owner != undefined ? createFullName(owner) : "",
+                cardLink,
+                menuItems: isAdmin ? (
+                  <>
+                    <MoveToGroupMenuItem
+                      activityId={id}
+                      carouselGroups={carouselGroups}
+                    />
+                  </>
+                ) : undefined,
+              };
+            } else if (itemObj?.type == "author") {
+              const cardLink = `/sharedActivities/${itemObj.userId}`;
+              return {
+                id: itemObj.userId,
+                title: createFullName(itemObj),
+                ownerName: createFullName(itemObj),
+                cardLink,
+                authorRow: true,
+              };
+            } else {
+              return { id: "", title: "" };
+            }
+          })}
+        />
+      );
     }
 
     return (
@@ -512,10 +602,65 @@ export function Community() {
               {q}
             </Text>
           </Text>
+          <Box width="100%">
+            <ButtonGroup
+              size="sm"
+              isAttached
+              variant="outline"
+              marginBottom=".5em"
+              marginRight=".5em"
+              float="right"
+            >
+              <Tooltip label="Toggle List View">
+                <Button isActive={listView === true}>
+                  <Icon
+                    as={listView ? FaListAlt : FaRegListAlt}
+                    boxSize={10}
+                    p=".5em"
+                    cursor="pointer"
+                    onClick={() => {
+                      if (listView === false) {
+                        setListView(true);
+                        fetcher.submit(
+                          {
+                            _action: "Set List View Preferred",
+                            listViewPref: true,
+                          },
+                          { method: "post" },
+                        );
+                      }
+                    }}
+                  />
+                </Button>
+              </Tooltip>
+              <Tooltip label="Toggle Card View">
+                <Button isActive={listView === false}>
+                  <Icon
+                    as={listView ? IoGridOutline : IoGrid}
+                    boxSize={10}
+                    p=".5em"
+                    cursor="pointer"
+                    onClick={() => {
+                      if (listView === true) {
+                        setListView(false);
+                        fetcher.submit(
+                          {
+                            _action: "Set List View Preferred",
+                            listViewPref: false,
+                          },
+                          { method: "post" },
+                        );
+                      }
+                    }}
+                  />
+                </Button>
+              </Tooltip>
+            </ButtonGroup>
+          </Box>
         </Box>
         <Tabs
           orientation="vertical"
-          minHeight="calc(100vh - 150px)"
+          minHeight="calc(100vh - 188px)"
           variant="line"
         >
           <TabList background="doenet.canvas" w={240}>
@@ -560,15 +705,12 @@ export function Community() {
 
           <TabPanels background="doenet.mainGray" data-test="Search Results">
             <TabPanel>
-              <Wrap
-                p={10}
-                m={0}
+              <Flex
                 display="flex"
-                justifyContent="center"
-                alignItems="center"
+                direction="column"
+                width="100%"
                 data-test="Results All Matches"
               >
-                {allMatches.map(displayCard)}
                 {allMatches.length == 0 ? (
                   <Flex
                     flexDirection="column"
@@ -576,26 +718,31 @@ export function Community() {
                     alignItems="center"
                     alignContent="center"
                     minHeight={200}
-                    background="doenet.canvas"
                     padding={20}
-                    // border="1px solid var(--canvastext)"
                   >
                     <Icon fontSize="48pt" as={RiEmotionSadLine} />
                     <Text fontSize="36pt">No Matches Found!</Text>
                   </Flex>
-                ) : null}
-              </Wrap>
+                ) : listView ? (
+                  displayResultsTable(allMatches)
+                ) : (
+                  <Flex
+                    justifyContent="center"
+                    alignItems="center"
+                    alignContent="center"
+                  >
+                    <Wrap>{allMatches.map(displayCard)}</Wrap>
+                  </Flex>
+                )}
+              </Flex>
             </TabPanel>
             <TabPanel>
-              <Wrap
-                p={10}
-                m={0}
+              <Flex
                 display="flex"
-                justifyContent="center"
-                alignItems="center"
+                direction="column"
+                width="100%"
                 data-test="Results Activities"
               >
-                {contentMatches.map(displayCard)}
                 {contentMatches.length == 0 ? (
                   <Flex
                     flexDirection="column"
@@ -603,27 +750,32 @@ export function Community() {
                     alignItems="center"
                     alignContent="center"
                     minHeight={200}
-                    background="doenet.canvas"
                     padding={20}
                     // border="1px solid var(--canvastext)"
                   >
                     <Icon fontSize="48pt" as={RiEmotionSadLine} />
                     <Text fontSize="36pt">No Matching Activities Found!</Text>
                   </Flex>
-                ) : null}
-                {/* </Box> */}
-              </Wrap>
+                ) : listView ? (
+                  displayResultsTable(contentMatches)
+                ) : (
+                  <Flex
+                    justifyContent="center"
+                    alignItems="center"
+                    alignContent="center"
+                  >
+                    <Wrap>{contentMatches.map(displayCard)}</Wrap>
+                  </Flex>
+                )}
+              </Flex>
             </TabPanel>
             <TabPanel>
-              <Wrap
-                p={10}
-                m={0}
+              <Flex
                 display="flex"
-                justifyContent="center"
-                alignItems="center"
-                data-test="Results Authors"
+                direction="column"
+                width="100%"
+                data-test="Results Activities"
               >
-                {authorMatches.map(displayCard)}
                 {searchResults?.users?.length == 0 ? (
                   <Flex
                     flexDirection="column"
@@ -631,15 +783,24 @@ export function Community() {
                     alignItems="center"
                     alignContent="center"
                     minHeight={200}
-                    background="doenet.canvas"
                     padding={20}
                     // border="1px solid var(--canvastext)"
                   >
                     <Icon fontSize="48pt" as={RiEmotionSadLine} />
                     <Text fontSize="36pt">No Matching Authors Found!</Text>
                   </Flex>
-                ) : null}
-              </Wrap>
+                ) : listView ? (
+                  displayResultsTable(authorMatches)
+                ) : (
+                  <Flex
+                    justifyContent="center"
+                    alignItems="center"
+                    alignContent="center"
+                  >
+                    <Wrap>{authorMatches.map(displayCard)}</Wrap>
+                  </Flex>
+                )}
+              </Flex>
             </TabPanel>
           </TabPanels>
         </Tabs>

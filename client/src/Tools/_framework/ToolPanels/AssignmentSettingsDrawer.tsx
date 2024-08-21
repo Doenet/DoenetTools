@@ -16,8 +16,24 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { FetcherWithComponents } from "react-router-dom";
-import { ContentStructure } from "../Paths/ActivityEditor";
-import { AssignActivityControls } from "./AssignActivityControls";
+import {
+  assignActivityActions,
+  AssignActivityControls,
+} from "./AssignActivityControls";
+import { ContentStructure } from "../../../_utils/types";
+
+export async function assignmentSettingsActions({
+  formObj,
+}: {
+  [k: string]: any;
+}) {
+  let result = await assignActivityActions({ formObj });
+  if (result) {
+    return result;
+  }
+
+  return null;
+}
 
 export function AssignmentSettingsDrawer({
   isOpen,
@@ -31,7 +47,7 @@ export function AssignmentSettingsDrawer({
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  id: number;
+  id: string;
   contentData: ContentStructure;
   fetcher: FetcherWithComponents<any>;
   displayTab?: "assignment";
