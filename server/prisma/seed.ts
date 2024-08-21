@@ -82,8 +82,8 @@ async function main() {
 
   const { id: commonCoreId } = await prisma.classificationSystems.upsert({
     where: { name: "Common Core" },
-    update: { name: "Common Core" },
-    create: { name: "Common Core" },
+    update: { name: "Common Core", categoryLabel: "Grade", subCategoryLabel: "Cluster"},
+    create: { name: "Common Core", categoryLabel: "Grade", subCategoryLabel: "Cluster"},
   });
   await prisma.classifications.upsert({
     where: {
@@ -94,16 +94,16 @@ async function main() {
     },
     update: {
       code: "K.CC.1",
-      grade: "Kindergarten",
-      category:
+      category: "Kindergarten",
+      subCategory:
         "Counting and Cardinality: Know number names and the count sequence.",
       description: "Count to 100 by ones and by tens.",
       systemId: commonCoreId,
     },
     create: {
       code: "K.CC.1",
-      grade: "Kindergarten",
-      category:
+      category: "Kindergarten",
+      subCategory:
         "Counting and Cardinality: Know number names and the count sequence.",
       description: "Count to 100 by ones and by tens.",
       systemId: commonCoreId,
@@ -116,8 +116,8 @@ async function main() {
     },
     update: {
       code: "K.OA.1",
-      grade: "Kindergarten",
-      category:
+      category: "Kindergarten",
+      subCategory:
         "Operations and Algebraic Thinking: Understand addition as putting together and adding to, and understand subtraction as taking apart and taking from.",
       description:
         "Represent addition and subtraction with objects, fingers, mental images, drawings (Drawings need not show details, but should show the mathematics in the problem.(This applies wherever drawings are mentioned in the Standards.)), sounds (e.g., claps), acting out situations, verbal explanations, expressions, or equations.",
@@ -125,8 +125,8 @@ async function main() {
     },
     create: {
       code: "K.OA.1",
-      grade: "Kindergarten",
-      category:
+      category: "Kindergarten",
+      subCategory:
         "Operations and Algebraic Thinking: Understand addition as putting together and adding to, and understand subtraction as taking apart and taking from.",
       description:
         "Represent addition and subtraction with objects, fingers, mental images, drawings (Drawings need not show details, but should show the mathematics in the problem.(This applies wherever drawings are mentioned in the Standards.)), sounds (e.g., claps), acting out situations, verbal explanations, expressions, or equations.",
@@ -140,8 +140,8 @@ async function main() {
     },
     update: {
       code: "A.SSE.3 c.",
-      grade: "HS",
-      category:
+      category: "HS",
+      subCategory:
         "Seeing Structure in Expressions: Write expressions in equivalent forms to solve problems.",
       description:
         "Use the properties of exponents to transform expressions for exponential functions.  For example the expression 1.15t can be rewritten as (1.151/12)12t ≈1.01212t to reveal the approximate equivalent monthly interest rate if the annual rate is 15%.",
@@ -149,8 +149,8 @@ async function main() {
     },
     create: {
       code: "A.SSE.3 c.",
-      grade: "HS",
-      category:
+      category: "HS",
+      subCategory:
         "Seeing Structure in Expressions: Write expressions in equivalent forms to solve problems.",
       description:
         "Use the properties of exponents to transform expressions for exponential functions.  For example the expression 1.15t can be rewritten as (1.151/12)12t ≈1.01212t to reveal the approximate equivalent monthly interest rate if the annual rate is 15%.",
@@ -160,8 +160,8 @@ async function main() {
 
   const { id: minnesotaMathId } = await prisma.classificationSystems.upsert({
     where: { name: "Minnesota Academic Standards in Math" },
-    update: { name: "Minnesota Academic Standards in Math" },
-    create: { name: "Minnesota Academic Standards in Math" },
+    update: { name: "Minnesota Academic Standards in Math", categoryLabel: "Grade", subCategoryLabel: "Standard"},
+    create: { name: "Minnesota Academic Standards in Math", categoryLabel: "Grade", subCategoryLabel: "Standard"},
   });
 
   await prisma.classifications.upsert({
@@ -173,7 +173,8 @@ async function main() {
     },
     update: {
       code: "8.2.1.5",
-      category:
+      category: "8",
+      subCategory:
         "Understand the concept of function in real-world and mathematical situations, and distinguish between linear and nonlinear functions.",
       description:
         "Understand that a geometric sequence is a non-linear function that can be expressed in the form f(x) = ab^x, where x = 0, 1, 2, 3,….",
@@ -181,7 +182,8 @@ async function main() {
     },
     create: {
       code: "8.2.1.5",
-      category:
+      category: "8",
+      subCategory:
         "Understand the concept of function in real-world and mathematical situations, and distinguish between linear and nonlinear functions.",
       description:
         "Understand that a geometric sequence is a non-linear function that can be expressed in the form f(x) = ab^x, where x = 0, 1, 2, 3,….",
@@ -198,7 +200,8 @@ async function main() {
     },
     update: {
       code: "9.4.3.9",
-      category:
+      category: "9",
+      subCategory:
         "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
       description:
         "Use the relationship between conditional probabilities and relative frequencies in contingency tables.",
@@ -206,7 +209,8 @@ async function main() {
     },
     create: {
       code: "9.4.3.9",
-      category:
+      category: "9",
+      subCategory:
         "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
       description:
         "Use the relationship between conditional probabilities and relative frequencies in contingency tables.",

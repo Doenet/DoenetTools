@@ -575,8 +575,8 @@ export function GeneralContentControls({
                                 styles={{ fontWeight: 900 }}
                               >
                                 {val.label.code +
-                                  (val.label.grade
-                                    ? " (" + val.label.grade + ")"
+                                  (val.label.category
+                                    ? " (" + val.label.category + ")"
                                     : "")}
                               </Highlight>
                             </Heading>
@@ -591,12 +591,12 @@ export function GeneralContentControls({
                             </Tag>
                           </Flex>
                           <Text>
-                            <Text as="i">Category:</Text>{" "}
+                            <Text as="i">Sub Category:</Text>{" "}
                             <Highlight
                               query={classifySelectorInput.split(" ")}
                               styles={{ fontWeight: "bold" }}
                             >
-                              {val.label.category}
+                              {val.label.subCategory}
                             </Highlight>
                           </Text>
                           <Text>

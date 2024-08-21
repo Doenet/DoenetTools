@@ -947,9 +947,9 @@ export async function getActivityEditorData(
             classification: {
               select: {
                 id: true,
-                grade: true,
-                code: true,
                 category: true,
+                subCategory: true,
+                code: true,
                 description: true,
                 system: {
                   select: {
@@ -1075,9 +1075,9 @@ export async function getActivityEditorData(
             classification: {
               select: {
                 id: true,
-                grade: true,
-                code: true,
                 category: true,
+                subCategory: true,
+                code: true,
                 description: true,
                 system: {
                   select: {
@@ -1205,9 +1205,9 @@ export async function getSharedEditorData(
           classification: {
             select: {
               id: true,
-              grade: true,
-              code: true,
               category: true,
+              subCategory: true,
+              code: true,
               description: true,
               system: {
                 select: {
@@ -1303,9 +1303,9 @@ export async function getActivityViewerData(
           classification: {
             select: {
               id: true,
-              grade: true,
-              code: true,
               category: true,
+              subCategory: true,
+              code: true,
               description: true,
               system: {
                 select: {
@@ -1819,9 +1819,9 @@ export async function searchSharedContent(
           classification: {
             select: {
               id: true,
-              grade: true,
-              code: true,
               category: true,
+              subCategory: true,
+              code: true,
               description: true,
               system: {
                 select: {
@@ -3677,8 +3677,8 @@ export async function getMyFolderContent({
             select: {
               id: true,
               code: true,
-              grade: true,
               category: true,
+              subCategory: true,
               description: true,
               system: {
                 select: {
@@ -3982,8 +3982,8 @@ export async function searchMyFolderContent({
             select: {
               id: true,
               code: true,
-              grade: true,
               category: true,
+              subCategory: true,
               description: true,
               system: {
                 select: {
@@ -4190,9 +4190,9 @@ export async function getSharedFolderContent({
           classification: {
             select: {
               id: true,
-              grade: true,
-              code: true,
               category: true,
+              subCategory: true,
+              code: true,
               description: true,
               system: {
                 select: {
@@ -4266,9 +4266,9 @@ export async function getSharedFolderContent({
             classification: {
               select: {
                 id: true,
-                grade: true,
-                code: true,
                 category: true,
+                subCategory: true,
+                code: true,
                 description: true,
                 system: {
                   select: {
@@ -4357,8 +4357,8 @@ export async function searchPossibleClassifications(query: string) {
         AND: query_words.map((query_word) => ({
           OR: [
             { code: { contains: query_word } },
-            { grade: { contains: query_word } },
             { category: { contains: query_word } },
+            { subCategory: { contains: query_word } },
             { description: { contains: query_word } },
             { system: { name: { contains: query_word } } },
           ],
@@ -4366,9 +4366,9 @@ export async function searchPossibleClassifications(query: string) {
       },
       select: {
         id: true,
-        grade: true,
-        code: true,
         category: true,
+        code: true,
+        subCategory: true,
         description: true,
         system: {
           select: {

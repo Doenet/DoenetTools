@@ -20,8 +20,8 @@ export type UserInfo = {
 export type ContentClassification = {
   id: number;
   code: string;
-  grade: string | null;
   category: string;
+  subCategory: string;
   description: string;
   system: {
     id: number;

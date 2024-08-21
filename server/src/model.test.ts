@@ -6980,13 +6980,13 @@ test("Search for content classifications", async () => {
   }
   {
     // Category
-    const results = await searchPossibleClassifications("nonlinear functions");
-    expect(results.find((i) => i.code === "8.2.1.5")).toBeDefined();
-  }
-  {
-    // Grade
     const results = await searchPossibleClassifications("Kind");
     expect(results.find((i) => i.code === "K.CC.1")).toBeDefined();
+  }
+  {
+    // Sub Category
+    const results = await searchPossibleClassifications("nonlinear functions");
+    expect(results.find((i) => i.code === "8.2.1.5")).toBeDefined();
   }
   {
     // Description

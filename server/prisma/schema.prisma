@@ -246,11 +246,11 @@ model contentClassifications {
 
 model classifications {
   id                     Int                      @id @default(autoincrement())
-  code                   String
   systemId               Int
   category               String                   @db.Text
+  subCategory            String                   @db.Text
+  code                   String
   description            String                   @db.Text
-  grade                  String?
   system                 classificationSystems    @relation(fields: [systemId], references: [id])
   contentClassifications contentClassifications[]
 
@@ -259,7 +259,9 @@ model classifications {
 }
 
 model classificationSystems {
-  id              Int               @id @default(autoincrement())
-  name            String            @unique
-  classifications classifications[]
+  id               Int               @id @default(autoincrement())
+  name             String            @unique
+  categoryLabel    String
+  subCategoryLabel String
+  classifications  classifications[]
 }
