@@ -26,7 +26,7 @@ import { FaFolder } from "react-icons/fa";
 import { RiDraftFill } from "react-icons/ri";
 import { MdAssignment } from "react-icons/md";
 import { BsPeopleFill } from "react-icons/bs";
-import { useFetcher, useNavigate } from "react-router-dom";
+import { useFetcher, useNavigate, Link } from "react-router-dom";
 import { AssignmentStatus } from "../_utils/types";
 
 export default forwardRef(function ActivityTable(
@@ -83,6 +83,9 @@ export default forwardRef(function ActivityTable(
         </Thead>
         <Tbody>
           {content.map(function (activity) {
+
+            const rowLink = activity.cardLink && !titleBeingEdited ? activity.cardLink : "";
+            
             let assignmentStatusString: string =
               activity.assignmentStatus !== null &&
               activity.assignmentStatus !== undefined &&
@@ -119,13 +122,13 @@ export default forwardRef(function ActivityTable(
                 cursor="pointer"
                 _hover={{ backgroundColor: "#eeeeee" }}
                 borderBottom="2px solid gray"
-                onClick={() =>
-                  activity.cardLink && !titleBeingEdited
-                    ? navigate(activity.cardLink)
-                    : null
-                }
+                // onClick={() =>
+                //   activity.cardLink && !titleBeingEdited
+                //     ? navigate(activity.cardLink)
+                //     : null
+                // }
               >
-                <Td p="0" m="0" width="20px">
+                <Td p="0" m="0" width="20px"><Link to={rowLink}>
                   <Tooltip
                     label={
                       activity.isFolder
@@ -171,32 +174,31 @@ export default forwardRef(function ActivityTable(
                       )}
                     </Box>
                   </Tooltip>
-                </Td>
-                <Td p="0" whiteSpace="normal">
-                  <HStack>
+                </Link></Td>
+                <Td m="0" whiteSpace="normal"><Link to={rowLink}>
+                  <HStack height="100%">
                     <Editable
-                      defaultValue={
-                        activity.authorRow ? activity.ownerName : activity.title
-                      }
+                      // value={
+                      //   activity.authorRow ? activity.ownerName : activity.title
+                      // }
+                      defaultValue={activity.authorRow ? activity.ownerName : activity.title}
                       data-test="Editable Title"
                       startWithEditView={activity.autoFocusTitle}
                       isDisabled={!activity.editableTitle}
-                      onClick={(e) =>
-                        activity.editableTitle ? e.stopPropagation() : null
-                      }
+                      onClick={(e) => activity.editableTitle ? e.stopPropagation() : null}
                       onEdit={() => setTitleBeingEdited(true)}
+                      onSubmit={(txt) => {
+                        saveUpdatedTitle(txt);
+                        setTitleBeingEdited(false);
+                      }}
                     >
                       <EditablePreview
                         cursor={activity.editableTitle ? "auto" : "pointer"}
-                        noOfLines={1}
                         maxHeight="1.5em"
                       />
                       <EditableInput
                         maxLength={191}
-                        noOfLines={1}
-                        onBlur={(e) => {
-                          saveUpdatedTitle(e.target.value);
-                          setTitleBeingEdited(false);
+                        onBlur={() => {
                           // prevent click default/propagation behavior one time (aka right now as user is clicking to blur input)
                           document.addEventListener(
                             "click",
@@ -223,19 +225,19 @@ export default forwardRef(function ActivityTable(
                       <Text>{assignmentStatusString}</Text>
                     ) : null}
                   </Show>
-                </Td>
+                </Link></Td>
                 {showPublicStatus ? (
-                  <Td>{activity.isPublic ? "Public" : "Private"}</Td>
+                  <Td><Link to={rowLink}><Text height="100%">{activity.isPublic ? "Public" : "Private"}</Text></Link></Td>
                 ) : null}
                 <Show above="md">
                   {showAssignmentStatus ? (
-                    <Td>{assignmentStatusString}</Td>
+                    <Td><Link to={rowLink}><Text height="100%">{assignmentStatusString}</Text></Link></Td>
                   ) : null}
                 </Show>
                 {(!suppressAvatar && !activity.authorRow) ||
                 (showOwnerName && !activity.authorRow) ? (
-                  <Td>
-                    <HStack>
+                  <Td><Link to={rowLink}>
+                    <HStack height="100%">
                       {suppressAvatar || activity.authorRow ? null : (
                         <Tooltip label={activity.ownerName}>
                           <Avatar size="sm" name={activity.ownerName} />
@@ -245,7 +247,7 @@ export default forwardRef(function ActivityTable(
                         <Text>{activity.ownerName}</Text>
                       ) : null}
                     </HStack>
-                  </Td>
+                  </Link></Td>
                 ) : null}
                 <Td p="0" m="0" textAlign="right">
                   {activity.menuItems ? (
