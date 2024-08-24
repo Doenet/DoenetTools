@@ -117,3 +117,24 @@ export type DocRemixItem = {
   activityName: string;
   owner: UserInfo;
 };
+
+
+export type ClassificationSystemTree = {
+  id: number;
+  name: string;
+  categoryLabel: string;
+  subCategoryLabel: string;
+  categories: {
+    id: number;
+    category: string;
+    subCategories: {
+      id: number;
+      subCategory: string;
+      classifications: {
+        id: number;
+        code: string;
+        description: string;
+      }[]
+    }[]
+  }[]
+};

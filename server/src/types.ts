@@ -31,11 +31,11 @@ export type ContentClassification = {
         id: number;
         name: string;
         categoryLabel: string;
-        subCategoryLabel: string;    
-      }
-    }
-  }
-}
+        subCategoryLabel: string;
+      };
+    };
+  };
+};
 
 export type ContentStructure = {
   id: Buffer;
@@ -111,4 +111,24 @@ export type DocHistory = {
       cid: string;
     };
   }[];
+};
+
+export type ClassificationSystemTree = {
+  id: number;
+  name: string;
+  categoryLabel: string;
+  subCategoryLabel: string;
+  categories: {
+    id: number;
+    category: string;
+    subCategories: {
+      id: number;
+      subCategory: string;
+      classifications: {
+        id: number;
+        code: string;
+        description: string;
+      }[]
+    }[]
+  }[]
 };

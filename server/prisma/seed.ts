@@ -158,6 +158,16 @@ async function main() {
     commonCoreCardinalityId,
   );
   await upsertClassification(
+    "K.CC.2",
+    "Count forward beginning from a given number within the known sequence (instead of having to begin at 1).",
+    commonCoreCardinalityId,
+  );
+  await upsertClassification(
+    "K.CC.3",
+    "Write numbers from 0 to 20. Represent a number of objects with a written numeral 0-20 (with 0 representing a count of no objects).",
+    commonCoreCardinalityId,
+  );
+  await upsertClassification(
     "K.OA.1",
     "Represent addition and subtraction with objects, fingers, mental images, drawings (Drawings need not show details, but should show the mathematics in the problem.(This applies wherever drawings are mentioned in the Standards.)), sounds (e.g., claps), acting out situations, verbal explanations, expressions, or equations.",
     commonCoreAlgebraicId,
@@ -173,14 +183,8 @@ async function main() {
     "Grade",
     "Standard",
   );
-  const mnEighthId = await upsertClassificationCategory(
-    "8",
-    mnId,
-  );
-  const mnNinthId = await upsertClassificationCategory(
-    "9",
-    mnId,
-  );
+  const mnEighthId = await upsertClassificationCategory("8", mnId);
+  const mnNinthId = await upsertClassificationCategory("9", mnId);
   const mnFuncId = await upsertClassificationSubCategory(
     "Understand the concept of function in real-world and mathematical situations, and distinguish between linear and nonlinear functions.",
     mnEighthId,
@@ -199,8 +203,6 @@ async function main() {
     "Use the relationship between conditional probabilities and relative frequencies in contingency tables.",
     mnProbabilityId,
   );
-
-
 
   await prisma.licenses.upsert({
     where: { code: "CCBYSA" },

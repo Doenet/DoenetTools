@@ -22,9 +22,17 @@ import {
   HStack,
   Tooltip,
   Spinner,
+  CardBody,
+  Card,
+  CardHeader,
+  Button,
 } from "@chakra-ui/react";
 import AsyncSelect from "react-select/async";
-import { ContentClassification, ContentStructure } from "../../../_utils/types";
+import {
+  ClassificationSystemTree,
+  ContentClassification,
+  ContentStructure,
+} from "../../../_utils/types";
 
 export async function classificationSettingsActions({
   formObj,
@@ -91,18 +99,22 @@ export function ClassificationSettings({
     setClassifyItemRemoveSpinner(0);
   }, [contentData]);
 
-  let [allClassifications, setAllClassifications] = useState();
+  let [allClassifications, setAllClassifications] = useState<
+    ClassificationSystemTree[]
+  >([]);
   useEffect(() => {
-    async function getAllClassifications() {
-      const { data } = await axios.get(
-        `/api/getContributorHistory/${contentData.id}`,
-      );
+    async function setClassifications() {
+      const { data } = await axios.get(`/api/getAllClassificationInfo`);
+      setAllClassifications(data);
     }
-
-    if (!contentData.isFolder) {
-      getAllClassifications();
-    }
+    setClassifications();
   }, []);
+
+  let [selectedSystem, setSelectedSystem] = useState<number | null>(null);
+  let [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  let [selectedSubCategory, setSelectedSubCategory] = useState<number | null>(
+    null,
+  );
 
   return (
     <>
@@ -117,7 +129,9 @@ export function ClassificationSettings({
               <Text>Existing Classifications</Text>
 
               {contentData.classifications.length === 0 ? (
-                <Text as="i" mt="-5" ml='3'>None added yet.</Text>
+                <Text as="i" mt="-5" ml="3">
+                  None added yet.
+                </Text>
               ) : (
                 <Accordion allowMultiple>
                   {contentData.classifications.map((classification, i) => (
@@ -128,7 +142,10 @@ export function ClassificationSettings({
                             <HStack flex="1" textAlign="left" direction={"row"}>
                               ;<Text as="b">{classification.code}</Text>
                               <Text fontSize={"small"} pt="2px">
-                                {classification.subCategory.category.system.name}
+                                {
+                                  classification.subCategory.category.system
+                                    .name
+                                }
                               </Text>
                             </HStack>
                             <AccordionIcon marginLeft="7px" />
@@ -165,13 +182,21 @@ export function ClassificationSettings({
                       <AccordionPanel>
                         <Text>
                           <Text as="b">
-                            {classification.subCategory.category.system.categoryLabel}:{" "}
+                            {
+                              classification.subCategory.category.system
+                                .categoryLabel
+                            }
+                            :{" "}
                           </Text>
                           {classification.subCategory.category.category}
                         </Text>
                         <Text>
                           <Text as="b">
-                            {classification.subCategory.category.system.subCategoryLabel}:{" "}
+                            {
+                              classification.subCategory.category.system
+                                .subCategoryLabel
+                            }
+                            :{" "}
                           </Text>
                           {classification.subCategory.subCategory}
                         </Text>
@@ -187,9 +212,111 @@ export function ClassificationSettings({
 
               <Text>Add a Classification</Text>
               <Box rowGap={2}>
-                <Select placeholder="Choose a system"></Select>
-                <Select placeholder="-" isDisabled></Select>
-                <Select placeholder="-" isDisabled></Select>
+                <Select
+                  placeholder="Choose a system"
+                  onChange={(event) => {
+                    if (event.target.value) {
+                      setSelectedSystem(Number(event.target.value));
+                    } else {
+                      setSelectedSystem(null);
+                    }
+                    setSelectedCategory(null);
+                    setSelectedSubCategory(null);
+                  }}
+                >
+                  {allClassifications.map((system, i) => (
+                    <option value={i}>{system.name}</option>
+                  ))}
+                </Select>
+
+                <Select
+                  value={selectedCategory ?? ""}
+                  placeholder={
+                    selectedSystem === null
+                      ? "-"
+                      : `Choose a ${allClassifications[selectedSystem].categoryLabel}`
+                  }
+                  isDisabled={selectedSystem === null}
+                  onChange={(event) => {
+                    if (event.target.value) {
+                      setSelectedCategory(Number(event.target.value));
+                    } else {
+                      setSelectedCategory(null);
+                    }
+                    setSelectedSubCategory(null);
+                  }}
+                >
+                  {selectedSystem !== null
+                    ? allClassifications[selectedSystem].categories.map(
+                        (category, i) => (
+                          <option value={i}>{category.category}</option>
+                        ),
+                      )
+                    : null}
+                </Select>
+
+                <Select
+                  value={selectedSubCategory ?? ""}
+                  placeholder={
+                    selectedCategory === null
+                      ? "-"
+                      : `Choose a ${allClassifications[selectedSystem!].subCategoryLabel}`
+                  }
+                  isDisabled={selectedCategory === null}
+                  onChange={(event) => {
+                    if (event.target.value) {
+                      setSelectedSubCategory(Number(event.target.value));
+                    } else {
+                      setSelectedSubCategory(null);
+                    }
+                  }}
+                >
+                  {selectedCategory !== null
+                    ? allClassifications[selectedSystem!].categories[
+                        selectedCategory
+                      ].subCategories.map((subCategory, i) => (
+                        <option value={i}>{subCategory.subCategory}</option>
+                      ))
+                    : null}
+                </Select>
+                {selectedSubCategory !== null
+                  ? allClassifications[selectedSystem!].categories[
+                      selectedCategory!
+                    ].subCategories[selectedSubCategory].classifications.map(
+                      (classification) => (
+                        <Card>
+                          <CardBody>
+                            <Flex>
+                              <Heading size="sm">{classification.code}</Heading>
+                              <Spacer />
+                              {contentData.classifications
+                                .map((c) => c.id)
+                                .includes(classification.id) ? (
+                                <Text as="i">Already added</Text>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  onClick={() => {
+                                    fetcher.submit(
+                                      {
+                                        _action: "add content classification",
+                                        activityId: id,
+                                        classificationId: classification.id,
+                                      },
+                                      { method: "post" },
+                                    );
+                                  }}
+                                >
+                                  Add
+                                </Button>
+                              )}
+                            </Flex>
+                            <Text>{classification.description}</Text>
+                          </CardBody>
+                        </Card>
+                      ),
+                    )
+                  : null}
               </Box>
 
               <HStack>
@@ -228,7 +355,9 @@ export function ClassificationSettings({
                               >
                                 {val.label.code +
                                   (val.label.subCategory.category.category
-                                    ? " (" + val.label.subCategory.category.category + ")"
+                                    ? " (" +
+                                      val.label.subCategory.category.category +
+                                      ")"
                                     : "")}
                               </Highlight>
                             </Heading>
@@ -244,7 +373,11 @@ export function ClassificationSettings({
                           </Flex>
                           <Text>
                             <Text as="i">
-                              {val.label.subCategory.category.system.categoryLabel}:
+                              {
+                                val.label.subCategory.category.system
+                                  .categoryLabel
+                              }
+                              :
                             </Text>{" "}
                             <Highlight
                               query={classifySelectorInput.split(" ")}
@@ -255,7 +388,11 @@ export function ClassificationSettings({
                           </Text>
                           <Text>
                             <Text as="i">
-                              {val.label.subCategory.category.system.subCategoryLabel}:
+                              {
+                                val.label.subCategory.category.system
+                                  .subCategoryLabel
+                              }
+                              :
                             </Text>{" "}
                             <Highlight
                               query={classifySelectorInput.split(" ")}

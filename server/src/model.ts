@@ -4,6 +4,7 @@ import { DateTime } from "luxon";
 import { fromUUID } from "./utils/uuid";
 import {
   AssignmentStatus,
+  ClassificationSystemTree,
   ContentClassification,
   ContentStructure,
   DocHistory,
@@ -951,11 +952,11 @@ export async function getActivityEditorData(
                     category: {
                       include: {
                         system: true,
-                      }
-                    }
-                  }
-                }
-              }
+                      },
+                    },
+                  },
+                },
+              },
             },
           },
         },
@@ -1077,11 +1078,11 @@ export async function getActivityEditorData(
                     category: {
                       include: {
                         system: true,
-                      }
-                    }
-                  }
-                }
-              }
+                      },
+                    },
+                  },
+                },
+              },
             },
           },
         },
@@ -3621,10 +3622,10 @@ export async function getMyFolderContent({
                   category: {
                     include: {
                       system: true,
-                    }
-                  }
-                }
-              }
+                    },
+                  },
+                },
+              },
             },
           },
         },
@@ -3932,11 +3933,11 @@ export async function searchMyFolderContent({
                   category: {
                     include: {
                       system: true,
-                    }
-                  }
-                }
-              }
-            }
+                    },
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -4255,6 +4256,72 @@ export async function getSharedFolderContent({
   };
 }
 
+export async function getAllClassificationInfo() {
+  const results = await prisma.classificationSystems.findMany({
+    orderBy: {
+      name: "asc",
+    },
+    select: {
+      id: true,
+      name: true,
+      categoryLabel: true,
+      subCategoryLabel: true,
+      classificationCategory: {
+        orderBy: {
+          category: "asc",
+        },
+        select: {
+          id: true,
+          category: true,
+          classificationSubCategory: {
+            orderBy: {
+              subCategory: "asc",
+            },
+            select: {
+              id: true,
+              subCategory: true,
+              classifications: {
+                orderBy: {
+                  code: "asc",
+                },
+                select: {
+                  id: true,
+                  code: true,
+                  description: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+  const formattedResults: ClassificationSystemTree[] = results.map((system) => {
+    return {
+      id: system.id,
+      name: system.name,
+      categoryLabel: system.categoryLabel,
+      subCategoryLabel: system.subCategoryLabel,
+      categories: system.classificationCategory.map((category) => {
+        return {
+          id: category.id,
+          category: category.category,
+          subCategories: category.classificationSubCategory.map(
+            (subCategory) => {
+              return {
+                id: subCategory.id,
+                subCategory: subCategory.subCategory,
+                classifications: subCategory.classifications,
+              };
+            },
+          ),
+        };
+      }),
+    };
+  });
+  return formattedResults;
+}
+
 export async function searchPossibleClassifications(query: string) {
   const query_words = query.split(" ");
   const results: ContentClassification[] =
@@ -4264,9 +4331,15 @@ export async function searchPossibleClassifications(query: string) {
           OR: [
             { code: { contains: query_word } },
             { description: { contains: query_word } },
-            { subCategory: { subCategory: { contains: query_word }}},
-            { subCategory: { category: {category: {contains: query_word }}}},
-            { subCategory: {category: {system: {name: {contains: query_word }}}}},
+            { subCategory: { subCategory: { contains: query_word } } },
+            {
+              subCategory: { category: { category: { contains: query_word } } },
+            },
+            {
+              subCategory: {
+                category: { system: { name: { contains: query_word } } },
+              },
+            },
           ],
         })),
       },
@@ -4276,9 +4349,9 @@ export async function searchPossibleClassifications(query: string) {
             category: {
               include: {
                 system: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
       },
     });
@@ -4405,15 +4478,17 @@ export async function getClassifications(
               category: {
                 include: {
                   system: true,
-                }
-              }
-            }
+                },
+              },
+            },
           },
         },
       },
     },
   });
-  const formatted: ContentClassification[] = classifications.map((c) => c.classification);
+  const formatted: ContentClassification[] = classifications.map(
+    (c) => c.classification,
+  );
   return formatted;
 }
 

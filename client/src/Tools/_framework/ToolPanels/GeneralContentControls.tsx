@@ -102,11 +102,6 @@ export function GeneralContentControls({
   let [imagePath, setImagePath] = useState(dataImagePath);
   let [alerts, setAlerts] = useState<Alert[]>([]);
 
-  let [classifySelectorInput, setClassifySelectorInput] = useState<string>("");
-  const classificationsAlreadyAdded = contentData.classifications.map(
-    (c2) => c2.id,
-  );
-
   //   let learningOutcomesInit = activityData.learningOutcomes;
   //   if (learningOutcomesInit == null) {
   //     learningOutcomesInit = [""];
@@ -462,7 +457,6 @@ export function GeneralContentControls({
         <input type="hidden" name="imagePath" value={imagePath ?? undefined} />
         <input type="hidden" name="_action" value="update general" />
         <input type="hidden" name="id" value={id} />
-
       </Form>
     </>
   );
