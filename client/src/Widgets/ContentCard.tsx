@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, forwardRef, ReactElement } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  ReactElement,
+} from "react";
 import {
   Box,
   Image,
@@ -15,7 +21,7 @@ import {
   Tooltip,
   Editable,
   EditablePreview,
-  EditableInput
+  EditableInput,
 } from "@chakra-ui/react";
 import { GoKebabVertical } from "react-icons/go";
 import { Link, useFetcher } from "react-router-dom";
@@ -27,7 +33,8 @@ export async function contentCardActions({ formObj }: { [k: string]: any }) {
     //Don't let name be blank
     let name = formObj?.cardTitle?.trim();
     if (name == "") {
-      name = "Untitled " + (formObj.isFolder === "true" ? "Folder" : "Activity");
+      name =
+        "Untitled " + (formObj.isFolder === "true" ? "Folder" : "Activity");
     }
     await axios.post(`/api/updateContentName`, {
       id: formObj.id,
@@ -160,9 +167,7 @@ export default forwardRef(function ContentCard(
                 value={cardTitle}
                 startWithEditView={autoFocusTitle}
                 isDisabled={!editableTitle}
-                onClick={(e) =>
-                  editableTitle ? e.stopPropagation() : null
-                }
+                onClick={(e) => (editableTitle ? e.stopPropagation() : null)}
                 onChange={(txt) => setCardTitle(txt)}
                 onSubmit={() => saveUpdatedTitle()}
                 fontSize="sm"

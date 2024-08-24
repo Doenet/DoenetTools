@@ -32,8 +32,15 @@ import { useFetcher } from "react-router-dom";
 import { AssignmentStatus } from "../_utils/types";
 
 // this component is separate so that it can have its own states
-function ActivityRow({activity, showAssignmentStatus, showPublicStatus, suppressAvatar, showOwnerName, ref}) {
-  console.log(showPublicStatus)
+function ActivityRow({
+  activity,
+  showAssignmentStatus,
+  showPublicStatus,
+  suppressAvatar,
+  showOwnerName,
+  ref,
+}) {
+  console.log(showPublicStatus);
 
   const [rowTitle, setRowTitle] = useState(activity.title);
   const fetcher = useFetcher();
@@ -41,7 +48,10 @@ function ActivityRow({activity, showAssignmentStatus, showPublicStatus, suppress
   // from ActivityEditor.tsx
   let lastActivityDataName = useRef(activity.title);
   //Update when something else updates the name
-  if (activity.title != lastActivityDataName.current && rowTitle != activity.title) {
+  if (
+    activity.title != lastActivityDataName.current &&
+    rowTitle != activity.title
+  ) {
     setRowTitle(activity.title);
   }
   lastActivityDataName.current = activity.title;
@@ -61,17 +71,14 @@ function ActivityRow({activity, showAssignmentStatus, showPublicStatus, suppress
       assignmentStatusString + " until " + activity.closeTime;
   }
 
-  let tooltipLabelString: string =
-    activity.isFolder
+  let tooltipLabelString: string = activity.isFolder
     ? activity.isPublic || activity.isShared
       ? "Folder / Public"
       : "Folder / Private"
     : activity.authorRow
       ? activity.ownerName
       : "Activity" +
-        (activity.assignmentStatus
-          ? " / " + activity.assignmentStatus
-          : "")
+        (activity.assignmentStatus ? " / " + activity.assignmentStatus : "");
 
   function saveUpdatedTitle() {
     if (rowTitle !== activity.title && activity.id !== undefined) {
@@ -88,7 +95,7 @@ function ActivityRow({activity, showAssignmentStatus, showPublicStatus, suppress
   }
 
   return (
-    <LinkBox 
+    <LinkBox
       as={Tr}
       key={(activity.authorRow ? "author" : "activity") + activity.id}
       data-test="Activity Link"
@@ -102,11 +109,7 @@ function ActivityRow({activity, showAssignmentStatus, showPublicStatus, suppress
           <Tooltip label={tooltipLabelString}>
             <Box m="0" p="0">
               {activity.authorRow ? (
-                <Avatar
-                  size="sm"
-                  name={activity.ownerName}
-                  marginLeft="1em"
-                />
+                <Avatar size="sm" name={activity.ownerName} marginLeft="1em" />
               ) : (
                 <Icon
                   as={
@@ -173,9 +176,7 @@ function ActivityRow({activity, showAssignmentStatus, showPublicStatus, suppress
           ) : null}
         </HStack>
         <Show below="md">
-          {showAssignmentStatus ? (
-            <Text>{assignmentStatusString}</Text>
-          ) : null}
+          {showAssignmentStatus ? <Text>{assignmentStatusString}</Text> : null}
         </Show>
       </Td>
       {showPublicStatus ? (
@@ -183,11 +184,12 @@ function ActivityRow({activity, showAssignmentStatus, showPublicStatus, suppress
       ) : null}
       <Show above="md">
         {showAssignmentStatus ? (
-          <Td><Text>{assignmentStatusString}</Text></Td>
+          <Td>
+            <Text>{assignmentStatusString}</Text>
+          </Td>
         ) : null}
       </Show>
-      {(!suppressAvatar && !activity.authorRow) ||
-      (showOwnerName) ? (
+      {(!suppressAvatar && !activity.authorRow) || showOwnerName ? (
         <Td>
           <HStack>
             {suppressAvatar || activity.authorRow ? null : (
@@ -214,9 +216,7 @@ function ActivityRow({activity, showAssignmentStatus, showPublicStatus, suppress
             >
               <Icon color="black" as={GoKebabVertical} boxSize={6} />
             </MenuButton>
-            <MenuList zIndex="1">
-              {activity.menuItems}
-            </MenuList>
+            <MenuList zIndex="1">{activity.menuItems}</MenuList>
           </Menu>
         ) : null}
       </Td>
@@ -254,7 +254,6 @@ export default forwardRef(function ActivityTable(
   },
   ref: React.ForwardedRef<HTMLButtonElement>,
 ) {
-
   return (
     <TableContainer overflowX="visible" overflowY="visible">
       <Table>
@@ -271,7 +270,16 @@ export default forwardRef(function ActivityTable(
           </Tr>
         </Thead>
         <Tbody>
-          {content.map((activity) => <ActivityRow activity={activity} showAssignmentStatus={showAssignmentStatus} showPublicStatus={showPublicStatus} suppressAvatar={suppressAvatar} showOwnerName={showOwnerName} ref={ref} />)}
+          {content.map((activity) => (
+            <ActivityRow
+              activity={activity}
+              showAssignmentStatus={showAssignmentStatus}
+              showPublicStatus={showPublicStatus}
+              suppressAvatar={suppressAvatar}
+              showOwnerName={showOwnerName}
+              ref={ref}
+            />
+          ))}
         </Tbody>
       </Table>
     </TableContainer>
