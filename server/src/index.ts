@@ -1380,7 +1380,7 @@ app.get("/api/getAllLicenses", async (_req: Request, res: Response) => {
 });
 
 app.get(
-  "/api/getActivityView/:activityId",
+  "/api/getActivityViewerData/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = req.user?.userId ?? Buffer.alloc(16);
     const activityId = toUUID(req.params.activityId);

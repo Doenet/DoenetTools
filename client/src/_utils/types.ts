@@ -42,12 +42,20 @@ export type UserInfo = {
 export type ContentClassification = {
   id: number;
   code: string;
-  category: string;
-  subCategory: string;
   description: string;
-  system: {
+  subCategory: {
     id: number;
-    name: string;
+    subCategory: string;
+    category: {
+      id: number;
+      category: string;
+      system: {
+        id: number;
+        name: string;
+        categoryLabel: string;
+        subCategoryLabel: string;
+      };
+    };
   };
 };
 

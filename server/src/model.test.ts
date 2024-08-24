@@ -6924,8 +6924,8 @@ test("Content classifications can only be edited by activity owner", async () =>
   {
     const classifications = await getClassifications(activityId, userId);
     expect(classifications.length).toBe(1);
-    expect(classifications[0].classification).toHaveProperty("code", "K.CC.1");
-    expect(classifications[0].classification).toHaveProperty(
+    expect(classifications[0]).toHaveProperty("code", "K.CC.1");
+    expect(classifications[0]).toHaveProperty(
       "id",
       classificationId,
     );
