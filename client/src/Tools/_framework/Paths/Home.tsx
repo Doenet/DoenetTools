@@ -178,6 +178,7 @@ export function Home() {
         justifyContent="center"
         bg={blackColor}
         py="30px"
+        overflow="hidden"
       >
         <Show above="sm">
           <Grid
