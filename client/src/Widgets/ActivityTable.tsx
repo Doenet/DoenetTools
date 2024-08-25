@@ -287,6 +287,7 @@ export default forwardRef(function ActivityTable(
         <Tbody>
           {content.map((activity) => (
             <ActivityRow
+              key={activity.id}
               activity={activity}
               showAssignmentStatus={showAssignmentStatus}
               showPublicStatus={showPublicStatus}
