@@ -17,6 +17,8 @@ import {
   SimpleGrid,
   VStack,
   Box,
+  LinkBox,
+  LinkOverlay,
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import axios from "axios";
@@ -188,26 +190,18 @@ export function AssignmentData() {
                       "/" +
                       assignmentScore.user.userId;
                     return (
-                      <Tr key={`user${assignmentScore.user.userId}`}>
+                      <LinkBox
+                        as={Tr}
+                        key={`user${assignmentScore.user.userId}`}
+                        _hover={{ backgroundColor: "#eeeeee" }}
+                      >
                         <Td>
-                          <ChakraLink
-                            as={ReactRouterLink}
-                            to={linkURL}
-                            style={linkStyle}
-                          >
+                          <LinkOverlay as={ReactRouterLink} to={linkURL}>
                             {createFullName(assignmentScore.user)}
-                          </ChakraLink>
+                          </LinkOverlay>
                         </Td>
-                        <Td>
-                          <ChakraLink
-                            as={ReactRouterLink}
-                            to={linkURL}
-                            style={linkStyle}
-                          >
-                            {Math.round(assignmentScore.score * 100) / 100}
-                          </ChakraLink>
-                        </Td>
-                      </Tr>
+                        <Td>{Math.round(assignmentScore.score * 100) / 100}</Td>
+                      </LinkBox>
                     );
                   })}
                 </Tbody>
@@ -262,37 +256,21 @@ export function AssignmentData() {
                           answerObj.docVersionNum
                         }?answerId=${encodeURIComponent(answerObj.answerId)}`;
                         return (
-                          <Tr key={key}>
+                          <LinkBox
+                            as={Tr}
+                            key={key}
+                            _hover={{ backgroundColor: "#eeeeee" }}
+                          >
                             <Td>
-                              <ChakraLink
-                                as={ReactRouterLink}
-                                to={linkURL}
-                                style={linkStyle}
-                              >
+                              <LinkOverlay as={ReactRouterLink} to={linkURL}>
                                 {answerObj.answerId}
-                              </ChakraLink>
+                              </LinkOverlay>
                             </Td>
+                            <Td>{answerObj.count}</Td>
                             <Td>
-                              <ChakraLink
-                                as={ReactRouterLink}
-                                to={linkURL}
-                                style={linkStyle}
-                              >
-                                {answerObj.count}
-                              </ChakraLink>
+                              {Math.round(answerObj.averageCredit * 1000) / 10}%
                             </Td>
-                            <Td>
-                              <ChakraLink
-                                as={ReactRouterLink}
-                                to={linkURL}
-                                style={linkStyle}
-                              >
-                                {Math.round(answerObj.averageCredit * 1000) /
-                                  10}
-                                %
-                              </ChakraLink>
-                            </Td>
-                          </Tr>
+                          </LinkBox>
                         );
                       })}
                     </Tbody>
