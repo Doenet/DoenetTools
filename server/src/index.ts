@@ -2479,7 +2479,7 @@ app.get(
 
 app.get(
   "/api/getAllClassificationInfo",
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const results = await getAllClassificationInfo();
       res.send(results);

@@ -128,7 +128,7 @@ export type ClassificationSystemTree = {
         id: number;
         code: string;
         description: string;
-      }[]
-    }[]
-  }[]
+      }[];
+    }[];
+  }[];
 };

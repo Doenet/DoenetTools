@@ -2571,7 +2571,7 @@ test("copyActivityToFolder copies content classifications", async () => {
     null,
   );
 
-  const activityData = await getActivityViewerData(newActivityId, newOwnerId);
+  const activityData = await getActivityEditorData(newActivityId, newOwnerId);
 
   expect(activityData.activity.classifications).toHaveLength(1);
   expect(activityData.activity.classifications[0].id).eq(classifyId);

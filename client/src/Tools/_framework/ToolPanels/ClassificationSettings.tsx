@@ -99,6 +99,12 @@ export function ClassificationSettings({
     setClassifyItemRemoveSpinner(0);
   }, [contentData]);
 
+  // Non-zero if waiting for server to add classification (stores id)
+  let [dropdownWaitingForAdd, setDropdownWaitingForAdd] = useState(0);
+  useEffect(() => {
+    setDropdownWaitingForAdd(0);
+  }, [contentData]);
+
   let [allClassifications, setAllClassifications] = useState<
     ClassificationSystemTree[]
   >([]);
@@ -296,7 +302,9 @@ export function ClassificationSettings({
                               ) : (
                                 <Button
                                   size="sm"
+                                  isDisabled={dropdownWaitingForAdd === classification.id}
                                   onClick={() => {
+                                    setDropdownWaitingForAdd(classification.id);
                                     fetcher.submit(
                                       {
                                         _action: "add content classification",
@@ -307,7 +315,7 @@ export function ClassificationSettings({
                                     );
                                   }}
                                 >
-                                  Add
+                                  {dropdownWaitingForAdd === classification.id ? <Spinner />: "Add" }
                                 </Button>
                               )}
                             </Flex>
@@ -326,6 +334,7 @@ export function ClassificationSettings({
                     placeholder="...or search by keyword"
                     defaultOptions
                     isClearable
+                    isDisabled={!classifySpinnerHidden}
                     value={null}
                     loadOptions={getClassificationOptions}
                     onInputChange={(newVal) => {
