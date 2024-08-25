@@ -28,7 +28,7 @@ import { FaFolder } from "react-icons/fa";
 import { RiDraftFill } from "react-icons/ri";
 import { MdAssignment } from "react-icons/md";
 import { BsPeopleFill } from "react-icons/bs";
-import { useFetcher } from "react-router-dom";
+import { Link as ReactRouterLink, useFetcher } from "react-router-dom";
 import { AssignmentStatus } from "../_utils/types";
 
 // this component is separate so that it can have its own states
@@ -40,8 +40,6 @@ function ActivityRow({
   showOwnerName,
   ref,
 }) {
-  console.log(showPublicStatus);
-
   const [rowTitle, setRowTitle] = useState(activity.title);
   const fetcher = useFetcher();
 
@@ -92,6 +90,10 @@ function ActivityRow({
         { method: "post" },
       );
     }
+    // set default title here so it isn't blank while waiting for activity.title to be set to default on backend
+    if (rowTitle.length === 0) {
+      setRowTitle("Untitled " + (activity.isFolder ? "Folder" : "Activity"));
+    }
   }
 
   return (
@@ -105,7 +107,10 @@ function ActivityRow({
       width="100%"
     >
       <Td p="0" m="0" width="20px">
-        <LinkOverlay href={activity.cardLink ? activity.cardLink : ""}>
+        <LinkOverlay
+          as={ReactRouterLink}
+          to={activity.cardLink ? activity.cardLink : ""}
+        >
           <Tooltip label={tooltipLabelString}>
             <Box m="0" p="0">
               {activity.authorRow ? (
@@ -154,14 +159,24 @@ function ActivityRow({
             <EditableInput
               maxLength={191}
               onBlur={() => {
-                // prevent click default/propagation behavior one time (aka right now as user is clicking to blur input)
+                // prevent click default/propagation behavior one time (i.e., right now as user is clicking to blur input)
+                const clickListener = (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                };
+                document.addEventListener("click", clickListener, {
+                  capture: true,
+                  once: true,
+                });
+                // unless the user presses a key; in that case, don't prevent any click behavior, as they could be navigating with the keyboard
                 document.addEventListener(
-                  "click",
-                  (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                  "keyup",
+                  () => {
+                    document.removeEventListener("click", clickListener, {
+                      capture: true,
+                    });
                   },
-                  { capture: true, once: true },
+                  { once: true },
                 );
               }}
             />

@@ -130,6 +130,10 @@ export default forwardRef(function ContentCard(
         { method: "post" },
       );
     }
+    // set default title here so it isn't blank while waiting for activity.title to be set to default on backend
+    if (cardTitle.length === 0) {
+      setCardTitle("Untitled " + (isFolder ? "Folder" : "Activity"));
+    }
   }
 
   let image = (
