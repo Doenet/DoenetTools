@@ -118,7 +118,6 @@ export type DocRemixItem = {
   owner: UserInfo;
 };
 
-
 export type ClassificationSystemTree = {
   id: number;
   name: string;
@@ -134,7 +133,7 @@ export type ClassificationSystemTree = {
         id: number;
         code: string;
         description: string;
-      }[]
-    }[]
-  }[]
+      }[];
+    }[];
+  }[];
 };

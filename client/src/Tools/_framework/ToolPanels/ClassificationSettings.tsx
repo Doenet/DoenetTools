@@ -302,7 +302,9 @@ export function ClassificationSettings({
                               ) : (
                                 <Button
                                   size="sm"
-                                  isDisabled={dropdownWaitingForAdd === classification.id}
+                                  isDisabled={
+                                    dropdownWaitingForAdd === classification.id
+                                  }
                                   onClick={() => {
                                     setDropdownWaitingForAdd(classification.id);
                                     fetcher.submit(
@@ -315,7 +317,12 @@ export function ClassificationSettings({
                                     );
                                   }}
                                 >
-                                  {dropdownWaitingForAdd === classification.id ? <Spinner />: "Add" }
+                                  {dropdownWaitingForAdd ===
+                                  classification.id ? (
+                                    <Spinner />
+                                  ) : (
+                                    "Add"
+                                  )}
                                 </Button>
                               )}
                             </Flex>
