@@ -12,6 +12,8 @@ import {
   Link,
   Text,
   Box,
+  LinkBox,
+  LinkOverlay,
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import axios from "axios";
@@ -118,36 +120,31 @@ export function StudentData() {
           <Tbody>
             {scores.map((score) => {
               return (
-                <Tr key={`assignment${score.activityId}`}>
+                <LinkBox
+                  as={Tr}
+                  key={`assignment${score.activityId}`}
+                  _hover={{ backgroundColor: "#eeeeee" }}
+                >
                   <Td key={`assignment_title${score.activityId}`}>
-                    {isAssignedData ? (
-                      score.activityName
-                    ) : (
-                      <Link
-                        href={`/assignmentData/${score.activityId}`}
-                        style={linkStyle}
-                      >
-                        {score.activityName}
-                      </Link>
-                    )}
+                    {score.activityName}
                   </Td>
                   <Td key={`score${score.activityId}`}>
                     {score.score !== null ? (
-                      <Link
-                        href={
+                      <LinkOverlay
+                        as={ReactRouterLink}
+                        to={
                           isAssignedData
-                            ? `assignedData/${score.activityId}`
+                            ? `/assignedData/${score.activityId}`
                             : `/assignmentData/${score.activityId}/${userData.userId}`
                         }
-                        style={linkStyle}
                       >
                         {score.score}
-                      </Link>
+                      </LinkOverlay>
                     ) : (
                       <Text>&#8212;</Text>
                     )}
                   </Td>
-                </Tr>
+                </LinkBox>
               );
             })}
           </Tbody>

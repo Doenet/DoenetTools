@@ -522,6 +522,7 @@ export function Activities() {
           noOfLines={1}
           maxHeight="1.5em"
           lineHeight="normal"
+          data-test="Folder Heading"
         >
           <Tooltip label={headingText}>{headingText}</Tooltip>
         </Heading>

@@ -1,4 +1,10 @@
-import React, { useState, useEffect, forwardRef, ReactElement } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  ReactElement,
+} from "react";
 import {
   Box,
   Image,
@@ -13,6 +19,9 @@ import {
   MenuList,
   Input,
   Tooltip,
+  Editable,
+  EditablePreview,
+  EditableInput,
 } from "@chakra-ui/react";
 import { GoKebabVertical } from "react-icons/go";
 import { Link, useFetcher } from "react-router-dom";
@@ -24,7 +33,8 @@ export async function contentCardActions({ formObj }: { [k: string]: any }) {
     //Don't let name be blank
     let name = formObj?.cardTitle?.trim();
     if (name == "") {
-      name = "Untitled " + (formObj.isFolder ? "Folder" : "Activity");
+      name =
+        "Untitled " + (formObj.isFolder === "true" ? "Folder" : "Activity");
     }
     await axios.post(`/api/updateContentName`, {
       id: formObj.id,
@@ -86,6 +96,14 @@ export default forwardRef(function ContentCard(
     setCardTitle(title);
   }, [title]);
 
+  // from ActivityEditor.tsx
+  let lastActivityDataName = useRef(title);
+  //Update when something else updates the name
+  if (title != lastActivityDataName.current && cardTitle != title) {
+    setCardTitle(title);
+  }
+  lastActivityDataName.current = title;
+
   if (isFolder) {
     showAssignmentStatus = false;
   }
@@ -111,6 +129,10 @@ export default forwardRef(function ContentCard(
         { _action: "update title", id, cardTitle, isFolder: Boolean(isFolder) },
         { method: "post" },
       );
+    }
+    // set default title here so it isn't blank while waiting for activity.title to be set to default on backend
+    if (cardTitle.length === 0) {
+      setCardTitle("Untitled " + (isFolder ? "Folder" : "Activity"));
     }
   }
 
@@ -144,23 +166,26 @@ export default forwardRef(function ContentCard(
           )}
 
           <Box width="160px" minWidth="0px" p="1">
-            {editableTitle ? (
-              <Tooltip label={cardTitle}>
-                <Input
-                  value={cardTitle}
+            <Tooltip label={cardTitle}>
+              <Editable
+                value={cardTitle}
+                startWithEditView={autoFocusTitle}
+                isDisabled={!editableTitle}
+                onClick={(e) => (editableTitle ? e.stopPropagation() : null)}
+                onChange={(txt) => setCardTitle(txt)}
+                onSubmit={() => saveUpdatedTitle()}
+                fontSize="sm"
+              >
+                <EditablePreview
+                  cursor={editableTitle ? "auto" : "pointer"}
+                  maxHeight="1.5em"
+                  noOfLines={1}
+                  padding=".1em"
+                />
+                <EditableInput
                   maxLength={191}
-                  size="xs"
-                  border="none"
                   padding="0"
-                  margin="0"
-                  height="1em"
-                  fontWeight="bold"
-                  data-test="Editable Title"
-                  autoFocus={autoFocusTitle}
-                  onFocus={(e) => e.target.select()}
-                  onChange={(e) => setCardTitle(e.target.value)}
-                  onBlur={(e) => {
-                    saveUpdatedTitle();
+                  onBlur={() => {
                     // prevent click default/propagation behavior one time (aka right now as user is clicking to blur input)
                     document.addEventListener(
                       "click",
@@ -171,28 +196,9 @@ export default forwardRef(function ContentCard(
                       { capture: true, once: true },
                     );
                   }}
-                  onKeyDown={(e) => {
-                    if (e.key == "Enter") {
-                      (e.target as HTMLElement).blur();
-                    }
-                  }}
                 />
-              </Tooltip>
-            ) : (
-              <Tooltip label={cardTitle}>
-                <Text
-                  data-test="Card Label"
-                  lineHeight="1.1"
-                  fontSize="xs"
-                  fontWeight="700"
-                  noOfLines={2}
-                  textAlign="left"
-                  overflow="hidden"
-                >
-                  {cardTitle}
-                </Text>
-              </Tooltip>
-            )}
+              </Editable>
+            </Tooltip>
             {showOwnerName ? (
               <Tooltip label={ownerName}>
                 <Text
@@ -211,6 +217,7 @@ export default forwardRef(function ContentCard(
                   fontSize="xs"
                   noOfLines={1}
                   textAlign="left"
+                  marginTop=".2em"
                   //data-test="Card Full Name"
                 >
                   {statusString}
