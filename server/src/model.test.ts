@@ -172,7 +172,8 @@ test("New activity starts out private, then delete it", async () => {
     documents: [
       {
         id: docId,
-        source: "",
+        source: `<p>Your content goes here! Example: What is <m>1+1</m>?</p>
+<answer>2</answer>`,
         name: "Untitled Document",
         doenetmlVersion: currentDoenetmlVersion,
       },
@@ -4720,7 +4721,8 @@ test("activity editor data and my folder contents before and after assigned", as
     documents: [
       {
         id: docId,
-        source: "",
+        source: `<p>Your content goes here! Example: What is <m>1+1</m>?</p>
+<answer>2</answer>`,
         name: "Untitled Document",
         doenetmlVersion: currentDoenetmlVersion,
       },
@@ -4771,7 +4773,8 @@ test("activity editor data and my folder contents before and after assigned", as
       {
         id: docId,
         versionNum: 1,
-        source: "",
+        source: `<p>Your content goes here! Example: What is <m>1+1</m>?</p>
+<answer>2</answer>`,
         name: "Untitled Document",
         doenetmlVersion: currentDoenetmlVersion,
       },
@@ -4817,7 +4820,8 @@ test("activity editor data and my folder contents before and after assigned", as
     documents: [
       {
         id: docId,
-        source: "",
+        source: `<p>Your content goes here! Example: What is <m>1+1</m>?</p>
+<answer>2</answer>`,
         name: "Untitled Document",
         doenetmlVersion: currentDoenetmlVersion,
       },
@@ -4871,7 +4875,8 @@ test("activity editor data and my folder contents before and after assigned", as
       {
         id: docId,
         versionNum: 1,
-        source: "",
+        source: `<p>Your content goes here! Example: What is <m>1+1</m>?</p>
+<answer>2</answer>`,
         name: "Untitled Document",
         doenetmlVersion: currentDoenetmlVersion,
       },
@@ -4927,7 +4932,8 @@ test("activity editor data and my folder contents before and after assigned", as
       {
         id: docId,
         versionNum: 1,
-        source: "",
+        source: `<p>Your content goes here! Example: What is <m>1+1</m>?</p>
+<answer>2</answer>`,
         name: "Untitled Document",
         doenetmlVersion: currentDoenetmlVersion,
       },
@@ -4974,7 +4980,8 @@ test("activity editor data and my folder contents before and after assigned", as
       {
         id: docId,
         versionNum: 1,
-        source: "",
+        source: `<p>Your content goes here! Example: What is <m>1+1</m>?</p>
+<answer>2</answer>`,
         name: "Untitled Document",
         doenetmlVersion: currentDoenetmlVersion,
       },
