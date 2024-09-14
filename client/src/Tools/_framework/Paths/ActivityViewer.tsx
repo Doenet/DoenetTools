@@ -41,7 +41,7 @@ import {
 export async function loader({ params }) {
   try {
     const { data: activityData } = await axios.get(
-      `/api/getActivityView/${params.activityId}`,
+      `/api/getActivityViewerData/${params.activityId}`,
     );
 
     let activityId = params.activityId;
