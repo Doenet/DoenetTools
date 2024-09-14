@@ -92,6 +92,9 @@ export async function createActivity(
     }
   }
 
+  const sourcePrefill = `<p>Your content goes here! Example: What is <m>1+1</m>?</p>
+<answer>2</answer>`;
+
   const activity = await prisma.content.create({
     data: {
       ownerId,
@@ -105,7 +108,7 @@ export async function createActivity(
       documents: {
         create: [
           {
-            source: "",
+            source: sourcePrefill,
             doenetmlVersionId: defaultDoenetmlVersion.id,
             name: "Untitled Document",
           },
