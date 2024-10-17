@@ -188,20 +188,6 @@ export function Home() {
 
   return (
     <>
-      <Center w="100%" bg={"#fefa78"} pl="10px" pr="10px">
-        <Text
-          fontSize={["18px", "18px", "18px", "24px"]}
-          // fontSize="60px"
-          fontWeight="700"
-          color={"#0f0f0f"}
-        >
-          Join us for our first Doenet Digital Math Interactives Workshop on
-          June 13, 2024.{" "}
-          <Link href="#workshop2" textDecoration={"underline"}>
-            More Info
-          </Link>
-        </Text>
-      </Center>
       <Flex
         alignItems="center"
         justifyContent="center"
@@ -255,70 +241,6 @@ export function Home() {
               // fontSize="60px"
               fontWeight="700"
               color={blackColor}
-              id="workshop2"
-            >
-              Digital Math Interactives Workshop
-            </Text>
-          </HStack>
-          <Text
-            fontSize={["25px", "25px", "25px", "30px", "40px"]}
-            // fontSize="60px"
-            fontWeight="700"
-            color={blackColor}
-          >
-            For Middle and High School Teachers
-          </Text>
-          <Text
-            pt="24px"
-            fontSize={"18px"}
-            // fontSize="20px"
-            fontWeight="500"
-            color={blackColor}
-          >
-            High-school and middle-school math and science teachers are invited
-            to attend the first in a series of free, one-day{" "}
-            <Link
-              href="https://forms.gle/CfiLXtMUY81c2YJh6"
-              textDecoration="underline"
-            >
-              educational technology workshops
-            </Link>
-            . It will be held on June 13, 2024 at the University of Minnesota,
-            Twin Cities Campus, from 9:00a.m. - 3:00p.m.
-            <br />
-            <br />
-            During the workshop, participants will learn to use and create
-            digital interactive activities that can be shared in the classroom
-            using the Doenet online application.
-            <br />
-            <br />
-            To register for the current workshop or receive information about
-            upcoming workshops, please fill out this{" "}
-            <Link
-              href="https://forms.gle/CfiLXtMUY81c2YJh6"
-              textDecoration="underline"
-            >
-              registration form
-            </Link>
-            .
-          </Text>
-        </VStack>
-      </Center>
-
-      <Center w="100%" bg={"white"} pl="10px" pr="10px">
-        <VStack
-          maxWidth="900px"
-          w="100%"
-          spacing={4}
-          marginTop="40px"
-          marginBottom="40px"
-        >
-          <HStack>
-            <Text
-              fontSize={["30px", "30px", "30px", "40px", "60px"]}
-              // fontSize="60px"
-              fontWeight="700"
-              color={blackColor}
             >
               Drop-In Office Hours
             </Text>
@@ -337,7 +259,7 @@ export function Home() {
             >
               PROSE Consortium
             </Link>
-            , Doenet invites you to join us each Thursday 2:15-4:15pm Central{" "}
+            , Doenet invites you to join us each Tuesday 1-3pm Central{" "}
             <Link
               href="https://prose.runestone.academy/dropin/"
               textDecoration="underline"
@@ -361,7 +283,7 @@ export function Home() {
         </VStack>
       </Center>
 
-      <Center w="100%" bg={grayColor} paddingTop="40px" pl="10px" pr="10px">
+      <Center w="100%" bg={"white"} paddingTop="40px" pl="10px" pr="10px">
         <HStack maxWidth="750px" w="100%" spacing={4}>
           <Text
             fontSize={["30px", "30px", "30px", "40px", "60px"]}
@@ -387,7 +309,7 @@ export function Home() {
       <Flex
         justifyContent="center"
         alignItems="center"
-        bg={grayColor}
+        bg={"white"}
         p="60px 10px"
       >
         <Carousel title="Doenet Team Favorites" data={favorites} />
