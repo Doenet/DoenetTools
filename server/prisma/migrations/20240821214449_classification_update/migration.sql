@@ -14,15 +14,3 @@ ALTER TABLE `classificationSystems` ADD COLUMN `categoryLabel` VARCHAR(191) NOT 
 -- AlterTable
 ALTER TABLE `classifications` DROP COLUMN `grade`,
     ADD COLUMN `subCategory` TEXT NOT NULL;
-
--- AlterTable
-ALTER TABLE `content` MODIFY `id` BINARY(16) NOT NULL DEFAULT (uuid_to_bin(uuid(), 1));
-
--- AlterTable
-ALTER TABLE `documentSubmittedResponses` MODIFY `id` BINARY(16) NOT NULL DEFAULT (uuid_to_bin(uuid(), 1));
-
--- AlterTable
-ALTER TABLE `documents` MODIFY `id` BINARY(16) NOT NULL DEFAULT (uuid_to_bin(uuid(), 1));
-
--- AlterTable
-ALTER TABLE `users` MODIFY `userId` BINARY(16) NOT NULL DEFAULT (uuid_to_bin(uuid(), 1));
