@@ -3109,8 +3109,8 @@ test("searchSharedContent, classification increases relevance", async () => {
   const ownerId = owner.userId;
 
   const { id: classifyId } = (
-    await searchPossibleClassifications("K.CC.1 common core")
-  ).find((k) => k.code === "K.CC.1")!;
+    await searchPossibleClassifications("K.CC.3 common core")
+  ).find((k) => k.code === "K.CC.3")!;
 
   // unique code to distinguish content added in this test
   const code = `${Date.now()}`;
@@ -3145,8 +3145,19 @@ test("searchSharedContent, classification increases relevance", async () => {
   });
   await addClassification(activity2Id, classifyId, ownerId);
 
-  const results = await searchSharedContent(`K.CC.1 banana${code}`, userId);
+  let results = await searchSharedContent(`K.CC.3 banana${code}`, userId);
+  expect(results[0].id).eqls(activity2Id);
+  expect(results[1].id).eqls(activity1Id);
 
+  results = await searchSharedContent(`Kindergarten banana${code}`, userId);
+  expect(results[0].id).eqls(activity2Id);
+  expect(results[1].id).eqls(activity1Id);
+
+  results = await searchSharedContent(`cardiNALITY banana${code}`, userId);
+  expect(results[0].id).eqls(activity2Id);
+  expect(results[1].id).eqls(activity1Id);
+
+  results = await searchSharedContent(`numeral banana${code}`, userId);
   expect(results[0].id).eqls(activity2Id);
   expect(results[1].id).eqls(activity1Id);
 });

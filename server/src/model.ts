@@ -1240,7 +1240,6 @@ export async function getSharedEditorData(
   return activity;
 }
 
-// TODO: do we need this?? It's not currently used
 // TODO: generalize this to multi-document activities
 export async function getActivityViewerData(
   activityId: Buffer,
@@ -1709,7 +1708,8 @@ export async function searchSharedContent(
     (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
     MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
     MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     ) as relevance
   FROM
     content
@@ -1723,6 +1723,8 @@ export async function searchSharedContent(
     classifications ON contentClassifications.classificationId = classifications.id
   LEFT JOIN
     classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
+  LEFT JOIN
+    classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
   WHERE
     content.isDeleted = FALSE
     AND (
@@ -1734,7 +1736,8 @@ export async function searchSharedContent(
     OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+    OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
   GROUP BY
     content.id
   ORDER BY
