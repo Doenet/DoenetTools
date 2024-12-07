@@ -244,22 +244,44 @@ model contentClassifications {
   @@id([contentId, classificationId])
 }
 
-model classifications {
-  id                     Int                      @id @default(autoincrement())
-  code                   String
-  systemId               Int
-  category               String                   @db.Text
-  description            String                   @db.Text
-  grade                  String?
-  system                 classificationSystems    @relation(fields: [systemId], references: [id])
-  contentClassifications contentClassifications[]
-
-  @@unique([code, systemId])
-  @@fulltext([code, category, description])
+model classificationSystems {
+  id                     Int                        @id @default(autoincrement())
+  name                   String                     @unique
+  categoryLabel          String
+  subCategoryLabel       String
+  classificationCategory classificationCategories[]
 }
 
-model classificationSystems {
-  id              Int               @id @default(autoincrement())
-  name            String            @unique
+model classificationCategories {
+  id                        Int                           @id @default(autoincrement())
+  category                  String
+  systemId                  Int
+  system                    classificationSystems         @relation(fields: [systemId], references: [id])
+  classificationSubCategory classificationSubCategories[]
+
+  @@unique([category, systemId])
+  @@fulltext([category])
+}
+
+model classificationSubCategories {
+  id              Int                      @id @default(autoincrement())
+  categoryId      Int
+  subCategory     String                   @db.VarChar(255)
+  category        classificationCategories @relation(fields: [categoryId], references: [id])
   classifications classifications[]
+
+  @@unique([subCategory, categoryId])
+  @@fulltext([subCategory])
+}
+
+model classifications {
+  id                     Int                         @id @default(autoincrement())
+  subCategoryId          Int
+  code                   String
+  description            String                      @db.Text
+  subCategory            classificationSubCategories @relation(fields: [subCategoryId], references: [id])
+  contentClassifications contentClassifications[]
+
+  @@unique([code, subCategoryId])
+  @@fulltext([code, description])
 }

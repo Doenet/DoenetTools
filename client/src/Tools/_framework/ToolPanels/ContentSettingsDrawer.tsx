@@ -25,6 +25,11 @@ import {
   SupportFilesControls,
 } from "./SupportFilesControls";
 import { ContentStructure, DoenetmlVersion } from "../../../_utils/types";
+import {
+  ClassificationSettings,
+  classificationSettingsActions,
+} from "./ClassificationSettings";
+import axios from "axios";
 
 export async function contentSettingsActions({
   formObj,
@@ -36,9 +41,14 @@ export async function contentSettingsActions({
     return result2;
   }
 
-  let result3 = await supportFilesActions({ formObj });
+  let result3 = await classificationSettingsActions({ formObj });
   if (result3) {
     return result3;
+  }
+
+  let result4 = await supportFilesActions({ formObj });
+  if (result4) {
+    return result4;
   }
 
   return null;
@@ -111,6 +121,12 @@ export function ContentSettingsDrawer({
           <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)}>
             <TabList>
               <Tab data-test="General Tab">General</Tab>
+
+              {!contentData.isFolder ? (
+                <Tab data-test="Classifications">
+                  Classifications ({contentData.classifications.length})
+                </Tab>
+              ) : null}
               {haveSupportingFiles ? (
                 <Tab data-test="Files Tab">Support Files</Tab>
               ) : null}
@@ -125,6 +141,15 @@ export function ContentSettingsDrawer({
                     allDoenetmlVersions={allDoenetmlVersions}
                   />
                 </TabPanel>
+                {!contentData.isFolder ? (
+                  <TabPanel>
+                    <ClassificationSettings
+                      fetcher={fetcher}
+                      id={id}
+                      contentData={contentData}
+                    />
+                  </TabPanel>
+                ) : null}
                 {haveSupportingFiles ? (
                   <TabPanel>
                     <SupportFilesControls

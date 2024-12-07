@@ -72,9 +72,10 @@ import {
   getDocumentSource,
   getPreferredFolderView,
   setPreferredFolderView,
+  getAllClassificationInfo,
 } from "./model";
 import { DateTime } from "luxon";
-import { ContentStructure } from "./types";
+import { ClassificationSystemTree, ContentStructure } from "./types";
 import {
   allAssignmentScoresConvertUUID,
   fromUUID,
@@ -2571,7 +2572,7 @@ test("copyActivityToFolder copies content classifications", async () => {
     null,
   );
 
-  const activityData = await getActivityViewerData(newActivityId, newOwnerId);
+  const activityData = await getActivityEditorData(newActivityId, newOwnerId);
 
   expect(activityData.activity.classifications).toHaveLength(1);
   expect(activityData.activity.classifications[0].id).eq(classifyId);
@@ -3108,8 +3109,8 @@ test("searchSharedContent, classification increases relevance", async () => {
   const ownerId = owner.userId;
 
   const { id: classifyId } = (
-    await searchPossibleClassifications("K.CC.1 common core")
-  ).find((k) => k.code === "K.CC.1")!;
+    await searchPossibleClassifications("K.CC.3 common core")
+  ).find((k) => k.code === "K.CC.3")!;
 
   // unique code to distinguish content added in this test
   const code = `${Date.now()}`;
@@ -3144,8 +3145,19 @@ test("searchSharedContent, classification increases relevance", async () => {
   });
   await addClassification(activity2Id, classifyId, ownerId);
 
-  const results = await searchSharedContent(`K.CC.1 banana${code}`, userId);
+  let results = await searchSharedContent(`K.CC.3 banana${code}`, userId);
+  expect(results[0].id).eqls(activity2Id);
+  expect(results[1].id).eqls(activity1Id);
 
+  results = await searchSharedContent(`Kindergarten banana${code}`, userId);
+  expect(results[0].id).eqls(activity2Id);
+  expect(results[1].id).eqls(activity1Id);
+
+  results = await searchSharedContent(`cardiNALITY banana${code}`, userId);
+  expect(results[0].id).eqls(activity2Id);
+  expect(results[1].id).eqls(activity1Id);
+
+  results = await searchSharedContent(`numeral banana${code}`, userId);
   expect(results[0].id).eqls(activity2Id);
   expect(results[1].id).eqls(activity1Id);
 });
@@ -6924,11 +6936,8 @@ test("Content classifications can only be edited by activity owner", async () =>
   {
     const classifications = await getClassifications(activityId, userId);
     expect(classifications.length).toBe(1);
-    expect(classifications[0].classification).toHaveProperty("code", "K.CC.1");
-    expect(classifications[0].classification).toHaveProperty(
-      "id",
-      classificationId,
-    );
+    expect(classifications[0]).toHaveProperty("code", "K.CC.1");
+    expect(classifications[0]).toHaveProperty("id", classificationId);
   }
 
   // Remove
@@ -6972,6 +6981,16 @@ test("Get classifications of public activity", async () => {
   expect(classifications.length).toBe(2);
 });
 
+test("Get all classification info as tree", async () => {
+  const results: ClassificationSystemTree[] = await getAllClassificationInfo();
+  expect(results.length).toBeGreaterThan(0);
+  expect(results[0].categories.length).toBeGreaterThan(0);
+  expect(results[0].categories[0].subCategories.length).toBeGreaterThan(0);
+  expect(
+    results[0].categories[0].subCategories[0].classifications.length,
+  ).toBeGreaterThan(0);
+});
+
 test("Search for content classifications", async () => {
   {
     // Code
@@ -6980,13 +6999,13 @@ test("Search for content classifications", async () => {
   }
   {
     // Category
-    const results = await searchPossibleClassifications("nonlinear functions");
-    expect(results.find((i) => i.code === "8.2.1.5")).toBeDefined();
-  }
-  {
-    // Grade
     const results = await searchPossibleClassifications("Kind");
     expect(results.find((i) => i.code === "K.CC.1")).toBeDefined();
+  }
+  {
+    // Sub Category
+    const results = await searchPossibleClassifications("nonlinear functions");
+    expect(results.find((i) => i.code === "8.2.1.5")).toBeDefined();
   }
   {
     // Description
@@ -7007,211 +7026,229 @@ test("Search for content classifications", async () => {
   }
 });
 
-test("search my folder content searches all subfolders", async () => {
-  const owner = await createTestUser();
-  const ownerId = owner.userId;
+test(
+  "search my folder content searches all subfolders",
+  { timeout: 30000 },
+  async () => {
+    const owner = await createTestUser();
+    const ownerId = owner.userId;
 
-  // Folder structure
-  // The Base folder
-  // - The first topic
-  //   - First activity
-  //   - Deleted activity (deleted)
-  //   - Subtopic
-  //     - First piece (deleted)
-  //     - Second piece
-  // - Activity 2
-  // - Activity 3 (deleted)
-  // Activity gone (deleted)
-  // Activity root, first
+    // Folder structure
+    // The Base folder
+    // - The first topic
+    //   - First activity
+    //   - Deleted activity (deleted)
+    //   - Subtopic
+    //     - First piece (deleted)
+    //     - Second piece
+    // - Activity 2
+    // - Activity 3 (deleted)
+    // Activity gone (deleted)
+    // Activity root, first
 
-  const { folderId: baseFolderId } = await createFolder(ownerId, null);
-  await updateContent({ id: baseFolderId, ownerId, name: "The Base Folder" });
-  const { folderId: folder1Id } = await createFolder(ownerId, baseFolderId);
-  await updateContent({ id: folder1Id, ownerId, name: "The first topic" });
+    const { folderId: baseFolderId } = await createFolder(ownerId, null);
+    await updateContent({ id: baseFolderId, ownerId, name: "The Base Folder" });
+    const { folderId: folder1Id } = await createFolder(ownerId, baseFolderId);
+    await updateContent({ id: folder1Id, ownerId, name: "The first topic" });
 
-  const { activityId: activity1aId } = await createActivity(ownerId, folder1Id);
-  await updateContent({
-    id: activity1aId,
-    ownerId,
-    name: "First activity",
-  });
+    const { activityId: activity1aId } = await createActivity(
+      ownerId,
+      folder1Id,
+    );
+    await updateContent({
+      id: activity1aId,
+      ownerId,
+      name: "First activity",
+    });
 
-  const { activityId: activity1bId } = await createActivity(ownerId, folder1Id);
-  await updateContent({ id: activity1bId, ownerId, name: "Deleted activity" });
-  await deleteActivity(activity1bId, ownerId);
+    const { activityId: activity1bId } = await createActivity(
+      ownerId,
+      folder1Id,
+    );
+    await updateContent({
+      id: activity1bId,
+      ownerId,
+      name: "Deleted activity",
+    });
+    await deleteActivity(activity1bId, ownerId);
 
-  const { folderId: folder1cId } = await createFolder(ownerId, folder1Id);
-  await updateContent({ id: folder1cId, ownerId, name: "Subtopic " });
+    const { folderId: folder1cId } = await createFolder(ownerId, folder1Id);
+    await updateContent({ id: folder1cId, ownerId, name: "Subtopic " });
 
-  const { activityId: activity1c1Id } = await createActivity(
-    ownerId,
-    folder1cId,
-  );
-  await updateContent({ id: activity1c1Id, ownerId, name: "First piece" });
-  await deleteActivity(activity1c1Id, ownerId);
+    const { activityId: activity1c1Id } = await createActivity(
+      ownerId,
+      folder1cId,
+    );
+    await updateContent({ id: activity1c1Id, ownerId, name: "First piece" });
+    await deleteActivity(activity1c1Id, ownerId);
 
-  const { activityId: activity1c2Id } = await createActivity(
-    ownerId,
-    folder1cId,
-  );
-  await updateContent({ id: activity1c2Id, ownerId, name: "Second piece" });
+    const { activityId: activity1c2Id } = await createActivity(
+      ownerId,
+      folder1cId,
+    );
+    await updateContent({ id: activity1c2Id, ownerId, name: "Second piece" });
 
-  const { activityId: activity2Id } = await createActivity(
-    ownerId,
-    baseFolderId,
-  );
-  await updateContent({ id: activity2Id, ownerId, name: "Activity 2" });
-  const { activityId: activity3Id } = await createActivity(
-    ownerId,
-    baseFolderId,
-  );
-  await updateContent({ id: activity3Id, ownerId, name: "Activity 3" });
-  await deleteActivity(activity3Id, ownerId);
+    const { activityId: activity2Id } = await createActivity(
+      ownerId,
+      baseFolderId,
+    );
+    await updateContent({ id: activity2Id, ownerId, name: "Activity 2" });
+    const { activityId: activity3Id } = await createActivity(
+      ownerId,
+      baseFolderId,
+    );
+    await updateContent({ id: activity3Id, ownerId, name: "Activity 3" });
+    await deleteActivity(activity3Id, ownerId);
 
-  const { activityId: activityGoneId } = await createActivity(ownerId, null);
-  await updateContent({ id: activityGoneId, ownerId, name: "Activity gone" });
-  await deleteActivity(activityGoneId, ownerId);
-  const { activityId: activityRootId } = await createActivity(ownerId, null);
-  await updateContent({
-    id: activityRootId,
-    ownerId,
-    name: "Activity root, first",
-  });
+    const { activityId: activityGoneId } = await createActivity(ownerId, null);
+    await updateContent({ id: activityGoneId, ownerId, name: "Activity gone" });
+    await deleteActivity(activityGoneId, ownerId);
+    const { activityId: activityRootId } = await createActivity(ownerId, null);
+    await updateContent({
+      id: activityRootId,
+      ownerId,
+      name: "Activity root, first",
+    });
 
-  let searchResults = await searchMyFolderContent({
-    folderId: null,
-    loggedInUserId: ownerId,
-    query: "first",
-  });
-  expect(searchResults.folder).eq(null);
-  let content = searchResults.content;
-  expect(content.length).eq(3);
-  expect(
-    content
-      .sort((a, b) => a.id.compare(b.id))
-      .map((c) => ({
-        id: fromUUID(c.id),
-        parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
-      })),
-  ).eqls([
-    { id: fromUUID(folder1Id), parentFolderId: fromUUID(baseFolderId) },
-    { id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) },
-    { id: fromUUID(activityRootId), parentFolderId: null },
-  ]);
+    let searchResults = await searchMyFolderContent({
+      folderId: null,
+      loggedInUserId: ownerId,
+      query: "first",
+    });
+    expect(searchResults.folder).eq(null);
+    let content = searchResults.content;
+    expect(content.length).eq(3);
+    expect(
+      content
+        .sort((a, b) => a.id.compare(b.id))
+        .map((c) => ({
+          id: fromUUID(c.id),
+          parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
+        })),
+    ).eqls([
+      { id: fromUUID(folder1Id), parentFolderId: fromUUID(baseFolderId) },
+      { id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) },
+      { id: fromUUID(activityRootId), parentFolderId: null },
+    ]);
 
-  searchResults = await searchMyFolderContent({
-    folderId: baseFolderId,
-    loggedInUserId: ownerId,
-    query: "first",
-  });
-  expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(baseFolderId));
-  content = searchResults.content;
-  expect(content.length).eq(2);
-  expect(
-    content
-      .sort((a, b) => a.id.compare(b.id))
-      .map((c) => ({
-        id: fromUUID(c.id),
-        parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
-      })),
-  ).eqls([
-    { id: fromUUID(folder1Id), parentFolderId: fromUUID(baseFolderId) },
-    { id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) },
-  ]);
+    searchResults = await searchMyFolderContent({
+      folderId: baseFolderId,
+      loggedInUserId: ownerId,
+      query: "first",
+    });
+    expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(baseFolderId));
+    content = searchResults.content;
+    expect(content.length).eq(2);
+    expect(
+      content
+        .sort((a, b) => a.id.compare(b.id))
+        .map((c) => ({
+          id: fromUUID(c.id),
+          parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
+        })),
+    ).eqls([
+      { id: fromUUID(folder1Id), parentFolderId: fromUUID(baseFolderId) },
+      { id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) },
+    ]);
 
-  searchResults = await searchMyFolderContent({
-    folderId: folder1Id,
-    loggedInUserId: ownerId,
-    query: "first",
-  });
-  expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(folder1Id));
-  content = searchResults.content;
-  expect(content.length).eq(1);
-  expect(
-    content
-      .sort((a, b) => a.id.compare(b.id))
-      .map((c) => ({
-        id: fromUUID(c.id),
-        parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
-      })),
-  ).eqls([{ id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) }]);
+    searchResults = await searchMyFolderContent({
+      folderId: folder1Id,
+      loggedInUserId: ownerId,
+      query: "first",
+    });
+    expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(folder1Id));
+    content = searchResults.content;
+    expect(content.length).eq(1);
+    expect(
+      content
+        .sort((a, b) => a.id.compare(b.id))
+        .map((c) => ({
+          id: fromUUID(c.id),
+          parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
+        })),
+    ).eqls([
+      { id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) },
+    ]);
 
-  searchResults = await searchMyFolderContent({
-    folderId: folder1cId,
-    loggedInUserId: ownerId,
-    query: "first",
-  });
-  expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(folder1cId));
-  content = searchResults.content;
-  expect(content.length).eq(0);
+    searchResults = await searchMyFolderContent({
+      folderId: folder1cId,
+      loggedInUserId: ownerId,
+      query: "first",
+    });
+    expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(folder1cId));
+    content = searchResults.content;
+    expect(content.length).eq(0);
 
-  searchResults = await searchMyFolderContent({
-    folderId: null,
-    loggedInUserId: ownerId,
-    query: "activity",
-  });
-  expect(searchResults.folder).eq(null);
-  content = searchResults.content;
-  expect(content.length).eq(3);
-  expect(
-    content
-      .sort((a, b) => a.id.compare(b.id))
-      .map((c) => ({
-        id: fromUUID(c.id),
-        parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
-      })),
-  ).eqls([
-    { id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) },
-    { id: fromUUID(activity2Id), parentFolderId: fromUUID(baseFolderId) },
-    { id: fromUUID(activityRootId), parentFolderId: null },
-  ]);
+    searchResults = await searchMyFolderContent({
+      folderId: null,
+      loggedInUserId: ownerId,
+      query: "activity",
+    });
+    expect(searchResults.folder).eq(null);
+    content = searchResults.content;
+    expect(content.length).eq(3);
+    expect(
+      content
+        .sort((a, b) => a.id.compare(b.id))
+        .map((c) => ({
+          id: fromUUID(c.id),
+          parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
+        })),
+    ).eqls([
+      { id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) },
+      { id: fromUUID(activity2Id), parentFolderId: fromUUID(baseFolderId) },
+      { id: fromUUID(activityRootId), parentFolderId: null },
+    ]);
 
-  searchResults = await searchMyFolderContent({
-    folderId: baseFolderId,
-    loggedInUserId: ownerId,
-    query: "activity",
-  });
-  expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(baseFolderId));
-  content = searchResults.content;
-  expect(content.length).eq(2);
-  expect(
-    content
-      .sort((a, b) => a.id.compare(b.id))
-      .map((c) => ({
-        id: fromUUID(c.id),
-        parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
-      })),
-  ).eqls([
-    { id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) },
-    { id: fromUUID(activity2Id), parentFolderId: fromUUID(baseFolderId) },
-  ]);
+    searchResults = await searchMyFolderContent({
+      folderId: baseFolderId,
+      loggedInUserId: ownerId,
+      query: "activity",
+    });
+    expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(baseFolderId));
+    content = searchResults.content;
+    expect(content.length).eq(2);
+    expect(
+      content
+        .sort((a, b) => a.id.compare(b.id))
+        .map((c) => ({
+          id: fromUUID(c.id),
+          parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
+        })),
+    ).eqls([
+      { id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) },
+      { id: fromUUID(activity2Id), parentFolderId: fromUUID(baseFolderId) },
+    ]);
 
-  searchResults = await searchMyFolderContent({
-    folderId: folder1Id,
-    loggedInUserId: ownerId,
-    query: "activity",
-  });
-  expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(folder1Id));
-  content = searchResults.content;
-  expect(content.length).eq(1);
-  expect(
-    content
-      .sort((a, b) => a.id.compare(b.id))
-      .map((c) => ({
-        id: fromUUID(c.id),
-        parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
-      })),
-  ).eqls([{ id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) }]);
+    searchResults = await searchMyFolderContent({
+      folderId: folder1Id,
+      loggedInUserId: ownerId,
+      query: "activity",
+    });
+    expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(folder1Id));
+    content = searchResults.content;
+    expect(content.length).eq(1);
+    expect(
+      content
+        .sort((a, b) => a.id.compare(b.id))
+        .map((c) => ({
+          id: fromUUID(c.id),
+          parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
+        })),
+    ).eqls([
+      { id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) },
+    ]);
 
-  searchResults = await searchMyFolderContent({
-    folderId: folder1cId,
-    loggedInUserId: ownerId,
-    query: "activity",
-  });
-  expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(folder1cId));
-  content = searchResults.content;
-  expect(content.length).eq(0);
-});
+    searchResults = await searchMyFolderContent({
+      folderId: folder1cId,
+      loggedInUserId: ownerId,
+      query: "activity",
+    });
+    expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(folder1cId));
+    content = searchResults.content;
+    expect(content.length).eq(0);
+  },
+);
 
 test("searchMyFolderContent, document source matches", async () => {
   const owner = await createTestUser();

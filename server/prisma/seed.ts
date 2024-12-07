@@ -80,139 +80,129 @@ async function main() {
     },
   });
 
-  const { id: commonCoreId } = await prisma.classificationSystems.upsert({
-    where: { name: "Common Core" },
-    update: { name: "Common Core" },
-    create: { name: "Common Core" },
-  });
-  await prisma.classifications.upsert({
-    where: {
-      code_systemId: {
-        code: "K.CC.1",
-        systemId: commonCoreId,
+  // Classifications
+  async function upsertClassificationSystem(
+    name: string,
+    categoryLabel: string,
+    subCategoryLabel: string,
+  ) {
+    const { id } = await prisma.classificationSystems.upsert({
+      where: { name },
+      update: { name, categoryLabel, subCategoryLabel },
+      create: { name, categoryLabel, subCategoryLabel },
+    });
+    return id;
+  }
+  async function upsertClassificationCategory(
+    category: string,
+    systemId: number,
+  ) {
+    const { id } = await prisma.classificationCategories.upsert({
+      where: { category_systemId: { category, systemId } },
+      update: { category, systemId },
+      create: { category, systemId },
+    });
+    return id;
+  }
+  async function upsertClassificationSubCategory(
+    subCategory: string,
+    categoryId: number,
+  ) {
+    const { id } = await prisma.classificationSubCategories.upsert({
+      where: { subCategory_categoryId: { subCategory, categoryId } },
+      update: { subCategory, categoryId },
+      create: { subCategory, categoryId },
+    });
+    return id;
+  }
+  async function upsertClassification(
+    code: string,
+    description: string,
+    subCategoryId: number,
+  ) {
+    await prisma.classifications.upsert({
+      where: {
+        code_subCategoryId: { code, subCategoryId },
       },
-    },
-    update: {
-      code: "K.CC.1",
-      grade: "Kindergarten",
-      category:
-        "Counting and Cardinality: Know number names and the count sequence.",
-      description: "Count to 100 by ones and by tens.",
-      systemId: commonCoreId,
-    },
-    create: {
-      code: "K.CC.1",
-      grade: "Kindergarten",
-      category:
-        "Counting and Cardinality: Know number names and the count sequence.",
-      description: "Count to 100 by ones and by tens.",
-      systemId: commonCoreId,
-    },
-  });
+      update: { code, description, subCategoryId },
+      create: { code, description, subCategoryId },
+    });
+  }
 
-  await prisma.classifications.upsert({
-    where: {
-      code_systemId: { code: "K.OA.1", systemId: commonCoreId },
-    },
-    update: {
-      code: "K.OA.1",
-      grade: "Kindergarten",
-      category:
-        "Operations and Algebraic Thinking: Understand addition as putting together and adding to, and understand subtraction as taking apart and taking from.",
-      description:
-        "Represent addition and subtraction with objects, fingers, mental images, drawings (Drawings need not show details, but should show the mathematics in the problem.(This applies wherever drawings are mentioned in the Standards.)), sounds (e.g., claps), acting out situations, verbal explanations, expressions, or equations.",
-      systemId: commonCoreId,
-    },
-    create: {
-      code: "K.OA.1",
-      grade: "Kindergarten",
-      category:
-        "Operations and Algebraic Thinking: Understand addition as putting together and adding to, and understand subtraction as taking apart and taking from.",
-      description:
-        "Represent addition and subtraction with objects, fingers, mental images, drawings (Drawings need not show details, but should show the mathematics in the problem.(This applies wherever drawings are mentioned in the Standards.)), sounds (e.g., claps), acting out situations, verbal explanations, expressions, or equations.",
-      systemId: commonCoreId,
-    },
-  });
+  const commonCoreId = await upsertClassificationSystem(
+    "Common Core",
+    "Grade",
+    "Cluster",
+  );
+  const commonCoreKinderId = await upsertClassificationCategory(
+    "Kindergarten",
+    commonCoreId,
+  );
+  const commonCoreHSId = await upsertClassificationCategory("HS", commonCoreId);
+  const commonCoreCardinalityId = await upsertClassificationSubCategory(
+    "Counting and Cardinality: Know number names and the count sequence.",
+    commonCoreKinderId,
+  );
+  const commonCoreAlgebraicId = await upsertClassificationSubCategory(
+    "Operations and Algebraic Thinking: Understand addition as putting together and adding to, and understand subtraction as taking apart and taking from.",
+    commonCoreKinderId,
+  );
+  const commonCoreStructureId = await upsertClassificationSubCategory(
+    "Seeing Structure in Expressions: Write expressions in equivalent forms to solve problems.",
+    commonCoreHSId,
+  );
 
-  await prisma.classifications.upsert({
-    where: {
-      code_systemId: { code: "A.SSE.3 c.", systemId: commonCoreId },
-    },
-    update: {
-      code: "A.SSE.3 c.",
-      grade: "HS",
-      category:
-        "Seeing Structure in Expressions: Write expressions in equivalent forms to solve problems.",
-      description:
-        "Use the properties of exponents to transform expressions for exponential functions.  For example the expression 1.15t can be rewritten as (1.151/12)12t ≈1.01212t to reveal the approximate equivalent monthly interest rate if the annual rate is 15%.",
-      systemId: commonCoreId,
-    },
-    create: {
-      code: "A.SSE.3 c.",
-      grade: "HS",
-      category:
-        "Seeing Structure in Expressions: Write expressions in equivalent forms to solve problems.",
-      description:
-        "Use the properties of exponents to transform expressions for exponential functions.  For example the expression 1.15t can be rewritten as (1.151/12)12t ≈1.01212t to reveal the approximate equivalent monthly interest rate if the annual rate is 15%.",
-      systemId: commonCoreId,
-    },
-  });
+  await upsertClassification(
+    "K.CC.1",
+    "Count to 100 by ones and by tens.",
+    commonCoreCardinalityId,
+  );
+  await upsertClassification(
+    "K.CC.2",
+    "Count forward beginning from a given number within the known sequence (instead of having to begin at 1).",
+    commonCoreCardinalityId,
+  );
+  await upsertClassification(
+    "K.CC.3",
+    "Write numbers from 0 to 20. Represent a number of objects with a written numeral 0-20 (with 0 representing a count of no objects).",
+    commonCoreCardinalityId,
+  );
+  await upsertClassification(
+    "K.OA.1",
+    "Represent addition and subtraction with objects, fingers, mental images, drawings (Drawings need not show details, but should show the mathematics in the problem.(This applies wherever drawings are mentioned in the Standards.)), sounds (e.g., claps), acting out situations, verbal explanations, expressions, or equations.",
+    commonCoreAlgebraicId,
+  );
+  await upsertClassification(
+    "A.SSE.3 c.",
+    "Use the properties of exponents to transform expressions for exponential functions.  For example the expression 1.15t can be rewritten as (1.151/12)12t ≈1.01212t to reveal the approximate equivalent monthly interest rate if the annual rate is 15%.",
+    commonCoreStructureId,
+  );
 
-  const { id: minnesotaMathId } = await prisma.classificationSystems.upsert({
-    where: { name: "Minnesota Academic Standards in Math" },
-    update: { name: "Minnesota Academic Standards in Math" },
-    create: { name: "Minnesota Academic Standards in Math" },
-  });
-
-  await prisma.classifications.upsert({
-    where: {
-      code_systemId: {
-        code: "8.2.1.5",
-        systemId: minnesotaMathId,
-      },
-    },
-    update: {
-      code: "8.2.1.5",
-      category:
-        "Understand the concept of function in real-world and mathematical situations, and distinguish between linear and nonlinear functions.",
-      description:
-        "Understand that a geometric sequence is a non-linear function that can be expressed in the form f(x) = ab^x, where x = 0, 1, 2, 3,….",
-      systemId: minnesotaMathId,
-    },
-    create: {
-      code: "8.2.1.5",
-      category:
-        "Understand the concept of function in real-world and mathematical situations, and distinguish between linear and nonlinear functions.",
-      description:
-        "Understand that a geometric sequence is a non-linear function that can be expressed in the form f(x) = ab^x, where x = 0, 1, 2, 3,….",
-      systemId: minnesotaMathId,
-    },
-  });
-
-  await prisma.classifications.upsert({
-    where: {
-      code_systemId: {
-        code: "9.4.3.9",
-        systemId: minnesotaMathId,
-      },
-    },
-    update: {
-      code: "9.4.3.9",
-      category:
-        "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
-      description:
-        "Use the relationship between conditional probabilities and relative frequencies in contingency tables.",
-      systemId: minnesotaMathId,
-    },
-    create: {
-      code: "9.4.3.9",
-      category:
-        "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
-      description:
-        "Use the relationship between conditional probabilities and relative frequencies in contingency tables.",
-      systemId: minnesotaMathId,
-    },
-  });
+  const mnId = await upsertClassificationSystem(
+    "Minnesota Academic Standards in Math",
+    "Grade",
+    "Standard",
+  );
+  const mnEighthId = await upsertClassificationCategory("8", mnId);
+  const mnNinthId = await upsertClassificationCategory("9", mnId);
+  const mnFuncId = await upsertClassificationSubCategory(
+    "Understand the concept of function in real-world and mathematical situations, and distinguish between linear and nonlinear functions.",
+    mnEighthId,
+  );
+  const mnProbabilityId = await upsertClassificationSubCategory(
+    "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
+    mnNinthId,
+  );
+  await upsertClassification(
+    "8.2.1.5",
+    "Understand that a geometric sequence is a non-linear function that can be expressed in the form f(x) = ab^x, where x = 0, 1, 2, 3,….",
+    mnFuncId,
+  );
+  await upsertClassification(
+    "9.4.3.9",
+    "Use the relationship between conditional probabilities and relative frequencies in contingency tables.",
+    mnProbabilityId,
+  );
 
   await prisma.licenses.upsert({
     where: { code: "CCBYSA" },

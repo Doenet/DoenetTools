@@ -79,6 +79,7 @@ import {
   getDocumentSource,
   setPreferredFolderView,
   getPreferredFolderView,
+  getAllClassificationInfo,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -1380,7 +1381,7 @@ app.get("/api/getAllLicenses", async (_req: Request, res: Response) => {
 });
 
 app.get(
-  "/api/getActivityView/:activityId",
+  "/api/getActivityViewerData/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = req.user?.userId ?? Buffer.alloc(16);
     const activityId = toUUID(req.params.activityId);
@@ -2466,6 +2467,22 @@ app.get(
       const query = req.query.q as string;
       const searchResults = await searchPossibleClassifications(query);
       res.send(searchResults);
+    } catch (e) {
+      if (e instanceof InvalidRequestError) {
+        res.status(e.errorCode).send(e.message);
+        return;
+      }
+      next(e);
+    }
+  },
+);
+
+app.get(
+  "/api/getAllClassificationInfo",
+  async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const results = await getAllClassificationInfo();
+      res.send(results);
     } catch (e) {
       if (e instanceof InvalidRequestError) {
         res.status(e.errorCode).send(e.message);

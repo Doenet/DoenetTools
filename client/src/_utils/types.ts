@@ -42,12 +42,20 @@ export type UserInfo = {
 export type ContentClassification = {
   id: number;
   code: string;
-  grade: string | null;
-  category: string;
   description: string;
-  system: {
+  subCategory: {
     id: number;
-    name: string;
+    subCategory: string;
+    category: {
+      id: number;
+      category: string;
+      system: {
+        id: number;
+        name: string;
+        categoryLabel: string;
+        subCategoryLabel: string;
+      };
+    };
   };
 };
 
@@ -108,4 +116,24 @@ export type DocRemixItem = {
   activityId: string;
   activityName: string;
   owner: UserInfo;
+};
+
+export type ClassificationSystemTree = {
+  id: number;
+  name: string;
+  categoryLabel: string;
+  subCategoryLabel: string;
+  categories: {
+    id: number;
+    category: string;
+    subCategories: {
+      id: number;
+      subCategory: string;
+      classifications: {
+        id: number;
+        code: string;
+        description: string;
+      }[];
+    }[];
+  }[];
 };

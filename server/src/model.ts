@@ -4,6 +4,7 @@ import { DateTime } from "luxon";
 import { fromUUID } from "./utils/uuid";
 import {
   AssignmentStatus,
+  ClassificationSystemTree,
   ContentClassification,
   ContentStructure,
   DocHistory,
@@ -945,16 +946,14 @@ export async function getActivityEditorData(
         classifications: {
           select: {
             classification: {
-              select: {
-                id: true,
-                grade: true,
-                code: true,
-                category: true,
-                description: true,
-                system: {
-                  select: {
-                    id: true,
-                    name: true,
+              include: {
+                subCategory: {
+                  include: {
+                    category: {
+                      include: {
+                        system: true,
+                      },
+                    },
                   },
                 },
               },
@@ -1073,16 +1072,14 @@ export async function getActivityEditorData(
         classifications: {
           select: {
             classification: {
-              select: {
-                id: true,
-                grade: true,
-                code: true,
-                category: true,
-                description: true,
-                system: {
-                  select: {
-                    id: true,
-                    name: true,
+              include: {
+                subCategory: {
+                  include: {
+                    category: {
+                      include: {
+                        system: true,
+                      },
+                    },
                   },
                 },
               },
@@ -1200,25 +1197,6 @@ export async function getSharedEditorData(
           },
         },
       },
-      classifications: {
-        select: {
-          classification: {
-            select: {
-              id: true,
-              grade: true,
-              code: true,
-              category: true,
-              description: true,
-              system: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-          },
-        },
-      },
       parentFolder: {
         select: {
           id: true,
@@ -1236,7 +1214,6 @@ export async function getSharedEditorData(
 
   const {
     license,
-    classifications,
     sharedWith: sharedWithOrig,
     parentFolder,
     ...preliminaryActivity2
@@ -1252,7 +1229,7 @@ export async function getSharedEditorData(
     isShared,
     sharedWith,
     license: license ? processLicense(license) : null,
-    classifications: classifications.map((c) => c.classification),
+    classifications: [],
     classCode: null,
     codeValidUntil: null,
     assignmentStatus: "Unassigned",
@@ -1298,25 +1275,6 @@ export async function getActivityViewerData(
           },
         },
       },
-      classifications: {
-        select: {
-          classification: {
-            select: {
-              id: true,
-              grade: true,
-              code: true,
-              category: true,
-              description: true,
-              system: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-          },
-        },
-      },
       documents: {
         where: { isDeleted: false },
         select: {
@@ -1353,7 +1311,6 @@ export async function getActivityViewerData(
 
   const {
     license,
-    classifications,
     sharedWith: sharedWithOrig,
     parentFolder,
     ...preliminaryActivity2
@@ -1370,7 +1327,7 @@ export async function getActivityViewerData(
     isShared,
     sharedWith,
     license: license ? processLicense(license) : null,
-    classifications: classifications.map((c) => c.classification),
+    classifications: [],
     classCode: null,
     codeValidUntil: null,
     assignmentStatus: "Unassigned",
@@ -1750,7 +1707,9 @@ export async function searchSharedContent(
     AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
     (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
     MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     ) as relevance
   FROM
     content
@@ -1762,6 +1721,10 @@ export async function searchSharedContent(
     contentClassifications ON content.id = contentClassifications.contentId
   LEFT JOIN
     classifications ON contentClassifications.classificationId = classifications.id
+  LEFT JOIN
+    classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
+  LEFT JOIN
+    classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
   WHERE
     content.isDeleted = FALSE
     AND (
@@ -1772,7 +1735,9 @@ export async function searchSharedContent(
     (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+    OR MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
   GROUP BY
     content.id
   ORDER BY
@@ -1814,25 +1779,6 @@ export async function searchSharedContent(
           },
         },
       },
-      classifications: {
-        select: {
-          classification: {
-            select: {
-              id: true,
-              grade: true,
-              code: true,
-              category: true,
-              description: true,
-              system: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-          },
-        },
-      },
       parentFolder: {
         select: {
           id: true,
@@ -1858,7 +1804,6 @@ export async function searchSharedContent(
     .map((content) => {
       const {
         license,
-        classifications,
         sharedWith: sharedWithOrig,
         parentFolder,
         ...content2
@@ -1875,7 +1820,7 @@ export async function searchSharedContent(
         sharedWith,
         documents: [],
         license: license ? processLicense(license) : null,
-        classifications: classifications.map((c) => c.classification),
+        classifications: [],
         classCode: null,
         codeValidUntil: null,
         assignmentStatus: "Unassigned",
@@ -3674,16 +3619,14 @@ export async function getMyFolderContent({
       classifications: {
         select: {
           classification: {
-            select: {
-              id: true,
-              code: true,
-              grade: true,
-              category: true,
-              description: true,
-              system: {
-                select: {
-                  id: true,
-                  name: true,
+            include: {
+              subCategory: {
+                include: {
+                  category: {
+                    include: {
+                      system: true,
+                    },
+                  },
                 },
               },
             },
@@ -3870,7 +3813,8 @@ export async function searchMyFolderContent({
     content.id,
     AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
     (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
-    MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     ) as relevance
   FROM
     content
@@ -3880,13 +3824,16 @@ export async function searchMyFolderContent({
     contentClassifications ON content.id = contentClassifications.contentId
   LEFT JOIN
     classifications ON contentClassifications.classificationId = classifications.id
+  LEFT JOIN
+    classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
   WHERE
     content.ownerId = ${loggedInUserId}
     AND content.isDeleted = FALSE
     AND
     (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+    OR MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
   GROUP BY
     content.id
   ORDER BY
@@ -3915,7 +3862,8 @@ export async function searchMyFolderContent({
       content.id,
       AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
       (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
-      MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+      MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       ) as relevance
     FROM
       content
@@ -3925,12 +3873,15 @@ export async function searchMyFolderContent({
       contentClassifications ON content.id = contentClassifications.contentId
     LEFT JOIN
       classifications ON contentClassifications.classificationId = classifications.id
+    LEFT JOIN
+      classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
     WHERE
       content.id IN (SELECT id from content_tree)
       AND
       (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH(classifications.code, classifications.category, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+      OR MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
     GROUP BY
       content.id
     ORDER BY
@@ -3979,16 +3930,14 @@ export async function searchMyFolderContent({
       classifications: {
         select: {
           classification: {
-            select: {
-              id: true,
-              code: true,
-              grade: true,
-              category: true,
-              description: true,
-              system: {
-                select: {
-                  id: true,
-                  name: true,
+            include: {
+              subCategory: {
+                include: {
+                  category: {
+                    include: {
+                      system: true,
+                    },
+                  },
                 },
               },
             },
@@ -4185,25 +4134,6 @@ export async function getSharedFolderContent({
           userId: true,
         },
       },
-      classifications: {
-        select: {
-          classification: {
-            select: {
-              id: true,
-              grade: true,
-              code: true,
-              category: true,
-              description: true,
-              system: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-          },
-        },
-      },
       license: {
         include: {
           composedOf: {
@@ -4261,25 +4191,6 @@ export async function getSharedFolderContent({
             userId: true,
           },
         },
-        classifications: {
-          select: {
-            classification: {
-              select: {
-                id: true,
-                grade: true,
-                code: true,
-                category: true,
-                description: true,
-                system: {
-                  select: {
-                    id: true,
-                    name: true,
-                  },
-                },
-              },
-            },
-          },
-        },
         license: {
           include: {
             composedOf: {
@@ -4310,7 +4221,6 @@ export async function getSharedFolderContent({
     (content) => {
       const {
         license,
-        classifications,
         sharedWith: sharedWithOrig,
         parentFolder,
         ...content2
@@ -4327,7 +4237,7 @@ export async function getSharedFolderContent({
         sharedWith,
         documents: [],
         license: license ? processLicense(license) : null,
-        classifications: classifications.map((c) => c.classification),
+        classifications: [],
         classCode: null,
         codeValidUntil: null,
         assignmentStatus: "Unassigned",
@@ -4349,6 +4259,72 @@ export async function getSharedFolderContent({
   };
 }
 
+export async function getAllClassificationInfo() {
+  const results = await prisma.classificationSystems.findMany({
+    orderBy: {
+      name: "asc",
+    },
+    select: {
+      id: true,
+      name: true,
+      categoryLabel: true,
+      subCategoryLabel: true,
+      classificationCategory: {
+        orderBy: {
+          category: "asc",
+        },
+        select: {
+          id: true,
+          category: true,
+          classificationSubCategory: {
+            orderBy: {
+              subCategory: "asc",
+            },
+            select: {
+              id: true,
+              subCategory: true,
+              classifications: {
+                orderBy: {
+                  code: "asc",
+                },
+                select: {
+                  id: true,
+                  code: true,
+                  description: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+  const formattedResults: ClassificationSystemTree[] = results.map((system) => {
+    return {
+      id: system.id,
+      name: system.name,
+      categoryLabel: system.categoryLabel,
+      subCategoryLabel: system.subCategoryLabel,
+      categories: system.classificationCategory.map((category) => {
+        return {
+          id: category.id,
+          category: category.category,
+          subCategories: category.classificationSubCategory.map(
+            (subCategory) => {
+              return {
+                id: subCategory.id,
+                subCategory: subCategory.subCategory,
+                classifications: subCategory.classifications,
+              };
+            },
+          ),
+        };
+      }),
+    };
+  });
+  return formattedResults;
+}
+
 export async function searchPossibleClassifications(query: string) {
   const query_words = query.split(" ");
   const results: ContentClassification[] =
@@ -4357,23 +4333,27 @@ export async function searchPossibleClassifications(query: string) {
         AND: query_words.map((query_word) => ({
           OR: [
             { code: { contains: query_word } },
-            { grade: { contains: query_word } },
-            { category: { contains: query_word } },
             { description: { contains: query_word } },
-            { system: { name: { contains: query_word } } },
+            { subCategory: { subCategory: { contains: query_word } } },
+            {
+              subCategory: { category: { category: { contains: query_word } } },
+            },
+            {
+              subCategory: {
+                category: { system: { name: { contains: query_word } } },
+              },
+            },
           ],
         })),
       },
-      select: {
-        id: true,
-        grade: true,
-        code: true,
-        category: true,
-        description: true,
-        system: {
-          select: {
-            id: true,
-            name: true,
+      include: {
+        subCategory: {
+          include: {
+            category: {
+              include: {
+                system: true,
+              },
+            },
           },
         },
       },
@@ -4495,21 +4475,24 @@ export async function getClassifications(
     },
     select: {
       classification: {
-        select: {
-          id: true,
-          system: {
-            select: {
-              name: true,
+        include: {
+          subCategory: {
+            include: {
+              category: {
+                include: {
+                  system: true,
+                },
+              },
             },
           },
-          code: true,
-          category: true,
-          description: true,
         },
       },
     },
   });
-  return classifications;
+  const formatted: ContentClassification[] = classifications.map(
+    (c) => c.classification,
+  );
+  return formatted;
 }
 
 export async function getLicense(code: string) {
