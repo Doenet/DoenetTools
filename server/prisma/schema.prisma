@@ -40,6 +40,8 @@ model content {
   promotedContent  promotedContent[]
   sharedWith       contentShares[]
   classifications  contentClassifications[]
+  librarySource    libraryActivityStatuses?         @relation("librarySource")
+  libraryActivity  libraryActivityStatuses?         @relation("libraryActivity")
 
   @@index([ownerId, parentFolderId, sortIndex])
   @@index([classCode])
@@ -212,6 +214,7 @@ model users {
   documentState              documentState[]
   documentSubmittedResponses documentSubmittedResponses[]
   sharedWithMe               contentShares[]
+  libraryEvents              libraryEvents[]
 
   @@fulltext([firstNames, lastNames])
 }
@@ -284,4 +287,39 @@ model classifications {
 
   @@unique([code, subCategoryId])
   @@fulltext([code, description])
+}
+
+model libraryActivityStatuses {
+  sourceActivityId  Bytes           @id @db.Binary(16)
+  libraryActivityId Bytes?          @unique @db.Binary(16)
+  status            LibraryStatus
+  comments          String
+  sourceActivity    content         @relation(name: "librarySource", fields: [sourceActivityId], references: [id])
+  libraryActivity   content?        @relation(name: "libraryActivity", fields: [libraryActivityId], references: [id])
+  libraryEvents     libraryEvents[]
+}
+
+enum LibraryStatus {
+  PENDING_REVIEW
+  NEEDS_REVISION
+  ADDED
+  REVIEW_REQUEST_REMOVED
+}
+
+model libraryEvents {
+  id        Bytes                   @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
+  eventType LibraryEventType
+  comments  String
+  statusId  Bytes                   @db.Binary(16)
+  userId    Bytes                   @db.Binary(16)
+  user      users                   @relation(fields: [userId], references: [userId])
+  status    libraryActivityStatuses @relation(fields: [statusId], references: [sourceActivityId])
+}
+
+enum LibraryEventType {
+  REQUEST_TO_BE_ADDED
+  REMOVE_REQUEST
+  ADD_TO_LIBRARY
+  RETURN_FOR_REVISION
+  MODIFY_COMMENTS
 }
