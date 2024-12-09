@@ -8,12 +8,28 @@ export function toUUID(id: string) {
   return toBinaryUUID(translator.toUUID(id));
 }
 
-export function fromUUID(UUID: Buffer) {
+export function fromUUID(UUID: Uint8Array) {
   return translator.fromUUID(fromBinaryUUID(UUID));
 }
 
 export function newUUID() {
   return toBinaryUUID(translator.new());
+}
+
+export function isEqualUUID(UUID1: Uint8Array, UUID2: Uint8Array) {
+  if (UUID1.length !== UUID2.length) {
+    return false;
+  }
+  for (let i = 0; i < UUID1.length; i++) {
+    if (UUID1[i] !== UUID2[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function compareUUID(UUID1: Uint8Array, UUID2: Uint8Array) {
+  return Buffer.from(UUID1).compare(UUID2);
 }
 
 export function contentStructureConvertUUID(content: ContentStructure) {
@@ -75,9 +91,9 @@ export function docHistoryConvertUUID(docHistory: DocHistory) {
 }
 
 export function assignmentConvertUUID(assignment: {
-  id: Buffer;
+  id: Uint8Array;
   documents: {
-    id: Buffer;
+    id: Uint8Array;
     assignedVersionNum: number | null;
     assignedVersion: {
       source: string;
@@ -104,7 +120,7 @@ export function assignmentStudentDataConvertUUID({
 }: {
   score: number;
   documentScores: {
-    docId: Buffer;
+    docId: Uint8Array;
     score: number;
     docVersionNum: number;
     hasMaxScore: boolean;
@@ -115,11 +131,11 @@ export function assignmentStudentDataConvertUUID({
       assignedVersion: {
         source: string;
         doenetmlVersion: { fullVersion: string };
-        docId: Buffer;
+        docId: Uint8Array;
         versionNum: number;
       } | null;
     }[];
-    id: Buffer;
+    id: Uint8Array;
     name: string;
   };
 }) {
@@ -151,16 +167,16 @@ export function allAssignmentScoresConvertUUID({
   folder,
 }: {
   orderedActivities: {
-    id: Buffer;
+    id: Uint8Array;
     name: string;
   }[];
   assignmentScores: {
     score: number;
     user: UserInfo;
-    activityId: Buffer;
+    activityId: Uint8Array;
   }[];
   folder: {
-    id: Buffer;
+    id: Uint8Array;
     name: string;
   } | null;
 }) {
@@ -185,12 +201,12 @@ export function studentDataConvertUUID({
 }: {
   userData: UserInfo;
   orderedActivityScores: {
-    activityId: Buffer;
+    activityId: Uint8Array;
     activityName: string;
     score: number | null;
   }[];
   folder: {
-    id: Buffer;
+    id: Uint8Array;
     name: string;
   } | null;
 }) {
