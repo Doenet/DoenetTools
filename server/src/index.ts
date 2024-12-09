@@ -105,6 +105,7 @@ import {
   assignmentStudentDataConvertUUID,
   allAssignmentScoresConvertUUID,
   studentDataConvertUUID,
+  isEqualUUID,
 } from "./utils/uuid";
 import { LicenseCode, UserInfo } from "./types";
 
@@ -1058,7 +1059,7 @@ app.get(
 );
 
 app.get("/api/searchSharedContent", async (req: Request, res: Response) => {
-  const loggedInUserId = req.user?.userId ?? Buffer.alloc(16);
+  const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
   const query = req.query.q as string;
   res.send({
     users: (await searchUsersWithSharedContent(query, loggedInUserId)).map(
@@ -1105,7 +1106,7 @@ app.post(
 app.get(
   "/api/loadPromotedContent",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.user?.userId ?? Buffer.alloc(16);
+    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
 
     try {
       const content = await loadPromotedContent(loggedInUserId);
@@ -1304,7 +1305,7 @@ app.post(
 app.get(
   "/api/getActivityEditorData/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.user?.userId ?? Buffer.alloc(16);
+    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
     const activityId = toUUID(req.params.activityId);
     try {
       const editorData = await getActivityEditorData(
@@ -1331,7 +1332,7 @@ app.get(
 app.get(
   "/api/getSharedEditorData/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.user?.userId ?? Buffer.alloc(16);
+    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
     const activityId = toUUID(req.params.activityId);
     try {
       const editorData = await getSharedEditorData(activityId, loggedInUserId);
@@ -1352,7 +1353,7 @@ app.get(
 app.get(
   "/api/getDocumentSource/:docId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.user?.userId ?? Buffer.alloc(16);
+    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
     const docId = toUUID(req.params.docId);
     try {
       const sourceData = await getDocumentSource(docId, loggedInUserId);
@@ -1383,7 +1384,7 @@ app.get("/api/getAllLicenses", async (_req: Request, res: Response) => {
 app.get(
   "/api/getActivityViewerData/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.user?.userId ?? Buffer.alloc(16);
+    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
     const activityId = toUUID(req.params.activityId);
 
     try {
@@ -1409,7 +1410,7 @@ app.get(
 app.get(
   "/api/getContributorHistory/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.user?.userId ?? Buffer.alloc(16);
+    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
     const activityId = toUUID(req.params.activityId);
 
     try {
@@ -1435,7 +1436,7 @@ app.get(
 app.get(
   "/api/getRemixes/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.user?.userId ?? Buffer.alloc(16);
+    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
     const activityId = toUUID(req.params.activityId);
 
     try {
@@ -2166,7 +2167,7 @@ app.get(
     const ownerId = toUUID(req.params.ownerId);
     const loggedInUserId = req.user?.userId;
 
-    if (!loggedInUserId || !ownerId.equals(loggedInUserId)) {
+    if (!loggedInUserId || !isEqualUUID(ownerId, loggedInUserId)) {
       return res.send({ notMe: true });
     }
 
@@ -2203,7 +2204,7 @@ app.get(
     const folderId = toUUID(req.params.folderId);
     const loggedInUserId = req.user?.userId;
 
-    if (!loggedInUserId || !ownerId.equals(loggedInUserId)) {
+    if (!loggedInUserId || !isEqualUUID(ownerId, loggedInUserId)) {
       return res.send({ notMe: true });
     }
 
@@ -2243,7 +2244,7 @@ app.get(
     const ownerId = toUUID(req.params.ownerId);
     const query = req.query.q as string;
 
-    if (!loggedInUserId || !ownerId.equals(loggedInUserId)) {
+    if (!loggedInUserId || !isEqualUUID(ownerId, loggedInUserId)) {
       return res.send({ notMe: true });
     }
 
@@ -2289,7 +2290,7 @@ app.get(
     const folderId = toUUID(req.params.folderId);
     const query = req.query.q as string;
 
-    if (!loggedInUserId || !ownerId.equals(loggedInUserId)) {
+    if (!loggedInUserId || !isEqualUUID(ownerId, loggedInUserId)) {
       return res.send({ notMe: true });
     }
 
@@ -2323,7 +2324,7 @@ app.get(
   "/api/getSharedFolderContent/:ownerId",
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = toUUID(req.params.ownerId);
-    const loggedInUserId = req.user?.userId ?? Buffer.alloc(16);
+    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
     try {
       const contentData = await getSharedFolderContent({
         ownerId,
@@ -2352,7 +2353,7 @@ app.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = toUUID(req.params.ownerId);
     const folderId = toUUID(req.params.folderId);
-    const loggedInUserId = req.user?.userId ?? Buffer.alloc(16);
+    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
     try {
       const contentData = await getSharedFolderContent({
         ownerId,
@@ -2444,7 +2445,7 @@ app.get(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const activityId = toUUID(req.body.activityId);
-      const loggedInUserId = req.user?.userId ?? Buffer.alloc(16);
+      const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
       const classifications = await getClassifications(
         activityId,
         loggedInUserId,

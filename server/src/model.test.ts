@@ -78,11 +78,14 @@ import { DateTime } from "luxon";
 import { ClassificationSystemTree, ContentStructure } from "./types";
 import {
   allAssignmentScoresConvertUUID,
+  compareUUID,
   fromUUID,
+  isEqualUUID,
   newUUID,
   studentDataConvertUUID,
   userConvertUUID,
 } from "./utils/uuid";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 // const EMPTY_DOC_CID =
 //   "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
@@ -200,7 +203,7 @@ test("New activity starts out private, then delete it", async () => {
   await deleteActivity(activityId, userId);
 
   await expect(getActivityEditorData(activityId, userId)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
 
   const dataAfterDelete = await getMyFolderContent({
@@ -445,7 +448,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
       loggedInUserId: userId,
       folderId: publicFolder1Id,
     }),
-  ).rejects.toThrow("No content found");
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   ownerContent = await getMyFolderContent({
     loggedInUserId: ownerId,
@@ -509,7 +512,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
       folderId: privateFolder1Id,
       loggedInUserId: userId,
     }),
-  ).rejects.toThrow("No content found");
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   // If other user tries to access folder, throws error
   await expect(
@@ -517,7 +520,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
       loggedInUserId: userId,
       folderId: privateFolder1Id,
     }),
-  ).rejects.toThrow("No content found");
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   ownerContent = await getMyFolderContent({
     loggedInUserId: ownerId,
@@ -542,7 +545,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
       loggedInUserId: userId,
       folderId: publicFolder3Id,
     }),
-  ).rejects.toThrow("No content found");
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 });
 
 test(
@@ -887,7 +890,7 @@ test(
         folderId: sharedFolder1Id,
         loggedInUserId: user3Id,
       }),
-    ).rejects.toThrow("No content found");
+    ).rejects.toThrow(PrismaClientKnownRequestError);
 
     // If other user tries to access folder via my folder, throws error
     await expect(
@@ -895,7 +898,7 @@ test(
         loggedInUserId: user1Id,
         folderId: sharedFolder1Id,
       }),
-    ).rejects.toThrow("No content found");
+    ).rejects.toThrow(PrismaClientKnownRequestError);
 
     ownerContent = await getMyFolderContent({
       loggedInUserId: ownerId,
@@ -963,7 +966,7 @@ test(
         folderId: privateFolder1Id,
         loggedInUserId: user1Id,
       }),
-    ).rejects.toThrow("No content found");
+    ).rejects.toThrow(PrismaClientKnownRequestError);
 
     // If other user tries to access folder, throws error
     await expect(
@@ -971,7 +974,7 @@ test(
         loggedInUserId: user1Id,
         folderId: privateFolder1Id,
       }),
-    ).rejects.toThrow("No content found");
+    ).rejects.toThrow(PrismaClientKnownRequestError);
 
     ownerContent = await getMyFolderContent({
       loggedInUserId: ownerId,
@@ -996,7 +999,7 @@ test(
         loggedInUserId: user1Id,
         folderId: sharedFolder3Id,
       }),
-    ).rejects.toThrow("No content found");
+    ).rejects.toThrow(PrismaClientKnownRequestError);
   },
 );
 
@@ -1811,16 +1814,18 @@ test("deleteActivity marks a activity and document as deleted and prevents its r
   expect(deleteResult.isDeleted).toBe(true);
 
   // cannot retrieve activity
-  await expect(getActivity(activityId)).rejects.toThrow("No content found");
+  await expect(getActivity(activityId)).rejects.toThrow(
+    PrismaClientKnownRequestError,
+  );
   await expect(getActivityViewerData(activityId, userId)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
   await expect(getActivityEditorData(activityId, userId)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
-  await expect(getDoc(docId)).rejects.toThrow("No documents found");
+  await expect(getDoc(docId)).rejects.toThrow(PrismaClientKnownRequestError);
   await expect(getDocumentSource(docId, userId)).rejects.toThrow(
-    "No documents found",
+    PrismaClientKnownRequestError,
   );
 });
 
@@ -1942,19 +1947,19 @@ test(
         loggedInUserId: userId,
         folderId: folder1Id,
       }),
-    ).rejects.toThrow("No content found");
+    ).rejects.toThrow(PrismaClientKnownRequestError);
     await expect(
       getMyFolderContent({
         loggedInUserId: userId,
         folderId: folder2Id,
       }),
-    ).rejects.toThrow("No content found");
+    ).rejects.toThrow(PrismaClientKnownRequestError);
     await expect(
       getMyFolderContent({
         loggedInUserId: userId,
         folderId: folder3Id,
       }),
-    ).rejects.toThrow("No content found");
+    ).rejects.toThrow(PrismaClientKnownRequestError);
     folder4Content = await getMyFolderContent({
       loggedInUserId: userId,
       folderId: folder4Id,
@@ -1971,15 +1976,21 @@ test(
     });
     expect(folder6Content.content.length).eq(1);
 
-    await expect(getActivity(activity1Id)).rejects.toThrow("No content found");
-    await expect(getActivity(activity2Id)).rejects.toThrow("No content found");
-    await expect(getActivity(activity3Id)).rejects.toThrow("No content found");
+    await expect(getActivity(activity1Id)).rejects.toThrow(
+      PrismaClientKnownRequestError,
+    );
+    await expect(getActivity(activity2Id)).rejects.toThrow(
+      PrismaClientKnownRequestError,
+    );
+    await expect(getActivity(activity3Id)).rejects.toThrow(
+      PrismaClientKnownRequestError,
+    );
     await getActivity(activity4Id);
     await getActivity(activity5Id);
     await getActivity(activity6Id);
-    await expect(getDoc(doc1Id)).rejects.toThrow("No documents found");
-    await expect(getDoc(doc2Id)).rejects.toThrow("No documents found");
-    await expect(getDoc(doc3Id)).rejects.toThrow("No documents found");
+    await expect(getDoc(doc1Id)).rejects.toThrow(PrismaClientKnownRequestError);
+    await expect(getDoc(doc2Id)).rejects.toThrow(PrismaClientKnownRequestError);
+    await expect(getDoc(doc3Id)).rejects.toThrow(PrismaClientKnownRequestError);
     await getDoc(doc4Id);
     await getDoc(doc5Id);
     await getDoc(doc6Id);
@@ -2002,20 +2013,24 @@ test(
         loggedInUserId: userId,
         folderId: folder5Id,
       }),
-    ).rejects.toThrow("No content found");
+    ).rejects.toThrow(PrismaClientKnownRequestError);
     await expect(
       getMyFolderContent({
         loggedInUserId: userId,
         folderId: folder6Id,
       }),
-    ).rejects.toThrow("No content found");
+    ).rejects.toThrow(PrismaClientKnownRequestError);
 
     await getActivity(activity4Id);
-    await expect(getActivity(activity5Id)).rejects.toThrow("No content found");
-    await expect(getActivity(activity6Id)).rejects.toThrow("No content found");
+    await expect(getActivity(activity5Id)).rejects.toThrow(
+      PrismaClientKnownRequestError,
+    );
+    await expect(getActivity(activity6Id)).rejects.toThrow(
+      PrismaClientKnownRequestError,
+    );
     await getDoc(doc4Id);
-    await expect(getDoc(doc5Id)).rejects.toThrow("No documents found");
-    await expect(getDoc(doc6Id)).rejects.toThrow("No documents found");
+    await expect(getDoc(doc5Id)).rejects.toThrow(PrismaClientKnownRequestError);
+    await expect(getDoc(doc6Id)).rejects.toThrow(PrismaClientKnownRequestError);
   },
 );
 
@@ -2027,7 +2042,7 @@ test("non-owner cannot delete folder", async () => {
 
   const { folderId } = await createFolder(ownerId, null);
   await expect(deleteFolder(folderId, userId)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
 
   // folder is still around
@@ -2430,7 +2445,7 @@ test("copyActivityToFolder copies a public document to a new owner", async () =>
   // cannot copy if not yet public
   await expect(
     copyActivityToFolder(activityId, newOwnerId, null),
-  ).rejects.toThrow("No content found");
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   // Make the activity public before copying
   await makeActivityPublic({
@@ -2463,7 +2478,7 @@ test("copyActivityToFolder copies a shared document to a new owner", async () =>
   // cannot copy if not yet shared
   await expect(
     copyActivityToFolder(activityId, newOwnerId, null),
-  ).rejects.toThrow("No content found");
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   // Make the activity public before copying
   await shareActivity({
@@ -2846,7 +2861,7 @@ test("searchSharedContent returns public/shared activities and folders matching 
   expect(searchResults.length).eq(4);
 
   const namesInOrder = searchResults
-    .sort((a, b) => a.id.compare(b.id))
+    .sort((a, b) => compareUUID(a.id, b.id))
     .map((c) => c.name);
 
   expect(namesInOrder).eqls([
@@ -2962,7 +2977,7 @@ test("searchSharedContent returns public/shared activities and folders even in a
   expect(searchResults.length).eq(4);
 
   const namesInOrder = searchResults
-    .sort((a, b) => a.id.compare(b.id))
+    .sort((a, b) => compareUUID(a.id, b.id))
     .map((c) => c.name);
 
   expect(namesInOrder).eqls([
@@ -2990,15 +3005,15 @@ test("searchSharedContent, document source matches", async () => {
 
   // apple doesn't hit
   let results = await searchSharedContent("apple", userId);
-  expect(results.filter((r) => r.id.equals(activityId))).toHaveLength(0);
+  expect(results.filter((r) => isEqualUUID(r.id, activityId))).toHaveLength(0);
 
   // first part of a word hits
   results = await searchSharedContent(`b${code}ana`, userId);
-  expect(results.filter((r) => r.id.equals(activityId))).toHaveLength(1);
+  expect(results.filter((r) => isEqualUUID(r.id, activityId))).toHaveLength(1);
 
   // full word hits
   results = await searchSharedContent(`b${code}ananas`, userId);
-  expect(results.filter((r) => r.id.equals(activityId))).toHaveLength(1);
+  expect(results.filter((r) => isEqualUUID(r.id, activityId))).toHaveLength(1);
 });
 
 test("searchSharedContent, owner name matches", async () => {
@@ -3016,10 +3031,10 @@ test("searchSharedContent, owner name matches", async () => {
   });
 
   let results = await searchSharedContent("Arya", userId);
-  expect(results.filter((r) => r.id.equals(activityId))).toHaveLength(1);
+  expect(results.filter((r) => isEqualUUID(r.id, activityId))).toHaveLength(1);
 
   results = await searchSharedContent("Arya Abbas", userId);
-  expect(results.filter((r) => r.id.equals(activityId))).toHaveLength(1);
+  expect(results.filter((r) => isEqualUUID(r.id, activityId))).toHaveLength(1);
 });
 
 test("searchSharedContent, document source is more relevant than classification", async () => {
@@ -3475,7 +3490,9 @@ test("deleteActivity prevents a document from being retrieved", async () => {
   const ownerId = owner.userId;
   const { activityId } = await createActivity(ownerId, null);
   await deleteActivity(activityId, ownerId);
-  await expect(getActivity(activityId)).rejects.toThrow("No content found");
+  await expect(getActivity(activityId)).rejects.toThrow(
+    PrismaClientKnownRequestError,
+  );
 });
 
 test("updateContent does not update properties when passed undefined values", async () => {
@@ -3566,7 +3583,7 @@ test("add and remove promoted content", async () => {
   const fakeGroupId = Math.random() * 1e8;
   await expect(
     addPromotedContent(fakeGroupId, activityId, userId),
-  ).rejects.toThrowError("Foreign key constraint failed");
+  ).rejects.toThrowError("Foreign key constraint violated");
   {
     const promotedContent = await loadPromotedContent(userId);
     const myContent = promotedContent.find(
@@ -3884,7 +3901,7 @@ test("cannot assign other user's activity", async () => {
   });
 
   await expect(assignActivity(activityId, ownerId2)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
 
   // still cannot create assignment even if activity is made public
@@ -3895,7 +3912,7 @@ test("cannot assign other user's activity", async () => {
   });
 
   await expect(assignActivity(activityId, ownerId2)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
 
   // still cannot create assignment even if activity is shared
@@ -3907,7 +3924,7 @@ test("cannot assign other user's activity", async () => {
   });
 
   await expect(assignActivity(activityId, ownerId2)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
 });
 
@@ -3944,7 +3961,7 @@ test("open and close assignment with code", async () => {
   // close assignment completely unassigns since there is no data
   await closeAssignmentWithCode(activityId, ownerId);
   await expect(getAssignment(activityId, ownerId)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
 
   assignmentData = await getAssignmentDataFromCode(classCode);
@@ -4039,7 +4056,7 @@ test("open and unassign assignment with code", async () => {
   // unassign activity
   await unassignActivity(activityId, ownerId);
   await expect(getAssignment(activityId, ownerId)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
 
   // Getting deleted assignment by code fails
@@ -4070,7 +4087,7 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
       source: "Some content",
       ownerId: userId2,
     }),
-  ).rejects.toThrow("No content found");
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   await updateContent({ id: activityId, name: "Activity 1", ownerId });
   await updateDoc({
@@ -4080,13 +4097,13 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
   });
 
   await expect(assignActivity(activityId, userId2)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
 
   await assignActivity(activityId, ownerId);
 
   await expect(getAssignment(activityId, userId2)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
 
   let assignment = await getAssignment(activityId, ownerId);
@@ -4104,7 +4121,7 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
 
   await expect(
     openAssignmentWithCode(activityId, closeAt, userId2),
-  ).rejects.toThrow("No content found");
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   const { codeValidUntil } = await openAssignmentWithCode(
     activityId,
@@ -4467,7 +4484,7 @@ test("can't get assignment data if other user, but student can get their own dat
       activityId,
       ownerId: otherUserId,
     }),
-  ).rejects.toThrow("No content found");
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   // student cannot get score data on all of assignment
   await expect(
@@ -4475,7 +4492,7 @@ test("can't get assignment data if other user, but student can get their own dat
       activityId,
       ownerId: newUser1.userId,
     }),
-  ).rejects.toThrow("No content found");
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   // assignment owner can get data on student
   const studentData = await getAssignmentStudentData({
@@ -4491,7 +4508,7 @@ test("can't get assignment data if other user, but student can get their own dat
       loggedInUserId: otherUserId,
       studentId: newUser1.userId,
     }),
-  ).rejects.toThrow("No assignmentScores found");
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   // student can get own data
   expect(
@@ -4558,13 +4575,13 @@ test("get activity/document data only if owner or limited data for public/shared
   await getDocumentSource(docId, ownerId);
 
   await expect(getActivityEditorData(activityId, user1Id)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
   await expect(getActivityViewerData(activityId, user1Id)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
   await expect(getDocumentSource(docId, user1Id)).rejects.toThrow(
-    "No documents found",
+    PrismaClientKnownRequestError,
   );
 
   await makeActivityPublic({ id: activityId, ownerId, licenseCode: "CCDUAL" });
@@ -4601,13 +4618,13 @@ test("get activity/document data only if owner or limited data for public/shared
 
   await makeActivityPrivate({ id: activityId, ownerId });
   await expect(getActivityEditorData(activityId, user1Id)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
   await expect(getActivityViewerData(activityId, user1Id)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
   await expect(getDocumentSource(docId, user1Id)).rejects.toThrow(
-    "No documents found",
+    PrismaClientKnownRequestError,
   );
 
   await shareActivity({
@@ -4640,13 +4657,13 @@ test("get activity/document data only if owner or limited data for public/shared
   await getDocumentSource(docId, user1Id);
 
   await expect(getActivityEditorData(activityId, user2Id)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
   await expect(getActivityViewerData(activityId, user2Id)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
   await expect(getDocumentSource(docId, user2Id)).rejects.toThrow(
-    "No documents found",
+    PrismaClientKnownRequestError,
   );
 });
 
@@ -4664,7 +4681,7 @@ test("get public activity editor data only if public or shared", async () => {
   await updateDoc({ id: docId, source: doenetML, ownerId });
 
   await expect(getSharedEditorData(activityId, user1Id)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
 
   await updateContent({
@@ -4688,7 +4705,7 @@ test("get public activity editor data only if public or shared", async () => {
   });
 
   await expect(getSharedEditorData(activityId, user1Id)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
 
   await shareActivity({
@@ -4703,7 +4720,7 @@ test("get public activity editor data only if public or shared", async () => {
   expect(sharedData.documents[0].source).eq(doenetML);
 
   await expect(getSharedEditorData(activityId, user2Id)).rejects.toThrow(
-    "No content found",
+    PrismaClientKnownRequestError,
   );
 });
 
@@ -5136,7 +5153,7 @@ test("only user and assignment owner can load document state", async () => {
       userId: user2.userId,
       withMaxScore: false,
     }),
-  ).rejects.toThrow("No content found");
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 });
 
 test("load document state based on withMaxScore", async () => {
@@ -5967,7 +5984,7 @@ test("only owner can get submitted responses", async () => {
       ownerId: userId2,
       answerId: answerId1,
     }),
-  ).rejects.toThrow("No content found");
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   await expect(
     getDocumentSubmittedResponseHistory({
@@ -5978,7 +5995,7 @@ test("only owner can get submitted responses", async () => {
       answerId: answerId1,
       userId: newUser!.userId,
     }),
-  ).rejects.toThrow("No content found");
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 });
 
 test("list assigned and get assigned scores get student assignments and scores", async () => {
@@ -7120,7 +7137,7 @@ test(
     expect(content.length).eq(3);
     expect(
       content
-        .sort((a, b) => a.id.compare(b.id))
+        .sort((a, b) => compareUUID(a.id, b.id))
         .map((c) => ({
           id: fromUUID(c.id),
           parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
@@ -7141,7 +7158,7 @@ test(
     expect(content.length).eq(2);
     expect(
       content
-        .sort((a, b) => a.id.compare(b.id))
+        .sort((a, b) => compareUUID(a.id, b.id))
         .map((c) => ({
           id: fromUUID(c.id),
           parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
@@ -7161,7 +7178,7 @@ test(
     expect(content.length).eq(1);
     expect(
       content
-        .sort((a, b) => a.id.compare(b.id))
+        .sort((a, b) => compareUUID(a.id, b.id))
         .map((c) => ({
           id: fromUUID(c.id),
           parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
@@ -7189,7 +7206,7 @@ test(
     expect(content.length).eq(3);
     expect(
       content
-        .sort((a, b) => a.id.compare(b.id))
+        .sort((a, b) => compareUUID(a.id, b.id))
         .map((c) => ({
           id: fromUUID(c.id),
           parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
@@ -7210,7 +7227,7 @@ test(
     expect(content.length).eq(2);
     expect(
       content
-        .sort((a, b) => a.id.compare(b.id))
+        .sort((a, b) => compareUUID(a.id, b.id))
         .map((c) => ({
           id: fromUUID(c.id),
           parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
@@ -7230,7 +7247,7 @@ test(
     expect(content.length).eq(1);
     expect(
       content
-        .sort((a, b) => a.id.compare(b.id))
+        .sort((a, b) => compareUUID(a.id, b.id))
         .map((c) => ({
           id: fromUUID(c.id),
           parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,

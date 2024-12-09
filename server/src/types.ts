@@ -11,7 +11,7 @@ export type DoenetmlVersion = {
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
 export type UserInfo = {
-  userId: Buffer;
+  userId: Uint8Array;
   firstNames: string | null;
   lastNames: string;
   email: string;
@@ -38,8 +38,8 @@ export type ContentClassification = {
 };
 
 export type ContentStructure = {
-  id: Buffer;
-  ownerId: Buffer;
+  id: Uint8Array;
+  ownerId: Uint8Array;
   owner?: UserInfo;
   name: string;
   imagePath: string | null;
@@ -53,7 +53,7 @@ export type ContentStructure = {
   license: License | null;
   classifications: ContentClassification[];
   documents: {
-    id: Buffer;
+    id: Uint8Array;
     versionNum?: number;
     name?: string;
     source?: string;
@@ -61,7 +61,7 @@ export type ContentStructure = {
   }[];
   hasScoreData: boolean;
   parentFolder: {
-    id: Buffer;
+    id: Uint8Array;
     name: string;
     isPublic: boolean;
     isShared: boolean;
@@ -90,10 +90,10 @@ export type License = {
 };
 
 export type DocHistory = {
-  id: Buffer;
+  id: Uint8Array;
   contributorHistory: {
-    docId: Buffer;
-    prevDocId: Buffer;
+    docId: Uint8Array;
+    prevDocId: Uint8Array;
     prevDocVersionNum: number;
     withLicenseCode: string | null;
     timestampDoc: Date;
@@ -103,7 +103,7 @@ export type DocHistory = {
         source: string;
         activity: {
           name: string;
-          id: Buffer;
+          id: Uint8Array;
           owner: UserInfo;
         };
       };
