@@ -40,8 +40,8 @@ model content {
   promotedContent  promotedContent[]
   sharedWith       contentShares[]
   classifications  contentClassifications[]
-  librarySource    libraryActivityStatuses?         @relation("librarySource")
-  libraryActivity  libraryActivityStatuses?         @relation("libraryActivity")
+  librarySource    libraryActivityStatuses? @relation("librarySource")
+  libraryActivity  libraryActivityStatuses? @relation("libraryActivity")
 
   @@index([ownerId, parentFolderId, sortIndex])
   @@index([classCode])
@@ -207,6 +207,7 @@ model users {
   firstNames                 String?
   lastNames                  String
   isAdmin                    Boolean                      @default(false)
+  isLibrary                  Boolean                      @default(false)
   isAnonymous                Boolean                      @default(false)
   cardView                   Boolean                      @default(false)
   content                    content[]
@@ -310,6 +311,7 @@ model libraryEvents {
   id        Bytes                   @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
   eventType LibraryEventType
   comments  String
+  dateTime  DateTime
   statusId  Bytes                   @db.Binary(16)
   userId    Bytes                   @db.Binary(16)
   user      users                   @relation(fields: [userId], references: [userId])
@@ -317,9 +319,11 @@ model libraryEvents {
 }
 
 enum LibraryEventType {
-  REQUEST_TO_BE_ADDED
-  REMOVE_REQUEST
-  ADD_TO_LIBRARY
-  RETURN_FOR_REVISION
+  SUBMIT_REQUEST
+  CANCEL_REQUEST
+  ADD_DRAFT
+  DELETE_DRAFT
+  PUBLISH
+  MARK_NEEDS_REVISION
   MODIFY_COMMENTS
 }
