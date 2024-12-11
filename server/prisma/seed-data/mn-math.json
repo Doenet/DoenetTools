@@ -1,0 +1,1838 @@
+[
+  {
+    "code": "K.1.1.1",
+    "subCategory": "Understand the relationship between quantities and whole numbers up to 31.",
+    "description": "Recognize that a number can be used to represent how many objects are in a set or to represent the position of an object in a sequence.",
+    "category": "Kindergarten"
+  },
+  {
+    "code": "K.1.1.2",
+    "subCategory": "Understand the relationship between quantities and whole numbers up to 31.",
+    "description": "Read, write, and represent whole numbers from 0 to at least 31. Representations may include numerals, pictures, real objects and picture graphs, spoken words, and manipulatives such as connecting cubes.",
+    "category": "Kindergarten"
+  },
+  {
+    "code": "K.1.1.3",
+    "subCategory": "Understand the relationship between quantities and whole numbers up to 31.",
+    "description": "Count, with and without objects, forward and backward to at least 20.",
+    "category": "Kindergarten"
+  },
+  {
+    "code": "K.1.1.4",
+    "subCategory": "Understand the relationship between quantities and whole numbers up to 31.",
+    "description": "Find a number that is 1 more or 1 less than a given number.",
+    "category": "Kindergarten"
+  },
+  {
+    "code": "K.1.1.5",
+    "subCategory": "Understand the relationship between quantities and whole numbers up to 31.",
+    "description": "Compare and order whole numbers, with and without objects, from 0 to 20.",
+    "category": "Kindergarten"
+  },
+  {
+    "code": "K.1.2.1",
+    "subCategory": "Use objects and pictures to represent situations involving combining and separating.",
+    "description": "Use objects and draw pictures to find the sums and differences of numbers between 0 and 10.",
+    "category": "Kindergarten"
+  },
+  {
+    "code": "K.1.2.2",
+    "subCategory": "Use objects and pictures to represent situations involving combining and separating.",
+    "description": "Compose and decompose numbers up to 10 with objects and pictures.",
+    "category": "Kindergarten"
+  },
+  {
+    "code": "K.2.1.1",
+    "subCategory": "Recognize, create, complete and extend patterns.",
+    "description": "Identify, create, complete, and extend simple patterns using shape, color, size, number, sounds and movements. Patterns may be repeating, growing or shrinking such as ABB, ABB, ABB or ●,●●,●●●.",
+    "category": "Kindergarten"
+  },
+  {
+    "code": "K.3.1.1",
+    "subCategory": "Recognize and sort basic two- and three-dimensional shapes; use them to model real-world objects.",
+    "description": "Recognize basic two- and three-dimensional shapes such as squares, circles, triangles, rectangles, trapezoids, hexagons, cubes, cones, cylinders and spheres.",
+    "category": "Kindergarten"
+  },
+  {
+    "code": "K.3.1.2",
+    "subCategory": "Recognize and sort basic two- and three-dimensional shapes; use them to model real-world objects.",
+    "description": "Sort objects using characteristics such as shape, size, color and thickness.",
+    "category": "Kindergarten"
+  },
+  {
+    "code": "K.3.1.3",
+    "subCategory": "Recognize and sort basic two- and three-dimensional shapes; use them to model real-world objects.",
+    "description": "Use basic shapes and spatial reasoning to model objects in the real-world.",
+    "category": "Kindergarten"
+  },
+  {
+    "code": "K.3.2.1",
+    "subCategory": "Compare and order objects according to location and measurable attributes.",
+    "description": "Use words to compare objects according to length, size, weight and position.",
+    "category": "Kindergarten"
+  },
+  {
+    "code": "K.3.2.2",
+    "subCategory": "Compare and order objects according to location and measurable attributes.",
+    "description": "Order 2 or 3 objects using measurable attributes, such as length and weight.",
+    "category": "Kindergarten"
+  },
+  {
+    "code": "1.1.1.1",
+    "subCategory": "Count, compare and represent whole numbers up to 120, with an emphasis on groups of tens and ones.",
+    "description": "Use place value to describe whole numbers between 10 and 100 in terms of tens and ones.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.1.1.2",
+    "subCategory": "Count, compare and represent whole numbers up to 120, with an emphasis on groups of tens and ones.",
+    "description": "Read, write and represent whole numbers up to 120. Representations may include numerals, addition and subtraction, pictures, tally marks, number lines and manipulatives, such as bundles of sticks and base 10 blocks.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.1.1.3",
+    "subCategory": "Count, compare and represent whole numbers up to 120, with an emphasis on groups of tens and ones.",
+    "description": "Count, with and without objects, forward and backward from any given number up to 120.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.1.1.4",
+    "subCategory": "Count, compare and represent whole numbers up to 120, with an emphasis on groups of tens and ones.",
+    "description": "Find a number that is 10 more or 10 less than a given number.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.1.1.5",
+    "subCategory": "Count, compare and represent whole numbers up to 120, with an emphasis on groups of tens and ones.",
+    "description": "Compare and order whole numbers up to 120.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.1.1.6",
+    "subCategory": "Count, compare and represent whole numbers up to 120, with an emphasis on groups of tens and ones.",
+    "description": "Use words to describe the relative size of numbers.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.1.1.7",
+    "subCategory": "Count, compare and represent whole numbers up to 120, with an emphasis on groups of tens and ones.",
+    "description": "Use counting and comparison skills to create and analyze bar graphs and tally charts.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.1.2.1",
+    "subCategory": "Use a variety of models and strategies to solve addition and subtraction problems in real-world and mathematical contexts.",
+    "description": "Use words, pictures, objects, length-based models (connecting cubes), numerals and number lines to model and solve addition and subtraction problems in part-part-total, adding to, taking away from and comparing situations.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.1.2.2",
+    "subCategory": "Use a variety of models and strategies to solve addition and subtraction problems in real-world and mathematical contexts.",
+    "description": "Compose and decompose numbers up to 12 with an emphasis on making ten.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.1.2.3",
+    "subCategory": "Use a variety of models and strategies to solve addition and subtraction problems in real-world and mathematical contexts.",
+    "description": "Recognize the relationship between counting and addition and subtraction. Skip count by 2s, 5s, and 10s.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.2.1.1",
+    "subCategory": "Recognize and create patterns; use rules to describe patterns.",
+    "description": "Create simple patterns using objects, pictures, numbers and rules. Identify possible rules to complete or extend patterns. Patterns may be repeating, growing or shrinking. Calculators can be used to create and explore patterns.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.2.2.1",
+    "subCategory": "Use number sentences involving addition and subtraction basic facts to represent and solve real-world and mathematical problems; create real-world situations corresponding to number sentences.",
+    "description": "Represent real-world situations involving addition and subtraction basic facts, using objects and number sentences.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.2.2.2",
+    "subCategory": "Use number sentences involving addition and subtraction basic facts to represent and solve real-world and mathematical problems; create real-world situations corresponding to number sentences.",
+    "description": "Determine if equations involving addition and subtraction are true.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.2.2.3",
+    "subCategory": "Use number sentences involving addition and subtraction basic facts to represent and solve real-world and mathematical problems; create real-world situations corresponding to number sentences.",
+    "description": "Use number sense and models of addition and subtraction, such as objects and number lines, to identify the missing number in an equation such as: 2 + 4 = ,           3 +  = 7, and 5 =  – 3.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.2.2.4",
+    "subCategory": "Use number sentences involving addition and subtraction basic facts to represent and solve real-world and mathematical problems; create real-world situations corresponding to number sentences.",
+    "description": "Use addition or subtraction basic facts to represent a given problem situation using a number sentence.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.3.1.1",
+    "subCategory": "Describe characteristics of basic shapes. Use basic shapes to compose and decompose other objects in various contexts.",
+    "description": "Describe characteristics of two- and three-dimensional objects, such as triangles, squares, rectangles, circles, rectangular prisms, cylinders, cones and spheres.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.3.1.2",
+    "subCategory": "Describe characteristics of basic shapes. Use basic shapes to compose and decompose other objects in various contexts.",
+    "description": "Compose (combine) and decompose (take apart) two- and three-dimensional figures such as triangles, squares, rectangles, circles, rectangular prisms and cylinders.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.3.2.1",
+    "subCategory": "Use basic concepts of measurement in real-world and mathematical situations involving length, time and money.",
+    "description": "Measure the length of an object in terms of multiple copies of another object.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.3.2.2",
+    "subCategory": "Use basic concepts of measurement in real-world and mathematical situations involving length, time and money.",
+    "description": "Tell time to the hour and half-hour.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "1.3.2.3",
+    "subCategory": "Use basic concepts of measurement in real-world and mathematical situations involving length, time and money.",
+    "description": "Identify pennies, nickels and dimes; find the value of a group of these coins, up to one dollar.",
+    "category": "Grade 1"
+  },
+  {
+    "code": "2.1.1.1",
+    "subCategory": "Compare and represent whole numbers up to 1000 with an emphasis on place value and equality.",
+    "description": "Read, write and represent whole numbers up to 1000. Representations may include numerals, addition, subtraction, multiplication, words, pictures, tally marks, number lines and manipulatives, such as bundles of sticks and base 10 blocks.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.1.1.2",
+    "subCategory": "Compare and represent whole numbers up to 1000 with an emphasis on place value and equality.",
+    "description": "Use place value to describe whole numbers between 10 and 1000 in terms of hundreds, tens and ones. Know that 100 is 10 tens, and 1000 is 10 hundreds.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.1.1.3",
+    "subCategory": "Compare and represent whole numbers up to 1000 with an emphasis on place value and equality.",
+    "description": "Find 10 more or 10 less than a given three-digit number. Find 100 more or 100 less than a given three-digit number.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.1.1.4",
+    "subCategory": "Compare and represent whole numbers up to 1000 with an emphasis on place value and equality.",
+    "description": "Round numbers up to the nearest 10 and 100 and round numbers down to the nearest 10 and 100.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.1.1.5",
+    "subCategory": "Compare and represent whole numbers up to 1000 with an emphasis on place value and equality.",
+    "description": "Compare and order whole numbers up to 1000.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.1.2.1",
+    "subCategory": "Demonstrate mastery of addition and subtraction basic facts; add and subtract one- and two-digit numbers in real-world and mathematical problems.",
+    "description": "Use strategies to generate addition and subtraction facts including making tens, fact families, doubles plus or minus one, counting on, counting back, and the commutative and associative properties. Use the relationship between addition and subtraction to generate basic facts.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.1.2.2",
+    "subCategory": "Demonstrate mastery of addition and subtraction basic facts; add and subtract one- and two-digit numbers in real-world and mathematical problems.",
+    "description": "Demonstrate fluency with basic addition facts and related subtraction facts.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.1.2.3",
+    "subCategory": "Demonstrate mastery of addition and subtraction basic facts; add and subtract one- and two-digit numbers in real-world and mathematical problems.",
+    "description": "Estimate sums and differences up to 100.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.1.2.4",
+    "subCategory": "Demonstrate mastery of addition and subtraction basic facts; add and subtract one- and two-digit numbers in real-world and mathematical problems.",
+    "description": "Use mental strategies and algorithms based on knowledge of place value and equality to add and subtract two-digit numbers. Strategies may include decomposition, expanded notation, and partial sums and differences.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.1.2.5",
+    "subCategory": "Demonstrate mastery of addition and subtraction basic facts; add and subtract one- and two-digit numbers in real-world and mathematical problems.",
+    "description": "Solve real-world and mathematical addition and subtraction problems involving whole numbers with up to 2 digits.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.1.2.6",
+    "subCategory": "Demonstrate mastery of addition and subtraction basic facts; add and subtract one- and two-digit numbers in real-world and mathematical problems.",
+    "description": "Use addition and subtraction to create and obtain information from tables, bar graphs and tally charts.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.2.1.1",
+    "subCategory": "Recognize, create, describe, and use patterns and rules to solve real-world and mathematical problems.",
+    "description": "Identify, create and describe simple number patterns involving repeated addition or subtraction, skip counting and arrays of objects such as counters or tiles. Use patterns to solve problems in various contexts.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.2.2.1",
+    "subCategory": "Use number sentences involving addition, subtraction and unknowns to represent and solve real-world and mathematical problems; create real-world situations corresponding to number sentences.",
+    "description": "Understand how to interpret number sentences involving addition, subtraction and unknowns represented by letters. Use objects and number lines and create real-world situations to represent number sentences.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.2.2.2",
+    "subCategory": "Use number sentences involving addition, subtraction and unknowns to represent and solve real-world and mathematical problems; create real-world situations corresponding to number sentences.",
+    "description": "Use number sentences involving addition, subtraction, and unknowns to represent given problem situations. Use number sense and properties of addition and subtraction to find values for the unknowns that make the number sentences true.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.3.1.1",
+    "subCategory": "Identify, describe and compare basic shapes according to their geometric attributes.",
+    "description": "Describe, compare, and classify two- and three-dimensional figures according to number and shape of faces, and the number of sides, edges and vertices (corners).",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.3.1.2",
+    "subCategory": "Identify, describe and compare basic shapes according to their geometric attributes.",
+    "description": "Identify and name basic two- and three-dimensional shapes, such as squares, circles, triangles, rectangles, trapezoids, hexagons, cubes, rectangular prisms, cones, cylinders and spheres.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.3.2.1",
+    "subCategory": "Understand length as a measurable attribute; use tools to measure length.",
+    "description": "Understand the relationship between the size of the unit of measurement and the number of units needed to measure the length of an object.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.3.2.2",
+    "subCategory": "Understand length as a measurable attribute; use tools to measure length.",
+    "description": "Demonstrate an understanding of the relationship between length and the numbers on a ruler by using a ruler to measure lengths to the nearest centimeter or inch.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.3.3.1",
+    "subCategory": "Use time and money in real-world and mathematical situations.",
+    "description": "Tell time to the quarter-hour and distinguish between a.m. and p.m.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "2.3.3.2",
+    "subCategory": "Use time and money in real-world and mathematical situations.",
+    "description": "Identify pennies, nickels, dimes and quarters. Find the value of a group of coins and determine combinations of coins that equal a given amount.",
+    "category": "Grade 2"
+  },
+  {
+    "code": "3.1.1.1",
+    "subCategory": "Compare and represent whole numbers up to 100,000 with an emphasis on place value and equality.",
+    "description": "Read, write and represent whole numbers up to 100,000. Representations may include numerals, expressions with operations, words, pictures, number lines, and manipulatives such as bundles of sticks and base 10 blocks.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.1.1.2",
+    "subCategory": "Compare and represent whole numbers up to 100,000 with an emphasis on place value and equality.",
+    "description": "Use place value to describe whole numbers between 1000 and 100,000 in terms of ten thousands, thousands, hundreds, tens and ones.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.1.1.3",
+    "subCategory": "Compare and represent whole numbers up to 100,000 with an emphasis on place value and equality.",
+    "description": "Find 10,000 more or 10,000 less than a given five-digit number. Find 1000 more or 1000 less than a given four- or five-digit. Find 100 more or 100 less than a given four- or five-digit number.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.1.1.4",
+    "subCategory": "Compare and represent whole numbers up to 100,000 with an emphasis on place value and equality.",
+    "description": "Round numbers to the nearest 10,000, 1000, 100 and 10. Round up and round down to estimate sums and differences.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.1.1.5",
+    "subCategory": "Compare and represent whole numbers up to 100,000 with an emphasis on place value and equality.",
+    "description": "Compare and order whole numbers up to 100,000.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.1.2.1",
+    "subCategory": "Add and subtract multi-digit whole numbers; represent multiplication and division in various ways; solve real-world and mathematical problems using arithmetic.",
+    "description": "Add and subtract multi-digit numbers, using efficient and generalizable procedures based on knowledge of place value, including standard algorithms.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.1.2.2",
+    "subCategory": "Add and subtract multi-digit whole numbers; represent multiplication and division in various ways; solve real-world and mathematical problems using arithmetic.",
+    "description": "Use addition and subtraction to solve real-world and mathematical problems involving whole numbers. Use various strategies, including the relationship between addition and subtraction, the use of technology, and the context of the problem to assess the reasonableness of results.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.1.2.3",
+    "subCategory": "Add and subtract multi-digit whole numbers; represent multiplication and division in various ways; solve real-world and mathematical problems using arithmetic.",
+    "description": "Represent multiplication facts by using a variety of approaches, such as repeated addition, equal-sized groups, arrays, area models, equal jumps on a number line and skip counting. Represent division facts by using a variety of approaches, such as repeated subtraction, equal sharing and forming equal groups. Recognize the relationship between multiplication and division.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.1.2.4",
+    "subCategory": "Add and subtract multi-digit whole numbers; represent multiplication and division in various ways; solve real-world and mathematical problems using arithmetic.",
+    "description": "Solve real-world and mathematical problems involving multiplication and division, including both \"how many in each group\" and \"how many groups\" division problems.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.1.2.5",
+    "subCategory": "Add and subtract multi-digit whole numbers; represent multiplication and division in various ways; solve real-world and mathematical problems using arithmetic.",
+    "description": "Use strategies and algorithms based on knowledge of place value, equality and properties of addition and multiplication to multiply a two- or three-digit number by a one-digit number. Strategies may include mental strategies, partial products, the standard algorithm, and the commutative, associative, and distributive properties.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.1.3.1",
+    "subCategory": "Understand meanings and uses of fractions in real-world and mathematical situations.",
+    "description": "Read and write fractions with words and symbols. Recognize that fractions can be used to represent parts of a whole, parts of a set, points on a number line, or distances on a number line.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.1.3.2",
+    "subCategory": "Understand meanings and uses of fractions in real-world and mathematical situations.",
+    "description": "Understand that the size of a fractional part is relative to the size of the whole.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.1.3.3",
+    "subCategory": "Understand meanings and uses of fractions in real-world and mathematical situations.",
+    "description": "Order and compare unit fractions and fractions with like denominators by using models and an understanding of the concept of numerator and denominator.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.2.1.1",
+    "subCategory": "Use single-operation input-output rules to represent patterns and relationships and to solve real-world and mathematical problems.",
+    "description": "Create, describe, and apply single-operation input-output rules involving addition, subtraction and multiplication to solve problems in various contexts.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.2.2.1",
+    "subCategory": "Use number sentences involving multiplication and division basic facts and unknowns to represent and solve real-world and mathematical problems; create real-world situations corresponding to number sentences.",
+    "description": "Understand how to interpret number sentences involving multiplication and division basic facts and unknowns. Create real-world situations to represent number sentences.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.2.2.2",
+    "subCategory": "Use number sentences involving multiplication and division basic facts and unknowns to represent and solve real-world and mathematical problems; create real-world situations corresponding to number sentences.",
+    "description": "Use multiplication and division basic facts to represent a given problem situation using a number sentence. Use number sense and multiplication and division basic facts to find values for the unknowns that make the number sentences true.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.3.1.1",
+    "subCategory": "Use geometric attributes to describe and create shapes in various contexts.",
+    "description": "Identify parallel and perpendicular lines in various contexts, and use them to describe and create geometric shapes, such as right triangles, rectangles, parallelograms and trapezoids.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.3.1.2",
+    "subCategory": "Use geometric attributes to describe and create shapes in various contexts.",
+    "description": "Sketch polygons with a given number of sides or vertices (corners), such as pentagons, hexagons and octagons.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.3.2.1",
+    "subCategory": "Understand perimeter as a measurable attribute of real-world and mathematical objects. Use various tools to measure distances.",
+    "description": "Use half units when measuring distances.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.3.2.2",
+    "subCategory": "Understand perimeter as a measurable attribute of real-world and mathematical objects. Use various tools to measure distances.",
+    "description": "Find the perimeter of a polygon by adding the lengths of the sides.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.3.2.3",
+    "subCategory": "Understand perimeter as a measurable attribute of real-world and mathematical objects. Use various tools to measure distances.",
+    "description": "Measure distances around objects.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.3.3.1",
+    "subCategory": "Use time, money and temperature to solve real-world and mathematical problems.",
+    "description": "Tell time to the minute, using digital and analog clocks. Determine elapsed time to the minute.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.3.3.2",
+    "subCategory": "Use time, money and temperature to solve real-world and mathematical problems.",
+    "description": "Know relationships among units of time.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.3.3.3",
+    "subCategory": "Use time, money and temperature to solve real-world and mathematical problems.",
+    "description": "Make change up to one dollar in several different ways, including with as few coins as possible.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.3.3.4",
+    "subCategory": "Use time, money and temperature to solve real-world and mathematical problems.",
+    "description": "Use an analog thermometer to determine temperature to the nearest degree in Fahrenheit and Celsius.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "3.4.1.1",
+    "subCategory": "Collect, organize, display, and interpret data. Use labels and a variety of scales and units in displays.",
+    "description": "Collect, display and interpret data using frequency tables, bar graphs, picture graphs and number line plots having a variety of scales. Use appropriate titles, labels and units.",
+    "category": "Grade 3"
+  },
+  {
+    "code": "4.1.1.1",
+    "subCategory": "Demonstrate mastery of multiplication and division basic facts; multiply multi-digit numbers; solve real-world and mathematical problems using arithmetic.",
+    "description": "Demonstrate fluency with multiplication and division facts.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.1.1.2",
+    "subCategory": "Demonstrate mastery of multiplication and division basic facts; multiply multi-digit numbers; solve real-world and mathematical problems using arithmetic.",
+    "description": "Use an understanding of place value to multiply a number by 10, 100 and 1000.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.1.1.3",
+    "subCategory": "Demonstrate mastery of multiplication and division basic facts; multiply multi-digit numbers; solve real-world and mathematical problems using arithmetic.",
+    "description": "Multiply multi-digit numbers, using efficient and generalizable procedures, based on knowledge of place value, including standard algorithms.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.1.1.4",
+    "subCategory": "Demonstrate mastery of multiplication and division basic facts; multiply multi-digit numbers; solve real-world and mathematical problems using arithmetic.",
+    "description": "Estimate products and quotients of multi-digit whole numbers by using rounding, benchmarks and place value to assess the reasonableness of results.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.1.1.5",
+    "subCategory": "Demonstrate mastery of multiplication and division basic facts; multiply multi-digit numbers; solve real-world and mathematical problems using arithmetic.",
+    "description": "Solve multi-step real-world and mathematical problems requiring the use of addition, subtraction and multiplication of multi-digit whole numbers. Use various strategies, including the relationship between operations, the use of technology, and the context of the problem to assess the reasonableness of results.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.1.1.6",
+    "subCategory": "Demonstrate mastery of multiplication and division basic facts; multiply multi-digit numbers; solve real-world and mathematical problems using arithmetic.",
+    "description": "Use strategies and algorithms based on knowledge of place value, equality and properties of operations to divide multi-digit whole numbers by one- or two-digit numbers. Strategies may include mental strategies, partial quotients, the commutative, associative, and distributive properties and repeated subtraction.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.1.2.1",
+    "subCategory": "Represent and compare fractions and decimals in real-world and mathematical situations; use place value to understand how decimals represent quantities.",
+    "description": "Represent equivalent fractions using fraction models such as parts of a set, fraction circles, fraction strips, number lines and other manipulatives. Use the models to determine equivalent fractions.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.1.2.2",
+    "subCategory": "Represent and compare fractions and decimals in real-world and mathematical situations; use place value to understand how decimals represent quantities.",
+    "description": "Locate fractions on a number line. Use models to order and compare whole numbers and fractions, including mixed numbers and improper fractions.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.1.2.3",
+    "subCategory": "Represent and compare fractions and decimals in real-world and mathematical situations; use place value to understand how decimals represent quantities.",
+    "description": "Use fraction models to add and subtract fractions with like denominators in real-world and mathematical situations. Develop a rule for addition and subtraction of fractions with like denominators.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.1.2.4",
+    "subCategory": "Represent and compare fractions and decimals in real-world and mathematical situations; use place value to understand how decimals represent quantities.",
+    "description": "Read and write decimals with words and symbols; use place value to describe decimals in terms of thousands, hundreds, tens, ones, tenths, hundredths and thousandths.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.1.2.5",
+    "subCategory": "Represent and compare fractions and decimals in real-world and mathematical situations; use place value to understand how decimals represent quantities.",
+    "description": "Compare and order decimals and whole numbers using place value, a number line and models such as grids and base 10 blocks.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.1.2.6",
+    "subCategory": "Represent and compare fractions and decimals in real-world and mathematical situations; use place value to understand how decimals represent quantities.",
+    "description": "Read and write tenths and hundredths in decimal and fraction notations using words and symbols; know the fraction and decimal equivalents for halves and fourths.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.1.2.7",
+    "subCategory": "Represent and compare fractions and decimals in real-world and mathematical situations; use place value to understand how decimals represent quantities.",
+    "description": "Round decimals to the nearest tenth.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.2.1.1",
+    "subCategory": "Use input-output rules, tables and charts to represent patterns and relationships and to solve real-world and mathematical problems.",
+    "description": "Create and use input-output rules involving addition, subtraction, multiplication and division to solve problems in various contexts. Record the inputs and outputs in a chart or table.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.2.2.1",
+    "subCategory": "Use number sentences involving multiplication, division and unknowns to represent and solve real-world and mathematical problems; create real-world situations corresponding to number sentences.",
+    "description": "Understand how to interpret number sentences involving multiplication, division and unknowns. Use real-world situations involving multiplication or division to represent number sentences.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.2.2.2",
+    "subCategory": "Use number sentences involving multiplication, division and unknowns to represent and solve real-world and mathematical problems; create real-world situations corresponding to number sentences.",
+    "description": "Use multiplication, division and unknowns to represent a given problem situation using a number sentence. Use number sense, properties of multiplication, and the relationship between multiplication and division to find values for the unknowns that make the number sentences true.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.3.1.1",
+    "subCategory": "Name, describe, classify and sketch polygons.",
+    "description": "Describe, classify and sketch triangles, including equilateral, right, obtuse and acute triangles. Recognize triangles in various contexts.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.3.1.2",
+    "subCategory": "Name, describe, classify and sketch polygons.",
+    "description": "Describe, classify and draw quadrilaterals, including squares, rectangles, trapezoids, rhombuses, parallelograms and kites. Recognize quadrilaterals in various contexts.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.3.2.1",
+    "subCategory": "Understand angle and area as measurable attributes of real-world and mathematical objects. Use various tools to measure angles and areas.",
+    "description": "Measure angles in geometric figures and real-world objects with a protractor or angle ruler.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.3.2.2",
+    "subCategory": "Understand angle and area as measurable attributes of real-world and mathematical objects. Use various tools to measure angles and areas.",
+    "description": "Compare angles according to size. Classify angles as acute, right and obtuse.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.3.2.3",
+    "subCategory": "Understand angle and area as measurable attributes of real-world and mathematical objects. Use various tools to measure angles and areas.",
+    "description": "Understand that the area of a two-dimensional figure can be found by counting the total number of same size square units that cover a shape without gaps or overlaps. Justify why length and width are multiplied to find the area of a rectangle by breaking the rectangle into one unit by one unit squares and viewing these as grouped into rows and columns.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.3.2.4",
+    "subCategory": "Understand angle and area as measurable attributes of real-world and mathematical objects. Use various tools to measure angles and areas.",
+    "description": "Find the areas of geometric figures and real-world objects that can be divided into rectangular shapes. Use square units to label area measurements.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.3.3.1",
+    "subCategory": "Use translations, reflections and rotations to establish congruency and understand symmetries.",
+    "description": "Apply translations (slides) to figures.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.3.3.2",
+    "subCategory": "Use translations, reflections and rotations to establish congruency and understand symmetries.",
+    "description": "Apply reflections (flips) to figures by reflecting over vertical or horizontal lines and relate reflections to lines of symmetry.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.3.3.3",
+    "subCategory": "Use translations, reflections and rotations to establish congruency and understand symmetries.",
+    "description": "Apply rotations (turns) of 90˚ clockwise or counterclockwise.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.3.3.4",
+    "subCategory": "Use translations, reflections and rotations to establish congruency and understand symmetries.",
+    "description": "Recognize that translations, reflections and rotations preserve congruency and use them to show that two figures are congruent.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "4.4.1.1",
+    "subCategory": "Collect, organize, display and interpret data, including data collected over a period of time and data represented by fractions and decimals.",
+    "description": "Use tables, bar graphs, timelines and Venn diagrams to display data sets. The data may include fractions or decimals. Understand that spreadsheet tables and graphs can be used to display data.",
+    "category": "Grade 4"
+  },
+  {
+    "code": "5.1.1.1",
+    "subCategory": "Divide multi-digit numbers; solve real-world and mathematical problems using arithmetic.",
+    "description": "Divide multi-digit numbers, using efficient and generalizable procedures, based on knowledge of place value, including standard algorithms. Recognize that quotients can be represented in a variety of ways, including a whole number with a remainder, a fraction or mixed number, or a decimal.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.1.1.2",
+    "subCategory": "Divide multi-digit numbers; solve real-world and mathematical problems using arithmetic.",
+    "description": "Consider the context in which a problem is situated to select the most useful form of the quotient for the solution and use the context to interpret the quotient appropriately.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.1.1.3",
+    "subCategory": "Divide multi-digit numbers; solve real-world and mathematical problems using arithmetic.",
+    "description": "Estimate solutions to arithmetic problems in order to assess the reasonableness of results.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.1.1.4",
+    "subCategory": "Divide multi-digit numbers; solve real-world and mathematical problems using arithmetic.",
+    "description": "Solve real-world and mathematical problems requiring addition, subtraction, multiplication and division of multi-digit whole numbers. Use various strategies, including the inverse relationships between operations, the use of technology, and the context of the problem to assess the reasonableness of results.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.1.2.1",
+    "subCategory": "Read, write, represent and compare fractions and decimals; recognize and write equivalent fractions; convert between fractions and decimals; use fractions and decimals in real-world and mathematical situations.",
+    "description": "Read and write decimals using place value to describe decimals in terms of groups from millionths to millions.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.1.2.2",
+    "subCategory": "Read, write, represent and compare fractions and decimals; recognize and write equivalent fractions; convert between fractions and decimals; use fractions and decimals in real-world and mathematical situations.",
+    "description": "Find 0.1 more than a number and 0.1 less than a number. Find 0.01 more than a number and 0.01 less than a number. Find 0.001 more than a number and 0.001 less than a number.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.1.2.3",
+    "subCategory": "Read, write, represent and compare fractions and decimals; recognize and write equivalent fractions; convert between fractions and decimals; use fractions and decimals in real-world and mathematical situations.",
+    "description": "Order fractions and decimals, including mixed numbers and improper fractions, and locate on a number line.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.1.2.4",
+    "subCategory": "Read, write, represent and compare fractions and decimals; recognize and write equivalent fractions; convert between fractions and decimals; use fractions and decimals in real-world and mathematical situations.",
+    "description": "Recognize and generate equivalent decimals, fractions, mixed numbers and improper fractions in various contexts.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.1.2.5",
+    "subCategory": "Read, write, represent and compare fractions and decimals; recognize and write equivalent fractions; convert between fractions and decimals; use fractions and decimals in real-world and mathematical situations.",
+    "description": "Round numbers to the nearest 0.1, 0.01 and 0.001.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.1.3.1",
+    "subCategory": "Add and subtract fractions, mixed numbers and decimals to solve real-world and mathematical problems.",
+    "description": "Add and subtract decimals and fractions, using efficient and generalizable procedures, including standard algorithms.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.1.3.2",
+    "subCategory": "Add and subtract fractions, mixed numbers and decimals to solve real-world and mathematical problems.",
+    "description": "Model addition and subtraction of fractions and decimals using a variety of representations.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.1.3.3",
+    "subCategory": "Add and subtract fractions, mixed numbers and decimals to solve real-world and mathematical problems.",
+    "description": "Estimate sums and differences of decimals and fractions to assess the reasonableness of results.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.1.3.4",
+    "subCategory": "Add and subtract fractions, mixed numbers and decimals to solve real-world and mathematical problems.",
+    "description": "Solve real-world and mathematical problems requiring addition and subtraction of decimals, fractions and mixed numbers, including those involving measurement, geometry and data.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.2.1.1",
+    "subCategory": "Recognize and represent patterns of change; use patterns, tables, graphs and rules to solve real-world and mathematical problems.",
+    "description": "Create and use rules, tables, spreadsheets and graphs to describe patterns of change and solve problems.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.2.1.2",
+    "subCategory": "Recognize and represent patterns of change; use patterns, tables, graphs and rules to solve real-world and mathematical problems.",
+    "description": "Use a rule or table to represent ordered pairs of positive integers and graph these ordered pairs on a coordinate system.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.2.2.1",
+    "subCategory": "Use properties of arithmetic to generate equivalent numerical expressions and evaluate expressions involving whole numbers.",
+    "description": "Apply the commutative, associative and distributive properties and order of operations to generate equivalent numerical expressions and to solve problems involving whole numbers.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.2.3.1",
+    "subCategory": "Understand and interpret equations and inequalities involving variables and whole numbers, and use them to represent and solve real-world and mathematical problems.",
+    "description": "Determine whether an equation or inequality involving a variable is true or false for a given value of the variable.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.2.3.2",
+    "subCategory": "Understand and interpret equations and inequalities involving variables and whole numbers, and use them to represent and solve real-world and mathematical problems.",
+    "description": "Represent real-world situations using equations and inequalities involving variables. Create real-world situations corresponding to equations and inequalities.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.2.3.3",
+    "subCategory": "Understand and interpret equations and inequalities involving variables and whole numbers, and use them to represent and solve real-world and mathematical problems.",
+    "description": "Evaluate expressions and solve equations involving variables when values for the variables are given.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.3.1.1",
+    "subCategory": "Describe, classify, and draw representations of three-dimensional figures.",
+    "description": "Describe and classify three-dimensional figures including cubes, prisms and pyramids by the number of edges, faces or vertices as well as the types of faces.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.3.1.2",
+    "subCategory": "Describe, classify, and draw representations of three-dimensional figures.",
+    "description": "Recognize and draw a net for a three-dimensional figure.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.3.2.1",
+    "subCategory": "Determine the area of triangles and quadrilaterals; determine the surface area and volume of rectangular prisms in various contexts.",
+    "description": "Develop and use formulas to determine the area of triangles, parallelograms and figures that can be decomposed into triangles.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.3.2.2",
+    "subCategory": "Determine the area of triangles and quadrilaterals; determine the surface area and volume of rectangular prisms in various contexts.",
+    "description": "Use various tools and strategies to measure the volume and surface area of objects that are shaped like rectangular prisms.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.3.2.3",
+    "subCategory": "Determine the area of triangles and quadrilaterals; determine the surface area and volume of rectangular prisms in various contexts.",
+    "description": "Understand that the volume of a three-dimensional figure can be found by counting the total number of same-sized cubic units that fill a shape without gaps or overlaps. Use cubic units to label volume measurements.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.3.2.4",
+    "subCategory": "Determine the area of triangles and quadrilaterals; determine the surface area and volume of rectangular prisms in various contexts.",
+    "description": "Develop and use the formulas     V = ℓwh and V = Bh to determine the volume of rectangular prisms. Justify why base area B and height h are multiplied to find the volume of a rectangular prism by breaking the prism into layers of unit cubes.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.4.1.1",
+    "subCategory": "Display and interpret data; determine mean, median and range.",
+    "description": "Know and use the definitions of the mean, median and range of a set of data. Know how to use a spreadsheet to find the mean, median and range of a data set. Understand that the mean is a \"leveling out\" of data.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "5.4.1.2",
+    "subCategory": "Display and interpret data; determine mean, median and range.",
+    "description": "Create and analyze double-bar graphs and line graphs by applying understanding of whole numbers, fractions and decimals. Know how to create spreadsheet tables and graphs to display data.",
+    "category": "Grade 5"
+  },
+  {
+    "code": "6.1.1.1",
+    "subCategory": "Read, write, represent and compare positive rational numbers expressed as fractions, decimals, percents and ratios; write positive integers as products of factors; use these representations in real-world and mathematical situations.",
+    "description": "Locate positive rational numbers on a number line and plot pairs of positive rational numbers on a coordinate grid.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.1.1.2",
+    "subCategory": "Read, write, represent and compare positive rational numbers expressed as fractions, decimals, percents and ratios; write positive integers as products of factors; use these representations in real-world and mathematical situations.",
+    "description": "Compare positive rational numbers represented in various forms. Use the symbols  < ,  =  and  >.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.1.1.3",
+    "subCategory": "Read, write, represent and compare positive rational numbers expressed as fractions, decimals, percents and ratios; write positive integers as products of factors; use these representations in real-world and mathematical situations.",
+    "description": "Understand that percent represents parts out of 100 and ratios to 100.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.1.1.4",
+    "subCategory": "Read, write, represent and compare positive rational numbers expressed as fractions, decimals, percents and ratios; write positive integers as products of factors; use these representations in real-world and mathematical situations.",
+    "description": "Determine equivalences among fractions, decimals and percents; select among these representations to solve problems.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.1.1.5",
+    "subCategory": "Read, write, represent and compare positive rational numbers expressed as fractions, decimals, percents and ratios; write positive integers as products of factors; use these representations in real-world and mathematical situations.",
+    "description": "Factor whole numbers; express a whole number as a product of prime factors with exponents.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.1.1.6",
+    "subCategory": "Read, write, represent and compare positive rational numbers expressed as fractions, decimals, percents and ratios; write positive integers as products of factors; use these representations in real-world and mathematical situations.",
+    "description": "Determine greatest common factors and least common multiples. Use common factors and common multiples to calculate with fractions and find equivalent fractions.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.1.1.7",
+    "subCategory": "Read, write, represent and compare positive rational numbers expressed as fractions, decimals, percents and ratios; write positive integers as products of factors; use these representations in real-world and mathematical situations.",
+    "description": "Convert between equivalent representations of positive rational numbers.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.1.2.1",
+    "subCategory": "Understand the concept of ratio and its relationship to fractions and to the multiplication and division of whole numbers. Use ratios to solve real-world and mathematical problems.",
+    "description": "Identify and use ratios to compare quantities; understand that comparing quantities using ratios is not the same as comparing quantities using subtraction.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.1.2.2",
+    "subCategory": "Understand the concept of ratio and its relationship to fractions and to the multiplication and division of whole numbers. Use ratios to solve real-world and mathematical problems.",
+    "description": "Apply the relationship between ratios, equivalent fractions and percents to solve problems in various contexts, including those involving mixtures and concentrations.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.1.2.3",
+    "subCategory": "Understand the concept of ratio and its relationship to fractions and to the multiplication and division of whole numbers. Use ratios to solve real-world and mathematical problems.",
+    "description": "Determine the rate for ratios of quantities with different units.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.1.2.4",
+    "subCategory": "Understand the concept of ratio and its relationship to fractions and to the multiplication and division of whole numbers. Use ratios to solve real-world and mathematical problems.",
+    "description": "Use reasoning about multiplication and division to solve ratio and rate problems.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.1.3.1",
+    "subCategory": "Multiply and divide decimals, fractions and mixed numbers; solve real-world and mathematical problems using arithmetic with positive rational numbers.",
+    "description": "Multiply and divide decimals and fractions, using efficient and generalizable procedures, including standard algorithms.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.1.3.2",
+    "subCategory": "Multiply and divide decimals, fractions and mixed numbers; solve real-world and mathematical problems using arithmetic with positive rational numbers.",
+    "description": "Use the meanings of fractions, multiplication, division and the inverse relationship between multiplication and division to make sense of procedures for multiplying and dividing fractions.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.1.3.3",
+    "subCategory": "Multiply and divide decimals, fractions and mixed numbers; solve real-world and mathematical problems using arithmetic with positive rational numbers.",
+    "description": "Calculate the percent of a number and determine what percent one number is of another number to solve problems in various contexts.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.1.3.4",
+    "subCategory": "Multiply and divide decimals, fractions and mixed numbers; solve real-world and mathematical problems using arithmetic with positive rational numbers.",
+    "description": "Solve real-world and mathematical problems requiring arithmetic with decimals, fractions and mixed numbers.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.1.3.5",
+    "subCategory": "Multiply and divide decimals, fractions and mixed numbers; solve real-world and mathematical problems using arithmetic with positive rational numbers.",
+    "description": "Estimate solutions to problems with whole numbers, fractions and decimals and use the estimates to assess the reasonableness of results in the context of the problem.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.2.1.1",
+    "subCategory": "Recognize and represent relationships between varying quantities; translate from one representation to another; use patterns, tables, graphs and rules to solve real-world and mathematical problems.",
+    "description": "Understand that a variable can be used to represent a quantity that can change, often in relationship to another changing quantity. Use variables in various contexts.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.2.1.2",
+    "subCategory": "Recognize and represent relationships between varying quantities; translate from one representation to another; use patterns, tables, graphs and rules to solve real-world and mathematical problems.",
+    "description": "Represent the relationship between two varying quantities with function rules, graphs and tables; translate between any two of these representations.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.2.2.1",
+    "subCategory": "Use properties of arithmetic to generate equivalent numerical expressions and evaluate expressions involving positive rational numbers.",
+    "description": "Apply the associative, commutative and distributive properties and order of operations to generate equivalent expressions and to solve problems involving positive rational numbers.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.2.3.1",
+    "subCategory": "Understand and interpret equations and inequalities involving variables and positive rational numbers. Use equations and inequalities to represent real-world and mathematical problems; use the idea of maintaining equality to solve equations. Interpret solutions in the original context.",
+    "description": "Represent real-world or mathematical situations using equations and inequalities involving variables and positive rational numbers.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.2.3.2",
+    "subCategory": "Understand and interpret equations and inequalities involving variables and positive rational numbers. Use equations and inequalities to represent real-world and mathematical problems; use the idea of maintaining equality to solve equations. Interpret solutions in the original context.",
+    "description": "Solve equations involving positive rational numbers using number sense, properties of arithmetic and the idea of maintaining equality on both sides of the equation. Interpret a solution in the original context and assess the reasonableness of results.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.3.1.1",
+    "subCategory": "Calculate perimeter, area, surface area and volume of two- and three-dimensional figures to solve real-world and mathematical problems.",
+    "description": "Calculate the surface area and volume of prisms and use appropriate units, such as cm2 and cm3. Justify the formulas used. Justification may involve decomposition, nets or other models.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.3.1.2",
+    "subCategory": "Calculate perimeter, area, surface area and volume of two- and three-dimensional figures to solve real-world and mathematical problems.",
+    "description": "Calculate the area of quadrilaterals. Quadrilaterals include squares, rectangles, rhombuses, parallelograms, trapezoids and kites. When formulas are used, be able to explain why they are valid.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.3.1.3",
+    "subCategory": "Calculate perimeter, area, surface area and volume of two- and three-dimensional figures to solve real-world and mathematical problems.",
+    "description": "Estimate the perimeter and area of irregular figures on a grid when they cannot be decomposed into common figures and use correct units, such as cm and cm2.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.3.2.1",
+    "subCategory": "Understand and use relationships between angles in geometric figures.",
+    "description": "Solve problems using the relationships between the angles formed by intersecting lines.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.3.2.2",
+    "subCategory": "Understand and use relationships between angles in geometric figures.",
+    "description": "Determine missing angle measures in a triangle using the fact that the sum of the interior angles of a triangle is 180˚. Use models of triangles to illustrate this fact.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.3.2.3",
+    "subCategory": "Understand and use relationships between angles in geometric figures.",
+    "description": "Develop and use formulas for the sums of the interior angles of polygons by decomposing them into triangles.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.3.3.1",
+    "subCategory": "Choose appropriate units of measurement and use ratios to convert within measurement systems to solve real-world and mathematical problems.",
+    "description": "Solve problems in various contexts involving conversion of weights, capacities, geometric measurements and times within measurement systems using appropriate units.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.3.3.2",
+    "subCategory": "Choose appropriate units of measurement and use ratios to convert within measurement systems to solve real-world and mathematical problems.",
+    "description": "Estimate weights, capacities and geometric measurements using benchmarks in measurement systems with appropriate units.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.4.1.1",
+    "subCategory": "Use probabilities to solve real-world and mathematical problems; represent probabilities using fractions, decimals and percents.",
+    "description": "Determine the sample space (set of possible outcomes) for a given experiment and determine which members of the sample space are related to certain events. Sample space may be determined by the use of tree diagrams, tables or pictorial representations.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.4.1.2",
+    "subCategory": "Use probabilities to solve real-world and mathematical problems; represent probabilities using fractions, decimals and percents.",
+    "description": "Determine the probability of an event using the ratio between the size of the event and the size of the sample space; represent probabilities as percents, fractions and decimals between 0 and 1 inclusive. Understand that probabilities measure likelihood.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.4.1.3",
+    "subCategory": "Use probabilities to solve real-world and mathematical problems; represent probabilities using fractions, decimals and percents.",
+    "description": "Perform experiments for situations in which the probabilities are known, compare the resulting relative frequencies with the known probabilities; know that there may be differences.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "6.4.1.4",
+    "subCategory": "Use probabilities to solve real-world and mathematical problems; represent probabilities using fractions, decimals and percents.",
+    "description": "Calculate experimental probabilities from experiments; represent them as percents, fractions and decimals between 0 and 1 inclusive. Use experimental probabilities to make predictions when actual probabilities are unknown.",
+    "category": "Grade 6"
+  },
+  {
+    "code": "7.1.1.1",
+    "subCategory": "Read, write, represent and compare positive and negative rational numbers, expressed as integers, fractions and decimals.",
+    "description": "Know that every rational number can be written as the ratio of two integers or as a terminating or repeating decimal. Recognize that π is not rational, but that it can be approximated by rational numbers such as 22/7 and 3.14.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.1.1.2",
+    "subCategory": "Read, write, represent and compare positive and negative rational numbers, expressed as integers, fractions and decimals.",
+    "description": "Understand that division of two integers will always result in a rational number. Use this information to interpret the decimal result of a division problem when using a calculator.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.1.1.3",
+    "subCategory": "Read, write, represent and compare positive and negative rational numbers, expressed as integers, fractions and decimals.",
+    "description": "Locate positive and negative rational numbers on a number line, understand the concept of opposites, and plot pairs of positive and negative rational numbers on a coordinate grid.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.1.1.4",
+    "subCategory": "Read, write, represent and compare positive and negative rational numbers, expressed as integers, fractions and decimals.",
+    "description": "Compare positive and negative rational numbers expressed in various forms using the symbols  < , >, = , ≤ , ≥ .",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.1.1.5",
+    "subCategory": "Read, write, represent and compare positive and negative rational numbers, expressed as integers, fractions and decimals.",
+    "description": "Recognize and generate equivalent representations of positive and negative rational numbers, including equivalent fractions.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.1.2.1",
+    "subCategory": "Calculate with positive and negative rational numbers, and rational numbers with whole number exponents, to solve real-world and mathematical problems.",
+    "description": "Add, subtract, multiply and divide positive and negative rational numbers that are integers, fractions and terminating decimals; use efficient and generalizable procedures, including standard algorithms; raise positive rational numbers to whole-number exponents.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.1.2.2",
+    "subCategory": "Calculate with positive and negative rational numbers, and rational numbers with whole number exponents, to solve real-world and mathematical problems.",
+    "description": "Use real-world contexts and the inverse relationship between addition and subtraction to explain why the procedures of arithmetic with negative rational numbers make sense.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.1.2.3",
+    "subCategory": "Calculate with positive and negative rational numbers, and rational numbers with whole number exponents, to solve real-world and mathematical problems.",
+    "description": "Understand that calculators and other computing technologies often truncate or round numbers.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.1.2.4",
+    "subCategory": "Calculate with positive and negative rational numbers, and rational numbers with whole number exponents, to solve real-world and mathematical problems.",
+    "description": "Solve problems in various contexts involving calculations with positive and negative rational numbers and positive integer exponents, including computing simple and compound interest.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.1.2.5",
+    "subCategory": "Calculate with positive and negative rational numbers, and rational numbers with whole number exponents, to solve real-world and mathematical problems.",
+    "description": "Use proportional reasoning to solve problems involving ratios in various contexts.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.1.2.6",
+    "subCategory": "Calculate with positive and negative rational numbers, and rational numbers with whole number exponents, to solve real-world and mathematical problems.",
+    "description": "Demonstrate an understanding of the relationship between the absolute value of a rational number and distance on a number line. Use the symbol for absolute value.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.2.1.1",
+    "subCategory": "Understand the concept of proportionality in real-world and mathematical situations, and distinguish between proportional and other relationships.",
+    "description": "Understand that a relationship between two variables, x and y, is proportional if it can be expressed in the form y/x = k or y = kx. Distinguish proportional relationships from other relationships, including inversely proportional relationships (xy = k or y = k/x).",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.2.1.2",
+    "subCategory": "Understand the concept of proportionality in real-world and mathematical situations, and distinguish between proportional and other relationships.",
+    "description": "Understand that the graph of a proportional relationship is a line through the origin whose slope is the unit rate (constant of proportionality). Know how to use graphing technology to examine what happens to a line when the unit rate is changed.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.2.2.1",
+    "subCategory": "Recognize proportional relationships in real-world and mathematical situations; represent these and other relationships with tables, verbal descriptions, symbols and graphs; solve problems involving proportional relationships and explain results in the original context.",
+    "description": "Represent proportional relationships with tables, verbal descriptions, symbols, equations and graphs; translate from one representation to another. Determine the unit rate (constant of proportionality or slope) given any of these representations.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.2.2.2",
+    "subCategory": "Recognize proportional relationships in real-world and mathematical situations; represent these and other relationships with tables, verbal descriptions, symbols and graphs; solve problems involving proportional relationships and explain results in the original context.",
+    "description": "Solve multi-step problems involving proportional relationships in numerous contexts.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.2.2.3",
+    "subCategory": "Recognize proportional relationships in real-world and mathematical situations; represent these and other relationships with tables, verbal descriptions, symbols and graphs; solve problems involving proportional relationships and explain results in the original context.",
+    "description": "Use knowledge of proportions to assess the reasonableness of solutions.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.2.2.4",
+    "subCategory": "Recognize proportional relationships in real-world and mathematical situations; represent these and other relationships with tables, verbal descriptions, symbols and graphs; solve problems involving proportional relationships and explain results in the original context.",
+    "description": "Represent real-world or mathematical situations using equations and inequalities involving variables and positive and negative rational numbers.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.2.3.1",
+    "subCategory": "Apply understanding of order of operations and algebraic properties to generate equivalent numerical and algebraic expressions containing positive and negative rational numbers and grouping symbols; evaluate such expressions.",
+    "description": "Use properties of algebra to generate equivalent numerical and algebraic expressions containing rational numbers, grouping symbols and whole number exponents. Properties of algebra include associative, commutative and distributive laws.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.2.3.2",
+    "subCategory": "Apply understanding of order of operations and algebraic properties to generate equivalent numerical and algebraic expressions containing positive and negative rational numbers and grouping symbols; evaluate such expressions.",
+    "description": "Evaluate algebraic expressions containing rational numbers and whole number exponents at specified values of their variables.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.2.3.3",
+    "subCategory": "Apply understanding of order of operations and algebraic properties to generate equivalent numerical and algebraic expressions containing positive and negative rational numbers and grouping symbols; evaluate such expressions.",
+    "description": "Apply understanding of order of operations and grouping symbols when using calculators and other technologies.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.2.4.1",
+    "subCategory": "Represent real-world and mathematical situations using equations with variables. Solve equations symbolically, using the properties of equality. Also solve equations graphically and numerically. Interpret solutions in the original context.",
+    "description": "Represent relationships in various contexts with equations involving variables and positive and negative rational numbers. Use the properties of equality to solve for the value of a variable. Interpret the solution in the original context.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.2.4.2",
+    "subCategory": "Represent real-world and mathematical situations using equations with variables. Solve equations symbolically, using the properties of equality. Also solve equations graphically and numerically. Interpret solutions in the original context.",
+    "description": "Solve equations resulting from proportional relationships in various contexts.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.3.1.1",
+    "subCategory": "Use reasoning with proportions and ratios to determine measurements, justify formulas and solve real-world and mathematical problems involving circles and related geometric figures.",
+    "description": "Demonstrate an understanding of the proportional relationship between the diameter and circumference of a circle and that the unit rate (constant of proportionality) is π. Calculate the circumference and area of circles and sectors of circles to solve problems in various contexts.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.3.1.2",
+    "subCategory": "Use reasoning with proportions and ratios to determine measurements, justify formulas and solve real-world and mathematical problems involving circles and related geometric figures.",
+    "description": "Calculate the volume and surface area of cylinders and justify the formulas used.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.3.2.1",
+    "subCategory": "Analyze the effect of change of scale, translations and reflections on the attributes of two-dimensional figures.",
+    "description": "Describe the properties of similarity, compare geometric figures for similarity, and determine scale factors.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.3.2.2",
+    "subCategory": "Analyze the effect of change of scale, translations and reflections on the attributes of two-dimensional figures.",
+    "description": "Apply scale factors, length ratios and area ratios to determine side lengths and areas of similar geometric figures.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.3.2.3",
+    "subCategory": "Analyze the effect of change of scale, translations and reflections on the attributes of two-dimensional figures.",
+    "description": "Use proportions and ratios to solve problems involving scale drawings and conversions of measurement units.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.3.2.4",
+    "subCategory": "Analyze the effect of change of scale, translations and reflections on the attributes of two-dimensional figures.",
+    "description": "Graph and describe translations and reflections of figures on a coordinate grid and determine the coordinates of the vertices of the figure after the transformation.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.4.1.1",
+    "subCategory": "Use mean, median and range to draw conclusions about data and make predictions.",
+    "description": "Design simple experiments and collect data. Determine mean, median and range for quantitative data and from data represented in a display. Use these quantities to draw conclusions about the data, compare different data sets, and make predictions.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.4.1.2",
+    "subCategory": "Use mean, median and range to draw conclusions about data and make predictions.",
+    "description": "Describe the impact that inserting or deleting a data point has on the mean and the median of a data set. Know how to create data displays using a spreadsheet to examine this impact.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.4.2.1",
+    "subCategory": "Display and interpret data in a variety of ways, including circle graphs and histograms.",
+    "description": "Use reasoning with proportions to display and interpret data in circle graphs (pie charts) and histograms. Choose the appropriate data display and know how to create the display using a spreadsheet or other graphing technology.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.4.3.1",
+    "subCategory": "Calculate probabilities and reason about probabilities using proportions to solve real-world and mathematical problems.",
+    "description": "Use random numbers generated by a calculator or a spreadsheet or taken from a table to simulate situations involving randomness; make a histogram to display the results, and compare the results to known probabilities.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.4.3.2",
+    "subCategory": "Calculate probabilities and reason about probabilities using proportions to solve real-world and mathematical problems.",
+    "description": "Calculate probability as a fraction of sample space or as a fraction of area. Express probabilities as percents, decimals and fractions.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "7.4.3.3",
+    "subCategory": "Calculate probabilities and reason about probabilities using proportions to solve real-world and mathematical problems.",
+    "description": "Use proportional reasoning to draw conclusions about and predict relative frequencies of outcomes based on probabilities.",
+    "category": "Grade 7"
+  },
+  {
+    "code": "8.1.1.1",
+    "subCategory": "Classify real numbers as rational or irrational. Know that when a square root of a positive integer is not an integer, then it is irrational. Know that the sum of a rational number and an irrational number is irrational, and the product of a non-zero rational number and an irrational number is irrational.",
+    "description": "Classify real numbers as rational or irrational. Know that when a square root of a positive integer is not an integer, then it is irrational. Know that the sum of a rational number and an irrational number is irrational, and the product of a non-zero rational number and an irrational number is irrational.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.1.1.2",
+    "subCategory": "Read, write, compare, classify and represent real numbers, and use them to solve problems in various contexts.",
+    "description": "Compare real numbers; locate real numbers on a number line. Identify the square root of a positive integer as an integer, or if it is not an integer, locate it as a real number between two consecutive positive integers.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.1.1.3",
+    "subCategory": "Read, write, compare, classify and represent real numbers, and use them to solve problems in various contexts.",
+    "description": "Determine rational approximations for solutions to problems involving real numbers.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.1.1.4",
+    "subCategory": "Read, write, compare, classify and represent real numbers, and use them to solve problems in various contexts.",
+    "description": "Know and apply the properties of positive and negative integer exponents to generate equivalent numerical expressions.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.1.1.5",
+    "subCategory": "Read, write, compare, classify and represent real numbers, and use them to solve problems in various contexts.",
+    "description": "Express approximations of very large and very small numbers using scientific notation; understand how calculators display numbers in scientific notation. Multiply and divide numbers expressed in scientific notation, express the answer in scientific notation, using the correct number of significant digits when physical measurements are involved.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.1.1",
+    "subCategory": "Understand the concept of function in real-world and mathematical situations, and distinguish between linear and nonlinear functions.",
+    "description": "Understand that a function is a relationship between an independent variable and a dependent variable in which the value of the independent variable determines the value of the dependent variable. Use functional notation, such as f(x), to represent such relationships.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.1.2",
+    "subCategory": "Understand the concept of function in real-world and mathematical situations, and distinguish between linear and nonlinear functions.",
+    "description": "Use linear functions to represent relationships in which changing the input variable by some amount leads to a change in the output variable that is a constant times that amount.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.1.3",
+    "subCategory": "Understand the concept of function in real-world and mathematical situations, and distinguish between linear and nonlinear functions.",
+    "description": "Understand that a function is linear if it can be expressed in the form f(x) = mx + b or if its graph is a straight line.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.1.4",
+    "subCategory": "Understand the concept of function in real-world and mathematical situations, and distinguish between linear and nonlinear functions.",
+    "description": "Understand that an arithmetic sequence is a linear function that can be expressed in the form,     f(x) = mx + b, where x = 0, 1, 2, 3,…",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.1.5",
+    "subCategory": "Understand the concept of function in real-world and mathematical situations, and distinguish between linear and nonlinear functions.",
+    "description": "Understand that a geometric sequence is a non-linear function that can be expressed in the form f(x) = ab^x, where x = 0, 1, 2, 3,….",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.2.1",
+    "subCategory": "Recognize linear functions in real-world and mathematical situations; represent linear functions and other functions with tables, verbal descriptions, symbols and graphs; solve problems involving these functions and explain results in the original context.",
+    "description": "Represent linear functions with tables, verbal descriptions, symbols, equations and graphs; translate from one representation to another.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.2.2",
+    "subCategory": "Recognize linear functions in real-world and mathematical situations; represent linear functions and other functions with tables, verbal descriptions, symbols and graphs; solve problems involving these functions and explain results in the original context.",
+    "description": "Identify graphical properties of linear functions including slopes and intercepts. Know that the slope equals the rate of change, and that the y-intercept is zero when the function represents a proportional relationship.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.2.3",
+    "subCategory": "Recognize linear functions in real-world and mathematical situations; represent linear functions and other functions with tables, verbal descriptions, symbols and graphs; solve problems involving these functions and explain results in the original context.",
+    "description": "Identify how coefficient changes in the equation f(x) = mx + b affect the graphs of linear functions. Know how to use graphing technology to examine these effects.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.2.4",
+    "subCategory": "Recognize linear functions in real-world and mathematical situations; represent linear functions and other functions with tables, verbal descriptions, symbols and graphs; solve problems involving these functions and explain results in the original context.",
+    "description": "Represent arithmetic sequences using equations, tables, graphs and verbal descriptions, and use them to solve problems.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.2.5",
+    "subCategory": "Recognize linear functions in real-world and mathematical situations; represent linear functions and other functions with tables, verbal descriptions, symbols and graphs; solve problems involving these functions and explain results in the original context.",
+    "description": "Represent geometric sequences using equations, tables, graphs and verbal descriptions, and use them to solve problems.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.3.1",
+    "subCategory": "Generate equivalent numerical and algebraic expressions and use algebraic properties to evaluate expressions.",
+    "description": "Evaluate algebraic expressions, including expressions containing radicals and absolute values, at specified values of their variables.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.3.2",
+    "subCategory": "Generate equivalent numerical and algebraic expressions and use algebraic properties to evaluate expressions.",
+    "description": "Justify steps in generating equivalent expressions by identifying the properties used, including the properties of algebra. Properties include the associative, commutative and distributive laws, and the order of operations, including grouping symbols.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.4.1",
+    "subCategory": "Represent real-world and mathematical situations using equations and inequalities involving linear expressions. Solve equations and inequalities symbolically and graphically. Interpret solutions in the original context.",
+    "description": "Use linear equations to represent situations involving a constant rate of change, including proportional and non-proportional relationships.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.4.2",
+    "subCategory": "Represent real-world and mathematical situations using equations and inequalities involving linear expressions. Solve equations and inequalities symbolically and graphically. Interpret solutions in the original context.",
+    "description": "Solve multi-step equations in one variable. Solve for one variable in a multi-variable equation in terms of the other variables. Justify the steps by identifying the properties of equalities used.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.4.3",
+    "subCategory": "Represent real-world and mathematical situations using equations and inequalities involving linear expressions. Solve equations and inequalities symbolically and graphically. Interpret solutions in the original context.",
+    "description": "Express linear equations in slope-intercept, point-slope and standard forms, and convert between these forms. Given sufficient information, find an equation of a line.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.4.4",
+    "subCategory": "Represent real-world and mathematical situations using equations and inequalities involving linear expressions. Solve equations and inequalities symbolically and graphically. Interpret solutions in the original context.",
+    "description": "Use linear inequalities to represent relationships in various contexts.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.4.5",
+    "subCategory": "Represent real-world and mathematical situations using equations and inequalities involving linear expressions. Solve equations and inequalities symbolically and graphically. Interpret solutions in the original context.",
+    "description": "Solve linear inequalities using properties of inequalities. Graph the solutions on a number line.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.4.6",
+    "subCategory": "Represent real-world and mathematical situations using equations and inequalities involving linear expressions. Solve equations and inequalities symbolically and graphically. Interpret solutions in the original context.",
+    "description": "Represent relationships in various contexts with equations and inequalities involving the absolute value of a linear expression. Solve such equations and inequalities and graph the solutions on a number line.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.4.7",
+    "subCategory": "Represent real-world and mathematical situations using equations and inequalities involving linear expressions. Solve equations and inequalities symbolically and graphically. Interpret solutions in the original context.",
+    "description": "Represent relationships in various contexts using systems of linear equations. Solve systems of linear equations in two variables symbolically, graphically and numerically.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.4.8",
+    "subCategory": "Represent real-world and mathematical situations using equations and inequalities involving linear expressions. Solve equations and inequalities symbolically and graphically. Interpret solutions in the original context.",
+    "description": "Understand that a system of linear equations may have no solution, one solution, or an infinite number of solutions. Relate the number of solutions to pairs of lines that are intersecting, parallel or identical. Check whether a pair of numbers satisfies a system of two linear equations in two unknowns by substituting the numbers into both equations.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.2.4.9",
+    "subCategory": "Represent real-world and mathematical situations using equations and inequalities involving linear expressions. Solve equations and inequalities symbolically and graphically. Interpret solutions in the original context.",
+    "description": "Use the relationship between square roots and squares of a number to solve problems.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.3.1.1",
+    "subCategory": "Solve problems involving right triangles using the Pythagorean Theorem and its converse.",
+    "description": "Use the Pythagorean Theorem to solve problems involving right triangles.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.3.1.2",
+    "subCategory": "Solve problems involving right triangles using the Pythagorean Theorem and its converse.",
+    "description": "Determine the distance between two points on a horizontal or vertical line in a coordinate system. Use the Pythagorean Theorem to find the distance between any two points in a coordinate system.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.3.1.3",
+    "subCategory": "Solve problems involving right triangles using the Pythagorean Theorem and its converse.",
+    "description": "Informally justify the Pythagorean Theorem by using measurements, diagrams and computer software.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.3.2.1",
+    "subCategory": "Solve problems involving parallel and perpendicular lines on a coordinate system.",
+    "description": "Understand and apply the relationships between the slopes of parallel lines and between the slopes of perpendicular lines. Dynamic graphing software may be used to examine these relationships.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.3.2.2",
+    "subCategory": "Solve problems involving parallel and perpendicular lines on a coordinate system.",
+    "description": "Analyze polygons on a coordinate system by determining the slopes of their sides.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.3.2.3",
+    "subCategory": "Solve problems involving parallel and perpendicular lines on a coordinate system.",
+    "description": "Given a line on a coordinate system and the coordinates of a point not on the line, find lines through that point that are parallel and perpendicular to the given line, symbolically and graphically.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.4.1.1",
+    "subCategory": "Interpret data using scatterplots and approximate lines of best fit. Use lines of best fit to draw conclusions about data.",
+    "description": "Collect, display and interpret data using scatterplots. Use the shape of the scatterplot to informally estimate a line of best fit and determine an equation for the line. Use appropriate titles, labels and units. Know how to use graphing technology to display scatterplots and corresponding lines of best fit.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.4.1.2",
+    "subCategory": "Interpret data using scatterplots and approximate lines of best fit. Use lines of best fit to draw conclusions about data.",
+    "description": "Use a line of best fit to make statements about approximate rate of change and to make predictions about values not in the original data set.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "8.4.1.3",
+    "subCategory": "Interpret data using scatterplots and approximate lines of best fit. Use lines of best fit to draw conclusions about data.",
+    "description": "Assess the reasonableness of predictions using scatterplots by interpreting them in the original context.",
+    "category": "Grade 8"
+  },
+  {
+    "code": "9.2.1.1",
+    "subCategory": "Understand the concept of function, and identify important features of functions and other relations using symbolic and graphical methods where appropriate.",
+    "description": "Understand the definition of a function. Use functional notation and evaluate a function at a given point in its domain.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.1.2",
+    "subCategory": "Understand the concept of function, and identify important features of functions and other relations using symbolic and graphical methods where appropriate.",
+    "description": "Distinguish between functions and other relations defined symbolically, graphically or in tabular form.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.1.3",
+    "subCategory": "Understand the concept of function, and identify important features of functions and other relations using symbolic and graphical methods where appropriate.",
+    "description": "Find the domain of a function defined symbolically, graphically or in a real-world context.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.1.4",
+    "subCategory": "Understand the concept of function, and identify important features of functions and other relations using symbolic and graphical methods where appropriate.",
+    "description": "Obtain information and draw conclusions from graphs of functions and other relations.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.1.5",
+    "subCategory": "Understand the concept of function, and identify important features of functions and other relations using symbolic and graphical methods where appropriate.",
+    "description": "Identify the vertex, line of symmetry and intercepts of the parabola corresponding to a quadratic function, using symbolic and graphical methods, when the function is expressed in the form      f(x) = ax2 + bx + c, in the form     f(x) = a(x – h)2 + k , or in factored form.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.1.6",
+    "subCategory": "Understand the concept of function, and identify important features of functions and other relations using symbolic and graphical methods where appropriate.",
+    "description": "Identify intercepts, zeros, maxima, minima and intervals of increase and decrease from the graph of a function.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.1.7",
+    "subCategory": "Understand the concept of function, and identify important features of functions and other relations using symbolic and graphical methods where appropriate.",
+    "description": "Understand the concept of an asymptote and identify asymptotes for exponential functions and reciprocals of linear functions, using symbolic and graphical methods.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.1.8",
+    "subCategory": "Understand the concept of function, and identify important features of functions and other relations using symbolic and graphical methods where appropriate.",
+    "description": "Make qualitative statements about the rate of change of a function, based on its graph or table of values.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.1.9",
+    "subCategory": "Understand the concept of function, and identify important features of functions and other relations using symbolic and graphical methods where appropriate.",
+    "description": "Determine how translations affect the symbolic and graphical forms of a function. Know how to use graphing technology to examine translations.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.2.1",
+    "subCategory": "Recognize linear, quadratic, exponential and other common functions in real-world and mathematical situations; represent these functions with tables, verbal descriptions, symbols and graphs; solve problems involving these functions, and explain results in the original context.",
+    "description": "Represent and solve problems in various contexts using linear and quadratic functions.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.2.2",
+    "subCategory": "Recognize linear, quadratic, exponential and other common functions in real-world and mathematical situations; represent these functions with tables, verbal descriptions, symbols and graphs; solve problems involving these functions, and explain results in the original context.",
+    "description": "Represent and solve problems in various contexts using exponential functions, such as investment growth, depreciation and population growth.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.2.3",
+    "subCategory": "Recognize linear, quadratic, exponential and other common functions in real-world and mathematical situations; represent these functions with tables, verbal descriptions, symbols and graphs; solve problems involving these functions, and explain results in the original context.",
+    "description": "Sketch graphs of linear, quadratic and exponential functions, and translate between graphs, tables and symbolic representations. Know how to use graphing technology to graph these functions.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.2.4",
+    "subCategory": "Recognize linear, quadratic, exponential and other common functions in real-world and mathematical situations; represent these functions with tables, verbal descriptions, symbols and graphs; solve problems involving these functions, and explain results in the original context.",
+    "description": "Express the terms in a geometric sequence recursively and by giving an explicit (closed form) formula, and express the partial sums of a geometric series recursively.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.2.5",
+    "subCategory": "Recognize linear, quadratic, exponential and other common functions in real-world and mathematical situations; represent these functions with tables, verbal descriptions, symbols and graphs; solve problems involving these functions, and explain results in the original context.",
+    "description": "Recognize and solve problems that can be modeled using finite geometric sequences and series, such as home mortgage and other compound interest examples. Know how to use spreadsheets and calculators to explore geometric sequences and series in various contexts.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.2.6",
+    "subCategory": "Recognize linear, quadratic, exponential and other common functions in real-world and mathematical situations; represent these functions with tables, verbal descriptions, symbols and graphs; solve problems involving these functions, and explain results in the original context.",
+    "description": "Sketch the graphs of common non-linear functions such as           f(x) = sqrt(x), f(x) = abs(x), f(x) = 1/x,  f (x) = x^3, and translations of these functions, such as f(x) = sqrt(x - 2) + 4.  Know how to use graphing technology to graph these functions.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.3.1",
+    "subCategory": "Generate equivalent algebraic expressions involving polynomials and radicals; use algebraic properties to evaluate expressions.",
+    "description": "Evaluate polynomial and rational expressions and expressions containing radicals and absolute values at specified points in their domains.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.3.2",
+    "subCategory": "Generate equivalent algebraic expressions involving polynomials and radicals; use algebraic properties to evaluate expressions.",
+    "description": "Add, subtract and multiply polynomials; divide a polynomial by a polynomial of equal or lower degree.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.3.3",
+    "subCategory": "Generate equivalent algebraic expressions involving polynomials and radicals; use algebraic properties to evaluate expressions.",
+    "description": "Factor common monomial factors from polynomials, factor quadratic polynomials, and factor the difference of two squares.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.3.4",
+    "subCategory": "Generate equivalent algebraic expressions involving polynomials and radicals; use algebraic properties to evaluate expressions.",
+    "description": "Add, subtract, multiply, divide and simplify algebraic fractions.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.3.5",
+    "subCategory": "Generate equivalent algebraic expressions involving polynomials and radicals; use algebraic properties to evaluate expressions.",
+    "description": "Check whether a given complex number is a solution of a quadratic equation by substituting it for the variable and evaluating the expression, using arithmetic with complex numbers.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.3.6",
+    "subCategory": "Generate equivalent algebraic expressions involving polynomials and radicals; use algebraic properties to evaluate expressions.",
+    "description": "Apply the properties of positive and negative rational exponents to generate equivalent algebraic expressions, including those involving nth roots.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.3.7",
+    "subCategory": "Generate equivalent algebraic expressions involving polynomials and radicals; use algebraic properties to evaluate expressions.",
+    "description": "Justify steps in generating equivalent expressions by identifying the properties used. Use substitution to check the equality of expressions for some particular values of the variables; recognize that checking with substitution does not guarantee equality of expressions for all values of the variables.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.4.1",
+    "subCategory": "Represent real-world and mathematical situations using equations and inequalities involving linear, quadratic, exponential and nth root functions. Solve equations and inequalities symbolically and graphically. Interpret solutions in the original context.",
+    "description": "Represent relationships in various contexts using quadratic equations and inequalities. Solve quadratic equations and inequalities by appropriate methods including factoring, completing the square, graphing and the quadratic formula. Find non-real complex roots when they exist. Recognize that a particular solution may not be applicable in the original context. Know how to use calculators, graphing utilities or other technology to solve quadratic equations and inequalities.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.4.2",
+    "subCategory": "Represent real-world and mathematical situations using equations and inequalities involving linear, quadratic, exponential and nth root functions. Solve equations and inequalities symbolically and graphically. Interpret solutions in the original context.",
+    "description": "Represent relationships in various contexts using equations involving exponential functions; solve these equations graphically or numerically. Know how to use calculators, graphing utilities or other technology to solve these equations.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.4.3",
+    "subCategory": "Represent real-world and mathematical situations using equations and inequalities involving linear, quadratic, exponential and nth root functions. Solve equations and inequalities symbolically and graphically. Interpret solutions in the original context.",
+    "description": "Recognize that to solve certain equations, number systems need to be extended from whole numbers to integers, from integers to rational numbers, from rational numbers to real numbers, and from real numbers to complex numbers. In particular, non-real complex numbers are needed to solve some quadratic equations with real coefficients.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.4.4",
+    "subCategory": "Represent real-world and mathematical situations using equations and inequalities involving linear, quadratic, exponential and nth root functions. Solve equations and inequalities symbolically and graphically. Interpret solutions in the original context.",
+    "description": "Represent relationships in various contexts using systems of linear inequalities; solve them graphically. Indicate which parts of the boundary are included in and excluded from the solution set using solid and dotted lines.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.4.5",
+    "subCategory": "Represent real-world and mathematical situations using equations and inequalities involving linear, quadratic, exponential and nth root functions. Solve equations and inequalities symbolically and graphically. Interpret solutions in the original context.",
+    "description": "Solve linear programming problems in two variables using graphical methods.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.4.6",
+    "subCategory": "Represent real-world and mathematical situations using equations and inequalities involving linear, quadratic, exponential and nth root functions. Solve equations and inequalities symbolically and graphically. Interpret solutions in the original context.",
+    "description": "Represent relationships in various contexts using absolute value inequalities in two variables; solve them graphically.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.4.7",
+    "subCategory": "Represent real-world and mathematical situations using equations and inequalities involving linear, quadratic, exponential and nth root functions. Solve equations and inequalities symbolically and graphically. Interpret solutions in the original context.",
+    "description": "Solve equations that contain radical expressions. Recognize that extraneous solutions may arise when using symbolic methods.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.2.4.8",
+    "subCategory": "Represent real-world and mathematical situations using equations and inequalities involving linear, quadratic, exponential and nth root functions. Solve equations and inequalities symbolically and graphically. Interpret solutions in the original context.",
+    "description": "Assess the reasonableness of a solution in its given context and compare the solution to appropriate graphical or numerical estimates; interpret a solution in the original context.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.1.1",
+    "subCategory": "Calculate measurements of plane and solid geometric figures; know that physical measurements depend on the choice of a unit and that they are approximations.",
+    "description": "Determine the surface area and volume of pyramids, cones and spheres. Use measuring devices or formulas as appropriate.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.1.2",
+    "subCategory": "Calculate measurements of plane and solid geometric figures; know that physical measurements depend on the choice of a unit and that they are approximations.",
+    "description": "Compose and decompose two- and three-dimensional figures; use decomposition to determine the perimeter, area, surface area and volume of various figures.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.1.3",
+    "subCategory": "Calculate measurements of plane and solid geometric figures; know that physical measurements depend on the choice of a unit and that they are approximations.",
+    "description": "Understand that quantities associated with physical measurements must be assigned units; apply such units correctly in expressions, equations and problem solutions that involve measurements; and convert between measurement systems.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.1.4",
+    "subCategory": "Calculate measurements of plane and solid geometric figures; know that physical measurements depend on the choice of a unit and that they are approximations.",
+    "description": "Understand and apply the fact that the effect of a scale factor k on length, area and volume is to multiply each by k, k2 and k3, respectively.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.1.5",
+    "subCategory": "Calculate measurements of plane and solid geometric figures; know that physical measurements depend on the choice of a unit and that they are approximations.",
+    "description": "Make reasonable estimates and judgments about the accuracy of values resulting from calculations involving measurements.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.2.1",
+    "subCategory": "Construct logical arguments, based on axioms, definitions and theorems, to prove theorems and other results in geometry.",
+    "description": "Understand the roles of axioms, definitions, undefined terms and theorems in logical arguments.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.2.2",
+    "subCategory": "Construct logical arguments, based on axioms, definitions and theorems, to prove theorems and other results in geometry.",
+    "description": "Accurately interpret and use words and phrases such as \"if…then,\" \"if and only if,\" \"all,\" and \"not.\" Recognize the logical relationships between an \"if…then\" statement and its inverse, converse and contrapositive.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.2.3",
+    "subCategory": "Construct logical arguments, based on axioms, definitions and theorems, to prove theorems and other results in geometry.",
+    "description": "Assess the validity of a logical argument and give counterexamples to disprove a statement.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.2.4",
+    "subCategory": "Construct logical arguments, based on axioms, definitions and theorems, to prove theorems and other results in geometry.",
+    "description": "Construct logical arguments and write proofs of theorems and other results in geometry, including proofs by contradiction. Express proofs in a form that clearly justifies the reasoning, such as two-column proofs, paragraph proofs, flow charts or illustrations.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.2.5",
+    "subCategory": "Construct logical arguments, based on axioms, definitions and theorems, to prove theorems and other results in geometry.",
+    "description": "Use technology tools to examine theorems, make and test conjectures, perform constructions and develop mathematical reasoning skills in multi-step problems. The tools may include compass and straight edge, dynamic geometry software, design software or Internet applets.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.3.1",
+    "subCategory": "Know and apply properties of geometric figures to solve real-world and mathematical problems and to logically justify results in geometry.",
+    "description": "Know and apply properties of parallel and perpendicular lines, including properties of angles formed by a transversal, to solve problems and logically justify results.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.3.2",
+    "subCategory": "Know and apply properties of geometric figures to solve real-world and mathematical problems and to logically justify results in geometry.",
+    "description": "Know and apply properties of angles, including corresponding, exterior, interior, vertical, complementary and supplementary angles, to solve problems and logically justify results.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.3.3",
+    "subCategory": "Know and apply properties of geometric figures to solve real-world and mathematical problems and to logically justify results in geometry.",
+    "description": "Know and apply properties of equilateral, isosceles and scalene triangles to solve problems and logically justify results.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.3.4",
+    "subCategory": "Know and apply properties of geometric figures to solve real-world and mathematical problems and to logically justify results in geometry.",
+    "description": "Apply the Pythagorean Theorem and its converse to solve problems and logically justify results.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.3.5",
+    "subCategory": "Know and apply properties of geometric figures to solve real-world and mathematical problems and to logically justify results in geometry.",
+    "description": "Know and apply properties of right triangles, including properties of 45-45-90 and 30-60-90 triangles, to solve problems and logically justify results.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.3.6",
+    "subCategory": "Know and apply properties of geometric figures to solve real-world and mathematical problems and to logically justify results in geometry.",
+    "description": "Know and apply properties of congruent and similar figures to solve problems and logically justify results.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.3.7",
+    "subCategory": "Know and apply properties of geometric figures to solve real-world and mathematical problems and to logically justify results in geometry.",
+    "description": "Use properties of polygons—including quadrilaterals and regular polygons—to define them, classify them, solve problems and logically justify results.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.3.8",
+    "subCategory": "Know and apply properties of geometric figures to solve real-world and mathematical problems and to logically justify results in geometry.",
+    "description": "Know and apply properties of a circle to solve problems and logically justify results.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.4.1",
+    "subCategory": "Solve real-world and mathematical geometric problems using algebraic methods.",
+    "description": "Understand how the properties of similar right triangles allow the trigonometric ratios to be defined, and determine the sine, cosine and tangent of an acute angle in a right triangle.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.4.2",
+    "subCategory": "Solve real-world and mathematical geometric problems using algebraic methods.",
+    "description": "Apply the trigonometric ratios sine, cosine and tangent to solve problems, such as determining lengths and areas in right triangles and in figures that can be decomposed into right triangles. Know how to use calculators, tables or other technology to evaluate trigonometric ratios.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.4.3",
+    "subCategory": "Solve real-world and mathematical geometric problems using algebraic methods.",
+    "description": "Use calculators, tables or other technologies in connection with the trigonometric ratios to find angle measures in right triangles in various contexts.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.4.4",
+    "subCategory": "Solve real-world and mathematical geometric problems using algebraic methods.",
+    "description": "Use coordinate geometry to represent and analyze line segments and polygons, including determining lengths, midpoints and slopes of line segments.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.4.5",
+    "subCategory": "Solve real-world and mathematical geometric problems using algebraic methods.",
+    "description": "Know the equation for the graph of a circle with radius r and center (h, k), (x – h)2 + (y – k)2 = r2, and justify this equation using the Pythagorean Theorem and properties of translations.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.4.6",
+    "subCategory": "Solve real-world and mathematical geometric problems using algebraic methods.",
+    "description": "Use numeric, graphic and symbolic representations of transformations in two dimensions, such as reflections, translations, scale changes and rotations about the origin by multiples of 90˚, to solve problems involving figures on a coordinate grid.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.3.4.7",
+    "subCategory": "Solve real-world and mathematical geometric problems using algebraic methods.",
+    "description": "Use algebra to solve geometric problems unrelated to coordinate geometry, such as solving for an unknown length in a figure involving similar triangles, or using the Pythagorean Theorem to obtain a quadratic equation for a length in a geometric figure.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.4.1.1",
+    "subCategory": "Display and analyze data; use various measures associated with data to draw conclusions, identify trends and describe relationships.",
+    "description": "Describe a data set using data displays, including box-and-whisker plots; describe and compare data sets using summary statistics, including measures of center, location and spread. Measures of center and location include mean, median, quartile and percentile. Measures of spread include standard deviation, range and inter-quartile range. Know how to use calculators, spreadsheets or other technology to display data and calculate summary statistics.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.4.1.2",
+    "subCategory": "Display and analyze data; use various measures associated with data to draw conclusions, identify trends and describe relationships.",
+    "description": "Analyze the effects on summary statistics of changes in data sets.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.4.1.3",
+    "subCategory": "Display and analyze data; use various measures associated with data to draw conclusions, identify trends and describe relationships.",
+    "description": "Use scatterplots to analyze patterns and describe relationships between two variables. Using technology, determine regression lines (line of best fit) and correlation coefficients; use regression lines to make predictions and correlation coefficients to assess the reliability of those predictions.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.4.1.4",
+    "subCategory": "Display and analyze data; use various measures associated with data to draw conclusions, identify trends and describe relationships.",
+    "description": "Use the mean and standard deviation of a data set to fit it to a normal distribution (bell-shaped curve) and to estimate population percentages. Recognize that there are data sets for which such a procedure is not appropriate. Use calculators, spreadsheets and tables to estimate areas under the normal curve.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.4.2.1",
+    "subCategory": "Explain the uses of data and statistical thinking to draw inferences,  make predictions and justify conclusions.",
+    "description": "Evaluate reports based on data published in the media by identifying the source of the data, the design of the study, and the way the data are analyzed and displayed. Show how graphs and data can be distorted to support different points of view. Know how to use spreadsheet tables and graphs or graphing technology to recognize and analyze distortions in data displays.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.4.2.2",
+    "subCategory": "Explain the uses of data and statistical thinking to draw inferences,  make predictions and justify conclusions.",
+    "description": "Identify and explain misleading uses of data; recognize when arguments based on data confuse correlation and causation.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.4.2.3",
+    "subCategory": "Explain the uses of data and statistical thinking to draw inferences,  make predictions and justify conclusions.",
+    "description": "Design simple experiments and explain the impact of sampling methods, bias and the phrasing of questions asked during data collection.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.4.3.1",
+    "subCategory": "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
+    "description": "Select and apply counting procedures, such as the multiplication and addition principles and tree diagrams, to determine the size of a sample space (the number of possible outcomes) and to calculate probabilities.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.4.3.2",
+    "subCategory": "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
+    "description": "Calculate experimental probabilities by performing simulations or experiments involving a probability model and using relative frequencies of outcomes.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.4.3.3",
+    "subCategory": "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
+    "description": "Understand that the Law of Large Numbers expresses a relationship between the probabilities in a probability model and the experimental probabilities found by performing simulations or experiments involving the model.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.4.3.4",
+    "subCategory": "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
+    "description": "Use random numbers generated by a calculator or a spreadsheet, or taken from a table, to perform probability simulations and to introduce fairness into decision making.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.4.3.5",
+    "subCategory": "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
+    "description": "Apply probability concepts such as intersections, unions and complements of events, and conditional probability and independence, to calculate probabilities and solve problems.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.4.3.6",
+    "subCategory": "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
+    "description": "Describe the concepts of intersections, unions and complements using Venn diagrams. Understand the relationships between these concepts and the words AND, OR, NOT, as used in computerized searches and spreadsheets.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.4.3.7",
+    "subCategory": "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
+    "description": "Understand and use simple probability formulas involving intersections, unions and complements of events.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.4.3.8",
+    "subCategory": "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
+    "description": "Apply probability concepts to real-world situations to make informed decisions.",
+    "category": "Grade 9"
+  },
+  {
+    "code": "9.4.3.9",
+    "subCategory": "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
+    "description": "Use the relationship between conditional probabilities and relative frequencies in contingency tables.",
+    "category": "Grade 9"
+  }
+]

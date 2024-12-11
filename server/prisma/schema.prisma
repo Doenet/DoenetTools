@@ -265,7 +265,7 @@ model classificationCategories {
 model classificationSubCategories {
   id              Int                      @id @default(autoincrement())
   categoryId      Int
-  subCategory     String                   @db.VarChar(255)
+  subCategory     String                   @db.VarChar(400)
   category        classificationCategories @relation(fields: [categoryId], references: [id])
   classifications classifications[]
 

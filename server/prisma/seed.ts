@@ -1,4 +1,7 @@
 import { PrismaClient } from "@prisma/client";
+import commonCoreMath from "./seed-data/common-core-math.json";
+import mnMath from "./seed-data/mn-math.json";
+
 const prisma = new PrismaClient();
 async function main() {
   await prisma.doenetmlVersions.upsert({
@@ -129,80 +132,70 @@ async function main() {
     });
   }
 
-  const commonCoreId = await upsertClassificationSystem(
-    "Common Core",
-    "Grade",
-    "Cluster",
-  );
-  const commonCoreKinderId = await upsertClassificationCategory(
-    "Kindergarten",
-    commonCoreId,
-  );
-  const commonCoreHSId = await upsertClassificationCategory("HS", commonCoreId);
-  const commonCoreCardinalityId = await upsertClassificationSubCategory(
-    "Counting and Cardinality: Know number names and the count sequence.",
-    commonCoreKinderId,
-  );
-  const commonCoreAlgebraicId = await upsertClassificationSubCategory(
-    "Operations and Algebraic Thinking: Understand addition as putting together and adding to, and understand subtraction as taking apart and taking from.",
-    commonCoreKinderId,
-  );
-  const commonCoreStructureId = await upsertClassificationSubCategory(
-    "Seeing Structure in Expressions: Write expressions in equivalent forms to solve problems.",
-    commonCoreHSId,
-  );
+  type ClassificationSystemData = {
+    category: string;
+    subCategory: string;
+    code: string;
+    description: string;
+  }[];
 
-  await upsertClassification(
-    "K.CC.1",
-    "Count to 100 by ones and by tens.",
-    commonCoreCardinalityId,
-  );
-  await upsertClassification(
-    "K.CC.2",
-    "Count forward beginning from a given number within the known sequence (instead of having to begin at 1).",
-    commonCoreCardinalityId,
-  );
-  await upsertClassification(
-    "K.CC.3",
-    "Write numbers from 0 to 20. Represent a number of objects with a written numeral 0-20 (with 0 representing a count of no objects).",
-    commonCoreCardinalityId,
-  );
-  await upsertClassification(
-    "K.OA.1",
-    "Represent addition and subtraction with objects, fingers, mental images, drawings (Drawings need not show details, but should show the mathematics in the problem.(This applies wherever drawings are mentioned in the Standards.)), sounds (e.g., claps), acting out situations, verbal explanations, expressions, or equations.",
-    commonCoreAlgebraicId,
-  );
-  await upsertClassification(
-    "A.SSE.3 c.",
-    "Use the properties of exponents to transform expressions for exponential functions.  For example the expression 1.15t can be rewritten as (1.151/12)12t ≈1.01212t to reveal the approximate equivalent monthly interest rate if the annual rate is 15%.",
-    commonCoreStructureId,
-  );
+  async function addClassificationFromData({
+    name,
+    categoryLabel,
+    subCategoryLabel,
+    data,
+  }: {
+    name: string;
+    categoryLabel: string;
+    subCategoryLabel: string;
+    data: ClassificationSystemData;
+  }) {
+    const systemId = await upsertClassificationSystem(
+      name,
+      categoryLabel,
+      subCategoryLabel,
+    );
 
-  const mnId = await upsertClassificationSystem(
-    "Minnesota Academic Standards in Math",
-    "Grade",
-    "Standard",
-  );
-  const mnEighthId = await upsertClassificationCategory("8", mnId);
-  const mnNinthId = await upsertClassificationCategory("9", mnId);
-  const mnFuncId = await upsertClassificationSubCategory(
-    "Understand the concept of function in real-world and mathematical situations, and distinguish between linear and nonlinear functions.",
-    mnEighthId,
-  );
-  const mnProbabilityId = await upsertClassificationSubCategory(
-    "Calculate probabilities and apply probability concepts to solve real-world and mathematical problems.",
-    mnNinthId,
-  );
-  await upsertClassification(
-    "8.2.1.5",
-    "Understand that a geometric sequence is a non-linear function that can be expressed in the form f(x) = ab^x, where x = 0, 1, 2, 3,….",
-    mnFuncId,
-  );
-  await upsertClassification(
-    "9.4.3.9",
-    "Use the relationship between conditional probabilities and relative frequencies in contingency tables.",
-    mnProbabilityId,
-  );
+    let lastCategory = "";
+    let lastCategoryId = NaN;
+    let lastSubCategory = "";
+    let lastSubCategoryId = NaN;
+    for (const classification of data) {
+      if (classification.category !== lastCategory) {
+        lastCategoryId = await upsertClassificationCategory(
+          classification.category,
+          systemId,
+        );
+        lastCategory = classification.category;
+      }
+      if (classification.subCategory !== lastSubCategory) {
+        lastSubCategoryId = await upsertClassificationSubCategory(
+          classification.subCategory,
+          lastCategoryId,
+        );
+        lastSubCategory = classification.subCategory;
+      }
+      await upsertClassification(
+        classification.code,
+        classification.description,
+        lastSubCategoryId,
+      );
+    }
+  }
+
+  await addClassificationFromData({
+    name: "Common Core",
+    categoryLabel: "Grade",
+    subCategoryLabel: "Cluster",
+    data: commonCoreMath,
+  });
+
+  await addClassificationFromData({
+    name: "Minnesota Academic Standards in Math",
+    categoryLabel: "Grade",
+    subCategoryLabel: "Standard",
+    data: mnMath,
+  });
 
   await prisma.licenses.upsert({
     where: { code: "CCBYSA" },
