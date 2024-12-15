@@ -24,7 +24,7 @@ export default defineConfig({
   numTestsKeptInMemory: 20,
   defaultCommandTimeout: 10000,
   e2e: {
-    setupNodeEvents(on, config) {
+    setupNodeEvents(on) {
       on("before:browser:launch", (browser = {}, launchOptions) => {
         if (browser.name === "chrome") {
           launchOptions.args.push("--mute-audio");
