@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 import { fromUUID, isEqualUUID } from "./utils/uuid";
 import {
   AssignmentStatus,
-  ClassificationSystemTree,
+  ClassificationCategoryTree,
   ContentClassification,
   ContentStructure,
   DocHistory,
@@ -4275,10 +4275,10 @@ export async function getSharedFolderContent({
   };
 }
 
-export async function getAllClassificationInfo() {
+export async function getClassificationCategories() {
   const results = await prisma.classificationSystems.findMany({
     orderBy: {
-      name: "asc",
+      sortIndex: "asc",
     },
     select: {
       id: true,
@@ -4287,81 +4287,281 @@ export async function getAllClassificationInfo() {
       subCategoryLabel: true,
       classificationCategory: {
         orderBy: {
-          category: "asc",
+          sortIndex: "asc",
         },
         select: {
           id: true,
           category: true,
           classificationSubCategory: {
             orderBy: {
-              subCategory: "asc",
+              sortIndex: "asc",
             },
             select: {
               id: true,
               subCategory: true,
-              classifications: {
-                orderBy: {
-                  code: "asc",
-                },
-                select: {
-                  id: true,
-                  code: true,
-                  description: true,
-                },
-              },
             },
           },
         },
       },
     },
   });
-  const formattedResults: ClassificationSystemTree[] = results.map((system) => {
-    return {
-      id: system.id,
-      name: system.name,
-      categoryLabel: system.categoryLabel,
-      subCategoryLabel: system.subCategoryLabel,
-      categories: system.classificationCategory.map((category) => {
-        return {
-          id: category.id,
-          category: category.category,
-          subCategories: category.classificationSubCategory.map(
-            (subCategory) => {
-              return {
-                id: subCategory.id,
-                subCategory: subCategory.subCategory,
-                classifications: subCategory.classifications,
-              };
-            },
-          ),
-        };
-      }),
-    };
-  });
+  const formattedResults: ClassificationCategoryTree[] = results.map(
+    (system) => {
+      return {
+        id: system.id,
+        name: system.name,
+        categoryLabel: system.categoryLabel,
+        subCategoryLabel: system.subCategoryLabel,
+        categories: system.classificationCategory.map((category) => {
+          return {
+            id: category.id,
+            category: category.category,
+            subCategories: category.classificationSubCategory.map(
+              (subCategory) => {
+                return {
+                  id: subCategory.id,
+                  subCategory: subCategory.subCategory,
+                };
+              },
+            ),
+          };
+        }),
+      };
+    },
+  );
   return formattedResults;
 }
 
-export async function searchPossibleClassifications(query: string) {
-  const query_words = query.split(" ");
+export async function searchPossibleClassifications({
+  query = "",
+  systemId,
+  categoryId,
+  subCategoryId,
+}: {
+  query?: string;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+}) {
+  // remove operators that break MySQL BOOLEAN search
+  // and add * at the end of every word so that match beginning of words
+  const query_as_prefixes = query
+    .replace(/[+\-><()~*"@]+/g, " ")
+    .split(" ")
+    .filter((s) => s)
+    .map((s) => s + "*")
+    .join(" ");
+
+  if (query_as_prefixes.length > 0) {
+    let matches: {
+      id: number;
+      relevance: number;
+    }[];
+
+    // TODO: there must be a better way to do this and to have to repeat the identical SQL string
+    // for each case! (Don't want to use unsafe raw queries.)
+    if (subCategoryId !== undefined) {
+      matches = await prisma.$queryRaw<
+        {
+          id: number;
+          relevance: number;
+        }[]
+      >(Prisma.sql`
+  SELECT
+    classifications.id,
+    AVG(
+    MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    ) as relevance
+  FROM
+    classifications
+  INNER JOIN
+    classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
+  INNER JOIN
+    classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
+  INNER JOIN
+    classificationSystems ON classificationCategories.systemId = classificationSystems.id
+  WHERE
+    (MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+    AND classificationSubCategories.id = ${subCategoryId}
+  GROUP BY
+    classifications.id
+  ORDER BY
+    relevance DESC
+  LIMIT 100
+  `);
+    } else if (categoryId !== undefined) {
+      matches = await prisma.$queryRaw<
+        {
+          id: number;
+          relevance: number;
+        }[]
+      >(Prisma.sql`
+SELECT
+  classifications.id,
+  AVG(
+  MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+  MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+  MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+  MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  ) as relevance
+FROM
+  classifications
+INNER JOIN
+  classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
+INNER JOIN
+  classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
+INNER JOIN
+  classificationSystems ON classificationCategories.systemId = classificationSystems.id
+WHERE
+  (MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  OR MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+  AND classificationCategories.id = ${categoryId}
+GROUP BY
+  classifications.id
+ORDER BY
+  relevance DESC
+LIMIT 100
+`);
+    } else if (systemId !== undefined) {
+      matches = await prisma.$queryRaw<
+        {
+          id: number;
+          relevance: number;
+        }[]
+      >(Prisma.sql`
+SELECT
+  classifications.id,
+  AVG(
+  MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+  MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+  MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+  MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  ) as relevance
+FROM
+  classifications
+INNER JOIN
+  classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
+INNER JOIN
+  classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
+INNER JOIN
+  classificationSystems ON classificationCategories.systemId = classificationSystems.id
+WHERE
+  (MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  OR MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+  AND classificationSystems.id = ${systemId}
+GROUP BY
+  classifications.id
+ORDER BY
+  relevance DESC
+LIMIT 100
+`);
+    } else {
+      matches = await prisma.$queryRaw<
+        {
+          id: number;
+          relevance: number;
+        }[]
+      >(Prisma.sql`
+SELECT
+  classifications.id,
+  AVG(
+  MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+  MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+  MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+  MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  ) as relevance
+FROM
+  classifications
+INNER JOIN
+  classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
+INNER JOIN
+  classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
+INNER JOIN
+  classificationSystems ON classificationCategories.systemId = classificationSystems.id
+WHERE
+  (MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  OR MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+GROUP BY
+  classifications.id
+ORDER BY
+  relevance DESC
+LIMIT 100
+`);
+    }
+
+    // since full text search doesn't match code well, separately match for those
+    // and put matches at the top of the list
+    const query_words = query.split(" ");
+
+    const code_matches = await prisma.classifications.findMany({
+      where: {
+        AND: [
+          {
+            OR: query_words.map((query_word) => ({
+              code: { contains: query_word },
+            })),
+          },
+          { subCategory: { category: { systemId } } },
+          { subCategory: { categoryId } },
+          { subCategoryId },
+        ],
+      },
+      select: { id: true },
+    });
+
+    const results: ContentClassification[] =
+      await prisma.classifications.findMany({
+        where: {
+          id: { in: [...matches, ...code_matches].map((m) => m.id) },
+        },
+        include: {
+          subCategory: {
+            include: {
+              category: {
+                include: {
+                  system: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+    // TODO: a more efficient way to get desired sort order?
+    const sort_order: Record<string, number> = {};
+    matches.forEach((match) => {
+      sort_order[match.id] = match.relevance;
+    });
+    code_matches.forEach((match) => {
+      sort_order[match.id] = 100 + (sort_order[match.id] || 0); // code matches go at the top
+    });
+    results.sort((a, b) => sort_order[b.id] - sort_order[a.id]);
+
+    return results;
+  }
+
   const results: ContentClassification[] =
     await prisma.classifications.findMany({
       where: {
-        AND: query_words.map((query_word) => ({
-          OR: [
-            { code: { contains: query_word } },
-            { description: { contains: query_word } },
-            { subCategory: { subCategory: { contains: query_word } } },
-            {
-              subCategory: { category: { category: { contains: query_word } } },
-            },
-            {
-              subCategory: {
-                category: { system: { name: { contains: query_word } } },
-              },
-            },
-          ],
-        })),
+        AND: [
+          { subCategory: { category: { systemId } } },
+          { subCategory: { categoryId } },
+          { subCategoryId },
+        ],
       },
+      take: 100,
       include: {
         subCategory: {
           include: {
