@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -248,13 +249,17 @@ model classificationSystems {
   name                   String                     @unique
   categoryLabel          String
   subCategoryLabel       String
+  sortIndex              Int
   classificationCategory classificationCategories[]
+
+  @@fulltext([name])
 }
 
 model classificationCategories {
   id                        Int                           @id @default(autoincrement())
   category                  String
   systemId                  Int
+  sortIndex                 Int
   system                    classificationSystems         @relation(fields: [systemId], references: [id])
   classificationSubCategory classificationSubCategories[]
 
@@ -266,6 +271,7 @@ model classificationSubCategories {
   id              Int                      @id @default(autoincrement())
   categoryId      Int
   subCategory     String                   @db.VarChar(400)
+  sortIndex       Int
   category        classificationCategories @relation(fields: [categoryId], references: [id])
   classifications classifications[]
 

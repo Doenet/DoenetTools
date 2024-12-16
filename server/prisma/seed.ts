@@ -88,33 +88,36 @@ async function main() {
     name: string,
     categoryLabel: string,
     subCategoryLabel: string,
+    sortIndex: number,
   ) {
     const { id } = await prisma.classificationSystems.upsert({
       where: { name },
-      update: { name, categoryLabel, subCategoryLabel },
-      create: { name, categoryLabel, subCategoryLabel },
+      update: { name, categoryLabel, subCategoryLabel, sortIndex },
+      create: { name, categoryLabel, subCategoryLabel, sortIndex },
     });
     return id;
   }
   async function upsertClassificationCategory(
     category: string,
     systemId: number,
+    sortIndex: number,
   ) {
     const { id } = await prisma.classificationCategories.upsert({
       where: { category_systemId: { category, systemId } },
-      update: { category, systemId },
-      create: { category, systemId },
+      update: { category, systemId, sortIndex },
+      create: { category, systemId, sortIndex },
     });
     return id;
   }
   async function upsertClassificationSubCategory(
     subCategory: string,
     categoryId: number,
+    sortIndex: number,
   ) {
     const { id } = await prisma.classificationSubCategories.upsert({
       where: { subCategory_categoryId: { subCategory, categoryId } },
-      update: { subCategory, categoryId },
-      create: { subCategory, categoryId },
+      update: { subCategory, categoryId, sortIndex },
+      create: { subCategory, categoryId, sortIndex },
     });
     return id;
   }
@@ -137,6 +140,7 @@ async function main() {
     subCategory: string;
     code: string;
     description: string;
+    sortIndex: string;
   }[];
 
   async function addClassificationFromData({
@@ -144,16 +148,19 @@ async function main() {
     categoryLabel,
     subCategoryLabel,
     data,
+    sortIndex,
   }: {
     name: string;
     categoryLabel: string;
     subCategoryLabel: string;
     data: ClassificationSystemData;
+    sortIndex: number;
   }) {
     const systemId = await upsertClassificationSystem(
       name,
       categoryLabel,
       subCategoryLabel,
+      sortIndex,
     );
 
     let lastCategory = "";
@@ -165,6 +172,7 @@ async function main() {
         lastCategoryId = await upsertClassificationCategory(
           classification.category,
           systemId,
+          Number(classification.sortIndex),
         );
         lastCategory = classification.category;
       }
@@ -172,6 +180,7 @@ async function main() {
         lastSubCategoryId = await upsertClassificationSubCategory(
           classification.subCategory,
           lastCategoryId,
+          Number(classification.sortIndex),
         );
         lastSubCategory = classification.subCategory;
       }
@@ -188,6 +197,7 @@ async function main() {
     categoryLabel: "Grade",
     subCategoryLabel: "Cluster",
     data: commonCoreMath,
+    sortIndex: 1,
   });
 
   await addClassificationFromData({
@@ -195,6 +205,7 @@ async function main() {
     categoryLabel: "Grade",
     subCategoryLabel: "Standard",
     data: mnMath,
+    sortIndex: 2,
   });
 
   await prisma.licenses.upsert({
