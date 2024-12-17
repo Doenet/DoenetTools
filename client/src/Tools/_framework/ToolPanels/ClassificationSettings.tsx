@@ -192,7 +192,12 @@ export function ClassificationSettings({
                       <h2>
                         <AccordionButton>
                           <HStack flex="1" textAlign="left" direction={"row"}>
-                            ;<Text as="b">{classification.code}</Text>
+                            <Text
+                              as="b"
+                              data-test={`Existing Classification ${i + 1}`}
+                            >
+                              {classification.code}
+                            </Text>
                             <Text fontSize={"small"} pt="2px">
                               {classification.subCategory.category.system.name}
                             </Text>
@@ -207,6 +212,7 @@ export function ClassificationSettings({
                       >
                         <CloseButton
                           aria-label={`Remove classification ${classification.code}`}
+                          data-test={`Remove Existing ${classification.code}`}
                           hidden={
                             classifyItemRemoveSpinner === classification.id
                           }
@@ -281,6 +287,7 @@ export function ClassificationSettings({
                 <Select
                   value={categoryFilter.systemTreeIndex ?? ""}
                   placeholder="Filter by system"
+                  data-test="Filter By System"
                   onChange={(event) => {
                     if (event.target.value) {
                       let treeIndex = Number(event.target.value);
@@ -299,6 +306,7 @@ export function ClassificationSettings({
                 </Select>
                 <CloseButton
                   aria-label={`Stop filtering by system`}
+                  data-test="Stop Filter By System"
                   disabled={selectedClassification === null}
                   onClick={() => {
                     setCategoryFilter({});
@@ -314,6 +322,7 @@ export function ClassificationSettings({
                       ? "-"
                       : `Filter by ${selectedClassification.categoryLabel}`
                   }
+                  data-test="Filter By Category"
                   isDisabled={categoryFilter.systemId === undefined}
                   onChange={(event) => {
                     if (event.target.value) {
@@ -347,6 +356,7 @@ export function ClassificationSettings({
                 </Select>
                 <CloseButton
                   aria-label={`Stop filtering by ${selectedClassification?.categoryLabel}`}
+                  data-test="Stop Filter By Category"
                   disabled={categoryFilter.categoryId === undefined}
                   onClick={() => {
                     setCategoryFilter((was) => {
@@ -369,6 +379,7 @@ export function ClassificationSettings({
                       ? "-"
                       : `Filter by ${selectedClassification!.subCategoryLabel}`
                   }
+                  data-test="Filter By Subcategory"
                   isDisabled={categoryFilter.categoryId === undefined}
                   onChange={(event) => {
                     if (event.target.value) {
@@ -402,6 +413,7 @@ export function ClassificationSettings({
                 </Select>
                 <CloseButton
                   aria-label={`Stop filtering by ${selectedClassification?.subCategoryLabel}`}
+                  data-test="Stop Filter By Subcategory"
                   disabled={categoryFilter.categoryId === undefined}
                   onClick={() => {
                     setCategoryFilter((was) => {
@@ -416,6 +428,7 @@ export function ClassificationSettings({
 
               <Input
                 type="search"
+                data-test="Search Terms"
                 placeholder="Filter by search terms"
                 onInput={updateSearchTerms}
                 onKeyDown={(e) => {
@@ -427,101 +440,108 @@ export function ClassificationSettings({
                 marginTop={4}
               />
 
-              {classificationOptions.length === 0 ? (
-                <p>No matching classifications</p>
-              ) : null}
+              <Box data-test="Matching Classifications">
+                {classificationOptions.length === 0 ? (
+                  <p>No matching classifications</p>
+                ) : null}
 
-              {classificationOptions.map((classification) => {
-                let added = contentData.classifications
-                  .map((c) => c.id)
-                  .includes(classification.id);
-                let buttonText = added ? "Remove" : "Add";
-                let action =
-                  (added ? "remove" : "add") + " content classification";
+                {classificationOptions.map((classification) => {
+                  let added = contentData.classifications
+                    .map((c) => c.id)
+                    .includes(classification.id);
+                  let buttonText = added ? "Remove" : "Add";
+                  let action =
+                    (added ? "remove" : "add") + " content classification";
 
-                return (
-                  <Card backgroundColor={added ? "lightGray" : "var(--canvas)"}>
-                    <CardBody paddingLeft={2}>
-                      <Flex>
-                        <Heading size="sm">
-                          {classification.code} (
-                          {classification.subCategory.category.system.name})
-                        </Heading>
-                        <Spacer />
+                  return (
+                    <Card
+                      backgroundColor={added ? "lightGray" : "var(--canvas)"}
+                    >
+                      <CardBody paddingLeft={2}>
+                        <HStack>
+                          <Heading size="sm">
+                            {classification.code} (
+                            {classification.subCategory.category.system.name})
+                          </Heading>
+                          <Spacer />
 
-                        <Button
-                          size="sm"
-                          isDisabled={
-                            dropdownWaitingForChange === classification.id
-                          }
-                          onClick={() => {
-                            setDropdownWaitingForChange(classification.id);
-                            fetcher.submit(
+                          <Button
+                            size="sm"
+                            isDisabled={
+                              dropdownWaitingForChange === classification.id
+                            }
+                            onClick={() => {
+                              setDropdownWaitingForChange(classification.id);
+                              fetcher.submit(
+                                {
+                                  _action: action,
+                                  activityId: id,
+                                  classificationId: classification.id,
+                                },
+                                { method: "post" },
+                              );
+                            }}
+                            data-test={`${buttonText} ${classification.code}`}
+                          >
+                            {dropdownWaitingForChange === classification.id ? (
+                              <Spinner />
+                            ) : (
+                              buttonText
+                            )}
+                          </Button>
+                        </HStack>
+                        <Box>
+                          <Text>
+                            <Text as="i">
                               {
-                                _action: action,
-                                activityId: id,
-                                classificationId: classification.id,
-                              },
-                              { method: "post" },
-                            );
-                          }}
-                        >
-                          {dropdownWaitingForChange === classification.id ? (
-                            <Spinner />
-                          ) : (
-                            buttonText
-                          )}
-                        </Button>
-                      </Flex>
-                      <Text>
-                        <Text as="i">
-                          {
-                            classification.subCategory.category.system
-                              .categoryLabel
-                          }
-                          :
-                        </Text>{" "}
-                        <Highlight
-                          query={queryFilter?.split(" ") || ""}
-                          styles={{ fontWeight: "bold" }}
-                        >
-                          {classification.subCategory.category.category}
-                        </Highlight>
-                      </Text>
-                      <Text>
-                        <Text as="i">
-                          {
-                            classification.subCategory.category.system
-                              .subCategoryLabel
-                          }
-                          :
-                        </Text>{" "}
-                        <Highlight
-                          query={queryFilter?.split(" ") || ""}
-                          styles={{ fontWeight: "bold" }}
-                        >
-                          {classification.subCategory.subCategory}
-                        </Highlight>
-                      </Text>
-                      <Text>
-                        <Text as="i">
-                          {
-                            classification.subCategory.category.system
-                              .descriptionLabel
-                          }
-                          :
-                        </Text>{" "}
-                        <Highlight
-                          query={(queryFilter || "").split(" ")}
-                          styles={{ fontWeight: "bold" }}
-                        >
-                          {classification.description}
-                        </Highlight>
-                      </Text>
-                    </CardBody>
-                  </Card>
-                );
-              })}
+                                classification.subCategory.category.system
+                                  .categoryLabel
+                              }
+                              :
+                            </Text>{" "}
+                            <Highlight
+                              query={queryFilter?.split(" ") || ""}
+                              styles={{ fontWeight: "bold" }}
+                            >
+                              {classification.subCategory.category.category}
+                            </Highlight>
+                          </Text>
+                          <Text>
+                            <Text as="i">
+                              {
+                                classification.subCategory.category.system
+                                  .subCategoryLabel
+                              }
+                              :
+                            </Text>{" "}
+                            <Highlight
+                              query={queryFilter?.split(" ") || ""}
+                              styles={{ fontWeight: "bold" }}
+                            >
+                              {classification.subCategory.subCategory}
+                            </Highlight>
+                          </Text>
+                          <Text>
+                            <Text as="i">
+                              {
+                                classification.subCategory.category.system
+                                  .descriptionLabel
+                              }
+                              :
+                            </Text>{" "}
+                            <Highlight
+                              query={(queryFilter || "").split(" ")}
+                              styles={{ fontWeight: "bold" }}
+                            >
+                              {classification.description}
+                            </Highlight>
+                          </Text>
+                        </Box>
+                      </CardBody>
+                    </Card>
+                  );
+                })}
+              </Box>
             </Box>
           </Flex>
         </Flex>
