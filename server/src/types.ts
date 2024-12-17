@@ -32,6 +32,7 @@ export type ContentClassification = {
         name: string;
         categoryLabel: string;
         subCategoryLabel: string;
+        descriptionLabel: string;
       };
     };
   };

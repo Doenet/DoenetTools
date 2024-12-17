@@ -29,7 +29,6 @@ import {
   ClassificationSettings,
   classificationSettingsActions,
 } from "./ClassificationSettings";
-import axios from "axios";
 
 export async function contentSettingsActions({
   formObj,
@@ -103,7 +102,7 @@ export function ContentSettingsDrawer({
       placement="right"
       onClose={onClose}
       finalFocusRef={finalFocusRef}
-      size="lg"
+      size="xl"
     >
       <DrawerOverlay />
       <DrawerContent>
@@ -117,8 +116,12 @@ export function ContentSettingsDrawer({
           </Tooltip>
         </DrawerHeader>
 
-        <DrawerBody>
-          <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)}>
+        <DrawerBody overflowY="hidden" paddingRight={[3, 6]}>
+          <Tabs
+            index={tabIndex}
+            onChange={(index) => setTabIndex(index)}
+            overflowY="hidden"
+          >
             <TabList>
               <Tab data-test="General Tab">General</Tab>
 
@@ -131,9 +134,9 @@ export function ContentSettingsDrawer({
                 <Tab data-test="Files Tab">Support Files</Tab>
               ) : null}
             </TabList>
-            <Box overflowY="auto" height="calc(100vh - 130px)">
-              <TabPanels>
-                <TabPanel>
+            <Box height="calc(100vh - 130px)">
+              <TabPanels height="100%">
+                <TabPanel overflowY="auto" height="100%">
                   <GeneralContentControls
                     fetcher={fetcher}
                     id={id}
@@ -142,7 +145,12 @@ export function ContentSettingsDrawer({
                   />
                 </TabPanel>
                 {!contentData.isFolder ? (
-                  <TabPanel>
+                  <TabPanel
+                    overflowY="hidden"
+                    height="100%"
+                    padding={0}
+                    paddingTop={4}
+                  >
                     <ClassificationSettings
                       fetcher={fetcher}
                       id={id}

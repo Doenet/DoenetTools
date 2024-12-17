@@ -2465,15 +2465,13 @@ app.get(
   "/api/searchPossibleClassifications",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const query = req.query.q as string;
-      const systemId = req.query.systemId
-        ? Number(req.query.systemId)
+      const query = req.query.q ? String(req.query.q) : undefined;
+      const systemId = req.query.system ? Number(req.query.system) : undefined;
+      const categoryId = req.query.category
+        ? Number(req.query.category)
         : undefined;
-      const categoryId = req.query.categoryId
-        ? Number(req.query.categoryId)
-        : undefined;
-      const subCategoryId = req.query.subCategoryId
-        ? Number(req.query.subCategoryId)
+      const subCategoryId = req.query.subCategory
+        ? Number(req.query.subCategory)
         : undefined;
       const searchResults = await searchPossibleClassifications({
         query,

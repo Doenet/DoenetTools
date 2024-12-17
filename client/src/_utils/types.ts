@@ -54,6 +54,7 @@ export type ContentClassification = {
         name: string;
         categoryLabel: string;
         subCategoryLabel: string;
+        descriptionLabel: string;
       };
     };
   };
@@ -118,7 +119,7 @@ export type DocRemixItem = {
   owner: UserInfo;
 };
 
-export type ClassificationSystemTree = {
+export type ClassificationCategoryTree = {
   id: number;
   name: string;
   categoryLabel: string;

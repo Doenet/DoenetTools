@@ -88,12 +88,25 @@ async function main() {
     name: string,
     categoryLabel: string,
     subCategoryLabel: string,
+    descriptionLabel: string,
     sortIndex: number,
   ) {
     const { id } = await prisma.classificationSystems.upsert({
       where: { name },
-      update: { name, categoryLabel, subCategoryLabel, sortIndex },
-      create: { name, categoryLabel, subCategoryLabel, sortIndex },
+      update: {
+        name,
+        categoryLabel,
+        subCategoryLabel,
+        descriptionLabel,
+        sortIndex,
+      },
+      create: {
+        name,
+        categoryLabel,
+        subCategoryLabel,
+        descriptionLabel,
+        sortIndex,
+      },
     });
     return id;
   }
@@ -147,12 +160,14 @@ async function main() {
     name,
     categoryLabel,
     subCategoryLabel,
+    descriptionLabel,
     data,
     sortIndex,
   }: {
     name: string;
     categoryLabel: string;
     subCategoryLabel: string;
+    descriptionLabel: string;
     data: ClassificationSystemData;
     sortIndex: number;
   }) {
@@ -160,6 +175,7 @@ async function main() {
       name,
       categoryLabel,
       subCategoryLabel,
+      descriptionLabel,
       sortIndex,
     );
 
@@ -196,6 +212,7 @@ async function main() {
     name: "Common Core",
     categoryLabel: "Grade",
     subCategoryLabel: "Cluster",
+    descriptionLabel: "Standard",
     data: commonCoreMath,
     sortIndex: 1,
   });
@@ -204,6 +221,7 @@ async function main() {
     name: "Minnesota Academic Standards in Math",
     categoryLabel: "Grade",
     subCategoryLabel: "Standard",
+    descriptionLabel: "Benchmark",
     data: mnMath,
     sortIndex: 2,
   });

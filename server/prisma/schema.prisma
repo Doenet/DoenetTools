@@ -249,6 +249,7 @@ model classificationSystems {
   name                   String                     @unique
   categoryLabel          String
   subCategoryLabel       String
+  descriptionLabel       String
   sortIndex              Int
   classificationCategory classificationCategories[]
 
