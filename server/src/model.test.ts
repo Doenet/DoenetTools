@@ -72,10 +72,10 @@ import {
   getDocumentSource,
   getPreferredFolderView,
   setPreferredFolderView,
-  getAllClassificationInfo,
+  getClassificationCategories,
 } from "./model";
 import { DateTime } from "luxon";
-import { ClassificationSystemTree, ContentStructure } from "./types";
+import { ClassificationCategoryTree, ContentStructure } from "./types";
 import {
   allAssignmentScoresConvertUUID,
   compareUUID,
@@ -2571,7 +2571,7 @@ test("copyActivityToFolder copies content classifications", async () => {
   const { activityId } = await createActivity(originalOwnerId, null);
 
   const { id: classifyId } = (
-    await searchPossibleClassifications("K.CC.1 common core")
+    await searchPossibleClassifications({ query: "K.CC.1 common core" })
   ).find((k) => k.code === "K.CC.1")!;
 
   await addClassification(activityId, classifyId, originalOwnerId);
@@ -3082,17 +3082,17 @@ test("searchSharedContent, document source is more relevant than classification"
   await createActivity(ownerId, null);
 
   const { id: classify1Id } = (
-    await searchPossibleClassifications("K.CC.1 common core")
+    await searchPossibleClassifications({ query: "K.CC.1 common core" })
   ).find((k) => k.code === "K.CC.1")!;
   await addClassification(activity2Id, classify1Id, ownerId);
 
   const { id: classify2Id } = (
-    await searchPossibleClassifications("K.OA.1 common core")
+    await searchPossibleClassifications({ query: "K.OA.1 common core" })
   ).find((k) => k.code === "K.OA.1")!;
   await addClassification(activity2Id, classify2Id, ownerId);
 
   const { id: classify3Id } = (
-    await searchPossibleClassifications("A.SSE.3")
+    await searchPossibleClassifications({ query: "A.SSE.3" })
   ).find((k) => k.code === "A.SSE.3 c.")!;
   await addClassification(activity2Id, classify3Id, ownerId);
 
@@ -3123,9 +3123,9 @@ test("searchSharedContent, classification increases relevance", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { id: classifyId } = (
-    await searchPossibleClassifications("K.CC.3 common core")
-  ).find((k) => k.code === "K.CC.3")!;
+  const classifyId = (
+    await searchPossibleClassifications({ query: "K.CC.3 common core" })
+  )[0].id;
 
   // unique code to distinguish content added in this test
   const code = `${Date.now()}`;
@@ -6939,10 +6939,10 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 test("Content classifications can only be edited by activity owner", async () => {
   const { userId } = await createTestUser();
   const { userId: otherId } = await createTestUser();
-  const allClassifications = await searchPossibleClassifications("");
-  const { id: classificationId } = allClassifications.find(
-    (k) => k.code === "K.CC.1",
-  )!;
+  const classificationId = (
+    await searchPossibleClassifications({ query: "K.CC.1" })
+  )[0].id;
+
   const { activityId } = await createActivity(userId, null);
 
   // Add
@@ -6969,11 +6969,11 @@ test("Content classifications can only be edited by activity owner", async () =>
 });
 
 test("Get classifications of public activity", async () => {
-  const allClassifications = await searchPossibleClassifications("");
-  const { id: classId1 } = allClassifications.find((k) => k.code === "K.CC.1")!;
-  const { id: classId2 } = allClassifications.find(
-    (k) => k.code === "8.2.1.5",
-  )!;
+  const classId1 = (await searchPossibleClassifications({ query: "K.CC.1" }))[0]
+    .id;
+  const classId2 = (
+    await searchPossibleClassifications({ query: "8.2.1.5" })
+  )[0].id;
   const { userId: ownerId } = await createTestUser();
   const { activityId } = await createActivity(ownerId, null);
 
@@ -6998,48 +6998,224 @@ test("Get classifications of public activity", async () => {
   expect(classifications.length).toBe(2);
 });
 
-test("Get all classification info as tree", async () => {
-  const results: ClassificationSystemTree[] = await getAllClassificationInfo();
+test("Get classification categories as tree", async () => {
+  const results: ClassificationCategoryTree[] =
+    await getClassificationCategories();
   expect(results.length).toBeGreaterThan(0);
   expect(results[0].categories.length).toBeGreaterThan(0);
   expect(results[0].categories[0].subCategories.length).toBeGreaterThan(0);
-  expect(
-    results[0].categories[0].subCategories[0].classifications.length,
-  ).toBeGreaterThan(0);
 });
 
-test("Search for content classifications", async () => {
+test("Search for content classifications, query alone", async () => {
   {
     // Code
-    const results = await searchPossibleClassifications("CC.1");
-    expect(results.find((i) => i.code === "K.CC.1")).toBeDefined();
+    const results = await searchPossibleClassifications({ query: "CC.1" });
+    // should be first entry
+    expect(results[0].code).eq("K.CC.1");
   }
   {
     // Category
-    const results = await searchPossibleClassifications("Kind");
+    const results = await searchPossibleClassifications({ query: "Kind" });
     expect(results.find((i) => i.code === "K.CC.1")).toBeDefined();
   }
   {
     // Sub Category
-    const results = await searchPossibleClassifications("nonlinear functions");
+    const results = await searchPossibleClassifications({
+      query: "nonlinear functions",
+    });
     expect(results.find((i) => i.code === "8.2.1.5")).toBeDefined();
   }
   {
     // Description
-    const results = await searchPossibleClassifications("exponents");
+    const results = await searchPossibleClassifications({ query: "exponents" });
     expect(results.find((i) => i.code === "A.SSE.3 c.")).toBeDefined();
   }
   {
     // System name
-    const results = await searchPossibleClassifications("coMMoN cOrE");
-    expect(results.find((i) => i.code === "A.SSE.3 c.")).toBeDefined();
+    const results = await searchPossibleClassifications({
+      query: "coMMoN cOrE",
+    });
+    expect(results.find((i) => i.code === "2.G.1")).toBeDefined();
   }
   {
     // Combination of fields
-    const results = await searchPossibleClassifications(
-      "mention addition SUBTRACTION kindergarten OA operations",
-    );
-    expect(results.find((i) => i.code === "K.OA.1")).toBeDefined();
+    const results = await searchPossibleClassifications({
+      query: "claps addition SUBTRACTION kindergarten operations",
+    });
+    expect(results[0].code).eq("K.OA.1");
+  }
+});
+
+test("Search for content classifications, by category and system ids", async () => {
+  const coins = (
+    await searchPossibleClassifications({
+      query: "1.3.2.3",
+    })
+  )[0];
+
+  const measurementsId = coins?.subCategory.id;
+  const firstGradeId = coins?.subCategory.category.id;
+  const mnStandardsId = coins?.subCategory.category.system.id;
+
+  {
+    // with no filter, finds everything, so gets first 100 entries
+    // which will all be common core
+    const results = await searchPossibleClassifications({});
+
+    expect(results.length).eq(100);
+    expect(
+      results.find((i) => i.subCategory.category.system.id == mnStandardsId),
+    ).toBeUndefined();
+  }
+
+  {
+    // Just system
+    const results = await searchPossibleClassifications({
+      systemId: mnStandardsId,
+    });
+
+    expect(results.length).eq(100);
+    expect(
+      results.find((i) => i.subCategory.category.system.id === mnStandardsId),
+    ).toBeDefined();
+    expect(
+      results.find((i) => i.subCategory.category.system.id !== mnStandardsId),
+    ).toBeUndefined();
+    expect(
+      results.find((i) => i.subCategory.category.id === firstGradeId),
+    ).toBeDefined();
+    expect(
+      results.find((i) => i.subCategory.category.id !== firstGradeId),
+    ).toBeDefined();
+  }
+
+  {
+    // system and category
+    const results = await searchPossibleClassifications({
+      systemId: mnStandardsId,
+      categoryId: firstGradeId,
+    });
+
+    expect(results.length).eq(20);
+    expect(
+      results.find((i) => i.subCategory.category.system.id === mnStandardsId),
+    ).toBeDefined();
+    expect(
+      results.find((i) => i.subCategory.category.system.id !== mnStandardsId),
+    ).toBeUndefined();
+    expect(
+      results.find((i) => i.subCategory.category.id === firstGradeId),
+    ).toBeDefined();
+    expect(
+      results.find((i) => i.subCategory.category.id !== firstGradeId),
+    ).toBeUndefined();
+    expect(
+      results.find((i) => i.subCategory.id === measurementsId),
+    ).toBeDefined();
+    expect(
+      results.find((i) => i.subCategory.id !== measurementsId),
+    ).toBeDefined();
+  }
+
+  {
+    // system, category and subCategory
+    const results = await searchPossibleClassifications({
+      systemId: mnStandardsId,
+      categoryId: firstGradeId,
+      subCategoryId: measurementsId,
+    });
+
+    expect(results.length).eq(3);
+    expect(
+      results.find((i) => i.subCategory.category.system.id === mnStandardsId),
+    ).toBeDefined();
+    expect(
+      results.find((i) => i.subCategory.category.system.id !== mnStandardsId),
+    ).toBeUndefined();
+    expect(
+      results.find((i) => i.subCategory.category.id === firstGradeId),
+    ).toBeDefined();
+    expect(
+      results.find((i) => i.subCategory.category.id !== firstGradeId),
+    ).toBeUndefined();
+    expect(
+      results.find((i) => i.subCategory.id === measurementsId),
+    ).toBeDefined();
+    expect(
+      results.find((i) => i.subCategory.id !== measurementsId),
+    ).toBeUndefined();
+  }
+});
+
+test("Search for content classifications, by query and by category and system ids", async () => {
+  const coins = (
+    await searchPossibleClassifications({
+      query: "1.3.2.3",
+    })
+  )[0];
+
+  const measurementsId = coins?.subCategory.id;
+  const firstGradeId = coins?.subCategory.category.id;
+  const mnStandardsId = coins?.subCategory.category.system.id;
+
+  {
+    // system and query
+    const results = await searchPossibleClassifications({
+      query: "measurement",
+      systemId: mnStandardsId,
+    });
+
+    for (const result of results) {
+      expect(result.subCategory.category.system.id).eq(mnStandardsId);
+      expect(
+        result.description.includes("measurement") ||
+          result.subCategory.subCategory.includes("measurement"),
+      ).eq(true);
+    }
+  }
+
+  {
+    // system, category, and query
+    const results = await searchPossibleClassifications({
+      query: "model",
+      systemId: mnStandardsId,
+      categoryId: firstGradeId,
+    });
+
+    for (const result of results) {
+      expect(result.subCategory.category.id).eq(firstGradeId);
+      expect(
+        result.description.includes("model") ||
+          result.subCategory.subCategory.includes("model"),
+      ).eq(true);
+    }
+  }
+
+  {
+    // system, category, subcategory and query
+    const results = await searchPossibleClassifications({
+      query: "hour",
+      systemId: mnStandardsId,
+      categoryId: firstGradeId,
+      subCategoryId: measurementsId,
+    });
+
+    expect(results.length).eq(1);
+    expect(results[0].code).eq("1.3.2.2");
+  }
+
+  {
+    // code matches on top
+    const results = await searchPossibleClassifications({
+      query: "2.3 number sense coin",
+      categoryId: firstGradeId,
+    });
+
+    expect(results.length).greaterThan(10);
+
+    expect(results[0].code).eq("1.2.2.3"); // first is number sense 2.3 category
+    expect(results[1].code).eq("1.3.2.3"); // second is coin 2.3 category
+    expect(results[2].code).eq("1.1.2.3"); // third is remaining 2.3 category from first grade
   }
 });
 
@@ -7319,9 +7495,9 @@ test("searchMyFolderContent, classification matches", async () => {
   let content = searchResults.content;
   expect(content.length).eq(0);
 
-  const { id: classifyId } = (
-    await searchPossibleClassifications("K.CC.1 common core")
-  ).find((k) => k.code === "K.CC.1")!;
+  const classifyId = (
+    await searchPossibleClassifications({ query: "K.CC.1 common core" })
+  )[0].id;
 
   await addClassification(activityId, classifyId, ownerId);
   // With code

@@ -32,6 +32,7 @@ export type ContentClassification = {
         name: string;
         categoryLabel: string;
         subCategoryLabel: string;
+        descriptionLabel: string;
       };
     };
   };
@@ -113,7 +114,7 @@ export type DocHistory = {
   }[];
 };
 
-export type ClassificationSystemTree = {
+export type ClassificationCategoryTree = {
   id: number;
   name: string;
   categoryLabel: string;
@@ -124,11 +125,6 @@ export type ClassificationSystemTree = {
     subCategories: {
       id: number;
       subCategory: string;
-      classifications: {
-        id: number;
-        code: string;
-        description: string;
-      }[];
     }[];
   }[];
 };

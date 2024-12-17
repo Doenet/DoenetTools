@@ -79,7 +79,7 @@ import {
   getDocumentSource,
   setPreferredFolderView,
   getPreferredFolderView,
-  getAllClassificationInfo,
+  getClassificationCategories,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -2465,8 +2465,20 @@ app.get(
   "/api/searchPossibleClassifications",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const query = req.query.q as string;
-      const searchResults = await searchPossibleClassifications(query);
+      const query = req.query.q ? String(req.query.q) : undefined;
+      const systemId = req.query.system ? Number(req.query.system) : undefined;
+      const categoryId = req.query.category
+        ? Number(req.query.category)
+        : undefined;
+      const subCategoryId = req.query.subCategory
+        ? Number(req.query.subCategory)
+        : undefined;
+      const searchResults = await searchPossibleClassifications({
+        query,
+        systemId,
+        categoryId,
+        subCategoryId,
+      });
       res.send(searchResults);
     } catch (e) {
       if (e instanceof InvalidRequestError) {
@@ -2479,10 +2491,10 @@ app.get(
 );
 
 app.get(
-  "/api/getAllClassificationInfo",
+  "/api/getClassificationCategories",
   async (_req: Request, res: Response, next: NextFunction) => {
     try {
-      const results = await getAllClassificationInfo();
+      const results = await getClassificationCategories();
       res.send(results);
     } catch (e) {
       if (e instanceof InvalidRequestError) {
