@@ -90,6 +90,7 @@ export function CopyActivityAndReportFinish({
 
         <ModalFooter>
           <Button
+            data-test="Go to Activities"
             marginRight="4px"
             onClick={() => {
               navigate(`/activities/${newActivityData?.userId}`);

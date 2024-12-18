@@ -197,7 +197,7 @@ function EditableName({ dataTest }) {
       }}
     >
       <Tooltip label={name}>
-        <EditablePreview data-test="Editable Preview" noOfLines={1} />
+        <EditablePreview data-test="Editable Title" noOfLines={1} />
       </Tooltip>
       <EditableInput
         width={{ base: "100%", md: "350px", lg: "450px" }}

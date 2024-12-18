@@ -1613,7 +1613,10 @@ app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
     desiredParentFolderId,
   );
 
-  res.send({ newActivityId: fromUUID(newActivityId), userId: loggedInUserId });
+  res.send({
+    newActivityId: fromUUID(newActivityId),
+    userId: fromUUID(loggedInUserId),
+  });
 });
 
 app.post("/api/assignActivity", async (req: Request, res: Response) => {
@@ -1626,7 +1629,7 @@ app.post("/api/assignActivity", async (req: Request, res: Response) => {
 
   await assignActivity(activityId, loggedInUserId);
 
-  res.send({ userId: loggedInUserId });
+  res.send({ userId: fromUUID(loggedInUserId) });
 });
 
 app.post(
