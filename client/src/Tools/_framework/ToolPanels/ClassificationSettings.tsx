@@ -186,87 +186,83 @@ export function ClassificationSettings({
               </Text>
             ) : (
               <Accordion allowMultiple>
-                {contentData.classifications.map((classification, i) => (
-                  <AccordionItem key={`classification${i}`}>
-                    <HStack>
-                      <h2>
-                        <AccordionButton>
-                          <HStack flex="1" textAlign="left" direction={"row"}>
-                            <Text
-                              as="b"
-                              data-test={`Existing Classification ${i + 1}`}
-                            >
-                              {classification.code}
-                            </Text>
-                            <Text fontSize={"small"} pt="2px">
-                              {classification.subCategory.category.system.name}
-                            </Text>
-                          </HStack>
-                          <AccordionIcon marginLeft="7px" />
-                        </AccordionButton>
-                      </h2>
-                      <Spacer />
-                      <Tooltip
-                        label={`Remove classification ${classification.code}`}
-                        placement="bottom-end"
-                      >
-                        <CloseButton
-                          aria-label={`Remove classification ${classification.code}`}
-                          data-test={`Remove Existing ${classification.code}`}
+                {contentData.classifications.map((classification, i) => {
+                  const {
+                    code,
+                    systemName,
+                    categoryLabel,
+                    category,
+                    subCategoryLabel,
+                    subCategory,
+                    description,
+                    descriptionLabel,
+                  } = extraClassificationData(classification);
+                  return (
+                    <AccordionItem key={`classification${i}`}>
+                      <HStack>
+                        <h2>
+                          <AccordionButton>
+                            <HStack flex="1" textAlign="left" direction={"row"}>
+                              <Text
+                                as="b"
+                                data-test={`Existing Classification ${i + 1}`}
+                              >
+                                {code}
+                              </Text>
+                              <Text fontSize={"small"} pt="2px">
+                                {systemName}
+                              </Text>
+                            </HStack>
+                            <AccordionIcon marginLeft="7px" />
+                          </AccordionButton>
+                        </h2>
+                        <Spacer />
+                        <Tooltip
+                          label={`Remove classification ${code}`}
+                          placement="bottom-end"
+                        >
+                          <CloseButton
+                            aria-label={`Remove classification ${code}`}
+                            data-test={`Remove Existing ${code}`}
+                            hidden={
+                              classifyItemRemoveSpinner === classification.id
+                            }
+                            onClick={() => {
+                              setClassifyItemRemoveSpinner(classification.id);
+                              fetcher.submit(
+                                {
+                                  _action: "remove content classification",
+                                  activityId: id,
+                                  classificationId: classification.id,
+                                },
+                                { method: "post" },
+                              );
+                            }}
+                          />
+                        </Tooltip>
+                        <Spinner
                           hidden={
-                            classifyItemRemoveSpinner === classification.id
+                            classifyItemRemoveSpinner !== classification.id
                           }
-                          onClick={() => {
-                            setClassifyItemRemoveSpinner(classification.id);
-                            fetcher.submit(
-                              {
-                                _action: "remove content classification",
-                                activityId: id,
-                                classificationId: classification.id,
-                              },
-                              { method: "post" },
-                            );
-                          }}
                         />
-                      </Tooltip>
-                      <Spinner
-                        hidden={classifyItemRemoveSpinner !== classification.id}
-                      />
-                    </HStack>
-                    <AccordionPanel>
-                      <Text>
-                        <Text as="i">
-                          {
-                            classification.subCategory.category.system
-                              .categoryLabel
-                          }
-                          :{" "}
+                      </HStack>
+                      <AccordionPanel>
+                        <Text>
+                          <Text as="i">{categoryLabel}: </Text>
+                          {category}
                         </Text>
-                        {classification.subCategory.category.category}
-                      </Text>
-                      <Text>
-                        <Text as="i">
-                          {
-                            classification.subCategory.category.system
-                              .subCategoryLabel
-                          }
-                          :{" "}
+                        <Text>
+                          <Text as="i">{subCategoryLabel}: </Text>
+                          {subCategory}
                         </Text>
-                        {classification.subCategory.subCategory}
-                      </Text>
-                      <Text>
-                        <Text as="i">
-                          {
-                            classification.subCategory.category.system
-                              .descriptionLabel
-                          }
-                          :{" "}
+                        <Text>
+                          <Text as="i">{descriptionLabel}: </Text>
+                          {description}
                         </Text>
-                        {classification.description}
-                      </Text>
-                    </AccordionPanel>
-                  </AccordionItem>
-                ))}
+                      </AccordionPanel>
+                    </AccordionItem>
+                  );
+                })}
               </Accordion>
             )}
           </Flex>
@@ -453,6 +449,17 @@ export function ClassificationSettings({
                   let action =
                     (added ? "remove" : "add") + " content classification";
 
+                  const {
+                    code,
+                    systemName,
+                    categoryLabel,
+                    category,
+                    subCategoryLabel,
+                    subCategory,
+                    description,
+                    descriptionLabel,
+                  } = extraClassificationData(classification);
+
                   return (
                     <Card
                       backgroundColor={added ? "lightGray" : "var(--canvas)"}
@@ -460,8 +467,7 @@ export function ClassificationSettings({
                       <CardBody paddingLeft={2}>
                         <HStack>
                           <Heading size="sm">
-                            {classification.code} (
-                            {classification.subCategory.category.system.name})
+                            {code} ({systemName})
                           </Heading>
                           <Spacer />
 
@@ -492,48 +498,30 @@ export function ClassificationSettings({
                         </HStack>
                         <Box>
                           <Text>
-                            <Text as="i">
-                              {
-                                classification.subCategory.category.system
-                                  .categoryLabel
-                              }
-                              :
-                            </Text>{" "}
+                            <Text as="i">{categoryLabel}:</Text>{" "}
                             <Highlight
                               query={queryFilter?.split(" ") || ""}
                               styles={{ fontWeight: "bold" }}
                             >
-                              {classification.subCategory.category.category}
+                              {category}
                             </Highlight>
                           </Text>
                           <Text>
-                            <Text as="i">
-                              {
-                                classification.subCategory.category.system
-                                  .subCategoryLabel
-                              }
-                              :
-                            </Text>{" "}
+                            <Text as="i">{subCategoryLabel}:</Text>{" "}
                             <Highlight
                               query={queryFilter?.split(" ") || ""}
                               styles={{ fontWeight: "bold" }}
                             >
-                              {classification.subCategory.subCategory}
+                              {subCategory}
                             </Highlight>
                           </Text>
                           <Text>
-                            <Text as="i">
-                              {
-                                classification.subCategory.category.system
-                                  .descriptionLabel
-                              }
-                              :
-                            </Text>{" "}
+                            <Text as="i">{descriptionLabel}:</Text>{" "}
                             <Highlight
                               query={(queryFilter || "").split(" ")}
                               styles={{ fontWeight: "bold" }}
                             >
-                              {classification.description}
+                              {description}
                             </Highlight>
                           </Text>
                         </Box>
@@ -548,4 +536,50 @@ export function ClassificationSettings({
       ) : null}
     </>
   );
+}
+
+function extraClassificationData(classification: ContentClassification) {
+  // For now, we don't have a classification that shares multiple system.
+  // If we add one that does, we need a better system than concatenating their names,
+  // but this concatenation will at least show that this combination occurred and a change is needed.
+  const systemName = classification.subCategories
+    .map((sc) => sc.category.system.name)
+    .reduce((acc: string[], c) => (acc.includes(c) ? acc : [...acc, c]), [])
+    .join(" / ");
+
+  const categories = classification.subCategories
+    .map((sc) => sc.category.category)
+    .reduce((acc: string[], c) => (acc.includes(c) ? acc : [...acc, c]), []);
+  let categoryLabel =
+    classification.subCategories[0].category.system.categoryLabel;
+  if (categories.length > 1) {
+    // for now, all our category labels are pluralized by adding an s...
+    categoryLabel += "s";
+  }
+  const category = categories.join(" / ");
+
+  const subCategories = classification.subCategories
+    .map((sc) => sc.subCategory)
+    .reduce((acc: string[], c) => (acc.includes(c) ? acc : [...acc, c]), []);
+  let subCategoryLabel =
+    classification.subCategories[0].category.system.subCategoryLabel;
+  if (subCategories.length > 1) {
+    // for now, all our sub-category labels are pluralized by adding an s...
+    subCategoryLabel += "s";
+  }
+  const subCategory = subCategories.join(" / ");
+
+  const descriptionLabel =
+    classification.subCategories[0].category.system.descriptionLabel;
+
+  return {
+    code: classification.code,
+    systemName,
+    categoryLabel,
+    category,
+    subCategoryLabel,
+    subCategory,
+    description: classification.description,
+    descriptionLabel,
+  };
 }

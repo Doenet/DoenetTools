@@ -43,7 +43,7 @@ export type ContentClassification = {
   id: number;
   code: string;
   description: string;
-  subCategory: {
+  subCategories: {
     id: number;
     subCategory: string;
     category: {
@@ -57,7 +57,7 @@ export type ContentClassification = {
         descriptionLabel: string;
       };
     };
-  };
+  }[];
 };
 
 export type ContentStructure = {
