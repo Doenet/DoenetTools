@@ -143,44 +143,48 @@ function ActivityRow({
       </Td>
       <Td>
         <HStack>
-          <Editable
-            value={rowTitle}
-            data-test="Editable Title"
-            zIndex="1"
-            startWithEditView={activity.autoFocusTitle}
-            isDisabled={!activity.editableTitle}
-            onChange={(txt) => setRowTitle(txt)}
-            onSubmit={saveUpdatedTitle}
-          >
-            <EditablePreview
-              cursor={activity.editableTitle ? "auto" : "pointer"}
-              maxHeight="1.5em"
-            />
-            <EditableInput
-              maxLength={191}
-              onBlur={() => {
-                // prevent click default/propagation behavior one time (i.e., right now as user is clicking to blur input)
-                const clickListener = (e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                };
-                document.addEventListener("click", clickListener, {
-                  capture: true,
-                  once: true,
-                });
-                // unless the user presses a key; in that case, don't prevent any click behavior, as they could be navigating with the keyboard
-                document.addEventListener(
-                  "keyup",
-                  () => {
-                    document.removeEventListener("click", clickListener, {
-                      capture: true,
-                    });
-                  },
-                  { once: true },
-                );
-              }}
-            />
-          </Editable>
+          {activity.editableTitle ? (
+            <Editable
+              value={rowTitle}
+              data-test="Editable Title"
+              zIndex="1"
+              startWithEditView={activity.autoFocusTitle}
+              isDisabled={!activity.editableTitle}
+              onChange={(txt) => setRowTitle(txt)}
+              onSubmit={saveUpdatedTitle}
+            >
+              <EditablePreview
+                cursor={activity.editableTitle ? "auto" : "pointer"}
+                maxHeight="1.5em"
+              />
+              <EditableInput
+                maxLength={191}
+                onBlur={() => {
+                  // prevent click default/propagation behavior one time (i.e., right now as user is clicking to blur input)
+                  const clickListener = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  };
+                  document.addEventListener("click", clickListener, {
+                    capture: true,
+                    once: true,
+                  });
+                  // unless the user presses a key; in that case, don't prevent any click behavior, as they could be navigating with the keyboard
+                  document.addEventListener(
+                    "keyup",
+                    () => {
+                      document.removeEventListener("click", clickListener, {
+                        capture: true,
+                      });
+                    },
+                    { once: true },
+                  );
+                }}
+              />
+            </Editable>
+          ) : (
+            <Text>{rowTitle}</Text>
+          )}
           {activity.isPublic || activity.isShared ? (
             <Icon
               as={BsPeopleFill}
