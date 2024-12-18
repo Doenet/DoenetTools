@@ -949,7 +949,7 @@ export async function getActivityEditorData(
           select: {
             classification: {
               include: {
-                subCategory: {
+                subCategories: {
                   include: {
                     category: {
                       include: {
@@ -1075,7 +1075,7 @@ export async function getActivityEditorData(
           select: {
             classification: {
               include: {
-                subCategory: {
+                subCategories: {
                   include: {
                     category: {
                       include: {
@@ -1727,7 +1727,9 @@ export async function searchSharedContent(
   LEFT JOIN
     classifications ON contentClassifications.classificationId = classifications.id
   LEFT JOIN
-    classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
+    _classificationSubCategoriesToclassifications rel ON classifications.id = rel.B
+  LEFT JOIN
+    classificationSubCategories ON rel.A = classificationSubCategories.id
   LEFT JOIN
     classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
   WHERE
@@ -3636,7 +3638,7 @@ export async function getMyFolderContent({
         select: {
           classification: {
             include: {
-              subCategory: {
+              subCategories: {
                 include: {
                   category: {
                     include: {
@@ -3841,7 +3843,9 @@ export async function searchMyFolderContent({
   LEFT JOIN
     classifications ON contentClassifications.classificationId = classifications.id
   LEFT JOIN
-    classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
+    _classificationSubCategoriesToclassifications rel ON classifications.id = rel.B
+  LEFT JOIN
+    classificationSubCategories ON rel.A = classificationSubCategories.id
   WHERE
     content.ownerId = ${loggedInUserId}
     AND content.isDeleted = FALSE
@@ -3890,7 +3894,9 @@ export async function searchMyFolderContent({
     LEFT JOIN
       classifications ON contentClassifications.classificationId = classifications.id
     LEFT JOIN
-      classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
+      _classificationSubCategoriesToclassifications rel ON classifications.id = rel.B
+    LEFT JOIN
+      classificationSubCategories ON rel.A = classificationSubCategories.id
     WHERE
       content.id IN (SELECT id from content_tree)
       AND
@@ -3947,7 +3953,7 @@ export async function searchMyFolderContent({
         select: {
           classification: {
             include: {
-              subCategory: {
+              subCategories: {
                 include: {
                   category: {
                     include: {
@@ -4378,7 +4384,9 @@ export async function searchPossibleClassifications({
   FROM
     classifications
   INNER JOIN
-    classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
+    _classificationSubCategoriesToclassifications rel ON classifications.id = rel.B
+  LEFT JOIN
+    classificationSubCategories ON rel.A = classificationSubCategories.id
   INNER JOIN
     classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
   INNER JOIN
@@ -4413,7 +4421,9 @@ SELECT
 FROM
   classifications
 INNER JOIN
-  classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
+    _classificationSubCategoriesToclassifications rel ON classifications.id = rel.B
+INNER JOIN
+    classificationSubCategories ON rel.A = classificationSubCategories.id
 INNER JOIN
   classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
 INNER JOIN
@@ -4448,7 +4458,9 @@ SELECT
 FROM
   classifications
 INNER JOIN
-  classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
+    _classificationSubCategoriesToclassifications rel ON classifications.id = rel.B
+INNER JOIN
+    classificationSubCategories ON rel.A = classificationSubCategories.id
 INNER JOIN
   classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
 INNER JOIN
@@ -4483,7 +4495,9 @@ SELECT
 FROM
   classifications
 INNER JOIN
-  classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
+    _classificationSubCategoriesToclassifications rel ON classifications.id = rel.B
+INNER JOIN
+    classificationSubCategories ON rel.A = classificationSubCategories.id
 INNER JOIN
   classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
 INNER JOIN
@@ -4513,9 +4527,9 @@ LIMIT 100
               code: { contains: query_word },
             })),
           },
-          { subCategory: { category: { systemId } } },
-          { subCategory: { categoryId } },
-          { subCategoryId },
+          { subCategories: { some: { category: { systemId } } } },
+          { subCategories: { some: { categoryId } } },
+          { subCategories: { some: { id: subCategoryId } } },
         ],
       },
       select: { id: true },
@@ -4527,7 +4541,7 @@ LIMIT 100
           id: { in: [...matches, ...code_matches].map((m) => m.id) },
         },
         include: {
-          subCategory: {
+          subCategories: {
             include: {
               category: {
                 include: {
@@ -4556,14 +4570,14 @@ LIMIT 100
     await prisma.classifications.findMany({
       where: {
         AND: [
-          { subCategory: { category: { systemId } } },
-          { subCategory: { categoryId } },
-          { subCategoryId },
+          { subCategories: { some: { category: { systemId } } } },
+          { subCategories: { some: { categoryId } } },
+          { subCategories: { some: { id: subCategoryId } } },
         ],
       },
       take: 100,
       include: {
-        subCategory: {
+        subCategories: {
           include: {
             category: {
               include: {
@@ -4692,7 +4706,7 @@ export async function getClassifications(
     select: {
       classification: {
         include: {
-          subCategory: {
+          subCategories: {
             include: {
               category: {
                 include: {

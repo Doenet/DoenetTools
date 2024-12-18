@@ -7053,9 +7053,9 @@ test("Search for content classifications, by category and system ids", async () 
     })
   )[0];
 
-  const measurementsId = coins?.subCategory.id;
-  const firstGradeId = coins?.subCategory.category.id;
-  const mnStandardsId = coins?.subCategory.category.system.id;
+  const measurementsId = coins?.subCategories[0].id;
+  const firstGradeId = coins?.subCategories[0].category.id;
+  const mnStandardsId = coins?.subCategories[0].category.system.id;
 
   {
     // with no filter, finds everything, so gets first 100 entries
@@ -7064,7 +7064,9 @@ test("Search for content classifications, by category and system ids", async () 
 
     expect(results.length).eq(100);
     expect(
-      results.find((i) => i.subCategory.category.system.id == mnStandardsId),
+      results.find(
+        (i) => i.subCategories[0].category.system.id == mnStandardsId,
+      ),
     ).toBeUndefined();
   }
 
@@ -7076,16 +7078,20 @@ test("Search for content classifications, by category and system ids", async () 
 
     expect(results.length).eq(100);
     expect(
-      results.find((i) => i.subCategory.category.system.id === mnStandardsId),
+      results.find(
+        (i) => i.subCategories[0].category.system.id === mnStandardsId,
+      ),
     ).toBeDefined();
     expect(
-      results.find((i) => i.subCategory.category.system.id !== mnStandardsId),
+      results.find(
+        (i) => i.subCategories[0].category.system.id !== mnStandardsId,
+      ),
     ).toBeUndefined();
     expect(
-      results.find((i) => i.subCategory.category.id === firstGradeId),
+      results.find((i) => i.subCategories[0].category.id === firstGradeId),
     ).toBeDefined();
     expect(
-      results.find((i) => i.subCategory.category.id !== firstGradeId),
+      results.find((i) => i.subCategories[0].category.id !== firstGradeId),
     ).toBeDefined();
   }
 
@@ -7098,22 +7104,26 @@ test("Search for content classifications, by category and system ids", async () 
 
     expect(results.length).eq(20);
     expect(
-      results.find((i) => i.subCategory.category.system.id === mnStandardsId),
+      results.find(
+        (i) => i.subCategories[0].category.system.id === mnStandardsId,
+      ),
     ).toBeDefined();
     expect(
-      results.find((i) => i.subCategory.category.system.id !== mnStandardsId),
+      results.find(
+        (i) => i.subCategories[0].category.system.id !== mnStandardsId,
+      ),
     ).toBeUndefined();
     expect(
-      results.find((i) => i.subCategory.category.id === firstGradeId),
+      results.find((i) => i.subCategories[0].category.id === firstGradeId),
     ).toBeDefined();
     expect(
-      results.find((i) => i.subCategory.category.id !== firstGradeId),
+      results.find((i) => i.subCategories[0].category.id !== firstGradeId),
     ).toBeUndefined();
     expect(
-      results.find((i) => i.subCategory.id === measurementsId),
+      results.find((i) => i.subCategories[0].id === measurementsId),
     ).toBeDefined();
     expect(
-      results.find((i) => i.subCategory.id !== measurementsId),
+      results.find((i) => i.subCategories[0].id !== measurementsId),
     ).toBeDefined();
   }
 
@@ -7127,22 +7137,26 @@ test("Search for content classifications, by category and system ids", async () 
 
     expect(results.length).eq(3);
     expect(
-      results.find((i) => i.subCategory.category.system.id === mnStandardsId),
+      results.find(
+        (i) => i.subCategories[0].category.system.id === mnStandardsId,
+      ),
     ).toBeDefined();
     expect(
-      results.find((i) => i.subCategory.category.system.id !== mnStandardsId),
+      results.find(
+        (i) => i.subCategories[0].category.system.id !== mnStandardsId,
+      ),
     ).toBeUndefined();
     expect(
-      results.find((i) => i.subCategory.category.id === firstGradeId),
+      results.find((i) => i.subCategories[0].category.id === firstGradeId),
     ).toBeDefined();
     expect(
-      results.find((i) => i.subCategory.category.id !== firstGradeId),
+      results.find((i) => i.subCategories[0].category.id !== firstGradeId),
     ).toBeUndefined();
     expect(
-      results.find((i) => i.subCategory.id === measurementsId),
+      results.find((i) => i.subCategories[0].id === measurementsId),
     ).toBeDefined();
     expect(
-      results.find((i) => i.subCategory.id !== measurementsId),
+      results.find((i) => i.subCategories[0].id !== measurementsId),
     ).toBeUndefined();
   }
 });
@@ -7154,9 +7168,9 @@ test("Search for content classifications, by query and by category and system id
     })
   )[0];
 
-  const measurementsId = coins?.subCategory.id;
-  const firstGradeId = coins?.subCategory.category.id;
-  const mnStandardsId = coins?.subCategory.category.system.id;
+  const measurementsId = coins?.subCategories[0].id;
+  const firstGradeId = coins?.subCategories[0].category.id;
+  const mnStandardsId = coins?.subCategories[0].category.system.id;
 
   {
     // system and query
@@ -7166,10 +7180,10 @@ test("Search for content classifications, by query and by category and system id
     });
 
     for (const result of results) {
-      expect(result.subCategory.category.system.id).eq(mnStandardsId);
+      expect(result.subCategories[0].category.system.id).eq(mnStandardsId);
       expect(
         result.description.includes("measurement") ||
-          result.subCategory.subCategory.includes("measurement"),
+          result.subCategories[0].subCategory.includes("measurement"),
       ).eq(true);
     }
   }
@@ -7183,10 +7197,10 @@ test("Search for content classifications, by query and by category and system id
     });
 
     for (const result of results) {
-      expect(result.subCategory.category.id).eq(firstGradeId);
+      expect(result.subCategories[0].category.id).eq(firstGradeId);
       expect(
         result.description.includes("model") ||
-          result.subCategory.subCategory.includes("model"),
+          result.subCategories[0].subCategory.includes("model"),
       ).eq(true);
     }
   }
@@ -7207,7 +7221,7 @@ test("Search for content classifications, by query and by category and system id
   {
     // code matches on top
     const results = await searchPossibleClassifications({
-      query: "2.3 number sense coin",
+      query: "2.3 number sense model coin",
       categoryId: firstGradeId,
     });
 
