@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import commonCoreMath from "./seed-data/common-core-math.json";
 import mnMath from "./seed-data/mn-math.json";
+import webWork from "./seed-data/webwork.json";
 
 const prisma = new PrismaClient();
 async function main() {
@@ -110,6 +111,7 @@ async function main() {
     });
     return id;
   }
+
   async function upsertClassificationCategory(
     category: string,
     systemId: number,
@@ -122,6 +124,7 @@ async function main() {
     });
     return id;
   }
+
   async function upsertClassificationSubCategory(
     subCategory: string,
     categoryId: number,
@@ -134,25 +137,52 @@ async function main() {
     });
     return id;
   }
+
   async function upsertClassification(
     code: string,
     description: string,
     subCategoryId: number,
   ) {
-    await prisma.classifications.upsert({
+    // can't actually upsert and don't a unique index
+    const classification = await prisma.classifications.findMany({
       where: {
-        code_subCategoryId: { code, subCategoryId },
+        code,
+        subCategories: { some: { id: subCategoryId } },
       },
-      update: { code, description, subCategoryId },
-      create: { code, description, subCategoryId },
     });
+    if (classification.length > 1) {
+      throw Error("Shouldn't get a duplicate classification when seeding...");
+    }
+
+    if (classification.length === 1) {
+      // even though just one record have to use updateMany as don't a unique index
+      await prisma.classifications.updateMany({
+        where: { code, subCategories: { some: { id: subCategoryId } } },
+        data: { description },
+      });
+    } else {
+      await prisma.classifications.create({
+        data: {
+          code,
+          description,
+          subCategories: { connect: { id: subCategoryId } },
+        },
+      });
+    }
   }
 
   type ClassificationSystemData = {
     category: string;
     subCategory: string;
     code: string;
-    description: string;
+    description:
+      | string
+      | {
+          descriptionLinked: string;
+          toCategory: string;
+          toSubCategory: string;
+          toDescription: string;
+        };
     sortIndex: string;
   }[];
 
@@ -200,11 +230,86 @@ async function main() {
         );
         lastSubCategory = classification.subCategory;
       }
-      await upsertClassification(
-        classification.code,
-        classification.description,
-        lastSubCategoryId,
-      );
+      if (typeof classification.description === "string") {
+        await upsertClassification(
+          classification.code,
+          classification.description,
+          lastSubCategoryId,
+        );
+      }
+    }
+
+    for (const classification of data) {
+      if (typeof classification.description !== "string") {
+        const linked = classification.description;
+
+        if (linked.toDescription !== linked.descriptionLinked) {
+          throw Error(
+            `We haven't yet implemented case where descriptions don't match. ${JSON.stringify(classification)}`,
+          );
+        }
+
+        // find category, subCategory, classification that we'll link to
+        const linkedCategoryId = (
+          await prisma.classificationCategories.findUniqueOrThrow({
+            where: {
+              category_systemId: { systemId, category: linked.toCategory },
+            },
+          })
+        ).id;
+
+        const linkedSubCategoryId = (
+          await prisma.classificationSubCategories.findUniqueOrThrow({
+            where: {
+              subCategory_categoryId: {
+                categoryId: linkedCategoryId,
+                subCategory: linked.toSubCategory,
+              },
+            },
+          })
+        ).id;
+
+        const linkedClassification = await prisma.classifications.findMany({
+          where: {
+            description: linked.toDescription,
+            subCategories: { some: { id: linkedSubCategoryId } },
+          },
+        });
+
+        if (linkedClassification.length !== 1) {
+          throw Error(
+            "Classification linked to description that isn't found or isn't unique",
+          );
+        }
+
+        // find new category and subcategory
+        const newCategoryId = (
+          await prisma.classificationCategories.findUniqueOrThrow({
+            where: {
+              category_systemId: {
+                systemId,
+                category: classification.category,
+              },
+            },
+          })
+        ).id;
+
+        const newSubCategoryId = (
+          await prisma.classificationSubCategories.findUniqueOrThrow({
+            where: {
+              subCategory_categoryId: {
+                categoryId: newCategoryId,
+                subCategory: classification.subCategory,
+              },
+            },
+          })
+        ).id;
+
+        await prisma.classifications.update({
+          where: { id: linkedClassification[0].id },
+          data: { subCategories: { connect: { id: newSubCategoryId } } },
+        });
+      }
     }
   }
 
@@ -224,6 +329,15 @@ async function main() {
     descriptionLabel: "Benchmark",
     data: mnMath,
     sortIndex: 2,
+  });
+
+  await addClassificationFromData({
+    name: "WeBWorK taxonomy",
+    categoryLabel: "Subject",
+    subCategoryLabel: "Chapter",
+    descriptionLabel: "Section",
+    data: webWork,
+    sortIndex: 3,
   });
 
   await prisma.licenses.upsert({

@@ -281,13 +281,11 @@ model classificationSubCategories {
 }
 
 model classifications {
-  id                     Int                         @id @default(autoincrement())
-  subCategoryId          Int
+  id                     Int                           @id @default(autoincrement())
   code                   String
-  description            String                      @db.Text
-  subCategory            classificationSubCategories @relation(fields: [subCategoryId], references: [id])
+  description            String                        @db.Text
+  subCategories          classificationSubCategories[]
   contentClassifications contentClassifications[]
 
-  @@unique([code, subCategoryId])
   @@fulltext([code, description])
 }
