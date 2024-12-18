@@ -496,6 +496,7 @@ export function ShareSettings({
               <Checkbox
                 marginTop="20px"
                 isChecked={selectedIsPublic}
+                data-test="Public Checkbox"
                 onChange={() => {
                   setShowSpinner({ type: "public" });
                   if (contentData.isPublic) {
