@@ -24,6 +24,7 @@ import {
   DocHistoryItem,
   DocRemixItem,
   License,
+  LicenseCode,
 } from "../../../_utils/types";
 import axios from "axios";
 import { cidFromText } from "../../../_utils/cid";
@@ -69,6 +70,8 @@ export function ShareDrawer({
   const [haveChangedHistoryItem, setHaveChangedHistoryItem] = useState(false);
   const [remixes, setRemixes] = useState<DocRemixItem[] | null>(null);
   const [thisCid, setThisCid] = useState<string | null>(null);
+  const [remixedWithLicense, setRemixedWithLicense] =
+    useState<LicenseCode | null>(null);
 
   useEffect(() => {
     async function getHistoryAndRemixes() {
@@ -83,6 +86,8 @@ export function ShareDrawer({
 
       setHaveChangedHistoryItem(haveChanged);
 
+      setRemixedWithLicense(hist[0].withLicenseCode || null);
+
       const { data: data2 } = await axios.get(
         `/api/getRemixes/${contentData.id}`,
       );
@@ -95,12 +100,6 @@ export function ShareDrawer({
       getHistoryAndRemixes();
     }
   }, [contentData]);
-
-  useEffect(() => {
-    async function getRemixes() {}
-
-    getRemixes();
-  }, [contentData.id]);
 
   useEffect(() => {
     async function recalculateThisCid() {
@@ -171,6 +170,7 @@ export function ShareDrawer({
                     fetcher={fetcher}
                     contentData={contentData}
                     allLicenses={allLicenses}
+                    remixedWithLicense={remixedWithLicense}
                   />
                 </TabPanel>
                 {!contentData.isFolder ? (
