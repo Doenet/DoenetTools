@@ -34,7 +34,11 @@ export function Remixes({ remixes }: { remixes: DocRemixItem[] | null }) {
   }
 
   if (remixes.length === 0) {
-    return <Text>No visible remixes of this activity (yet!)</Text>;
+    return (
+      <Text data-test="No Remixes">
+        No visible remixes of this activity (yet!)
+      </Text>
+    );
   }
 
   let remixTable = (
@@ -69,7 +73,7 @@ export function Remixes({ remixes }: { remixes: DocRemixItem[] | null }) {
         <Tbody>
           {remixes.map((ch, i) => {
             return (
-              <Tr key={`ch${i}`}>
+              <Tr key={`ch${i}`} data-test={`Remix ${i + 1}`}>
                 <Show above="sm">
                   <Td>
                     <ChakraLink

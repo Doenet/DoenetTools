@@ -1,4 +1,4 @@
-describe("Classifications test", function () {
+describe("Classification panel tests", function () {
   it("add classifications to activity", () => {
     cy.loginAsTestUser();
 

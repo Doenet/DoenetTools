@@ -41,7 +41,9 @@ export function RemixedFrom({
   }
 
   if (contributorHistory.length === 0) {
-    return <Text>Not remixed from other activities</Text>;
+    return (
+      <Text data-test="Not Remixed">Not remixed from other activities</Text>
+    );
   }
 
   let historyTable = (
@@ -92,7 +94,7 @@ export function RemixedFrom({
               changeText = "";
             }
             return (
-              <Tr key={`ch${i}`}>
+              <Tr key={`ch${i}`} data-test={`Remixed from ${i + 1}`}>
                 <Show above="sm">
                   <Td>
                     <ChakraLink
