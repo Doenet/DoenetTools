@@ -52,6 +52,7 @@ export type ContentClassification = {
       system: {
         id: number;
         name: string;
+        shortName: string;
         categoryLabel: string;
         subCategoryLabel: string;
         descriptionLabel: string;
@@ -96,7 +97,7 @@ export type DocHistoryItem = {
   docId: string;
   prevDocId: string;
   prevDocVersionNum: number;
-  withLicenseCode: string | null;
+  withLicenseCode: LicenseCode | null;
   timestampDoc: DateTime;
   timestampPrevDoc: DateTime;
   prevActivityId: string;
@@ -110,7 +111,7 @@ export type DocRemixItem = {
   docId: string;
   prevDocId: string;
   prevDocVersionNum: number;
-  withLicenseCode: string | null;
+  withLicenseCode: LicenseCode | null;
   isDirect: boolean;
   timestampDoc: DateTime;
   timestampPrevDoc: DateTime;

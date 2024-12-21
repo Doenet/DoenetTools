@@ -28,19 +28,21 @@ export async function processContributorHistory(hist: {
   return historyItems;
 }
 
-export function processRemixes(remixes: {
-  documentVersions: { contributorHistory: any[] }[];
+export function processRemixes(docRemixes: {
+  documentVersions: { versionNumber: number; remixes: any[] }[];
+  id: string;
 }): DocRemixItem[] {
-  let items = remixes.documentVersions
+  let items = docRemixes.documentVersions
     .flatMap((dv) =>
-      dv.contributorHistory.map((ch) => {
-        const { document, ...item } = ch;
-        const activity = document.activity;
+      dv.remixes.map((remix) => {
+        const activity = remix.activity;
         const remixItem: DocRemixItem = {
-          ...item,
-          isDirect: ch.timestampDoc === ch.timestampPrevDoc,
-          timestampDoc: DateTime.fromISO(ch.timestampDoc),
-          timestampPrevDoc: DateTime.fromISO(ch.timestampPrevDoc),
+          ...remix,
+          prevDocId: docRemixes.id,
+          prevDocVersionNum: dv.versionNumber,
+          isDirect: remix.timestampDoc === remix.timestampPrevDoc,
+          timestampDoc: DateTime.fromISO(remix.timestampDoc),
+          timestampPrevDoc: DateTime.fromISO(remix.timestampPrevDoc),
           activityId: activity.id,
           activityName: activity.name,
           owner: activity.owner,

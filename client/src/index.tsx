@@ -98,9 +98,9 @@ import {
   action as activityEditorAction,
 } from "./Tools/_framework/Paths/ActivityEditor";
 import {
-  PublicEditor,
-  loader as publicEditorLoader,
-} from "./Tools/_framework/Paths/PublicEditor";
+  CodeViewer,
+  loader as codeViewerLoader,
+} from "./Tools/_framework/Paths/CodeViewer";
 import { mathjaxConfig } from "@doenet/doenetml-iframe";
 import {
   SignIn,
@@ -277,22 +277,22 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "publicEditor",
-        loader: publicEditorLoader,
+        path: "codeViewer",
+        loader: codeViewerLoader,
         errorElement: <ErrorPage />,
-        element: <PublicEditor />,
+        element: <CodeViewer />,
       },
       {
-        path: "publicEditor/:activityId",
-        loader: publicEditorLoader,
+        path: "codeViewer/:activityId",
+        loader: codeViewerLoader,
         errorElement: <ErrorPage />,
-        element: <PublicEditor />,
+        element: <CodeViewer />,
       },
       {
-        path: "publicEditor/:activityId/:docId",
-        loader: publicEditorLoader,
+        path: "codeViewer/:activityId/:docId",
+        loader: codeViewerLoader,
         errorElement: <ErrorPage />,
-        element: <PublicEditor />,
+        element: <CodeViewer />,
       },
       {
         path: "assigned",

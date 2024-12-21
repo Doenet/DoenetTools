@@ -97,7 +97,7 @@ export async function loader({ params }) {
 
   if (notMe) {
     return redirect(
-      `/publicEditor/${params.activityId}${params.docId ? "/" + params.docId : ""}`,
+      `/codeViewer/${params.activityId}${params.docId ? "/" + params.docId : ""}`,
     );
   }
 
@@ -661,7 +661,7 @@ export function ActivityEditor() {
                         navigate={navigate}
                         linkSettings={{
                           viewURL: "/activityViewer",
-                          editURL: "/publicEditor",
+                          editURL: "/codeViewer",
                         }}
                         includeVariantSelector={true}
                       />

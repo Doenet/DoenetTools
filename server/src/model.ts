@@ -8,6 +8,7 @@ import {
   ContentClassification,
   ContentStructure,
   DocHistory,
+  DocRemixes,
   License,
   LicenseCode,
   UserInfo,
@@ -702,6 +703,7 @@ export async function copyActivityToFolder(
           classificationId: c.classificationId,
         })),
       },
+      licenseCode: origActivity.licenseCode,
     },
   });
 
@@ -1211,6 +1213,31 @@ export async function getSharedEditorData(
           },
         },
       },
+      owner: {
+        select: {
+          userId: true,
+          email: true,
+          firstNames: true,
+          lastNames: true,
+        },
+      },
+      classifications: {
+        select: {
+          classification: {
+            include: {
+              subCategories: {
+                include: {
+                  category: {
+                    include: {
+                      system: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
   });
 
@@ -1218,6 +1245,7 @@ export async function getSharedEditorData(
     license,
     sharedWith: sharedWithOrig,
     parentFolder,
+    classifications,
     ...preliminaryActivity2
   } = preliminaryActivity;
 
@@ -1231,7 +1259,7 @@ export async function getSharedEditorData(
     isShared,
     sharedWith,
     license: license ? processLicense(license) : null,
-    classifications: [],
+    classifications: classifications.map((c) => c.classification),
     classCode: null,
     codeValidUntil: null,
     assignmentStatus: "Unassigned",
@@ -1308,6 +1336,23 @@ export async function getActivityViewerData(
           lastNames: true,
         },
       },
+      classifications: {
+        select: {
+          classification: {
+            include: {
+              subCategories: {
+                include: {
+                  category: {
+                    include: {
+                      system: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
   });
 
@@ -1315,6 +1360,7 @@ export async function getActivityViewerData(
     license,
     sharedWith: sharedWithOrig,
     parentFolder,
+    classifications,
     ...preliminaryActivity2
   } = preliminaryActivity;
 
@@ -1329,7 +1375,7 @@ export async function getActivityViewerData(
     isShared,
     sharedWith,
     license: license ? processLicense(license) : null,
-    classifications: [],
+    classifications: classifications.map((v) => v.classification),
     classCode: null,
     codeValidUntil: null,
     assignmentStatus: "Unassigned",
@@ -1530,6 +1576,7 @@ export async function getDocumentDirectRemixes({
           contributorHistory: {
             where: {
               document: {
+                isDeleted: false,
                 activity: {
                   OR: [
                     { ownerId: loggedInUserId },
@@ -1543,7 +1590,11 @@ export async function getDocumentDirectRemixes({
               },
             },
             orderBy: { timestampDoc: "desc" },
-            include: {
+            select: {
+              docId: true,
+              withLicenseCode: true,
+              timestampDoc: true,
+              timestampPrevDoc: true,
               document: {
                 select: {
                   activity: {
@@ -1569,7 +1620,21 @@ export async function getDocumentDirectRemixes({
     },
   });
 
-  return docRemixes;
+  const docRemixes2: DocRemixes[] = docRemixes.map((remixes) => ({
+    id: remixes.id,
+    documentVersions: remixes.documentVersions.map((docVersion) => ({
+      versionNumber: docVersion.versionNum,
+      remixes: docVersion.contributorHistory.map((contribHist) => ({
+        docId: contribHist.docId,
+        withLicenseCode: contribHist.withLicenseCode,
+        timestampDoc: contribHist.timestampDoc,
+        timestampPrevDoc: contribHist.timestampPrevDoc,
+        activity: contribHist.document.activity,
+      })),
+    })),
+  }));
+
+  return docRemixes2;
 }
 
 export async function getDocumentRemixes({
@@ -1599,6 +1664,7 @@ export async function getDocumentRemixes({
           contributorHistory: {
             where: {
               document: {
+                isDeleted: false,
                 activity: {
                   OR: [
                     { ownerId: loggedInUserId },
@@ -1609,7 +1675,11 @@ export async function getDocumentRemixes({
               },
             },
             orderBy: { timestampDoc: "desc" },
-            include: {
+            select: {
+              docId: true,
+              withLicenseCode: true,
+              timestampDoc: true,
+              timestampPrevDoc: true,
               document: {
                 select: {
                   activity: {
@@ -1635,7 +1705,21 @@ export async function getDocumentRemixes({
     },
   });
 
-  return docRemixes;
+  const docRemixes2: DocRemixes[] = docRemixes.map((remixes) => ({
+    id: remixes.id,
+    documentVersions: remixes.documentVersions.map((docVersion) => ({
+      versionNumber: docVersion.versionNum,
+      remixes: docVersion.contributorHistory.map((contribHist) => ({
+        docId: contribHist.docId,
+        withLicenseCode: contribHist.withLicenseCode,
+        timestampDoc: contribHist.timestampDoc,
+        timestampPrevDoc: contribHist.timestampPrevDoc,
+        activity: contribHist.document.activity,
+      })),
+    })),
+  }));
+
+  return docRemixes2;
 }
 
 export async function getAssignmentDataFromCode(code: string) {
@@ -1786,6 +1870,24 @@ export async function searchSharedContent(
           },
         },
       },
+      classifications: {
+        select: {
+          classification: {
+            include: {
+              subCategories: {
+                include: {
+                  category: {
+                    include: {
+                      system: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      documents: { select: { id: true, doenetmlVersion: true } },
       parentFolder: {
         select: {
           id: true,
@@ -1813,6 +1915,7 @@ export async function searchSharedContent(
         license,
         sharedWith: sharedWithOrig,
         parentFolder,
+        classifications,
         ...content2
       } = content;
 
@@ -1825,9 +1928,8 @@ export async function searchSharedContent(
         ...content2,
         isShared,
         sharedWith,
-        documents: [],
         license: license ? processLicense(license) : null,
-        classifications: [],
+        classifications: classifications.map((c) => c.classification),
         classCode: null,
         codeValidUntil: null,
         assignmentStatus: "Unassigned",

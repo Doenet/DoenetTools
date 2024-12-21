@@ -267,7 +267,7 @@ export function AssignmentStudentData() {
             paginate={true}
             linkSettings={{
               viewURL: "/activityViewer",
-              editURL: "/publicEditor",
+              editURL: "/codeViewer",
             }}
             apiURLs={{ postMessages: true }}
           />
@@ -298,7 +298,7 @@ export function AssignmentStudentData() {
             paginate={true}
             linkSettings={{
               viewURL: "/activityViewer",
-              editURL: "/publicEditor",
+              editURL: "/codeViewer",
             }}
             apiURLs={{ postMessages: true }}
           />

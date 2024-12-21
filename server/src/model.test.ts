@@ -2627,7 +2627,7 @@ test("contributor history shows only documents user can view", async () => {
   await makeActivityPublic({
     id: activityId4,
     ownerId: ownerId3,
-    licenseCode: "CCBYNCSA",
+    licenseCode: "CCBYSA",
   });
 
   // owner 3 copies activity 1 to activity 5 and shares it with owner 1
@@ -2636,7 +2636,7 @@ test("contributor history shows only documents user can view", async () => {
   await shareActivity({
     id: activityId5,
     ownerId: ownerId3,
-    licenseCode: "CCBYSA",
+    licenseCode: "CCBYNCSA",
     users: [ownerId1],
   });
 
@@ -2658,13 +2658,13 @@ test("contributor history shows only documents user can view", async () => {
       docIds: [docId1],
       loggedInUserId: ownerId1,
     })
-  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  )[0].documentVersions.flatMap((v) => v.remixes);
   expect(docRemixes.length).eq(2);
   expect(docRemixes[0].docId).eqls(docId5);
-  expect(docRemixes[0].document.activity.id).eqls(activityId5);
+  expect(docRemixes[0].activity.id).eqls(activityId5);
   expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
   expect(docRemixes[1].docId).eqls(docId4);
-  expect(docRemixes[1].document.activity.id).eqls(activityId4);
+  expect(docRemixes[1].activity.id).eqls(activityId4);
   expect(docRemixes[1].withLicenseCode).eq("CCDUAL");
 
   // owner 1 just sees direct remix from activity 1 into activity 5
@@ -2673,10 +2673,10 @@ test("contributor history shows only documents user can view", async () => {
       docIds: [docId1],
       loggedInUserId: ownerId1,
     })
-  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  )[0].documentVersions.flatMap((v) => v.remixes);
   expect(docRemixes.length).eq(1);
   expect(docRemixes[0].docId).eqls(docId5);
-  expect(docRemixes[0].document.activity.id).eqls(activityId5);
+  expect(docRemixes[0].activity.id).eqls(activityId5);
   expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
 
   // owner2 just sees activity 1 and 2 in history of activity 4
@@ -2700,13 +2700,13 @@ test("contributor history shows only documents user can view", async () => {
       docIds: [docId1],
       loggedInUserId: ownerId2,
     })
-  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  )[0].documentVersions.flatMap((v) => v.remixes);
   expect(docRemixes.length).eq(2);
   expect(docRemixes[0].docId).eqls(docId4);
-  expect(docRemixes[0].document.activity.id).eqls(activityId4);
+  expect(docRemixes[0].activity.id).eqls(activityId4);
   expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
   expect(docRemixes[1].docId).eqls(docId2);
-  expect(docRemixes[1].document.activity.id).eqls(activityId2);
+  expect(docRemixes[1].activity.id).eqls(activityId2);
   expect(docRemixes[1].withLicenseCode).eq("CCDUAL");
 
   // owner 2 sees direct remix of activity 1 into 2
@@ -2715,10 +2715,10 @@ test("contributor history shows only documents user can view", async () => {
       docIds: [docId1],
       loggedInUserId: ownerId2,
     })
-  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  )[0].documentVersions.flatMap((v) => v.remixes);
   expect(docRemixes.length).eq(1);
   expect(docRemixes[0].docId).eqls(docId2);
-  expect(docRemixes[0].document.activity.id).eqls(activityId2);
+  expect(docRemixes[0].activity.id).eqls(activityId2);
   expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
 
   // owner3 sees activity 1, 2 and 3 in history of activity 4
@@ -2731,7 +2731,7 @@ test("contributor history shows only documents user can view", async () => {
   expect(docHistory.length).eq(3);
   expect(docHistory[0].prevDocId).eqls(docId3);
   expect(docHistory[0].prevDoc.document.activity.id).eqls(activityId3);
-  expect(docHistory[0].withLicenseCode).eq("CCDUAL");
+  expect(docHistory[0].withLicenseCode).eq("CCBYSA");
   expect(docHistory[1].prevDocId).eqls(docId2);
   expect(docHistory[1].prevDoc.document.activity.id).eqls(activityId2);
   expect(docHistory[1].withLicenseCode).eq("CCBYSA");
@@ -2745,19 +2745,19 @@ test("contributor history shows only documents user can view", async () => {
       docIds: [docId1],
       loggedInUserId: ownerId3,
     })
-  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  )[0].documentVersions.flatMap((v) => v.remixes);
   expect(docRemixes.length).eq(4);
   expect(docRemixes[0].docId).eqls(docId5);
-  expect(docRemixes[0].document.activity.id).eqls(activityId5);
+  expect(docRemixes[0].activity.id).eqls(activityId5);
   expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
   expect(docRemixes[1].docId).eqls(docId4);
-  expect(docRemixes[1].document.activity.id).eqls(activityId4);
+  expect(docRemixes[1].activity.id).eqls(activityId4);
   expect(docRemixes[1].withLicenseCode).eq("CCDUAL");
   expect(docRemixes[2].docId).eqls(docId3);
-  expect(docRemixes[2].document.activity.id).eqls(activityId3);
+  expect(docRemixes[2].activity.id).eqls(activityId3);
   expect(docRemixes[2].withLicenseCode).eq("CCDUAL");
   expect(docRemixes[3].docId).eqls(docId2);
-  expect(docRemixes[3].document.activity.id).eqls(activityId2);
+  expect(docRemixes[3].activity.id).eqls(activityId2);
   expect(docRemixes[3].withLicenseCode).eq("CCDUAL");
 
   // owner 3 sees direct remixes of activity 1 into 2 and 5
@@ -2766,13 +2766,13 @@ test("contributor history shows only documents user can view", async () => {
       docIds: [docId1],
       loggedInUserId: ownerId3,
     })
-  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  )[0].documentVersions.flatMap((v) => v.remixes);
   expect(docRemixes.length).eq(2);
   expect(docRemixes[0].docId).eqls(docId5);
-  expect(docRemixes[0].document.activity.id).eqls(activityId5);
+  expect(docRemixes[0].activity.id).eqls(activityId5);
   expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
   expect(docRemixes[1].docId).eqls(docId2);
-  expect(docRemixes[1].document.activity.id).eqls(activityId2);
+  expect(docRemixes[1].activity.id).eqls(activityId2);
   expect(docRemixes[1].withLicenseCode).eq("CCDUAL");
 });
 
@@ -7551,7 +7551,7 @@ test("searchMyFolderContent, handle tags in search", async () => {
 
 test("get licenses", async () => {
   const cc_by_sa = await getLicense("CCBYSA");
-  expect(cc_by_sa.name).eq("Creative Commons Attribution-ShareAlike");
+  expect(cc_by_sa.name).eq("Creative Commons Attribution-ShareAlike 4.0");
   expect(cc_by_sa.imageURL).eq("/creative_commons_by_sa.png");
   expect(cc_by_sa.smallImageURL).eq("/creative_commons_by_sa_small.png");
   expect(cc_by_sa.licenseURL).eq(
@@ -7560,7 +7560,7 @@ test("get licenses", async () => {
 
   const cc_by_nc_sa = await getLicense("CCBYNCSA");
   expect(cc_by_nc_sa.name).eq(
-    "Creative Commons Attribution-NonCommercial-ShareAlike",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
   );
   expect(cc_by_nc_sa.imageURL).eq("/creative_commons_by_nc_sa.png");
   expect(cc_by_nc_sa.smallImageURL).eq("/creative_commons_by_nc_sa_small.png");
@@ -7570,11 +7570,11 @@ test("get licenses", async () => {
 
   const cc_dual = await getLicense("CCDUAL");
   expect(cc_dual.name).eq(
-    "Dual license Creative Commons Attribution-ShareAlike OR Attribution-NonCommercial-ShareAlike",
+    "Dual license Creative Commons Attribution-ShareAlike 4.0 OR Attribution-NonCommercial-ShareAlike 4.0",
   );
 
   expect(cc_dual.composedOf[0].name).eq(
-    "Creative Commons Attribution-ShareAlike",
+    "Creative Commons Attribution-ShareAlike 4.0",
   );
   expect(cc_dual.composedOf[0].imageURL).eq("/creative_commons_by_sa.png");
   expect(cc_dual.composedOf[0].smallImageURL).eq(
@@ -7584,7 +7584,7 @@ test("get licenses", async () => {
     "https://creativecommons.org/licenses/by-sa/4.0/",
   );
   expect(cc_dual.composedOf[1].name).eq(
-    "Creative Commons Attribution-NonCommercial-ShareAlike",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
   );
   expect(cc_dual.composedOf[1].imageURL).eq("/creative_commons_by_nc_sa.png");
   expect(cc_dual.composedOf[1].smallImageURL).eq(
@@ -7617,7 +7617,7 @@ test("set license to make public", async () => {
 
   expect(activityData.license?.code).eq("CCBYSA");
   expect(activityData.license?.name).eq(
-    "Creative Commons Attribution-ShareAlike",
+    "Creative Commons Attribution-ShareAlike 4.0",
   );
   expect(activityData.license?.licenseURL).eq(
     "https://creativecommons.org/licenses/by-sa/4.0/",
@@ -7646,7 +7646,7 @@ test("set license to make public", async () => {
 
   expect(activityData.license?.code).eq("CCBYNCSA");
   expect(activityData.license?.name).eq(
-    "Creative Commons Attribution-NonCommercial-ShareAlike",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
   );
   expect(activityData.license?.licenseURL).eq(
     "https://creativecommons.org/licenses/by-nc-sa/4.0/",
@@ -7668,12 +7668,12 @@ test("set license to make public", async () => {
 
   expect(activityData.license?.code).eq("CCDUAL");
   expect(activityData.license?.name).eq(
-    "Dual license Creative Commons Attribution-ShareAlike OR Attribution-NonCommercial-ShareAlike",
+    "Dual license Creative Commons Attribution-ShareAlike 4.0 OR Attribution-NonCommercial-ShareAlike 4.0",
   );
 
   expect(activityData.license?.composedOf[0].code).eq("CCBYSA");
   expect(activityData.license?.composedOf[0].name).eq(
-    "Creative Commons Attribution-ShareAlike",
+    "Creative Commons Attribution-ShareAlike 4.0",
   );
   expect(activityData.license?.composedOf[0].licenseURL).eq(
     "https://creativecommons.org/licenses/by-sa/4.0/",
@@ -7684,7 +7684,7 @@ test("set license to make public", async () => {
 
   expect(activityData.license?.composedOf[1].code).eq("CCBYNCSA");
   expect(activityData.license?.composedOf[1].name).eq(
-    "Creative Commons Attribution-NonCommercial-ShareAlike",
+    "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
   );
   expect(activityData.license?.composedOf[1].licenseURL).eq(
     "https://creativecommons.org/licenses/by-nc-sa/4.0/",
