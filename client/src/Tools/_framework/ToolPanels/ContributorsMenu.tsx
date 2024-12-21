@@ -59,7 +59,7 @@ export default function ContributorsMenu({
             to={`/activityViewer/${contributorHistory[0].prevActivityId}`}
             aria-label={`Go to ${contributorHistory[0].prevActivityName}`}
           >
-            {contributorHistory[0].prevActivityName} by
+            {contributorHistory[0].prevActivityName} by{" "}
             {createFullName(contributorHistory[0].prevOwner)}
           </ChakraLink>
         </Tooltip>
