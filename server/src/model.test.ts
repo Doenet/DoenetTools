@@ -2658,13 +2658,13 @@ test("contributor history shows only documents user can view", async () => {
       docIds: [docId1],
       loggedInUserId: ownerId1,
     })
-  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  )[0].documentVersions.flatMap((v) => v.remixes);
   expect(docRemixes.length).eq(2);
   expect(docRemixes[0].docId).eqls(docId5);
-  expect(docRemixes[0].document.activity.id).eqls(activityId5);
+  expect(docRemixes[0].activity.id).eqls(activityId5);
   expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
   expect(docRemixes[1].docId).eqls(docId4);
-  expect(docRemixes[1].document.activity.id).eqls(activityId4);
+  expect(docRemixes[1].activity.id).eqls(activityId4);
   expect(docRemixes[1].withLicenseCode).eq("CCDUAL");
 
   // owner 1 just sees direct remix from activity 1 into activity 5
@@ -2673,10 +2673,10 @@ test("contributor history shows only documents user can view", async () => {
       docIds: [docId1],
       loggedInUserId: ownerId1,
     })
-  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  )[0].documentVersions.flatMap((v) => v.remixes);
   expect(docRemixes.length).eq(1);
   expect(docRemixes[0].docId).eqls(docId5);
-  expect(docRemixes[0].document.activity.id).eqls(activityId5);
+  expect(docRemixes[0].activity.id).eqls(activityId5);
   expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
 
   // owner2 just sees activity 1 and 2 in history of activity 4
@@ -2700,13 +2700,13 @@ test("contributor history shows only documents user can view", async () => {
       docIds: [docId1],
       loggedInUserId: ownerId2,
     })
-  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  )[0].documentVersions.flatMap((v) => v.remixes);
   expect(docRemixes.length).eq(2);
   expect(docRemixes[0].docId).eqls(docId4);
-  expect(docRemixes[0].document.activity.id).eqls(activityId4);
+  expect(docRemixes[0].activity.id).eqls(activityId4);
   expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
   expect(docRemixes[1].docId).eqls(docId2);
-  expect(docRemixes[1].document.activity.id).eqls(activityId2);
+  expect(docRemixes[1].activity.id).eqls(activityId2);
   expect(docRemixes[1].withLicenseCode).eq("CCDUAL");
 
   // owner 2 sees direct remix of activity 1 into 2
@@ -2715,10 +2715,10 @@ test("contributor history shows only documents user can view", async () => {
       docIds: [docId1],
       loggedInUserId: ownerId2,
     })
-  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  )[0].documentVersions.flatMap((v) => v.remixes);
   expect(docRemixes.length).eq(1);
   expect(docRemixes[0].docId).eqls(docId2);
-  expect(docRemixes[0].document.activity.id).eqls(activityId2);
+  expect(docRemixes[0].activity.id).eqls(activityId2);
   expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
 
   // owner3 sees activity 1, 2 and 3 in history of activity 4
@@ -2745,19 +2745,19 @@ test("contributor history shows only documents user can view", async () => {
       docIds: [docId1],
       loggedInUserId: ownerId3,
     })
-  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  )[0].documentVersions.flatMap((v) => v.remixes);
   expect(docRemixes.length).eq(4);
   expect(docRemixes[0].docId).eqls(docId5);
-  expect(docRemixes[0].document.activity.id).eqls(activityId5);
+  expect(docRemixes[0].activity.id).eqls(activityId5);
   expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
   expect(docRemixes[1].docId).eqls(docId4);
-  expect(docRemixes[1].document.activity.id).eqls(activityId4);
+  expect(docRemixes[1].activity.id).eqls(activityId4);
   expect(docRemixes[1].withLicenseCode).eq("CCDUAL");
   expect(docRemixes[2].docId).eqls(docId3);
-  expect(docRemixes[2].document.activity.id).eqls(activityId3);
+  expect(docRemixes[2].activity.id).eqls(activityId3);
   expect(docRemixes[2].withLicenseCode).eq("CCDUAL");
   expect(docRemixes[3].docId).eqls(docId2);
-  expect(docRemixes[3].document.activity.id).eqls(activityId2);
+  expect(docRemixes[3].activity.id).eqls(activityId2);
   expect(docRemixes[3].withLicenseCode).eq("CCDUAL");
 
   // owner 3 sees direct remixes of activity 1 into 2 and 5
@@ -2766,13 +2766,13 @@ test("contributor history shows only documents user can view", async () => {
       docIds: [docId1],
       loggedInUserId: ownerId3,
     })
-  )[0].documentVersions.flatMap((v) => v.contributorHistory);
+  )[0].documentVersions.flatMap((v) => v.remixes);
   expect(docRemixes.length).eq(2);
   expect(docRemixes[0].docId).eqls(docId5);
-  expect(docRemixes[0].document.activity.id).eqls(activityId5);
+  expect(docRemixes[0].activity.id).eqls(activityId5);
   expect(docRemixes[0].withLicenseCode).eq("CCDUAL");
   expect(docRemixes[1].docId).eqls(docId2);
-  expect(docRemixes[1].document.activity.id).eqls(activityId2);
+  expect(docRemixes[1].activity.id).eqls(activityId2);
   expect(docRemixes[1].withLicenseCode).eq("CCDUAL");
 });
 

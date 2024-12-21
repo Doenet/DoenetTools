@@ -106,6 +106,7 @@ import {
   allAssignmentScoresConvertUUID,
   studentDataConvertUUID,
   isEqualUUID,
+  docRemixesConvertUUID,
 } from "./utils/uuid";
 import { LicenseCode, UserInfo } from "./types";
 
@@ -1440,12 +1441,11 @@ app.get(
     const activityId = toUUID(req.params.activityId);
 
     try {
-      const data = await getActivityRemixes({
+      const { docRemixes } = await getActivityRemixes({
         activityId,
         loggedInUserId,
       });
-      // TODO: process to convert UUIDs
-      res.send(data);
+      res.send({ docRemixes: docRemixes.map(docRemixesConvertUUID) });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);

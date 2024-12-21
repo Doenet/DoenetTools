@@ -115,6 +115,30 @@ export type DocHistory = {
   }[];
 };
 
+export type DocRemixes = {
+  id: Uint8Array;
+  documentVersions: {
+    versionNumber: number;
+    remixes: {
+      activity: {
+        id: Uint8Array;
+        name: string;
+        owner: {
+          userId: Uint8Array;
+          email: string;
+          firstNames: string | null;
+          lastNames: string;
+        };
+      };
+
+      docId: Uint8Array;
+      withLicenseCode: string | null;
+      timestampDoc: Date;
+      timestampPrevDoc: Date;
+    }[];
+  }[];
+};
+
 export type ClassificationCategoryTree = {
   id: number;
   name: string;
