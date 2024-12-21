@@ -296,7 +296,7 @@ export function AssignmentViewer() {
                     navigate={navigate}
                     linkSettings={{
                       viewURL: "/activityViewer",
-                      editURL: "/publicEditor",
+                      editURL: "/codeViewer",
                     }}
                     apiURLs={{ postMessages: true }}
                   />

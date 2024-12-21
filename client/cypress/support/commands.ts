@@ -47,7 +47,22 @@ declare global {
       /**
        * Custom command to create an activity for the logged in user
        */
-      createActivity(activityName: string, doenetML: string): Chainable<string>;
+      createActivity({
+        activityName,
+        doenetML,
+        classifications,
+        makePublic,
+      }: {
+        activityName: string;
+        doenetML: string;
+        classifications?: {
+          systemShortName: string;
+          category: string;
+          subCategory: string;
+          code: string;
+        }[];
+        makePublic?: boolean;
+      }): Chainable<string>;
     }
   }
 }
@@ -78,13 +93,50 @@ Cypress.Commands.add(
 
 Cypress.Commands.add(
   "createActivity",
-  (activityName: string, doenetML: string) => {
+  ({
+    activityName,
+    doenetML,
+    classifications,
+    makePublic = false,
+  }: {
+    activityName: string;
+    doenetML: string;
+    classifications?: {
+      systemShortName: string;
+      category: string;
+      subCategory: string;
+      code: string;
+    }[];
+    makePublic?: boolean;
+  }) => {
     cy.request({
       method: "POST",
       url: "/api/createActivity",
     }).then((resp) => {
       let activityId: string = resp.body.activityId;
       let docId: string = resp.body.docId;
+
+      if (classifications) {
+        cy.request({
+          method: "POST",
+          url: "/api/test/addClassificationsByNames",
+          body: {
+            id: activityId,
+            classifications,
+          },
+        });
+      }
+
+      if (makePublic) {
+        cy.request({
+          method: "POST",
+          url: "/api/makeActivityPublic",
+          body: {
+            id: activityId,
+            licenseCode: "CCDUAL",
+          },
+        });
+      }
 
       cy.request({
         method: "POST",

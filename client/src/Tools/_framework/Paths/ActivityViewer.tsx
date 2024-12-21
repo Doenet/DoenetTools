@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   useLoaderData,
   useNavigate,
@@ -13,10 +13,14 @@ import {
   Flex,
   Grid,
   GridItem,
+  Heading,
   HStack,
+  IconButton,
   List,
+  ListItem,
   Spacer,
   Text,
+  Tooltip,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
@@ -30,13 +34,14 @@ import {
   ContentStructure,
   DocHistoryItem,
   DoenetmlVersion,
-  License,
 } from "../../../_utils/types";
 import { processContributorHistory } from "../../../_utils/processRemixes";
 import {
   DisplayLicenseItem,
   SmallLicenseBadges,
 } from "../../../Widgets/Licenses";
+import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
+import { MdOutlineInfo } from "react-icons/md";
 
 export async function loader({ params }) {
   try {
@@ -102,6 +107,16 @@ export function ActivityViewer() {
     onClose: copyDialogOnClose,
   } = useDisclosure();
 
+  const {
+    isOpen: infoIsOpen,
+    onOpen: infoOnOpen,
+    onClose: infoOnClose,
+  } = useDisclosure();
+
+  const [displayInfoTab, setDisplayInfoTab] = useState<
+    "general" | "classifications"
+  >("general");
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -111,12 +126,21 @@ export function ActivityViewer() {
     document.title = `${activity.name} - Doenet`;
   }, [activity.name]);
 
+  const haveClassifications = activity.classifications.length > 0;
+
   return (
     <>
       <CopyActivityAndReportFinish
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
         activityData={activity}
+      />
+      <ContentInfoDrawer
+        isOpen={infoIsOpen}
+        onClose={infoOnClose}
+        id={activityId}
+        contentData={activity}
+        displayTab={displayInfoTab}
       />
       <Box background="doenet.lightBlue" height="100%">
         <Flex
@@ -179,7 +203,7 @@ export function ActivityViewer() {
                             colorScheme="blue"
                             data-test="See Inside"
                             onClick={() => {
-                              navigate(`/publicEditor/${activityId}/${docId}`);
+                              navigate(`/codeViewer/${activityId}/${docId}`);
                             }}
                           >
                             See Inside
@@ -207,6 +231,22 @@ export function ActivityViewer() {
                               Sign In To Copy to Activities
                             </Button>
                           )}
+                          <Tooltip
+                            label={`Activity information`}
+                            placement="bottom-end"
+                          >
+                            <IconButton
+                              size="xs"
+                              colorScheme="blue"
+                              icon={<MdOutlineInfo />}
+                              aria-label="Activity information"
+                              data-test="Activity Information"
+                              onClick={() => {
+                                setDisplayInfoTab("general");
+                                infoOnOpen();
+                              }}
+                            />
+                          </Tooltip>
                         </HStack>
                       </VStack>
                     </Flex>
@@ -240,7 +280,7 @@ export function ActivityViewer() {
                     navigate={navigate}
                     linkSettings={{
                       viewURL: "/activityViewer",
-                      editURL: "/publicEditor",
+                      editURL: "/codeViewer",
                     }}
                     includeVariantSelector={false}
                   />
@@ -252,55 +292,86 @@ export function ActivityViewer() {
                   padding="0px"
                   margin="0px"
                 />
-                <Box
+                <Flex
                   background="gray"
                   width="100%"
                   color="var(--canvas)"
                   padding="20px"
                   minHeight="20vh"
                 >
-                  {activity.license ? (
-                    activity.license.isComposition ? (
-                      <>
-                        <p>
-                          <strong>{activity.name}</strong> by{" "}
-                          {createFullName(activity.owner!)} is shared with these
-                          licenses:
-                        </p>
-                        <List spacing="20px" marginTop="10px">
-                          {activity.license.composedOf.map((comp) => (
+                  <Box width={haveClassifications ? "70%" : "100%"}>
+                    {activity.license ? (
+                      activity.license.isComposition ? (
+                        <>
+                          <p>
+                            <strong>{activity.name}</strong> by{" "}
+                            {createFullName(activity.owner!)} is shared with
+                            these licenses:
+                          </p>
+                          <List spacing="20px" marginTop="10px">
+                            {activity.license.composedOf.map((comp) => (
+                              <DisplayLicenseItem
+                                licenseItem={comp}
+                                key={comp.code}
+                              />
+                            ))}
+                          </List>
+                          <p style={{ marginTop: "10px" }}>
+                            You are free to use either license when reusing this
+                            work.
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <p>
+                            <strong>{activity.name}</strong> by{" "}
+                            {createFullName(activity.owner!)} is shared using
+                            the license:
+                          </p>
+                          <List marginTop="10px">
                             <DisplayLicenseItem
-                              licenseItem={comp}
-                              key={comp.code}
+                              licenseItem={activity.license}
                             />
-                          ))}
-                        </List>
-                        <p style={{ marginTop: "10px" }}>
-                          You are free to use either license when reusing this
-                          work.
-                        </p>
-                      </>
+                          </List>
+                        </>
+                      )
                     ) : (
-                      <>
-                        <p>
-                          <strong>{activity.name}</strong> by{" "}
-                          {createFullName(activity.owner!)} is shared using the
-                          license:
-                        </p>
-                        <List marginTop="10px">
-                          <DisplayLicenseItem licenseItem={activity.license} />
-                        </List>
-                      </>
-                    )
-                  ) : (
-                    <p>
-                      <strong>{activity.name}</strong> by{" "}
-                      {createFullName(activity.owner!)} is shared, but a license
-                      was not specified. Contact the author to determine in what
-                      ways you can reuse this activity.
-                    </p>
-                  )}
-                </Box>
+                      <p>
+                        <strong>{activity.name}</strong> by{" "}
+                        {createFullName(activity.owner!)} is shared, but a
+                        license was not specified. Contact the author to
+                        determine in what ways you can reuse this activity.
+                      </p>
+                    )}
+                  </Box>
+                  {haveClassifications ? (
+                    <Box
+                      cursor="pointer"
+                      onClick={() => {
+                        setDisplayInfoTab("classifications");
+                        infoOnOpen();
+                      }}
+                    >
+                      <Heading size="sm">Classifications</Heading>
+                      <List data-test="Classifications Footer">
+                        {activity.classifications.map((classification) => {
+                          return (
+                            <Tooltip label={classification.description}>
+                              <ListItem>
+                                {classification.code} (
+                                {
+                                  classification.subCategories[0].category
+                                    .system.shortName
+                                }
+                                )
+                              </ListItem>
+                            </Tooltip>
+                          );
+                        })}
+                      </List>
+                    </Box>
+                  ) : null}
+                </Flex>
               </VStack>
             </GridItem>
           </Grid>

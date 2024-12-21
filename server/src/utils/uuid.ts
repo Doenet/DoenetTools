@@ -1,4 +1,4 @@
-import { ContentStructure, DocHistory, UserInfo } from "../types";
+import { ContentStructure, DocHistory, DocRemixes, UserInfo } from "../types";
 import { fromBinaryUUID, toBinaryUUID } from "./binary-uuid";
 import short from "short-uuid";
 
@@ -87,6 +87,24 @@ export function docHistoryConvertUUID(docHistory: DocHistory) {
         },
       };
     }),
+  };
+}
+
+export function docRemixesConvertUUID(docRemixes: DocRemixes) {
+  return {
+    id: fromUUID(docRemixes.id),
+    documentVersions: docRemixes.documentVersions.map((docVersion) => ({
+      versionNumber: docVersion.versionNumber,
+      remixes: docVersion.remixes.map((remix) => ({
+        ...remix,
+        docId: fromUUID(remix.docId),
+        activity: {
+          name: remix.activity.name,
+          id: fromUUID(remix.activity.id),
+          owner: userConvertUUID(remix.activity.owner),
+        },
+      })),
+    })),
   };
 }
 

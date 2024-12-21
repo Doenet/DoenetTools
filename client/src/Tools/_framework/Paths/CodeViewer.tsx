@@ -9,7 +9,9 @@ import {
   Grid,
   GridItem,
   HStack,
+  IconButton,
   Text,
+  Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
@@ -18,6 +20,8 @@ import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReport
 import axios from "axios";
 import { User } from "./SiteHeader";
 import { ContentStructure, DoenetmlVersion } from "../../../_utils/types";
+import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
+import { MdOutlineInfo } from "react-icons/md";
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);
@@ -58,7 +62,7 @@ export async function loader({ params, request }) {
   };
 }
 
-export function PublicEditor() {
+export function CodeViewer() {
   const { doenetML, doenetmlVersion, activityData } = useLoaderData() as {
     doenetML: string;
     doenetmlVersion?: DoenetmlVersion;
@@ -66,9 +70,15 @@ export function PublicEditor() {
   };
 
   const {
-    isOpen: copyActivityIsOpen,
-    onOpen: copyActivityOnOpen,
-    onClose: copyActivityOnClose,
+    isOpen: copyDialogIsOpen,
+    onOpen: copyDialogOnOpen,
+    onClose: copyDialogOnClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: infoIsOpen,
+    onOpen: infoOnOpen,
+    onClose: infoOnClose,
   } = useDisclosure();
 
   const user = useOutletContext<User>();
@@ -83,11 +93,19 @@ export function PublicEditor() {
   return (
     <>
       {activityData ? (
-        <CopyActivityAndReportFinish
-          isOpen={copyActivityIsOpen}
-          onClose={copyActivityOnClose}
-          activityData={activityData}
-        />
+        <>
+          <CopyActivityAndReportFinish
+            isOpen={copyDialogIsOpen}
+            onClose={copyDialogOnClose}
+            activityData={activityData}
+          />
+          <ContentInfoDrawer
+            isOpen={infoIsOpen}
+            onClose={infoOnClose}
+            id={activityData.id}
+            contentData={activityData}
+          />
+        </>
       ) : null}
       <Grid
         background="doenet.lightBlue"
@@ -178,7 +196,7 @@ export function PublicEditor() {
                         size="xs"
                         colorScheme="blue"
                         onClick={async () => {
-                          copyActivityOnOpen();
+                          copyDialogOnOpen();
                         }}
                       >
                         Copy to Activities
@@ -195,6 +213,21 @@ export function PublicEditor() {
                         Sign In To Copy to Activities
                       </Button>
                     )}
+                    <Tooltip
+                      label={`Activity information`}
+                      placement="bottom-end"
+                    >
+                      <IconButton
+                        size="xs"
+                        colorScheme="blue"
+                        icon={<MdOutlineInfo />}
+                        aria-label="Activity information"
+                        data-test="Activity Information"
+                        onClick={() => {
+                          infoOnOpen();
+                        }}
+                      />
+                    </Tooltip>
                   </>
                 )}
               </HStack>
@@ -210,6 +243,8 @@ export function PublicEditor() {
             readOnly={activityData !== undefined}
             doenetmlVersion={doenetmlVersion?.fullVersion}
             border="none"
+            showFormatter={false}
+            showErrorsWarnings={false}
           />
         </GridItem>
       </Grid>

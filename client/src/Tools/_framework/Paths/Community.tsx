@@ -41,6 +41,7 @@ import AuthorCard from "../../../Widgets/AuthorCard";
 import { createFullName } from "../../../_utils/names";
 import ActivityTable from "../../../Widgets/ActivityTable";
 import { ContentStructure } from "../../../_utils/types";
+import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 
 type SearchMatch =
   | (ContentStructure & { type: "content" })
@@ -425,6 +426,14 @@ export function Community() {
     document.title = `Community - Doenet`;
   }, []);
 
+  const [infoContentId, setInfoContentId] = useState<string | null>(null);
+
+  const {
+    isOpen: infoIsOpen,
+    onOpen: infoOnOpen,
+    onClose: infoOnClose,
+  } = useDisclosure();
+
   if (searchResults) {
     let contentMatches: SearchMatch[] = searchResults.content.map((c) => ({
       type: "content",
@@ -533,19 +542,36 @@ export function Community() {
                   ? `/sharedActivities/${owner.userId}/${id}`
                   : `/activityViewer/${id}`;
 
-              return {
-                id,
-                title: name,
-                ownerName: owner != undefined ? createFullName(owner) : "",
-                cardLink,
-                menuItems: isAdmin ? (
+              let menuItems = (
+                <MenuItem
+                  data-test="Activity Information"
+                  onClick={() => {
+                    setInfoContentId(id);
+                    infoOnOpen();
+                  }}
+                >
+                  Activity information
+                </MenuItem>
+              );
+
+              if (isAdmin) {
+                menuItems = (
                   <>
+                    {menuItems}
                     <MoveToGroupMenuItem
                       activityId={id}
                       carouselGroups={carouselGroups}
                     />
                   </>
-                ) : undefined,
+                );
+              }
+
+              return {
+                id,
+                title: name,
+                ownerName: owner != undefined ? createFullName(owner) : "",
+                cardLink,
+                menuItems,
               };
             } else if (itemObj?.type == "author") {
               const cardLink = `/sharedActivities/${itemObj.userId}`;
@@ -564,8 +590,31 @@ export function Community() {
       );
     }
 
+    let contentData: ContentStructure | undefined;
+    if (infoContentId) {
+      let index = searchResults.content.findIndex(
+        (obj) => obj.id == infoContentId,
+      );
+      if (index != -1) {
+        contentData = searchResults.content[index];
+      } else {
+        //Throw error not found
+      }
+    }
+
+    let infoDrawer =
+      contentData && infoContentId ? (
+        <ContentInfoDrawer
+          isOpen={infoIsOpen}
+          onClose={infoOnClose}
+          id={infoContentId}
+          contentData={contentData}
+        />
+      ) : null;
+
     return (
       <>
+        {infoDrawer}
         <Flex
           flexDirection="column"
           p={4}

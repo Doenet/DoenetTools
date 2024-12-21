@@ -2,6 +2,7 @@ import React from "react";
 import {
   Flex,
   Hide,
+  Link as ChakraLink,
   Show,
   Spinner,
   Table,
@@ -14,6 +15,7 @@ import {
   Tr,
   VStack,
 } from "@chakra-ui/react";
+import { Link as ReactRouterLink } from "react-router-dom";
 import { createFullName } from "../../../_utils/names";
 import { DateTime } from "luxon";
 import { DocRemixItem } from "../../../_utils/types";
@@ -32,7 +34,11 @@ export function Remixes({ remixes }: { remixes: DocRemixItem[] | null }) {
   }
 
   if (remixes.length === 0) {
-    return <Text>No remixes of this activity (yet!)</Text>;
+    return (
+      <Text data-test="No Remixes">
+        No visible remixes of this activity (yet!)
+      </Text>
+    );
   }
 
   let remixTable = (
@@ -51,7 +57,7 @@ export function Remixes({ remixes }: { remixes: DocRemixItem[] | null }) {
               <Th textTransform="none">Owner</Th>
             </Show>
             <Hide above="sm">
-              <Th>
+              <Th textTransform="none">
                 <VStack alignItems="left">
                   <Text>Activity Name</Text>
                   <Text>Owner</Text>
@@ -60,23 +66,49 @@ export function Remixes({ remixes }: { remixes: DocRemixItem[] | null }) {
             </Hide>
             <Th textTransform="none">License</Th>
             <Show above="sm">
-              <Th>Date copied</Th>
+              <Th textTransform="none">Date copied</Th>
             </Show>
           </Tr>
         </Thead>
         <Tbody>
           {remixes.map((ch, i) => {
             return (
-              <Tr key={`ch${i}`}>
+              <Tr key={`ch${i}`} data-test={`Remix ${i + 1}`}>
                 <Show above="sm">
-                  <Td>{ch.activityName}</Td>
-                  <Td>{createFullName(ch.owner)}</Td>
+                  <Td>
+                    <ChakraLink
+                      as={ReactRouterLink}
+                      to={`/activityViewer/${ch.activityId}`}
+                    >
+                      <Text wordBreak="break-word" whiteSpace="normal">
+                        {ch.activityName}
+                      </Text>
+                    </ChakraLink>
+                  </Td>
+                  <Td>
+                    <ChakraLink
+                      as={ReactRouterLink}
+                      to={`/sharedActivities/${ch.owner.userId}`}
+                    >
+                      <Text
+                        wordBreak="break-word"
+                        whiteSpace="normal"
+                        minWidth="50px"
+                      >
+                        {createFullName(ch.owner)}
+                      </Text>
+                    </ChakraLink>
+                  </Td>
                 </Show>
                 <Hide above="sm">
                   <Td>
                     <VStack alignItems="left">
-                      <Text>{ch.activityName}</Text>
-                      <Text>{createFullName(ch.owner)}</Text>
+                      <Text wordBreak="break-word" whiteSpace="normal">
+                        {ch.activityName}
+                      </Text>
+                      <Text wordBreak="break-word" whiteSpace="normal">
+                        {createFullName(ch.owner)}
+                      </Text>
                     </VStack>
                   </Td>
                 </Hide>
@@ -86,7 +118,7 @@ export function Remixes({ remixes }: { remixes: DocRemixItem[] | null }) {
                   <Td>
                     {ch.timestampPrevDoc.toLocaleString(DateTime.DATE_MED)}
                   </Td>
-                  <Td>{ch.isDirect.toString()}</Td>
+                  <Td>{ch.isDirect ? "direct copy" : ""}</Td>
                 </Show>
               </Tr>
             );

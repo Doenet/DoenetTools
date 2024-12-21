@@ -87,6 +87,7 @@ async function main() {
   // Classifications
   async function upsertClassificationSystem(
     name: string,
+    shortName: string,
     categoryLabel: string,
     subCategoryLabel: string,
     descriptionLabel: string,
@@ -96,6 +97,7 @@ async function main() {
       where: { name },
       update: {
         name,
+        shortName,
         categoryLabel,
         subCategoryLabel,
         descriptionLabel,
@@ -103,6 +105,7 @@ async function main() {
       },
       create: {
         name,
+        shortName,
         categoryLabel,
         subCategoryLabel,
         descriptionLabel,
@@ -188,6 +191,7 @@ async function main() {
 
   async function addClassificationFromData({
     name,
+    shortName,
     categoryLabel,
     subCategoryLabel,
     descriptionLabel,
@@ -195,6 +199,7 @@ async function main() {
     sortIndex,
   }: {
     name: string;
+    shortName: string;
     categoryLabel: string;
     subCategoryLabel: string;
     descriptionLabel: string;
@@ -203,6 +208,7 @@ async function main() {
   }) {
     const systemId = await upsertClassificationSystem(
       name,
+      shortName,
       categoryLabel,
       subCategoryLabel,
       descriptionLabel,
@@ -315,6 +321,7 @@ async function main() {
 
   await addClassificationFromData({
     name: "Common Core",
+    shortName: "Common Core",
     categoryLabel: "Grade",
     subCategoryLabel: "Cluster",
     descriptionLabel: "Standard",
@@ -324,6 +331,7 @@ async function main() {
 
   await addClassificationFromData({
     name: "Minnesota Academic Standards in Math",
+    shortName: "MN Math",
     categoryLabel: "Grade",
     subCategoryLabel: "Standard",
     descriptionLabel: "Benchmark",
@@ -333,6 +341,7 @@ async function main() {
 
   await addClassificationFromData({
     name: "WeBWorK taxonomy",
+    shortName: "WeBWorK",
     categoryLabel: "Subject",
     subCategoryLabel: "Chapter",
     descriptionLabel: "Section",
@@ -343,7 +352,7 @@ async function main() {
   await prisma.licenses.upsert({
     where: { code: "CCBYSA" },
     update: {
-      name: "Creative Commons Attribution-ShareAlike",
+      name: "Creative Commons Attribution-ShareAlike 4.0",
       description:
         "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, even for commercial purposes. If others remix, adapt, or build upon the material, they must license the modified material under identical terms.",
       imageURL: "/creative_commons_by_sa.png",
@@ -353,7 +362,7 @@ async function main() {
     },
     create: {
       code: "CCBYSA",
-      name: "Creative Commons Attribution-ShareAlike",
+      name: "Creative Commons Attribution-ShareAlike 4.0",
       description:
         "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, even for commercial purposes. If others remix, adapt, or build upon the material, they must license the modified material under identical terms.",
       imageURL: "/creative_commons_by_sa.png",
@@ -366,7 +375,7 @@ async function main() {
   await prisma.licenses.upsert({
     where: { code: "CCBYNCSA" },
     update: {
-      name: "Creative Commons Attribution-NonCommercial-ShareAlike",
+      name: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
       description:
         "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, for noncommercial purposes only. If others modify or adapt the material, they must license the modified material under identical terms.",
       imageURL: "/creative_commons_by_nc_sa.png",
@@ -376,7 +385,7 @@ async function main() {
     },
     create: {
       code: "CCBYNCSA",
-      name: "Creative Commons Attribution-NonCommercial-ShareAlike",
+      name: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
       description:
         "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, for noncommercial purposes only. If others modify or adapt the material, they must license the modified material under identical terms.",
       imageURL: "/creative_commons_by_nc_sa.png",
@@ -389,16 +398,16 @@ async function main() {
   await prisma.licenses.upsert({
     where: { code: "CCDUAL" },
     update: {
-      name: "Dual license Creative Commons Attribution-ShareAlike OR Attribution-NonCommercial-ShareAlike",
+      name: "Dual license Creative Commons Attribution-ShareAlike 4.0 OR Attribution-NonCommercial-ShareAlike 4.0",
       description:
-        "Allow reusers to use either the Creative Commons Attribution-ShareAlike license or the Creative Commons Attribution-NonCommercial-ShareAlike license.",
+        "Allow reusers to use either the Creative Commons Attribution-ShareAlike 4.0 license or the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 license.",
       sortIndex: 1,
     },
     create: {
       code: "CCDUAL",
-      name: "Dual license Creative Commons Attribution-ShareAlike OR Attribution-NonCommercial-ShareAlike",
+      name: "Dual license Creative Commons Attribution-ShareAlike 4.0 OR Attribution-NonCommercial-ShareAlike 4.0",
       description:
-        "Allow reusers to use either the Creative Commons Attribution-ShareAlike license or the Creative Commons Attribution-NonCommercial-ShareAlike license.",
+        "Allow reusers to use either the Creative Commons Attribution-ShareAlike 4.0 license or the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 license.",
       sortIndex: 1,
     },
   });

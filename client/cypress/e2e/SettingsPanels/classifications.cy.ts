@@ -1,8 +1,11 @@
-describe("Classifications test", function () {
+describe("Classification panel tests", function () {
   it("add classifications to activity", () => {
     cy.loginAsTestUser();
 
-    cy.createActivity("Hello!", "Initial content").then((activityId) => {
+    cy.createActivity({
+      activityName: "Hello!",
+      doenetML: "Initial content",
+    }).then((activityId) => {
       cy.visit(`/activityEditor/${activityId}`);
 
       cy.get('[data-test="Settings Button"]').click();
@@ -87,7 +90,7 @@ describe("Classifications test", function () {
 
       cy.get('[data-test="Add 9.2.3.3"]').should("not.exist");
       cy.get('[data-test="Stop Filter By System').click();
-      cy.get('[data-test="Add 9.2.3.3"]').should("be.visible");
+      cy.get('[data-test="Add 9.2.3.3"]').scrollIntoView().should("be.visible");
     });
   });
 });

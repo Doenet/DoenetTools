@@ -31,8 +31,8 @@ describe("Share Activities Tests", function () {
     cy.get('[data-test="Sharing Button"]').click();
     cy.get('[data-test="Public Checkbox"]').click();
     cy.get('[data-test="Status message"]').should(
-      "have.text",
-      "Successfully shared publicly",
+      "contain.text",
+      "shared publicly",
     );
 
     cy.get('[data-test="Close Share Drawer Button"]').click();

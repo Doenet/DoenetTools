@@ -1,7 +1,4 @@
 import React, { RefObject, useEffect, useState } from "react";
-import { sharingActions, ShareSettings } from "./ShareSettings";
-import { remixedFromActions, RemixedFrom } from "./RemixedFrom";
-import { FetcherWithComponents } from "react-router-dom";
 import {
   Box,
   Drawer,
@@ -18,60 +15,64 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import { Remixes } from "./Remixes";
 import {
   ContentStructure,
   DocHistoryItem,
   DocRemixItem,
-  License,
-  LicenseCode,
 } from "../../../_utils/types";
+import { GeneralContentInfo } from "./GeneralContentInfo";
+import { ClassificationInfo } from "./ClassificationInfo";
 import axios from "axios";
-import { cidFromText } from "../../../_utils/cid";
 import {
   processContributorHistory,
   processRemixes,
 } from "../../../_utils/processRemixes";
+import { cidFromText } from "../../../_utils/cid";
+import { RemixedFrom } from "./RemixedFrom";
+import { Remixes } from "./Remixes";
 
-export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
-  let result1 = await sharingActions({ formObj });
-  if (result1) {
-    return result1;
-  }
-
-  let result4 = await remixedFromActions({ formObj });
-  if (result4) {
-    return result4;
-  }
-
-  return null;
-}
-
-export function ShareDrawer({
+export function ContentInfoDrawer({
   isOpen,
   onClose,
   finalFocusRef,
-  fetcher,
+  id,
   contentData,
-  allLicenses,
-  currentDoenetML,
+  displayTab = "general",
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  fetcher: FetcherWithComponents<any>;
+  id: string;
   contentData: ContentStructure;
-  allLicenses: License[];
-  currentDoenetML?: React.MutableRefObject<string>;
+  displayTab?: "general" | "classifications";
 }) {
+  let initialTabIndex: number;
+  switch (displayTab) {
+    case "general": {
+      initialTabIndex = 0;
+      break;
+    }
+    case "classifications": {
+      initialTabIndex = 1;
+      break;
+    }
+  }
+
+  const [tabIndex, setTabIndex] = useState(initialTabIndex);
+
+  useEffect(() => {
+    setTabIndex(initialTabIndex);
+  }, [displayTab, isOpen]);
+
+  // TODO: this next section (through recalculateThisCid()) is copied almost verbatim from ShareDrawer.tsx
+  // Refactor to avoid code duplication
+
   const [contributorHistory, setContributorHistory] = useState<
     DocHistoryItem[] | null
   >(null);
   const [haveChangedHistoryItem, setHaveChangedHistoryItem] = useState(false);
   const [remixes, setRemixes] = useState<DocRemixItem[] | null>(null);
   const [thisCid, setThisCid] = useState<string | null>(null);
-  const [remixedWithLicense, setRemixedWithLicense] =
-    useState<LicenseCode | null>(null);
 
   useEffect(() => {
     async function getHistoryAndRemixes() {
@@ -85,8 +86,6 @@ export function ShareDrawer({
       let haveChanged = hist.some((dhi) => dhi.prevChanged);
 
       setHaveChangedHistoryItem(haveChanged);
-
-      setRemixedWithLicense(hist[0]?.withLicenseCode || null);
 
       const { data: data2 } = await axios.get(
         `/api/getRemixes/${contentData.id}`,
@@ -105,8 +104,7 @@ export function ShareDrawer({
     async function recalculateThisCid() {
       let cid: string | null = null;
       if (haveChangedHistoryItem) {
-        let thisSource =
-          currentDoenetML?.current || contentData.documents[0].source;
+        let thisSource = contentData.documents[0].source;
 
         if (thisSource === undefined) {
           const { data: sourceData } = await axios.get(
@@ -122,7 +120,7 @@ export function ShareDrawer({
     }
 
     recalculateThisCid();
-  }, [haveChangedHistoryItem, currentDoenetML?.current]);
+  }, [haveChangedHistoryItem]);
 
   return (
     <Drawer
@@ -134,10 +132,10 @@ export function ShareDrawer({
     >
       <DrawerOverlay />
       <DrawerContent>
-        <DrawerCloseButton data-test="Close Share Drawer Button" />
+        <DrawerCloseButton data-test="Close Settings Button" />
         <DrawerHeader textAlign="center" height="70px">
-          Sharing Controls
-          <Tooltip label={contentData.name} openDelay={1000}>
+          {contentData.isFolder ? "Folder" : "Activity"} Information
+          <Tooltip label={contentData.name}>
             <Text fontSize="smaller" noOfLines={1}>
               {contentData.name}
             </Text>
@@ -145,11 +143,15 @@ export function ShareDrawer({
         </DrawerHeader>
 
         <DrawerBody>
-          <Tabs>
+          <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)}>
             <TabList>
-              <Tab data-test="Share Tab">Share</Tab>
+              <Tab data-test="General Tab">General</Tab>
+
               {!contentData.isFolder ? (
                 <>
+                  <Tab data-test="Classifications">
+                    Classifications ({contentData.classifications.length})
+                  </Tab>
                   <Tab data-test="Remixed From Tab">
                     Remixed From{" "}
                     {contributorHistory !== null
@@ -163,16 +165,16 @@ export function ShareDrawer({
                 </>
               ) : null}
             </TabList>
-            <Box overflowY="auto" height="calc(100vh - 130px)">
-              <TabPanels>
-                <TabPanel>
-                  <ShareSettings
-                    fetcher={fetcher}
-                    contentData={contentData}
-                    allLicenses={allLicenses}
-                    remixedWithLicense={remixedWithLicense}
-                  />
+            <Box height="calc(100vh - 130px)">
+              <TabPanels height="100%">
+                <TabPanel height="100%">
+                  <GeneralContentInfo contentData={contentData} />
                 </TabPanel>
+                {!contentData.isFolder ? (
+                  <TabPanel overflowY="hidden" height="100%">
+                    <ClassificationInfo contentData={contentData} />
+                  </TabPanel>
+                ) : null}
                 {!contentData.isFolder ? (
                   <TabPanel>
                     <RemixedFrom
