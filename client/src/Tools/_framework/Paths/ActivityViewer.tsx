@@ -240,6 +240,7 @@ export function ActivityViewer() {
                               colorScheme="blue"
                               icon={<MdOutlineInfo />}
                               aria-label="Activity information"
+                              data-test="Activity Information"
                               onClick={() => {
                                 setDisplayInfoTab("general");
                                 infoOnOpen();
@@ -352,7 +353,7 @@ export function ActivityViewer() {
                       }}
                     >
                       <Heading size="sm">Classifications</Heading>
-                      <List>
+                      <List data-test="Classifications Footer">
                         {activity.classifications.map((classification) => {
                           return (
                             <Tooltip label={classification.description}>

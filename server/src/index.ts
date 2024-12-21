@@ -109,6 +109,7 @@ import {
   docRemixesConvertUUID,
 } from "./utils/uuid";
 import { LicenseCode, UserInfo } from "./types";
+import { add_test_apis } from "./test_apis";
 
 const client = new SESClient({ region: "us-east-2" });
 
@@ -2558,6 +2559,13 @@ app.get(
     }
   },
 );
+
+if (
+  process.env.ADD_TEST_APIS &&
+  process.env.ADD_TEST_APIS.toLocaleLowerCase() !== "false"
+) {
+  add_test_apis(app);
+}
 
 // handle every other route with index.html, which will contain
 // a script tag to your application's JavaScript file(s).

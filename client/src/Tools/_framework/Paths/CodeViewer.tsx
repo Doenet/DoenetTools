@@ -222,6 +222,7 @@ export function CodeViewer() {
                         colorScheme="blue"
                         icon={<MdOutlineInfo />}
                         aria-label="Activity information"
+                        data-test="Activity Information"
                         onClick={() => {
                           infoOnOpen();
                         }}

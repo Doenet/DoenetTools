@@ -249,7 +249,7 @@ export function ShareSettings({
       (l) => l.code === remixedWithLicense,
     )?.name;
     chooseLicenseForm = (
-      <Box marginTop="20px">
+      <Box marginTop="20px" data-test="Cannot Change License">
         <p>License: {licenseName} </p>
         <p>
           (Cannot change license since remixed from activity with this license.)
@@ -265,6 +265,7 @@ export function ShareSettings({
         <HStack gap={5}>
           <Select
             width="90%"
+            data-test="Select License"
             placeholder={placeholder}
             value={selectedLicenseCode}
             onChange={(e) => {
@@ -546,7 +547,7 @@ export function ShareSettings({
           method="post"
           onSubmit={() => {
             setShowSpinner({ type: "emailShare" });
-            nextStatusText.current = `Successfully shared with ${shareWithEmail}`;
+            nextStatusText.current = `Successfully shared with ${shareWithEmail}.`;
           }}
         >
           <FormControl isInvalid={errorMessage !== ""} marginTop="20px">
@@ -608,7 +609,7 @@ export function ShareSettings({
                     );
                     setSelectedIsPublic(false);
                   } else {
-                    nextStatusText.current = "Successfully shared publicly";
+                    nextStatusText.current = "Successfully shared publicly.";
                     fetcher.submit(
                       {
                         _action: "make content public",

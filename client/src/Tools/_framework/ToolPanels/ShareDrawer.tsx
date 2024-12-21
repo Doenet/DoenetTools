@@ -86,7 +86,7 @@ export function ShareDrawer({
 
       setHaveChangedHistoryItem(haveChanged);
 
-      setRemixedWithLicense(hist[0].withLicenseCode || null);
+      setRemixedWithLicense(hist[0]?.withLicenseCode || null);
 
       const { data: data2 } = await axios.get(
         `/api/getRemixes/${contentData.id}`,
