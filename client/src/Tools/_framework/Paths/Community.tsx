@@ -544,6 +544,7 @@ export function Community() {
 
               let menuItems = (
                 <MenuItem
+                  data-test="Activity Information"
                   onClick={() => {
                     setInfoContentId(id);
                     infoOnOpen();

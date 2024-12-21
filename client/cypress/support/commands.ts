@@ -51,6 +51,7 @@ declare global {
         activityName,
         doenetML,
         classifications,
+        makePublic,
       }: {
         activityName: string;
         doenetML: string;
@@ -60,6 +61,7 @@ declare global {
           subCategory: string;
           code: string;
         }[];
+        makePublic?: boolean;
       }): Chainable<string>;
     }
   }
@@ -95,6 +97,7 @@ Cypress.Commands.add(
     activityName,
     doenetML,
     classifications,
+    makePublic = false,
   }: {
     activityName: string;
     doenetML: string;
@@ -104,6 +107,7 @@ Cypress.Commands.add(
       subCategory: string;
       code: string;
     }[];
+    makePublic?: boolean;
   }) => {
     cy.request({
       method: "POST",
@@ -119,6 +123,17 @@ Cypress.Commands.add(
           body: {
             id: activityId,
             classifications,
+          },
+        });
+      }
+
+      if (makePublic) {
+        cy.request({
+          method: "POST",
+          url: "/api/makeActivityPublic",
+          body: {
+            id: activityId,
+            licenseCode: "CCDUAL",
           },
         });
       }
