@@ -81,15 +81,10 @@ export function RemixedFrom({
             if (ch.prevChanged) {
               // The previous doc changed since it was remixed.
               changeText = "*Changed since copied";
-              // // Check if this activity's doc change since then
-              // let thisActivityDocChanged = thisCid !== ch.prevCid;
-              // if (thisActivityDocChanged) {
-              //   changeText =
-              //     "The original doc changed and so did this one, so would have to merge changes";
-              // } else {
-              //   changeText =
-              //     "The original doc changed but this one did not, so could just copy over changes.";
-              // }
+
+              // TODO: do we want want to prompt to copy over changes if this activity's doc
+              // has not changed since remixing?
+              // I.e., if thisCid === ch.prevCid;
             } else {
               changeText = "";
             }
