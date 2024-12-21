@@ -247,6 +247,7 @@ model contentClassifications {
 model classificationSystems {
   id                     Int                        @id @default(autoincrement())
   name                   String                     @unique
+  shortName              String                     @unique
   categoryLabel          String
   subCategoryLabel       String
   descriptionLabel       String

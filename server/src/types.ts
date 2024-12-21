@@ -30,6 +30,7 @@ export type ContentClassification = {
       system: {
         id: number;
         name: string;
+        shortName: string;
         categoryLabel: string;
         subCategoryLabel: string;
         descriptionLabel: string;
