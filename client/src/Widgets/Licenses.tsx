@@ -3,7 +3,6 @@ import { License } from "../_utils/types";
 import {
   HStack,
   Image,
-  ListIcon,
   ListItem,
   Text,
   Tooltip,
@@ -104,10 +103,7 @@ export function DisplayLicenseItem({
 
   return (
     <ListItem>
-      <HStack>
-        <ListIcon as={MdCircle} margin="0px" />
-        {item}
-      </HStack>
+      <HStack>{item}</HStack>
     </ListItem>
   );
 }
