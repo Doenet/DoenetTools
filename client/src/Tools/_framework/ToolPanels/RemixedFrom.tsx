@@ -2,6 +2,7 @@ import React from "react";
 import {
   Flex,
   Hide,
+  Link as ChakraLink,
   Show,
   Spinner,
   Table,
@@ -13,7 +14,9 @@ import {
   Thead,
   Tr,
   VStack,
+  Box,
 } from "@chakra-ui/react";
+import { Link as ReactRouterLink } from "react-router-dom";
 import { createFullName } from "../../../_utils/names";
 import { DateTime } from "luxon";
 import { DocHistoryItem } from "../../../_utils/types";
@@ -53,20 +56,20 @@ export function RemixedFrom({
         <Thead position="sticky" top={0} backgroundColor="var(--canvas)">
           <Tr>
             <Show above="sm">
-              <Th textTransform="none">Activity Name</Th>
+              <Th textTransform="none">Remixed Activity</Th>
               <Th textTransform="none">Owner</Th>
             </Show>
             <Hide above="sm">
-              <Th>
+              <Th textTransform="none">
                 <VStack alignItems="left">
-                  <Text>Activity Name</Text>
+                  <Text>Remixed Activity</Text>
                   <Text>Owner</Text>
                 </VStack>
               </Th>
             </Hide>
             <Th textTransform="none">License</Th>
             <Show above="sm">
-              <Th>Date copied</Th>
+              <Th textTransform="none">Date copied</Th>
             </Show>
           </Tr>
         </Thead>
@@ -75,29 +78,56 @@ export function RemixedFrom({
             let changeText = "";
             if (ch.prevChanged) {
               // The previous doc changed since it was remixed.
-              // Check if this activity's doc change since then
-              let thisActivityDocChanged = thisCid !== ch.prevCid;
-              if (thisActivityDocChanged) {
-                changeText =
-                  "The original doc changed and so did this one, so would have to merge changes";
-              } else {
-                changeText =
-                  "The original doc changed but this one did not, so could just copy over changes.";
-              }
+              changeText = "*Changed since copied";
+              // // Check if this activity's doc change since then
+              // let thisActivityDocChanged = thisCid !== ch.prevCid;
+              // if (thisActivityDocChanged) {
+              //   changeText =
+              //     "The original doc changed and so did this one, so would have to merge changes";
+              // } else {
+              //   changeText =
+              //     "The original doc changed but this one did not, so could just copy over changes.";
+              // }
             } else {
-              changeText = "The original doc is unchanged";
+              changeText = "";
             }
             return (
               <Tr key={`ch${i}`}>
                 <Show above="sm">
-                  <Td>{ch.prevActivityName}</Td>
-                  <Td>{createFullName(ch.prevOwner)}</Td>
+                  <Td>
+                    <ChakraLink
+                      as={ReactRouterLink}
+                      to={`/activityViewer/${ch.prevActivityId}`}
+                    >
+                      <Text wordBreak="break-word" whiteSpace="normal">
+                        {ch.prevActivityName}
+                      </Text>
+                    </ChakraLink>
+                  </Td>
+                  <Td>
+                    <ChakraLink
+                      as={ReactRouterLink}
+                      to={`/sharedActivities/${ch.prevOwner.userId}`}
+                    >
+                      <Text
+                        wordBreak="break-word"
+                        whiteSpace="normal"
+                        minWidth="50px"
+                      >
+                        {createFullName(ch.prevOwner)}
+                      </Text>
+                    </ChakraLink>
+                  </Td>
                 </Show>
                 <Hide above="sm">
                   <Td>
                     <VStack alignItems="left">
-                      <Text>{ch.prevActivityName}</Text>
-                      <Text>{createFullName(ch.prevOwner)}</Text>
+                      <Text wordBreak="break-word" whiteSpace="normal">
+                        {ch.prevActivityName}
+                      </Text>
+                      <Text wordBreak="break-word" whiteSpace="normal">
+                        {createFullName(ch.prevOwner)}
+                      </Text>
                     </VStack>
                   </Td>
                 </Hide>
@@ -108,10 +138,9 @@ export function RemixedFrom({
                     {ch.timestampPrevDoc.toLocaleString(DateTime.DATE_MED)}
                   </Td>
                 </Show>
-                <Td width="100px">
+                <Td>
                   <Text
                     width="100px"
-                    flexWrap="wrap"
                     wordBreak="break-word"
                     whiteSpace="normal"
                   >
