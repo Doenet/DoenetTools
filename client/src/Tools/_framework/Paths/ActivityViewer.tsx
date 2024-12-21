@@ -179,7 +179,7 @@ export function ActivityViewer() {
                             colorScheme="blue"
                             data-test="See Inside"
                             onClick={() => {
-                              navigate(`/publicEditor/${activityId}/${docId}`);
+                              navigate(`/codeViewer/${activityId}/${docId}`);
                             }}
                           >
                             See Inside
@@ -240,7 +240,7 @@ export function ActivityViewer() {
                     navigate={navigate}
                     linkSettings={{
                       viewURL: "/activityViewer",
-                      editURL: "/publicEditor",
+                      editURL: "/codeViewer",
                     }}
                     includeVariantSelector={false}
                   />

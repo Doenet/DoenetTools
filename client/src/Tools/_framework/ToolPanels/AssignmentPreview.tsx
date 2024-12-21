@@ -53,7 +53,7 @@ export default function AssignmentPreview({
           navigate={navigate}
           linkSettings={{
             viewURL: "/activityViewer",
-            editURL: "/publicEditor",
+            editURL: "/codeViewer",
           }}
           showAnswerTitles={true}
         />

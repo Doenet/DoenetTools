@@ -511,7 +511,7 @@ export function Home() {
                 addBottomPadding={false}
                 linkSettings={{
                   viewURL: "/activityViewer",
-                  editURL: "/publicEditor",
+                  editURL: "/codeViewer",
                 }}
               />
             </Flex>
