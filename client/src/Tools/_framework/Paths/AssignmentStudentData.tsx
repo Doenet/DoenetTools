@@ -9,7 +9,7 @@ import {
   Link as ReactRouterLink,
   useFetcher,
   useNavigate,
-} from "react-router-dom";
+} from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { UserInfo } from "../../../_utils/types";
 

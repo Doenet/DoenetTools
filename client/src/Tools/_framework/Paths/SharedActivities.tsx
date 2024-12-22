@@ -10,7 +10,7 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import React, { useEffect } from "react";
-import { useLoaderData, useFetcher, Link } from "react-router-dom";
+import { useLoaderData, useFetcher, Link } from "react-router";
 
 import { RiEmotionSadLine } from "react-icons/ri";
 import ContentCard from "../../../Widgets/ContentCard";

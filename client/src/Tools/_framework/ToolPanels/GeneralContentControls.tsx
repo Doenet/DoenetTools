@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Alert, AlertQueue } from "./AlertQueue";
-import { FetcherWithComponents, Form } from "react-router-dom";
+import { FetcherWithComponents, Form } from "react-router";
 import {
   Box,
   FormControl,

@@ -13,7 +13,7 @@ import {
   Tooltip,
   Box,
 } from "@chakra-ui/react";
-import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
+import { Link as ReactRouterLink, useNavigate } from "react-router";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 import { lastNameFirst } from "../../../_utils/names";

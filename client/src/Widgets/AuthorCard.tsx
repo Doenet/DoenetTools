@@ -1,6 +1,6 @@
 import React from "react";
 import { Avatar, Text, Card, CardBody, Center } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 export default function AuthorCard({
   cardLink,

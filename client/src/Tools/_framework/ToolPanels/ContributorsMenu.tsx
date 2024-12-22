@@ -12,7 +12,7 @@ import {
   Link as ChakraLink,
   Tooltip,
 } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { Link as ReactRouterLink } from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { ContentStructure, DocHistoryItem } from "../../../_utils/types";
 

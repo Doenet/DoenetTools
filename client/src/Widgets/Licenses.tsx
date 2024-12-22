@@ -8,7 +8,7 @@ import {
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { MdCircle } from "react-icons/md";
 
 export function SmallLicenseBadges({ license }: { license: License }) {

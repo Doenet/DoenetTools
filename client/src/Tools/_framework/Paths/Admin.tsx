@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Box, Text, Wrap } from "@chakra-ui/react";
 import React from "react";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData } from "react-router";
 import styled from "styled-components";
 import ContentCard from "../../../Widgets/ContentCard";
 import { MoveToGroupMenuItem } from "./Community";

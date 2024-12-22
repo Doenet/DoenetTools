@@ -29,7 +29,7 @@ import {
   MdOutlineGroup,
 } from "react-icons/md";
 import { FaCog } from "react-icons/fa";
-import { useFetcher } from "react-router-dom";
+import { useFetcher } from "react-router";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router";
 import {

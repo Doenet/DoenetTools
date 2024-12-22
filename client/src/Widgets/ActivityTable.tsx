@@ -28,7 +28,7 @@ import { FaFolder } from "react-icons/fa";
 import { RiDraftFill } from "react-icons/ri";
 import { MdAssignment } from "react-icons/md";
 import { BsPeopleFill } from "react-icons/bs";
-import { Link as ReactRouterLink, useFetcher } from "react-router-dom";
+import { Link as ReactRouterLink, useFetcher } from "react-router";
 import { AssignmentStatus } from "../_utils/types";
 
 // this component is separate so that it can have its own states

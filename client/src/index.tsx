@@ -4,7 +4,7 @@ import {
   createBrowserRouter,
   redirect,
   RouterProvider,
-} from "react-router-dom";
+} from "react-router";
 import { createRoot } from "react-dom/client";
 
 import "@doenet/doenetml-iframe/style.css";

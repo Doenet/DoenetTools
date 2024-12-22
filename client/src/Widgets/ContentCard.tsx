@@ -24,7 +24,7 @@ import {
   EditableInput,
 } from "@chakra-ui/react";
 import { GoKebabVertical } from "react-icons/go";
-import { Link, useFetcher } from "react-router-dom";
+import { Link, useFetcher } from "react-router";
 import axios from "axios";
 import { AssignmentStatus } from "../_utils/types";
 

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Box, Text } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData } from "react-router";
 import styled from "styled-components";
 import Papa from "papaparse";
 import {

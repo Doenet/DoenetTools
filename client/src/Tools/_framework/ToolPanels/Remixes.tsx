@@ -15,7 +15,7 @@ import {
   Tr,
   VStack,
 } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { Link as ReactRouterLink } from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { DateTime } from "luxon";
 import { DocRemixItem } from "../../../_utils/types";
