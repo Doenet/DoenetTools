@@ -53,6 +53,9 @@ export type ContentStructure = {
   isShared: boolean;
   sharedWith: UserInfo[];
   license: License | null;
+  isQuestion: boolean;
+  isInteractive: boolean;
+  containsVideo: boolean;
   classifications: ContentClassification[];
   documents: {
     id: Uint8Array;

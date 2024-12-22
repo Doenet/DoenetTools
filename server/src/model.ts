@@ -281,17 +281,26 @@ export async function updateContent({
   name,
   imagePath,
   ownerId,
+  isQuestion,
+  isInteractive,
+  containsVideo,
 }: {
   id: Uint8Array;
   name?: string;
   imagePath?: string;
   ownerId: Uint8Array;
+  isQuestion?: boolean;
+  isInteractive?: boolean;
+  containsVideo?: boolean;
 }) {
   const updated = await prisma.content.update({
     where: { id, ownerId, isDeleted: false },
     data: {
       name,
       imagePath,
+      isQuestion,
+      isInteractive,
+      containsVideo,
     },
   });
 
@@ -896,6 +905,9 @@ export async function getActivityEditorData(
       isShared: false,
       sharedWith: [],
       license: null,
+      isQuestion: false,
+      isInteractive: false,
+      containsVideo: false,
       classifications: [],
       documents: [],
       hasScoreData: false,
@@ -927,6 +939,9 @@ export async function getActivityEditorData(
         classCode: true,
         codeValidUntil: true,
         isPublic: true,
+        isQuestion: true,
+        isInteractive: true,
+        containsVideo: true,
         sharedWith: {
           select: {
             user: {
@@ -1024,6 +1039,9 @@ export async function getActivityEditorData(
       license: assignedActivity.license
         ? processLicense(assignedActivity.license)
         : null,
+      isQuestion: assignedActivity.isQuestion,
+      isInteractive: assignedActivity.isInteractive,
+      containsVideo: assignedActivity.containsVideo,
       classifications: assignedActivity.classifications.map(
         (c) => c.classification,
       ),
@@ -1053,6 +1071,9 @@ export async function getActivityEditorData(
         classCode: true,
         codeValidUntil: true,
         isPublic: true,
+        isQuestion: true,
+        isInteractive: true,
+        containsVideo: true,
         sharedWith: {
           select: {
             user: {
@@ -1178,6 +1199,9 @@ export async function getSharedEditorData(
       name: true,
       imagePath: true,
       isPublic: true,
+      isQuestion: true,
+      isInteractive: true,
+      containsVideo: true,
       sharedWith: {
         select: {
           userId: true,
@@ -1292,6 +1316,9 @@ export async function getActivityViewerData(
       ownerId: true,
       imagePath: true,
       isPublic: true,
+      isQuestion: true,
+      isInteractive: true,
+      containsVideo: true,
       sharedWith: {
         select: {
           userId: true,
@@ -1857,6 +1884,9 @@ export async function searchSharedContent(
       name: true,
       imagePath: true,
       isPublic: true,
+      isQuestion: true,
+      isInteractive: true,
+      containsVideo: true,
       sharedWith: {
         select: {
           userId: true,
@@ -2004,6 +2034,9 @@ export async function listUserAssigned(userId: Uint8Array) {
       name: true,
       imagePath: true,
       isPublic: true,
+      isQuestion: true,
+      isInteractive: true,
+      containsVideo: true,
       classCode: true,
       codeValidUntil: true,
       license: {
@@ -3633,6 +3666,9 @@ export async function getMyFolderContent({
         name: true,
         imagePath: true,
         isPublic: true,
+        isQuestion: true,
+        isInteractive: true,
+        containsVideo: true,
         sharedWith: {
           select: {
             user: {
@@ -3713,6 +3749,9 @@ export async function getMyFolderContent({
       name: true,
       imagePath: true,
       isPublic: true,
+      isQuestion: true,
+      isInteractive: true,
+      containsVideo: true,
       sharedWith: {
         select: {
           user: {
@@ -3842,6 +3881,9 @@ export async function searchMyFolderContent({
         name: true,
         imagePath: true,
         isPublic: true,
+        isQuestion: true,
+        isInteractive: true,
+        containsVideo: true,
         sharedWith: {
           select: {
             user: {
@@ -4028,6 +4070,9 @@ export async function searchMyFolderContent({
       name: true,
       imagePath: true,
       isPublic: true,
+      isQuestion: true,
+      isInteractive: true,
+      containsVideo: true,
       sharedWith: {
         select: {
           user: {
@@ -4166,6 +4211,9 @@ export async function getSharedFolderContent({
         name: true,
         imagePath: true,
         isPublic: true,
+        isQuestion: true,
+        isInteractive: true,
+        containsVideo: true,
         sharedWith: {
           select: {
             userId: true,
@@ -4253,6 +4301,9 @@ export async function getSharedFolderContent({
       name: true,
       imagePath: true,
       isPublic: true,
+      isQuestion: true,
+      isInteractive: true,
+      containsVideo: true,
       sharedWith: {
         select: {
           userId: true,
@@ -4310,6 +4361,9 @@ export async function getSharedFolderContent({
         name: true,
         imagePath: true,
         isPublic: true,
+        isQuestion: true,
+        isInteractive: true,
+        containsVideo: true,
         sharedWith: {
           select: {
             userId: true,

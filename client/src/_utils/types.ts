@@ -72,6 +72,9 @@ export type ContentStructure = {
   classCode: string | null;
   codeValidUntil: string | null;
   isPublic: boolean;
+  isQuestion: boolean;
+  isInteractive: boolean;
+  containsVideo: boolean;
   isShared: boolean;
   sharedWith: UserInfo[];
   license: License | null;

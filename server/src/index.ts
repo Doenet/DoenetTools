@@ -1523,8 +1523,6 @@ app.post(
     const id = toUUID(body.id);
     const imagePath = body.imagePath;
     const name = body.name;
-    // TODO - deal with learning outcomes
-    // const learningOutcomes = body.learningOutcomes;
     try {
       await updateContent({
         id,
