@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Alert, AlertQueue } from "./AlertQueue";
 import { FetcherWithComponents, Form } from "react-router";
@@ -14,44 +14,38 @@ import {
   Image,
   Input,
   FormErrorMessage,
-  Flex,
   Select,
+  Checkbox,
   Heading,
-  Tag,
-  Highlight,
-  Spacer,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
-  CloseButton,
-  HStack,
   Tooltip,
-  Spinner,
 } from "@chakra-ui/react";
-import AsyncSelect from "react-select/async";
 import { FaFileImage } from "react-icons/fa";
-import { HiOutlineX, HiPlus } from "react-icons/hi";
 import { readAndCompressImage } from "browser-image-resizer";
-import {
-  ContentClassification,
-  ContentStructure,
-  DoenetmlVersion,
-} from "../../../_utils/types";
+import { ContentStructure, DoenetmlVersion } from "../../../_utils/types";
 
 export async function generalContentActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "update general") {
-    let learningOutcomes;
-    if (formObj.learningOutcomes) {
-      learningOutcomes = JSON.parse(formObj.learningOutcomes);
-    }
+    console.log(formObj);
 
+    let isQuestion =
+      formObj.isQuestion === "undefined"
+        ? undefined
+        : formObj.isQuestion === "true";
+    let isInteractive =
+      formObj.isInteractive === "undefined"
+        ? undefined
+        : formObj.isInteractive === "true";
+    let containsVideo =
+      formObj.containsVideo === "undefined"
+        ? undefined
+        : formObj.containsVideo === "true";
     await axios.post("/api/updateContentSettings", {
       name: formObj.name,
       imagePath: formObj.imagePath,
       id: formObj.id,
-      learningOutcomes,
+      isQuestion,
+      isInteractive,
+      containsVideo,
     });
 
     if (formObj.doenetmlVersionId) {
@@ -62,22 +56,6 @@ export async function generalContentActions({ formObj }: { [k: string]: any }) {
       });
     }
     return true;
-  } else if (formObj._action == "add content classification") {
-    if (formObj.isFolder !== "true") {
-      await axios.post("/api/addClassification", {
-        activityId: formObj.activityId,
-        classificationId: Number(formObj.classificationId),
-      });
-      return true;
-    }
-  } else if (formObj._action == "remove content classification") {
-    if (formObj.isFolder !== "true") {
-      await axios.post("/api/removeClassification", {
-        activityId: formObj.activityId,
-        classificationId: Number(formObj.classificationId),
-      });
-      return true;
-    }
   } else if (formObj?._action == "noop") {
     return true;
   }
@@ -102,11 +80,6 @@ export function GeneralContentControls({
   let [imagePath, setImagePath] = useState(dataImagePath);
   let [alerts, setAlerts] = useState<Alert[]>([]);
 
-  //   let learningOutcomesInit = activityData.learningOutcomes;
-  //   if (learningOutcomesInit == null) {
-  //     learningOutcomesInit = [""];
-  //   }
-
   // TODO: if saveDataToServer is unsuccessful, then doenetmlVersion from the server
   // will not match doenetmlVersion on the client and the client will not be notified.
   // (And same for other variables using this pattern)
@@ -120,27 +93,33 @@ export function GeneralContentControls({
   let lastAcceptedNameValue = useRef(name);
   let [nameIsInvalid, setNameIsInvalid] = useState(false);
 
-  //   let [learningOutcomes, setLearningOutcomes] = useState(learningOutcomesInit);
+  let [isQuestion, setIsQuestion] = useState(contentData.isQuestion);
+  let [isInteractive, setIsInteractive] = useState(contentData.isInteractive);
+  let [containsVideo, setContainsVideo] = useState(contentData.containsVideo);
+
   let [doenetmlVersion, setDoenetmlVersion] = useState(doenetmlVersionInit);
 
   let contentType = contentData.isFolder ? "Folder" : "Activity";
   let contentTypeLower = contentData.isFolder ? "folder" : "activity";
 
   function saveDataToServer({
-    nextLearningOutcomes,
     nextDoenetmlVersionId,
+    isQuestion,
+    isInteractive,
+    containsVideo,
   }: {
-    nextLearningOutcomes?: any[];
     nextDoenetmlVersionId?: number;
+    isQuestion?: boolean;
+    isInteractive?: boolean;
+    containsVideo?: boolean;
   } = {}) {
     let data: {
-      learningOutcomes?: string;
       name?: string;
       doenetmlVersionId?: number;
-    } = {};
-    if (nextLearningOutcomes) {
-      data.learningOutcomes = JSON.stringify(nextLearningOutcomes);
-    }
+      isQuestion?: boolean;
+      isInteractive?: boolean;
+      containsVideo?: boolean;
+    } = { isQuestion, isInteractive, containsVideo };
 
     // Turn on/off name error messages and
     // use the latest valid name
@@ -252,13 +231,6 @@ export function GeneralContentControls({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-  //TODO: Cypress is opening the drawer so fast
-  //the activityData is out of date
-  //We need something like this. But this code sets learningOutcomes too often
-  // useEffect(() => {
-  //   setLearningOutcomes(learningOutcomesInit);
-  // }, [learningOutcomesInit]);
-
   return (
     <>
       <AlertQueue alerts={alerts} />
@@ -331,87 +303,56 @@ export function GeneralContentControls({
             Error - A name for the {contentTypeLower} is required.
           </FormErrorMessage>
         </FormControl>
-        {/* {!activityData.isFolder ? (
-          <FormControl>
-            <Flex flexDirection="column" width="100%" rowGap={6}>
-              <FormLabel mt="16px">Learning Outcomes</FormLabel>
-              {learningOutcomes.map((outcome, i) => {
-                return (
-                  <Flex key={`learningOutcome${i}`} columnGap={4}>
-                    <Input
-                      size="sm"
-                      value={outcome}
-                      data-test={`learning outcome ${i}`}
-                      // width="300px"
-                      onChange={(e) => {
-                        setLearningOutcomes((prev) => {
-                          let next = [...prev];
-                          next[i] = e.target.value;
-                          return next;
-                        });
-                      }}
-                      onBlur={() =>
-                        saveDataToServer({
-                          nextLearningOutcomes: learningOutcomes,
-                        })
-                      }
-                      onKeyDown={(e) => {
-                        if (e.key == "Enter") {
-                          saveDataToServer({
-                            nextLearningOutcomes: learningOutcomes,
-                          });
-                        }
-                      }}
-                      placeholder={`Learning Outcome #${i + 1}`}
-                      data-text={`Learning Outcome #${i}`}
-                    />
-                    <IconButton
-                      variant="outline"
-                      data-test={`delete learning outcome ${i} button`}
-                      size="sm"
-                      color="doenet.mainRed"
-                      borderColor="doenet.mainRed"
-                      aria-label="delete learning outcome"
-                      // background="doenet.mainRed"
-                      icon={<HiOutlineX />}
-                      onClick={() => {
-                        let nextLearningOutcomes = [...learningOutcomes];
-                        if (learningOutcomes.length < 2) {
-                          nextLearningOutcomes = [""];
-                        } else {
-                          nextLearningOutcomes.splice(i, 1);
-                        }
 
-                        setLearningOutcomes(nextLearningOutcomes);
-                        saveDataToServer({ nextLearningOutcomes });
-                      }}
-                    />
-                  </Flex>
-                );
-              })}
-              <Center>
-                <IconButton
-                  isDisabled={learningOutcomes.length > 9}
-                  data-test={`add a learning outcome button`}
-                  variant="outline"
-                  width="80%"
-                  size="xs"
-                  icon={<HiPlus />}
-                  onClick={() => {
-                    let nextLearningOutcomes = [...learningOutcomes];
-                    if (learningOutcomes.length < 9) {
-                      nextLearningOutcomes.push("");
-                    }
+        {!contentData.isFolder ? (
+          <Box backgroundColor="#F5F5F5" padding="10px" marginTop="20px">
+            <Heading size="sm">Activity features</Heading>
+            <FormControl>
+              <Checkbox
+                marginTop="10px"
+                isChecked={isQuestion}
+                data-test="Is Question Checkbox"
+                onChange={() => {
+                  setIsQuestion(!isQuestion);
+                  saveDataToServer({ isQuestion: !isQuestion });
+                }}
+              >
+                <Tooltip label="Activity is a single question suitable to add to an assessment.">
+                  Single question
+                </Tooltip>
+              </Checkbox>
+            </FormControl>
+            <FormControl>
+              <Checkbox
+                marginTop="10px"
+                isChecked={isInteractive}
+                data-test="Is Interactive Checkbox"
+                onChange={() => {
+                  setIsInteractive(!isInteractive);
+                  saveDataToServer({ isInteractive: !isInteractive });
+                }}
+              >
+                <Tooltip label="Activity contains interactives, such as interactive graphics.">
+                  Interactive
+                </Tooltip>
+              </Checkbox>
+            </FormControl>
+            <FormControl>
+              <Checkbox
+                marginTop="10px"
+                isChecked={containsVideo}
+                data-test="Contains Video Checkbox"
+                onChange={() => {
+                  setContainsVideo(!containsVideo);
+                  saveDataToServer({ containsVideo: !containsVideo });
+                }}
+              >
+                <Tooltip label="Activity contains videos.">Video</Tooltip>
+              </Checkbox>
+            </FormControl>
+          </Box>
+        ) : null}
 
-                    setLearningOutcomes(nextLearningOutcomes);
-                    saveDataToServer({ nextLearningOutcomes });
-                  }}
-                  aria-label={""}
-                />
-              </Center>
-            </Flex>
-          </FormControl>
-        ) : null} */}
         {!contentData.isFolder ? (
           <FormControl>
             <FormLabel mt="16px">DoenetML version</FormLabel>

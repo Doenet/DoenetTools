@@ -1518,16 +1518,24 @@ app.post(
       res.sendStatus(403);
       return;
     }
+
     const loggedInUserId = req.user.userId;
     const body = req.body;
     const id = toUUID(body.id);
     const imagePath = body.imagePath;
     const name = body.name;
+    const isQuestion = body.isQuestion;
+    const isInteractive = body.isInteractive;
+    const containsVideo = body.containsVideo;
+
     try {
       await updateContent({
         id,
         imagePath,
         name,
+        isQuestion,
+        isInteractive,
+        containsVideo,
         ownerId: loggedInUserId,
       });
       res.send({});
