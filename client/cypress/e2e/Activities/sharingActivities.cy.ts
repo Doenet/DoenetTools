@@ -46,13 +46,13 @@ describe("Share Activities Tests", function () {
     cy.get('[data-test="Search"]').type(`activity${code}{enter}`);
 
     cy.get(
-      '[data-test="Results All Matches"] [data-test="Activity Link"]',
+      '[data-test="Results All Matches"] [data-test="Activity Card"]',
     ).click();
 
     cy.get('[data-test="Copy to Activities Button"]').click();
     cy.get('[data-test="Go to Activities"]').click();
 
-    cy.get(`[data-test="Activity Link"]`).eq(0).click();
+    cy.get(`[data-test="Activity Card"]`).eq(0).click();
     cy.iframe().find(".doenet-viewer").should("contain.text", `Hello there!`);
   });
 });

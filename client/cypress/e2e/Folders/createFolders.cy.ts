@@ -30,7 +30,7 @@ describe("Create Folders Tests", function () {
     cy.get('[data-test="Add Folder Button"]').click();
 
     cy.get('[data-test="Editable Title"]').type("My new folder{enter}");
-    cy.get('[data-test="Activity Link"]').click();
+    cy.get('[data-test="Activity Card"]').click();
 
     cy.get('[data-test="Folder Heading"]').should(
       "contain.text",
@@ -53,7 +53,7 @@ describe("Create Folders Tests", function () {
     cy.get('[data-test="Status message"]').should("contain.text", scrappyEmail);
     cy.get('[data-test="Close Share Drawer Button"]').click();
 
-    cy.get('[data-test="Activity Link"]').eq(1).click();
+    cy.get('[data-test="Activity Card"]').eq(1).click();
     cy.get('[data-test="Folder Heading"]').should(
       "contain.text",
       `Shared folder${code}`,

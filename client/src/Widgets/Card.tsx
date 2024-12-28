@@ -178,6 +178,7 @@ export default function Card({
     <Tooltip label={cardTitle}>
       <Editable
         value={cardTitle}
+        data-test="Editable Title"
         startWithEditView={autoFocusTitle}
         isDisabled={!editableTitle}
         cursor={editableTitle ? "auto" : "pointer"}
@@ -422,7 +423,7 @@ export default function Card({
         height={cardHeight}
         p="0"
         m="0"
-        data-test="ActivityCard"
+        data-test="Activity Card"
         variant="unstyled"
         borderBottom="2px solid gray"
         borderRadius={0}
