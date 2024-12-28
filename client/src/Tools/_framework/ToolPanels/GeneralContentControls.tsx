@@ -26,8 +26,6 @@ import { activityFeatures } from "../../../_utils/activity";
 
 export async function generalContentActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "update general") {
-    console.log(formObj);
-
     let isQuestion =
       formObj.isQuestion === "undefined"
         ? undefined
