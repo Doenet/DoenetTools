@@ -8,12 +8,17 @@ import {
   Tooltip,
   List,
   Spacer,
+  VStack,
+  ButtonGroup,
+  Button,
+  MenuItem,
+  useDisclosure,
 } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useLoaderData, useFetcher, Link } from "react-router";
 
 import { RiEmotionSadLine } from "react-icons/ri";
-import ContentCard from "../../../Widgets/ContentCard";
+import Card, { CardContent } from "../../../Widgets/Card";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
 import { ContentStructure } from "../../../_utils/types";
@@ -21,22 +26,44 @@ import {
   DisplayLicenseItem,
   SmallLicenseBadges,
 } from "../../../Widgets/Licenses";
+import { FaListAlt, FaRegListAlt } from "react-icons/fa";
+import { IoGrid, IoGridOutline } from "react-icons/io5";
+import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
+import CardList from "../../../Widgets/CardList";
+
+export async function action({ request }) {
+  const formData = await request.formData();
+  let formObj = Object.fromEntries(formData);
+
+  if (formObj?._action == "Set List View Preferred") {
+    await axios.post(`/api/setPreferredFolderView`, {
+      cardView: formObj.listViewPref === "false",
+    });
+    return true;
+  }
+
+  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
+}
 
 export async function loader({ params }) {
   const { data } = await axios.get(
     `/api/getSharedFolderContent/${params.ownerId}/${params.folderId ?? ""}`,
   );
 
+  let prefData = await axios.get(`/api/getPreferredFolderView`);
+  let listViewPref = !prefData.data.cardView;
+
   return {
     content: data.content,
     ownerId: params.ownerId,
     owner: data.owner,
     folder: data.folder,
+    listViewPref,
   };
 }
 
 export function SharedActivities() {
-  let { content, ownerId, owner, folder } = useLoaderData() as {
+  let { content, ownerId, owner, folder, listViewPref } = useLoaderData() as {
     content: ContentStructure[];
     ownerId: string;
     owner: {
@@ -44,7 +71,10 @@ export function SharedActivities() {
       lastNames: string;
     };
     folder: ContentStructure | null;
+    listViewPref: boolean;
   };
+
+  const [listView, setListView] = useState(listViewPref);
 
   useEffect(() => {
     document.title = folder
@@ -54,27 +84,54 @@ export function SharedActivities() {
 
   const fetcher = useFetcher();
 
+  const [infoContentId, setInfoContentId] = useState<string | null>(null);
+
+  const {
+    isOpen: infoIsOpen,
+    onOpen: infoOnOpen,
+    onClose: infoOnClose,
+  } = useDisclosure();
+
+  let contentData: ContentStructure | undefined;
+  if (infoContentId) {
+    let index = content.findIndex((obj) => obj.id == infoContentId);
+    if (index != -1) {
+      contentData = content[index];
+    } else {
+      //Throw error not found
+    }
+  }
+
+  let infoDrawer =
+    contentData && infoContentId ? (
+      <ContentInfoDrawer
+        isOpen={infoIsOpen}
+        onClose={infoOnClose}
+        id={infoContentId}
+        contentData={contentData}
+      />
+    ) : null;
+
   let headingText = folder ? (
     <>Folder: {folder.name}</>
   ) : (
     `Shared Activities of ${createFullName(owner)}`
   );
 
-  return (
-    <>
-      <Box
-        backgroundColor="#fff"
-        color="#000"
-        height="80px"
-        width="100%"
-        textAlign="center"
-      >
-        <Tooltip label={headingText}>
-          <Heading as="h2" size="lg" paddingTop=".5em" noOfLines={1}>
-            {headingText}
-          </Heading>
-        </Tooltip>
-      </Box>
+  const heading = (
+    <Box
+      backgroundColor="#fff"
+      color="#000"
+      height="80px"
+      width="100%"
+      textAlign="center"
+    >
+      <Tooltip label={headingText}>
+        <Heading as="h2" size="lg" paddingTop=".5em" noOfLines={1}>
+          {headingText}
+        </Heading>
+      </Tooltip>
+
       {folder ? (
         <Flex
           width="100%"
@@ -104,53 +161,112 @@ export function SharedActivities() {
           ) : null}
         </Flex>
       ) : null}
+
+      <VStack align="flex-end" float="right" marginRight=".5em">
+        <ButtonGroup size="sm" isAttached variant="outline" marginBottom=".5em">
+          <Tooltip label="Toggle List View">
+            <Button isActive={listView === true}>
+              <Icon
+                as={listView ? FaListAlt : FaRegListAlt}
+                boxSize={10}
+                p=".5em"
+                cursor="pointer"
+                onClick={() => {
+                  if (listView === false) {
+                    setListView(true);
+                    fetcher.submit(
+                      {
+                        _action: "Set List View Preferred",
+                        listViewPref: true,
+                      },
+                      { method: "post" },
+                    );
+                  }
+                }}
+              />
+            </Button>
+          </Tooltip>
+          <Tooltip label="Toggle Card View">
+            <Button isActive={listView === false}>
+              <Icon
+                as={listView ? IoGridOutline : IoGrid}
+                boxSize={10}
+                p=".5em"
+                cursor="pointer"
+                onClick={() => {
+                  if (listView === true) {
+                    setListView(false);
+                    fetcher.submit(
+                      {
+                        _action: "Set List View Preferred",
+                        listViewPref: false,
+                      },
+                      { method: "post" },
+                    );
+                  }
+                }}
+              />
+            </Button>
+          </Tooltip>
+        </ButtonGroup>
+      </VStack>
+    </Box>
+  );
+
+  const cardContent: CardContent[] = content.map((activity) => {
+    let contentType = activity.isFolder ? "Folder" : "Activity";
+
+    let menuItems = (
+      <MenuItem
+        data-test={`${contentType} Information`}
+        onClick={() => {
+          setInfoContentId(activity.id);
+          infoOnOpen();
+        }}
+      >
+        {contentType} information
+      </MenuItem>
+    );
+
+    return {
+      ...activity,
+      title: activity.name,
+      cardLink: activity.isFolder
+        ? `/sharedActivities/${activity.ownerId}/${activity.id}`
+        : `/activityViewer/${activity.id}`,
+      cardType: activity.isFolder ? "folder" : "activity",
+      menuItems,
+    };
+  });
+
+  const mainPanel = (
+    <CardList
+      showOwnerName={false}
+      showAssignmentStatus={false}
+      showPublicStatus={false}
+      showActivityFeatures={true}
+      emptyMessage={"No Activities Yet"}
+      listView={listView}
+      content={cardContent}
+    />
+  );
+
+  return (
+    <>
+      {infoDrawer}
+      {heading}
       <Flex
         data-test="Shared Activities"
-        padding="10px"
+        padding=".5em 10px"
+        margin="0"
         width="100%"
-        margin="0px"
-        justifyContent="center"
-        background="var(--lightBlue)"
+        background={
+          listView && content.length > 0 ? "white" : "var(--lightBlue)"
+        }
         minHeight="calc(80vh - 130px)"
+        flexDirection="column"
       >
-        <Wrap p="10px" overflow="visible">
-          {content.length < 1 ? (
-            <Flex
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-              alignContent="center"
-              minHeight={200}
-              background="doenet.canvas"
-              padding={20}
-              width="100%"
-              backgroundColor="transparent"
-            >
-              <Icon fontSize="48pt" as={RiEmotionSadLine} />
-              <Text fontSize="36pt">No Activities Yet</Text>
-            </Flex>
-          ) : (
-            <>
-              {content.map((item) => {
-                return (
-                  <ContentCard
-                    key={`Card${item.id}`}
-                    {...item}
-                    title={item.name}
-                    ownerName={createFullName(owner)}
-                    showPublicStatus={false}
-                    showAssignmentStatus={false}
-                    cardLink={
-                      item.isFolder
-                        ? `/sharedActivities/${item.ownerId}/${item.id}`
-                        : `/activityViewer/${item.id}`
-                    }
-                  />
-                );
-              })}
-            </>
-          )}
-        </Wrap>
+        {mainPanel}
       </Flex>
       <Box
         background="gray"

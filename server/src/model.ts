@@ -2375,15 +2375,48 @@ export async function loadPromotedContent(userId: Uint8Array) {
           activity: {
             select: {
               id: true,
-              name: true,
-              imagePath: true,
-
+              isFolder: true,
+              ownerId: true,
               owner: {
                 select: {
+                  userId: true,
                   firstNames: true,
                   lastNames: true,
+                  email: true,
                 },
               },
+              name: true,
+              imagePath: true,
+              isPublic: true,
+              isQuestion: true,
+              isInteractive: true,
+              containsVideo: true,
+              license: {
+                include: {
+                  composedOf: {
+                    select: { composedOf: true },
+                    orderBy: { composedOf: { sortIndex: "asc" } },
+                  },
+                },
+              },
+              classifications: {
+                select: {
+                  classification: {
+                    include: {
+                      subCategories: {
+                        include: {
+                          category: {
+                            include: {
+                              system: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              documents: { select: { id: true, doenetmlVersion: true } },
             },
           },
         },
@@ -2392,17 +2425,30 @@ export async function loadPromotedContent(userId: Uint8Array) {
     },
   });
 
-  const reformattedContent = content.map((groupContent) => {
-    const reformattedActivities = groupContent.promotedContent.map(
-      (promoted) => {
+  const reformattedContent: {
+    groupName: string;
+    promotedGroupId: number;
+    currentlyFeatured: boolean;
+    homepage: boolean;
+    promotedContent: ContentStructure[];
+  }[] = content.map((groupContent) => {
+    const reformattedActivities: ContentStructure[] =
+      groupContent.promotedContent.map((content) => {
+        const { license, classifications, ...content2 } = content.activity;
+
         return {
-          name: promoted.activity.name,
-          activityId: promoted.activity.id,
-          imagePath: promoted.activity.imagePath,
-          owner: promoted.activity.owner,
+          ...content2,
+          license: license ? processLicense(license) : null,
+          classifications: classifications.map((c) => c.classification),
+          classCode: null,
+          codeValidUntil: null,
+          assignmentStatus: "Unassigned",
+          hasScoreData: false,
+          parentFolder: null,
+          isShared: false,
+          sharedWith: [],
         };
-      },
-    );
+      });
 
     return {
       groupName: groupContent.groupName,
@@ -4298,6 +4344,14 @@ export async function getSharedFolderContent({
       id: true,
       isFolder: true,
       ownerId: true,
+      owner: {
+        select: {
+          userId: true,
+          firstNames: true,
+          lastNames: true,
+          email: true,
+        },
+      },
       name: true,
       imagePath: true,
       isPublic: true,
@@ -4317,6 +4371,24 @@ export async function getSharedFolderContent({
           },
         },
       },
+      classifications: {
+        select: {
+          classification: {
+            include: {
+              subCategories: {
+                include: {
+                  category: {
+                    include: {
+                      system: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      documents: { select: { id: true, doenetmlVersion: true } },
       parentFolder: {
         select: {
           id: true,
@@ -4358,6 +4430,14 @@ export async function getSharedFolderContent({
         id: true,
         isFolder: true,
         ownerId: true,
+        owner: {
+          select: {
+            userId: true,
+            firstNames: true,
+            lastNames: true,
+            email: true,
+          },
+        },
         name: true,
         imagePath: true,
         isPublic: true,
@@ -4377,6 +4457,24 @@ export async function getSharedFolderContent({
             },
           },
         },
+        classifications: {
+          select: {
+            classification: {
+              include: {
+                subCategories: {
+                  include: {
+                    category: {
+                      include: {
+                        system: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        documents: { select: { id: true, doenetmlVersion: true } },
         parentFolder: {
           select: {
             id: true,
@@ -4401,6 +4499,7 @@ export async function getSharedFolderContent({
         license,
         sharedWith: sharedWithOrig,
         parentFolder,
+        classifications,
         ...content2
       } = content;
 
@@ -4413,9 +4512,8 @@ export async function getSharedFolderContent({
         ...content2,
         isShared,
         sharedWith,
-        documents: [],
         license: license ? processLicense(license) : null,
-        classifications: [],
+        classifications: classifications.map((c) => c.classification),
         classCode: null,
         codeValidUntil: null,
         assignmentStatus: "Unassigned",

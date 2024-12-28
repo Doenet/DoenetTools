@@ -33,15 +33,13 @@ import { useLoaderData } from "react-router";
 import { Carousel } from "../../../Widgets/Carousel";
 import Searchbar from "../../../Widgets/SearchBar";
 import { Form, useFetcher } from "react-router";
-import { RiEmotionSadLine } from "react-icons/ri";
 import { FaListAlt, FaRegListAlt } from "react-icons/fa";
 import { IoGrid, IoGridOutline } from "react-icons/io5";
-import ContentCard from "../../../Widgets/ContentCard";
-import AuthorCard from "../../../Widgets/AuthorCard";
+import Card, { CardContent } from "../../../Widgets/Card";
 import { createFullName } from "../../../_utils/names";
-import ActivityTable from "../../../Widgets/ActivityTable";
 import { ContentStructure } from "../../../_utils/types";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
+import CardList from "../../../Widgets/CardList";
 
 type SearchMatch =
   | (ContentStructure & { type: "content" })
@@ -148,18 +146,16 @@ export async function loader({ request }) {
       data: { isAdmin },
     } = await axios.get(`/api/checkForCommunityAdmin`);
 
-    let carouselGroups = [];
+    let carouselData = [];
     if (isAdmin) {
-      const carouselGroupsData = await axios.get(
-        `/api/loadPromotedContentGroups`,
-      );
-      carouselGroups = carouselGroupsData.data;
+      const result = await axios.get(`/api/loadPromotedContent`);
+      carouselData = result.data;
     }
 
     return {
       q,
       searchResults: searchData,
-      carouselGroups,
+      carouselData,
       isAdmin,
       listViewPref,
     };
@@ -196,13 +192,25 @@ export function DoenetHeading(props) {
   );
 }
 
-export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
+export function MoveToGroupMenuItem({
+  activityId,
+  carouselData,
+}: {
+  activityId: string;
+  carouselData: {
+    groupName: string;
+    promotedGroupId: number;
+    currentlyFeatured: boolean;
+    homepage: boolean;
+    promotedContent: ContentStructure[];
+  }[];
+}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = React.useRef(null);
   const fetcher = useFetcher();
 
-  if (!carouselGroups) {
-    carouselGroups = [];
+  if (!carouselData) {
+    carouselData = [];
   }
 
   const banContent = () => {
@@ -317,7 +325,7 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
 
           <DrawerBody>
             <VStack spacing="2">
-              {carouselGroups.map((group) => {
+              {carouselData.map((group) => {
                 return (
                   <Button
                     margin="5px"
@@ -338,18 +346,21 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
                 </Text>
 
                 <Form>
-                  {carouselGroups.map((group, position) => {
+                  {carouselData.map((group, position) => {
                     return (
                       <Wrap key={group.promotedGroupId}>
                         <Checkbox
                           isDisabled={group.homepage}
                           isChecked={group.currentlyFeatured}
-                          name={group.groupId}
+                          name={group.promotedGroupId.toString()}
                           onChange={(evt) =>
                             promoteGroup(group, evt.target.checked)
                           }
                         />
-                        <FormLabel htmlFor={group.groupId} width="200px">
+                        <FormLabel
+                          htmlFor={group.promotedGroupId.toString()}
+                          width="200px"
+                        >
                           {group.groupName}
                         </FormLabel>
                         <Button onClick={() => renameGroup(group)}>
@@ -362,7 +373,7 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
                           ↑
                         </Button>
                         <Button
-                          isDisabled={position === carouselGroups.length - 1}
+                          isDisabled={position === carouselData.length - 1}
                           onClick={() => moveGroup(group, position + 1)}
                         >
                           ↓
@@ -395,28 +406,28 @@ export function MoveToGroupMenuItem({ activityId, carouselGroups }) {
 }
 
 export function Community() {
-  const {
-    carouselData,
-    q,
-    searchResults,
-    carouselGroups,
-    isAdmin,
-    listViewPref,
-  } = useLoaderData() as {
-    carouselData: any;
-    q: string;
-    searchResults: {
-      content: ContentStructure[];
-      users: {
-        userId: string;
-        firstNames: string | null;
-        lastNames: string;
+  const { carouselData, q, searchResults, isAdmin, listViewPref } =
+    useLoaderData() as {
+      carouselData: {
+        groupName: string;
+        promotedGroupId: number;
+        currentlyFeatured: boolean;
+        homepage: boolean;
+        promotedContent: ContentStructure[];
       }[];
+      q: string;
+      searchResults: {
+        content: ContentStructure[];
+        users: {
+          userId: string;
+          firstNames: string | null;
+          lastNames: string;
+        }[];
+      };
+      isAdmin: boolean;
+      listViewPref: boolean;
     };
-    carouselGroups: any;
-    isAdmin: boolean;
-    listViewPref: boolean;
-  };
+
   const [currentTab, setCurrentTab] = useState(0);
   const fetcher = useFetcher();
 
@@ -426,13 +437,23 @@ export function Community() {
     document.title = `Community - Doenet`;
   }, []);
 
-  const [infoContentId, setInfoContentId] = useState<string | null>(null);
+  const [infoContentData, setInfoContentData] =
+    useState<ContentStructure | null>(null);
 
   const {
     isOpen: infoIsOpen,
     onOpen: infoOnOpen,
     onClose: infoOnClose,
   } = useDisclosure();
+
+  const infoDrawer = infoContentData ? (
+    <ContentInfoDrawer
+      isOpen={infoIsOpen}
+      onClose={infoOnClose}
+      id={infoContentData.id}
+      contentData={infoContentData}
+    />
+  ) : null;
 
   if (searchResults) {
     let contentMatches: SearchMatch[] = searchResults.content.map((c) => ({
@@ -459,162 +480,81 @@ export function Community() {
       },
     ];
 
-    function displayCard(itemObj: SearchMatch) {
-      if (itemObj.type == "content") {
-        const { id, imagePath, name, owner, isFolder } = itemObj;
-        if (!owner) {
-          return null;
-        }
-        if (isFolder) {
-          const cardLink = `/sharedActivities/${owner.userId}/${id}`;
+    function displaySearchResults(matches: SearchMatch[]) {
+      const cardContent: CardContent[] = matches.map((itemObj) => {
+        if (itemObj.type === "content") {
+          const { id, imagePath, name, owner, isFolder } = itemObj;
+          const cardLink =
+            isFolder && owner != undefined
+              ? `/sharedActivities/${owner.userId}/${id}`
+              : `/activityViewer/${id}`;
 
-          return (
-            <ContentCard
-              key={`ContentCard${id}`}
-              cardLink={cardLink}
-              title={name}
-              imagePath={imagePath}
-              ownerName={createFullName(owner)}
-              showPublicStatus={false}
-              showAssignmentStatus={false}
-              menuItems={
-                isAdmin ? (
-                  <>
-                    <MoveToGroupMenuItem
-                      activityId={id}
-                      carouselGroups={carouselGroups}
-                    />
-                  </>
-                ) : undefined
-              }
-            />
+          let contentType = isFolder ? "Folder" : "Activity";
+
+          let menuItems = (
+            <MenuItem
+              data-test={`${contentType} Information`}
+              onClick={() => {
+                setInfoContentData(itemObj);
+                infoOnOpen();
+              }}
+            >
+              {contentType} information
+            </MenuItem>
           );
+
+          if (isAdmin) {
+            menuItems = (
+              <>
+                {menuItems}
+                <MoveToGroupMenuItem
+                  activityId={id}
+                  carouselData={carouselData}
+                />
+              </>
+            );
+          }
+
+          return {
+            id,
+            title: name,
+            ownerName: owner !== undefined ? createFullName(owner) : "",
+            cardLink,
+            cardType: isFolder ? "folder" : "activity",
+            menuItems,
+            imagePath,
+            isQuestion: itemObj.isQuestion,
+            isInteractive: itemObj.isInteractive,
+            containsVideo: itemObj.containsVideo,
+          };
         } else {
-          const cardLink = `/activityViewer/${id}`;
-
-          return (
-            <ContentCard
-              key={`ContentCard${id}`}
-              cardLink={cardLink}
-              title={name}
-              imagePath={imagePath}
-              ownerName={createFullName(owner)}
-              showPublicStatus={false}
-              showAssignmentStatus={false}
-              menuItems={
-                isAdmin ? (
-                  <>
-                    <MoveToGroupMenuItem
-                      activityId={id}
-                      carouselGroups={carouselGroups}
-                    />
-                  </>
-                ) : undefined
-              }
-            />
-          );
+          // author result
+          const cardLink = `/sharedActivities/${itemObj.userId}`;
+          return {
+            id: itemObj.userId,
+            title: createFullName(itemObj),
+            ownerName: createFullName(itemObj),
+            cardLink,
+            cardType: "author",
+          };
         }
-      } else if (itemObj?.type == "author") {
-        const cardLink = `/sharedActivities/${itemObj.userId}`;
+      });
 
-        return (
-          <AuthorCard
-            key={itemObj.userId}
-            authorName={createFullName(itemObj)}
-            cardLink={cardLink}
-          />
-        );
-      }
-    }
-
-    function displayResultsTable(allMatches: SearchMatch[]) {
       return (
-        <ActivityTable
-          suppressAvatar={false}
+        <CardList
           showPublicStatus={false}
           showAssignmentStatus={false}
+          showActivityFeatures={true}
           showOwnerName={true}
-          content={allMatches.map((itemObj) => {
-            if (itemObj.type === "content") {
-              const { id, imagePath, name, owner, isFolder } = itemObj;
-              const cardLink =
-                isFolder && owner != undefined
-                  ? `/sharedActivities/${owner.userId}/${id}`
-                  : `/activityViewer/${id}`;
-
-              let menuItems = (
-                <MenuItem
-                  data-test="Activity Information"
-                  onClick={() => {
-                    setInfoContentId(id);
-                    infoOnOpen();
-                  }}
-                >
-                  Activity information
-                </MenuItem>
-              );
-
-              if (isAdmin) {
-                menuItems = (
-                  <>
-                    {menuItems}
-                    <MoveToGroupMenuItem
-                      activityId={id}
-                      carouselGroups={carouselGroups}
-                    />
-                  </>
-                );
-              }
-
-              return {
-                id,
-                title: name,
-                ownerName: owner != undefined ? createFullName(owner) : "",
-                cardLink,
-                menuItems,
-              };
-            } else if (itemObj?.type == "author") {
-              const cardLink = `/sharedActivities/${itemObj.userId}`;
-              return {
-                id: itemObj.userId,
-                title: createFullName(itemObj),
-                ownerName: createFullName(itemObj),
-                cardLink,
-                authorRow: true,
-              };
-            } else {
-              return { id: "", title: "" };
-            }
-          })}
+          content={cardContent}
+          emptyMessage={"No Matches Found!"}
+          listView={listView}
         />
       );
     }
 
-    let contentData: ContentStructure | undefined;
-    if (infoContentId) {
-      let index = searchResults.content.findIndex(
-        (obj) => obj.id == infoContentId,
-      );
-      if (index != -1) {
-        contentData = searchResults.content[index];
-      } else {
-        //Throw error not found
-      }
-    }
-
-    let infoDrawer =
-      contentData && infoContentId ? (
-        <ContentInfoDrawer
-          isOpen={infoIsOpen}
-          onClose={infoOnClose}
-          id={infoContentId}
-          contentData={contentData}
-        />
-      ) : null;
-
-    return (
+    const heading = (
       <>
-        {infoDrawer}
         <Flex
           flexDirection="column"
           p={4}
@@ -707,6 +647,14 @@ export function Community() {
             </ButtonGroup>
           </Box>
         </Box>
+      </>
+    );
+
+    return (
+      <>
+        {infoDrawer}
+        {heading}
+
         <Tabs
           orientation="vertical"
           minHeight="calc(100vh - 188px)"
@@ -752,290 +700,256 @@ export function Community() {
             ))}
           </TabList>
 
-          <TabPanels background="doenet.mainGray" data-test="Search Results">
-            <TabPanel>
+          <TabPanels data-test="Search Results">
+            <TabPanel overflowY="hidden">
               <Flex
-                display="flex"
-                direction="column"
-                width="100%"
                 data-test="Results All Matches"
+                display="flex"
+                direction="column"
+                width="100%"
+                height="calc(100vh - 220px)"
+                overflowY="auto"
+                background={
+                  listView && allMatches.length > 0
+                    ? "white"
+                    : "var(--lightBlue)"
+                }
               >
-                {allMatches.length == 0 ? (
-                  <Flex
-                    flexDirection="column"
-                    justifyContent="center"
-                    alignItems="center"
-                    alignContent="center"
-                    minHeight={200}
-                    padding={20}
-                  >
-                    <Icon fontSize="48pt" as={RiEmotionSadLine} />
-                    <Text fontSize="36pt">No Matches Found!</Text>
-                  </Flex>
-                ) : listView ? (
-                  displayResultsTable(allMatches)
-                ) : (
-                  <Flex
-                    justifyContent="center"
-                    alignItems="center"
-                    alignContent="center"
-                  >
-                    <Wrap>{allMatches.map(displayCard)}</Wrap>
-                  </Flex>
-                )}
+                {displaySearchResults(allMatches)}
               </Flex>
             </TabPanel>
             <TabPanel>
               <Flex
+                data-test="Results Activities"
                 display="flex"
                 direction="column"
                 width="100%"
-                data-test="Results Activities"
+                height="calc(100vh - 220px)"
+                background={
+                  listView && allMatches.length > 0
+                    ? "white"
+                    : "var(--lightBlue)"
+                }
               >
-                {contentMatches.length == 0 ? (
-                  <Flex
-                    flexDirection="column"
-                    justifyContent="center"
-                    alignItems="center"
-                    alignContent="center"
-                    minHeight={200}
-                    padding={20}
-                    // border="1px solid var(--canvastext)"
-                  >
-                    <Icon fontSize="48pt" as={RiEmotionSadLine} />
-                    <Text fontSize="36pt">No Matching Activities Found!</Text>
-                  </Flex>
-                ) : listView ? (
-                  displayResultsTable(contentMatches)
-                ) : (
-                  <Flex
-                    justifyContent="center"
-                    alignItems="center"
-                    alignContent="center"
-                  >
-                    <Wrap>{contentMatches.map(displayCard)}</Wrap>
-                  </Flex>
-                )}
+                {displaySearchResults(contentMatches)}
               </Flex>
             </TabPanel>
             <TabPanel>
               <Flex
+                data-test="Results Activities"
                 display="flex"
                 direction="column"
                 width="100%"
-                data-test="Results Activities"
+                height="calc(100vh - 220px)"
+                background={
+                  listView && allMatches.length > 0
+                    ? "white"
+                    : "var(--lightBlue)"
+                }
               >
-                {searchResults?.users?.length == 0 ? (
-                  <Flex
-                    flexDirection="column"
-                    justifyContent="center"
-                    alignItems="center"
-                    alignContent="center"
-                    minHeight={200}
-                    padding={20}
-                    // border="1px solid var(--canvastext)"
-                  >
-                    <Icon fontSize="48pt" as={RiEmotionSadLine} />
-                    <Text fontSize="36pt">No Matching Authors Found!</Text>
-                  </Flex>
-                ) : listView ? (
-                  displayResultsTable(authorMatches)
-                ) : (
-                  <Flex
-                    justifyContent="center"
-                    alignItems="center"
-                    alignContent="center"
-                  >
-                    <Wrap>{authorMatches.map(displayCard)}</Wrap>
-                  </Flex>
-                )}
+                {displaySearchResults(authorMatches)}
               </Flex>
             </TabPanel>
           </TabPanels>
         </Tabs>
       </>
     );
-  }
+  } else {
+    // no search results
 
-  return (
-    <Flex flexDirection="column" height="100%">
-      <Flex
-        flexDirection="column"
-        p={4}
-        mt="1rem"
-        justifyContent="center"
-        alignItems="center"
-        textAlign="center"
-        height="20px"
-      >
-        <Box maxW={400} minW={200}>
-          <Box width="400px">
-            <Form>
-              <Searchbar defaultValue={q} dataTest="Search" />
-            </Form>
-          </Box>
-          {/* <input type='text' width="400px" /> */}
-        </Box>
-      </Flex>
-      <DoenetHeading subheading="Community Content" />
-      <Box
-        display="flex"
-        flexDirection="column"
-        padding="60px 10px 200px 10px"
-        margin="0px"
-        rowGap="45px"
-        alignItems="center"
-        textAlign="center"
-        background="var(--mainGray)"
-        flex="1"
-      >
-        {isAdmin ? (
-          <Text>
-            You are logged in as an admin and can manage these lists, they will
-            show to other users as carousels
-          </Text>
-        ) : null}
-        {carouselData
-          .sort((a, b) => {
-            if (a.homepage) return -1;
-            else if (b.homepage) return 1;
-            else if (a.currentlyFeatured && !b.currentlyFeatured) return -1;
-            else if (!a.currentlyFeatured && b.currentlyFeatured) return 1;
-            else return 0;
-          })
-          .map((group) => {
-            // Homepage only visible to admins
-            if (!isAdmin && group.homepage) {
-              return null;
-            }
+    return (
+      <>
+        {infoDrawer}
+        <Flex flexDirection="column" height="100%">
+          <Flex
+            flexDirection="column"
+            p={4}
+            mt="1rem"
+            justifyContent="center"
+            alignItems="center"
+            textAlign="center"
+            height="20px"
+          >
+            <Box maxW={400} minW={200}>
+              <Box width="400px">
+                <Form>
+                  <Searchbar defaultValue={q} dataTest="Search" />
+                </Form>
+              </Box>
+              {/* <input type='text' width="400px" /> */}
+            </Box>
+          </Flex>
+          <DoenetHeading subheading="Community Content" />
+          <Box
+            display="flex"
+            flexDirection="column"
+            padding="60px 10px 200px 10px"
+            margin="0px"
+            rowGap="45px"
+            alignItems="center"
+            textAlign="center"
+            background="var(--mainGray)"
+            flex="1"
+          >
+            {isAdmin ? (
+              <Text>
+                You are logged in as an admin and can manage these lists, they
+                will show to other users as carousels
+              </Text>
+            ) : null}
+            {carouselData
+              .sort((a, b) => {
+                if (a.homepage) return -1;
+                else if (b.homepage) return 1;
+                else if (a.currentlyFeatured && !b.currentlyFeatured) return -1;
+                else if (!a.currentlyFeatured && b.currentlyFeatured) return 1;
+                else return 0;
+              })
+              .map((group) => {
+                // Homepage only visible to admins
+                if (!isAdmin && group.homepage) {
+                  return null;
+                }
 
-            let groupName = group.groupName;
-            let notPromoted = false;
-            if (
-              isAdmin &&
-              !group.homepage &&
-              group.currentlyFeatured == false
-            ) {
-              groupName += " (Not currently featured on community page)";
-              notPromoted = true;
-            }
-            return isAdmin ? (
-              <span key={groupName}>
-                <Text fontSize="24px">{groupName}</Text>
-                {group.homepage ? (
-                  <Text>Always promoted</Text>
-                ) : notPromoted ? (
-                  <Button
-                    onClick={() => {
-                      fetcher.submit(
-                        {
-                          _action: "Promote Group",
-                          groupId: group.promotedGroupId,
-                          currentlyFeatured: true,
-                          homepage: false,
-                        },
-                        { method: "post" },
-                      );
-                    }}
-                  >
-                    Promote
-                  </Button>
+                let groupName = group.groupName;
+                let notPromoted = false;
+                if (
+                  isAdmin &&
+                  !group.homepage &&
+                  group.currentlyFeatured == false
+                ) {
+                  groupName += " (Not currently featured on community page)";
+                  notPromoted = true;
+                }
+                return isAdmin ? (
+                  <span key={groupName}>
+                    <Text fontSize="24px">{groupName}</Text>
+                    {group.homepage ? (
+                      <Text>Always promoted</Text>
+                    ) : notPromoted ? (
+                      <Button
+                        onClick={() => {
+                          fetcher.submit(
+                            {
+                              _action: "Promote Group",
+                              groupId: group.promotedGroupId,
+                              currentlyFeatured: true,
+                              homepage: false,
+                            },
+                            { method: "post" },
+                          );
+                        }}
+                      >
+                        Promote
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          fetcher.submit(
+                            {
+                              _action: "Promote Group",
+                              groupId: group.promotedGroupId,
+                              currentlyFeatured: false,
+                              homepage: false,
+                            },
+                            { method: "post" },
+                          );
+                        }}
+                      >
+                        Stop Promoting
+                      </Button>
+                    )}
+                    <br />
+                    <br />
+                    <Wrap overflow="visible">
+                      {group.promotedContent.map((cardObj, i) => {
+                        return (
+                          <Card
+                            key={`swipercard${i}`}
+                            cardContent={{
+                              id: cardObj.id,
+                              imagePath: cardObj.imagePath,
+                              title: cardObj.name,
+                              ownerName: createFullName(cardObj.owner!),
+                              isQuestion: cardObj.isQuestion,
+                              isInteractive: cardObj.isInteractive,
+                              containsVideo: cardObj.containsVideo,
+                              cardLink: `/activityViewer/${cardObj.id}`,
+                              cardType: "activity",
+                              menuItems: (
+                                <>
+                                  <MenuItem
+                                    onClick={() => {
+                                      fetcher.submit(
+                                        {
+                                          _action: "Remove Promoted Content",
+                                          activityId: cardObj.id,
+                                          groupId: group.promotedGroupId,
+                                        },
+                                        { method: "post" },
+                                      );
+                                    }}
+                                  >
+                                    Remove from group
+                                  </MenuItem>
+                                  <MenuItem
+                                    isDisabled={i === 0}
+                                    onClick={() => {
+                                      fetcher.submit(
+                                        {
+                                          _action: "Move Promoted Content",
+                                          activityId: cardObj.id,
+                                          groupId: group.promotedGroupId,
+                                          desiredPosition: i - 1,
+                                        },
+                                        { method: "post" },
+                                      );
+                                    }}
+                                  >
+                                    Move Left
+                                  </MenuItem>
+                                  <MenuItem
+                                    isDisabled={
+                                      i === group.promotedContent.length - 1
+                                    }
+                                    onClick={() => {
+                                      fetcher.submit(
+                                        {
+                                          _action: "Move Promoted Content",
+                                          activityId: cardObj.id,
+                                          groupId: group.promotedGroupId,
+                                          desiredPosition: i + 1,
+                                        },
+                                        { method: "post" },
+                                      );
+                                    }}
+                                  >
+                                    Move Right
+                                  </MenuItem>
+                                </>
+                              ),
+                            }}
+                            showOwnerName={true}
+                            showActivityFeatures={true}
+                            listView={false}
+                          />
+                        );
+                      })}
+                    </Wrap>
+                  </span>
                 ) : (
-                  <Button
-                    onClick={() => {
-                      fetcher.submit(
-                        {
-                          _action: "Promote Group",
-                          groupId: group.promotedGroupId,
-                          currentlyFeatured: false,
-                          homepage: false,
-                        },
-                        { method: "post" },
-                      );
-                    }}
-                  >
-                    Stop Promoting
-                  </Button>
-                )}
-                <br />
-                <br />
-                <Wrap overflow="visible">
-                  {group.promotedContent.map((cardObj, i) => {
-                    return (
-                      <ContentCard
-                        key={`swipercard${i}`}
-                        imagePath={cardObj.imagePath}
-                        title={cardObj.name}
-                        ownerName={createFullName(cardObj.owner)}
-                        cardLink={`/activityViewer/${cardObj.activityId}`}
-                        showPublicStatus={false}
-                        showAssignmentStatus={false}
-                        menuItems={
-                          <>
-                            <MenuItem
-                              onClick={() => {
-                                fetcher.submit(
-                                  {
-                                    _action: "Remove Promoted Content",
-                                    activityId: cardObj.activityId,
-                                    groupId: group.promotedGroupId,
-                                  },
-                                  { method: "post" },
-                                );
-                              }}
-                            >
-                              Remove from group
-                            </MenuItem>
-                            <MenuItem
-                              isDisabled={i === 0}
-                              onClick={() => {
-                                fetcher.submit(
-                                  {
-                                    _action: "Move Promoted Content",
-                                    activityId: cardObj.activityId,
-                                    groupId: group.promotedGroupId,
-                                    desiredPosition: i - 1,
-                                  },
-                                  { method: "post" },
-                                );
-                              }}
-                            >
-                              Move Left
-                            </MenuItem>
-                            <MenuItem
-                              isDisabled={
-                                i === group.promotedContent.length - 1
-                              }
-                              onClick={() => {
-                                fetcher.submit(
-                                  {
-                                    _action: "Move Promoted Content",
-                                    activityId: cardObj.activityId,
-                                    groupId: group.promotedGroupId,
-                                    desiredPosition: i + 1,
-                                  },
-                                  { method: "post" },
-                                );
-                              }}
-                            >
-                              Move Right
-                            </MenuItem>
-                          </>
-                        }
-                      />
-                    );
-                  })}
-                </Wrap>
-              </span>
-            ) : (
-              <Carousel
-                key={groupName}
-                title={groupName}
-                data={group.promotedContent}
-              />
-            );
-          })}
-      </Box>
-    </Flex>
-  );
+                  <Carousel
+                    key={groupName}
+                    title={groupName}
+                    activities={group.promotedContent}
+                    setInfoContentData={setInfoContentData}
+                    infoOnOpen={infoOnOpen}
+                  />
+                );
+              })}
+          </Box>
+        </Flex>
+      </>
+    );
+  }
 }

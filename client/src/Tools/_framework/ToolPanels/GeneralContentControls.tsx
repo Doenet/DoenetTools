@@ -22,6 +22,7 @@ import {
 import { FaFileImage } from "react-icons/fa";
 import { readAndCompressImage } from "browser-image-resizer";
 import { ContentStructure, DoenetmlVersion } from "../../../_utils/types";
+import { activityFeatures } from "../../../_utils/activity";
 
 export async function generalContentActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "update general") {
@@ -65,12 +66,10 @@ export async function generalContentActions({ formObj }: { [k: string]: any }) {
 
 export function GeneralContentControls({
   fetcher,
-  id,
   contentData,
   allDoenetmlVersions,
 }: {
   fetcher: FetcherWithComponents<any>;
-  id: string;
   contentData: ContentStructure;
   allDoenetmlVersions: DoenetmlVersion[];
 }) {
@@ -143,7 +142,7 @@ export function GeneralContentControls({
     fetcher.submit(
       {
         _action: "update general",
-        id,
+        id: contentData.id,
         docId: contentData.documents?.[0]?.id,
         ...data,
       },
@@ -193,7 +192,7 @@ export function GeneralContentControls({
         const uploadData = new FormData();
         // uploadData.append('file',file);
         uploadData.append("file", image);
-        uploadData.append("activityId", id.toString());
+        uploadData.append("activityId", contentData.id.toString());
 
         axios.post("/api/activityThumbnailUpload", uploadData).then((resp) => {
           let { data } = resp;
@@ -226,7 +225,7 @@ export function GeneralContentControls({
         });
       };
     },
-    [id],
+    [contentData.id],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
@@ -317,8 +316,15 @@ export function GeneralContentControls({
                   saveDataToServer({ isQuestion: !isQuestion });
                 }}
               >
-                <Tooltip label="Activity is a single question suitable to add to an assessment.">
-                  Single question
+                <Tooltip label={activityFeatures.isQuestion.description}>
+                  {activityFeatures.isQuestion.term}
+                  <Icon
+                    paddingLeft="5px"
+                    as={activityFeatures.isQuestion.icon}
+                    color="#666699"
+                    boxSize={5}
+                    verticalAlign="middle"
+                  />
                 </Tooltip>
               </Checkbox>
             </FormControl>
@@ -332,8 +338,15 @@ export function GeneralContentControls({
                   saveDataToServer({ isInteractive: !isInteractive });
                 }}
               >
-                <Tooltip label="Activity contains interactives, such as interactive graphics.">
-                  Interactive
+                <Tooltip label={activityFeatures.isInteractive.description}>
+                  {activityFeatures.isInteractive.term}
+                  <Icon
+                    paddingLeft="5px"
+                    as={activityFeatures.isInteractive.icon}
+                    color="#666699"
+                    boxSize={5}
+                    verticalAlign="middle"
+                  />
                 </Tooltip>
               </Checkbox>
             </FormControl>
@@ -347,7 +360,16 @@ export function GeneralContentControls({
                   saveDataToServer({ containsVideo: !containsVideo });
                 }}
               >
-                <Tooltip label="Activity contains videos.">Video</Tooltip>
+                <Tooltip label={activityFeatures.containsVideo.description}>
+                  {activityFeatures.containsVideo.term}
+                  <Icon
+                    paddingLeft="5px"
+                    as={activityFeatures.containsVideo.icon}
+                    color="#666699"
+                    boxSize={5}
+                    verticalAlign="middle"
+                  />
+                </Tooltip>
               </Checkbox>
             </FormControl>
           </Box>
@@ -397,7 +419,7 @@ export function GeneralContentControls({
         )}
         <input type="hidden" name="imagePath" value={imagePath ?? undefined} />
         <input type="hidden" name="_action" value="update general" />
-        <input type="hidden" name="id" value={id} />
+        <input type="hidden" name="id" value={contentData.id} />
       </Form>
     </>
   );

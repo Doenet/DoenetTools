@@ -1114,10 +1114,7 @@ app.get(
       const content = await loadPromotedContent(loggedInUserId);
       const content2 = content.map((c) => ({
         ...c,
-        promotedContent: c.promotedContent.map((pc) => ({
-          ...pc,
-          activityId: fromUUID(pc.activityId),
-        })),
+        promotedContent: c.promotedContent.map(contentStructureConvertUUID),
       }));
       res.send(content2);
     } catch (e) {

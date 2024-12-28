@@ -32,11 +32,10 @@ import {
   Form,
 } from "react-router";
 
-import { RiEmotionSadLine } from "react-icons/ri";
 import { FaListAlt, FaRegListAlt } from "react-icons/fa";
 import { IoGrid, IoGridOutline } from "react-icons/io5";
-import ContentCard, { contentCardActions } from "../../../Widgets/ContentCard";
-import ActivityTable from "../../../Widgets/ActivityTable";
+import { cardActions, CardContent } from "../../../Widgets/Card";
+import CardList from "../../../Widgets/CardList";
 import axios from "axios";
 import MoveContentToFolder, {
   moveContentActions,
@@ -81,7 +80,7 @@ export async function action({ request, params }) {
     return resultAS;
   }
 
-  let resultCC = await contentCardActions({ formObj });
+  let resultCC = await cardActions({ formObj });
   if (resultCC) {
     return resultCC;
   }
@@ -198,7 +197,7 @@ export function Activities() {
     allLicenses: License[];
     userId: string;
     folder: ContentStructure | null;
-    listViewPref: Boolean;
+    listViewPref: boolean;
     query: string | null;
   };
   const [settingsContentId, setSettingsContentId] = useState<string | null>(
@@ -222,9 +221,12 @@ export function Activities() {
     onClose: assignmentSettingsOnClose,
   } = useDisclosure();
 
-  const contentCardRefs = useRef(new Array());
+  // refs to the menu button of each content card,
+  // which should be given focus when drawers are closed
+  const cardMenuRefs = useRef<HTMLButtonElement[]>(new Array());
+
   const folderSettingsRef = useRef(null);
-  const finalFocusRef = useRef(null);
+  const finalFocusRef = useRef<HTMLElement | null>(null);
 
   const [haveContentSpinner, setHaveContentSpinner] = useState(false);
 
@@ -447,7 +449,7 @@ export function Activities() {
       let index = content.findIndex((obj) => obj.id == settingsContentId);
       if (index != -1) {
         contentData = content[index];
-        finalFocusRef.current = contentCardRefs.current[index];
+        finalFocusRef.current = cardMenuRefs.current[index];
       } else {
         //Throw error not found
       }
@@ -459,7 +461,6 @@ export function Activities() {
       <ContentSettingsDrawer
         isOpen={settingsAreOpen}
         onClose={settingsOnClose}
-        id={settingsContentId}
         contentData={contentData}
         allDoenetmlVersions={allDoenetmlVersions}
         finalFocusRef={finalFocusRef}
@@ -739,6 +740,54 @@ export function Activities() {
     </Flex>
   ) : null;
 
+  const emptyMessage = haveQuery ? "No Results Found" : "No Activities Yet";
+
+  const cardContent: CardContent[] = content.map((activity, position) => {
+    const getCardMenuRef = (element: HTMLButtonElement) => {
+      cardMenuRefs.current[position] = element;
+    };
+    const justCreated = folderJustCreated === activity.id;
+    if (justCreated) {
+      folderJustCreated = "";
+    }
+
+    return {
+      menuRef: getCardMenuRef,
+      ...activity,
+      title: activity.name,
+      menuItems: getCardMenuList({
+        id: activity.id,
+        position,
+        numCards: content.length,
+        assignmentStatus: activity.assignmentStatus,
+        isPublic: activity.isPublic,
+        isShared: activity.isShared,
+        sharedWith: activity.sharedWith,
+        licenseCode: activity.license?.code ?? null,
+        parentFolderId: activity.parentFolder?.id ?? null,
+      }),
+      cardLink: activity.isFolder
+        ? `/activities/${activity.ownerId}/${activity.id}`
+        : `/activityEditor/${activity.id}`,
+      editableTitle: true,
+      autoFocusTitle: justCreated,
+      cardType: activity.isFolder ? "folder" : "activity",
+    };
+  });
+
+  const mainPanel = (
+    <CardList
+      showOwnerName={false}
+      showAssignmentStatus={true}
+      showPublicStatus={true}
+      showActivityFeatures={true}
+      emptyMessage={emptyMessage}
+      listView={listView}
+      content={cardContent}
+      editableTitles={true}
+    />
+  );
+
   return (
     <>
       {settingsDrawer}
@@ -763,108 +812,7 @@ export function Activities() {
         minHeight="calc(100vh - 189px)"
         direction="column"
       >
-        {content.length < 1 ? (
-          <Flex
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-            alignContent="center"
-            minHeight={200}
-            background="doenet.canvas"
-            padding={20}
-            width="100%"
-            backgroundColor="transparent"
-          >
-            <Icon fontSize="48pt" as={RiEmotionSadLine} />
-            <Text fontSize="36pt">
-              {haveQuery ? "No Results Found" : "No Activities Yet"}
-            </Text>
-          </Flex>
-        ) : listView ? (
-          <ActivityTable
-            suppressAvatar={true}
-            showOwnerName={false}
-            showAssignmentStatus={true}
-            content={content.map((activity, position) => {
-              const getCardRef = (element) => {
-                contentCardRefs.current[position] = element;
-              };
-              const justCreated = folderJustCreated === activity.id;
-              if (justCreated) {
-                folderJustCreated = "";
-              }
-              return {
-                ref: getCardRef,
-                ...activity,
-                title: activity.name,
-                menuItems: getCardMenuList({
-                  id: activity.id,
-                  position,
-                  numCards: content.length,
-                  assignmentStatus: activity.assignmentStatus,
-                  isFolder: activity.isFolder,
-                  isPublic: activity.isPublic,
-                  isShared: activity.isShared,
-                  sharedWith: activity.sharedWith,
-                  licenseCode: activity.license?.code ?? null,
-                  parentFolderId: activity.parentFolder?.id ?? null,
-                }),
-                cardLink: activity.isFolder
-                  ? `/activities/${activity.ownerId}/${activity.id}`
-                  : `/activityEditor/${activity.id}`,
-                editableTitle: true,
-                autoFocusTitle: justCreated,
-              };
-            })}
-          />
-        ) : (
-          <Flex
-            justifyContent="center"
-            alignItems="center"
-            alignContent="center"
-          >
-            <Wrap p="10px" overflow="visible">
-              {content.map((activity, position) => {
-                const getCardRef = (element) => {
-                  contentCardRefs.current[position] = element;
-                };
-                const justCreated = folderJustCreated === activity.id;
-                if (justCreated) {
-                  folderJustCreated = "";
-                }
-                return (
-                  <ContentCard
-                    key={`Card${activity.id}`}
-                    ref={getCardRef}
-                    {...activity}
-                    title={activity.name}
-                    menuItems={getCardMenuList({
-                      id: activity.id,
-                      position,
-                      numCards: content.length,
-                      assignmentStatus: activity.assignmentStatus,
-                      isFolder: activity.isFolder,
-                      isPublic: activity.isPublic,
-                      isShared: activity.isShared,
-                      sharedWith: activity.sharedWith,
-                      licenseCode: activity.license?.code ?? null,
-                      parentFolderId: activity.parentFolder?.id ?? null,
-                    })}
-                    suppressAvatar={true}
-                    showOwnerName={false}
-                    cardLink={
-                      activity.isFolder
-                        ? `/activities/${activity.ownerId}/${activity.id}`
-                        : `/activityEditor/${activity.id}`
-                    }
-                    editableTitle={true}
-                    autoFocusTitle={justCreated}
-                  />
-                );
-              })}
-            </Wrap>
-          </Flex>
-        )}
+        {mainPanel}
       </Flex>
     </>
   );

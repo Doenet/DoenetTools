@@ -1,9 +1,18 @@
 import React from "react";
-import { Box, List } from "@chakra-ui/react";
+import {
+  Box,
+  Heading,
+  Icon,
+  List,
+  ListItem,
+  Tooltip,
+  UnorderedList,
+} from "@chakra-ui/react";
 import { ContentStructure } from "../../../_utils/types";
 import { InfoIcon } from "@chakra-ui/icons";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { createFullName } from "../../../_utils/names";
+import { activityFeatures } from "../../../_utils/activity";
 
 export function GeneralContentInfo({
   contentData,
@@ -12,6 +21,11 @@ export function GeneralContentInfo({
 }) {
   let license = contentData.license;
   let contentType = contentData.isFolder ? "Folder" : "Activity";
+
+  const containsFeatures =
+    contentData.isQuestion ||
+    contentData.isInteractive ||
+    contentData.containsVideo;
 
   return (
     <Box>
@@ -56,6 +70,56 @@ export function GeneralContentInfo({
           </>
         )}
       </Box>
+
+      {!contentData.isFolder && containsFeatures ? (
+        <Box borderBottom="2px" marginBottom={4} paddingBottom={4}>
+          <Heading size="sm">Activity features</Heading>
+          <UnorderedList>
+            {contentData.isQuestion ? (
+              <ListItem>
+                <Tooltip label={activityFeatures.isQuestion.description}>
+                  {activityFeatures.isQuestion.term}
+                  <Icon
+                    paddingLeft="5px"
+                    as={activityFeatures.isQuestion.icon}
+                    color="#666699"
+                    boxSize={5}
+                    verticalAlign="middle"
+                  />
+                </Tooltip>
+              </ListItem>
+            ) : null}
+            {contentData.isInteractive ? (
+              <ListItem>
+                <Tooltip label={activityFeatures.isInteractive.description}>
+                  {activityFeatures.isInteractive.term}
+                  <Icon
+                    paddingLeft="5px"
+                    as={activityFeatures.isInteractive.icon}
+                    color="#666699"
+                    boxSize={5}
+                    verticalAlign="middle"
+                  />
+                </Tooltip>
+              </ListItem>
+            ) : null}
+            {contentData.containsVideo ? (
+              <ListItem>
+                <Tooltip label={activityFeatures.containsVideo.description}>
+                  {activityFeatures.containsVideo.term}
+                  <Icon
+                    paddingLeft="5px"
+                    as={activityFeatures.containsVideo.icon}
+                    color="#666699"
+                    boxSize={5}
+                    verticalAlign="middle"
+                  />
+                </Tooltip>
+              </ListItem>
+            ) : null}
+          </UnorderedList>
+        </Box>
+      ) : null}
 
       {!contentData.isFolder
         ? `DoenetML version: ${contentData.documents[0].doenetmlVersion.fullVersion}`

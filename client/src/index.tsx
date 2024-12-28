@@ -1,10 +1,6 @@
 import React from "react";
 
-import {
-  createBrowserRouter,
-  redirect,
-  RouterProvider,
-} from "react-router";
+import { createBrowserRouter, RouterProvider } from "react-router";
 import { createRoot } from "react-dom/client";
 
 import "@doenet/doenetml-iframe/style.css";
@@ -37,6 +33,7 @@ import {
 } from "./Tools/_framework/Paths/Activities";
 import {
   loader as sharedActivitiesLoader,
+  action as sharedActivitiesAction,
   SharedActivities,
 } from "./Tools/_framework/Paths/SharedActivities";
 import {
@@ -246,12 +243,14 @@ const router = createBrowserRouter([
       {
         path: "sharedActivities/:ownerId",
         loader: sharedActivitiesLoader,
+        action: sharedActivitiesAction,
         element: <SharedActivities />,
         errorElement: <ErrorPage />,
       },
       {
         path: "sharedActivities/:ownerId/:folderId",
         loader: sharedActivitiesLoader,
+        action: sharedActivitiesAction,
         element: <SharedActivities />,
         errorElement: <ErrorPage />,
       },

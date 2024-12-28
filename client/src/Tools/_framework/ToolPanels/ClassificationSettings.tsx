@@ -59,11 +59,9 @@ export async function classificationSettingsActions({
 
 export function ClassificationSettings({
   fetcher,
-  id,
   contentData,
 }: {
   fetcher: FetcherWithComponents<any>;
-  id: string;
   contentData: ContentStructure;
 }) {
   let [categoryFilter, setCategoryFilter] = useState<{
@@ -232,7 +230,7 @@ export function ClassificationSettings({
                               fetcher.submit(
                                 {
                                   _action: "remove content classification",
-                                  activityId: id,
+                                  activityId: contentData.id,
                                   classificationId: classification.id,
                                 },
                                 { method: "post" },
@@ -481,7 +479,7 @@ export function ClassificationSettings({
                               fetcher.submit(
                                 {
                                   _action: action,
-                                  activityId: id,
+                                  activityId: contentData.id,
                                   classificationId: classification.id,
                                 },
                                 { method: "post" },
