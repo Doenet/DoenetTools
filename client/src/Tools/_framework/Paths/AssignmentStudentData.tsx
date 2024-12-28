@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { redirect, replace, useLoaderData } from "react-router";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
 import { Button, Box, Link as ChakraLink } from "@chakra-ui/react";
@@ -9,6 +8,8 @@ import {
   Link as ReactRouterLink,
   useFetcher,
   useNavigate,
+  redirect,
+  useLoaderData,
 } from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { UserInfo } from "../../../_utils/types";
