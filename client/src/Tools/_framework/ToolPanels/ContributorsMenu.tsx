@@ -11,8 +11,9 @@ import {
   Text,
   Link as ChakraLink,
   Tooltip,
+  HStack,
 } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { Link as ReactRouterLink } from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { ContentStructure, DocHistoryItem } from "../../../_utils/types";
 
@@ -122,9 +123,12 @@ export default function ContributorsMenu({
                 {avatars[0]}{" "}
               </ChakraLink>
             </Tooltip>
-            <Text cursor="default">
-              {activity.name} by {createFullName(activity.owner)}
-            </Text>
+            <HStack cursor="default">
+              <Text noOfLines={1} maxWidth="400px">
+                {activity.name}
+              </Text>{" "}
+              <Text>by {createFullName(activity.owner)}</Text>
+            </HStack>
           </MenuItem>
           {contributorHistory.map((contrib_hist, i) => {
             let menuText = `${contrib_hist.prevActivityName} by ${createFullName(contrib_hist.prevOwner)}`;

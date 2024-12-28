@@ -16,7 +16,7 @@ import {
   VStack,
   Box,
 } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { Link as ReactRouterLink } from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { DateTime } from "luxon";
 import { DocHistoryItem } from "../../../_utils/types";

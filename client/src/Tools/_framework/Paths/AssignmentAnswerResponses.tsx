@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
-import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
+import { Link as ReactRouterLink, useNavigate } from "react-router";
 import { createFullName, lastNameFirst } from "../../../_utils/names";
 import { UserInfo } from "../../../_utils/types";
 

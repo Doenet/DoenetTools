@@ -182,9 +182,11 @@ export function ActivityViewer() {
                     mt="10px"
                   >
                     <Flex width="100%">
-                      <Text fontSize="1.4em" fontWeight="bold" noOfLines={1}>
-                        {activity.name}
-                      </Text>
+                      <Tooltip label={activity.name}>
+                        <Text fontSize="1.4em" fontWeight="bold" noOfLines={1}>
+                          {activity.name}
+                        </Text>
+                      </Tooltip>
                       <Spacer />
                       {activity.license ? (
                         <SmallLicenseBadges license={activity.license} />

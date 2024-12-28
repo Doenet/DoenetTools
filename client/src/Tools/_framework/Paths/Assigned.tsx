@@ -13,17 +13,16 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { useLoaderData, useNavigate, useFetcher } from "react-router-dom";
+import { useLoaderData, useNavigate, useFetcher } from "react-router";
 
-import { RiEmotionSadLine } from "react-icons/ri";
 import { FaListAlt, FaRegListAlt } from "react-icons/fa";
 import { IoGrid, IoGridOutline } from "react-icons/io5";
-import ContentCard from "../../../Widgets/ContentCard";
+import { CardContent } from "../../../Widgets/Card";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
 import { DateTime } from "luxon";
-import ActivityTable from "../../../Widgets/ActivityTable";
 import { ContentStructure, UserInfo } from "../../../_utils/types";
+import CardList from "../../../Widgets/CardList";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -56,7 +55,7 @@ export function Assigned() {
   let { user, assignments, listViewPref } = useLoaderData() as {
     user: UserInfo;
     assignments: ContentStructure[];
-    listViewPref: Boolean;
+    listViewPref: boolean;
   };
 
   const navigate = useNavigate();
@@ -119,92 +118,115 @@ export function Assigned() {
     return timeFormatted;
   }
 
+  const heading = (
+    <Box
+      backgroundColor="#fff"
+      color="#000"
+      height="80px"
+      width="100%"
+      textAlign="center"
+      padding=".5em 0"
+    >
+      <Heading as="h2" size="lg">
+        {createFullName(user)}
+      </Heading>
+      <Heading as="h3" size="md">
+        Assigned Activities
+      </Heading>
+      <VStack align="flex-end" float="right" marginRight=".5em">
+        <HStack>
+          <Button
+            size="sm"
+            colorScheme="blue"
+            onClick={() => navigate(`/code`)}
+          >
+            Class code
+          </Button>
+          <Button
+            size="sm"
+            colorScheme="blue"
+            onClick={() => navigate(`/assignedData`)}
+          >
+            See Scores
+          </Button>
+        </HStack>
+        <ButtonGroup size="sm" isAttached variant="outline" marginBottom=".5em">
+          <Tooltip label="Toggle List View">
+            <Button isActive={listView === true}>
+              <Icon
+                as={listView ? FaListAlt : FaRegListAlt}
+                boxSize={10}
+                p=".5em"
+                cursor="pointer"
+                onClick={() => {
+                  if (listView === false) {
+                    setListView(true);
+                    fetcher.submit(
+                      {
+                        _action: "Set List View Preferred",
+                        listViewPref: true,
+                      },
+                      { method: "post" },
+                    );
+                  }
+                }}
+              />
+            </Button>
+          </Tooltip>
+          <Tooltip label="Toggle Card View">
+            <Button isActive={listView === false}>
+              <Icon
+                as={listView ? IoGridOutline : IoGrid}
+                boxSize={10}
+                p=".5em"
+                cursor="pointer"
+                onClick={() => {
+                  if (listView === true) {
+                    setListView(false);
+                    fetcher.submit(
+                      {
+                        _action: "Set List View Preferred",
+                        listViewPref: false,
+                      },
+                      { method: "post" },
+                    );
+                  }
+                }}
+              />
+            </Button>
+          </Tooltip>
+        </ButtonGroup>
+      </VStack>
+    </Box>
+  );
+
+  const cardContent: CardContent[] = assignments.map((assignment, position) => {
+    return {
+      ...assignment,
+      title: assignment.name,
+      cardLink:
+        assignment.assignmentStatus === "Open"
+          ? `/code/${assignment.classCode}`
+          : `/assignedData/${assignment.id}`,
+      cardType: assignment.isFolder ? "folder" : "activity",
+      closeTime: formatTime(assignment.codeValidUntil),
+    };
+  });
+
+  const mainPanel = (
+    <CardList
+      showOwnerName={false}
+      showAssignmentStatus={true}
+      showPublicStatus={false}
+      emptyMessage={"Nothing Assigned"}
+      listView={listView}
+      content={cardContent}
+    />
+  );
+
   return (
     <>
-      <Box
-        backgroundColor="#fff"
-        color="#000"
-        height="80px"
-        width="100%"
-        textAlign="center"
-        padding=".5em 0"
-      >
-        <Heading as="h2" size="lg">
-          {createFullName(user)}
-        </Heading>
-        <Heading as="h3" size="md">
-          Assigned Activities
-        </Heading>
-        <VStack align="flex-end" float="right" marginRight=".5em">
-          <HStack>
-            <Button
-              size="sm"
-              colorScheme="blue"
-              onClick={() => navigate(`/code`)}
-            >
-              Class code
-            </Button>
-            <Button
-              size="sm"
-              colorScheme="blue"
-              onClick={() => navigate(`/assignedData`)}
-            >
-              See Scores
-            </Button>
-          </HStack>
-          <ButtonGroup
-            size="sm"
-            isAttached
-            variant="outline"
-            marginBottom=".5em"
-          >
-            <Tooltip label="Toggle List View">
-              <Button isActive={listView === true}>
-                <Icon
-                  as={listView ? FaListAlt : FaRegListAlt}
-                  boxSize={10}
-                  p=".5em"
-                  cursor="pointer"
-                  onClick={() => {
-                    if (listView === false) {
-                      setListView(true);
-                      fetcher.submit(
-                        {
-                          _action: "Set List View Preferred",
-                          listViewPref: true,
-                        },
-                        { method: "post" },
-                      );
-                    }
-                  }}
-                />
-              </Button>
-            </Tooltip>
-            <Tooltip label="Toggle Card View">
-              <Button isActive={listView === false}>
-                <Icon
-                  as={listView ? IoGridOutline : IoGrid}
-                  boxSize={10}
-                  p=".5em"
-                  cursor="pointer"
-                  onClick={() => {
-                    if (listView === true) {
-                      setListView(false);
-                      fetcher.submit(
-                        {
-                          _action: "Set List View Preferred",
-                          listViewPref: false,
-                        },
-                        { method: "post" },
-                      );
-                    }
-                  }}
-                />
-              </Button>
-            </Tooltip>
-          </ButtonGroup>
-        </VStack>
-      </Box>
+      {heading}
       <Flex
         data-test="Assigned Activities"
         padding=".5em 10px"
@@ -216,68 +238,7 @@ export function Assigned() {
         minHeight="calc(100vh - 188px)"
         flexDirection="column"
       >
-        {assignments.length < 1 ? (
-          <Flex
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-            alignContent="center"
-            minHeight={200}
-            padding={20}
-            width="100%"
-          >
-            <Icon fontSize="48pt" as={RiEmotionSadLine} />
-            <Text fontSize="36pt">Nothing Assigned</Text>
-          </Flex>
-        ) : listView ? (
-          <ActivityTable
-            suppressAvatar={true}
-            showPublicStatus={false}
-            showAssignmentStatus={true}
-            content={assignments.map((assignment) => {
-              return {
-                id: assignment.id,
-                title: assignment.name,
-                cardLink:
-                  assignment.assignmentStatus === "Open"
-                    ? `/code/${assignment.classCode}`
-                    : `/assignedData/${assignment.id}`,
-                assignmentStatus: assignment.assignmentStatus,
-                closeTime: formatTime(assignment.codeValidUntil),
-              };
-            })}
-          />
-        ) : (
-          <Flex
-            justifyContent="center"
-            alignItems="center"
-            alignContent="center"
-          >
-            <Wrap p="10px" overflow="visible">
-              {assignments.map((assignment) => {
-                return (
-                  <ContentCard
-                    key={`Card${assignment.id}`}
-                    id={assignment.id}
-                    imagePath={assignment.imagePath}
-                    title={assignment.name}
-                    ownerName={"Quick assign activity"}
-                    cardLink={
-                      assignment.assignmentStatus === "Open"
-                        ? `/code/${assignment.classCode}`
-                        : `/assignedData/${assignment.id}`
-                    }
-                    suppressAvatar={true}
-                    showPublicStatus={false}
-                    showAssignmentStatus={true}
-                    assignmentStatus={assignment.assignmentStatus}
-                    closeTime={formatTime(assignment.codeValidUntil)}
-                  />
-                );
-              })}
-            </Wrap>
-          </Flex>
-        )}
+        {mainPanel}
       </Flex>
     </>
   );

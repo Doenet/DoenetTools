@@ -24,7 +24,7 @@ import {
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
 import { Outlet, useLoaderData } from "react-router";
-import { NavLink } from "react-router-dom";
+import { NavLink } from "react-router";
 import RouterLogo from "../RouterLogo";
 import { ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import axios from "axios";

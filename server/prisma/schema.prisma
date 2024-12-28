@@ -31,6 +31,9 @@ model content {
   isDeleted        Boolean                  @default(false)
   sortIndex        BigInt
   licenseCode      String?                  @default("CCDUAL") @db.VarChar(10)
+  isQuestion       Boolean                  @default(false)
+  isInteractive    Boolean                  @default(false)
+  containsVideo    Boolean                  @default(false)
   owner            users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   parentFolder     content?                 @relation("folderStructure", fields: [parentFolderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   subFolders       content[]                @relation("folderStructure")

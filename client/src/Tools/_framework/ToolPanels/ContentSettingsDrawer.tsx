@@ -15,7 +15,7 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import { FetcherWithComponents } from "react-router-dom";
+import { FetcherWithComponents } from "react-router";
 import {
   generalContentActions,
   GeneralContentControls,
@@ -57,7 +57,6 @@ export function ContentSettingsDrawer({
   isOpen,
   onClose,
   finalFocusRef,
-  id,
   contentData,
   allDoenetmlVersions,
   supportingFileData,
@@ -67,7 +66,6 @@ export function ContentSettingsDrawer({
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  id: string;
   contentData: ContentStructure;
   allDoenetmlVersions: DoenetmlVersion[];
   supportingFileData?: any;
@@ -139,7 +137,6 @@ export function ContentSettingsDrawer({
                 <TabPanel overflowY="auto" height="100%">
                   <GeneralContentControls
                     fetcher={fetcher}
-                    id={id}
                     contentData={contentData}
                     allDoenetmlVersions={allDoenetmlVersions}
                   />
@@ -153,7 +150,6 @@ export function ContentSettingsDrawer({
                   >
                     <ClassificationSettings
                       fetcher={fetcher}
-                      id={id}
                       contentData={contentData}
                     />
                   </TabPanel>
@@ -162,7 +158,7 @@ export function ContentSettingsDrawer({
                   <TabPanel>
                     <SupportFilesControls
                       fetcher={fetcher}
-                      activityId={id}
+                      activityId={contentData.id}
                       supportingFileData={supportingFileData}
                     />
                   </TabPanel>

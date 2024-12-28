@@ -8,13 +8,13 @@ import {
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { MdCircle } from "react-icons/md";
 
 export function SmallLicenseBadges({ license }: { license: License }) {
   if (license.isComposition) {
     return (
-      <VStack spacing={1}>
+      <VStack spacing={1} minWidth="80px">
         {license.composedOf.map((comp) => (
           <DisplaySmallLicenseBadge licenseItem={comp} key={comp.code} />
         ))}

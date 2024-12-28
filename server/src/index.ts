@@ -1114,10 +1114,7 @@ app.get(
       const content = await loadPromotedContent(loggedInUserId);
       const content2 = content.map((c) => ({
         ...c,
-        promotedContent: c.promotedContent.map((pc) => ({
-          ...pc,
-          activityId: fromUUID(pc.activityId),
-        })),
+        promotedContent: c.promotedContent.map(contentStructureConvertUUID),
       }));
       res.send(content2);
     } catch (e) {
@@ -1518,18 +1515,24 @@ app.post(
       res.sendStatus(403);
       return;
     }
+
     const loggedInUserId = req.user.userId;
     const body = req.body;
     const id = toUUID(body.id);
     const imagePath = body.imagePath;
     const name = body.name;
-    // TODO - deal with learning outcomes
-    // const learningOutcomes = body.learningOutcomes;
+    const isQuestion = body.isQuestion;
+    const isInteractive = body.isInteractive;
+    const containsVideo = body.containsVideo;
+
     try {
       await updateContent({
         id,
         imagePath,
         name,
+        isQuestion,
+        isInteractive,
+        containsVideo,
         ownerId: loggedInUserId,
       });
       res.send({});

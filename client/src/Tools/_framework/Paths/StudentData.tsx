@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useLoaderData } from "react-router";
-import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
+import { Link as ReactRouterLink, useNavigate } from "react-router";
 import {
   TableContainer,
   Table,

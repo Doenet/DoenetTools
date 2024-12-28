@@ -18,7 +18,7 @@ import {
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 import { parseAndFormatResponse } from "./AssignmentAnswerResponses";
-import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
+import { Link as ReactRouterLink, useNavigate } from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { UserInfo } from "../../../_utils/types";
 

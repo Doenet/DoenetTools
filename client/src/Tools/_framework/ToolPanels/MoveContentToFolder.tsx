@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { useFetcher } from "react-router-dom";
+import { useFetcher } from "react-router";
 import { MdFolder, MdOutlineInsertDriveFile } from "react-icons/md";
 import MoveToSharedAlert from "./MoveToSharedAlert";
 import { ContentStructure, LicenseCode, UserInfo } from "../../../_utils/types";

@@ -26,7 +26,7 @@ import { DoenetHeading as Heading } from "./Community";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Label } from "recharts";
 import AssignmentPreview from "../ToolPanels/AssignmentPreview";
-import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
+import { Link as ReactRouterLink, useNavigate } from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { UserInfo } from "../../../_utils/types";
 

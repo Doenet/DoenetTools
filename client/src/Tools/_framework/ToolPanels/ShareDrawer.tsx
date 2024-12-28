@@ -1,7 +1,7 @@
 import React, { RefObject, useEffect, useState } from "react";
 import { sharingActions, ShareSettings } from "./ShareSettings";
 import { remixedFromActions, RemixedFrom } from "./RemixedFrom";
-import { FetcherWithComponents } from "react-router-dom";
+import { FetcherWithComponents } from "react-router";
 import {
   Box,
   Drawer,

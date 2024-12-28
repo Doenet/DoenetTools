@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FetcherWithComponents, redirect } from "react-router-dom";
+import { FetcherWithComponents, redirect } from "react-router";
 import {
   Box,
   Heading,
