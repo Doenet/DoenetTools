@@ -57,6 +57,7 @@ import {
 } from "./../../../_utils/types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
+import { formatTime } from "../../../_utils/dateUtilityFunction";
 
 // what is a better solution than this?
 let folderJustCreated = ""; // if a folder was just created, set autoFocusName true for the card with the matching id
@@ -64,6 +65,8 @@ let folderJustCreated = ""; // if a folder was just created, set autoFocusName t
 export async function action({ request, params }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
+
+  console.log("Activities action", formObj);
 
   const resultCS = await contentSettingsActions({ formObj });
   if (resultCS) {
@@ -750,6 +753,7 @@ export function Activities() {
       menuRef: getCardMenuRef,
       ...activity,
       title: activity.name,
+      closeTime: formatTime(activity.codeValidUntil),
       menuItems: getCardMenuList({
         id: activity.id,
         position,
