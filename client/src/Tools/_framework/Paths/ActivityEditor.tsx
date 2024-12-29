@@ -52,7 +52,7 @@ import {
 
 export async function action({ params, request }) {
   const formData = await request.formData();
-  let formObj = Object.fromEntries(formData);
+  const formObj = Object.fromEntries(formData);
 
   //Don't let name be blank
   let name = formObj?.name?.trim();
@@ -68,17 +68,17 @@ export async function action({ params, request }) {
     return true;
   }
 
-  let resultCS = await contentSettingsActions({ formObj });
+  const resultCS = await contentSettingsActions({ formObj });
   if (resultCS) {
     return resultCS;
   }
 
-  let resultSA = await sharingActions({ formObj });
+  const resultSA = await sharingActions({ formObj });
   if (resultSA) {
     return resultSA;
   }
 
-  let resultAS = await assignmentSettingsActions({ formObj });
+  const resultAS = await assignmentSettingsActions({ formObj });
   if (resultAS) {
     return resultAS;
   }
@@ -101,7 +101,7 @@ export async function loader({ params }) {
     );
   }
 
-  let activityId = params.activityId;
+  const activityId = params.activityId;
   let docId = params.docId;
   if (!docId) {
     // If docId was not supplied in the url,
@@ -125,7 +125,7 @@ export async function loader({ params }) {
     `/api/loadSupportingFileInfo/${activityId}`,
   );
 
-  let supportingFileData = supportingFileResp.data;
+  const supportingFileData = supportingFileResp.data;
 
   //This code isn't depreciated but only works on Chrome
   //navigator.userAgentData.platform.indexOf("linux") != -1
@@ -168,7 +168,7 @@ function EditableName({ dataTest }) {
   const [name, setName] = useState(activityData.name);
   const fetcher = useFetcher();
 
-  let lastActivityDataName = useRef(activityData.name);
+  const lastActivityDataName = useRef(activityData.name);
 
   //Update when something else updates the name
   if (activityData.name != lastActivityDataName.current) {
@@ -188,7 +188,7 @@ function EditableName({ dataTest }) {
         setName(value);
       }}
       onSubmit={(value) => {
-        let submitValue = value;
+        const submitValue = value;
 
         fetcher.submit(
           { _action: "update name", name: submitValue },
@@ -209,7 +209,6 @@ function EditableName({ dataTest }) {
 
 export function ActivityEditor() {
   const {
-    platform,
     activityId,
     doenetML,
     doenetmlVersion,
@@ -218,7 +217,6 @@ export function ActivityEditor() {
     allDoenetmlVersions,
     allLicenses,
   } = useLoaderData() as {
-    platform: "Win" | "Mac" | "Linux";
     activityId: string;
     doenetML: string;
     doenetmlVersion: DoenetmlVersion;
@@ -358,7 +356,6 @@ export function ActivityEditor() {
         onClose={settingsOnClose}
         finalFocusRef={controlsBtnRef}
         fetcher={fetcher}
-        id={activityId}
         contentData={activityData}
         allDoenetmlVersions={allDoenetmlVersions}
         displayTab={displaySettingsTab}

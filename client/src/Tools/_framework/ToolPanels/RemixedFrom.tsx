@@ -14,20 +14,22 @@ import {
   Thead,
   Tr,
   VStack,
-  Box,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { DateTime } from "luxon";
 import { DocHistoryItem } from "../../../_utils/types";
 
-export async function remixedFromActions({ formObj }: { [k: string]: any }) {
+export async function remixedFromActions({
+  formObj: _formObj,
+}: {
+  [k: string]: any;
+}) {
   return null;
 }
 
 export function RemixedFrom({
   contributorHistory,
-  thisCid,
 }: {
   contributorHistory: DocHistoryItem[] | null;
   thisCid: string | null;
@@ -46,7 +48,7 @@ export function RemixedFrom({
     );
   }
 
-  let historyTable = (
+  const historyTable = (
     <TableContainer
       maxHeight="200px"
       overflowY="auto"

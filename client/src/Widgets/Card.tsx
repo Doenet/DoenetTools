@@ -112,7 +112,7 @@ export default function Card({
   showOwnerName = showOwnerName && !(cardType === "author");
 
   // from ActivityEditor.tsx
-  let lastActivityDataName = useRef(title);
+  const lastActivityDataName = useRef(title);
   //Update when something else updates the name
   if (title != lastActivityDataName.current && cardTitle != title) {
     setCardTitle(title);
@@ -129,15 +129,6 @@ export default function Card({
       assignmentStatusString = assignmentStatusString + " until " + closeTime;
     }
   }
-
-  let statusString = "";
-  if (showPublicStatus) {
-    statusString += isPublic ? "Public" : "Private";
-    if (assignmentStatusString) {
-      statusString += " / ";
-    }
-  }
-  statusString += assignmentStatusString;
 
   function saveUpdatedTitle() {
     if (cardTitle !== title && id !== undefined) {
@@ -178,6 +169,7 @@ export default function Card({
     <Tooltip label={cardTitle}>
       <Editable
         value={cardTitle}
+        data-test="Editable Title"
         startWithEditView={autoFocusTitle}
         isDisabled={!editableTitle}
         cursor={editableTitle ? "auto" : "pointer"}
@@ -273,7 +265,7 @@ export default function Card({
   let featureIcons: ReactElement | null = null;
 
   if (showActivityFeatures) {
-    let placeholdersForMissingFeatures = listView;
+    const placeholdersForMissingFeatures = listView;
     let isQuestionIcon: ReactElement | null = null;
     if (cardContent.isQuestion) {
       isQuestionIcon = (
@@ -372,8 +364,8 @@ export default function Card({
   //Note: when we have a menu width 140px becomes 120px
   let card: ReactElement;
   if (listView) {
-    let cardWidth = "100%";
-    let cardHeight = "40px";
+    const cardWidth = "100%";
+    const cardHeight = "40px";
     let initialIcon: ReactElement;
 
     if (cardType === "author") {
@@ -422,7 +414,7 @@ export default function Card({
         height={cardHeight}
         p="0"
         m="0"
-        data-test="ActivityCard"
+        data-test="Activity Card"
         variant="unstyled"
         borderBottom="2px solid gray"
         borderRadius={0}
@@ -470,10 +462,10 @@ export default function Card({
       </ChakraCard>
     );
   } else {
-    let cardWidth = "180px";
-    let cardHeight = "180px";
-    let cardTextWidth = 172 - smallAvatarWidth;
-    let cardTextWidthLine1 = menuItems ? cardTextWidth - 16 : cardTextWidth;
+    const cardWidth = "180px";
+    const cardHeight = "180px";
+    const cardTextWidth = 172 - smallAvatarWidth;
+    const cardTextWidthLine1 = menuItems ? cardTextWidth - 16 : cardTextWidth;
 
     const assignmentStatusDisplay = showAssignmentStatus ? (
       <Tooltip label={assignmentStatusString} placement="bottom-start">

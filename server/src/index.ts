@@ -456,12 +456,7 @@ app.get(
   "/api/getAllRecentPublicActivities",
   async (_req: Request, res: Response) => {
     const activities = await getAllRecentPublicActivities();
-    res.send(
-      activities.map((activity) => ({
-        ...activity,
-        id: fromUUID(activity.id),
-      })),
-    );
+    res.send(activities.map(contentStructureConvertUUID));
   },
 );
 
@@ -684,7 +679,8 @@ app.post(
         break;
       }
       default: {
-        return res.status(400).send("Invalid license code");
+        res.status(400).send("Invalid license code");
+        return;
       }
     }
 
@@ -727,7 +723,8 @@ app.post(
         break;
       }
       default: {
-        return res.status(400).send("Invalid license code");
+        res.status(400).send("Invalid license code");
+        return;
       }
     }
 
@@ -770,7 +767,8 @@ app.post(
         break;
       }
       default: {
-        return res.status(400).send("Invalid license code");
+        res.status(400).send("Invalid license code");
+        return;
       }
     }
 
@@ -837,7 +835,8 @@ app.post(
         break;
       }
       default: {
-        return res.status(400).send("Invalid license code");
+        res.status(400).send("Invalid license code");
+        return;
       }
     }
 
@@ -904,7 +903,8 @@ app.post(
         break;
       }
       default: {
-        return res.status(400).send("Invalid license code");
+        res.status(400).send("Invalid license code");
+        return;
       }
     }
 
@@ -983,7 +983,8 @@ app.post(
         break;
       }
       default: {
-        return res.status(400).send("Invalid license code");
+        res.status(400).send("Invalid license code");
+        return;
       }
     }
 
@@ -2175,7 +2176,8 @@ app.get(
     const loggedInUserId = req.user?.userId;
 
     if (!loggedInUserId || !isEqualUUID(ownerId, loggedInUserId)) {
-      return res.send({ notMe: true });
+      res.send({ notMe: true });
+      return;
     }
 
     try {
@@ -2212,7 +2214,8 @@ app.get(
     const loggedInUserId = req.user?.userId;
 
     if (!loggedInUserId || !isEqualUUID(ownerId, loggedInUserId)) {
-      return res.send({ notMe: true });
+      res.send({ notMe: true });
+      return;
     }
 
     try {
@@ -2252,7 +2255,8 @@ app.get(
     const query = req.query.q as string;
 
     if (!loggedInUserId || !isEqualUUID(ownerId, loggedInUserId)) {
-      return res.send({ notMe: true });
+      res.send({ notMe: true });
+      return;
     }
 
     try {
@@ -2298,7 +2302,8 @@ app.get(
     const query = req.query.q as string;
 
     if (!loggedInUserId || !isEqualUUID(ownerId, loggedInUserId)) {
-      return res.send({ notMe: true });
+      res.send({ notMe: true });
+      return;
     }
 
     try {

@@ -51,7 +51,7 @@ export async function supportFilesActions({ formObj }: { [k: string]: any }) {
     });
     return true;
   } else if (formObj._action == "remove file") {
-    let resp = await axios.get("/api/deleteFile", {
+    const resp = await axios.get("/api/deleteFile", {
       params: { activityId: formObj.activityId, cid: formObj.cid },
     });
 
@@ -79,12 +79,12 @@ export function SupportFilesControls({
   const { supportingFiles, userQuotaBytesAvailable, quotaBytes } =
     supportingFileData;
 
-  let [alerts, setAlerts] = useState<Alert[]>([]);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
 
   //Update messages after action completes
   if (fetcher.data) {
     if (fetcher.data._action == "remove file") {
-      let newAlerts = [...alerts];
+      const newAlerts = [...alerts];
       const index = newAlerts.findIndex(
         (obj) => obj.id == fetcher.data.fileRemovedCid && obj.stage == 1,
       );
@@ -134,7 +134,7 @@ export function SupportFilesControls({
         uploadData.append("activityId", activityId.toString());
         uploadData.append("columnTypes", columnTypes);
 
-        let resp = await axios.post("/api/supportFileUpload", uploadData);
+        const resp = await axios.post("/api/supportFileUpload", uploadData);
 
         if (resp.data.success) {
           setAlerts([
@@ -285,7 +285,7 @@ export function SupportFilesControls({
         {supportingFiles.map((file, i) => {
           let previewImagePath = `/media/${file.fileName}`;
 
-          let fileNameNoExtension = file.fileName.split(".")[0];
+          const fileNameNoExtension = file.fileName.split(".")[0];
 
           let doenetMLCode = `<image source='doenet:cid=${fileNameNoExtension}' description='${file.description}' asfilename='${file.asFileName}' width='${file.width}' mimeType='${file.fileType}' />`;
 

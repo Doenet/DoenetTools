@@ -51,7 +51,7 @@ export async function assignActivityActions({ formObj }: { [k: string]: any }) {
       await axios.post("/api/unassignActivity", {
         activityId: formObj.activityId,
       });
-    } catch (e) {
+    } catch (_e) {
       alert("Unable to unassign activity");
     }
     return true;
@@ -101,7 +101,7 @@ export function AssignActivityControls({
     onClose: invitationOnClose,
   } = useDisclosure();
 
-  let assignmentStatus = activityData.assignmentStatus;
+  const assignmentStatus = activityData.assignmentStatus;
 
   function saveCloseTimeToServer() {
     fetcher.submit(

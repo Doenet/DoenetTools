@@ -52,23 +52,23 @@ type SearchMatch =
 
 export async function action({ request }) {
   const formData = await request.formData();
-  let formObj = Object.fromEntries(formData);
-  let {
+  const formObj = Object.fromEntries(formData);
+  const {
     desiredPosition,
     activityId,
     groupName,
     newGroupName,
     groupId,
-    currentlyFeatured,
-    homepage,
     listViewPref,
   } = formObj;
+
+  let { currentlyFeatured, homepage } = formObj;
 
   // TODO: should this function exist?
   // Could be bad pattern to catch all API errors as browser alerts
   async function postApiAlertOnError(url, uploadData) {
     try {
-      const response = await axios.post(url, uploadData);
+      await axios.post(url, uploadData);
       return true;
     } catch (e) {
       console.log(e);
@@ -133,8 +133,8 @@ export async function loader({ request }) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
 
-  let prefData = await axios.get(`/api/getPreferredFolderView`);
-  let listViewPref = !prefData.data.cardView;
+  const prefData = await axios.get(`/api/getPreferredFolderView`);
+  const listViewPref = !prefData.data.cardView;
 
   if (q) {
     //Show search results
@@ -253,7 +253,7 @@ export function MoveToGroupMenuItem({
     };
     axios
       .post("/api/addPromotedContent", uploadData)
-      .then(({ data }) => {
+      .then(() => {
         onClose();
       })
       .catch((e) => {
@@ -450,21 +450,20 @@ export function Community() {
     <ContentInfoDrawer
       isOpen={infoIsOpen}
       onClose={infoOnClose}
-      id={infoContentData.id}
       contentData={infoContentData}
     />
   ) : null;
 
   if (searchResults) {
-    let contentMatches: SearchMatch[] = searchResults.content.map((c) => ({
+    const contentMatches: SearchMatch[] = searchResults.content.map((c) => ({
       type: "content",
       ...c,
     }));
-    let authorMatches: SearchMatch[] = searchResults.users.map((u) => ({
+    const authorMatches: SearchMatch[] = searchResults.users.map((u) => ({
       type: "author",
       ...u,
     }));
-    let allMatches: SearchMatch[] = [...contentMatches, ...authorMatches];
+    const allMatches: SearchMatch[] = [...contentMatches, ...authorMatches];
     const tabs = [
       {
         label: "All Matches",
@@ -489,7 +488,7 @@ export function Community() {
               ? `/sharedActivities/${owner.userId}/${id}`
               : `/activityViewer/${id}`;
 
-          let contentType = isFolder ? "Folder" : "Activity";
+          const contentType = isFolder ? "Folder" : "Activity";
 
           let menuItems = (
             <MenuItem

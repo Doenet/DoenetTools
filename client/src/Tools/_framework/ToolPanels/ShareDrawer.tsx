@@ -34,12 +34,12 @@ import {
 } from "../../../_utils/processRemixes";
 
 export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
-  let result1 = await sharingActions({ formObj });
+  const result1 = await sharingActions({ formObj });
   if (result1) {
     return result1;
   }
 
-  let result4 = await remixedFromActions({ formObj });
+  const result4 = await remixedFromActions({ formObj });
   if (result4) {
     return result4;
   }
@@ -82,7 +82,7 @@ export function ShareDrawer({
       const hist = await processContributorHistory(data.docHistories[0]);
       setContributorHistory(hist);
 
-      let haveChanged = hist.some((dhi) => dhi.prevChanged);
+      const haveChanged = hist.some((dhi) => dhi.prevChanged);
 
       setHaveChangedHistoryItem(haveChanged);
 

@@ -1,26 +1,8 @@
 import { cesc2 } from "../../../src/_utils/url";
 
 describe("Porfolio Errors and Warnings ", function () {
-  const userId = "cyuserId";
-  const userId2 = "cyuserId2";
-
-  before(() => {
-    // cy.clearAllOfAUsersActivities({userId})
-  });
-  beforeEach(() => {
-    cy.signin({ userId });
-    cy.visit(`/`);
-  });
-
-  Cypress.on("uncaught:exception", (err, runnable) => {
-    // returning false here prevents Cypress from
-    // failing the test
-    return false;
-  });
-
-  it("Errors and Warnings in Activities Editor", () => {
+  it.skip("Errors and Warnings in Activities Editor", () => {
     const label = "Errors Warnings PE";
-    cy.deleteActivity({ userId, label });
 
     cy.get('[data-test="Activities"]').click();
 

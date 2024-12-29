@@ -130,7 +130,7 @@ export function ShareSettings({
   allLicenses: License[];
   remixedWithLicense: LicenseCode | null;
 }) {
-  let license = contentData.license;
+  const license = contentData.license;
 
   const [selectedIsPublic, setSelectedIsPublic] = useState(
     contentData.isPublic,
@@ -158,12 +158,12 @@ export function ShareSettings({
     setSelectedIsPublic(contentData.isPublic);
   }, [contentData.isPublic]);
 
-  let missingLicense = selectedIsPublic && selectedLicenseCode === undefined;
+  const missingLicense = selectedIsPublic && selectedLicenseCode === undefined;
 
-  let placeholder = missingLicense ? "Select license" : undefined;
+  const placeholder = missingLicense ? "Select license" : undefined;
 
-  let contentType = contentData.isFolder ? "Folder" : "Activity";
-  let contentTypeLower = contentData.isFolder ? "folder" : "activity";
+  const contentType = contentData.isFolder ? "Folder" : "Activity";
+  const contentTypeLower = contentData.isFolder ? "folder" : "activity";
 
   const actionResult: any = useActionData();
 
@@ -199,22 +199,22 @@ export function ShareSettings({
     setStatusText(nextStatusText.current);
   }, [contentData]);
 
-  let licenseDeterminedFromRemix =
+  const licenseDeterminedFromRemix =
     selectedLicenseCode === remixedWithLicense &&
     remixedWithLicense !== "CCDUAL";
 
-  let licenseNotMatchRemix =
+  const licenseNotMatchRemix =
     remixedWithLicense !== null &&
     remixedWithLicense !== "CCDUAL" &&
     selectedLicenseCode !== remixedWithLicense;
 
   let licenseWarning: ReactElement | null = null;
   if (licenseNotMatchRemix) {
-    let remixedWithLicenseName = allLicenses.find(
+    const remixedWithLicenseName = allLicenses.find(
       (l) => l.code === remixedWithLicense,
     )?.name;
 
-    let selectedLicenseName = allLicenses.find(
+    const selectedLicenseName = allLicenses.find(
       (l) => l.code === selectedLicenseCode,
     )?.name;
 
@@ -240,7 +240,7 @@ export function ShareSettings({
 
   let chooseLicenseForm: ReactElement | null = null;
   if (licenseDeterminedFromRemix) {
-    let licenseName = allLicenses.find(
+    const licenseName = allLicenses.find(
       (l) => l.code === remixedWithLicense,
     )?.name;
     chooseLicenseForm = (
@@ -267,7 +267,7 @@ export function ShareSettings({
               setShowSpinner({ type: "license" });
               setStatusText("");
               nextStatusText.current = "Successfully changed license.";
-              let newLicenseCode = e.target.value as LicenseCode;
+              const newLicenseCode = e.target.value as LicenseCode;
               setSelectedLicenseCode(newLicenseCode);
               fetcher.submit(
                 {

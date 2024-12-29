@@ -3,9 +3,7 @@ import {
   Button,
   Box,
   Icon,
-  Text,
   Flex,
-  Wrap,
   Heading,
   ButtonGroup,
   Tooltip,
@@ -26,7 +24,7 @@ import CardList from "../../../Widgets/CardList";
 
 export async function action({ request }) {
   const formData = await request.formData();
-  let formObj = Object.fromEntries(formData);
+  const formObj = Object.fromEntries(formData);
 
   if (formObj?._action == "Set List View Preferred") {
     await axios.post(`/api/setPreferredFolderView`, {
@@ -38,11 +36,11 @@ export async function action({ request }) {
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
-export async function loader({ params }) {
+export async function loader() {
   const { data: assignmentData } = await axios.get(`/api/getAssigned`);
 
-  let prefData = await axios.get(`/api/getPreferredFolderView`);
-  let listViewPref = !prefData.data.cardView;
+  const prefData = await axios.get(`/api/getPreferredFolderView`);
+  const listViewPref = !prefData.data.cardView;
 
   return {
     user: assignmentData.user,
@@ -52,7 +50,7 @@ export async function loader({ params }) {
 }
 
 export function Assigned() {
-  let { user, assignments, listViewPref } = useLoaderData() as {
+  const { user, assignments, listViewPref } = useLoaderData() as {
     user: UserInfo;
     assignments: ContentStructure[];
     listViewPref: boolean;
@@ -77,9 +75,9 @@ export function Assigned() {
         );
       };
 
-      let closeDateTime = DateTime.fromISO(time);
-      let now = DateTime.now();
-      let tomorrow = now.plus({ day: 1 });
+      const closeDateTime = DateTime.fromISO(time);
+      const now = DateTime.now();
+      const tomorrow = now.plus({ day: 1 });
 
       if (sameDay(closeDateTime, now)) {
         if (closeDateTime.minute === 0) {
@@ -200,7 +198,7 @@ export function Assigned() {
     </Box>
   );
 
-  const cardContent: CardContent[] = assignments.map((assignment, position) => {
+  const cardContent: CardContent[] = assignments.map((assignment) => {
     return {
       ...assignment,
       title: assignment.name,

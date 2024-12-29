@@ -113,8 +113,8 @@ Cypress.Commands.add(
       method: "POST",
       url: "/api/createActivity",
     }).then((resp) => {
-      let activityId: string = resp.body.activityId;
-      let docId: string = resp.body.docId;
+      const activityId: string = resp.body.activityId;
+      const docId: string = resp.body.docId;
 
       if (classifications) {
         cy.request({

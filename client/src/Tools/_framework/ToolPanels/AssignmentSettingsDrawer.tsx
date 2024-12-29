@@ -27,7 +27,7 @@ export async function assignmentSettingsActions({
 }: {
   [k: string]: any;
 }) {
-  let result = await assignActivityActions({ formObj });
+  const result = await assignActivityActions({ formObj });
   if (result) {
     return result;
   }

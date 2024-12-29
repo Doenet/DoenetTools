@@ -17,10 +17,10 @@ import {
 import axios from "axios";
 import { DoenetHeading as Heading } from "./Community";
 import { Link as ReactRouterLink, useNavigate } from "react-router";
-import { createFullName, lastNameFirst } from "../../../_utils/names";
+import { lastNameFirst } from "../../../_utils/names";
 import { UserInfo } from "../../../_utils/types";
 
-export async function action({ params, request }) {
+export async function action() {
   return null;
 }
 export async function loader({ params, request }) {
@@ -37,13 +37,13 @@ export async function loader({ params, request }) {
     }?answerId=${encodeURIComponent(answerId)}`,
   );
 
-  let activityId = params.activityId;
-  let docId = params.docId;
-  let docVersionNum = Number(params.docVersionNum);
-  let activityName = data.activityName;
+  const activityId = params.activityId;
+  const docId = params.docId;
+  const docVersionNum = Number(params.docVersionNum);
+  const activityName = data.activityName;
 
   // sort response data by user name
-  let responseData = data.submittedResponses.toSorted((a, b) => {
+  const responseData = data.submittedResponses.toSorted((a, b) => {
     const name1 = lastNameFirst(a.user).toLowerCase();
     const name2 = lastNameFirst(b.user).toLowerCase();
     if (name1 > name2) {
@@ -93,7 +93,7 @@ export function AssignmentAnswerResponses() {
     document.title = `${activityName} - Doenet`;
   }, [activityName]);
 
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [responses, setResponses] = useState<
     { latestResponse: React.JSX.Element; bestResponse: React.JSX.Element }[]
@@ -210,7 +210,7 @@ export function AssignmentAnswerResponses() {
 }
 
 export function parseAndFormatResponse(response: string): React.JSX.Element {
-  let parsedResp = JSON.parse(response);
+  const parsedResp = JSON.parse(response);
 
   return parsedResp.response.map((v, i) => {
     const componentType = parsedResp.componentTypes[i];

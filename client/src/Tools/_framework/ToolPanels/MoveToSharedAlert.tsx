@@ -19,7 +19,6 @@ export default function MoveToSharedAlert({
   performMove,
   folderName,
   contentIsPublic,
-  licenseChange,
 }: {
   isOpen: boolean;
   onClose: () => void;

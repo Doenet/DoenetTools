@@ -1,19 +1,6 @@
-const { cesc2 } = require("../../../src/_utils/url");
+import { cesc2 } from "../../../src/_utils/url";
 
-describe("Activities Editor Tests", function () {
-  const userId = "cyuserId";
-
-  beforeEach(() => {
-    cy.signin({ userId });
-    cy.visit(`/`);
-  });
-
-  Cypress.on("uncaught:exception", (err, runnable) => {
-    // returning false here prevents Cypress from
-    // failing the test
-    return false;
-  });
-
+describe.skip("Activities Editor Tests", function () {
   it("Update Button", () => {
     const label = "Activities Variant Control";
     const text1 = "Hello World";

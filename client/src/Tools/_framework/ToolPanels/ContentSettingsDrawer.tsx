@@ -35,17 +35,17 @@ export async function contentSettingsActions({
 }: {
   [k: string]: any;
 }) {
-  let result2 = await generalContentActions({ formObj });
+  const result2 = await generalContentActions({ formObj });
   if (result2) {
     return result2;
   }
 
-  let result3 = await classificationSettingsActions({ formObj });
+  const result3 = await classificationSettingsActions({ formObj });
   if (result3) {
     return result3;
   }
 
-  let result4 = await supportFilesActions({ formObj });
+  const result4 = await supportFilesActions({ formObj });
   if (result4) {
     return result4;
   }

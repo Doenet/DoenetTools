@@ -20,7 +20,6 @@ import { User } from "./SiteHeader";
 import { createFullName } from "../../../_utils/names";
 
 export async function action({
-  params,
   request,
   formData,
 }: {
@@ -31,7 +30,7 @@ export async function action({
   if (!formData) {
     formData = await request.formData();
   }
-  let formObj = Object.fromEntries(formData);
+  const formObj = Object.fromEntries(formData);
 
   if (formObj._action === "change user name") {
     await axios.post(`/api/updateUser`, {
@@ -62,7 +61,7 @@ export function ChangeName({
 
   const user = useOutletContext<User>();
 
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [firstNames, setFirstNames] = useState(user?.firstNames ?? "");
   const [lastNames, setLastNames] = useState(user?.lastNames ?? "");

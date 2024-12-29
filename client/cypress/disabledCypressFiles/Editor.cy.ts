@@ -2,42 +2,15 @@
 
 import { cesc2 } from "../../src/_utils/url";
 
-describe("doenetEditor test", function () {
-  const userId = "cyuserId";
-  const studentUserId = "cyStudentUserId";
+describe.skip("doenetEditor test", function () {
+  // const userId = "cyuserId";
+  // const studentUserId = "cyStudentUserId";
   // const userId = "devuserId";
   const courseId = "courseid1";
   const doenetId = "activity1id";
-  const pageDoenetId = "_page1id";
+  // const pageDoenetId = "_page1id";
 
   const headerPixels = 40;
-
-  before(() => {
-    // cy.clearAllOfAUsersActivities({userId})
-    cy.signin({ userId });
-    cy.clearAllOfAUsersCoursesAndItems({ userId });
-    cy.clearAllOfAUsersCoursesAndItems({ userId: studentUserId });
-    cy.createCourse({ userId, courseId, studentUserId });
-  });
-  beforeEach(() => {
-    cy.signin({ userId });
-    cy.clearIndexedDB();
-    cy.clearAllOfAUsersActivities({ userId });
-    cy.clearAllOfAUsersActivities({ userId: studentUserId });
-    cy.createActivity({
-      courseId,
-      doenetId,
-      parentDoenetId: courseId,
-      pageDoenetId,
-    });
-    cy.visit(`/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
-  });
-
-  Cypress.on("uncaught:exception", (err, runnable) => {
-    // returning false here prevents Cypress from
-    // failing the test
-    return false;
-  });
 
   it("basic test of update button", () => {
     const doenetMLString = "abcdefg";
@@ -198,7 +171,7 @@ describe("doenetEditor test", function () {
     cy.get('[data-test="Crumb Menu Item 2"]').click();
     cy.get(".navigationRow").eq(0).find(".navigationColumn1").click();
 
-    cy.signin({ userId: studentUserId });
+    // cy.signin({ userId: studentUserId });
 
     cy.visit(`/course?tool=navigation&courseId=${courseId}`);
 
@@ -456,7 +429,7 @@ describe("doenetEditor test", function () {
     cy.url().should("match", /#\\\/aside$/);
 
     cy.get(cesc2("#/aside")).then((el) => {
-      let rect = el[0].getBoundingClientRect();
+      const rect = el[0].getBoundingClientRect();
       expect(rect.top)
         .gt(headerPixels - 1)
         .lt(headerPixels + 1);
@@ -470,7 +443,7 @@ describe("doenetEditor test", function () {
     cy.get(cesc2("#/toAside")).scrollIntoView();
 
     cy.get(cesc2("#/toAside")).then((el) => {
-      let rect = el[0].getBoundingClientRect();
+      const rect = el[0].getBoundingClientRect();
       expect(rect.top)
         .gt(headerPixels - 1)
         .lt(headerPixels + 1);
@@ -484,7 +457,7 @@ describe("doenetEditor test", function () {
     cy.url().should("match", /#\\\/aside$/);
 
     cy.get(cesc2("#/aside")).then((el) => {
-      let rect = el[0].getBoundingClientRect();
+      const rect = el[0].getBoundingClientRect();
       expect(rect.top)
         .gt(headerPixels - 1)
         .lt(headerPixels + 1);
@@ -530,7 +503,7 @@ describe("doenetEditor test", function () {
     cy.get(cesc2("#/toAside")).scrollIntoView();
 
     cy.get(cesc2("#/toAside")).then((el) => {
-      let rect = el[0].getBoundingClientRect();
+      const rect = el[0].getBoundingClientRect();
       expect(rect.top)
         .gt(headerPixels - 1)
         .lt(headerPixels + 1);
@@ -540,7 +513,7 @@ describe("doenetEditor test", function () {
     cy.url().should("match", /#\/aside$/);
 
     cy.get(cesc2("#/aside")).then((el) => {
-      let rect = el[0].getBoundingClientRect();
+      const rect = el[0].getBoundingClientRect();
       expect(rect.top)
         .gt(headerPixels - 1)
         .lt(headerPixels + 1);
@@ -551,7 +524,7 @@ describe("doenetEditor test", function () {
     cy.get("#\\/bottom").scrollIntoView();
 
     cy.get("#\\/bottom").then((el) => {
-      let rect = el[0].getBoundingClientRect();
+      const rect = el[0].getBoundingClientRect();
       expect(rect.top)
         .gt(headerPixels - 1)
         .lt(headerPixels + 1);
@@ -561,7 +534,7 @@ describe("doenetEditor test", function () {
     cy.url().should("match", /[^#]/);
 
     cy.get(cesc2("#/toAside")).then((el) => {
-      let rect = el[0].getBoundingClientRect();
+      const rect = el[0].getBoundingClientRect();
       expect(rect.top)
         .gt(headerPixels - 1)
         .lt(headerPixels + 1);

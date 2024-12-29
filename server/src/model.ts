@@ -2199,17 +2199,69 @@ export async function getAllRecentPublicActivities() {
     take: 100,
     select: {
       id: true,
-      name: true,
-      imagePath: true,
+      isFolder: true,
+      ownerId: true,
       owner: {
         select: {
+          userId: true,
           firstNames: true,
           lastNames: true,
+          email: true,
         },
       },
+      name: true,
+      imagePath: true,
+      isPublic: true,
+      isQuestion: true,
+      isInteractive: true,
+      containsVideo: true,
+      license: {
+        include: {
+          composedOf: {
+            select: { composedOf: true },
+            orderBy: { composedOf: { sortIndex: "asc" } },
+          },
+        },
+      },
+      classifications: {
+        select: {
+          classification: {
+            include: {
+              subCategories: {
+                include: {
+                  category: {
+                    include: {
+                      system: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      documents: { select: { id: true, doenetmlVersion: true } },
     },
   });
-  return activities;
+
+  const activities2: ContentStructure[] = activities.map((activity) => {
+    const { license, classifications, ...content2 } = activity;
+
+    return {
+      ...content2,
+      license: license ? processLicense(license) : null,
+      classifications: classifications.map((c) => c.classification),
+      classCode: null,
+      codeValidUntil: null,
+      assignmentStatus: "Unassigned",
+      hasScoreData: false,
+      parentFolder: null,
+      isShared: false,
+      sharedWith: [],
+    };
+  });
+
+  return activities2;
 }
 
 export async function addPromotedContentGroup(

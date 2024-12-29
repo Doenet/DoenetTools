@@ -35,14 +35,12 @@ export function ContentInfoDrawer({
   isOpen,
   onClose,
   finalFocusRef,
-  id,
   contentData,
   displayTab = "general",
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  id: string;
   contentData: ContentStructure;
   displayTab?: "general" | "classifications";
 }) {
@@ -83,7 +81,7 @@ export function ContentInfoDrawer({
       const hist = await processContributorHistory(data.docHistories[0]);
       setContributorHistory(hist);
 
-      let haveChanged = hist.some((dhi) => dhi.prevChanged);
+      const haveChanged = hist.some((dhi) => dhi.prevChanged);
 
       setHaveChangedHistoryItem(haveChanged);
 

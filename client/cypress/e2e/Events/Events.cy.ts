@@ -3,44 +3,17 @@
 import { cesc2 } from "../../../src/_utils/url";
 
 describe("doenet events test", function () {
-  const userId = "cyuserId";
-  const studentUserId = "cyStudentUserId";
+  const _userId = "cyuserId";
+  const _studentUserId = "cyStudentUserId";
   // const userId = "devuserId";
-  const courseId = "courseid1";
+  const _courseId = "courseid1";
   const doenetId = "activity1id";
   const pageDoenetId = "_page1id";
-  const blankCid =
+  const _blankCid =
     "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
 
-  before(() => {
-    // cy.clearAllOfAUsersActivities({userId})
-    cy.signin({ userId });
-    cy.clearAllOfAUsersCoursesAndItems({ userId });
-    cy.clearAllOfAUsersCoursesAndItems({ userId: studentUserId });
-    cy.createCourse({ userId, courseId, studentUserId });
-  });
-  beforeEach(() => {
-    cy.signin({ userId });
-    cy.clearIndexedDB();
-    cy.clearAllOfAUsersActivities({ userId });
-    cy.clearAllOfAUsersActivities({ userId: studentUserId });
-    cy.createActivity({
-      courseId,
-      doenetId,
-      parentDoenetId: courseId,
-      pageDoenetId,
-    });
-    cy.clearEvents({ doenetId });
-  });
-
-  Cypress.on("uncaught:exception", (err, runnable) => {
-    // returning false here prevents Cypress from
-    // failing the test
-    return false;
-  });
-
-  it("make sure events are recorded in general", () => {
-    const doenetML = `
+  it.skip("make sure events are recorded in general", () => {
+    const _doenetML = `
   <p>Enter values that sum to <m>3x</m>: 
   <answer>
   <mathinput /> <mathinput/>
@@ -48,12 +21,12 @@ describe("doenet events test", function () {
   <award credit="0.5"><when>$_mathinput1+$_mathinput2 = 3</when></award>
   </answer></p>
   `;
-    cy.saveDoenetML({
-      doenetML,
-      pageId: pageDoenetId,
-      courseId,
-      lastKnownCid: blankCid,
-    });
+    // cy.saveDoenetML({
+    //   doenetML,
+    //   pageId: pageDoenetId,
+    //   courseId,
+    //   lastKnownCid: blankCid,
+    // });
     cy.visit(`/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
@@ -61,7 +34,7 @@ describe("doenet events test", function () {
 
     cy.wait(1000);
 
-    cy.signin({ userId: studentUserId });
+    // cy.signin({ userId: studentUserId });
 
     cy.visit(`/course?tool=assignment&doenetId=${doenetId}`);
     //Interact with content

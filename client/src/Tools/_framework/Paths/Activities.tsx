@@ -4,7 +4,6 @@ import {
   Icon,
   Text,
   Flex,
-  Wrap,
   useDisclosure,
   MenuItem,
   Heading,
@@ -64,42 +63,42 @@ let folderJustCreated = ""; // if a folder was just created, set autoFocusName t
 
 export async function action({ request, params }) {
   const formData = await request.formData();
-  let formObj = Object.fromEntries(formData);
+  const formObj = Object.fromEntries(formData);
 
-  let resultCS = await contentSettingsActions({ formObj });
+  const resultCS = await contentSettingsActions({ formObj });
   if (resultCS) {
     return resultCS;
   }
 
-  let resultSD = await shareDrawerActions({ formObj });
+  const resultSD = await shareDrawerActions({ formObj });
   if (resultSD) {
     return resultSD;
   }
-  let resultAS = await assignmentSettingsActions({ formObj });
+  const resultAS = await assignmentSettingsActions({ formObj });
   if (resultAS) {
     return resultAS;
   }
 
-  let resultCC = await cardActions({ formObj });
+  const resultCC = await cardActions({ formObj });
   if (resultCC) {
     return resultCC;
   }
 
-  let resultMC = await moveContentActions({ formObj });
+  const resultMC = await moveContentActions({ formObj });
   if (resultMC) {
     return resultMC;
   }
 
   if (formObj?._action == "Add Activity") {
     //Create an activity and redirect to the editor for it
-    let { data } = await axios.post(
+    const { data } = await axios.post(
       `/api/createActivity/${params.folderId ?? ""}`,
     );
 
-    let { activityId, docId } = data;
+    const { activityId } = data;
     return redirect(`/activityEditor/${activityId}`);
   } else if (formObj?._action == "Add Folder") {
-    let { data } = await axios.post(
+    const { data } = await axios.post(
       `/api/createFolder/${params.folderId ?? ""}`,
     );
     folderJustCreated = data.folderId;
@@ -148,12 +147,12 @@ export async function loader({ params, request }) {
 
   let data;
   if (q) {
-    let results = await axios.get(
+    const results = await axios.get(
       `/api/searchMyFolderContent/${params.userId}/${params.folderId ?? ""}?q=${q}`,
     );
     data = results.data;
   } else {
-    let results = await axios.get(
+    const results = await axios.get(
       `/api/getMyFolderContent/${params.userId}/${params.folderId ?? ""}`,
     );
     data = results.data;
@@ -165,8 +164,8 @@ export async function loader({ params, request }) {
     );
   }
 
-  let prefData = await axios.get(`/api/getPreferredFolderView`);
-  let listViewPref = !prefData.data.cardView;
+  const prefData = await axios.get(`/api/getPreferredFolderView`);
+  const listViewPref = !prefData.data.cardView;
 
   return {
     folderId: params.folderId ? params.folderId : null,
@@ -181,7 +180,7 @@ export async function loader({ params, request }) {
 }
 
 export function Activities() {
-  let {
+  const {
     folderId,
     content,
     allDoenetmlVersions,
@@ -223,7 +222,7 @@ export function Activities() {
 
   // refs to the menu button of each content card,
   // which should be given focus when drawers are closed
-  const cardMenuRefs = useRef<HTMLButtonElement[]>(new Array());
+  const cardMenuRefs = useRef<HTMLButtonElement[]>([]);
 
   const folderSettingsRef = useRef(null);
   const finalFocusRef = useRef<HTMLElement | null>(null);
@@ -432,7 +431,7 @@ export function Activities() {
     );
   }
 
-  let headingText = folder ? (
+  const headingText = folder ? (
     <>
       {folder.isPublic ? "Public " : ""}Folder: {folder.name}
     </>
@@ -446,7 +445,7 @@ export function Activities() {
       contentData = folder;
       finalFocusRef.current = folderSettingsRef.current;
     } else {
-      let index = content.findIndex((obj) => obj.id == settingsContentId);
+      const index = content.findIndex((obj) => obj.id == settingsContentId);
       if (index != -1) {
         contentData = content[index];
         finalFocusRef.current = cardMenuRefs.current[index];
@@ -544,10 +543,6 @@ export function Activities() {
                 name="q"
                 onInput={(e) => {
                   setSearchString((e.target as HTMLInputElement).value);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key == "Enter") {
-                  }
                 }}
                 onBlur={() => {
                   searchBlurTimeout.current = setTimeout(() => {

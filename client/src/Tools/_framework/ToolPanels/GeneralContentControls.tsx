@@ -26,15 +26,15 @@ import { activityFeatures } from "../../../_utils/activity";
 
 export async function generalContentActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "update general") {
-    let isQuestion =
+    const isQuestion =
       formObj.isQuestion === "undefined"
         ? undefined
         : formObj.isQuestion === "true";
-    let isInteractive =
+    const isInteractive =
       formObj.isInteractive === "undefined"
         ? undefined
         : formObj.isInteractive === "true";
-    let containsVideo =
+    const containsVideo =
       formObj.containsVideo === "undefined"
         ? undefined
         : formObj.containsVideo === "true";
@@ -71,33 +71,33 @@ export function GeneralContentControls({
   contentData: ContentStructure;
   allDoenetmlVersions: DoenetmlVersion[];
 }) {
-  let { name, imagePath: dataImagePath } = contentData;
+  const { name, imagePath: dataImagePath } = contentData;
 
-  let numberOfFilesUploading = useRef(0);
-  let [imagePath, setImagePath] = useState(dataImagePath);
-  let [alerts, setAlerts] = useState<Alert[]>([]);
+  const numberOfFilesUploading = useRef(0);
+  const [imagePath, setImagePath] = useState(dataImagePath);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
 
   // TODO: if saveDataToServer is unsuccessful, then doenetmlVersion from the server
   // will not match doenetmlVersion on the client and the client will not be notified.
   // (And same for other variables using this pattern)
   // It appears this file is using optimistic UI without a recourse
   // should the optimism be unmerited.
-  let doenetmlVersionInit: DoenetmlVersion | null = contentData.isFolder
+  const doenetmlVersionInit: DoenetmlVersion | null = contentData.isFolder
     ? null
     : contentData.documents[0].doenetmlVersion;
 
-  let [nameValue, setName] = useState(name);
-  let lastAcceptedNameValue = useRef(name);
-  let [nameIsInvalid, setNameIsInvalid] = useState(false);
+  const [nameValue, setName] = useState(name);
+  const lastAcceptedNameValue = useRef(name);
+  const [nameIsInvalid, setNameIsInvalid] = useState(false);
 
-  let [isQuestion, setIsQuestion] = useState(contentData.isQuestion);
-  let [isInteractive, setIsInteractive] = useState(contentData.isInteractive);
-  let [containsVideo, setContainsVideo] = useState(contentData.containsVideo);
+  const [isQuestion, setIsQuestion] = useState(contentData.isQuestion);
+  const [isInteractive, setIsInteractive] = useState(contentData.isInteractive);
+  const [containsVideo, setContainsVideo] = useState(contentData.containsVideo);
 
-  let [doenetmlVersion, setDoenetmlVersion] = useState(doenetmlVersionInit);
+  const [doenetmlVersion, setDoenetmlVersion] = useState(doenetmlVersionInit);
 
-  let contentType = contentData.isFolder ? "Folder" : "Activity";
-  let contentTypeLower = contentData.isFolder ? "folder" : "activity";
+  const contentType = contentData.isFolder ? "Folder" : "Activity";
+  const contentTypeLower = contentData.isFolder ? "folder" : "activity";
 
   function saveDataToServer({
     nextDoenetmlVersionId,
@@ -110,7 +110,7 @@ export function GeneralContentControls({
     isInteractive?: boolean;
     containsVideo?: boolean;
   } = {}) {
-    let data: {
+    const data: {
       name?: string;
       doenetmlVersionId?: number;
       isQuestion?: boolean;
@@ -173,7 +173,7 @@ export function GeneralContentControls({
 
       numberOfFilesUploading.current = 1;
 
-      let image = await readAndCompressImage(file, {
+      const image = await readAndCompressImage(file, {
         quality: 0.9,
         maxWidth: 350,
         maxHeight: 234,
@@ -193,11 +193,11 @@ export function GeneralContentControls({
         uploadData.append("activityId", contentData.id.toString());
 
         axios.post("/api/activityThumbnailUpload", uploadData).then((resp) => {
-          let { data } = resp;
+          const { data } = resp;
 
           //uploads are finished clear it out
           numberOfFilesUploading.current = 0;
-          let { success, cid, msg, asFileName } = data;
+          const { success, cid, msg } = data;
           if (success) {
             setImagePath(`/media/${cid}.jpg`);
             //Refresh images in activities
@@ -384,8 +384,8 @@ export function GeneralContentControls({
                 // If saveDataToServer is unsuccessful, the client doenetmlVersion
                 // will no match what's on the server.
                 // (See TODO from near where doenetmlVersion is defined)
-                let nextDoenetmlVersionId = Number(e.target.value);
-                let nextDoenetmlVersion = allDoenetmlVersions.find(
+                const nextDoenetmlVersionId = Number(e.target.value);
+                const nextDoenetmlVersion = allDoenetmlVersions.find(
                   (v) => v.id == nextDoenetmlVersionId,
                 );
                 if (nextDoenetmlVersion) {
