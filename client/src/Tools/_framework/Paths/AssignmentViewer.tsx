@@ -21,7 +21,11 @@ export async function action({ params, request }) {
     return codeResults;
   }
 
-  const changeNameResults = await changeNameAction({ params, request, formData });
+  const changeNameResults = await changeNameAction({
+    params,
+    request,
+    formData,
+  });
   if (changeNameResults !== null) {
     return changeNameResults;
   }
