@@ -18,9 +18,9 @@ import { IoGrid, IoGridOutline } from "react-icons/io5";
 import { CardContent } from "../../../Widgets/Card";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
-import { DateTime } from "luxon";
 import { ContentStructure, UserInfo } from "../../../_utils/types";
 import CardList from "../../../Widgets/CardList";
+import { formatTime } from "../../../_utils/dateUtilityFunction";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -65,57 +65,6 @@ export function Assigned() {
     document.title = `Assigned - Doenet`;
   }, []);
 
-  function formatTime(time: string | null) {
-    let timeFormatted: string | undefined;
-
-    if (time !== null) {
-      const sameDay = (a: DateTime, b: DateTime): boolean => {
-        return (
-          a.hasSame(b, "day") && a.hasSame(b, "month") && a.hasSame(b, "year")
-        );
-      };
-
-      const closeDateTime = DateTime.fromISO(time);
-      const now = DateTime.now();
-      const tomorrow = now.plus({ day: 1 });
-
-      if (sameDay(closeDateTime, now)) {
-        if (closeDateTime.minute === 0) {
-          timeFormatted = `today, ${closeDateTime.toLocaleString({ hour: "2-digit" })}`;
-        } else {
-          timeFormatted = `today, ${closeDateTime.toLocaleString({ hour: "2-digit", minute: "2-digit" })}`;
-        }
-      } else if (sameDay(closeDateTime, tomorrow)) {
-        if (closeDateTime.minute === 0) {
-          timeFormatted = `tomorrow, ${closeDateTime.toLocaleString({ hour: "2-digit" })}`;
-        } else {
-          timeFormatted = `tomorrow, ${closeDateTime.toLocaleString({ hour: "2-digit", minute: "2-digit" })}`;
-        }
-      } else if (closeDateTime.year === now.year) {
-        if (closeDateTime.minute === 0) {
-          timeFormatted = closeDateTime.toLocaleString({
-            weekday: "short",
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-          });
-        } else {
-          timeFormatted = closeDateTime.toLocaleString({
-            weekday: "short",
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-        }
-      } else {
-        timeFormatted = closeDateTime.toLocaleString(DateTime.DATETIME_MED);
-      }
-    }
-
-    return timeFormatted;
-  }
-
   const heading = (
     <Box
       backgroundColor="#fff"
@@ -128,7 +77,7 @@ export function Assigned() {
       <Heading as="h2" size="lg">
         {createFullName(user)}
       </Heading>
-      <Heading as="h3" size="md">
+      <Heading as="h3" size="md" marginBottom="0.5em">
         Assigned Activities
       </Heading>
       <VStack align="flex-end" float="right" marginRight=".5em">

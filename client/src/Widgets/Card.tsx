@@ -58,6 +58,7 @@ export async function cardActions({ formObj }: { [k: string]: any }) {
       name =
         "Untitled " + (formObj.isFolder === "true" ? "Folder" : "Activity");
     }
+
     await axios.post(`/api/updateContentName`, {
       id: formObj.id,
       name,
@@ -195,7 +196,7 @@ export default function Card({
           }}
         />
         <EditableInput
-          size={50}
+          size={1000}
           onClick={(e) => {
             if (editableTitle) {
               e.preventDefault();
@@ -255,7 +256,7 @@ export default function Card({
             as={BsPeopleFill}
             color="#666699"
             boxSize={5}
-            verticalAlign="baseline"
+            verticalAlign="middle"
           />
         </Box>
       </Tooltip>
@@ -330,7 +331,6 @@ export default function Card({
   }
 
   let smallAvatarDisplay: ReactElement | null = null;
-  let ownerNameWithAvatar: ReactElement | null = null;
   let ownerDisplay: ReactElement | null = null;
   let smallAvatarWidth = 0;
 
@@ -339,16 +339,6 @@ export default function Card({
     smallAvatarDisplay = (
       <Tooltip label={ownerName}>
         <Avatar size="sm" name={ownerName} />
-      </Tooltip>
-    );
-
-    const avatarSize = listView ? "xs" : "sm";
-    ownerNameWithAvatar = (
-      <Tooltip label={ownerName}>
-        <HStack>
-          <Avatar size={avatarSize} name={ownerName} />
-          <Text noOfLines={1}>{ownerName}</Text>
-        </HStack>
       </Tooltip>
     );
 
@@ -391,20 +381,46 @@ export default function Card({
       }
 
       initialIcon = (
-        <Icon as={iconImage} color={iconColor} boxSize={10} paddingLeft="1em" />
+        <Icon
+          as={iconImage}
+          color={iconColor}
+          boxSize={10}
+          paddingLeft={[".1em", "1em"]}
+        />
       );
     }
 
     const titleWidth = showAssignmentStatus || showOwnerName ? "50%" : "80%";
 
     const assignmentStatusDisplay = showAssignmentStatus ? (
+      <Tooltip label={assignmentStatusString}>
+        <Box
+          paddingLeft={[".2em", "1em"]}
+          width="30%"
+          height={cardHeight}
+          alignContent="center"
+          fontSize="sm"
+        >
+          <Box noOfLines={2} fontStyle="italic">
+            {assignmentStatusString}
+          </Box>
+        </Box>
+      </Tooltip>
+    ) : null;
+
+    const ownerNameWithAvatar = showOwnerName ? (
       <Box
-        paddingLeft="10px"
+        paddingLeft={[".1em", "1em"]}
         width="30%"
         height={cardHeight}
         alignContent="center"
       >
-        {assignmentStatusString}
+        <Tooltip label={ownerName}>
+          <HStack>
+            <Avatar size="xs" name={ownerName} />
+            <Text noOfLines={1}>{ownerName}</Text>
+          </HStack>
+        </Tooltip>
       </Box>
     ) : null;
 
@@ -433,22 +449,21 @@ export default function Card({
                   {initialIcon}
                 </Box>
                 <Box
-                  paddingLeft="10px"
-                  paddingRight="10px"
+                  paddingLeft={[".1em", "1em"]}
+                  paddingRight={[".1em", "1em"]}
                   width={titleWidth}
                   height={cardHeight}
                   alignContent="center"
                 >
-                  <HStack>
+                  <HStack gap="0.1em">
                     {titleDisplay}
                     {sharedIcon}
                   </HStack>
                 </Box>
                 {assignmentStatusDisplay}
                 {ownerNameWithAvatar}
-                <Spacer />
                 <Box
-                  paddingLeft="10px"
+                  paddingLeft={[".1em", "1em"]}
                   height={cardHeight}
                   alignContent="center"
                 >
@@ -462,6 +477,7 @@ export default function Card({
       </ChakraCard>
     );
   } else {
+    // card view
     const cardWidth = "180px";
     const cardHeight = "180px";
     const cardTextWidth = 172 - smallAvatarWidth;

@@ -102,8 +102,8 @@ export default function CardList({
 
   const panel = (
     <Flex
-      paddingLeft="1em"
-      paddingRight="1em"
+      paddingLeft={[".1em", "1em"]}
+      paddingRight={[".1em", "1em"]}
       flexDirection={flexDirection}
       justifyContent="center"
       alignItems="center"

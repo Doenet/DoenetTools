@@ -455,11 +455,7 @@ export function ShareSettings({
                       (contentData.parentFolder?.sharedWith.findIndex(
                         (cs) => cs.userId === user.userId,
                       ) ?? -1) !== -1;
-                    console.log({
-                      sharedViaFolder,
-                      sharedWith: contentData.parentFolder?.sharedWith,
-                      user,
-                    });
+
                     return (
                       <Tr key={user.userId}>
                         <Show above="sm">
