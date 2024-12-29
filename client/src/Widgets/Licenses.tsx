@@ -9,7 +9,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { Link } from "react-router";
-import { MdCircle } from "react-icons/md";
 
 export function SmallLicenseBadges({ license }: { license: License }) {
   if (license.isComposition) {
@@ -37,7 +36,7 @@ function DisplaySmallLicenseBadge({
   };
 }) {
   let badge: React.JSX.Element | null = null;
-  let imageURL = licenseItem.smallImageURL ?? licenseItem.imageURL;
+  const imageURL = licenseItem.smallImageURL ?? licenseItem.imageURL;
   if (imageURL) {
     badge = (
       <Tooltip

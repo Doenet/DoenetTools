@@ -9,7 +9,6 @@ import {
   Th,
   Tbody,
   Td,
-  Link,
   Text,
   Box,
   LinkBox,
@@ -38,7 +37,7 @@ type Folder = {
 
 // loader for when an instructor gets data about a student
 export async function loader({ params }) {
-  let { data } = await axios.get(
+  const { data } = await axios.get(
     `/api/getStudentData/${params.userId}/${params.folderId ?? ""}`,
   );
 
@@ -51,7 +50,7 @@ export async function loader({ params }) {
 
 // loader for when a student gets their own data
 export async function assignedDataloader() {
-  let { data } = await axios.get(`/api/getAssignedScores`);
+  const { data } = await axios.get(`/api/getAssignedScores`);
 
   const userData = data.userData;
   const scores = data.orderedActivityScores;
@@ -72,12 +71,7 @@ export function StudentData() {
     document.title = `${createFullName(userData)}'s Assignments`;
   });
 
-  let navigate = useNavigate();
-
-  const linkStyle = {
-    display: "block",
-    color: "var(--mainBlue)",
-  };
+  const navigate = useNavigate();
 
   return (
     <>

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import {
   Button,
   Center,
@@ -22,7 +22,7 @@ import {
   Hide,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
-import { BsGithub, BsDiscord } from "react-icons/bs";
+import { BsDiscord } from "react-icons/bs";
 import { Outlet, useLoaderData } from "react-router";
 import { NavLink } from "react-router";
 import RouterLogo from "../RouterLogo";
@@ -53,7 +53,7 @@ function NavLinkTab({ to, children, dataTest }) {
   // TODO: use end only when path is "/"
   return (
     <NavLink to={to} end data-test={dataTest}>
-      {({ isActive, isPending }) => {
+      {({ isActive }) => {
         // let spinner = null;
         // if (isPending) {
         //   spinner = <Spinner size="sm" />;
@@ -90,7 +90,7 @@ function NavLinkDropdownTab({ to, children, dataTest }) {
   // TODO: use end only when path is "/"
   return (
     <NavLink to={to} end data-test={dataTest}>
-      {({ isActive, isPending }) => {
+      {({ isActive }) => {
         // let spinner = null;
         // if (isPending) {
         //   spinner = <Spinner size="sm" />;

@@ -16,12 +16,12 @@ import { User } from "./SiteHeader";
 export async function action({ params, request }) {
   const formData = await request.formData();
 
-  let codeResults = await enterClassCodeAction({ params, request, formData });
+  const codeResults = await enterClassCodeAction({ params, request, formData });
   if (codeResults !== null) {
     return codeResults;
   }
 
-  let changeNameResults = await changeNameAction({ params, request, formData });
+  const changeNameResults = await changeNameAction({ params, request, formData });
   if (changeNameResults !== null) {
     return changeNameResults;
   }
@@ -36,12 +36,12 @@ export async function loader({ params }) {
 
   if (params.activityId) {
     // TODO: create this route
-    let { data } = await axios.get(
+    const { data } = await axios.get(
       `/api/getAssignmentData/${params.activityId}`,
     );
     assignment = data;
   } else if (params.classCode) {
-    let { data } = await axios.get(
+    const { data } = await axios.get(
       `/api/getAssignmentDataFromCode/${params.classCode}`,
     );
 
@@ -93,8 +93,8 @@ export function AssignmentViewer() {
 
   const user = useOutletContext<User>();
 
-  let navigate = useNavigate();
-  let location = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (assignmentFound) {
@@ -109,7 +109,7 @@ export function AssignmentViewer() {
       return;
     }
 
-    let messageListener = async function (event) {
+    const messageListener = async function (event) {
       if (event.data.subject == "SPLICE.reportScoreAndState") {
         // TODO: generalize to multiple documents. For now, assume just have one.
         await axios.post("/api/saveScoreAndState", {
@@ -132,7 +132,7 @@ export function AssignmentViewer() {
         }
       } else if (event.data.subject == "SPLICE.getState") {
         try {
-          let { data } = await axios.get("/api/loadState", {
+          const { data } = await axios.get("/api/loadState", {
             params: {
               activityId: assignment.id,
               docId: assignment.documents[0].id,
@@ -320,7 +320,7 @@ async function recordSubmittedEvent({
   const answerId = object.componentName;
 
   if (answerId) {
-    let result = JSON.parse(data.result);
+    const result = JSON.parse(data.result);
     const creditAchieved = result.creditAchieved;
     const response = JSON.stringify({
       response: result.response,

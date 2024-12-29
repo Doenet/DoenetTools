@@ -15,8 +15,8 @@ export default function AssignmentPreview({
     allPossibleVariants: ["a"],
   });
 
-  let navigate = useNavigate();
-  let location = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <Box

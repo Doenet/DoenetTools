@@ -112,7 +112,7 @@ export default function MoveContentToFolder({
       `/api/getMyFolderContent/${userId}/${newActiveFolderId ?? ""}`,
     );
 
-    let folder: ContentStructure | null = data.folder;
+    const folder: ContentStructure | null = data.folder;
     const folderName: string | null = folder?.name ?? null;
     const folderIsPublic: boolean = folder?.isPublic ?? false;
     const folderIsShared: boolean = folder?.isShared ?? false;

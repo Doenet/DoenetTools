@@ -39,7 +39,7 @@ export function Carousel({
 
   const pagination = {
     clickable: true,
-    renderBullet: function (index, className) {
+    renderBullet: function (_index, className) {
       return `<span class="${className}" ></span>`;
     },
   };
@@ -56,10 +56,10 @@ export function Carousel({
     // thresholdTime: 1000,
   };
 
-  let numCards = activities.length;
+  const numCards = activities.length;
 
   const cardContent: CardContent[] = activities.map((activity) => {
-    let menuItems = (
+    const menuItems = (
       <MenuItem
         data-test={`Activity Information`}
         onClick={() => {

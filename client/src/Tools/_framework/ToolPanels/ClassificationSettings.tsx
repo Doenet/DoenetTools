@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { FetcherWithComponents, Form } from "react-router";
+import { FetcherWithComponents } from "react-router";
 import {
   Box,
   Text,
@@ -64,7 +64,7 @@ export function ClassificationSettings({
   fetcher: FetcherWithComponents<any>;
   contentData: ContentStructure;
 }) {
-  let [categoryFilter, setCategoryFilter] = useState<{
+  const [categoryFilter, setCategoryFilter] = useState<{
     systemId?: number;
     systemTreeIndex?: number;
     categoryId?: number;
@@ -73,9 +73,9 @@ export function ClassificationSettings({
     subCategoryTreeIndex?: number;
   }>({});
 
-  let [queryFilter, setQueryFilter] = useState<string | undefined>(undefined);
+  const [queryFilter, setQueryFilter] = useState<string | undefined>(undefined);
 
-  let [classificationOptions, setClassificationOptions] = useState<
+  const [classificationOptions, setClassificationOptions] = useState<
     ContentClassification[]
   >([]);
 
@@ -106,11 +106,11 @@ export function ClassificationSettings({
       searchParameters += `q=${query}`;
     }
 
-    let results = await axios.get(
+    const results = await axios.get(
       `/api/searchPossibleClassifications?${searchParameters}`,
     );
 
-    let classifications: ContentClassification[] = results.data;
+    const classifications: ContentClassification[] = results.data;
     setClassificationOptions(classifications);
   };
 
@@ -118,18 +118,18 @@ export function ClassificationSettings({
     fetchClassificationOptions({ ...categoryFilter, query: queryFilter });
   }, [categoryFilter, queryFilter]);
 
-  let [classifyItemRemoveSpinner, setClassifyItemRemoveSpinner] = useState(0);
+  const [classifyItemRemoveSpinner, setClassifyItemRemoveSpinner] = useState(0);
   useEffect(() => {
     setClassifyItemRemoveSpinner(0);
   }, [contentData]);
 
   // Non-zero if waiting for server to add/remove classification (stores id)
-  let [dropdownWaitingForChange, setDropdownWaitingForChange] = useState(0);
+  const [dropdownWaitingForChange, setDropdownWaitingForChange] = useState(0);
   useEffect(() => {
     setDropdownWaitingForChange(0);
   }, [contentData]);
 
-  let [classificationCategories, setClassificationCategories] = useState<
+  const [classificationCategories, setClassificationCategories] = useState<
     ClassificationCategoryTree[]
   >([]);
   useEffect(() => {
@@ -284,7 +284,7 @@ export function ClassificationSettings({
                   data-test="Filter By System"
                   onChange={(event) => {
                     if (event.target.value) {
-                      let treeIndex = Number(event.target.value);
+                      const treeIndex = Number(event.target.value);
                       setCategoryFilter({
                         systemId: classificationCategories[treeIndex].id,
                         systemTreeIndex: treeIndex,
@@ -320,9 +320,9 @@ export function ClassificationSettings({
                   isDisabled={categoryFilter.systemId === undefined}
                   onChange={(event) => {
                     if (event.target.value) {
-                      let treeIndex = Number(event.target.value);
+                      const treeIndex = Number(event.target.value);
                       setCategoryFilter((was) => {
-                        let obj = { ...was };
+                        const obj = { ...was };
                         obj.categoryId =
                           selectedClassification!.categories[treeIndex].id;
                         obj.categoryTreeIndex = treeIndex;
@@ -332,7 +332,7 @@ export function ClassificationSettings({
                       });
                     } else {
                       setCategoryFilter((was) => {
-                        let obj = { ...was };
+                        const obj = { ...was };
                         delete obj.categoryId;
                         delete obj.categoryTreeIndex;
                         delete obj.subCategoryId;
@@ -354,7 +354,7 @@ export function ClassificationSettings({
                   disabled={categoryFilter.categoryId === undefined}
                   onClick={() => {
                     setCategoryFilter((was) => {
-                      let obj = { ...was };
+                      const obj = { ...was };
                       delete obj.categoryId;
                       delete obj.categoryTreeIndex;
                       delete obj.subCategoryId;
@@ -377,9 +377,9 @@ export function ClassificationSettings({
                   isDisabled={categoryFilter.categoryId === undefined}
                   onChange={(event) => {
                     if (event.target.value) {
-                      let treeIndex = Number(event.target.value);
+                      const treeIndex = Number(event.target.value);
                       setCategoryFilter((was) => {
-                        let obj = { ...was };
+                        const obj = { ...was };
                         obj.subCategoryId =
                           selectedClassification!.categories[
                             categoryFilter.categoryTreeIndex!
@@ -389,7 +389,7 @@ export function ClassificationSettings({
                       });
                     } else {
                       setCategoryFilter((was) => {
-                        let obj = { ...was };
+                        const obj = { ...was };
                         delete obj.subCategoryId;
                         delete obj.subCategoryTreeIndex;
                         return obj;
@@ -411,7 +411,7 @@ export function ClassificationSettings({
                   disabled={categoryFilter.categoryId === undefined}
                   onClick={() => {
                     setCategoryFilter((was) => {
-                      let obj = { ...was };
+                      const obj = { ...was };
                       delete obj.subCategoryId;
                       delete obj.subCategoryTreeIndex;
                       return obj;
@@ -440,11 +440,11 @@ export function ClassificationSettings({
                 ) : null}
 
                 {classificationOptions.map((classification) => {
-                  let added = contentData.classifications
+                  const added = contentData.classifications
                     .map((c) => c.id)
                     .includes(classification.id);
-                  let buttonText = added ? "Remove" : "Add";
-                  let action =
+                  const buttonText = added ? "Remove" : "Add";
+                  const action =
                     (added ? "remove" : "add") + " content classification";
 
                   const {

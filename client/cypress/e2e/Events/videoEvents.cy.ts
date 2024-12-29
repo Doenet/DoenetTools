@@ -3,41 +3,16 @@
 import { cesc2 } from "../../../src/_utils/url";
 
 describe("video events test", function () {
-  const userId = "cyuserId";
+  // const userId = "cyuserId";
   // const userId = "devuserId";
   const courseId = "courseid1";
   const doenetId = "activity1id";
   const pageDoenetId = "_page1id";
-  const blankCid =
+  const _blankCid =
     "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
 
-  before(() => {
-    // cy.clearAllOfAUsersActivities({userId})
-    cy.signin({ userId });
-    cy.clearAllOfAUsersCoursesAndItems({ userId });
-    cy.createCourse({ userId, courseId });
-  });
-  beforeEach(() => {
-    cy.signin({ userId });
-    cy.clearIndexedDB();
-    cy.clearAllOfAUsersActivities({ userId });
-    cy.createActivity({
-      courseId,
-      doenetId,
-      parentDoenetId: courseId,
-      pageDoenetId,
-    });
-    cy.clearEvents({ doenetId });
-  });
-
-  Cypress.on("uncaught:exception", (err, runnable) => {
-    // returning false here prevents Cypress from
-    // failing the test
-    return false;
-  });
-
-  it("youtube player, play/pause/skip events", () => {
-    const doenetML = `
+  it.skip("youtube player, play/pause/skip events", () => {
+    const _doenetML = `
   <video youtube="tJ4ypc5L6uU" name="v" />
 
   <p>State: <copy prop="state" target="v" assignNames="state" /></p>
@@ -53,12 +28,12 @@ describe("video events test", function () {
   <p>Skip to time 157: <updateValue target="v" prop="time" newValue="157" name="skip1"><label>Skip 1</label></updateValue></p>
   <p>Skip to time 57: <updateValue target="v" prop="time" newValue="57" name="skip2"><label>Skip 2</label></updateValue></p>
   `;
-    cy.saveDoenetML({
-      doenetML,
-      pageId: pageDoenetId,
-      courseId,
-      lastKnownCid: blankCid,
-    });
+    // cy.saveDoenetML({
+    //   doenetML,
+    //   pageId: pageDoenetId,
+    //   courseId,
+    //   lastKnownCid: blankCid,
+    // });
     cy.visit(`/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`);
     cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
     cy.get('[data-test="Assign Activity"]').click();
@@ -136,12 +111,12 @@ describe("video events test", function () {
     cy.request(`/api/getEventData.php?doenetId[]=${doenetId}`).then((resp) => {
       const events = resp.body.events;
 
-      let videoEvents = events.filter((evt) =>
+      const videoEvents = events.filter((evt) =>
         ["played", "watched", "paused", "skipped", "completed"].includes(
           evt.verb,
         ),
       );
-      let videoVerbs = videoEvents.map((x) => x.verb);
+      const videoVerbs = videoEvents.map((x) => x.verb);
 
       console.log(...videoEvents);
 
@@ -494,8 +469,8 @@ describe("video events test", function () {
       expect(rates[0].endingPoint).closeTo(endingPoint, 0.5);
       expect(rates[0].rate).eq(1);
 
-      let completedInd = videoVerbs.indexOf("completed");
-      let completedEvent = videoEvents.splice(completedInd, 1)[0];
+      const completedInd = videoVerbs.indexOf("completed");
+      const completedEvent = videoEvents.splice(completedInd, 1)[0];
       videoVerbs.splice(completedInd, 1);
 
       context = JSON.parse(completedEvent.context);

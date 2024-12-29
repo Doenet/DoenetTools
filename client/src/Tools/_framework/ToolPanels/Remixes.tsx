@@ -20,7 +20,11 @@ import { createFullName } from "../../../_utils/names";
 import { DateTime } from "luxon";
 import { DocRemixItem } from "../../../_utils/types";
 
-export async function remixesActions({ formObj }: { [k: string]: any }) {
+export async function remixesActions({
+  formObj: _formObj,
+}: {
+  [k: string]: any;
+}) {
   return null;
 }
 
@@ -41,7 +45,7 @@ export function Remixes({ remixes }: { remixes: DocRemixItem[] | null }) {
     );
   }
 
-  let remixTable = (
+  const remixTable = (
     <TableContainer
       maxHeight="200px"
       overflowY="auto"

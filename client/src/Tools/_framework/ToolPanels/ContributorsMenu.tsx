@@ -28,7 +28,7 @@ export default function ContributorsMenu({
     return null;
   }
 
-  let byLine = (
+  const byLine = (
     <>
       by{" "}
       <Tooltip
@@ -131,7 +131,7 @@ export default function ContributorsMenu({
             </HStack>
           </MenuItem>
           {contributorHistory.map((contrib_hist, i) => {
-            let menuText = `${contrib_hist.prevActivityName} by ${createFullName(contrib_hist.prevOwner)}`;
+            const menuText = `${contrib_hist.prevActivityName} by ${createFullName(contrib_hist.prevOwner)}`;
             const activityRef = `/activityViewer/${contrib_hist.prevActivityId}`;
             const activityLabel = `Go to ${contrib_hist.prevActivityName}`;
             const userRef = `/sharedActivities/${contrib_hist.prevOwner.userId}`;

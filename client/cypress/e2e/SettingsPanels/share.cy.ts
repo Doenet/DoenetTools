@@ -1,6 +1,6 @@
 describe("Share panel tests", function () {
   it("cannot select incompatible license after remix, ShareAlike", () => {
-    let code = Date.now().toString();
+    const code = Date.now().toString();
     const scrappyEmail = `scrappy${code}@doo`;
     const scoobyEmail = `scooby${code}@doo`;
 
@@ -58,7 +58,7 @@ describe("Share panel tests", function () {
   });
 
   it("cannot select incompatible license after remix, NonCommercial-ShareAlike", () => {
-    let code = Date.now().toString();
+    const code = Date.now().toString();
     const scrappyEmail = `scrappy${code}@doo`;
     const scoobyEmail = `scooby${code}@doo`;
 
@@ -116,7 +116,7 @@ describe("Share panel tests", function () {
   });
 
   it("can select license after remix, Dual License", () => {
-    let code = Date.now().toString();
+    const code = Date.now().toString();
     const scrappyEmail = `scrappy${code}@doo`;
     const scoobyEmail = `scooby${code}@doo`;
 
@@ -169,7 +169,7 @@ describe("Share panel tests", function () {
   });
 
   it("Remixes shown in share panel", () => {
-    let code = Date.now().toString();
+    const code = Date.now().toString();
     const scrappyEmail = `scrappy${code}@doo`;
     const scoobyEmail = `scooby${code}@doo`;
 

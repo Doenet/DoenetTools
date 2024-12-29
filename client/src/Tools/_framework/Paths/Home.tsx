@@ -37,8 +37,8 @@ export async function loader() {
 
 const HomeIntroVideo = lazy(() => import("./HomeIntroVideo"));
 
-let doenetmlVersion = "0.7.0-alpha18";
-let doenetML = `
+const doenetmlVersion = "0.7.0-alpha18";
+const doenetML = `
 <example>
 <setup>
 <number name="num_lines">2</number>
@@ -104,7 +104,6 @@ export function Home() {
   const blueColor = useColorModeValue("doenet.lightBlue", "doenet.mainBlue");
   const blackColor = "black";
   const whiteColor = useColorModeValue("white", "gray.900");
-  const textColor = useColorModeValue("doenet.canvas", "doenet.canvastext");
 
   const [infoContentData, setInfoContentData] =
     useState<ContentStructure | null>(null);
@@ -119,7 +118,6 @@ export function Home() {
     <ContentInfoDrawer
       isOpen={infoIsOpen}
       onClose={infoOnClose}
-      id={infoContentData.id}
       contentData={infoContentData}
     />
   ) : null;

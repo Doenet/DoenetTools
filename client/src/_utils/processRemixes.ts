@@ -5,13 +5,13 @@ import { DocHistoryItem, DocRemixItem } from "./types";
 export async function processContributorHistory(hist: {
   contributorHistory: any[];
 }) {
-  let historyItems: DocHistoryItem[] = [];
+  const historyItems: DocHistoryItem[] = [];
 
-  for (let ch of hist.contributorHistory) {
+  for (const ch of hist.contributorHistory) {
     const { prevDoc, ...historyItem } = ch;
-    let prevActivity = prevDoc.activity;
-    let prevCid = prevDoc.cid;
-    let prevDocCurrentCid = await cidFromText(prevDoc.source);
+    const prevActivity = prevDoc.activity;
+    const prevCid = prevDoc.cid;
+    const prevDocCurrentCid = await cidFromText(prevDoc.source);
 
     historyItems.push({
       ...historyItem,
@@ -32,7 +32,7 @@ export function processRemixes(docRemixes: {
   documentVersions: { versionNumber: number; remixes: any[] }[];
   id: string;
 }): DocRemixItem[] {
-  let items = docRemixes.documentVersions
+  const items = docRemixes.documentVersions
     .flatMap((dv) =>
       dv.remixes.map((remix) => {
         const activity = remix.activity;

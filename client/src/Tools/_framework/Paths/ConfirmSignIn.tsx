@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useLoaderData } from "react-router";
 import axios from "axios";
 import {
@@ -19,7 +19,7 @@ export async function action({ params, request }) {
   return changeNameAction({ params, request, formData });
 }
 
-export async function loader({ params, request }) {
+export async function loader({ request }) {
   const url = new URL(request.url);
   const token = url.searchParams.get("token");
 
@@ -31,7 +31,7 @@ export function ConfirmSignIn() {
     token: string;
   };
 
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [errorConfirming, setErrorConfirm] = useState(false);
 
@@ -51,7 +51,7 @@ export function ConfirmSignIn() {
           navigate("/");
         }
       })
-      .catch((e) => {
+      .catch((_e) => {
         document.body.style.cursor = "default";
         setErrorConfirm(true);
       });

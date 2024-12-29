@@ -6,7 +6,7 @@ describe("Create Folders Tests", function () {
   // TODO: this test is unfinished, but waiting until
   // the folder UI redesign
   it("create and share folder", () => {
-    let code = Date.now().toString();
+    const code = Date.now().toString();
     const scrappyEmail = `scrappy${code}@doo`;
     const scoobyEmail = `scooby${code}@doo`;
 

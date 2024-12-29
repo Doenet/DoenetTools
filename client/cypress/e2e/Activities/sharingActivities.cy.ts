@@ -4,7 +4,7 @@ describe("Share Activities Tests", function () {
   beforeEach(() => {});
 
   it("create, share, and copy public activity", () => {
-    let code = Date.now().toString();
+    const code = Date.now().toString();
     const scrappyEmail = `scrappy${code}@doo`;
     const scoobyEmail = `scooby${code}@doo`;
 

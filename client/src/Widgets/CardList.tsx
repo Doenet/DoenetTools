@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { Text, Icon, Box, Show, Flex, Wrap } from "@chakra-ui/react";
+import { Text, Icon, Box, Flex, Wrap } from "@chakra-ui/react";
 import { RiEmotionSadLine } from "react-icons/ri";
 import Card, { CardContent } from "./Card";
 
@@ -43,26 +43,26 @@ export default function CardList({
     );
   }
 
-  let headerRow: ReactElement | null = null;
+  // let headerRow: ReactElement | null = null;
 
-  if (listView) {
-    // headerRow = (
-    //   <Flex>
-    //     <Box width="100%"></Box>
-    //     <Box width="100%"></Box>
-    //     {showPublicStatus ? <Box width="100%">Visibility</Box> : null}
-    //     <Show above="md">
-    //       {showAssignmentStatus ? (
-    //         <Box width="100%">Assignment Status</Box>
-    //       ) : null}
-    //     </Show>
-    //     {showOwnerName ? (
-    //       <Box width="100%">Owner</Box>
-    //     ) : null}
-    //     <Box width="100%"></Box>
-    //   </Flex>
-    // );
-  }
+  // if (listView) {
+  //   headerRow = (
+  //     <Flex>
+  //       <Box width="100%"></Box>
+  //       <Box width="100%"></Box>
+  //       {showPublicStatus ? <Box width="100%">Visibility</Box> : null}
+  //       <Show above="md">
+  //         {showAssignmentStatus ? (
+  //           <Box width="100%">Assignment Status</Box>
+  //         ) : null}
+  //       </Show>
+  //       {showOwnerName ? (
+  //         <Box width="100%">Owner</Box>
+  //       ) : null}
+  //       <Box width="100%"></Box>
+  //     </Flex>
+  //   );
+  // }
 
   let cards: ReactElement | ReactElement[] = content.map((cardContent) => {
     const justCreated = folderJustCreated === cardContent.id;
@@ -98,9 +98,9 @@ export default function CardList({
     );
   }
 
-  let flexDirection: "column" | "row" = listView ? "column" : "row";
+  const flexDirection: "column" | "row" = listView ? "column" : "row";
 
-  let panel = (
+  const panel = (
     <Flex
       paddingLeft="1em"
       paddingRight="1em"
@@ -116,7 +116,7 @@ export default function CardList({
 
   return (
     <>
-      {headerRow}
+      {/* {headerRow} */}
       {panel}
     </>
   );

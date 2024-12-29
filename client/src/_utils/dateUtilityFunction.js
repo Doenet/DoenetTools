@@ -1,4 +1,4 @@
-export function dateUtilityFunction(date, isTimeIncluded) {
+export function dateUtilityFunction(date) {
   const datepresent = new Date(Date.now());
   const diff = Math.floor(datepresent - date);
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));

@@ -49,7 +49,7 @@ export async function loader({ params }) {
       `/api/getActivityViewerData/${params.activityId}`,
     );
 
-    let activityId = params.activityId;
+    const activityId = params.activityId;
     let docId = params.docId;
     if (!docId) {
       // If docId was not supplied in the url,

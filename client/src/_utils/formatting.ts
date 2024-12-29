@@ -1,10 +1,10 @@
 export function formatBytes(bytes: number) {
-  var marker = 1024; // Change to 1000 if required
-  var decimal = 1; // Change as required
-  var kiloBytes = marker;
-  var megaBytes = marker * marker;
-  var gigaBytes = marker * marker * marker;
-  var teraBytes = marker * marker * marker * marker;
+  const marker = 1024; // Change to 1000 if required
+  const decimal = 1; // Change as required
+  const kiloBytes = marker;
+  const megaBytes = marker * marker;
+  const gigaBytes = marker * marker * marker;
+  const teraBytes = marker * marker * marker * marker;
 
   if (bytes < kiloBytes) return bytes + " Bytes";
   else if (bytes < megaBytes)

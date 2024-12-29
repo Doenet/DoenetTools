@@ -54,7 +54,7 @@ export async function loader({ params }) {
 
   const assignmentScores: AssignmentScore[] = data.assignmentScores;
 
-  let studentData: Record<string, StudentStructure> = {};
+  const studentData: Record<string, StudentStructure> = {};
   assignmentScores.forEach((score) => {
     if (!(score.user.userId in studentData)) {
       studentData[score.user.userId] = { ...score.user, scores: {} };
@@ -64,10 +64,10 @@ export async function loader({ params }) {
 
   // list of student ids (keys to studentData) ordered based on corresponding student name
   // sort by last names
-  let studentIdsOrdered = Object.keys(studentData);
+  const studentIdsOrdered = Object.keys(studentData);
   studentIdsOrdered.sort((a, b) => {
-    let nameA = lastNameFirst(studentData[a]).trim().toLowerCase();
-    let nameB = lastNameFirst(studentData[b]).trim().toLowerCase();
+    const nameA = lastNameFirst(studentData[a]).trim().toLowerCase();
+    const nameB = lastNameFirst(studentData[b]).trim().toLowerCase();
     if (nameA > nameB) {
       return 1;
     } else if (nameA < nameB) {
@@ -97,7 +97,7 @@ export function AllAssignmentScores() {
     document.title = "My Assignments";
   });
 
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const linkStyle = {
     display: "block",

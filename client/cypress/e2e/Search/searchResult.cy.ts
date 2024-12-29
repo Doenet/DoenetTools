@@ -1,7 +1,7 @@
 describe("Search results Tests", function () {
   it("classifications shown in search", () => {
     cy.loginAsTestUser();
-    let code = Date.now().toString();
+    const code = Date.now().toString();
 
     cy.createActivity({
       activityName: `Classifications${code}!`,
@@ -22,7 +22,7 @@ describe("Search results Tests", function () {
           code: "A.SSE.3 a.",
         },
       ],
-    }).then((activityId) => {
+    }).then(() => {
       cy.visit(`/community?q=Classifications${code}`);
 
       cy.get('[data-test="Results All Matches"] [data-test="Card Menu Button"]')

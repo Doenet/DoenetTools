@@ -19,8 +19,8 @@ export function GeneralContentInfo({
 }: {
   contentData: ContentStructure;
 }) {
-  let license = contentData.license;
-  let contentType = contentData.isFolder ? "Folder" : "Activity";
+  const license = contentData.license;
+  const contentType = contentData.isFolder ? "Folder" : "Activity";
 
   const containsFeatures =
     contentData.isQuestion ||

@@ -1,9 +1,7 @@
 import {
   Box,
   Icon,
-  Text,
   Flex,
-  Wrap,
   Heading,
   Tooltip,
   List,
@@ -17,8 +15,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { useLoaderData, useFetcher, Link } from "react-router";
 
-import { RiEmotionSadLine } from "react-icons/ri";
-import Card, { CardContent } from "../../../Widgets/Card";
+import { CardContent } from "../../../Widgets/Card";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
 import { ContentStructure } from "../../../_utils/types";
@@ -33,7 +30,7 @@ import CardList from "../../../Widgets/CardList";
 
 export async function action({ request }) {
   const formData = await request.formData();
-  let formObj = Object.fromEntries(formData);
+  const formObj = Object.fromEntries(formData);
 
   if (formObj?._action == "Set List View Preferred") {
     await axios.post(`/api/setPreferredFolderView`, {
@@ -50,8 +47,8 @@ export async function loader({ params }) {
     `/api/getSharedFolderContent/${params.ownerId}/${params.folderId ?? ""}`,
   );
 
-  let prefData = await axios.get(`/api/getPreferredFolderView`);
-  let listViewPref = !prefData.data.cardView;
+  const prefData = await axios.get(`/api/getPreferredFolderView`);
+  const listViewPref = !prefData.data.cardView;
 
   return {
     content: data.content,
@@ -63,7 +60,7 @@ export async function loader({ params }) {
 }
 
 export function SharedActivities() {
-  let { content, ownerId, owner, folder, listViewPref } = useLoaderData() as {
+  const { content, ownerId, owner, folder, listViewPref } = useLoaderData() as {
     content: ContentStructure[];
     ownerId: string;
     owner: {
@@ -94,7 +91,7 @@ export function SharedActivities() {
 
   let contentData: ContentStructure | undefined;
   if (infoContentId) {
-    let index = content.findIndex((obj) => obj.id == infoContentId);
+    const index = content.findIndex((obj) => obj.id == infoContentId);
     if (index != -1) {
       contentData = content[index];
     } else {
@@ -102,17 +99,16 @@ export function SharedActivities() {
     }
   }
 
-  let infoDrawer =
+  const infoDrawer =
     contentData && infoContentId ? (
       <ContentInfoDrawer
         isOpen={infoIsOpen}
         onClose={infoOnClose}
-        id={infoContentId}
         contentData={contentData}
       />
     ) : null;
 
-  let headingText = folder ? (
+  const headingText = folder ? (
     <>Folder: {folder.name}</>
   ) : (
     `Shared Activities of ${createFullName(owner)}`
@@ -214,9 +210,9 @@ export function SharedActivities() {
   );
 
   const cardContent: CardContent[] = content.map((activity) => {
-    let contentType = activity.isFolder ? "Folder" : "Activity";
+    const contentType = activity.isFolder ? "Folder" : "Activity";
 
-    let menuItems = (
+    const menuItems = (
       <MenuItem
         data-test={`${contentType} Information`}
         onClick={() => {

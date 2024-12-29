@@ -3,7 +3,6 @@ import axios from "axios";
 import {
   Box,
   Button,
-  Checkbox,
   Flex,
   FormControl,
   FormLabel,
@@ -18,9 +17,9 @@ import { useNavigate, useOutletContext } from "react-router";
 import "./google-signin.css";
 import { User } from "./SiteHeader";
 
-export async function action({ params, request }) {
+export async function action({ request }) {
   const formData = await request.formData();
-  let formObj = Object.fromEntries(formData);
+  const formObj = Object.fromEntries(formData);
 
   axios.post("/api/auth/magiclink", {
     email: formObj.email,
@@ -34,10 +33,10 @@ export async function action({ params, request }) {
 export function SignIn() {
   const user = useOutletContext<User>();
 
-  let [formSubmitted, setFormSubmitted] = useState(false);
-  let [email, setEmail] = useState("");
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [email, setEmail] = useState("");
 
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   return (
     <Flex

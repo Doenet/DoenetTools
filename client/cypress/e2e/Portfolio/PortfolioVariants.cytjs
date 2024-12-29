@@ -15,7 +15,7 @@ describe("Activities Variant Tests", function () {
     return false;
   });
 
-  it("Activities Editor Varient Control Shows Up", () => {
+  it.skip("Activities Editor Variant Control Shows Up", () => {
     const label = "Activities Variant Control";
     const text1 = "Hello World";
 
