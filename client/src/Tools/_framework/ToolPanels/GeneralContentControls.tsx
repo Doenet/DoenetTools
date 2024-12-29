@@ -27,17 +27,28 @@ import { activityFeatures } from "../../../_utils/activity";
 export async function generalContentActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "update general") {
     const isQuestion =
-      formObj.isQuestion === "undefined"
+      formObj.isQuestion === "undefined" || formObj.isQuestion === undefined
         ? undefined
         : formObj.isQuestion === "true";
     const isInteractive =
-      formObj.isInteractive === "undefined"
+      formObj.isInteractive === "undefined" ||
+      formObj.isInteractive === undefined
         ? undefined
         : formObj.isInteractive === "true";
     const containsVideo =
-      formObj.containsVideo === "undefined"
+      formObj.containsVideo === "undefined" ||
+      formObj.containsVideo === undefined
         ? undefined
         : formObj.containsVideo === "true";
+
+    console.log("GeneralContentControls /api/updateContentSettings", {
+      name: formObj.name,
+      imagePath: formObj.imagePath,
+      id: formObj.id,
+      isQuestion,
+      isInteractive,
+      containsVideo,
+    });
     await axios.post("/api/updateContentSettings", {
       name: formObj.name,
       imagePath: formObj.imagePath,
