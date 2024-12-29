@@ -456,12 +456,7 @@ app.get(
   "/api/getAllRecentPublicActivities",
   async (_req: Request, res: Response) => {
     const activities = await getAllRecentPublicActivities();
-    res.send(
-      activities.map((activity) => ({
-        ...activity,
-        id: fromUUID(activity.id),
-      })),
-    );
+    res.send(activities.map(contentStructureConvertUUID));
   },
 );
 
