@@ -66,8 +66,6 @@ export async function action({ request, params }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
-  console.log("Activities action", formObj);
-
   const resultCS = await contentSettingsActions({ formObj });
   if (resultCS) {
     return resultCS;

@@ -41,14 +41,6 @@ export async function generalContentActions({ formObj }: { [k: string]: any }) {
         ? undefined
         : formObj.containsVideo === "true";
 
-    console.log("GeneralContentControls /api/updateContentSettings", {
-      name: formObj.name,
-      imagePath: formObj.imagePath,
-      id: formObj.id,
-      isQuestion,
-      isInteractive,
-      containsVideo,
-    });
     await axios.post("/api/updateContentSettings", {
       name: formObj.name,
       imagePath: formObj.imagePath,

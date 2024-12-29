@@ -59,11 +59,6 @@ export async function cardActions({ formObj }: { [k: string]: any }) {
         "Untitled " + (formObj.isFolder === "true" ? "Folder" : "Activity");
     }
 
-    console.log("from card, /api/updateContentName", {
-      id: formObj.id,
-      name,
-    });
-
     await axios.post(`/api/updateContentName`, {
       id: formObj.id,
       name,
