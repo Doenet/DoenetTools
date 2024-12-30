@@ -73,6 +73,7 @@ import {
   getPreferredFolderView,
   setPreferredFolderView,
   getClassificationCategories,
+  prisma,
 } from "./model";
 import { DateTime } from "luxon";
 import { ClassificationCategoryTree, ContentStructure } from "./types";
@@ -7033,12 +7034,41 @@ test("Get classification categories as tree", async () => {
   expect(results[0].categories[0].subCategories.length).toBeGreaterThan(0);
 });
 
+test("Have unique content classification code per system", async () => {
+  const systems = await prisma.classificationSystems.findMany({
+    select: {
+      id: true,
+      name: true,
+    },
+  });
+
+  for (const system of systems) {
+    const codes = (
+      await prisma.classifications.findMany({
+        select: { code: true },
+        where: {
+          descriptions: {
+            some: { subCategory: { category: { systemId: system.id } } },
+          },
+        },
+      })
+    ).map((c) => c.code);
+
+    const uniqueCodes = [...new Set(codes)];
+
+    expect(uniqueCodes.length).eq(
+      codes.length,
+      `For non-unique codes in system ${system.name}`,
+    );
+  }
+});
+
 test("Search for content classifications, query alone", async () => {
   {
     // Code
     const results = await searchPossibleClassifications({ query: "CC.1" });
     // should be first entry
-    expect(results[0].code).eq("K.CC.1");
+    expect(results[0].code).eq("Alg.CC.1");
   }
   {
     // Category
@@ -7080,9 +7110,9 @@ test("Search for content classifications, by category and system ids", async () 
     })
   )[0];
 
-  const measurementsId = coins?.subCategories[0].id;
-  const firstGradeId = coins?.subCategories[0].category.id;
-  const mnStandardsId = coins?.subCategories[0].category.system.id;
+  const measurementsId = coins?.descriptions[0].subCategory.id;
+  const firstGradeId = coins?.descriptions[0].subCategory.category.id;
+  const mnStandardsId = coins?.descriptions[0].subCategory.category.system.id;
 
   {
     // with no filter, finds everything, so gets first 100 entries
@@ -7092,7 +7122,8 @@ test("Search for content classifications, by category and system ids", async () 
     expect(results.length).eq(100);
     expect(
       results.find(
-        (i) => i.subCategories[0].category.system.id == mnStandardsId,
+        (i) =>
+          i.descriptions[0].subCategory.category.system.shortName == "MN Math",
       ),
     ).toBeUndefined();
   }
@@ -7106,19 +7137,25 @@ test("Search for content classifications, by category and system ids", async () 
     expect(results.length).eq(100);
     expect(
       results.find(
-        (i) => i.subCategories[0].category.system.id === mnStandardsId,
+        (i) =>
+          i.descriptions[0].subCategory.category.system.id === mnStandardsId,
       ),
     ).toBeDefined();
     expect(
       results.find(
-        (i) => i.subCategories[0].category.system.id !== mnStandardsId,
+        (i) =>
+          i.descriptions[0].subCategory.category.system.id !== mnStandardsId,
       ),
     ).toBeUndefined();
     expect(
-      results.find((i) => i.subCategories[0].category.id === firstGradeId),
+      results.find(
+        (i) => i.descriptions[0].subCategory.category.id === firstGradeId,
+      ),
     ).toBeDefined();
     expect(
-      results.find((i) => i.subCategories[0].category.id !== firstGradeId),
+      results.find(
+        (i) => i.descriptions[0].subCategory.category.id !== firstGradeId,
+      ),
     ).toBeDefined();
   }
 
@@ -7132,25 +7169,31 @@ test("Search for content classifications, by category and system ids", async () 
     expect(results.length).eq(20);
     expect(
       results.find(
-        (i) => i.subCategories[0].category.system.id === mnStandardsId,
+        (i) =>
+          i.descriptions[0].subCategory.category.system.id === mnStandardsId,
       ),
     ).toBeDefined();
     expect(
       results.find(
-        (i) => i.subCategories[0].category.system.id !== mnStandardsId,
+        (i) =>
+          i.descriptions[0].subCategory.category.system.id !== mnStandardsId,
       ),
     ).toBeUndefined();
     expect(
-      results.find((i) => i.subCategories[0].category.id === firstGradeId),
+      results.find(
+        (i) => i.descriptions[0].subCategory.category.id === firstGradeId,
+      ),
     ).toBeDefined();
     expect(
-      results.find((i) => i.subCategories[0].category.id !== firstGradeId),
+      results.find(
+        (i) => i.descriptions[0].subCategory.category.id !== firstGradeId,
+      ),
     ).toBeUndefined();
     expect(
-      results.find((i) => i.subCategories[0].id === measurementsId),
+      results.find((i) => i.descriptions[0].subCategory.id === measurementsId),
     ).toBeDefined();
     expect(
-      results.find((i) => i.subCategories[0].id !== measurementsId),
+      results.find((i) => i.descriptions[0].subCategory.id !== measurementsId),
     ).toBeDefined();
   }
 
@@ -7165,25 +7208,31 @@ test("Search for content classifications, by category and system ids", async () 
     expect(results.length).eq(3);
     expect(
       results.find(
-        (i) => i.subCategories[0].category.system.id === mnStandardsId,
+        (i) =>
+          i.descriptions[0].subCategory.category.system.id === mnStandardsId,
       ),
     ).toBeDefined();
     expect(
       results.find(
-        (i) => i.subCategories[0].category.system.id !== mnStandardsId,
+        (i) =>
+          i.descriptions[0].subCategory.category.system.id !== mnStandardsId,
       ),
     ).toBeUndefined();
     expect(
-      results.find((i) => i.subCategories[0].category.id === firstGradeId),
+      results.find(
+        (i) => i.descriptions[0].subCategory.category.id === firstGradeId,
+      ),
     ).toBeDefined();
     expect(
-      results.find((i) => i.subCategories[0].category.id !== firstGradeId),
+      results.find(
+        (i) => i.descriptions[0].subCategory.category.id !== firstGradeId,
+      ),
     ).toBeUndefined();
     expect(
-      results.find((i) => i.subCategories[0].id === measurementsId),
+      results.find((i) => i.descriptions[0].subCategory.id === measurementsId),
     ).toBeDefined();
     expect(
-      results.find((i) => i.subCategories[0].id !== measurementsId),
+      results.find((i) => i.descriptions[0].subCategory.id !== measurementsId),
     ).toBeUndefined();
   }
 });
@@ -7195,9 +7244,9 @@ test("Search for content classifications, by query and by category and system id
     })
   )[0];
 
-  const measurementsId = coins?.subCategories[0].id;
-  const firstGradeId = coins?.subCategories[0].category.id;
-  const mnStandardsId = coins?.subCategories[0].category.system.id;
+  const measurementsId = coins?.descriptions[0].subCategory.id;
+  const firstGradeId = coins?.descriptions[0].subCategory.category.id;
+  const mnStandardsId = coins?.descriptions[0].subCategory.category.system.id;
 
   {
     // system and query
@@ -7207,10 +7256,14 @@ test("Search for content classifications, by query and by category and system id
     });
 
     for (const result of results) {
-      expect(result.subCategories[0].category.system.id).eq(mnStandardsId);
+      expect(result.descriptions[0].subCategory.category.system.id).eq(
+        mnStandardsId,
+      );
       expect(
-        result.description.includes("measurement") ||
-          result.subCategories[0].subCategory.includes("measurement"),
+        result.descriptions[0].description.includes("measurement") ||
+          result.descriptions[0].subCategory.subCategory.includes(
+            "measurement",
+          ),
       ).eq(true);
     }
   }
@@ -7224,10 +7277,10 @@ test("Search for content classifications, by query and by category and system id
     });
 
     for (const result of results) {
-      expect(result.subCategories[0].category.id).eq(firstGradeId);
+      expect(result.descriptions[0].subCategory.category.id).eq(firstGradeId);
       expect(
-        result.description.includes("model") ||
-          result.subCategories[0].subCategory.includes("model"),
+        result.descriptions[0].description.includes("model") ||
+          result.descriptions[0].subCategory.subCategory.includes("model"),
       ).eq(true);
     }
   }

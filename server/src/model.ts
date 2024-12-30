@@ -13,6 +13,7 @@ import {
   LicenseCode,
   UserInfo,
 } from "./types";
+import { sortClassifications } from "./utils/classifications";
 
 export class InvalidRequestError extends Error {
   errorCode = 400;
@@ -965,12 +966,35 @@ export async function getActivityEditorData(
         classifications: {
           select: {
             classification: {
-              include: {
-                subCategories: {
-                  include: {
-                    category: {
-                      include: {
-                        system: true,
+              select: {
+                id: true,
+                code: true,
+                descriptions: {
+                  select: {
+                    description: true,
+                    subCategory: {
+                      select: {
+                        id: true,
+                        subCategory: true,
+                        sortIndex: true,
+                        category: {
+                          select: {
+                            id: true,
+                            category: true,
+                            system: {
+                              select: {
+                                id: true,
+                                name: true,
+                                shortName: true,
+                                categoryLabel: true,
+                                subCategoryLabel: true,
+                                descriptionLabel: true,
+                                categoriesInDescription: true,
+                                type: true,
+                              },
+                            },
+                          },
+                        },
                       },
                     },
                   },
@@ -1042,8 +1066,8 @@ export async function getActivityEditorData(
       isQuestion: assignedActivity.isQuestion,
       isInteractive: assignedActivity.isInteractive,
       containsVideo: assignedActivity.containsVideo,
-      classifications: assignedActivity.classifications.map(
-        (c) => c.classification,
+      classifications: sortClassifications(
+        assignedActivity.classifications.map((c) => c.classification),
       ),
       documents: assignedActivity.documents.map((doc) => ({
         id: doc.id,
@@ -1097,12 +1121,35 @@ export async function getActivityEditorData(
         classifications: {
           select: {
             classification: {
-              include: {
-                subCategories: {
-                  include: {
-                    category: {
-                      include: {
-                        system: true,
+              select: {
+                id: true,
+                code: true,
+                descriptions: {
+                  select: {
+                    description: true,
+                    subCategory: {
+                      select: {
+                        id: true,
+                        subCategory: true,
+                        sortIndex: true,
+                        category: {
+                          select: {
+                            id: true,
+                            category: true,
+                            system: {
+                              select: {
+                                id: true,
+                                name: true,
+                                shortName: true,
+                                categoryLabel: true,
+                                subCategoryLabel: true,
+                                descriptionLabel: true,
+                                categoriesInDescription: true,
+                                type: true,
+                              },
+                            },
+                          },
+                        },
                       },
                     },
                   },
@@ -1158,7 +1205,9 @@ export async function getActivityEditorData(
       isShared,
       sharedWith,
       license: license ? processLicense(license) : null,
-      classifications: classifications.map((c) => c.classification),
+      classifications: sortClassifications(
+        classifications.map((c) => c.classification),
+      ),
       assignmentStatus: "Unassigned",
       hasScoreData: false,
       parentFolder: processParentFolder(parentFolder),
@@ -1248,12 +1297,35 @@ export async function getSharedEditorData(
       classifications: {
         select: {
           classification: {
-            include: {
-              subCategories: {
-                include: {
-                  category: {
-                    include: {
-                      system: true,
+            select: {
+              id: true,
+              code: true,
+              descriptions: {
+                select: {
+                  description: true,
+                  subCategory: {
+                    select: {
+                      id: true,
+                      subCategory: true,
+                      sortIndex: true,
+                      category: {
+                        select: {
+                          id: true,
+                          category: true,
+                          system: {
+                            select: {
+                              id: true,
+                              name: true,
+                              shortName: true,
+                              categoryLabel: true,
+                              subCategoryLabel: true,
+                              descriptionLabel: true,
+                              categoriesInDescription: true,
+                              type: true,
+                            },
+                          },
+                        },
+                      },
                     },
                   },
                 },
@@ -1283,7 +1355,9 @@ export async function getSharedEditorData(
     isShared,
     sharedWith,
     license: license ? processLicense(license) : null,
-    classifications: classifications.map((c) => c.classification),
+    classifications: sortClassifications(
+      classifications.map((c) => c.classification),
+    ),
     classCode: null,
     codeValidUntil: null,
     assignmentStatus: "Unassigned",
@@ -1366,12 +1440,35 @@ export async function getActivityViewerData(
       classifications: {
         select: {
           classification: {
-            include: {
-              subCategories: {
-                include: {
-                  category: {
-                    include: {
-                      system: true,
+            select: {
+              id: true,
+              code: true,
+              descriptions: {
+                select: {
+                  description: true,
+                  subCategory: {
+                    select: {
+                      id: true,
+                      subCategory: true,
+                      sortIndex: true,
+                      category: {
+                        select: {
+                          id: true,
+                          category: true,
+                          system: {
+                            select: {
+                              id: true,
+                              name: true,
+                              shortName: true,
+                              categoryLabel: true,
+                              subCategoryLabel: true,
+                              descriptionLabel: true,
+                              categoriesInDescription: true,
+                              type: true,
+                            },
+                          },
+                        },
+                      },
                     },
                   },
                 },
@@ -1402,7 +1499,9 @@ export async function getActivityViewerData(
     isShared,
     sharedWith,
     license: license ? processLicense(license) : null,
-    classifications: classifications.map((v) => v.classification),
+    classifications: sortClassifications(
+      classifications.map((c) => c.classification),
+    ),
     classCode: null,
     codeValidUntil: null,
     assignmentStatus: "Unassigned",
@@ -1823,7 +1922,8 @@ export async function searchSharedContent(
     AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
     (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
     MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
     MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
     MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     ) as relevance
@@ -1838,9 +1938,11 @@ export async function searchSharedContent(
   LEFT JOIN
     classifications ON contentClassifications.classificationId = classifications.id
   LEFT JOIN
-    _classificationSubCategoriesToclassifications rel ON classifications.id = rel.B
+    _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
   LEFT JOIN
-    classificationSubCategories ON rel.A = classificationSubCategories.id
+    classificationDescriptions ON rel.A = classificationDescriptions.id
+  LEFT JOIN
+    classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
   LEFT JOIN
     classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
   WHERE
@@ -1853,7 +1955,8 @@ export async function searchSharedContent(
     (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
   GROUP BY
@@ -1903,12 +2006,35 @@ export async function searchSharedContent(
       classifications: {
         select: {
           classification: {
-            include: {
-              subCategories: {
-                include: {
-                  category: {
-                    include: {
-                      system: true,
+            select: {
+              id: true,
+              code: true,
+              descriptions: {
+                select: {
+                  description: true,
+                  subCategory: {
+                    select: {
+                      id: true,
+                      subCategory: true,
+                      sortIndex: true,
+                      category: {
+                        select: {
+                          id: true,
+                          category: true,
+                          system: {
+                            select: {
+                              id: true,
+                              name: true,
+                              shortName: true,
+                              categoryLabel: true,
+                              subCategoryLabel: true,
+                              descriptionLabel: true,
+                              categoriesInDescription: true,
+                              type: true,
+                            },
+                          },
+                        },
+                      },
                     },
                   },
                 },
@@ -1959,7 +2085,9 @@ export async function searchSharedContent(
         isShared,
         sharedWith,
         license: license ? processLicense(license) : null,
-        classifications: classifications.map((c) => c.classification),
+        classifications: sortClassifications(
+          classifications.map((c) => c.classification),
+        ),
         classCode: null,
         codeValidUntil: null,
         assignmentStatus: "Unassigned",
@@ -2226,12 +2354,35 @@ export async function getAllRecentPublicActivities() {
       classifications: {
         select: {
           classification: {
-            include: {
-              subCategories: {
-                include: {
-                  category: {
-                    include: {
-                      system: true,
+            select: {
+              id: true,
+              code: true,
+              descriptions: {
+                select: {
+                  description: true,
+                  subCategory: {
+                    select: {
+                      id: true,
+                      subCategory: true,
+                      sortIndex: true,
+                      category: {
+                        select: {
+                          id: true,
+                          category: true,
+                          system: {
+                            select: {
+                              id: true,
+                              name: true,
+                              shortName: true,
+                              categoryLabel: true,
+                              subCategoryLabel: true,
+                              descriptionLabel: true,
+                              categoriesInDescription: true,
+                              type: true,
+                            },
+                          },
+                        },
+                      },
                     },
                   },
                 },
@@ -2250,7 +2401,9 @@ export async function getAllRecentPublicActivities() {
     return {
       ...content2,
       license: license ? processLicense(license) : null,
-      classifications: classifications.map((c) => c.classification),
+      classifications: sortClassifications(
+        classifications.map((c) => c.classification),
+      ),
       classCode: null,
       codeValidUntil: null,
       assignmentStatus: "Unassigned",
@@ -2281,13 +2434,13 @@ export async function addPromotedContentGroup(
 
   const newIndex = getNextSortIndex(lastIndex);
 
-  const { promotedGroupId } = await prisma.promotedContentGroups.create({
+  const { id } = await prisma.promotedContentGroups.create({
     data: {
       groupName,
       sortIndex: newIndex,
     },
   });
-  return promotedGroupId;
+  return id;
 }
 
 export async function updatePromotedContentGroup(
@@ -2304,7 +2457,7 @@ export async function updatePromotedContentGroup(
 
   await prisma.promotedContentGroups.update({
     where: {
-      promotedGroupId: groupId,
+      id: groupId,
     },
     data: {
       groupName: newGroupName,
@@ -2330,7 +2483,7 @@ export async function deletePromotedContentGroup(
   });
   const deleteGroup = prisma.promotedContentGroups.delete({
     where: {
-      promotedGroupId: groupId,
+      id: groupId,
     },
   });
   await prisma.$transaction([deleteEntries, deleteGroup]);
@@ -2360,7 +2513,7 @@ export async function movePromotedContentGroup(
   const currentSortIndices = (
     await prisma.promotedContentGroups.findMany({
       where: {
-        promotedGroupId: { not: groupId },
+        id: { not: groupId },
       },
       select: {
         sortIndex: true,
@@ -2380,7 +2533,7 @@ export async function movePromotedContentGroup(
   }) {
     await prisma.promotedContentGroups.updateMany({
       where: {
-        promotedGroupId: { not: groupId },
+        id: { not: groupId },
         sortIndex: sortIndices,
       },
       data: {
@@ -2398,7 +2551,7 @@ export async function movePromotedContentGroup(
   // Move the item!
   await prisma.promotedContentGroups.update({
     where: {
-      promotedGroupId: groupId,
+      id: groupId,
     },
     data: {
       sortIndex: newSortIndex,
@@ -2418,7 +2571,7 @@ export async function loadPromotedContent(userId: Uint8Array) {
     },
     select: {
       groupName: true,
-      promotedGroupId: true,
+      id: true,
       currentlyFeatured: true,
       homepage: true,
 
@@ -2454,12 +2607,35 @@ export async function loadPromotedContent(userId: Uint8Array) {
               classifications: {
                 select: {
                   classification: {
-                    include: {
-                      subCategories: {
-                        include: {
-                          category: {
-                            include: {
-                              system: true,
+                    select: {
+                      id: true,
+                      code: true,
+                      descriptions: {
+                        select: {
+                          description: true,
+                          subCategory: {
+                            select: {
+                              id: true,
+                              subCategory: true,
+                              sortIndex: true,
+                              category: {
+                                select: {
+                                  id: true,
+                                  category: true,
+                                  system: {
+                                    select: {
+                                      id: true,
+                                      name: true,
+                                      shortName: true,
+                                      categoryLabel: true,
+                                      subCategoryLabel: true,
+                                      descriptionLabel: true,
+                                      categoriesInDescription: true,
+                                      type: true,
+                                    },
+                                  },
+                                },
+                              },
                             },
                           },
                         },
@@ -2491,7 +2667,9 @@ export async function loadPromotedContent(userId: Uint8Array) {
         return {
           ...content2,
           license: license ? processLicense(license) : null,
-          classifications: classifications.map((c) => c.classification),
+          classifications: sortClassifications(
+            classifications.map((c) => c.classification),
+          ),
           classCode: null,
           codeValidUntil: null,
           assignmentStatus: "Unassigned",
@@ -2504,7 +2682,7 @@ export async function loadPromotedContent(userId: Uint8Array) {
 
     return {
       groupName: groupContent.groupName,
-      promotedGroupId: groupContent.promotedGroupId,
+      promotedGroupId: groupContent.id,
       currentlyFeatured: groupContent.currentlyFeatured,
       homepage: groupContent.homepage,
       promotedContent: reformattedActivities,
@@ -3876,12 +4054,35 @@ export async function getMyFolderContent({
       classifications: {
         select: {
           classification: {
-            include: {
-              subCategories: {
-                include: {
-                  category: {
-                    include: {
-                      system: true,
+            select: {
+              id: true,
+              code: true,
+              descriptions: {
+                select: {
+                  description: true,
+                  subCategory: {
+                    select: {
+                      id: true,
+                      subCategory: true,
+                      sortIndex: true,
+                      category: {
+                        select: {
+                          id: true,
+                          category: true,
+                          system: {
+                            select: {
+                              id: true,
+                              name: true,
+                              shortName: true,
+                              categoryLabel: true,
+                              subCategoryLabel: true,
+                              descriptionLabel: true,
+                              categoriesInDescription: true,
+                              type: true,
+                            },
+                          },
+                        },
+                      },
                     },
                   },
                 },
@@ -3940,7 +4141,9 @@ export async function getMyFolderContent({
       isShared,
       sharedWith,
       license: license ? processLicense(license) : null,
-      classifications: classifications.map((c) => c.classification),
+      classifications: sortClassifications(
+        classifications.map((c) => c.classification),
+      ),
       assignmentStatus,
       hasScoreData: _count.assignmentScores > 0,
       parentFolder: processParentFolder(parentFolder),
@@ -4073,7 +4276,8 @@ export async function searchMyFolderContent({
     content.id,
     AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
     (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
-    MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
     MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     ) as relevance
   FROM
@@ -4085,16 +4289,19 @@ export async function searchMyFolderContent({
   LEFT JOIN
     classifications ON contentClassifications.classificationId = classifications.id
   LEFT JOIN
-    _classificationSubCategoriesToclassifications rel ON classifications.id = rel.B
+    _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
   LEFT JOIN
-    classificationSubCategories ON rel.A = classificationSubCategories.id
+    classificationDescriptions ON rel.A = classificationDescriptions.id
+  LEFT JOIN
+    classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
   WHERE
     content.ownerId = ${loggedInUserId}
     AND content.isDeleted = FALSE
     AND
     (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
   GROUP BY
     content.id
@@ -4124,7 +4331,8 @@ export async function searchMyFolderContent({
       content.id,
       AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
       (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
-      MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+      MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+      MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
       MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       ) as relevance
     FROM
@@ -4136,15 +4344,18 @@ export async function searchMyFolderContent({
     LEFT JOIN
       classifications ON contentClassifications.classificationId = classifications.id
     LEFT JOIN
-      _classificationSubCategoriesToclassifications rel ON classifications.id = rel.B
+      _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
     LEFT JOIN
-      classificationSubCategories ON rel.A = classificationSubCategories.id
+      classificationDescriptions ON rel.A = classificationDescriptions.id
+    LEFT JOIN
+      classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
     WHERE
       content.id IN (SELECT id from content_tree)
       AND
       (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
     GROUP BY
       content.id
@@ -4197,12 +4408,35 @@ export async function searchMyFolderContent({
       classifications: {
         select: {
           classification: {
-            include: {
-              subCategories: {
-                include: {
-                  category: {
-                    include: {
-                      system: true,
+            select: {
+              id: true,
+              code: true,
+              descriptions: {
+                select: {
+                  description: true,
+                  subCategory: {
+                    select: {
+                      id: true,
+                      subCategory: true,
+                      sortIndex: true,
+                      category: {
+                        select: {
+                          id: true,
+                          category: true,
+                          system: {
+                            select: {
+                              id: true,
+                              name: true,
+                              shortName: true,
+                              categoryLabel: true,
+                              subCategoryLabel: true,
+                              descriptionLabel: true,
+                              categoriesInDescription: true,
+                              type: true,
+                            },
+                          },
+                        },
+                      },
                     },
                   },
                 },
@@ -4267,7 +4501,9 @@ export async function searchMyFolderContent({
         isShared,
         sharedWith,
         license: license ? processLicense(license) : null,
-        classifications: classifications.map((c) => c.classification),
+        classifications: sortClassifications(
+          classifications.map((c) => c.classification),
+        ),
         assignmentStatus,
         hasScoreData: _count.assignmentScores > 0,
         parentFolder: processParentFolder(parentFolder),
@@ -4426,12 +4662,35 @@ export async function getSharedFolderContent({
       classifications: {
         select: {
           classification: {
-            include: {
-              subCategories: {
-                include: {
-                  category: {
-                    include: {
-                      system: true,
+            select: {
+              id: true,
+              code: true,
+              descriptions: {
+                select: {
+                  description: true,
+                  subCategory: {
+                    select: {
+                      id: true,
+                      subCategory: true,
+                      sortIndex: true,
+                      category: {
+                        select: {
+                          id: true,
+                          category: true,
+                          system: {
+                            select: {
+                              id: true,
+                              name: true,
+                              shortName: true,
+                              categoryLabel: true,
+                              subCategoryLabel: true,
+                              descriptionLabel: true,
+                              categoriesInDescription: true,
+                              type: true,
+                            },
+                          },
+                        },
+                      },
                     },
                   },
                 },
@@ -4512,12 +4771,35 @@ export async function getSharedFolderContent({
         classifications: {
           select: {
             classification: {
-              include: {
-                subCategories: {
-                  include: {
-                    category: {
-                      include: {
-                        system: true,
+              select: {
+                id: true,
+                code: true,
+                descriptions: {
+                  select: {
+                    description: true,
+                    subCategory: {
+                      select: {
+                        id: true,
+                        subCategory: true,
+                        sortIndex: true,
+                        category: {
+                          select: {
+                            id: true,
+                            category: true,
+                            system: {
+                              select: {
+                                id: true,
+                                name: true,
+                                shortName: true,
+                                categoryLabel: true,
+                                subCategoryLabel: true,
+                                descriptionLabel: true,
+                                categoriesInDescription: true,
+                                type: true,
+                              },
+                            },
+                          },
+                        },
                       },
                     },
                   },
@@ -4565,7 +4847,9 @@ export async function getSharedFolderContent({
         isShared,
         sharedWith,
         license: license ? processLicense(license) : null,
-        classifications: classifications.map((c) => c.classification),
+        classifications: sortClassifications(
+          classifications.map((c) => c.classification),
+        ),
         classCode: null,
         codeValidUntil: null,
         assignmentStatus: "Unassigned",
@@ -4597,14 +4881,15 @@ export async function getClassificationCategories() {
       name: true,
       categoryLabel: true,
       subCategoryLabel: true,
-      classificationCategory: {
+      type: true,
+      categories: {
         orderBy: {
           sortIndex: "asc",
         },
         select: {
           id: true,
           category: true,
-          classificationSubCategory: {
+          subCategories: {
             orderBy: {
               sortIndex: "asc",
             },
@@ -4617,25 +4902,25 @@ export async function getClassificationCategories() {
       },
     },
   });
+
   const formattedResults: ClassificationCategoryTree[] = results.map(
     (system) => {
       return {
         id: system.id,
         name: system.name,
+        type: system.type,
         categoryLabel: system.categoryLabel,
         subCategoryLabel: system.subCategoryLabel,
-        categories: system.classificationCategory.map((category) => {
+        categories: system.categories.map((category) => {
           return {
             id: category.id,
             category: category.category,
-            subCategories: category.classificationSubCategory.map(
-              (subCategory) => {
-                return {
-                  id: subCategory.id,
-                  subCategory: subCategory.subCategory,
-                };
-              },
-            ),
+            subCategories: category.subCategories.map((subCategory) => {
+              return {
+                id: subCategory.id,
+                subCategory: subCategory.subCategory,
+              };
+            }),
           };
         }),
       };
@@ -4682,7 +4967,8 @@ export async function searchPossibleClassifications({
   SELECT
     classifications.id,
     AVG(
-    MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
     MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
     MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
     MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
@@ -4690,15 +4976,18 @@ export async function searchPossibleClassifications({
   FROM
     classifications
   INNER JOIN
-    _classificationSubCategoriesToclassifications rel ON classifications.id = rel.B
+    _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
   LEFT JOIN
-    classificationSubCategories ON rel.A = classificationSubCategories.id
+    classificationDescriptions ON rel.A = classificationDescriptions.id
+  LEFT JOIN
+    classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
   INNER JOIN
     classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
   INNER JOIN
     classificationSystems ON classificationCategories.systemId = classificationSystems.id
   WHERE
-    (MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    (MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
@@ -4719,7 +5008,8 @@ export async function searchPossibleClassifications({
 SELECT
   classifications.id,
   AVG(
-  MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+  MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+  MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
   MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
   MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
   MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
@@ -4727,15 +5017,18 @@ SELECT
 FROM
   classifications
 INNER JOIN
-    _classificationSubCategoriesToclassifications rel ON classifications.id = rel.B
+  _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
 INNER JOIN
-    classificationSubCategories ON rel.A = classificationSubCategories.id
+  classificationDescriptions ON rel.A = classificationDescriptions.id
+INNER JOIN
+  classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
 INNER JOIN
   classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
 INNER JOIN
   classificationSystems ON classificationCategories.systemId = classificationSystems.id
 WHERE
-  (MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  (MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
   OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
   OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
   OR MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
@@ -4756,7 +5049,8 @@ LIMIT 100
 SELECT
   classifications.id,
   AVG(
-  MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+  MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+  MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
   MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
   MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
   MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
@@ -4764,15 +5058,18 @@ SELECT
 FROM
   classifications
 INNER JOIN
-    _classificationSubCategoriesToclassifications rel ON classifications.id = rel.B
+  _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
 INNER JOIN
-    classificationSubCategories ON rel.A = classificationSubCategories.id
+  classificationDescriptions ON rel.A = classificationDescriptions.id
+INNER JOIN
+  classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
 INNER JOIN
   classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
 INNER JOIN
   classificationSystems ON classificationCategories.systemId = classificationSystems.id
 WHERE
-  (MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  (MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
   OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
   OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
   OR MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
@@ -4793,7 +5090,8 @@ LIMIT 100
 SELECT
   classifications.id,
   AVG(
-  MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+  MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+  MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
   MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
   MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
   MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
@@ -4801,15 +5099,18 @@ SELECT
 FROM
   classifications
 INNER JOIN
-    _classificationSubCategoriesToclassifications rel ON classifications.id = rel.B
+  _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
 INNER JOIN
-    classificationSubCategories ON rel.A = classificationSubCategories.id
+  classificationDescriptions ON rel.A = classificationDescriptions.id
+INNER JOIN
+  classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
 INNER JOIN
   classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
 INNER JOIN
   classificationSystems ON classificationCategories.systemId = classificationSystems.id
 WHERE
-  (MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  (MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
   OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
   OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
   OR MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
@@ -4833,9 +5134,11 @@ LIMIT 100
               code: { contains: query_word },
             })),
           },
-          { subCategories: { some: { category: { systemId } } } },
-          { subCategories: { some: { categoryId } } },
-          { subCategories: { some: { id: subCategoryId } } },
+          {
+            descriptions: { some: { subCategory: { category: { systemId } } } },
+          },
+          { descriptions: { some: { subCategory: { categoryId } } } },
+          { descriptions: { some: { subCategoryId } } },
         ],
       },
       select: { id: true },
@@ -4846,12 +5149,35 @@ LIMIT 100
         where: {
           id: { in: [...matches, ...code_matches].map((m) => m.id) },
         },
-        include: {
-          subCategories: {
-            include: {
-              category: {
-                include: {
-                  system: true,
+        select: {
+          id: true,
+          code: true,
+          descriptions: {
+            select: {
+              description: true,
+              subCategory: {
+                select: {
+                  id: true,
+                  subCategory: true,
+                  sortIndex: true,
+                  category: {
+                    select: {
+                      id: true,
+                      category: true,
+                      system: {
+                        select: {
+                          id: true,
+                          name: true,
+                          shortName: true,
+                          categoryLabel: true,
+                          subCategoryLabel: true,
+                          descriptionLabel: true,
+                          categoriesInDescription: true,
+                          type: true,
+                        },
+                      },
+                    },
+                  },
                 },
               },
             },
@@ -4876,18 +5202,43 @@ LIMIT 100
     await prisma.classifications.findMany({
       where: {
         AND: [
-          { subCategories: { some: { category: { systemId } } } },
-          { subCategories: { some: { categoryId } } },
-          { subCategories: { some: { id: subCategoryId } } },
+          {
+            descriptions: { some: { subCategory: { category: { systemId } } } },
+          },
+          { descriptions: { some: { subCategory: { categoryId } } } },
+          { descriptions: { some: { subCategoryId } } },
         ],
       },
       take: 100,
-      include: {
-        subCategories: {
-          include: {
-            category: {
-              include: {
-                system: true,
+      select: {
+        id: true,
+        code: true,
+        descriptions: {
+          select: {
+            description: true,
+            subCategory: {
+              select: {
+                id: true,
+                subCategory: true,
+                sortIndex: true,
+                category: {
+                  select: {
+                    id: true,
+                    category: true,
+                    system: {
+                      select: {
+                        id: true,
+                        name: true,
+                        shortName: true,
+                        categoryLabel: true,
+                        subCategoryLabel: true,
+                        descriptionLabel: true,
+                        categoriesInDescription: true,
+                        type: true,
+                      },
+                    },
+                  },
+                },
               },
             },
           },
@@ -5011,12 +5362,35 @@ export async function getClassifications(
     },
     select: {
       classification: {
-        include: {
-          subCategories: {
-            include: {
-              category: {
-                include: {
-                  system: true,
+        select: {
+          id: true,
+          code: true,
+          descriptions: {
+            select: {
+              description: true,
+              subCategory: {
+                select: {
+                  id: true,
+                  subCategory: true,
+                  sortIndex: true,
+                  category: {
+                    select: {
+                      id: true,
+                      category: true,
+                      system: {
+                        select: {
+                          id: true,
+                          name: true,
+                          shortName: true,
+                          categoryLabel: true,
+                          subCategoryLabel: true,
+                          descriptionLabel: true,
+                          categoriesInDescription: true,
+                          type: true,
+                        },
+                      },
+                    },
+                  },
                 },
               },
             },
@@ -5025,8 +5399,8 @@ export async function getClassifications(
       },
     },
   });
-  const formatted: ContentClassification[] = classifications.map(
-    (c) => c.classification,
+  const formatted: ContentClassification[] = sortClassifications(
+    classifications.map((c) => c.classification),
   );
   return formatted;
 }

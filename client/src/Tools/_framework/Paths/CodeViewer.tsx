@@ -102,7 +102,6 @@ export function CodeViewer() {
           <ContentInfoDrawer
             isOpen={infoIsOpen}
             onClose={infoOnClose}
-            id={activityData.id}
             contentData={activityData}
           />
         </>

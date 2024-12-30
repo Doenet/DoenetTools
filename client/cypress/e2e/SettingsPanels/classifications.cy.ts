@@ -46,7 +46,7 @@ describe("Classification panel tests", function () {
         "9.2.4.1",
       );
 
-      cy.get('[data-test="Filter By System').select("Common Core");
+      cy.get('[data-test="Filter By System').select("Common Core Math");
       cy.get('[data-test="Add A.REI.4 b."]').should("be.visible");
 
       cy.get('[data-test="Filter By Category').select("Grade 6");

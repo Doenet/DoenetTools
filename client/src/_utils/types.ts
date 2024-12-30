@@ -42,20 +42,25 @@ export type UserInfo = {
 export type ContentClassification = {
   id: number;
   code: string;
-  description: string;
-  subCategories: {
-    id: number;
-    subCategory: string;
-    category: {
+  descriptions: {
+    description: string;
+    subCategory: {
       id: number;
-      category: string;
-      system: {
+      subCategory: string;
+      sortIndex: number;
+      category: {
         id: number;
-        name: string;
-        shortName: string;
-        categoryLabel: string;
-        subCategoryLabel: string;
-        descriptionLabel: string;
+        category: string;
+        system: {
+          id: number;
+          name: string;
+          shortName: string;
+          categoryLabel: string;
+          subCategoryLabel: string;
+          descriptionLabel: string;
+          categoriesInDescription: boolean;
+          type: string;
+        };
       };
     };
   }[];
@@ -126,6 +131,7 @@ export type DocRemixItem = {
 export type ClassificationCategoryTree = {
   id: number;
   name: string;
+  type: string;
   categoryLabel: string;
   subCategoryLabel: string;
   categories: {

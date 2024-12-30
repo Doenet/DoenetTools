@@ -42,6 +42,7 @@ import {
 } from "../../../Widgets/Licenses";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import { MdOutlineInfo } from "react-icons/md";
+import { getClassificationAugmentedDescription } from "../../../_utils/activity";
 
 export async function loader({ params }) {
   try {
@@ -138,7 +139,6 @@ export function ActivityViewer() {
       <ContentInfoDrawer
         isOpen={infoIsOpen}
         onClose={infoOnClose}
-        id={activityId}
         contentData={activity}
         displayTab={displayInfoTab}
       />
@@ -356,14 +356,19 @@ export function ActivityViewer() {
                     >
                       <Heading size="sm">Classifications</Heading>
                       <List data-test="Classifications Footer">
-                        {activity.classifications.map((classification) => {
+                        {activity.classifications.map((classification, i) => {
                           return (
-                            <Tooltip label={classification.description}>
+                            <Tooltip
+                              key={i}
+                              label={getClassificationAugmentedDescription(
+                                classification,
+                              )}
+                            >
                               <ListItem>
                                 {classification.code} (
                                 {
-                                  classification.subCategories[0].category
-                                    .system.shortName
+                                  classification.descriptions[0].subCategory
+                                    .category.system.shortName
                                 }
                                 )
                               </ListItem>
