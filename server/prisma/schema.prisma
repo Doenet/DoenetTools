@@ -220,7 +220,7 @@ model users {
 }
 
 model promotedContentGroups {
-  promotedGroupId   Int               @id @default(autoincrement())
+  id                Int               @id @default(autoincrement())
   groupName         String            @unique
   currentlyFeatured Boolean           @default(false)
   homepage          Boolean           @default(false)
@@ -233,7 +233,7 @@ model promotedContent {
   promotedGroupId Int
   sortIndex       BigInt
   activity        content               @relation(fields: [activityId], references: [id])
-  promotedGroup   promotedContentGroups @relation(fields: [promotedGroupId], references: [promotedGroupId])
+  promotedGroup   promotedContentGroups @relation(fields: [promotedGroupId], references: [id])
 
   @@id([activityId, promotedGroupId])
 }
@@ -248,48 +248,60 @@ model contentClassifications {
 }
 
 model classificationSystems {
-  id                     Int                        @id @default(autoincrement())
-  name                   String                     @unique
-  shortName              String                     @unique
-  categoryLabel          String
-  subCategoryLabel       String
-  descriptionLabel       String
-  sortIndex              Int
-  classificationCategory classificationCategories[]
+  id                      Int                        @id @default(autoincrement())
+  name                    String                     @unique
+  shortName               String                     @unique
+  categoryLabel           String
+  subCategoryLabel        String
+  descriptionLabel        String
+  sortIndex               Int
+  type                    String
+  categoriesInDescription Boolean                    @default(false)
+  categories              classificationCategories[]
 
   @@fulltext([name])
 }
 
 model classificationCategories {
-  id                        Int                           @id @default(autoincrement())
-  category                  String
-  systemId                  Int
-  sortIndex                 Int
-  system                    classificationSystems         @relation(fields: [systemId], references: [id])
-  classificationSubCategory classificationSubCategories[]
+  id            Int                           @id @default(autoincrement())
+  category      String
+  systemId      Int
+  sortIndex     Int
+  system        classificationSystems         @relation(fields: [systemId], references: [id])
+  subCategories classificationSubCategories[]
 
   @@unique([category, systemId])
   @@fulltext([category])
 }
 
 model classificationSubCategories {
-  id              Int                      @id @default(autoincrement())
-  categoryId      Int
-  subCategory     String                   @db.VarChar(400)
-  sortIndex       Int
-  category        classificationCategories @relation(fields: [categoryId], references: [id])
-  classifications classifications[]
+  id           Int                          @id @default(autoincrement())
+  categoryId   Int
+  subCategory  String                       @db.Text
+  sortIndex    Int
+  category     classificationCategories     @relation(fields: [categoryId], references: [id])
+  descriptions classificationDescriptions[]
 
-  @@unique([subCategory, categoryId])
+  @@unique([subCategory(length: 200), categoryId])
   @@fulltext([subCategory])
 }
 
+model classificationDescriptions {
+  id              Int                         @id @default(autoincrement())
+  subCategoryId   Int
+  description     String                      @db.Text
+  subCategory     classificationSubCategories @relation(fields: [subCategoryId], references: [id])
+  classifications classifications[]
+
+  @@unique([description(length: 200), subCategoryId])
+  @@fulltext([description])
+}
+
 model classifications {
-  id                     Int                           @id @default(autoincrement())
+  id                     Int                          @id @default(autoincrement())
   code                   String
-  description            String                        @db.Text
-  subCategories          classificationSubCategories[]
+  descriptions           classificationDescriptions[]
   contentClassifications contentClassifications[]
 
-  @@fulltext([code, description])
+  @@fulltext([code])
 }

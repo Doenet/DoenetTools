@@ -1431,14 +1431,14 @@
     "category": "Algebra",
     "subCategory": "Properties of exponents, rational exponents and radicals",
     "description": "Properties of exponents",
-    "code": "Alg.PE.1"
+    "code": "Alg.ER.1"
   },
   {
     "sortIndex": "198",
     "category": "Algebra",
     "subCategory": "Properties of exponents, rational exponents and radicals",
     "description": "Properties of rational exponents and radicals",
-    "code": "Alg.PE.2"
+    "code": "Alg.ER.2"
   },
   {
     "sortIndex": "199",
@@ -5340,35 +5340,35 @@
     "category": "Statistics",
     "subCategory": "Exploratory data analysis/descriptive statistics",
     "description": "Classifying data",
-    "code": "Stats.ED.1"
+    "code": "Stats.DA.1"
   },
   {
     "sortIndex": "660",
     "category": "Statistics",
     "subCategory": "Exploratory data analysis/descriptive statistics",
     "description": "Summary statistics",
-    "code": "Stats.ED.2"
+    "code": "Stats.DA.2"
   },
   {
     "sortIndex": "661",
     "category": "Statistics",
     "subCategory": "Exploratory data analysis/descriptive statistics",
     "description": "Graphical representations",
-    "code": "Stats.ED.3"
+    "code": "Stats.DA.3"
   },
   {
     "sortIndex": "662",
     "category": "Statistics",
     "subCategory": "Exploratory data analysis/descriptive statistics",
     "description": "Description of distributions",
-    "code": "Stats.ED.4"
+    "code": "Stats.DA.4"
   },
   {
     "sortIndex": "663",
     "category": "Statistics",
     "subCategory": "Exploratory data analysis/descriptive statistics",
     "description": "Summarizing data in tables",
-    "code": "Stats.ED.5"
+    "code": "Stats.DA.5"
   },
   {
     "sortIndex": "664",

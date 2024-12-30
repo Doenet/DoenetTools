@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { FetcherWithComponents } from "react-router";
 import {
   Box,
@@ -12,7 +12,6 @@ import {
   Accordion,
   AccordionItem,
   AccordionButton,
-  AccordionPanel,
   AccordionIcon,
   CloseButton,
   HStack,
@@ -28,6 +27,12 @@ import {
   ContentClassification,
   ContentStructure,
 } from "../../../_utils/types";
+import {
+  findClassificationDescriptionIndex,
+  getClassificationAugmentedDescription,
+  reformatClassificationData,
+} from "../../../_utils/activity";
+import { returnClassificationsAccordionPanel } from "../../../_utils/classification";
 
 export async function classificationSettingsActions({
   formObj,
@@ -161,6 +166,34 @@ export function ClassificationSettings({
       ? null
       : classificationCategories[categoryFilter.systemTreeIndex];
 
+  const classificationSystemOptionGroups: ReactElement[] = [];
+
+  let classificationTypeOptions: ReactElement[] = [];
+  let lastType = "";
+
+  for (const [i, system] of classificationCategories.entries()) {
+    if (system.type !== lastType && classificationTypeOptions.length > 0) {
+      if (lastType === "Primary") {
+        // skip optgroup for Primary
+        classificationSystemOptionGroups.push(...classificationTypeOptions);
+      } else {
+        classificationSystemOptionGroups.push(
+          <optgroup label={lastType}>{classificationTypeOptions}</optgroup>,
+        );
+      }
+      classificationTypeOptions = [];
+    }
+    lastType = system.type;
+
+    classificationTypeOptions.push(<option value={i}>{system.name}</option>);
+
+    if (i === classificationCategories.length - 1) {
+      classificationSystemOptionGroups.push(
+        <optgroup label={system.type}>{classificationTypeOptions}</optgroup>,
+      );
+    }
+  }
+
   return (
     <>
       {!contentData.isFolder ? (
@@ -185,16 +218,11 @@ export function ClassificationSettings({
             ) : (
               <Accordion allowMultiple>
                 {contentData.classifications.map((classification, i) => {
-                  const {
-                    code,
-                    systemName,
-                    categoryLabel,
-                    category,
-                    subCategoryLabel,
-                    subCategory,
-                    description,
-                    descriptionLabel,
-                  } = extraClassificationData(classification);
+                  const code = classification.code;
+                  const systemName =
+                    classification.descriptions[0].subCategory.category.system
+                      .name;
+
                   return (
                     <AccordionItem key={`classification${i}`}>
                       <HStack>
@@ -244,20 +272,7 @@ export function ClassificationSettings({
                           }
                         />
                       </HStack>
-                      <AccordionPanel>
-                        <Text>
-                          <Text as="i">{categoryLabel}: </Text>
-                          {category}
-                        </Text>
-                        <Text>
-                          <Text as="i">{subCategoryLabel}: </Text>
-                          {subCategory}
-                        </Text>
-                        <Text>
-                          <Text as="i">{descriptionLabel}: </Text>
-                          {description}
-                        </Text>
-                      </AccordionPanel>
+                      {returnClassificationsAccordionPanel(classification)}
                     </AccordionItem>
                   );
                 })}
@@ -294,9 +309,7 @@ export function ClassificationSettings({
                     }
                   }}
                 >
-                  {classificationCategories.map((system, i) => (
-                    <option value={i}>{system.name}</option>
-                  ))}
+                  {classificationSystemOptionGroups}
                 </Select>
                 <CloseButton
                   aria-label={`Stop filtering by system`}
@@ -447,6 +460,29 @@ export function ClassificationSettings({
                   const action =
                     (added ? "remove" : "add") + " content classification";
 
+                  let descriptionIndex = 0;
+
+                  if (selectedClassification !== null) {
+                    descriptionIndex = findClassificationDescriptionIndex({
+                      classification,
+                      systemName: selectedClassification.name,
+                      category:
+                        selectedClassification.categories[
+                          categoryFilter.categoryTreeIndex ?? -1
+                        ]?.category,
+                      subCategory:
+                        selectedClassification.categories[
+                          categoryFilter.categoryTreeIndex ?? -1
+                        ]?.subCategories[
+                          categoryFilter.subCategoryTreeIndex ?? -1
+                        ]?.subCategory,
+                    });
+                  }
+
+                  if (descriptionIndex === -1) {
+                    return null;
+                  }
+
                   const {
                     code,
                     systemName,
@@ -456,7 +492,37 @@ export function ClassificationSettings({
                     subCategory,
                     description,
                     descriptionLabel,
-                  } = extraClassificationData(classification);
+                  } = reformatClassificationData(
+                    classification,
+                    descriptionIndex,
+                  );
+
+                  let aliasNote: ReactElement | null = null;
+
+                  if (descriptionIndex !== 0) {
+                    const aliasedAugmentedDescription =
+                      getClassificationAugmentedDescription(classification, 0);
+
+                    const systemChanged =
+                      systemName !==
+                      classification.descriptions[0].subCategory.category.system
+                        .name;
+
+                    let aliasText = `"${aliasedAugmentedDescription}"`;
+                    if (systemChanged) {
+                      aliasText += ` from ${
+                        classification.descriptions[0].subCategory.category
+                          .system.name
+                      }`;
+                    }
+
+                    aliasNote =
+                      descriptionIndex === 0 ? null : (
+                        <Text>
+                          <Text as="i">Alias of:</Text> {aliasText}
+                        </Text>
+                      );
+                  }
 
                   return (
                     <Card
@@ -522,6 +588,7 @@ export function ClassificationSettings({
                               {description}
                             </Highlight>
                           </Text>
+                          {aliasNote}
                         </Box>
                       </CardBody>
                     </Card>
@@ -534,50 +601,4 @@ export function ClassificationSettings({
       ) : null}
     </>
   );
-}
-
-function extraClassificationData(classification: ContentClassification) {
-  // For now, we don't have a classification that shares multiple system.
-  // If we add one that does, we need a better system than concatenating their names,
-  // but this concatenation will at least show that this combination occurred and a change is needed.
-  const systemName = classification.subCategories
-    .map((sc) => sc.category.system.name)
-    .reduce((acc: string[], c) => (acc.includes(c) ? acc : [...acc, c]), [])
-    .join(" / ");
-
-  const categories = classification.subCategories
-    .map((sc) => sc.category.category)
-    .reduce((acc: string[], c) => (acc.includes(c) ? acc : [...acc, c]), []);
-  let categoryLabel =
-    classification.subCategories[0].category.system.categoryLabel;
-  if (categories.length > 1) {
-    // for now, all our category labels are pluralized by adding an s...
-    categoryLabel += "s";
-  }
-  const category = categories.join(" / ");
-
-  const subCategories = classification.subCategories
-    .map((sc) => sc.subCategory)
-    .reduce((acc: string[], c) => (acc.includes(c) ? acc : [...acc, c]), []);
-  let subCategoryLabel =
-    classification.subCategories[0].category.system.subCategoryLabel;
-  if (subCategories.length > 1) {
-    // for now, all our sub-category labels are pluralized by adding an s...
-    subCategoryLabel += "s";
-  }
-  const subCategory = subCategories.join(" / ");
-
-  const descriptionLabel =
-    classification.subCategories[0].category.system.descriptionLabel;
-
-  return {
-    code: classification.code,
-    systemName,
-    categoryLabel,
-    category,
-    subCategoryLabel,
-    subCategory,
-    description: classification.description,
-    descriptionLabel,
-  };
 }

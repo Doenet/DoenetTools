@@ -6,13 +6,13 @@ describe("Code Viewer Tests", function () {
       doenetML: "Hi!",
       classifications: [
         {
-          systemShortName: "WeBWorK",
+          systemShortName: "HS/C Math",
           category: "Algebra",
           subCategory: "Factoring",
           code: "Alg.F.2",
         },
         {
-          systemShortName: "Common Core",
+          systemShortName: "CC Math",
           category: "HS",
           subCategory:
             "Seeing Structure in Expressions. Write expressions in equivalent forms to solve problems.",
@@ -27,11 +27,11 @@ describe("Code Viewer Tests", function () {
       cy.get('[data-test="Classifications"]').click();
       cy.get('[data-test="Classification 1"]').should(
         "contain.text",
-        "A.SSE.3 a.",
+        "Alg.F.2",
       );
       cy.get('[data-test="Classification 2"]').should(
         "contain.text",
-        "Alg.F.2",
+        "A.SSE.3 a.",
       );
     });
   });

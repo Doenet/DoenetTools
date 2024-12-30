@@ -27,13 +27,15 @@ export function add_test_apis(app: Express) {
               },
               where: {
                 code: classification.code,
-                subCategories: {
+                descriptions: {
                   some: {
-                    subCategory: classification.subCategory,
-                    category: {
-                      category: classification.category,
-                      system: {
-                        shortName: classification.systemShortName,
+                    subCategory: {
+                      subCategory: classification.subCategory,
+                      category: {
+                        category: classification.category,
+                        system: {
+                          shortName: classification.systemShortName,
+                        },
                       },
                     },
                   },
