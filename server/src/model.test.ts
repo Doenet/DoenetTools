@@ -167,6 +167,7 @@ test("New activity starts out private, then delete it", async () => {
     ownerId: userId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
+    isFolder: false,
     isShared: false,
     isQuestion: false,
     isInteractive: false,
@@ -5242,6 +5243,7 @@ test("activity editor data and my folder contents before and after assigned", as
     name: "Untitled Activity",
     ownerId,
     imagePath: "/activity_default.jpg",
+    isFolder: false,
     isPublic: false,
     isQuestion: false,
     isInteractive: false,
@@ -5267,14 +5269,11 @@ test("activity editor data and my folder contents before and after assigned", as
   preAssignedData.license = null; // skip trying to check big license object
   expect(preAssignedData).eqls(expectedData);
 
-  // get my folder content returns same data, with differences in some optional fields
+  // get my folder content returns same data
   let folderData = await getMyFolderContent({
     folderId: null,
     loggedInUserId: ownerId,
   });
-  delete expectedData.documents[0].name;
-  delete expectedData.documents[0].source;
-  expectedData.isFolder = false;
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
@@ -5295,6 +5294,7 @@ test("activity editor data and my folder contents before and after assigned", as
     name: "Untitled Activity",
     ownerId,
     imagePath: "/activity_default.jpg",
+    isFolder: false,
     isPublic: false,
     isQuestion: false,
     isInteractive: false,
@@ -5327,8 +5327,6 @@ test("activity editor data and my folder contents before and after assigned", as
     folderId: null,
     loggedInUserId: ownerId,
   });
-  delete expectedData.documents[0].name;
-  delete expectedData.documents[0].source;
   delete expectedData.documents[0].versionNum;
   expectedData.isFolder = false;
   folderData.content[0].license = null; // skip trying to check big license object
@@ -5345,6 +5343,7 @@ test("activity editor data and my folder contents before and after assigned", as
     name: "Untitled Activity",
     ownerId,
     imagePath: "/activity_default.jpg",
+    isFolder: false,
     isPublic: false,
     isQuestion: false,
     isInteractive: false,
@@ -5371,14 +5370,11 @@ test("activity editor data and my folder contents before and after assigned", as
   closedData.license = null; // skip trying to check big license object
   expect(closedData).eqls(expectedData);
 
-  // get my folder content returns same data, with differences in some optional fields
+  // get my folder content returns same data
   folderData = await getMyFolderContent({
     folderId: null,
     loggedInUserId: ownerId,
   });
-  delete expectedData.documents[0].name;
-  delete expectedData.documents[0].source;
-  expectedData.isFolder = false;
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
@@ -5401,6 +5397,7 @@ test("activity editor data and my folder contents before and after assigned", as
     name: "Untitled Activity",
     ownerId,
     imagePath: "/activity_default.jpg",
+    isFolder: false,
     isPublic: false,
     isQuestion: false,
     isInteractive: false,
@@ -5433,10 +5430,7 @@ test("activity editor data and my folder contents before and after assigned", as
     folderId: null,
     loggedInUserId: ownerId,
   });
-  delete expectedData.documents[0].name;
-  delete expectedData.documents[0].source;
   delete expectedData.documents[0].versionNum;
-  expectedData.isFolder = false;
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
@@ -5460,6 +5454,7 @@ test("activity editor data and my folder contents before and after assigned", as
     name: "Untitled Activity",
     ownerId,
     imagePath: "/activity_default.jpg",
+    isFolder: false,
     isPublic: false,
     isQuestion: false,
     isInteractive: false,
@@ -5492,10 +5487,7 @@ test("activity editor data and my folder contents before and after assigned", as
     folderId: null,
     loggedInUserId: ownerId,
   });
-  delete expectedData.documents[0].name;
-  delete expectedData.documents[0].source;
   delete expectedData.documents[0].versionNum;
-  expectedData.isFolder = false;
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
@@ -5510,6 +5502,7 @@ test("activity editor data and my folder contents before and after assigned", as
     name: "Untitled Activity",
     ownerId,
     imagePath: "/activity_default.jpg",
+    isFolder: false,
     isPublic: false,
     isQuestion: false,
     isInteractive: false,
@@ -5542,10 +5535,7 @@ test("activity editor data and my folder contents before and after assigned", as
     folderId: null,
     loggedInUserId: ownerId,
   });
-  delete expectedData.documents[0].name;
-  delete expectedData.documents[0].source;
   delete expectedData.documents[0].versionNum;
-  expectedData.isFolder = false;
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 

@@ -14,6 +14,10 @@ import {
   UserInfo,
 } from "./types";
 import { sortClassifications } from "./utils/classifications";
+import {
+  returnContentStructureFullOwnerSelect,
+  returnContentStructureSharedDetailsSelect,
+} from "./utils/contentStructure";
 
 export class InvalidRequestError extends Error {
   errorCode = 400;
@@ -923,7 +927,32 @@ export async function getActivityEditorData(
 
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
 
+  const contentSelect = returnContentStructureSharedDetailsSelect({
+    includeClassInfo: true,
+  });
+
   if (isAssigned) {
+    // modify `contentSelect` to include assigned doenetMl and to count assignment scores
+    const documents = {
+      ...contentSelect.documents,
+      select: {
+        id: true,
+        name: true,
+        assignedVersion: {
+          select: {
+            versionNum: true,
+            source: true,
+            doenetmlVersion: true,
+          },
+        },
+      },
+    };
+    const constSelectWithAssignedVersion = {
+      ...contentSelect,
+      documents,
+      _count: { select: { assignmentScores: true } },
+    };
+
     const assignedActivity = await prisma.content.findUniqueOrThrow({
       where: {
         id: activityId,
@@ -931,114 +960,7 @@ export async function getActivityEditorData(
         ownerId: loggedInUserId,
         isFolder: false,
       },
-      select: {
-        id: true,
-        name: true,
-        ownerId: true,
-        imagePath: true,
-        isAssigned: true,
-        classCode: true,
-        codeValidUntil: true,
-        isPublic: true,
-        isQuestion: true,
-        isInteractive: true,
-        containsVideo: true,
-        sharedWith: {
-          select: {
-            user: {
-              select: {
-                userId: true,
-                email: true,
-                firstNames: true,
-                lastNames: true,
-              },
-            },
-          },
-        },
-        license: {
-          include: {
-            composedOf: {
-              select: { composedOf: true },
-              orderBy: { composedOf: { sortIndex: "asc" } },
-            },
-          },
-        },
-        classifications: {
-          select: {
-            classification: {
-              select: {
-                id: true,
-                code: true,
-                descriptions: {
-                  select: {
-                    description: true,
-                    subCategory: {
-                      select: {
-                        id: true,
-                        subCategory: true,
-                        sortIndex: true,
-                        category: {
-                          select: {
-                            id: true,
-                            category: true,
-                            system: {
-                              select: {
-                                id: true,
-                                name: true,
-                                shortName: true,
-                                categoryLabel: true,
-                                subCategoryLabel: true,
-                                descriptionLabel: true,
-                                categoriesInDescription: true,
-                                type: true,
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        documents: {
-          select: {
-            id: true,
-            name: true,
-            assignedVersion: {
-              select: {
-                versionNum: true,
-                source: true,
-                doenetmlVersion: true,
-              },
-            },
-          },
-          // TODO: implement ability to allow users to order the documents within an activity
-          orderBy: { id: "asc" },
-        },
-        parentFolder: {
-          select: {
-            id: true,
-            name: true,
-            isPublic: true,
-            sharedWith: {
-              select: {
-                user: {
-                  select: {
-                    userId: true,
-                    email: true,
-                    firstNames: true,
-                    lastNames: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        _count: { select: { assignmentScores: true } },
-      },
+      select: constSelectWithAssignedVersion,
     });
 
     const isOpen = assignedActivity.codeValidUntil
@@ -1057,6 +979,7 @@ export async function getActivityEditorData(
       assignmentStatus: isOpen ? "Open" : "Closed",
       classCode: assignedActivity.classCode,
       codeValidUntil: assignedActivity.codeValidUntil,
+      isFolder: assignedActivity.isFolder,
       isPublic: assignedActivity.isPublic,
       isShared,
       sharedWith,
@@ -1087,107 +1010,7 @@ export async function getActivityEditorData(
         ownerId: loggedInUserId,
         isFolder: false,
       },
-      select: {
-        id: true,
-        name: true,
-        ownerId: true,
-        imagePath: true,
-        classCode: true,
-        codeValidUntil: true,
-        isPublic: true,
-        isQuestion: true,
-        isInteractive: true,
-        containsVideo: true,
-        sharedWith: {
-          select: {
-            user: {
-              select: {
-                userId: true,
-                email: true,
-                firstNames: true,
-                lastNames: true,
-              },
-            },
-          },
-        },
-        license: {
-          include: {
-            composedOf: {
-              select: { composedOf: true },
-              orderBy: { composedOf: { sortIndex: "asc" } },
-            },
-          },
-        },
-        classifications: {
-          select: {
-            classification: {
-              select: {
-                id: true,
-                code: true,
-                descriptions: {
-                  select: {
-                    description: true,
-                    subCategory: {
-                      select: {
-                        id: true,
-                        subCategory: true,
-                        sortIndex: true,
-                        category: {
-                          select: {
-                            id: true,
-                            category: true,
-                            system: {
-                              select: {
-                                id: true,
-                                name: true,
-                                shortName: true,
-                                categoryLabel: true,
-                                subCategoryLabel: true,
-                                descriptionLabel: true,
-                                categoriesInDescription: true,
-                                type: true,
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        documents: {
-          select: {
-            name: true,
-            id: true,
-            source: true,
-            doenetmlVersion: true,
-          },
-          // TODO: implement ability to allow users to order the documents within an activity
-          orderBy: { id: "asc" },
-        },
-        parentFolder: {
-          select: {
-            id: true,
-            name: true,
-            isPublic: true,
-            sharedWith: {
-              select: {
-                user: {
-                  select: {
-                    userId: true,
-                    email: true,
-                    firstNames: true,
-                    lastNames: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      select: contentSelect,
     });
 
     const {
@@ -1241,100 +1064,7 @@ export async function getSharedEditorData(
         { sharedWith: { some: { userId: loggedInUserId } } },
       ],
     },
-    select: {
-      id: true,
-      isFolder: true,
-      ownerId: true,
-      name: true,
-      imagePath: true,
-      isPublic: true,
-      isQuestion: true,
-      isInteractive: true,
-      containsVideo: true,
-      sharedWith: {
-        select: {
-          userId: true,
-        },
-      },
-      documents: {
-        select: {
-          name: true,
-          id: true,
-          source: true,
-          doenetmlVersion: true,
-        },
-        // TODO: implement ability to allow users to order the documents within an activity
-        orderBy: { id: "asc" },
-      },
-      license: {
-        include: {
-          composedOf: {
-            select: { composedOf: true },
-            orderBy: { composedOf: { sortIndex: "asc" } },
-          },
-        },
-      },
-      parentFolder: {
-        select: {
-          id: true,
-          name: true,
-          isPublic: true,
-          sharedWith: {
-            select: {
-              userId: true,
-            },
-          },
-        },
-      },
-      owner: {
-        select: {
-          userId: true,
-          email: true,
-          firstNames: true,
-          lastNames: true,
-        },
-      },
-      classifications: {
-        select: {
-          classification: {
-            select: {
-              id: true,
-              code: true,
-              descriptions: {
-                select: {
-                  description: true,
-                  subCategory: {
-                    select: {
-                      id: true,
-                      subCategory: true,
-                      sortIndex: true,
-                      category: {
-                        select: {
-                          id: true,
-                          category: true,
-                          system: {
-                            select: {
-                              id: true,
-                              name: true,
-                              shortName: true,
-                              categoryLabel: true,
-                              subCategoryLabel: true,
-                              descriptionLabel: true,
-                              categoriesInDescription: true,
-                              type: true,
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
+    select: returnContentStructureFullOwnerSelect(),
   });
 
   const {
@@ -1384,100 +1114,7 @@ export async function getActivityViewerData(
         { sharedWith: { some: { userId: loggedInUserId } } },
       ],
     },
-    select: {
-      id: true,
-      name: true,
-      ownerId: true,
-      imagePath: true,
-      isPublic: true,
-      isQuestion: true,
-      isInteractive: true,
-      containsVideo: true,
-      sharedWith: {
-        select: {
-          userId: true,
-        },
-      },
-      license: {
-        include: {
-          composedOf: {
-            select: { composedOf: true },
-            orderBy: { composedOf: { sortIndex: "asc" } },
-          },
-        },
-      },
-      documents: {
-        where: { isDeleted: false },
-        select: {
-          name: true,
-          id: true,
-          source: true,
-          doenetmlVersion: true,
-        },
-        // TODO: implement ability to allow users to order the documents within an activity
-        orderBy: { id: "asc" },
-      },
-      parentFolder: {
-        select: {
-          id: true,
-          name: true,
-          isPublic: true,
-          sharedWith: {
-            select: {
-              userId: true,
-            },
-          },
-        },
-      },
-      owner: {
-        select: {
-          userId: true,
-          email: true,
-          firstNames: true,
-          lastNames: true,
-        },
-      },
-      classifications: {
-        select: {
-          classification: {
-            select: {
-              id: true,
-              code: true,
-              descriptions: {
-                select: {
-                  description: true,
-                  subCategory: {
-                    select: {
-                      id: true,
-                      subCategory: true,
-                      sortIndex: true,
-                      category: {
-                        select: {
-                          id: true,
-                          category: true,
-                          system: {
-                            select: {
-                              id: true,
-                              name: true,
-                              shortName: true,
-                              categoryLabel: true,
-                              subCategoryLabel: true,
-                              descriptionLabel: true,
-                              categoriesInDescription: true,
-                              type: true,
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
+    select: returnContentStructureFullOwnerSelect(),
   });
 
   const {
@@ -2003,91 +1640,7 @@ export async function searchSharedContent({
     where: {
       id: { in: matches.map((m) => m.id) },
     },
-    select: {
-      id: true,
-      isFolder: true,
-      ownerId: true,
-      owner: {
-        select: {
-          userId: true,
-          firstNames: true,
-          lastNames: true,
-          email: true,
-        },
-      },
-      name: true,
-      imagePath: true,
-      isPublic: true,
-      isQuestion: true,
-      isInteractive: true,
-      containsVideo: true,
-      sharedWith: {
-        select: {
-          userId: true,
-        },
-      },
-      license: {
-        include: {
-          composedOf: {
-            select: { composedOf: true },
-            orderBy: { composedOf: { sortIndex: "asc" } },
-          },
-        },
-      },
-      classifications: {
-        select: {
-          classification: {
-            select: {
-              id: true,
-              code: true,
-              descriptions: {
-                select: {
-                  description: true,
-                  subCategory: {
-                    select: {
-                      id: true,
-                      subCategory: true,
-                      sortIndex: true,
-                      category: {
-                        select: {
-                          id: true,
-                          category: true,
-                          system: {
-                            select: {
-                              id: true,
-                              name: true,
-                              shortName: true,
-                              categoryLabel: true,
-                              subCategoryLabel: true,
-                              descriptionLabel: true,
-                              categoriesInDescription: true,
-                              type: true,
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      documents: { select: { id: true, doenetmlVersion: true } },
-      parentFolder: {
-        select: {
-          id: true,
-          name: true,
-          isPublic: true,
-          sharedWith: {
-            select: {
-              userId: true,
-            },
-          },
-        },
-      },
-    },
+    select: returnContentStructureFullOwnerSelect(),
   });
 
   // TODO: better way to sort! (For free if combine queries)
@@ -2356,74 +1909,7 @@ export async function getAllRecentPublicActivities() {
     where: { isPublic: true, isDeleted: false, isFolder: false },
     orderBy: { lastEdited: "desc" },
     take: 100,
-    select: {
-      id: true,
-      isFolder: true,
-      ownerId: true,
-      owner: {
-        select: {
-          userId: true,
-          firstNames: true,
-          lastNames: true,
-          email: true,
-        },
-      },
-      name: true,
-      imagePath: true,
-      isPublic: true,
-      isQuestion: true,
-      isInteractive: true,
-      containsVideo: true,
-      license: {
-        include: {
-          composedOf: {
-            select: { composedOf: true },
-            orderBy: { composedOf: { sortIndex: "asc" } },
-          },
-        },
-      },
-      classifications: {
-        select: {
-          classification: {
-            select: {
-              id: true,
-              code: true,
-              descriptions: {
-                select: {
-                  description: true,
-                  subCategory: {
-                    select: {
-                      id: true,
-                      subCategory: true,
-                      sortIndex: true,
-                      category: {
-                        select: {
-                          id: true,
-                          category: true,
-                          system: {
-                            select: {
-                              id: true,
-                              name: true,
-                              shortName: true,
-                              categoryLabel: true,
-                              subCategoryLabel: true,
-                              descriptionLabel: true,
-                              categoriesInDescription: true,
-                              type: true,
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      documents: { select: { id: true, doenetmlVersion: true } },
-    },
+    select: returnContentStructureFullOwnerSelect(),
   });
 
   const activities2: ContentStructure[] = activities.map((activity) => {
@@ -2609,74 +2095,7 @@ export async function loadPromotedContent(userId: Uint8Array) {
       promotedContent: {
         select: {
           activity: {
-            select: {
-              id: true,
-              isFolder: true,
-              ownerId: true,
-              owner: {
-                select: {
-                  userId: true,
-                  firstNames: true,
-                  lastNames: true,
-                  email: true,
-                },
-              },
-              name: true,
-              imagePath: true,
-              isPublic: true,
-              isQuestion: true,
-              isInteractive: true,
-              containsVideo: true,
-              license: {
-                include: {
-                  composedOf: {
-                    select: { composedOf: true },
-                    orderBy: { composedOf: { sortIndex: "asc" } },
-                  },
-                },
-              },
-              classifications: {
-                select: {
-                  classification: {
-                    select: {
-                      id: true,
-                      code: true,
-                      descriptions: {
-                        select: {
-                          description: true,
-                          subCategory: {
-                            select: {
-                              id: true,
-                              subCategory: true,
-                              sortIndex: true,
-                              category: {
-                                select: {
-                                  id: true,
-                                  category: true,
-                                  system: {
-                                    select: {
-                                      id: true,
-                                      name: true,
-                                      shortName: true,
-                                      categoryLabel: true,
-                                      subCategoryLabel: true,
-                                      descriptionLabel: true,
-                                      categoriesInDescription: true,
-                                      type: true,
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              documents: { select: { id: true, doenetmlVersion: true } },
-            },
+            select: returnContentStructureFullOwnerSelect(),
           },
         },
         orderBy: { sortIndex: "asc" },
@@ -3981,98 +3400,10 @@ export async function getMyFolderContent({
       parentFolderId: folderId,
     },
     select: {
-      id: true,
-      isFolder: true,
-      ownerId: true,
-      name: true,
-      imagePath: true,
-      isPublic: true,
-      isQuestion: true,
-      isInteractive: true,
-      containsVideo: true,
-      sharedWith: {
-        select: {
-          user: {
-            select: {
-              userId: true,
-              email: true,
-              firstNames: true,
-              lastNames: true,
-            },
-          },
-        },
-      },
-      isAssigned: true,
-      classCode: true,
-      codeValidUntil: true,
-      license: {
-        include: {
-          composedOf: {
-            select: { composedOf: true },
-            orderBy: { composedOf: { sortIndex: "asc" } },
-          },
-        },
-      },
-      classifications: {
-        select: {
-          classification: {
-            select: {
-              id: true,
-              code: true,
-              descriptions: {
-                select: {
-                  description: true,
-                  subCategory: {
-                    select: {
-                      id: true,
-                      subCategory: true,
-                      sortIndex: true,
-                      category: {
-                        select: {
-                          id: true,
-                          category: true,
-                          system: {
-                            select: {
-                              id: true,
-                              name: true,
-                              shortName: true,
-                              categoryLabel: true,
-                              subCategoryLabel: true,
-                              descriptionLabel: true,
-                              categoriesInDescription: true,
-                              type: true,
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      documents: { select: { id: true, doenetmlVersion: true } },
-      parentFolder: {
-        select: {
-          id: true,
-          name: true,
-          isPublic: true,
-          sharedWith: {
-            select: {
-              user: {
-                select: {
-                  userId: true,
-                  email: true,
-                  firstNames: true,
-                  lastNames: true,
-                },
-              },
-            },
-          },
-        },
-      },
+      ...returnContentStructureSharedDetailsSelect({
+        includeIsAssigned: true,
+        includeClassInfo: true,
+      }),
       _count: { select: { assignmentScores: true } },
     },
     orderBy: { sortIndex: "asc" },
@@ -4295,98 +3626,10 @@ export async function searchMyFolderContent({
       id: { in: matches.map((m) => m.id) },
     },
     select: {
-      id: true,
-      isFolder: true,
-      ownerId: true,
-      name: true,
-      imagePath: true,
-      isPublic: true,
-      isQuestion: true,
-      isInteractive: true,
-      containsVideo: true,
-      sharedWith: {
-        select: {
-          user: {
-            select: {
-              userId: true,
-              email: true,
-              firstNames: true,
-              lastNames: true,
-            },
-          },
-        },
-      },
-      isAssigned: true,
-      classCode: true,
-      codeValidUntil: true,
-      license: {
-        include: {
-          composedOf: {
-            select: { composedOf: true },
-            orderBy: { composedOf: { sortIndex: "asc" } },
-          },
-        },
-      },
-      classifications: {
-        select: {
-          classification: {
-            select: {
-              id: true,
-              code: true,
-              descriptions: {
-                select: {
-                  description: true,
-                  subCategory: {
-                    select: {
-                      id: true,
-                      subCategory: true,
-                      sortIndex: true,
-                      category: {
-                        select: {
-                          id: true,
-                          category: true,
-                          system: {
-                            select: {
-                              id: true,
-                              name: true,
-                              shortName: true,
-                              categoryLabel: true,
-                              subCategoryLabel: true,
-                              descriptionLabel: true,
-                              categoriesInDescription: true,
-                              type: true,
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      documents: { select: { id: true, doenetmlVersion: true } },
-      parentFolder: {
-        select: {
-          id: true,
-          name: true,
-          isPublic: true,
-          sharedWith: {
-            select: {
-              user: {
-                select: {
-                  userId: true,
-                  email: true,
-                  firstNames: true,
-                  lastNames: true,
-                },
-              },
-            },
-          },
-        },
-      },
+      ...returnContentStructureSharedDetailsSelect({
+        includeClassInfo: true,
+        includeIsAssigned: true,
+      }),
       _count: { select: { assignmentScores: true } },
     },
   });
@@ -4550,91 +3793,7 @@ export async function getSharedFolderContent({
         { sharedWith: { some: { userId: loggedInUserId } } },
       ],
     },
-    select: {
-      id: true,
-      isFolder: true,
-      ownerId: true,
-      owner: {
-        select: {
-          userId: true,
-          firstNames: true,
-          lastNames: true,
-          email: true,
-        },
-      },
-      name: true,
-      imagePath: true,
-      isPublic: true,
-      isQuestion: true,
-      isInteractive: true,
-      containsVideo: true,
-      sharedWith: {
-        select: {
-          userId: true,
-        },
-      },
-      license: {
-        include: {
-          composedOf: {
-            select: { composedOf: true },
-            orderBy: { composedOf: { sortIndex: "asc" } },
-          },
-        },
-      },
-      classifications: {
-        select: {
-          classification: {
-            select: {
-              id: true,
-              code: true,
-              descriptions: {
-                select: {
-                  description: true,
-                  subCategory: {
-                    select: {
-                      id: true,
-                      subCategory: true,
-                      sortIndex: true,
-                      category: {
-                        select: {
-                          id: true,
-                          category: true,
-                          system: {
-                            select: {
-                              id: true,
-                              name: true,
-                              shortName: true,
-                              categoryLabel: true,
-                              subCategoryLabel: true,
-                              descriptionLabel: true,
-                              categoriesInDescription: true,
-                              type: true,
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      documents: { select: { id: true, doenetmlVersion: true } },
-      parentFolder: {
-        select: {
-          id: true,
-          name: true,
-          isPublic: true,
-          sharedWith: {
-            select: {
-              userId: true,
-            },
-          },
-        },
-      },
-    },
+    select: returnContentStructureFullOwnerSelect(),
     orderBy: { sortIndex: "asc" },
   });
 
@@ -4659,91 +3818,7 @@ export async function getSharedFolderContent({
           { sharedWith: { some: { userId: loggedInUserId } } },
         ],
       },
-      select: {
-        id: true,
-        isFolder: true,
-        ownerId: true,
-        owner: {
-          select: {
-            userId: true,
-            firstNames: true,
-            lastNames: true,
-            email: true,
-          },
-        },
-        name: true,
-        imagePath: true,
-        isPublic: true,
-        isQuestion: true,
-        isInteractive: true,
-        containsVideo: true,
-        sharedWith: {
-          select: {
-            userId: true,
-          },
-        },
-        license: {
-          include: {
-            composedOf: {
-              select: { composedOf: true },
-              orderBy: { composedOf: { sortIndex: "asc" } },
-            },
-          },
-        },
-        classifications: {
-          select: {
-            classification: {
-              select: {
-                id: true,
-                code: true,
-                descriptions: {
-                  select: {
-                    description: true,
-                    subCategory: {
-                      select: {
-                        id: true,
-                        subCategory: true,
-                        sortIndex: true,
-                        category: {
-                          select: {
-                            id: true,
-                            category: true,
-                            system: {
-                              select: {
-                                id: true,
-                                name: true,
-                                shortName: true,
-                                categoryLabel: true,
-                                subCategoryLabel: true,
-                                descriptionLabel: true,
-                                categoriesInDescription: true,
-                                type: true,
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        documents: { select: { id: true, doenetmlVersion: true } },
-        parentFolder: {
-          select: {
-            id: true,
-            name: true,
-            isPublic: true,
-            sharedWith: {
-              select: {
-                userId: true,
-              },
-            },
-          },
-        },
-      },
+      select: returnContentStructureFullOwnerSelect(),
       orderBy: { sortIndex: "asc" },
     });
     preliminarySharedContent.push(...orphanedSharedContent);
