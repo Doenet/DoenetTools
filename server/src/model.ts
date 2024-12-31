@@ -4278,7 +4278,8 @@ export async function searchMyFolderContent({
     (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
     MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
     MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     ) as relevance
   FROM
     content
@@ -4294,6 +4295,8 @@ export async function searchMyFolderContent({
     classificationDescriptions ON rel.A = classificationDescriptions.id
   LEFT JOIN
     classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
+  LEFT JOIN
+    classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
   WHERE
     content.ownerId = ${loggedInUserId}
     AND content.isDeleted = FALSE
@@ -4302,7 +4305,8 @@ export async function searchMyFolderContent({
     OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+    OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
   GROUP BY
     content.id
   ORDER BY
@@ -4333,7 +4337,8 @@ export async function searchMyFolderContent({
       (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
       MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
       MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-      MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+      MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       ) as relevance
     FROM
       content
@@ -4349,6 +4354,8 @@ export async function searchMyFolderContent({
       classificationDescriptions ON rel.A = classificationDescriptions.id
     LEFT JOIN
       classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
+    LEFT JOIN
+      classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
     WHERE
       content.id IN (SELECT id from content_tree)
       AND
@@ -4356,7 +4363,8 @@ export async function searchMyFolderContent({
       OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       OR MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+      OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
     GROUP BY
       content.id
     ORDER BY

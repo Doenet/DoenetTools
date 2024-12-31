@@ -7611,6 +7611,99 @@ test("searchMyFolderContent, classification matches", async () => {
   });
   content = searchResults.content;
   expect(content.length).eq(1);
+
+  // With category
+  searchResults = await searchMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
+    query: "kinder",
+  });
+  content = searchResults.content;
+  expect(content.length).eq(1);
+
+  // With subcategory
+  searchResults = await searchMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
+    query: "cardinality",
+  });
+  content = searchResults.content;
+  expect(content.length).eq(1);
+
+  // With description
+  searchResults = await searchMyFolderContent({
+    folderId: null,
+    loggedInUserId: ownerId,
+    query: "tens",
+  });
+  content = searchResults.content;
+  expect(content.length).eq(1);
+});
+
+test("searchMyFolderContent in folder, classification matches", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  const { folderId } = await createFolder(ownerId, null);
+  const { activityId } = await createActivity(ownerId, folderId);
+
+  let searchResults = await searchMyFolderContent({
+    folderId,
+    loggedInUserId: ownerId,
+    query: "K.CC.1 comMMon cOREe",
+  });
+  let content = searchResults.content;
+  expect(content.length).eq(0);
+
+  const classifyId = (
+    await searchPossibleClassifications({ query: "K.CC.1 common core" })
+  )[0].id;
+
+  await addClassification(activityId, classifyId, ownerId);
+  // With code
+  searchResults = await searchMyFolderContent({
+    folderId,
+    loggedInUserId: ownerId,
+    query: "K.C",
+  });
+  content = searchResults.content;
+  expect(content.length).eq(1);
+
+  // With both
+  searchResults = await searchMyFolderContent({
+    folderId,
+    loggedInUserId: ownerId,
+    query: "common C.1",
+  });
+  content = searchResults.content;
+  expect(content.length).eq(1);
+
+  // With category
+  searchResults = await searchMyFolderContent({
+    folderId,
+    loggedInUserId: ownerId,
+    query: "kinder",
+  });
+  content = searchResults.content;
+  expect(content.length).eq(1);
+
+  // With subcategory
+  searchResults = await searchMyFolderContent({
+    folderId,
+    loggedInUserId: ownerId,
+    query: "cardinality",
+  });
+  content = searchResults.content;
+  expect(content.length).eq(1);
+
+  // With description
+  searchResults = await searchMyFolderContent({
+    folderId,
+    loggedInUserId: ownerId,
+    query: "tens",
+  });
+  content = searchResults.content;
+  expect(content.length).eq(1);
 });
 
 test("searchMyFolderContent, handle tags in search", async () => {
