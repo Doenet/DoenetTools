@@ -1,14 +1,11 @@
 import {
   Box,
-  Icon,
   Flex,
   Heading,
   Tooltip,
   List,
   Spacer,
   VStack,
-  ButtonGroup,
-  Button,
   MenuItem,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -23,20 +20,20 @@ import {
   DisplayLicenseItem,
   SmallLicenseBadges,
 } from "../../../Widgets/Licenses";
-import { FaListAlt, FaRegListAlt } from "react-icons/fa";
-import { IoGrid, IoGridOutline } from "react-icons/io5";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import CardList from "../../../Widgets/CardList";
+import {
+  ToggleViewButtonGroup,
+  toggleViewButtonGroupActions,
+} from "../ToolPanels/ToggleViewButtonGroup";
 
 export async function action({ request }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
-  if (formObj?._action == "Set List View Preferred") {
-    await axios.post(`/api/setPreferredFolderView`, {
-      cardView: formObj.listViewPref === "false",
-    });
-    return true;
+  const resultTLV = await toggleViewButtonGroupActions({ formObj });
+  if (resultTLV) {
+    return resultTLV;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
@@ -159,52 +156,11 @@ export function SharedActivities() {
       ) : null}
 
       <VStack align="flex-end" float="right" marginRight=".5em">
-        <ButtonGroup size="sm" isAttached variant="outline" marginBottom=".5em">
-          <Tooltip label="Toggle List View">
-            <Button isActive={listView === true}>
-              <Icon
-                as={listView ? FaListAlt : FaRegListAlt}
-                boxSize={10}
-                p=".5em"
-                cursor="pointer"
-                onClick={() => {
-                  if (listView === false) {
-                    setListView(true);
-                    fetcher.submit(
-                      {
-                        _action: "Set List View Preferred",
-                        listViewPref: true,
-                      },
-                      { method: "post" },
-                    );
-                  }
-                }}
-              />
-            </Button>
-          </Tooltip>
-          <Tooltip label="Toggle Card View">
-            <Button isActive={listView === false}>
-              <Icon
-                as={listView ? IoGridOutline : IoGrid}
-                boxSize={10}
-                p=".5em"
-                cursor="pointer"
-                onClick={() => {
-                  if (listView === true) {
-                    setListView(false);
-                    fetcher.submit(
-                      {
-                        _action: "Set List View Preferred",
-                        listViewPref: false,
-                      },
-                      { method: "post" },
-                    );
-                  }
-                }}
-              />
-            </Button>
-          </Tooltip>
-        </ButtonGroup>
+        <ToggleViewButtonGroup
+          listView={listView}
+          setListView={setListView}
+          fetcher={fetcher}
+        />
       </VStack>
     </Box>
   );

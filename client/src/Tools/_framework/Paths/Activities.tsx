@@ -1,7 +1,6 @@
 import {
   Button,
   Box,
-  Icon,
   Text,
   Flex,
   useDisclosure,
@@ -16,7 +15,6 @@ import {
   Spacer,
   Show,
   HStack,
-  ButtonGroup,
   VStack,
   Hide,
   Spinner,
@@ -31,8 +29,6 @@ import {
   Form,
 } from "react-router";
 
-import { FaListAlt, FaRegListAlt } from "react-icons/fa";
-import { IoGrid, IoGridOutline } from "react-icons/io5";
 import { cardActions, CardContent } from "../../../Widgets/Card";
 import CardList from "../../../Widgets/CardList";
 import axios from "axios";
@@ -58,6 +54,10 @@ import {
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 import { formatTime } from "../../../_utils/dateUtilityFunction";
+import {
+  ToggleViewButtonGroup,
+  toggleViewButtonGroupActions,
+} from "../ToolPanels/ToggleViewButtonGroup";
 
 // what is a better solution than this?
 let folderJustCreated = ""; // if a folder was just created, set autoFocusName true for the card with the matching id
@@ -88,6 +88,11 @@ export async function action({ request, params }) {
   const resultMC = await moveContentActions({ formObj });
   if (resultMC) {
     return resultMC;
+  }
+
+  const resultTLV = await toggleViewButtonGroupActions({ formObj });
+  if (resultTLV) {
+    return resultTLV;
   }
 
   if (formObj?._action == "Add Activity") {
@@ -638,52 +643,11 @@ export function Activities() {
             See Scores
           </Button>
         </HStack>
-        <ButtonGroup size="sm" isAttached variant="outline" marginBottom=".5em">
-          <Tooltip label="Toggle List View">
-            <Button isActive={listView === true}>
-              <Icon
-                as={listView ? FaListAlt : FaRegListAlt}
-                boxSize={10}
-                p=".5em"
-                cursor="pointer"
-                onClick={() => {
-                  if (listView === false) {
-                    setListView(true);
-                    fetcher.submit(
-                      {
-                        _action: "Set List View Preferred",
-                        listViewPref: true,
-                      },
-                      { method: "post" },
-                    );
-                  }
-                }}
-              />
-            </Button>
-          </Tooltip>
-          <Tooltip label="Toggle Card View">
-            <Button isActive={listView === false}>
-              <Icon
-                as={listView ? IoGridOutline : IoGrid}
-                boxSize={10}
-                p=".5em"
-                cursor="pointer"
-                onClick={() => {
-                  if (listView === true) {
-                    setListView(false);
-                    fetcher.submit(
-                      {
-                        _action: "Set List View Preferred",
-                        listViewPref: false,
-                      },
-                      { method: "post" },
-                    );
-                  }
-                }}
-              />
-            </Button>
-          </Tooltip>
-        </ButtonGroup>
+        <ToggleViewButtonGroup
+          listView={listView}
+          setListView={setListView}
+          fetcher={fetcher}
+        />
       </VStack>
     </Box>
   );
