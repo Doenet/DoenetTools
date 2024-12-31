@@ -422,7 +422,7 @@ export function Home() {
             color={blackColor}
           >
             Interact with{" "}
-            <Link href="/community" textDecoration="underline">
+            <Link href="/explore" textDecoration="underline">
               our existing content
             </Link>
           </Text>

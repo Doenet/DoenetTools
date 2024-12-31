@@ -4,7 +4,7 @@ import React from "react";
 import { useLoaderData } from "react-router";
 import styled from "styled-components";
 import Card from "../../../Widgets/Card";
-import { MoveToGroupMenuItem } from "./Community";
+import { MoveToGroupMenuItem } from "./CommunityAdmin";
 import { createFullName } from "../../../_utils/names";
 import { ContentStructure } from "../../../_utils/types";
 

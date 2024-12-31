@@ -15,7 +15,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { DoenetHeading as Heading } from "./Community";
+import { DoenetHeading as Heading } from "../../../Widgets/Heading";
 import { Link as ReactRouterLink, useNavigate } from "react-router";
 import { lastNameFirst } from "../../../_utils/names";
 import { UserInfo } from "../../../_utils/types";
