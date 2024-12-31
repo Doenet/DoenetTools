@@ -2861,7 +2861,10 @@ test("searchSharedContent returns public/shared activities and folders matching 
     users: [userId],
   });
 
-  const searchResults = await searchSharedContent(sessionNumber, userId);
+  const searchResults = await searchSharedContent({
+    query: sessionNumber,
+    loggedInUserId: userId,
+  });
   expect(searchResults.length).eq(4);
 
   const namesInOrder = searchResults
@@ -2977,7 +2980,10 @@ test("searchSharedContent returns public/shared activities and folders even in a
     users: [userId],
   });
 
-  const searchResults = await searchSharedContent(sessionNumber, userId);
+  const searchResults = await searchSharedContent({
+    query: sessionNumber,
+    loggedInUserId: userId,
+  });
   expect(searchResults.length).eq(4);
 
   const namesInOrder = searchResults
@@ -3008,15 +3014,24 @@ test("searchSharedContent, document source matches", async () => {
   });
 
   // apple doesn't hit
-  let results = await searchSharedContent("apple", userId);
+  let results = await searchSharedContent({
+    query: "apple",
+    loggedInUserId: userId,
+  });
   expect(results.filter((r) => isEqualUUID(r.id, activityId))).toHaveLength(0);
 
   // first part of a word hits
-  results = await searchSharedContent(`b${code}ana`, userId);
+  results = await searchSharedContent({
+    query: `b${code}ana`,
+    loggedInUserId: userId,
+  });
   expect(results.filter((r) => isEqualUUID(r.id, activityId))).toHaveLength(1);
 
   // full word hits
-  results = await searchSharedContent(`b${code}ananas`, userId);
+  results = await searchSharedContent({
+    query: `b${code}ananas`,
+    loggedInUserId: userId,
+  });
   expect(results.filter((r) => isEqualUUID(r.id, activityId))).toHaveLength(1);
 });
 
@@ -3034,10 +3049,16 @@ test("searchSharedContent, owner name matches", async () => {
     licenseCode: "CCDUAL",
   });
 
-  let results = await searchSharedContent("Arya", userId);
+  let results = await searchSharedContent({
+    query: "Arya",
+    loggedInUserId: userId,
+  });
   expect(results.filter((r) => isEqualUUID(r.id, activityId))).toHaveLength(1);
 
-  results = await searchSharedContent("Arya Abbas", userId);
+  results = await searchSharedContent({
+    query: "Arya Abbas",
+    loggedInUserId: userId,
+  });
   expect(results.filter((r) => isEqualUUID(r.id, activityId))).toHaveLength(1);
 });
 
@@ -3102,19 +3123,19 @@ test("searchSharedContent, document source is more relevant than classification"
 
   // First make sure irrelevant classifications don't help relevance
   // (as they did when summed over records rather than taking average)
-  let results = await searchSharedContent(
-    `banana${code} muffin${code}`,
-    userId,
-  );
+  let results = await searchSharedContent({
+    query: `banana${code} muffin${code}`,
+    loggedInUserId: userId,
+  });
 
   expect(results[0].id).eqls(activity1Id);
   expect(results[1].id).eqls(activity2Id);
 
   // Even adding in two matching classifications doesn't put the match in first
-  results = await searchSharedContent(
-    `K.CC.1 K.OA.1 A.SSE.3 banana${code} muffin${code}`,
-    userId,
-  );
+  results = await searchSharedContent({
+    query: `K.CC.1 K.OA.1 A.SSE.3 banana${code} muffin${code}`,
+    loggedInUserId: userId,
+  });
 
   expect(results[0].id).eqls(activity1Id);
   expect(results[1].id).eqls(activity2Id);
@@ -3164,19 +3185,31 @@ test("searchSharedContent, classification increases relevance", async () => {
   });
   await addClassification(activity2Id, classifyId, ownerId);
 
-  let results = await searchSharedContent(`K.CC.3 banana${code}`, userId);
+  let results = await searchSharedContent({
+    query: `K.CC.3 banana${code}`,
+    loggedInUserId: userId,
+  });
   expect(results[0].id).eqls(activity2Id);
   expect(results[1].id).eqls(activity1Id);
 
-  results = await searchSharedContent(`Kindergarten banana${code}`, userId);
+  results = await searchSharedContent({
+    query: `Kindergarten banana${code}`,
+    loggedInUserId: userId,
+  });
   expect(results[0].id).eqls(activity2Id);
   expect(results[1].id).eqls(activity1Id);
 
-  results = await searchSharedContent(`cardiNALITY banana${code}`, userId);
+  results = await searchSharedContent({
+    query: `cardiNALITY banana${code}`,
+    loggedInUserId: userId,
+  });
   expect(results[0].id).eqls(activity2Id);
   expect(results[1].id).eqls(activity1Id);
 
-  results = await searchSharedContent(`numeral banana${code}`, userId);
+  results = await searchSharedContent({
+    query: `numeral banana${code}`,
+    loggedInUserId: userId,
+  });
   expect(results[0].id).eqls(activity2Id);
   expect(results[1].id).eqls(activity1Id);
 });
@@ -3196,8 +3229,469 @@ test("searchSharedContent, handle tags in search", async () => {
     licenseCode: "CCDUAL",
   });
 
-  const results = await searchSharedContent(`<point>`, userId);
+  const results = await searchSharedContent({
+    query: `<point>`,
+    loggedInUserId: userId,
+  });
   expect(results.length).gte(1);
+});
+
+test("searchSharedContent, filter by classification", async () => {
+  const user = await createTestUser();
+  const userId = user.userId;
+
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  const classification1 = (
+    await searchPossibleClassifications({ query: "Trig.TT.3" })
+  )[0];
+  const classifyId1 = classification1.id;
+  const subCategoryId1 = classification1.descriptions[0].subCategory.id;
+  const categoryId1 = classification1.descriptions[0].subCategory.category.id;
+  const systemId1 =
+    classification1.descriptions[0].subCategory.category.system.id;
+
+  const classifyId2 = (
+    await searchPossibleClassifications({ query: "Trig.TT.5" })
+  )[0].id;
+  const classifyId3 = (
+    await searchPossibleClassifications({ query: "Trig.PC.2" })
+  )[0].id;
+  const classifyId4 = (
+    await searchPossibleClassifications({ query: "AbsAlg.R.3" })
+  )[0].id;
+  const classifyId5 = (
+    await searchPossibleClassifications({ query: "7.SP.3" })
+  )[0].id;
+
+  // unique code to distinguish content added in this test
+  const code = `${Date.now()}`;
+
+  // Create identical activities, with only difference being which classification is used
+  // classifyId1
+  const { activityId: activity1Id, docId: doc1Id } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: doc1Id,
+    source: `banana${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activity1Id,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  await addClassification(activity1Id, classifyId1, ownerId);
+
+  // classifyId2
+  const { activityId: activity2Id, docId: doc2Id } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: doc2Id,
+    source: `banana${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activity2Id,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  await addClassification(activity2Id, classifyId2, ownerId);
+
+  // classifyId3
+  const { activityId: activity3Id, docId: doc3Id } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: doc3Id,
+    source: `banana${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activity3Id,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  await addClassification(activity3Id, classifyId3, ownerId);
+
+  // classifyId4
+  const { activityId: activity4Id, docId: doc4Id } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: doc4Id,
+    source: `banana${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activity4Id,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  await addClassification(activity4Id, classifyId4, ownerId);
+
+  // classifyId5
+  const { activityId: activity5Id, docId: doc5Id } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: doc5Id,
+    source: `banana${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activity5Id,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  await addClassification(activity5Id, classifyId5, ownerId);
+
+  // Create one more distractor activity with classification 1 but different text
+  const { activityId: activity6Id, docId: doc6Id } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: doc6Id,
+    source: `grape${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activity6Id,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  await addClassification(activity6Id, classifyId1, ownerId);
+
+  // get all five activities with no filtering
+  let results = await searchSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+  });
+  expect(results.length).eq(5);
+
+  // filtering by system reduces it to four activities
+  results = await searchSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    systemId: systemId1,
+  });
+  expect(results.length).eq(4);
+
+  // filtering by category reduces it to three activities
+  results = await searchSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    categoryId: categoryId1,
+  });
+  expect(results.length).eq(3);
+
+  // filtering by subCategory reduces it to two activities
+  results = await searchSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    subCategoryId: subCategoryId1,
+  });
+  expect(results.length).eq(2);
+
+  // filtering by classification reduces it to one activity
+  results = await searchSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    classificationId: classifyId1,
+  });
+  expect(results.length).eq(1);
+});
+
+test("searchSharedContent, filter by activity feature", async () => {
+  const user = await createTestUser();
+  const userId = user.userId;
+
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  // unique code to distinguish content added in this test
+  const code = `${Date.now()}`;
+
+  // Create identical activities, with only difference being the activity features
+  // no features
+  const { activityId: activityNId, docId: docNId } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: docNId,
+    source: `banana${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activityNId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+
+  // is question
+  const { activityId: activityQId, docId: docQId } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: docQId,
+    source: `banana${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activityQId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  await updateContent({ id: activityQId, ownerId, isQuestion: true });
+
+  // is interactive
+  const { activityId: activityIId, docId: docIId } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: docIId,
+    source: `banana${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activityIId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  await updateContent({ id: activityIId, ownerId, isInteractive: true });
+
+  // contains video
+  const { activityId: activityVId, docId: docVId } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: docVId,
+    source: `banana${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activityVId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  await updateContent({ id: activityVId, ownerId, containsVideo: true });
+
+  // is question and interactive
+  const { activityId: activityQIId, docId: docQIId } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: docQIId,
+    source: `banana${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activityQIId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  await updateContent({
+    id: activityQIId,
+    ownerId,
+    isQuestion: true,
+    isInteractive: true,
+  });
+
+  // is question and contains video
+  const { activityId: activityQVId, docId: docQVId } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: docQVId,
+    source: `banana${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activityQVId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  await updateContent({
+    id: activityQVId,
+    ownerId,
+    isQuestion: true,
+    containsVideo: true,
+  });
+
+  // is interactive and contains video
+  const { activityId: activityIVId, docId: docIVId } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: docIVId,
+    source: `banana${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activityIVId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  await updateContent({
+    id: activityIVId,
+    ownerId,
+    isInteractive: true,
+    containsVideo: true,
+  });
+
+  // is question, is interactive, and contains video
+  const { activityId: activityQIVId, docId: docQIVId } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: docQIVId,
+    source: `banana${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activityQIVId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  await updateContent({
+    id: activityQIVId,
+    ownerId,
+    isQuestion: true,
+    isInteractive: true,
+    containsVideo: true,
+  });
+
+  // Create one more distractor activity with all features but different text
+  const { activityId: activityDId, docId: docDId } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: docDId,
+    source: `grape${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activityDId,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  await updateContent({
+    id: activityDId,
+    ownerId,
+    isQuestion: true,
+    isInteractive: true,
+    containsVideo: true,
+  });
+
+  // get all eight activities with no filtering
+  let results = await searchSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+  });
+  expect(results.map((c) => c.id)).eqls([
+    activityNId,
+    activityQId,
+    activityIId,
+    activityVId,
+    activityQIId,
+    activityQVId,
+    activityIVId,
+    activityQIVId,
+  ]);
+
+  // filter to the four that are questions
+  results = await searchSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    isQuestion: true,
+  });
+  expect(results.map((c) => c.id)).eqls([
+    activityQId,
+    activityQIId,
+    activityQVId,
+    activityQIVId,
+  ]);
+
+  // filter to the four that are interactive
+  results = await searchSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    isInteractive: true,
+  });
+  expect(results.map((c) => c.id)).eqls([
+    activityIId,
+    activityQIId,
+    activityIVId,
+    activityQIVId,
+  ]);
+
+  // filter to the four that are contain videos
+  results = await searchSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    containsVideo: true,
+  });
+  expect(results.map((c) => c.id)).eqls([
+    activityVId,
+    activityQVId,
+    activityIVId,
+    activityQIVId,
+  ]);
+
+  // filter to the two have are a question and interactive
+  results = await searchSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    isQuestion: true,
+    isInteractive: true,
+  });
+  expect(results.map((c) => c.id)).eqls([activityQIId, activityQIVId]);
+
+  // filter to the two have are a question and contain a video
+  results = await searchSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    isQuestion: true,
+    containsVideo: true,
+  });
+  expect(results.map((c) => c.id)).eqls([activityQVId, activityQIVId]);
+
+  // filter to the two have are interactive and contain a video
+  results = await searchSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    isInteractive: true,
+    containsVideo: true,
+  });
+  expect(results.map((c) => c.id)).eqls([activityIVId, activityQIVId]);
+
+  // filter to the one that has all three features
+  results = await searchSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    isQuestion: true,
+    isInteractive: true,
+    containsVideo: true,
+  });
+  expect(results.map((c) => c.id)).eqls([activityQIVId]);
 });
 
 test("searchUsersWithSharedContent returns only users with public/shared content", async () => {

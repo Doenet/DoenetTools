@@ -1898,10 +1898,27 @@ export async function getAssignmentDataFromCode(code: string) {
   return { assignmentFound: true, assignment };
 }
 
-export async function searchSharedContent(
-  query: string,
-  loggedInUserId: Uint8Array,
-) {
+export async function searchSharedContent({
+  query,
+  loggedInUserId,
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+  isQuestion,
+  isInteractive,
+  containsVideo,
+}: {
+  query: string;
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+  isQuestion?: boolean;
+  isInteractive?: boolean;
+  containsVideo?: boolean;
+}) {
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
@@ -1959,6 +1976,20 @@ export async function searchSharedContent(
     OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+    ${
+      classificationId !== undefined
+        ? Prisma.sql`AND classifications.id = ${classificationId}`
+        : subCategoryId !== undefined
+          ? Prisma.sql`AND classificationSubCategories.id = ${subCategoryId}`
+          : categoryId !== undefined
+            ? Prisma.sql`AND classificationCategories.id = ${categoryId}`
+            : systemId !== undefined
+              ? Prisma.sql`AND classificationCategories.systemId = ${systemId}`
+              : Prisma.empty
+    }
+    ${isQuestion !== undefined ? Prisma.sql`AND content.isQuestion = ${isQuestion}` : Prisma.empty}
+    ${isInteractive !== undefined ? Prisma.sql`AND content.isInteractive = ${isInteractive}` : Prisma.empty}
+    ${containsVideo !== undefined ? Prisma.sql`AND content.containsVideo = ${containsVideo}` : Prisma.empty}
   GROUP BY
     content.id
   ORDER BY
@@ -1968,7 +1999,7 @@ export async function searchSharedContent(
 
   // TODO: combine queries
 
-  const preliminaryPublicContent = await prisma.content.findMany({
+  const preliminarySharedContent = await prisma.content.findMany({
     where: {
       id: { in: matches.map((m) => m.id) },
     },
@@ -2064,7 +2095,7 @@ export async function searchSharedContent(
     matches.map((m) => [fromUUID(m.id), m.relevance]),
   );
 
-  const publicContent: ContentStructure[] = preliminaryPublicContent
+  const sharedContent: ContentStructure[] = preliminarySharedContent
     .sort((a, b) => relevance[fromUUID(b.id)] - relevance[fromUUID(a.id)])
     .map((content) => {
       const {
@@ -2096,7 +2127,7 @@ export async function searchSharedContent(
       };
     });
 
-  return publicContent;
+  return sharedContent;
 }
 
 export async function searchUsersWithSharedContent(
@@ -3408,69 +3439,37 @@ export async function getAllAssignmentScores({
   ownerId: Uint8Array;
   parentFolderId: Uint8Array | null;
 }) {
-  let orderedActivities;
+  const orderedActivities = await prisma.$queryRaw<
+    {
+      id: Uint8Array;
+      name: string;
+    }[]
+  >(Prisma.sql`
+    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
+      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
+      WHERE ${parentFolderId === null ? Prisma.sql`parentFolderId IS NULL` : Prisma.sql`parentFolderId = ${parentFolderId}`}
+      AND ownerId = ${ownerId}
+      AND (isAssigned = true or isFolder = true) AND isDeleted = false
+      UNION ALL
+      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
+      FROM content AS c
+      INNER JOIN content_tree AS ft
+      ON c.parentFolderId = ft.id
+      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
+    )
+    
+    SELECT c.id, c.name FROM content AS c
+    INNER JOIN content_tree AS ct
+    ON ct.id = c.id
+    WHERE ct.isFolder = FALSE ORDER BY path
+  `);
 
   let folder: {
     id: Uint8Array;
     name: string;
   } | null = null;
 
-  // NOTE: the string after `Prisma.sql` is NOT interpreted as a regular string,
-  // but it does special processing with the template variables.
-  // For this reason, one cannot have an operator such as "=" or "IS" as a template variable
-  // or a phrase such as "parentFolderId IS NULL".
-  // To get two versions, one with `parentFolderId IS NULL` and the other with `parentFolderId = ${parentFolderId}`,
-  // we had to make two completely separate raw queries.
-  // See: https://www.prisma.io/docs/orm/prisma-client/queries/raw-database-access/raw-queries#considerations
-  if (parentFolderId === null) {
-    orderedActivities = await prisma.$queryRaw<
-      {
-        id: Uint8Array;
-        name: string;
-      }[]
-    >(Prisma.sql`
-    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
-      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
-      WHERE parentFolderId IS NULL AND ownerId = ${ownerId}
-      AND (isAssigned = true or isFolder = true) AND isDeleted = false
-      UNION ALL
-      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
-      FROM content AS c
-      INNER JOIN content_tree AS ft
-      ON c.parentFolderId = ft.id
-      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
-    )
-    
-    SELECT c.id, c.name FROM content AS c
-    INNER JOIN content_tree AS ct
-    ON ct.id = c.id
-    WHERE ct.isFolder = FALSE ORDER BY path
-  `);
-  } else {
-    orderedActivities = await prisma.$queryRaw<
-      {
-        id: Uint8Array;
-        name: string;
-      }[]
-    >(Prisma.sql`
-    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
-      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
-      WHERE parentFolderId = ${parentFolderId} AND ownerId = ${ownerId}
-      AND (isAssigned = true or isFolder = true) AND isDeleted = false
-      UNION ALL
-      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
-      FROM content AS c
-      INNER JOIN content_tree AS ft
-      ON c.parentFolderId = ft.id
-      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
-    )
-    
-    SELECT c.id, c.name FROM content AS c
-    INNER JOIN content_tree AS ct
-    ON ct.id = c.id
-    WHERE ct.isFolder = FALSE ORDER BY path
-  `);
-
+  if (parentFolderId !== null) {
     folder = await prisma.content.findUniqueOrThrow({
       where: { id: parentFolderId, ownerId, isDeleted: false, isFolder: true },
       select: { id: true, name: true },
@@ -3531,79 +3530,42 @@ export async function getStudentData({
     },
   });
 
-  let orderedActivityScores;
+  const orderedActivityScores = await prisma.$queryRaw<
+    {
+      activityId: Uint8Array;
+      activityName: string;
+      score: number | null;
+    }[]
+  >(Prisma.sql`
+    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
+      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
+      WHERE ${parentFolderId === null ? Prisma.sql`parentFolderId IS NULL` : Prisma.sql`parentFolderId = ${parentFolderId}`}
+      AND ownerId = ${ownerId}
+      AND (isAssigned = true or isFolder = true) AND isDeleted = false
+      UNION ALL
+      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
+      FROM content AS c
+      INNER JOIN content_tree AS ft
+      ON c.parentFolderId = ft.id
+      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
+    )
+    
+    SELECT c.id AS activityId, c.name AS activityName, s.score FROM content AS c
+    INNER JOIN content_tree AS ct
+    ON ct.id = c.id
+    LEFT JOIN (
+    	SELECT * FROM assignmentScores WHERE userId=${userId}
+    	) as s
+    ON s.activityId  = c.id 
+    WHERE ct.isFolder = FALSE ORDER BY path
+  `);
 
   let folder: {
     id: Uint8Array;
     name: string;
   } | null = null;
 
-  // NOTE: the string after `Prisma.sql` is NOT interpreted as a regular string,
-  // but it does special processing with the template variables.
-  // For this reason, one cannot have an operator such as "=" or "IS" as a template variable
-  // or a phrase such as "parentFolderId IS NULL".
-  // To get two versions, one with `parentFolderId IS NULL` and the other with `parentFolderId = ${parentFolderId}`,
-  // we had to make two completely separate raw queries.
-  // See: https://www.prisma.io/docs/orm/prisma-client/queries/raw-database-access/raw-queries#considerations
-  if (parentFolderId === null) {
-    orderedActivityScores = await prisma.$queryRaw<
-      {
-        activityId: Uint8Array;
-        activityName: string;
-        score: number | null;
-      }[]
-    >(Prisma.sql`
-    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
-      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
-      WHERE parentFolderId IS NULL AND ownerId = ${ownerId}
-      AND (isAssigned = true or isFolder = true) AND isDeleted = false
-      UNION ALL
-      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
-      FROM content AS c
-      INNER JOIN content_tree AS ft
-      ON c.parentFolderId = ft.id
-      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
-    )
-    
-    SELECT c.id AS activityId, c.name AS activityName, s.score FROM content AS c
-    INNER JOIN content_tree AS ct
-    ON ct.id = c.id
-    LEFT JOIN (
-    	SELECT * FROM assignmentScores WHERE userId=${userId}
-    	) as s
-    ON s.activityId  = c.id 
-    WHERE ct.isFolder = FALSE ORDER BY path
-  `);
-  } else {
-    orderedActivityScores = await prisma.$queryRaw<
-      {
-        activityId: Uint8Array;
-        activityName: string;
-        score: number | null;
-      }[]
-    >(Prisma.sql`
-    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
-      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
-      WHERE parentFolderId = ${parentFolderId} AND ownerId = ${ownerId}
-      AND (isAssigned = true or isFolder = true) AND isDeleted = false
-      UNION ALL
-      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
-      FROM content AS c
-      INNER JOIN content_tree AS ft
-      ON c.parentFolderId = ft.id
-      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
-    )
-    
-    SELECT c.id AS activityId, c.name AS activityName, s.score FROM content AS c
-    INNER JOIN content_tree AS ct
-    ON ct.id = c.id
-    LEFT JOIN (
-    	SELECT * FROM assignmentScores WHERE userId=${userId}
-    	) as s
-    ON s.activityId  = c.id 
-    WHERE ct.isFolder = FALSE ORDER BY path
-  `);
-
+  if (parentFolderId !== null) {
     folder = await prisma.content.findUniqueOrThrow({
       where: { id: parentFolderId, ownerId, isDeleted: false, isFolder: true },
       select: { id: true, name: true },
@@ -4251,11 +4213,6 @@ export async function searchMyFolderContent({
     };
   }
 
-  let matches: {
-    id: Uint8Array;
-    relevance: number;
-  }[];
-
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
@@ -4265,13 +4222,27 @@ export async function searchMyFolderContent({
     .map((s) => s + "*")
     .join(" ");
 
-  if (folderId === null) {
-    matches = await prisma.$queryRaw<
-      {
-        id: Uint8Array;
-        relevance: number;
-      }[]
-    >(Prisma.sql`
+  const matches = await prisma.$queryRaw<
+    {
+      id: Uint8Array;
+      relevance: number;
+    }[]
+  >(Prisma.sql`
+
+  ${
+    folderId !== null
+      ? Prisma.sql`
+      WITH RECURSIVE content_tree(id) AS (
+      SELECT id FROM content
+      WHERE parentFolderId = ${folderId} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
+      UNION ALL
+      SELECT content.id FROM content
+      INNER JOIN content_tree AS ft
+      ON content.parentFolderId = ft.id
+      WHERE content.isDeleted = FALSE
+    )`
+      : Prisma.empty
+  }
   SELECT
     content.id,
     AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
@@ -4298,8 +4269,11 @@ export async function searchMyFolderContent({
   LEFT JOIN
     classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
   WHERE
-    content.ownerId = ${loggedInUserId}
-    AND content.isDeleted = FALSE
+    ${
+      folderId !== null
+        ? Prisma.sql`content.id IN (SELECT id from content_tree)`
+        : Prisma.sql`content.ownerId = ${loggedInUserId} AND content.isDeleted = FALSE`
+    }
     AND
     (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
@@ -4313,66 +4287,6 @@ export async function searchMyFolderContent({
     relevance DESC
   LIMIT 100
   `);
-  } else {
-    matches = await prisma.$queryRaw<
-      {
-        id: Uint8Array;
-        relevance: number;
-      }[]
-    >(
-      Prisma.sql`
-    WITH RECURSIVE content_tree(id) AS (
-      SELECT id FROM content
-      WHERE parentFolderId = ${folderId} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
-      UNION ALL
-      SELECT content.id FROM content
-      INNER JOIN content_tree AS ft
-      ON content.parentFolderId = ft.id
-      WHERE content.isDeleted = FALSE
-    )
-
-    SELECT
-      content.id,
-      AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
-      (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
-      MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-      MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-      MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-      MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      ) as relevance
-    FROM
-      content
-    LEFT JOIN
-      (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
-    LEFT JOIN
-      contentClassifications ON content.id = contentClassifications.contentId
-    LEFT JOIN
-      classifications ON contentClassifications.classificationId = classifications.id
-    LEFT JOIN
-      _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
-    LEFT JOIN
-      classificationDescriptions ON rel.A = classificationDescriptions.id
-    LEFT JOIN
-      classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
-    LEFT JOIN
-      classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
-    WHERE
-      content.id IN (SELECT id from content_tree)
-      AND
-      (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
-    GROUP BY
-      content.id
-    ORDER BY
-      relevance DESC
-    LIMIT 100
-    `,
-    );
-  }
 
   // TODO: combine queries
 
@@ -4958,20 +4872,12 @@ export async function searchPossibleClassifications({
     .join(" ");
 
   if (query_as_prefixes.length > 0) {
-    let matches: {
-      id: number;
-      relevance: number;
-    }[];
-
-    // TODO: there must be a better way to do this and to have to repeat the identical SQL string
-    // for each case! (Don't want to use unsafe raw queries.)
-    if (subCategoryId !== undefined) {
-      matches = await prisma.$queryRaw<
-        {
-          id: number;
-          relevance: number;
-        }[]
-      >(Prisma.sql`
+    const matches = await prisma.$queryRaw<
+      {
+        id: number;
+        relevance: number;
+      }[]
+    >(Prisma.sql`
   SELECT
     classifications.id,
     AVG(
@@ -4999,136 +4905,22 @@ export async function searchPossibleClassifications({
     OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
-    AND classificationSubCategories.id = ${subCategoryId}
+    ${
+      subCategoryId !== undefined
+        ? Prisma.sql`AND classificationSubCategories.id = ${subCategoryId}`
+        : categoryId !== undefined
+          ? Prisma.sql`AND classificationCategories.id = ${categoryId}`
+          : systemId !== undefined
+            ? Prisma.sql`AND classificationSystems.id = ${systemId}`
+            : Prisma.empty
+    }
+    
   GROUP BY
     classifications.id
   ORDER BY
     relevance DESC
   LIMIT 100
   `);
-    } else if (categoryId !== undefined) {
-      matches = await prisma.$queryRaw<
-        {
-          id: number;
-          relevance: number;
-        }[]
-      >(Prisma.sql`
-SELECT
-  classifications.id,
-  AVG(
-  MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-  MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-  MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-  MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-  MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-  ) as relevance
-FROM
-  classifications
-INNER JOIN
-  _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
-INNER JOIN
-  classificationDescriptions ON rel.A = classificationDescriptions.id
-INNER JOIN
-  classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
-INNER JOIN
-  classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
-INNER JOIN
-  classificationSystems ON classificationCategories.systemId = classificationSystems.id
-WHERE
-  (MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-  OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-  OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-  OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-  OR MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
-  AND classificationCategories.id = ${categoryId}
-GROUP BY
-  classifications.id
-ORDER BY
-  relevance DESC
-LIMIT 100
-`);
-    } else if (systemId !== undefined) {
-      matches = await prisma.$queryRaw<
-        {
-          id: number;
-          relevance: number;
-        }[]
-      >(Prisma.sql`
-SELECT
-  classifications.id,
-  AVG(
-  MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-  MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-  MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-  MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-  MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-  ) as relevance
-FROM
-  classifications
-INNER JOIN
-  _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
-INNER JOIN
-  classificationDescriptions ON rel.A = classificationDescriptions.id
-INNER JOIN
-  classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
-INNER JOIN
-  classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
-INNER JOIN
-  classificationSystems ON classificationCategories.systemId = classificationSystems.id
-WHERE
-  (MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-  OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-  OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-  OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-  OR MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
-  AND classificationSystems.id = ${systemId}
-GROUP BY
-  classifications.id
-ORDER BY
-  relevance DESC
-LIMIT 100
-`);
-    } else {
-      matches = await prisma.$queryRaw<
-        {
-          id: number;
-          relevance: number;
-        }[]
-      >(Prisma.sql`
-SELECT
-  classifications.id,
-  AVG(
-  MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-  MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-  MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-  MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-  MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-  ) as relevance
-FROM
-  classifications
-INNER JOIN
-  _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
-INNER JOIN
-  classificationDescriptions ON rel.A = classificationDescriptions.id
-INNER JOIN
-  classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
-INNER JOIN
-  classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
-INNER JOIN
-  classificationSystems ON classificationCategories.systemId = classificationSystems.id
-WHERE
-  (MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-  OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-  OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-  OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-  OR MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
-GROUP BY
-  classifications.id
-ORDER BY
-  relevance DESC
-LIMIT 100
-`);
-    }
 
     // since full text search doesn't match code well, separately match for those
     // and put matches at the top of the list

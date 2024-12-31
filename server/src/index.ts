@@ -1068,7 +1068,7 @@ app.get("/api/searchSharedContent", async (req: Request, res: Response) => {
     users: (await searchUsersWithSharedContent(query, loggedInUserId)).map(
       userConvertUUID,
     ),
-    content: (await searchSharedContent(query, loggedInUserId)).map(
+    content: (await searchSharedContent({ query, loggedInUserId })).map(
       contentStructureConvertUUID,
     ),
   });
