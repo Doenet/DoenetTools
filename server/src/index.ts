@@ -109,7 +109,7 @@ import {
   docRemixesConvertUUID,
 } from "./utils/uuid";
 import { LicenseCode, UserInfo } from "./types";
-import { add_test_apis } from "./test_apis";
+import { add_test_apis } from "./test/test_apis";
 
 const client = new SESClient({ region: "us-east-2" });
 
