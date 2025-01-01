@@ -3040,9 +3040,16 @@ test("searchSharedContent, owner name matches", async () => {
   const user = await createTestUser();
   const userId = user.userId;
 
+  // unique code to distinguish content added in this test
+  const code = `${Date.now()}`;
+
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  await updateUser({ userId: ownerId, firstNames: "Arya", lastNames: "Abbas" });
+  await updateUser({
+    userId: ownerId,
+    firstNames: `Arya${code}`,
+    lastNames: "Abbas",
+  });
   const { activityId } = await createActivity(ownerId, null);
   await makeActivityPublic({
     id: activityId,
@@ -3051,13 +3058,13 @@ test("searchSharedContent, owner name matches", async () => {
   });
 
   let results = await searchSharedContent({
-    query: "Arya",
+    query: `Arya${code}`,
     loggedInUserId: userId,
   });
   expect(results.filter((r) => isEqualUUID(r.id, activityId))).toHaveLength(1);
 
   results = await searchSharedContent({
-    query: "Arya Abbas",
+    query: `Arya${code} Abbas`,
     loggedInUserId: userId,
   });
   expect(results.filter((r) => isEqualUUID(r.id, activityId))).toHaveLength(1);

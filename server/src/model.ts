@@ -3,19 +3,25 @@ import { cidFromText } from "./utils/cid";
 import { DateTime } from "luxon";
 import { fromUUID, isEqualUUID } from "./utils/uuid";
 import {
-  AssignmentStatus,
   ClassificationCategoryTree,
   ContentClassification,
   ContentStructure,
   DocHistory,
   DocRemixes,
-  License,
   LicenseCode,
   UserInfo,
 } from "./types";
 import { sortClassifications } from "./utils/classifications";
 import {
+  processContentSharedDetails,
+  processContentSharedDetailsAssignedDoc,
+  processContent,
+  processContentSharedDetailsNoClassDocs,
+  processContentNoClassDocs,
+  processLicense,
   returnContentStructureFullOwnerSelect,
+  returnContentStructureNoClassDocsSelect,
+  returnContentStructureSharedDetailsNoClassDocsSelect,
   returnContentStructureSharedDetailsSelect,
 } from "./utils/contentStructure";
 
@@ -928,7 +934,7 @@ export async function getActivityEditorData(
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
 
   const contentSelect = returnContentStructureSharedDetailsSelect({
-    includeClassInfo: true,
+    includeAssignInfo: true,
   });
 
   if (isAssigned) {
@@ -947,7 +953,7 @@ export async function getActivityEditorData(
         },
       },
     };
-    const constSelectWithAssignedVersion = {
+    const contentSelectWithAssignedVersion = {
       ...contentSelect,
       documents,
       _count: { select: { assignmentScores: true } },
@@ -960,48 +966,10 @@ export async function getActivityEditorData(
         ownerId: loggedInUserId,
         isFolder: false,
       },
-      select: constSelectWithAssignedVersion,
+      select: contentSelectWithAssignedVersion,
     });
 
-    const isOpen = assignedActivity.codeValidUntil
-      ? DateTime.now() <= DateTime.fromJSDate(assignedActivity.codeValidUntil)
-      : false;
-
-    const { isShared, sharedWith } = processSharedWith(
-      assignedActivity.sharedWith,
-    );
-
-    activity = {
-      id: assignedActivity.id,
-      name: assignedActivity.name,
-      ownerId: assignedActivity.ownerId,
-      imagePath: assignedActivity.imagePath,
-      assignmentStatus: isOpen ? "Open" : "Closed",
-      classCode: assignedActivity.classCode,
-      codeValidUntil: assignedActivity.codeValidUntil,
-      isFolder: assignedActivity.isFolder,
-      isPublic: assignedActivity.isPublic,
-      isShared,
-      sharedWith,
-      license: assignedActivity.license
-        ? processLicense(assignedActivity.license)
-        : null,
-      isQuestion: assignedActivity.isQuestion,
-      isInteractive: assignedActivity.isInteractive,
-      containsVideo: assignedActivity.containsVideo,
-      classifications: sortClassifications(
-        assignedActivity.classifications.map((c) => c.classification),
-      ),
-      documents: assignedActivity.documents.map((doc) => ({
-        id: doc.id,
-        versionNum: doc.assignedVersion!.versionNum,
-        name: doc.name,
-        source: doc.assignedVersion!.source,
-        doenetmlVersion: doc.assignedVersion!.doenetmlVersion,
-      })),
-      hasScoreData: assignedActivity._count.assignmentScores > 0,
-      parentFolder: processParentFolder(assignedActivity.parentFolder),
-    };
+    activity = processContentSharedDetailsAssignedDoc(assignedActivity);
   } else {
     const unassignedActivity = await prisma.content.findUniqueOrThrow({
       where: {
@@ -1013,28 +981,7 @@ export async function getActivityEditorData(
       select: contentSelect,
     });
 
-    const {
-      sharedWith: sharedWithOrig,
-      license,
-      classifications,
-      parentFolder,
-      ...unassignedActivity2
-    } = unassignedActivity;
-
-    const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
-
-    activity = {
-      ...unassignedActivity2,
-      isShared,
-      sharedWith,
-      license: license ? processLicense(license) : null,
-      classifications: sortClassifications(
-        classifications.map((c) => c.classification),
-      ),
-      assignmentStatus: "Unassigned",
-      hasScoreData: false,
-      parentFolder: processParentFolder(parentFolder),
-    };
+    activity = processContentSharedDetails(unassignedActivity);
   }
 
   return { notMe: false, activity };
@@ -1067,33 +1014,7 @@ export async function getSharedEditorData(
     select: returnContentStructureFullOwnerSelect(),
   });
 
-  const {
-    license,
-    sharedWith: sharedWithOrig,
-    parentFolder,
-    classifications,
-    ...preliminaryActivity2
-  } = preliminaryActivity;
-
-  const { isShared, sharedWith } = processSharedWithForUser(
-    sharedWithOrig,
-    loggedInUserId,
-  );
-
-  const activity: ContentStructure = {
-    ...preliminaryActivity2,
-    isShared,
-    sharedWith,
-    license: license ? processLicense(license) : null,
-    classifications: sortClassifications(
-      classifications.map((c) => c.classification),
-    ),
-    classCode: null,
-    codeValidUntil: null,
-    assignmentStatus: "Unassigned",
-    hasScoreData: false,
-    parentFolder: processParentFolderForUser(parentFolder, loggedInUserId),
-  };
+  const activity = processContent(preliminaryActivity, loggedInUserId);
 
   return activity;
 }
@@ -1117,34 +1038,7 @@ export async function getActivityViewerData(
     select: returnContentStructureFullOwnerSelect(),
   });
 
-  const {
-    license,
-    sharedWith: sharedWithOrig,
-    parentFolder,
-    classifications,
-    ...preliminaryActivity2
-  } = preliminaryActivity;
-
-  const { isShared, sharedWith } = processSharedWithForUser(
-    sharedWithOrig,
-    loggedInUserId,
-  );
-
-  const activity: ContentStructure = {
-    ...preliminaryActivity2,
-    isFolder: false,
-    isShared,
-    sharedWith,
-    license: license ? processLicense(license) : null,
-    classifications: sortClassifications(
-      classifications.map((c) => c.classification),
-    ),
-    classCode: null,
-    codeValidUntil: null,
-    assignmentStatus: "Unassigned",
-    hasScoreData: false,
-    parentFolder: processParentFolderForUser(parentFolder, loggedInUserId),
-  };
+  const activity = processContent(preliminaryActivity, loggedInUserId);
 
   const docHistories = await getDocumentContributorHistories({
     docIds: activity.documents.map((doc) => doc.id),
@@ -1648,37 +1542,9 @@ export async function searchSharedContent({
     matches.map((m) => [fromUUID(m.id), m.relevance]),
   );
 
-  const sharedContent: ContentStructure[] = preliminarySharedContent
+  const sharedContent = preliminarySharedContent
     .sort((a, b) => relevance[fromUUID(b.id)] - relevance[fromUUID(a.id)])
-    .map((content) => {
-      const {
-        license,
-        sharedWith: sharedWithOrig,
-        parentFolder,
-        classifications,
-        ...content2
-      } = content;
-
-      const { isShared, sharedWith } = processSharedWithForUser(
-        sharedWithOrig,
-        loggedInUserId,
-      );
-
-      return {
-        ...content2,
-        isShared,
-        sharedWith,
-        license: license ? processLicense(license) : null,
-        classifications: sortClassifications(
-          classifications.map((c) => c.classification),
-        ),
-        classCode: null,
-        codeValidUntil: null,
-        assignmentStatus: "Unassigned",
-        hasScoreData: false,
-        parentFolder: processParentFolderForUser(parentFolder, loggedInUserId),
-      };
-    });
+    .map((content) => processContent(content, loggedInUserId));
 
   return sharedContent;
 }
@@ -1739,48 +1605,15 @@ export async function listUserAssigned(userId: Uint8Array) {
       isAssigned: true,
       assignmentScores: { some: { userId } },
     },
-    select: {
-      id: true,
-      isFolder: true,
-      ownerId: true,
-      name: true,
-      imagePath: true,
-      isPublic: true,
-      isQuestion: true,
-      isInteractive: true,
-      containsVideo: true,
-      classCode: true,
-      codeValidUntil: true,
-      license: {
-        include: {
-          composedOf: {
-            select: { composedOf: true },
-            orderBy: { composedOf: { sortIndex: "asc" } },
-          },
-        },
-      },
-      parentFolder: { select: { id: true, name: true, isPublic: true } },
-    },
+    select: returnContentStructureNoClassDocsSelect({
+      includeAssignInfo: true,
+    }),
     orderBy: { createdAt: "asc" },
   });
 
-  const assignments: ContentStructure[] = preliminaryAssignments.map((obj) => {
-    const isOpen = obj.codeValidUntil
-      ? DateTime.now() <= DateTime.fromJSDate(obj.codeValidUntil)
-      : false;
-    const assignmentStatus: AssignmentStatus = !isOpen ? "Closed" : "Open";
-    return {
-      ...obj,
-      isShared: false,
-      sharedWith: [],
-      license: obj.license ? processLicense(obj.license) : null,
-      classifications: [],
-      assignmentStatus,
-      documents: [],
-      hasScoreData: false,
-      parentFolder: processParentFolder(obj.parentFolder),
-    };
-  });
+  const assignments = preliminaryAssignments.map((obj) =>
+    processContentNoClassDocs(obj),
+  );
 
   const user: UserInfo = await prisma.users.findUniqueOrThrow({
     where: { userId },
@@ -1912,24 +1745,7 @@ export async function getAllRecentPublicActivities() {
     select: returnContentStructureFullOwnerSelect(),
   });
 
-  const activities2: ContentStructure[] = activities.map((activity) => {
-    const { license, classifications, ...content2 } = activity;
-
-    return {
-      ...content2,
-      license: license ? processLicense(license) : null,
-      classifications: sortClassifications(
-        classifications.map((c) => c.classification),
-      ),
-      classCode: null,
-      codeValidUntil: null,
-      assignmentStatus: "Unassigned",
-      hasScoreData: false,
-      parentFolder: null,
-      isShared: false,
-      sharedWith: [],
-    };
-  });
+  const activities2 = activities.map((activity) => processContent(activity));
 
   return activities2;
 }
@@ -2111,24 +1927,9 @@ export async function loadPromotedContent(userId: Uint8Array) {
     promotedContent: ContentStructure[];
   }[] = content.map((groupContent) => {
     const reformattedActivities: ContentStructure[] =
-      groupContent.promotedContent.map((content) => {
-        const { license, classifications, ...content2 } = content.activity;
-
-        return {
-          ...content2,
-          license: license ? processLicense(license) : null,
-          classifications: sortClassifications(
-            classifications.map((c) => c.classification),
-          ),
-          classCode: null,
-          codeValidUntil: null,
-          assignmentStatus: "Unassigned",
-          hasScoreData: false,
-          parentFolder: null,
-          isShared: false,
-          sharedWith: [],
-        };
-      });
+      groupContent.promotedContent.map((content) =>
+        processContent(content.activity),
+      );
 
     return {
       groupName: groupContent.groupName,
@@ -3317,80 +3118,10 @@ export async function getMyFolderContent({
         isFolder: true,
         ownerId: loggedInUserId,
       },
-      select: {
-        id: true,
-        ownerId: true,
-        name: true,
-        imagePath: true,
-        isPublic: true,
-        isQuestion: true,
-        isInteractive: true,
-        containsVideo: true,
-        sharedWith: {
-          select: {
-            user: {
-              select: {
-                userId: true,
-                email: true,
-                firstNames: true,
-                lastNames: true,
-              },
-            },
-          },
-        },
-        license: {
-          include: {
-            composedOf: {
-              select: { composedOf: true },
-              orderBy: { composedOf: { sortIndex: "asc" } },
-            },
-          },
-        },
-        parentFolder: {
-          select: {
-            id: true,
-            name: true,
-            isPublic: true,
-            sharedWith: {
-              select: {
-                user: {
-                  select: {
-                    userId: true,
-                    email: true,
-                    firstNames: true,
-                    lastNames: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      select: returnContentStructureSharedDetailsNoClassDocsSelect(),
     });
 
-    const {
-      sharedWith: sharedWithOrig,
-      license,
-      parentFolder,
-      ...preliminaryFolder2
-    } = preliminaryFolder;
-
-    const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
-
-    folder = {
-      ...preliminaryFolder2,
-      isFolder: true,
-      isShared,
-      sharedWith,
-      assignmentStatus: "Unassigned",
-      classCode: null,
-      codeValidUntil: null,
-      documents: [],
-      hasScoreData: false,
-      license: license ? processLicense(license) : null,
-      parentFolder: processParentFolder(parentFolder),
-      classifications: [],
-    };
+    folder = processContentSharedDetailsNoClassDocs(preliminaryFolder);
   }
 
   const preliminaryContent = await prisma.content.findMany({
@@ -3401,47 +3132,16 @@ export async function getMyFolderContent({
     },
     select: {
       ...returnContentStructureSharedDetailsSelect({
-        includeIsAssigned: true,
-        includeClassInfo: true,
+        includeAssignInfo: true,
       }),
       _count: { select: { assignmentScores: true } },
     },
     orderBy: { sortIndex: "asc" },
   });
 
-  const content: ContentStructure[] = preliminaryContent.map((obj) => {
-    const {
-      _count,
-      isAssigned,
-      sharedWith: sharedWithOrig,
-      license,
-      classifications,
-      parentFolder,
-      ...activity
-    } = obj;
-    const isOpen = obj.codeValidUntil
-      ? DateTime.now() <= DateTime.fromJSDate(obj.codeValidUntil)
-      : false;
-    const assignmentStatus: AssignmentStatus = !obj.isAssigned
-      ? "Unassigned"
-      : !isOpen
-        ? "Closed"
-        : "Open";
-    const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
-
-    return {
-      ...activity,
-      isShared,
-      sharedWith,
-      license: license ? processLicense(license) : null,
-      classifications: sortClassifications(
-        classifications.map((c) => c.classification),
-      ),
-      assignmentStatus,
-      hasScoreData: _count.assignmentScores > 0,
-      parentFolder: processParentFolder(parentFolder),
-    };
-  });
+  const content: ContentStructure[] = preliminaryContent.map(
+    processContentSharedDetails,
+  );
 
   return {
     content,
@@ -3469,79 +3169,10 @@ export async function searchMyFolderContent({
         isFolder: true,
         ownerId: loggedInUserId,
       },
-      select: {
-        id: true,
-        ownerId: true,
-        name: true,
-        imagePath: true,
-        isPublic: true,
-        isQuestion: true,
-        isInteractive: true,
-        containsVideo: true,
-        sharedWith: {
-          select: {
-            user: {
-              select: {
-                userId: true,
-                email: true,
-                firstNames: true,
-                lastNames: true,
-              },
-            },
-          },
-        },
-        license: {
-          include: {
-            composedOf: {
-              select: { composedOf: true },
-              orderBy: { composedOf: { sortIndex: "asc" } },
-            },
-          },
-        },
-        parentFolder: {
-          select: {
-            id: true,
-            name: true,
-            isPublic: true,
-            sharedWith: {
-              select: {
-                user: {
-                  select: {
-                    userId: true,
-                    email: true,
-                    firstNames: true,
-                    lastNames: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      select: returnContentStructureSharedDetailsNoClassDocsSelect(),
     });
 
-    const {
-      sharedWith: sharedWithOrig,
-      license,
-      parentFolder,
-      ...preliminaryFolder2
-    } = preliminaryFolder;
-    const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
-
-    folder = {
-      ...preliminaryFolder2,
-      isFolder: true,
-      isShared,
-      sharedWith,
-      assignmentStatus: "Unassigned",
-      classCode: null,
-      codeValidUntil: null,
-      documents: [],
-      hasScoreData: false,
-      license: license ? processLicense(license) : null,
-      parentFolder: processParentFolder(parentFolder),
-      classifications: [],
-    };
+    folder = processContentSharedDetailsNoClassDocs(preliminaryFolder);
   }
 
   // remove operators that break MySQL BOOLEAN search
@@ -3627,8 +3258,7 @@ export async function searchMyFolderContent({
     },
     select: {
       ...returnContentStructureSharedDetailsSelect({
-        includeClassInfo: true,
-        includeIsAssigned: true,
+        includeAssignInfo: true,
       }),
       _count: { select: { assignmentScores: true } },
     },
@@ -3641,39 +3271,7 @@ export async function searchMyFolderContent({
 
   const content: ContentStructure[] = preliminaryResults
     .sort((a, b) => relevance[fromUUID(b.id)] - relevance[fromUUID(a.id)])
-    .map((obj) => {
-      const {
-        _count,
-        isAssigned,
-        sharedWith: sharedWithOrig,
-        license,
-        classifications,
-        parentFolder,
-        ...activity
-      } = obj;
-      const isOpen = obj.codeValidUntil
-        ? DateTime.now() <= DateTime.fromJSDate(obj.codeValidUntil)
-        : false;
-      const assignmentStatus: AssignmentStatus = !obj.isAssigned
-        ? "Unassigned"
-        : !isOpen
-          ? "Closed"
-          : "Open";
-      const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
-
-      return {
-        ...activity,
-        isShared,
-        sharedWith,
-        license: license ? processLicense(license) : null,
-        classifications: sortClassifications(
-          classifications.map((c) => c.classification),
-        ),
-        assignmentStatus,
-        hasScoreData: _count.assignmentScores > 0,
-        parentFolder: processParentFolder(parentFolder),
-      };
-    });
+    .map(processContentSharedDetails);
 
   return {
     content,
@@ -3699,46 +3297,13 @@ export async function getSharedFolderContent({
         ownerId,
         id: folderId,
         isDeleted: false,
+        isFolder: true,
         OR: [
           { isPublic: true },
           { sharedWith: { some: { userId: loggedInUserId } } },
         ],
       },
-      select: {
-        id: true,
-        ownerId: true,
-        name: true,
-        imagePath: true,
-        isPublic: true,
-        isQuestion: true,
-        isInteractive: true,
-        containsVideo: true,
-        sharedWith: {
-          select: {
-            userId: true,
-          },
-        },
-        license: {
-          include: {
-            composedOf: {
-              select: { composedOf: true },
-              orderBy: { composedOf: { sortIndex: "asc" } },
-            },
-          },
-        },
-        parentFolder: {
-          select: {
-            id: true,
-            name: true,
-            isPublic: true,
-            sharedWith: {
-              select: {
-                userId: true,
-              },
-            },
-          },
-        },
-      },
+      select: returnContentStructureNoClassDocsSelect(),
     });
 
     // If parent folder is not public or not shared with me,
@@ -3755,32 +3320,7 @@ export async function getSharedFolderContent({
       preliminaryFolder.parentFolder = null;
     }
 
-    const {
-      license,
-      sharedWith: sharedWithOrig,
-      parentFolder,
-      ...preliminaryFolder2
-    } = preliminaryFolder;
-
-    const { isShared, sharedWith } = processSharedWithForUser(
-      sharedWithOrig,
-      loggedInUserId,
-    );
-
-    folder = {
-      ...preliminaryFolder2,
-      isFolder: true,
-      isShared,
-      sharedWith,
-      assignmentStatus: "Unassigned",
-      classCode: null,
-      codeValidUntil: null,
-      documents: [],
-      hasScoreData: false,
-      license: license ? processLicense(license) : null,
-      parentFolder: processParentFolderForUser(parentFolder, loggedInUserId),
-      classifications: [],
-    };
+    folder = processContentNoClassDocs(preliminaryFolder, loggedInUserId);
   }
 
   const preliminarySharedContent = await prisma.content.findMany({
@@ -3824,36 +3364,8 @@ export async function getSharedFolderContent({
     preliminarySharedContent.push(...orphanedSharedContent);
   }
 
-  const publicContent: ContentStructure[] = preliminarySharedContent.map(
-    (content) => {
-      const {
-        license,
-        sharedWith: sharedWithOrig,
-        parentFolder,
-        classifications,
-        ...content2
-      } = content;
-
-      const { isShared, sharedWith } = processSharedWithForUser(
-        sharedWithOrig,
-        loggedInUserId,
-      );
-
-      return {
-        ...content2,
-        isShared,
-        sharedWith,
-        license: license ? processLicense(license) : null,
-        classifications: sortClassifications(
-          classifications.map((c) => c.classification),
-        ),
-        classCode: null,
-        codeValidUntil: null,
-        assignmentStatus: "Unassigned",
-        hasScoreData: false,
-        parentFolder: processParentFolderForUser(parentFolder, loggedInUserId),
-      };
-    },
+  const publicContent = preliminarySharedContent.map((content) =>
+    processContent(content, loggedInUserId),
   );
 
   const owner = await prisma.users.findUniqueOrThrow({
@@ -4308,188 +3820,6 @@ export async function getAllLicenses() {
 
   const licenses = preliminary_licenses.map(processLicense);
   return licenses;
-}
-
-/**
- * Process a list of user info from the SharedWith table
- *
- * Returns:
- * - isShared: true if there were any SharedWith items
- * - sharedWith: an array of UserInfo sorted by last names, then first names, then email.
- */
-function processSharedWith(
-  sharedWithOrig:
-    | {
-        user: UserInfo;
-      }[]
-    | null
-    | undefined,
-): { isShared: boolean; sharedWith: UserInfo[] } {
-  if (sharedWithOrig === null || sharedWithOrig === undefined) {
-    return { isShared: false, sharedWith: [] };
-  }
-
-  const isShared = sharedWithOrig.length > 0;
-
-  const sharedWith = sharedWithOrig
-    .map((cs) => cs.user)
-    .sort(
-      (a, b) =>
-        a.lastNames.localeCompare(b.lastNames) ||
-        a.firstNames?.localeCompare(b.firstNames || "") ||
-        a.email.localeCompare(b.email),
-    );
-
-  return { isShared, sharedWith };
-}
-
-/**
- * Process a list of userIds from the SharedWith table to determine
- * if the content was shared with `determineSharedToUser`
- *
- * Returns:
- * - isShared: true if `determineSharedToUser` is in the list of userIds
- * - sharedWith: any empty array of UserInfo
- *
- * @param sharedWithIds
- * @param determineSharedToUser
- * @returns
- */
-function processSharedWithForUser(
-  sharedWithIds: { userId: Uint8Array }[] | null | undefined,
-  determineSharedToUser: Uint8Array,
-): { isShared: boolean; sharedWith: UserInfo[] } {
-  if (sharedWithIds === null || sharedWithIds === undefined) {
-    return { isShared: false, sharedWith: [] };
-  }
-
-  const isShared =
-    sharedWithIds.findIndex((cs) =>
-      isEqualUUID(cs.userId, determineSharedToUser),
-    ) !== -1;
-
-  const sharedWith: {
-    userId: Uint8Array;
-    email: string;
-    firstNames: string | null;
-    lastNames: string;
-  }[] = [];
-
-  return { isShared, sharedWith };
-}
-
-/**
- * Process a parent folder of content to standard form for the parent folder of ContentStructure
- */
-function processParentFolder(
-  parentFolder: {
-    id: Uint8Array;
-    name: string;
-    isPublic: boolean;
-    sharedWith?: {
-      user: UserInfo;
-    }[];
-  } | null,
-) {
-  if (parentFolder === null) {
-    return null;
-  }
-
-  const { isShared, sharedWith } = processSharedWith(parentFolder.sharedWith);
-
-  return {
-    id: parentFolder.id,
-    name: parentFolder.name,
-    isPublic: parentFolder.isPublic,
-    isShared,
-    sharedWith,
-  };
-}
-
-/**
- * Process a parent folder of content to standard form for the parent folder of ContentStructure
- * where the content sharing is just for the user `determineSharedToUser`.
- */
-function processParentFolderForUser(
-  parentFolder: {
-    id: Uint8Array;
-    name: string;
-    isPublic: boolean;
-    sharedWith: { userId: Uint8Array }[];
-  } | null,
-  determineSharedToUser: Uint8Array,
-) {
-  if (parentFolder === null) {
-    return null;
-  }
-
-  const { isShared, sharedWith } = processSharedWithForUser(
-    parentFolder.sharedWith,
-    determineSharedToUser,
-  );
-
-  return {
-    id: parentFolder.id,
-    name: parentFolder.name,
-    isPublic: parentFolder.isPublic,
-    isShared,
-    sharedWith,
-  };
-}
-
-function processLicense(
-  preliminary_license: {
-    composedOf: {
-      composedOf: {
-        code: string;
-        name: string;
-        description: string;
-        imageURL: string | null;
-        smallImageURL: string | null;
-        licenseURL: string | null;
-        sortIndex: number;
-      };
-    }[];
-  } & {
-    code: string;
-    name: string;
-    description: string;
-    imageURL: string | null;
-    smallImageURL: string | null;
-    licenseURL: string | null;
-    sortIndex: number;
-  },
-): License {
-  if (preliminary_license.composedOf.length > 0) {
-    return {
-      code: preliminary_license.code as LicenseCode,
-      name: preliminary_license.name,
-      description: preliminary_license.description,
-      imageURL: null,
-      smallImageURL: null,
-      licenseURL: null,
-      isComposition: true,
-      composedOf: preliminary_license.composedOf.map((comp) => ({
-        code: comp.composedOf.code as LicenseCode,
-        name: comp.composedOf.name,
-        description: comp.composedOf.description,
-        imageURL: comp.composedOf.imageURL,
-        smallImageURL: comp.composedOf.smallImageURL,
-        licenseURL: comp.composedOf.licenseURL,
-      })),
-    };
-  } else {
-    return {
-      code: preliminary_license.code as LicenseCode,
-      name: preliminary_license.name,
-      description: preliminary_license.description,
-      imageURL: preliminary_license.imageURL,
-      smallImageURL: preliminary_license.smallImageURL,
-      licenseURL: preliminary_license.licenseURL,
-      isComposition: false,
-      composedOf: [],
-    };
-  }
 }
 
 export async function setActivityLicense({
