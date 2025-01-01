@@ -793,3 +793,45 @@ export function processContentSharedDetailsAssignedDoc(
 
   return content;
 }
+
+/**
+ *
+ * Return the select statement for prisma to select the components needed
+ * to form the ContentClassification object for each classification
+ */
+export function returnClassificationListSelect() {
+  return {
+    id: true,
+    code: true,
+    descriptions: {
+      select: {
+        description: true,
+        subCategory: {
+          select: {
+            id: true,
+            subCategory: true,
+            sortIndex: true,
+            category: {
+              select: {
+                id: true,
+                category: true,
+                system: {
+                  select: {
+                    id: true,
+                    name: true,
+                    shortName: true,
+                    categoryLabel: true,
+                    subCategoryLabel: true,
+                    descriptionLabel: true,
+                    categoriesInDescription: true,
+                    type: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+}

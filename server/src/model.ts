@@ -23,6 +23,7 @@ import {
   returnContentStructureNoClassDocsSelect,
   returnContentStructureSharedDetailsNoClassDocsSelect,
   returnContentStructureSharedDetailsSelect,
+  returnClassificationListSelect,
 } from "./utils/contentStructure";
 
 export class InvalidRequestError extends Error {
@@ -1596,6 +1597,481 @@ export async function searchUsersWithSharedContent(
     email: "",
   }));
   return usersWithPublic2;
+}
+
+export async function searchClassificationsWithSharedContent({
+  query,
+  loggedInUserId,
+  systemId,
+  categoryId,
+  subCategoryId,
+  isQuestion,
+  isInteractive,
+  containsVideo,
+}: {
+  query: string;
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  isQuestion?: boolean;
+  isInteractive?: boolean;
+  containsVideo?: boolean;
+}) {
+  // remove operators that break MySQL BOOLEAN search
+  // and add * at the end of every word so that match beginning of words
+  const query_as_prefixes = query
+    .replace(/[+\-><()~*"@]+/g, " ")
+    .split(" ")
+    .filter((s) => s)
+    .map((s) => s + "*")
+    .join(" ");
+
+  const matches = await prisma.$queryRaw<
+    {
+      id: number;
+      relevance: number;
+    }[]
+  >(Prisma.sql`
+  SELECT
+    classifications.id,
+    AVG(
+    MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
+    MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    ) as relevance
+  FROM
+    classifications
+  INNER JOIN
+    _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
+  INNER JOIN
+    classificationDescriptions ON rel.A = classificationDescriptions.id
+  INNER JOIN
+    contentClassifications ON contentClassifications.classificationId = classifications.id
+  INNER JOIN
+    content ON content.id = contentClassifications.contentId
+  WHERE
+    content.isDeleted = FALSE
+    AND (
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+    )
+    AND
+    (MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+    ${
+      subCategoryId !== undefined
+        ? Prisma.sql`AND classificationSubCategories.id = ${subCategoryId}`
+        : categoryId !== undefined
+          ? Prisma.sql`AND classificationCategories.id = ${categoryId}`
+          : systemId !== undefined
+            ? Prisma.sql`AND classificationSystems.id = ${systemId}`
+            : Prisma.empty
+    }
+    ${isQuestion !== undefined ? Prisma.sql`AND content.isQuestion = ${isQuestion}` : Prisma.empty}
+    ${isInteractive !== undefined ? Prisma.sql`AND content.isInteractive = ${isInteractive}` : Prisma.empty}
+    ${containsVideo !== undefined ? Prisma.sql`AND content.containsVideo = ${containsVideo}` : Prisma.empty}
+
+  GROUP BY
+    classifications.id
+  ORDER BY
+    relevance DESC
+  LIMIT 10
+  `);
+
+  // since full text search doesn't match code well, separately match for those
+  // and put matches at the top of the list
+  const query_words = query.split(" ");
+
+  const code_matches = await prisma.classifications.findMany({
+    where: {
+      AND: [
+        {
+          OR: query_words.map((query_word) => ({
+            code: { contains: query_word },
+          })),
+        },
+        {
+          descriptions: { some: { subCategory: { category: { systemId } } } },
+        },
+        { descriptions: { some: { subCategory: { categoryId } } } },
+        { descriptions: { some: { subCategoryId } } },
+        {
+          contentClassifications: {
+            some: {
+              content: {
+                isDeleted: false,
+                OR: [
+                  { isPublic: true },
+                  { sharedWith: { some: { userId: loggedInUserId } } },
+                ],
+              },
+            },
+          },
+        },
+      ],
+    },
+    select: { id: true },
+    take: 10,
+  });
+
+  const results = await prisma.classifications.findMany({
+    where: {
+      id: { in: [...matches, ...code_matches].map((m) => m.id) },
+    },
+    select: {
+      ...returnClassificationListSelect(),
+      contentClassifications: {
+        select: {
+          content: {
+            select: returnContentStructureFullOwnerSelect(),
+          },
+        },
+        where: {
+          content: {
+            isDeleted: false,
+            OR: [
+              { isPublic: true },
+              { sharedWith: { some: { userId: loggedInUserId } } },
+            ],
+          },
+        },
+        take: 10,
+      },
+    },
+    take: 10,
+  });
+
+  // TODO: a more efficient way to get desired sort order?
+  const sort_order: Record<string, number> = {};
+  matches.forEach((match) => {
+    sort_order[match.id] = match.relevance;
+  });
+  code_matches.forEach((match) => {
+    sort_order[match.id] = 100 + (sort_order[match.id] || 0); // code matches go at the top
+  });
+  results.sort((a, b) => sort_order[b.id] - sort_order[a.id]);
+
+  const reformattedResults: (ContentClassification & {
+    content: ContentStructure[];
+  })[] = results.map((obj) => {
+    const { contentClassifications, ...obj2 } = obj;
+
+    return {
+      content: contentClassifications.map((c) =>
+        processContent(c.content, loggedInUserId),
+      ),
+      ...obj2,
+    };
+  });
+
+  return reformattedResults;
+}
+
+export async function searchClassificationSubCategoriesWithSharedContent({
+  query,
+  loggedInUserId,
+  systemId,
+  categoryId,
+  isQuestion,
+  isInteractive,
+  containsVideo,
+}: {
+  query: string;
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  isQuestion?: boolean;
+  isInteractive?: boolean;
+  containsVideo?: boolean;
+}) {
+  // remove operators that break MySQL BOOLEAN search
+  // and add * at the end of every word so that match beginning of words
+  const query_as_prefixes = query
+    .replace(/[+\-><()~*"@]+/g, " ")
+    .split(" ")
+    .filter((s) => s)
+    .map((s) => s + "*")
+    .join(" ");
+
+  const matches = await prisma.$queryRaw<
+    {
+      id: number;
+      relevance: number;
+    }[]
+  >(Prisma.sql`
+  SELECT
+    classificationSubCategories.id,
+    MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) as relevance
+  FROM
+    classifications
+  INNER JOIN
+    _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
+  INNER JOIN
+    classificationDescriptions ON rel.A = classificationDescriptions.id
+  INNER JOIN
+    classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
+  INNER JOIN
+    contentClassifications ON contentClassifications.classificationId = classifications.id
+  INNER JOIN
+    content ON content.id = contentClassifications.contentId
+  WHERE
+    content.isDeleted = FALSE
+    AND (
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+    )
+    AND
+    MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    ${
+      categoryId !== undefined
+        ? Prisma.sql`AND classificationCategories.id = ${categoryId}`
+        : systemId !== undefined
+          ? Prisma.sql`AND classificationSystems.id = ${systemId}`
+          : Prisma.empty
+    }
+    ${isQuestion !== undefined ? Prisma.sql`AND content.isQuestion = ${isQuestion}` : Prisma.empty}
+    ${isInteractive !== undefined ? Prisma.sql`AND content.isInteractive = ${isInteractive}` : Prisma.empty}
+    ${containsVideo !== undefined ? Prisma.sql`AND content.containsVideo = ${containsVideo}` : Prisma.empty}
+
+  GROUP BY
+    classificationSubCategories.id
+  ORDER BY
+    relevance DESC
+  LIMIT 10
+  `);
+
+  const results = await prisma.classificationSubCategories.findMany({
+    where: {
+      id: { in: matches.map((m) => m.id) },
+    },
+    select: {
+      id: true,
+      subCategory: true,
+      category: {
+        select: {
+          id: true,
+          category: true,
+          system: {
+            select: {
+              id: true,
+              name: true,
+              shortName: true,
+              categoryLabel: true,
+              subCategoryLabel: true,
+              descriptionLabel: true,
+              categoriesInDescription: true,
+              type: true,
+            },
+          },
+        },
+      },
+      descriptions: {
+        select: {
+          classifications: {
+            select: {
+              contentClassifications: {
+                select: {
+                  content: {
+                    select: returnContentStructureFullOwnerSelect(),
+                  },
+                },
+                where: {
+                  content: {
+                    isDeleted: false,
+                    OR: [
+                      { isPublic: true },
+                      { sharedWith: { some: { userId: loggedInUserId } } },
+                    ],
+                  },
+                },
+                take: 10,
+              },
+            },
+            take: 10,
+          },
+        },
+        take: 10,
+      },
+    },
+    take: 10,
+  });
+
+  // TODO: a more efficient way to get desired sort order?
+  const sort_order: Record<string, number> = {};
+  matches.forEach((match) => {
+    sort_order[match.id] = match.relevance;
+  });
+  results.sort((a, b) => sort_order[b.id] - sort_order[a.id]);
+
+  const reformattedResults = results.map((obj) => {
+    const { descriptions, ...obj2 } = obj;
+
+    return {
+      content: descriptions.flatMap((d) =>
+        d.classifications.flatMap((c) =>
+          c.contentClassifications.flatMap((cc) =>
+            processContent(cc.content, loggedInUserId),
+          ),
+        ),
+      ),
+      ...obj2,
+    };
+  });
+
+  return reformattedResults;
+}
+
+export async function searchClassificationCategoriesWithSharedContent({
+  query,
+  loggedInUserId,
+  systemId,
+  isQuestion,
+  isInteractive,
+  containsVideo,
+}: {
+  query: string;
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  isQuestion?: boolean;
+  isInteractive?: boolean;
+  containsVideo?: boolean;
+}) {
+  // remove operators that break MySQL BOOLEAN search
+  // and add * at the end of every word so that match beginning of words
+  const query_as_prefixes = query
+    .replace(/[+\-><()~*"@]+/g, " ")
+    .split(" ")
+    .filter((s) => s)
+    .map((s) => s + "*")
+    .join(" ");
+
+  const matches = await prisma.$queryRaw<
+    {
+      id: number;
+      relevance: number;
+    }[]
+  >(Prisma.sql`
+  SELECT
+    classificationCategories.id,
+    MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) as relevance
+  FROM
+    classifications
+  INNER JOIN
+    _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
+  INNER JOIN
+    classificationDescriptions ON rel.A = classificationDescriptions.id
+  INNER JOIN
+    classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
+  INNER JOIN
+    classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
+  INNER JOIN
+    contentClassifications ON contentClassifications.classificationId = classifications.id
+  INNER JOIN
+    content ON content.id = contentClassifications.contentId
+  WHERE
+    content.isDeleted = FALSE
+    AND (
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+    )
+    AND
+    MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    ${
+      systemId !== undefined
+        ? Prisma.sql`AND classificationSystems.id = ${systemId}`
+        : Prisma.empty
+    }
+    ${isQuestion !== undefined ? Prisma.sql`AND content.isQuestion = ${isQuestion}` : Prisma.empty}
+    ${isInteractive !== undefined ? Prisma.sql`AND content.isInteractive = ${isInteractive}` : Prisma.empty}
+    ${containsVideo !== undefined ? Prisma.sql`AND content.containsVideo = ${containsVideo}` : Prisma.empty}
+
+  GROUP BY
+    classificationCategories.id
+  ORDER BY
+    relevance DESC
+  LIMIT 10
+  `);
+
+  const results = await prisma.classificationCategories.findMany({
+    where: {
+      id: { in: matches.map((m) => m.id) },
+    },
+    select: {
+      id: true,
+      category: true,
+      system: {
+        select: {
+          id: true,
+          name: true,
+          shortName: true,
+          categoryLabel: true,
+          subCategoryLabel: true,
+          descriptionLabel: true,
+          categoriesInDescription: true,
+          type: true,
+        },
+      },
+      subCategories: {
+        select: {
+          descriptions: {
+            select: {
+              classifications: {
+                select: {
+                  contentClassifications: {
+                    select: {
+                      content: {
+                        select: returnContentStructureFullOwnerSelect(),
+                      },
+                    },
+                    where: {
+                      content: {
+                        isDeleted: false,
+                        OR: [
+                          { isPublic: true },
+                          { sharedWith: { some: { userId: loggedInUserId } } },
+                        ],
+                      },
+                    },
+                    take: 10,
+                  },
+                },
+                take: 10,
+              },
+            },
+            take: 10,
+          },
+        },
+        take: 10,
+      },
+    },
+    take: 10,
+  });
+
+  // TODO: a more efficient way to get desired sort order?
+  const sort_order: Record<string, number> = {};
+  matches.forEach((match) => {
+    sort_order[match.id] = match.relevance;
+  });
+  results.sort((a, b) => sort_order[b.id] - sort_order[a.id]);
+
+  const reformattedResults = results.map((obj) => {
+    const { subCategories, ...obj2 } = obj;
+
+    return {
+      content: subCategories.flatMap((sc) =>
+        sc.descriptions.flatMap((d) =>
+          d.classifications.flatMap((c) =>
+            c.contentClassifications.flatMap((cc) =>
+              processContent(cc.content, loggedInUserId),
+            ),
+          ),
+        ),
+      ),
+      ...obj2,
+    };
+  });
+
+  return reformattedResults;
 }
 
 export async function listUserAssigned(userId: Uint8Array) {
@@ -3536,40 +4012,7 @@ export async function searchPossibleClassifications({
         where: {
           id: { in: [...matches, ...code_matches].map((m) => m.id) },
         },
-        select: {
-          id: true,
-          code: true,
-          descriptions: {
-            select: {
-              description: true,
-              subCategory: {
-                select: {
-                  id: true,
-                  subCategory: true,
-                  sortIndex: true,
-                  category: {
-                    select: {
-                      id: true,
-                      category: true,
-                      system: {
-                        select: {
-                          id: true,
-                          name: true,
-                          shortName: true,
-                          categoryLabel: true,
-                          subCategoryLabel: true,
-                          descriptionLabel: true,
-                          categoriesInDescription: true,
-                          type: true,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
+        select: returnClassificationListSelect(),
       });
 
     // TODO: a more efficient way to get desired sort order?
@@ -3597,40 +4040,7 @@ export async function searchPossibleClassifications({
         ],
       },
       take: 100,
-      select: {
-        id: true,
-        code: true,
-        descriptions: {
-          select: {
-            description: true,
-            subCategory: {
-              select: {
-                id: true,
-                subCategory: true,
-                sortIndex: true,
-                category: {
-                  select: {
-                    id: true,
-                    category: true,
-                    system: {
-                      select: {
-                        id: true,
-                        name: true,
-                        shortName: true,
-                        categoryLabel: true,
-                        subCategoryLabel: true,
-                        descriptionLabel: true,
-                        categoriesInDescription: true,
-                        type: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      select: returnClassificationListSelect(),
     });
   return results;
 }
@@ -3749,40 +4159,7 @@ export async function getClassifications(
     },
     select: {
       classification: {
-        select: {
-          id: true,
-          code: true,
-          descriptions: {
-            select: {
-              description: true,
-              subCategory: {
-                select: {
-                  id: true,
-                  subCategory: true,
-                  sortIndex: true,
-                  category: {
-                    select: {
-                      id: true,
-                      category: true,
-                      system: {
-                        select: {
-                          id: true,
-                          name: true,
-                          shortName: true,
-                          categoryLabel: true,
-                          subCategoryLabel: true,
-                          descriptionLabel: true,
-                          categoriesInDescription: true,
-                          type: true,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
+        select: returnClassificationListSelect(),
       },
     },
   });
