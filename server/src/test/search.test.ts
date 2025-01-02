@@ -6,6 +6,8 @@ import {
   deleteActivity,
   makeActivityPublic,
   makeFolderPublic,
+  searchClassificationCategoriesWithSharedContent,
+  searchClassificationSubCategoriesWithSharedContent,
   searchClassificationsWithSharedContent,
   searchMyFolderContent,
   searchPossibleClassifications,
@@ -18,7 +20,7 @@ import {
   updateDoc,
   updateUser,
 } from "../model";
-import { createTestUser } from "./utils";
+import { createTestClassifications, createTestUser } from "./utils";
 import { compareUUID, fromUUID, isEqualUUID } from "../utils/uuid";
 
 test("searchSharedContent returns public/shared activities and folders matching the query", async () => {
@@ -1099,32 +1101,521 @@ test("searchUsersWithSharedContent returns only users with public/shared content
   expect(searchResults.length).eq(0);
 });
 
-test("searchClassificationsWithSharedContent", async () => {
+test("searchClassificationsWithSharedContent, filter by system, category, sub category", async () => {
   const user = await createTestUser();
   const userId = user.userId;
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  // create a made up classification tree in High
+  // create a made up classification tree
   const code = Date.now().toString();
+  const word = "banana";
 
-  const classification = (
+  const systemId = (
     await searchPossibleClassifications({ query: "FinM.A.3" })
-  )[0];
+  )[0].descriptions[0].subCategory.category.system.id;
 
-  const classifyId = classification.id;
-  const subCategoryId = classification.descriptions[0].subCategory.id;
-  const categoryId = classification.descriptions[0].subCategory.category.id;
-  const systemId =
-    classification.descriptions[0].subCategory.category.system.id;
+  const systemIdOther = (
+    await searchPossibleClassifications({ query: "K.CC.1" })
+  )[0].descriptions[0].subCategory.category.system.id;
 
-  const { activityId } = await createActivity(ownerId, null);
-  await addClassification(activityId, categoryId, ownerId);
+  const {
+    categoryIdA,
+    subCategoryIdA1,
+    classificationIdA1A,
+    classificationIdA1B,
+    subCategoryIdA2,
+    classificationIdA2A,
+    classificationIdA2B,
+    categoryIdB,
+    subCategoryIdB1,
+    classificationIdB1A,
+    classificationIdB1B,
+    subCategoryIdB2,
+    classificationIdB2A,
+    classificationIdB2B,
+  } = await createTestClassifications({ systemId, word, code });
 
-  let results = await searchClassificationsWithSharedContent({
-    query: "annuities",
+  // add activity 1A to classificationIdA1A, classificationIdB1A
+  const { activityId: activityId1A } = await createActivity(ownerId, null);
+  const activityId1AString = fromUUID(activityId1A);
+  await makeActivityPublic({
+    id: activityId1A,
+    licenseCode: "CCDUAL",
+    ownerId,
+  });
+  await addClassification(activityId1A, classificationIdA1A, ownerId);
+  await addClassification(activityId1A, classificationIdB1A, ownerId);
+
+  // add activity 2A to classificationIdA2A, classificationIdB2A
+  const { activityId: activityId2A } = await createActivity(ownerId, null);
+  const activityId2AString = fromUUID(activityId2A);
+  await makeActivityPublic({
+    id: activityId2A,
+    licenseCode: "CCDUAL",
+    ownerId,
+  });
+  await addClassification(activityId2A, classificationIdA2A, ownerId);
+  await addClassification(activityId2A, classificationIdB2A, ownerId);
+
+  // add activity 1B to classificationIdA1B, classificationIdB1B
+  const { activityId: activityId1B } = await createActivity(ownerId, null);
+  const activityId1BString = fromUUID(activityId1B);
+  await makeActivityPublic({
+    id: activityId1B,
+    licenseCode: "CCDUAL",
+    ownerId,
+  });
+  await addClassification(activityId1B, classificationIdA1B, ownerId);
+  await addClassification(activityId1B, classificationIdB1B, ownerId);
+
+  // add activity 2B to classificationIdA2B, classificationIdB2B
+  const { activityId: activityId2B } = await createActivity(ownerId, null);
+  const activityId2BString = fromUUID(activityId2B);
+  await makeActivityPublic({
+    id: activityId2B,
+    licenseCode: "CCDUAL",
+    ownerId,
+  });
+  await addClassification(activityId2B, classificationIdA2B, ownerId);
+  await addClassification(activityId2B, classificationIdB2B, ownerId);
+
+  // add activity A1 to classificationIdA1A, classificationIdA1A
+  const { activityId: activityIdA1 } = await createActivity(ownerId, null);
+  const activityIdA1String = fromUUID(activityIdA1);
+  await makeActivityPublic({
+    id: activityIdA1,
+    licenseCode: "CCDUAL",
+    ownerId,
+  });
+  await addClassification(activityIdA1, classificationIdA1A, ownerId);
+  await addClassification(activityIdA1, classificationIdA1B, ownerId);
+
+  // add activity A2 to classificationIdA2A, classificationIdA2A
+  const { activityId: activityIdA2 } = await createActivity(ownerId, null);
+  const activityIdA2String = fromUUID(activityIdA2);
+  await makeActivityPublic({
+    id: activityIdA2,
+    licenseCode: "CCDUAL",
+    ownerId,
+  });
+  await addClassification(activityIdA2, classificationIdA2A, ownerId);
+  await addClassification(activityIdA2, classificationIdA2B, ownerId);
+
+  // add activity B1 to classificationIdB1A, classificationIdB1A
+  const { activityId: activityIdB1 } = await createActivity(ownerId, null);
+  const activityIdB1String = fromUUID(activityIdB1);
+  await makeActivityPublic({
+    id: activityIdB1,
+    licenseCode: "CCDUAL",
+    ownerId,
+  });
+  await addClassification(activityIdB1, classificationIdB1A, ownerId);
+  await addClassification(activityIdB1, classificationIdB1B, ownerId);
+
+  // add activity B2 to classificationIdB2A, classificationIdB2A
+  const { activityId: activityIdB2 } = await createActivity(ownerId, null);
+  const activityIdB2String = fromUUID(activityIdB2);
+  await makeActivityPublic({
+    id: activityIdB2,
+    licenseCode: "CCDUAL",
+    ownerId,
+  });
+  await addClassification(activityIdB2, classificationIdB2A, ownerId);
+  await addClassification(activityIdB2, classificationIdB2B, ownerId);
+
+  // without filter get all eight classifications, with first determined by second query word
+  let resultsClass = await searchClassificationsWithSharedContent({
+    query: `${word}${code} ${word}A2B${code}`,
     loggedInUserId: userId,
   });
+  expect(resultsClass.length).eq(8);
+  expect(resultsClass[0].id).eq(classificationIdA2B);
+  expect(resultsClass[0].content.length).eq(2);
+  expect(resultsClass[0].content.map((c) => fromUUID(c.id)).sort()).eqls(
+    [activityIdA2String, activityId2BString].sort(),
+  );
+  expect(resultsClass[1].content.length).eq(2);
+  expect(resultsClass[2].content.length).eq(2);
+  expect(resultsClass[3].content.length).eq(2);
+  expect(resultsClass[4].content.length).eq(2);
+  expect(resultsClass[5].content.length).eq(2);
+  expect(resultsClass[6].content.length).eq(2);
+  expect(resultsClass[7].content.length).eq(2);
+
+  resultsClass = await searchClassificationsWithSharedContent({
+    query: `${word}${code} ${word}B1A${code}`,
+    loggedInUserId: userId,
+  });
+  expect(resultsClass.length).eq(8);
+  expect(resultsClass[0].id).eq(classificationIdB1A);
+  expect(resultsClass[0].content.length).eq(2);
+  expect(resultsClass[0].content.map((c) => fromUUID(c.id)).sort()).eqls(
+    [activityIdB1String, activityId1AString].sort(),
+  );
+  expect(resultsClass[1].content.length).eq(2);
+  expect(resultsClass[2].content.length).eq(2);
+  expect(resultsClass[3].content.length).eq(2);
+  expect(resultsClass[4].content.length).eq(2);
+  expect(resultsClass[5].content.length).eq(2);
+  expect(resultsClass[6].content.length).eq(2);
+  expect(resultsClass[7].content.length).eq(2);
+
+  // without filter get all four sub categories, with first determined by second query word
+  let resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
+    query: `${word}${code} ${word}B1${code}`,
+    loggedInUserId: userId,
+  });
+  expect(resultsSubCat.length).eq(4);
+  expect(resultsSubCat[0].id).eq(subCategoryIdB1);
+  expect(resultsSubCat[0].content.length).eq(3);
+  expect(resultsSubCat[0].content.map((c) => fromUUID(c.id)).sort()).eqls(
+    [activityIdB1String, activityId1AString, activityId1BString].sort(),
+  );
+
+  resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
+    query: `${word}${code} ${word}A2${code}`,
+    loggedInUserId: userId,
+  });
+  expect(resultsSubCat.length).eq(4);
+  expect(resultsSubCat[0].id).eq(subCategoryIdA2);
+  expect(resultsSubCat[0].content.length).eq(3);
+  expect(resultsSubCat[0].content.map((c) => fromUUID(c.id)).sort()).eqls(
+    [activityIdA2String, activityId2AString, activityId2BString].sort(),
+  );
+
+  // without filter get all both categories, with order determined by second query word
+  let resultsCat = await searchClassificationCategoriesWithSharedContent({
+    query: `${word}${code} ${word}B${code}`,
+    loggedInUserId: userId,
+  });
+  expect(resultsCat.length).eq(2);
+  expect(resultsCat[0].id).eq(categoryIdB);
+  expect(resultsCat[0].content.length).eq(6);
+  expect(resultsCat[0].content.map((c) => fromUUID(c.id)).sort()).eqls(
+    [
+      activityIdB1String,
+      activityIdB2String,
+      activityId1AString,
+      activityId1BString,
+      activityId2AString,
+      activityId2BString,
+    ].sort(),
+  );
+  expect(resultsCat[1].id).eq(categoryIdA);
+  expect(resultsCat[1].content.length).eq(6);
+  expect(resultsCat[1].content.map((c) => fromUUID(c.id)).sort()).eqls(
+    [
+      activityIdA1String,
+      activityIdA2String,
+      activityId1AString,
+      activityId1BString,
+      activityId2AString,
+      activityId2BString,
+    ].sort(),
+  );
+
+  // filtering by systemId doesn't change the results
+  resultsClass = await searchClassificationsWithSharedContent({
+    query: `${word}${code} ${word}A2A${code}`,
+    loggedInUserId: userId,
+    systemId,
+  });
+  expect(resultsClass.length).eq(8);
+  expect(resultsClass[0].id).eq(classificationIdA2A);
+  expect(resultsClass[0].content.length).eq(2);
+
+  resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
+    query: `${word}${code} ${word}A1${code}`,
+    loggedInUserId: userId,
+    systemId,
+  });
+  expect(resultsSubCat.length).eq(4);
+  expect(resultsSubCat[0].id).eq(subCategoryIdA1);
+  expect(resultsSubCat[0].content.length).eq(3);
+
+  resultsCat = await searchClassificationCategoriesWithSharedContent({
+    query: `${word}${code} ${word}A${code}`,
+    loggedInUserId: userId,
+    systemId,
+  });
+  expect(resultsCat.length).eq(2);
+  expect(resultsCat[0].id).eq(categoryIdA);
+
+  // filtering by systemIdOther filters out all results
+  resultsClass = await searchClassificationsWithSharedContent({
+    query: `${word}${code} ${word}A2A${code}`,
+    loggedInUserId: userId,
+    systemId: systemIdOther,
+  });
+  expect(resultsClass.length).eq(0);
+  expect(resultsCat[0].content.length).eq(6);
+
+  resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
+    query: `${word}${code} ${word}A1${code}`,
+    loggedInUserId: userId,
+    systemId: systemIdOther,
+  });
+  expect(resultsSubCat.length).eq(0);
+
+  resultsCat = await searchClassificationCategoriesWithSharedContent({
+    query: `${word}${code} ${word}A${code}`,
+    loggedInUserId: userId,
+    systemId: systemIdOther,
+  });
+  expect(resultsCat.length).eq(0);
+
+  // filter by category B
+  resultsClass = await searchClassificationsWithSharedContent({
+    query: `${word}${code} ${word}B2B${code}`,
+    loggedInUserId: userId,
+    categoryId: categoryIdB,
+  });
+  expect(resultsClass.length).eq(4);
+  expect(resultsClass[0].id).eq(classificationIdB2B);
+  expect(resultsClass[0].content.length).eq(2);
+  expect(resultsClass[0].content.map((c) => fromUUID(c.id)).sort()).eqls(
+    [activityIdB2String, activityId2BString].sort(),
+  );
+  expect(resultsClass[1].content.length).eq(2);
+  expect(resultsClass[2].content.length).eq(2);
+  expect(resultsClass[3].content.length).eq(2);
+
+  resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
+    query: `${word}${code} ${word}B2${code}`,
+    loggedInUserId: userId,
+    categoryId: categoryIdB,
+  });
+  expect(resultsSubCat.length).eq(2);
+  expect(resultsSubCat[0].id).eq(subCategoryIdB2);
+  expect(resultsSubCat[0].content.length).eq(3);
+  expect(resultsSubCat[0].content.map((c) => fromUUID(c.id)).sort()).eqls(
+    [activityIdB2String, activityId2AString, activityId2BString].sort(),
+  );
+  expect(resultsSubCat[1].id).eq(subCategoryIdB1);
+  expect(resultsSubCat[1].content.length).eq(3);
+
+  // filter by sub category A2
+  resultsClass = await searchClassificationsWithSharedContent({
+    query: `${word}${code} ${word}A2B${code}`,
+    loggedInUserId: userId,
+    subCategoryId: subCategoryIdA2,
+  });
+  expect(resultsClass.length).eq(2);
+  expect(resultsClass[0].id).eq(classificationIdA2B);
+  expect(resultsClass[0].content.length).eq(2);
+  expect(resultsClass[0].content.map((c) => fromUUID(c.id)).sort()).eqls(
+    [activityIdA2String, activityId2BString].sort(),
+  );
+  expect(resultsClass[1].id).eq(classificationIdA2A);
+  expect(resultsClass[1].content.length).eq(2);
+});
+
+test.only("searchClassificationsWithSharedContent, filter by activity feature", async () => {
+  const user = await createTestUser();
+  const userId = user.userId;
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  // create a made up classification tree
+  const code = Date.now().toString();
+  const word = "banana";
+
+  const systemId = (
+    await searchPossibleClassifications({ query: "FinM.A.3" })
+  )[0].descriptions[0].subCategory.category.system.id;
+
+  const {
+    categoryIdA,
+    subCategoryIdA1,
+    classificationIdA1A,
+    categoryIdB,
+    subCategoryIdB2,
+    classificationIdB2B,
+  } = await createTestClassifications({ systemId, word, code });
+
+  // add activity that is question
+  const { activityId: activityIdA } = await createActivity(ownerId, null);
+  await makeActivityPublic({
+    id: activityIdA,
+    licenseCode: "CCDUAL",
+    ownerId,
+  });
+
+  await updateContent({ id: activityIdA, ownerId, isQuestion: true });
+  await addClassification(activityIdA, classificationIdA1A, ownerId);
+
+  // add activity that is interactive
+  const { activityId: activityIdB } = await createActivity(ownerId, null);
+  await makeActivityPublic({
+    id: activityIdB,
+    licenseCode: "CCDUAL",
+    ownerId,
+  });
+  await updateContent({ id: activityIdB, ownerId, isInteractive: true });
+  await addClassification(activityIdB, classificationIdB2B, ownerId);
+
+  // without filter, get two classifications, sub categories, and categories
+  let resultsClass = await searchClassificationsWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+  });
+  expect(resultsClass.length).eq(2);
+  let resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+  });
+  expect(resultsSubCat.length).eq(2);
+  let resultsCat = await searchClassificationCategoriesWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+  });
+  expect(resultsCat.length).eq(2);
+
+  // filter by isQuestion
+  resultsClass = await searchClassificationsWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+    isQuestion: true,
+  });
+  expect(resultsClass.length).eq(1);
+  expect(resultsClass[0].id).eq(classificationIdA1A);
+  resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+    isQuestion: true,
+  });
+  expect(resultsSubCat.length).eq(1);
+  expect(resultsSubCat[0].id).eq(subCategoryIdA1);
+  resultsCat = await searchClassificationCategoriesWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+    isQuestion: true,
+  });
+  expect(resultsCat.length).eq(1);
+  expect(resultsCat[0].id).eq(categoryIdA);
+
+  // filter by isInteractive
+  resultsClass = await searchClassificationsWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+    isInteractive: true,
+  });
+  expect(resultsClass.length).eq(1);
+  expect(resultsClass[0].id).eq(classificationIdB2B);
+
+  resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+    isInteractive: true,
+  });
+  expect(resultsSubCat.length).eq(1);
+  expect(resultsSubCat[0].id).eq(subCategoryIdB2);
+  resultsCat = await searchClassificationCategoriesWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+    isInteractive: true,
+  });
+  expect(resultsCat.length).eq(1);
+  expect(resultsCat[0].id).eq(categoryIdB);
+  resultsClass = await searchClassificationsWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+    containsVideo: true,
+  });
+
+  // nothing if filter by containsVideo
+  expect(resultsClass.length).eq(0);
+  resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+    containsVideo: true,
+  });
+  expect(resultsSubCat.length).eq(0);
+  resultsCat = await searchClassificationCategoriesWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+    containsVideo: true,
+  });
+  expect(resultsCat.length).eq(0);
+
+  // add containsVideo to first activity
+  await updateContent({ id: activityIdA, ownerId, containsVideo: true });
+  // add isQuestion to second activity
+  await updateContent({ id: activityIdB, ownerId, isQuestion: true });
+
+  // filter by isQuestion
+  resultsClass = await searchClassificationsWithSharedContent({
+    query: `${word}${code} ${word}B2B${code}`,
+    loggedInUserId: userId,
+    isQuestion: true,
+  });
+  expect(resultsClass.length).eq(2);
+  expect(resultsClass[0].id).eq(classificationIdB2B);
+  expect(resultsClass[1].id).eq(classificationIdA1A);
+  resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
+    query: `${word}${code} ${word}A1${code}`,
+    loggedInUserId: userId,
+    isQuestion: true,
+  });
+  expect(resultsSubCat.length).eq(2);
+  expect(resultsSubCat[0].id).eq(subCategoryIdA1);
+  expect(resultsSubCat[1].id).eq(subCategoryIdB2);
+  resultsCat = await searchClassificationCategoriesWithSharedContent({
+    query: `${word}${code} ${word}B${code}`,
+    loggedInUserId: userId,
+    isQuestion: true,
+  });
+  expect(resultsCat.length).eq(2);
+  expect(resultsCat[0].id).eq(categoryIdB);
+  expect(resultsCat[1].id).eq(categoryIdA);
+
+  // filter by isInteractive
+  resultsClass = await searchClassificationsWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+    isInteractive: true,
+  });
+  expect(resultsClass.length).eq(1);
+  expect(resultsClass[0].id).eq(classificationIdB2B);
+
+  resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+    isInteractive: true,
+  });
+  expect(resultsSubCat.length).eq(1);
+  expect(resultsSubCat[0].id).eq(subCategoryIdB2);
+  resultsCat = await searchClassificationCategoriesWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+    isInteractive: true,
+  });
+  expect(resultsCat.length).eq(1);
+  expect(resultsCat[0].id).eq(categoryIdB);
+
+  // by containsVideo
+  resultsClass = await searchClassificationsWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+    containsVideo: true,
+  });
+  expect(resultsClass.length).eq(1);
+  expect(resultsClass[0].id).eq(classificationIdA1A);
+  resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+    containsVideo: true,
+  });
+  expect(resultsSubCat.length).eq(1);
+  expect(resultsSubCat[0].id).eq(subCategoryIdA1);
+  resultsCat = await searchClassificationCategoriesWithSharedContent({
+    query: `${word}${code}`,
+    loggedInUserId: userId,
+    containsVideo: true,
+  });
+  expect(resultsCat.length).eq(1);
+  expect(resultsCat[0].id).eq(categoryIdA);
 });
 
 test(

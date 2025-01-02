@@ -25,6 +25,7 @@ import {
   returnContentStructureSharedDetailsSelect,
   returnClassificationListSelect,
 } from "./utils/contentStructure";
+import { getRandomValues } from "crypto";
 
 export class InvalidRequestError extends Error {
   errorCode = 400;
@@ -1646,6 +1647,12 @@ export async function searchClassificationsWithSharedContent({
   INNER JOIN
     classificationDescriptions ON rel.A = classificationDescriptions.id
   INNER JOIN
+    classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
+  INNER JOIN
+    classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
+  INNER JOIN
+    classificationSystems ON classificationCategories.systemId = classificationSystems.id
+  INNER JOIN
     contentClassifications ON contentClassifications.classificationId = classifications.id
   INNER JOIN
     content ON content.id = contentClassifications.contentId
@@ -1811,6 +1818,10 @@ export async function searchClassificationSubCategoriesWithSharedContent({
   INNER JOIN
     classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
   INNER JOIN
+    classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
+  INNER JOIN
+    classificationSystems ON classificationCategories.systemId = classificationSystems.id
+  INNER JOIN
     contentClassifications ON contentClassifications.classificationId = classifications.id
   INNER JOIN
     content ON content.id = contentClassifications.contentId
@@ -1906,14 +1917,22 @@ export async function searchClassificationSubCategoriesWithSharedContent({
   const reformattedResults = results.map((obj) => {
     const { descriptions, ...obj2 } = obj;
 
-    return {
-      content: descriptions.flatMap((d) =>
-        d.classifications.flatMap((c) =>
-          c.contentClassifications.flatMap((cc) =>
-            processContent(cc.content, loggedInUserId),
-          ),
+    let content = descriptions.flatMap((d) =>
+      d.classifications.flatMap((c) =>
+        c.contentClassifications.flatMap((cc) =>
+          processContent(cc.content, loggedInUserId),
         ),
       ),
+    );
+
+    // Could get duplicate content if has multiple classification in the sub category.
+    // Need to deduplicate while preserving order (we'll eventually determine a desired ordering of content)
+    content = content.filter(
+      (v, i, a) => a.findIndex((c) => isEqualUUID(c.id, v.id)) === i,
+    );
+
+    return {
+      content,
       ...obj2,
     };
   });
@@ -1964,6 +1983,8 @@ export async function searchClassificationCategoriesWithSharedContent({
     classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
   INNER JOIN
     classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
+  INNER JOIN
+    classificationSystems ON classificationCategories.systemId = classificationSystems.id
   INNER JOIN
     contentClassifications ON contentClassifications.classificationId = classifications.id
   INNER JOIN
@@ -2057,16 +2078,24 @@ export async function searchClassificationCategoriesWithSharedContent({
   const reformattedResults = results.map((obj) => {
     const { subCategories, ...obj2 } = obj;
 
-    return {
-      content: subCategories.flatMap((sc) =>
-        sc.descriptions.flatMap((d) =>
-          d.classifications.flatMap((c) =>
-            c.contentClassifications.flatMap((cc) =>
-              processContent(cc.content, loggedInUserId),
-            ),
+    let content = subCategories.flatMap((sc) =>
+      sc.descriptions.flatMap((d) =>
+        d.classifications.flatMap((c) =>
+          c.contentClassifications.flatMap((cc) =>
+            processContent(cc.content, loggedInUserId),
           ),
         ),
       ),
+    );
+
+    // Could get duplicate content if has multiple classification in the category.
+    // Need to deduplicate while preserving order (we'll eventually determine a desired ordering of content)
+    content = content.filter(
+      (v, i, a) => a.findIndex((c) => isEqualUUID(c.id, v.id)) === i,
+    );
+
+    return {
+      content,
       ...obj2,
     };
   });
@@ -2626,7 +2655,9 @@ export async function assignActivity(
 }
 
 function generateClassCode() {
-  return ("00000" + Math.floor(Math.random() * 1000000)).slice(-6);
+  const array = new Uint32Array(1);
+  getRandomValues(array);
+  return array[0].toString().slice(-6);
 }
 
 export async function openAssignmentWithCode(
