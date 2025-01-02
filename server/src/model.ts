@@ -1711,6 +1711,9 @@ export async function searchClassificationsWithSharedContent({
                   { isPublic: true },
                   { sharedWith: { some: { userId: loggedInUserId } } },
                 ],
+                isQuestion,
+                isInteractive,
+                containsVideo,
               },
             },
           },
@@ -1740,6 +1743,9 @@ export async function searchClassificationsWithSharedContent({
               { isPublic: true },
               { sharedWith: { some: { userId: loggedInUserId } } },
             ],
+            isQuestion,
+            isInteractive,
+            containsVideo,
           },
         },
         take: 10,
@@ -1851,6 +1857,8 @@ export async function searchClassificationSubCategoriesWithSharedContent({
   LIMIT 10
   `);
 
+  // TODO: presumably this could be made more efficient,
+  // for example querying based on content
   const results = await prisma.classificationSubCategories.findMany({
     where: {
       id: { in: matches.map((m) => m.id) },
@@ -1893,6 +1901,9 @@ export async function searchClassificationSubCategoriesWithSharedContent({
                       { isPublic: true },
                       { sharedWith: { some: { userId: loggedInUserId } } },
                     ],
+                    isQuestion,
+                    isInteractive,
+                    containsVideo,
                   },
                 },
                 take: 10,
@@ -2013,6 +2024,8 @@ export async function searchClassificationCategoriesWithSharedContent({
   LIMIT 10
   `);
 
+  // TODO: presumably this could be made more efficient,
+  // for example querying based on content
   const results = await prisma.classificationCategories.findMany({
     where: {
       id: { in: matches.map((m) => m.id) },
@@ -2051,6 +2064,9 @@ export async function searchClassificationCategoriesWithSharedContent({
                           { isPublic: true },
                           { sharedWith: { some: { userId: loggedInUserId } } },
                         ],
+                        isQuestion,
+                        isInteractive,
+                        containsVideo,
                       },
                     },
                     take: 10,
