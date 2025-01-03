@@ -1473,91 +1473,91 @@
     "category": "Algebra",
     "subCategory": "Factoring",
     "description": "Factoring: common factors",
-    "code": "Alg.F.1"
+    "code": "Alg.FA.1"
   },
   {
     "sortIndex": "204",
     "category": "Algebra",
     "subCategory": "Factoring",
     "description": "Factoring by grouping",
-    "code": "Alg.F.2"
+    "code": "Alg.FA.2"
   },
   {
     "sortIndex": "205",
     "category": "Algebra",
     "subCategory": "Factoring",
     "description": "Factoring trinomials",
-    "code": "Alg.F.3"
+    "code": "Alg.FA.3"
   },
   {
     "sortIndex": "206",
     "category": "Algebra",
     "subCategory": "Factoring",
     "description": "Factoring: special forms",
-    "code": "Alg.F.4"
+    "code": "Alg.FA.4"
   },
   {
     "sortIndex": "207",
     "category": "Algebra",
     "subCategory": "Factoring",
     "description": "Factoring polynomials: general",
-    "code": "Alg.F.5"
+    "code": "Alg.FA.5"
   },
   {
     "sortIndex": "208",
     "category": "Algebra",
     "subCategory": "Functions",
     "description": "Definition, concept",
-    "code": "Alg.F.6"
+    "code": "Alg.FN.1"
   },
   {
     "sortIndex": "209",
     "category": "Algebra",
     "subCategory": "Functions",
     "description": "Function notation",
-    "code": "Alg.F.7"
+    "code": "Alg.FN.2"
   },
   {
     "sortIndex": "210",
     "category": "Algebra",
     "subCategory": "Functions",
     "description": "Graphs",
-    "code": "Alg.F.8"
+    "code": "Alg.FN.3"
   },
   {
     "sortIndex": "211",
     "category": "Algebra",
     "subCategory": "Functions",
     "description": "Domain and range",
-    "code": "Alg.F.9"
+    "code": "Alg.FN.4"
   },
   {
     "sortIndex": "212",
     "category": "Algebra",
     "subCategory": "Functions",
     "description": "Piecewise functions",
-    "code": "Alg.F.10"
+    "code": "Alg.FN.5"
   },
   {
     "sortIndex": "213",
     "category": "Algebra",
     "subCategory": "Functions",
     "description": "Compositions and combinations of functions",
-    "code": "Alg.F.11"
+    "code": "Alg.FN.6"
   },
   {
     "sortIndex": "214",
     "category": "Algebra",
     "subCategory": "Functions",
     "description": "Difference quotient",
-    "code": "Alg.F.12"
+    "code": "Alg.FN.7"
   },
   {
     "sortIndex": "215",
     "category": "Algebra",
     "subCategory": "Functions",
     "description": "Interpretation and applications",
-    "code": "Alg.F.13"
+    "code": "Alg.FN.8"
   },
   {
     "sortIndex": "216",
