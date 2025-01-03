@@ -1678,7 +1678,7 @@ export async function searchClassificationsWithSharedContent({
     classifications.id
   ORDER BY
     relevance DESC
-  LIMIT 10
+  LIMIT 100
   `);
 
   // since full text search doesn't match code well, separately match for those
@@ -1717,38 +1717,17 @@ export async function searchClassificationsWithSharedContent({
       ],
     },
     select: { id: true },
-    take: 10,
+    take: 100,
   });
 
-  const results = await prisma.classifications.findMany({
-    where: {
-      id: { in: [...matches, ...code_matches].map((m) => m.id) },
-    },
-    select: {
-      ...returnClassificationListSelect(),
-      contentClassifications: {
-        select: {
-          content: {
-            select: returnContentStructureFullOwnerSelect(),
-          },
-        },
-        where: {
-          content: {
-            isDeleted: false,
-            OR: [
-              { isPublic: true },
-              { sharedWith: { some: { userId: loggedInUserId } } },
-            ],
-            isQuestion,
-            isInteractive,
-            containsVideo,
-          },
-        },
-        take: 10,
+  const results: ContentClassification[] =
+    await prisma.classifications.findMany({
+      where: {
+        id: { in: [...matches, ...code_matches].map((m) => m.id) },
       },
-    },
-    take: 10,
-  });
+      select: returnClassificationListSelect(),
+      take: 100,
+    });
 
   // TODO: a more efficient way to get desired sort order?
   const sort_order: Record<string, number> = {};
@@ -1760,20 +1739,7 @@ export async function searchClassificationsWithSharedContent({
   });
   results.sort((a, b) => sort_order[b.id] - sort_order[a.id]);
 
-  const reformattedResults: (ContentClassification & {
-    content: ContentStructure[];
-  })[] = results.map((obj) => {
-    const { contentClassifications, ...obj2 } = obj;
-
-    return {
-      content: contentClassifications.map((c) =>
-        processContent(c.content, loggedInUserId),
-      ),
-      ...obj2,
-    };
-  });
-
-  return reformattedResults;
+  return results;
 }
 
 export async function searchClassificationSubCategoriesWithSharedContent({
@@ -1804,12 +1770,30 @@ export async function searchClassificationSubCategoriesWithSharedContent({
 
   const matches = await prisma.$queryRaw<
     {
-      id: number;
+      subCategoryId: number;
+      subCategory: string;
+      categoryId: number;
+      category: string;
+      systemId: number;
+      systemName: string;
+      systemShortName: string;
+      categoryLabel: string;
+      subCategoryLabel: string;
+      categoriesInDescription: boolean;
       relevance: number;
     }[]
   >(Prisma.sql`
   SELECT
-    classificationSubCategories.id,
+    classificationSubCategories.id subCategoryId,
+    classificationSubCategories.subCategory,
+    classificationCategories.id categoryId,
+    classificationCategories.category,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.categoriesInDescription,
     MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) as relevance
   FROM
     classifications
@@ -1848,98 +1832,10 @@ export async function searchClassificationSubCategoriesWithSharedContent({
     classificationSubCategories.id
   ORDER BY
     relevance DESC
-  LIMIT 10
+  LIMIT 100
   `);
 
-  // TODO: presumably this could be made more efficient,
-  // for example querying based on content
-  const results = await prisma.classificationSubCategories.findMany({
-    where: {
-      id: { in: matches.map((m) => m.id) },
-    },
-    select: {
-      id: true,
-      subCategory: true,
-      category: {
-        select: {
-          id: true,
-          category: true,
-          system: {
-            select: {
-              id: true,
-              name: true,
-              shortName: true,
-              categoryLabel: true,
-              subCategoryLabel: true,
-              descriptionLabel: true,
-              categoriesInDescription: true,
-              type: true,
-            },
-          },
-        },
-      },
-      descriptions: {
-        select: {
-          classification: {
-            select: {
-              contentClassifications: {
-                select: {
-                  content: {
-                    select: returnContentStructureFullOwnerSelect(),
-                  },
-                },
-                where: {
-                  content: {
-                    isDeleted: false,
-                    OR: [
-                      { isPublic: true },
-                      { sharedWith: { some: { userId: loggedInUserId } } },
-                    ],
-                    isQuestion,
-                    isInteractive,
-                    containsVideo,
-                  },
-                },
-                take: 10,
-              },
-            },
-          },
-        },
-        take: 10,
-      },
-    },
-    take: 10,
-  });
-
-  // TODO: a more efficient way to get desired sort order?
-  const sort_order: Record<string, number> = {};
-  matches.forEach((match) => {
-    sort_order[match.id] = match.relevance;
-  });
-  results.sort((a, b) => sort_order[b.id] - sort_order[a.id]);
-
-  const reformattedResults = results.map((obj) => {
-    const { descriptions, ...obj2 } = obj;
-
-    let content = descriptions.flatMap((d) =>
-      d.classification.contentClassifications.flatMap((cc) =>
-        processContent(cc.content, loggedInUserId),
-      ),
-    );
-
-    // Could get duplicate content if has multiple classification in the sub category.
-    // Need to deduplicate while preserving order (we'll eventually determine a desired ordering of content)
-    content = content.filter(
-      (v, i, a) => a.findIndex((c) => isEqualUUID(c.id, v.id)) === i,
-    );
-
-    return {
-      content,
-      ...obj2,
-    };
-  });
-
-  return reformattedResults;
+  return matches;
 }
 
 export async function searchClassificationCategoriesWithSharedContent({
@@ -1968,12 +1864,26 @@ export async function searchClassificationCategoriesWithSharedContent({
 
   const matches = await prisma.$queryRaw<
     {
-      id: number;
+      categoryId: number;
+      category: string;
+      systemId: number;
+      systemName: string;
+      systemShortName: string;
+      categoryLabel: string;
+      subCategoryLabel: string;
+      categoriesInDescription: boolean;
       relevance: number;
     }[]
   >(Prisma.sql`
   SELECT
-    classificationCategories.id,
+    classificationCategories.id categoryId,
+    classificationCategories.category,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.categoriesInDescription,
     MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) as relevance
   FROM
     classifications
@@ -2010,99 +1920,10 @@ export async function searchClassificationCategoriesWithSharedContent({
     classificationCategories.id
   ORDER BY
     relevance DESC
-  LIMIT 10
+  LIMIT 100
   `);
 
-  // TODO: presumably this could be made more efficient,
-  // for example querying based on content
-  const results = await prisma.classificationCategories.findMany({
-    where: {
-      id: { in: matches.map((m) => m.id) },
-    },
-    select: {
-      id: true,
-      category: true,
-      system: {
-        select: {
-          id: true,
-          name: true,
-          shortName: true,
-          categoryLabel: true,
-          subCategoryLabel: true,
-          descriptionLabel: true,
-          categoriesInDescription: true,
-          type: true,
-        },
-      },
-      subCategories: {
-        select: {
-          descriptions: {
-            select: {
-              classification: {
-                select: {
-                  contentClassifications: {
-                    select: {
-                      content: {
-                        select: returnContentStructureFullOwnerSelect(),
-                      },
-                    },
-                    where: {
-                      content: {
-                        isDeleted: false,
-                        OR: [
-                          { isPublic: true },
-                          { sharedWith: { some: { userId: loggedInUserId } } },
-                        ],
-                        isQuestion,
-                        isInteractive,
-                        containsVideo,
-                      },
-                    },
-                    take: 10,
-                  },
-                },
-              },
-            },
-            take: 10,
-          },
-        },
-        take: 10,
-      },
-    },
-    take: 10,
-  });
-
-  // TODO: a more efficient way to get desired sort order?
-  const sort_order: Record<string, number> = {};
-  matches.forEach((match) => {
-    sort_order[match.id] = match.relevance;
-  });
-  results.sort((a, b) => sort_order[b.id] - sort_order[a.id]);
-
-  const reformattedResults = results.map((obj) => {
-    const { subCategories, ...obj2 } = obj;
-
-    let content = subCategories.flatMap((sc) =>
-      sc.descriptions.flatMap((d) =>
-        d.classification.contentClassifications.flatMap((cc) =>
-          processContent(cc.content, loggedInUserId),
-        ),
-      ),
-    );
-
-    // Could get duplicate content if has multiple classification in the category.
-    // Need to deduplicate while preserving order (we'll eventually determine a desired ordering of content)
-    content = content.filter(
-      (v, i, a) => a.findIndex((c) => isEqualUUID(c.id, v.id)) === i,
-    );
-
-    return {
-      content,
-      ...obj2,
-    };
-  });
-
-  return reformattedResults;
+  return matches;
 }
 
 export async function browseClassificationSharedContent({
