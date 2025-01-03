@@ -2,6 +2,7 @@ import { expect, test } from "vitest";
 import {
   addClassification,
   createActivity,
+  getActivityEditorData,
   getClassificationCategories,
   getClassifications,
   makeActivityPublic,
@@ -360,4 +361,66 @@ test("Search for content classifications, by query and by category and system id
     expect(results[1].code).eq("1.3.2.3"); // second is coin 2.3 category
     expect(results[2].code).eq("1.1.2.3"); // third is remaining 2.3 category from first grade
   }
+});
+
+test("Search classifications has correct primary description", async () => {
+  const classification = (
+    await searchPossibleClassifications({ query: "Trig.PC.1" })
+  )[0];
+
+  expect(classification.descriptions[0].subCategory.category.category).eq(
+    "Trigonometry",
+  );
+  expect(classification.descriptions[0].subCategory.category.system.name).eq(
+    "High school and college math",
+  );
+});
+
+test("Classifications show as primary, sorted by primary", async () => {
+  const { userId } = await createTestUser();
+  const { activityId } = await createActivity(userId, null);
+
+  const multivarClassificationId = (
+    await searchPossibleClassifications({ query: "CalcMV.CV.1" })
+  )[0].id;
+
+  const algebraClassificationId = (
+    await searchPossibleClassifications({ query: "Alg.FN.1" })
+  )[0].id;
+
+  const trigPolarClassificationId = (
+    await searchPossibleClassifications({ query: "Trig.PC.1" })
+  )[0].id;
+
+  const diffEqClassificationId = (
+    await searchPossibleClassifications({ query: "DiffEq.IC.1" })
+  )[0].id;
+
+  await addClassification(activityId, diffEqClassificationId, userId);
+  await addClassification(activityId, trigPolarClassificationId, userId);
+  await addClassification(activityId, multivarClassificationId, userId);
+  await addClassification(activityId, algebraClassificationId, userId);
+
+  const { activity } = await getActivityEditorData(activityId, userId);
+
+  expect(activity.classifications[0].code).eq("CalcMV.CV.1");
+  expect(activity.classifications[1].code).eq("Alg.FN.1");
+  expect(activity.classifications[2].code).eq("Trig.PC.1");
+  expect(activity.classifications[3].code).eq("DiffEq.IC.1");
+
+  expect(
+    activity.classifications[1].descriptions[0].subCategory.category.category,
+  ).eq("Algebra");
+  expect(
+    activity.classifications[1].descriptions[0].subCategory.category.system
+      .name,
+  ).eq("High school and college math");
+
+  expect(
+    activity.classifications[2].descriptions[0].subCategory.category.category,
+  ).eq("Trigonometry");
+  expect(
+    activity.classifications[2].descriptions[0].subCategory.category.system
+      .name,
+  ).eq("High school and college math");
 });

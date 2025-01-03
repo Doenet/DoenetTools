@@ -1488,9 +1488,7 @@ export async function searchSharedContent({
   LEFT JOIN
     classifications ON contentClassifications.classificationId = classifications.id
   LEFT JOIN
-    _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
-  LEFT JOIN
-    classificationDescriptions ON rel.A = classificationDescriptions.id
+    classificationDescriptions ON classifications.id = classificationDescriptions.classificationId
   LEFT JOIN
     classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
   LEFT JOIN
@@ -1643,9 +1641,7 @@ export async function searchClassificationsWithSharedContent({
   FROM
     classifications
   INNER JOIN
-    _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
-  INNER JOIN
-    classificationDescriptions ON rel.A = classificationDescriptions.id
+    classificationDescriptions ON classifications.id = classificationDescriptions.classificationId
   INNER JOIN
     classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
   INNER JOIN
@@ -1818,9 +1814,7 @@ export async function searchClassificationSubCategoriesWithSharedContent({
   FROM
     classifications
   INNER JOIN
-    _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
-  INNER JOIN
-    classificationDescriptions ON rel.A = classificationDescriptions.id
+    classificationDescriptions ON classifications.id = classificationDescriptions.classificationId
   INNER JOIN
     classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
   INNER JOIN
@@ -1886,7 +1880,7 @@ export async function searchClassificationSubCategoriesWithSharedContent({
       },
       descriptions: {
         select: {
-          classifications: {
+          classification: {
             select: {
               contentClassifications: {
                 select: {
@@ -1909,7 +1903,6 @@ export async function searchClassificationSubCategoriesWithSharedContent({
                 take: 10,
               },
             },
-            take: 10,
           },
         },
         take: 10,
@@ -1929,10 +1922,8 @@ export async function searchClassificationSubCategoriesWithSharedContent({
     const { descriptions, ...obj2 } = obj;
 
     let content = descriptions.flatMap((d) =>
-      d.classifications.flatMap((c) =>
-        c.contentClassifications.flatMap((cc) =>
-          processContent(cc.content, loggedInUserId),
-        ),
+      d.classification.contentClassifications.flatMap((cc) =>
+        processContent(cc.content, loggedInUserId),
       ),
     );
 
@@ -1987,9 +1978,7 @@ export async function searchClassificationCategoriesWithSharedContent({
   FROM
     classifications
   INNER JOIN
-    _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
-  INNER JOIN
-    classificationDescriptions ON rel.A = classificationDescriptions.id
+    classificationDescriptions ON classifications.id = classificationDescriptions.classificationId
   INNER JOIN
     classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
   INNER JOIN
@@ -2049,7 +2038,7 @@ export async function searchClassificationCategoriesWithSharedContent({
         select: {
           descriptions: {
             select: {
-              classifications: {
+              classification: {
                 select: {
                   contentClassifications: {
                     select: {
@@ -2072,7 +2061,6 @@ export async function searchClassificationCategoriesWithSharedContent({
                     take: 10,
                   },
                 },
-                take: 10,
               },
             },
             take: 10,
@@ -2096,10 +2084,8 @@ export async function searchClassificationCategoriesWithSharedContent({
 
     let content = subCategories.flatMap((sc) =>
       sc.descriptions.flatMap((d) =>
-        d.classifications.flatMap((c) =>
-          c.contentClassifications.flatMap((cc) =>
-            processContent(cc.content, loggedInUserId),
-          ),
+        d.classification.contentClassifications.flatMap((cc) =>
+          processContent(cc.content, loggedInUserId),
         ),
       ),
     );
@@ -3746,9 +3732,7 @@ export async function searchMyFolderContent({
   LEFT JOIN
     classifications ON contentClassifications.classificationId = classifications.id
   LEFT JOIN
-    _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
-  LEFT JOIN
-    classificationDescriptions ON rel.A = classificationDescriptions.id
+    classificationDescriptions ON classifications.id = classificationDescriptions.classificationId
   LEFT JOIN
     classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
   LEFT JOIN
@@ -3999,10 +3983,8 @@ export async function searchPossibleClassifications({
     ) as relevance
   FROM
     classifications
-  INNER JOIN
-    _classificationDescriptionsToclassifications rel ON classifications.id = rel.B
   LEFT JOIN
-    classificationDescriptions ON rel.A = classificationDescriptions.id
+    classificationDescriptions ON classifications.id = classificationDescriptions.classificationId
   LEFT JOIN
     classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
   INNER JOIN
@@ -4164,6 +4146,8 @@ export async function removeClassification(
     },
   });
 }
+
+// TODO: The getClassifications API is not being used (Jan 2, 2025). Remove?
 
 /**
  * Get all classifications for an activity. The activity must be either public or owned by

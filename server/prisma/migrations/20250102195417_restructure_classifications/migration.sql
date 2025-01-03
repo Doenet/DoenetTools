@@ -51,20 +51,15 @@ DROP TABLE `_classificationSubCategoriesToclassifications`;
 CREATE TABLE `classificationDescriptions` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `subCategoryId` INTEGER NOT NULL,
+    `classificationId` INTEGER NOT NULL,
     `description` TEXT NOT NULL,
+    `sortIndex` INTEGER NOT NULL,
+    `isPrimary` BOOLEAN NOT NULL DEFAULT true,
 
+    UNIQUE INDEX `classificationDescriptions_classificationId_subCategoryId_key`(`classificationId`, `subCategoryId`),
     UNIQUE INDEX `classificationDescriptions_description_subCategoryId_key`(`description`(200), `subCategoryId`),
     FULLTEXT INDEX `classificationDescriptions_description_idx`(`description`),
     PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `_classificationDescriptionsToclassifications` (
-    `A` INTEGER NOT NULL,
-    `B` INTEGER NOT NULL,
-
-    UNIQUE INDEX `_classificationDescriptionsToclassifications_AB_unique`(`A`, `B`),
-    INDEX `_classificationDescriptionsToclassifications_B_index`(`B`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateIndex
@@ -80,7 +75,4 @@ ALTER TABLE `promotedContent` ADD CONSTRAINT `promotedContent_promotedGroupId_fk
 ALTER TABLE `classificationDescriptions` ADD CONSTRAINT `classificationDescriptions_subCategoryId_fkey` FOREIGN KEY (`subCategoryId`) REFERENCES `classificationSubCategories`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `_classificationDescriptionsToclassifications` ADD CONSTRAINT `_classificationDescriptionsToclassifications_A_fkey` FOREIGN KEY (`A`) REFERENCES `classificationDescriptions`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_classificationDescriptionsToclassifications` ADD CONSTRAINT `_classificationDescriptionsToclassifications_B_fkey` FOREIGN KEY (`B`) REFERENCES `classifications`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `classificationDescriptions` ADD CONSTRAINT `classificationDescriptions_classificationId_fkey` FOREIGN KEY (`classificationId`) REFERENCES `classifications`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

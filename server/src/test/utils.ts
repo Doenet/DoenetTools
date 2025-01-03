@@ -72,34 +72,30 @@ export async function createTestClassifications({
     });
 
   // A1A. classification A1A
-  const { id: descriptionIdA1A } =
-    await prisma.classificationDescriptions.create({
-      data: {
-        description: `${word}${code} ${word}A1A${code}`,
-        subCategoryId: subCategoryIdA1,
-      },
-    });
-
   const { id: classificationIdA1A } = await prisma.classifications.create({
     data: {
       code: `${word}.A1A.${code}`,
-      descriptions: { connect: { id: descriptionIdA1A } },
+      descriptions: {
+        create: {
+          description: `${word}${code} ${word}A1A${code}`,
+          subCategoryId: subCategoryIdA1,
+          sortIndex: 1,
+        },
+      },
     },
   });
 
   // A1B. classification A1B
-  const { id: descriptionIdA1B } =
-    await prisma.classificationDescriptions.create({
-      data: {
-        description: `${word}${code} ${word}A1B${code}`,
-        subCategoryId: subCategoryIdA1,
-      },
-    });
-
   const { id: classificationIdA1B } = await prisma.classifications.create({
     data: {
       code: `${word}.A1B.${code}`,
-      descriptions: { connect: { id: descriptionIdA1B } },
+      descriptions: {
+        create: {
+          description: `${word}${code} ${word}A1B${code}`,
+          subCategoryId: subCategoryIdA1,
+          sortIndex: 1,
+        },
+      },
     },
   });
 
@@ -115,34 +111,30 @@ export async function createTestClassifications({
     });
 
   // A2A. classification A2A
-  const { id: descriptionIdA2A } =
-    await prisma.classificationDescriptions.create({
-      data: {
-        description: `${word}${code} ${word}A2A${code}`,
-        subCategoryId: subCategoryIdA2,
-      },
-    });
-
   const { id: classificationIdA2A } = await prisma.classifications.create({
     data: {
       code: `${word}.A2A.${code}`,
-      descriptions: { connect: { id: descriptionIdA2A } },
+      descriptions: {
+        create: {
+          description: `${word}${code} ${word}A2A${code}`,
+          subCategoryId: subCategoryIdA2,
+          sortIndex: 1,
+        },
+      },
     },
   });
 
   // A2B. classification A2B
-  const { id: descriptionIdA2B } =
-    await prisma.classificationDescriptions.create({
-      data: {
-        description: `${word}${code} ${word}A2B${code}`,
-        subCategoryId: subCategoryIdA2,
-      },
-    });
-
   const { id: classificationIdA2B } = await prisma.classifications.create({
     data: {
       code: `${word}.A2B.${code}`,
-      descriptions: { connect: { id: descriptionIdA2B } },
+      descriptions: {
+        create: {
+          description: `${word}${code} ${word}A2B${code}`,
+          subCategoryId: subCategoryIdA2,
+          sortIndex: 1,
+        },
+      },
     },
   });
 
@@ -169,34 +161,30 @@ export async function createTestClassifications({
     });
 
   // B1A. classification B1A
-  const { id: descriptionIdB1A } =
-    await prisma.classificationDescriptions.create({
-      data: {
-        description: `${word}${code} ${word}B1A${code}`,
-        subCategoryId: subCategoryIdB1,
-      },
-    });
-
   const { id: classificationIdB1A } = await prisma.classifications.create({
     data: {
       code: `${word}.B1A.${code}`,
-      descriptions: { connect: { id: descriptionIdB1A } },
+      descriptions: {
+        create: {
+          description: `${word}${code} ${word}B1A${code}`,
+          subCategoryId: subCategoryIdB1,
+          sortIndex: 1,
+        },
+      },
     },
   });
 
   // B1B. classification B1B
-  const { id: descriptionIdB1B } =
-    await prisma.classificationDescriptions.create({
-      data: {
-        description: `${word}${code} ${word}B1B${code}`,
-        subCategoryId: subCategoryIdB1,
-      },
-    });
-
   const { id: classificationIdB1B } = await prisma.classifications.create({
     data: {
       code: `${word}.B1B.${code}`,
-      descriptions: { connect: { id: descriptionIdB1B } },
+      descriptions: {
+        create: {
+          description: `${word}${code} ${word}B1B${code}`,
+          subCategoryId: subCategoryIdB1,
+          sortIndex: 1,
+        },
+      },
     },
   });
 
@@ -212,34 +200,30 @@ export async function createTestClassifications({
     });
 
   // B2A. classification B2A
-  const { id: descriptionIdB2A } =
-    await prisma.classificationDescriptions.create({
-      data: {
-        description: `${word}${code} ${word}B2A${code}`,
-        subCategoryId: subCategoryIdB2,
-      },
-    });
-
   const { id: classificationIdB2A } = await prisma.classifications.create({
     data: {
       code: `${word}.B2A.${code}`,
-      descriptions: { connect: { id: descriptionIdB2A } },
+      descriptions: {
+        create: {
+          description: `${word}${code} ${word}B2A${code}`,
+          subCategoryId: subCategoryIdB2,
+          sortIndex: 1,
+        },
+      },
     },
   });
 
   // B2B. classification B2B
-  const { id: descriptionIdB2B } =
-    await prisma.classificationDescriptions.create({
-      data: {
-        description: `${word}${code} ${word}B2B${code}`,
-        subCategoryId: subCategoryIdB2,
-      },
-    });
-
   const { id: classificationIdB2B } = await prisma.classifications.create({
     data: {
       code: `${word}.B2B.${code}`,
-      descriptions: { connect: { id: descriptionIdB2B } },
+      descriptions: {
+        create: {
+          description: `${word}${code} ${word}B2B${code}`,
+          subCategoryId: subCategoryIdB2,
+          sortIndex: 1,
+        },
+      },
     },
   });
 
@@ -247,25 +231,17 @@ export async function createTestClassifications({
     deleteTestClassifications({
       categoryIdA,
       subCategoryIdA1,
-      descriptionIdA1A,
       classificationIdA1A,
-      descriptionIdA1B,
       classificationIdA1B,
       subCategoryIdA2,
-      descriptionIdA2A,
       classificationIdA2A,
-      descriptionIdA2B,
       classificationIdA2B,
       categoryIdB,
       subCategoryIdB1,
-      descriptionIdB1A,
       classificationIdB1A,
-      descriptionIdB1B,
       classificationIdB1B,
       subCategoryIdB2,
-      descriptionIdB2A,
       classificationIdB2A,
-      descriptionIdB2B,
       classificationIdB2B,
     }),
   );
@@ -273,25 +249,17 @@ export async function createTestClassifications({
   return {
     categoryIdA,
     subCategoryIdA1,
-    descriptionIdA1A,
     classificationIdA1A,
-    descriptionIdA1B,
     classificationIdA1B,
     subCategoryIdA2,
-    descriptionIdA2A,
     classificationIdA2A,
-    descriptionIdA2B,
     classificationIdA2B,
     categoryIdB,
     subCategoryIdB1,
-    descriptionIdB1A,
     classificationIdB1A,
-    descriptionIdB1B,
     classificationIdB1B,
     subCategoryIdB2,
-    descriptionIdB2A,
     classificationIdB2A,
-    descriptionIdB2B,
     classificationIdB2B,
   };
 }
@@ -299,48 +267,32 @@ export async function createTestClassifications({
 export async function deleteTestClassifications({
   categoryIdA,
   subCategoryIdA1,
-  descriptionIdA1A,
   classificationIdA1A,
-  descriptionIdA1B,
   classificationIdA1B,
   subCategoryIdA2,
-  descriptionIdA2A,
   classificationIdA2A,
-  descriptionIdA2B,
   classificationIdA2B,
   categoryIdB,
   subCategoryIdB1,
-  descriptionIdB1A,
   classificationIdB1A,
-  descriptionIdB1B,
   classificationIdB1B,
   subCategoryIdB2,
-  descriptionIdB2A,
   classificationIdB2A,
-  descriptionIdB2B,
   classificationIdB2B,
 }: {
   categoryIdA: number;
   subCategoryIdA1: number;
-  descriptionIdA1A: number;
   classificationIdA1A: number;
-  descriptionIdA1B: number;
   classificationIdA1B: number;
   subCategoryIdA2: number;
-  descriptionIdA2A: number;
   classificationIdA2A: number;
-  descriptionIdA2B: number;
   classificationIdA2B: number;
   categoryIdB: number;
   subCategoryIdB1: number;
-  descriptionIdB1A: number;
   classificationIdB1A: number;
-  descriptionIdB1B: number;
   classificationIdB1B: number;
   subCategoryIdB2: number;
-  descriptionIdB2A: number;
   classificationIdB2A: number;
-  descriptionIdB2B: number;
   classificationIdB2B: number;
 }) {
   // sub category A1
@@ -353,14 +305,24 @@ export async function deleteTestClassifications({
     data: { contentClassifications: { deleteMany: {} } },
   });
 
+  await prisma.classificationDescriptions.delete({
+    where: {
+      classificationId_subCategoryId: {
+        classificationId: classificationIdA1A,
+        subCategoryId: subCategoryIdA1,
+      },
+    },
+  });
   await prisma.classifications.delete({ where: { id: classificationIdA1A } });
   await prisma.classificationDescriptions.delete({
-    where: { id: descriptionIdA1A },
+    where: {
+      classificationId_subCategoryId: {
+        classificationId: classificationIdA1B,
+        subCategoryId: subCategoryIdA1,
+      },
+    },
   });
   await prisma.classifications.delete({ where: { id: classificationIdA1B } });
-  await prisma.classificationDescriptions.delete({
-    where: { id: descriptionIdA1B },
-  });
   await prisma.classificationSubCategories.delete({
     where: { id: subCategoryIdA1 },
   });
@@ -375,14 +337,24 @@ export async function deleteTestClassifications({
     data: { contentClassifications: { deleteMany: {} } },
   });
 
+  await prisma.classificationDescriptions.delete({
+    where: {
+      classificationId_subCategoryId: {
+        classificationId: classificationIdA2A,
+        subCategoryId: subCategoryIdA2,
+      },
+    },
+  });
   await prisma.classifications.delete({ where: { id: classificationIdA2A } });
   await prisma.classificationDescriptions.delete({
-    where: { id: descriptionIdA2A },
+    where: {
+      classificationId_subCategoryId: {
+        classificationId: classificationIdA2B,
+        subCategoryId: subCategoryIdA2,
+      },
+    },
   });
   await prisma.classifications.delete({ where: { id: classificationIdA2B } });
-  await prisma.classificationDescriptions.delete({
-    where: { id: descriptionIdA2B },
-  });
   await prisma.classificationSubCategories.delete({
     where: { id: subCategoryIdA2 },
   });
@@ -399,14 +371,24 @@ export async function deleteTestClassifications({
     data: { contentClassifications: { deleteMany: {} } },
   });
 
+  await prisma.classificationDescriptions.delete({
+    where: {
+      classificationId_subCategoryId: {
+        classificationId: classificationIdB1A,
+        subCategoryId: subCategoryIdB1,
+      },
+    },
+  });
   await prisma.classifications.delete({ where: { id: classificationIdB1A } });
   await prisma.classificationDescriptions.delete({
-    where: { id: descriptionIdB1A },
+    where: {
+      classificationId_subCategoryId: {
+        classificationId: classificationIdB1B,
+        subCategoryId: subCategoryIdB1,
+      },
+    },
   });
   await prisma.classifications.delete({ where: { id: classificationIdB1B } });
-  await prisma.classificationDescriptions.delete({
-    where: { id: descriptionIdB1B },
-  });
   await prisma.classificationSubCategories.delete({
     where: { id: subCategoryIdB1 },
   });
@@ -421,14 +403,24 @@ export async function deleteTestClassifications({
     data: { contentClassifications: { deleteMany: {} } },
   });
 
+  await prisma.classificationDescriptions.delete({
+    where: {
+      classificationId_subCategoryId: {
+        classificationId: classificationIdB2A,
+        subCategoryId: subCategoryIdB2,
+      },
+    },
+  });
   await prisma.classifications.delete({ where: { id: classificationIdB2A } });
   await prisma.classificationDescriptions.delete({
-    where: { id: descriptionIdB2A },
+    where: {
+      classificationId_subCategoryId: {
+        classificationId: classificationIdB2B,
+        subCategoryId: subCategoryIdB2,
+      },
+    },
   });
   await prisma.classifications.delete({ where: { id: classificationIdB2B } });
-  await prisma.classificationDescriptions.delete({
-    where: { id: descriptionIdB2B },
-  });
   await prisma.classificationSubCategories.delete({
     where: { id: subCategoryIdB2 },
   });

@@ -287,12 +287,16 @@ model classificationSubCategories {
 }
 
 model classificationDescriptions {
-  id              Int                         @id @default(autoincrement())
-  subCategoryId   Int
-  description     String                      @db.Text
-  subCategory     classificationSubCategories @relation(fields: [subCategoryId], references: [id])
-  classifications classifications[]
+  id               Int                         @id @default(autoincrement())
+  subCategoryId    Int
+  classificationId Int
+  description      String                      @db.Text
+  sortIndex        Int
+  isPrimary        Boolean                     @default(true)
+  subCategory      classificationSubCategories @relation(fields: [subCategoryId], references: [id])
+  classification   classifications             @relation(fields: [classificationId], references: [id])
 
+  @@unique([classificationId, subCategoryId])
   @@unique([description(length: 200), subCategoryId])
   @@fulltext([description])
 }

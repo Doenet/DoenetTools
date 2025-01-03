@@ -22,6 +22,7 @@ export type ContentClassification = {
   code: string;
   descriptions: {
     description: string;
+    sortIndex: number;
     subCategory: {
       id: number;
       subCategory: string;

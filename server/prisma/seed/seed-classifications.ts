@@ -67,22 +67,41 @@ async function upsertClassificationSubCategory(
 
 async function upsertClassificationDescription(
   description: string,
+  classificationId: number,
   subCategoryId: number,
+  sortIndex: number,
+  isPrimary: boolean,
 ) {
-  const { id } = await prisma.classificationDescriptions.upsert({
-    where: { description_subCategoryId: { description, subCategoryId } },
-    update: {},
-    create: { description, subCategoryId },
+  await prisma.classificationDescriptions.upsert({
+    where: {
+      classificationId_subCategoryId: {
+        classificationId,
+        subCategoryId,
+      },
+    },
+    create: {
+      description,
+      classificationId,
+      subCategoryId,
+      sortIndex,
+      isPrimary,
+    },
+    update: { description, sortIndex, isPrimary },
   });
-  return id;
 }
 
-async function upsertClassification(code: string, descriptionId: number) {
-  // can't actually upsert as don't a unique index
+async function upsertClassification(
+  code: string,
+  description: string,
+  subCategoryId: number,
+  sortIndex: number,
+  isPrimary: boolean,
+) {
+  // can't actually upsert as don't have a unique index
   const classification = await prisma.classifications.findMany({
     where: {
       code,
-      descriptions: { some: { id: descriptionId } },
+      descriptions: { some: { subCategoryId } },
     },
   });
   if (classification.length > 1) {
@@ -93,9 +112,17 @@ async function upsertClassification(code: string, descriptionId: number) {
     await prisma.classifications.create({
       data: {
         code,
-        descriptions: { connect: { id: descriptionId } },
+        descriptions: { create: { description, subCategoryId, sortIndex } },
       },
     });
+  } else {
+    await upsertClassificationDescription(
+      description,
+      classification[0].id,
+      subCategoryId,
+      sortIndex,
+      isPrimary,
+    );
   }
 }
 
@@ -169,11 +196,13 @@ async function addClassificationFromData({
       lastSubCategory = classification.subCategory;
     }
     if (typeof classification.description === "string") {
-      const descriptionId = await upsertClassificationDescription(
+      await upsertClassification(
+        classification.code,
         classification.description,
         lastSubCategoryId,
+        baseSortIndex + Number(classification.sortIndex),
+        true,
       );
-      await upsertClassification(classification.code, descriptionId);
     }
   }
 
@@ -250,15 +279,13 @@ async function addClassificationFromData({
       ).id;
 
       // upsert new description
-      const newDescriptionId = await upsertClassificationDescription(
+      await upsertClassificationDescription(
         linked.descriptionLinked,
+        linkedClassification[0].id,
         newSubCategoryId,
+        baseSortIndex + Number(classification.sortIndex),
+        false,
       );
-
-      await prisma.classifications.update({
-        where: { id: linkedClassification[0].id },
-        data: { descriptions: { connect: { id: newDescriptionId } } },
-      });
     }
   }
 }
@@ -311,7 +338,8 @@ async function addClassificationFromLinks({
                   descriptions: {
                     select: {
                       description: true,
-                      classifications: {
+                      sortIndex: true,
+                      classification: {
                         select: {
                           id: true,
                         },
@@ -338,16 +366,13 @@ async function addClassificationFromLinks({
           subCategory.sortIndex,
         );
         for (const description of subCategory.descriptions) {
-          const descriptionId = await upsertClassificationDescription(
+          await upsertClassificationDescription(
             description.description,
+            description.classification.id,
             subCategoryId,
+            description.sortIndex,
+            false,
           );
-          for (const classification of description.classifications) {
-            await prisma.classifications.update({
-              where: { id: classification.id },
-              data: { descriptions: { connect: { id: descriptionId } } },
-            });
-          }
         }
       }
     }

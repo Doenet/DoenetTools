@@ -317,6 +317,7 @@ export function returnContentStructureBaseSelect({
             descriptions: {
               select: {
                 description: true,
+                sortIndex: true,
                 subCategory: {
                   select: {
                     id: true,
@@ -343,6 +344,7 @@ export function returnContentStructureBaseSelect({
                   },
                 },
               },
+              orderBy: { isPrimary: "desc" as const },
             },
           },
         },
@@ -806,6 +808,7 @@ export function returnClassificationListSelect() {
     descriptions: {
       select: {
         description: true,
+        sortIndex: true,
         subCategory: {
           select: {
             id: true,
@@ -832,6 +835,7 @@ export function returnClassificationListSelect() {
           },
         },
       },
+      orderBy: { isPrimary: "desc" as const },
     },
   };
 }
