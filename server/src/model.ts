@@ -2105,6 +2105,154 @@ export async function searchClassificationCategoriesWithSharedContent({
   return reformattedResults;
 }
 
+export async function browseClassificationSharedContent({
+  loggedInUserId,
+  classificationId,
+  isQuestion,
+  isInteractive,
+  containsVideo,
+  page = 1,
+}: {
+  loggedInUserId: Uint8Array;
+  classificationId?: number;
+  isQuestion?: boolean;
+  isInteractive?: boolean;
+  containsVideo?: boolean;
+  page?: number;
+}) {
+  const pageSize = 100;
+
+  // TODO: how do we sort these?
+  const results = await prisma.content.findMany({
+    where: {
+      isDeleted: false,
+      OR: [
+        { isPublic: true },
+        { sharedWith: { some: { userId: loggedInUserId } } },
+      ],
+      isQuestion,
+      isInteractive,
+      containsVideo,
+      classifications: { some: { classificationId } },
+    },
+    select: returnContentStructureFullOwnerSelect(),
+    take: pageSize,
+    skip: (page - 1) * pageSize,
+  });
+
+  const content = results.map((c) => processContent(c));
+
+  return { content };
+}
+
+export async function browseSubCategorySharedContent({
+  loggedInUserId,
+  subCategoryId,
+  isQuestion,
+  isInteractive,
+  containsVideo,
+}: {
+  loggedInUserId: Uint8Array;
+  subCategoryId?: number;
+  isQuestion?: boolean;
+  isInteractive?: boolean;
+  containsVideo?: boolean;
+}) {
+  const pageSize = 100;
+
+  // TODO: how do we sort the classifications and the content within each classification
+
+  const preliminaryResults =
+    await prisma.classificationSubCategories.findUniqueOrThrow({
+      where: { id: subCategoryId },
+      select: {
+        subCategory: true,
+        category: {
+          select: {
+            category: true,
+            system: {
+              select: {
+                name: true,
+                shortName: true,
+                categoryLabel: true,
+                subCategoryLabel: true,
+                descriptionLabel: true,
+                categoriesInDescription: true,
+              },
+            },
+          },
+        },
+        descriptions: {
+          where: {
+            classification: {
+              contentClassifications: {
+                some: {
+                  content: {
+                    isDeleted: false,
+                    OR: [
+                      { isPublic: true },
+                      { sharedWith: { some: { userId: loggedInUserId } } },
+                    ],
+                    isQuestion,
+                    isInteractive,
+                    containsVideo,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: { sortIndex: "asc" },
+          select: {
+            description: true,
+            id: true,
+            classification: {
+              select: {
+                code: true,
+                id: true,
+                contentClassifications: {
+                  where: {
+                    content: {
+                      isDeleted: false,
+                      OR: [
+                        { isPublic: true },
+                        { sharedWith: { some: { userId: loggedInUserId } } },
+                      ],
+                      isQuestion,
+                      isInteractive,
+                      containsVideo,
+                    },
+                  },
+                  select: {
+                    content: {
+                      select: returnContentStructureFullOwnerSelect(),
+                    },
+                  },
+                  take: pageSize,
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+  const results = {
+    subCategory: preliminaryResults.subCategory,
+    category: preliminaryResults.category,
+    classifications: preliminaryResults.descriptions.map((description) => ({
+      code: description.classification.code,
+      classificationId: description.classification.id,
+      description: description.description,
+      descriptionId: description.id,
+      content: description.classification.contentClassifications.map((cc) =>
+        processContent(cc.content),
+      ),
+    })),
+  };
+
+  return results;
+}
+
 export async function listUserAssigned(userId: Uint8Array) {
   const preliminaryAssignments = await prisma.content.findMany({
     where: {

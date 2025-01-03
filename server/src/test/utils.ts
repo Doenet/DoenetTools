@@ -67,7 +67,7 @@ export async function createTestClassifications({
       data: {
         subCategory: `${word}${code} ${word}A1${code}`,
         categoryId: categoryIdA,
-        sortIndex: 1,
+        sortIndex: 2,
       },
     });
 
@@ -79,7 +79,7 @@ export async function createTestClassifications({
         create: {
           description: `${word}${code} ${word}A1A${code}`,
           subCategoryId: subCategoryIdA1,
-          sortIndex: 1,
+          sortIndex: 3,
         },
       },
     },
@@ -93,7 +93,7 @@ export async function createTestClassifications({
         create: {
           description: `${word}${code} ${word}A1B${code}`,
           subCategoryId: subCategoryIdA1,
-          sortIndex: 1,
+          sortIndex: 4,
         },
       },
     },
@@ -106,7 +106,7 @@ export async function createTestClassifications({
       data: {
         subCategory: `${word}${code} ${word}A2${code}`,
         categoryId: categoryIdA,
-        sortIndex: 1,
+        sortIndex: 5,
       },
     });
 
@@ -118,7 +118,7 @@ export async function createTestClassifications({
         create: {
           description: `${word}${code} ${word}A2A${code}`,
           subCategoryId: subCategoryIdA2,
-          sortIndex: 1,
+          sortIndex: 6,
         },
       },
     },
@@ -132,7 +132,7 @@ export async function createTestClassifications({
         create: {
           description: `${word}${code} ${word}A2B${code}`,
           subCategoryId: subCategoryIdA2,
-          sortIndex: 1,
+          sortIndex: 7,
         },
       },
     },
@@ -145,7 +145,7 @@ export async function createTestClassifications({
     data: {
       category: `${word}${code} ${word}B${code}`,
       systemId,
-      sortIndex: 1,
+      sortIndex: 8,
     },
   });
 
@@ -156,7 +156,7 @@ export async function createTestClassifications({
       data: {
         subCategory: `${word}${code} ${word}B1${code}`,
         categoryId: categoryIdB,
-        sortIndex: 1,
+        sortIndex: 9,
       },
     });
 
@@ -168,7 +168,7 @@ export async function createTestClassifications({
         create: {
           description: `${word}${code} ${word}B1A${code}`,
           subCategoryId: subCategoryIdB1,
-          sortIndex: 1,
+          sortIndex: 10,
         },
       },
     },
@@ -182,7 +182,7 @@ export async function createTestClassifications({
         create: {
           description: `${word}${code} ${word}B1B${code}`,
           subCategoryId: subCategoryIdB1,
-          sortIndex: 1,
+          sortIndex: 11,
         },
       },
     },
@@ -195,7 +195,7 @@ export async function createTestClassifications({
       data: {
         subCategory: `${word}${code} ${word}B2${code}`,
         categoryId: categoryIdB,
-        sortIndex: 1,
+        sortIndex: 12,
       },
     });
 
@@ -207,7 +207,7 @@ export async function createTestClassifications({
         create: {
           description: `${word}${code} ${word}B2A${code}`,
           subCategoryId: subCategoryIdB2,
-          sortIndex: 1,
+          sortIndex: 13,
         },
       },
     },
@@ -221,7 +221,7 @@ export async function createTestClassifications({
         create: {
           description: `${word}${code} ${word}B2B${code}`,
           subCategoryId: subCategoryIdB2,
-          sortIndex: 1,
+          sortIndex: 14,
         },
       },
     },
