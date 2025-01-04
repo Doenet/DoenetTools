@@ -168,7 +168,57 @@ async function main() {
     update: {},
     create: { composedOfCode: "CCBYNCSA", includedInCode: "CCDUAL" },
   });
+
+  await prisma.contentFeatures.upsert({
+    where: { code: "isQuestion" },
+    update: {
+      term: "Single question",
+      description:
+        "Activity is a single question suitable to add to an assessment.",
+      sortIndex: 1,
+    },
+    create: {
+      code: "isQuestion",
+      term: "Single question",
+      description:
+        "Activity is a single question suitable to add to an assessment.",
+      sortIndex: 1,
+    },
+  });
+
+  await prisma.contentFeatures.upsert({
+    where: { code: "isInteractive" },
+    update: {
+      term: "Interactive",
+      description:
+        "Activity contains interactives, such as interactive graphics.",
+      sortIndex: 2,
+    },
+    create: {
+      code: "isInteractive",
+      term: "Interactive",
+      description:
+        "Activity contains interactives, such as interactive graphics.",
+      sortIndex: 2,
+    },
+  });
+
+  await prisma.contentFeatures.upsert({
+    where: { code: "containsVideo" },
+    update: {
+      term: "Video",
+      description: "Activity contains videos.",
+      sortIndex: 3,
+    },
+    create: {
+      code: "containsVideo",
+      term: "Video",
+      description: "Activity contains videos.",
+      sortIndex: 3,
+    },
+  });
 }
+
 main()
   .then(async () => {
     await prisma.$disconnect();

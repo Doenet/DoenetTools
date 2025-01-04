@@ -14,6 +14,7 @@ import {
 import {
   returnClassificationJoins,
   returnClassificationWhereClauses,
+  returnFeatureJoins,
   returnFeatureWhereClauses,
   sortClassifications,
 } from "./utils/classificationsFeatures";
@@ -299,26 +300,17 @@ export async function updateContent({
   name,
   imagePath,
   ownerId,
-  isQuestion,
-  isInteractive,
-  containsVideo,
 }: {
   id: Uint8Array;
   name?: string;
   imagePath?: string;
   ownerId: Uint8Array;
-  isQuestion?: boolean;
-  isInteractive?: boolean;
-  containsVideo?: boolean;
 }) {
   const updated = await prisma.content.update({
     where: { id, ownerId, isDeleted: false },
     data: {
       name,
       imagePath,
-      isQuestion,
-      isInteractive,
-      containsVideo,
     },
   });
 
@@ -326,6 +318,35 @@ export async function updateContent({
     id: updated.id,
     name: updated.name,
     imagePath: updated.imagePath,
+  };
+}
+
+export async function updateContentFeatures({
+  id,
+  ownerId,
+  features,
+}: {
+  id: Uint8Array;
+  ownerId: Uint8Array;
+  features: Record<string, boolean>;
+}) {
+  const updated = await prisma.content.update({
+    where: { id, ownerId, isDeleted: false },
+    data: {
+      contentFeatures: {
+        connect: Object.entries(features)
+          .filter(([_, val]) => val)
+          .map(([code, _]) => ({ code })),
+        disconnect: Object.entries(features)
+          .filter(([_, val]) => !val)
+          .map(([code, _]) => ({ code })),
+      },
+    },
+    select: { id: true },
+  });
+
+  return {
+    id: updated.id,
   };
 }
 
@@ -923,9 +944,7 @@ export async function getActivityEditorData(
       isShared: false,
       sharedWith: [],
       license: null,
-      isQuestion: false,
-      isInteractive: false,
-      containsVideo: false,
+      contentFeatures: [],
       classifications: [],
       documents: [],
       hasScoreData: false,
@@ -1444,9 +1463,7 @@ export async function searchSharedContent({
   subCategoryId,
   classificationId,
   isUnclassified,
-  isQuestion,
-  isInteractive,
-  containsVideo,
+  features,
 }: {
   query: string;
   loggedInUserId: Uint8Array;
@@ -1455,9 +1472,7 @@ export async function searchSharedContent({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  isQuestion?: boolean;
-  isInteractive?: boolean;
-  containsVideo?: boolean;
+  features?: Record<string, boolean>;
 }) {
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
@@ -1491,6 +1506,7 @@ export async function searchSharedContent({
   LEFT JOIN
     users ON content.ownerId = users.userId
   ${returnClassificationJoins({ includeCategory: true, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
   WHERE
     content.isDeleted = FALSE
     AND (
@@ -1506,7 +1522,7 @@ export async function searchSharedContent({
     OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
     ${returnClassificationWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-    ${returnFeatureWhereClauses({ isQuestion, isInteractive, containsVideo })}
+    ${returnFeatureWhereClauses(features)}
   GROUP BY
     content.id
   ORDER BY
@@ -1543,9 +1559,7 @@ export async function searchUsersWithSharedContent({
   subCategoryId,
   classificationId,
   isUnclassified,
-  isQuestion,
-  isInteractive,
-  containsVideo,
+  features,
 }: {
   query: string;
   loggedInUserId: Uint8Array;
@@ -1554,9 +1568,7 @@ export async function searchUsersWithSharedContent({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  isQuestion?: boolean;
-  isInteractive?: boolean;
-  containsVideo?: boolean;
+  features?: Record<string, boolean>;
 }) {
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
@@ -1592,13 +1604,14 @@ export async function searchUsersWithSharedContent({
       SELECT ownerId 
         FROM content 
         ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+        ${returnFeatureJoins(features)}
         WHERE
           isDeleted = FALSE AND (
             isPublic = TRUE
             OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
           )
           ${returnClassificationWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-          ${returnFeatureWhereClauses({ isQuestion, isInteractive, containsVideo })}
+          ${returnFeatureWhereClauses(features)}
       
     )
     AND
@@ -1621,18 +1634,14 @@ export async function searchClassificationsWithSharedContent({
   systemId,
   categoryId,
   subCategoryId,
-  isQuestion,
-  isInteractive,
-  containsVideo,
+  features,
 }: {
   query: string;
   loggedInUserId: Uint8Array;
   systemId?: number;
   categoryId?: number;
   subCategoryId?: number;
-  isQuestion?: boolean;
-  isInteractive?: boolean;
-  containsVideo?: boolean;
+  features?: Record<string, boolean>;
 }) {
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
@@ -1663,6 +1672,7 @@ export async function searchClassificationsWithSharedContent({
   FROM
     content
   ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
   WHERE
     content.isDeleted = FALSE
     AND (
@@ -1673,7 +1683,7 @@ export async function searchClassificationsWithSharedContent({
     (MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
     ${returnClassificationWhereClauses({ systemId, categoryId, subCategoryId })}
-    ${returnFeatureWhereClauses({ isQuestion, isInteractive, containsVideo })}
+    ${returnFeatureWhereClauses(features)}
 
   GROUP BY
     classifications.id
@@ -1685,6 +1695,13 @@ export async function searchClassificationsWithSharedContent({
   // since full text search doesn't match code well, separately match for those
   // and put matches at the top of the list
   const query_words = query.split(" ");
+
+  const featuresToRequire =
+    features === undefined
+      ? []
+      : Object.entries(features)
+          .filter(([_key, value]) => value)
+          .map(([key, _value]) => key);
 
   const code_matches = await prisma.classifications.findMany({
     where: {
@@ -1708,9 +1725,9 @@ export async function searchClassificationsWithSharedContent({
                   { isPublic: true },
                   { sharedWith: { some: { userId: loggedInUserId } } },
                 ],
-                isQuestion,
-                isInteractive,
-                containsVideo,
+                AND: featuresToRequire.map((feature) => ({
+                  contentFeatures: { some: { code: feature } },
+                })),
               },
             },
           },
@@ -1748,17 +1765,13 @@ export async function searchClassificationSubCategoriesWithSharedContent({
   loggedInUserId,
   systemId,
   categoryId,
-  isQuestion,
-  isInteractive,
-  containsVideo,
+  features,
 }: {
   query: string;
   loggedInUserId: Uint8Array;
   systemId?: number;
   categoryId?: number;
-  isQuestion?: boolean;
-  isInteractive?: boolean;
-  containsVideo?: boolean;
+  features?: Record<string, boolean>;
 }) {
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
@@ -1799,6 +1812,7 @@ export async function searchClassificationSubCategoriesWithSharedContent({
   FROM
     content
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
   WHERE
     content.isDeleted = FALSE
     AND (
@@ -1808,7 +1822,7 @@ export async function searchClassificationSubCategoriesWithSharedContent({
     AND
     MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     ${returnClassificationWhereClauses({ systemId, categoryId })}
-    ${returnFeatureWhereClauses({ isQuestion, isInteractive, containsVideo })}
+    ${returnFeatureWhereClauses(features)}
 
   GROUP BY
     classificationSubCategories.id
@@ -1824,16 +1838,12 @@ export async function searchClassificationCategoriesWithSharedContent({
   query,
   loggedInUserId,
   systemId,
-  isQuestion,
-  isInteractive,
-  containsVideo,
+  features,
 }: {
   query: string;
   loggedInUserId: Uint8Array;
   systemId?: number;
-  isQuestion?: boolean;
-  isInteractive?: boolean;
-  containsVideo?: boolean;
+  features?: Record<string, boolean>;
 }) {
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
@@ -1870,6 +1880,7 @@ export async function searchClassificationCategoriesWithSharedContent({
   FROM
     content
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
   WHERE
     content.isDeleted = FALSE
     AND (
@@ -1879,7 +1890,7 @@ export async function searchClassificationCategoriesWithSharedContent({
     AND
     MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     ${returnClassificationWhereClauses({ systemId })}
-    ${returnFeatureWhereClauses({ isQuestion, isInteractive, containsVideo })}
+    ${returnFeatureWhereClauses(features)}
 
   GROUP BY
     classificationCategories.id
@@ -1894,19 +1905,22 @@ export async function searchClassificationCategoriesWithSharedContent({
 export async function browseClassificationSharedContent({
   loggedInUserId,
   classificationId,
-  isQuestion,
-  isInteractive,
-  containsVideo,
+  features,
   page = 1,
 }: {
   loggedInUserId: Uint8Array;
   classificationId?: number;
-  isQuestion?: boolean;
-  isInteractive?: boolean;
-  containsVideo?: boolean;
+  features?: Record<string, boolean>;
   page?: number;
 }) {
   const pageSize = 100;
+
+  const featuresToRequire =
+    features === undefined
+      ? []
+      : Object.entries(features)
+          .filter(([_key, value]) => value)
+          .map(([key, _value]) => key);
 
   // TODO: how do we sort these?
   const results = await prisma.content.findMany({
@@ -1916,9 +1930,9 @@ export async function browseClassificationSharedContent({
         { isPublic: true },
         { sharedWith: { some: { userId: loggedInUserId } } },
       ],
-      isQuestion,
-      isInteractive,
-      containsVideo,
+      AND: featuresToRequire.map((feature) => ({
+        contentFeatures: { some: { code: feature } },
+      })),
       classifications: { some: { classificationId } },
     },
     select: returnContentStructureFullOwnerSelect(),
@@ -1934,17 +1948,20 @@ export async function browseClassificationSharedContent({
 export async function browseSubCategorySharedContent({
   loggedInUserId,
   subCategoryId,
-  isQuestion,
-  isInteractive,
-  containsVideo,
+  features,
 }: {
   loggedInUserId: Uint8Array;
   subCategoryId?: number;
-  isQuestion?: boolean;
-  isInteractive?: boolean;
-  containsVideo?: boolean;
+  features?: Record<string, boolean>;
 }) {
   // TODO: how do we sort the content within each classification
+
+  const featuresToRequire =
+    features === undefined
+      ? []
+      : Object.entries(features)
+          .filter(([_key, value]) => value)
+          .map(([key, _value]) => key);
 
   const preliminaryResults =
     await prisma.classificationSubCategories.findUniqueOrThrow({
@@ -1977,9 +1994,9 @@ export async function browseSubCategorySharedContent({
                       { isPublic: true },
                       { sharedWith: { some: { userId: loggedInUserId } } },
                     ],
-                    isQuestion,
-                    isInteractive,
-                    containsVideo,
+                    AND: featuresToRequire.map((feature) => ({
+                      contentFeatures: { some: { code: feature } },
+                    })),
                   },
                 },
               },
@@ -2001,9 +2018,9 @@ export async function browseSubCategorySharedContent({
                         { isPublic: true },
                         { sharedWith: { some: { userId: loggedInUserId } } },
                       ],
-                      isQuestion,
-                      isInteractive,
-                      containsVideo,
+                      AND: featuresToRequire.map((feature) => ({
+                        contentFeatures: { some: { code: feature } },
+                      })),
                     },
                   },
                   select: {
@@ -2040,16 +2057,19 @@ export async function browseSubCategorySharedContent({
 export async function browseCategorySharedContent({
   loggedInUserId,
   categoryId,
-  isQuestion,
-  isInteractive,
-  containsVideo,
+  features,
 }: {
   loggedInUserId: Uint8Array;
   categoryId?: number;
-  isQuestion?: boolean;
-  isInteractive?: boolean;
-  containsVideo?: boolean;
+  features?: Record<string, boolean>;
 }) {
+  const featuresToRequire =
+    features === undefined
+      ? []
+      : Object.entries(features)
+          .filter(([_key, value]) => value)
+          .map(([key, _value]) => key);
+
   // TODO: how do we sort the content within each classification
 
   const preliminaryResults =
@@ -2070,9 +2090,9 @@ export async function browseCategorySharedContent({
                           { isPublic: true },
                           { sharedWith: { some: { userId: loggedInUserId } } },
                         ],
-                        isQuestion,
-                        isInteractive,
-                        containsVideo,
+                        AND: featuresToRequire.map((feature) => ({
+                          contentFeatures: { some: { code: feature } },
+                        })),
                       },
                     },
                   },
@@ -2110,9 +2130,9 @@ export async function browseCategorySharedContent({
                           { isPublic: true },
                           { sharedWith: { some: { userId: loggedInUserId } } },
                         ],
-                        isQuestion,
-                        isInteractive,
-                        containsVideo,
+                        AND: featuresToRequire.map((feature) => ({
+                          contentFeatures: { some: { code: feature } },
+                        })),
                       },
                     },
                   },
@@ -2136,9 +2156,9 @@ export async function browseCategorySharedContent({
                               sharedWith: { some: { userId: loggedInUserId } },
                             },
                           ],
-                          isQuestion,
-                          isInteractive,
-                          containsVideo,
+                          AND: featuresToRequire.map((feature) => ({
+                            contentFeatures: { some: { code: feature } },
+                          })),
                         },
                       },
                       select: {

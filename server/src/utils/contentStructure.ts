@@ -208,9 +208,7 @@ export function returnContentStructureNoClassDocsSelect({
     isAssigned: includeAssignInfo,
     classCode: includeAssignInfo,
     codeValidUntil: includeAssignInfo,
-    isQuestion: true,
-    isInteractive: true,
-    containsVideo: true,
+    contentFeatures: true,
     sharedWith: {
       select: {
         userId: true,
@@ -459,9 +457,13 @@ type PreliminaryContentNoClassDocs = {
   isAssigned?: boolean;
   classCode?: string | null;
   codeValidUntil?: Date | null;
-  isQuestion: boolean;
-  isInteractive: boolean;
-  containsVideo: boolean;
+  contentFeatures: {
+    id: number;
+    code: string;
+    term: string;
+    description: string;
+    sortIndex: number;
+  }[];
   sharedWith: { userId: Uint8Array }[];
   license: PreliminaryLicense | null;
   parentFolder?: {

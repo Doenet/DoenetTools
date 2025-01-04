@@ -80,6 +80,7 @@ import {
   setPreferredFolderView,
   getPreferredFolderView,
   getClassificationCategories,
+  updateContentFeatures,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -1086,9 +1087,7 @@ app.post("/api/searchSharedContent", async (req: Request, res: Response) => {
     categoryId === undefined &&
     systemId === undefined;
 
-  const isQuestion: true | undefined = req.body.isQuestion;
-  const isInteractive: true | undefined = req.body.isInteractive;
-  const containsVideo: true | undefined = req.body.containsVideo;
+  const features: Record<string, boolean> | undefined = req.body.features;
 
   res.send({
     users: (
@@ -1100,9 +1099,7 @@ app.post("/api/searchSharedContent", async (req: Request, res: Response) => {
         subCategoryId,
         classificationId,
         isUnclassified,
-        isQuestion,
-        isInteractive,
-        containsVideo,
+        features,
       })
     ).map(userConvertUUID),
     content: (
@@ -1114,9 +1111,7 @@ app.post("/api/searchSharedContent", async (req: Request, res: Response) => {
         subCategoryId,
         classificationId,
         isUnclassified,
-        isQuestion,
-        isInteractive,
-        containsVideo,
+        features,
       })
     ).map(contentStructureConvertUUID),
   });
@@ -1570,18 +1565,12 @@ app.post(
     const id = toUUID(body.id);
     const imagePath = body.imagePath;
     const name = body.name;
-    const isQuestion = body.isQuestion;
-    const isInteractive = body.isInteractive;
-    const containsVideo = body.containsVideo;
 
     try {
       await updateContent({
         id,
         imagePath,
         name,
-        isQuestion,
-        isInteractive,
-        containsVideo,
         ownerId: loggedInUserId,
       });
       res.send({});
@@ -1614,6 +1603,36 @@ app.post(
         id: docId,
         name,
         doenetmlVersionId,
+        ownerId: loggedInUserId,
+      });
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/updateContentFeatures",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+
+    const loggedInUserId = req.user.userId;
+    const body = req.body;
+    const id = toUUID(body.id);
+    const features: Record<string, boolean> = body.features;
+
+    try {
+      await updateContentFeatures({
+        id,
+        features,
         ownerId: loggedInUserId,
       });
       res.send({});

@@ -99,18 +99,65 @@ export function returnClassificationWhereClauses({
   }
 }
 
-export function returnFeatureWhereClauses({
-  isQuestion,
-  isInteractive,
-  containsVideo,
-}: {
-  isQuestion?: boolean;
-  isInteractive?: boolean;
-  containsVideo?: boolean;
-}) {
-  return Prisma.sql`
-    ${isQuestion !== undefined ? Prisma.sql`AND content.isQuestion = ${isQuestion}` : Prisma.empty}
-    ${isInteractive !== undefined ? Prisma.sql`AND content.isInteractive = ${isInteractive}` : Prisma.empty}
-    ${containsVideo !== undefined ? Prisma.sql`AND content.containsVideo = ${containsVideo}` : Prisma.empty}
-  `;
+export function returnFeatureJoins(features?: Record<string, boolean>) {
+  const numFeatures = features === undefined ? 0 : Object.keys(features).length;
+
+  // TODO: a better way to do this?
+  if (numFeatures === 0) {
+    return Prisma.empty;
+  } else if (numFeatures === 1) {
+    return Prisma.sql`
+      LEFT JOIN _contentTocontentFeatures AS ccf1 ON ccf1.A = content.id
+      LEFT JOIN contentFeatures as contentFeatures1 on contentFeatures1.id = ccf1.B 
+    `;
+  } else if (numFeatures === 2) {
+    return Prisma.sql`
+      LEFT JOIN _contentTocontentFeatures AS ccf1 ON ccf1.A = content.id
+      LEFT JOIN contentFeatures as contentFeatures1 on contentFeatures1.id = ccf1.B 
+      LEFT JOIN _contentTocontentFeatures AS ccf2 ON ccf2.A = content.id
+      LEFT JOIN contentFeatures as contentFeatures2 on contentFeatures2.id = ccf2.B 
+    `;
+  } else {
+    // stopping at 3 features for now
+    return Prisma.sql`
+      LEFT JOIN _contentTocontentFeatures AS ccf1 ON ccf1.A = content.id
+      LEFT JOIN contentFeatures as contentFeatures1 on contentFeatures1.id = ccf1.B 
+      LEFT JOIN _contentTocontentFeatures AS ccf2 ON ccf2.A = content.id
+      LEFT JOIN contentFeatures as contentFeatures2 on contentFeatures2.id = ccf2.B 
+      LEFT JOIN _contentTocontentFeatures AS ccf3 ON ccf3.A = content.id
+      LEFT JOIN contentFeatures as contentFeatures3 on contentFeatures3.id = ccf3.B 
+    `;
+  }
+}
+
+export function returnFeatureWhereClauses(features?: Record<string, boolean>) {
+  // TODO: is there a better way to code this?
+
+  if (features === undefined) {
+    return Prisma.empty;
+  }
+
+  const featuresToRequire = Object.entries(features)
+    .filter(([_key, value]) => value)
+    .map(([key, _value]) => key);
+
+  const numFeatures = featuresToRequire.length;
+
+  if (numFeatures === 0) {
+    return Prisma.empty;
+  } else if (numFeatures === 1) {
+    return Prisma.sql`AND contentFeatures1.code = ${featuresToRequire[0]}`;
+  } else if (numFeatures === 2) {
+    return Prisma.sql`
+    AND contentFeatures1.code = ${featuresToRequire[0]}
+    AND contentFeatures2.code = ${featuresToRequire[1]}
+    `;
+  } else {
+    // stopping at 3 features for now
+    return Prisma.sql`
+    AND contentFeatures1.code = ${featuresToRequire[0]}
+    AND contentFeatures2.code = ${featuresToRequire[1]}
+    AND contentFeatures3.code = ${featuresToRequire[2]}
+    `;
+  }
 }
