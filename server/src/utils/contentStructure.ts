@@ -6,7 +6,7 @@ import {
   LicenseCode,
   UserInfo,
 } from "../types";
-import { sortClassifications } from "./classifications";
+import { sortClassifications } from "./classificationsFeatures";
 import { isEqualUUID } from "./uuid";
 import { DateTime } from "luxon";
 

@@ -1061,16 +1061,73 @@ app.get(
   },
 );
 
-app.get("/api/searchSharedContent", async (req: Request, res: Response) => {
+app.post("/api/searchSharedContent", async (req: Request, res: Response) => {
   const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
-  const query = req.query.q as string;
+  const query: string = req.body.q;
+
+  // if an id is specified, ignore more general ids
+  const classificationId: number | undefined = req.body.classificationId;
+  const subCategoryId: number | undefined =
+    classificationId === undefined ? req.body.subCategoryId : undefined;
+  const categoryId: number | undefined =
+    classificationId === undefined && subCategoryId === undefined
+      ? req.body.categoryId
+      : undefined;
+  const systemId: number | undefined =
+    classificationId === undefined &&
+    subCategoryId === undefined &&
+    categoryId === undefined
+      ? req.body.systemId
+      : undefined;
+  const isUnclassified: boolean =
+    req.body.isUnclassified &&
+    classificationId === undefined &&
+    subCategoryId === undefined &&
+    categoryId === undefined &&
+    systemId === undefined;
+
+  const isQuestion: true | undefined = req.body.isQuestion;
+  const isInteractive: true | undefined = req.body.isInteractive;
+  const containsVideo: true | undefined = req.body.containsVideo;
+
+  console.log({
+    systemId,
+    categoryId,
+    subCategoryId,
+    classificationId,
+    isQuestion,
+    isInteractive,
+    containsVideo,
+  });
+
   res.send({
-    users: (await searchUsersWithSharedContent(query, loggedInUserId)).map(
-      userConvertUUID,
-    ),
-    content: (await searchSharedContent({ query, loggedInUserId })).map(
-      contentStructureConvertUUID,
-    ),
+    users: (
+      await searchUsersWithSharedContent({
+        query,
+        loggedInUserId,
+        systemId,
+        categoryId,
+        subCategoryId,
+        classificationId,
+        isUnclassified,
+        isQuestion,
+        isInteractive,
+        containsVideo,
+      })
+    ).map(userConvertUUID),
+    content: (
+      await searchSharedContent({
+        query,
+        loggedInUserId,
+        systemId,
+        categoryId,
+        subCategoryId,
+        classificationId,
+        isQuestion,
+        isInteractive,
+        containsVideo,
+      })
+    ).map(contentStructureConvertUUID),
   });
 });
 

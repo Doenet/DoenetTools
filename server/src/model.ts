@@ -11,7 +11,12 @@ import {
   LicenseCode,
   UserInfo,
 } from "./types";
-import { sortClassifications } from "./utils/classifications";
+import {
+  returnClassificationJoins,
+  returnClassificationWhereClauses,
+  returnFeatureWhereClauses,
+  sortClassifications,
+} from "./utils/classificationsFeatures";
 import {
   processContentSharedDetails,
   processContentSharedDetailsAssignedDoc,
@@ -1483,16 +1488,7 @@ export async function searchSharedContent({
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
   LEFT JOIN
     users ON content.ownerId = users.userId
-  LEFT JOIN
-    contentClassifications ON content.id = contentClassifications.contentId
-  LEFT JOIN
-    classifications ON contentClassifications.classificationId = classifications.id
-  LEFT JOIN
-    classificationDescriptions ON classifications.id = classificationDescriptions.classificationId
-  LEFT JOIN
-    classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
-  LEFT JOIN
-    classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
+  ${returnClassificationJoins({ includeCategory: true, joinFromContent: true })}
   WHERE
     content.isDeleted = FALSE
     AND (
@@ -1507,20 +1503,8 @@ export async function searchSharedContent({
     OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
-    ${
-      classificationId !== undefined
-        ? Prisma.sql`AND classifications.id = ${classificationId}`
-        : subCategoryId !== undefined
-          ? Prisma.sql`AND classificationSubCategories.id = ${subCategoryId}`
-          : categoryId !== undefined
-            ? Prisma.sql`AND classificationCategories.id = ${categoryId}`
-            : systemId !== undefined
-              ? Prisma.sql`AND classificationCategories.systemId = ${systemId}`
-              : Prisma.empty
-    }
-    ${isQuestion !== undefined ? Prisma.sql`AND content.isQuestion = ${isQuestion}` : Prisma.empty}
-    ${isInteractive !== undefined ? Prisma.sql`AND content.isInteractive = ${isInteractive}` : Prisma.empty}
-    ${containsVideo !== undefined ? Prisma.sql`AND content.containsVideo = ${containsVideo}` : Prisma.empty}
+    ${returnClassificationWhereClauses({ systemId, categoryId, subCategoryId, classificationId })}
+    ${returnFeatureWhereClauses({ isQuestion, isInteractive, containsVideo })}
   GROUP BY
     content.id
   ORDER BY
@@ -1549,10 +1533,29 @@ export async function searchSharedContent({
   return sharedContent;
 }
 
-export async function searchUsersWithSharedContent(
-  query: string,
-  loggedInUserId: Uint8Array,
-) {
+export async function searchUsersWithSharedContent({
+  query,
+  loggedInUserId,
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+  isUnclassified,
+  isQuestion,
+  isInteractive,
+  containsVideo,
+}: {
+  query: string;
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+  isUnclassified?: boolean;
+  isQuestion?: boolean;
+  isInteractive?: boolean;
+  containsVideo?: boolean;
+}) {
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
@@ -1561,6 +1564,13 @@ export async function searchUsersWithSharedContent(
     .filter((s) => s)
     .map((s) => s + "*")
     .join(" ");
+
+  const includeClassification =
+    classificationId !== undefined || isUnclassified;
+  const includeSubCategory =
+    !includeClassification && subCategoryId !== undefined;
+  const includeCategory =
+    !includeSubCategory && (categoryId !== undefined || systemId !== undefined);
 
   const usersWithPublic = await prisma.$queryRaw<
     {
@@ -1577,12 +1587,17 @@ export async function searchUsersWithSharedContent(
   WHERE
     users.isAnonymous = FALSE
     AND users.userId IN (
-      SELECT ownerId FROM content WHERE isDeleted = FALSE AND (
-        isPublic = TRUE
-        OR id IN (
-          SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId}
-        )
-      )
+      SELECT ownerId 
+        FROM content 
+        ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+        WHERE
+          isDeleted = FALSE AND (
+            isPublic = TRUE
+            OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+          )
+          ${returnClassificationWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
+          ${returnFeatureWhereClauses({ isQuestion, isInteractive, containsVideo })}
+      
     )
     AND
     MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
@@ -1626,6 +1641,11 @@ export async function searchClassificationsWithSharedContent({
     .map((s) => s + "*")
     .join(" ");
 
+  const includeClassification = true;
+  const includeSubCategory = subCategoryId !== undefined;
+  const includeCategory =
+    !includeSubCategory && (categoryId !== undefined || systemId !== undefined);
+
   const matches = await prisma.$queryRaw<
     {
       id: number;
@@ -1639,19 +1659,8 @@ export async function searchClassificationsWithSharedContent({
     MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     ) as relevance
   FROM
-    classifications
-  INNER JOIN
-    classificationDescriptions ON classifications.id = classificationDescriptions.classificationId
-  INNER JOIN
-    classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
-  INNER JOIN
-    classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
-  INNER JOIN
-    classificationSystems ON classificationCategories.systemId = classificationSystems.id
-  INNER JOIN
-    contentClassifications ON contentClassifications.classificationId = classifications.id
-  INNER JOIN
-    content ON content.id = contentClassifications.contentId
+    content
+  ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
   WHERE
     content.isDeleted = FALSE
     AND (
@@ -1661,18 +1670,8 @@ export async function searchClassificationsWithSharedContent({
     AND
     (MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
-    ${
-      subCategoryId !== undefined
-        ? Prisma.sql`AND classificationSubCategories.id = ${subCategoryId}`
-        : categoryId !== undefined
-          ? Prisma.sql`AND classificationCategories.id = ${categoryId}`
-          : systemId !== undefined
-            ? Prisma.sql`AND classificationSystems.id = ${systemId}`
-            : Prisma.empty
-    }
-    ${isQuestion !== undefined ? Prisma.sql`AND content.isQuestion = ${isQuestion}` : Prisma.empty}
-    ${isInteractive !== undefined ? Prisma.sql`AND content.isInteractive = ${isInteractive}` : Prisma.empty}
-    ${containsVideo !== undefined ? Prisma.sql`AND content.containsVideo = ${containsVideo}` : Prisma.empty}
+    ${returnClassificationWhereClauses({ systemId, categoryId, subCategoryId })}
+    ${returnFeatureWhereClauses({ isQuestion, isInteractive, containsVideo })}
 
   GROUP BY
     classifications.id
@@ -1796,19 +1795,8 @@ export async function searchClassificationSubCategoriesWithSharedContent({
     classificationSystems.categoriesInDescription,
     MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) as relevance
   FROM
-    classifications
-  INNER JOIN
-    classificationDescriptions ON classifications.id = classificationDescriptions.classificationId
-  INNER JOIN
-    classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
-  INNER JOIN
-    classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
-  INNER JOIN
-    classificationSystems ON classificationCategories.systemId = classificationSystems.id
-  INNER JOIN
-    contentClassifications ON contentClassifications.classificationId = classifications.id
-  INNER JOIN
-    content ON content.id = contentClassifications.contentId
+    content
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   WHERE
     content.isDeleted = FALSE
     AND (
@@ -1817,16 +1805,8 @@ export async function searchClassificationSubCategoriesWithSharedContent({
     )
     AND
     MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    ${
-      categoryId !== undefined
-        ? Prisma.sql`AND classificationCategories.id = ${categoryId}`
-        : systemId !== undefined
-          ? Prisma.sql`AND classificationSystems.id = ${systemId}`
-          : Prisma.empty
-    }
-    ${isQuestion !== undefined ? Prisma.sql`AND content.isQuestion = ${isQuestion}` : Prisma.empty}
-    ${isInteractive !== undefined ? Prisma.sql`AND content.isInteractive = ${isInteractive}` : Prisma.empty}
-    ${containsVideo !== undefined ? Prisma.sql`AND content.containsVideo = ${containsVideo}` : Prisma.empty}
+    ${returnClassificationWhereClauses({ systemId, categoryId })}
+    ${returnFeatureWhereClauses({ isQuestion, isInteractive, containsVideo })}
 
   GROUP BY
     classificationSubCategories.id
@@ -1886,19 +1866,8 @@ export async function searchClassificationCategoriesWithSharedContent({
     classificationSystems.categoriesInDescription,
     MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) as relevance
   FROM
-    classifications
-  INNER JOIN
-    classificationDescriptions ON classifications.id = classificationDescriptions.classificationId
-  INNER JOIN
-    classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
-  INNER JOIN
-    classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
-  INNER JOIN
-    classificationSystems ON classificationCategories.systemId = classificationSystems.id
-  INNER JOIN
-    contentClassifications ON contentClassifications.classificationId = classifications.id
-  INNER JOIN
-    content ON content.id = contentClassifications.contentId
+    content
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   WHERE
     content.isDeleted = FALSE
     AND (
@@ -1907,14 +1876,8 @@ export async function searchClassificationCategoriesWithSharedContent({
     )
     AND
     MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    ${
-      systemId !== undefined
-        ? Prisma.sql`AND classificationSystems.id = ${systemId}`
-        : Prisma.empty
-    }
-    ${isQuestion !== undefined ? Prisma.sql`AND content.isQuestion = ${isQuestion}` : Prisma.empty}
-    ${isInteractive !== undefined ? Prisma.sql`AND content.isInteractive = ${isInteractive}` : Prisma.empty}
-    ${containsVideo !== undefined ? Prisma.sql`AND content.containsVideo = ${containsVideo}` : Prisma.empty}
+    ${returnClassificationWhereClauses({ systemId })}
+    ${returnFeatureWhereClauses({ isQuestion, isInteractive, containsVideo })}
 
   GROUP BY
     classificationCategories.id
@@ -3696,16 +3659,7 @@ export async function searchMyFolderContent({
     content
   LEFT JOIN
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
-  LEFT JOIN
-    contentClassifications ON content.id = contentClassifications.contentId
-  LEFT JOIN
-    classifications ON contentClassifications.classificationId = classifications.id
-  LEFT JOIN
-    classificationDescriptions ON classifications.id = classificationDescriptions.classificationId
-  LEFT JOIN
-    classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
-  LEFT JOIN
-    classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
+  ${returnClassificationJoins({ includeCategory: true, joinFromContent: true })}
   WHERE
     ${
       folderId !== null
@@ -3952,29 +3906,14 @@ export async function searchPossibleClassifications({
     ) as relevance
   FROM
     classifications
-  LEFT JOIN
-    classificationDescriptions ON classifications.id = classificationDescriptions.classificationId
-  LEFT JOIN
-    classificationSubCategories ON classificationDescriptions.subCategoryId = classificationSubCategories.id
-  INNER JOIN
-    classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
-  INNER JOIN
-    classificationSystems ON classificationCategories.systemId = classificationSystems.id
+  ${returnClassificationJoins({ includeSystem: true })}
   WHERE
     (MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
-    ${
-      subCategoryId !== undefined
-        ? Prisma.sql`AND classificationSubCategories.id = ${subCategoryId}`
-        : categoryId !== undefined
-          ? Prisma.sql`AND classificationCategories.id = ${categoryId}`
-          : systemId !== undefined
-            ? Prisma.sql`AND classificationSystems.id = ${systemId}`
-            : Prisma.empty
-    }
+    ${returnClassificationWhereClauses({ systemId, categoryId, subCategoryId })}
     
   GROUP BY
     classifications.id

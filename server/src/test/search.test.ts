@@ -946,13 +946,13 @@ test("searchSharedContent, filter by activity feature", async () => {
   expect(results.map((c) => c.id)).eqls([activityQIVId]);
 });
 
-test("searchUsersWithSharedContent returns only users with public/shared content", async () => {
+test("searchUsersWithSharedContent returns only users with public/shared/non-deleted content", async () => {
   const user1 = await createTestUser();
   const user1Id = user1.userId;
   const user2 = await createTestUser();
   const user2Id = user2.userId;
 
-  // owner 1 has only private content
+  // owner 1 has only private and deleted content
   const owner1 = await createTestUser();
   const owner1Id = owner1.userId;
 
@@ -960,6 +960,13 @@ test("searchUsersWithSharedContent returns only users with public/shared content
   await createActivity(owner1Id, null);
   const { folderId: folder1aId } = await createFolder(owner1Id, null);
   await createActivity(owner1Id, folder1aId);
+  const { activityId: activity1dId } = await createActivity(owner1Id, null);
+  await makeActivityPublic({
+    id: activity1dId,
+    ownerId: owner1Id,
+    licenseCode: "CCDUAL",
+  });
+  await deleteActivity(activity1dId, owner1Id);
 
   // owner 2 has a public activity
   const owner2 = await createTestUser();
@@ -1044,62 +1051,449 @@ test("searchUsersWithSharedContent returns only users with public/shared content
   });
 
   // user1 cannot find owner1
-  let searchResults = await searchUsersWithSharedContent(
-    owner1.lastNames,
-    user1Id,
-  );
+  let searchResults = await searchUsersWithSharedContent({
+    query: owner1.lastNames,
+    loggedInUserId: user1Id,
+  });
   expect(searchResults.length).eq(0);
 
   // user1 can find owner2
-  searchResults = await searchUsersWithSharedContent(owner2.lastNames, user1Id);
+  searchResults = await searchUsersWithSharedContent({
+    query: owner2.lastNames,
+    loggedInUserId: user1Id,
+  });
   expect(searchResults.length).eq(1);
   expect(searchResults[0].firstNames).eq(owner2.firstNames);
   expect(searchResults[0].lastNames).eq(owner2.lastNames);
 
   // user1 can find owner3
-  searchResults = await searchUsersWithSharedContent(owner3.lastNames, user1Id);
+  searchResults = await searchUsersWithSharedContent({
+    query: owner3.lastNames,
+    loggedInUserId: user1Id,
+  });
   expect(searchResults.length).eq(1);
   expect(searchResults[0].firstNames).eq(owner3.firstNames);
   expect(searchResults[0].lastNames).eq(owner3.lastNames);
 
   // user1 can find owner4
-  searchResults = await searchUsersWithSharedContent(owner4.lastNames, user1Id);
+  searchResults = await searchUsersWithSharedContent({
+    query: owner4.lastNames,
+    loggedInUserId: user1Id,
+  });
   expect(searchResults.length).eq(1);
   expect(searchResults[0].firstNames).eq(owner4.firstNames);
   expect(searchResults[0].lastNames).eq(owner4.lastNames);
 
   // user1 can find owner5
-  searchResults = await searchUsersWithSharedContent(owner5.lastNames, user1Id);
+  searchResults = await searchUsersWithSharedContent({
+    query: owner5.lastNames,
+    loggedInUserId: user1Id,
+  });
   expect(searchResults.length).eq(1);
   expect(searchResults[0].firstNames).eq(owner5.firstNames);
   expect(searchResults[0].lastNames).eq(owner5.lastNames);
 
   // user1 cannot find owner6
-  searchResults = await searchUsersWithSharedContent(owner6.lastNames, user1Id);
+  searchResults = await searchUsersWithSharedContent({
+    query: owner6.lastNames,
+    loggedInUserId: user1Id,
+  });
   expect(searchResults.length).eq(0);
 
   // user1 cannot find owner7
-  searchResults = await searchUsersWithSharedContent(owner7.lastNames, user1Id);
+  searchResults = await searchUsersWithSharedContent({
+    query: owner7.lastNames,
+    loggedInUserId: user1Id,
+  });
   expect(searchResults.length).eq(0);
 
   // user2 can find owner6
-  searchResults = await searchUsersWithSharedContent(owner6.lastNames, user2Id);
+  searchResults = await searchUsersWithSharedContent({
+    query: owner6.lastNames,
+    loggedInUserId: user2Id,
+  });
   expect(searchResults.length).eq(1);
   expect(searchResults[0].firstNames).eq(owner6.firstNames);
   expect(searchResults[0].lastNames).eq(owner6.lastNames);
 
   // user2 can find owner7
-  searchResults = await searchUsersWithSharedContent(owner7.lastNames, user2Id);
+  searchResults = await searchUsersWithSharedContent({
+    query: owner7.lastNames,
+    loggedInUserId: user2Id,
+  });
   expect(searchResults.length).eq(1);
   expect(searchResults[0].firstNames).eq(owner7.firstNames);
   expect(searchResults[0].lastNames).eq(owner7.lastNames);
 
   // user2 cannot find owner4
-  searchResults = await searchUsersWithSharedContent(owner4.lastNames, user2Id);
+  searchResults = await searchUsersWithSharedContent({
+    query: owner4.lastNames,
+    loggedInUserId: user2Id,
+  });
   expect(searchResults.length).eq(0);
 
   // user2 cannot find owner5
-  searchResults = await searchUsersWithSharedContent(owner5.lastNames, user2Id);
+  searchResults = await searchUsersWithSharedContent({
+    query: owner5.lastNames,
+    loggedInUserId: user2Id,
+  });
+  expect(searchResults.length).eq(0);
+});
+
+test("searchUsersWithSharedContent, filter by system, category, sub category, classification", async () => {
+  const classificationFA1 = (
+    await searchPossibleClassifications({ query: "FinM.A.1" })
+  )[0];
+  const classificationIdFA1 = classificationFA1.id;
+  const subCategoryIdFA = classificationFA1.descriptions[0].subCategory.id;
+  const categoryIdF = classificationFA1.descriptions[0].subCategory.category.id;
+  const systemId =
+    classificationFA1.descriptions[0].subCategory.category.system.id;
+
+  const classificationSD2 = (
+    await searchPossibleClassifications({ query: "Stats.DA.2" })
+  )[0];
+  const classificationIdSD2 = classificationSD2.id;
+  const subCategoryIdSD = classificationSD2.descriptions[0].subCategory.id;
+  const categoryIdS = classificationSD2.descriptions[0].subCategory.category.id;
+
+  const { userId } = await createTestUser();
+
+  const code = Date.now().toString();
+  const ownerLastNames = `Flintstone${code}`;
+
+  // owner 1 has only unclassified content
+  const { userId: owner1Id } = await createTestUser();
+  await updateUser({
+    userId: owner1Id,
+    firstNames: "Fred",
+    lastNames: ownerLastNames,
+  });
+  const { activityId: activity1aId } = await createActivity(owner1Id, null);
+  const { activityId: activity1bId } = await createActivity(owner1Id, null);
+  await makeActivityPublic({
+    id: activity1aId,
+    ownerId: owner1Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity1bId,
+    ownerId: owner1Id,
+    licenseCode: "CCDUAL",
+  });
+
+  // owner 2 has content in classification FA1
+  const { userId: owner2Id } = await createTestUser();
+  await updateUser({
+    userId: owner2Id,
+    firstNames: "Wilma",
+    lastNames: ownerLastNames,
+  });
+  const { activityId: activity2aId } = await createActivity(owner2Id, null);
+  const { activityId: activity2bId } = await createActivity(owner2Id, null);
+  await makeActivityPublic({
+    id: activity2aId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity2bId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+  await addClassification(activity2aId, classificationIdFA1, owner2Id);
+  await addClassification(activity2bId, classificationIdFA1, owner2Id);
+
+  // owner 3 has a content in classification SD2 and unclassified content
+  const { userId: owner3Id } = await createTestUser();
+  await updateUser({
+    userId: owner3Id,
+    firstNames: "Pebbles",
+    lastNames: ownerLastNames,
+  });
+
+  const { activityId: activity3aId } = await createActivity(owner3Id, null);
+  const { activityId: activity3bId } = await createActivity(owner3Id, null);
+  await makeActivityPublic({
+    id: activity3aId,
+    ownerId: owner3Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity3bId,
+    ownerId: owner3Id,
+    licenseCode: "CCDUAL",
+  });
+  await addClassification(activity3aId, classificationIdSD2, owner3Id);
+
+  // all three owners found with no filters
+  let searchResults = await searchUsersWithSharedContent({
+    query: ownerLastNames,
+    loggedInUserId: userId,
+  });
+  expect(searchResults.length).eq(3);
+  expect(searchResults.map((u) => u.firstNames).sort()).eqls([
+    "Fred",
+    "Pebbles",
+    "Wilma",
+  ]);
+
+  // owners 1 and 3 have unclassified content
+  searchResults = await searchUsersWithSharedContent({
+    query: ownerLastNames,
+    loggedInUserId: userId,
+    isUnclassified: true,
+  });
+  expect(searchResults.length).eq(2);
+  expect(searchResults.map((u) => u.firstNames).sort()).eqls([
+    "Fred",
+    "Pebbles",
+  ]);
+
+  // owners 2 and 3 have content classified in systemId
+  searchResults = await searchUsersWithSharedContent({
+    query: ownerLastNames,
+    loggedInUserId: userId,
+    systemId,
+  });
+  expect(searchResults.length).eq(2);
+  expect(searchResults.map((u) => u.firstNames).sort()).eqls([
+    "Pebbles",
+    "Wilma",
+  ]);
+
+  // owners 2 has content in classification FA1
+  searchResults = await searchUsersWithSharedContent({
+    query: ownerLastNames,
+    loggedInUserId: userId,
+    classificationId: classificationIdFA1,
+  });
+  expect(searchResults.length).eq(1);
+  expect(searchResults[0].firstNames).eq("Wilma");
+  searchResults = await searchUsersWithSharedContent({
+    query: ownerLastNames,
+    loggedInUserId: userId,
+    subCategoryId: subCategoryIdFA,
+  });
+  expect(searchResults.length).eq(1);
+  expect(searchResults[0].firstNames).eq("Wilma");
+  searchResults = await searchUsersWithSharedContent({
+    query: ownerLastNames,
+    loggedInUserId: userId,
+    categoryId: categoryIdF,
+  });
+  expect(searchResults.length).eq(1);
+  expect(searchResults[0].firstNames).eq("Wilma");
+
+  // owners 3 has content in classification SD2
+  searchResults = await searchUsersWithSharedContent({
+    query: ownerLastNames,
+    loggedInUserId: userId,
+    classificationId: classificationIdSD2,
+  });
+  expect(searchResults.length).eq(1);
+  expect(searchResults[0].firstNames).eq("Pebbles");
+  searchResults = await searchUsersWithSharedContent({
+    query: ownerLastNames,
+    loggedInUserId: userId,
+    subCategoryId: subCategoryIdSD,
+  });
+  expect(searchResults.length).eq(1);
+  expect(searchResults[0].firstNames).eq("Pebbles");
+  searchResults = await searchUsersWithSharedContent({
+    query: ownerLastNames,
+    loggedInUserId: userId,
+    categoryId: categoryIdS,
+  });
+  expect(searchResults.length).eq(1);
+  expect(searchResults[0].firstNames).eq("Pebbles");
+});
+
+test("searchUsersWithSharedContent, filter by activity feature", async () => {
+  const { userId } = await createTestUser();
+
+  const code = Date.now().toString();
+  const ownerLastNames = `Flintstone${code}`;
+
+  // owner 1 has only content without features and isQuestion
+  const { userId: owner1Id } = await createTestUser();
+  await updateUser({
+    userId: owner1Id,
+    firstNames: "Fred",
+    lastNames: ownerLastNames,
+  });
+  const { activityId: activity1aId } = await createActivity(owner1Id, null);
+  const { activityId: activity1bId } = await createActivity(owner1Id, null);
+  await makeActivityPublic({
+    id: activity1aId,
+    ownerId: owner1Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity1bId,
+    ownerId: owner1Id,
+    licenseCode: "CCDUAL",
+  });
+  await updateContent({
+    id: activity1bId,
+    ownerId: owner1Id,
+    isQuestion: true,
+  });
+
+  // owner 2 has content combinations of two features
+  const { userId: owner2Id } = await createTestUser();
+  await updateUser({
+    userId: owner2Id,
+    firstNames: "Wilma",
+    lastNames: ownerLastNames,
+  });
+  const { activityId: activity2aId } = await createActivity(owner2Id, null);
+  const { activityId: activity2bId } = await createActivity(owner2Id, null);
+  const { activityId: activity2cId } = await createActivity(owner2Id, null);
+  await makeActivityPublic({
+    id: activity2aId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity2bId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity2cId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+  await updateContent({
+    id: activity2aId,
+    ownerId: owner2Id,
+    isQuestion: true,
+    isInteractive: true,
+  });
+  await updateContent({
+    id: activity2bId,
+    ownerId: owner2Id,
+    isQuestion: true,
+    containsVideo: true,
+  });
+  await updateContent({
+    id: activity2cId,
+    ownerId: owner2Id,
+    containsVideo: true,
+    isInteractive: true,
+  });
+
+  // owner 3 has a content with isInteractive and containsVideo
+  const { userId: owner3Id } = await createTestUser();
+  await updateUser({
+    userId: owner3Id,
+    firstNames: "Pebbles",
+    lastNames: ownerLastNames,
+  });
+
+  const { activityId: activity3aId } = await createActivity(owner3Id, null);
+  const { activityId: activity3bId } = await createActivity(owner3Id, null);
+  await makeActivityPublic({
+    id: activity3aId,
+    ownerId: owner3Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity3bId,
+    ownerId: owner3Id,
+    licenseCode: "CCDUAL",
+  });
+  await updateContent({
+    id: activity3aId,
+    ownerId: owner3Id,
+    isInteractive: true,
+  });
+  await updateContent({
+    id: activity3bId,
+    ownerId: owner3Id,
+    containsVideo: true,
+  });
+
+  // all three owners found with no filters
+  let searchResults = await searchUsersWithSharedContent({
+    query: ownerLastNames,
+    loggedInUserId: userId,
+  });
+  expect(searchResults.length).eq(3);
+  expect(searchResults.map((u) => u.firstNames).sort()).eqls([
+    "Fred",
+    "Pebbles",
+    "Wilma",
+  ]);
+
+  // owners 1 and 2 have isQuestion
+  searchResults = await searchUsersWithSharedContent({
+    query: ownerLastNames,
+    loggedInUserId: userId,
+    isQuestion: true,
+  });
+  expect(searchResults.length).eq(2);
+  expect(searchResults.map((u) => u.firstNames).sort()).eqls(["Fred", "Wilma"]);
+
+  // owners 2 and 3 have isInteractive
+  searchResults = await searchUsersWithSharedContent({
+    query: ownerLastNames,
+    loggedInUserId: userId,
+    isInteractive: true,
+  });
+  expect(searchResults.length).eq(2);
+  expect(searchResults.map((u) => u.firstNames).sort()).eqls([
+    "Pebbles",
+    "Wilma",
+  ]);
+
+  // owners 2 and 3 have containsVideo
+  searchResults = await searchUsersWithSharedContent({
+    query: ownerLastNames,
+    loggedInUserId: userId,
+    containsVideo: true,
+  });
+  expect(searchResults.length).eq(2);
+  expect(searchResults.map((u) => u.firstNames).sort()).eqls([
+    "Pebbles",
+    "Wilma",
+  ]);
+
+  // owners 2 has combinations of two features
+  searchResults = await searchUsersWithSharedContent({
+    query: ownerLastNames,
+    loggedInUserId: userId,
+    isQuestion: true,
+    isInteractive: true,
+  });
+  expect(searchResults.length).eq(1);
+  expect(searchResults[0].firstNames).eq("Wilma");
+  searchResults = await searchUsersWithSharedContent({
+    query: ownerLastNames,
+    loggedInUserId: userId,
+    isQuestion: true,
+    containsVideo: true,
+  });
+  expect(searchResults.length).eq(1);
+  expect(searchResults[0].firstNames).eq("Wilma");
+  searchResults = await searchUsersWithSharedContent({
+    query: ownerLastNames,
+    loggedInUserId: userId,
+    containsVideo: true,
+    isInteractive: true,
+  });
+  expect(searchResults.length).eq(1);
+  expect(searchResults[0].firstNames).eq("Wilma");
+
+  // no one has all three features
+  searchResults = await searchUsersWithSharedContent({
+    query: ownerLastNames,
+    loggedInUserId: userId,
+    containsVideo: true,
+    isInteractive: true,
+    isQuestion: true,
+  });
   expect(searchResults.length).eq(0);
 });
 
