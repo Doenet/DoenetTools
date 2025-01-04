@@ -606,14 +606,14 @@ test("searchSharedContent, filter by classification", async () => {
   });
   await addClassification(activity5Id, classifyId5, ownerId);
 
-  // Create one more distractor activity with classification 1 but different text
+  // unclassified
   const { activityId: activity6Id, docId: doc6Id } = await createActivity(
     ownerId,
     null,
   );
   await updateDoc({
     id: doc6Id,
-    source: `grape${code}`,
+    source: `banana${code}`,
     ownerId,
   });
   await makeActivityPublic({
@@ -621,14 +621,38 @@ test("searchSharedContent, filter by classification", async () => {
     ownerId: ownerId,
     licenseCode: "CCDUAL",
   });
-  await addClassification(activity6Id, classifyId1, ownerId);
 
-  // get all five activities with no filtering
+  // Create one more distractor activity with classification 1 but different text
+  const { activityId: activity7Id, docId: doc7Id } = await createActivity(
+    ownerId,
+    null,
+  );
+  await updateDoc({
+    id: doc7Id,
+    source: `grape${code}`,
+    ownerId,
+  });
+  await makeActivityPublic({
+    id: activity7Id,
+    ownerId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  await addClassification(activity7Id, classifyId1, ownerId);
+
+  // get all six activities with no filtering
   let results = await searchSharedContent({
     query: `banana${code}`,
     loggedInUserId: userId,
   });
-  expect(results.length).eq(5);
+  expect(results.length).eq(6);
+
+  // filtering by unclassified reduces it to one activity
+  results = await searchSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    isUnclassified: true,
+  });
+  expect(results.length).eq(1);
 
   // filtering by system reduces it to four activities
   results = await searchSharedContent({

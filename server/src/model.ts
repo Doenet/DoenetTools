@@ -1443,6 +1443,7 @@ export async function searchSharedContent({
   categoryId,
   subCategoryId,
   classificationId,
+  isUnclassified,
   isQuestion,
   isInteractive,
   containsVideo,
@@ -1453,6 +1454,7 @@ export async function searchSharedContent({
   categoryId?: number;
   subCategoryId?: number;
   classificationId?: number;
+  isUnclassified?: boolean;
   isQuestion?: boolean;
   isInteractive?: boolean;
   containsVideo?: boolean;
@@ -1503,7 +1505,7 @@ export async function searchSharedContent({
     OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
     OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
-    ${returnClassificationWhereClauses({ systemId, categoryId, subCategoryId, classificationId })}
+    ${returnClassificationWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
     ${returnFeatureWhereClauses({ isQuestion, isInteractive, containsVideo })}
   GROUP BY
     content.id

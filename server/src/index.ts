@@ -1090,16 +1090,6 @@ app.post("/api/searchSharedContent", async (req: Request, res: Response) => {
   const isInteractive: true | undefined = req.body.isInteractive;
   const containsVideo: true | undefined = req.body.containsVideo;
 
-  console.log({
-    systemId,
-    categoryId,
-    subCategoryId,
-    classificationId,
-    isQuestion,
-    isInteractive,
-    containsVideo,
-  });
-
   res.send({
     users: (
       await searchUsersWithSharedContent({
@@ -1123,6 +1113,7 @@ app.post("/api/searchSharedContent", async (req: Request, res: Response) => {
         categoryId,
         subCategoryId,
         classificationId,
+        isUnclassified,
         isQuestion,
         isInteractive,
         containsVideo,
