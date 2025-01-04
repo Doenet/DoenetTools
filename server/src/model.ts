@@ -1944,9 +1944,7 @@ export async function browseSubCategorySharedContent({
   isInteractive?: boolean;
   containsVideo?: boolean;
 }) {
-  const pageSize = 100;
-
-  // TODO: how do we sort the classifications and the content within each classification
+  // TODO: how do we sort the content within each classification
 
   const preliminaryResults =
     await prisma.classificationSubCategories.findUniqueOrThrow({
@@ -2013,7 +2011,7 @@ export async function browseSubCategorySharedContent({
                       select: returnContentStructureFullOwnerSelect(),
                     },
                   },
-                  take: pageSize,
+                  take: 100,
                 },
               },
             },
@@ -2033,6 +2031,146 @@ export async function browseSubCategorySharedContent({
       content: description.classification.contentClassifications.map((cc) =>
         processContent(cc.content),
       ),
+    })),
+  };
+
+  return results;
+}
+
+export async function browseCategorySharedContent({
+  loggedInUserId,
+  categoryId,
+  isQuestion,
+  isInteractive,
+  containsVideo,
+}: {
+  loggedInUserId: Uint8Array;
+  categoryId?: number;
+  isQuestion?: boolean;
+  isInteractive?: boolean;
+  containsVideo?: boolean;
+}) {
+  // TODO: how do we sort the content within each classification
+
+  const preliminaryResults =
+    await prisma.classificationCategories.findUniqueOrThrow({
+      where: { id: categoryId },
+      select: {
+        category: true,
+        subCategories: {
+          where: {
+            descriptions: {
+              some: {
+                classification: {
+                  contentClassifications: {
+                    some: {
+                      content: {
+                        isDeleted: false,
+                        OR: [
+                          { isPublic: true },
+                          { sharedWith: { some: { userId: loggedInUserId } } },
+                        ],
+                        isQuestion,
+                        isInteractive,
+                        containsVideo,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          orderBy: { sortIndex: "asc" },
+          select: {
+            subCategory: true,
+            id: true,
+            category: {
+              select: {
+                category: true,
+                system: {
+                  select: {
+                    name: true,
+                    shortName: true,
+                    categoryLabel: true,
+                    subCategoryLabel: true,
+                    descriptionLabel: true,
+                    categoriesInDescription: true,
+                  },
+                },
+              },
+            },
+            descriptions: {
+              where: {
+                classification: {
+                  contentClassifications: {
+                    some: {
+                      content: {
+                        isDeleted: false,
+                        OR: [
+                          { isPublic: true },
+                          { sharedWith: { some: { userId: loggedInUserId } } },
+                        ],
+                        isQuestion,
+                        isInteractive,
+                        containsVideo,
+                      },
+                    },
+                  },
+                },
+              },
+              orderBy: { sortIndex: "asc" },
+              select: {
+                description: true,
+                id: true,
+                classification: {
+                  select: {
+                    code: true,
+                    id: true,
+                    contentClassifications: {
+                      where: {
+                        content: {
+                          isDeleted: false,
+                          OR: [
+                            { isPublic: true },
+                            {
+                              sharedWith: { some: { userId: loggedInUserId } },
+                            },
+                          ],
+                          isQuestion,
+                          isInteractive,
+                          containsVideo,
+                        },
+                      },
+                      select: {
+                        content: {
+                          select: returnContentStructureFullOwnerSelect(),
+                        },
+                      },
+                      take: 10,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+  const results = {
+    category: preliminaryResults.category,
+    subCategories: preliminaryResults.subCategories.map((subCategory) => ({
+      subCategory: subCategory.subCategory,
+      subCategoryId: subCategory.id,
+      classifications: subCategory.descriptions.map((description) => ({
+        code: description.classification.code,
+        classificationId: description.classification.id,
+        description: description.description,
+        descriptionId: description.id,
+        content: description.classification.contentClassifications.map((cc) =>
+          processContent(cc.content),
+        ),
+      })),
     })),
   };
 
