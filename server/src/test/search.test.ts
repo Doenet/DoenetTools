@@ -4,6 +4,7 @@ import {
   browseCategorySharedContent,
   browseClassificationSharedContent,
   browseSubCategorySharedContent,
+  browseUsersWithSharedContent,
   createActivity,
   createFolder,
   deleteActivity,
@@ -24,7 +25,11 @@ import {
   updateDoc,
   updateUser,
 } from "../model";
-import { createTestClassifications, createTestUser } from "./utils";
+import {
+  createTestClassifications,
+  createTestFeature,
+  createTestUser,
+} from "./utils";
 import { compareUUID, fromUUID, isEqualUUID } from "../utils/uuid";
 
 test("searchSharedContent returns public/shared activities and folders matching the query", async () => {
@@ -1577,6 +1582,752 @@ test("searchUsersWithSharedContent, filter by activity feature", async () => {
     features: { containsVideo: true, isInteractive: true, isQuestion: true },
   });
   expect(searchResults.length).eq(0);
+});
+
+test("browseUsersWithSharedContent, no filter, filter by unclassified", async () => {
+  const { userId } = await createTestUser();
+
+  const classificationId = (
+    await searchPossibleClassifications({ query: "FinM.A.3" })
+  )[0].id;
+
+  // owner 2 has two activities, one with a classification
+  const { userId: owner1Id } = await createTestUser();
+  const { activityId: activity1aId } = await createActivity(owner1Id, null);
+  await makeActivityPublic({
+    id: activity1aId,
+    ownerId: owner1Id,
+    licenseCode: "CCDUAL",
+  });
+  const { activityId: activity1bId } = await createActivity(owner1Id, null);
+  await makeActivityPublic({
+    id: activity1bId,
+    ownerId: owner1Id,
+    licenseCode: "CCDUAL",
+  });
+  await addClassification(activity1aId, classificationId, owner1Id);
+
+  // owner 2 has three activities that have a classification
+  const { userId: owner2Id } = await createTestUser();
+  const { activityId: activity2aId } = await createActivity(owner2Id, null);
+  await makeActivityPublic({
+    id: activity2aId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+  const { activityId: activity2bId } = await createActivity(owner2Id, null);
+  await makeActivityPublic({
+    id: activity2bId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+  const { activityId: activity2cId } = await createActivity(owner2Id, null);
+  await makeActivityPublic({
+    id: activity2cId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+
+  await addClassification(activity2aId, classificationId, owner2Id);
+  await addClassification(activity2bId, classificationId, owner2Id);
+  await addClassification(activity2cId, classificationId, owner2Id);
+
+  // if don't have any filter or filter just by unclassified,
+  // then there is no way to include only users from this test,
+  // so just make sure one gets at least the number of results from this test
+
+  let results = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+  });
+
+  expect(results.length).greaterThanOrEqual(2);
+
+  results = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+    isUnclassified: true,
+  });
+
+  expect(results.length).greaterThanOrEqual(1);
+
+  // to filter out just owners from this test, add a test feature
+  const code = Date.now().toString();
+  const word = "banana";
+  const feature = await createTestFeature({ word, code });
+  const features = { [feature.code]: true };
+  await updateContentFeatures({
+    id: activity2aId,
+    ownerId: owner2Id,
+    features,
+  });
+  await updateContentFeatures({
+    id: activity2bId,
+    ownerId: owner2Id,
+    features,
+  });
+  await updateContentFeatures({
+    id: activity2cId,
+    ownerId: owner2Id,
+    features,
+  });
+  await updateContentFeatures({
+    id: activity1aId,
+    ownerId: owner1Id,
+    features,
+  });
+  await updateContentFeatures({
+    id: activity1bId,
+    ownerId: owner1Id,
+    features,
+  });
+
+  // when filter by feature, just the two owners, sorted by number of activities
+  results = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+    features,
+  });
+
+  expect(results.length).eq(2);
+  expect(isEqualUUID(results[0].userId, owner2Id)).eq(true);
+  expect(results[0].numContent).eq(3);
+  expect(isEqualUUID(results[1].userId, owner1Id)).eq(true);
+  expect(results[1].numContent).eq(2);
+
+  // when filter by feature and unclassified, just get owner 1
+  results = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+    features,
+    isUnclassified: true,
+  });
+
+  expect(results.length).eq(1);
+  expect(isEqualUUID(results[0].userId, owner1Id)).eq(true);
+  expect(results[0].numContent).eq(1);
+});
+
+test("browseUsersWithSharedContent returns only users with public/shared/non-deleted content", async () => {
+  // to filter out just owners from this test, add a test feature to all of the content
+  const code = Date.now().toString();
+  const word = "banana";
+  const feature = await createTestFeature({ word, code });
+  const features = { [feature.code]: true };
+
+  const user1 = await createTestUser();
+  const user1Id = user1.userId;
+  const user2 = await createTestUser();
+  const user2Id = user2.userId;
+
+  // owner 1 has only private and deleted content
+  const owner1 = await createTestUser();
+  const owner1Id = owner1.userId;
+
+  const { activityId: activity1aId } = await createActivity(owner1Id, null);
+  await updateContentFeatures({
+    id: activity1aId,
+    ownerId: owner1Id,
+    features,
+  });
+  const { activityId: activity1bId } = await createActivity(owner1Id, null);
+  await updateContentFeatures({
+    id: activity1bId,
+    ownerId: owner1Id,
+    features,
+  });
+  const { folderId: folder1aId } = await createFolder(owner1Id, null);
+  const { activityId: activity1cId } = await createActivity(
+    owner1Id,
+    folder1aId,
+  );
+  await updateContentFeatures({
+    id: activity1cId,
+    ownerId: owner1Id,
+    features,
+  });
+  const { activityId: activity1dId } = await createActivity(owner1Id, null);
+  await makeActivityPublic({
+    id: activity1dId,
+    ownerId: owner1Id,
+    licenseCode: "CCDUAL",
+  });
+  await updateContentFeatures({
+    id: activity1dId,
+    ownerId: owner1Id,
+    features,
+  });
+  await deleteActivity(activity1dId, owner1Id);
+
+  // owner 2 has two public activities
+  const owner2 = await createTestUser();
+  const owner2Id = owner2.userId;
+
+  const { folderId: folder2aId } = await createFolder(owner2Id, null);
+  const { activityId: activity2aId } = await createActivity(
+    owner2Id,
+    folder2aId,
+  );
+  await makeActivityPublic({
+    id: activity2aId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+  await updateContentFeatures({
+    id: activity2aId,
+    ownerId: owner2Id,
+    features,
+  });
+  const { activityId: activity2bId } = await createActivity(
+    owner2Id,
+    folder2aId,
+  );
+  await makeActivityPublic({
+    id: activity2bId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+  await updateContentFeatures({
+    id: activity2bId,
+    ownerId: owner2Id,
+    features,
+  });
+
+  // owner 3 has a activity shared with user1
+  const owner3 = await createTestUser();
+  const owner3Id = owner3.userId;
+
+  const { folderId: folder3aId } = await createFolder(owner3Id, null);
+  const { activityId: activity3aId } = await createActivity(
+    owner3Id,
+    folder3aId,
+  );
+  await shareActivity({
+    id: activity3aId,
+    ownerId: owner3Id,
+    licenseCode: "CCDUAL",
+    users: [user1Id],
+  });
+  await updateContentFeatures({
+    id: activity3aId,
+    ownerId: owner3Id,
+    features,
+  });
+
+  // owner 4 has three activities shared with user2
+  const owner4 = await createTestUser();
+  const owner4Id = owner4.userId;
+
+  const { folderId: folder4aId } = await createFolder(owner4Id, null);
+  const { activityId: activity4aId } = await createActivity(
+    owner4Id,
+    folder4aId,
+  );
+  await shareActivity({
+    id: activity4aId,
+    ownerId: owner4Id,
+    licenseCode: "CCDUAL",
+    users: [user2Id],
+  });
+  await updateContentFeatures({
+    id: activity4aId,
+    ownerId: owner4Id,
+    features,
+  });
+
+  const { activityId: activity4bId } = await createActivity(
+    owner4Id,
+    folder4aId,
+  );
+  await shareActivity({
+    id: activity4bId,
+    ownerId: owner4Id,
+    licenseCode: "CCDUAL",
+    users: [user2Id],
+  });
+  await updateContentFeatures({
+    id: activity4bId,
+    ownerId: owner4Id,
+    features,
+  });
+  const { activityId: activity4cId } = await createActivity(
+    owner4Id,
+    folder4aId,
+  );
+  await shareActivity({
+    id: activity4cId,
+    ownerId: owner4Id,
+    licenseCode: "CCDUAL",
+    users: [user2Id],
+  });
+  await updateContentFeatures({
+    id: activity4cId,
+    ownerId: owner4Id,
+    features,
+  });
+
+  // user1 find only owner2, owner3
+  let result = await browseUsersWithSharedContent({
+    loggedInUserId: user1Id,
+    features,
+  });
+  expect(result.length).eq(2);
+  expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
+  expect(result[0].numContent).eq(2);
+  expect(isEqualUUID(result[1].userId, owner3Id)).eq(true);
+  expect(result[1].numContent).eq(1);
+
+  // user2 can find owner2, owner4
+  result = await browseUsersWithSharedContent({
+    loggedInUserId: user2Id,
+    features,
+  });
+  expect(result.length).eq(2);
+  expect(isEqualUUID(result[0].userId, owner4Id)).eq(true);
+  expect(result[0].numContent).eq(3);
+  expect(isEqualUUID(result[1].userId, owner2Id)).eq(true);
+  expect(result[1].numContent).eq(2);
+});
+
+test("browseUsersWithSharedContent, filter by system, category, sub category, classification", async () => {
+  // create a made up classification tree
+  const code = Date.now().toString();
+  const word = "banana";
+
+  const {
+    systemId,
+    categoryIdA,
+    subCategoryIdA1,
+    classificationIdA1A,
+    classificationIdA1B,
+    classificationIdA2A,
+    classificationIdA2B,
+    categoryIdB,
+    classificationIdB2B,
+  } = await createTestClassifications({ word, code });
+
+  const { userId } = await createTestUser();
+
+  // owner 1 has only unclassified content
+  const { userId: owner1Id } = await createTestUser();
+  const { activityId: activity1aId } = await createActivity(owner1Id, null);
+  const { activityId: activity1bId } = await createActivity(owner1Id, null);
+  await makeActivityPublic({
+    id: activity1aId,
+    ownerId: owner1Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity1bId,
+    ownerId: owner1Id,
+    licenseCode: "CCDUAL",
+  });
+
+  // owner 2 has content in classification A1A
+  const { userId: owner2Id } = await createTestUser();
+  const { activityId: activity2aId } = await createActivity(owner2Id, null);
+  const { activityId: activity2bId } = await createActivity(owner2Id, null);
+  await makeActivityPublic({
+    id: activity2aId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity2bId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+  await addClassification(activity2aId, classificationIdA1A, owner2Id);
+  await addClassification(activity2bId, classificationIdA1A, owner2Id);
+
+  // owner 3 has a content in classification B2B and unclassified content
+  const { userId: owner3Id } = await createTestUser();
+  const { activityId: activity3aId } = await createActivity(owner3Id, null);
+  const { activityId: activity3bId } = await createActivity(owner3Id, null);
+  await makeActivityPublic({
+    id: activity3aId,
+    ownerId: owner3Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity3bId,
+    ownerId: owner3Id,
+    licenseCode: "CCDUAL",
+  });
+  await addClassification(activity3aId, classificationIdB2B, owner3Id);
+
+  // owner 4 has content in classification A1A and A1B
+  const { userId: owner4Id } = await createTestUser();
+  const { activityId: activity4aId } = await createActivity(owner4Id, null);
+  const { activityId: activity4bId } = await createActivity(owner4Id, null);
+  const { activityId: activity4cId } = await createActivity(owner4Id, null);
+  await makeActivityPublic({
+    id: activity4aId,
+    ownerId: owner4Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity4bId,
+    ownerId: owner4Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity4cId,
+    ownerId: owner4Id,
+    licenseCode: "CCDUAL",
+  });
+  await addClassification(activity4aId, classificationIdA1A, owner4Id);
+  await addClassification(activity4bId, classificationIdA1B, owner4Id);
+  await addClassification(activity4cId, classificationIdA1B, owner4Id);
+
+  // owner 5 has content in classification A1B, B2B
+  const { userId: owner5Id } = await createTestUser();
+  const { activityId: activity5aId } = await createActivity(owner5Id, null);
+  const { activityId: activity5bId } = await createActivity(owner5Id, null);
+  const { activityId: activity5cId } = await createActivity(owner5Id, null);
+  const { activityId: activity5dId } = await createActivity(owner5Id, null);
+  await makeActivityPublic({
+    id: activity5aId,
+    ownerId: owner5Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity5bId,
+    ownerId: owner5Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity5cId,
+    ownerId: owner5Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity5dId,
+    ownerId: owner5Id,
+    licenseCode: "CCDUAL",
+  });
+  await addClassification(activity5aId, classificationIdA1B, owner5Id);
+  await addClassification(activity5bId, classificationIdB2B, owner5Id);
+  await addClassification(activity5cId, classificationIdB2B, owner5Id);
+  await addClassification(activity5dId, classificationIdB2B, owner5Id);
+
+  // owner 6 has content in classification A2A, A2B, and B2B
+  const { userId: owner6Id } = await createTestUser();
+  const { activityId: activity6aId } = await createActivity(owner6Id, null);
+  const { activityId: activity6bId } = await createActivity(owner6Id, null);
+  const { activityId: activity6cId } = await createActivity(owner6Id, null);
+  const { activityId: activity6dId } = await createActivity(owner6Id, null);
+  const { activityId: activity6eId } = await createActivity(owner6Id, null);
+  const { activityId: activity6fId } = await createActivity(owner6Id, null);
+  await makeActivityPublic({
+    id: activity6aId,
+    ownerId: owner6Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity6bId,
+    ownerId: owner6Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity6cId,
+    ownerId: owner6Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity6dId,
+    ownerId: owner6Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity6eId,
+    ownerId: owner6Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity6fId,
+    ownerId: owner6Id,
+    licenseCode: "CCDUAL",
+  });
+  await addClassification(activity6aId, classificationIdA2A, owner6Id);
+  await addClassification(activity6bId, classificationIdA2A, owner6Id);
+  await addClassification(activity6cId, classificationIdA2B, owner6Id);
+  await addClassification(activity6dId, classificationIdA2B, owner6Id);
+  await addClassification(activity6eId, classificationIdB2B, owner6Id);
+  await addClassification(activity6fId, classificationIdB2B, owner6Id);
+
+  // owner 7 has a content in another system
+  const outsideClassificationId = (
+    await searchPossibleClassifications({ query: "K.CC.1" })
+  )[0].id;
+
+  const { userId: owner7Id } = await createTestUser();
+  const { activityId: activity7aId } = await createActivity(owner7Id, null);
+  await makeActivityPublic({
+    id: activity7aId,
+    ownerId: owner7Id,
+    licenseCode: "CCDUAL",
+  });
+  await addClassification(activity7aId, outsideClassificationId, owner7Id);
+
+  // owners 2, 3, 4, 5, 6 have content classified in systemId
+  let result = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+    systemId,
+  });
+  expect(result.length).eq(5);
+  expect(isEqualUUID(result[0].userId, owner6Id)).eq(true);
+  expect(result[0].numContent).eq(6);
+  expect(isEqualUUID(result[1].userId, owner5Id)).eq(true);
+  expect(result[1].numContent).eq(4);
+  expect(isEqualUUID(result[2].userId, owner4Id)).eq(true);
+  expect(result[2].numContent).eq(3);
+  expect(isEqualUUID(result[3].userId, owner2Id)).eq(true);
+  expect(result[3].numContent).eq(2);
+  expect(isEqualUUID(result[4].userId, owner3Id)).eq(true);
+  expect(result[4].numContent).eq(1);
+
+  // owners 2, 4, 5, 6 have content classified in category A
+  result = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+    categoryId: categoryIdA,
+  });
+  expect(result.length).eq(4);
+  expect(isEqualUUID(result[0].userId, owner6Id)).eq(true);
+  expect(result[0].numContent).eq(4);
+  expect(isEqualUUID(result[1].userId, owner4Id)).eq(true);
+  expect(result[1].numContent).eq(3);
+  expect(isEqualUUID(result[2].userId, owner2Id)).eq(true);
+  expect(result[2].numContent).eq(2);
+  expect(isEqualUUID(result[3].userId, owner5Id)).eq(true);
+  expect(result[3].numContent).eq(1);
+
+  // owners 3, 5, 6 have content classified in category B
+  result = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+    categoryId: categoryIdB,
+  });
+  expect(result.length).eq(3);
+  expect(isEqualUUID(result[0].userId, owner5Id)).eq(true);
+  expect(result[0].numContent).eq(3);
+  expect(isEqualUUID(result[1].userId, owner6Id)).eq(true);
+  expect(result[1].numContent).eq(2);
+  expect(isEqualUUID(result[2].userId, owner3Id)).eq(true);
+  expect(result[2].numContent).eq(1);
+
+  // owners 2, 4, 5 have content classified in subcategory A1
+  result = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+    subCategoryId: subCategoryIdA1,
+  });
+  expect(result.length).eq(3);
+  expect(isEqualUUID(result[0].userId, owner4Id)).eq(true);
+  expect(result[0].numContent).eq(3);
+  expect(isEqualUUID(result[1].userId, owner2Id)).eq(true);
+  expect(result[1].numContent).eq(2);
+  expect(isEqualUUID(result[2].userId, owner5Id)).eq(true);
+  expect(result[2].numContent).eq(1);
+
+  // owners 2, 4 have content classified in classification A1A
+  result = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+    classificationId: classificationIdA1A,
+  });
+  expect(result.length).eq(2);
+  expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
+  expect(result[0].numContent).eq(2);
+  expect(isEqualUUID(result[1].userId, owner4Id)).eq(true);
+  expect(result[1].numContent).eq(1);
+
+  // owners 4, 5 have content classified in classification A1B
+  result = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+    classificationId: classificationIdA1B,
+  });
+  expect(result.length).eq(2);
+  expect(isEqualUUID(result[0].userId, owner4Id)).eq(true);
+  expect(result[0].numContent).eq(2);
+  expect(isEqualUUID(result[1].userId, owner5Id)).eq(true);
+  expect(result[1].numContent).eq(1);
+});
+
+test("browseUsersWithSharedContent, filter by activity feature", async () => {
+  // add two test features
+  const code = Date.now().toString();
+  const feature1Code = (await createTestFeature({ word: "banana", code })).code;
+  const feature2Code = (await createTestFeature({ word: "grape", code })).code;
+  const feature3Code = (await createTestFeature({ word: "orange", code })).code;
+
+  const { userId } = await createTestUser();
+
+  // owner 1 has only content without features and feature1
+  const { userId: owner1Id } = await createTestUser();
+  const { activityId: activity1aId } = await createActivity(owner1Id, null);
+  const { activityId: activity1bId } = await createActivity(owner1Id, null);
+  await makeActivityPublic({
+    id: activity1aId,
+    ownerId: owner1Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity1bId,
+    ownerId: owner1Id,
+    licenseCode: "CCDUAL",
+  });
+  await updateContentFeatures({
+    id: activity1bId,
+    ownerId: owner1Id,
+    features: { [feature1Code]: true },
+  });
+
+  // owner 2 has content combinations of two features
+  const { userId: owner2Id } = await createTestUser();
+  const { activityId: activity2aId } = await createActivity(owner2Id, null);
+  const { activityId: activity2bId } = await createActivity(owner2Id, null);
+  const { activityId: activity2cId } = await createActivity(owner2Id, null);
+  await makeActivityPublic({
+    id: activity2aId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity2bId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity2cId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+  await updateContentFeatures({
+    id: activity2aId,
+    ownerId: owner2Id,
+    features: { [feature1Code]: true, [feature2Code]: true },
+  });
+  await updateContentFeatures({
+    id: activity2bId,
+    ownerId: owner2Id,
+    features: { [feature1Code]: true, [feature3Code]: true },
+  });
+  await updateContentFeatures({
+    id: activity2cId,
+    ownerId: owner2Id,
+    features: { [feature3Code]: true, [feature2Code]: true },
+  });
+
+  // owner 3 has one content with feature 2 and and three with feature 3
+  const { userId: owner3Id } = await createTestUser();
+
+  const { activityId: activity3aId } = await createActivity(owner3Id, null);
+  const { activityId: activity3bId } = await createActivity(owner3Id, null);
+  const { activityId: activity3cId } = await createActivity(owner3Id, null);
+  const { activityId: activity3dId } = await createActivity(owner3Id, null);
+  await makeActivityPublic({
+    id: activity3aId,
+    ownerId: owner3Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity3bId,
+    ownerId: owner3Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity3cId,
+    ownerId: owner3Id,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activity3dId,
+    ownerId: owner3Id,
+    licenseCode: "CCDUAL",
+  });
+  await updateContentFeatures({
+    id: activity3aId,
+    ownerId: owner3Id,
+    features: { [feature2Code]: true },
+  });
+  await updateContentFeatures({
+    id: activity3bId,
+    ownerId: owner3Id,
+    features: { [feature3Code]: true },
+  });
+  await updateContentFeatures({
+    id: activity3cId,
+    ownerId: owner3Id,
+    features: { [feature3Code]: true },
+  });
+  await updateContentFeatures({
+    id: activity3dId,
+    ownerId: owner3Id,
+    features: { [feature3Code]: true },
+  });
+
+  // owners 1 and 2 have feature1
+  let result = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+    features: { [feature1Code]: true },
+  });
+  expect(result.length).eq(2);
+  expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
+  expect(result[0].numContent).eq(2);
+  expect(isEqualUUID(result[1].userId, owner1Id)).eq(true);
+  expect(result[1].numContent).eq(1);
+
+  // owners 2 and 3 have feature2
+  result = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+    features: { [feature2Code]: true },
+  });
+  expect(result.length).eq(2);
+  expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
+  expect(result[0].numContent).eq(2);
+  expect(isEqualUUID(result[1].userId, owner3Id)).eq(true);
+  expect(result[1].numContent).eq(1);
+
+  // owners 2 and 3 have feature3
+  result = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+    features: { [feature3Code]: true },
+  });
+  expect(result.length).eq(2);
+  expect(isEqualUUID(result[0].userId, owner3Id)).eq(true);
+  expect(result[0].numContent).eq(3);
+  expect(isEqualUUID(result[1].userId, owner2Id)).eq(true);
+  expect(result[1].numContent).eq(2);
+
+  // owners 2 has combinations of two features
+  result = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+    features: { [feature1Code]: true, [feature2Code]: true },
+  });
+  expect(result.length).eq(1);
+  expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
+  expect(result[0].numContent).eq(1);
+
+  result = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+    features: { [feature1Code]: true, [feature3Code]: true },
+  });
+  expect(result.length).eq(1);
+  expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
+  expect(result[0].numContent).eq(1);
+
+  result = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+    features: { [feature3Code]: true, [feature2Code]: true },
+  });
+  expect(result.length).eq(1);
+  expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
+  expect(result[0].numContent).eq(1);
+
+  // no one has all three features
+  result = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+    features: {
+      [feature3Code]: true,
+      [feature2Code]: true,
+      [feature1Code]: true,
+    },
+  });
+  expect(result.length).eq(0);
 });
 
 test("searchClassificationsWithSharedContent, returns only classifications with public/shared/non-deleted content", async () => {

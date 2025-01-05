@@ -41,14 +41,33 @@ export async function createTestAnonymousUser() {
 }
 
 export async function createTestClassifications({
-  systemId,
+  systemId: originalSystemId,
   word,
   code,
 }: {
-  systemId: number;
+  systemId?: number;
   word: string;
   code: string;
 }) {
+  let systemId;
+  if (originalSystemId === undefined) {
+    // if systemId is undefined, then create a new system
+    const system = await prisma.classificationSystems.create({
+      data: {
+        name: `${word}${code}`,
+        shortName: `${word}${code}`,
+        categoryLabel: "",
+        subCategoryLabel: "",
+        descriptionLabel: "",
+        sortIndex: 100,
+        type: "other",
+      },
+    });
+    systemId = system.id;
+  } else {
+    systemId = originalSystemId;
+  }
+
   ////////////////
   // A. category A
   ////////////////
@@ -229,6 +248,7 @@ export async function createTestClassifications({
 
   onTestFinished(() =>
     deleteTestClassifications({
+      systemId: originalSystemId === undefined ? systemId : undefined,
       categoryIdA,
       subCategoryIdA1,
       classificationIdA1A,
@@ -247,6 +267,7 @@ export async function createTestClassifications({
   );
 
   return {
+    systemId,
     categoryIdA,
     subCategoryIdA1,
     classificationIdA1A,
@@ -265,6 +286,7 @@ export async function createTestClassifications({
 }
 
 export async function deleteTestClassifications({
+  systemId,
   categoryIdA,
   subCategoryIdA1,
   classificationIdA1A,
@@ -280,6 +302,7 @@ export async function deleteTestClassifications({
   classificationIdB2A,
   classificationIdB2B,
 }: {
+  systemId?: number;
   categoryIdA: number;
   subCategoryIdA1: number;
   classificationIdA1A: number;
@@ -426,4 +449,33 @@ export async function deleteTestClassifications({
   });
 
   await prisma.classificationCategories.delete({ where: { id: categoryIdB } });
+
+  if (systemId) {
+    await prisma.classificationSystems.delete({ where: { id: systemId } });
+  }
+}
+
+export async function createTestFeature({
+  word,
+  code,
+}: {
+  word: string;
+  code: string;
+}) {
+  const feature = await prisma.contentFeatures.create({
+    data: {
+      code: `${word}${code}`,
+      term: `${word}${code}`,
+      description: `${word} ${code}`,
+      sortIndex: 10,
+    },
+  });
+
+  onTestFinished(() => deleteTestFeature(feature.id));
+
+  return feature;
+}
+
+export async function deleteTestFeature(featureId: number) {
+  await prisma.contentFeatures.delete({ where: { id: featureId } });
 }

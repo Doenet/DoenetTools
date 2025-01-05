@@ -1594,7 +1594,7 @@ export async function searchUsersWithSharedContent({
   const includeCategory =
     !includeSubCategory && (categoryId !== undefined || systemId !== undefined);
 
-  const usersWithPublic = await prisma.$queryRaw<
+  const usersWithShared = await prisma.$queryRaw<
     {
       userId: Uint8Array;
       firstNames: string | null;
@@ -1629,11 +1629,87 @@ export async function searchUsersWithSharedContent({
   LIMIT 100
   `);
 
-  const usersWithPublic2: UserInfo[] = usersWithPublic.map((u) => ({
+  const usersWithShared2: UserInfo[] = usersWithShared.map((u) => ({
     ...u,
     email: "",
   }));
-  return usersWithPublic2;
+  return usersWithShared2;
+}
+
+export async function browseUsersWithSharedContent({
+  loggedInUserId,
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+  isUnclassified,
+  features,
+  page = 1,
+}: {
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+  isUnclassified?: boolean;
+  features?: Record<string, boolean>;
+  page?: number;
+}) {
+  const pageSize = 100;
+
+  const includeClassification =
+    classificationId !== undefined || isUnclassified;
+  const includeSubCategory =
+    !includeClassification && subCategoryId !== undefined;
+  const includeCategory =
+    !includeSubCategory && (categoryId !== undefined || systemId !== undefined);
+
+  const usersWithShared = await prisma.$queryRaw<
+    {
+      userId: Uint8Array;
+      firstNames: string | null;
+      lastNames: string;
+      numContent: bigint;
+    }[]
+  >(Prisma.sql`
+  SELECT
+    users.userId, users.firstNames, users.lastNames, COUNT(content.id) AS numContent
+  FROM
+    users
+  INNER JOIN
+    content on content.ownerId = users.userId
+  WHERE
+    users.isAnonymous = FALSE
+    AND content.id IN (
+      SELECT content.id
+      FROM content
+      ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+      ${returnFeatureJoins(features)}
+      WHERE
+        content.isFolder = FALSE
+        AND content.isDeleted = FALSE
+        AND (
+          content.isPublic = TRUE
+          OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+        )
+        ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
+        ${returnFeatureWhereClauses(features)}
+    )
+  GROUP BY
+    users.userId
+  ORDER BY
+    numContent DESC
+  LIMIT ${pageSize}
+  OFFSET ${(page - 1) * pageSize}
+  `);
+
+  const usersWithShared2: (UserInfo & { numContent: number })[] =
+    usersWithShared.map((u) => ({
+      ...u,
+      email: "",
+      numContent: Number(u.numContent),
+    }));
+  return usersWithShared2;
 }
 
 export async function searchClassificationsWithSharedContent({
