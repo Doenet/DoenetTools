@@ -972,6 +972,70 @@ test("searchSharedContent, filter by activity feature", async () => {
   expect(results.map((c) => c.id)).eqls([activityQIVId]);
 });
 
+test("searchSharedContent, filter by owner name", async () => {
+  const { userId } = await createTestUser();
+
+  const { userId: owner1Id } = await createTestUser();
+  const { userId: owner2Id } = await createTestUser();
+
+  // unique code to distinguish content added in this test
+  const code = `${Date.now()}`;
+
+  // Create identical activities, with only difference being the owner
+  const { activityId: activity1Id, docId: doc1Id } = await createActivity(
+    owner1Id,
+    null,
+  );
+  await updateDoc({
+    id: doc1Id,
+    source: `banana${code}`,
+    ownerId: owner1Id,
+  });
+  await makeActivityPublic({
+    id: activity1Id,
+    ownerId: owner1Id,
+    licenseCode: "CCDUAL",
+  });
+
+  const { activityId: activity2Id, docId: doc2Id } = await createActivity(
+    owner2Id,
+    null,
+  );
+  await updateDoc({
+    id: doc2Id,
+    source: `banana${code}`,
+    ownerId: owner2Id,
+  });
+  await makeActivityPublic({
+    id: activity2Id,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+
+  // get both activities with no filtering
+  let results = await searchSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+  });
+  expect(results.map((c) => c.id)).eqls([activity1Id, activity2Id]);
+
+  // filter for owner 1
+  results = await searchSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    ownerId: owner1Id,
+  });
+  expect(results.map((c) => c.id)).eqls([activity1Id]);
+
+  // filter for owner 2
+  results = await searchSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    ownerId: owner2Id,
+  });
+  expect(results.map((c) => c.id)).eqls([activity2Id]);
+});
+
 test("searchUsersWithSharedContent returns only users with public/shared/non-deleted content", async () => {
   const user1 = await createTestUser();
   const user1Id = user1.userId;

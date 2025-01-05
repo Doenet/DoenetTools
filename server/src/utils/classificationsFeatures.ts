@@ -71,7 +71,96 @@ export function returnClassificationJoins({
   }`;
 }
 
-export function returnClassificationWhereClauses({
+export function returnClassificationMatchClauses({
+  query_as_prefixes,
+  matchClassification = false,
+  matchSubCategory = false,
+  matchCategory = false,
+  matchSystem = false,
+  prependOperator = false,
+  operator = "OR",
+}: {
+  query_as_prefixes: string;
+  matchClassification?: boolean;
+  matchSubCategory?: boolean;
+  matchCategory?: boolean;
+  matchSystem?: boolean;
+  prependOperator?: boolean;
+  operator?: "+" | "OR";
+}) {
+  if (!(matchClassification || matchSubCategory || matchCategory)) {
+    return Prisma.empty;
+  }
+
+  let classificationSQL;
+
+  if (matchClassification) {
+    classificationSQL = Prisma.sql`
+      MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      + MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)`;
+
+    if (prependOperator) {
+      if (operator === "OR") {
+        classificationSQL = Prisma.sql`OR ${classificationSQL}`;
+      } else {
+        classificationSQL = Prisma.sql`+ ${classificationSQL}`;
+      }
+    }
+  } else {
+    classificationSQL = Prisma.empty;
+  }
+
+  let subCategorySQL;
+  if (matchSubCategory) {
+    subCategorySQL = Prisma.sql`MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)`;
+    if (prependOperator || matchClassification) {
+      if (operator === "OR") {
+        subCategorySQL = Prisma.sql`OR ${subCategorySQL}`;
+      } else {
+        subCategorySQL = Prisma.sql`+ ${subCategorySQL}`;
+      }
+    }
+  } else {
+    subCategorySQL = Prisma.empty;
+  }
+
+  let categorySQL;
+  if (matchCategory) {
+    categorySQL = Prisma.sql`MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)`;
+    if (prependOperator || matchClassification || matchSubCategory) {
+      if (operator === "OR") {
+        categorySQL = Prisma.sql`OR ${categorySQL}`;
+      } else {
+        categorySQL = Prisma.sql`+ ${categorySQL}`;
+      }
+    }
+  } else {
+    categorySQL = Prisma.empty;
+  }
+
+  let systemSQL;
+  if (matchSystem) {
+    systemSQL = Prisma.sql`MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)`;
+    if (
+      prependOperator ||
+      matchClassification ||
+      matchSubCategory ||
+      matchCategory
+    ) {
+      if (operator === "OR") {
+        systemSQL = Prisma.sql`OR ${systemSQL}`;
+      } else {
+        systemSQL = Prisma.sql`+ ${systemSQL}`;
+      }
+    }
+  } else {
+    systemSQL = Prisma.empty;
+  }
+
+  return Prisma.sql`${classificationSQL} ${subCategorySQL} ${categorySQL} ${systemSQL}`;
+}
+
+export function returnClassificationFilterWhereClauses({
   systemId,
   categoryId,
   subCategoryId,

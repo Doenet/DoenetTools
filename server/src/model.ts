@@ -13,10 +13,11 @@ import {
 } from "./types";
 import {
   returnClassificationJoins,
-  returnClassificationWhereClauses,
+  returnClassificationFilterWhereClauses,
   returnFeatureJoins,
   returnFeatureWhereClauses,
   sortClassifications,
+  returnClassificationMatchClauses,
 } from "./utils/classificationsFeatures";
 import {
   processContentSharedDetails,
@@ -1464,6 +1465,7 @@ export async function searchSharedContent({
   classificationId,
   isUnclassified,
   features,
+  ownerId,
 }: {
   query: string;
   loggedInUserId: Uint8Array;
@@ -1473,6 +1475,7 @@ export async function searchSharedContent({
   classificationId?: number;
   isUnclassified?: boolean;
   features?: Record<string, boolean>;
+  ownerId?: Uint8Array;
 }) {
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
@@ -1483,6 +1486,14 @@ export async function searchSharedContent({
     .map((s) => s + "*")
     .join(" ");
 
+  const matchClassification = !isUnclassified && classificationId === undefined;
+  const matchSubCategory = matchClassification && subCategoryId === undefined;
+  const matchCategory = matchSubCategory && categoryId === undefined;
+
+  const includeClassification = true;
+  const includeSubCategory = matchClassification;
+  const includeCategory = matchSubCategory;
+
   const matches = await prisma.$queryRaw<
     {
       id: Uint8Array;
@@ -1491,13 +1502,10 @@ export async function searchSharedContent({
   >(Prisma.sql`
   SELECT
     content.id,
-    AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
-    (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
-    MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100)
+    +(MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100)
+    ${ownerId === undefined ? Prisma.sql`+ MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
+    ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "+" })}
     ) as relevance
   FROM
     content
@@ -1505,7 +1513,7 @@ export async function searchSharedContent({
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
   LEFT JOIN
     users ON content.ownerId = users.userId
-  ${returnClassificationJoins({ includeCategory: true, joinFromContent: true })}
+  ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
     content.isDeleted = FALSE
@@ -1514,15 +1522,15 @@ export async function searchSharedContent({
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
     )
     AND
-    (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
-    ${returnClassificationWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
+    (
+      MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
+      ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
+    )
+    ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
     ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND users.userId=${ownerId}`}
   GROUP BY
     content.id
   ORDER BY
@@ -1610,7 +1618,7 @@ export async function searchUsersWithSharedContent({
             isPublic = TRUE
             OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
           )
-          ${returnClassificationWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
+          ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
           ${returnFeatureWhereClauses(features)}
       
     )
@@ -1666,8 +1674,7 @@ export async function searchClassificationsWithSharedContent({
   SELECT
     classifications.id,
     AVG(
-    MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, operator: "+" })}
     ) as relevance
   FROM
     content
@@ -1680,9 +1687,10 @@ export async function searchClassificationsWithSharedContent({
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
     )
     AND
-    (MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
-    ${returnClassificationWhereClauses({ systemId, categoryId, subCategoryId })}
+    (
+      ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, operator: "OR" })}
+    )
+    ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId })}
     ${returnFeatureWhereClauses(features)}
 
   GROUP BY
@@ -1808,7 +1816,7 @@ export async function searchClassificationSubCategoriesWithSharedContent({
     classificationSystems.categoryLabel,
     classificationSystems.subCategoryLabel,
     classificationSystems.categoriesInDescription,
-    MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) as relevance
+    ${returnClassificationMatchClauses({ query_as_prefixes, matchSubCategory: true })} as relevance
   FROM
     content
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
@@ -1820,8 +1828,8 @@ export async function searchClassificationSubCategoriesWithSharedContent({
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
     )
     AND
-    MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    ${returnClassificationWhereClauses({ systemId, categoryId })}
+    ${returnClassificationMatchClauses({ query_as_prefixes, matchSubCategory: true })}
+    ${returnClassificationFilterWhereClauses({ systemId, categoryId })}
     ${returnFeatureWhereClauses(features)}
 
   GROUP BY
@@ -1876,7 +1884,7 @@ export async function searchClassificationCategoriesWithSharedContent({
     classificationSystems.categoryLabel,
     classificationSystems.subCategoryLabel,
     classificationSystems.categoriesInDescription,
-    MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) as relevance
+    ${returnClassificationMatchClauses({ query_as_prefixes, matchCategory: true })} as relevance
   FROM
     content
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
@@ -1888,8 +1896,8 @@ export async function searchClassificationCategoriesWithSharedContent({
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
     )
     AND
-    MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    ${returnClassificationWhereClauses({ systemId })}
+    ${returnClassificationMatchClauses({ query_as_prefixes, matchCategory: true })}
+    ${returnClassificationFilterWhereClauses({ systemId })}
     ${returnFeatureWhereClauses(features)}
 
   GROUP BY
@@ -3810,10 +3818,7 @@ export async function searchMyFolderContent({
     content.id,
     AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
     (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
-    MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, matchSubCategory: true, matchCategory: true, prependOperator: true, operator: "+" })} 
     ) as relevance
   FROM
     content
@@ -3827,12 +3832,11 @@ export async function searchMyFolderContent({
         : Prisma.sql`content.ownerId = ${loggedInUserId} AND content.isDeleted = FALSE`
     }
     AND
-    (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+    (
+      MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, matchSubCategory: true, matchCategory: true, prependOperator: true, operator: "OR" })} 
+    )
   GROUP BY
     content.id
   ORDER BY
@@ -4049,6 +4053,16 @@ export async function searchPossibleClassifications({
     .join(" ");
 
   if (query_as_prefixes.length > 0) {
+    const matchClassification = true;
+    const matchSubCategory = subCategoryId === undefined;
+    const matchCategory = matchSubCategory && categoryId === undefined;
+    const matchSystem = matchCategory && systemId === undefined;
+
+    const includeClassification = true;
+    const includeSubCategory = true;
+    const includeCategory = matchSubCategory;
+    const includeSystem = matchCategory;
+
     const matches = await prisma.$queryRaw<
       {
         id: number;
@@ -4058,22 +4072,16 @@ export async function searchPossibleClassifications({
   SELECT
     classifications.id,
     AVG(
-    MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, matchSystem, operator: "+" })} 
     ) as relevance
   FROM
     classifications
-  ${returnClassificationJoins({ includeSystem: true })}
+    ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, includeSystem })}
   WHERE
-    (MATCH(classifications.code) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classificationDescriptions.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classificationSystems.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
-    ${returnClassificationWhereClauses({ systemId, categoryId, subCategoryId })}
+    (
+      ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, matchSystem, operator: "OR" })} 
+    )
+    ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId })}
     
   GROUP BY
     classifications.id
