@@ -3905,6 +3905,492 @@ test("browseCategorySharedContent, returns only public/shared/non-deleted conten
   ).eq(true);
 });
 
+test("browseCategorySharedContent, filter by activity feature", async () => {
+  const { userId } = await createTestUser();
+  const { userId: ownerId } = await createTestUser();
+  const licenseCode = "CCDUAL";
+
+  // create a made up classification tree
+  const code = Date.now().toString();
+  const word = "banana";
+
+  const systemId = (
+    await searchPossibleClassifications({ query: "FinM.A.3" })
+  )[0].descriptions[0].subCategory.category.system.id;
+
+  const {
+    categoryIdA,
+    subCategoryIdA1,
+    classificationIdA1A,
+    subCategoryIdA2,
+    classificationIdA2B,
+  } = await createTestClassifications({
+    systemId,
+    word,
+    code,
+  });
+
+  // add activities with different features to to A1A and A2B
+  const { activityId: activityIdNA } = await createActivity(ownerId, null);
+  const { activityId: activityIdQA } = await createActivity(ownerId, null);
+  const { activityId: activityIdIA } = await createActivity(ownerId, null);
+  const { activityId: activityIdVA } = await createActivity(ownerId, null);
+  const { activityId: activityIdQIA } = await createActivity(ownerId, null);
+  const { activityId: activityIdQVA } = await createActivity(ownerId, null);
+  const { activityId: activityIdIVA } = await createActivity(ownerId, null);
+  const { activityId: activityIdQIVA } = await createActivity(ownerId, null);
+  const { activityId: activityIdNB } = await createActivity(ownerId, null);
+  const { activityId: activityIdQB } = await createActivity(ownerId, null);
+  const { activityId: activityIdIB } = await createActivity(ownerId, null);
+  const { activityId: activityIdVB } = await createActivity(ownerId, null);
+  const { activityId: activityIdQIB } = await createActivity(ownerId, null);
+  const { activityId: activityIdQVB } = await createActivity(ownerId, null);
+  const { activityId: activityIdIVB } = await createActivity(ownerId, null);
+  const { activityId: activityIdQIVB } = await createActivity(ownerId, null);
+
+  const activityIdNAString = fromUUID(activityIdNA);
+  const activityIdQAString = fromUUID(activityIdQA);
+  const activityIdIAString = fromUUID(activityIdIA);
+  const activityIdVAString = fromUUID(activityIdVA);
+  const activityIdQIAString = fromUUID(activityIdQIA);
+  const activityIdQVAString = fromUUID(activityIdQVA);
+  const activityIdIVAString = fromUUID(activityIdIVA);
+  const activityIdQIVAString = fromUUID(activityIdQIVA);
+  const activityIdNBString = fromUUID(activityIdNB);
+  const activityIdQBString = fromUUID(activityIdQB);
+  const activityIdIBString = fromUUID(activityIdIB);
+  const activityIdVBString = fromUUID(activityIdVB);
+  const activityIdQIBString = fromUUID(activityIdQIB);
+  const activityIdQVBString = fromUUID(activityIdQVB);
+  const activityIdIVBString = fromUUID(activityIdIVB);
+  const activityIdQIVBString = fromUUID(activityIdQIVB);
+
+  await makeActivityPublic({ id: activityIdNA, licenseCode, ownerId });
+  await makeActivityPublic({ id: activityIdQA, licenseCode, ownerId });
+  await makeActivityPublic({ id: activityIdIA, licenseCode, ownerId });
+  await makeActivityPublic({ id: activityIdVA, licenseCode, ownerId });
+  await makeActivityPublic({ id: activityIdQIA, licenseCode, ownerId });
+  await makeActivityPublic({ id: activityIdQVA, licenseCode, ownerId });
+  await makeActivityPublic({ id: activityIdIVA, licenseCode, ownerId });
+  await makeActivityPublic({ id: activityIdQIVA, licenseCode, ownerId });
+  await makeActivityPublic({ id: activityIdNB, licenseCode, ownerId });
+  await makeActivityPublic({ id: activityIdQB, licenseCode, ownerId });
+  await makeActivityPublic({ id: activityIdIB, licenseCode, ownerId });
+  await makeActivityPublic({ id: activityIdVB, licenseCode, ownerId });
+  await makeActivityPublic({ id: activityIdQIB, licenseCode, ownerId });
+  await makeActivityPublic({ id: activityIdQVB, licenseCode, ownerId });
+  await makeActivityPublic({ id: activityIdIVB, licenseCode, ownerId });
+  await makeActivityPublic({ id: activityIdQIVB, licenseCode, ownerId });
+
+  await addClassification(activityIdNA, classificationIdA1A, ownerId);
+  await addClassification(activityIdQA, classificationIdA1A, ownerId);
+  await addClassification(activityIdIA, classificationIdA1A, ownerId);
+  await addClassification(activityIdVA, classificationIdA1A, ownerId);
+  await addClassification(activityIdQIA, classificationIdA1A, ownerId);
+  await addClassification(activityIdQVA, classificationIdA1A, ownerId);
+  await addClassification(activityIdIVA, classificationIdA1A, ownerId);
+  await addClassification(activityIdQIVA, classificationIdA1A, ownerId);
+  await addClassification(activityIdNB, classificationIdA2B, ownerId);
+  await addClassification(activityIdQB, classificationIdA2B, ownerId);
+  await addClassification(activityIdIB, classificationIdA2B, ownerId);
+  await addClassification(activityIdVB, classificationIdA2B, ownerId);
+  await addClassification(activityIdQIB, classificationIdA2B, ownerId);
+  await addClassification(activityIdQVB, classificationIdA2B, ownerId);
+  await addClassification(activityIdIVB, classificationIdA2B, ownerId);
+  await addClassification(activityIdQIVB, classificationIdA2B, ownerId);
+
+  await updateContentFeatures({
+    id: activityIdQA,
+    ownerId,
+    features: { isQuestion: true },
+  });
+  await updateContentFeatures({
+    id: activityIdIA,
+    ownerId,
+    features: { isInteractive: true },
+  });
+  await updateContentFeatures({
+    id: activityIdVA,
+    ownerId,
+    features: { containsVideo: true },
+  });
+  await updateContentFeatures({
+    id: activityIdQIA,
+    ownerId,
+    features: { isQuestion: true, isInteractive: true },
+  });
+  await updateContentFeatures({
+    id: activityIdQVA,
+    ownerId,
+    features: { isQuestion: true, containsVideo: true },
+  });
+  await updateContentFeatures({
+    id: activityIdIVA,
+    ownerId,
+    features: { isInteractive: true, containsVideo: true },
+  });
+  await updateContentFeatures({
+    id: activityIdQIVA,
+    ownerId,
+    features: { isQuestion: true, isInteractive: true, containsVideo: true },
+  });
+
+  await updateContentFeatures({
+    id: activityIdQB,
+    ownerId,
+    features: { isQuestion: true },
+  });
+  await updateContentFeatures({
+    id: activityIdIB,
+    ownerId,
+    features: { isInteractive: true },
+  });
+  await updateContentFeatures({
+    id: activityIdVB,
+    ownerId,
+    features: { containsVideo: true },
+  });
+  await updateContentFeatures({
+    id: activityIdQIB,
+    ownerId,
+    features: { isQuestion: true, isInteractive: true },
+  });
+  await updateContentFeatures({
+    id: activityIdQVB,
+    ownerId,
+    features: { isQuestion: true, containsVideo: true },
+  });
+  await updateContentFeatures({
+    id: activityIdIVB,
+    ownerId,
+    features: { isInteractive: true, containsVideo: true },
+  });
+  await updateContentFeatures({
+    id: activityIdQIVB,
+    ownerId,
+    features: { isQuestion: true, isInteractive: true, containsVideo: true },
+  });
+
+  // no filter, get everything
+  let results = await browseCategorySharedContent({
+    loggedInUserId: userId,
+    categoryId: categoryIdA,
+  });
+
+  expect(results.subCategories.length).eq(2);
+  expect(results.subCategories[0].subCategoryId).eq(subCategoryIdA1);
+  expect(results.subCategories[0].classifications.length).eq(1);
+  expect(results.subCategories[0].classifications[0].classificationId).eq(
+    classificationIdA1A,
+  );
+  expect(results.subCategories[0].classifications[0].content.length).eq(8);
+  expect(
+    results.subCategories[0].classifications[0].content
+      .map((c) => fromUUID(c.id))
+      .sort(),
+  ).eqls(
+    [
+      activityIdNAString,
+      activityIdQAString,
+      activityIdIAString,
+      activityIdVAString,
+      activityIdQIAString,
+      activityIdQVAString,
+      activityIdIVAString,
+      activityIdQIVAString,
+    ].sort(),
+  );
+
+  expect(results.subCategories[1].subCategoryId).eq(subCategoryIdA2);
+  expect(results.subCategories[1].classifications.length).eq(1);
+  expect(results.subCategories[1].classifications[0].classificationId).eq(
+    classificationIdA2B,
+  );
+  expect(results.subCategories[1].classifications[0].content.length).eq(8);
+  expect(
+    results.subCategories[1].classifications[0].content
+      .map((c) => fromUUID(c.id))
+      .sort(),
+  ).eqls(
+    [
+      activityIdNBString,
+      activityIdQBString,
+      activityIdIBString,
+      activityIdVBString,
+      activityIdQIBString,
+      activityIdQVBString,
+      activityIdIVBString,
+      activityIdQIVBString,
+    ].sort(),
+  );
+
+  // filter by isQuestion
+  results = await browseCategorySharedContent({
+    loggedInUserId: userId,
+    categoryId: categoryIdA,
+    features: { isQuestion: true },
+  });
+
+  expect(results.subCategories.length).eq(2);
+  expect(results.subCategories[0].subCategoryId).eq(subCategoryIdA1);
+  expect(results.subCategories[0].classifications.length).eq(1);
+  expect(results.subCategories[0].classifications[0].classificationId).eq(
+    classificationIdA1A,
+  );
+  expect(results.subCategories[0].classifications[0].content.length).eq(4);
+  expect(
+    results.subCategories[0].classifications[0].content
+      .map((c) => fromUUID(c.id))
+      .sort(),
+  ).eqls(
+    [
+      activityIdQAString,
+      activityIdQIAString,
+      activityIdQVAString,
+      activityIdQIVAString,
+    ].sort(),
+  );
+
+  expect(results.subCategories[1].subCategoryId).eq(subCategoryIdA2);
+  expect(results.subCategories[1].classifications.length).eq(1);
+  expect(results.subCategories[1].classifications[0].classificationId).eq(
+    classificationIdA2B,
+  );
+  expect(results.subCategories[1].classifications[0].content.length).eq(4);
+  expect(
+    results.subCategories[1].classifications[0].content
+      .map((c) => fromUUID(c.id))
+      .sort(),
+  ).eqls(
+    [
+      activityIdQBString,
+      activityIdQIBString,
+      activityIdQVBString,
+      activityIdQIVBString,
+    ].sort(),
+  );
+
+  // filter by isInteractive
+  results = await browseCategorySharedContent({
+    loggedInUserId: userId,
+    categoryId: categoryIdA,
+    features: { isInteractive: true },
+  });
+
+  expect(results.subCategories.length).eq(2);
+  expect(results.subCategories[0].subCategoryId).eq(subCategoryIdA1);
+  expect(results.subCategories[0].classifications.length).eq(1);
+  expect(results.subCategories[0].classifications[0].classificationId).eq(
+    classificationIdA1A,
+  );
+  expect(results.subCategories[0].classifications[0].content.length).eq(4);
+  expect(
+    results.subCategories[0].classifications[0].content
+      .map((c) => fromUUID(c.id))
+      .sort(),
+  ).eqls(
+    [
+      activityIdIAString,
+      activityIdQIAString,
+      activityIdIVAString,
+      activityIdQIVAString,
+    ].sort(),
+  );
+
+  expect(results.subCategories[1].subCategoryId).eq(subCategoryIdA2);
+  expect(results.subCategories[1].classifications.length).eq(1);
+  expect(results.subCategories[1].classifications[0].classificationId).eq(
+    classificationIdA2B,
+  );
+  expect(results.subCategories[1].classifications[0].content.length).eq(4);
+  expect(
+    results.subCategories[1].classifications[0].content
+      .map((c) => fromUUID(c.id))
+      .sort(),
+  ).eqls(
+    [
+      activityIdIBString,
+      activityIdQIBString,
+      activityIdIVBString,
+      activityIdQIVBString,
+    ].sort(),
+  );
+
+  // filter by containsVideo
+  results = await browseCategorySharedContent({
+    loggedInUserId: userId,
+    categoryId: categoryIdA,
+    features: { containsVideo: true },
+  });
+
+  expect(results.subCategories.length).eq(2);
+  expect(results.subCategories[0].subCategoryId).eq(subCategoryIdA1);
+  expect(results.subCategories[0].classifications.length).eq(1);
+  expect(results.subCategories[0].classifications[0].classificationId).eq(
+    classificationIdA1A,
+  );
+  expect(results.subCategories[0].classifications[0].content.length).eq(4);
+  expect(
+    results.subCategories[0].classifications[0].content
+      .map((c) => fromUUID(c.id))
+      .sort(),
+  ).eqls(
+    [
+      activityIdVAString,
+      activityIdQVAString,
+      activityIdIVAString,
+      activityIdQIVAString,
+    ].sort(),
+  );
+
+  expect(results.subCategories[1].subCategoryId).eq(subCategoryIdA2);
+  expect(results.subCategories[1].classifications.length).eq(1);
+  expect(results.subCategories[1].classifications[0].classificationId).eq(
+    classificationIdA2B,
+  );
+  expect(results.subCategories[1].classifications[0].content.length).eq(4);
+  expect(
+    results.subCategories[1].classifications[0].content
+      .map((c) => fromUUID(c.id))
+      .sort(),
+  ).eqls(
+    [
+      activityIdVBString,
+      activityIdQVBString,
+      activityIdIVBString,
+      activityIdQIVBString,
+    ].sort(),
+  );
+
+  // filter by isQuestion, isInteractive
+  results = await browseCategorySharedContent({
+    loggedInUserId: userId,
+    categoryId: categoryIdA,
+    features: { isQuestion: true, isInteractive: true },
+  });
+
+  expect(results.subCategories.length).eq(2);
+  expect(results.subCategories[0].subCategoryId).eq(subCategoryIdA1);
+  expect(results.subCategories[0].classifications.length).eq(1);
+  expect(results.subCategories[0].classifications[0].classificationId).eq(
+    classificationIdA1A,
+  );
+  expect(results.subCategories[0].classifications[0].content.length).eq(2);
+  expect(
+    results.subCategories[0].classifications[0].content
+      .map((c) => fromUUID(c.id))
+      .sort(),
+  ).eqls([activityIdQIAString, activityIdQIVAString].sort());
+
+  expect(results.subCategories[1].subCategoryId).eq(subCategoryIdA2);
+  expect(results.subCategories[1].classifications.length).eq(1);
+  expect(results.subCategories[1].classifications[0].classificationId).eq(
+    classificationIdA2B,
+  );
+  expect(results.subCategories[1].classifications[0].content.length).eq(2);
+  expect(
+    results.subCategories[1].classifications[0].content
+      .map((c) => fromUUID(c.id))
+      .sort(),
+  ).eqls([activityIdQIBString, activityIdQIVBString].sort());
+
+  // filter by isQuestion, containsVideo
+  results = await browseCategorySharedContent({
+    loggedInUserId: userId,
+    categoryId: categoryIdA,
+    features: { isQuestion: true, containsVideo: true },
+  });
+
+  expect(results.subCategories.length).eq(2);
+  expect(results.subCategories[0].subCategoryId).eq(subCategoryIdA1);
+  expect(results.subCategories[0].classifications.length).eq(1);
+  expect(results.subCategories[0].classifications[0].classificationId).eq(
+    classificationIdA1A,
+  );
+  expect(results.subCategories[0].classifications[0].content.length).eq(2);
+  expect(
+    results.subCategories[0].classifications[0].content
+      .map((c) => fromUUID(c.id))
+      .sort(),
+  ).eqls([activityIdQVAString, activityIdQIVAString].sort());
+
+  expect(results.subCategories[1].subCategoryId).eq(subCategoryIdA2);
+  expect(results.subCategories[1].classifications.length).eq(1);
+  expect(results.subCategories[1].classifications[0].classificationId).eq(
+    classificationIdA2B,
+  );
+  expect(results.subCategories[1].classifications[0].content.length).eq(2);
+  expect(
+    results.subCategories[1].classifications[0].content
+      .map((c) => fromUUID(c.id))
+      .sort(),
+  ).eqls([activityIdQVBString, activityIdQIVBString].sort());
+
+  // filter by isInteractive, containsVideo
+  results = await browseCategorySharedContent({
+    loggedInUserId: userId,
+    categoryId: categoryIdA,
+    features: { isInteractive: true, containsVideo: true },
+  });
+
+  expect(results.subCategories.length).eq(2);
+  expect(results.subCategories[0].subCategoryId).eq(subCategoryIdA1);
+  expect(results.subCategories[0].classifications.length).eq(1);
+  expect(results.subCategories[0].classifications[0].classificationId).eq(
+    classificationIdA1A,
+  );
+  expect(results.subCategories[0].classifications[0].content.length).eq(2);
+  expect(
+    results.subCategories[0].classifications[0].content
+      .map((c) => fromUUID(c.id))
+      .sort(),
+  ).eqls([activityIdIVAString, activityIdQIVAString].sort());
+
+  expect(results.subCategories[1].subCategoryId).eq(subCategoryIdA2);
+  expect(results.subCategories[1].classifications.length).eq(1);
+  expect(results.subCategories[1].classifications[0].classificationId).eq(
+    classificationIdA2B,
+  );
+  expect(results.subCategories[1].classifications[0].content.length).eq(2);
+  expect(
+    results.subCategories[1].classifications[0].content
+      .map((c) => fromUUID(c.id))
+      .sort(),
+  ).eqls([activityIdIVBString, activityIdQIVBString].sort());
+
+  // filter by isQuestion, isInteractive, containsVideo
+  results = await browseCategorySharedContent({
+    loggedInUserId: userId,
+    categoryId: categoryIdA,
+    features: { isQuestion: true, isInteractive: true, containsVideo: true },
+  });
+
+  expect(results.subCategories.length).eq(2);
+  expect(results.subCategories[0].subCategoryId).eq(subCategoryIdA1);
+  expect(results.subCategories[0].classifications.length).eq(1);
+  expect(results.subCategories[0].classifications[0].classificationId).eq(
+    classificationIdA1A,
+  );
+  expect(results.subCategories[0].classifications[0].content.length).eq(1);
+  expect(
+    results.subCategories[0].classifications[0].content
+      .map((c) => fromUUID(c.id))
+      .sort(),
+  ).eqls([activityIdQIVAString].sort());
+
+  expect(results.subCategories[1].subCategoryId).eq(subCategoryIdA2);
+  expect(results.subCategories[1].classifications.length).eq(1);
+  expect(results.subCategories[1].classifications[0].classificationId).eq(
+    classificationIdA2B,
+  );
+  expect(results.subCategories[1].classifications[0].content.length).eq(1);
+  expect(
+    results.subCategories[1].classifications[0].content
+      .map((c) => fromUUID(c.id))
+      .sort(),
+  ).eqls([activityIdQIVBString].sort());
+});
+
 test(
   "search my folder content searches all subfolders",
   { timeout: 30000 },
