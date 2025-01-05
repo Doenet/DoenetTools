@@ -1789,34 +1789,32 @@ export async function searchClassificationsWithSharedContent({
 
   const code_matches = await prisma.classifications.findMany({
     where: {
-      AND: [
-        {
-          OR: query_words.map((query_word) => ({
-            code: { contains: query_word },
-          })),
-        },
-        {
-          descriptions: { some: { subCategory: { category: { systemId } } } },
-        },
-        { descriptions: { some: { subCategory: { categoryId } } } },
-        { descriptions: { some: { subCategoryId } } },
-        {
-          contentClassifications: {
-            some: {
-              content: {
-                isDeleted: false,
-                OR: [
-                  { isPublic: true },
-                  { sharedWith: { some: { userId: loggedInUserId } } },
-                ],
-                AND: featuresToRequire.map((feature) => ({
-                  contentFeatures: { some: { code: feature } },
-                })),
-              },
-            },
+      OR: query_words.map((query_word) => ({
+        code: { contains: query_word },
+      })),
+      descriptions: {
+        some: {
+          subCategoryId,
+          subCategory: {
+            categoryId,
+            category: { systemId },
           },
         },
-      ],
+      },
+      contentClassifications: {
+        some: {
+          content: {
+            isDeleted: false,
+            OR: [
+              { isPublic: true },
+              { sharedWith: { some: { userId: loggedInUserId } } },
+            ],
+            AND: featuresToRequire.map((feature) => ({
+              contentFeatures: { some: { code: feature } },
+            })),
+          },
+        },
+      },
     },
     select: { id: true },
     take: 100,
@@ -1993,7 +1991,7 @@ export async function browseClassificationSharedContent({
   page = 1,
 }: {
   loggedInUserId: Uint8Array;
-  classificationId?: number;
+  classificationId: number;
   features?: Record<string, boolean>;
   page?: number;
 }) {
@@ -2035,7 +2033,7 @@ export async function browseSubCategorySharedContent({
   features,
 }: {
   loggedInUserId: Uint8Array;
-  subCategoryId?: number;
+  subCategoryId: number;
   features?: Record<string, boolean>;
 }) {
   // TODO: how do we sort the content within each classification
@@ -2144,7 +2142,7 @@ export async function browseCategorySharedContent({
   features,
 }: {
   loggedInUserId: Uint8Array;
-  categoryId?: number;
+  categoryId: number;
   features?: Record<string, boolean>;
 }) {
   const featuresToRequire =
@@ -4172,18 +4170,18 @@ export async function searchPossibleClassifications({
 
     const code_matches = await prisma.classifications.findMany({
       where: {
-        AND: [
-          {
-            OR: query_words.map((query_word) => ({
-              code: { contains: query_word },
-            })),
+        OR: query_words.map((query_word) => ({
+          code: { contains: query_word },
+        })),
+        descriptions: {
+          some: {
+            subCategoryId,
+            subCategory: {
+              categoryId,
+              category: { systemId },
+            },
           },
-          {
-            descriptions: { some: { subCategory: { category: { systemId } } } },
-          },
-          { descriptions: { some: { subCategory: { categoryId } } } },
-          { descriptions: { some: { subCategoryId } } },
-        ],
+        },
       },
       select: { id: true },
     });
@@ -4212,13 +4210,15 @@ export async function searchPossibleClassifications({
   const results: ContentClassification[] =
     await prisma.classifications.findMany({
       where: {
-        AND: [
-          {
-            descriptions: { some: { subCategory: { category: { systemId } } } },
+        descriptions: {
+          some: {
+            subCategoryId,
+            subCategory: {
+              categoryId,
+              category: { systemId },
+            },
           },
-          { descriptions: { some: { subCategory: { categoryId } } } },
-          { descriptions: { some: { subCategoryId } } },
-        ],
+        },
       },
       take: 100,
       select: returnClassificationListSelect(),
