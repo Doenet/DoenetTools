@@ -1530,7 +1530,7 @@ export async function searchSharedContent({
     )
     ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
     ${returnFeatureWhereClauses(features)}
-    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND users.userId=${ownerId}`}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     content.id
   ORDER BY
@@ -1719,6 +1719,7 @@ export async function searchClassificationsWithSharedContent({
   categoryId,
   subCategoryId,
   features,
+  ownerId,
 }: {
   query: string;
   loggedInUserId: Uint8Array;
@@ -1726,6 +1727,7 @@ export async function searchClassificationsWithSharedContent({
   categoryId?: number;
   subCategoryId?: number;
   features?: Record<string, boolean>;
+  ownerId?: Uint8Array;
 }) {
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
@@ -1768,7 +1770,7 @@ export async function searchClassificationsWithSharedContent({
     )
     ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId })}
     ${returnFeatureWhereClauses(features)}
-
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
     classifications.id
   ORDER BY
@@ -1812,6 +1814,7 @@ export async function searchClassificationsWithSharedContent({
             AND: featuresToRequire.map((feature) => ({
               contentFeatures: { some: { code: feature } },
             })),
+            ownerId,
           },
         },
       },
@@ -1848,12 +1851,14 @@ export async function searchClassificationSubCategoriesWithSharedContent({
   systemId,
   categoryId,
   features,
+  ownerId,
 }: {
   query: string;
   loggedInUserId: Uint8Array;
   systemId?: number;
   categoryId?: number;
   features?: Record<string, boolean>;
+  ownerId?: Uint8Array;
 }) {
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
@@ -1905,6 +1910,7 @@ export async function searchClassificationSubCategoriesWithSharedContent({
     ${returnClassificationMatchClauses({ query_as_prefixes, matchSubCategory: true })}
     ${returnClassificationFilterWhereClauses({ systemId, categoryId })}
     ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
 
   GROUP BY
     classificationSubCategories.id
@@ -1921,11 +1927,13 @@ export async function searchClassificationCategoriesWithSharedContent({
   loggedInUserId,
   systemId,
   features,
+  ownerId,
 }: {
   query: string;
   loggedInUserId: Uint8Array;
   systemId?: number;
   features?: Record<string, boolean>;
+  ownerId?: Uint8Array;
 }) {
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
@@ -1973,6 +1981,7 @@ export async function searchClassificationCategoriesWithSharedContent({
     ${returnClassificationMatchClauses({ query_as_prefixes, matchCategory: true })}
     ${returnClassificationFilterWhereClauses({ systemId })}
     ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
 
   GROUP BY
     classificationCategories.id
@@ -1988,11 +1997,13 @@ export async function browseClassificationSharedContent({
   loggedInUserId,
   classificationId,
   features,
+  ownerId,
   page = 1,
 }: {
   loggedInUserId: Uint8Array;
   classificationId: number;
   features?: Record<string, boolean>;
+  ownerId?: Uint8Array;
   page?: number;
 }) {
   const pageSize = 100;
@@ -2016,6 +2027,7 @@ export async function browseClassificationSharedContent({
         contentFeatures: { some: { code: feature } },
       })),
       classifications: { some: { classificationId } },
+      ownerId,
     },
     select: returnContentStructureFullOwnerSelect(),
     take: pageSize,
@@ -2031,10 +2043,12 @@ export async function browseSubCategorySharedContent({
   loggedInUserId,
   subCategoryId,
   features,
+  ownerId,
 }: {
   loggedInUserId: Uint8Array;
   subCategoryId: number;
   features?: Record<string, boolean>;
+  ownerId?: Uint8Array;
 }) {
   // TODO: how do we sort the content within each classification
 
@@ -2079,6 +2093,7 @@ export async function browseSubCategorySharedContent({
                     AND: featuresToRequire.map((feature) => ({
                       contentFeatures: { some: { code: feature } },
                     })),
+                    ownerId,
                   },
                 },
               },
@@ -2103,6 +2118,7 @@ export async function browseSubCategorySharedContent({
                       AND: featuresToRequire.map((feature) => ({
                         contentFeatures: { some: { code: feature } },
                       })),
+                      ownerId,
                     },
                   },
                   select: {
@@ -2140,10 +2156,12 @@ export async function browseCategorySharedContent({
   loggedInUserId,
   categoryId,
   features,
+  ownerId,
 }: {
   loggedInUserId: Uint8Array;
   categoryId: number;
   features?: Record<string, boolean>;
+  ownerId?: Uint8Array;
 }) {
   const featuresToRequire =
     features === undefined
@@ -2175,6 +2193,7 @@ export async function browseCategorySharedContent({
                         AND: featuresToRequire.map((feature) => ({
                           contentFeatures: { some: { code: feature } },
                         })),
+                        ownerId,
                       },
                     },
                   },
@@ -2215,6 +2234,7 @@ export async function browseCategorySharedContent({
                         AND: featuresToRequire.map((feature) => ({
                           contentFeatures: { some: { code: feature } },
                         })),
+                        ownerId,
                       },
                     },
                   },
@@ -2241,6 +2261,7 @@ export async function browseCategorySharedContent({
                           AND: featuresToRequire.map((feature) => ({
                             contentFeatures: { some: { code: feature } },
                           })),
+                          ownerId,
                         },
                       },
                       select: {
