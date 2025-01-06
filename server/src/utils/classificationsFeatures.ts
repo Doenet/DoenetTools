@@ -178,9 +178,9 @@ export function returnClassificationFilterWhereClauses({
   } else if (classificationId !== undefined) {
     return Prisma.sql`AND classifications.id = ${classificationId}`;
   } else if (subCategoryId !== undefined) {
-    return Prisma.sql`AND classificationSubCategories.id = ${subCategoryId}`;
+    return Prisma.sql`AND classificationDescriptions.subCategoryId = ${subCategoryId}`;
   } else if (categoryId !== undefined) {
-    return Prisma.sql`AND classificationCategories.id = ${categoryId}`;
+    return Prisma.sql`AND classificationSubCategories.categoryId = ${categoryId}`;
   } else if (systemId !== undefined) {
     return Prisma.sql`AND classificationCategories.systemId = ${systemId}`;
   } else {
