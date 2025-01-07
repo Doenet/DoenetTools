@@ -3051,7 +3051,7 @@ test("browse classification and subcategories with shared content, returns only 
     code,
   });
 
-  // add shared, private activities to A1A
+  // add shared, private activities to A1A (one shared in both A1A and A1B)
   // add public, shared, private activities to A1B
   const { activityId: activityIdSharedA } = await createActivity(ownerId, null);
   const { activityId: activityIdPrivateA } = await createActivity(
@@ -3089,6 +3089,7 @@ test("browse classification and subcategories with shared content, returns only 
   await makeActivityPublic({ id: activityIdDeletedA, licenseCode, ownerId });
   await makeActivityPublic({ id: activityIdDeletedB, licenseCode, ownerId });
   await addClassification(activityIdSharedA, classificationIdA1A, ownerId);
+  await addClassification(activityIdSharedA, classificationIdA1B, ownerId);
   await addClassification(activityIdPrivateA, classificationIdA1A, ownerId);
   await addClassification(activityIdDeletedA, classificationIdA1A, ownerId);
   await addClassification(activityIdPublicB, classificationIdA1B, ownerId);
@@ -3110,6 +3111,8 @@ test("browse classification and subcategories with shared content, returns only 
   await deleteActivity(activityIdDeletedB, ownerId);
 
   // user 1 gets the classifications with shared and public activities
+  // Note: one activity is counted in both A1A and A1B
+  // (there are only three activities total)
   let resultsClass = await browseClassificationsWithSharedContent({
     loggedInUserId: userId1,
     subCategoryId: subCategoryIdA1,
@@ -3119,7 +3122,7 @@ test("browse classification and subcategories with shared content, returns only 
   expect(resultsClass[0].classificationId).eq(classificationIdA1A);
   expect(resultsClass[0].numContent).eq(1);
   expect(resultsClass[1].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[1].numContent).eq(2);
+  expect(resultsClass[1].numContent).eq(3);
 
   // user 2 gets the classification with public activities
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3150,6 +3153,9 @@ test("browse classification and subcategories with shared content, returns only 
   expect(resultsClass.length).eq(0);
 
   // user 1 gets the subcategories with shared and public activities
+  // Note: even though an activity counted in both A1A and A1B
+  // (leading to a count of 1 in A1A and a count of 3 in A1B)
+  // the total in A1 is still 3 (that activity is not counted twice)
   let resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     loggedInUserId: userId1,
     categoryId: categoryIdA,
@@ -3195,7 +3201,7 @@ test("browse classification and subcategories with shared content, search, retur
     code,
   });
 
-  // add shared, private activities to A1A
+  // add shared, private activities to A1A (one shared in both A1A and A1B)
   // add public, shared, private activities to A1B
   const { activityId: activityIdSharedA, docId: docIdSharedA } =
     await createActivity(ownerId, null);
@@ -3284,6 +3290,7 @@ test("browse classification and subcategories with shared content, search, retur
   await makeActivityPublic({ id: activityIdPublicD, licenseCode, ownerId });
 
   await addClassification(activityIdSharedA, classificationIdA1A, ownerId);
+  await addClassification(activityIdSharedA, classificationIdA1B, ownerId);
   await addClassification(activityIdPrivateA, classificationIdA1A, ownerId);
   await addClassification(activityIdDeletedA, classificationIdA1A, ownerId);
   await addClassification(activityIdPublicC, classificationIdA1A, ownerId);
@@ -3309,6 +3316,8 @@ test("browse classification and subcategories with shared content, search, retur
   await deleteActivity(activityIdDeletedB, ownerId);
 
   // user 1 gets the classifications with shared and public activities
+  // Note: one activity is counted in both A1A and A1B
+  // (there are only three activities total)
   let resultsClass = await browseClassificationsWithSharedContent({
     query: `banana${code}`,
     loggedInUserId: userId1,
@@ -3319,7 +3328,7 @@ test("browse classification and subcategories with shared content, search, retur
   expect(resultsClass[0].classificationId).eq(classificationIdA1A);
   expect(resultsClass[0].numContent).eq(1);
   expect(resultsClass[1].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[1].numContent).eq(2);
+  expect(resultsClass[1].numContent).eq(3);
 
   // user 2 gets the classification with public activities
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3353,6 +3362,9 @@ test("browse classification and subcategories with shared content, search, retur
   expect(resultsClass.length).eq(0);
 
   // user 1 gets the subcategories with shared and public activities
+  // Note: even though an activity counted in both A1A and A1B
+  // (leading to a count of 1 in A1A and a count of 3 in A1B)
+  // the total in A1 is still 3 (that activity is not counted twice)
   let resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     query: `banana${code}`,
     loggedInUserId: userId1,
@@ -4330,7 +4342,13 @@ test("browse categories and systems with shared content, returns only classifica
     systemId: systemId1,
     categoryIdA: categoryId1A,
     classificationIdA1A: classificationId1A1A,
+    classificationIdA1B: classificationId1A1B,
+    classificationIdA2A: classificationId1A2A,
+    classificationIdA2B: classificationId1A2B,
     categoryIdB: categoryId1B,
+    classificationIdB1A: classificationId1B1A,
+    classificationIdB1B: classificationId1B1B,
+    classificationIdB2A: classificationId1B2A,
     classificationIdB2B: classificationId1B2B,
   } = await createTestClassifications({
     word,
@@ -4347,8 +4365,8 @@ test("browse categories and systems with shared content, returns only classifica
     code,
   });
 
-  // add shared, private activities to 1A1A
-  // add public, shared, private activities to 1B2B
+  // add shared, private activities to 1A1A, 1A1B, 1A2A, and/or 1A2B
+  // add public, shared, private activities to 1B1A, 1B1B, 1B2A, and/or 1B2B
   const { activityId: activityIdSharedA } = await createActivity(ownerId, null);
   const { activityId: activityIdPrivateA } = await createActivity(
     ownerId,
@@ -4385,9 +4403,16 @@ test("browse categories and systems with shared content, returns only classifica
   await makeActivityPublic({ id: activityIdDeletedA, licenseCode, ownerId });
   await makeActivityPublic({ id: activityIdDeletedB, licenseCode, ownerId });
   await addClassification(activityIdSharedA, classificationId1A1A, ownerId);
+  await addClassification(activityIdSharedA, classificationId1A1B, ownerId);
+  await addClassification(activityIdSharedA, classificationId1A2A, ownerId);
+  await addClassification(activityIdSharedA, classificationId1A2B, ownerId);
   await addClassification(activityIdPrivateA, classificationId1A1A, ownerId);
   await addClassification(activityIdDeletedA, classificationId1A1A, ownerId);
+  await addClassification(activityIdPublicB, classificationId1B1B, ownerId);
+  await addClassification(activityIdPublicB, classificationId1B2A, ownerId);
   await addClassification(activityIdPublicB, classificationId1B2B, ownerId);
+  await addClassification(activityIdSharedB, classificationId1B1A, ownerId);
+  await addClassification(activityIdSharedB, classificationId1B2A, ownerId);
   await addClassification(activityIdSharedB, classificationId1B2B, ownerId);
   await addClassification(activityIdPrivateB, classificationId1B2B, ownerId);
   await addClassification(activityIdDeletedB, classificationId1B2B, ownerId);
@@ -4484,7 +4509,13 @@ test("browse categories and systems with shared content, search, returns only cl
     systemId: systemId1,
     categoryIdA: categoryId1A,
     classificationIdA1A: classificationId1A1A,
+    classificationIdA1B: classificationId1A1B,
+    classificationIdA2A: classificationId1A2A,
+    classificationIdA2B: classificationId1A2B,
     categoryIdB: categoryId1B,
+    classificationIdB1A: classificationId1B1A,
+    classificationIdB1B: classificationId1B1B,
+    classificationIdB2A: classificationId1B2A,
     classificationIdB2B: classificationId1B2B,
   } = await createTestClassifications({
     word,
@@ -4501,8 +4532,8 @@ test("browse categories and systems with shared content, search, returns only cl
     code,
   });
 
-  // add shared, private activities to 1A1A
-  // add public, shared, private activities to 1B2B
+  // add shared, private activities to 1A1A, 1A1B, 1A2A, and/or 1A2B
+  // add public, shared, private activities to 1B1A, 1B1B, 1B2A, and/or 1B2B
   const { activityId: activityIdSharedA, docId: docIdSharedA } =
     await createActivity(ownerId, null);
   await updateDoc({
@@ -4590,13 +4621,23 @@ test("browse categories and systems with shared content, search, returns only cl
   await makeActivityPublic({ id: activityIdPublicD, licenseCode, ownerId });
 
   await addClassification(activityIdSharedA, classificationId1A1A, ownerId);
+  await addClassification(activityIdSharedA, classificationId1A1B, ownerId);
+  await addClassification(activityIdSharedA, classificationId1A2A, ownerId);
+  await addClassification(activityIdSharedA, classificationId1A2B, ownerId);
   await addClassification(activityIdPrivateA, classificationId1A1A, ownerId);
   await addClassification(activityIdDeletedA, classificationId1A1A, ownerId);
   await addClassification(activityIdPublicC, classificationId1A1A, ownerId);
+  await addClassification(activityIdPublicC, classificationId1A1B, ownerId);
+  await addClassification(activityIdPublicC, classificationId1A2A, ownerId);
+  await addClassification(activityIdPublicB, classificationId1B1B, ownerId);
+  await addClassification(activityIdPublicB, classificationId1B2A, ownerId);
   await addClassification(activityIdPublicB, classificationId1B2B, ownerId);
+  await addClassification(activityIdSharedB, classificationId1B1A, ownerId);
+  await addClassification(activityIdSharedB, classificationId1B2A, ownerId);
   await addClassification(activityIdSharedB, classificationId1B2B, ownerId);
   await addClassification(activityIdPrivateB, classificationId1B2B, ownerId);
   await addClassification(activityIdDeletedB, classificationId1B2B, ownerId);
+  await addClassification(activityIdPublicD, classificationId1B2A, ownerId);
   await addClassification(activityIdPublicD, classificationId1B2B, ownerId);
 
   // add the private and deleted activities, and public activities with different text, to 2A1A and 2B2B

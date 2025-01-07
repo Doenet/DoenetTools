@@ -2410,7 +2410,7 @@ export async function browseClassificationsWithSharedContent({
     classifications.code,
     classificationDescriptions.id AS descriptionId,
     classificationDescriptions.description,
-    COUNT(content.id) AS numContent
+    COUNT(distinct content.id) AS numContent
   FROM
     content
   LEFT JOIN
@@ -2452,7 +2452,7 @@ export async function browseClassificationsWithSharedContent({
     classifications.code,
     classificationDescriptions.id AS descriptionId,
     classificationDescriptions.description,
-    COUNT(content.id) AS numContent
+    COUNT(distinct content.id) AS numContent
   FROM
     content
   ${returnClassificationJoins({ includeClassification: true, joinFromContent: true })}
@@ -2514,7 +2514,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
   SELECT
     classificationSubCategories.id AS subCategoryId,
     classificationSubCategories.subCategory,
-    COUNT(content.id) AS numContent
+    COUNT(distinct content.id) AS numContent
   FROM
     content
   LEFT JOIN
@@ -2552,7 +2552,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
   SELECT
     classificationSubCategories.id AS subCategoryId,
     classificationSubCategories.subCategory,
-    COUNT(content.id) AS numContent
+    COUNT(distinct content.id) AS numContent
   FROM
     content
   ${returnClassificationJoins({ includeSubCategory: true, joinFromContent: true })}
@@ -2614,7 +2614,7 @@ export async function browseClassificationCategoriesWithSharedContent({
   SELECT
     classificationCategories.id AS categoryId,
     classificationCategories.category,
-    COUNT(content.id) AS numContent
+    COUNT(distinct content.id) AS numContent
   FROM
     content
   LEFT JOIN
@@ -2652,7 +2652,7 @@ export async function browseClassificationCategoriesWithSharedContent({
   SELECT
     classificationCategories.id AS categoryId,
     classificationCategories.category,
-    COUNT(content.id) AS numContent
+    COUNT(distinct content.id) AS numContent
   FROM
     content
   ${returnClassificationJoins({ includeCategory: true, joinFromContent: true })}
@@ -2716,7 +2716,7 @@ export async function browseClassificationSystemsWithSharedContent({
     classificationSystems.name as systemName,
     classificationSystems.shortName as systemShortName,
     classificationSystems.type as systemType,
-    COUNT(content.id) AS numContent
+    COUNT(distinct content.id) AS numContent
   FROM
     content
   LEFT JOIN
@@ -2757,7 +2757,7 @@ export async function browseClassificationSystemsWithSharedContent({
     classificationSystems.name as systemName,
     classificationSystems.shortName as systemShortName,
     classificationSystems.type as systemType,
-    COUNT(content.id) AS numContent
+    COUNT(distinct content.id) AS numContent
   FROM
     content
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
