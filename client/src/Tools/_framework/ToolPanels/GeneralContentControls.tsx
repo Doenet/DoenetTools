@@ -26,6 +26,21 @@ import { activityFeatures } from "../../../_utils/activity";
 
 export async function generalContentActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "update general") {
+    await axios.post("/api/updateContentSettings", {
+      name: formObj.name,
+      imagePath: formObj.imagePath,
+      id: formObj.id,
+    });
+
+    if (formObj.doenetmlVersionId) {
+      // TODO: handle other updates to just a document
+      await axios.post("/api/updateDocumentSettings", {
+        docId: formObj.docId,
+        doenetmlVersionId: formObj.doenetmlVersionId,
+      });
+    }
+    return true;
+  } else if (formObj?._action === "update features") {
     const isQuestion =
       formObj.isQuestion === "undefined" || formObj.isQuestion === undefined
         ? undefined
@@ -41,22 +56,14 @@ export async function generalContentActions({ formObj }: { [k: string]: any }) {
         ? undefined
         : formObj.containsVideo === "true";
 
-    await axios.post("/api/updateContentSettings", {
-      name: formObj.name,
-      imagePath: formObj.imagePath,
+    await axios.post("/api/updateContentFeatures", {
       id: formObj.id,
-      isQuestion,
-      isInteractive,
-      containsVideo,
+      features: {
+        isQuestion,
+        isInteractive,
+        containsVideo,
+      },
     });
-
-    if (formObj.doenetmlVersionId) {
-      // TODO: handle other updates to just a document
-      await axios.post("/api/updateDocumentSettings", {
-        docId: formObj.docId,
-        doenetmlVersionId: formObj.doenetmlVersionId,
-      });
-    }
     return true;
   } else if (formObj?._action == "noop") {
     return true;
@@ -93,9 +100,21 @@ export function GeneralContentControls({
   const lastAcceptedNameValue = useRef(name);
   const [nameIsInvalid, setNameIsInvalid] = useState(false);
 
-  const [isQuestion, setIsQuestion] = useState(contentData.isQuestion);
-  const [isInteractive, setIsInteractive] = useState(contentData.isInteractive);
-  const [containsVideo, setContainsVideo] = useState(contentData.containsVideo);
+  const [isQuestion, setIsQuestion] = useState(
+    contentData.contentFeatures.findIndex(
+      (feature) => feature.code === "isQuestion",
+    ) !== -1,
+  );
+  const [isInteractive, setIsInteractive] = useState(
+    contentData.contentFeatures.findIndex(
+      (feature) => feature.code === "isInteractive",
+    ) !== -1,
+  );
+  const [containsVideo, setContainsVideo] = useState(
+    contentData.contentFeatures.findIndex(
+      (feature) => feature.code === "containsVideo",
+    ) !== -1,
+  );
 
   const [doenetmlVersion, setDoenetmlVersion] = useState(doenetmlVersionInit);
 
@@ -304,124 +323,142 @@ export function GeneralContentControls({
           </FormErrorMessage>
         </FormControl>
 
-        {!contentData.isFolder ? (
-          <Box backgroundColor="#F5F5F5" padding="10px" marginTop="20px">
-            <Heading size="sm">Activity features</Heading>
-            <FormControl>
-              <Checkbox
-                marginTop="10px"
-                isChecked={isQuestion}
-                data-test="Is Question Checkbox"
-                onChange={() => {
-                  setIsQuestion(!isQuestion);
-                  saveDataToServer({ isQuestion: !isQuestion });
-                }}
-              >
-                <Tooltip label={activityFeatures.isQuestion.description}>
-                  {activityFeatures.isQuestion.term}
-                  <Icon
-                    paddingLeft="5px"
-                    as={activityFeatures.isQuestion.icon}
-                    color="#666699"
-                    boxSize={5}
-                    verticalAlign="middle"
-                  />
-                </Tooltip>
-              </Checkbox>
-            </FormControl>
-            <FormControl>
-              <Checkbox
-                marginTop="10px"
-                isChecked={isInteractive}
-                data-test="Is Interactive Checkbox"
-                onChange={() => {
-                  setIsInteractive(!isInteractive);
-                  saveDataToServer({ isInteractive: !isInteractive });
-                }}
-              >
-                <Tooltip label={activityFeatures.isInteractive.description}>
-                  {activityFeatures.isInteractive.term}
-                  <Icon
-                    paddingLeft="5px"
-                    as={activityFeatures.isInteractive.icon}
-                    color="#666699"
-                    boxSize={5}
-                    verticalAlign="middle"
-                  />
-                </Tooltip>
-              </Checkbox>
-            </FormControl>
-            <FormControl>
-              <Checkbox
-                marginTop="10px"
-                isChecked={containsVideo}
-                data-test="Contains Video Checkbox"
-                onChange={() => {
-                  setContainsVideo(!containsVideo);
-                  saveDataToServer({ containsVideo: !containsVideo });
-                }}
-              >
-                <Tooltip label={activityFeatures.containsVideo.description}>
-                  {activityFeatures.containsVideo.term}
-                  <Icon
-                    paddingLeft="5px"
-                    as={activityFeatures.containsVideo.icon}
-                    color="#666699"
-                    boxSize={5}
-                    verticalAlign="middle"
-                  />
-                </Tooltip>
-              </Checkbox>
-            </FormControl>
-          </Box>
-        ) : null}
-
-        {!contentData.isFolder ? (
-          <FormControl>
-            <FormLabel mt="16px">DoenetML version</FormLabel>
-            <Select
-              value={doenetmlVersion?.id}
-              disabled={contentData.assignmentStatus !== "Unassigned"}
-              onChange={(e) => {
-                // TODO: do we worry about this pattern?
-                // If saveDataToServer is unsuccessful, the client doenetmlVersion
-                // will no match what's on the server.
-                // (See TODO from near where doenetmlVersion is defined)
-                const nextDoenetmlVersionId = Number(e.target.value);
-                const nextDoenetmlVersion = allDoenetmlVersions.find(
-                  (v) => v.id == nextDoenetmlVersionId,
-                );
-                if (nextDoenetmlVersion) {
-                  setDoenetmlVersion(nextDoenetmlVersion);
-                  saveDataToServer({ nextDoenetmlVersionId });
-                }
-              }}
-            >
-              {allDoenetmlVersions.map((version) => (
-                <option value={version.id} key={version.id}>
-                  {version.displayedVersion}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-        ) : null}
-        {contentData.assignmentStatus !== "Unassigned" ? (
-          <p>
-            <strong>Note</strong>: Cannot modify DoenetML version since activity
-            is assigned.
-          </p>
-        ) : null}
-        {doenetmlVersion?.deprecated && (
-          <p>
-            <strong>Warning</strong>: DoenetML version{" "}
-            {doenetmlVersion.displayedVersion} is deprecated.{" "}
-            {doenetmlVersion.deprecationMessage}
-          </p>
-        )}
         <input type="hidden" name="imagePath" value={imagePath ?? undefined} />
         <input type="hidden" name="_action" value="update general" />
         <input type="hidden" name="id" value={contentData.id} />
       </Form>
+
+      {!contentData.isFolder ? (
+        <Box backgroundColor="#F5F5F5" padding="10px" marginTop="20px">
+          <Heading size="sm">Activity features</Heading>
+          <VStack alignItems="flex-start" gap={0}>
+            <Checkbox
+              marginTop="10px"
+              isChecked={isQuestion}
+              data-test="Is Question Checkbox"
+              onChange={() => {
+                setIsQuestion(!isQuestion);
+                fetcher.submit(
+                  {
+                    _action: "update features",
+                    id: contentData.id,
+                    isQuestion: !isQuestion,
+                  },
+                  { method: "post" },
+                );
+              }}
+            >
+              <Tooltip label={activityFeatures.isQuestion.description}>
+                {activityFeatures.isQuestion.term}
+                <Icon
+                  paddingLeft="5px"
+                  as={activityFeatures.isQuestion.icon}
+                  color="#666699"
+                  boxSize={5}
+                  verticalAlign="middle"
+                />
+              </Tooltip>
+            </Checkbox>
+            <Checkbox
+              marginTop="10px"
+              isChecked={isInteractive}
+              data-test="Is Interactive Checkbox"
+              onChange={() => {
+                setIsInteractive(!isInteractive);
+                fetcher.submit(
+                  {
+                    _action: "update features",
+                    id: contentData.id,
+                    isInteractive: !isInteractive,
+                  },
+                  { method: "post" },
+                );
+              }}
+            >
+              <Tooltip label={activityFeatures.isInteractive.description}>
+                {activityFeatures.isInteractive.term}
+                <Icon
+                  paddingLeft="5px"
+                  as={activityFeatures.isInteractive.icon}
+                  color="#666699"
+                  boxSize={5}
+                  verticalAlign="middle"
+                />
+              </Tooltip>
+            </Checkbox>
+            <Checkbox
+              marginTop="10px"
+              isChecked={containsVideo}
+              data-test="Contains Video Checkbox"
+              onChange={() => {
+                setContainsVideo(!containsVideo);
+                fetcher.submit(
+                  {
+                    _action: "update features",
+                    id: contentData.id,
+                    containsVideo: !containsVideo,
+                  },
+                  { method: "post" },
+                );
+              }}
+            >
+              <Tooltip label={activityFeatures.containsVideo.description}>
+                {activityFeatures.containsVideo.term}
+                <Icon
+                  paddingLeft="5px"
+                  as={activityFeatures.containsVideo.icon}
+                  color="#666699"
+                  boxSize={5}
+                  verticalAlign="middle"
+                />
+              </Tooltip>
+            </Checkbox>
+          </VStack>
+        </Box>
+      ) : null}
+
+      {!contentData.isFolder ? (
+        <FormControl>
+          <FormLabel mt="16px">DoenetML version</FormLabel>
+          <Select
+            value={doenetmlVersion?.id}
+            disabled={contentData.assignmentStatus !== "Unassigned"}
+            onChange={(e) => {
+              // TODO: do we worry about this pattern?
+              // If saveDataToServer is unsuccessful, the client doenetmlVersion
+              // will no match what's on the server.
+              // (See TODO from near where doenetmlVersion is defined)
+              const nextDoenetmlVersionId = Number(e.target.value);
+              const nextDoenetmlVersion = allDoenetmlVersions.find(
+                (v) => v.id == nextDoenetmlVersionId,
+              );
+              if (nextDoenetmlVersion) {
+                setDoenetmlVersion(nextDoenetmlVersion);
+                saveDataToServer({ nextDoenetmlVersionId });
+              }
+            }}
+          >
+            {allDoenetmlVersions.map((version) => (
+              <option value={version.id} key={version.id}>
+                {version.displayedVersion}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
+      ) : null}
+      {contentData.assignmentStatus !== "Unassigned" ? (
+        <p>
+          <strong>Note</strong>: Cannot modify DoenetML version since activity
+          is assigned.
+        </p>
+      ) : null}
+      {doenetmlVersion?.deprecated && (
+        <p>
+          <strong>Warning</strong>: DoenetML version{" "}
+          {doenetmlVersion.displayedVersion} is deprecated.{" "}
+          {doenetmlVersion.deprecationMessage}
+        </p>
+      )}
     </>
   );
 }

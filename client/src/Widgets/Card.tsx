@@ -40,9 +40,13 @@ export type CardContent = {
   assignmentStatus?: AssignmentStatus;
   isPublic?: boolean;
   isShared?: boolean;
-  isQuestion?: boolean;
-  isInteractive?: boolean;
-  containsVideo?: boolean;
+  contentFeatures?: {
+    id: number;
+    code: string;
+    term: string;
+    description: string;
+    sortIndex: number;
+  }[];
   title: string;
   ownerName?: string;
   menuItems?: ReactElement;
@@ -234,6 +238,7 @@ export default function Card({
   const menuDisplay = menuItems ? (
     <Menu>
       <MenuButton
+        width="16px"
         height="26px"
         data-test="Card Menu Button"
         _focus={{ boxShadow: "outline" }}
@@ -268,9 +273,12 @@ export default function Card({
   if (showActivityFeatures) {
     const placeholdersForMissingFeatures = listView;
     let isQuestionIcon: ReactElement | null = null;
-    if (cardContent.isQuestion) {
+    const isQuestionFeature = cardContent.contentFeatures?.find(
+      (feature) => feature.code === "isQuestion",
+    );
+    if (isQuestionFeature) {
       isQuestionIcon = (
-        <Tooltip label={activityFeatures.isQuestion.description}>
+        <Tooltip label={isQuestionFeature.description} placement="bottom-end">
           <Box width="20px">
             <Icon
               as={activityFeatures.isQuestion.icon}
@@ -286,9 +294,16 @@ export default function Card({
     }
 
     let isInteractiveIcon: ReactElement | null = null;
-    if (cardContent.isInteractive) {
+    const isInteractiveFeature = cardContent.contentFeatures?.find(
+      (feature) => feature.code === "isInteractive",
+    );
+
+    if (isInteractiveFeature) {
       isInteractiveIcon = (
-        <Tooltip label={activityFeatures.isInteractive.description}>
+        <Tooltip
+          label={isInteractiveFeature.description}
+          placement="bottom-end"
+        >
           <Box>
             <Icon
               as={activityFeatures.isInteractive.icon}
@@ -304,9 +319,15 @@ export default function Card({
     }
 
     let containsVideoIcon: ReactElement | null = null;
-    if (cardContent.containsVideo) {
+    const containsVideoFeature = cardContent.contentFeatures?.find(
+      (feature) => feature.code === "containsVideo",
+    );
+    if (containsVideoFeature) {
       containsVideoIcon = (
-        <Tooltip label={activityFeatures.containsVideo.description}>
+        <Tooltip
+          label={containsVideoFeature.description}
+          placement="bottom-end"
+        >
           <Box width="20px">
             <Icon
               as={activityFeatures.containsVideo.icon}
@@ -322,7 +343,7 @@ export default function Card({
     }
 
     featureIcons = (
-      <HStack gap={0}>
+      <HStack gap={0} width="60px">
         {isQuestionIcon}
         {isInteractiveIcon}
         {containsVideoIcon}
@@ -384,19 +405,20 @@ export default function Card({
         <Icon
           as={iconImage}
           color={iconColor}
-          boxSize={10}
-          paddingLeft={[".1em", "1em"]}
+          boxSizing="content-box"
+          width="24px"
+          height={cardHeight}
+          paddingLeft={["2px", "5px"]}
+          verticalAlign="middle"
         />
       );
     }
-
-    const titleWidth = showAssignmentStatus || showOwnerName ? "50%" : "80%";
 
     const assignmentStatusDisplay = showAssignmentStatus ? (
       <Tooltip label={assignmentStatusString}>
         <Box
           paddingLeft={[".2em", "1em"]}
-          width="30%"
+          width="100%"
           height={cardHeight}
           alignContent="center"
           fontSize="sm"
@@ -411,7 +433,7 @@ export default function Card({
     const ownerNameWithAvatar = showOwnerName ? (
       <Box
         paddingLeft={[".1em", "1em"]}
-        width="30%"
+        width="100%"
         height={cardHeight}
         alignContent="center"
       >
@@ -437,21 +459,22 @@ export default function Card({
         _hover={{ backgroundColor: "#eeeeee" }}
       >
         <CardBody>
-          <HStack>
+          <HStack gap={0}>
             <ChakraLink
               as={ReactRouterLink}
               to={cardLink}
-              width={cardWidth}
+              width={menuItems ? `calc(${cardWidth} - 16px)` : cardWidth}
               _hover={{ textDecoration: "none" }}
             >
-              <Flex>
-                <Box m="0" p="0">
+              <Flex width="100%">
+                <Box m="0" p="0" width={["26px", "29px"]}>
                   {initialIcon}
                 </Box>
                 <Box
                   paddingLeft={[".1em", "1em"]}
                   paddingRight={[".1em", "1em"]}
-                  width={titleWidth}
+                  width="1px"
+                  flexGrow={3}
                   height={cardHeight}
                   alignContent="center"
                 >
@@ -460,9 +483,19 @@ export default function Card({
                     {sharedIcon}
                   </HStack>
                 </Box>
-                {assignmentStatusDisplay}
-                {ownerNameWithAvatar}
                 <Box
+                  width={
+                    showAssignmentStatus || showOwnerName
+                      ? `calc(40% - 50px)`
+                      : "0px"
+                  }
+                >
+                  {assignmentStatusDisplay}
+                  {ownerNameWithAvatar}
+                </Box>
+                <Box
+                  minWidth={showActivityFeatures ? "60px" : "0px"}
+                  flexGrow={0.1}
                   paddingLeft={[".1em", "1em"]}
                   height={cardHeight}
                   alignContent="center"

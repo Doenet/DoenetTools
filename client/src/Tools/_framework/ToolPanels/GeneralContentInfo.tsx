@@ -22,10 +22,7 @@ export function GeneralContentInfo({
   const license = contentData.license;
   const contentType = contentData.isFolder ? "Folder" : "Activity";
 
-  const containsFeatures =
-    contentData.isQuestion ||
-    contentData.isInteractive ||
-    contentData.containsVideo;
+  const containsFeatures = contentData.contentFeatures.length > 0;
 
   return (
     <Box>
@@ -75,48 +72,20 @@ export function GeneralContentInfo({
         <Box borderBottom="2px" marginBottom={4} paddingBottom={4}>
           <Heading size="sm">Activity features</Heading>
           <UnorderedList>
-            {contentData.isQuestion ? (
+            {contentData.contentFeatures.map((feature) => (
               <ListItem>
-                <Tooltip label={activityFeatures.isQuestion.description}>
-                  {activityFeatures.isQuestion.term}
+                <Tooltip label={feature.description}>
+                  {feature.term}
                   <Icon
                     paddingLeft="5px"
-                    as={activityFeatures.isQuestion.icon}
+                    as={activityFeatures[feature.code].icon}
                     color="#666699"
                     boxSize={5}
                     verticalAlign="middle"
                   />
                 </Tooltip>
               </ListItem>
-            ) : null}
-            {contentData.isInteractive ? (
-              <ListItem>
-                <Tooltip label={activityFeatures.isInteractive.description}>
-                  {activityFeatures.isInteractive.term}
-                  <Icon
-                    paddingLeft="5px"
-                    as={activityFeatures.isInteractive.icon}
-                    color="#666699"
-                    boxSize={5}
-                    verticalAlign="middle"
-                  />
-                </Tooltip>
-              </ListItem>
-            ) : null}
-            {contentData.containsVideo ? (
-              <ListItem>
-                <Tooltip label={activityFeatures.containsVideo.description}>
-                  {activityFeatures.containsVideo.term}
-                  <Icon
-                    paddingLeft="5px"
-                    as={activityFeatures.containsVideo.icon}
-                    color="#666699"
-                    boxSize={5}
-                    verticalAlign="middle"
-                  />
-                </Tooltip>
-              </ListItem>
-            ) : null}
+            ))}
           </UnorderedList>
         </Box>
       ) : null}
