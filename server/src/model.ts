@@ -1491,8 +1491,8 @@ export async function searchSharedContent({
   const matchCategory = matchSubCategory && categoryId === undefined;
 
   const includeClassification = true;
-  const includeSubCategory = matchClassification;
-  const includeCategory = matchSubCategory;
+  const includeSubCategory = matchSubCategory;
+  const includeCategory = matchCategory;
 
   const matches = await prisma.$queryRaw<
     {
@@ -1588,11 +1588,11 @@ export async function searchUsersWithSharedContent({
     .join(" ");
 
   const includeClassification =
-    classificationId !== undefined || isUnclassified;
-  const includeSubCategory =
-    !includeClassification && subCategoryId !== undefined;
-  const includeCategory =
-    !includeSubCategory && (categoryId !== undefined || systemId !== undefined);
+    classificationId !== undefined ||
+    isUnclassified ||
+    subCategoryId !== undefined;
+  const includeSubCategory = !includeClassification && categoryId !== undefined;
+  const includeCategory = !includeSubCategory && systemId !== undefined;
 
   const usersWithShared = await prisma.$queryRaw<
     {
@@ -1637,6 +1637,7 @@ export async function searchUsersWithSharedContent({
 }
 
 export async function browseUsersWithSharedContent({
+  query,
   loggedInUserId,
   systemId,
   categoryId,
@@ -1646,6 +1647,7 @@ export async function browseUsersWithSharedContent({
   features,
   page = 1,
 }: {
+  query?: string;
   loggedInUserId: Uint8Array;
   systemId?: number;
   categoryId?: number;
@@ -1657,51 +1659,120 @@ export async function browseUsersWithSharedContent({
 }) {
   const pageSize = 100;
 
-  const includeClassification =
-    classificationId !== undefined || isUnclassified;
-  const includeSubCategory =
-    !includeClassification && subCategoryId !== undefined;
-  const includeCategory =
-    !includeSubCategory && (categoryId !== undefined || systemId !== undefined);
+  let usersWithShared;
 
-  const usersWithShared = await prisma.$queryRaw<
-    {
-      userId: Uint8Array;
-      firstNames: string | null;
-      lastNames: string;
-      numContent: bigint;
-    }[]
-  >(Prisma.sql`
-  SELECT
-    users.userId, users.firstNames, users.lastNames, COUNT(content.id) AS numContent
-  FROM
-    users
-  INNER JOIN
-    content on content.ownerId = users.userId
-  WHERE
-    users.isAnonymous = FALSE
-    AND content.id IN (
-      SELECT content.id
-      FROM content
-      ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
-      ${returnFeatureJoins(features)}
+  if (query) {
+    // remove operators that break MySQL BOOLEAN search
+    // and add * at the end of every word so that match beginning of words
+    const query_as_prefixes = query
+      .replace(/[+\-><()~*"@]+/g, " ")
+      .split(" ")
+      .filter((s) => s)
+      .map((s) => s + "*")
+      .join(" ");
+
+    const matchClassification =
+      !isUnclassified && classificationId === undefined;
+    const matchSubCategory = matchClassification && subCategoryId === undefined;
+    const matchCategory = matchSubCategory && categoryId === undefined;
+
+    const includeClassification = true;
+    const includeSubCategory = matchSubCategory;
+    const includeCategory = matchCategory;
+
+    usersWithShared = await prisma.$queryRaw<
+      {
+        userId: Uint8Array;
+        firstNames: string | null;
+        lastNames: string;
+        numContent: bigint;
+      }[]
+    >(Prisma.sql`
+      SELECT
+        users.userId, users.firstNames, users.lastNames, COUNT(content.id) AS numContent
+      FROM
+        users
+      INNER JOIN
+        content on content.ownerId = users.userId
       WHERE
-        content.isFolder = FALSE
-        AND content.isDeleted = FALSE
-        AND (
-          content.isPublic = TRUE
-          OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+        users.isAnonymous = FALSE
+        AND content.id IN (
+          SELECT content.id
+          FROM content
+          LEFT JOIN
+            (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+          ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+          ${returnFeatureJoins(features)}
+          WHERE
+            content.isFolder = FALSE
+            AND content.isDeleted = FALSE
+            AND (
+              content.isPublic = TRUE
+              OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+            )
+            AND (
+              MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+              OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+              ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
+            )
+            ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
+            ${returnFeatureWhereClauses(features)}
         )
-        ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-        ${returnFeatureWhereClauses(features)}
-    )
-  GROUP BY
-    users.userId
-  ORDER BY
-    numContent DESC
-  LIMIT ${pageSize}
-  OFFSET ${(page - 1) * pageSize}
+      GROUP BY
+        users.userId
+      ORDER BY
+        numContent DESC
+      LIMIT ${pageSize}
+      OFFSET ${(page - 1) * pageSize}
   `);
+  } else {
+    const includeClassification =
+      classificationId !== undefined ||
+      isUnclassified ||
+      subCategoryId !== undefined;
+    const includeSubCategory =
+      !includeClassification && categoryId !== undefined;
+    const includeCategory = !includeSubCategory && systemId !== undefined;
+
+    usersWithShared = await prisma.$queryRaw<
+      {
+        userId: Uint8Array;
+        firstNames: string | null;
+        lastNames: string;
+        numContent: bigint;
+      }[]
+    >(Prisma.sql`
+      SELECT
+        users.userId, users.firstNames, users.lastNames, COUNT(content.id) AS numContent
+      FROM
+        users
+      INNER JOIN
+        content on content.ownerId = users.userId
+      WHERE
+        users.isAnonymous = FALSE
+        AND content.id IN (
+          SELECT content.id
+          FROM content
+          ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+          ${returnFeatureJoins(features)}
+          WHERE
+            content.isFolder = FALSE
+            AND content.isDeleted = FALSE
+            AND (
+              content.isPublic = TRUE
+              OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+            )
+            ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
+            ${returnFeatureWhereClauses(features)}
+        )
+      GROUP BY
+        users.userId
+      ORDER BY
+        numContent DESC
+      LIMIT ${pageSize}
+      OFFSET ${(page - 1) * pageSize}
+  `);
+  }
 
   const usersWithShared2: (UserInfo & { numContent: number })[] =
     usersWithShared.map((u) => ({
@@ -1739,9 +1810,9 @@ export async function searchClassificationsWithSharedContent({
     .join(" ");
 
   const includeClassification = true;
-  const includeSubCategory = subCategoryId !== undefined;
-  const includeCategory =
-    !includeSubCategory && (categoryId !== undefined || systemId !== undefined);
+  const includeSubCategory =
+    subCategoryId === undefined && categoryId !== undefined;
+  const includeCategory = !includeSubCategory && systemId !== undefined;
 
   const matches = await prisma.$queryRaw<
     {
@@ -2344,6 +2415,7 @@ export async function browseClassificationsWithSharedContent({
     content
   LEFT JOIN
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeClassification: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
@@ -2355,6 +2427,7 @@ export async function browseClassificationsWithSharedContent({
     AND (
       MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
     ${returnClassificationFilterWhereClauses({ subCategoryId })}
     ${returnFeatureWhereClauses(features)}
@@ -2446,6 +2519,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
     content
   LEFT JOIN
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSubCategory: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
@@ -2457,6 +2531,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
     AND (
       MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
     ${returnClassificationFilterWhereClauses({ categoryId })}
     ${returnFeatureWhereClauses(features)}
@@ -2544,6 +2619,7 @@ export async function browseClassificationCategoriesWithSharedContent({
     content
   LEFT JOIN
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeCategory: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
@@ -2555,6 +2631,7 @@ export async function browseClassificationCategoriesWithSharedContent({
     AND (
       MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
     ${returnClassificationFilterWhereClauses({ systemId })}
     ${returnFeatureWhereClauses(features)}
@@ -2644,6 +2721,7 @@ export async function browseClassificationSystemsWithSharedContent({
     content
   LEFT JOIN
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
@@ -2655,6 +2733,7 @@ export async function browseClassificationSystemsWithSharedContent({
     AND (
       MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
     ${returnFeatureWhereClauses(features)}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
@@ -4558,9 +4637,9 @@ export async function searchPossibleClassifications({
     const matchSystem = matchCategory && systemId === undefined;
 
     const includeClassification = true;
-    const includeSubCategory = true;
-    const includeCategory = matchSubCategory;
-    const includeSystem = matchCategory;
+    const includeSubCategory = matchSubCategory;
+    const includeCategory = matchCategory;
+    const includeSystem = matchSystem;
 
     const matches = await prisma.$queryRaw<
       {

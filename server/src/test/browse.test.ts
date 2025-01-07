@@ -18,6 +18,7 @@ import {
   browseClassificationSubCategoriesWithSharedContent,
   browseClassificationCategoriesWithSharedContent,
   browseClassificationSystemsWithSharedContent,
+  updateUser,
 } from "../model";
 import {
   createTestClassifications,
@@ -327,10 +328,220 @@ test("browseUsersWithSharedContent returns only users with public/shared/non-del
   expect(result[1].numContent).eq(2);
 });
 
+test("browseUsersWithSharedContent, search, returns only users with public/shared/non-deleted content", async () => {
+  const code = Date.now().toString();
+
+  const user1 = await createTestUser();
+  const user1Id = user1.userId;
+  const user2 = await createTestUser();
+  const user2Id = user2.userId;
+
+  // owner 1 has only private and deleted content, and public content with different text
+  const owner1 = await createTestUser();
+  const owner1Id = owner1.userId;
+
+  const { activityId: activity1aId } = await createActivity(owner1Id, null);
+  await updateContent({
+    id: activity1aId,
+    name: `banana${code}`,
+    ownerId: owner1Id,
+  });
+  const { docId: doc1bId } = await createActivity(owner1Id, null);
+  await updateDoc({ id: doc1bId, source: `banana${code}`, ownerId: owner1Id });
+  const { folderId: folder1aId } = await createFolder(owner1Id, null);
+  const { activityId: activity1cId } = await createActivity(
+    owner1Id,
+    folder1aId,
+  );
+  await updateContent({
+    id: activity1cId,
+    name: `banana${code}`,
+    ownerId: owner1Id,
+  });
+
+  const { activityId: activity1dId, docId: doc1dId } = await createActivity(
+    owner1Id,
+    null,
+  );
+  await updateDoc({ id: doc1dId, source: `banana${code}`, ownerId: owner1Id });
+  await makeActivityPublic({
+    id: activity1dId,
+    ownerId: owner1Id,
+    licenseCode: "CCDUAL",
+  });
+  await deleteActivity(activity1dId, owner1Id);
+
+  const { activityId: activity1eId, docId: doc1eId } = await createActivity(
+    owner1Id,
+    null,
+  );
+  await updateDoc({ id: doc1eId, source: `grape${code}`, ownerId: owner1Id });
+  await makeActivityPublic({
+    id: activity1eId,
+    ownerId: owner1Id,
+    licenseCode: "CCDUAL",
+  });
+
+  // owner 2 has two public activities, plus third with different text
+  const owner2 = await createTestUser();
+  const owner2Id = owner2.userId;
+
+  const { folderId: folder2aId } = await createFolder(owner2Id, null);
+  const { activityId: activity2aId } = await createActivity(
+    owner2Id,
+    folder2aId,
+  );
+  await updateContent({
+    id: activity2aId,
+    name: `banana${code}`,
+    ownerId: owner2Id,
+  });
+  await makeActivityPublic({
+    id: activity2aId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+  const { activityId: activity2bId, docId: doc2bId } = await createActivity(
+    owner2Id,
+    folder2aId,
+  );
+  await updateDoc({ id: doc2bId, source: `banana${code}`, ownerId: owner2Id });
+  await makeActivityPublic({
+    id: activity2bId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+
+  const { activityId: activity2cId, docId: doc2cId } = await createActivity(
+    owner2Id,
+    null,
+  );
+  await updateDoc({ id: doc2cId, source: `grape${code}`, ownerId: owner2Id });
+  await makeActivityPublic({
+    id: activity2cId,
+    ownerId: owner2Id,
+    licenseCode: "CCDUAL",
+  });
+
+  // owner 3 has a activity shared with user1, plus public with different text
+  const owner3 = await createTestUser();
+  const owner3Id = owner3.userId;
+
+  const { folderId: folder3aId } = await createFolder(owner3Id, null);
+  const { activityId: activity3aId } = await createActivity(
+    owner3Id,
+    folder3aId,
+  );
+  await updateContent({
+    id: activity3aId,
+    name: `banana${code}`,
+    ownerId: owner3Id,
+  });
+  await shareActivity({
+    id: activity3aId,
+    ownerId: owner3Id,
+    licenseCode: "CCDUAL",
+    users: [user1Id],
+  });
+
+  const { activityId: activity3bId } = await createActivity(owner3Id, null);
+  await updateContent({
+    id: activity3bId,
+    name: `grape${code}`,
+    ownerId: owner3Id,
+  });
+  await makeActivityPublic({
+    id: activity3bId,
+    ownerId: owner3Id,
+    licenseCode: "CCDUAL",
+  });
+
+  // owner 4 has three activities shared with user2, plus public content with different text
+  const owner4 = await createTestUser();
+  const owner4Id = owner4.userId;
+
+  const { folderId: folder4aId } = await createFolder(owner4Id, null);
+  const { activityId: activity4aId } = await createActivity(
+    owner4Id,
+    folder4aId,
+  );
+  await updateContent({
+    id: activity4aId,
+    name: `banana${code}`,
+    ownerId: owner4Id,
+  });
+  await shareActivity({
+    id: activity4aId,
+    ownerId: owner4Id,
+    licenseCode: "CCDUAL",
+    users: [user2Id],
+  });
+
+  const { activityId: activity4bId, docId: doc4bId } = await createActivity(
+    owner4Id,
+    folder4aId,
+  );
+  await updateDoc({ id: doc4bId, source: `banana${code}`, ownerId: owner4Id });
+  await shareActivity({
+    id: activity4bId,
+    ownerId: owner4Id,
+    licenseCode: "CCDUAL",
+    users: [user2Id],
+  });
+  const { activityId: activity4cId } = await createActivity(
+    owner4Id,
+    folder4aId,
+  );
+  await updateContent({
+    id: activity4cId,
+    name: `banana${code}`,
+    ownerId: owner4Id,
+  });
+  await shareActivity({
+    id: activity4cId,
+    ownerId: owner4Id,
+    licenseCode: "CCDUAL",
+    users: [user2Id],
+  });
+  const { activityId: activity4dId } = await createActivity(owner4Id, null);
+  await updateContent({
+    id: activity4dId,
+    name: `grape${code}`,
+    ownerId: owner4Id,
+  });
+  await makeActivityPublic({
+    id: activity4dId,
+    ownerId: owner4Id,
+    licenseCode: "CCDUAL",
+  });
+
+  // user1 find only owner2, owner3
+  let result = await browseUsersWithSharedContent({
+    loggedInUserId: user1Id,
+    query: `banana${code}`,
+  });
+  expect(result.length).eq(2);
+  expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
+  expect(result[0].numContent).eq(2);
+  expect(isEqualUUID(result[1].userId, owner3Id)).eq(true);
+  expect(result[1].numContent).eq(1);
+
+  // user2 can find owner2, owner4
+  result = await browseUsersWithSharedContent({
+    loggedInUserId: user2Id,
+    query: `banana${code}`,
+  });
+  expect(result.length).eq(2);
+  expect(isEqualUUID(result[0].userId, owner4Id)).eq(true);
+  expect(result[0].numContent).eq(3);
+  expect(isEqualUUID(result[1].userId, owner2Id)).eq(true);
+  expect(result[1].numContent).eq(2);
+});
+
 test("browseUsersWithSharedContent, filter by system, category, sub category, classification", async () => {
   // create a made up classification tree
   const code = Date.now().toString();
-  const word = "banana";
+  const word = "b";
 
   const {
     systemId,
@@ -350,6 +561,16 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   const { userId: owner1Id } = await createTestUser();
   const { activityId: activity1aId } = await createActivity(owner1Id, null);
   const { activityId: activity1bId } = await createActivity(owner1Id, null);
+  await updateContent({
+    id: activity1aId,
+    name: `banana${code}`,
+    ownerId: owner1Id,
+  });
+  await updateContent({
+    id: activity1bId,
+    name: `grape${code}`,
+    ownerId: owner1Id,
+  });
   await makeActivityPublic({
     id: activity1aId,
     ownerId: owner1Id,
@@ -365,6 +586,16 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   const { userId: owner2Id } = await createTestUser();
   const { activityId: activity2aId } = await createActivity(owner2Id, null);
   const { activityId: activity2bId } = await createActivity(owner2Id, null);
+  await updateContent({
+    id: activity2aId,
+    name: `grape${code}`,
+    ownerId: owner2Id,
+  });
+  await updateContent({
+    id: activity2bId,
+    name: `grape${code}`,
+    ownerId: owner2Id,
+  });
   await makeActivityPublic({
     id: activity2aId,
     ownerId: owner2Id,
@@ -382,6 +613,16 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   const { userId: owner3Id } = await createTestUser();
   const { activityId: activity3aId } = await createActivity(owner3Id, null);
   const { activityId: activity3bId } = await createActivity(owner3Id, null);
+  await updateContent({
+    id: activity3aId,
+    name: `grape${code}`,
+    ownerId: owner3Id,
+  });
+  await updateContent({
+    id: activity3bId,
+    name: `grape${code}`,
+    ownerId: owner3Id,
+  });
   await makeActivityPublic({
     id: activity3aId,
     ownerId: owner3Id,
@@ -399,6 +640,21 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   const { activityId: activity4aId } = await createActivity(owner4Id, null);
   const { activityId: activity4bId } = await createActivity(owner4Id, null);
   const { activityId: activity4cId } = await createActivity(owner4Id, null);
+  await updateContent({
+    id: activity4aId,
+    name: `banana${code}`,
+    ownerId: owner4Id,
+  });
+  await updateContent({
+    id: activity4bId,
+    name: `banana${code}`,
+    ownerId: owner4Id,
+  });
+  await updateContent({
+    id: activity4cId,
+    name: `banana${code}`,
+    ownerId: owner4Id,
+  });
   await makeActivityPublic({
     id: activity4aId,
     ownerId: owner4Id,
@@ -424,6 +680,26 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   const { activityId: activity5bId } = await createActivity(owner5Id, null);
   const { activityId: activity5cId } = await createActivity(owner5Id, null);
   const { activityId: activity5dId } = await createActivity(owner5Id, null);
+  await updateContent({
+    id: activity5aId,
+    name: `grape${code}`,
+    ownerId: owner5Id,
+  });
+  await updateContent({
+    id: activity5bId,
+    name: `grape${code}`,
+    ownerId: owner5Id,
+  });
+  await updateContent({
+    id: activity5cId,
+    name: `banana${code}`,
+    ownerId: owner5Id,
+  });
+  await updateContent({
+    id: activity5dId,
+    name: `grape${code}`,
+    ownerId: owner5Id,
+  });
   await makeActivityPublic({
     id: activity5aId,
     ownerId: owner5Id,
@@ -457,6 +733,36 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   const { activityId: activity6dId } = await createActivity(owner6Id, null);
   const { activityId: activity6eId } = await createActivity(owner6Id, null);
   const { activityId: activity6fId } = await createActivity(owner6Id, null);
+  await updateContent({
+    id: activity6aId,
+    name: `banana${code}`,
+    ownerId: owner6Id,
+  });
+  await updateContent({
+    id: activity6bId,
+    name: `grape${code}`,
+    ownerId: owner6Id,
+  });
+  await updateContent({
+    id: activity6cId,
+    name: `banana${code}`,
+    ownerId: owner6Id,
+  });
+  await updateContent({
+    id: activity6dId,
+    name: `grape${code}`,
+    ownerId: owner6Id,
+  });
+  await updateContent({
+    id: activity6eId,
+    name: `banana${code}`,
+    ownerId: owner6Id,
+  });
+  await updateContent({
+    id: activity6fId,
+    name: `banana${code}`,
+    ownerId: owner6Id,
+  });
   await makeActivityPublic({
     id: activity6aId,
     ownerId: owner6Id,
@@ -501,6 +807,11 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
 
   const { userId: owner7Id } = await createTestUser();
   const { activityId: activity7aId } = await createActivity(owner7Id, null);
+  await updateContent({
+    id: activity7aId,
+    name: `banana${code}`,
+    ownerId: owner7Id,
+  });
   await makeActivityPublic({
     id: activity7aId,
     ownerId: owner7Id,
@@ -587,14 +898,84 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   expect(result[0].numContent).eq(2);
   expect(isEqualUUID(result[1].userId, owner5Id)).eq(true);
   expect(result[1].numContent).eq(1);
+
+  // now add search
+
+  // owners 4, 5, 6 have content classified in systemId
+  result = await browseUsersWithSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    systemId,
+  });
+  expect(result.length).eq(3);
+  expect(isEqualUUID(result[0].userId, owner6Id)).eq(true);
+  expect(result[0].numContent).eq(4);
+  expect(isEqualUUID(result[1].userId, owner4Id)).eq(true);
+  expect(result[1].numContent).eq(3);
+  expect(isEqualUUID(result[2].userId, owner5Id)).eq(true);
+  expect(result[2].numContent).eq(1);
+
+  // owners 4, 6 have content classified in category A
+  result = await browseUsersWithSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    categoryId: categoryIdA,
+  });
+  expect(result.length).eq(2);
+  expect(isEqualUUID(result[0].userId, owner4Id)).eq(true);
+  expect(result[0].numContent).eq(3);
+  expect(isEqualUUID(result[1].userId, owner6Id)).eq(true);
+  expect(result[1].numContent).eq(2);
+
+  // owners  5, 6 have content classified in category B
+  result = await browseUsersWithSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    categoryId: categoryIdB,
+  });
+  expect(result.length).eq(2);
+  expect(isEqualUUID(result[0].userId, owner6Id)).eq(true);
+  expect(result[0].numContent).eq(2);
+  expect(isEqualUUID(result[1].userId, owner5Id)).eq(true);
+  expect(result[1].numContent).eq(1);
+
+  // owners 4 has content classified in subcategory A1
+  result = await browseUsersWithSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    subCategoryId: subCategoryIdA1,
+  });
+  expect(result.length).eq(1);
+  expect(isEqualUUID(result[0].userId, owner4Id)).eq(true);
+  expect(result[0].numContent).eq(3);
+
+  // owners 4 has content classified in classification A1A
+  result = await browseUsersWithSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    classificationId: classificationIdA1A,
+  });
+  expect(result.length).eq(1);
+  expect(isEqualUUID(result[0].userId, owner4Id)).eq(true);
+  expect(result[0].numContent).eq(1);
+
+  // owners 4 have content classified in classification A1B
+  result = await browseUsersWithSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    classificationId: classificationIdA1B,
+  });
+  expect(result.length).eq(1);
+  expect(isEqualUUID(result[0].userId, owner4Id)).eq(true);
+  expect(result[0].numContent).eq(2);
 });
 
 test("browseUsersWithSharedContent, filter by activity feature", async () => {
-  // add two test features
+  // add three test features
   const code = Date.now().toString();
-  const feature1Code = (await createTestFeature({ word: "banana", code })).code;
-  const feature2Code = (await createTestFeature({ word: "grape", code })).code;
-  const feature3Code = (await createTestFeature({ word: "orange", code })).code;
+  const feature1Code = (await createTestFeature({ word: "a", code })).code;
+  const feature2Code = (await createTestFeature({ word: "b", code })).code;
+  const feature3Code = (await createTestFeature({ word: "c", code })).code;
 
   const { userId } = await createTestUser();
 
@@ -602,6 +983,16 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
   const { userId: owner1Id } = await createTestUser();
   const { activityId: activity1aId } = await createActivity(owner1Id, null);
   const { activityId: activity1bId } = await createActivity(owner1Id, null);
+  await updateContent({
+    id: activity1aId,
+    name: `banana${code}`,
+    ownerId: owner1Id,
+  });
+  await updateContent({
+    id: activity1bId,
+    name: `grape${code}`,
+    ownerId: owner1Id,
+  });
   await makeActivityPublic({
     id: activity1aId,
     ownerId: owner1Id,
@@ -623,6 +1014,21 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
   const { activityId: activity2aId } = await createActivity(owner2Id, null);
   const { activityId: activity2bId } = await createActivity(owner2Id, null);
   const { activityId: activity2cId } = await createActivity(owner2Id, null);
+  await updateContent({
+    id: activity2aId,
+    name: `banana${code}`,
+    ownerId: owner2Id,
+  });
+  await updateContent({
+    id: activity2bId,
+    name: `grape${code}`,
+    ownerId: owner2Id,
+  });
+  await updateContent({
+    id: activity2cId,
+    name: `banana${code}`,
+    ownerId: owner2Id,
+  });
   await makeActivityPublic({
     id: activity2aId,
     ownerId: owner2Id,
@@ -661,6 +1067,26 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
   const { activityId: activity3bId } = await createActivity(owner3Id, null);
   const { activityId: activity3cId } = await createActivity(owner3Id, null);
   const { activityId: activity3dId } = await createActivity(owner3Id, null);
+  await updateContent({
+    id: activity3aId,
+    name: `banana${code}`,
+    ownerId: owner3Id,
+  });
+  await updateContent({
+    id: activity3bId,
+    name: `banana${code}`,
+    ownerId: owner3Id,
+  });
+  await updateContent({
+    id: activity3cId,
+    name: `grape${code}`,
+    ownerId: owner3Id,
+  });
+  await updateContent({
+    id: activity3dId,
+    name: `banana${code}`,
+    ownerId: owner3Id,
+  });
   await makeActivityPublic({
     id: activity3aId,
     ownerId: owner3Id,
@@ -762,6 +1188,80 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
 
   // no one has all three features
   result = await browseUsersWithSharedContent({
+    loggedInUserId: userId,
+    features: {
+      [feature3Code]: true,
+      [feature2Code]: true,
+      [feature1Code]: true,
+    },
+  });
+  expect(result.length).eq(0);
+
+  // now combine with search
+
+  // owner 2 has feature1
+  result = await browseUsersWithSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    features: { [feature1Code]: true },
+  });
+  expect(result.length).eq(1);
+  expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
+  expect(result[0].numContent).eq(1);
+
+  // owners 2 and 3 have feature2
+  result = await browseUsersWithSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    features: { [feature2Code]: true },
+  });
+  expect(result.length).eq(2);
+  expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
+  expect(result[0].numContent).eq(2);
+  expect(isEqualUUID(result[1].userId, owner3Id)).eq(true);
+  expect(result[1].numContent).eq(1);
+
+  // owners 2 and 3 have feature3
+  result = await browseUsersWithSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    features: { [feature3Code]: true },
+  });
+  expect(result.length).eq(2);
+  expect(isEqualUUID(result[0].userId, owner3Id)).eq(true);
+  expect(result[0].numContent).eq(2);
+  expect(isEqualUUID(result[1].userId, owner2Id)).eq(true);
+  expect(result[1].numContent).eq(1);
+
+  // owners 2 has most combinations of two features
+  result = await browseUsersWithSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    features: { [feature1Code]: true, [feature2Code]: true },
+  });
+  expect(result.length).eq(1);
+  expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
+  expect(result[0].numContent).eq(1);
+
+  result = await browseUsersWithSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    features: { [feature1Code]: true, [feature3Code]: true },
+  });
+  expect(result.length).eq(0);
+
+  result = await browseUsersWithSharedContent({
+    query: `banana${code}`,
+    loggedInUserId: userId,
+    features: { [feature3Code]: true, [feature2Code]: true },
+  });
+  expect(result.length).eq(1);
+  expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
+  expect(result[0].numContent).eq(1);
+
+  // no one has all three features
+  result = await browseUsersWithSharedContent({
+    query: `banana${code}`,
     loggedInUserId: userId,
     features: {
       [feature3Code]: true,
@@ -3622,6 +4122,200 @@ test("browse classification and subcategories with shared content, filter by own
   expect(resultsSubcat[0].numContent).eq(1);
 });
 
+test("browse classification and subcategories with shared content, search includes owner name if not filtering by owner", async () => {
+  const code = Date.now().toString();
+
+  const { userId } = await createTestUser();
+  const { userId: owner1Id } = await createTestUser();
+  await updateUser({
+    userId: owner1Id,
+    firstNames: `Fred${code}`,
+    lastNames: `Flintstone${code}`,
+  });
+  const { userId: owner2Id } = await createTestUser();
+  await updateUser({
+    userId: owner2Id,
+    firstNames: `Wilma${code}`,
+    lastNames: `Flintstone${code}`,
+  });
+  const licenseCode = "CCDUAL";
+
+  // create a made up classification tree
+  const word = "banana";
+
+  const {
+    categoryIdA,
+    subCategoryIdA1,
+    classificationIdA1A,
+    classificationIdA1B,
+    subCategoryIdA2,
+    classificationIdA2A,
+    classificationIdA2B,
+  } = await createTestClassifications({
+    word,
+    code,
+  });
+
+  // add owner1 activity to A1A
+  // add owner1 activity with different text to A1B
+  // add owner2 activity to A1B
+  // add owner2 activity with different text to A2A
+  // add owner1 activity to A2B
+
+  const { activityId: activityId1A1A } = await createActivity(owner1Id, null);
+  await updateContent({
+    id: activityId1A1A,
+    name: `banana${code}`,
+    ownerId: owner1Id,
+  });
+  const { activityId: activityId1A1B } = await createActivity(owner1Id, null);
+  await updateContent({
+    id: activityId1A1B,
+    name: `grape${code}`,
+    ownerId: owner1Id,
+  });
+  const { activityId: activityId2A1B } = await createActivity(owner2Id, null);
+  await updateContent({
+    id: activityId2A1B,
+    name: `banana${code}`,
+    ownerId: owner2Id,
+  });
+
+  const { activityId: activityId2A2A } = await createActivity(owner2Id, null);
+  await updateContent({
+    id: activityId2A2A,
+    name: `grape${code}`,
+    ownerId: owner2Id,
+  });
+  const { activityId: activityId1A2B } = await createActivity(owner1Id, null);
+  await updateContent({
+    id: activityId1A2B,
+    name: `banana${code}`,
+    ownerId: owner1Id,
+  });
+
+  await makeActivityPublic({
+    id: activityId1A1A,
+    licenseCode,
+    ownerId: owner1Id,
+  });
+  await makeActivityPublic({
+    id: activityId1A1B,
+    licenseCode,
+    ownerId: owner1Id,
+  });
+  await makeActivityPublic({
+    id: activityId2A1B,
+    licenseCode,
+    ownerId: owner2Id,
+  });
+  await makeActivityPublic({
+    id: activityId2A2A,
+    licenseCode,
+    ownerId: owner2Id,
+  });
+  await makeActivityPublic({
+    id: activityId1A2B,
+    licenseCode,
+    ownerId: owner1Id,
+  });
+  await addClassification(activityId1A1A, classificationIdA1A, owner1Id);
+  await addClassification(activityId1A1B, classificationIdA1B, owner1Id);
+  await addClassification(activityId2A1B, classificationIdA1B, owner2Id);
+  await addClassification(activityId2A2A, classificationIdA2A, owner2Id);
+  await addClassification(activityId1A2B, classificationIdA2B, owner1Id);
+
+  // search for owner 1 name
+  let resultsClass = await browseClassificationsWithSharedContent({
+    query: `Fred${code}`,
+    loggedInUserId: userId,
+    subCategoryId: subCategoryIdA1,
+  });
+  expect(resultsClass.length).eq(2);
+  expect(resultsClass[0].classificationId).eq(classificationIdA1A);
+  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[1].classificationId).eq(classificationIdA1B);
+  expect(resultsClass[1].numContent).eq(1);
+
+  let resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
+    query: `Fred${code}`,
+    loggedInUserId: userId,
+    categoryId: categoryIdA,
+  });
+  expect(resultsSubcat.length).eq(2);
+  expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
+  expect(resultsSubcat[0].numContent).eq(2);
+  expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
+  expect(resultsSubcat[1].numContent).eq(1);
+
+  // search owner 2 name
+  resultsClass = await browseClassificationsWithSharedContent({
+    query: `Wilma${code}`,
+    loggedInUserId: userId,
+    subCategoryId: subCategoryIdA1,
+  });
+  expect(resultsClass.length).eq(1);
+  expect(resultsClass[0].classificationId).eq(classificationIdA1B);
+  expect(resultsClass[0].numContent).eq(1);
+
+  resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
+    query: `Wilma${code}`,
+    loggedInUserId: userId,
+    categoryId: categoryIdA,
+  });
+  expect(resultsSubcat.length).eq(2);
+  expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
+  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
+  expect(resultsSubcat[1].numContent).eq(1);
+
+  // search for banana and owner 1 name
+  resultsClass = await browseClassificationsWithSharedContent({
+    query: `banana${code} Fred${code}`,
+    loggedInUserId: userId,
+    subCategoryId: subCategoryIdA1,
+  });
+  expect(resultsClass.length).eq(2);
+  expect(resultsClass[0].classificationId).eq(classificationIdA1A);
+  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[1].classificationId).eq(classificationIdA1B);
+  expect(resultsClass[1].numContent).eq(2);
+
+  resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
+    query: `banana${code} Fred${code}`,
+    loggedInUserId: userId,
+    categoryId: categoryIdA,
+  });
+  expect(resultsSubcat.length).eq(2);
+  expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
+  expect(resultsSubcat[0].numContent).eq(3);
+  expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
+  expect(resultsSubcat[1].numContent).eq(1);
+
+  // search for banana and owner 2 name
+  resultsClass = await browseClassificationsWithSharedContent({
+    query: `banana${code} Wilma${code}`,
+    loggedInUserId: userId,
+    subCategoryId: subCategoryIdA1,
+  });
+  expect(resultsClass.length).eq(2);
+  expect(resultsClass[0].classificationId).eq(classificationIdA1A);
+  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[1].classificationId).eq(classificationIdA1B);
+  expect(resultsClass[1].numContent).eq(1);
+
+  resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
+    query: `banana${code} Wilma${code}`,
+    loggedInUserId: userId,
+    categoryId: categoryIdA,
+  });
+  expect(resultsSubcat.length).eq(2);
+  expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
+  expect(resultsSubcat[0].numContent).eq(2);
+  expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
+  expect(resultsSubcat[1].numContent).eq(2);
+});
+
 test("browse categories and systems with shared content, returns only classifications with public/shared/non-deleted content and classifications", async () => {
   const { userId: userId1 } = await createTestUser();
   const { userId: userId2 } = await createTestUser();
@@ -4771,4 +5465,209 @@ test("browse categories and systems with shared content, filter by owner", async
   expect(resultsSystem.length).eq(1);
   expect(resultsSystem[0].systemId).eq(systemId1);
   expect(resultsSystem[0].numContent).eq(1);
+});
+
+test("browse categories and systems with shared content, search includes owner name if not filtering by owner", async () => {
+  const code = Date.now().toString();
+
+  const { userId } = await createTestUser();
+  const { userId: owner1Id } = await createTestUser();
+  await updateUser({
+    userId: owner1Id,
+    firstNames: `Fred${code}`,
+    lastNames: `Flintstone${code}`,
+  });
+  const { userId: owner2Id } = await createTestUser();
+  await updateUser({
+    userId: owner2Id,
+    firstNames: `Wilma${code}`,
+    lastNames: `Flintstone${code}`,
+  });
+  const licenseCode = "CCDUAL";
+
+  // create a made up classification tree
+  const word = "b";
+
+  const {
+    systemId: systemId1,
+    categoryIdA: categoryId1A,
+    classificationIdA1A: classificationId1A1A,
+    categoryIdB: categoryId1B,
+    classificationIdB2B: classificationId1B2B,
+  } = await createTestClassifications({
+    word,
+    code,
+  });
+
+  const {
+    systemId: systemId2,
+    classificationIdA1A: classificationId2A1A,
+    classificationIdB2B: classificationId2B2B,
+  } = await createTestClassifications({
+    word: "b2",
+    code,
+  });
+
+  // add owner1 activity to 1A1A
+  // add owner1 activity with different text to 1B2B
+  // add owner2 activity to 1B2B
+  // add owner2 activity with different text to 2A1A
+  // add owner1 activity to 2B2B
+
+  const { activityId: activityId1A1A } = await createActivity(owner1Id, null);
+  await updateContent({
+    id: activityId1A1A,
+    name: `banana${code}`,
+    ownerId: owner1Id,
+  });
+  const { activityId: activityId1A1B } = await createActivity(owner1Id, null);
+  await updateContent({
+    id: activityId1A1B,
+    name: `grape${code}`,
+    ownerId: owner1Id,
+  });
+  const { activityId: activityId2A1B } = await createActivity(owner2Id, null);
+  await updateContent({
+    id: activityId2A1B,
+    name: `banana${code}`,
+    ownerId: owner2Id,
+  });
+
+  const { activityId: activityId2A2A } = await createActivity(owner2Id, null);
+  await updateContent({
+    id: activityId2A2A,
+    name: `grape${code}`,
+    ownerId: owner2Id,
+  });
+  const { activityId: activityId1A2B } = await createActivity(owner1Id, null);
+  await updateContent({
+    id: activityId1A2B,
+    name: `banana${code}`,
+    ownerId: owner1Id,
+  });
+
+  await makeActivityPublic({
+    id: activityId1A1A,
+    licenseCode,
+    ownerId: owner1Id,
+  });
+  await makeActivityPublic({
+    id: activityId1A1B,
+    licenseCode,
+    ownerId: owner1Id,
+  });
+  await makeActivityPublic({
+    id: activityId2A1B,
+    licenseCode,
+    ownerId: owner2Id,
+  });
+  await makeActivityPublic({
+    id: activityId2A2A,
+    licenseCode,
+    ownerId: owner2Id,
+  });
+  await makeActivityPublic({
+    id: activityId1A2B,
+    licenseCode,
+    ownerId: owner1Id,
+  });
+  await addClassification(activityId1A1A, classificationId1A1A, owner1Id);
+  await addClassification(activityId1A1B, classificationId1B2B, owner1Id);
+  await addClassification(activityId2A1B, classificationId1B2B, owner2Id);
+  await addClassification(activityId2A2A, classificationId2A1A, owner2Id);
+  await addClassification(activityId1A2B, classificationId2B2B, owner1Id);
+
+  // search owner 1
+  let resultsCat = await browseClassificationCategoriesWithSharedContent({
+    query: `Fred${code}`,
+    loggedInUserId: userId,
+    systemId: systemId1,
+  });
+  expect(resultsCat.length).eq(2);
+  expect(resultsCat[0].categoryId).eq(categoryId1A);
+  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[1].categoryId).eq(categoryId1B);
+  expect(resultsCat[1].numContent).eq(1);
+
+  let resultsSystem = (
+    await browseClassificationSystemsWithSharedContent({
+      query: `Fred${code}`,
+      loggedInUserId: userId,
+    })
+  ).filter((res) => [systemId1, systemId2].includes(res.systemId));
+  expect(resultsSystem.length).eq(2);
+  expect(resultsSystem[0].systemId).eq(systemId1);
+  expect(resultsSystem[0].numContent).eq(2);
+  expect(resultsSystem[1].systemId).eq(systemId2);
+  expect(resultsSystem[1].numContent).eq(1);
+
+  // search owner 2
+  resultsCat = await browseClassificationCategoriesWithSharedContent({
+    query: `Wilma${code}`,
+    loggedInUserId: userId,
+    systemId: systemId1,
+  });
+  expect(resultsCat.length).eq(1);
+  expect(resultsCat[0].categoryId).eq(categoryId1B);
+  expect(resultsCat[0].numContent).eq(1);
+
+  resultsSystem = (
+    await browseClassificationSystemsWithSharedContent({
+      query: `Wilma${code}`,
+      loggedInUserId: userId,
+    })
+  ).filter((res) => [systemId1, systemId2].includes(res.systemId));
+  expect(resultsSystem.length).eq(2);
+  expect(resultsSystem[0].systemId).eq(systemId1);
+  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[1].systemId).eq(systemId2);
+  expect(resultsSystem[1].numContent).eq(1);
+
+  // search banana and owner 1
+  resultsCat = await browseClassificationCategoriesWithSharedContent({
+    query: `banana${code} Fred${code}`,
+    loggedInUserId: userId,
+    systemId: systemId1,
+  });
+  expect(resultsCat.length).eq(2);
+  expect(resultsCat[0].categoryId).eq(categoryId1A);
+  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[1].categoryId).eq(categoryId1B);
+  expect(resultsCat[1].numContent).eq(2);
+
+  resultsSystem = (
+    await browseClassificationSystemsWithSharedContent({
+      query: `banana${code} Fred${code}`,
+      loggedInUserId: userId,
+    })
+  ).filter((res) => [systemId1, systemId2].includes(res.systemId));
+  expect(resultsSystem.length).eq(2);
+  expect(resultsSystem[0].systemId).eq(systemId1);
+  expect(resultsSystem[0].numContent).eq(3);
+  expect(resultsSystem[1].systemId).eq(systemId2);
+  expect(resultsSystem[1].numContent).eq(1);
+
+  // search for banana and owner 2
+  resultsCat = await browseClassificationCategoriesWithSharedContent({
+    query: `banana${code} Wilma${code}`,
+    loggedInUserId: userId,
+    systemId: systemId1,
+  });
+  expect(resultsCat.length).eq(2);
+  expect(resultsCat[0].categoryId).eq(categoryId1A);
+  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[1].categoryId).eq(categoryId1B);
+  expect(resultsCat[1].numContent).eq(1);
+
+  resultsSystem = (
+    await browseClassificationSystemsWithSharedContent({
+      query: `banana${code} Wilma${code}`,
+      loggedInUserId: userId,
+    })
+  ).filter((res) => [systemId1, systemId2].includes(res.systemId));
+  expect(resultsSystem.length).eq(2);
+  expect(resultsSystem[0].systemId).eq(systemId1);
+  expect(resultsSystem[0].numContent).eq(2);
+  expect(resultsSystem[1].systemId).eq(systemId2);
+  expect(resultsSystem[1].numContent).eq(2);
 });
