@@ -1559,6 +1559,89 @@ export async function searchSharedContent({
   return sharedContent;
 }
 
+// TODO: add tests of this api if we're sure we want to keep it
+export async function browseSharedContent({
+  loggedInUserId,
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+  isUnclassified,
+  features,
+  ownerId,
+  page = 1,
+}: {
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+  isUnclassified?: boolean;
+  features?: Record<string, boolean>;
+  ownerId?: Uint8Array;
+  page?: number;
+}) {
+  const pageSize = 100;
+
+  const classificationsFilter = isUnclassified
+    ? {
+        none: {},
+      }
+    : classificationId !== undefined
+      ? { some: { classification: { id: classificationId } } }
+      : subCategoryId !== undefined ||
+          categoryId !== undefined ||
+          systemId !== undefined
+        ? {
+            some: {
+              classification: {
+                descriptions: {
+                  some: {
+                    subCategoryId,
+                    subCategory: {
+                      categoryId,
+                      category: { systemId },
+                    },
+                  },
+                },
+              },
+            },
+          }
+        : undefined;
+
+  const featuresToRequire =
+    features === undefined
+      ? []
+      : Object.entries(features)
+          .filter(([_key, value]) => value)
+          .map(([key, _value]) => key);
+
+  const preliminarySharedContent = await prisma.content.findMany({
+    where: {
+      isDeleted: false,
+      OR: [
+        { isPublic: true },
+        { sharedWith: { some: { userId: loggedInUserId } } },
+      ],
+      AND: featuresToRequire.map((feature) => ({
+        contentFeatures: { some: { code: feature } },
+      })),
+      ownerId,
+      classifications: classificationsFilter,
+    },
+    select: returnContentStructureFullOwnerSelect(),
+    orderBy: { createdAt: "desc" },
+    take: pageSize,
+    skip: (page - 1) * pageSize,
+  });
+
+  const sharedContent = preliminarySharedContent.map((content) =>
+    processContent(content, loggedInUserId),
+  );
+
+  return sharedContent;
+}
+
 export async function searchUsersWithSharedContent({
   query,
   loggedInUserId,
@@ -1775,10 +1858,10 @@ export async function browseUsersWithSharedContent({
   }
 
   const usersWithShared2: UserInfo[] = usersWithShared.map((u) => ({
-      ...u,
-      email: "",
+    ...u,
+    email: "",
     numCommunity: Number(u.numContent),
-    }));
+  }));
   return usersWithShared2;
 }
 
