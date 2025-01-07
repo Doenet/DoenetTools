@@ -131,9 +131,9 @@ test("browseUsersWithSharedContent, no filter, filter by unclassified", async ()
 
   expect(results.length).eq(2);
   expect(isEqualUUID(results[0].userId, owner2Id)).eq(true);
-  expect(results[0].numContent).eq(3);
+  expect(results[0].numCommunity).eq(3);
   expect(isEqualUUID(results[1].userId, owner1Id)).eq(true);
-  expect(results[1].numContent).eq(2);
+  expect(results[1].numCommunity).eq(2);
 
   // when filter by feature and unclassified, just get owner 1
   results = await browseUsersWithSharedContent({
@@ -144,7 +144,7 @@ test("browseUsersWithSharedContent, no filter, filter by unclassified", async ()
 
   expect(results.length).eq(1);
   expect(isEqualUUID(results[0].userId, owner1Id)).eq(true);
-  expect(results[0].numContent).eq(1);
+  expect(results[0].numCommunity).eq(1);
 });
 
 test("browseUsersWithSharedContent returns only users with public/shared/non-deleted content", async () => {
@@ -312,9 +312,9 @@ test("browseUsersWithSharedContent returns only users with public/shared/non-del
   });
   expect(result.length).eq(2);
   expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
-  expect(result[0].numContent).eq(2);
+  expect(result[0].numCommunity).eq(2);
   expect(isEqualUUID(result[1].userId, owner3Id)).eq(true);
-  expect(result[1].numContent).eq(1);
+  expect(result[1].numCommunity).eq(1);
 
   // user2 can find owner2, owner4
   result = await browseUsersWithSharedContent({
@@ -323,9 +323,9 @@ test("browseUsersWithSharedContent returns only users with public/shared/non-del
   });
   expect(result.length).eq(2);
   expect(isEqualUUID(result[0].userId, owner4Id)).eq(true);
-  expect(result[0].numContent).eq(3);
+  expect(result[0].numCommunity).eq(3);
   expect(isEqualUUID(result[1].userId, owner2Id)).eq(true);
-  expect(result[1].numContent).eq(2);
+  expect(result[1].numCommunity).eq(2);
 });
 
 test("browseUsersWithSharedContent, search, returns only users with public/shared/non-deleted content", async () => {
@@ -522,9 +522,9 @@ test("browseUsersWithSharedContent, search, returns only users with public/share
   });
   expect(result.length).eq(2);
   expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
-  expect(result[0].numContent).eq(2);
+  expect(result[0].numCommunity).eq(2);
   expect(isEqualUUID(result[1].userId, owner3Id)).eq(true);
-  expect(result[1].numContent).eq(1);
+  expect(result[1].numCommunity).eq(1);
 
   // user2 can find owner2, owner4
   result = await browseUsersWithSharedContent({
@@ -533,9 +533,9 @@ test("browseUsersWithSharedContent, search, returns only users with public/share
   });
   expect(result.length).eq(2);
   expect(isEqualUUID(result[0].userId, owner4Id)).eq(true);
-  expect(result[0].numContent).eq(3);
+  expect(result[0].numCommunity).eq(3);
   expect(isEqualUUID(result[1].userId, owner2Id)).eq(true);
-  expect(result[1].numContent).eq(2);
+  expect(result[1].numCommunity).eq(2);
 });
 
 test("browseUsersWithSharedContent, filter by system, category, sub category, classification", async () => {
@@ -826,15 +826,15 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   });
   expect(result.length).eq(5);
   expect(isEqualUUID(result[0].userId, owner6Id)).eq(true);
-  expect(result[0].numContent).eq(6);
+  expect(result[0].numCommunity).eq(6);
   expect(isEqualUUID(result[1].userId, owner5Id)).eq(true);
-  expect(result[1].numContent).eq(4);
+  expect(result[1].numCommunity).eq(4);
   expect(isEqualUUID(result[2].userId, owner4Id)).eq(true);
-  expect(result[2].numContent).eq(3);
+  expect(result[2].numCommunity).eq(3);
   expect(isEqualUUID(result[3].userId, owner2Id)).eq(true);
-  expect(result[3].numContent).eq(2);
+  expect(result[3].numCommunity).eq(2);
   expect(isEqualUUID(result[4].userId, owner3Id)).eq(true);
-  expect(result[4].numContent).eq(1);
+  expect(result[4].numCommunity).eq(1);
 
   // owners 2, 4, 5, 6 have content classified in category A
   result = await browseUsersWithSharedContent({
@@ -843,13 +843,13 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   });
   expect(result.length).eq(4);
   expect(isEqualUUID(result[0].userId, owner6Id)).eq(true);
-  expect(result[0].numContent).eq(4);
+  expect(result[0].numCommunity).eq(4);
   expect(isEqualUUID(result[1].userId, owner4Id)).eq(true);
-  expect(result[1].numContent).eq(3);
+  expect(result[1].numCommunity).eq(3);
   expect(isEqualUUID(result[2].userId, owner2Id)).eq(true);
-  expect(result[2].numContent).eq(2);
+  expect(result[2].numCommunity).eq(2);
   expect(isEqualUUID(result[3].userId, owner5Id)).eq(true);
-  expect(result[3].numContent).eq(1);
+  expect(result[3].numCommunity).eq(1);
 
   // owners 3, 5, 6 have content classified in category B
   result = await browseUsersWithSharedContent({
@@ -858,11 +858,11 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   });
   expect(result.length).eq(3);
   expect(isEqualUUID(result[0].userId, owner5Id)).eq(true);
-  expect(result[0].numContent).eq(3);
+  expect(result[0].numCommunity).eq(3);
   expect(isEqualUUID(result[1].userId, owner6Id)).eq(true);
-  expect(result[1].numContent).eq(2);
+  expect(result[1].numCommunity).eq(2);
   expect(isEqualUUID(result[2].userId, owner3Id)).eq(true);
-  expect(result[2].numContent).eq(1);
+  expect(result[2].numCommunity).eq(1);
 
   // owners 2, 4, 5 have content classified in subcategory A1
   result = await browseUsersWithSharedContent({
@@ -871,11 +871,11 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   });
   expect(result.length).eq(3);
   expect(isEqualUUID(result[0].userId, owner4Id)).eq(true);
-  expect(result[0].numContent).eq(3);
+  expect(result[0].numCommunity).eq(3);
   expect(isEqualUUID(result[1].userId, owner2Id)).eq(true);
-  expect(result[1].numContent).eq(2);
+  expect(result[1].numCommunity).eq(2);
   expect(isEqualUUID(result[2].userId, owner5Id)).eq(true);
-  expect(result[2].numContent).eq(1);
+  expect(result[2].numCommunity).eq(1);
 
   // owners 2, 4 have content classified in classification A1A
   result = await browseUsersWithSharedContent({
@@ -884,9 +884,9 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   });
   expect(result.length).eq(2);
   expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
-  expect(result[0].numContent).eq(2);
+  expect(result[0].numCommunity).eq(2);
   expect(isEqualUUID(result[1].userId, owner4Id)).eq(true);
-  expect(result[1].numContent).eq(1);
+  expect(result[1].numCommunity).eq(1);
 
   // owners 4, 5 have content classified in classification A1B
   result = await browseUsersWithSharedContent({
@@ -895,9 +895,9 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   });
   expect(result.length).eq(2);
   expect(isEqualUUID(result[0].userId, owner4Id)).eq(true);
-  expect(result[0].numContent).eq(2);
+  expect(result[0].numCommunity).eq(2);
   expect(isEqualUUID(result[1].userId, owner5Id)).eq(true);
-  expect(result[1].numContent).eq(1);
+  expect(result[1].numCommunity).eq(1);
 
   // now add search
 
@@ -909,11 +909,11 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   });
   expect(result.length).eq(3);
   expect(isEqualUUID(result[0].userId, owner6Id)).eq(true);
-  expect(result[0].numContent).eq(4);
+  expect(result[0].numCommunity).eq(4);
   expect(isEqualUUID(result[1].userId, owner4Id)).eq(true);
-  expect(result[1].numContent).eq(3);
+  expect(result[1].numCommunity).eq(3);
   expect(isEqualUUID(result[2].userId, owner5Id)).eq(true);
-  expect(result[2].numContent).eq(1);
+  expect(result[2].numCommunity).eq(1);
 
   // owners 4, 6 have content classified in category A
   result = await browseUsersWithSharedContent({
@@ -923,9 +923,9 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   });
   expect(result.length).eq(2);
   expect(isEqualUUID(result[0].userId, owner4Id)).eq(true);
-  expect(result[0].numContent).eq(3);
+  expect(result[0].numCommunity).eq(3);
   expect(isEqualUUID(result[1].userId, owner6Id)).eq(true);
-  expect(result[1].numContent).eq(2);
+  expect(result[1].numCommunity).eq(2);
 
   // owners  5, 6 have content classified in category B
   result = await browseUsersWithSharedContent({
@@ -935,9 +935,9 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   });
   expect(result.length).eq(2);
   expect(isEqualUUID(result[0].userId, owner6Id)).eq(true);
-  expect(result[0].numContent).eq(2);
+  expect(result[0].numCommunity).eq(2);
   expect(isEqualUUID(result[1].userId, owner5Id)).eq(true);
-  expect(result[1].numContent).eq(1);
+  expect(result[1].numCommunity).eq(1);
 
   // owners 4 has content classified in subcategory A1
   result = await browseUsersWithSharedContent({
@@ -947,7 +947,7 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   });
   expect(result.length).eq(1);
   expect(isEqualUUID(result[0].userId, owner4Id)).eq(true);
-  expect(result[0].numContent).eq(3);
+  expect(result[0].numCommunity).eq(3);
 
   // owners 4 has content classified in classification A1A
   result = await browseUsersWithSharedContent({
@@ -957,7 +957,7 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   });
   expect(result.length).eq(1);
   expect(isEqualUUID(result[0].userId, owner4Id)).eq(true);
-  expect(result[0].numContent).eq(1);
+  expect(result[0].numCommunity).eq(1);
 
   // owners 4 have content classified in classification A1B
   result = await browseUsersWithSharedContent({
@@ -967,7 +967,7 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   });
   expect(result.length).eq(1);
   expect(isEqualUUID(result[0].userId, owner4Id)).eq(true);
-  expect(result[0].numContent).eq(2);
+  expect(result[0].numCommunity).eq(2);
 });
 
 test("browseUsersWithSharedContent, filter by activity feature", async () => {
@@ -1135,9 +1135,9 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
   });
   expect(result.length).eq(2);
   expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
-  expect(result[0].numContent).eq(2);
+  expect(result[0].numCommunity).eq(2);
   expect(isEqualUUID(result[1].userId, owner1Id)).eq(true);
-  expect(result[1].numContent).eq(1);
+  expect(result[1].numCommunity).eq(1);
 
   // owners 2 and 3 have feature2
   result = await browseUsersWithSharedContent({
@@ -1146,9 +1146,9 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
   });
   expect(result.length).eq(2);
   expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
-  expect(result[0].numContent).eq(2);
+  expect(result[0].numCommunity).eq(2);
   expect(isEqualUUID(result[1].userId, owner3Id)).eq(true);
-  expect(result[1].numContent).eq(1);
+  expect(result[1].numCommunity).eq(1);
 
   // owners 2 and 3 have feature3
   result = await browseUsersWithSharedContent({
@@ -1157,9 +1157,9 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
   });
   expect(result.length).eq(2);
   expect(isEqualUUID(result[0].userId, owner3Id)).eq(true);
-  expect(result[0].numContent).eq(3);
+  expect(result[0].numCommunity).eq(3);
   expect(isEqualUUID(result[1].userId, owner2Id)).eq(true);
-  expect(result[1].numContent).eq(2);
+  expect(result[1].numCommunity).eq(2);
 
   // owners 2 has combinations of two features
   result = await browseUsersWithSharedContent({
@@ -1168,7 +1168,7 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
   });
   expect(result.length).eq(1);
   expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
-  expect(result[0].numContent).eq(1);
+  expect(result[0].numCommunity).eq(1);
 
   result = await browseUsersWithSharedContent({
     loggedInUserId: userId,
@@ -1176,7 +1176,7 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
   });
   expect(result.length).eq(1);
   expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
-  expect(result[0].numContent).eq(1);
+  expect(result[0].numCommunity).eq(1);
 
   result = await browseUsersWithSharedContent({
     loggedInUserId: userId,
@@ -1184,7 +1184,7 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
   });
   expect(result.length).eq(1);
   expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
-  expect(result[0].numContent).eq(1);
+  expect(result[0].numCommunity).eq(1);
 
   // no one has all three features
   result = await browseUsersWithSharedContent({
@@ -1207,7 +1207,7 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
   });
   expect(result.length).eq(1);
   expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
-  expect(result[0].numContent).eq(1);
+  expect(result[0].numCommunity).eq(1);
 
   // owners 2 and 3 have feature2
   result = await browseUsersWithSharedContent({
@@ -1217,9 +1217,9 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
   });
   expect(result.length).eq(2);
   expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
-  expect(result[0].numContent).eq(2);
+  expect(result[0].numCommunity).eq(2);
   expect(isEqualUUID(result[1].userId, owner3Id)).eq(true);
-  expect(result[1].numContent).eq(1);
+  expect(result[1].numCommunity).eq(1);
 
   // owners 2 and 3 have feature3
   result = await browseUsersWithSharedContent({
@@ -1229,9 +1229,9 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
   });
   expect(result.length).eq(2);
   expect(isEqualUUID(result[0].userId, owner3Id)).eq(true);
-  expect(result[0].numContent).eq(2);
+  expect(result[0].numCommunity).eq(2);
   expect(isEqualUUID(result[1].userId, owner2Id)).eq(true);
-  expect(result[1].numContent).eq(1);
+  expect(result[1].numCommunity).eq(1);
 
   // owners 2 has most combinations of two features
   result = await browseUsersWithSharedContent({
@@ -1241,7 +1241,7 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
   });
   expect(result.length).eq(1);
   expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
-  expect(result[0].numContent).eq(1);
+  expect(result[0].numCommunity).eq(1);
 
   result = await browseUsersWithSharedContent({
     query: `banana${code}`,
@@ -1257,7 +1257,7 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
   });
   expect(result.length).eq(1);
   expect(isEqualUUID(result[0].userId, owner2Id)).eq(true);
-  expect(result[0].numContent).eq(1);
+  expect(result[0].numCommunity).eq(1);
 
   // no one has all three features
   result = await browseUsersWithSharedContent({
@@ -3120,9 +3120,9 @@ test("browse classification and subcategories with shared content, returns only 
 
   expect(resultsClass.length).eq(2);
   expect(resultsClass[0].classificationId).eq(classificationIdA1A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
   expect(resultsClass[1].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[1].numContent).eq(3);
+  expect(resultsClass[1].numCommunity).eq(3);
 
   // user 2 gets the classification with public activities
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3132,7 +3132,7 @@ test("browse classification and subcategories with shared content, returns only 
 
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
 
   // user 1 gets the classification with shared activities
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3142,7 +3142,7 @@ test("browse classification and subcategories with shared content, returns only 
 
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA2B);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
 
   // user 2 doesn't get anything in A2
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3163,9 +3163,9 @@ test("browse classification and subcategories with shared content, returns only 
 
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(3);
+  expect(resultsSubcat[0].numCommunity).eq(3);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(1);
+  expect(resultsSubcat[1].numCommunity).eq(1);
 
   // user 2 gets the subcategory with public activities
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
@@ -3175,7 +3175,7 @@ test("browse classification and subcategories with shared content, returns only 
 
   expect(resultsSubcat.length).eq(1);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[0].numCommunity).eq(1);
 });
 
 test("browse classification and subcategories with shared content, search, returns only classifications with public/shared/non-deleted content and classifications", async () => {
@@ -3326,9 +3326,9 @@ test("browse classification and subcategories with shared content, search, retur
 
   expect(resultsClass.length).eq(2);
   expect(resultsClass[0].classificationId).eq(classificationIdA1A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
   expect(resultsClass[1].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[1].numContent).eq(3);
+  expect(resultsClass[1].numCommunity).eq(3);
 
   // user 2 gets the classification with public activities
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3339,7 +3339,7 @@ test("browse classification and subcategories with shared content, search, retur
 
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
 
   // user 1 gets the classification with shared activities
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3350,7 +3350,7 @@ test("browse classification and subcategories with shared content, search, retur
 
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA2B);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
 
   // user 2 doesn't get anything in A2
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3373,9 +3373,9 @@ test("browse classification and subcategories with shared content, search, retur
 
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(3);
+  expect(resultsSubcat[0].numCommunity).eq(3);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(1);
+  expect(resultsSubcat[1].numCommunity).eq(1);
 
   // user 2 gets the classification with public activities
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
@@ -3386,7 +3386,7 @@ test("browse classification and subcategories with shared content, search, retur
 
   expect(resultsSubcat.length).eq(1);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[0].numCommunity).eq(1);
 });
 
 test("browse classification and subcategories with shared content, filter by activity feature", async () => {
@@ -3491,18 +3491,18 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(2);
   expect(resultsClass[0].classificationId).eq(classificationIdA1A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
   expect(resultsClass[1].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[1].numContent).eq(2);
+  expect(resultsClass[1].numCommunity).eq(2);
   resultsClass = await browseClassificationsWithSharedContent({
     loggedInUserId: userId,
     subCategoryId: subCategoryIdA2,
   });
   expect(resultsClass.length).eq(2);
   expect(resultsClass[0].classificationId).eq(classificationIdA2A);
-  expect(resultsClass[0].numContent).eq(2);
+  expect(resultsClass[0].numCommunity).eq(2);
   expect(resultsClass[1].classificationId).eq(classificationIdA2B);
-  expect(resultsClass[1].numContent).eq(1);
+  expect(resultsClass[1].numCommunity).eq(1);
 
   let resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     loggedInUserId: userId,
@@ -3510,9 +3510,9 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(3);
+  expect(resultsSubcat[0].numCommunity).eq(3);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(3);
+  expect(resultsSubcat[1].numCommunity).eq(3);
 
   // filter by isQuestion
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3522,7 +3522,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA1A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
   resultsClass = await browseClassificationsWithSharedContent({
     loggedInUserId: userId,
     subCategoryId: subCategoryIdA2,
@@ -3530,7 +3530,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA2A);
-  expect(resultsClass[0].numContent).eq(2);
+  expect(resultsClass[0].numCommunity).eq(2);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     loggedInUserId: userId,
@@ -3539,9 +3539,9 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[0].numCommunity).eq(1);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(2);
+  expect(resultsSubcat[1].numCommunity).eq(2);
 
   // filter by isInteractive
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3551,7 +3551,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
   resultsClass = await browseClassificationsWithSharedContent({
     loggedInUserId: userId,
     subCategoryId: subCategoryIdA2,
@@ -3559,9 +3559,9 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(2);
   expect(resultsClass[0].classificationId).eq(classificationIdA2A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
   expect(resultsClass[1].classificationId).eq(classificationIdA2B);
-  expect(resultsClass[1].numContent).eq(1);
+  expect(resultsClass[1].numCommunity).eq(1);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     loggedInUserId: userId,
@@ -3570,9 +3570,9 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[0].numCommunity).eq(1);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(2);
+  expect(resultsSubcat[1].numCommunity).eq(2);
 
   // filter by containsVideo
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3582,7 +3582,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
   resultsClass = await browseClassificationsWithSharedContent({
     loggedInUserId: userId,
     subCategoryId: subCategoryIdA2,
@@ -3590,9 +3590,9 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(2);
   expect(resultsClass[0].classificationId).eq(classificationIdA2A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
   expect(resultsClass[1].classificationId).eq(classificationIdA2B);
-  expect(resultsClass[1].numContent).eq(1);
+  expect(resultsClass[1].numCommunity).eq(1);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     loggedInUserId: userId,
@@ -3601,9 +3601,9 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[0].numCommunity).eq(1);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(2);
+  expect(resultsSubcat[1].numCommunity).eq(2);
 
   // filter by isQuestion, isInteractive
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3619,7 +3619,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA2A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     loggedInUserId: userId,
@@ -3628,7 +3628,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsSubcat.length).eq(1);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[0].numCommunity).eq(1);
 
   // filter by isQuestion, containsVideo
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3644,7 +3644,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA2A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     loggedInUserId: userId,
@@ -3653,7 +3653,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsSubcat.length).eq(1);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[0].numCommunity).eq(1);
 
   // filter by isInteractive, containsVideo
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3669,7 +3669,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA2B);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     loggedInUserId: userId,
@@ -3678,7 +3678,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsSubcat.length).eq(1);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[0].numCommunity).eq(1);
 
   // filter by isQuestion, isInteractive, containsVideo
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3711,9 +3711,9 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(2);
   expect(resultsClass[0].classificationId).eq(classificationIdA1A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
   expect(resultsClass[1].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[1].numContent).eq(1);
+  expect(resultsClass[1].numCommunity).eq(1);
   resultsClass = await browseClassificationsWithSharedContent({
     query: `banana${code}`,
     loggedInUserId: userId,
@@ -3721,7 +3721,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA2A);
-  expect(resultsClass[0].numContent).eq(2);
+  expect(resultsClass[0].numCommunity).eq(2);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     query: `banana${code}`,
@@ -3730,9 +3730,9 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(2);
+  expect(resultsSubcat[0].numCommunity).eq(2);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(2);
+  expect(resultsSubcat[1].numCommunity).eq(2);
 
   // filter by isQuestion, search banana
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3743,7 +3743,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA1A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
   resultsClass = await browseClassificationsWithSharedContent({
     query: `banana${code}`,
     loggedInUserId: userId,
@@ -3752,7 +3752,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA2A);
-  expect(resultsClass[0].numContent).eq(2);
+  expect(resultsClass[0].numCommunity).eq(2);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     query: `banana${code}`,
@@ -3762,9 +3762,9 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[0].numCommunity).eq(1);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(2);
+  expect(resultsSubcat[1].numCommunity).eq(2);
 
   // filter by isInteractive, search banana
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3775,7 +3775,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
   resultsClass = await browseClassificationsWithSharedContent({
     query: `banana${code}`,
     loggedInUserId: userId,
@@ -3784,7 +3784,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA2A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     query: `banana${code}`,
@@ -3794,9 +3794,9 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[0].numCommunity).eq(1);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(1);
+  expect(resultsSubcat[1].numCommunity).eq(1);
 
   // filter by containsVideo, search banana
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3814,7 +3814,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA2A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     query: `banana${code}`,
@@ -3824,7 +3824,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsSubcat.length).eq(1);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[0].numCommunity).eq(1);
 
   // filter by isQuestion, isInteractive, search banana
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3842,7 +3842,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA2A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     query: `banana${code}`,
@@ -3852,7 +3852,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsSubcat.length).eq(1);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[0].numCommunity).eq(1);
 
   // filter by isQuestion, containsVideo, search banana
   resultsClass = await browseClassificationsWithSharedContent({
@@ -3870,7 +3870,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA2A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     query: `banana${code}`,
@@ -3880,7 +3880,7 @@ test("browse classification and subcategories with shared content, filter by act
   });
   expect(resultsSubcat.length).eq(1);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[0].numCommunity).eq(1);
 
   // filter by isInteractive, containsVideo, search banana
   resultsClass = await browseClassificationsWithSharedContent({
@@ -4006,9 +4006,9 @@ test("browse classification and subcategories with shared content, filter by own
   });
   expect(resultsClass.length).eq(2);
   expect(resultsClass[0].classificationId).eq(classificationIdA1A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
   expect(resultsClass[1].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[1].numContent).eq(2);
+  expect(resultsClass[1].numCommunity).eq(2);
 
   let resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     loggedInUserId: userId,
@@ -4016,9 +4016,9 @@ test("browse classification and subcategories with shared content, filter by own
   });
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(3);
+  expect(resultsSubcat[0].numCommunity).eq(3);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(2);
+  expect(resultsSubcat[1].numCommunity).eq(2);
 
   // filter by owner 1
   resultsClass = await browseClassificationsWithSharedContent({
@@ -4028,9 +4028,9 @@ test("browse classification and subcategories with shared content, filter by own
   });
   expect(resultsClass.length).eq(2);
   expect(resultsClass[0].classificationId).eq(classificationIdA1A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
   expect(resultsClass[1].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[1].numContent).eq(1);
+  expect(resultsClass[1].numCommunity).eq(1);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     loggedInUserId: userId,
@@ -4039,9 +4039,9 @@ test("browse classification and subcategories with shared content, filter by own
   });
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(2);
+  expect(resultsSubcat[0].numCommunity).eq(2);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(1);
+  expect(resultsSubcat[1].numCommunity).eq(1);
 
   // filter by owner 2
   resultsClass = await browseClassificationsWithSharedContent({
@@ -4051,7 +4051,7 @@ test("browse classification and subcategories with shared content, filter by own
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     loggedInUserId: userId,
@@ -4060,9 +4060,9 @@ test("browse classification and subcategories with shared content, filter by own
   });
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[0].numCommunity).eq(1);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(1);
+  expect(resultsSubcat[1].numCommunity).eq(1);
 
   // now combine with search
 
@@ -4074,9 +4074,9 @@ test("browse classification and subcategories with shared content, filter by own
   });
   expect(resultsClass.length).eq(2);
   expect(resultsClass[0].classificationId).eq(classificationIdA1A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
   expect(resultsClass[1].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[1].numContent).eq(1);
+  expect(resultsClass[1].numCommunity).eq(1);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     query: `banana${code}`,
@@ -4085,9 +4085,9 @@ test("browse classification and subcategories with shared content, filter by own
   });
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(2);
+  expect(resultsSubcat[0].numCommunity).eq(2);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(1);
+  expect(resultsSubcat[1].numCommunity).eq(1);
 
   // filter by owner 1, search banana
   resultsClass = await browseClassificationsWithSharedContent({
@@ -4098,7 +4098,7 @@ test("browse classification and subcategories with shared content, filter by own
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA1A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     query: `banana${code}`,
@@ -4108,9 +4108,9 @@ test("browse classification and subcategories with shared content, filter by own
   });
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[0].numCommunity).eq(1);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(1);
+  expect(resultsSubcat[1].numCommunity).eq(1);
 
   // filter by owner 2, search banana
   resultsClass = await browseClassificationsWithSharedContent({
@@ -4121,7 +4121,7 @@ test("browse classification and subcategories with shared content, filter by own
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     query: `banana${code}`,
@@ -4131,7 +4131,7 @@ test("browse classification and subcategories with shared content, filter by own
   });
   expect(resultsSubcat.length).eq(1);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[0].numCommunity).eq(1);
 });
 
 test("browse classification and subcategories with shared content, search includes owner name if not filtering by owner", async () => {
@@ -4245,9 +4245,9 @@ test("browse classification and subcategories with shared content, search includ
   });
   expect(resultsClass.length).eq(2);
   expect(resultsClass[0].classificationId).eq(classificationIdA1A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
   expect(resultsClass[1].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[1].numContent).eq(1);
+  expect(resultsClass[1].numCommunity).eq(1);
 
   let resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     query: `Fred${code}`,
@@ -4256,9 +4256,9 @@ test("browse classification and subcategories with shared content, search includ
   });
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(2);
+  expect(resultsSubcat[0].numCommunity).eq(2);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(1);
+  expect(resultsSubcat[1].numCommunity).eq(1);
 
   // search owner 2 name
   resultsClass = await browseClassificationsWithSharedContent({
@@ -4268,7 +4268,7 @@ test("browse classification and subcategories with shared content, search includ
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     query: `Wilma${code}`,
@@ -4277,9 +4277,9 @@ test("browse classification and subcategories with shared content, search includ
   });
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(1);
+  expect(resultsSubcat[0].numCommunity).eq(1);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(1);
+  expect(resultsSubcat[1].numCommunity).eq(1);
 
   // search for banana and owner 1 name
   resultsClass = await browseClassificationsWithSharedContent({
@@ -4289,9 +4289,9 @@ test("browse classification and subcategories with shared content, search includ
   });
   expect(resultsClass.length).eq(2);
   expect(resultsClass[0].classificationId).eq(classificationIdA1A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
   expect(resultsClass[1].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[1].numContent).eq(2);
+  expect(resultsClass[1].numCommunity).eq(2);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     query: `banana${code} Fred${code}`,
@@ -4300,9 +4300,9 @@ test("browse classification and subcategories with shared content, search includ
   });
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(3);
+  expect(resultsSubcat[0].numCommunity).eq(3);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(1);
+  expect(resultsSubcat[1].numCommunity).eq(1);
 
   // search for banana and owner 2 name
   resultsClass = await browseClassificationsWithSharedContent({
@@ -4312,9 +4312,9 @@ test("browse classification and subcategories with shared content, search includ
   });
   expect(resultsClass.length).eq(2);
   expect(resultsClass[0].classificationId).eq(classificationIdA1A);
-  expect(resultsClass[0].numContent).eq(1);
+  expect(resultsClass[0].numCommunity).eq(1);
   expect(resultsClass[1].classificationId).eq(classificationIdA1B);
-  expect(resultsClass[1].numContent).eq(1);
+  expect(resultsClass[1].numCommunity).eq(1);
 
   resultsSubcat = await browseClassificationSubCategoriesWithSharedContent({
     query: `banana${code} Wilma${code}`,
@@ -4323,9 +4323,9 @@ test("browse classification and subcategories with shared content, search includ
   });
   expect(resultsSubcat.length).eq(2);
   expect(resultsSubcat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubcat[0].numContent).eq(2);
+  expect(resultsSubcat[0].numCommunity).eq(2);
   expect(resultsSubcat[1].subCategoryId).eq(subCategoryIdA2);
-  expect(resultsSubcat[1].numContent).eq(2);
+  expect(resultsSubcat[1].numCommunity).eq(2);
 });
 
 test("browse categories and systems with shared content, returns only classifications with public/shared/non-deleted content and classifications", async () => {
@@ -4438,9 +4438,9 @@ test("browse categories and systems with shared content, returns only classifica
 
   expect(resultsCat.length).eq(2);
   expect(resultsCat[0].categoryId).eq(categoryId1A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
   expect(resultsCat[1].categoryId).eq(categoryId1B);
-  expect(resultsCat[1].numContent).eq(2);
+  expect(resultsCat[1].numCommunity).eq(2);
 
   // user 2 gets the category with public activities
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -4450,7 +4450,7 @@ test("browse categories and systems with shared content, returns only classifica
 
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId1B);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
 
   // user 1 gets the category with shared activities
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -4460,7 +4460,7 @@ test("browse categories and systems with shared content, returns only classifica
 
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId2B);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
 
   // user 2 doesn't get anything in A2
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -4479,9 +4479,9 @@ test("browse categories and systems with shared content, returns only classifica
 
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(3);
+  expect(resultsSystem[0].numCommunity).eq(3);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(1);
+  expect(resultsSystem[1].numCommunity).eq(1);
 
   // user 2 gets the system with public activities
   resultsSystem = (
@@ -4492,7 +4492,7 @@ test("browse categories and systems with shared content, returns only classifica
 
   expect(resultsSystem.length).eq(1);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[0].numCommunity).eq(1);
 });
 
 test("browse categories and systems with shared content, search, returns only classifications with public/shared/non-deleted content and classifications", async () => {
@@ -4664,9 +4664,9 @@ test("browse categories and systems with shared content, search, returns only cl
 
   expect(resultsCat.length).eq(2);
   expect(resultsCat[0].categoryId).eq(categoryId1A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
   expect(resultsCat[1].categoryId).eq(categoryId1B);
-  expect(resultsCat[1].numContent).eq(2);
+  expect(resultsCat[1].numCommunity).eq(2);
 
   // user 2 gets the classification with public activities
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -4677,7 +4677,7 @@ test("browse categories and systems with shared content, search, returns only cl
 
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId1B);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
 
   // user 1 gets the classification with shared activities
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -4688,7 +4688,7 @@ test("browse categories and systems with shared content, search, returns only cl
 
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId2B);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
 
   // user 2 doesn't get anything in A2
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -4709,9 +4709,9 @@ test("browse categories and systems with shared content, search, returns only cl
 
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(3);
+  expect(resultsSystem[0].numCommunity).eq(3);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(1);
+  expect(resultsSystem[1].numCommunity).eq(1);
 
   // user 2 gets the classification with public activities
   resultsSystem = (
@@ -4723,7 +4723,7 @@ test("browse categories and systems with shared content, search, returns only cl
 
   expect(resultsSystem.length).eq(1);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[0].numCommunity).eq(1);
 });
 
 test("browse categories and systems with shared content, filter by activity feature", async () => {
@@ -4837,18 +4837,18 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(2);
   expect(resultsCat[0].categoryId).eq(categoryId1A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
   expect(resultsCat[1].categoryId).eq(categoryId1B);
-  expect(resultsCat[1].numContent).eq(2);
+  expect(resultsCat[1].numCommunity).eq(2);
   resultsCat = await browseClassificationCategoriesWithSharedContent({
     loggedInUserId: userId,
     systemId: systemId2,
   });
   expect(resultsCat.length).eq(2);
   expect(resultsCat[0].categoryId).eq(categoryId2A);
-  expect(resultsCat[0].numContent).eq(2);
+  expect(resultsCat[0].numCommunity).eq(2);
   expect(resultsCat[1].categoryId).eq(categoryId2B);
-  expect(resultsCat[1].numContent).eq(1);
+  expect(resultsCat[1].numCommunity).eq(1);
 
   let resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -4857,9 +4857,9 @@ test("browse categories and systems with shared content, filter by activity feat
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(3);
+  expect(resultsSystem[0].numCommunity).eq(3);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(3);
+  expect(resultsSystem[1].numCommunity).eq(3);
 
   // filter by isQuestion
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -4869,7 +4869,7 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId1A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
   resultsCat = await browseClassificationCategoriesWithSharedContent({
     loggedInUserId: userId,
     systemId: systemId2,
@@ -4877,7 +4877,7 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId2A);
-  expect(resultsCat[0].numContent).eq(2);
+  expect(resultsCat[0].numCommunity).eq(2);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -4887,9 +4887,9 @@ test("browse categories and systems with shared content, filter by activity feat
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[0].numCommunity).eq(1);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(2);
+  expect(resultsSystem[1].numCommunity).eq(2);
 
   // filter by isInteractive
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -4899,7 +4899,7 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId1B);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
   resultsCat = await browseClassificationCategoriesWithSharedContent({
     loggedInUserId: userId,
     systemId: systemId2,
@@ -4907,9 +4907,9 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(2);
   expect(resultsCat[0].categoryId).eq(categoryId2A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
   expect(resultsCat[1].categoryId).eq(categoryId2B);
-  expect(resultsCat[1].numContent).eq(1);
+  expect(resultsCat[1].numCommunity).eq(1);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -4919,9 +4919,9 @@ test("browse categories and systems with shared content, filter by activity feat
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[0].numCommunity).eq(1);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(2);
+  expect(resultsSystem[1].numCommunity).eq(2);
 
   // filter by containsVideo
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -4931,7 +4931,7 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId1B);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
   resultsCat = await browseClassificationCategoriesWithSharedContent({
     loggedInUserId: userId,
     systemId: systemId2,
@@ -4939,9 +4939,9 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(2);
   expect(resultsCat[0].categoryId).eq(categoryId2A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
   expect(resultsCat[1].categoryId).eq(categoryId2B);
-  expect(resultsCat[1].numContent).eq(1);
+  expect(resultsCat[1].numCommunity).eq(1);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -4951,9 +4951,9 @@ test("browse categories and systems with shared content, filter by activity feat
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[0].numCommunity).eq(1);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(2);
+  expect(resultsSystem[1].numCommunity).eq(2);
 
   // filter by isQuestion, isInteractive
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -4969,7 +4969,7 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId2A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -4979,7 +4979,7 @@ test("browse categories and systems with shared content, filter by activity feat
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(1);
   expect(resultsSystem[0].systemId).eq(systemId2);
-  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[0].numCommunity).eq(1);
 
   // filter by isQuestion, containsVideo
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -4995,7 +4995,7 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId2A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5005,7 +5005,7 @@ test("browse categories and systems with shared content, filter by activity feat
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(1);
   expect(resultsSystem[0].systemId).eq(systemId2);
-  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[0].numCommunity).eq(1);
 
   // filter by isInteractive, containsVideo
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -5021,7 +5021,7 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId2B);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5031,7 +5031,7 @@ test("browse categories and systems with shared content, filter by activity feat
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(1);
   expect(resultsSystem[0].systemId).eq(systemId2);
-  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[0].numCommunity).eq(1);
 
   // filter by isQuestion, isInteractive, containsVideo
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -5065,9 +5065,9 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(2);
   expect(resultsCat[0].categoryId).eq(categoryId1A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
   expect(resultsCat[1].categoryId).eq(categoryId1B);
-  expect(resultsCat[1].numContent).eq(1);
+  expect(resultsCat[1].numCommunity).eq(1);
   resultsCat = await browseClassificationCategoriesWithSharedContent({
     query: `banana${code}`,
     loggedInUserId: userId,
@@ -5075,7 +5075,7 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId2A);
-  expect(resultsCat[0].numContent).eq(2);
+  expect(resultsCat[0].numCommunity).eq(2);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5085,9 +5085,9 @@ test("browse categories and systems with shared content, filter by activity feat
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(2);
+  expect(resultsSystem[0].numCommunity).eq(2);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(2);
+  expect(resultsSystem[1].numCommunity).eq(2);
 
   // filter by isQuestion, search banana
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -5098,7 +5098,7 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId1A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
   resultsCat = await browseClassificationCategoriesWithSharedContent({
     query: `banana${code}`,
     loggedInUserId: userId,
@@ -5107,7 +5107,7 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId2A);
-  expect(resultsCat[0].numContent).eq(2);
+  expect(resultsCat[0].numCommunity).eq(2);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5118,9 +5118,9 @@ test("browse categories and systems with shared content, filter by activity feat
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[0].numCommunity).eq(1);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(2);
+  expect(resultsSystem[1].numCommunity).eq(2);
 
   // filter by isInteractive, search banana
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -5131,7 +5131,7 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId1B);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
   resultsCat = await browseClassificationCategoriesWithSharedContent({
     query: `banana${code}`,
     loggedInUserId: userId,
@@ -5140,7 +5140,7 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId2A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5151,9 +5151,9 @@ test("browse categories and systems with shared content, filter by activity feat
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[0].numCommunity).eq(1);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(1);
+  expect(resultsSystem[1].numCommunity).eq(1);
 
   // filter by containsVideo, search banana
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -5171,7 +5171,7 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId2A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5182,7 +5182,7 @@ test("browse categories and systems with shared content, filter by activity feat
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(1);
   expect(resultsSystem[0].systemId).eq(systemId2);
-  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[0].numCommunity).eq(1);
 
   // filter by isQuestion, isInteractive, search banana
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -5200,7 +5200,7 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId2A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5211,7 +5211,7 @@ test("browse categories and systems with shared content, filter by activity feat
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(1);
   expect(resultsSystem[0].systemId).eq(systemId2);
-  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[0].numCommunity).eq(1);
 
   // filter by isQuestion, containsVideo, search banana
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -5229,7 +5229,7 @@ test("browse categories and systems with shared content, filter by activity feat
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId2A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5240,7 +5240,7 @@ test("browse categories and systems with shared content, filter by activity feat
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(1);
   expect(resultsSystem[0].systemId).eq(systemId2);
-  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[0].numCommunity).eq(1);
 
   // filter by isInteractive, containsVideo, search banana
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -5374,9 +5374,9 @@ test("browse categories and systems with shared content, filter by owner", async
   });
   expect(resultsCat.length).eq(2);
   expect(resultsCat[0].categoryId).eq(categoryId1A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
   expect(resultsCat[1].categoryId).eq(categoryId1B);
-  expect(resultsCat[1].numContent).eq(2);
+  expect(resultsCat[1].numCommunity).eq(2);
 
   let resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5385,9 +5385,9 @@ test("browse categories and systems with shared content, filter by owner", async
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(3);
+  expect(resultsSystem[0].numCommunity).eq(3);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(2);
+  expect(resultsSystem[1].numCommunity).eq(2);
 
   // filter by owner 1
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -5397,9 +5397,9 @@ test("browse categories and systems with shared content, filter by owner", async
   });
   expect(resultsCat.length).eq(2);
   expect(resultsCat[0].categoryId).eq(categoryId1A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
   expect(resultsCat[1].categoryId).eq(categoryId1B);
-  expect(resultsCat[1].numContent).eq(1);
+  expect(resultsCat[1].numCommunity).eq(1);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5409,9 +5409,9 @@ test("browse categories and systems with shared content, filter by owner", async
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(2);
+  expect(resultsSystem[0].numCommunity).eq(2);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(1);
+  expect(resultsSystem[1].numCommunity).eq(1);
 
   // filter by owner 2
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -5421,7 +5421,7 @@ test("browse categories and systems with shared content, filter by owner", async
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId1B);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5431,9 +5431,9 @@ test("browse categories and systems with shared content, filter by owner", async
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[0].numCommunity).eq(1);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(1);
+  expect(resultsSystem[1].numCommunity).eq(1);
 
   // now combine with search
 
@@ -5445,9 +5445,9 @@ test("browse categories and systems with shared content, filter by owner", async
   });
   expect(resultsCat.length).eq(2);
   expect(resultsCat[0].categoryId).eq(categoryId1A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
   expect(resultsCat[1].categoryId).eq(categoryId1B);
-  expect(resultsCat[1].numContent).eq(1);
+  expect(resultsCat[1].numCommunity).eq(1);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5457,9 +5457,9 @@ test("browse categories and systems with shared content, filter by owner", async
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(2);
+  expect(resultsSystem[0].numCommunity).eq(2);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(1);
+  expect(resultsSystem[1].numCommunity).eq(1);
 
   // filter by owner 1, search banana
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -5470,7 +5470,7 @@ test("browse categories and systems with shared content, filter by owner", async
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId1A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5481,9 +5481,9 @@ test("browse categories and systems with shared content, filter by owner", async
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[0].numCommunity).eq(1);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(1);
+  expect(resultsSystem[1].numCommunity).eq(1);
 
   // filter by owner 2, search banana
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -5494,7 +5494,7 @@ test("browse categories and systems with shared content, filter by owner", async
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId1B);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5505,7 +5505,7 @@ test("browse categories and systems with shared content, filter by owner", async
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(1);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[0].numCommunity).eq(1);
 });
 
 test("browse categories and systems with shared content, search includes owner name if not filtering by owner", async () => {
@@ -5626,9 +5626,9 @@ test("browse categories and systems with shared content, search includes owner n
   });
   expect(resultsCat.length).eq(2);
   expect(resultsCat[0].categoryId).eq(categoryId1A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
   expect(resultsCat[1].categoryId).eq(categoryId1B);
-  expect(resultsCat[1].numContent).eq(1);
+  expect(resultsCat[1].numCommunity).eq(1);
 
   let resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5638,9 +5638,9 @@ test("browse categories and systems with shared content, search includes owner n
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(2);
+  expect(resultsSystem[0].numCommunity).eq(2);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(1);
+  expect(resultsSystem[1].numCommunity).eq(1);
 
   // search owner 2
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -5650,7 +5650,7 @@ test("browse categories and systems with shared content, search includes owner n
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].categoryId).eq(categoryId1B);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5660,9 +5660,9 @@ test("browse categories and systems with shared content, search includes owner n
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(1);
+  expect(resultsSystem[0].numCommunity).eq(1);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(1);
+  expect(resultsSystem[1].numCommunity).eq(1);
 
   // search banana and owner 1
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -5672,9 +5672,9 @@ test("browse categories and systems with shared content, search includes owner n
   });
   expect(resultsCat.length).eq(2);
   expect(resultsCat[0].categoryId).eq(categoryId1A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
   expect(resultsCat[1].categoryId).eq(categoryId1B);
-  expect(resultsCat[1].numContent).eq(2);
+  expect(resultsCat[1].numCommunity).eq(2);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5684,9 +5684,9 @@ test("browse categories and systems with shared content, search includes owner n
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(3);
+  expect(resultsSystem[0].numCommunity).eq(3);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(1);
+  expect(resultsSystem[1].numCommunity).eq(1);
 
   // search for banana and owner 2
   resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -5696,9 +5696,9 @@ test("browse categories and systems with shared content, search includes owner n
   });
   expect(resultsCat.length).eq(2);
   expect(resultsCat[0].categoryId).eq(categoryId1A);
-  expect(resultsCat[0].numContent).eq(1);
+  expect(resultsCat[0].numCommunity).eq(1);
   expect(resultsCat[1].categoryId).eq(categoryId1B);
-  expect(resultsCat[1].numContent).eq(1);
+  expect(resultsCat[1].numCommunity).eq(1);
 
   resultsSystem = (
     await browseClassificationSystemsWithSharedContent({
@@ -5708,7 +5708,7 @@ test("browse categories and systems with shared content, search includes owner n
   ).filter((res) => [systemId1, systemId2].includes(res.systemId));
   expect(resultsSystem.length).eq(2);
   expect(resultsSystem[0].systemId).eq(systemId1);
-  expect(resultsSystem[0].numContent).eq(2);
+  expect(resultsSystem[0].numCommunity).eq(2);
   expect(resultsSystem[1].systemId).eq(systemId2);
-  expect(resultsSystem[1].numContent).eq(2);
+  expect(resultsSystem[1].numCommunity).eq(2);
 });

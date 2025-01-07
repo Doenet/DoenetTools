@@ -15,6 +15,8 @@ export type UserInfo = {
   firstNames: string | null;
   lastNames: string;
   email: string;
+  numLibrary?: number;
+  numCommunity?: number;
 };
 
 export type ContentClassification = {

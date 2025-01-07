@@ -1774,11 +1774,10 @@ export async function browseUsersWithSharedContent({
   `);
   }
 
-  const usersWithShared2: (UserInfo & { numContent: number })[] =
-    usersWithShared.map((u) => ({
+  const usersWithShared2: UserInfo[] = usersWithShared.map((u) => ({
       ...u,
       email: "",
-      numContent: Number(u.numContent),
+    numCommunity: Number(u.numContent),
     }));
   return usersWithShared2;
 }
@@ -2476,7 +2475,7 @@ export async function browseClassificationsWithSharedContent({
 
   return matches.map((c) => ({
     ...c,
-    numContent: Number(c.numContent),
+    numCommunity: Number(c.numContent),
   }));
 }
 
@@ -2576,7 +2575,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
 
   return matches.map((c) => ({
     ...c,
-    numContent: Number(c.numContent),
+    numCommunity: Number(c.numContent),
   }));
 }
 
@@ -2676,7 +2675,7 @@ export async function browseClassificationCategoriesWithSharedContent({
 
   return matches.map((c) => ({
     ...c,
-    numContent: Number(c.numContent),
+    numCommunity: Number(c.numContent),
   }));
 }
 
@@ -2780,7 +2779,7 @@ export async function browseClassificationSystemsWithSharedContent({
 
   return matches.map((c) => ({
     ...c,
-    numContent: Number(c.numContent),
+    numCommunity: Number(c.numContent),
   }));
 }
 
