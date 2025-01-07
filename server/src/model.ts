@@ -2031,6 +2031,7 @@ export async function searchClassificationCategoriesWithSharedContent({
   SELECT
     classificationCategories.id categoryId,
     classificationCategories.category,
+    classificationCategories.sortIndex,
     classificationSystems.id systemId,
     classificationSystems.name systemName,
     classificationSystems.shortName systemShortName,
@@ -2057,7 +2058,7 @@ export async function searchClassificationCategoriesWithSharedContent({
   GROUP BY
     classificationCategories.id
   ORDER BY
-    relevance DESC
+    relevance DESC, classificationCategories.sortIndex
   LIMIT 100
   `);
 

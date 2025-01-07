@@ -327,6 +327,7 @@ async function addClassificationFromLinks({
       await prisma.classificationSystems.findUniqueOrThrow({
         where: { name: systemName },
         select: {
+          sortIndex: true,
           categories: {
             select: {
               category: true,
@@ -353,24 +354,26 @@ async function addClassificationFromLinks({
         },
       });
 
+    const sortIndexDiff = (sortIndex - classificationsToCopy.sortIndex) * 1000;
+
     for (const category of classificationsToCopy.categories) {
       const categoryId = await upsertClassificationCategory(
         category.category,
         systemId,
-        category.sortIndex,
+        category.sortIndex + sortIndexDiff,
       );
       for (const subCategory of category.subCategories) {
         const subCategoryId = await upsertClassificationSubCategory(
           subCategory.subCategory,
           categoryId,
-          subCategory.sortIndex,
+          subCategory.sortIndex + sortIndexDiff,
         );
         for (const description of subCategory.descriptions) {
           await upsertClassificationDescription(
             description.description,
             description.classification.id,
             subCategoryId,
-            description.sortIndex,
+            description.sortIndex + sortIndexDiff,
             false,
           );
         }
