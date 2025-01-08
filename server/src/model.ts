@@ -1011,7 +1011,11 @@ export async function getActivityEditorData(
     activity = processContentSharedDetails(unassignedActivity);
   }
 
-  return { notMe: false, activity };
+  const availableFeatures = await prisma.contentFeatures.findMany({
+    orderBy: { sortIndex: "asc" },
+  });
+
+  return { notMe: false, activity, availableFeatures };
 }
 
 /**
@@ -1857,11 +1861,14 @@ export async function browseUsersWithSharedContent({
   `);
   }
 
-  const usersWithShared2: UserInfo[] = usersWithShared.map((u) => ({
-    ...u,
+  const usersWithShared2: UserInfo[] = usersWithShared.map((u) => {
+    const { numContent, ...u2 } = u;
+    return {
+      ...u2,
     email: "",
-    numCommunity: Number(u.numContent),
-  }));
+      numCommunity: Number(numContent),
+    };
+  });
   return usersWithShared2;
 }
 
@@ -2556,10 +2563,13 @@ export async function browseClassificationsWithSharedContent({
   `);
   }
 
-  return matches.map((c) => ({
-    ...c,
-    numCommunity: Number(c.numContent),
-  }));
+  return matches.map((c) => {
+    const { numContent, ...c2 } = c;
+    return {
+      ...c2,
+      numCommunity: Number(numContent),
+    };
+  });
 }
 
 export async function browseClassificationSubCategoriesWithSharedContent({
@@ -2656,10 +2666,13 @@ export async function browseClassificationSubCategoriesWithSharedContent({
   `);
   }
 
-  return matches.map((c) => ({
-    ...c,
-    numCommunity: Number(c.numContent),
-  }));
+  return matches.map((c) => {
+    const { numContent, ...c2 } = c;
+    return {
+      ...c2,
+      numCommunity: Number(numContent),
+    };
+  });
 }
 
 export async function browseClassificationCategoriesWithSharedContent({
@@ -2756,10 +2769,13 @@ export async function browseClassificationCategoriesWithSharedContent({
   `);
   }
 
-  return matches.map((c) => ({
-    ...c,
-    numCommunity: Number(c.numContent),
-  }));
+  return matches.map((c) => {
+    const { numContent, ...c2 } = c;
+    return {
+      ...c2,
+      numCommunity: Number(numContent),
+    };
+  });
 }
 
 export async function browseClassificationSystemsWithSharedContent({
@@ -2860,10 +2876,13 @@ export async function browseClassificationSystemsWithSharedContent({
   `);
   }
 
-  return matches.map((c) => ({
-    ...c,
-    numCommunity: Number(c.numContent),
-  }));
+  return matches.map((c) => {
+    const { numContent, ...c2 } = c;
+    return {
+      ...c2,
+      numCommunity: Number(numContent),
+    };
+  });
 }
 
 export async function listUserAssigned(userId: Uint8Array) {
@@ -4413,9 +4432,14 @@ export async function getMyFolderContent({
     processContentSharedDetails,
   );
 
+  const availableFeatures = await prisma.contentFeatures.findMany({
+    orderBy: { sortIndex: "asc" },
+  });
+
   return {
     content,
     folder,
+    availableFeatures,
   };
 }
 
@@ -4528,9 +4552,14 @@ export async function searchMyFolderContent({
     .sort((a, b) => relevance[fromUUID(b.id)] - relevance[fromUUID(a.id)])
     .map(processContentSharedDetails);
 
+  const availableFeatures = await prisma.contentFeatures.findMany({
+    orderBy: { sortIndex: "asc" },
+  });
+
   return {
     content,
     folder,
+    availableFeatures,
   };
 }
 

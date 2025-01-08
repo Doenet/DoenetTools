@@ -12,7 +12,7 @@ import { ContentStructure } from "../../../_utils/types";
 import { InfoIcon } from "@chakra-ui/icons";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { createFullName } from "../../../_utils/names";
-import { activityFeatures } from "../../../_utils/activity";
+import { activityFeatureIcons } from "../../../_utils/activity";
 
 export function GeneralContentInfo({
   contentData,
@@ -78,7 +78,7 @@ export function GeneralContentInfo({
                   {feature.term}
                   <Icon
                     paddingLeft="5px"
-                    as={activityFeatures[feature.code].icon}
+                    as={activityFeatureIcons[feature.code]}
                     color="#666699"
                     boxSize={5}
                     verticalAlign="middle"

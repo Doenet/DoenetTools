@@ -45,6 +45,7 @@ import {
 } from "../ToolPanels/AssignmentSettingsDrawer";
 import {
   AssignmentStatus,
+  ContentFeature,
   ContentStructure,
   DoenetmlVersion,
   License,
@@ -178,6 +179,7 @@ export async function loader({ params, request }) {
     content: data.content,
     allDoenetmlVersions: data.allDoenetmlVersions,
     allLicenses: data.allLicenses,
+    availableFeatures: data.availableFeatures,
     userId: params.userId,
     folder: data.folder,
     listViewPref,
@@ -191,6 +193,7 @@ export function Activities() {
     content,
     allDoenetmlVersions,
     allLicenses,
+    availableFeatures,
     userId,
     folder,
     listViewPref,
@@ -200,6 +203,7 @@ export function Activities() {
     content: ContentStructure[];
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
+    availableFeatures: ContentFeature[];
     userId: string;
     folder: ContentStructure | null;
     listViewPref: boolean;
@@ -468,6 +472,7 @@ export function Activities() {
         onClose={settingsOnClose}
         contentData={contentData}
         allDoenetmlVersions={allDoenetmlVersions}
+        availableFeatures={availableFeatures}
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
         displayTab={displaySettingsTab}

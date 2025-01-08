@@ -24,7 +24,11 @@ import {
   supportFilesActions,
   SupportFilesControls,
 } from "./SupportFilesControls";
-import { ContentStructure, DoenetmlVersion } from "../../../_utils/types";
+import {
+  ContentFeature,
+  ContentStructure,
+  DoenetmlVersion,
+} from "../../../_utils/types";
 import {
   ClassificationSettings,
   classificationSettingsActions,
@@ -59,6 +63,7 @@ export function ContentSettingsDrawer({
   finalFocusRef,
   contentData,
   allDoenetmlVersions,
+  availableFeatures,
   supportingFileData,
   fetcher,
   displayTab = "general",
@@ -68,6 +73,7 @@ export function ContentSettingsDrawer({
   finalFocusRef?: RefObject<HTMLElement>;
   contentData: ContentStructure;
   allDoenetmlVersions: DoenetmlVersion[];
+  availableFeatures: ContentFeature[];
   supportingFileData?: any;
   fetcher: FetcherWithComponents<any>;
   displayTab?: "general" | "files";
@@ -139,6 +145,7 @@ export function ContentSettingsDrawer({
                     fetcher={fetcher}
                     contentData={contentData}
                     allDoenetmlVersions={allDoenetmlVersions}
+                    availableFeatures={availableFeatures}
                   />
                 </TabPanel>
                 {!contentData.isFolder ? (

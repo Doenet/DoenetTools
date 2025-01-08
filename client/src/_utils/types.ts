@@ -37,6 +37,15 @@ export type UserInfo = {
   firstNames: string | null;
   lastNames: string;
   email: string;
+  numLibrary?: number;
+  numCommunity?: number;
+};
+
+export type ContentFeature = {
+  id: number;
+  code: string;
+  description: string;
+  term: string;
 };
 
 export type ContentClassification = {

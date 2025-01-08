@@ -30,7 +30,7 @@ import { RiDraftFill } from "react-icons/ri";
 import { MdAssignment } from "react-icons/md";
 import { BsPeopleFill } from "react-icons/bs";
 import { IconType } from "react-icons/lib";
-import { activityFeatures } from "../_utils/activity";
+import { activityFeatureIcons } from "../_utils/activity";
 
 export type CardContent = {
   cardType: "activity" | "folder" | "author";
@@ -281,7 +281,7 @@ export default function Card({
         <Tooltip label={isQuestionFeature.description} placement="bottom-end">
           <Box width="20px">
             <Icon
-              as={activityFeatures.isQuestion.icon}
+              as={activityFeatureIcons.isQuestion}
               color="#666699"
               boxSize={5}
               verticalAlign="middle"
@@ -306,7 +306,7 @@ export default function Card({
         >
           <Box>
             <Icon
-              as={activityFeatures.isInteractive.icon}
+              as={activityFeatureIcons.isInteractive}
               color="#666699"
               boxSize={5}
               verticalAlign="middle"
@@ -330,7 +330,7 @@ export default function Card({
         >
           <Box width="20px">
             <Icon
-              as={activityFeatures.containsVideo.icon}
+              as={activityFeatureIcons.containsVideo}
               color="#666699"
               boxSize={5}
               verticalAlign="middle"
