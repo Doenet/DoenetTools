@@ -5186,7 +5186,7 @@ export async function getClassificationInfo({
   categoryId?: number;
   subCategoryId?: number;
   classificationId?: number;
-}): Promise<PartialContentClassification | undefined> {
+}): Promise<PartialContentClassification | null> {
   if (classificationId !== undefined) {
     const classificationInfo = await prisma.classifications.findUniqueOrThrow({
       where: { id: classificationId },
@@ -5286,6 +5286,8 @@ export async function getClassificationInfo({
       where: { id: systemId },
     });
     return { system: systemInfo };
+  } else {
+    return null;
   }
 }
 
