@@ -16,7 +16,8 @@ test("New user has no content", async () => {
     loggedInUserId: userId,
     folderId: null,
   });
-  expect(docs).toStrictEqual({
+  const { availableFeatures, ...docs2 } = docs;
+  expect(docs2).toStrictEqual({
     content: [],
     folder: null,
   });

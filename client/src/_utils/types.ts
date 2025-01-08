@@ -75,6 +75,35 @@ export type ContentClassification = {
   }[];
 };
 
+export type PartialContentClassification = {
+  classification?: {
+    id: number;
+    code: string;
+    descriptionId: number;
+    description: string;
+  };
+  subCategory?: {
+    id: number;
+    subCategory: string;
+  };
+  category?: {
+    id: number;
+    category: string;
+  };
+  system: {
+    id: number;
+    name: string;
+    shortName: string;
+    categoryLabel: string;
+    subCategoryLabel: string;
+    descriptionLabel: string;
+    type?: string;
+    categoriesInDescription: boolean;
+  };
+  numLibrary?: number;
+  numCommunity?: number;
+};
+
 export type ContentStructure = {
   id: string;
   ownerId: number;

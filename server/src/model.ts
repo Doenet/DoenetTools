@@ -9,6 +9,7 @@ import {
   DocHistory,
   DocRemixes,
   LicenseCode,
+  PartialContentClassification,
   UserInfo,
 } from "./types";
 import {
@@ -1865,7 +1866,7 @@ export async function browseUsersWithSharedContent({
     const { numContent, ...u2 } = u;
     return {
       ...u2,
-    email: "",
+      email: "",
       numCommunity: Number(numContent),
     };
   });
@@ -1888,7 +1889,7 @@ export async function searchClassificationsWithSharedContent({
   subCategoryId?: number;
   features?: Record<string, boolean>;
   ownerId?: Uint8Array;
-}) {
+}): Promise<ContentClassification[]> {
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
@@ -2019,7 +2020,7 @@ export async function searchClassificationSubCategoriesWithSharedContent({
   categoryId?: number;
   features?: Record<string, boolean>;
   ownerId?: Uint8Array;
-}) {
+}): Promise<PartialContentClassification[]> {
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
@@ -2040,6 +2041,7 @@ export async function searchClassificationSubCategoriesWithSharedContent({
       systemShortName: string;
       categoryLabel: string;
       subCategoryLabel: string;
+      descriptionLabel: string;
       categoriesInDescription: boolean;
       relevance: number;
     }[]
@@ -2054,6 +2056,7 @@ export async function searchClassificationSubCategoriesWithSharedContent({
     classificationSystems.shortName systemShortName,
     classificationSystems.categoryLabel,
     classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     ${returnClassificationMatchClauses({ query_as_prefixes, matchSubCategory: true })} as relevance
   FROM
@@ -2079,7 +2082,25 @@ export async function searchClassificationSubCategoriesWithSharedContent({
   LIMIT 100
   `);
 
-  return matches;
+  return matches.map((m) => ({
+    subCategory: {
+      id: m.subCategoryId,
+      subCategory: m.subCategory,
+    },
+    category: {
+      id: m.categoryId,
+      category: m.category,
+    },
+    system: {
+      id: m.systemId,
+      name: m.systemName,
+      shortName: m.systemShortName,
+      descriptionLabel: m.descriptionLabel,
+      subCategoryLabel: m.subCategoryLabel,
+      categoryLabel: m.categoryLabel,
+      categoriesInDescription: m.categoriesInDescription,
+    },
+  }));
 }
 
 export async function searchClassificationCategoriesWithSharedContent({
@@ -2094,7 +2115,7 @@ export async function searchClassificationCategoriesWithSharedContent({
   systemId?: number;
   features?: Record<string, boolean>;
   ownerId?: Uint8Array;
-}) {
+}): Promise<PartialContentClassification[]> {
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
@@ -2113,6 +2134,7 @@ export async function searchClassificationCategoriesWithSharedContent({
       systemShortName: string;
       categoryLabel: string;
       subCategoryLabel: string;
+      descriptionLabel: string;
       categoriesInDescription: boolean;
       relevance: number;
     }[]
@@ -2126,6 +2148,7 @@ export async function searchClassificationCategoriesWithSharedContent({
     classificationSystems.shortName systemShortName,
     classificationSystems.categoryLabel,
     classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     ${returnClassificationMatchClauses({ query_as_prefixes, matchCategory: true })} as relevance
   FROM
@@ -2151,7 +2174,21 @@ export async function searchClassificationCategoriesWithSharedContent({
   LIMIT 100
   `);
 
-  return matches;
+  return matches.map((m) => ({
+    category: {
+      id: m.categoryId,
+      category: m.category,
+    },
+    system: {
+      id: m.systemId,
+      name: m.systemName,
+      shortName: m.systemShortName,
+      descriptionLabel: m.descriptionLabel,
+      subCategoryLabel: m.subCategoryLabel,
+      categoryLabel: m.categoryLabel,
+      categoriesInDescription: m.categoriesInDescription,
+    },
+  }));
 }
 
 export async function browseClassificationSharedContent({
@@ -2473,7 +2510,7 @@ export async function browseClassificationsWithSharedContent({
   subCategoryId: number;
   features?: Record<string, boolean>;
   ownerId?: Uint8Array;
-}) {
+}): Promise<PartialContentClassification[]> {
   let matches;
 
   if (query) {
@@ -2492,7 +2529,18 @@ export async function browseClassificationsWithSharedContent({
         code: string;
         descriptionId: number;
         description: string;
-        numContent: number;
+        subCategoryId: number;
+        subCategory: string;
+        categoryId: number;
+        category: string;
+        systemId: number;
+        systemName: string;
+        systemShortName: string;
+        categoryLabel: string;
+        subCategoryLabel: string;
+        descriptionLabel: string;
+        categoriesInDescription: boolean;
+        numContent: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -2500,13 +2548,24 @@ export async function browseClassificationsWithSharedContent({
     classifications.code,
     classificationDescriptions.id AS descriptionId,
     classificationDescriptions.description,
+    classificationSubCategories.id subCategoryId,
+    classificationSubCategories.subCategory subCategory,
+    classificationCategories.id categoryId,
+    classificationCategories.category,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent
   FROM
     content
   LEFT JOIN
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
-  ${returnClassificationJoins({ includeClassification: true, joinFromContent: true })}
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
     content.isDeleted = FALSE
@@ -2534,7 +2593,18 @@ export async function browseClassificationsWithSharedContent({
         code: string;
         descriptionId: number;
         description: string;
-        numContent: number;
+        subCategoryId: number;
+        subCategory: string;
+        categoryId: number;
+        category: string;
+        systemId: number;
+        systemName: string;
+        systemShortName: string;
+        categoryLabel: string;
+        subCategoryLabel: string;
+        descriptionLabel: string;
+        categoriesInDescription: boolean;
+        numContent: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -2542,10 +2612,21 @@ export async function browseClassificationsWithSharedContent({
     classifications.code,
     classificationDescriptions.id AS descriptionId,
     classificationDescriptions.description,
+    classificationSubCategories.id subCategoryId,
+    classificationSubCategories.subCategory subCategory,
+    classificationCategories.id categoryId,
+    classificationCategories.category,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent
   FROM
     content
-  ${returnClassificationJoins({ includeClassification: true, joinFromContent: true })}
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
     content.isDeleted = FALSE
@@ -2563,13 +2644,32 @@ export async function browseClassificationsWithSharedContent({
   `);
   }
 
-  return matches.map((c) => {
-    const { numContent, ...c2 } = c;
-    return {
-      ...c2,
-      numCommunity: Number(numContent),
-    };
-  });
+  return matches.map((m) => ({
+    classification: {
+      id: m.classificationId,
+      code: m.code,
+      descriptionId: m.descriptionId,
+      description: m.description,
+    },
+    subCategory: {
+      id: m.subCategoryId,
+      subCategory: m.subCategory,
+    },
+    category: {
+      id: m.categoryId,
+      category: m.category,
+    },
+    system: {
+      id: m.systemId,
+      name: m.systemName,
+      shortName: m.systemShortName,
+      descriptionLabel: m.descriptionLabel,
+      subCategoryLabel: m.subCategoryLabel,
+      categoryLabel: m.categoryLabel,
+      categoriesInDescription: m.categoriesInDescription,
+    },
+    numCommunity: Number(m.numContent),
+  }));
 }
 
 export async function browseClassificationSubCategoriesWithSharedContent({
@@ -2584,7 +2684,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
   categoryId: number;
   features?: Record<string, boolean>;
   ownerId?: Uint8Array;
-}) {
+}): Promise<PartialContentClassification[]> {
   let matches;
 
   if (query) {
@@ -2601,19 +2701,37 @@ export async function browseClassificationSubCategoriesWithSharedContent({
       {
         subCategoryId: number;
         subCategory: string;
-        numContent: number;
+        categoryId: number;
+        category: string;
+        systemId: number;
+        systemName: string;
+        systemShortName: string;
+        categoryLabel: string;
+        subCategoryLabel: string;
+        descriptionLabel: string;
+        categoriesInDescription: boolean;
+        numContent: bigint;
       }[]
     >(Prisma.sql`
   SELECT
     classificationSubCategories.id AS subCategoryId,
     classificationSubCategories.subCategory,
+    classificationCategories.id categoryId,
+    classificationCategories.category,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent
   FROM
     content
   LEFT JOIN
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
-  ${returnClassificationJoins({ includeSubCategory: true, joinFromContent: true })}
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
     content.isDeleted = FALSE
@@ -2639,16 +2757,34 @@ export async function browseClassificationSubCategoriesWithSharedContent({
       {
         subCategoryId: number;
         subCategory: string;
-        numContent: number;
+        categoryId: number;
+        category: string;
+        systemId: number;
+        systemName: string;
+        systemShortName: string;
+        categoryLabel: string;
+        subCategoryLabel: string;
+        descriptionLabel: string;
+        categoriesInDescription: boolean;
+        numContent: bigint;
       }[]
     >(Prisma.sql`
   SELECT
     classificationSubCategories.id AS subCategoryId,
     classificationSubCategories.subCategory,
+    classificationCategories.id categoryId,
+    classificationCategories.category,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent
   FROM
     content
-  ${returnClassificationJoins({ includeSubCategory: true, joinFromContent: true })}
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
     content.isDeleted = FALSE
@@ -2666,13 +2802,26 @@ export async function browseClassificationSubCategoriesWithSharedContent({
   `);
   }
 
-  return matches.map((c) => {
-    const { numContent, ...c2 } = c;
-    return {
-      ...c2,
-      numCommunity: Number(numContent),
-    };
-  });
+  return matches.map((m) => ({
+    subCategory: {
+      id: m.subCategoryId,
+      subCategory: m.subCategory,
+    },
+    category: {
+      id: m.categoryId,
+      category: m.category,
+    },
+    system: {
+      id: m.systemId,
+      name: m.systemName,
+      shortName: m.systemShortName,
+      descriptionLabel: m.descriptionLabel,
+      subCategoryLabel: m.subCategoryLabel,
+      categoryLabel: m.categoryLabel,
+      categoriesInDescription: m.categoriesInDescription,
+    },
+    numCommunity: Number(m.numContent),
+  }));
 }
 
 export async function browseClassificationCategoriesWithSharedContent({
@@ -2687,7 +2836,7 @@ export async function browseClassificationCategoriesWithSharedContent({
   systemId: number;
   features?: Record<string, boolean>;
   ownerId?: Uint8Array;
-}) {
+}): Promise<PartialContentClassification[]> {
   let matches;
 
   if (query) {
@@ -2704,19 +2853,33 @@ export async function browseClassificationCategoriesWithSharedContent({
       {
         categoryId: number;
         category: string;
-        numContent: number;
+        systemId: number;
+        systemName: string;
+        systemShortName: string;
+        categoryLabel: string;
+        subCategoryLabel: string;
+        descriptionLabel: string;
+        categoriesInDescription: boolean;
+        numContent: bigint;
       }[]
     >(Prisma.sql`
   SELECT
     classificationCategories.id AS categoryId,
     classificationCategories.category,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent
   FROM
     content
   LEFT JOIN
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
-  ${returnClassificationJoins({ includeCategory: true, joinFromContent: true })}
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
     content.isDeleted = FALSE
@@ -2742,16 +2905,30 @@ export async function browseClassificationCategoriesWithSharedContent({
       {
         categoryId: number;
         category: string;
-        numContent: number;
+        systemId: number;
+        systemName: string;
+        systemShortName: string;
+        categoryLabel: string;
+        subCategoryLabel: string;
+        descriptionLabel: string;
+        categoriesInDescription: boolean;
+        numContent: bigint;
       }[]
     >(Prisma.sql`
   SELECT
     classificationCategories.id AS categoryId,
     classificationCategories.category,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent
   FROM
     content
-  ${returnClassificationJoins({ includeCategory: true, joinFromContent: true })}
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
     content.isDeleted = FALSE
@@ -2769,13 +2946,22 @@ export async function browseClassificationCategoriesWithSharedContent({
   `);
   }
 
-  return matches.map((c) => {
-    const { numContent, ...c2 } = c;
-    return {
-      ...c2,
-      numCommunity: Number(numContent),
-    };
-  });
+  return matches.map((m) => ({
+    category: {
+      id: m.categoryId,
+      category: m.category,
+    },
+    system: {
+      id: m.systemId,
+      name: m.systemName,
+      shortName: m.systemShortName,
+      descriptionLabel: m.descriptionLabel,
+      subCategoryLabel: m.subCategoryLabel,
+      categoryLabel: m.categoryLabel,
+      categoriesInDescription: m.categoriesInDescription,
+    },
+    numCommunity: Number(m.numContent),
+  }));
 }
 
 export async function browseClassificationSystemsWithSharedContent({
@@ -2788,7 +2974,7 @@ export async function browseClassificationSystemsWithSharedContent({
   loggedInUserId: Uint8Array;
   features?: Record<string, boolean>;
   ownerId?: Uint8Array;
-}) {
+}): Promise<PartialContentClassification[]> {
   let matches;
 
   if (query) {
@@ -2807,7 +2993,11 @@ export async function browseClassificationSystemsWithSharedContent({
         systemName: string;
         systemShortName: string;
         systemType: string;
-        numContent: number;
+        categoryLabel: string;
+        subCategoryLabel: string;
+        descriptionLabel: string;
+        categoriesInDescription: boolean;
+        numContent: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -2815,6 +3005,10 @@ export async function browseClassificationSystemsWithSharedContent({
     classificationSystems.name as systemName,
     classificationSystems.shortName as systemShortName,
     classificationSystems.type as systemType,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent
   FROM
     content
@@ -2848,7 +3042,11 @@ export async function browseClassificationSystemsWithSharedContent({
         systemName: string;
         systemShortName: string;
         systemType: string;
-        numContent: number;
+        categoryLabel: string;
+        subCategoryLabel: string;
+        descriptionLabel: string;
+        categoriesInDescription: boolean;
+        numContent: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -2856,6 +3054,10 @@ export async function browseClassificationSystemsWithSharedContent({
     classificationSystems.name as systemName,
     classificationSystems.shortName as systemShortName,
     classificationSystems.type as systemType,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent
   FROM
     content
@@ -2876,13 +3078,18 @@ export async function browseClassificationSystemsWithSharedContent({
   `);
   }
 
-  return matches.map((c) => {
-    const { numContent, ...c2 } = c;
-    return {
-      ...c2,
-      numCommunity: Number(numContent),
-    };
-  });
+  return matches.map((m) => ({
+    system: {
+      id: m.systemId,
+      name: m.systemName,
+      shortName: m.systemShortName,
+      descriptionLabel: m.descriptionLabel,
+      subCategoryLabel: m.subCategoryLabel,
+      categoryLabel: m.categoryLabel,
+      categoriesInDescription: m.categoriesInDescription,
+    },
+    numCommunity: Number(m.numContent),
+  }));
 }
 
 export async function listUserAssigned(userId: Uint8Array) {
@@ -4966,6 +5173,120 @@ export async function getClassifications(
     classifications.map((c) => c.classification),
   );
   return formatted;
+}
+
+// TODO: create test
+export async function getClassificationInfo({
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+}: {
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+}): Promise<PartialContentClassification | undefined> {
+  if (classificationId !== undefined) {
+    const classificationInfo = await prisma.classifications.findUniqueOrThrow({
+      where: { id: classificationId },
+      select: {
+        id: true,
+        code: true,
+        descriptions: {
+          where: { subCategoryId },
+          select: {
+            id: true,
+            description: true,
+            subCategory: {
+              select: {
+                id: true,
+                subCategory: true,
+                category: {
+                  select: {
+                    id: true,
+                    category: true,
+                    system: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const description = classificationInfo.descriptions[0];
+
+    return {
+      classification: {
+        id: classificationInfo.id,
+        code: classificationInfo.code,
+        descriptionId: description.id,
+        description: description.description,
+      },
+      subCategory: {
+        id: description.subCategory.id,
+        subCategory: description.subCategory.subCategory,
+      },
+      category: {
+        id: description.subCategory.category.id,
+        category: description.subCategory.category.category,
+      },
+      system: description.subCategory.category.system,
+    };
+  } else if (subCategoryId !== undefined) {
+    const subCategoryInfo =
+      await prisma.classificationSubCategories.findUniqueOrThrow({
+        where: { id: subCategoryId },
+        select: {
+          id: true,
+          subCategory: true,
+          category: {
+            select: {
+              id: true,
+              category: true,
+              system: true,
+            },
+          },
+        },
+      });
+
+    return {
+      subCategory: {
+        id: subCategoryInfo.id,
+        subCategory: subCategoryInfo.subCategory,
+      },
+      category: {
+        id: subCategoryInfo.category.id,
+        category: subCategoryInfo.category.category,
+      },
+      system: subCategoryInfo.category.system,
+    };
+  } else if (categoryId !== undefined) {
+    const categoryInfo =
+      await prisma.classificationCategories.findUniqueOrThrow({
+        where: { id: categoryId },
+        select: {
+          id: true,
+          category: true,
+          system: true,
+        },
+      });
+
+    return {
+      category: {
+        id: categoryInfo.id,
+        category: categoryInfo.category,
+      },
+      system: categoryInfo.system,
+    };
+  } else if (systemId !== undefined) {
+    const systemInfo = await prisma.classificationSystems.findUniqueOrThrow({
+      where: { id: systemId },
+    });
+    return { system: systemInfo };
+  }
 }
 
 export async function getLicense(code: string) {

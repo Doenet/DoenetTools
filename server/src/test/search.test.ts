@@ -1643,15 +1643,15 @@ test("searchClassificationsWithSharedContent, returns only classifications with 
     loggedInUserId: user1Id,
   });
   expect(resultsSubCat.length).eq(2); // ordered determined by second query word
-  expect(resultsSubCat[0].subCategoryId).eq(subCategoryIdA1);
-  expect(resultsSubCat[1].subCategoryId).eq(subCategoryIdB2);
+  expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdA1);
+  expect(resultsSubCat[1].subCategory!.id).eq(subCategoryIdB2);
   let resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code} ${word}B${code}`,
     loggedInUserId: user1Id,
   });
   expect(resultsCat.length).eq(2); // ordered determined by second query word
-  expect(resultsCat[0].categoryId).eq(categoryIdB);
-  expect(resultsCat[1].categoryId).eq(categoryIdA);
+  expect(resultsCat[0].category!.id).eq(categoryIdB);
+  expect(resultsCat[1].category!.id).eq(categoryIdA);
 
   // user2 just gets classifications with public
   resultsClass = await searchClassificationsWithSharedContent({
@@ -1665,13 +1665,13 @@ test("searchClassificationsWithSharedContent, returns only classifications with 
     loggedInUserId: user2Id,
   });
   expect(resultsSubCat.length).eq(1);
-  expect(resultsSubCat[0].subCategoryId).eq(subCategoryIdB2);
+  expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdB2);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: user2Id,
   });
   expect(resultsCat.length).eq(1);
-  expect(resultsCat[0].categoryId).eq(categoryIdB);
+  expect(resultsCat[0].category!.id).eq(categoryIdB);
 });
 
 test("searchClassificationsWithSharedContent, filter by system, category, sub category", async () => {
@@ -1810,14 +1810,14 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
     loggedInUserId: userId,
   });
   expect(resultsSubCat.length).eq(4);
-  expect(resultsSubCat[0].subCategoryId).eq(subCategoryIdB1);
+  expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdB1);
 
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code} ${word}A2${code}`,
     loggedInUserId: userId,
   });
   expect(resultsSubCat.length).eq(4);
-  expect(resultsSubCat[0].subCategoryId).eq(subCategoryIdA2);
+  expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdA2);
 
   // without filter get all both categories, with order determined by second query word
   let resultsCat = await searchClassificationCategoriesWithSharedContent({
@@ -1825,8 +1825,8 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
     loggedInUserId: userId,
   });
   expect(resultsCat.length).eq(2);
-  expect(resultsCat[0].categoryId).eq(categoryIdB);
-  expect(resultsCat[1].categoryId).eq(categoryIdA);
+  expect(resultsCat[0].category!.id).eq(categoryIdB);
+  expect(resultsCat[1].category!.id).eq(categoryIdA);
 
   // filtering by systemId doesn't change the results
   resultsClass = await searchClassificationsWithSharedContent({
@@ -1843,7 +1843,7 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
     systemId,
   });
   expect(resultsSubCat.length).eq(4);
-  expect(resultsSubCat[0].subCategoryId).eq(subCategoryIdA1);
+  expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdA1);
 
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code} ${word}A${code}`,
@@ -1851,8 +1851,8 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
     systemId,
   });
   expect(resultsCat.length).eq(2);
-  expect(resultsCat[0].categoryId).eq(categoryIdA);
-  expect(resultsCat[1].categoryId).eq(categoryIdB);
+  expect(resultsCat[0].category!.id).eq(categoryIdA);
+  expect(resultsCat[1].category!.id).eq(categoryIdB);
 
   // filtering by systemIdOther filters out all results
   resultsClass = await searchClassificationsWithSharedContent({
@@ -1899,8 +1899,8 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
     categoryId: categoryIdB,
   });
   expect(resultsSubCat.length).eq(2);
-  expect(resultsSubCat[0].subCategoryId).eq(subCategoryIdB2);
-  expect(resultsSubCat[1].subCategoryId).eq(subCategoryIdB1);
+  expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdB2);
+  expect(resultsSubCat[1].subCategory!.id).eq(subCategoryIdB1);
 
   // filter by sub category A2
   resultsClass = await searchClassificationsWithSharedContent({
@@ -1999,14 +1999,14 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
     features: { isQuestion: true },
   });
   expect(resultsSubCat.length).eq(1);
-  expect(resultsSubCat[0].subCategoryId).eq(subCategoryIdA1);
+  expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdA1);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
     features: { isQuestion: true },
   });
   expect(resultsCat.length).eq(1);
-  expect(resultsCat[0].categoryId).eq(categoryIdA);
+  expect(resultsCat[0].category!.id).eq(categoryIdA);
 
   // filter by isInteractive
   resultsClass = await searchClassificationsWithSharedContent({
@@ -2022,14 +2022,14 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
     features: { isInteractive: true },
   });
   expect(resultsSubCat.length).eq(1);
-  expect(resultsSubCat[0].subCategoryId).eq(subCategoryIdA1);
+  expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdA1);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
     features: { isInteractive: true },
   });
   expect(resultsCat.length).eq(1);
-  expect(resultsCat[0].categoryId).eq(categoryIdA);
+  expect(resultsCat[0].category!.id).eq(categoryIdA);
 
   // filter by containsVideo
   resultsClass = await searchClassificationsWithSharedContent({
@@ -2045,14 +2045,14 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
     features: { containsVideo: true },
   });
   expect(resultsSubCat.length).eq(1);
-  expect(resultsSubCat[0].subCategoryId).eq(subCategoryIdB2);
+  expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdB2);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
     features: { containsVideo: true },
   });
   expect(resultsCat.length).eq(1);
-  expect(resultsCat[0].categoryId).eq(categoryIdB);
+  expect(resultsCat[0].category!.id).eq(categoryIdB);
 
   // nothing if filter by pairs of features
   resultsClass = await searchClassificationsWithSharedContent({
@@ -2143,14 +2143,14 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
     features: { isQuestion: true, isInteractive: true },
   });
   expect(resultsSubCat.length).eq(1);
-  expect(resultsSubCat[0].subCategoryId).eq(subCategoryIdA1);
+  expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdA1);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
     features: { isQuestion: true, isInteractive: true },
   });
   expect(resultsCat.length).eq(1);
-  expect(resultsCat[0].categoryId).eq(categoryIdA);
+  expect(resultsCat[0].category!.id).eq(categoryIdA);
 
   resultsClass = await searchClassificationsWithSharedContent({
     query: `${word}${code}`,
@@ -2165,14 +2165,14 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
     features: { isInteractive: true, containsVideo: true },
   });
   expect(resultsSubCat.length).eq(1);
-  expect(resultsSubCat[0].subCategoryId).eq(subCategoryIdA1);
+  expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdA1);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
     features: { isInteractive: true, containsVideo: true },
   });
   expect(resultsCat.length).eq(1);
-  expect(resultsCat[0].categoryId).eq(categoryIdA);
+  expect(resultsCat[0].category!.id).eq(categoryIdA);
 
   resultsClass = await searchClassificationsWithSharedContent({
     query: `${word}${code}`,
@@ -2187,14 +2187,14 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
     features: { containsVideo: true, isQuestion: true },
   });
   expect(resultsSubCat.length).eq(1);
-  expect(resultsSubCat[0].subCategoryId).eq(subCategoryIdB2);
+  expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdB2);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
     features: { containsVideo: true, isQuestion: true },
   });
   expect(resultsCat.length).eq(1);
-  expect(resultsCat[0].categoryId).eq(categoryIdB);
+  expect(resultsCat[0].category!.id).eq(categoryIdB);
 
   // filter by all three features
   resultsClass = await searchClassificationsWithSharedContent({
@@ -2299,14 +2299,14 @@ test("searchClassificationsWithSharedContent, filter by owner", async () => {
     ownerId: owner1Id,
   });
   expect(resultsSubCat.length).eq(1);
-  expect(resultsSubCat[0].subCategoryId).eq(subCategoryIdA1);
+  expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdA1);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
     ownerId: owner1Id,
   });
   expect(resultsCat.length).eq(1);
-  expect(resultsCat[0].categoryId).eq(categoryIdA);
+  expect(resultsCat[0].category!.id).eq(categoryIdA);
 
   // filter by owner 2
   resultsClass = await searchClassificationsWithSharedContent({
@@ -2342,14 +2342,14 @@ test("searchClassificationsWithSharedContent, filter by owner", async () => {
     ownerId: owner3Id,
   });
   expect(resultsSubCat.length).eq(1);
-  expect(resultsSubCat[0].subCategoryId).eq(subCategoryIdB2);
+  expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdB2);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
     ownerId: owner3Id,
   });
   expect(resultsCat.length).eq(1);
-  expect(resultsCat[0].categoryId).eq(categoryIdB);
+  expect(resultsCat[0].category!.id).eq(categoryIdB);
 });
 
 test(
