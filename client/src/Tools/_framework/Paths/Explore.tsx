@@ -89,10 +89,10 @@ export async function loader({ params, request }) {
 
   const url = new URL(request.url);
 
-  const features: Record<string, boolean> = {};
+  const features: Set<string> = new Set();
   for (const feature of availableFeatures) {
     if (url.searchParams.has(feature.code)) {
-      features[feature.code] = true;
+      features.add(feature.code);
     }
   }
 
@@ -104,7 +104,7 @@ export async function loader({ params, request }) {
     //Show search results
     const { data: searchData } = await axios.post(`/api/searchSharedContent`, {
       q,
-      features,
+      features: [...features.keys()],
       isUnclassified,
       systemId,
       categoryId,
@@ -124,7 +124,7 @@ export async function loader({ params, request }) {
     };
   } else {
     const { data: browseData } = await axios.post("/api/browseSharedContent", {
-      features,
+      features: [...features.keys()],
       isUnclassified,
       systemId,
       categoryId,
@@ -141,7 +141,9 @@ export async function loader({ params, request }) {
 export function Explore() {
   const {
     q,
-    users,
+    topAuthors,
+    matchedAuthors,
+    authorInfo,
     content,
     matchedClassifications,
     matchedSubCategories,
@@ -158,7 +160,9 @@ export function Explore() {
     listViewPref,
   } = useLoaderData() as {
     q: string;
-    users: UserInfo[];
+    topAuthors: UserInfo[] | null;
+    matchedAuthors: UserInfo[] | undefined;
+    authorInfo: UserInfo | null;
     content: ContentStructure[];
     matchedClassifications: ContentClassification[] | null | undefined;
     matchedSubCategories: PartialContentClassification[] | null | undefined;
@@ -173,7 +177,7 @@ export function Explore() {
       string,
       { numLibrary?: number; numCommunity?: number }
     >;
-    features: Record<string, boolean>;
+    features: Set<string>;
     availableFeatures: ContentFeature[];
     listViewPref: boolean;
   };
@@ -183,7 +187,7 @@ export function Explore() {
 
   const [listView, setListView] = useState(listViewPref);
 
-  const [filtersOpen, setFiltersOpen] = useState(true);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const { search } = useLocation();
   const navigate = useNavigate();
@@ -209,7 +213,7 @@ export function Explore() {
     />
   ) : null;
 
-  function displaySearchResults(matches: ContentStructure[]) {
+  function displayMatchingContent(matches: ContentStructure[]) {
     const cardContent: CardContent[] = matches.map((itemObj) => {
       const { id, imagePath, name, owner, isFolder, contentFeatures } = itemObj;
       const cardLink =
@@ -256,6 +260,62 @@ export function Explore() {
     );
   }
 
+  const categoryFilterSection = (
+    <>
+      <Heading size="sm">Content features</Heading>
+      <VStack alignItems="flex-start" gap={0}>
+        {availableFeatures.map((feature) => {
+          const isPresent = features.has(feature.code);
+          const c = countByFeature[feature.code];
+          const numLibrary = c.numLibrary || 0;
+          const numCommunity = c.numCommunity || 0;
+
+          return (
+            <Checkbox
+              key={feature.code}
+              isChecked={isPresent}
+              data-test={`${feature.code} Checkbox`}
+              disabled={numLibrary + numCommunity === 0}
+              onChange={() => {
+                let newSearch = search;
+                if (isPresent) {
+                  newSearch = removeQueryParameter(feature.code, newSearch);
+                } else {
+                  if (newSearch) {
+                    newSearch += "&";
+                  } else {
+                    newSearch = "?";
+                  }
+                  newSearch += feature.code;
+                }
+                navigate(`.${newSearch}`);
+              }}
+            >
+              <HStack>
+                <Tooltip label={feature.description} openDelay={500}>
+                  {feature.term}
+                  <Icon
+                    paddingLeft="5px"
+                    as={activityFeatureIcons[feature.code]}
+                    color="#666699"
+                    boxSize={5}
+                    verticalAlign="middle"
+                  />
+                </Tooltip>
+                <Tooltip
+                  label={`${numPhraseDisplay(c)} designated as ${feature.term.toLowerCase()}`}
+                  openDelay={500}
+                >
+                  {numPairDisplay(c)}
+                </Tooltip>
+              </HStack>
+            </Checkbox>
+          );
+        })}
+      </VStack>
+    </>
+  );
+
   let classificationStatusSection: ReactElement | null = null;
 
   if (classificationInfo === null) {
@@ -265,15 +325,18 @@ export function Explore() {
     filteredBy.push(
       <ListItem key="system">
         <HStack gap={0}>
-          <Text noOfLines={1}>{classificationInfo.system.shortName}</Text>
+          <Tooltip label={classificationInfo.system.name} openDelay={500}>
+            <Text noOfLines={1}>{classificationInfo.system.shortName}</Text>
+          </Tooltip>
           <Tooltip
-            label={`remove filter: ${classificationInfo.system.shortName}`}
+            label={`remove filter: ${classificationInfo.system.name}`}
+            openDelay={500}
           >
             <IconButton
               variant="ghost"
               size="sm"
               icon={<MdFilterAltOff />}
-              aria-label={`remove filter: ${classificationInfo.system.shortName}`}
+              aria-label={`remove filter: ${classificationInfo.system.name}`}
               onClick={() =>
                 navigate(
                   `../${classificationInfo.category ? "../" : ""}${classificationInfo.subCategory ? "../" : ""}${classificationInfo.classification ? "../" : ""}${search}`,
@@ -290,9 +353,15 @@ export function Explore() {
       filteredBy.push(
         <ListItem key="category">
           <HStack gap={0}>
-            <Text noOfLines={1}>{classificationInfo.category.category}</Text>
+            <Tooltip
+              label={classificationInfo.category.category}
+              openDelay={500}
+            >
+              <Text noOfLines={1}>{classificationInfo.category.category}</Text>
+            </Tooltip>
             <Tooltip
               label={`remove filter: ${classificationInfo.category.category}`}
+              openDelay={500}
             >
               <IconButton
                 variant="ghost"
@@ -314,11 +383,17 @@ export function Explore() {
         filteredBy.push(
           <ListItem key="subcategory">
             <HStack gap={0}>
-              <Text noOfLines={1}>
-                {classificationInfo.subCategory.subCategory}
-              </Text>
+              <Tooltip
+                label={classificationInfo.subCategory.subCategory}
+                openDelay={500}
+              >
+                <Text noOfLines={1}>
+                  {classificationInfo.subCategory.subCategory}
+                </Text>
+              </Tooltip>
               <Tooltip
                 label={`remove filter: ${classificationInfo.subCategory.subCategory}`}
+                openDelay={500}
               >
                 <IconButton
                   variant="ghost"
@@ -341,12 +416,18 @@ export function Explore() {
           filteredBy.push(
             <ListItem key="classification">
               <HStack gap={0}>
-                <Text noOfLines={1}>
-                  {classificationInfo.classification.code}:{" "}
-                  {classificationInfo.classification.description}
-                </Text>
+                <Tooltip
+                  label={`${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
+                  openDelay={500}
+                >
+                  <Text noOfLines={1}>
+                    {classificationInfo.classification.code}:{" "}
+                    {classificationInfo.classification.description}
+                  </Text>
+                </Tooltip>
                 <Tooltip
                   label={`remove filter: ${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
+                  openDelay={500}
                 >
                   <IconButton
                     variant="ghost"
@@ -380,10 +461,10 @@ export function Explore() {
           Current classification filters
         </Heading>
         <List>
-          <ListItem key="classification">
+          <ListItem>
             <HStack gap={0}>
               <Text>Unclassified</Text>
-              <Tooltip label={`remove filter: Unclassified`}>
+              <Tooltip label={`remove filter: Unclassified`} openDelay={500}>
                 <IconButton
                   variant="ghost"
                   size="sm"
@@ -399,9 +480,9 @@ export function Explore() {
     );
   }
 
-  let classificationsBrowseSection: ReactElement | null;
+  let classificationsBrowseSection: ReactElement | null = null;
 
-  if (systemBrowse) {
+  if (systemBrowse && systemBrowse.length > 0) {
     const unclassified = systemBrowse.filter((s) => s.system === undefined);
     classificationsBrowseSection = (
       <>
@@ -421,11 +502,11 @@ export function Explore() {
                 >
                   {" "}
                   <Tooltip
-                    label={`${numPhraseDisplay(c)} in ${c.system.shortName}`}
+                    label={`${numPhraseDisplay(c)} in ${c.system.name}`}
                     openDelay={500}
                   >
                     <HStack>
-                      <Text>{c.system.name}</Text>
+                      <Text>{c.system.shortName}</Text>
 
                       {numPairDisplay(c)}
                     </HStack>
@@ -439,7 +520,7 @@ export function Explore() {
           <Box marginTop="10px">
             <ChakraLink as={ReactRouterLink} to={`./0/${search}`}>
               <Tooltip
-                label={`${numPhraseDisplay(unclassified[0], "community")}`}
+                label={`${numPhraseDisplay(unclassified[0], "unclassified")}`}
                 openDelay={500}
               >
                 <HStack>
@@ -452,11 +533,12 @@ export function Explore() {
         ) : null}
       </>
     );
-  } else if (categoryBrowse) {
+  } else if (categoryBrowse && categoryBrowse.length > 0) {
     classificationsBrowseSection = (
       <>
         <Heading size="xs">
-          Filter by {classificationInfo?.system?.categoryLabel}
+          Filter further by{" "}
+          {classificationInfo?.system?.categoryLabel.toLowerCase()}
         </Heading>
 
         <List>
@@ -486,11 +568,12 @@ export function Explore() {
         </List>
       </>
     );
-  } else if (subCategoryBrowse) {
+  } else if (subCategoryBrowse && subCategoryBrowse.length > 0) {
     classificationsBrowseSection = (
       <>
         <Heading size="xs">
-          Filter by {classificationInfo?.system?.subCategoryLabel}
+          Filter further by{" "}
+          {classificationInfo?.system?.subCategoryLabel.toLowerCase()}
         </Heading>
 
         <List>
@@ -520,11 +603,12 @@ export function Explore() {
         </List>
       </>
     );
-  } else if (classificationBrowse) {
+  } else if (classificationBrowse && classificationBrowse.length > 0) {
     classificationsBrowseSection = (
       <>
         <Heading size="xs">
-          Filter by {classificationInfo?.system?.descriptionLabel}
+          Filter further by{" "}
+          {classificationInfo?.system?.descriptionLabel.toLowerCase()}
         </Heading>
 
         <List>
@@ -556,8 +640,154 @@ export function Explore() {
         </List>
       </>
     );
-  } else {
-    classificationsBrowseSection = null;
+  }
+
+  let authorBrowseSection: ReactElement | null = null;
+
+  if (topAuthors && topAuthors.length > 0) {
+    authorBrowseSection = (
+      <>
+        <Heading size="sm" marginBottom="5px">
+          Authors
+        </Heading>
+        <List>
+          {topAuthors.map((u) => {
+            let newSearch = search;
+            if (newSearch) {
+              newSearch += "&";
+            } else {
+              newSearch = "?";
+            }
+            newSearch += `author=${u.userId}`;
+            const authorName = createFullName(u);
+            return (
+              <ListItem key={u.userId}>
+                <ChakraLink as={ReactRouterLink} to={`./${newSearch}`}>
+                  {" "}
+                  <Tooltip
+                    label={`${numPhraseDisplay(u)} by ${authorName}`}
+                    openDelay={500}
+                  >
+                    <HStack>
+                      <Text>{authorName}</Text>
+
+                      {numPairDisplay(u)}
+                    </HStack>
+                  </Tooltip>
+                </ChakraLink>
+              </ListItem>
+            );
+          })}
+        </List>
+      </>
+    );
+  } else if (authorInfo) {
+    const authorName = createFullName(authorInfo);
+    authorBrowseSection = (
+      <>
+        {" "}
+        <Heading size="sm" marginBottom="5px">
+          Current author filter
+        </Heading>
+        <List>
+          <ListItem>
+            <HStack gap={0}>
+              <Text>{authorName}</Text>
+              <Tooltip label={`remove filter: ${authorName}`} openDelay={500}>
+                <IconButton
+                  variant="ghost"
+                  size="sm"
+                  icon={<MdFilterAltOff />}
+                  aria-label={`remove filter: ${authorName}`}
+                  onClick={() => {
+                    const newSearch = removeQueryParameter("author", search);
+                    navigate(`.${newSearch}`);
+                  }}
+                />
+              </Tooltip>
+            </HStack>
+          </ListItem>
+        </List>
+      </>
+    );
+  }
+
+  let filteredByStatement: ReactElement | null = null;
+
+  if (authorInfo || classificationInfo || features.size > 0) {
+    const filters: string[] = [];
+    if (authorInfo) {
+      filters.push(`author (${createFullName(authorInfo)})`);
+    }
+    if (classificationInfo) {
+      if (classificationInfo.classification) {
+        filters.push(
+          `classification (${classificationInfo.classification.code})`,
+        );
+      } else if (classificationInfo.subCategory) {
+        let subCategory = classificationInfo.subCategory.subCategory;
+        if (subCategory.length > 20) {
+          subCategory = subCategory.substring(0, 20) + "...";
+        }
+        filters.push(`classification (${subCategory})`);
+      } else if (classificationInfo.category) {
+        let category = classificationInfo.category.category;
+        if (category.length > 20) {
+          category = category.substring(0, 20) + "...";
+        }
+        filters.push(`classification (${category})`);
+      } else if (classificationInfo.system) {
+        filters.push(
+          `classification system (${classificationInfo.system.shortName})`,
+        );
+      } else {
+        filters.push(`unclassified`);
+      }
+    }
+
+    for (const feature of availableFeatures) {
+      if (features.has(feature.code)) {
+        filters.push(feature.term.toLowerCase());
+      }
+    }
+    let filterText = "Filtered by ";
+    if (filters.length === 1) {
+      filterText += filters[0];
+    } else {
+      filterText += filters.slice(0, filters.length - 1).join(", ");
+      filterText += ` and ${filters[filters.length - 1]}`;
+    }
+
+    filteredByStatement = (
+      <HStack gap={0}>
+        <Text>{filterText}</Text>
+        <Tooltip label={`remove all filters`} openDelay={500}>
+          <IconButton
+            variant="ghost"
+            size="sm"
+            icon={<MdFilterAltOff />}
+            aria-label={`remove all filter`}
+            onClick={() => {
+              let newSearch = search;
+              for (const feature of features) {
+                newSearch = removeQueryParameter(feature, newSearch);
+              }
+              if (authorInfo) {
+                newSearch = removeQueryParameter("author", newSearch);
+              }
+              if (classificationInfo) {
+                navigate(
+                  `../${classificationInfo.category ? "../" : ""}${classificationInfo.subCategory ? "../" : ""}${classificationInfo.classification ? "../" : ""}${newSearch}`,
+                  { relative: "path" },
+                );
+              } else {
+                navigate(`./${newSearch}`, { relative: "path" });
+              }
+            }}
+          />
+        </Tooltip>
+      </HStack>
+    );
   }
 
   const heading = (
@@ -598,15 +828,17 @@ export function Explore() {
             {q}
           </Text>
         </Text>
-        <Box width="100%">
-          <Box float="right" marginRight=".5em">
+        <Flex width="100%" fontStyle="italic">
+          <Box marginLeft="10px">{filteredByStatement}</Box>
+          <Spacer />
+          <Box marginRight=".5em">
             <ToggleViewButtonGroup
               listView={listView}
               setListView={setListView}
               fetcher={fetcher}
             />
           </Box>
-        </Box>
+        </Flex>
       </Box>
     </>
   );
@@ -626,9 +858,8 @@ export function Explore() {
 
       <TabPanels data-test="Search Results">
         <TabPanel>We don't have anything in library yet</TabPanel>
-        <TabPanel>
-          {!q ? <p>For now, just showing the most recent content....</p> : null}
-          {displaySearchResults(content)}
+        <TabPanel paddingLeft={0} paddingRight={0}>
+          {displayMatchingContent(content)}
         </TabPanel>
         <TabPanel>Authors!</TabPanel>
         <TabPanel></TabPanel>
@@ -643,76 +874,30 @@ export function Explore() {
       <>
         <Flex>
           Filters <Spacer />{" "}
-          <CloseButton onClick={() => setFiltersOpen(false)} />
+          <Tooltip label="Close filter panel" openDelay={500}>
+            <CloseButton
+              onClick={() => setFiltersOpen(false)}
+              aria-label="Close filter panel"
+            />
+          </Tooltip>
         </Flex>
-
-        <Heading size="sm">Content features</Heading>
-        <VStack alignItems="flex-start" gap={0}>
-          {availableFeatures.map((feature) => {
-            const isPresent = feature.code in features;
-            const c = countByFeature[feature.code];
-            const numLibrary = c.numLibrary || 0;
-            const numCommunity = c.numCommunity || 0;
-
-            return (
-              <Checkbox
-                key={feature.code}
-                marginTop="10px"
-                isChecked={isPresent}
-                data-test={`${feature.code} Checkbox`}
-                disabled={numLibrary + numCommunity === 0}
-                onChange={() => {
-                  let newSearch = search;
-                  if (isPresent) {
-                    newSearch = newSearch.replace(`&${feature.code}`, "");
-                    newSearch = newSearch.replace(feature.code, "");
-                    if (newSearch === "?") {
-                      newSearch = "";
-                    }
-                    if (newSearch.substring(0, 2) === "?&") {
-                      newSearch = "?" + newSearch.slice(2);
-                    }
-                  } else {
-                    if (newSearch) {
-                      newSearch += "&";
-                    } else {
-                      newSearch = "?";
-                    }
-                    newSearch += feature.code;
-                  }
-                  navigate(`.${newSearch}`);
-                }}
-              >
-                <HStack>
-                  <Tooltip label={feature.description}>
-                    {feature.term}
-                    <Icon
-                      paddingLeft="5px"
-                      as={activityFeatureIcons[feature.code]}
-                      color="#666699"
-                      boxSize={5}
-                      verticalAlign="middle"
-                    />
-                  </Tooltip>
-                  {numPairDisplay(c)}
-                </HStack>
-              </Checkbox>
-            );
-          })}
-        </VStack>
+        <Box>{categoryFilterSection}</Box>
         <Box marginTop="20px">{classificationStatusSection}</Box>
         <Box marginTop="20px">{classificationsBrowseSection}</Box>
+        <Box marginTop="20px">{authorBrowseSection}</Box>
       </>
     );
   } else {
     filterSection = (
-      <IconButton
-        variant="outline"
-        size="sm"
-        icon={<MdFilterAlt />}
-        onClick={() => setFiltersOpen(true)}
-        aria-label="Open filters"
-      />
+      <Tooltip label="Open filter panel" openDelay={500}>
+        <IconButton
+          variant="outline"
+          size="sm"
+          icon={<MdFilterAlt />}
+          onClick={() => setFiltersOpen(true)}
+          aria-label="Open filter panel"
+        />
+      </Tooltip>
     );
   }
 
@@ -720,13 +905,16 @@ export function Explore() {
     <>
       {infoDrawer}
       {heading}
-
       <Grid
         width="100%"
-        gridTemplateColumns={filtersOpen ? "300px 1fr" : "50px 1fr"}
+        gridTemplateColumns={filtersOpen ? "300px 1fr" : "40px 1fr"}
         gap="2"
       >
-        <GridItem marginLeft="10px" borderRight={"2px"} paddingRight="4px">
+        <GridItem
+          marginLeft={filtersOpen ? "10px" : "4px"}
+          borderRight={"2px"}
+          paddingRight="4px"
+        >
           {filterSection}
         </GridItem>
         <GridItem>{results}</GridItem>
@@ -773,4 +961,21 @@ function numPhraseDisplay(
   }
 
   return `${nl} ${qualifier}library item${nl === "1" ? "" : "s"} and ${nc} ${qualifier}community item${nc === "1" ? "" : "s"}`;
+}
+
+function removeQueryParameter(param: string, search: string) {
+  function escapeRegex(string) {
+    return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
+  }
+  const escapedParam = escapeRegex(param);
+
+  let newSearch = search;
+  newSearch = newSearch.replace(new RegExp(`&?${escapedParam}(=[^&]*)?`), "");
+  if (newSearch === "?") {
+    newSearch = "";
+  }
+  if (newSearch.substring(0, 2) === "?&") {
+    newSearch = "?" + newSearch.slice(2);
+  }
+  return newSearch;
 }
