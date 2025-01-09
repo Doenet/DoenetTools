@@ -2089,6 +2089,59 @@ app.post(
   },
 );
 
+app.post(
+  "/api/recordLLMSubmittedEvent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+
+    const loggedInUserId = req.user.userId;
+    const body = req.body;
+
+    // Convert IDs from string to binary if necessary
+    const activityId = toUUID(body.activityId);
+    const docId = toUUID(body.docId);
+    const docVersionNum = Number(body.docVersionNum);
+    const answerId = body.answerId as string;
+    const rubric = body.rubric as string;
+    const response = body.result.response as string;
+    const itemNumber = Number(body.result.itemNumber);
+    const answerNumber = body.answerNumber ? Number(body.answerNumber) : undefined;
+
+    try {
+      await prisma.documentLLMSubmittedResponses.create({
+        data: {
+          activityId,
+          docId,
+          docVersionNum,
+          userId: loggedInUserId,
+          answerId,
+          rubric,
+          response,
+          answerNumber,
+          itemNumber,
+          graded: false,  // Mark response as ungraded initially
+          // creditAchieved, itemCreditAchieved, documentCreditAchieved are left null by default
+          // submittedAt will default to now()
+        },
+      });
+      res.send({});
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientValidationError ||
+        e instanceof Prisma.PrismaClientKnownRequestError
+      ) {
+        res.status(400).send({});
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+
 app.get(
   "/api/getSubmittedResponses/:activityId/:docId/:docVersionNum",
   async (req: Request, res: Response, next: NextFunction) => {

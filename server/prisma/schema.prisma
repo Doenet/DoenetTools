@@ -181,6 +181,30 @@ model documentState {
   @@index([userId])
 }
 
+model documentLLMSubmittedResponses {
+  id                     Bytes            @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
+  activityId             Bytes            @db.Binary(16)
+  docId                  Bytes            @db.Binary(16)
+  docVersionNum          Int
+  userId                 Bytes            @db.Binary(16)
+  answerId               String
+  rubric                 String           @db.Text
+  response               String           @db.Text
+  answerNumber           Int?
+  itemNumber             Int
+  graded                 Boolean          @default(false)
+  creditAchieved         Float?
+  itemCreditAchieved     Float?
+  documentCreditAchieved Float?
+  submittedAt            DateTime         @default(now())
+  documentVersion        documentVersions @relation(fields: [docId, docVersionNum], references: [docId, versionNum], onDelete: NoAction, onUpdate: NoAction)
+  user                   users            @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([activityId, docId, docVersionNum, answerId])
+  @@index([userId])
+  @@index([graded])
+}
+
 model documentSubmittedResponses {
   id                     Bytes            @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
   activityId             Bytes            @db.Binary(16)
