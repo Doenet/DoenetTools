@@ -91,6 +91,9 @@ import {
   browseUsersWithSharedContent,
   browseSharedContent,
   getClassificationInfo,
+  getSharedContentMatchCount,
+  getAvailableContentFeatures,
+  getSharedContentMatchCountPerAvailableFeature,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -1081,20 +1084,10 @@ app.post("/api/searchSharedContent", async (req: Request, res: Response) => {
   const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
   const query: string = req.body.q;
 
-  // if an id is specified, ignore more general ids
   const classificationId: number | undefined = req.body.classificationId;
-  const subCategoryId: number | undefined =
-    classificationId === undefined ? req.body.subCategoryId : undefined;
-  const categoryId: number | undefined =
-    classificationId === undefined && subCategoryId === undefined
-      ? req.body.categoryId
-      : undefined;
-  const systemId: number | undefined =
-    classificationId === undefined &&
-    subCategoryId === undefined &&
-    categoryId === undefined
-      ? req.body.systemId
-      : undefined;
+  const subCategoryId: number | undefined = req.body.subCategoryId;
+  const categoryId: number | undefined = req.body.categoryId;
+  const systemId: number | undefined = req.body.systemId;
   const isUnclassified: boolean =
     req.body.isUnclassified &&
     classificationId === undefined &&
@@ -1212,11 +1205,37 @@ app.post("/api/searchSharedContent", async (req: Request, res: Response) => {
     }
   }
 
-  const classificationInfo = await getClassificationInfo({
+  const classificationInfo: PartialContentClassification | null = isUnclassified
+    ? {}
+    : await getClassificationInfo({
+        systemId,
+        categoryId,
+        subCategoryId,
+        classificationId,
+      });
+
+  const totalCount = await getSharedContentMatchCount({
+    query,
+    loggedInUserId,
     systemId,
     categoryId,
     subCategoryId,
     classificationId,
+    isUnclassified,
+    features,
+    ownerId,
+  });
+
+  const countByFeature = await getSharedContentMatchCountPerAvailableFeature({
+    query,
+    loggedInUserId,
+    systemId,
+    categoryId,
+    subCategoryId,
+    classificationId,
+    isUnclassified,
+    features,
+    ownerId,
   });
 
   res.send({
@@ -1230,13 +1249,14 @@ app.post("/api/searchSharedContent", async (req: Request, res: Response) => {
     categoryBrowse,
     systemBrowse,
     classificationInfo,
+    totalCount,
+    countByFeature,
   });
 });
 
 app.post("/api/browseSharedContent", async (req: Request, res: Response) => {
   const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
 
-  // if an id is specified, ignore more general ids
   const classificationId: number | undefined = req.body.classificationId;
   const subCategoryId: number | undefined = req.body.subCategoryId;
   const categoryId: number | undefined = req.body.categoryId;
@@ -1320,11 +1340,35 @@ app.post("/api/browseSharedContent", async (req: Request, res: Response) => {
     }
   }
 
-  const classificationInfo = await getClassificationInfo({
+  const classificationInfo: PartialContentClassification | null = isUnclassified
+    ? {}
+    : await getClassificationInfo({
+        systemId,
+        categoryId,
+        subCategoryId,
+        classificationId,
+      });
+
+  const totalCount = await getSharedContentMatchCount({
+    loggedInUserId,
     systemId,
     categoryId,
     subCategoryId,
     classificationId,
+    isUnclassified,
+    features,
+    ownerId,
+  });
+
+  const countByFeature = await getSharedContentMatchCountPerAvailableFeature({
+    loggedInUserId,
+    systemId,
+    categoryId,
+    subCategoryId,
+    classificationId,
+    isUnclassified,
+    features,
+    ownerId,
   });
 
   res.send({
@@ -1335,8 +1379,22 @@ app.post("/api/browseSharedContent", async (req: Request, res: Response) => {
     categoryBrowse,
     systemBrowse,
     classificationInfo,
+    totalCount,
+    countByFeature,
   });
 });
+
+app.get(
+  "/api/getAvailableContentFeatures",
+  async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const availableFeatures = await getAvailableContentFeatures();
+      res.send(availableFeatures);
+    } catch (e) {
+      next(e);
+    }
+  },
+);
 
 app.post(
   "/api/addPromotedContent",
