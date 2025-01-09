@@ -90,7 +90,7 @@ export type PartialContentClassification = {
     id: number;
     category: string;
   };
-  system: {
+  system?: {
     id: number;
     name: string;
     shortName: string;

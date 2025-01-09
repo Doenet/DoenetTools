@@ -215,6 +215,34 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
+        path: "explore/:systemId",
+        loader: exploreLoader,
+        action: exploreAction,
+        element: <Explore />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "explore/:systemId/:categoryId",
+        loader: exploreLoader,
+        action: exploreAction,
+        element: <Explore />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "explore/:systemId/:categoryId/:subCategoryId",
+        loader: exploreLoader,
+        action: exploreAction,
+        element: <Explore />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "explore/:systemId/:categoryId/:subCategoryId/:classificationId",
+        loader: exploreLoader,
+        action: exploreAction,
+        element: <Explore />,
+        errorElement: <ErrorPage />,
+      },
+      {
         path: "admin",
         loader: adminLoader,
         // sharing an action with the explore page is somewhat intentional
