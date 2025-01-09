@@ -73,7 +73,7 @@ export function GeneralContentInfo({
           <Heading size="sm">Activity features</Heading>
           <UnorderedList>
             {contentData.contentFeatures.map((feature) => (
-              <ListItem>
+              <ListItem key={feature.code}>
                 <Tooltip label={feature.description}>
                   {feature.term}
                   <Icon

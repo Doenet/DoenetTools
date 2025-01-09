@@ -94,6 +94,7 @@ import {
   getSharedContentMatchCount,
   getAvailableContentFeatures,
   getSharedContentMatchCountPerAvailableFeature,
+  getAuthorInfo,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -1095,11 +1096,26 @@ app.post("/api/searchSharedContent", async (req: Request, res: Response) => {
     categoryId === undefined &&
     systemId === undefined;
 
-  const features: Record<string, boolean> | undefined = req.body.features;
+  const features: Set<string> | undefined = req.body.features;
 
   const ownerId = req.body.ownerId ? toUUID(req.body.ownerId) : undefined;
 
-  const users = ownerId
+  const topAuthors = ownerId
+    ? null
+    : (
+        await browseUsersWithSharedContent({
+          loggedInUserId,
+          systemId,
+          categoryId,
+          subCategoryId,
+          classificationId,
+          isUnclassified,
+          features,
+          take: 10,
+        })
+      ).map(userConvertUUID);
+
+  const matchedAuthors = ownerId
     ? null
     : (
         await searchUsersWithSharedContent({
@@ -1113,6 +1129,11 @@ app.post("/api/searchSharedContent", async (req: Request, res: Response) => {
           features,
         })
       ).map(userConvertUUID);
+
+  const authorInfo = ownerId
+    ? userConvertUUID(await getAuthorInfo(ownerId))
+    : null;
+
   const content = (
     await searchSharedContent({
       query,
@@ -1239,7 +1260,9 @@ app.post("/api/searchSharedContent", async (req: Request, res: Response) => {
   });
 
   res.send({
-    users,
+    topAuthors,
+    matchedAuthors,
+    authorInfo,
     content,
     matchedClassifications,
     matchedSubCategories,
@@ -1268,11 +1291,11 @@ app.post("/api/browseSharedContent", async (req: Request, res: Response) => {
     categoryId === undefined &&
     systemId === undefined;
 
-  const features: Record<string, boolean> | undefined = req.body.features;
+  const features: Set<string> | undefined = req.body.features;
 
   const ownerId = req.body.ownerId ? toUUID(req.body.ownerId) : undefined;
 
-  const users = ownerId
+  const topAuthors = ownerId
     ? null
     : (
         await browseUsersWithSharedContent({
@@ -1283,8 +1306,14 @@ app.post("/api/browseSharedContent", async (req: Request, res: Response) => {
           classificationId,
           isUnclassified,
           features,
+          take: 10,
         })
       ).map(userConvertUUID);
+
+  const authorInfo = ownerId
+    ? userConvertUUID(await getAuthorInfo(ownerId))
+    : null;
+
   const content = (
     await browseSharedContent({
       loggedInUserId,
@@ -1372,7 +1401,8 @@ app.post("/api/browseSharedContent", async (req: Request, res: Response) => {
   });
 
   res.send({
-    users,
+    topAuthors,
+    authorInfo,
     content,
     classificationBrowse,
     subCategoryBrowse,

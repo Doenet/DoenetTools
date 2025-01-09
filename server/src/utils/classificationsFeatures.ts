@@ -188,8 +188,8 @@ export function returnClassificationFilterWhereClauses({
   }
 }
 
-export function returnFeatureJoins(features?: Record<string, boolean>) {
-  const numFeatures = features === undefined ? 0 : Object.keys(features).length;
+export function returnFeatureJoins(features?: Set<string>) {
+  const numFeatures = features === undefined ? 0 : features.size;
 
   // TODO: a better way to do this?
   if (numFeatures === 0) {
@@ -219,16 +219,14 @@ export function returnFeatureJoins(features?: Record<string, boolean>) {
   }
 }
 
-export function returnFeatureWhereClauses(features?: Record<string, boolean>) {
+export function returnFeatureWhereClauses(features?: Set<string>) {
   // TODO: is there a better way to code this?
 
   if (features === undefined) {
     return Prisma.empty;
   }
 
-  const featuresToRequire = Object.entries(features)
-    .filter(([_key, value]) => value)
-    .map(([key, _value]) => key);
+  const featuresToRequire = [...features.keys()];
 
   const numFeatures = featuresToRequire.length;
 

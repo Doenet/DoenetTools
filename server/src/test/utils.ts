@@ -93,7 +93,7 @@ export async function createTestClassifications({
   // A1A. classification A1A
   const { id: classificationIdA1A } = await prisma.classifications.create({
     data: {
-      code: `${word}.A1A.${code}`,
+      code: `${word}A1A${code}`,
       descriptions: {
         create: {
           description: `${word}${code} ${word}A1A${code}`,
@@ -107,7 +107,7 @@ export async function createTestClassifications({
   // A1B. classification A1B
   const { id: classificationIdA1B } = await prisma.classifications.create({
     data: {
-      code: `${word}.A1B.${code}`,
+      code: `${word}A1B${code}`,
       descriptions: {
         create: {
           description: `${word}${code} ${word}A1B${code}`,
@@ -132,7 +132,7 @@ export async function createTestClassifications({
   // A2A. classification A2A
   const { id: classificationIdA2A } = await prisma.classifications.create({
     data: {
-      code: `${word}.A2A.${code}`,
+      code: `${word}A2A${code}`,
       descriptions: {
         create: {
           description: `${word}${code} ${word}A2A${code}`,
@@ -146,7 +146,7 @@ export async function createTestClassifications({
   // A2B. classification A2B
   const { id: classificationIdA2B } = await prisma.classifications.create({
     data: {
-      code: `${word}.A2B.${code}`,
+      code: `${word}A2B${code}`,
       descriptions: {
         create: {
           description: `${word}${code} ${word}A2B${code}`,
@@ -182,7 +182,7 @@ export async function createTestClassifications({
   // B1A. classification B1A
   const { id: classificationIdB1A } = await prisma.classifications.create({
     data: {
-      code: `${word}.B1A.${code}`,
+      code: `${word}B1A${code}`,
       descriptions: {
         create: {
           description: `${word}${code} ${word}B1A${code}`,
@@ -196,7 +196,7 @@ export async function createTestClassifications({
   // B1B. classification B1B
   const { id: classificationIdB1B } = await prisma.classifications.create({
     data: {
-      code: `${word}.B1B.${code}`,
+      code: `${word}B1B${code}`,
       descriptions: {
         create: {
           description: `${word}${code} ${word}B1B${code}`,
@@ -221,7 +221,7 @@ export async function createTestClassifications({
   // B2A. classification B2A
   const { id: classificationIdB2A } = await prisma.classifications.create({
     data: {
-      code: `${word}.B2A.${code}`,
+      code: `${word}B2A${code}`,
       descriptions: {
         create: {
           description: `${word}${code} ${word}B2A${code}`,
@@ -235,7 +235,7 @@ export async function createTestClassifications({
   // B2B. classification B2B
   const { id: classificationIdB2B } = await prisma.classifications.create({
     data: {
-      code: `${word}.B2B.${code}`,
+      code: `${word}B2B${code}`,
       descriptions: {
         create: {
           description: `${word}${code} ${word}B2B${code}`,

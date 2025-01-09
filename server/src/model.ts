@@ -1475,6 +1475,7 @@ export async function searchSharedContent({
   isUnclassified,
   features,
   ownerId,
+  page = 1,
 }: {
   query: string;
   loggedInUserId: Uint8Array;
@@ -1483,9 +1484,12 @@ export async function searchSharedContent({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  features?: Record<string, boolean>;
+  features?: Set<string>;
   ownerId?: Uint8Array;
+  page?: number;
 }) {
+  const pageSize = 100;
+
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
@@ -1544,7 +1548,8 @@ export async function searchSharedContent({
     content.id
   ORDER BY
     relevance DESC
-  LIMIT 100
+  LIMIT ${pageSize}
+  OFFSET ${(page - 1) * pageSize}
   `);
 
   // TODO: combine queries
@@ -1586,7 +1591,7 @@ export async function browseSharedContent({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  features?: Record<string, boolean>;
+  features?: Set<string>;
   ownerId?: Uint8Array;
   page?: number;
 }) {
@@ -1618,12 +1623,7 @@ export async function browseSharedContent({
           }
         : undefined;
 
-  const featuresToRequire =
-    features === undefined
-      ? []
-      : Object.entries(features)
-          .filter(([_key, value]) => value)
-          .map(([key, _value]) => key);
+  const featuresToRequire = features === undefined ? [] : [...features.keys()];
 
   const preliminarySharedContent = await prisma.content.findMany({
     where: {
@@ -1660,6 +1660,7 @@ export async function searchUsersWithSharedContent({
   classificationId,
   isUnclassified,
   features,
+  page = 1,
 }: {
   query: string;
   loggedInUserId: Uint8Array;
@@ -1668,8 +1669,11 @@ export async function searchUsersWithSharedContent({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  features?: Record<string, boolean>;
+  features?: Set<string>;
+  page?: number;
 }) {
+  const pageSize = 100;
+
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
@@ -1691,6 +1695,7 @@ export async function searchUsersWithSharedContent({
       userId: Uint8Array;
       firstNames: string | null;
       lastNames: string;
+      relevance: number;
     }[]
   >(Prisma.sql`
   SELECT
@@ -1718,11 +1723,14 @@ export async function searchUsersWithSharedContent({
     MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
   ORDER BY
     relevance DESC
-  LIMIT 100
+  LIMIT ${pageSize}
+  OFFSET ${(page - 1) * pageSize}
   `);
 
   const usersWithShared2: UserInfo[] = usersWithShared.map((u) => ({
-    ...u,
+    userId: u.userId,
+    firstNames: u.firstNames,
+    lastNames: u.lastNames,
     email: "",
   }));
   return usersWithShared2;
@@ -1737,7 +1745,8 @@ export async function browseUsersWithSharedContent({
   classificationId,
   isUnclassified,
   features,
-  page = 1,
+  take = 100,
+  skip = 0,
 }: {
   query?: string;
   loggedInUserId: Uint8Array;
@@ -1746,11 +1755,10 @@ export async function browseUsersWithSharedContent({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  features?: Record<string, boolean>;
-  page?: number;
+  features?: Set<string>;
+  take?: number;
+  skip?: number;
 }) {
-  const pageSize = 100;
-
   let usersWithShared;
 
   if (query) {
@@ -1814,8 +1822,8 @@ export async function browseUsersWithSharedContent({
         users.userId
       ORDER BY
         numContent DESC
-      LIMIT ${pageSize}
-      OFFSET ${(page - 1) * pageSize}
+      LIMIT ${take}
+      OFFSET ${skip}
   `);
   } else {
     const includeClassification =
@@ -1861,8 +1869,8 @@ export async function browseUsersWithSharedContent({
         users.userId
       ORDER BY
         numContent DESC
-      LIMIT ${pageSize}
-      OFFSET ${(page - 1) * pageSize}
+      LIMIT ${take}
+      OFFSET ${skip}
   `);
   }
 
@@ -1891,7 +1899,7 @@ export async function searchClassificationsWithSharedContent({
   systemId?: number;
   categoryId?: number;
   subCategoryId?: number;
-  features?: Record<string, boolean>;
+  features?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<ContentClassification[]> {
   // remove operators that break MySQL BOOLEAN search
@@ -1947,12 +1955,7 @@ export async function searchClassificationsWithSharedContent({
   // and put matches at the top of the list
   const query_words = query.split(" ");
 
-  const featuresToRequire =
-    features === undefined
-      ? []
-      : Object.entries(features)
-          .filter(([_key, value]) => value)
-          .map(([key, _value]) => key);
+  const featuresToRequire = features === undefined ? [] : [...features.keys()];
 
   const code_matches = await prisma.classifications.findMany({
     where: {
@@ -2022,7 +2025,7 @@ export async function searchClassificationSubCategoriesWithSharedContent({
   loggedInUserId: Uint8Array;
   systemId?: number;
   categoryId?: number;
-  features?: Record<string, boolean>;
+  features?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
   // remove operators that break MySQL BOOLEAN search
@@ -2117,7 +2120,7 @@ export async function searchClassificationCategoriesWithSharedContent({
   query: string;
   loggedInUserId: Uint8Array;
   systemId?: number;
-  features?: Record<string, boolean>;
+  features?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
   // remove operators that break MySQL BOOLEAN search
@@ -2204,18 +2207,13 @@ export async function browseClassificationSharedContent({
 }: {
   loggedInUserId: Uint8Array;
   classificationId: number;
-  features?: Record<string, boolean>;
+  features?: Set<string>;
   ownerId?: Uint8Array;
   page?: number;
 }) {
   const pageSize = 100;
 
-  const featuresToRequire =
-    features === undefined
-      ? []
-      : Object.entries(features)
-          .filter(([_key, value]) => value)
-          .map(([key, _value]) => key);
+  const featuresToRequire = features === undefined ? [] : [...features.keys()];
 
   // TODO: how do we sort these?
   const results = await prisma.content.findMany({
@@ -2249,17 +2247,12 @@ export async function browseClassificationSubCategorySharedContent({
 }: {
   loggedInUserId: Uint8Array;
   subCategoryId: number;
-  features?: Record<string, boolean>;
+  features?: Set<string>;
   ownerId?: Uint8Array;
 }) {
   // TODO: how do we sort the content within each classification
 
-  const featuresToRequire =
-    features === undefined
-      ? []
-      : Object.entries(features)
-          .filter(([_key, value]) => value)
-          .map(([key, _value]) => key);
+  const featuresToRequire = features === undefined ? [] : [...features.keys()];
 
   const preliminaryResults =
     await prisma.classificationSubCategories.findUniqueOrThrow({
@@ -2362,15 +2355,10 @@ export async function browseClassificationCategorySharedContent({
 }: {
   loggedInUserId: Uint8Array;
   categoryId: number;
-  features?: Record<string, boolean>;
+  features?: Set<string>;
   ownerId?: Uint8Array;
 }) {
-  const featuresToRequire =
-    features === undefined
-      ? []
-      : Object.entries(features)
-          .filter(([_key, value]) => value)
-          .map(([key, _value]) => key);
+  const featuresToRequire = features === undefined ? [] : [...features.keys()];
 
   // TODO: how do we sort the content within each classification
 
@@ -2512,7 +2500,7 @@ export async function browseClassificationsWithSharedContent({
   query?: string;
   loggedInUserId: Uint8Array;
   subCategoryId: number;
-  features?: Record<string, boolean>;
+  features?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
   let matches;
@@ -2686,7 +2674,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
   query?: string;
   loggedInUserId: Uint8Array;
   categoryId: number;
-  features?: Record<string, boolean>;
+  features?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
   let matches;
@@ -2746,6 +2734,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
     AND (
       MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, prependOperator: true, operator: "OR" })}
       ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
     ${returnClassificationFilterWhereClauses({ categoryId })}
@@ -2838,7 +2827,7 @@ export async function browseClassificationCategoriesWithSharedContent({
   query?: string;
   loggedInUserId: Uint8Array;
   systemId: number;
-  features?: Record<string, boolean>;
+  features?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
   let matches;
@@ -2894,6 +2883,7 @@ export async function browseClassificationCategoriesWithSharedContent({
     AND (
       MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, matchSubCategory: true, prependOperator: true, operator: "OR" })}
       ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
     ${returnClassificationFilterWhereClauses({ systemId })}
@@ -2976,7 +2966,7 @@ export async function browseClassificationSystemsWithSharedContent({
 }: {
   query?: string;
   loggedInUserId: Uint8Array;
-  features?: Record<string, boolean>;
+  features?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
   let matches;
@@ -3030,6 +3020,7 @@ export async function browseClassificationSystemsWithSharedContent({
     AND (
       MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, matchSubCategory: true, matchCategory: true, prependOperator: true, operator: "OR" })}
       ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
     ${returnFeatureWhereClauses(features)}
@@ -3122,7 +3113,7 @@ export async function getSharedContentMatchCount({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  features?: Record<string, boolean>;
+  features?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<{ numCommunity: number }> {
   let matches;
@@ -3240,7 +3231,7 @@ export async function getSharedContentMatchCountPerAvailableFeature({
   subCategoryId?: number;
   classificationId?: number;
   isUnclassified?: boolean;
-  features?: Record<string, boolean>;
+  features?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<Record<string, { numCommunity?: number; numLibrary?: number }>> {
   const matchesPerFeature: Record<
@@ -3270,9 +3261,8 @@ export async function getSharedContentMatchCountPerAvailableFeature({
     const includeCategory = matchCategory;
 
     for (const feature of availableFeatures) {
-      const newFeatures = { ...features };
-
-      newFeatures[feature.code] = true;
+      const newFeatures = new Set(features);
+      newFeatures.add(feature.code);
 
       const matches = await prisma.$queryRaw<
         {
@@ -3323,9 +3313,8 @@ export async function getSharedContentMatchCountPerAvailableFeature({
     const includeCategory = !includeSubCategory && systemId !== undefined;
 
     for (const feature of availableFeatures) {
-      const newFeatures = { ...features };
-
-      newFeatures[feature.code] = true;
+      const newFeatures = new Set(features);
+      newFeatures.add(feature.code);
 
       const matches = await prisma.$queryRaw<
         {
@@ -3432,6 +3421,18 @@ export async function getUserInfo(userId: Uint8Array) {
     },
   });
   return user;
+}
+
+export async function getAuthorInfo(userId: Uint8Array): Promise<UserInfo> {
+  const user = await prisma.users.findUniqueOrThrow({
+    where: { userId },
+    select: {
+      userId: true,
+      firstNames: true,
+      lastNames: true,
+    },
+  });
+  return { email: "", ...user };
 }
 
 export async function getUserInfoFromEmail(email: string) {

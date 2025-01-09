@@ -901,7 +901,7 @@ test("searchSharedContent, filter by activity feature", async () => {
   results = await searchSharedContent({
     query: `banana${code}`,
     loggedInUserId: userId,
-    features: { isQuestion: true },
+    features: new Set(["isQuestion"]),
   });
   expect(results.map((c) => c.id)).eqls([
     activityQId,
@@ -914,7 +914,7 @@ test("searchSharedContent, filter by activity feature", async () => {
   results = await searchSharedContent({
     query: `banana${code}`,
     loggedInUserId: userId,
-    features: { isInteractive: true },
+    features: new Set(["isInteractive"]),
   });
   expect(results.map((c) => c.id)).eqls([
     activityIId,
@@ -927,7 +927,7 @@ test("searchSharedContent, filter by activity feature", async () => {
   results = await searchSharedContent({
     query: `banana${code}`,
     loggedInUserId: userId,
-    features: { containsVideo: true },
+    features: new Set(["containsVideo"]),
   });
   expect(results.map((c) => c.id)).eqls([
     activityVId,
@@ -940,7 +940,7 @@ test("searchSharedContent, filter by activity feature", async () => {
   results = await searchSharedContent({
     query: `banana${code}`,
     loggedInUserId: userId,
-    features: { isQuestion: true, isInteractive: true },
+    features: new Set(["isQuestion", "isInteractive"]),
   });
   expect(results.map((c) => c.id)).eqls([activityQIId, activityQIVId]);
 
@@ -948,7 +948,7 @@ test("searchSharedContent, filter by activity feature", async () => {
   results = await searchSharedContent({
     query: `banana${code}`,
     loggedInUserId: userId,
-    features: { isQuestion: true, containsVideo: true },
+    features: new Set(["isQuestion", "containsVideo"]),
   });
   expect(results.map((c) => c.id)).eqls([activityQVId, activityQIVId]);
 
@@ -956,7 +956,7 @@ test("searchSharedContent, filter by activity feature", async () => {
   results = await searchSharedContent({
     query: `banana${code}`,
     loggedInUserId: userId,
-    features: { isInteractive: true, containsVideo: true },
+    features: new Set(["isInteractive", "containsVideo"]),
   });
   expect(results.map((c) => c.id)).eqls([activityIVId, activityQIVId]);
 
@@ -964,7 +964,7 @@ test("searchSharedContent, filter by activity feature", async () => {
   results = await searchSharedContent({
     query: `banana${code}`,
     loggedInUserId: userId,
-    features: { isQuestion: true, isInteractive: true, containsVideo: true },
+    features: new Set(["isQuestion", "isInteractive", "containsVideo"]),
   });
   expect(results.map((c) => c.id)).eqls([activityQIVId]);
 });
@@ -1515,7 +1515,7 @@ test("searchUsersWithSharedContent, filter by activity feature", async () => {
   searchResults = await searchUsersWithSharedContent({
     query: ownerLastNames,
     loggedInUserId: userId,
-    features: { isQuestion: true },
+    features: new Set(["isQuestion"]),
   });
   expect(searchResults.length).eq(2);
   expect(searchResults.map((u) => u.firstNames).sort()).eqls(["Fred", "Wilma"]);
@@ -1524,7 +1524,7 @@ test("searchUsersWithSharedContent, filter by activity feature", async () => {
   searchResults = await searchUsersWithSharedContent({
     query: ownerLastNames,
     loggedInUserId: userId,
-    features: { isInteractive: true },
+    features: new Set(["isInteractive"]),
   });
   expect(searchResults.length).eq(2);
   expect(searchResults.map((u) => u.firstNames).sort()).eqls([
@@ -1536,7 +1536,7 @@ test("searchUsersWithSharedContent, filter by activity feature", async () => {
   searchResults = await searchUsersWithSharedContent({
     query: ownerLastNames,
     loggedInUserId: userId,
-    features: { containsVideo: true },
+    features: new Set(["containsVideo"]),
   });
   expect(searchResults.length).eq(2);
   expect(searchResults.map((u) => u.firstNames).sort()).eqls([
@@ -1548,21 +1548,21 @@ test("searchUsersWithSharedContent, filter by activity feature", async () => {
   searchResults = await searchUsersWithSharedContent({
     query: ownerLastNames,
     loggedInUserId: userId,
-    features: { isQuestion: true, isInteractive: true },
+    features: new Set(["isQuestion", "isInteractive"]),
   });
   expect(searchResults.length).eq(1);
   expect(searchResults[0].firstNames).eq("Wilma");
   searchResults = await searchUsersWithSharedContent({
     query: ownerLastNames,
     loggedInUserId: userId,
-    features: { isQuestion: true, containsVideo: true },
+    features: new Set(["isQuestion", "containsVideo"]),
   });
   expect(searchResults.length).eq(1);
   expect(searchResults[0].firstNames).eq("Wilma");
   searchResults = await searchUsersWithSharedContent({
     query: ownerLastNames,
     loggedInUserId: userId,
-    features: { containsVideo: true, isInteractive: true },
+    features: new Set(["containsVideo", "isInteractive"]),
   });
   expect(searchResults.length).eq(1);
   expect(searchResults[0].firstNames).eq("Wilma");
@@ -1571,7 +1571,7 @@ test("searchUsersWithSharedContent, filter by activity feature", async () => {
   searchResults = await searchUsersWithSharedContent({
     query: ownerLastNames,
     loggedInUserId: userId,
-    features: { containsVideo: true, isInteractive: true, isQuestion: true },
+    features: new Set(["containsVideo", "isInteractive", "isQuestion"]),
   });
   expect(searchResults.length).eq(0);
 });
@@ -1924,10 +1924,6 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
   const code = Date.now().toString();
   const word = "banana";
 
-  const systemId = (
-    await searchPossibleClassifications({ query: "FinM.A.3" })
-  )[0].descriptions[0].subCategory.category.system.id;
-
   const {
     categoryIdA,
     subCategoryIdA1,
@@ -1935,7 +1931,7 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
     categoryIdB,
     subCategoryIdB2,
     classificationIdB2B,
-  } = await createTestClassifications({ systemId, word, code });
+  } = await createTestClassifications({ word, code });
 
   // add two activities to A1A and B2B
   const { activityId: activityIdA1 } = await createActivity(ownerId, null);
@@ -1970,10 +1966,11 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
 
   // without filter, get two classifications, sub categories, and categories
   let resultsClass = await searchClassificationsWithSharedContent({
-    query: `${word}${code}`,
+    query: `${word}${code} ${word}B2B${code}`,
     loggedInUserId: userId,
   });
   expect(resultsClass.length).eq(2);
+  expect(resultsClass[0].code).eq(`${word}B2B${code}`);
   let resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
@@ -1987,128 +1984,128 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
 
   // filter by isQuestion
   resultsClass = await searchClassificationsWithSharedContent({
-    query: `${word}${code}`,
+    query: `${word}${code} ${word}B2B${code}`, // make sure filter out match hitting code
     loggedInUserId: userId,
-    features: { isQuestion: true },
+    features: new Set(["isQuestion"]),
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].id).eq(classificationIdA1A);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { isQuestion: true },
+    features: new Set(["isQuestion"]),
   });
   expect(resultsSubCat.length).eq(1);
   expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdA1);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { isQuestion: true },
+    features: new Set(["isQuestion"]),
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].category!.id).eq(categoryIdA);
 
   // filter by isInteractive
   resultsClass = await searchClassificationsWithSharedContent({
-    query: `${word}${code}`,
+    query: `${word}${code} ${word}B2B${code}`, // make sure filter out match hitting code
     loggedInUserId: userId,
-    features: { isInteractive: true },
+    features: new Set(["isInteractive"]),
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].id).eq(classificationIdA1A);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { isInteractive: true },
+    features: new Set(["isInteractive"]),
   });
   expect(resultsSubCat.length).eq(1);
   expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdA1);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { isInteractive: true },
+    features: new Set(["isInteractive"]),
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].category!.id).eq(categoryIdA);
 
   // filter by containsVideo
   resultsClass = await searchClassificationsWithSharedContent({
-    query: `${word}${code}`,
+    query: `${word}${code} ${word}A1A${code}`, // make sure filter out match hitting code
     loggedInUserId: userId,
-    features: { containsVideo: true },
+    features: new Set(["containsVideo"]),
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].id).eq(classificationIdB2B);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { containsVideo: true },
+    features: new Set(["containsVideo"]),
   });
   expect(resultsSubCat.length).eq(1);
   expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdB2);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { containsVideo: true },
+    features: new Set(["containsVideo"]),
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].category!.id).eq(categoryIdB);
 
   // nothing if filter by pairs of features
   resultsClass = await searchClassificationsWithSharedContent({
-    query: `${word}${code}`,
+    query: `${word}${code} ${word}A1A${code}`, // make sure filter out match hitting code
     loggedInUserId: userId,
-    features: { isQuestion: true, isInteractive: true },
+    features: new Set(["isQuestion", "isInteractive"]),
   });
   expect(resultsClass.length).eq(0);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { isQuestion: true, isInteractive: true },
+    features: new Set(["isQuestion", "isInteractive"]),
   });
   expect(resultsSubCat.length).eq(0);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { isQuestion: true, isInteractive: true },
+    features: new Set(["isQuestion", "isInteractive"]),
   });
   expect(resultsCat.length).eq(0);
 
   resultsClass = await searchClassificationsWithSharedContent({
-    query: `${word}${code}`,
+    query: `${word}${code} ${word}A1A${code}`, // make sure filter out match hitting code
     loggedInUserId: userId,
-    features: { isQuestion: true, containsVideo: true },
+    features: new Set(["isQuestion", "containsVideo"]),
   });
   expect(resultsClass.length).eq(0);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { isQuestion: true, containsVideo: true },
+    features: new Set(["isQuestion", "containsVideo"]),
   });
   expect(resultsSubCat.length).eq(0);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { isQuestion: true, containsVideo: true },
+    features: new Set(["isQuestion", "containsVideo"]),
   });
   expect(resultsCat.length).eq(0);
 
   resultsClass = await searchClassificationsWithSharedContent({
-    query: `${word}${code}`,
+    query: `${word}${code} ${word}A1A${code}`, // make sure filter out match hitting code
     loggedInUserId: userId,
-    features: { isInteractive: true, containsVideo: true },
+    features: new Set(["isInteractive", "containsVideo"]),
   });
   expect(resultsClass.length).eq(0);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { isInteractive: true, containsVideo: true },
+    features: new Set(["isInteractive", "containsVideo"]),
   });
   expect(resultsSubCat.length).eq(0);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { isInteractive: true, containsVideo: true },
+    features: new Set(["isInteractive", "containsVideo"]),
   });
   expect(resultsCat.length).eq(0);
 
@@ -2131,88 +2128,88 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
 
   // filter by pairs of features again
   resultsClass = await searchClassificationsWithSharedContent({
-    query: `${word}${code}`,
+    query: `${word}${code} ${word}B2B${code}`, // make sure filter out match hitting code
     loggedInUserId: userId,
-    features: { isQuestion: true, isInteractive: true },
+    features: new Set(["isQuestion", "isInteractive"]),
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].id).eq(classificationIdA1A);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { isQuestion: true, isInteractive: true },
+    features: new Set(["isQuestion", "isInteractive"]),
   });
   expect(resultsSubCat.length).eq(1);
   expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdA1);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { isQuestion: true, isInteractive: true },
+    features: new Set(["isQuestion", "isInteractive"]),
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].category!.id).eq(categoryIdA);
 
   resultsClass = await searchClassificationsWithSharedContent({
-    query: `${word}${code}`,
+    query: `${word}${code} ${word}B2B${code}`, // make sure filter out match hitting code
     loggedInUserId: userId,
-    features: { isInteractive: true, containsVideo: true },
+    features: new Set(["isInteractive", "containsVideo"]),
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].id).eq(classificationIdA1A);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { isInteractive: true, containsVideo: true },
+    features: new Set(["isInteractive", "containsVideo"]),
   });
   expect(resultsSubCat.length).eq(1);
   expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdA1);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { isInteractive: true, containsVideo: true },
+    features: new Set(["isInteractive", "containsVideo"]),
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].category!.id).eq(categoryIdA);
 
   resultsClass = await searchClassificationsWithSharedContent({
-    query: `${word}${code}`,
+    query: `${word}${code} ${word}A1A${code}`, // make sure filter out match hitting code
     loggedInUserId: userId,
-    features: { containsVideo: true, isQuestion: true },
+    features: new Set(["containsVideo", "isQuestion"]),
   });
   expect(resultsClass.length).eq(1);
   expect(resultsClass[0].id).eq(classificationIdB2B);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { containsVideo: true, isQuestion: true },
+    features: new Set(["containsVideo", "isQuestion"]),
   });
   expect(resultsSubCat.length).eq(1);
   expect(resultsSubCat[0].subCategory!.id).eq(subCategoryIdB2);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { containsVideo: true, isQuestion: true },
+    features: new Set(["containsVideo", "isQuestion"]),
   });
   expect(resultsCat.length).eq(1);
   expect(resultsCat[0].category!.id).eq(categoryIdB);
 
   // filter by all three features
   resultsClass = await searchClassificationsWithSharedContent({
-    query: `${word}${code}`,
+    query: `${word}${code} ${word}A1A${code}`, // make sure filter out match hitting code
     loggedInUserId: userId,
-    features: { isQuestion: true, isInteractive: true, containsVideo: true },
+    features: new Set(["isQuestion", "isInteractive", "containsVideo"]),
   });
   expect(resultsClass.length).eq(0);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { isQuestion: true, isInteractive: true, containsVideo: true },
+    features: new Set(["isQuestion", "isInteractive", "containsVideo"]),
   });
   expect(resultsSubCat.length).eq(0);
   resultsCat = await searchClassificationCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
-    features: { isQuestion: true, isInteractive: true, containsVideo: true },
+    features: new Set(["isQuestion", "isInteractive", "containsVideo"]),
   });
   expect(resultsCat.length).eq(0);
 });
