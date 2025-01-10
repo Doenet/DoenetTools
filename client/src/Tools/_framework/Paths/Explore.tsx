@@ -25,6 +25,8 @@ import {
   HStack,
   Spacer,
   CloseButton,
+  Button,
+  Input,
 } from "@chakra-ui/react";
 import {
   Link as ReactRouterLink,
@@ -182,7 +184,12 @@ export function Explore() {
     listViewPref: boolean;
   };
 
-  const [currentTab, setCurrentTab] = useState(0);
+  const [currentTab, setCurrentTab] = useState(
+    !totalCount.numLibrary && totalCount.numCommunity ? 1 : 0,
+  );
+
+  const [searchString, setSearchString] = useState(q || "");
+
   const fetcher = useFetcher();
 
   const [listView, setListView] = useState(listViewPref);
@@ -262,7 +269,9 @@ export function Explore() {
 
   const categoryFilterSection = (
     <>
-      <Heading size="sm">Content features</Heading>
+      <Heading size="sm" marginBottom="4px" marginTop="10px">
+        Content features
+      </Heading>
       <VStack alignItems="flex-start" gap={0}>
         {availableFeatures.map((feature) => {
           const isPresent = features.has(feature.code);
@@ -278,9 +287,8 @@ export function Explore() {
               disabled={numLibrary + numCommunity === 0}
               onChange={() => {
                 let newSearch = search;
-                if (isPresent) {
-                  newSearch = removeQueryParameter(feature.code, newSearch);
-                } else {
+                newSearch = clearQueryParameter(feature.code, newSearch);
+                if (!isPresent) {
                   if (newSearch) {
                     newSearch += "&";
                   } else {
@@ -329,14 +337,14 @@ export function Explore() {
             <Text noOfLines={1}>{classificationInfo.system.shortName}</Text>
           </Tooltip>
           <Tooltip
-            label={`remove filter: ${classificationInfo.system.name}`}
+            label={`Clear filter: ${classificationInfo.system.name}`}
             openDelay={500}
           >
             <IconButton
               variant="ghost"
               size="sm"
               icon={<MdFilterAltOff />}
-              aria-label={`remove filter: ${classificationInfo.system.name}`}
+              aria-label={`Clear filter: ${classificationInfo.system.name}`}
               onClick={() =>
                 navigate(
                   `../${classificationInfo.category ? "../" : ""}${classificationInfo.subCategory ? "../" : ""}${classificationInfo.classification ? "../" : ""}${search}`,
@@ -360,14 +368,14 @@ export function Explore() {
               <Text noOfLines={1}>{classificationInfo.category.category}</Text>
             </Tooltip>
             <Tooltip
-              label={`remove filter: ${classificationInfo.category.category}`}
+              label={`Clear filter: ${classificationInfo.category.category}`}
               openDelay={500}
             >
               <IconButton
                 variant="ghost"
                 size="sm"
                 icon={<MdFilterAltOff />}
-                aria-label={`remove filter: ${classificationInfo.category.category}`}
+                aria-label={`Clear filter: ${classificationInfo.category.category}`}
                 onClick={() =>
                   navigate(
                     `../${classificationInfo.subCategory ? "../" : ""}${classificationInfo.classification ? "../" : ""}${search}`,
@@ -392,14 +400,14 @@ export function Explore() {
                 </Text>
               </Tooltip>
               <Tooltip
-                label={`remove filter: ${classificationInfo.subCategory.subCategory}`}
+                label={`Clear filter: ${classificationInfo.subCategory.subCategory}`}
                 openDelay={500}
               >
                 <IconButton
                   variant="ghost"
                   size="sm"
                   icon={<MdFilterAltOff />}
-                  aria-label={`remove filter: ${classificationInfo.subCategory.subCategory}`}
+                  aria-label={`Clear filter: ${classificationInfo.subCategory.subCategory}`}
                   onClick={() =>
                     navigate(
                       `../${classificationInfo.classification ? "../" : ""}${search}`,
@@ -426,14 +434,14 @@ export function Explore() {
                   </Text>
                 </Tooltip>
                 <Tooltip
-                  label={`remove filter: ${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
+                  label={`Clear filter: ${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
                   openDelay={500}
                 >
                   <IconButton
                     variant="ghost"
                     size="sm"
                     icon={<MdFilterAltOff />}
-                    aria-label={`remove filter: ${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
+                    aria-label={`Clear filter: ${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
                     onClick={() =>
                       navigate(`../${search}`, { relative: "path" })
                     }
@@ -464,12 +472,12 @@ export function Explore() {
           <ListItem>
             <HStack gap={0}>
               <Text>Unclassified</Text>
-              <Tooltip label={`remove filter: Unclassified`} openDelay={500}>
+              <Tooltip label={`Clear filter: Unclassified`} openDelay={500}>
                 <IconButton
                   variant="ghost"
                   size="sm"
                   icon={<MdFilterAltOff />}
-                  aria-label={`remove filter: Unclassified`}
+                  aria-label={`Clear filter: Unclassified`}
                   onClick={() => navigate(`../${search}`, { relative: "path" })}
                 />
               </Tooltip>
@@ -653,6 +661,7 @@ export function Explore() {
         <List>
           {topAuthors.map((u) => {
             let newSearch = search;
+            newSearch = clearQueryParameter("author", newSearch);
             if (newSearch) {
               newSearch += "&";
             } else {
@@ -693,14 +702,14 @@ export function Explore() {
           <ListItem>
             <HStack gap={0}>
               <Text>{authorName}</Text>
-              <Tooltip label={`remove filter: ${authorName}`} openDelay={500}>
+              <Tooltip label={`Clear filter: ${authorName}`} openDelay={500}>
                 <IconButton
                   variant="ghost"
                   size="sm"
                   icon={<MdFilterAltOff />}
-                  aria-label={`remove filter: ${authorName}`}
+                  aria-label={`Clear filter: ${authorName}`}
                   onClick={() => {
-                    const newSearch = removeQueryParameter("author", search);
+                    const newSearch = clearQueryParameter("author", search);
                     navigate(`.${newSearch}`);
                   }}
                 />
@@ -761,33 +770,114 @@ export function Explore() {
     filteredByStatement = (
       <HStack gap={0}>
         <Text>{filterText}</Text>
-        <Tooltip label={`remove all filters`} openDelay={500}>
+        <Tooltip label={`Clear all filters`} openDelay={500}>
           <IconButton
             variant="ghost"
             size="sm"
             icon={<MdFilterAltOff />}
-            aria-label={`remove all filter`}
-            onClick={() => {
-              let newSearch = search;
-              for (const feature of features) {
-                newSearch = removeQueryParameter(feature, newSearch);
-              }
-              if (authorInfo) {
-                newSearch = removeQueryParameter("author", newSearch);
-              }
-              if (classificationInfo) {
-                navigate(
-                  `../${classificationInfo.category ? "../" : ""}${classificationInfo.subCategory ? "../" : ""}${classificationInfo.classification ? "../" : ""}${newSearch}`,
-                  { relative: "path" },
-                );
-              } else {
-                navigate(`./${newSearch}`, { relative: "path" });
-              }
-            }}
+            aria-label={`Clear all filters`}
+            onClick={() => clearAllFilters(search, availableFeatures, navigate)}
           />
         </Tooltip>
       </HStack>
     );
+  }
+
+  let authorMatches: ReactElement | null = null;
+
+  if (authorInfo) {
+    const authorName = createFullName(authorInfo);
+    authorMatches = (
+      <Flex>
+        Currently filtered by {authorName}
+        <Tooltip label={`Clear filter: ${authorName}`} openDelay={500}>
+          <Button
+            rightIcon={<MdFilterAltOff />}
+            size="xs"
+            marginLeft="10px"
+            onClick={() => {
+              const newSearch = clearQueryParameter("author", search);
+              navigate(`.${newSearch}`);
+            }}
+          >
+            Clear filter
+          </Button>
+        </Tooltip>
+      </Flex>
+    );
+  } else if (matchedAuthors && matchedAuthors.length > 0) {
+    authorMatches = (
+      <>
+        <Heading size="md" marginBottom="10px">
+          Matching authors
+        </Heading>
+        <List>
+          {matchedAuthors.map((author) => {
+            const authorName = createFullName(author);
+
+            return (
+              <ListItem key={author.userId} marginTop="5px">
+                <Flex>
+                  <Tooltip
+                    label={`Go to shared activities of ${authorName}`}
+                    openDelay={500}
+                  >
+                    <ChakraLink
+                      as={ReactRouterLink}
+                      to={`/sharedActivities/${author.userId}`}
+                    >
+                      {authorName}
+                    </ChakraLink>
+                  </Tooltip>
+                  <Tooltip label={`Filter by ${authorName}`} openDelay={500}>
+                    <IconButton
+                      icon={<MdFilterAlt />}
+                      size="xs"
+                      marginLeft="10px"
+                      onClick={() => {
+                        let newSearch = search;
+                        // clear the search string
+                        newSearch = clearQueryParameter("q", newSearch);
+                        newSearch = clearQueryParameter("author", newSearch);
+                        if (newSearch) {
+                          newSearch += "&";
+                        } else {
+                          newSearch = "?";
+                        }
+                        newSearch += `author=${author.userId}`;
+                        navigate(`.${newSearch}`);
+                        setCurrentTab(1);
+                        setSearchString("");
+                      }}
+                      aria-label={`Filter by ${authorName}`}
+                    />
+                  </Tooltip>
+                </Flex>
+              </ListItem>
+            );
+          })}
+        </List>
+      </>
+    );
+  }
+
+  const extraFormInputs: ReactElement[] = [];
+  if (authorInfo) {
+    extraFormInputs.push(
+      <Input
+        type="hidden"
+        name="author"
+        key="author"
+        value={authorInfo.userId}
+      />,
+    );
+  }
+  for (const feature of availableFeatures) {
+    if (features.has(feature.code)) {
+      extraFormInputs.push(
+        <Input type="hidden" name={feature.code} key={feature.code} />,
+      );
+    }
   }
 
   const heading = (
@@ -804,7 +894,15 @@ export function Explore() {
         <Box maxW={400} minW={200}>
           <Box w="400px">
             <Form>
-              <Searchbar defaultValue={q} dataTest="Search" />
+              <Searchbar
+                value={searchString}
+                dataTest="Search"
+                name="q"
+                onInput={(e) => {
+                  setSearchString((e.target as HTMLInputElement).value);
+                }}
+              />
+              {extraFormInputs}
             </Form>
           </Box>
         </Box>
@@ -817,17 +915,36 @@ export function Explore() {
         height="100px"
         background="doenet.canvas"
       >
-        <Text fontSize="24px">
-          Results for{" "}
-          <Text
-            as="span"
-            fontSize="24px"
-            fontWeight="700"
-            data-test="Search Results For"
-          >
-            {q}
-          </Text>
-        </Text>
+        <Flex fontSize="24px">
+          {q ? (
+            <>
+              <Text>
+                Search results for{" "}
+                <Text
+                  as="span"
+                  fontSize="24px"
+                  fontWeight="700"
+                  data-test="Search Results For"
+                >
+                  {q}
+                </Text>
+              </Text>
+              <Tooltip label="Clear search results" openDelay={500}>
+                <CloseButton
+                  aria-label="Clear search results"
+                  onClick={() => {
+                    let newSearch = search;
+                    newSearch = clearQueryParameter("q", newSearch);
+                    navigate(`.${newSearch}`);
+                    setSearchString("");
+                  }}
+                />
+              </Tooltip>
+            </>
+          ) : (
+            <>Explore Doenet</>
+          )}
+        </Flex>
         <Flex width="100%" fontStyle="italic">
           <Box marginLeft="10px">{filteredByStatement}</Box>
           <Spacer />
@@ -843,8 +960,18 @@ export function Explore() {
     </>
   );
 
+  const totalMatchedClassifications =
+    (matchedClassifications?.length || 0) +
+    (matchedSubCategories?.length || 0) +
+    (matchedCategories?.length || 0);
+
   const results = (
-    <Tabs minHeight="calc(100vh - 188px)" variant="line">
+    <Tabs
+      minHeight="calc(100vh - 188px)"
+      variant="line"
+      index={currentTab}
+      onChange={setCurrentTab}
+    >
       <TabList>
         <Tab data-test="Library Tab">
           Library ({intWithCommas(totalCount.numLibrary || 0)})
@@ -852,16 +979,23 @@ export function Explore() {
         <Tab data-test="Community Tab">
           Community ({intWithCommas(totalCount.numCommunity || 0)})
         </Tab>
-        <Tab data-test="Authors Tab">Authors</Tab>
-        <Tab data-test="Classifications Tab">Classifications</Tab>
+        <Tab data-test="Authors Tab" hidden={!q}>
+          Authors ({intWithCommas(matchedAuthors?.length || 0)})
+        </Tab>
+        <Tab data-test="Classifications Tab" hidden={!q}>
+          Classifications ({intWithCommas(totalMatchedClassifications)})
+        </Tab>
       </TabList>
 
       <TabPanels data-test="Search Results">
-        <TabPanel>We don't have anything in library yet</TabPanel>
+        <TabPanel>
+          We don't have anything in library yet
+          {displayMatchingContent([])}
+        </TabPanel>
         <TabPanel paddingLeft={0} paddingRight={0}>
           {displayMatchingContent(content)}
         </TabPanel>
-        <TabPanel>Authors!</TabPanel>
+        <TabPanel>{authorMatches}</TabPanel>
         <TabPanel></TabPanel>
       </TabPanels>
     </Tabs>
@@ -873,7 +1007,20 @@ export function Explore() {
     filterSection = (
       <>
         <Flex>
-          Filters <Spacer />{" "}
+          <Heading size="md">Filters</Heading>
+          {filteredByStatement ? (
+            <Button
+              rightIcon={<MdFilterAltOff />}
+              size="xs"
+              marginLeft="10px"
+              onClick={() =>
+                clearAllFilters(search, availableFeatures, navigate)
+              }
+            >
+              Clear all filters
+            </Button>
+          ) : null}
+          <Spacer />
           <Tooltip label="Close filter panel" openDelay={500}>
             <CloseButton
               onClick={() => setFiltersOpen(false)}
@@ -923,6 +1070,19 @@ export function Explore() {
   );
 }
 
+function clearAllFilters(
+  search: string,
+  availableFeatures: ContentFeature[],
+  navigate,
+) {
+  let newSearch = search;
+  for (const feature of availableFeatures) {
+    newSearch = clearQueryParameter(feature.code, newSearch);
+  }
+  newSearch = clearQueryParameter("author", newSearch);
+  navigate(`/explore/${newSearch}`);
+}
+
 function numPairDisplay({
   numLibrary,
   numCommunity,
@@ -963,7 +1123,7 @@ function numPhraseDisplay(
   return `${nl} ${qualifier}library item${nl === "1" ? "" : "s"} and ${nc} ${qualifier}community item${nc === "1" ? "" : "s"}`;
 }
 
-function removeQueryParameter(param: string, search: string) {
+function clearQueryParameter(param: string, search: string) {
   function escapeRegex(string) {
     return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
   }

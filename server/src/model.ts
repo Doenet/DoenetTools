@@ -1804,8 +1804,7 @@ export async function browseUsersWithSharedContent({
           ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
           ${returnFeatureJoins(features)}
           WHERE
-            content.isFolder = FALSE
-            AND content.isDeleted = FALSE
+            content.isDeleted = FALSE
             AND (
               content.isPublic = TRUE
               OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})

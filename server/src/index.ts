@@ -1111,6 +1111,7 @@ app.post(
         ? null
         : (
             await browseUsersWithSharedContent({
+              query,
               loggedInUserId,
               systemId,
               categoryId,

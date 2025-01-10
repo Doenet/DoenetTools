@@ -178,18 +178,26 @@ export function ClassificationSettings({
         classificationSystemOptionGroups.push(...classificationTypeOptions);
       } else {
         classificationSystemOptionGroups.push(
-          <optgroup label={lastType}>{classificationTypeOptions}</optgroup>,
+          <optgroup label={lastType} key={i}>
+            {classificationTypeOptions}
+          </optgroup>,
         );
       }
       classificationTypeOptions = [];
     }
     lastType = system.type;
 
-    classificationTypeOptions.push(<option value={i}>{system.name}</option>);
+    classificationTypeOptions.push(
+      <option value={i} key={i}>
+        {system.name}
+      </option>,
+    );
 
     if (i === classificationCategories.length - 1) {
       classificationSystemOptionGroups.push(
-        <optgroup label={system.type}>{classificationTypeOptions}</optgroup>,
+        <optgroup label={system.type} key={i + 1}>
+          {classificationTypeOptions}
+        </optgroup>,
       );
     }
   }
@@ -357,7 +365,9 @@ export function ClassificationSettings({
                 >
                   {selectedClassification !== null
                     ? selectedClassification.categories.map((category, i) => (
-                        <option value={i}>{category.category}</option>
+                        <option value={i} key={i}>
+                          {category.category}
+                        </option>
                       ))
                     : null}
                 </Select>
@@ -414,7 +424,9 @@ export function ClassificationSettings({
                     ? selectedClassification!.categories[
                         categoryFilter.categoryTreeIndex
                       ].subCategories.map((subCategory, i) => (
-                        <option value={i}>{subCategory.subCategory}</option>
+                        <option value={i} key={i}>
+                          {subCategory.subCategory}
+                        </option>
                       ))
                     : null}
                 </Select>
@@ -527,6 +539,7 @@ export function ClassificationSettings({
                   return (
                     <Card
                       backgroundColor={added ? "lightGray" : "var(--canvas)"}
+                      key={classification.id}
                     >
                       <CardBody paddingLeft={2}>
                         <HStack>
