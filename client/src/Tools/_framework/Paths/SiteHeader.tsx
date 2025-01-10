@@ -177,9 +177,6 @@ export function SiteHeader() {
                   <NavLinkTab to="/" dataTest="Home">
                     Home
                   </NavLinkTab>
-                  <NavLinkTab to="library" dataTest="Library">
-                    Library
-                  </NavLinkTab>
                   <NavLinkTab to="explore" dataTest="Explore">
                     Explore
                   </NavLinkTab>
@@ -292,9 +289,6 @@ export function SiteHeader() {
                       <MenuList>
                         <NavLinkDropdownTab to="/" dataTest="Home">
                           Home
-                        </NavLinkDropdownTab>
-                        <NavLinkDropdownTab to="library" dataTest="Library">
-                          Library
                         </NavLinkDropdownTab>
                         <NavLinkDropdownTab to="explore" dataTest="Explore">
                           Explore
