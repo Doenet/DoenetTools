@@ -1636,8 +1636,8 @@ test("searchClassificationsWithSharedContent, returns only classifications with 
     loggedInUserId: user1Id,
   });
   expect(resultsClass.length).eq(2); // order determined by second query word
-  expect(resultsClass[0].id).eq(classificationIdB2B);
-  expect(resultsClass[1].id).eq(classificationIdA1A);
+  expect(resultsClass[0].classification!.id).eq(classificationIdB2B);
+  expect(resultsClass[1].classification!.id).eq(classificationIdA1A);
   let resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code} ${word}A1${code}`,
     loggedInUserId: user1Id,
@@ -1659,7 +1659,7 @@ test("searchClassificationsWithSharedContent, returns only classifications with 
     loggedInUserId: user2Id,
   });
   expect(resultsClass.length).eq(1);
-  expect(resultsClass[0].id).eq(classificationIdB2B);
+  expect(resultsClass[0].classification!.id).eq(classificationIdB2B);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: user2Id,
@@ -1795,14 +1795,14 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
     loggedInUserId: userId,
   });
   expect(resultsClass.length).eq(8);
-  expect(resultsClass[0].id).eq(classificationIdA2B);
+  expect(resultsClass[0].classification!.id).eq(classificationIdA2B);
 
   resultsClass = await searchClassificationsWithSharedContent({
     query: `${word}${code} ${word}B1A${code}`,
     loggedInUserId: userId,
   });
   expect(resultsClass.length).eq(8);
-  expect(resultsClass[0].id).eq(classificationIdB1A);
+  expect(resultsClass[0].classification!.id).eq(classificationIdB1A);
 
   // without filter get all four sub categories, with first determined by second query word
   let resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
@@ -1835,7 +1835,7 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
     systemId,
   });
   expect(resultsClass.length).eq(8);
-  expect(resultsClass[0].id).eq(classificationIdA2A);
+  expect(resultsClass[0].classification!.id).eq(classificationIdA2A);
 
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code} ${word}A1${code}`,
@@ -1883,11 +1883,11 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
     categoryId: categoryIdB,
   });
   expect(resultsClass.length).eq(4);
-  expect(resultsClass[0].id).eq(classificationIdB2B);
+  expect(resultsClass[0].classification!.id).eq(classificationIdB2B);
   expect(
     resultsClass
       .slice(1)
-      .map((c) => c.id)
+      .map((c) => c.classification!.id)
       .sort(),
   ).eqls(
     [classificationIdB1A, classificationIdB1B, classificationIdB2A].sort(),
@@ -1909,8 +1909,8 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
     subCategoryId: subCategoryIdA2,
   });
   expect(resultsClass.length).eq(2);
-  expect(resultsClass[0].id).eq(classificationIdA2B);
-  expect(resultsClass[1].id).eq(classificationIdA2A);
+  expect(resultsClass[0].classification!.id).eq(classificationIdA2B);
+  expect(resultsClass[1].classification!.id).eq(classificationIdA2A);
 });
 
 test("searchClassificationsWithSharedContent, filter by activity feature", async () => {
@@ -1970,7 +1970,7 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
     loggedInUserId: userId,
   });
   expect(resultsClass.length).eq(2);
-  expect(resultsClass[0].code).eq(`${word}B2B${code}`);
+  expect(resultsClass[0].classification!.code).eq(`${word}B2B${code}`);
   let resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
@@ -1989,7 +1989,7 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
     features: new Set(["isQuestion"]),
   });
   expect(resultsClass.length).eq(1);
-  expect(resultsClass[0].id).eq(classificationIdA1A);
+  expect(resultsClass[0].classification!.id).eq(classificationIdA1A);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
@@ -2012,7 +2012,7 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
     features: new Set(["isInteractive"]),
   });
   expect(resultsClass.length).eq(1);
-  expect(resultsClass[0].id).eq(classificationIdA1A);
+  expect(resultsClass[0].classification!.id).eq(classificationIdA1A);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
@@ -2035,7 +2035,7 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
     features: new Set(["containsVideo"]),
   });
   expect(resultsClass.length).eq(1);
-  expect(resultsClass[0].id).eq(classificationIdB2B);
+  expect(resultsClass[0].classification!.id).eq(classificationIdB2B);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
@@ -2133,7 +2133,7 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
     features: new Set(["isQuestion", "isInteractive"]),
   });
   expect(resultsClass.length).eq(1);
-  expect(resultsClass[0].id).eq(classificationIdA1A);
+  expect(resultsClass[0].classification!.id).eq(classificationIdA1A);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
@@ -2155,7 +2155,7 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
     features: new Set(["isInteractive", "containsVideo"]),
   });
   expect(resultsClass.length).eq(1);
-  expect(resultsClass[0].id).eq(classificationIdA1A);
+  expect(resultsClass[0].classification!.id).eq(classificationIdA1A);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
@@ -2177,7 +2177,7 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
     features: new Set(["containsVideo", "isQuestion"]),
   });
   expect(resultsClass.length).eq(1);
-  expect(resultsClass[0].id).eq(classificationIdB2B);
+  expect(resultsClass[0].classification!.id).eq(classificationIdB2B);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
@@ -2289,7 +2289,7 @@ test("searchClassificationsWithSharedContent, filter by owner", async () => {
     ownerId: owner1Id,
   });
   expect(resultsClass.length).eq(1);
-  expect(resultsClass[0].id).eq(classificationIdA1A);
+  expect(resultsClass[0].classification!.id).eq(classificationIdA1A);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
@@ -2332,7 +2332,7 @@ test("searchClassificationsWithSharedContent, filter by owner", async () => {
     ownerId: owner3Id,
   });
   expect(resultsClass.length).eq(1);
-  expect(resultsClass[0].id).eq(classificationIdB2B);
+  expect(resultsClass[0].classification!.id).eq(classificationIdB2B);
   resultsSubCat = await searchClassificationSubCategoriesWithSharedContent({
     query: `${word}${code}`,
     loggedInUserId: userId,
