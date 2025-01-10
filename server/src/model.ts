@@ -1900,7 +1900,7 @@ export async function searchClassificationsWithSharedContent({
   subCategoryId?: number;
   features?: Set<string>;
   ownerId?: Uint8Array;
-}): Promise<ContentClassification[]> {
+}): Promise<PartialContentClassification[]> {
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
@@ -1910,25 +1910,54 @@ export async function searchClassificationsWithSharedContent({
     .map((s) => s + "*")
     .join(" ");
 
-  const includeClassification = true;
-  const includeSubCategory =
-    subCategoryId === undefined && categoryId !== undefined;
-  const includeCategory = !includeSubCategory && systemId !== undefined;
+  const queryRegEx = query
+    .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    .replace(/\s+/g, "|");
 
   const matches = await prisma.$queryRaw<
     {
-      id: number;
+      classificationId: number;
+      code: string;
+      descriptionId: number;
+      description: string;
+      subCategoryId: number;
+      subCategory: string;
+      categoryId: number;
+      category: string;
+      systemId: number;
+      systemName: string;
+      systemShortName: string;
+      categoryLabel: string;
+      subCategoryLabel: string;
+      descriptionLabel: string;
+      categoriesInDescription: boolean;
+      codeMatch: bigint;
       relevance: number;
     }[]
   >(Prisma.sql`
   SELECT
-    classifications.id,
+    classifications.id as classificationId,
+    classifications.code,
+    classificationDescriptions.id AS descriptionId,
+    classificationDescriptions.description,
+    classificationSubCategories.id subCategoryId,
+    classificationSubCategories.subCategory,
+    classificationCategories.id categoryId,
+    classificationCategories.category,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
+    REGEXP_LIKE(classifications.code, ${queryRegEx}) AS codeMatch,
     AVG(
     ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, operator: "+" })}
     ) as relevance
   FROM
     content
-  ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
     content.isDeleted = FALSE
@@ -1939,77 +1968,43 @@ export async function searchClassificationsWithSharedContent({
     AND
     (
       ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, operator: "OR" })}
+      OR classifications.code REGEXP ${queryRegEx}
     )
     ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId })}
     ${returnFeatureWhereClauses(features)}
     ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
   GROUP BY
-    classifications.id
+    classificationId, descriptionId
   ORDER BY
-    relevance DESC
+    codeMatch DESC, relevance DESC
   LIMIT 100
   `);
 
-  // since full text search doesn't match code well, separately match for those
-  // and put matches at the top of the list
-  const query_words = query.split(" ");
-
-  const featuresToRequire = features === undefined ? [] : [...features.keys()];
-
-  const code_matches = await prisma.classifications.findMany({
-    where: {
-      OR: query_words.map((query_word) => ({
-        code: { contains: query_word },
-      })),
-      descriptions: {
-        some: {
-          subCategoryId,
-          subCategory: {
-            categoryId,
-            category: { systemId },
-          },
-        },
-      },
-      contentClassifications: {
-        some: {
-          content: {
-            isDeleted: false,
-            OR: [
-              { isPublic: true },
-              { sharedWith: { some: { userId: loggedInUserId } } },
-            ],
-            AND: featuresToRequire.map((feature) => ({
-              contentFeatures: { some: { code: feature } },
-            })),
-            ownerId,
-          },
-        },
-      },
+  return matches.map((m) => ({
+    classification: {
+      id: m.classificationId,
+      code: m.code,
+      descriptionId: m.descriptionId,
+      description: m.description,
     },
-    select: { id: true },
-    take: 100,
-  });
-
-  const results: ContentClassification[] =
-    await prisma.classifications.findMany({
-      where: {
-        id: { in: [...matches, ...code_matches].map((m) => m.id) },
-      },
-      select: returnClassificationListSelect(),
-      take: 100,
-    });
-
-  // TODO: a more efficient way to get desired sort order?
-  const sort_order: Record<string, number> = {};
-  matches.forEach((match) => {
-    sort_order[match.id] = match.relevance;
-  });
-  code_matches.forEach((match) => {
-    sort_order[match.id] = 100 + (sort_order[match.id] || 0); // code matches go at the top
-  });
-  results.sort((a, b) => sort_order[b.id] - sort_order[a.id]);
-
-  return results;
+    subCategory: {
+      id: m.subCategoryId,
+      subCategory: m.subCategory,
+    },
+    category: {
+      id: m.categoryId,
+      category: m.category,
+    },
+    system: {
+      id: m.systemId,
+      name: m.systemName,
+      shortName: m.systemShortName,
+      descriptionLabel: m.descriptionLabel,
+      subCategoryLabel: m.subCategoryLabel,
+      categoryLabel: m.categoryLabel,
+      categoriesInDescription: m.categoriesInDescription,
+    },
+  }));
 }
 
 export async function searchClassificationSubCategoriesWithSharedContent({

@@ -39,7 +39,6 @@ import { Form, useFetcher } from "react-router";
 import { CardContent } from "../../../Widgets/Card";
 import { createFullName } from "../../../_utils/names";
 import {
-  ContentClassification,
   ContentFeature,
   ContentStructure,
   PartialContentClassification,
@@ -166,7 +165,7 @@ export function Explore() {
     matchedAuthors: UserInfo[] | undefined;
     authorInfo: UserInfo | null;
     content: ContentStructure[];
-    matchedClassifications: ContentClassification[] | null | undefined;
+    matchedClassifications: PartialContentClassification[] | null | undefined;
     matchedSubCategories: PartialContentClassification[] | null | undefined;
     matchedCategories: PartialContentClassification[] | null | undefined;
     classificationBrowse: PartialContentClassification[] | null;
@@ -735,14 +734,14 @@ export function Explore() {
         );
       } else if (classificationInfo.subCategory) {
         let subCategory = classificationInfo.subCategory.subCategory;
-        if (subCategory.length > 20) {
-          subCategory = subCategory.substring(0, 20) + "...";
+        if (subCategory.length > 40) {
+          subCategory = subCategory.substring(0, 40) + "...";
         }
         filters.push(`classification (${subCategory})`);
       } else if (classificationInfo.category) {
         let category = classificationInfo.category.category;
-        if (category.length > 20) {
-          category = category.substring(0, 20) + "...";
+        if (category.length > 40) {
+          category = category.substring(0, 40) + "...";
         }
         filters.push(`classification (${category})`);
       } else if (classificationInfo.system) {
@@ -861,6 +860,160 @@ export function Explore() {
     );
   }
 
+  const classificationMatchPieces: ReactElement[] = [];
+  if (matchedClassifications && matchedClassifications.length > 0) {
+    for (const partialClass of matchedClassifications) {
+      const classification = partialClass.classification!;
+      const subCategory = partialClass.subCategory!;
+      const category = partialClass.category!;
+      const system = partialClass.system!;
+      const expandedDescription = system.categoriesInDescription
+        ? `${category.category} | ${subCategory.subCategory} | ${classification.description}`
+        : classification.description;
+
+      const newURL = `/explore/${system.id}/${category.id}/${subCategory.id}/${classification.id}`;
+
+      classificationMatchPieces.push(
+        <ListItem
+          key={`classification${classification.id}|${classification.descriptionId}`}
+          marginTop="5px"
+        >
+          <Flex>
+            <VStack alignItems="left" gap={0}>
+              <Text>
+                {classification.code}: {expandedDescription}
+              </Text>
+              <Text>
+                ({system.descriptionLabel} from {system.name})
+              </Text>
+            </VStack>
+            <Tooltip
+              label={`Filter by ${expandedDescription}`}
+              openDelay={500}
+              placement="bottom-end"
+            >
+              <IconButton
+                icon={<MdFilterAlt />}
+                size="xs"
+                marginLeft="10px"
+                onClick={() => {
+                  let newSearch = search;
+                  // clear the search string
+                  newSearch = clearQueryParameter("q", newSearch);
+                  navigate(`${newURL}${newSearch}`);
+                  setCurrentTab(1);
+                  setSearchString("");
+                }}
+                aria-label={`Filter by ${expandedDescription}`}
+              />
+            </Tooltip>
+          </Flex>
+        </ListItem>,
+      );
+    }
+  }
+
+  if (matchedSubCategories && matchedSubCategories.length > 0) {
+    for (const partialClass of matchedSubCategories) {
+      const subCategory = partialClass.subCategory!;
+      const category = partialClass.category!;
+      const system = partialClass.system!;
+      const expandedDescription = system.categoriesInDescription
+        ? `${category.category} | ${subCategory.subCategory}`
+        : subCategory.subCategory;
+
+      const newURL = `/explore/${system.id}/${category.id}/${subCategory.id}`;
+
+      classificationMatchPieces.push(
+        <ListItem key={`subcategory${subCategory.id}`} marginTop="5px">
+          <Flex>
+            <VStack alignItems="left" gap={0}>
+              <Text>{expandedDescription}</Text>
+              <Text>
+                ({system.subCategoryLabel} from {system.name})
+              </Text>
+            </VStack>
+            <Tooltip
+              label={`Filter by ${expandedDescription}`}
+              openDelay={500}
+              placement="bottom-end"
+            >
+              <IconButton
+                icon={<MdFilterAlt />}
+                size="xs"
+                marginLeft="10px"
+                onClick={() => {
+                  let newSearch = search;
+                  // clear the search string
+                  newSearch = clearQueryParameter("q", newSearch);
+                  navigate(`${newURL}${newSearch}`);
+                  setCurrentTab(1);
+                  setSearchString("");
+                }}
+                aria-label={`Filter by ${expandedDescription}`}
+              />
+            </Tooltip>
+          </Flex>
+        </ListItem>,
+      );
+    }
+  }
+
+  if (matchedCategories && matchedCategories.length > 0) {
+    for (const partialClass of matchedCategories) {
+      const category = partialClass.category!;
+      const system = partialClass.system!;
+
+      const newURL = `/explore/${system.id}/${category.id}`;
+
+      classificationMatchPieces.push(
+        <ListItem key={`category${category.id}`} marginTop="5px">
+          <Flex>
+            <VStack alignItems="left" gap={0}>
+              <Text>{category.category}</Text>
+              <Text>
+                ({system.categoryLabel} from {system.name})
+              </Text>
+            </VStack>
+            <Tooltip
+              label={`Filter by ${category.category}`}
+              openDelay={500}
+              placement="bottom-end"
+            >
+              <IconButton
+                icon={<MdFilterAlt />}
+                size="xs"
+                marginLeft="10px"
+                onClick={() => {
+                  let newSearch = search;
+                  // clear the search string
+                  newSearch = clearQueryParameter("q", newSearch);
+                  navigate(`${newURL}${newSearch}`);
+                  setCurrentTab(1);
+                  setSearchString("");
+                }}
+                aria-label={`Filter by ${category.category}`}
+              />
+            </Tooltip>
+          </Flex>
+        </ListItem>,
+      );
+    }
+  }
+
+  let classificationMatches: ReactElement | null = null;
+
+  if (classificationMatchPieces.length > 0) {
+    classificationMatches = (
+      <>
+        <Heading size="md" marginBottom="10px">
+          Matching classifications
+        </Heading>
+        <List>{classificationMatchPieces}</List>
+      </>
+    );
+  }
+
   const extraFormInputs: ReactElement[] = [];
   if (authorInfo) {
     extraFormInputs.push(
@@ -918,8 +1071,8 @@ export function Explore() {
         <Flex fontSize="24px">
           {q ? (
             <>
-              <Text>
-                Search results for{" "}
+              <Text marginRight="10px">
+                Search results for:{" "}
                 <Text
                   as="span"
                   fontSize="24px"
@@ -996,7 +1149,7 @@ export function Explore() {
           {displayMatchingContent(content)}
         </TabPanel>
         <TabPanel>{authorMatches}</TabPanel>
-        <TabPanel></TabPanel>
+        <TabPanel>{classificationMatches}</TabPanel>
       </TabPanels>
     </Tabs>
   );

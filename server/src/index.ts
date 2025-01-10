@@ -123,12 +123,7 @@ import {
   isEqualUUID,
   docRemixesConvertUUID,
 } from "./utils/uuid";
-import {
-  ContentClassification,
-  LicenseCode,
-  PartialContentClassification,
-  UserInfo,
-} from "./types";
+import { LicenseCode, PartialContentClassification, UserInfo } from "./types";
 import { add_test_apis } from "./test/test_apis";
 
 const client = new SESClient({ region: "us-east-2" });
@@ -1156,7 +1151,7 @@ app.post(
         })
       ).map(contentStructureConvertUUID);
 
-      let matchedClassifications: ContentClassification[] | null = null;
+      let matchedClassifications: PartialContentClassification[] | null = null;
       let matchedSubCategories: PartialContentClassification[] | null = null;
       let matchedCategories: PartialContentClassification[] | null = null;
 
