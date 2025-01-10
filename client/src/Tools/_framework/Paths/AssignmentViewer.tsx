@@ -12,6 +12,7 @@ import {
 } from "./EnterClassCode";
 import { ChangeName, action as changeNameAction } from "./ChangeName";
 import { User } from "./SiteHeader";
+import axios from "axios";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -133,6 +134,17 @@ export function AssignmentViewer() {
             docVersionNum,
             data,
           });
+
+          // TODO: check if this is a submission destined for LLM grading
+          if (1) {
+            // if so... then record it
+            recordLLMSubmittedEvent({
+              activityId: assignment.id,
+              docId,
+              docVersionNum,
+              data,
+            });
+          }
         }
       } else if (event.data.subject == "SPLICE.getState") {
         try {
@@ -347,6 +359,40 @@ async function recordSubmittedEvent({
         creditAchieved,
         itemCreditAchieved,
         documentCreditAchieved,
+      },
+    });
+  }
+}
+
+async function recordLLMSubmittedEvent({
+  activityId,
+  docId,
+  docVersionNum,
+  data,
+}) {
+  const object = JSON.parse(data.object);
+  const answerId = object.componentName;
+
+  if (answerId) {
+    const result = JSON.parse(data.result);
+    const response = JSON.stringify({
+      response: result.response,
+      componentTypes: result.componentTypes,
+    });
+    const context = JSON.parse(data.context);
+    const itemNumber = context.item;
+
+    await axios.post(`/api/recordLLMSubmittedEvent`, {
+      activityId,
+      docId,
+      docVersionNum,
+      answerId,
+      answerNumber: object.answerNumber,
+      // TODO: include the processed rubric from the provided `data`
+      rubric: "FAKE RUBRIC",
+      result: {
+        response,
+        itemNumber,
       },
     });
   }
