@@ -5,7 +5,6 @@ import {
   Tooltip,
   List,
   Spacer,
-  VStack,
   MenuItem,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -132,10 +131,18 @@ export function SharedActivities() {
           paddingRight="15px"
           paddingBottom="5px"
           boxSizing="border-box"
-          marginTop="-30px"
+          marginTop="-45px"
           height="40px"
-          alignItems="center"
         >
+          <Spacer />
+          {folder.license ? (
+            <SmallLicenseBadges license={folder.license} />
+          ) : null}
+        </Flex>
+      ) : null}
+
+      <Flex marginRight=".5em" alignItems="center" paddingLeft="15px">
+        {folder ? (
           <Link
             to={`/sharedActivities/${ownerId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
             style={{
@@ -148,20 +155,14 @@ export function SharedActivities() {
               ? folder.parentFolder.name
               : `Shared Activities of ${createFullName(owner)}`}
           </Link>
-          <Spacer />
-          {folder.license ? (
-            <SmallLicenseBadges license={folder.license} />
-          ) : null}
-        </Flex>
-      ) : null}
-
-      <VStack align="flex-end" float="right" marginRight=".5em">
+        ) : null}
+        <Spacer />
         <ToggleViewButtonGroup
           listView={listView}
           setListView={setListView}
           fetcher={fetcher}
         />
-      </VStack>
+      </Flex>
     </Box>
   );
 

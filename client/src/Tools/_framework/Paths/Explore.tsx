@@ -254,15 +254,23 @@ export function Explore() {
     });
 
     return (
-      <CardList
-        showPublicStatus={false}
-        showAssignmentStatus={false}
-        showActivityFeatures={true}
-        showOwnerName={true}
-        content={cardContent}
-        emptyMessage={"No Matches Found!"}
-        listView={listView}
-      />
+      <Box
+        background={
+          listView && cardContent.length > 0 ? "white" : "var(--lightBlue)"
+        }
+        paddingTop="16px"
+        minHeight="calc(100vh - 230px)"
+      >
+        <CardList
+          showPublicStatus={false}
+          showAssignmentStatus={false}
+          showActivityFeatures={true}
+          showOwnerName={true}
+          content={cardContent}
+          emptyMessage={"No Matches Found!"}
+          listView={listView}
+        />
+      </Box>
     );
   }
 
@@ -1141,13 +1149,8 @@ export function Explore() {
       </TabList>
 
       <TabPanels data-test="Search Results">
-        <TabPanel>
-          We don't have anything in library yet
-          {displayMatchingContent([])}
-        </TabPanel>
-        <TabPanel paddingLeft={0} paddingRight={0}>
-          {displayMatchingContent(content)}
-        </TabPanel>
+        <TabPanel padding={0}>{displayMatchingContent([])}</TabPanel>
+        <TabPanel padding={0}>{displayMatchingContent(content)}</TabPanel>
         <TabPanel>{authorMatches}</TabPanel>
         <TabPanel>{classificationMatches}</TabPanel>
       </TabPanels>
@@ -1208,7 +1211,7 @@ export function Explore() {
       <Grid
         width="100%"
         gridTemplateColumns={filtersOpen ? "300px 1fr" : "40px 1fr"}
-        gap="2"
+        gap="0"
       >
         <GridItem
           marginLeft={filtersOpen ? "10px" : "4px"}

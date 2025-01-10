@@ -521,7 +521,7 @@ export function Activities() {
     <Box
       backgroundColor="#fff"
       color="#000"
-      height="80px"
+      height="130px"
       width="100%"
       textAlign="center"
     >
@@ -536,146 +536,163 @@ export function Activities() {
       >
         <Tooltip label={headingText}>{headingText}</Tooltip>
       </Heading>
-      <VStack align="flex-end" float="right" marginRight=".5em">
-        <HStack>
-          <Flex>
-            <Form>
-              <Input
-                type="search"
-                hidden={!searchOpen}
-                size="sm"
-                colorScheme="blue"
-                width="250px"
-                ref={searchRef}
-                placeholder={
-                  folder ? `Search in folder` : `Search my activities`
-                }
-                value={searchString}
-                name="q"
-                onInput={(e) => {
-                  setSearchString((e.target as HTMLInputElement).value);
-                }}
-                onBlur={() => {
-                  searchBlurTimeout.current = setTimeout(() => {
-                    setFocusSearch(false);
-                  }, 200);
-                }}
-              />
-              <Tooltip
-                label={folder ? `Search in folder` : `Search my activities`}
-                placement="bottom-end"
-              >
-                <IconButton
+      <VStack width="100%">
+        <Flex marginRight="1em" width="100%">
+          <Spacer />
+          <HStack>
+            <Flex>
+              <Form>
+                <Input
+                  type="search"
+                  hidden={!searchOpen}
                   size="sm"
                   colorScheme="blue"
-                  icon={<MdOutlineSearch />}
-                  aria-label={
+                  width="250px"
+                  ref={searchRef}
+                  placeholder={
                     folder ? `Search in folder` : `Search my activities`
                   }
-                  type="submit"
-                  onClick={(e) => {
-                    if (focusSearch) {
-                      clearTimeout(searchBlurTimeout.current);
-                      searchRef.current?.focus();
-                    } else {
-                      setFocusSearch(true);
-                    }
-                    if (!searchOpen) {
-                      e.preventDefault();
-                    }
+                  value={searchString}
+                  name="q"
+                  onInput={(e) => {
+                    setSearchString((e.target as HTMLInputElement).value);
+                  }}
+                  onBlur={() => {
+                    searchBlurTimeout.current = setTimeout(() => {
+                      setFocusSearch(false);
+                    }, 200);
                   }}
                 />
-              </Tooltip>
-            </Form>
-          </Flex>
-          <Menu>
-            <MenuButton
-              as={Button}
-              size="sm"
-              colorScheme="blue"
-              hidden={searchOpen}
-              data-test="New Button"
-            >
-              {haveContentSpinner ? <Spinner size="sm" /> : "New"}
-            </MenuButton>
-            <MenuList>
-              <MenuItem
-                data-test="Add Activity Button"
-                onClick={async () => {
-                  setHaveContentSpinner(true);
-                  fetcher.submit(
-                    { _action: "Add Activity" },
-                    { method: "post" },
-                  );
-                }}
+                <Tooltip
+                  label={folder ? `Search in folder` : `Search my activities`}
+                  placement="bottom-end"
+                >
+                  <IconButton
+                    size="sm"
+                    colorScheme="blue"
+                    icon={<MdOutlineSearch />}
+                    aria-label={
+                      folder ? `Search in folder` : `Search my activities`
+                    }
+                    type="submit"
+                    onClick={(e) => {
+                      if (focusSearch) {
+                        clearTimeout(searchBlurTimeout.current);
+                        searchRef.current?.focus();
+                      } else {
+                        setFocusSearch(true);
+                      }
+                      if (!searchOpen) {
+                        e.preventDefault();
+                      }
+                    }}
+                  />
+                </Tooltip>
+              </Form>
+            </Flex>
+            <Menu>
+              <MenuButton
+                as={Button}
+                size="sm"
+                colorScheme="blue"
+                hidden={searchOpen}
+                data-test="New Button"
               >
-                Activity
-              </MenuItem>
-              <MenuItem
-                data-test="Add Folder Button"
-                onClick={() => {
-                  setHaveContentSpinner(true);
-                  fetcher.submit({ _action: "Add Folder" }, { method: "post" });
-                }}
-              >
-                Folder
-              </MenuItem>
-            </MenuList>
-          </Menu>
+                {haveContentSpinner ? <Spinner size="sm" /> : "New"}
+              </MenuButton>
+              <MenuList>
+                <MenuItem
+                  data-test="Add Activity Button"
+                  onClick={async () => {
+                    setHaveContentSpinner(true);
+                    fetcher.submit(
+                      { _action: "Add Activity" },
+                      { method: "post" },
+                    );
+                  }}
+                >
+                  Activity
+                </MenuItem>
+                <MenuItem
+                  data-test="Add Folder Button"
+                  onClick={() => {
+                    setHaveContentSpinner(true);
+                    fetcher.submit(
+                      { _action: "Add Folder" },
+                      { method: "post" },
+                    );
+                  }}
+                >
+                  Folder
+                </MenuItem>
+              </MenuList>
+            </Menu>
 
-          {folderId !== null ? (
+            {folderId !== null ? (
+              <Button
+                colorScheme="blue"
+                size="sm"
+                ref={folderSettingsRef}
+                onClick={() => {
+                  setSettingsContentId(folderId);
+                  sharingOnOpen();
+                }}
+                hidden={searchOpen}
+              >
+                Share
+              </Button>
+            ) : null}
             <Button
               colorScheme="blue"
               size="sm"
-              ref={folderSettingsRef}
-              onClick={() => {
-                setSettingsContentId(folderId);
-                sharingOnOpen();
-              }}
+              onClick={() =>
+                navigate(
+                  `/allAssignmentScores${folderId ? "/" + folderId : ""}`,
+                )
+              }
               hidden={searchOpen}
             >
-              Share
+              See Scores
             </Button>
+          </HStack>
+        </Flex>
+
+        <Flex
+          width="100%"
+          paddingRight="0.5em"
+          paddingLeft="1em"
+          alignItems="middle"
+        >
+          {folder && !haveQuery ? (
+            <Box>
+              <Link
+                to={`/activities/${userId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
+                style={{
+                  color: "var(--mainBlue)",
+                }}
+              >
+                <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
+                  <Show above="sm">
+                    &lt; Back to{" "}
+                    {folder.parentFolder
+                      ? folder.parentFolder.name
+                      : `My Activities`}
+                  </Show>
+                  <Hide above="sm">&lt; Back</Hide>
+                </Text>
+              </Link>
+            </Box>
           ) : null}
-          <Button
-            colorScheme="blue"
-            size="sm"
-            onClick={() =>
-              navigate(`/allAssignmentScores${folderId ? "/" + folderId : ""}`)
-            }
-            hidden={searchOpen}
-          >
-            See Scores
-          </Button>
-        </HStack>
-        <ToggleViewButtonGroup
-          listView={listView}
-          setListView={setListView}
-          fetcher={fetcher}
-        />
+          <Spacer />
+          <ToggleViewButtonGroup
+            listView={listView}
+            setListView={setListView}
+            fetcher={fetcher}
+          />
+        </Flex>
       </VStack>
     </Box>
   );
-
-  const backLink =
-    folder && !haveQuery ? (
-      <Box style={{ marginLeft: "15px", marginTop: "-30px", float: "left" }}>
-        <Link
-          to={`/activities/${userId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
-          style={{
-            color: "var(--mainBlue)",
-          }}
-        >
-          <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
-            <Show above="sm">
-              &lt; Back to{" "}
-              {folder.parentFolder ? folder.parentFolder.name : `My Activities`}
-            </Show>
-            <Hide above="sm">&lt; Back</Hide>
-          </Text>
-        </Link>
-      </Box>
-    ) : null;
 
   const searchResultsHeading = haveQuery ? (
     <Flex
@@ -762,8 +779,6 @@ export function Activities() {
       {moveContentModal}
 
       {heading}
-
-      {backLink}
 
       {searchResultsHeading}
 
