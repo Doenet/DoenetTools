@@ -741,6 +741,7 @@ export async function copyActivityToFolder(
         where: { isDeleted: false },
       },
       classifications: true,
+      contentFeatures: true,
     },
   });
 
@@ -758,6 +759,9 @@ export async function copyActivityToFolder(
         create: origActivity.classifications.map((c) => ({
           classificationId: c.classificationId,
         })),
+      },
+      contentFeatures: {
+        connect: origActivity.contentFeatures.map((cf) => ({ id: cf.id })),
       },
       licenseCode: origActivity.licenseCode,
     },

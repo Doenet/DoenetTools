@@ -25,6 +25,7 @@ import {
   shareFolderWithEmail,
   unshareActivity,
   unshareFolder,
+  updateContentFeatures,
   updateDoc,
   updateUser,
 } from "../model";
@@ -1550,6 +1551,61 @@ test("copyActivityToFolder copies content classifications", async () => {
 
   expect(activityData.activity.classifications).toHaveLength(1);
   expect(activityData.activity.classifications[0].id).eq(classifyId);
+});
+
+test("copyActivityToFolder copies content featuers", async () => {
+  const originalOwnerId = (await createTestUser()).userId;
+  const newOwnerId = (await createTestUser()).userId;
+  const { activityId: activityId1 } = await createActivity(
+    originalOwnerId,
+    null,
+  );
+  const { activityId: activityId2 } = await createActivity(
+    originalOwnerId,
+    null,
+  );
+
+  await updateContentFeatures({
+    id: activityId1,
+    ownerId: originalOwnerId,
+    features: { isQuestion: true },
+  });
+  await updateContentFeatures({
+    id: activityId2,
+    ownerId: originalOwnerId,
+    features: { containsVideo: true, isInteractive: true },
+  });
+
+  await makeActivityPublic({
+    id: activityId1,
+    ownerId: originalOwnerId,
+    licenseCode: "CCDUAL",
+  });
+  await makeActivityPublic({
+    id: activityId2,
+    ownerId: originalOwnerId,
+    licenseCode: "CCDUAL",
+  });
+
+  const newActivityId1 = await copyActivityToFolder(
+    activityId1,
+    newOwnerId,
+    null,
+  );
+  const newActivityId2 = await copyActivityToFolder(
+    activityId2,
+    newOwnerId,
+    null,
+  );
+
+  const activityData1 = await getActivityEditorData(newActivityId1, newOwnerId);
+  expect(activityData1.activity.contentFeatures).toHaveLength(1);
+  expect(activityData1.activity.contentFeatures[0].code).eq("isQuestion");
+
+  const activityData2 = await getActivityEditorData(newActivityId2, newOwnerId);
+  expect(activityData2.activity.contentFeatures).toHaveLength(2);
+  expect(activityData2.activity.contentFeatures[0].code).eq("isInteractive");
+  expect(activityData2.activity.contentFeatures[1].code).eq("containsVideo");
 });
 
 test("set and get preferred folder view", async () => {
