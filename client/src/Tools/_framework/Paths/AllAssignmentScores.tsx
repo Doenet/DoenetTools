@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, useNavigate } from "react-router";
 import axios from "axios";
-import { DoenetHeading as Heading } from "./Community";
+import { DoenetHeading as Heading } from "../../../Widgets/Heading";
 import { lastNameFirst } from "../../../_utils/names";
 
 type AssignmentScore = {

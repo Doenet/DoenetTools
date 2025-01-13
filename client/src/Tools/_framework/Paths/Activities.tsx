@@ -1,7 +1,6 @@
 import {
   Button,
   Box,
-  Icon,
   Text,
   Flex,
   useDisclosure,
@@ -16,7 +15,6 @@ import {
   Spacer,
   Show,
   HStack,
-  ButtonGroup,
   VStack,
   Hide,
   Spinner,
@@ -31,8 +29,6 @@ import {
   Form,
 } from "react-router";
 
-import { FaListAlt, FaRegListAlt } from "react-icons/fa";
-import { IoGrid, IoGridOutline } from "react-icons/io5";
 import { cardActions, CardContent } from "../../../Widgets/Card";
 import CardList from "../../../Widgets/CardList";
 import axios from "axios";
@@ -49,6 +45,7 @@ import {
 } from "../ToolPanels/AssignmentSettingsDrawer";
 import {
   AssignmentStatus,
+  ContentFeature,
   ContentStructure,
   DoenetmlVersion,
   License,
@@ -58,6 +55,10 @@ import {
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 import { formatTime } from "../../../_utils/dateUtilityFunction";
+import {
+  ToggleViewButtonGroup,
+  toggleViewButtonGroupActions,
+} from "../ToolPanels/ToggleViewButtonGroup";
 
 // what is a better solution than this?
 let folderJustCreated = ""; // if a folder was just created, set autoFocusName true for the card with the matching id
@@ -88,6 +89,11 @@ export async function action({ request, params }) {
   const resultMC = await moveContentActions({ formObj });
   if (resultMC) {
     return resultMC;
+  }
+
+  const resultTLV = await toggleViewButtonGroupActions({ formObj });
+  if (resultTLV) {
+    return resultTLV;
   }
 
   if (formObj?._action == "Add Activity") {
@@ -173,6 +179,7 @@ export async function loader({ params, request }) {
     content: data.content,
     allDoenetmlVersions: data.allDoenetmlVersions,
     allLicenses: data.allLicenses,
+    availableFeatures: data.availableFeatures,
     userId: params.userId,
     folder: data.folder,
     listViewPref,
@@ -186,6 +193,7 @@ export function Activities() {
     content,
     allDoenetmlVersions,
     allLicenses,
+    availableFeatures,
     userId,
     folder,
     listViewPref,
@@ -195,6 +203,7 @@ export function Activities() {
     content: ContentStructure[];
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
+    availableFeatures: ContentFeature[];
     userId: string;
     folder: ContentStructure | null;
     listViewPref: boolean;
@@ -463,6 +472,7 @@ export function Activities() {
         onClose={settingsOnClose}
         contentData={contentData}
         allDoenetmlVersions={allDoenetmlVersions}
+        availableFeatures={availableFeatures}
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
         displayTab={displaySettingsTab}
@@ -511,7 +521,7 @@ export function Activities() {
     <Box
       backgroundColor="#fff"
       color="#000"
-      height="80px"
+      height="130px"
       width="100%"
       textAlign="center"
     >
@@ -526,187 +536,163 @@ export function Activities() {
       >
         <Tooltip label={headingText}>{headingText}</Tooltip>
       </Heading>
-      <VStack align="flex-end" float="right" marginRight=".5em">
-        <HStack>
-          <Flex>
-            <Form>
-              <Input
-                type="search"
-                hidden={!searchOpen}
-                size="sm"
-                colorScheme="blue"
-                width="250px"
-                ref={searchRef}
-                placeholder={
-                  folder ? `Search in folder` : `Search my activities`
-                }
-                value={searchString}
-                name="q"
-                onInput={(e) => {
-                  setSearchString((e.target as HTMLInputElement).value);
-                }}
-                onBlur={() => {
-                  searchBlurTimeout.current = setTimeout(() => {
-                    setFocusSearch(false);
-                  }, 200);
-                }}
-              />
-              <Tooltip
-                label={folder ? `Search in folder` : `Search my activities`}
-                placement="bottom-end"
-              >
-                <IconButton
+      <VStack width="100%">
+        <Flex marginRight="1em" width="100%">
+          <Spacer />
+          <HStack>
+            <Flex>
+              <Form>
+                <Input
+                  type="search"
+                  hidden={!searchOpen}
                   size="sm"
                   colorScheme="blue"
-                  icon={<MdOutlineSearch />}
-                  aria-label={
+                  width="250px"
+                  ref={searchRef}
+                  placeholder={
                     folder ? `Search in folder` : `Search my activities`
                   }
-                  type="submit"
-                  onClick={(e) => {
-                    if (focusSearch) {
-                      clearTimeout(searchBlurTimeout.current);
-                      searchRef.current?.focus();
-                    } else {
-                      setFocusSearch(true);
-                    }
-                    if (!searchOpen) {
-                      e.preventDefault();
-                    }
+                  value={searchString}
+                  name="q"
+                  onInput={(e) => {
+                    setSearchString((e.target as HTMLInputElement).value);
+                  }}
+                  onBlur={() => {
+                    searchBlurTimeout.current = setTimeout(() => {
+                      setFocusSearch(false);
+                    }, 200);
                   }}
                 />
-              </Tooltip>
-            </Form>
-          </Flex>
-          <Menu>
-            <MenuButton
-              as={Button}
-              size="sm"
-              colorScheme="blue"
-              hidden={searchOpen}
-              data-test="New Button"
-            >
-              {haveContentSpinner ? <Spinner size="sm" /> : "New"}
-            </MenuButton>
-            <MenuList>
-              <MenuItem
-                data-test="Add Activity Button"
-                onClick={async () => {
-                  setHaveContentSpinner(true);
-                  fetcher.submit(
-                    { _action: "Add Activity" },
-                    { method: "post" },
-                  );
-                }}
+                <Tooltip
+                  label={folder ? `Search in folder` : `Search my activities`}
+                  placement="bottom-end"
+                >
+                  <IconButton
+                    size="sm"
+                    colorScheme="blue"
+                    icon={<MdOutlineSearch />}
+                    aria-label={
+                      folder ? `Search in folder` : `Search my activities`
+                    }
+                    type="submit"
+                    onClick={(e) => {
+                      if (focusSearch) {
+                        clearTimeout(searchBlurTimeout.current);
+                        searchRef.current?.focus();
+                      } else {
+                        setFocusSearch(true);
+                      }
+                      if (!searchOpen) {
+                        e.preventDefault();
+                      }
+                    }}
+                  />
+                </Tooltip>
+              </Form>
+            </Flex>
+            <Menu>
+              <MenuButton
+                as={Button}
+                size="sm"
+                colorScheme="blue"
+                hidden={searchOpen}
+                data-test="New Button"
               >
-                Activity
-              </MenuItem>
-              <MenuItem
-                data-test="Add Folder Button"
-                onClick={() => {
-                  setHaveContentSpinner(true);
-                  fetcher.submit({ _action: "Add Folder" }, { method: "post" });
-                }}
-              >
-                Folder
-              </MenuItem>
-            </MenuList>
-          </Menu>
+                {haveContentSpinner ? <Spinner size="sm" /> : "New"}
+              </MenuButton>
+              <MenuList>
+                <MenuItem
+                  data-test="Add Activity Button"
+                  onClick={async () => {
+                    setHaveContentSpinner(true);
+                    fetcher.submit(
+                      { _action: "Add Activity" },
+                      { method: "post" },
+                    );
+                  }}
+                >
+                  Activity
+                </MenuItem>
+                <MenuItem
+                  data-test="Add Folder Button"
+                  onClick={() => {
+                    setHaveContentSpinner(true);
+                    fetcher.submit(
+                      { _action: "Add Folder" },
+                      { method: "post" },
+                    );
+                  }}
+                >
+                  Folder
+                </MenuItem>
+              </MenuList>
+            </Menu>
 
-          {folderId !== null ? (
+            {folderId !== null ? (
+              <Button
+                colorScheme="blue"
+                size="sm"
+                ref={folderSettingsRef}
+                onClick={() => {
+                  setSettingsContentId(folderId);
+                  sharingOnOpen();
+                }}
+                hidden={searchOpen}
+              >
+                Share
+              </Button>
+            ) : null}
             <Button
               colorScheme="blue"
               size="sm"
-              ref={folderSettingsRef}
-              onClick={() => {
-                setSettingsContentId(folderId);
-                sharingOnOpen();
-              }}
+              onClick={() =>
+                navigate(
+                  `/allAssignmentScores${folderId ? "/" + folderId : ""}`,
+                )
+              }
               hidden={searchOpen}
             >
-              Share
+              See Scores
             </Button>
+          </HStack>
+        </Flex>
+
+        <Flex
+          width="100%"
+          paddingRight="0.5em"
+          paddingLeft="1em"
+          alignItems="middle"
+        >
+          {folder && !haveQuery ? (
+            <Box>
+              <Link
+                to={`/activities/${userId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
+                style={{
+                  color: "var(--mainBlue)",
+                }}
+              >
+                <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
+                  <Show above="sm">
+                    &lt; Back to{" "}
+                    {folder.parentFolder
+                      ? folder.parentFolder.name
+                      : `My Activities`}
+                  </Show>
+                  <Hide above="sm">&lt; Back</Hide>
+                </Text>
+              </Link>
+            </Box>
           ) : null}
-          <Button
-            colorScheme="blue"
-            size="sm"
-            onClick={() =>
-              navigate(`/allAssignmentScores${folderId ? "/" + folderId : ""}`)
-            }
-            hidden={searchOpen}
-          >
-            See Scores
-          </Button>
-        </HStack>
-        <ButtonGroup size="sm" isAttached variant="outline" marginBottom=".5em">
-          <Tooltip label="Toggle List View">
-            <Button isActive={listView === true}>
-              <Icon
-                as={listView ? FaListAlt : FaRegListAlt}
-                boxSize={10}
-                p=".5em"
-                cursor="pointer"
-                onClick={() => {
-                  if (listView === false) {
-                    setListView(true);
-                    fetcher.submit(
-                      {
-                        _action: "Set List View Preferred",
-                        listViewPref: true,
-                      },
-                      { method: "post" },
-                    );
-                  }
-                }}
-              />
-            </Button>
-          </Tooltip>
-          <Tooltip label="Toggle Card View">
-            <Button isActive={listView === false}>
-              <Icon
-                as={listView ? IoGridOutline : IoGrid}
-                boxSize={10}
-                p=".5em"
-                cursor="pointer"
-                onClick={() => {
-                  if (listView === true) {
-                    setListView(false);
-                    fetcher.submit(
-                      {
-                        _action: "Set List View Preferred",
-                        listViewPref: false,
-                      },
-                      { method: "post" },
-                    );
-                  }
-                }}
-              />
-            </Button>
-          </Tooltip>
-        </ButtonGroup>
+          <Spacer />
+          <ToggleViewButtonGroup
+            listView={listView}
+            setListView={setListView}
+            fetcher={fetcher}
+          />
+        </Flex>
       </VStack>
     </Box>
   );
-
-  const backLink =
-    folder && !haveQuery ? (
-      <Box style={{ marginLeft: "15px", marginTop: "-30px", float: "left" }}>
-        <Link
-          to={`/activities/${userId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
-          style={{
-            color: "var(--mainBlue)",
-          }}
-        >
-          <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
-            <Show above="sm">
-              &lt; Back to{" "}
-              {folder.parentFolder ? folder.parentFolder.name : `My Activities`}
-            </Show>
-            <Hide above="sm">&lt; Back</Hide>
-          </Text>
-        </Link>
-      </Box>
-    ) : null;
 
   const searchResultsHeading = haveQuery ? (
     <Flex
@@ -793,8 +779,6 @@ export function Activities() {
       {moveContentModal}
 
       {heading}
-
-      {backLink}
 
       {searchResultsHeading}
 

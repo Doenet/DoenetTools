@@ -45,6 +45,7 @@ import {
 import { ShareDrawer } from "../ToolPanels/ShareDrawer";
 import { sharingActions } from "../ToolPanels/ShareSettings";
 import {
+  ContentFeature,
   ContentStructure,
   DoenetmlVersion,
   License,
@@ -92,7 +93,7 @@ export async function action({ params, request }) {
 
 export async function loader({ params }) {
   const {
-    data: { notMe, activity: activityData },
+    data: { notMe, activity: activityData, availableFeatures },
   } = await axios.get(`/api/getActivityEditorData/${params.activityId}`);
 
   if (notMe) {
@@ -159,6 +160,7 @@ export async function loader({ params }) {
     supportingFileData,
     allDoenetmlVersions,
     allLicenses,
+    availableFeatures,
   };
 }
 
@@ -216,6 +218,7 @@ export function ActivityEditor() {
     activityData,
     allDoenetmlVersions,
     allLicenses,
+    availableFeatures,
   } = useLoaderData() as {
     activityId: string;
     doenetML: string;
@@ -224,6 +227,7 @@ export function ActivityEditor() {
     activityData: ContentStructure;
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
+    availableFeatures: ContentFeature[];
   };
 
   const {
@@ -358,6 +362,7 @@ export function ActivityEditor() {
         fetcher={fetcher}
         contentData={activityData}
         allDoenetmlVersions={allDoenetmlVersions}
+        availableFeatures={availableFeatures}
         displayTab={displaySettingsTab}
       />
       <ShareDrawer

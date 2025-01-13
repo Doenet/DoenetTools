@@ -3,7 +3,7 @@ import { DoenetViewer } from "@doenet/doenetml-iframe";
 
 import { Button, Box, Link as ChakraLink } from "@chakra-ui/react";
 import axios from "axios";
-import { DoenetHeading as Heading } from "./Community";
+import { DoenetHeading as Heading } from "../../../Widgets/Heading";
 import {
   Link as ReactRouterLink,
   useNavigate,

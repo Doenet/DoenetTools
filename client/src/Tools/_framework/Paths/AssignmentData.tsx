@@ -22,7 +22,7 @@ import {
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { DoenetHeading as Heading } from "./Community";
+import { DoenetHeading as Heading } from "../../../Widgets/Heading";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Label } from "recharts";
 import AssignmentPreview from "../ToolPanels/AssignmentPreview";

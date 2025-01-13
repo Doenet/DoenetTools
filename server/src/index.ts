@@ -80,6 +80,21 @@ import {
   setPreferredFolderView,
   getPreferredFolderView,
   getClassificationCategories,
+  updateContentFeatures,
+  searchClassificationsWithSharedContent,
+  searchClassificationSubCategoriesWithSharedContent,
+  searchClassificationCategoriesWithSharedContent,
+  browseClassificationsWithSharedContent,
+  browseClassificationSubCategoriesWithSharedContent,
+  browseClassificationCategoriesWithSharedContent,
+  browseClassificationSystemsWithSharedContent,
+  browseUsersWithSharedContent,
+  browseSharedContent,
+  getClassificationInfo,
+  getSharedContentMatchCount,
+  getAvailableContentFeatures,
+  getSharedContentMatchCountPerAvailableFeature,
+  getAuthorInfo,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -108,8 +123,8 @@ import {
   isEqualUUID,
   docRemixesConvertUUID,
 } from "./utils/uuid";
-import { LicenseCode, UserInfo } from "./types";
-import { add_test_apis } from "./test_apis";
+import { LicenseCode, PartialContentClassification, UserInfo } from "./types";
+import { add_test_apis } from "./test/test_apis";
 
 const client = new SESClient({ region: "us-east-2" });
 
@@ -1061,18 +1076,381 @@ app.get(
   },
 );
 
-app.get("/api/searchSharedContent", async (req: Request, res: Response) => {
-  const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
-  const query = req.query.q as string;
-  res.send({
-    users: (await searchUsersWithSharedContent(query, loggedInUserId)).map(
-      userConvertUUID,
-    ),
-    content: (await searchSharedContent(query, loggedInUserId)).map(
-      contentStructureConvertUUID,
-    ),
-  });
-});
+app.post(
+  "/api/searchSharedContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
+    const query: string = req.body.q;
+
+    const classificationId: number | undefined = req.body.classificationId;
+    const subCategoryId: number | undefined = req.body.subCategoryId;
+    const categoryId: number | undefined = req.body.categoryId;
+    const systemId: number | undefined = req.body.systemId;
+    const isUnclassified: boolean =
+      req.body.isUnclassified &&
+      classificationId === undefined &&
+      subCategoryId === undefined &&
+      categoryId === undefined &&
+      systemId === undefined;
+
+    let features: Set<string> | undefined;
+
+    if (req.body.features) {
+      features = new Set(req.body.features);
+    }
+
+    const ownerId = req.body.ownerId ? toUUID(req.body.ownerId) : undefined;
+
+    try {
+      const topAuthors = ownerId
+        ? null
+        : (
+            await browseUsersWithSharedContent({
+              query,
+              loggedInUserId,
+              systemId,
+              categoryId,
+              subCategoryId,
+              classificationId,
+              isUnclassified,
+              features,
+              take: 10,
+            })
+          ).map(userConvertUUID);
+
+      const matchedAuthors = ownerId
+        ? null
+        : (
+            await searchUsersWithSharedContent({
+              query,
+              loggedInUserId,
+              systemId,
+              categoryId,
+              subCategoryId,
+              classificationId,
+              isUnclassified,
+              features,
+            })
+          ).map(userConvertUUID);
+
+      const authorInfo = ownerId
+        ? userConvertUUID(await getAuthorInfo(ownerId))
+        : null;
+
+      const content = (
+        await searchSharedContent({
+          query,
+          loggedInUserId,
+          systemId,
+          categoryId,
+          subCategoryId,
+          classificationId,
+          isUnclassified,
+          features,
+          ownerId,
+        })
+      ).map(contentStructureConvertUUID);
+
+      let matchedClassifications: PartialContentClassification[] | null = null;
+      let matchedSubCategories: PartialContentClassification[] | null = null;
+      let matchedCategories: PartialContentClassification[] | null = null;
+
+      let classificationBrowse: PartialContentClassification[] | null = null;
+      let subCategoryBrowse: PartialContentClassification[] | null = null;
+      let categoryBrowse: PartialContentClassification[] | null = null;
+      let systemBrowse: PartialContentClassification[] | null = null;
+
+      if (!isUnclassified && classificationId === undefined) {
+        matchedClassifications = await searchClassificationsWithSharedContent({
+          query,
+          loggedInUserId,
+          systemId,
+          categoryId,
+          subCategoryId,
+          features,
+          ownerId,
+        });
+
+        if (subCategoryId !== undefined) {
+          classificationBrowse = await browseClassificationsWithSharedContent({
+            query,
+            loggedInUserId,
+            subCategoryId,
+            features,
+            ownerId,
+          });
+        } else {
+          matchedSubCategories =
+            await searchClassificationSubCategoriesWithSharedContent({
+              query,
+              loggedInUserId,
+              systemId,
+              categoryId,
+              features,
+              ownerId,
+            });
+          if (categoryId !== undefined) {
+            subCategoryBrowse =
+              await browseClassificationSubCategoriesWithSharedContent({
+                query,
+                loggedInUserId,
+                categoryId,
+                features,
+                ownerId,
+              });
+          } else {
+            matchedCategories =
+              await searchClassificationCategoriesWithSharedContent({
+                query,
+                loggedInUserId,
+                systemId,
+                features,
+                ownerId,
+              });
+
+            if (systemId !== undefined) {
+              categoryBrowse =
+                await browseClassificationCategoriesWithSharedContent({
+                  query,
+                  loggedInUserId,
+                  systemId,
+                  features,
+                  ownerId,
+                });
+            } else {
+              systemBrowse = await browseClassificationSystemsWithSharedContent(
+                {
+                  query,
+                  loggedInUserId,
+                  features,
+                  ownerId,
+                },
+              );
+            }
+          }
+        }
+      }
+
+      const classificationInfo: PartialContentClassification | null =
+        isUnclassified
+          ? {}
+          : await getClassificationInfo({
+              systemId,
+              categoryId,
+              subCategoryId,
+              classificationId,
+            });
+
+      const totalCount = await getSharedContentMatchCount({
+        query,
+        loggedInUserId,
+        systemId,
+        categoryId,
+        subCategoryId,
+        classificationId,
+        isUnclassified,
+        features,
+        ownerId,
+      });
+
+      const countByFeature =
+        await getSharedContentMatchCountPerAvailableFeature({
+          query,
+          loggedInUserId,
+          systemId,
+          categoryId,
+          subCategoryId,
+          classificationId,
+          isUnclassified,
+          features,
+          ownerId,
+        });
+
+      res.send({
+        topAuthors,
+        matchedAuthors,
+        authorInfo,
+        content,
+        matchedClassifications,
+        matchedSubCategories,
+        matchedCategories,
+        classificationBrowse,
+        subCategoryBrowse,
+        categoryBrowse,
+        systemBrowse,
+        classificationInfo,
+        totalCount,
+        countByFeature,
+      });
+    } catch (e) {
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/browseSharedContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
+
+    const classificationId: number | undefined = req.body.classificationId;
+    const subCategoryId: number | undefined = req.body.subCategoryId;
+    const categoryId: number | undefined = req.body.categoryId;
+    const systemId: number | undefined = req.body.systemId;
+    const isUnclassified: boolean =
+      req.body.isUnclassified &&
+      classificationId === undefined &&
+      subCategoryId === undefined &&
+      categoryId === undefined &&
+      systemId === undefined;
+
+    let features: Set<string> | undefined;
+
+    if (req.body.features) {
+      features = new Set(req.body.features);
+    }
+
+    const ownerId = req.body.ownerId ? toUUID(req.body.ownerId) : undefined;
+
+    try {
+      const topAuthors = ownerId
+        ? null
+        : (
+            await browseUsersWithSharedContent({
+              loggedInUserId,
+              systemId,
+              categoryId,
+              subCategoryId,
+              classificationId,
+              isUnclassified,
+              features,
+              take: 10,
+            })
+          ).map(userConvertUUID);
+
+      const authorInfo = ownerId
+        ? userConvertUUID(await getAuthorInfo(ownerId))
+        : null;
+
+      const content = (
+        await browseSharedContent({
+          loggedInUserId,
+          systemId,
+          categoryId,
+          subCategoryId,
+          classificationId,
+          isUnclassified,
+          features,
+          ownerId,
+        })
+      ).map(contentStructureConvertUUID);
+
+      let classificationBrowse: PartialContentClassification[] | null = null;
+      let subCategoryBrowse: PartialContentClassification[] | null = null;
+      let categoryBrowse: PartialContentClassification[] | null = null;
+      let systemBrowse: PartialContentClassification[] | null = null;
+
+      if (!isUnclassified && classificationId === undefined) {
+        if (subCategoryId !== undefined) {
+          classificationBrowse = await browseClassificationsWithSharedContent({
+            loggedInUserId,
+            subCategoryId,
+            features,
+            ownerId,
+          });
+        } else {
+          if (categoryId !== undefined) {
+            subCategoryBrowse =
+              await browseClassificationSubCategoriesWithSharedContent({
+                loggedInUserId,
+                categoryId,
+                features,
+                ownerId,
+              });
+          } else {
+            if (systemId !== undefined) {
+              categoryBrowse =
+                await browseClassificationCategoriesWithSharedContent({
+                  loggedInUserId,
+                  systemId,
+                  features,
+                  ownerId,
+                });
+            } else {
+              systemBrowse = await browseClassificationSystemsWithSharedContent(
+                {
+                  loggedInUserId,
+                  features,
+                  ownerId,
+                },
+              );
+            }
+          }
+        }
+      }
+
+      const classificationInfo: PartialContentClassification | null =
+        isUnclassified
+          ? {}
+          : await getClassificationInfo({
+              systemId,
+              categoryId,
+              subCategoryId,
+              classificationId,
+            });
+
+      const totalCount = await getSharedContentMatchCount({
+        loggedInUserId,
+        systemId,
+        categoryId,
+        subCategoryId,
+        classificationId,
+        isUnclassified,
+        features,
+        ownerId,
+      });
+
+      const countByFeature =
+        await getSharedContentMatchCountPerAvailableFeature({
+          loggedInUserId,
+          systemId,
+          categoryId,
+          subCategoryId,
+          classificationId,
+          isUnclassified,
+          features,
+          ownerId,
+        });
+
+      res.send({
+        topAuthors,
+        authorInfo,
+        content,
+        classificationBrowse,
+        subCategoryBrowse,
+        categoryBrowse,
+        systemBrowse,
+        classificationInfo,
+        totalCount,
+        countByFeature,
+      });
+    } catch (e) {
+      next(e);
+    }
+  },
+);
+
+app.get(
+  "/api/getAvailableContentFeatures",
+  async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const availableFeatures = await getAvailableContentFeatures();
+      res.send(availableFeatures);
+    } catch (e) {
+      next(e);
+    }
+  },
+);
 
 app.post(
   "/api/addPromotedContent",
@@ -1315,6 +1693,7 @@ app.get(
       res.send({
         notMe: editorData.notMe,
         activity: contentStructureConvertUUID(editorData.activity),
+        availableFeatures: editorData.availableFeatures,
       });
     } catch (e) {
       if (
@@ -1522,18 +1901,12 @@ app.post(
     const id = toUUID(body.id);
     const imagePath = body.imagePath;
     const name = body.name;
-    const isQuestion = body.isQuestion;
-    const isInteractive = body.isInteractive;
-    const containsVideo = body.containsVideo;
 
     try {
       await updateContent({
         id,
         imagePath,
         name,
-        isQuestion,
-        isInteractive,
-        containsVideo,
         ownerId: loggedInUserId,
       });
       res.send({});
@@ -1566,6 +1939,36 @@ app.post(
         id: docId,
         name,
         doenetmlVersionId,
+        ownerId: loggedInUserId,
+      });
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/updateContentFeatures",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+
+    const loggedInUserId = req.user.userId;
+    const body = req.body;
+    const id = toUUID(body.id);
+    const features: Record<string, boolean> = body.features;
+
+    try {
+      await updateContentFeatures({
+        id,
+        features,
         ownerId: loggedInUserId,
       });
       res.send({});
@@ -2195,6 +2598,7 @@ app.get(
         folder: contentData.folder
           ? contentStructureConvertUUID(contentData.folder)
           : null,
+        availableFeatures: contentData.availableFeatures,
       });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -2232,6 +2636,7 @@ app.get(
         folder: contentData.folder
           ? contentStructureConvertUUID(contentData.folder)
           : null,
+        availableFeatures: contentData.availableFeatures,
       });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -2275,6 +2680,7 @@ app.get(
         folder: contentData.folder
           ? contentStructureConvertUUID(contentData.folder)
           : null,
+        availableFeatures: contentData.availableFeatures,
       });
     } catch (e) {
       if (
@@ -2321,6 +2727,7 @@ app.get(
         folder: contentData.folder
           ? contentStructureConvertUUID(contentData.folder)
           : null,
+        availableFeatures: contentData.availableFeatures,
       });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {

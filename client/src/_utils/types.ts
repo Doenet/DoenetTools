@@ -37,6 +37,15 @@ export type UserInfo = {
   firstNames: string | null;
   lastNames: string;
   email: string;
+  numLibrary?: number;
+  numCommunity?: number;
+};
+
+export type ContentFeature = {
+  id: number;
+  code: string;
+  description: string;
+  term: string;
 };
 
 export type ContentClassification = {
@@ -66,6 +75,35 @@ export type ContentClassification = {
   }[];
 };
 
+export type PartialContentClassification = {
+  classification?: {
+    id: number;
+    code: string;
+    descriptionId: number;
+    description: string;
+  };
+  subCategory?: {
+    id: number;
+    subCategory: string;
+  };
+  category?: {
+    id: number;
+    category: string;
+  };
+  system?: {
+    id: number;
+    name: string;
+    shortName: string;
+    categoryLabel: string;
+    subCategoryLabel: string;
+    descriptionLabel: string;
+    type?: string;
+    categoriesInDescription: boolean;
+  };
+  numLibrary?: number;
+  numCommunity?: number;
+};
+
 export type ContentStructure = {
   id: string;
   ownerId: number;
@@ -77,9 +115,13 @@ export type ContentStructure = {
   classCode: string | null;
   codeValidUntil: string | null;
   isPublic: boolean;
-  isQuestion: boolean;
-  isInteractive: boolean;
-  containsVideo: boolean;
+  contentFeatures: {
+    id: number;
+    code: string;
+    term: string;
+    description: string;
+    sortIndex: number;
+  }[];
   isShared: boolean;
   sharedWith: UserInfo[];
   license: License | null;

@@ -353,6 +353,7 @@ export function ActivityViewer() {
                         setDisplayInfoTab("classifications");
                         infoOnOpen();
                       }}
+                      marginLeft="40px"
                     >
                       <Heading size="sm">Classifications</Heading>
                       <List data-test="Classifications Footer">

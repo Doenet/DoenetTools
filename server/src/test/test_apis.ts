@@ -1,6 +1,6 @@
 import { Express, NextFunction, Request, Response } from "express";
-import { prisma } from "./model";
-import { toUUID } from "./utils/uuid";
+import { prisma } from "../model";
+import { toUUID } from "../utils/uuid";
 
 type ClassificationByNames = {
   systemShortName: string;

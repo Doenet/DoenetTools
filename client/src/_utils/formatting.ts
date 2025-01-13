@@ -15,3 +15,15 @@ export function formatBytes(bytes: number) {
     return (bytes / gigaBytes).toFixed(decimal) + " GB";
   else return (bytes / teraBytes).toFixed(decimal) + " TB";
 }
+
+export function intWithCommas(num: number | undefined) {
+  const startAtLeastFourNumRegex = /^(-?\d+)(\d{3})/;
+  let numString = (num ?? 0).toString();
+
+  let matchObj = numString.match(startAtLeastFourNumRegex);
+  while (matchObj !== null) {
+    numString = numString.replace(startAtLeastFourNumRegex, `$1,$2`);
+    matchObj = numString.match(startAtLeastFourNumRegex);
+  }
+  return numString;
+}

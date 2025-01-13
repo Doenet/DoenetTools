@@ -31,14 +31,12 @@ model content {
   isDeleted        Boolean                  @default(false)
   sortIndex        BigInt
   licenseCode      String?                  @default("CCDUAL") @db.VarChar(10)
-  isQuestion       Boolean                  @default(false)
-  isInteractive    Boolean                  @default(false)
-  containsVideo    Boolean                  @default(false)
   owner            users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   parentFolder     content?                 @relation("folderStructure", fields: [parentFolderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   subFolders       content[]                @relation("folderStructure")
   documents        documents[]
   license          licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  contentFeatures  contentFeatures[]
   assignmentScores assignmentScores[]
   promotedContent  promotedContent[]
   sharedWith       contentShares[]
@@ -112,6 +110,15 @@ model licenseCompositions {
   @@id([composedOfCode, includedInCode])
 }
 
+model contentFeatures {
+  id          Int       @id @default(autoincrement())
+  code        String    @unique
+  term        String    @unique
+  description String
+  sortIndex   Int
+  content     content[]
+}
+
 model contributorHistory {
   docId             Bytes            @db.Binary(16)
   prevDocId         Bytes            @db.Binary(16)
@@ -138,7 +145,7 @@ model contentShares {
 }
 
 model doenetmlVersions {
-  id                 Int                @id @unique @default(autoincrement())
+  id                 Int                @id @default(autoincrement())
   displayedVersion   String             @unique
   fullVersion        String
   default            Boolean            @default(false)
@@ -287,12 +294,16 @@ model classificationSubCategories {
 }
 
 model classificationDescriptions {
-  id              Int                         @id @default(autoincrement())
-  subCategoryId   Int
-  description     String                      @db.Text
-  subCategory     classificationSubCategories @relation(fields: [subCategoryId], references: [id])
-  classifications classifications[]
+  id               Int                         @id @default(autoincrement())
+  subCategoryId    Int
+  classificationId Int
+  description      String                      @db.Text
+  sortIndex        Int
+  isPrimary        Boolean                     @default(true)
+  subCategory      classificationSubCategories @relation(fields: [subCategoryId], references: [id])
+  classification   classifications             @relation(fields: [classificationId], references: [id])
 
+  @@unique([classificationId, subCategoryId])
   @@unique([description(length: 200), subCategoryId])
   @@fulltext([description])
 }

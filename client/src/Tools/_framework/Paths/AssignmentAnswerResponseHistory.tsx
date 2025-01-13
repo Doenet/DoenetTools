@@ -14,7 +14,7 @@ import {
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { DoenetHeading as Heading } from "./Community";
+import { DoenetHeading as Heading } from "../../../Widgets/Heading";
 import { parseAndFormatResponse } from "./AssignmentAnswerResponses";
 import { Link as ReactRouterLink, useNavigate } from "react-router";
 import { createFullName } from "../../../_utils/names";

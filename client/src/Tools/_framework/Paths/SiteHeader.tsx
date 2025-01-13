@@ -177,11 +177,8 @@ export function SiteHeader() {
                   <NavLinkTab to="/" dataTest="Home">
                     Home
                   </NavLinkTab>
-                  <NavLinkTab to="library" dataTest="Library">
-                    Library
-                  </NavLinkTab>
-                  <NavLinkTab to="community" dataTest="Community">
-                    Community
+                  <NavLinkTab to="explore" dataTest="Explore">
+                    Explore
                   </NavLinkTab>
                   {!user || user.isAnonymous ? (
                     <NavLinkTab to="code" dataTest="Class Code">
@@ -293,11 +290,8 @@ export function SiteHeader() {
                         <NavLinkDropdownTab to="/" dataTest="Home">
                           Home
                         </NavLinkDropdownTab>
-                        <NavLinkDropdownTab to="library" dataTest="Library">
-                          Library
-                        </NavLinkDropdownTab>
-                        <NavLinkDropdownTab to="community" dataTest="Community">
-                          Community
+                        <NavLinkDropdownTab to="explore" dataTest="Explore">
+                          Explore
                         </NavLinkDropdownTab>
                         {!user || user.isAnonymous ? (
                           <NavLinkDropdownTab to="code" dataTest="Class Code">

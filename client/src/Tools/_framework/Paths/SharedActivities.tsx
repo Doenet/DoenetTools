@@ -1,14 +1,10 @@
 import {
   Box,
-  Icon,
   Flex,
   Heading,
   Tooltip,
   List,
   Spacer,
-  VStack,
-  ButtonGroup,
-  Button,
   MenuItem,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -23,20 +19,20 @@ import {
   DisplayLicenseItem,
   SmallLicenseBadges,
 } from "../../../Widgets/Licenses";
-import { FaListAlt, FaRegListAlt } from "react-icons/fa";
-import { IoGrid, IoGridOutline } from "react-icons/io5";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import CardList from "../../../Widgets/CardList";
+import {
+  ToggleViewButtonGroup,
+  toggleViewButtonGroupActions,
+} from "../ToolPanels/ToggleViewButtonGroup";
 
 export async function action({ request }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
-  if (formObj?._action == "Set List View Preferred") {
-    await axios.post(`/api/setPreferredFolderView`, {
-      cardView: formObj.listViewPref === "false",
-    });
-    return true;
+  const resultTLV = await toggleViewButtonGroupActions({ formObj });
+  if (resultTLV) {
+    return resultTLV;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
@@ -135,10 +131,18 @@ export function SharedActivities() {
           paddingRight="15px"
           paddingBottom="5px"
           boxSizing="border-box"
-          marginTop="-30px"
+          marginTop="-45px"
           height="40px"
-          alignItems="center"
         >
+          <Spacer />
+          {folder.license ? (
+            <SmallLicenseBadges license={folder.license} />
+          ) : null}
+        </Flex>
+      ) : null}
+
+      <Flex marginRight=".5em" alignItems="center" paddingLeft="15px">
+        {folder ? (
           <Link
             to={`/sharedActivities/${ownerId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
             style={{
@@ -151,61 +155,14 @@ export function SharedActivities() {
               ? folder.parentFolder.name
               : `Shared Activities of ${createFullName(owner)}`}
           </Link>
-          <Spacer />
-          {folder.license ? (
-            <SmallLicenseBadges license={folder.license} />
-          ) : null}
-        </Flex>
-      ) : null}
-
-      <VStack align="flex-end" float="right" marginRight=".5em">
-        <ButtonGroup size="sm" isAttached variant="outline" marginBottom=".5em">
-          <Tooltip label="Toggle List View">
-            <Button isActive={listView === true}>
-              <Icon
-                as={listView ? FaListAlt : FaRegListAlt}
-                boxSize={10}
-                p=".5em"
-                cursor="pointer"
-                onClick={() => {
-                  if (listView === false) {
-                    setListView(true);
-                    fetcher.submit(
-                      {
-                        _action: "Set List View Preferred",
-                        listViewPref: true,
-                      },
-                      { method: "post" },
-                    );
-                  }
-                }}
-              />
-            </Button>
-          </Tooltip>
-          <Tooltip label="Toggle Card View">
-            <Button isActive={listView === false}>
-              <Icon
-                as={listView ? IoGridOutline : IoGrid}
-                boxSize={10}
-                p=".5em"
-                cursor="pointer"
-                onClick={() => {
-                  if (listView === true) {
-                    setListView(false);
-                    fetcher.submit(
-                      {
-                        _action: "Set List View Preferred",
-                        listViewPref: false,
-                      },
-                      { method: "post" },
-                    );
-                  }
-                }}
-              />
-            </Button>
-          </Tooltip>
-        </ButtonGroup>
-      </VStack>
+        ) : null}
+        <Spacer />
+        <ToggleViewButtonGroup
+          listView={listView}
+          setListView={setListView}
+          fetcher={fetcher}
+        />
+      </Flex>
     </Box>
   );
 
