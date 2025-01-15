@@ -28,7 +28,7 @@ import { FaFolder } from "react-icons/fa";
 import { RiDraftFill } from "react-icons/ri";
 
 import { MdAssignment } from "react-icons/md";
-import { BsPeopleFill } from "react-icons/bs";
+import { BsPeople } from "react-icons/bs";
 import { IconType } from "react-icons/lib";
 import { activityFeatureIcons } from "../_utils/activity";
 
@@ -258,7 +258,7 @@ export default function Card({
       <Tooltip label={(isPublic ? "Public " : "Shared ") + cardTypeUpper}>
         <Box width="20px">
           <Icon
-            as={BsPeopleFill}
+            as={BsPeople}
             color="#666699"
             boxSize={5}
             verticalAlign="middle"
@@ -446,6 +446,16 @@ export default function Card({
       </Box>
     ) : null;
 
+    let activityWidth = 0;
+    if (showActivityFeatures) {
+      activityWidth += 60;
+      if (showPublicStatus) {
+        activityWidth += 24;
+      }
+    } else if (showPublicStatus) {
+      activityWidth += 20;
+    }
+
     card = (
       <ChakraCard
         width={cardWidth}
@@ -471,6 +481,18 @@ export default function Card({
                   {initialIcon}
                 </Box>
                 <Box
+                  width={`${activityWidth}px`}
+                  paddingLeft={[".1em", "1em"]}
+                  height={cardHeight}
+                  alignContent="center"
+                  boxSizing="content-box"
+                >
+                  <HStack gap="4px" width={`${activityWidth}px`}>
+                    {featureIcons}
+                    {sharedIcon}
+                  </HStack>
+                </Box>
+                <Box
                   paddingLeft={[".1em", "1em"]}
                   paddingRight={[".1em", "1em"]}
                   width="1px"
@@ -478,10 +500,8 @@ export default function Card({
                   height={cardHeight}
                   alignContent="center"
                 >
-                  <HStack gap="0.1em">
-                    {titleDisplay}
-                    {sharedIcon}
-                  </HStack>
+                  <HStack>{titleDisplay}</HStack>{" "}
+                  {/* HStack makes region to right of title part of the link */}
                 </Box>
                 <Box
                   width={
@@ -492,15 +512,6 @@ export default function Card({
                 >
                   {assignmentStatusDisplay}
                   {ownerNameWithAvatar}
-                </Box>
-                <Box
-                  minWidth={showActivityFeatures ? "60px" : "0px"}
-                  flexGrow={0.1}
-                  paddingLeft={[".1em", "1em"]}
-                  height={cardHeight}
-                  alignContent="center"
-                >
-                  {featureIcons}
                 </Box>
               </Flex>
             </ChakraLink>

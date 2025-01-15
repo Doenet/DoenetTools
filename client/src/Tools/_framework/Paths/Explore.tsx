@@ -1256,7 +1256,7 @@ export function Explore() {
     filterSection = (
       <Tooltip label="Open filter panel" openDelay={500}>
         <IconButton
-          variant="outline"
+          variant="solid"
           size="sm"
           icon={<MdFilterAlt />}
           onClick={() => setFiltersOpen(true)}
