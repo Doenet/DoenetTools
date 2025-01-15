@@ -133,6 +133,8 @@ test("cannot assign other user's activity", async () => {
 test("open and close assignment with code", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
+  const fakeId = new Uint8Array(16);
+
   const { activityId } = await createActivity(ownerId, null);
   const activity = await getActivity(activityId);
   await updateContent({ id: activityId, name: "Activity 1", ownerId });
@@ -153,7 +155,7 @@ test("open and close assignment with code", async () => {
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
 
-  let assignmentData = await getAssignmentDataFromCode(classCode);
+  let assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
   expect(assignmentData.assignmentFound).eq(true);
   expect(assignmentData.assignment!.id).eqls(activityId);
   expect(assignmentData.assignment!.documents[0].assignedVersion!.source).eq(
@@ -166,7 +168,7 @@ test("open and close assignment with code", async () => {
     PrismaClientKnownRequestError,
   );
 
-  assignmentData = await getAssignmentDataFromCode(classCode);
+  assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
 
@@ -182,7 +184,7 @@ test("open and close assignment with code", async () => {
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
 
-  assignmentData = await getAssignmentDataFromCode(classCode);
+  assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
   expect(assignmentData.assignmentFound).eq(true);
   expect(assignmentData.assignment!.id).eqls(activityId);
 
@@ -192,7 +194,7 @@ test("open and close assignment with code", async () => {
   // then this should still retrieve data for those students.
   closeAt = DateTime.now().plus({ seconds: -7 });
   await openAssignmentWithCode(activityId, closeAt, ownerId);
-  assignmentData = await getAssignmentDataFromCode(classCode);
+  assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
 
@@ -230,6 +232,8 @@ test("open and close assignment with code", async () => {
 test("open and unassign assignment with code", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
+  const fakeId = new Uint8Array(16);
+
   const { activityId } = await createActivity(ownerId, null);
   const activity = await getActivity(activityId);
   await updateContent({ id: activityId, name: "Activity 1", ownerId });
@@ -252,7 +256,7 @@ test("open and unassign assignment with code", async () => {
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
 
-  let assignmentData = await getAssignmentDataFromCode(classCode);
+  let assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
   expect(assignmentData.assignment!.id).eqls(activityId);
 
   // unassign activity
@@ -262,7 +266,7 @@ test("open and unassign assignment with code", async () => {
   );
 
   // Getting deleted assignment by code fails
-  assignmentData = await getAssignmentDataFromCode(classCode);
+  assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
 

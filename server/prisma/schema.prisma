@@ -16,7 +16,7 @@ model Session {
 }
 
 model content {
-  id               Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
+  id               Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
   ownerId          Bytes                    @db.Binary(16)
   isFolder         Boolean
   parentFolderId   Bytes?                   @db.Binary(16)
@@ -41,6 +41,7 @@ model content {
   promotedContent  promotedContent[]
   sharedWith       contentShares[]
   classifications  contentClassifications[]
+  contentViews     contentViews[]
 
   @@index([ownerId, parentFolderId, sortIndex])
   @@index([classCode])
@@ -49,7 +50,7 @@ model content {
 }
 
 model documents {
-  id                 Bytes                @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
+  id                 Bytes                @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
   activityId         Bytes                @db.Binary(16)
   source             String               @db.MediumText
   createdAt          DateTime             @default(now())
@@ -189,7 +190,7 @@ model documentState {
 }
 
 model documentSubmittedResponses {
-  id                     Bytes            @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
+  id                     Int              @id @default(autoincrement())
   activityId             Bytes            @db.Binary(16)
   docId                  Bytes            @db.Binary(16)
   docVersionNum          Int
@@ -209,8 +210,18 @@ model documentSubmittedResponses {
   @@index([userId])
 }
 
+model contentViews {
+  id         Int      @id @default(autoincrement())
+  activityId Bytes    @db.Binary(16)
+  date       DateTime @default(dbgenerated("(curdate())")) @db.Date
+  userId     Bytes    @db.Binary(16)
+  activity   content  @relation(fields: [activityId], references: [id])
+
+  @@unique([date, activityId, userId])
+}
+
 model users {
-  userId                     Bytes                        @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
+  userId                     Bytes                        @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
   email                      String                       @unique
   firstNames                 String?
   lastNames                  String

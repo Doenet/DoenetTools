@@ -132,7 +132,13 @@ export async function loader({ params, request }) {
       ownerId: authorId,
     });
 
-    return { ...browseData, features, availableFeatures, listViewPref };
+    return {
+      ...browseData,
+      content: browseData.recentContent,
+      features,
+      availableFeatures,
+      listViewPref,
+    };
   }
 }
 
@@ -143,6 +149,7 @@ export function Explore() {
     matchedAuthors,
     authorInfo,
     content,
+    trendingContent,
     matchedClassifications,
     matchedSubCategories,
     matchedCategories,
@@ -157,11 +164,12 @@ export function Explore() {
     availableFeatures,
     listViewPref,
   } = useLoaderData() as {
-    q: string;
+    q?: string;
     topAuthors: UserInfo[] | null;
     matchedAuthors: UserInfo[] | undefined;
     authorInfo: UserInfo | null;
     content: ContentStructure[];
+    trendingContent: ContentStructure[];
     matchedClassifications: PartialContentClassification[] | null | undefined;
     matchedSubCategories: PartialContentClassification[] | null | undefined;
     matchedCategories: PartialContentClassification[] | null | undefined;
@@ -199,6 +207,13 @@ export function Explore() {
     document.title = `Explore - Doenet`;
   }, []);
 
+  useEffect(() => {
+    setSearchString(q || "");
+    if (!q && currentTab > 1) {
+      setCurrentTab(!totalCount.numLibrary && totalCount.numCommunity ? 1 : 0);
+    }
+  }, [q]);
+
   const [infoContentData, setInfoContentData] =
     useState<ContentStructure | null>(null);
 
@@ -216,7 +231,10 @@ export function Explore() {
     />
   ) : null;
 
-  function displayMatchingContent(matches: ContentStructure[]) {
+  function displayMatchingContent(
+    matches: ContentStructure[],
+    minHeight?: string,
+  ) {
     const cardContent: CardContent[] = matches.map((itemObj) => {
       const { id, imagePath, name, owner, isFolder, contentFeatures } = itemObj;
       const cardLink =
@@ -256,7 +274,8 @@ export function Explore() {
           listView && cardContent.length > 0 ? "white" : "var(--lightBlue)"
         }
         paddingTop="16px"
-        minHeight="calc(100vh - 230px)"
+        paddingBottom="16px"
+        minHeight={minHeight}
       >
         <CardList
           showPublicStatus={false}
@@ -284,7 +303,7 @@ export function Explore() {
       >
         Content features
       </Heading>
-      <VStack alignItems="flex-start" gap={0} ml="10px">
+      <VStack alignItems="flex-start" gap={0} ml="10px" mr="4px">
         {availableFeatures.map((feature) => {
           const isPresent = features.has(feature.code);
           const c = countByFeature[feature.code];
@@ -530,7 +549,7 @@ export function Explore() {
         >
           Classifications
         </Heading>
-        <List marginLeft="10px">
+        <List marginLeft="10px" marginRight="4px">
           {systemBrowse.map((c) => {
             if (c.system === undefined) {
               return null;
@@ -589,7 +608,7 @@ export function Explore() {
           {classificationInfo?.system?.categoryLabel.toLowerCase()}
         </Heading>
 
-        <List marginLeft="20px">
+        <List marginLeft="20px" marginRight="4px">
           {categoryBrowse.map((c) => {
             if (c.category === undefined) {
               return null;
@@ -631,7 +650,7 @@ export function Explore() {
           {classificationInfo?.system?.subCategoryLabel.toLowerCase()}
         </Heading>
 
-        <List marginLeft="30px">
+        <List marginLeft="30px" marginRight="4px">
           {subCategoryBrowse.map((c) => {
             if (c.subCategory === undefined) {
               return null;
@@ -673,7 +692,7 @@ export function Explore() {
           {classificationInfo?.system?.descriptionLabel.toLowerCase()}
         </Heading>
 
-        <List marginLeft="40px">
+        <List marginLeft="40px" marginRight="4px">
           {classificationBrowse.map((c) => {
             if (c.classification === undefined) {
               return null;
@@ -719,7 +738,7 @@ export function Explore() {
         >
           Authors
         </Heading>
-        <List marginLeft="10px">
+        <List marginLeft="10px" marginRight="4px">
           {topAuthors.map((u) => {
             let newSearch = search;
             newSearch = clearQueryParameter("author", newSearch);
@@ -1196,7 +1215,7 @@ export function Explore() {
   const results = (
     <Tabs
       minHeight="calc(100vh - 188px)"
-      variant="line"
+      variant="enclosed-colored"
       index={currentTab}
       onChange={setCurrentTab}
     >
@@ -1216,8 +1235,34 @@ export function Explore() {
       </TabList>
 
       <TabPanels data-test="Search Results">
-        <TabPanel padding={0}>{displayMatchingContent([])}</TabPanel>
-        <TabPanel padding={0}>{displayMatchingContent(content)}</TabPanel>
+        <TabPanel padding={0}>
+          {displayMatchingContent([], "calc(100vh - 230px)")}
+        </TabPanel>
+        <TabPanel padding={0}>
+          {trendingContent ? (
+            <>
+              <Heading
+                paddingLeft="10px"
+                paddingTop="10px"
+                paddingBottom="10px"
+                backgroundColor="gray.100"
+              >
+                Trending
+              </Heading>
+              {displayMatchingContent(trendingContent)}
+
+              <Heading
+                paddingLeft="10px"
+                paddingTop="10px"
+                paddingBottom="10px"
+                backgroundColor="gray.100"
+              >
+                Recent
+              </Heading>
+            </>
+          ) : null}
+          {displayMatchingContent(content, "calc(100vh - 230px)")}
+        </TabPanel>
         <TabPanel>{authorMatches}</TabPanel>
         <TabPanel>{classificationMatches}</TabPanel>
       </TabPanels>
@@ -1283,8 +1328,8 @@ export function Explore() {
       >
         <GridItem
           marginLeft={filtersOpen ? "0px" : "4px"}
-          borderRight={"2px"}
-          paddingRight="4px"
+          borderRight="2px"
+          paddingRight={filtersOpen ? "0px" : "4px"}
         >
           {filterSection}
         </GridItem>

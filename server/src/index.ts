@@ -95,6 +95,7 @@ import {
   getAvailableContentFeatures,
   getSharedContentMatchCountPerAvailableFeature,
   getAuthorInfo,
+  browseTrendingContent,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -1332,7 +1333,7 @@ app.post(
         ? userConvertUUID(await getAuthorInfo(ownerId))
         : null;
 
-      const content = (
+      const recentContent = (
         await browseSharedContent({
           loggedInUserId,
           systemId,
@@ -1342,6 +1343,20 @@ app.post(
           isUnclassified,
           features,
           ownerId,
+        })
+      ).map(contentStructureConvertUUID);
+
+      const trendingContent = (
+        await browseTrendingContent({
+          loggedInUserId,
+          systemId,
+          categoryId,
+          subCategoryId,
+          classificationId,
+          isUnclassified,
+          features,
+          ownerId,
+          pageSize: 10,
         })
       ).map(contentStructureConvertUUID);
 
@@ -1425,7 +1440,8 @@ app.post(
       res.send({
         topAuthors,
         authorInfo,
-        content,
+        recentContent,
+        trendingContent,
         classificationBrowse,
         subCategoryBrowse,
         categoryBrowse,
@@ -1846,9 +1862,13 @@ app.get(
       return res.redirect(`/api/login/anonymId/${code}`);
     }
 
+    const loggedInUserId = req.user.userId;
+
     try {
-      const { assignmentFound, assignment } =
-        await getAssignmentDataFromCode(code);
+      const { assignmentFound, assignment } = await getAssignmentDataFromCode(
+        code,
+        loggedInUserId,
+      );
 
       res.send({
         assignmentFound,

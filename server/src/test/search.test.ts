@@ -411,7 +411,7 @@ test("searchSharedContent, classification increases relevance", async () => {
   );
   await updateDoc({
     id: doc1Id,
-    source: `banana${code}`,
+    source: `banana${code} grape${code}`,
     ownerId,
   });
   await makeActivityPublic({
@@ -426,7 +426,7 @@ test("searchSharedContent, classification increases relevance", async () => {
   );
   await updateDoc({
     id: doc2Id,
-    source: `banana${code}`,
+    source: `banana${code} grape${code}`,
     ownerId,
   });
   await makeActivityPublic({
@@ -437,28 +437,28 @@ test("searchSharedContent, classification increases relevance", async () => {
   await addClassification(activity2Id, classifyId, ownerId);
 
   let results = await searchSharedContent({
-    query: `K.CC.3 banana${code}`,
+    query: `K.CC.3 banana${code} grape${code}`,
     loggedInUserId: userId,
   });
   expect(results[0].id).eqls(activity2Id);
   expect(results[1].id).eqls(activity1Id);
 
   results = await searchSharedContent({
-    query: `Kindergarten banana${code}`,
+    query: `Kindergarten banana${code} grape${code}`,
     loggedInUserId: userId,
   });
   expect(results[0].id).eqls(activity2Id);
   expect(results[1].id).eqls(activity1Id);
 
   results = await searchSharedContent({
-    query: `cardiNALITY banana${code}`,
+    query: `cardiNALITY banana${code} grape${code}`,
     loggedInUserId: userId,
   });
   expect(results[0].id).eqls(activity2Id);
   expect(results[1].id).eqls(activity1Id);
 
   results = await searchSharedContent({
-    query: `numeral banana${code}`,
+    query: `numeral banana${code} grape${code}`,
     loggedInUserId: userId,
   });
   expect(results[0].id).eqls(activity2Id);

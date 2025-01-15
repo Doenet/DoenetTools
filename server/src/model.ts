@@ -1085,6 +1085,10 @@ export async function getActivityViewerData(
     loggedInUserId,
   });
 
+  if (!isEqualUUID(loggedInUserId, activity.ownerId)) {
+    await recordActivityView(activityId, loggedInUserId);
+  }
+
   return {
     activity,
     docHistories,
@@ -1111,6 +1115,27 @@ export async function getDocumentSource(
   });
 
   return { source: document.source };
+}
+
+export async function recordActivityView(
+  activityId: Uint8Array,
+  loggedInUserId: Uint8Array,
+) {
+  try {
+    await prisma.contentViews.create({
+      data: { activityId, userId: loggedInUserId },
+    });
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        // if error was due to unique constraint failure,
+        // then it was presumably due to a user viewing an activity
+        // twice in one day, so we ignore the error
+        return;
+      }
+    }
+    throw e;
+  }
 }
 
 export async function getActivityContributorHistory({
@@ -1419,7 +1444,10 @@ export async function getDocumentRemixes({
   return docRemixes2;
 }
 
-export async function getAssignmentDataFromCode(code: string) {
+export async function getAssignmentDataFromCode(
+  code: string,
+  loggedInUserId: Uint8Array,
+) {
   let assignment;
 
   try {
@@ -1435,6 +1463,7 @@ export async function getAssignmentDataFromCode(code: string) {
       },
       select: {
         id: true,
+        ownerId: true,
         documents: {
           select: {
             id: true,
@@ -1464,6 +1493,10 @@ export async function getAssignmentDataFromCode(code: string) {
     } else {
       throw e;
     }
+  }
+
+  if (!isEqualUUID(loggedInUserId, assignment.ownerId)) {
+    await recordActivityView(assignment.id, loggedInUserId);
   }
 
   return { assignmentFound: true, assignment };
@@ -1651,6 +1684,99 @@ export async function browseSharedContent({
   const sharedContent = preliminarySharedContent.map((content) =>
     processContent(content, loggedInUserId),
   );
+
+  return sharedContent;
+}
+
+// TODO: add tests of this api if we're sure we want to keep it
+export async function browseTrendingContent({
+  loggedInUserId,
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+  isUnclassified,
+  features,
+  ownerId,
+  page = 1,
+  pageSize = 100,
+}: {
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+  isUnclassified?: boolean;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+  page?: number;
+  pageSize?: number;
+}) {
+  const matchClassification = !isUnclassified && classificationId === undefined;
+  const matchSubCategory = matchClassification && subCategoryId === undefined;
+  const matchCategory = matchSubCategory && categoryId === undefined;
+
+  const includeClassification = true;
+  const includeSubCategory = matchSubCategory;
+  const includeCategory = matchCategory;
+
+  const matches = await prisma.$queryRaw<
+    {
+      id: Uint8Array;
+      numViews: bigint;
+    }[]
+  >(Prisma.sql`
+  SELECT
+    content.id,
+    COUNT(distinct contentViews.userId) AS numViews,
+    content.createdAt
+  FROM
+    content
+  LEFT JOIN
+    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  LEFT JOIN
+    users ON content.ownerId = users.userId
+  ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
+  LEFT JOIN
+    contentViews ON contentViews.activityId = content.id
+  WHERE
+    content.isDeleted = FALSE
+    AND (
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+    )
+    ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
+    ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+  GROUP BY
+    content.id
+  ORDER BY
+    numViews DESC, content.createdAt DESC
+  LIMIT ${pageSize}
+  OFFSET ${(page - 1) * pageSize}
+  `);
+
+  // TODO: combine queries
+
+  const preliminarySharedContent = await prisma.content.findMany({
+    where: {
+      id: { in: matches.map((m) => m.id) },
+    },
+    select: returnContentStructureFullOwnerSelect(),
+    orderBy: { createdAt: "desc" },
+  });
+
+  // TODO: better way to sort! (For free if combine queries)
+  const numViews = Object.fromEntries(
+    matches.map((m) => [fromUUID(m.id), Number(m.numViews)]),
+  );
+
+  // relying on the fact that .sort() is stable so that numView ties
+  // will still be sorted in descending createdAt order
+  const sharedContent = preliminarySharedContent
+    .sort((a, b) => numViews[fromUUID(b.id)] - numViews[fromUUID(a.id)])
+    .map((content) => processContent(content, loggedInUserId));
 
   return sharedContent;
 }
