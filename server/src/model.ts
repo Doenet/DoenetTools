@@ -1085,6 +1085,10 @@ export async function getActivityViewerData(
     loggedInUserId,
   });
 
+  if (!isEqualUUID(loggedInUserId, activity.ownerId)) {
+    await recordActivityView(activityId, loggedInUserId);
+  }
+
   return {
     activity,
     docHistories,
@@ -1111,6 +1115,27 @@ export async function getDocumentSource(
   });
 
   return { source: document.source };
+}
+
+export async function recordActivityView(
+  activityId: Uint8Array,
+  loggedInUserId: Uint8Array,
+) {
+  try {
+    await prisma.contentViews.create({
+      data: { activityId, userId: loggedInUserId },
+    });
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        // if error was due to unique constraint failure,
+        // then it was presumably due to a user viewing an activity
+        // twice in one day, so we ignore the error
+        return;
+      }
+    }
+    throw e;
+  }
 }
 
 export async function getActivityContributorHistory({
@@ -1419,7 +1444,10 @@ export async function getDocumentRemixes({
   return docRemixes2;
 }
 
-export async function getAssignmentDataFromCode(code: string) {
+export async function getAssignmentDataFromCode(
+  code: string,
+  loggedInUserId: Uint8Array,
+) {
   let assignment;
 
   try {
@@ -1435,6 +1463,7 @@ export async function getAssignmentDataFromCode(code: string) {
       },
       select: {
         id: true,
+        ownerId: true,
         documents: {
           select: {
             id: true,
@@ -1464,6 +1493,10 @@ export async function getAssignmentDataFromCode(code: string) {
     } else {
       throw e;
     }
+  }
+
+  if (!isEqualUUID(loggedInUserId, assignment.ownerId)) {
+    await recordActivityView(assignment.id, loggedInUserId);
   }
 
   return { assignmentFound: true, assignment };

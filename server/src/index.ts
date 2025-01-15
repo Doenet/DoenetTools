@@ -1846,9 +1846,13 @@ app.get(
       return res.redirect(`/api/login/anonymId/${code}`);
     }
 
+    const loggedInUserId = req.user.userId;
+
     try {
-      const { assignmentFound, assignment } =
-        await getAssignmentDataFromCode(code);
+      const { assignmentFound, assignment } = await getAssignmentDataFromCode(
+        code,
+        loggedInUserId,
+      );
 
       res.send({
         assignmentFound,
