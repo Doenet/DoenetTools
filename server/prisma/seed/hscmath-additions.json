@@ -1,0 +1,79 @@
+[
+  {
+    "sortIndex": "339.1",
+    "category": "Trigonometry",
+    "subCategory": "Polar coordinates & vectors",
+    "description": "Vector notation and arithmetic",
+    "code": "Trig.PC.4"
+  },
+  {
+    "sortIndex": "339.2",
+    "category": "Trigonometry",
+    "subCategory": "Polar coordinates & vectors",
+    "description": "Applications of vectors",
+    "code": "Trig.PC.5"
+  },
+
+  {
+    "sortIndex": "592.1",
+    "category": "Precalculus",
+    "subCategory": "Polar coordinates & vectors",
+    "description": {
+      "descriptionLinked": "Vector notation and arithmetic",
+      "toCategory": "Trigonometry",
+      "toSubCategory": "Polar coordinates & vectors",
+      "toDescription": "Vector notation and arithmetic"
+    },
+    "code": ""
+  },
+  {
+    "sortIndex": "592.2",
+    "category": "Precalculus",
+    "subCategory": "Polar coordinates & vectors",
+    "description": {
+      "descriptionLinked": "Applications of vectors",
+      "toCategory": "Trigonometry",
+      "toSubCategory": "Polar coordinates & vectors",
+      "toDescription": "Applications of vectors"
+    },
+    "code": ""
+  },
+  {
+    "sortIndex": "300.1",
+    "category": "Algebra",
+    "subCategory": "Finite sequences and series",
+    "description": "Geometric",
+    "code": "Alg.FS.5"
+  },
+  {
+    "sortIndex": "558.1",
+    "category": "Precalculus",
+    "subCategory": "Finite sequences and series",
+    "description": {
+      "descriptionLinked": "Geometric",
+      "toCategory": "Algebra",
+      "toSubCategory": "Finite sequences and series",
+      "toDescription": "Geometric"
+    },
+    "code": ""
+  },
+  {
+    "sortIndex": "249.1",
+    "category": "Algebra",
+    "subCategory": "Quadratic equations and functions",
+    "description": "Optimization using parabolas",
+    "code": "Alg.QE.10"
+  },
+  {
+    "sortIndex": "507.1",
+    "category": "Precalculus",
+    "subCategory": "Quadratic equations and functions",
+    "description": {
+      "descriptionLinked": "Optimization using parabolas",
+      "toCategory": "Algebra",
+      "toSubCategory": "Quadratic equations and functions",
+      "toDescription": "Optimization using parabolas"
+    },
+    "code": ""
+  }
+]

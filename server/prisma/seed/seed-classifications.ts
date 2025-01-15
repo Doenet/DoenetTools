@@ -2,6 +2,7 @@ import { prisma } from "../seed";
 import commonCoreMath from "./common-core-math.json";
 import mnMath from "./mn-math.json";
 import webWork from "./webwork.json";
+import hscMathAdditions from "./hscmath-additions.json";
 
 async function upsertClassificationSystem(
   name: string,
@@ -428,6 +429,18 @@ export async function seedClassifications() {
     linkedFrom: ["High school and college math"],
     sortIndex: 21,
     type: "Other",
+    categoriesInDescription: true,
+  });
+
+  await addClassificationFromData({
+    name: "High school and college math",
+    shortName: "HS/C Math",
+    categoryLabel: "Subject",
+    subCategoryLabel: "Chapter",
+    descriptionLabel: "Section",
+    data: hscMathAdditions,
+    sortIndex: 1,
+    type: "Primary",
     categoriesInDescription: true,
   });
 }
