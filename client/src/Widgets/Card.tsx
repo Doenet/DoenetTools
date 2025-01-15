@@ -482,7 +482,7 @@ export default function Card({
                 </Box>
                 <Box
                   width={`${activityWidth}px`}
-                  paddingLeft={[".1em", "1em"]}
+                  paddingLeft={[".1em", "0.5em"]}
                   height={cardHeight}
                   alignContent="center"
                   boxSizing="content-box"
@@ -493,7 +493,7 @@ export default function Card({
                   </HStack>
                 </Box>
                 <Box
-                  paddingLeft={[".1em", "1em"]}
+                  paddingLeft={[".1em", "0.5em"]}
                   paddingRight={[".1em", "1em"]}
                   width="1px"
                   flexGrow={3}

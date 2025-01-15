@@ -291,7 +291,7 @@ export function Explore() {
       >
         Content features
       </Heading>
-      <VStack alignItems="flex-start" gap={0} ml="10px">
+      <VStack alignItems="flex-start" gap={0} ml="10px" mr="4px">
         {availableFeatures.map((feature) => {
           const isPresent = features.has(feature.code);
           const c = countByFeature[feature.code];
@@ -537,7 +537,7 @@ export function Explore() {
         >
           Classifications
         </Heading>
-        <List marginLeft="10px">
+        <List marginLeft="10px" marginRight="4px">
           {systemBrowse.map((c) => {
             if (c.system === undefined) {
               return null;
@@ -596,7 +596,7 @@ export function Explore() {
           {classificationInfo?.system?.categoryLabel.toLowerCase()}
         </Heading>
 
-        <List marginLeft="20px">
+        <List marginLeft="20px" marginRight="4px">
           {categoryBrowse.map((c) => {
             if (c.category === undefined) {
               return null;
@@ -638,7 +638,7 @@ export function Explore() {
           {classificationInfo?.system?.subCategoryLabel.toLowerCase()}
         </Heading>
 
-        <List marginLeft="30px">
+        <List marginLeft="30px" marginRight="4px">
           {subCategoryBrowse.map((c) => {
             if (c.subCategory === undefined) {
               return null;
@@ -680,7 +680,7 @@ export function Explore() {
           {classificationInfo?.system?.descriptionLabel.toLowerCase()}
         </Heading>
 
-        <List marginLeft="40px">
+        <List marginLeft="40px" marginRight="4px">
           {classificationBrowse.map((c) => {
             if (c.classification === undefined) {
               return null;
@@ -726,7 +726,7 @@ export function Explore() {
         >
           Authors
         </Heading>
-        <List marginLeft="10px">
+        <List marginLeft="10px" marginRight="4px">
           {topAuthors.map((u) => {
             let newSearch = search;
             newSearch = clearQueryParameter("author", newSearch);
@@ -1290,8 +1290,8 @@ export function Explore() {
       >
         <GridItem
           marginLeft={filtersOpen ? "0px" : "4px"}
-          borderRight={"2px"}
-          paddingRight="4px"
+          borderRight="2px"
+          paddingRight={filtersOpen ? "0px" : "4px"}
         >
           {filterSection}
         </GridItem>
