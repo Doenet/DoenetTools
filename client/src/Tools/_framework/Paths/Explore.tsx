@@ -201,6 +201,9 @@ export function Explore() {
 
   useEffect(() => {
     setSearchString(q);
+    if (!q && currentTab > 1) {
+      setCurrentTab(!totalCount.numLibrary && totalCount.numCommunity ? 1 : 0);
+    }
   }, [q]);
 
   const [infoContentData, setInfoContentData] =
@@ -1200,7 +1203,7 @@ export function Explore() {
   const results = (
     <Tabs
       minHeight="calc(100vh - 188px)"
-      variant="line"
+      variant="enclosed-colored"
       index={currentTab}
       onChange={setCurrentTab}
     >
