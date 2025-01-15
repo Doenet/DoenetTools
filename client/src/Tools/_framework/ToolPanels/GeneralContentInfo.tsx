@@ -26,6 +26,28 @@ export function GeneralContentInfo({
 
   return (
     <Box>
+      {!contentData.isFolder && containsFeatures ? (
+        <Box borderBottom="2px" marginBottom={4} paddingBottom={4}>
+          <Heading size="sm">Activity features</Heading>
+          <UnorderedList>
+            {contentData.contentFeatures.map((feature) => (
+              <ListItem key={feature.code}>
+                <Tooltip label={feature.description}>
+                  {feature.term}
+                  <Icon
+                    paddingLeft="5px"
+                    as={activityFeatureIcons[feature.code]}
+                    color="#666699"
+                    boxSize={5}
+                    verticalAlign="middle"
+                  />
+                </Tooltip>
+              </ListItem>
+            ))}
+          </UnorderedList>
+        </Box>
+      ) : null}
+
       <Box borderBottom="2px" marginBottom={4} paddingBottom={4}>
         {license === null ? (
           <Box
@@ -67,28 +89,6 @@ export function GeneralContentInfo({
           </>
         )}
       </Box>
-
-      {!contentData.isFolder && containsFeatures ? (
-        <Box borderBottom="2px" marginBottom={4} paddingBottom={4}>
-          <Heading size="sm">Activity features</Heading>
-          <UnorderedList>
-            {contentData.contentFeatures.map((feature) => (
-              <ListItem key={feature.code}>
-                <Tooltip label={feature.description}>
-                  {feature.term}
-                  <Icon
-                    paddingLeft="5px"
-                    as={activityFeatureIcons[feature.code]}
-                    color="#666699"
-                    boxSize={5}
-                    verticalAlign="middle"
-                  />
-                </Tooltip>
-              </ListItem>
-            ))}
-          </UnorderedList>
-        </Box>
-      ) : null}
 
       {!contentData.isFolder
         ? `DoenetML version: ${contentData.documents[0].doenetmlVersion.fullVersion}`

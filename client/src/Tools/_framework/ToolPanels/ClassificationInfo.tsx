@@ -16,6 +16,9 @@ export function ClassificationInfo({
 }: {
   contentData: ContentStructure;
 }) {
+  const numClassifications = contentData.classifications.length;
+  const allIndices = [...Array(numClassifications).keys()];
+
   return (
     <>
       {!contentData.isFolder ? (
@@ -28,12 +31,12 @@ export function ClassificationInfo({
         >
           <Text>Classifications</Text>
 
-          {contentData.classifications.length === 0 ? (
+          {numClassifications === 0 ? (
             <Text as="i" mt="-5" ml="3">
               None added yet.
             </Text>
           ) : (
-            <Accordion allowMultiple>
+            <Accordion allowMultiple defaultIndex={allIndices}>
               {contentData.classifications.map((classification, i) => {
                 const code = classification.code;
                 const systemName =

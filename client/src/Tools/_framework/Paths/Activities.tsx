@@ -699,7 +699,6 @@ export function Activities() {
       width="100%"
       background="lightgray"
       fontSize="large"
-      justifyContent="center"
       alignItems="center"
       padding="5px"
     >

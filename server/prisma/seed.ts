@@ -15,10 +15,10 @@ async function main() {
   });
   await prisma.doenetmlVersions.upsert({
     where: { displayedVersion: "0.7" },
-    update: { fullVersion: "0.7.0-alpha18" },
+    update: { fullVersion: "0.7.0-alpha22" },
     create: {
       displayedVersion: "0.7",
-      fullVersion: "0.7.0-alpha18",
+      fullVersion: "0.7.0-alpha22",
       default: true,
     },
   });
