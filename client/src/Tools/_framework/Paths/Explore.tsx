@@ -132,7 +132,13 @@ export async function loader({ params, request }) {
       ownerId: authorId,
     });
 
-    return { ...browseData, features, availableFeatures, listViewPref };
+    return {
+      ...browseData,
+      content: browseData.recentContent,
+      features,
+      availableFeatures,
+      listViewPref,
+    };
   }
 }
 
@@ -143,6 +149,7 @@ export function Explore() {
     matchedAuthors,
     authorInfo,
     content,
+    trendingContent,
     matchedClassifications,
     matchedSubCategories,
     matchedCategories,
@@ -157,11 +164,12 @@ export function Explore() {
     availableFeatures,
     listViewPref,
   } = useLoaderData() as {
-    q: string;
+    q?: string;
     topAuthors: UserInfo[] | null;
     matchedAuthors: UserInfo[] | undefined;
     authorInfo: UserInfo | null;
     content: ContentStructure[];
+    trendingContent: ContentStructure[];
     matchedClassifications: PartialContentClassification[] | null | undefined;
     matchedSubCategories: PartialContentClassification[] | null | undefined;
     matchedCategories: PartialContentClassification[] | null | undefined;
@@ -200,7 +208,7 @@ export function Explore() {
   }, []);
 
   useEffect(() => {
-    setSearchString(q);
+    setSearchString(q || "");
     if (!q && currentTab > 1) {
       setCurrentTab(!totalCount.numLibrary && totalCount.numCommunity ? 1 : 0);
     }
@@ -223,7 +231,10 @@ export function Explore() {
     />
   ) : null;
 
-  function displayMatchingContent(matches: ContentStructure[]) {
+  function displayMatchingContent(
+    matches: ContentStructure[],
+    minHeight?: string,
+  ) {
     const cardContent: CardContent[] = matches.map((itemObj) => {
       const { id, imagePath, name, owner, isFolder, contentFeatures } = itemObj;
       const cardLink =
@@ -263,7 +274,8 @@ export function Explore() {
           listView && cardContent.length > 0 ? "white" : "var(--lightBlue)"
         }
         paddingTop="16px"
-        minHeight="calc(100vh - 230px)"
+        paddingBottom="16px"
+        minHeight={minHeight}
       >
         <CardList
           showPublicStatus={false}
@@ -1223,8 +1235,34 @@ export function Explore() {
       </TabList>
 
       <TabPanels data-test="Search Results">
-        <TabPanel padding={0}>{displayMatchingContent([])}</TabPanel>
-        <TabPanel padding={0}>{displayMatchingContent(content)}</TabPanel>
+        <TabPanel padding={0}>
+          {displayMatchingContent([], "calc(100vh - 230px)")}
+        </TabPanel>
+        <TabPanel padding={0}>
+          {trendingContent ? (
+            <>
+              <Heading
+                paddingLeft="10px"
+                paddingTop="10px"
+                paddingBottom="10px"
+                backgroundColor="gray.100"
+              >
+                Trending
+              </Heading>
+              {displayMatchingContent(trendingContent)}
+
+              <Heading
+                paddingLeft="10px"
+                paddingTop="10px"
+                paddingBottom="10px"
+                backgroundColor="gray.100"
+              >
+                Recent
+              </Heading>
+            </>
+          ) : null}
+          {displayMatchingContent(content, "calc(100vh - 230px)")}
+        </TabPanel>
         <TabPanel>{authorMatches}</TabPanel>
         <TabPanel>{classificationMatches}</TabPanel>
       </TabPanels>
