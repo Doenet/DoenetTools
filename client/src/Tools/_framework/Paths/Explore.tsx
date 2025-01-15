@@ -114,8 +114,6 @@ export async function loader({ params, request }) {
       ownerId: authorId,
     });
 
-    console.log({ q, ...searchData, listViewPref });
-
     return {
       q,
       ...searchData,
@@ -134,7 +132,6 @@ export async function loader({ params, request }) {
       ownerId: authorId,
     });
 
-    console.log({ ...browseData, listViewPref });
     return { ...browseData, features, availableFeatures, listViewPref };
   }
 }
@@ -193,7 +190,7 @@ export function Explore() {
 
   const [listView, setListView] = useState(listViewPref);
 
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(true);
 
   const { search } = useLocation();
   const navigate = useNavigate();
@@ -276,10 +273,18 @@ export function Explore() {
 
   const categoryFilterSection = (
     <>
-      <Heading size="sm" marginBottom="4px" marginTop="10px">
+      <Heading
+        size="sm"
+        marginBottom="4px"
+        marginTop="10px"
+        backgroundColor="gray.100"
+        pl="10px"
+        pt="4px"
+        pb="4px"
+      >
         Content features
       </Heading>
-      <VStack alignItems="flex-start" gap={0}>
+      <VStack alignItems="flex-start" gap={0} ml="10px">
         {availableFeatures.map((feature) => {
           const isPresent = features.has(feature.code);
           const c = countByFeature[feature.code];
@@ -366,7 +371,7 @@ export function Explore() {
 
     if (classificationInfo.category) {
       filteredBy.push(
-        <ListItem key="category">
+        <ListItem key="category" marginLeft="10px" marginTop="-10px">
           <HStack gap={0}>
             <Tooltip
               label={classificationInfo.category.category}
@@ -396,7 +401,7 @@ export function Explore() {
       );
       if (classificationInfo.subCategory) {
         filteredBy.push(
-          <ListItem key="subcategory">
+          <ListItem key="subcategory" marginLeft="20px" marginTop="-10px">
             <HStack gap={0}>
               <Tooltip
                 label={classificationInfo.subCategory.subCategory}
@@ -429,7 +434,7 @@ export function Explore() {
 
         if (classificationInfo.classification) {
           filteredBy.push(
-            <ListItem key="classification">
+            <ListItem key="classification" marginLeft="30px" marginTop="-10px">
               <HStack gap={0}>
                 <Tooltip
                   label={`${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
@@ -463,19 +468,33 @@ export function Explore() {
 
     classificationStatusSection = (
       <>
-        <Heading size="sm" marginBottom="5px">
+        <Heading
+          size="sm"
+          marginBottom="5px"
+          backgroundColor="gray.100"
+          pl="10px"
+          pt="4px"
+          pb="4px"
+        >
           Current classification filters
         </Heading>
-        <List>{filteredBy}</List>
+        <List marginLeft="10px">{filteredBy}</List>
       </>
     );
   } else {
     classificationStatusSection = (
       <>
-        <Heading size="sm" marginBottom="5px">
+        <Heading
+          size="sm"
+          marginBottom="5px"
+          backgroundColor="gray.100"
+          pl="10px"
+          pt="4px"
+          pb="4px"
+        >
           Current classification filters
         </Heading>
-        <List>
+        <List marginLeft="10px">
           <ListItem>
             <HStack gap={0}>
               <Text>Unclassified</Text>
@@ -501,10 +520,17 @@ export function Explore() {
     const unclassified = systemBrowse.filter((s) => s.system === undefined);
     classificationsBrowseSection = (
       <>
-        <Heading size="sm" marginBottom="5px">
+        <Heading
+          size="sm"
+          marginBottom="5px"
+          paddingTop="4px"
+          paddingBottom="4px"
+          paddingLeft="10px"
+          backgroundColor="gray.100"
+        >
           Classifications
         </Heading>
-        <List>
+        <List marginLeft="10px">
           {systemBrowse.map((c) => {
             if (c.system === undefined) {
               return null;
@@ -532,7 +558,7 @@ export function Explore() {
           })}
         </List>
         {unclassified.length > 0 ? (
-          <Box marginTop="10px">
+          <Box marginTop="10px" marginLeft="10px">
             <ChakraLink as={ReactRouterLink} to={`./0/${search}`}>
               <Tooltip
                 label={`${numPhraseDisplay(unclassified[0], "unclassified")}`}
@@ -551,12 +577,19 @@ export function Explore() {
   } else if (categoryBrowse && categoryBrowse.length > 0) {
     classificationsBrowseSection = (
       <>
-        <Heading size="xs">
+        <Heading
+          size="sm"
+          marginBottom="5px"
+          paddingTop="4px"
+          paddingBottom="4px"
+          paddingLeft="20px"
+          backgroundColor="gray.100"
+        >
           Filter further by{" "}
           {classificationInfo?.system?.categoryLabel.toLowerCase()}
         </Heading>
 
-        <List>
+        <List marginLeft="20px">
           {categoryBrowse.map((c) => {
             if (c.category === undefined) {
               return null;
@@ -586,12 +619,19 @@ export function Explore() {
   } else if (subCategoryBrowse && subCategoryBrowse.length > 0) {
     classificationsBrowseSection = (
       <>
-        <Heading size="xs">
+        <Heading
+          size="sm"
+          marginBottom="5px"
+          paddingTop="4px"
+          paddingBottom="4px"
+          paddingLeft="30px"
+          backgroundColor="gray.100"
+        >
           Filter further by{" "}
           {classificationInfo?.system?.subCategoryLabel.toLowerCase()}
         </Heading>
 
-        <List>
+        <List marginLeft="30px">
           {subCategoryBrowse.map((c) => {
             if (c.subCategory === undefined) {
               return null;
@@ -621,12 +661,19 @@ export function Explore() {
   } else if (classificationBrowse && classificationBrowse.length > 0) {
     classificationsBrowseSection = (
       <>
-        <Heading size="xs">
+        <Heading
+          size="sm"
+          marginBottom="5px"
+          paddingTop="4px"
+          paddingBottom="4px"
+          paddingLeft="40px"
+          backgroundColor="gray.100"
+        >
           Filter further by{" "}
           {classificationInfo?.system?.descriptionLabel.toLowerCase()}
         </Heading>
 
-        <List>
+        <List marginLeft="40px">
           {classificationBrowse.map((c) => {
             if (c.classification === undefined) {
               return null;
@@ -662,10 +709,17 @@ export function Explore() {
   if (topAuthors && topAuthors.length > 0) {
     authorBrowseSection = (
       <>
-        <Heading size="sm" marginBottom="5px">
+        <Heading
+          size="sm"
+          marginBottom="5px"
+          paddingTop="4px"
+          paddingBottom="4px"
+          paddingLeft="10px"
+          backgroundColor="gray.100"
+        >
           Authors
         </Heading>
-        <List>
+        <List marginLeft="10px">
           {topAuthors.map((u) => {
             let newSearch = search;
             newSearch = clearQueryParameter("author", newSearch);
@@ -702,10 +756,17 @@ export function Explore() {
     authorBrowseSection = (
       <>
         {" "}
-        <Heading size="sm" marginBottom="5px">
+        <Heading
+          size="sm"
+          marginBottom="5px"
+          paddingTop="4px"
+          paddingBottom="4px"
+          paddingLeft="10px"
+          backgroundColor="gray.100"
+        >
           Current author filter
         </Heading>
-        <List>
+        <List marginLeft="10px">
           <ListItem>
             <HStack gap={0}>
               <Text>{authorName}</Text>
@@ -1162,10 +1223,11 @@ export function Explore() {
   if (filtersOpen) {
     filterSection = (
       <>
-        <Flex>
+        <Flex backgroundColor="gray.100" pl="10px" pt="10px">
           <Heading size="md">Filters</Heading>
           {filteredByStatement ? (
             <Button
+              colorScheme="blue"
               rightIcon={<MdFilterAltOff />}
               size="xs"
               marginLeft="10px"
@@ -1214,7 +1276,7 @@ export function Explore() {
         gap="0"
       >
         <GridItem
-          marginLeft={filtersOpen ? "10px" : "4px"}
+          marginLeft={filtersOpen ? "0px" : "4px"}
           borderRight={"2px"}
           paddingRight="4px"
         >
