@@ -199,6 +199,10 @@ export function Explore() {
     document.title = `Explore - Doenet`;
   }, []);
 
+  useEffect(() => {
+    setSearchString(q);
+  }, [q]);
+
   const [infoContentData, setInfoContentData] =
     useState<ContentStructure | null>(null);
 
