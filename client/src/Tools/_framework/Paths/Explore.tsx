@@ -1137,23 +1137,29 @@ export function Explore() {
         height="100px"
         background="doenet.canvas"
       >
-        <Flex fontSize="24px">
+        <Flex
+          fontSize="24px"
+          backgroundColor={q ? "gray.300" : "inherit"}
+          width="100%"
+          justifyContent="center"
+          marginBottom="2px"
+        >
           {q ? (
             <>
-              <Text marginRight="10px">
-                Search results for:{" "}
-                <Text
-                  as="span"
-                  fontSize="24px"
-                  fontWeight="700"
-                  data-test="Search Results For"
-                >
-                  {q}
-                </Text>
+              <Spacer />
+              <Text data-test="Search Results For">
+                Search results for: {q}{" "}
               </Text>
-              <Tooltip label="Clear search results" openDelay={500}>
-                <CloseButton
+              <Spacer />
+              <Tooltip
+                label="Clear search results"
+                openDelay={500}
+                placement="bottom-end"
+              >
+                <IconButton
                   aria-label="Clear search results"
+                  icon={<MdFilterAltOff />}
+                  variant="ghost"
                   onClick={() => {
                     let newSearch = search;
                     newSearch = clearQueryParameter("q", newSearch);

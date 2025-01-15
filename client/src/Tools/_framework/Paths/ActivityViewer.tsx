@@ -36,10 +36,7 @@ import {
   DoenetmlVersion,
 } from "../../../_utils/types";
 import { processContributorHistory } from "../../../_utils/processRemixes";
-import {
-  DisplayLicenseItem,
-  SmallLicenseBadges,
-} from "../../../Widgets/Licenses";
+import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import { MdOutlineInfo } from "react-icons/md";
 import { getClassificationAugmentedDescription } from "../../../_utils/activity";
@@ -181,17 +178,13 @@ export function ActivityViewer() {
                     alignItems="flex-start"
                     mt="10px"
                   >
-                    <Flex width="100%">
+                    <Box width="100%" textAlign="center">
                       <Tooltip label={activity.name}>
                         <Text fontSize="1.4em" fontWeight="bold" noOfLines={1}>
                           {activity.name}
                         </Text>
                       </Tooltip>
-                      <Spacer />
-                      {activity.license ? (
-                        <SmallLicenseBadges license={activity.license} />
-                      ) : null}
-                    </Flex>
+                    </Box>
                     <Flex mt="10px" width="100%">
                       <ContributorsMenu
                         activity={activity}
