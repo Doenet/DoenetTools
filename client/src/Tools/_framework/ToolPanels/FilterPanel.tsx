@@ -58,6 +58,193 @@ export function FilterPanel({
   search: string;
   navigate: NavigateFunction;
 }) {
+  let clearFilters: ReactElement | null = null;
+  if (authorInfo || classificationInfo || features.size > 0) {
+    const clearFilterButtons: ReactElement[] = [];
+
+    for (const feature of availableFeatures) {
+      if (features.has(feature.code)) {
+        clearFilterButtons.push(
+          <Tooltip
+            label={`Clear filter: ${feature.term}`}
+            openDelay={500}
+            key={`feature${feature.code}`}
+          >
+            <Button
+              colorScheme="blue"
+              rightIcon={<CloseIcon boxSize={2} />}
+              size="xs"
+              aria-label={`Clear filter: ${feature.term}`}
+              onClick={() => {
+                const newSearch = clearQueryParameter(feature.code, search);
+                navigate(`.${newSearch}`);
+              }}
+            >
+              {feature.term}
+            </Button>
+          </Tooltip>,
+        );
+      }
+    }
+
+    if (classificationInfo) {
+      if (classificationInfo.system) {
+        clearFilterButtons.push(
+          <Tooltip
+            label={`Clear filter: ${classificationInfo.system.name}`}
+            openDelay={500}
+            key={`system${classificationInfo.system.id}`}
+          >
+            <Button
+              colorScheme="blue"
+              rightIcon={<CloseIcon boxSize={2} />}
+              size="xs"
+              aria-label={`Clear filter: ${classificationInfo.system.name}`}
+              onClick={() =>
+                clearClassificationSystemFilter(
+                  search,
+                  classificationInfo,
+                  navigate,
+                )
+              }
+            >
+              {classificationInfo.system.shortName}
+            </Button>
+          </Tooltip>,
+        );
+      } else {
+        clearFilterButtons.push(
+          <Tooltip
+            label={`Clear filter: Unclassified`}
+            openDelay={500}
+            key={`unclassified`}
+          >
+            <Button
+              colorScheme="blue"
+              rightIcon={<CloseIcon boxSize={2} />}
+              size="xs"
+              aria-label={`Clear filter: Unclassified`}
+              onClick={() => clearUnclassifiedFilter(search, navigate)}
+            >
+              Unclassified
+            </Button>
+          </Tooltip>,
+        );
+      }
+
+      if (classificationInfo.category) {
+        let category = classificationInfo.category.category;
+        if (category.length > 40) {
+          category = category.substring(0, 40) + "...";
+        }
+
+        clearFilterButtons.push(
+          <Tooltip
+            label={`Clear filter: ${classificationInfo.category.category}`}
+            openDelay={500}
+            key={`cat${classificationInfo.category.id}`}
+          >
+            <Button
+              colorScheme="blue"
+              rightIcon={<CloseIcon boxSize={2} />}
+              size="xs"
+              aria-label={`Clear filter: ${classificationInfo.category.category}`}
+              onClick={() =>
+                clearClassificationCategoryFilter(
+                  search,
+                  classificationInfo,
+                  navigate,
+                )
+              }
+            >
+              {category}
+            </Button>
+          </Tooltip>,
+        );
+      }
+
+      if (classificationInfo.subCategory) {
+        let subCategory = classificationInfo.subCategory.subCategory;
+        if (subCategory.length > 40) {
+          subCategory = subCategory.substring(0, 40) + "...";
+        }
+
+        clearFilterButtons.push(
+          <Tooltip
+            label={`Clear filter: ${classificationInfo.subCategory.subCategory}`}
+            openDelay={500}
+            key={`subCat${classificationInfo.subCategory.id}`}
+          >
+            <Button
+              colorScheme="blue"
+              rightIcon={<CloseIcon boxSize={2} />}
+              size="xs"
+              aria-label={`Clear filter: ${classificationInfo.subCategory.subCategory}`}
+              onClick={() =>
+                clearClassificationSubcategoryFilter(
+                  search,
+                  classificationInfo,
+                  navigate,
+                )
+              }
+            >
+              {subCategory}
+            </Button>
+          </Tooltip>,
+        );
+      }
+      if (classificationInfo.classification) {
+        clearFilterButtons.push(
+          <Tooltip
+            label={`Clear filter: ${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
+            openDelay={500}
+            key={classificationInfo.classification.code}
+          >
+            <Button
+              colorScheme="blue"
+              rightIcon={<CloseIcon boxSize={2} />}
+              size="xs"
+              aria-label={`Clear filter: ${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
+              onClick={() => clearClassificationFilter(search, navigate)}
+            >
+              {classificationInfo.classification.code}
+            </Button>
+          </Tooltip>,
+        );
+      }
+    }
+
+    if (authorInfo) {
+      const authorName = createFullName(authorInfo);
+      clearFilterButtons.push(
+        <Tooltip
+          label={`Clear filter: ${authorName}`}
+          openDelay={500}
+          key={authorInfo.userId}
+        >
+          <Button
+            colorScheme="blue"
+            rightIcon={<CloseIcon boxSize={2} />}
+            size="xs"
+            aria-label={`Clear filter: ${authorName}`}
+            onClick={() => {
+              const newSearch = clearQueryParameter("author", search);
+              navigate(`.${newSearch}`);
+            }}
+          >
+            {authorName}
+          </Button>
+        </Tooltip>,
+      );
+    }
+
+    clearFilters = (
+      <Wrap marginLeft="10px" marginRight="2px">
+        {clearFilterButtons}
+      </Wrap>
+    );
+  }
+
   const categoryFilterSection = (
     <>
       <Heading
@@ -320,7 +507,10 @@ export function FilterPanel({
                   to={`./${c.system.id}/${search}`}
                 >
                   <HStack>
-                    <Tooltip label={c.system.name} openDelay={500}>
+                    <Tooltip
+                      label={`Add filter: ${c.system.name}`}
+                      openDelay={500}
+                    >
                       <Text>{c.system.shortName}</Text>
                     </Tooltip>
                     {numItemsBadge(c)}
@@ -334,7 +524,12 @@ export function FilterPanel({
           <Box marginTop="10px" marginLeft="10px">
             <ChakraLink as={ReactRouterLink} to={`./0/${search}`}>
               <HStack>
-                <Text>Unclassified items</Text>
+                <Tooltip
+                  label={`Add filter: Unclassified items`}
+                  openDelay={500}
+                >
+                  <Text>Unclassified items</Text>
+                </Tooltip>
                 {numItemsBadge(unclassified[0])}
               </HStack>
             </ChakraLink>
@@ -368,7 +563,12 @@ export function FilterPanel({
                   to={`./${c.category.id}/${search}`}
                 >
                   <HStack>
-                    <Text noOfLines={4}>{c.category.category}</Text>
+                    <Tooltip
+                      label={`Add filter: ${c.category.category}`}
+                      openDelay={500}
+                    >
+                      <Text noOfLines={4}>{c.category.category}</Text>
+                    </Tooltip>
                     {numItemsBadge(c)}
                   </HStack>
                 </ChakraLink>
@@ -404,7 +604,12 @@ export function FilterPanel({
                   to={`./${c.subCategory.id}/${search}`}
                 >
                   <HStack>
-                    <Text noOfLines={4}>{c.subCategory.subCategory}</Text>
+                    <Tooltip
+                      label={`Add filter: ${c.subCategory.subCategory}`}
+                      openDelay={500}
+                    >
+                      <Text noOfLines={4}>{c.subCategory.subCategory}</Text>
+                    </Tooltip>
                     {numItemsBadge(c)}
                   </HStack>
                 </ChakraLink>
@@ -440,9 +645,14 @@ export function FilterPanel({
                   to={`./${c.classification.id}/${search}`}
                 >
                   <HStack>
-                    <Text noOfLines={4}>
-                      {c.classification.code}: {c.classification.description}
-                    </Text>
+                    <Tooltip
+                      label={`Add filter: ${c.classification.code}: ${c.classification.description}`}
+                      openDelay={500}
+                    >
+                      <Text noOfLines={4}>
+                        {c.classification.code}: {c.classification.description}
+                      </Text>
+                    </Tooltip>
                     {numItemsBadge(c)}
                   </HStack>
                 </ChakraLink>
@@ -529,189 +739,6 @@ export function FilterPanel({
         </List>
       </>
     );
-  }
-
-  let clearFilters: ReactElement | null = null;
-  if (authorInfo || classificationInfo || features.size > 0) {
-    const clearFilterButtons: ReactElement[] = [];
-
-    for (const feature of availableFeatures) {
-      if (features.has(feature.code)) {
-        clearFilterButtons.push(
-          <Tooltip
-            label={`Clear filter: ${feature.term}`}
-            openDelay={500}
-            key={`feature${feature.code}`}
-          >
-            <Button
-              colorScheme="blue"
-              rightIcon={<CloseIcon />}
-              size="xs"
-              aria-label={`Clear filter: ${feature.term}`}
-              onClick={() => {
-                const newSearch = clearQueryParameter(feature.code, search);
-                navigate(`.${newSearch}`);
-              }}
-            >
-              {feature.term}
-            </Button>
-          </Tooltip>,
-        );
-      }
-    }
-
-    if (classificationInfo) {
-      if (classificationInfo.system) {
-        clearFilterButtons.push(
-          <Tooltip
-            label={`Clear filter: ${classificationInfo.system.name}`}
-            openDelay={500}
-            key={`system${classificationInfo.system.id}`}
-          >
-            <Button
-              colorScheme="blue"
-              rightIcon={<CloseIcon />}
-              size="xs"
-              aria-label={`Clear filter: ${classificationInfo.system.name}`}
-              onClick={() =>
-                clearClassificationSystemFilter(
-                  search,
-                  classificationInfo,
-                  navigate,
-                )
-              }
-            >
-              {classificationInfo.system.shortName}
-            </Button>
-          </Tooltip>,
-        );
-      } else {
-        clearFilterButtons.push(
-          <Tooltip
-            label={`Clear filter: Unclassified`}
-            openDelay={500}
-            key={`unclassified`}
-          >
-            <Button
-              colorScheme="blue"
-              rightIcon={<CloseIcon />}
-              size="xs"
-              aria-label={`Clear filter: Unclassified`}
-              onClick={() => clearUnclassifiedFilter(search, navigate)}
-            >
-              Unclassified
-            </Button>
-          </Tooltip>,
-        );
-      }
-
-      if (classificationInfo.category) {
-        let category = classificationInfo.category.category;
-        if (category.length > 40) {
-          category = category.substring(0, 40) + "...";
-        }
-
-        clearFilterButtons.push(
-          <Tooltip
-            label={`Clear filter: ${classificationInfo.category.category}`}
-            openDelay={500}
-            key={`cat${classificationInfo.category.id}`}
-          >
-            <Button
-              colorScheme="blue"
-              rightIcon={<CloseIcon />}
-              size="xs"
-              aria-label={`Clear filter: ${classificationInfo.category.category}`}
-              onClick={() =>
-                clearClassificationCategoryFilter(
-                  search,
-                  classificationInfo,
-                  navigate,
-                )
-              }
-            >
-              {category}
-            </Button>
-          </Tooltip>,
-        );
-      }
-
-      if (classificationInfo.subCategory) {
-        let subCategory = classificationInfo.subCategory.subCategory;
-        if (subCategory.length > 40) {
-          subCategory = subCategory.substring(0, 40) + "...";
-        }
-
-        clearFilterButtons.push(
-          <Tooltip
-            label={`Clear filter: ${classificationInfo.subCategory.subCategory}`}
-            openDelay={500}
-            key={`subCat${classificationInfo.subCategory.id}`}
-          >
-            <Button
-              colorScheme="blue"
-              rightIcon={<CloseIcon />}
-              size="xs"
-              aria-label={`Clear filter: ${classificationInfo.subCategory.subCategory}`}
-              onClick={() =>
-                clearClassificationSubcategoryFilter(
-                  search,
-                  classificationInfo,
-                  navigate,
-                )
-              }
-            >
-              {subCategory}
-            </Button>
-          </Tooltip>,
-        );
-      }
-      if (classificationInfo.classification) {
-        clearFilterButtons.push(
-          <Tooltip
-            label={`Clear filter: ${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
-            openDelay={500}
-            key={classificationInfo.classification.code}
-          >
-            <Button
-              colorScheme="blue"
-              rightIcon={<CloseIcon />}
-              size="xs"
-              aria-label={`Clear filter: ${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
-              onClick={() => clearClassificationFilter(search, navigate)}
-            >
-              {classificationInfo.classification.code}
-            </Button>
-          </Tooltip>,
-        );
-      }
-    }
-
-    if (authorInfo) {
-      const authorName = createFullName(authorInfo);
-      clearFilterButtons.push(
-        <Tooltip
-          label={`Clear filter: ${authorName}`}
-          openDelay={500}
-          key={authorInfo.userId}
-        >
-          <Button
-            colorScheme="blue"
-            rightIcon={<CloseIcon />}
-            size="xs"
-            aria-label={`Clear filter: ${authorName}`}
-            onClick={() => {
-              const newSearch = clearQueryParameter("author", search);
-              navigate(`.${newSearch}`);
-            }}
-          >
-            {authorName}
-          </Button>
-        </Tooltip>,
-      );
-    }
-
-    clearFilters = <Wrap marginLeft="10px">{clearFilterButtons}</Wrap>;
   }
 
   return (

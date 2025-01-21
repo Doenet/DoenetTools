@@ -602,28 +602,25 @@ export function Explore() {
   const heading = (
     <>
       <Flex
-        flexDirection="column"
         p={4}
         mt="1rem"
         justifyContent="center"
         alignItems="center"
-        textAlign="center"
         height="20px"
+        width="100%"
       >
-        <Box maxW={400} minW={200}>
-          <Box w="400px">
-            <Form>
-              <Searchbar
-                value={searchString}
-                dataTest="Search"
-                name="q"
-                onInput={(e) => {
-                  setSearchString((e.target as HTMLInputElement).value);
-                }}
-              />
-              {extraFormInputs}
-            </Form>
-          </Box>
+        <Box width="400px">
+          <Form>
+            <Searchbar
+              value={searchString}
+              dataTest="Search"
+              name="q"
+              onInput={(e) => {
+                setSearchString((e.target as HTMLInputElement).value);
+              }}
+            />
+            {extraFormInputs}
+          </Form>
         </Box>
       </Flex>
       <Box
@@ -635,13 +632,15 @@ export function Explore() {
         background="doenet.canvas"
       >
         <Flex
-          fontSize="24px"
+          fontSize={{ base: "16px", md: "24px" }}
           backgroundColor={q ? "gray.100" : "inherit"}
           width="100%"
           justifyContent="center"
           marginBottom="2px"
           height="40px"
           alignItems="center"
+          pl="4px"
+          pr="4px"
         >
           {q ? (
             <>
@@ -714,13 +713,13 @@ export function Explore() {
           Curated ({intWithCommas(totalCount.numCurated || 0)})
         </Tab>
         <Tab data-test="Community Tab">
-          Community ({intWithCommas(totalCount.numCommunity || 0)})
+          Com&shy;munity ({intWithCommas(totalCount.numCommunity || 0)})
         </Tab>
         <Tab data-test="Authors Tab" hidden={!q}>
           Authors ({intWithCommas(matchedAuthors?.length || 0)})
         </Tab>
         <Tab data-test="Classifications Tab" hidden={!q}>
-          Classifications ({intWithCommas(totalMatchedClassifications)})
+          Classifi&shy;cations ({intWithCommas(totalMatchedClassifications)})
         </Tab>
       </TabList>
 
