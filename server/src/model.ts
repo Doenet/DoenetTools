@@ -1,4 +1,9 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import {
+  PrismaClient,
+  Prisma,
+  LibraryStatus,
+  LibraryEventType,
+} from "@prisma/client";
 import { cidFromText } from "./utils/cid";
 import { DateTime } from "luxon";
 import { fromUUID } from "./utils/uuid";
@@ -5085,5 +5090,438 @@ export async function getPreferredFolderView(loggedInUserId: Buffer) {
   return await prisma.users.findUniqueOrThrow({
     where: { userId: loggedInUserId },
     select: { cardView: true },
+  });
+}
+
+export async function getLibraryStatus({
+  id,
+  userId,
+}: {
+  id: Buffer;
+  userId: Buffer;
+}) {
+  const isAdminOrOwner = await prisma.users.findFirst({
+    where: {
+      OR: [
+        {
+          userId,
+          isAdmin: true,
+        },
+        {
+          userId,
+          content: {
+            some: {
+              id,
+            },
+          },
+        },
+      ],
+    },
+    select: {
+      userId: true,
+    },
+  });
+
+  if (!isAdminOrOwner) {
+    return { status: "none" };
+  }
+
+  const info = await prisma.libraryActivityInfos.findUnique({
+    where: {
+      sourceActivityId: id,
+    },
+    select: {
+      status: true,
+      comments: true,
+      libraryActivityId: true,
+    },
+  });
+
+  if (!info) {
+    return { status: "none" };
+  } else if (info.status === LibraryStatus.PUBLISHED) {
+    return {
+      status: info.status,
+      comments: info.comments,
+      publishedActivityId: info.libraryActivityId,
+    };
+  } else {
+    return {
+      status: info?.status,
+      comments: info.comments,
+    };
+  }
+}
+
+export async function submitLibraryRequest({
+  activityId,
+  ownerId,
+}: {
+  activityId: Buffer;
+  ownerId: Buffer;
+}) {
+  const isOwner = await prisma.content.findUnique({
+    where: {
+      id: activityId,
+      ownerId,
+    },
+  });
+  if (!isOwner) {
+    throw new InvalidRequestError(
+      "Activity does not exist or is not owned by you.",
+    );
+  }
+
+  const updateLibInfo = prisma.libraryActivityInfos.upsert({
+    where: {
+      sourceActivityId: activityId,
+      sourceActivity: {
+        isPublic: true,
+        isFolder: false,
+        isDeleted: false,
+        ownerId,
+      },
+      OR: [
+        {
+          status: LibraryStatus.NEEDS_REVISION,
+        },
+        {
+          status: LibraryStatus.REQUEST_REMOVED,
+        },
+      ],
+    },
+    update: {
+      status: LibraryStatus.PENDING_REVIEW,
+      ownerRequested: true,
+    },
+    create: {
+      sourceActivityId: activityId,
+      status: LibraryStatus.PENDING_REVIEW,
+      comments: "",
+      ownerRequested: true,
+    },
+  });
+
+  const newEvent = prisma.libraryEvents.create({
+    data: {
+      sourceActivityId: activityId,
+      eventType: LibraryEventType.SUBMIT_REQUEST,
+      dateTime: new Date(),
+      comments: "",
+      userId: ownerId,
+    },
+  });
+
+  await prisma.$transaction([updateLibInfo, newEvent]);
+}
+
+export async function cancelLibraryRequest({
+  activityId,
+  ownerId,
+}: {
+  activityId: Buffer;
+  ownerId: Buffer;
+}) {
+  const updateLibInfo = prisma.libraryActivityInfos.update({
+    where: {
+      sourceActivityId: activityId,
+      sourceActivity: {
+        isPublic: true,
+        isFolder: false,
+        isDeleted: false,
+        ownerId,
+      },
+      status: LibraryStatus.PENDING_REVIEW,
+    },
+    data: {
+      status: LibraryStatus.REQUEST_REMOVED,
+    },
+  });
+
+  const newEvent = prisma.libraryEvents.create({
+    data: {
+      sourceActivityId: activityId,
+      eventType: LibraryEventType.CANCEL_REQUEST,
+      dateTime: new Date(),
+      comments: "",
+      userId: ownerId,
+    },
+  });
+
+  await prisma.$transaction([updateLibInfo, newEvent]);
+}
+
+async function getLibraryAccountId() {
+  const library = await prisma.users.findFirst({
+    where: {
+      isLibrary: true,
+    },
+    select: {
+      userId: true,
+    },
+  });
+  const libraryId = library!.userId;
+  return libraryId;
+}
+
+export async function addDraftToLibrary({
+  id,
+  loggedInUserId,
+}: {
+  id: Buffer;
+  loggedInUserId: Buffer;
+}) {
+  await mustBeAdmin(loggedInUserId);
+
+  // Cannot add draft if it can already be found in library
+  const existingLibId = await prisma.libraryActivityInfos.findUnique({
+    where: {
+      sourceActivityId: id,
+      NOT: {
+        libraryActivityId: null,
+      },
+    },
+    select: {
+      libraryActivityId: true,
+    },
+  });
+
+  if (existingLibId) {
+    throw new InvalidRequestError(
+      `Already included in library, see activity ${existingLibId}`,
+    );
+  }
+
+  const libraryId = await getLibraryAccountId();
+
+  const draftId = await copyActivityToFolder(id, libraryId, null);
+
+  await prisma.libraryActivityInfos.upsert({
+    where: {
+      sourceActivityId: id,
+    },
+    update: {
+      libraryActivityId: draftId,
+    },
+    create: {
+      sourceActivityId: id,
+      libraryActivityId: draftId,
+      ownerRequested: false,
+      status: LibraryStatus.PENDING_REVIEW,
+    },
+  });
+
+  await prisma.libraryEvents.create({
+    data: {
+      sourceActivityId: id,
+      libraryActivityId: draftId,
+      dateTime: new Date(),
+      eventType: LibraryEventType.ADD_DRAFT,
+      userId: loggedInUserId,
+      comments: "",
+    },
+  });
+
+  return { draftId };
+}
+
+export async function deleteDraftFromLibrary({
+  draftId,
+  loggedInUserId,
+}: {
+  draftId: Buffer;
+  loggedInUserId: Buffer;
+}) {
+  await mustBeAdmin(loggedInUserId);
+  const libraryId = await getLibraryAccountId();
+  const { sourceActivityId } =
+    await prisma.libraryActivityInfos.findUniqueOrThrow({
+      where: {
+        libraryActivityId: draftId,
+      },
+      select: {
+        sourceActivityId: true,
+      },
+    });
+
+  const deleteDraft = prisma.content.update({
+    where: {
+      id: draftId,
+      isPublic: false, // This is key! We're only deleting unpublished drafts here
+      isDeleted: false,
+      isFolder: false,
+      ownerId: libraryId,
+    },
+    data: {
+      isDeleted: true,
+      documents: {
+        updateMany: {
+          where: {},
+          data: {
+            isDeleted: true,
+          },
+        },
+      },
+    },
+  });
+
+  const logDeletion = prisma.libraryEvents.create({
+    data: {
+      sourceActivityId,
+      libraryActivityId: draftId,
+      eventType: LibraryEventType.DELETE_DRAFT,
+      dateTime: new Date(),
+      userId: loggedInUserId,
+    },
+  });
+
+  await prisma.$transaction([deleteDraft, logDeletion]);
+}
+
+// TODO: Notify owner that their activity has been added to the library
+export async function publishActivityToLibrary({
+  draftId,
+  loggedInUserId,
+  comments,
+}: {
+  draftId: Buffer;
+  loggedInUserId: Buffer;
+  comments: string;
+}) {
+  await mustBeAdmin(loggedInUserId);
+  const libraryId = await getLibraryAccountId();
+  const { sourceActivityId } =
+    await prisma.libraryActivityInfos.findUniqueOrThrow({
+      where: {
+        libraryActivityId: draftId,
+      },
+      select: {
+        sourceActivityId: true,
+      },
+    });
+
+  await prisma.content.update({
+    where: {
+      id: draftId,
+      isPublic: false,
+      isDeleted: false,
+      isFolder: false,
+      ownerId: libraryId,
+      license: {
+        isNot: null,
+      },
+      libraryActivity: { status: LibraryStatus.PENDING_REVIEW, comments },
+    },
+    data: {
+      // Publish
+      isPublic: true,
+      // Update status
+      // libraryActivity: {
+      //   update: {
+      //     status: LibraryStatus.PUBLISHED,
+      //   },
+      // },
+      // Log publication
+      libraryEventsEdited: {
+        create: {
+          sourceActivityId,
+          eventType: LibraryEventType.PUBLISH,
+          dateTime: new Date(),
+          userId: loggedInUserId,
+          comments,
+        },
+      },
+    },
+  });
+}
+
+export async function unpublishActivityFromLibrary({
+  activityId,
+  loggedInUserId,
+}: {
+  activityId: Buffer;
+  loggedInUserId: Buffer;
+}) {
+  await mustBeAdmin(loggedInUserId);
+  const libraryId = await getLibraryAccountId();
+  const { sourceActivityId } =
+    await prisma.libraryActivityInfos.findUniqueOrThrow({
+      where: {
+        libraryActivityId: activityId,
+      },
+      select: {
+        sourceActivityId: true,
+      },
+    });
+
+  await prisma.content.update({
+    where: {
+      id: activityId,
+      isPublic: true,
+      isFolder: false,
+      isDeleted: false,
+      ownerId: libraryId,
+      libraryActivity: {
+        status: LibraryStatus.PUBLISHED,
+      },
+    },
+    data: {
+      isPublic: false,
+      libraryActivity: {
+        update: {
+          status: LibraryStatus.PENDING_REVIEW,
+        },
+      },
+      libraryEventsEdited: {
+        create: {
+          sourceActivityId,
+          eventType: LibraryEventType.UNPUBLISH,
+          dateTime: new Date(),
+          userId: loggedInUserId,
+        },
+      },
+    },
+  });
+}
+
+// TODO: Notify owner that their activity needs revision before it will be accepted into the library
+export async function markLibraryRequestNeedsRevision({
+  sourceActivityId,
+  comments,
+  userId,
+}: {
+  sourceActivityId: Buffer;
+  comments: string;
+  userId: Buffer;
+}) {
+  await mustBeAdmin(userId);
+
+  await prisma.content.update({
+    where: {
+      id: sourceActivityId,
+      isPublic: true,
+      isFolder: false,
+      isDeleted: false,
+      libraryActivity: {
+        status: LibraryStatus.PENDING_REVIEW,
+        ownerRequested: true,
+      },
+    },
+    data: {
+      libraryActivity: {
+        update: {
+          status: LibraryStatus.NEEDS_REVISION,
+          comments,
+        },
+      },
+      libraryEvents: {
+        create: {
+          eventType: LibraryEventType.MARK_NEEDS_REVISION,
+          dateTime: new Date(),
+          userId,
+          comments,
+        },
+      },
+    },
   });
 }

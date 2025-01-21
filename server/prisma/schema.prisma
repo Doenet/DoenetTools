@@ -16,32 +16,34 @@ model Session {
 }
 
 model content {
-  id               Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
-  ownerId          Bytes                    @db.Binary(16)
-  isFolder         Boolean
-  parentFolderId   Bytes?                   @db.Binary(16)
-  name             String
-  createdAt        DateTime                 @default(now())
-  lastEdited       DateTime                 @default(now())
-  imagePath        String?
-  isAssigned       Boolean                  @default(false)
-  classCode        String?                  @db.VarChar(45)
-  codeValidUntil   DateTime?
-  isPublic         Boolean                  @default(false)
-  isDeleted        Boolean                  @default(false)
-  sortIndex        BigInt
-  licenseCode      String?                  @default("CCDUAL") @db.VarChar(10)
-  owner            users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  parentFolder     content?                 @relation("folderStructure", fields: [parentFolderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  subFolders       content[]                @relation("folderStructure")
-  documents        documents[]
-  license          licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
-  assignmentScores assignmentScores[]
-  promotedContent  promotedContent[]
-  sharedWith       contentShares[]
-  classifications  contentClassifications[]
-  librarySource    libraryActivityStatuses? @relation("librarySource")
-  libraryActivity  libraryActivityStatuses? @relation("libraryActivity")
+  id                  Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
+  ownerId             Bytes                    @db.Binary(16)
+  isFolder            Boolean
+  parentFolderId      Bytes?                   @db.Binary(16)
+  name                String
+  createdAt           DateTime                 @default(now())
+  lastEdited          DateTime                 @default(now())
+  imagePath           String?
+  isAssigned          Boolean                  @default(false)
+  classCode           String?                  @db.VarChar(45)
+  codeValidUntil      DateTime?
+  isPublic            Boolean                  @default(false)
+  isDeleted           Boolean                  @default(false)
+  sortIndex           BigInt
+  licenseCode         String?                  @default("CCDUAL") @db.VarChar(10)
+  owner               users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  parentFolder        content?                 @relation("folderStructure", fields: [parentFolderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subFolders          content[]                @relation("folderStructure")
+  documents           documents[]
+  license             licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  assignmentScores    assignmentScores[]
+  promotedContent     promotedContent[]
+  sharedWith          contentShares[]
+  classifications     contentClassifications[]
+  librarySource       libraryActivityInfos?    @relation("librarySource")
+  libraryActivity     libraryActivityInfos?    @relation("libraryActivity")
+  libraryEvents       libraryEvents[]          @relation("sourceActivity")
+  libraryEventsEdited libraryEvents[]          @relation("libraryActivity")
 
   @@index([ownerId, parentFolderId, sortIndex])
   @@index([classCode])
@@ -290,40 +292,46 @@ model classifications {
   @@fulltext([code, description])
 }
 
-model libraryActivityStatuses {
-  sourceActivityId  Bytes           @id @db.Binary(16)
-  libraryActivityId Bytes?          @unique @db.Binary(16)
+model libraryActivityInfos {
+  sourceActivityId  Bytes         @id @db.Binary(16)
+  libraryActivityId Bytes?        @unique @db.Binary(16)
+  ownerRequested    Boolean
   status            LibraryStatus
-  comments          String
-  sourceActivity    content         @relation(name: "librarySource", fields: [sourceActivityId], references: [id])
-  libraryActivity   content?        @relation(name: "libraryActivity", fields: [libraryActivityId], references: [id])
-  libraryEvents     libraryEvents[]
+  comments          String        @default("")
+  sourceActivity    content       @relation(name: "librarySource", fields: [sourceActivityId], references: [id])
+  libraryActivity   content?      @relation(name: "libraryActivity", fields: [libraryActivityId], references: [id])
 }
 
 enum LibraryStatus {
   PENDING_REVIEW
+  REQUEST_REMOVED
+  PUBLISHED
   NEEDS_REVISION
-  ADDED
-  REVIEW_REQUEST_REMOVED
 }
 
 model libraryEvents {
-  id        Bytes                   @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
-  eventType LibraryEventType
-  comments  String
-  dateTime  DateTime
-  statusId  Bytes                   @db.Binary(16)
-  userId    Bytes                   @db.Binary(16)
-  user      users                   @relation(fields: [userId], references: [userId])
-  status    libraryActivityStatuses @relation(fields: [statusId], references: [sourceActivityId])
+  id                Bytes            @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
+  sourceActivityId  Bytes            @db.Binary(16)
+  libraryActivityId Bytes?           @db.Binary(16)
+  eventType         LibraryEventType
+  dateTime          DateTime
+  comments          String           @default("")
+  userId            Bytes            @db.Binary(16)
+  user              users            @relation(fields: [userId], references: [userId])
+  sourceActivity    content          @relation(name: "sourceActivity", fields: [sourceActivityId], references: [id])
+  libraryActivity   content?          @relation(name: "libraryActivity", fields: [libraryActivityId], references: [id])
 }
 
 enum LibraryEventType {
+  // Activity owners can:
   SUBMIT_REQUEST
   CANCEL_REQUEST
+  // Admins can:
   ADD_DRAFT
   DELETE_DRAFT
   PUBLISH
+  UNPUBLISH
+  // And admins can communicate with owner
   MARK_NEEDS_REVISION
   MODIFY_COMMENTS
 }

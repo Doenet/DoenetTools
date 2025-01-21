@@ -22,6 +22,16 @@ async function main() {
   });
 
   await prisma.users.upsert({
+    where: { email: "library@doenet.org" },
+    update: {},
+    create: {
+      email: "library@doenet.org",
+      lastNames: "Library",
+      isLibrary: true
+    },
+  });
+
+  await prisma.users.upsert({
     where: { email: "devuser@doenet.org" },
     update: {},
     create: {
