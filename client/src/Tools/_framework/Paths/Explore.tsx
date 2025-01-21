@@ -17,16 +17,13 @@ import {
   Tooltip,
   Heading,
   VStack,
-  Checkbox,
-  Icon,
   Grid,
   GridItem,
-  IconButton,
-  HStack,
   Spacer,
-  CloseButton,
   Button,
   Input,
+  Show,
+  Hide,
 } from "@chakra-ui/react";
 import {
   Link as ReactRouterLink,
@@ -51,8 +48,10 @@ import {
   toggleViewButtonGroupActions,
 } from "../ToolPanels/ToggleViewButtonGroup";
 import { intWithCommas } from "../../../_utils/formatting";
-import { activityFeatureIcons } from "../../../_utils/activity";
 import { MdFilterAlt, MdFilterAltOff } from "react-icons/md";
+import { clearQueryParameter } from "../../../_utils/explore";
+import { FilterPanel } from "../ToolPanels/FilterPanel";
+import { ExploreFilterDrawer } from "../ToolPanels/ExploreFilterDrawer";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -178,10 +177,10 @@ export function Explore() {
     categoryBrowse: PartialContentClassification[] | null;
     systemBrowse: PartialContentClassification[] | null;
     classificationInfo: PartialContentClassification | null;
-    totalCount: { numLibrary?: number; numCommunity?: number };
+    totalCount: { numCurated?: number; numCommunity?: number };
     countByFeature: Record<
       string,
-      { numLibrary?: number; numCommunity?: number }
+      { numCurated?: number; numCommunity?: number }
     >;
     features: Set<string>;
     availableFeatures: ContentFeature[];
@@ -189,7 +188,7 @@ export function Explore() {
   };
 
   const [currentTab, setCurrentTab] = useState(
-    !totalCount.numLibrary && totalCount.numCommunity ? 1 : 0,
+    !totalCount.numCurated && totalCount.numCommunity ? 1 : 0,
   );
 
   const [searchString, setSearchString] = useState(q || "");
@@ -197,8 +196,6 @@ export function Explore() {
   const fetcher = useFetcher();
 
   const [listView, setListView] = useState(listViewPref);
-
-  const [filtersOpen, setFiltersOpen] = useState(true);
 
   const { search } = useLocation();
   const navigate = useNavigate();
@@ -210,7 +207,7 @@ export function Explore() {
   useEffect(() => {
     setSearchString(q || "");
     if (!q && currentTab > 1) {
-      setCurrentTab(!totalCount.numLibrary && totalCount.numCommunity ? 1 : 0);
+      setCurrentTab(!totalCount.numCurated && totalCount.numCommunity ? 1 : 0);
     }
   }, [q]);
 
@@ -231,9 +228,34 @@ export function Explore() {
     />
   ) : null;
 
+  const {
+    isOpen: filterIsOpen,
+    onOpen: filterOnOpen,
+    onClose: filterOnClose,
+  } = useDisclosure();
+
+  const filterDrawer = (
+    <ExploreFilterDrawer
+      isOpen={filterIsOpen}
+      onClose={filterOnClose}
+      topAuthors={topAuthors}
+      authorInfo={authorInfo}
+      classificationBrowse={classificationBrowse}
+      subCategoryBrowse={subCategoryBrowse}
+      categoryBrowse={categoryBrowse}
+      systemBrowse={systemBrowse}
+      classificationInfo={classificationInfo}
+      countByFeature={countByFeature}
+      features={features}
+      availableFeatures={availableFeatures}
+      search={search}
+      navigate={navigate}
+    />
+  );
+
   function displayMatchingContent(
     matches: ContentStructure[],
-    minHeight?: string,
+    minHeight?: string | { base: string; lg: string },
   ) {
     const cardContent: CardContent[] = matches.map((itemObj) => {
       const { id, imagePath, name, owner, isFolder, contentFeatures } = itemObj;
@@ -290,586 +312,6 @@ export function Explore() {
     );
   }
 
-  const categoryFilterSection = (
-    <>
-      <Heading
-        size="sm"
-        marginBottom="4px"
-        marginTop="10px"
-        backgroundColor="gray.100"
-        pl="10px"
-        pt="4px"
-        pb="4px"
-      >
-        Content features
-      </Heading>
-      <VStack alignItems="flex-start" gap={0} ml="10px" mr="4px">
-        {availableFeatures.map((feature) => {
-          const isPresent = features.has(feature.code);
-          const c = countByFeature[feature.code];
-          const numLibrary = c.numLibrary || 0;
-          const numCommunity = c.numCommunity || 0;
-
-          return (
-            <Checkbox
-              key={feature.code}
-              isChecked={isPresent}
-              data-test={`${feature.code} Checkbox`}
-              disabled={numLibrary + numCommunity === 0}
-              onChange={() => {
-                let newSearch = search;
-                newSearch = clearQueryParameter(feature.code, newSearch);
-                if (!isPresent) {
-                  if (newSearch) {
-                    newSearch += "&";
-                  } else {
-                    newSearch = "?";
-                  }
-                  newSearch += feature.code;
-                }
-                navigate(`.${newSearch}`);
-              }}
-            >
-              <HStack>
-                <Tooltip label={feature.description} openDelay={500}>
-                  {feature.term}
-                  <Icon
-                    paddingLeft="5px"
-                    as={activityFeatureIcons[feature.code]}
-                    color="#666699"
-                    boxSize={5}
-                    verticalAlign="middle"
-                  />
-                </Tooltip>
-                <Tooltip
-                  label={`${numPhraseDisplay(c)} designated as ${feature.term.toLowerCase()}`}
-                  openDelay={500}
-                >
-                  {numPairDisplay(c)}
-                </Tooltip>
-              </HStack>
-            </Checkbox>
-          );
-        })}
-      </VStack>
-    </>
-  );
-
-  let classificationStatusSection: ReactElement | null = null;
-
-  if (classificationInfo === null) {
-    classificationStatusSection = null;
-  } else if (classificationInfo.system) {
-    const filteredBy: ReactElement[] = [];
-    filteredBy.push(
-      <ListItem key="system">
-        <HStack gap={0}>
-          <Tooltip label={classificationInfo.system.name} openDelay={500}>
-            <Text noOfLines={1}>{classificationInfo.system.shortName}</Text>
-          </Tooltip>
-          <Tooltip
-            label={`Clear filter: ${classificationInfo.system.name}`}
-            openDelay={500}
-          >
-            <IconButton
-              variant="ghost"
-              size="sm"
-              icon={<MdFilterAltOff />}
-              aria-label={`Clear filter: ${classificationInfo.system.name}`}
-              onClick={() =>
-                navigate(
-                  `../${classificationInfo.category ? "../" : ""}${classificationInfo.subCategory ? "../" : ""}${classificationInfo.classification ? "../" : ""}${search}`,
-                  { relative: "path" },
-                )
-              }
-            />
-          </Tooltip>
-        </HStack>
-      </ListItem>,
-    );
-
-    if (classificationInfo.category) {
-      filteredBy.push(
-        <ListItem key="category" marginLeft="10px" marginTop="-10px">
-          <HStack gap={0}>
-            <Tooltip
-              label={classificationInfo.category.category}
-              openDelay={500}
-            >
-              <Text noOfLines={1}>{classificationInfo.category.category}</Text>
-            </Tooltip>
-            <Tooltip
-              label={`Clear filter: ${classificationInfo.category.category}`}
-              openDelay={500}
-            >
-              <IconButton
-                variant="ghost"
-                size="sm"
-                icon={<MdFilterAltOff />}
-                aria-label={`Clear filter: ${classificationInfo.category.category}`}
-                onClick={() =>
-                  navigate(
-                    `../${classificationInfo.subCategory ? "../" : ""}${classificationInfo.classification ? "../" : ""}${search}`,
-                    { relative: "path" },
-                  )
-                }
-              />
-            </Tooltip>
-          </HStack>
-        </ListItem>,
-      );
-      if (classificationInfo.subCategory) {
-        filteredBy.push(
-          <ListItem key="subcategory" marginLeft="20px" marginTop="-10px">
-            <HStack gap={0}>
-              <Tooltip
-                label={classificationInfo.subCategory.subCategory}
-                openDelay={500}
-              >
-                <Text noOfLines={1}>
-                  {classificationInfo.subCategory.subCategory}
-                </Text>
-              </Tooltip>
-              <Tooltip
-                label={`Clear filter: ${classificationInfo.subCategory.subCategory}`}
-                openDelay={500}
-              >
-                <IconButton
-                  variant="ghost"
-                  size="sm"
-                  icon={<MdFilterAltOff />}
-                  aria-label={`Clear filter: ${classificationInfo.subCategory.subCategory}`}
-                  onClick={() =>
-                    navigate(
-                      `../${classificationInfo.classification ? "../" : ""}${search}`,
-                      { relative: "path" },
-                    )
-                  }
-                />
-              </Tooltip>
-            </HStack>
-          </ListItem>,
-        );
-
-        if (classificationInfo.classification) {
-          filteredBy.push(
-            <ListItem key="classification" marginLeft="30px" marginTop="-10px">
-              <HStack gap={0}>
-                <Tooltip
-                  label={`${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
-                  openDelay={500}
-                >
-                  <Text noOfLines={1}>
-                    {classificationInfo.classification.code}:{" "}
-                    {classificationInfo.classification.description}
-                  </Text>
-                </Tooltip>
-                <Tooltip
-                  label={`Clear filter: ${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
-                  openDelay={500}
-                >
-                  <IconButton
-                    variant="ghost"
-                    size="sm"
-                    icon={<MdFilterAltOff />}
-                    aria-label={`Clear filter: ${classificationInfo.classification.code}: ${classificationInfo.classification.description}`}
-                    onClick={() =>
-                      navigate(`../${search}`, { relative: "path" })
-                    }
-                  />
-                </Tooltip>
-              </HStack>
-            </ListItem>,
-          );
-        }
-      }
-    }
-
-    classificationStatusSection = (
-      <>
-        <Heading
-          size="sm"
-          marginBottom="5px"
-          backgroundColor="gray.100"
-          pl="10px"
-          pt="4px"
-          pb="4px"
-        >
-          Current classification filters
-        </Heading>
-        <List marginLeft="10px">{filteredBy}</List>
-      </>
-    );
-  } else {
-    classificationStatusSection = (
-      <>
-        <Heading
-          size="sm"
-          marginBottom="5px"
-          backgroundColor="gray.100"
-          pl="10px"
-          pt="4px"
-          pb="4px"
-        >
-          Current classification filters
-        </Heading>
-        <List marginLeft="10px">
-          <ListItem>
-            <HStack gap={0}>
-              <Text>Unclassified</Text>
-              <Tooltip label={`Clear filter: Unclassified`} openDelay={500}>
-                <IconButton
-                  variant="ghost"
-                  size="sm"
-                  icon={<MdFilterAltOff />}
-                  aria-label={`Clear filter: Unclassified`}
-                  onClick={() => navigate(`../${search}`, { relative: "path" })}
-                />
-              </Tooltip>
-            </HStack>
-          </ListItem>
-        </List>
-      </>
-    );
-  }
-
-  let classificationsBrowseSection: ReactElement | null = null;
-
-  if (systemBrowse && systemBrowse.length > 0) {
-    const unclassified = systemBrowse.filter((s) => s.system === undefined);
-    classificationsBrowseSection = (
-      <>
-        <Heading
-          size="sm"
-          marginBottom="5px"
-          paddingTop="4px"
-          paddingBottom="4px"
-          paddingLeft="10px"
-          backgroundColor="gray.100"
-        >
-          Classifications
-        </Heading>
-        <List marginLeft="10px" marginRight="4px">
-          {systemBrowse.map((c) => {
-            if (c.system === undefined) {
-              return null;
-            }
-            return (
-              <ListItem key={c.system.id || 0}>
-                <ChakraLink
-                  as={ReactRouterLink}
-                  to={`./${c.system.id}/${search}`}
-                >
-                  {" "}
-                  <Tooltip
-                    label={`${numPhraseDisplay(c)} in ${c.system.name}`}
-                    openDelay={500}
-                  >
-                    <HStack>
-                      <Text>{c.system.shortName}</Text>
-
-                      {numPairDisplay(c)}
-                    </HStack>
-                  </Tooltip>
-                </ChakraLink>
-              </ListItem>
-            );
-          })}
-        </List>
-        {unclassified.length > 0 ? (
-          <Box marginTop="10px" marginLeft="10px">
-            <ChakraLink as={ReactRouterLink} to={`./0/${search}`}>
-              <Tooltip
-                label={`${numPhraseDisplay(unclassified[0], "unclassified")}`}
-                openDelay={500}
-              >
-                <HStack>
-                  <Text>Unclassified items</Text>
-                  {numPairDisplay(unclassified[0])}
-                </HStack>
-              </Tooltip>
-            </ChakraLink>
-          </Box>
-        ) : null}
-      </>
-    );
-  } else if (categoryBrowse && categoryBrowse.length > 0) {
-    classificationsBrowseSection = (
-      <>
-        <Heading
-          size="sm"
-          marginBottom="5px"
-          paddingTop="4px"
-          paddingBottom="4px"
-          paddingLeft="20px"
-          backgroundColor="gray.100"
-        >
-          Filter further by{" "}
-          {classificationInfo?.system?.categoryLabel.toLowerCase()}
-        </Heading>
-
-        <List marginLeft="20px" marginRight="4px">
-          {categoryBrowse.map((c) => {
-            if (c.category === undefined) {
-              return null;
-            }
-            return (
-              <ListItem key={c.category.id || 0}>
-                <ChakraLink
-                  as={ReactRouterLink}
-                  to={`./${c.category.id}/${search}`}
-                >
-                  <Tooltip
-                    label={`${numPhraseDisplay(c)} in ${c.category.category}`}
-                    openDelay={500}
-                  >
-                    <HStack>
-                      <Text noOfLines={4}>{c.category.category}</Text>
-                      {numPairDisplay(c)}
-                    </HStack>
-                  </Tooltip>
-                </ChakraLink>
-              </ListItem>
-            );
-          })}
-        </List>
-      </>
-    );
-  } else if (subCategoryBrowse && subCategoryBrowse.length > 0) {
-    classificationsBrowseSection = (
-      <>
-        <Heading
-          size="sm"
-          marginBottom="5px"
-          paddingTop="4px"
-          paddingBottom="4px"
-          paddingLeft="30px"
-          backgroundColor="gray.100"
-        >
-          Filter further by{" "}
-          {classificationInfo?.system?.subCategoryLabel.toLowerCase()}
-        </Heading>
-
-        <List marginLeft="30px" marginRight="4px">
-          {subCategoryBrowse.map((c) => {
-            if (c.subCategory === undefined) {
-              return null;
-            }
-            return (
-              <ListItem key={c.subCategory.id || 0}>
-                <ChakraLink
-                  as={ReactRouterLink}
-                  to={`./${c.subCategory.id}/${search}`}
-                >
-                  <Tooltip
-                    label={`${numPhraseDisplay(c)} in ${c.subCategory.subCategory}`}
-                    openDelay={500}
-                  >
-                    <HStack>
-                      <Text noOfLines={4}>{c.subCategory.subCategory}</Text>
-                      {numPairDisplay(c)}
-                    </HStack>
-                  </Tooltip>
-                </ChakraLink>
-              </ListItem>
-            );
-          })}
-        </List>
-      </>
-    );
-  } else if (classificationBrowse && classificationBrowse.length > 0) {
-    classificationsBrowseSection = (
-      <>
-        <Heading
-          size="sm"
-          marginBottom="5px"
-          paddingTop="4px"
-          paddingBottom="4px"
-          paddingLeft="40px"
-          backgroundColor="gray.100"
-        >
-          Filter further by{" "}
-          {classificationInfo?.system?.descriptionLabel.toLowerCase()}
-        </Heading>
-
-        <List marginLeft="40px" marginRight="4px">
-          {classificationBrowse.map((c) => {
-            if (c.classification === undefined) {
-              return null;
-            }
-            return (
-              <ListItem key={c.classification.id || 0}>
-                <ChakraLink
-                  as={ReactRouterLink}
-                  to={`./${c.classification.id}/${search}`}
-                >
-                  <Tooltip
-                    label={`${numPhraseDisplay(c)} in ${c.classification.code}: ${c.classification.description}`}
-                    openDelay={500}
-                  >
-                    <HStack>
-                      <Text noOfLines={4}>
-                        {c.classification.code}: {c.classification.description}
-                      </Text>
-                      {numPairDisplay(c)}
-                    </HStack>
-                  </Tooltip>
-                </ChakraLink>
-              </ListItem>
-            );
-          })}
-        </List>
-      </>
-    );
-  }
-
-  let authorBrowseSection: ReactElement | null = null;
-
-  if (topAuthors && topAuthors.length > 0) {
-    authorBrowseSection = (
-      <>
-        <Heading
-          size="sm"
-          marginBottom="5px"
-          paddingTop="4px"
-          paddingBottom="4px"
-          paddingLeft="10px"
-          backgroundColor="gray.100"
-        >
-          Authors
-        </Heading>
-        <List marginLeft="10px" marginRight="4px">
-          {topAuthors.map((u) => {
-            let newSearch = search;
-            newSearch = clearQueryParameter("author", newSearch);
-            if (newSearch) {
-              newSearch += "&";
-            } else {
-              newSearch = "?";
-            }
-            newSearch += `author=${u.userId}`;
-            const authorName = createFullName(u);
-            return (
-              <ListItem key={u.userId}>
-                <ChakraLink as={ReactRouterLink} to={`./${newSearch}`}>
-                  {" "}
-                  <Tooltip
-                    label={`${numPhraseDisplay(u)} by ${authorName}`}
-                    openDelay={500}
-                  >
-                    <HStack>
-                      <Text>{authorName}</Text>
-
-                      {numPairDisplay(u)}
-                    </HStack>
-                  </Tooltip>
-                </ChakraLink>
-              </ListItem>
-            );
-          })}
-        </List>
-      </>
-    );
-  } else if (authorInfo) {
-    const authorName = createFullName(authorInfo);
-    authorBrowseSection = (
-      <>
-        {" "}
-        <Heading
-          size="sm"
-          marginBottom="5px"
-          paddingTop="4px"
-          paddingBottom="4px"
-          paddingLeft="10px"
-          backgroundColor="gray.100"
-        >
-          Current author filter
-        </Heading>
-        <List marginLeft="10px">
-          <ListItem>
-            <HStack gap={0}>
-              <Text>{authorName}</Text>
-              <Tooltip label={`Clear filter: ${authorName}`} openDelay={500}>
-                <IconButton
-                  variant="ghost"
-                  size="sm"
-                  icon={<MdFilterAltOff />}
-                  aria-label={`Clear filter: ${authorName}`}
-                  onClick={() => {
-                    const newSearch = clearQueryParameter("author", search);
-                    navigate(`.${newSearch}`);
-                  }}
-                />
-              </Tooltip>
-            </HStack>
-          </ListItem>
-        </List>
-      </>
-    );
-  }
-
-  let filteredByStatement: ReactElement | null = null;
-
-  if (authorInfo || classificationInfo || features.size > 0) {
-    const filters: string[] = [];
-    if (authorInfo) {
-      filters.push(`author (${createFullName(authorInfo)})`);
-    }
-    if (classificationInfo) {
-      if (classificationInfo.classification) {
-        filters.push(
-          `classification (${classificationInfo.classification.code})`,
-        );
-      } else if (classificationInfo.subCategory) {
-        let subCategory = classificationInfo.subCategory.subCategory;
-        if (subCategory.length > 40) {
-          subCategory = subCategory.substring(0, 40) + "...";
-        }
-        filters.push(`classification (${subCategory})`);
-      } else if (classificationInfo.category) {
-        let category = classificationInfo.category.category;
-        if (category.length > 40) {
-          category = category.substring(0, 40) + "...";
-        }
-        filters.push(`classification (${category})`);
-      } else if (classificationInfo.system) {
-        filters.push(
-          `classification system (${classificationInfo.system.shortName})`,
-        );
-      } else {
-        filters.push(`unclassified`);
-      }
-    }
-
-    for (const feature of availableFeatures) {
-      if (features.has(feature.code)) {
-        filters.push(feature.term.toLowerCase());
-      }
-    }
-    let filterText = "Filtered by ";
-    if (filters.length === 1) {
-      filterText += filters[0];
-    } else {
-      filterText += filters.slice(0, filters.length - 1).join(", ");
-      filterText += ` and ${filters[filters.length - 1]}`;
-    }
-
-    filteredByStatement = (
-      <HStack gap={0}>
-        <Text>{filterText}</Text>
-        <Tooltip label={`Clear all filters`} openDelay={500}>
-          <IconButton
-            variant="ghost"
-            size="sm"
-            icon={<MdFilterAltOff />}
-            aria-label={`Clear all filters`}
-            onClick={() => clearAllFilters(search, availableFeatures, navigate)}
-          />
-        </Tooltip>
-      </HStack>
-    );
-  }
-
   let authorMatches: ReactElement | null = null;
 
   if (authorInfo) {
@@ -917,8 +359,8 @@ export function Explore() {
                     </ChakraLink>
                   </Tooltip>
                   <Tooltip label={`Filter by ${authorName}`} openDelay={500}>
-                    <IconButton
-                      icon={<MdFilterAlt />}
+                    <Button
+                      rightIcon={<MdFilterAlt />}
                       size="xs"
                       marginLeft="10px"
                       onClick={() => {
@@ -937,7 +379,9 @@ export function Explore() {
                         setSearchString("");
                       }}
                       aria-label={`Filter by ${authorName}`}
-                    />
+                    >
+                      Filter by {authorName}
+                    </Button>
                   </Tooltip>
                 </Flex>
               </ListItem>
@@ -961,41 +405,47 @@ export function Explore() {
 
       const newURL = `/explore/${system.id}/${category.id}/${subCategory.id}/${classification.id}`;
 
+      let shortenedDescription = classification.description;
+      if (shortenedDescription.length > 40) {
+        shortenedDescription = shortenedDescription.substring(0, 40) + "...";
+      }
+
       classificationMatchPieces.push(
         <ListItem
           key={`classification${classification.id}|${classification.descriptionId}`}
-          marginTop="5px"
+          marginTop="15px"
         >
-          <Flex>
-            <VStack alignItems="left" gap={0}>
-              <Text>
-                {classification.code}: {expandedDescription}
-              </Text>
-              <Text>
-                ({system.descriptionLabel} from {system.name})
-              </Text>
-            </VStack>
-            <Tooltip
-              label={`Filter by ${expandedDescription}`}
-              openDelay={500}
-              placement="bottom-end"
-            >
-              <IconButton
-                icon={<MdFilterAlt />}
-                size="xs"
-                marginLeft="10px"
-                onClick={() => {
-                  let newSearch = search;
-                  // clear the search string
-                  newSearch = clearQueryParameter("q", newSearch);
-                  navigate(`${newURL}${newSearch}`);
-                  setCurrentTab(1);
-                  setSearchString("");
-                }}
-                aria-label={`Filter by ${expandedDescription}`}
-              />
-            </Tooltip>
-          </Flex>
+          <VStack alignItems="left" gap={0}>
+            <Box>
+              {classification.code}: {expandedDescription}
+            </Box>
+            <Box>
+              ({system.descriptionLabel} from {system.name})
+            </Box>
+            <Box>
+              <Tooltip
+                label={`Filter by ${expandedDescription}`}
+                openDelay={500}
+                placement="bottom-end"
+              >
+                <Button
+                  rightIcon={<MdFilterAlt />}
+                  size="xs"
+                  onClick={() => {
+                    let newSearch = search;
+                    // clear the search string
+                    newSearch = clearQueryParameter("q", newSearch);
+                    navigate(`${newURL}${newSearch}`);
+                    setCurrentTab(1);
+                    setSearchString("");
+                  }}
+                  aria-label={`Filter by ${expandedDescription}`}
+                >
+                  Filter by {shortenedDescription}
+                </Button>
+              </Tooltip>
+            </Box>
+          </VStack>
         </ListItem>,
       );
     }
@@ -1010,38 +460,44 @@ export function Explore() {
         ? `${category.category} | ${subCategory.subCategory}`
         : subCategory.subCategory;
 
+      let shortenedDescription = subCategory.subCategory;
+      if (shortenedDescription.length > 40) {
+        shortenedDescription = shortenedDescription.substring(0, 40) + "...";
+      }
+
       const newURL = `/explore/${system.id}/${category.id}/${subCategory.id}`;
 
       classificationMatchPieces.push(
-        <ListItem key={`subcategory${subCategory.id}`} marginTop="5px">
-          <Flex>
-            <VStack alignItems="left" gap={0}>
-              <Text>{expandedDescription}</Text>
-              <Text>
-                ({system.subCategoryLabel} from {system.name})
-              </Text>
-            </VStack>
-            <Tooltip
-              label={`Filter by ${expandedDescription}`}
-              openDelay={500}
-              placement="bottom-end"
-            >
-              <IconButton
-                icon={<MdFilterAlt />}
-                size="xs"
-                marginLeft="10px"
-                onClick={() => {
-                  let newSearch = search;
-                  // clear the search string
-                  newSearch = clearQueryParameter("q", newSearch);
-                  navigate(`${newURL}${newSearch}`);
-                  setCurrentTab(1);
-                  setSearchString("");
-                }}
-                aria-label={`Filter by ${expandedDescription}`}
-              />
-            </Tooltip>
-          </Flex>
+        <ListItem key={`subcategory${subCategory.id}`} marginTop="15px">
+          <VStack alignItems="left" gap={0}>
+            <Box>{expandedDescription}</Box>
+            <Box>
+              ({system.subCategoryLabel} from {system.name})
+            </Box>
+            <Box>
+              <Tooltip
+                label={`Filter by ${expandedDescription}`}
+                openDelay={500}
+                placement="bottom-end"
+              >
+                <Button
+                  rightIcon={<MdFilterAlt />}
+                  size="xs"
+                  onClick={() => {
+                    let newSearch = search;
+                    // clear the search string
+                    newSearch = clearQueryParameter("q", newSearch);
+                    navigate(`${newURL}${newSearch}`);
+                    setCurrentTab(1);
+                    setSearchString("");
+                  }}
+                  aria-label={`Filter by ${expandedDescription}`}
+                >
+                  Filter by {shortenedDescription}
+                </Button>
+              </Tooltip>
+            </Box>
+          </VStack>
         </ListItem>,
       );
     }
@@ -1055,35 +511,36 @@ export function Explore() {
       const newURL = `/explore/${system.id}/${category.id}`;
 
       classificationMatchPieces.push(
-        <ListItem key={`category${category.id}`} marginTop="5px">
-          <Flex>
-            <VStack alignItems="left" gap={0}>
-              <Text>{category.category}</Text>
-              <Text>
-                ({system.categoryLabel} from {system.name})
-              </Text>
-            </VStack>
-            <Tooltip
-              label={`Filter by ${category.category}`}
-              openDelay={500}
-              placement="bottom-end"
-            >
-              <IconButton
-                icon={<MdFilterAlt />}
-                size="xs"
-                marginLeft="10px"
-                onClick={() => {
-                  let newSearch = search;
-                  // clear the search string
-                  newSearch = clearQueryParameter("q", newSearch);
-                  navigate(`${newURL}${newSearch}`);
-                  setCurrentTab(1);
-                  setSearchString("");
-                }}
-                aria-label={`Filter by ${category.category}`}
-              />
-            </Tooltip>
-          </Flex>
+        <ListItem key={`category${category.id}`} marginTop="15px">
+          <VStack alignItems="left" gap={0}>
+            <Text>{category.category}</Text>
+            <Text>
+              ({system.categoryLabel} from {system.name})
+            </Text>
+            <Box>
+              <Tooltip
+                label={`Filter by ${category.category}`}
+                openDelay={500}
+                placement="bottom-end"
+              >
+                <Button
+                  rightIcon={<MdFilterAlt />}
+                  size="xs"
+                  onClick={() => {
+                    let newSearch = search;
+                    // clear the search string
+                    newSearch = clearQueryParameter("q", newSearch);
+                    navigate(`${newURL}${newSearch}`);
+                    setCurrentTab(1);
+                    setSearchString("");
+                  }}
+                  aria-label={`Filter by ${category.category}`}
+                >
+                  Filter by {category.category}
+                </Button>
+              </Tooltip>
+            </Box>
+          </VStack>
         </ListItem>,
       );
     }
@@ -1121,31 +578,49 @@ export function Explore() {
     }
   }
 
+  let numActiveFilters = features.size;
+
+  if (classificationInfo) {
+    // add one for system or unclassified
+    numActiveFilters++;
+
+    if (classificationInfo.category) {
+      numActiveFilters++;
+    }
+
+    if (classificationInfo.subCategory) {
+      numActiveFilters++;
+    }
+    if (classificationInfo.classification) {
+      numActiveFilters++;
+    }
+  }
+
+  const numActiveFiltersInfo =
+    numActiveFilters > 0 ? `(${numActiveFilters})` : "";
+
   const heading = (
     <>
       <Flex
-        flexDirection="column"
         p={4}
         mt="1rem"
         justifyContent="center"
         alignItems="center"
-        textAlign="center"
         height="20px"
+        width="100%"
       >
-        <Box maxW={400} minW={200}>
-          <Box w="400px">
-            <Form>
-              <Searchbar
-                value={searchString}
-                dataTest="Search"
-                name="q"
-                onInput={(e) => {
-                  setSearchString((e.target as HTMLInputElement).value);
-                }}
-              />
-              {extraFormInputs}
-            </Form>
-          </Box>
+        <Box width="400px">
+          <Form>
+            <Searchbar
+              value={searchString}
+              dataTest="Search"
+              name="q"
+              onInput={(e) => {
+                setSearchString((e.target as HTMLInputElement).value);
+              }}
+            />
+            {extraFormInputs}
+          </Form>
         </Box>
       </Flex>
       <Box
@@ -1157,43 +632,57 @@ export function Explore() {
         background="doenet.canvas"
       >
         <Flex
-          fontSize="24px"
-          backgroundColor={q ? "gray.300" : "inherit"}
+          fontSize={{ base: "16px", md: "24px" }}
+          backgroundColor={q ? "gray.100" : "inherit"}
           width="100%"
           justifyContent="center"
           marginBottom="2px"
+          height="40px"
+          alignItems="center"
+          pl="4px"
+          pr="4px"
         >
           {q ? (
             <>
-              <Spacer />
               <Text data-test="Search Results For">
                 Search results for: {q}{" "}
               </Text>
-              <Spacer />
               <Tooltip
                 label="Clear search results"
                 openDelay={500}
                 placement="bottom-end"
               >
-                <IconButton
+                <Button
                   aria-label="Clear search results"
-                  icon={<MdFilterAltOff />}
-                  variant="ghost"
+                  variant="solid"
+                  colorScheme="blue"
+                  size="xs"
+                  marginLeft="10px"
                   onClick={() => {
                     let newSearch = search;
                     newSearch = clearQueryParameter("q", newSearch);
                     navigate(`.${newSearch}`);
                     setSearchString("");
                   }}
-                />
+                >
+                  Clear
+                </Button>
               </Tooltip>
             </>
-          ) : (
-            <>Explore Doenet</>
-          )}
+          ) : null}
         </Flex>
-        <Flex width="100%" fontStyle="italic">
-          <Box marginLeft="10px">{filteredByStatement}</Box>
+
+        <Flex width="100%">
+          <Show below="lg">
+            <Button
+              onClick={filterOnOpen}
+              colorScheme="blue"
+              marginLeft="5px"
+              rightIcon={<MdFilterAlt />}
+            >
+              Filter results {numActiveFiltersInfo}
+            </Button>
+          </Show>
           <Spacer />
           <Box marginRight=".5em">
             <ToggleViewButtonGroup
@@ -1214,29 +703,32 @@ export function Explore() {
 
   const results = (
     <Tabs
-      minHeight="calc(100vh - 188px)"
+      minHeight={{ base: "calc(100vh - 188px)", lg: "calc(100vh - 133px)" }}
       variant="enclosed-colored"
       index={currentTab}
       onChange={setCurrentTab}
     >
       <TabList>
-        <Tab data-test="Library Tab">
-          Library ({intWithCommas(totalCount.numLibrary || 0)})
+        <Tab data-test="Curated Tab">
+          Curated ({intWithCommas(totalCount.numCurated || 0)})
         </Tab>
         <Tab data-test="Community Tab">
-          Community ({intWithCommas(totalCount.numCommunity || 0)})
+          Com&shy;munity ({intWithCommas(totalCount.numCommunity || 0)})
         </Tab>
         <Tab data-test="Authors Tab" hidden={!q}>
           Authors ({intWithCommas(matchedAuthors?.length || 0)})
         </Tab>
         <Tab data-test="Classifications Tab" hidden={!q}>
-          Classifications ({intWithCommas(totalMatchedClassifications)})
+          Classifi&shy;cations ({intWithCommas(totalMatchedClassifications)})
         </Tab>
       </TabList>
 
       <TabPanels data-test="Search Results">
         <TabPanel padding={0}>
-          {displayMatchingContent([], "calc(100vh - 230px)")}
+          {displayMatchingContent([], {
+            base: "calc(100vh - 230px)",
+            lg: "calc(100vh - 175px)",
+          })}
         </TabPanel>
         <TabPanel padding={0}>
           {trendingContent ? (
@@ -1261,7 +753,10 @@ export function Explore() {
               </Heading>
             </>
           ) : null}
-          {displayMatchingContent(content, "calc(100vh - 230px)")}
+          {displayMatchingContent(content, {
+            base: "calc(100vh - 230px)",
+            lg: "calc(100vh - 175px)",
+          })}
         </TabPanel>
         <TabPanel>{authorMatches}</TabPanel>
         <TabPanel>{classificationMatches}</TabPanel>
@@ -1269,142 +764,43 @@ export function Explore() {
     </Tabs>
   );
 
-  let filterSection: ReactElement;
-
-  if (filtersOpen) {
-    filterSection = (
-      <>
-        <Flex backgroundColor="gray.100" pl="10px" pt="10px">
-          <Heading size="md">Filters</Heading>
-          {filteredByStatement ? (
-            <Button
-              colorScheme="blue"
-              rightIcon={<MdFilterAltOff />}
-              size="xs"
-              marginLeft="10px"
-              onClick={() =>
-                clearAllFilters(search, availableFeatures, navigate)
-              }
-            >
-              Clear all filters
-            </Button>
-          ) : null}
-          <Spacer />
-          <Tooltip label="Close filter panel" openDelay={500}>
-            <CloseButton
-              onClick={() => setFiltersOpen(false)}
-              aria-label="Close filter panel"
-            />
-          </Tooltip>
-        </Flex>
-        <Box>{categoryFilterSection}</Box>
-        <Box marginTop="20px">{classificationStatusSection}</Box>
-        <Box marginTop="20px">{classificationsBrowseSection}</Box>
-        <Box marginTop="20px">{authorBrowseSection}</Box>
-      </>
-    );
-  } else {
-    filterSection = (
-      <Tooltip label="Open filter panel" openDelay={500}>
-        <IconButton
-          variant="solid"
-          size="sm"
-          icon={<MdFilterAlt />}
-          onClick={() => setFiltersOpen(true)}
-          aria-label="Open filter panel"
-        />
-      </Tooltip>
-    );
-  }
-
   return (
     <>
       {infoDrawer}
+      {filterDrawer}
       {heading}
-      <Grid
-        width="100%"
-        gridTemplateColumns={filtersOpen ? "300px 1fr" : "40px 1fr"}
-        gap="0"
-      >
-        <GridItem
-          marginLeft={filtersOpen ? "0px" : "4px"}
-          borderRight="2px"
-          paddingRight={filtersOpen ? "0px" : "4px"}
+      <Hide below="lg">
+        <Grid
+          width="100%"
+          gridTemplateColumns="300px 1fr"
+          gap="0"
+          marginTop={{ base: "0px", lg: "-55px" }}
         >
-          {filterSection}
-        </GridItem>
-        <GridItem>{results}</GridItem>
-      </Grid>
+          <GridItem
+            marginLeft="0px"
+            borderRight="2px"
+            paddingRight="0px"
+            marginTop="40px"
+          >
+            <FilterPanel
+              topAuthors={topAuthors}
+              authorInfo={authorInfo}
+              classificationBrowse={classificationBrowse}
+              subCategoryBrowse={subCategoryBrowse}
+              categoryBrowse={categoryBrowse}
+              systemBrowse={systemBrowse}
+              classificationInfo={classificationInfo}
+              countByFeature={countByFeature}
+              features={features}
+              availableFeatures={availableFeatures}
+              search={search}
+              navigate={navigate}
+            />
+          </GridItem>
+          <GridItem>{results}</GridItem>
+        </Grid>
+      </Hide>
+      <Show below="lg">{results}</Show>
     </>
   );
-}
-
-function clearAllFilters(
-  search: string,
-  availableFeatures: ContentFeature[],
-  navigate,
-) {
-  let newSearch = search;
-  for (const feature of availableFeatures) {
-    newSearch = clearQueryParameter(feature.code, newSearch);
-  }
-  newSearch = clearQueryParameter("author", newSearch);
-  navigate(`/explore/${newSearch}`);
-}
-
-function numPairDisplay({
-  numLibrary,
-  numCommunity,
-}: {
-  numLibrary?: number;
-  numCommunity?: number;
-}) {
-  const nl = intWithCommas(numLibrary || 0);
-  const nc = intWithCommas(numCommunity || 0);
-
-  return (
-    <Box>
-      {" "}
-      <Text fontSize="smaller">
-        ({nl};&nbsp;{nc})
-      </Text>
-    </Box>
-  );
-}
-
-function numPhraseDisplay(
-  {
-    numLibrary,
-    numCommunity,
-  }: {
-    numLibrary?: number;
-    numCommunity?: number;
-  },
-  qualifier = "",
-) {
-  const nl = intWithCommas(numLibrary || 0);
-  const nc = intWithCommas(numCommunity || 0);
-
-  if (qualifier) {
-    qualifier += " ";
-  }
-
-  return `${nl} ${qualifier}library item${nl === "1" ? "" : "s"} and ${nc} ${qualifier}community item${nc === "1" ? "" : "s"}`;
-}
-
-function clearQueryParameter(param: string, search: string) {
-  function escapeRegex(string) {
-    return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
-  }
-  const escapedParam = escapeRegex(param);
-
-  let newSearch = search;
-  newSearch = newSearch.replace(new RegExp(`&?${escapedParam}(=[^&]*)?`), "");
-  if (newSearch === "?") {
-    newSearch = "";
-  }
-  if (newSearch.substring(0, 2) === "?&") {
-    newSearch = "?" + newSearch.slice(2);
-  }
-  return newSearch;
 }

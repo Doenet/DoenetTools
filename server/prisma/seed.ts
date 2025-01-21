@@ -15,10 +15,10 @@ async function main() {
   });
   await prisma.doenetmlVersions.upsert({
     where: { displayedVersion: "0.7" },
-    update: { fullVersion: "0.7.0-alpha22" },
+    update: { fullVersion: "0.7.0-alpha27" },
     create: {
       displayedVersion: "0.7",
-      fullVersion: "0.7.0-alpha22",
+      fullVersion: "0.7.0-alpha27",
       default: true,
     },
   });
@@ -191,14 +191,14 @@ async function main() {
     update: {
       term: "Interactive",
       description:
-        "Activity contains interactives, such as interactive graphics.",
+        "Activity contains interactives, such as draggable graphics.",
       sortIndex: 2,
     },
     create: {
       code: "isInteractive",
       term: "Interactive",
       description:
-        "Activity contains interactives, such as interactive graphics.",
+        "Activity contains interactives, such as draggable graphics.",
       sortIndex: 2,
     },
   });

@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Icon, Tooltip } from "@chakra-ui/react";
+import { ButtonGroup, IconButton, Tooltip } from "@chakra-ui/react";
 import axios from "axios";
 import React from "react";
 import { FaListAlt, FaRegListAlt } from "react-icons/fa";
@@ -31,49 +31,51 @@ export function ToggleViewButtonGroup({
 }) {
   return (
     <ButtonGroup size="sm" isAttached variant="outline" marginBottom=".5em">
-      <Tooltip label="Toggle List View">
-        <Button isActive={listView === true}>
-          <Icon
-            as={listView ? FaListAlt : FaRegListAlt}
-            boxSize={10}
-            p=".5em"
-            cursor="pointer"
-            onClick={() => {
-              if (listView === false) {
-                setListView(true);
-                fetcher.submit(
-                  {
-                    _action: "Set List View Preferred",
-                    listViewPref: true,
-                  },
-                  { method: "post" },
-                );
-              }
-            }}
-          />
-        </Button>
+      <Tooltip label="Toggle list view" openDelay={500}>
+        <IconButton
+          size="lg"
+          isActive={listView === true}
+          zIndex={1}
+          icon={listView ? <FaListAlt /> : <FaRegListAlt />}
+          boxSize="8"
+          width="50px"
+          aria-label="Toggle list view"
+          onClick={() => {
+            if (listView === false) {
+              setListView(true);
+              fetcher.submit(
+                {
+                  _action: "Set List View Preferred",
+                  listViewPref: true,
+                },
+                { method: "post" },
+              );
+            }
+          }}
+        />
       </Tooltip>
-      <Tooltip label="Toggle Card View">
-        <Button isActive={listView === false}>
-          <Icon
-            as={listView ? IoGridOutline : IoGrid}
-            boxSize={10}
-            p=".5em"
-            cursor="pointer"
-            onClick={() => {
-              if (listView === true) {
-                setListView(false);
-                fetcher.submit(
-                  {
-                    _action: "Set List View Preferred",
-                    listViewPref: false,
-                  },
-                  { method: "post" },
-                );
-              }
-            }}
-          />
-        </Button>
+      <Tooltip label="Toggle card view" placement="bottom-end" openDelay={500}>
+        <IconButton
+          size="lg"
+          isActive={listView === false}
+          zIndex={1}
+          icon={listView ? <IoGridOutline /> : <IoGrid />}
+          boxSize={8}
+          width="50px"
+          aria-label="Toggle card view"
+          onClick={() => {
+            if (listView === true) {
+              setListView(false);
+              fetcher.submit(
+                {
+                  _action: "Set List View Preferred",
+                  listViewPref: false,
+                },
+                { method: "post" },
+              );
+            }
+          }}
+        />
       </Tooltip>
     </ButtonGroup>
   );
