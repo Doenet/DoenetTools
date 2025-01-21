@@ -1,21 +1,21 @@
 import React, { useEffect } from "react";
-import { redirect, replace, useLoaderData } from "react-router";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
 import { Button, Box, Link as ChakraLink } from "@chakra-ui/react";
 import axios from "axios";
-import { DoenetHeading as Heading } from "./Community";
+import { DoenetHeading as Heading } from "../../../Widgets/Heading";
 import {
   Link as ReactRouterLink,
-  useFetcher,
   useNavigate,
-} from "react-router-dom";
+  redirect,
+  useLoaderData,
+} from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { UserInfo } from "../../../_utils/types";
 
-export async function action({ params, request }) {
+export async function action({ request }) {
   const formData = await request.formData();
-  let formObj = Object.fromEntries(formData);
+  const formObj = Object.fromEntries(formData);
 
   // Note: currently not using these actions but using navigate directly to avoid adding to browser history
 
@@ -44,7 +44,7 @@ export async function loader({ params, request, isAssignedData = false }) {
   const doenetML = assignment.documents[0].source;
   const doenetmlVersion = assignment.documents[0].doenetmlVersion.fullVersion;
   const numStatesSaved = assignmentData.documentScores.length;
-  let documentScores: { latest: number; maxScore?: number } = {
+  const documentScores: { latest: number; maxScore?: number } = {
     latest: assignmentData.documentScores[0].score,
   };
   if (numStatesSaved === 2) {
@@ -78,7 +78,6 @@ export function AssignmentStudentData() {
     withMaxScore,
     numStatesSaved,
     documentScores,
-    isAssignedData,
   } = useLoaderData() as {
     assignment: {
       name: string;
@@ -106,14 +105,13 @@ export function AssignmentStudentData() {
     document.title = `${assignment?.name} - Doenet`;
   }, [assignment?.name]);
 
-  const fetcher = useFetcher();
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    let messageListener = async function (event) {
+    const messageListener = async function (event) {
       if (event.data.subject == "SPLICE.getState") {
         try {
-          let { data } = await axios.get("/api/loadState", {
+          const { data } = await axios.get("/api/loadState", {
             params: {
               activityId: assignment.id,
               docId: assignment.documents[0]!.docId,
@@ -139,7 +137,7 @@ export function AssignmentStudentData() {
               loadedState: false,
             });
           }
-        } catch (e) {
+        } catch (_e) {
           window.postMessage({
             subject: "SPLICE.getState.response",
             messageId: event.data.messageId,
@@ -267,7 +265,7 @@ export function AssignmentStudentData() {
             paginate={true}
             linkSettings={{
               viewURL: "/activityViewer",
-              editURL: "/publicEditor",
+              editURL: "/codeViewer",
             }}
             apiURLs={{ postMessages: true }}
           />
@@ -298,7 +296,7 @@ export function AssignmentStudentData() {
             paginate={true}
             linkSettings={{
               viewURL: "/activityViewer",
-              editURL: "/publicEditor",
+              editURL: "/codeViewer",
             }}
             apiURLs={{ postMessages: true }}
           />

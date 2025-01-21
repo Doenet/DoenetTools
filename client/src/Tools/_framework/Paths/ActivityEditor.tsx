@@ -29,7 +29,7 @@ import {
   MdOutlineGroup,
 } from "react-icons/md";
 import { FaCog } from "react-icons/fa";
-import { useFetcher } from "react-router-dom";
+import { useFetcher } from "react-router";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router";
 import {
@@ -45,6 +45,7 @@ import {
 import { ShareDrawer } from "../ToolPanels/ShareDrawer";
 import { sharingActions } from "../ToolPanels/ShareSettings";
 import {
+  ContentFeature,
   ContentStructure,
   DoenetmlVersion,
   License,
@@ -52,7 +53,7 @@ import {
 
 export async function action({ params, request }) {
   const formData = await request.formData();
-  let formObj = Object.fromEntries(formData);
+  const formObj = Object.fromEntries(formData);
 
   //Don't let name be blank
   let name = formObj?.name?.trim();
@@ -68,17 +69,17 @@ export async function action({ params, request }) {
     return true;
   }
 
-  let resultCS = await contentSettingsActions({ formObj });
+  const resultCS = await contentSettingsActions({ formObj });
   if (resultCS) {
     return resultCS;
   }
 
-  let resultSA = await sharingActions({ formObj });
+  const resultSA = await sharingActions({ formObj });
   if (resultSA) {
     return resultSA;
   }
 
-  let resultAS = await assignmentSettingsActions({ formObj });
+  const resultAS = await assignmentSettingsActions({ formObj });
   if (resultAS) {
     return resultAS;
   }
@@ -92,16 +93,16 @@ export async function action({ params, request }) {
 
 export async function loader({ params }) {
   const {
-    data: { notMe, activity: activityData },
+    data: { notMe, activity: activityData, availableFeatures },
   } = await axios.get(`/api/getActivityEditorData/${params.activityId}`);
 
   if (notMe) {
     return redirect(
-      `/publicEditor/${params.activityId}${params.docId ? "/" + params.docId : ""}`,
+      `/codeViewer/${params.activityId}${params.docId ? "/" + params.docId : ""}`,
     );
   }
 
-  let activityId = params.activityId;
+  const activityId = params.activityId;
   let docId = params.docId;
   if (!docId) {
     // If docId was not supplied in the url,
@@ -125,7 +126,7 @@ export async function loader({ params }) {
     `/api/loadSupportingFileInfo/${activityId}`,
   );
 
-  let supportingFileData = supportingFileResp.data;
+  const supportingFileData = supportingFileResp.data;
 
   //This code isn't depreciated but only works on Chrome
   //navigator.userAgentData.platform.indexOf("linux") != -1
@@ -159,6 +160,7 @@ export async function loader({ params }) {
     supportingFileData,
     allDoenetmlVersions,
     allLicenses,
+    availableFeatures,
   };
 }
 
@@ -168,7 +170,7 @@ function EditableName({ dataTest }) {
   const [name, setName] = useState(activityData.name);
   const fetcher = useFetcher();
 
-  let lastActivityDataName = useRef(activityData.name);
+  const lastActivityDataName = useRef(activityData.name);
 
   //Update when something else updates the name
   if (activityData.name != lastActivityDataName.current) {
@@ -188,7 +190,7 @@ function EditableName({ dataTest }) {
         setName(value);
       }}
       onSubmit={(value) => {
-        let submitValue = value;
+        const submitValue = value;
 
         fetcher.submit(
           { _action: "update name", name: submitValue },
@@ -197,7 +199,7 @@ function EditableName({ dataTest }) {
       }}
     >
       <Tooltip label={name}>
-        <EditablePreview data-test="Editable Preview" noOfLines={1} />
+        <EditablePreview data-test="Editable Title" noOfLines={1} />
       </Tooltip>
       <EditableInput
         width={{ base: "100%", md: "350px", lg: "450px" }}
@@ -209,7 +211,6 @@ function EditableName({ dataTest }) {
 
 export function ActivityEditor() {
   const {
-    platform,
     activityId,
     doenetML,
     doenetmlVersion,
@@ -217,8 +218,8 @@ export function ActivityEditor() {
     activityData,
     allDoenetmlVersions,
     allLicenses,
+    availableFeatures,
   } = useLoaderData() as {
-    platform: "Win" | "Mac" | "Linux";
     activityId: string;
     doenetML: string;
     doenetmlVersion: DoenetmlVersion;
@@ -226,6 +227,7 @@ export function ActivityEditor() {
     activityData: ContentStructure;
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
+    availableFeatures: ContentFeature[];
   };
 
   const {
@@ -358,9 +360,9 @@ export function ActivityEditor() {
         onClose={settingsOnClose}
         finalFocusRef={controlsBtnRef}
         fetcher={fetcher}
-        id={activityId}
         contentData={activityData}
         allDoenetmlVersions={allDoenetmlVersions}
+        availableFeatures={availableFeatures}
         displayTab={displaySettingsTab}
       />
       <ShareDrawer
@@ -581,7 +583,7 @@ export function ActivityEditor() {
               <DoenetEditor
                 height={`calc(100vh - ${readOnly ? 120 : 80}px)`}
                 width="100%"
-                doenetML={doenetML}
+                doenetML={textEditorDoenetML.current}
                 doenetmlChangeCallback={handleSaveDoc}
                 immediateDoenetmlChangeCallback={(newDoenetML: string) => {
                   textEditorDoenetML.current = newDoenetML;
@@ -661,7 +663,7 @@ export function ActivityEditor() {
                         navigate={navigate}
                         linkSettings={{
                           viewURL: "/activityViewer",
-                          editURL: "/publicEditor",
+                          editURL: "/codeViewer",
                         }}
                         includeVariantSelector={true}
                       />

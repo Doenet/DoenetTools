@@ -15,8 +15,8 @@ export default function AssignmentPreview({
     allPossibleVariants: ["a"],
   });
 
-  let navigate = useNavigate();
-  let location = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <Box
@@ -53,7 +53,7 @@ export default function AssignmentPreview({
           navigate={navigate}
           linkSettings={{
             viewURL: "/activityViewer",
-            editURL: "/publicEditor",
+            editURL: "/codeViewer",
           }}
           showAnswerTitles={true}
         />

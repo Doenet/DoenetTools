@@ -1,7 +1,7 @@
 import React, { RefObject, useEffect, useState } from "react";
 import { sharingActions, ShareSettings } from "./ShareSettings";
 import { remixedFromActions, RemixedFrom } from "./RemixedFrom";
-import { FetcherWithComponents } from "react-router-dom";
+import { FetcherWithComponents } from "react-router";
 import {
   Box,
   Drawer,
@@ -24,6 +24,7 @@ import {
   DocHistoryItem,
   DocRemixItem,
   License,
+  LicenseCode,
 } from "../../../_utils/types";
 import axios from "axios";
 import { cidFromText } from "../../../_utils/cid";
@@ -33,12 +34,12 @@ import {
 } from "../../../_utils/processRemixes";
 
 export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
-  let result1 = await sharingActions({ formObj });
+  const result1 = await sharingActions({ formObj });
   if (result1) {
     return result1;
   }
 
-  let result4 = await remixedFromActions({ formObj });
+  const result4 = await remixedFromActions({ formObj });
   if (result4) {
     return result4;
   }
@@ -69,6 +70,8 @@ export function ShareDrawer({
   const [haveChangedHistoryItem, setHaveChangedHistoryItem] = useState(false);
   const [remixes, setRemixes] = useState<DocRemixItem[] | null>(null);
   const [thisCid, setThisCid] = useState<string | null>(null);
+  const [remixedWithLicense, setRemixedWithLicense] =
+    useState<LicenseCode | null>(null);
 
   useEffect(() => {
     async function getHistoryAndRemixes() {
@@ -79,9 +82,11 @@ export function ShareDrawer({
       const hist = await processContributorHistory(data.docHistories[0]);
       setContributorHistory(hist);
 
-      let haveChanged = hist.some((dhi) => dhi.prevChanged);
+      const haveChanged = hist.some((dhi) => dhi.prevChanged);
 
       setHaveChangedHistoryItem(haveChanged);
+
+      setRemixedWithLicense(hist[0]?.withLicenseCode || null);
 
       const { data: data2 } = await axios.get(
         `/api/getRemixes/${contentData.id}`,
@@ -95,12 +100,6 @@ export function ShareDrawer({
       getHistoryAndRemixes();
     }
   }, [contentData]);
-
-  useEffect(() => {
-    async function getRemixes() {}
-
-    getRemixes();
-  }, [contentData.id]);
 
   useEffect(() => {
     async function recalculateThisCid() {
@@ -171,6 +170,7 @@ export function ShareDrawer({
                     fetcher={fetcher}
                     contentData={contentData}
                     allLicenses={allLicenses}
+                    remixedWithLicense={remixedWithLicense}
                   />
                 </TabPanel>
                 {!contentData.isFolder ? (

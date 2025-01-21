@@ -1,11 +1,12 @@
 import axios from "axios";
 import { Box, Text, Wrap } from "@chakra-ui/react";
 import React from "react";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData } from "react-router";
 import styled from "styled-components";
-import ContentCard from "../../../Widgets/ContentCard";
-import { MoveToGroupMenuItem } from "./Community";
+import Card from "../../../Widgets/Card";
+import { MoveToGroupMenuItem } from "./CommunityAdmin";
 import { createFullName } from "../../../_utils/names";
+import { ContentStructure } from "../../../_utils/types";
 
 export async function loader() {
   const {
@@ -15,7 +16,7 @@ export async function loader() {
     throw Error("Page not available");
   }
 
-  const { data: carouselGroups } = await axios.get(`/api/loadPromotedContent`);
+  const { data: carouselData } = await axios.get(`/api/loadPromotedContent`);
 
   const { data: recentActivities } = await axios.get(
     `/api/getAllRecentPublicActivities`,
@@ -23,7 +24,7 @@ export async function loader() {
 
   return {
     publicActivities: recentActivities,
-    carouselGroups,
+    carouselData,
   };
 }
 
@@ -49,9 +50,15 @@ const ActivitiesGrid = styled.div`
 `;
 
 export function Admin() {
-  const { carouselGroups, publicActivities } = useLoaderData() as {
-    carouselGroups: any;
-    publicActivities: any;
+  const { carouselData, publicActivities } = useLoaderData() as {
+    carouselData: {
+      groupName: string;
+      promotedGroupId: number;
+      currentlyFeatured: boolean;
+      homepage: boolean;
+      promotedContent: ContentStructure[];
+    }[];
+    publicActivities: ContentStructure[];
   };
 
   return (
@@ -86,20 +93,28 @@ export function Admin() {
                   const cardLink = `/activityViewer/${activity.id}`;
 
                   return (
-                    <ContentCard
-                      key={`ContentCard${activity.id}`}
-                      cardLink={cardLink}
-                      title={activity.name}
-                      imagePath={activity.imagePath}
-                      ownerName={createFullName(activity.owner)}
-                      showPublicStatus={false}
-                      showAssignmentStatus={false}
-                      menuItems={
-                        <MoveToGroupMenuItem
-                          activityId={activity.id}
-                          carouselGroups={carouselGroups}
-                        />
-                      }
+                    <Card
+                      key={`Card${activity.id}`}
+                      cardContent={{
+                        cardType: "activity",
+                        cardLink,
+                        id: activity.id,
+                        title: activity.name,
+                        ownerName: createFullName(activity.owner!),
+                        imagePath: activity.imagePath,
+                        isQuestion: activity.isQuestion,
+                        isInteractive: activity.isInteractive,
+                        containsVideo: activity.containsVideo,
+                        menuItems: (
+                          <MoveToGroupMenuItem
+                            activityId={activity.id}
+                            carouselData={carouselData}
+                          />
+                        ),
+                      }}
+                      showActivityFeatures={true}
+                      showOwnerName={true}
+                      listView={false}
                     />
                   );
                 })}

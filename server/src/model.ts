@@ -6,17 +6,39 @@ import {
 } from "@prisma/client";
 import { cidFromText } from "./utils/cid";
 import { DateTime } from "luxon";
-import { fromUUID } from "./utils/uuid";
+import { fromUUID, isEqualUUID } from "./utils/uuid";
 import {
-  AssignmentStatus,
-  ClassificationSystemTree,
+  ClassificationCategoryTree,
   ContentClassification,
   ContentStructure,
   DocHistory,
-  License,
+  DocRemixes,
   LicenseCode,
+  PartialContentClassification,
   UserInfo,
 } from "./types";
+import {
+  returnClassificationJoins,
+  returnClassificationFilterWhereClauses,
+  returnFeatureJoins,
+  returnFeatureWhereClauses,
+  sortClassifications,
+  returnClassificationMatchClauses,
+} from "./utils/classificationsFeatures";
+import {
+  processContentSharedDetails,
+  processContentSharedDetailsAssignedDoc,
+  processContent,
+  processContentSharedDetailsNoClassDocs,
+  processContentNoClassDocs,
+  processLicense,
+  returnContentStructureFullOwnerSelect,
+  returnContentStructureNoClassDocsSelect,
+  returnContentStructureSharedDetailsNoClassDocsSelect,
+  returnContentStructureSharedDetailsSelect,
+  returnClassificationListSelect,
+} from "./utils/contentStructure";
+import { getRandomValues } from "crypto";
 
 export class InvalidRequestError extends Error {
   errorCode = 400;
@@ -30,7 +52,7 @@ export class InvalidRequestError extends Error {
 export const prisma = new PrismaClient();
 
 async function mustBeAdmin(
-  userId: Buffer,
+  userId: Uint8Array,
   message = "You must be an community admin to take this action",
 ) {
   const isAdmin = await getIsAdmin(userId);
@@ -58,8 +80,8 @@ type ShiftIndicesCallbackFunction = ({
  * @param folderId
  */
 export async function createActivity(
-  ownerId: Buffer,
-  parentFolderId: Buffer | null,
+  ownerId: Uint8Array,
+  parentFolderId: Uint8Array | null,
 ) {
   const sortIndex = await getNextSortIndexForFolder(ownerId, parentFolderId);
 
@@ -71,7 +93,7 @@ export async function createActivity(
 
   let isPublic = false;
   let licenseCode = undefined;
-  let sharedWith: Buffer[] = [];
+  let sharedWith: Uint8Array[] = [];
 
   // If parent folder isn't null, check if it is shared and get its license
   if (parentFolderId !== null) {
@@ -136,14 +158,14 @@ export async function createActivity(
 }
 
 export async function createFolder(
-  ownerId: Buffer,
-  parentFolderId: Buffer | null,
+  ownerId: Uint8Array,
+  parentFolderId: Uint8Array | null,
 ) {
   const sortIndex = await getNextSortIndexForFolder(ownerId, parentFolderId);
 
   let isPublic = false;
   let licenseCode = undefined;
-  let sharedWith: Buffer[] = [];
+  let sharedWith: Uint8Array[] = [];
 
   // If parent folder isn't null, check if it is shared and get its license
   if (parentFolderId !== null) {
@@ -199,8 +221,8 @@ export async function createFolder(
  * @param folderId
  */
 async function getNextSortIndexForFolder(
-  ownerId: Buffer,
-  folderId: Buffer | null,
+  ownerId: Uint8Array,
+  folderId: Uint8Array | null,
 ) {
   if (folderId !== null) {
     // if a folderId is present, verify that it is a folder is owned by ownerId
@@ -227,7 +249,7 @@ function getNextSortIndex(lastIndex: bigint | null) {
     : Math.ceil(Number(lastIndex) / SORT_INCREMENT + 1) * SORT_INCREMENT;
 }
 
-export async function deleteActivity(id: Buffer, ownerId: Buffer) {
+export async function deleteActivity(id: Uint8Array, ownerId: Uint8Array) {
   const deleted = await prisma.content.update({
     where: { id, ownerId, isFolder: false },
     data: {
@@ -246,7 +268,7 @@ export async function deleteActivity(id: Buffer, ownerId: Buffer) {
   return { id: deleted.id, isDeleted: deleted.isDeleted };
 }
 
-export async function deleteFolder(id: Buffer, ownerId: Buffer) {
+export async function deleteFolder(id: Uint8Array, ownerId: Uint8Array) {
   // Delete the folder `id` along with all the content inside it,
   // recursing to subfolders, and including the documents of activities.
 
@@ -273,7 +295,7 @@ export async function deleteFolder(id: Buffer, ownerId: Buffer) {
 }
 
 // Note: currently (June 4, 2024) unused and untested
-export async function deleteDocument(id: Buffer, ownerId: Buffer) {
+export async function deleteDocument(id: Uint8Array, ownerId: Uint8Array) {
   await prisma.documents.update({
     where: { id, activity: { ownerId } },
     data: { isDeleted: true },
@@ -286,10 +308,10 @@ export async function updateContent({
   imagePath,
   ownerId,
 }: {
-  id: Buffer;
+  id: Uint8Array;
   name?: string;
   imagePath?: string;
-  ownerId: Buffer;
+  ownerId: Uint8Array;
 }) {
   const updated = await prisma.content.update({
     where: { id, ownerId, isDeleted: false },
@@ -306,6 +328,41 @@ export async function updateContent({
   };
 }
 
+export async function updateContentFeatures({
+  id,
+  ownerId,
+  features,
+}: {
+  id: Uint8Array;
+  ownerId: Uint8Array;
+  features: Record<string, boolean>;
+}) {
+  const updated = await prisma.content.update({
+    where: { id, ownerId, isDeleted: false },
+    data: {
+      contentFeatures: {
+        connect: Object.entries(features)
+          .filter(([_, val]) => val)
+          .map(([code, _]) => ({ code })),
+        disconnect: Object.entries(features)
+          .filter(([_, val]) => !val)
+          .map(([code, _]) => ({ code })),
+      },
+    },
+    select: { id: true },
+  });
+
+  return {
+    id: updated.id,
+  };
+}
+
+export async function getAvailableContentFeatures() {
+  return await prisma.contentFeatures.findMany({
+    orderBy: { sortIndex: "asc" },
+  });
+}
+
 export async function updateDoc({
   id,
   source,
@@ -313,11 +370,11 @@ export async function updateDoc({
   doenetmlVersionId,
   ownerId,
 }: {
-  id: Buffer;
+  id: Uint8Array;
   source?: string;
   name?: string;
   doenetmlVersionId?: number;
-  ownerId: Buffer;
+  ownerId: Uint8Array;
 }) {
   // check if activity is assigned
   const isAssigned = (
@@ -356,7 +413,7 @@ export async function updateDoc({
 // by relies on calling functions to determine access.
 // Also, the results of getActivity shouldn't be sent unchanged to the response,
 // as the sortIndex (bigint) cannot be serialized
-export async function getActivity(id: Buffer) {
+export async function getActivity(id: Uint8Array) {
   return await prisma.content.findUniqueOrThrow({
     where: { id, isDeleted: false, isFolder: false },
     include: {
@@ -367,7 +424,7 @@ export async function getActivity(id: Buffer) {
   });
 }
 
-export async function getActivityName(id: Buffer) {
+export async function getActivityName(id: Uint8Array) {
   return await prisma.content.findUniqueOrThrow({
     where: { id, isDeleted: false, isFolder: false },
     select: {
@@ -379,7 +436,7 @@ export async function getActivityName(id: Buffer) {
 
 // Note: getDoc does not currently incorporate access control,
 // by relies on calling functions to determine access
-export async function getDoc(id: Buffer) {
+export async function getDoc(id: Uint8Array) {
   return await prisma.documents.findUniqueOrThrow({
     where: { id, isDeleted: false },
   });
@@ -398,10 +455,10 @@ export async function moveContent({
   desiredPosition,
   ownerId,
 }: {
-  id: Buffer;
-  desiredParentFolderId: Buffer | null;
+  id: Uint8Array;
+  desiredParentFolderId: Uint8Array | null;
   desiredPosition: number;
-  ownerId: Buffer;
+  ownerId: Uint8Array;
 }) {
   if (!Number.isInteger(desiredPosition)) {
     throw Error("desiredPosition must be an integer");
@@ -419,7 +476,7 @@ export async function moveContent({
 
   let desiredFolderIsPublic = false;
   let desiredFolderLicenseCode: LicenseCode = "CCDUAL";
-  let desiredFolderShares: Buffer[] = [];
+  let desiredFolderShares: Uint8Array[] = [];
 
   if (desiredParentFolderId !== null) {
     // if desired parent folder is specified, make sure it exists and is owned by `ownerId`
@@ -456,13 +513,13 @@ export async function moveContent({
       // if content is a folder and moving it to another folder,
       // make sure that folder is not itself or a subfolder of itself
 
-      if (desiredParentFolderId.equals(content.id)) {
+      if (isEqualUUID(desiredParentFolderId, content.id)) {
         throw Error("Cannot move folder into itself");
       }
 
       const subfolders = await prisma.$queryRaw<
         {
-          id: Buffer;
+          id: Uint8Array;
         }[]
       >(Prisma.sql`
         WITH RECURSIVE folder_tree(id) AS (
@@ -479,7 +536,9 @@ export async function moveContent({
         `);
 
       if (
-        subfolders.findIndex((sf) => sf.id.equals(desiredParentFolderId)) !== -1
+        subfolders.findIndex((sf) =>
+          isEqualUUID(sf.id, desiredParentFolderId),
+        ) !== -1
       ) {
         throw Error("Cannot move folder into a subfolder of itself");
       }
@@ -667,9 +726,9 @@ async function calculateNewSortIndex(
  * @param folderId
  */
 export async function copyActivityToFolder(
-  origActivityId: Buffer,
-  userId: Buffer,
-  folderId: Buffer | null,
+  origActivityId: Uint8Array,
+  userId: Uint8Array,
+  folderId: Uint8Array | null,
 ) {
   const origActivity = await prisma.content.findUniqueOrThrow({
     where: {
@@ -687,6 +746,7 @@ export async function copyActivityToFolder(
         where: { isDeleted: false },
       },
       classifications: true,
+      contentFeatures: true,
     },
   });
 
@@ -705,6 +765,10 @@ export async function copyActivityToFolder(
           classificationId: c.classificationId,
         })),
       },
+      contentFeatures: {
+        connect: origActivity.contentFeatures.map((cf) => ({ id: cf.id })),
+      },
+      licenseCode: origActivity.licenseCode,
     },
   });
 
@@ -801,9 +865,9 @@ export async function copyActivityToFolder(
 
 // Note: createDocumentVersion does not currently incorporate access control,
 // by relies on calling functions to determine access
-async function createDocumentVersion(docId: Buffer): Promise<{
+async function createDocumentVersion(docId: Uint8Array): Promise<{
   versionNum: number;
-  docId: Buffer;
+  docId: Uint8Array;
   cid: string | null;
   source: string | null;
   createdAt: Date | null;
@@ -863,8 +927,8 @@ async function createDocumentVersion(docId: Buffer): Promise<{
  * @param loggedInUserId
  */
 export async function getActivityEditorData(
-  activityId: Buffer,
-  loggedInUserId: Buffer,
+  activityId: Uint8Array,
+  loggedInUserId: Uint8Array,
 ) {
   // TODO: is there a way to combine these queries and avoid any race condition?
 
@@ -882,7 +946,7 @@ export async function getActivityEditorData(
     select: { isAssigned: true, ownerId: true },
   });
 
-  if (!contentCheck.ownerId.equals(loggedInUserId)) {
+  if (!isEqualUUID(contentCheck.ownerId, loggedInUserId)) {
     // activity is public or shared but not owned by the logged in user
 
     const activity: ContentStructure = {
@@ -897,6 +961,7 @@ export async function getActivityEditorData(
       isShared: false,
       sharedWith: [],
       license: null,
+      contentFeatures: [],
       classifications: [],
       documents: [],
       hasScoreData: false,
@@ -911,7 +976,32 @@ export async function getActivityEditorData(
 
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
 
+  const contentSelect = returnContentStructureSharedDetailsSelect({
+    includeAssignInfo: true,
+  });
+
   if (isAssigned) {
+    // modify `contentSelect` to include assigned doenetMl and to count assignment scores
+    const documents = {
+      ...contentSelect.documents,
+      select: {
+        id: true,
+        name: true,
+        assignedVersion: {
+          select: {
+            versionNum: true,
+            source: true,
+            doenetmlVersion: true,
+          },
+        },
+      },
+    };
+    const contentSelectWithAssignedVersion = {
+      ...contentSelect,
+      documents,
+      _count: { select: { assignmentScores: true } },
+    };
+
     const assignedActivity = await prisma.content.findUniqueOrThrow({
       where: {
         id: activityId,
@@ -919,125 +1009,10 @@ export async function getActivityEditorData(
         ownerId: loggedInUserId,
         isFolder: false,
       },
-      select: {
-        id: true,
-        name: true,
-        ownerId: true,
-        imagePath: true,
-        isAssigned: true,
-        classCode: true,
-        codeValidUntil: true,
-        isPublic: true,
-        sharedWith: {
-          select: {
-            user: {
-              select: {
-                userId: true,
-                email: true,
-                firstNames: true,
-                lastNames: true,
-              },
-            },
-          },
-        },
-        license: {
-          include: {
-            composedOf: {
-              select: { composedOf: true },
-              orderBy: { composedOf: { sortIndex: "asc" } },
-            },
-          },
-        },
-        classifications: {
-          select: {
-            classification: {
-              include: {
-                subCategory: {
-                  include: {
-                    category: {
-                      include: {
-                        system: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        documents: {
-          select: {
-            id: true,
-            name: true,
-            assignedVersion: {
-              select: {
-                versionNum: true,
-                source: true,
-                doenetmlVersion: true,
-              },
-            },
-          },
-          // TODO: implement ability to allow users to order the documents within an activity
-          orderBy: { id: "asc" },
-        },
-        parentFolder: {
-          select: {
-            id: true,
-            name: true,
-            isPublic: true,
-            sharedWith: {
-              select: {
-                user: {
-                  select: {
-                    userId: true,
-                    email: true,
-                    firstNames: true,
-                    lastNames: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        _count: { select: { assignmentScores: true } },
-      },
+      select: contentSelectWithAssignedVersion,
     });
 
-    const isOpen = assignedActivity.codeValidUntil
-      ? DateTime.now() <= DateTime.fromJSDate(assignedActivity.codeValidUntil)
-      : false;
-
-    const { isShared, sharedWith } = processSharedWith(
-      assignedActivity.sharedWith,
-    );
-
-    activity = {
-      id: assignedActivity.id,
-      name: assignedActivity.name,
-      ownerId: assignedActivity.ownerId,
-      imagePath: assignedActivity.imagePath,
-      assignmentStatus: isOpen ? "Open" : "Closed",
-      classCode: assignedActivity.classCode,
-      codeValidUntil: assignedActivity.codeValidUntil,
-      isPublic: assignedActivity.isPublic,
-      isShared,
-      sharedWith,
-      license: assignedActivity.license
-        ? processLicense(assignedActivity.license)
-        : null,
-      classifications: assignedActivity.classifications.map(
-        (c) => c.classification,
-      ),
-      documents: assignedActivity.documents.map((doc) => ({
-        id: doc.id,
-        versionNum: doc.assignedVersion!.versionNum,
-        name: doc.name,
-        source: doc.assignedVersion!.source,
-        doenetmlVersion: doc.assignedVersion!.doenetmlVersion,
-      })),
-      hasScoreData: assignedActivity._count.assignmentScores > 0,
-      parentFolder: processParentFolder(assignedActivity.parentFolder),
-    };
+    activity = processContentSharedDetailsAssignedDoc(assignedActivity);
   } else {
     const unassignedActivity = await prisma.content.findUniqueOrThrow({
       where: {
@@ -1046,106 +1021,15 @@ export async function getActivityEditorData(
         ownerId: loggedInUserId,
         isFolder: false,
       },
-      select: {
-        id: true,
-        name: true,
-        ownerId: true,
-        imagePath: true,
-        classCode: true,
-        codeValidUntil: true,
-        isPublic: true,
-        sharedWith: {
-          select: {
-            user: {
-              select: {
-                userId: true,
-                email: true,
-                firstNames: true,
-                lastNames: true,
-              },
-            },
-          },
-        },
-        license: {
-          include: {
-            composedOf: {
-              select: { composedOf: true },
-              orderBy: { composedOf: { sortIndex: "asc" } },
-            },
-          },
-        },
-        classifications: {
-          select: {
-            classification: {
-              include: {
-                subCategory: {
-                  include: {
-                    category: {
-                      include: {
-                        system: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        documents: {
-          select: {
-            name: true,
-            id: true,
-            source: true,
-            doenetmlVersion: true,
-          },
-          // TODO: implement ability to allow users to order the documents within an activity
-          orderBy: { id: "asc" },
-        },
-        parentFolder: {
-          select: {
-            id: true,
-            name: true,
-            isPublic: true,
-            sharedWith: {
-              select: {
-                user: {
-                  select: {
-                    userId: true,
-                    email: true,
-                    firstNames: true,
-                    lastNames: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      select: contentSelect,
     });
 
-    const {
-      sharedWith: sharedWithOrig,
-      license,
-      classifications,
-      parentFolder,
-      ...unassignedActivity2
-    } = unassignedActivity;
-
-    const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
-
-    activity = {
-      ...unassignedActivity2,
-      isShared,
-      sharedWith,
-      license: license ? processLicense(license) : null,
-      classifications: classifications.map((c) => c.classification),
-      assignmentStatus: "Unassigned",
-      hasScoreData: false,
-      parentFolder: processParentFolder(parentFolder),
-    };
+    activity = processContentSharedDetails(unassignedActivity);
   }
 
-  return { notMe: false, activity };
+  const availableFeatures = await getAvailableContentFeatures();
+
+  return { notMe: false, activity, availableFeatures };
 }
 
 /**
@@ -1156,8 +1040,8 @@ export async function getActivityEditorData(
  * @param activityId
  */
 export async function getSharedEditorData(
-  activityId: Buffer,
-  loggedInUserId: Buffer,
+  activityId: Uint8Array,
+  loggedInUserId: Uint8Array,
 ) {
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
 
@@ -1172,83 +1056,18 @@ export async function getSharedEditorData(
         { sharedWith: { some: { userId: loggedInUserId } } },
       ],
     },
-    select: {
-      id: true,
-      isFolder: true,
-      ownerId: true,
-      name: true,
-      imagePath: true,
-      isPublic: true,
-      sharedWith: {
-        select: {
-          userId: true,
-        },
-      },
-      documents: {
-        select: {
-          name: true,
-          id: true,
-          source: true,
-          doenetmlVersion: true,
-        },
-        // TODO: implement ability to allow users to order the documents within an activity
-        orderBy: { id: "asc" },
-      },
-      license: {
-        include: {
-          composedOf: {
-            select: { composedOf: true },
-            orderBy: { composedOf: { sortIndex: "asc" } },
-          },
-        },
-      },
-      parentFolder: {
-        select: {
-          id: true,
-          name: true,
-          isPublic: true,
-          sharedWith: {
-            select: {
-              userId: true,
-            },
-          },
-        },
-      },
-    },
+    select: returnContentStructureFullOwnerSelect(),
   });
 
-  const {
-    license,
-    sharedWith: sharedWithOrig,
-    parentFolder,
-    ...preliminaryActivity2
-  } = preliminaryActivity;
-
-  const { isShared, sharedWith } = processSharedWithForUser(
-    sharedWithOrig,
-    loggedInUserId,
-  );
-
-  const activity: ContentStructure = {
-    ...preliminaryActivity2,
-    isShared,
-    sharedWith,
-    license: license ? processLicense(license) : null,
-    classifications: [],
-    classCode: null,
-    codeValidUntil: null,
-    assignmentStatus: "Unassigned",
-    hasScoreData: false,
-    parentFolder: processParentFolderForUser(parentFolder, loggedInUserId),
-  };
+  const activity = processContent(preliminaryActivity, loggedInUserId);
 
   return activity;
 }
 
 // TODO: generalize this to multi-document activities
 export async function getActivityViewerData(
-  activityId: Buffer,
-  loggedInUserId: Buffer,
+  activityId: Uint8Array,
+  loggedInUserId: Uint8Array,
 ) {
   const preliminaryActivity = await prisma.content.findUniqueOrThrow({
     where: {
@@ -1261,89 +1080,19 @@ export async function getActivityViewerData(
         { sharedWith: { some: { userId: loggedInUserId } } },
       ],
     },
-    select: {
-      id: true,
-      name: true,
-      ownerId: true,
-      imagePath: true,
-      isPublic: true,
-      sharedWith: {
-        select: {
-          userId: true,
-        },
-      },
-      license: {
-        include: {
-          composedOf: {
-            select: { composedOf: true },
-            orderBy: { composedOf: { sortIndex: "asc" } },
-          },
-        },
-      },
-      documents: {
-        where: { isDeleted: false },
-        select: {
-          name: true,
-          id: true,
-          source: true,
-          doenetmlVersion: true,
-        },
-        // TODO: implement ability to allow users to order the documents within an activity
-        orderBy: { id: "asc" },
-      },
-      parentFolder: {
-        select: {
-          id: true,
-          name: true,
-          isPublic: true,
-          sharedWith: {
-            select: {
-              userId: true,
-            },
-          },
-        },
-      },
-      owner: {
-        select: {
-          userId: true,
-          email: true,
-          firstNames: true,
-          lastNames: true,
-        },
-      },
-    },
+    select: returnContentStructureFullOwnerSelect(),
   });
 
-  const {
-    license,
-    sharedWith: sharedWithOrig,
-    parentFolder,
-    ...preliminaryActivity2
-  } = preliminaryActivity;
-
-  const { isShared, sharedWith } = processSharedWithForUser(
-    sharedWithOrig,
-    loggedInUserId,
-  );
-
-  const activity: ContentStructure = {
-    ...preliminaryActivity2,
-    isFolder: false,
-    isShared,
-    sharedWith,
-    license: license ? processLicense(license) : null,
-    classifications: [],
-    classCode: null,
-    codeValidUntil: null,
-    assignmentStatus: "Unassigned",
-    hasScoreData: false,
-    parentFolder: processParentFolderForUser(parentFolder, loggedInUserId),
-  };
+  const activity = processContent(preliminaryActivity, loggedInUserId);
 
   const docHistories = await getDocumentContributorHistories({
     docIds: activity.documents.map((doc) => doc.id),
     loggedInUserId,
   });
+
+  if (!isEqualUUID(loggedInUserId, activity.ownerId)) {
+    await recordActivityView(activityId, loggedInUserId);
+  }
 
   return {
     activity,
@@ -1351,7 +1100,10 @@ export async function getActivityViewerData(
   };
 }
 
-export async function getDocumentSource(docId: Buffer, loggedInUserId: Buffer) {
+export async function getDocumentSource(
+  docId: Uint8Array,
+  loggedInUserId: Uint8Array,
+) {
   const document = await prisma.documents.findUniqueOrThrow({
     where: {
       id: docId,
@@ -1370,12 +1122,33 @@ export async function getDocumentSource(docId: Buffer, loggedInUserId: Buffer) {
   return { source: document.source };
 }
 
+export async function recordActivityView(
+  activityId: Uint8Array,
+  loggedInUserId: Uint8Array,
+) {
+  try {
+    await prisma.contentViews.create({
+      data: { activityId, userId: loggedInUserId },
+    });
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        // if error was due to unique constraint failure,
+        // then it was presumably due to a user viewing an activity
+        // twice in one day, so we ignore the error
+        return;
+      }
+    }
+    throw e;
+  }
+}
+
 export async function getActivityContributorHistory({
   activityId,
   loggedInUserId,
 }: {
-  activityId: Buffer;
-  loggedInUserId: Buffer;
+  activityId: Uint8Array;
+  loggedInUserId: Uint8Array;
 }) {
   const activity = await prisma.content.findUniqueOrThrow({
     where: {
@@ -1403,8 +1176,8 @@ export async function getDocumentContributorHistories({
   docIds,
   loggedInUserId,
 }: {
-  docIds: Buffer[];
-  loggedInUserId: Buffer;
+  docIds: Uint8Array[];
+  loggedInUserId: Uint8Array;
 }) {
   const docHistories: DocHistory[] = await prisma.documents.findMany({
     where: {
@@ -1473,8 +1246,8 @@ export async function getActivityRemixes({
   activityId,
   loggedInUserId,
 }: {
-  activityId: Buffer;
-  loggedInUserId: Buffer;
+  activityId: Uint8Array;
+  loggedInUserId: Uint8Array;
 }) {
   const activity = await prisma.content.findUniqueOrThrow({
     where: {
@@ -1507,8 +1280,8 @@ export async function getDocumentDirectRemixes({
   docIds,
   loggedInUserId,
 }: {
-  docIds: Buffer[];
-  loggedInUserId: Buffer;
+  docIds: Uint8Array[];
+  loggedInUserId: Uint8Array;
 }) {
   const docRemixes = await prisma.documents.findMany({
     where: {
@@ -1530,6 +1303,7 @@ export async function getDocumentDirectRemixes({
           contributorHistory: {
             where: {
               document: {
+                isDeleted: false,
                 activity: {
                   OR: [
                     { ownerId: loggedInUserId },
@@ -1543,7 +1317,11 @@ export async function getDocumentDirectRemixes({
               },
             },
             orderBy: { timestampDoc: "desc" },
-            include: {
+            select: {
+              docId: true,
+              withLicenseCode: true,
+              timestampDoc: true,
+              timestampPrevDoc: true,
               document: {
                 select: {
                   activity: {
@@ -1569,15 +1347,29 @@ export async function getDocumentDirectRemixes({
     },
   });
 
-  return docRemixes;
+  const docRemixes2: DocRemixes[] = docRemixes.map((remixes) => ({
+    id: remixes.id,
+    documentVersions: remixes.documentVersions.map((docVersion) => ({
+      versionNumber: docVersion.versionNum,
+      remixes: docVersion.contributorHistory.map((contribHist) => ({
+        docId: contribHist.docId,
+        withLicenseCode: contribHist.withLicenseCode,
+        timestampDoc: contribHist.timestampDoc,
+        timestampPrevDoc: contribHist.timestampPrevDoc,
+        activity: contribHist.document.activity,
+      })),
+    })),
+  }));
+
+  return docRemixes2;
 }
 
 export async function getDocumentRemixes({
   docIds,
   loggedInUserId,
 }: {
-  docIds: Buffer[];
-  loggedInUserId: Buffer;
+  docIds: Uint8Array[];
+  loggedInUserId: Uint8Array;
 }) {
   const docRemixes = await prisma.documents.findMany({
     where: {
@@ -1599,6 +1391,7 @@ export async function getDocumentRemixes({
           contributorHistory: {
             where: {
               document: {
+                isDeleted: false,
                 activity: {
                   OR: [
                     { ownerId: loggedInUserId },
@@ -1609,7 +1402,11 @@ export async function getDocumentRemixes({
               },
             },
             orderBy: { timestampDoc: "desc" },
-            include: {
+            select: {
+              docId: true,
+              withLicenseCode: true,
+              timestampDoc: true,
+              timestampPrevDoc: true,
               document: {
                 select: {
                   activity: {
@@ -1635,10 +1432,27 @@ export async function getDocumentRemixes({
     },
   });
 
-  return docRemixes;
+  const docRemixes2: DocRemixes[] = docRemixes.map((remixes) => ({
+    id: remixes.id,
+    documentVersions: remixes.documentVersions.map((docVersion) => ({
+      versionNumber: docVersion.versionNum,
+      remixes: docVersion.contributorHistory.map((contribHist) => ({
+        docId: contribHist.docId,
+        withLicenseCode: contribHist.withLicenseCode,
+        timestampDoc: contribHist.timestampDoc,
+        timestampPrevDoc: contribHist.timestampPrevDoc,
+        activity: contribHist.document.activity,
+      })),
+    })),
+  }));
+
+  return docRemixes2;
 }
 
-export async function getAssignmentDataFromCode(code: string) {
+export async function getAssignmentDataFromCode(
+  code: string,
+  loggedInUserId: Uint8Array,
+) {
   let assignment;
 
   try {
@@ -1654,6 +1468,7 @@ export async function getAssignmentDataFromCode(code: string) {
       },
       select: {
         id: true,
+        ownerId: true,
         documents: {
           select: {
             id: true,
@@ -1685,13 +1500,663 @@ export async function getAssignmentDataFromCode(code: string) {
     }
   }
 
+  if (!isEqualUUID(loggedInUserId, assignment.ownerId)) {
+    await recordActivityView(assignment.id, loggedInUserId);
+  }
+
   return { assignmentFound: true, assignment };
 }
 
-export async function searchSharedContent(
-  query: string,
-  loggedInUserId: Buffer,
-) {
+export async function searchSharedContent({
+  query,
+  loggedInUserId,
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+  isUnclassified,
+  features,
+  ownerId,
+  page = 1,
+}: {
+  query: string;
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+  isUnclassified?: boolean;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+  page?: number;
+}) {
+  const pageSize = 100;
+
+  // remove operators that break MySQL BOOLEAN search
+  // and add * at the end of every word so that match beginning of words
+  const query_as_prefixes = query
+    .replace(/[+\-><()~*"@]+/g, " ")
+    .split(" ")
+    .filter((s) => s)
+    .map((s) => s + "*")
+    .join(" ");
+
+  const matchClassification = !isUnclassified && classificationId === undefined;
+  const matchSubCategory = matchClassification && subCategoryId === undefined;
+  const matchCategory = matchSubCategory && categoryId === undefined;
+
+  const includeClassification = true;
+  const includeSubCategory = matchSubCategory;
+  const includeCategory = matchCategory;
+
+  const matches = await prisma.$queryRaw<
+    {
+      id: Uint8Array;
+      relevance: number;
+    }[]
+  >(Prisma.sql`
+  SELECT
+    content.id,
+    AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*5)
+    +(MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*5)
+    ${ownerId === undefined ? Prisma.sql`+ MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
+    ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "+" })}
+    ) as relevance
+  FROM
+    content
+  LEFT JOIN
+    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  LEFT JOIN
+    users ON content.ownerId = users.userId
+  ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
+  WHERE
+    content.isDeleted = FALSE
+    AND (
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+    )
+    AND
+    (
+      MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
+      ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
+    )
+    ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
+    ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+  GROUP BY
+    content.id
+  ORDER BY
+    relevance DESC
+  LIMIT ${pageSize}
+  OFFSET ${(page - 1) * pageSize}
+  `);
+
+  // TODO: combine queries
+
+  const preliminarySharedContent = await prisma.content.findMany({
+    where: {
+      id: { in: matches.map((m) => m.id) },
+    },
+    select: returnContentStructureFullOwnerSelect(),
+  });
+
+  // TODO: better way to sort! (For free if combine queries)
+  const relevance = Object.fromEntries(
+    matches.map((m) => [fromUUID(m.id), m.relevance]),
+  );
+
+  const sharedContent = preliminarySharedContent
+    .sort((a, b) => relevance[fromUUID(b.id)] - relevance[fromUUID(a.id)])
+    .map((content) => processContent(content, loggedInUserId));
+
+  return sharedContent;
+}
+
+// TODO: add tests of this api if we're sure we want to keep it
+export async function browseSharedContent({
+  loggedInUserId,
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+  isUnclassified,
+  features,
+  ownerId,
+  page = 1,
+}: {
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+  isUnclassified?: boolean;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+  page?: number;
+}) {
+  const pageSize = 100;
+
+  const classificationsFilter = isUnclassified
+    ? {
+        none: {},
+      }
+    : classificationId !== undefined
+      ? { some: { classification: { id: classificationId } } }
+      : subCategoryId !== undefined ||
+          categoryId !== undefined ||
+          systemId !== undefined
+        ? {
+            some: {
+              classification: {
+                descriptions: {
+                  some: {
+                    subCategoryId,
+                    subCategory: {
+                      categoryId,
+                      category: { systemId },
+                    },
+                  },
+                },
+              },
+            },
+          }
+        : undefined;
+
+  const featuresToRequire = features === undefined ? [] : [...features.keys()];
+
+  const preliminarySharedContent = await prisma.content.findMany({
+    where: {
+      isDeleted: false,
+      OR: [
+        { isPublic: true },
+        { sharedWith: { some: { userId: loggedInUserId } } },
+      ],
+      AND: featuresToRequire.map((feature) => ({
+        contentFeatures: { some: { code: feature } },
+      })),
+      ownerId,
+      classifications: classificationsFilter,
+    },
+    select: returnContentStructureFullOwnerSelect(),
+    orderBy: { createdAt: "desc" },
+    take: pageSize,
+    skip: (page - 1) * pageSize,
+  });
+
+  const sharedContent = preliminarySharedContent.map((content) =>
+    processContent(content, loggedInUserId),
+  );
+
+  return sharedContent;
+}
+
+// TODO: add tests of this api if we're sure we want to keep it
+export async function browseTrendingContent({
+  loggedInUserId,
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+  isUnclassified,
+  features,
+  ownerId,
+  page = 1,
+  pageSize = 100,
+}: {
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+  isUnclassified?: boolean;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+  page?: number;
+  pageSize?: number;
+}) {
+  const matchClassification = !isUnclassified && classificationId === undefined;
+  const matchSubCategory = matchClassification && subCategoryId === undefined;
+  const matchCategory = matchSubCategory && categoryId === undefined;
+
+  const includeClassification = true;
+  const includeSubCategory = matchSubCategory;
+  const includeCategory = matchCategory;
+
+  const matches = await prisma.$queryRaw<
+    {
+      id: Uint8Array;
+      numViews: bigint;
+    }[]
+  >(Prisma.sql`
+  SELECT
+    content.id,
+    COUNT(distinct contentViews.userId) AS numViews,
+    content.createdAt
+  FROM
+    content
+  LEFT JOIN
+    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  LEFT JOIN
+    users ON content.ownerId = users.userId
+  ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
+  LEFT JOIN
+    contentViews ON contentViews.activityId = content.id
+  WHERE
+    content.isDeleted = FALSE
+    AND (
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+    )
+    ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
+    ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+  GROUP BY
+    content.id
+  ORDER BY
+    numViews DESC, content.createdAt DESC
+  LIMIT ${pageSize}
+  OFFSET ${(page - 1) * pageSize}
+  `);
+
+  // TODO: combine queries
+
+  const preliminarySharedContent = await prisma.content.findMany({
+    where: {
+      id: { in: matches.map((m) => m.id) },
+    },
+    select: returnContentStructureFullOwnerSelect(),
+    orderBy: { createdAt: "desc" },
+  });
+
+  // TODO: better way to sort! (For free if combine queries)
+  const numViews = Object.fromEntries(
+    matches.map((m) => [fromUUID(m.id), Number(m.numViews)]),
+  );
+
+  // relying on the fact that .sort() is stable so that numView ties
+  // will still be sorted in descending createdAt order
+  const sharedContent = preliminarySharedContent
+    .sort((a, b) => numViews[fromUUID(b.id)] - numViews[fromUUID(a.id)])
+    .map((content) => processContent(content, loggedInUserId));
+
+  return sharedContent;
+}
+
+export async function searchUsersWithSharedContent({
+  query,
+  loggedInUserId,
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+  isUnclassified,
+  features,
+  page = 1,
+}: {
+  query: string;
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+  isUnclassified?: boolean;
+  features?: Set<string>;
+  page?: number;
+}) {
+  const pageSize = 100;
+
+  // remove operators that break MySQL BOOLEAN search
+  // and add * at the end of every word so that match beginning of words
+  const query_as_prefixes = query
+    .replace(/[+\-><()~*"@]+/g, " ")
+    .split(" ")
+    .filter((s) => s)
+    .map((s) => s + "*")
+    .join(" ");
+
+  const includeClassification =
+    classificationId !== undefined ||
+    isUnclassified ||
+    subCategoryId !== undefined;
+  const includeSubCategory = !includeClassification && categoryId !== undefined;
+  const includeCategory = !includeSubCategory && systemId !== undefined;
+
+  const usersWithShared = await prisma.$queryRaw<
+    {
+      userId: Uint8Array;
+      firstNames: string | null;
+      lastNames: string;
+      relevance: number;
+    }[]
+  >(Prisma.sql`
+  SELECT
+    users.userId, users.firstNames, users.lastNames,
+    MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) as relevance
+  FROM
+    users
+  WHERE
+    users.isAnonymous = FALSE
+    AND users.userId IN (
+      SELECT ownerId 
+        FROM content 
+        ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+        ${returnFeatureJoins(features)}
+        WHERE
+          isDeleted = FALSE AND (
+            isPublic = TRUE
+            OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+          )
+          ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
+          ${returnFeatureWhereClauses(features)}
+      
+    )
+    AND
+    MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+  ORDER BY
+    relevance DESC
+  LIMIT ${pageSize}
+  OFFSET ${(page - 1) * pageSize}
+  `);
+
+  const usersWithShared2: UserInfo[] = usersWithShared.map((u) => ({
+    userId: u.userId,
+    firstNames: u.firstNames,
+    lastNames: u.lastNames,
+    email: "",
+  }));
+  return usersWithShared2;
+}
+
+export async function browseUsersWithSharedContent({
+  query,
+  loggedInUserId,
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+  isUnclassified,
+  features,
+  take = 100,
+  skip = 0,
+}: {
+  query?: string;
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+  isUnclassified?: boolean;
+  features?: Set<string>;
+  take?: number;
+  skip?: number;
+}) {
+  let usersWithShared;
+
+  if (query) {
+    // remove operators that break MySQL BOOLEAN search
+    // and add * at the end of every word so that match beginning of words
+    const query_as_prefixes = query
+      .replace(/[+\-><()~*"@]+/g, " ")
+      .split(" ")
+      .filter((s) => s)
+      .map((s) => s + "*")
+      .join(" ");
+
+    const matchClassification =
+      !isUnclassified && classificationId === undefined;
+    const matchSubCategory = matchClassification && subCategoryId === undefined;
+    const matchCategory = matchSubCategory && categoryId === undefined;
+
+    const includeClassification = true;
+    const includeSubCategory = matchSubCategory;
+    const includeCategory = matchCategory;
+
+    usersWithShared = await prisma.$queryRaw<
+      {
+        userId: Uint8Array;
+        firstNames: string | null;
+        lastNames: string;
+        numContent: bigint;
+      }[]
+    >(Prisma.sql`
+      SELECT
+        users.userId, users.firstNames, users.lastNames, COUNT(content.id) AS numContent
+      FROM
+        users
+      INNER JOIN
+        content on content.ownerId = users.userId
+      WHERE
+        users.isAnonymous = FALSE
+        AND content.id IN (
+          SELECT content.id
+          FROM content
+          LEFT JOIN
+            (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+          ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+          ${returnFeatureJoins(features)}
+          WHERE
+            content.isDeleted = FALSE
+            AND (
+              content.isPublic = TRUE
+              OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+            )
+            AND (
+              MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+              OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+              ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
+            )
+            ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
+            ${returnFeatureWhereClauses(features)}
+        )
+      GROUP BY
+        users.userId
+      ORDER BY
+        numContent DESC
+      LIMIT ${take}
+      OFFSET ${skip}
+  `);
+  } else {
+    const includeClassification =
+      classificationId !== undefined ||
+      isUnclassified ||
+      subCategoryId !== undefined;
+    const includeSubCategory =
+      !includeClassification && categoryId !== undefined;
+    const includeCategory = !includeSubCategory && systemId !== undefined;
+
+    usersWithShared = await prisma.$queryRaw<
+      {
+        userId: Uint8Array;
+        firstNames: string | null;
+        lastNames: string;
+        numContent: bigint;
+      }[]
+    >(Prisma.sql`
+      SELECT
+        users.userId, users.firstNames, users.lastNames, COUNT(content.id) AS numContent
+      FROM
+        users
+      INNER JOIN
+        content on content.ownerId = users.userId
+      WHERE
+        users.isAnonymous = FALSE
+        AND content.id IN (
+          SELECT content.id
+          FROM content
+          ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+          ${returnFeatureJoins(features)}
+          WHERE
+            content.isFolder = FALSE
+            AND content.isDeleted = FALSE
+            AND (
+              content.isPublic = TRUE
+              OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+            )
+            ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
+            ${returnFeatureWhereClauses(features)}
+        )
+      GROUP BY
+        users.userId
+      ORDER BY
+        numContent DESC
+      LIMIT ${take}
+      OFFSET ${skip}
+  `);
+  }
+
+  const usersWithShared2: UserInfo[] = usersWithShared.map((u) => {
+    const { numContent, ...u2 } = u;
+    return {
+      ...u2,
+      email: "",
+      numCommunity: Number(numContent),
+    };
+  });
+  return usersWithShared2;
+}
+
+export async function searchClassificationsWithSharedContent({
+  query,
+  loggedInUserId,
+  systemId,
+  categoryId,
+  subCategoryId,
+  features,
+  ownerId,
+}: {
+  query: string;
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+}): Promise<PartialContentClassification[]> {
+  // remove operators that break MySQL BOOLEAN search
+  // and add * at the end of every word so that match beginning of words
+  const query_as_prefixes = query
+    .replace(/[+\-><()~*"@]+/g, " ")
+    .split(" ")
+    .filter((s) => s)
+    .map((s) => s + "*")
+    .join(" ");
+
+  const queryRegEx = query
+    .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    .replace(/\s+/g, "|");
+
+  const matches = await prisma.$queryRaw<
+    {
+      classificationId: number;
+      code: string;
+      descriptionId: number;
+      description: string;
+      subCategoryId: number;
+      subCategory: string;
+      categoryId: number;
+      category: string;
+      systemId: number;
+      systemName: string;
+      systemShortName: string;
+      categoryLabel: string;
+      subCategoryLabel: string;
+      descriptionLabel: string;
+      categoriesInDescription: boolean;
+      codeMatch: bigint;
+      relevance: number;
+    }[]
+  >(Prisma.sql`
+  SELECT
+    classifications.id as classificationId,
+    classifications.code,
+    classificationDescriptions.id AS descriptionId,
+    classificationDescriptions.description,
+    classificationSubCategories.id subCategoryId,
+    classificationSubCategories.subCategory,
+    classificationCategories.id categoryId,
+    classificationCategories.category,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
+    REGEXP_LIKE(classifications.code, ${queryRegEx}) AS codeMatch,
+    AVG(
+    ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, operator: "+" })}
+    ) as relevance
+  FROM
+    content
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
+  WHERE
+    content.isDeleted = FALSE
+    AND (
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+    )
+    AND
+    (
+      ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, operator: "OR" })}
+      OR classifications.code REGEXP ${queryRegEx}
+    )
+    ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId })}
+    ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+  GROUP BY
+    classificationId, descriptionId
+  ORDER BY
+    codeMatch DESC, relevance DESC
+  LIMIT 100
+  `);
+
+  return matches.map((m) => ({
+    classification: {
+      id: m.classificationId,
+      code: m.code,
+      descriptionId: m.descriptionId,
+      description: m.description,
+    },
+    subCategory: {
+      id: m.subCategoryId,
+      subCategory: m.subCategory,
+    },
+    category: {
+      id: m.categoryId,
+      category: m.category,
+    },
+    system: {
+      id: m.systemId,
+      name: m.systemName,
+      shortName: m.systemShortName,
+      descriptionLabel: m.descriptionLabel,
+      subCategoryLabel: m.subCategoryLabel,
+      categoryLabel: m.categoryLabel,
+      categoriesInDescription: m.categoriesInDescription,
+    },
+  }));
+}
+
+export async function searchClassificationSubCategoriesWithSharedContent({
+  query,
+  loggedInUserId,
+  systemId,
+  categoryId,
+  features,
+  ownerId,
+}: {
+  query: string;
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+}): Promise<PartialContentClassification[]> {
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
@@ -1703,33 +2168,37 @@ export async function searchSharedContent(
 
   const matches = await prisma.$queryRaw<
     {
-      id: Buffer;
+      subCategoryId: number;
+      subCategory: string;
+      categoryId: number;
+      category: string;
+      systemId: number;
+      systemName: string;
+      systemShortName: string;
+      categoryLabel: string;
+      subCategoryLabel: string;
+      descriptionLabel: string;
+      categoriesInDescription: boolean;
       relevance: number;
     }[]
   >(Prisma.sql`
   SELECT
-    content.id,
-    AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
-    (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
-    MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    ) as relevance
+    classificationSubCategories.id subCategoryId,
+    classificationSubCategories.subCategory,
+    classificationCategories.id categoryId,
+    classificationCategories.category,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
+    ${returnClassificationMatchClauses({ query_as_prefixes, matchSubCategory: true })} as relevance
   FROM
     content
-  LEFT JOIN
-    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
-  LEFT JOIN
-    users ON content.ownerId = users.userId
-  LEFT JOIN
-    contentClassifications ON content.id = contentClassifications.contentId
-  LEFT JOIN
-    classifications ON contentClassifications.classificationId = classifications.id
-  LEFT JOIN
-    classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
-  LEFT JOIN
-    classificationCategories ON classificationSubCategories.categoryId = classificationCategories.id
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
   WHERE
     content.isDeleted = FALSE
     AND (
@@ -1737,110 +2206,52 @@ export async function searchSharedContent(
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
     )
     AND
-    (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classificationCategories.category) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
+    ${returnClassificationMatchClauses({ query_as_prefixes, matchSubCategory: true })}
+    ${returnClassificationFilterWhereClauses({ systemId, categoryId })}
+    ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+
   GROUP BY
-    content.id
+    classificationSubCategories.id
   ORDER BY
     relevance DESC
   LIMIT 100
   `);
 
-  // TODO: combine queries
-
-  const preliminaryPublicContent = await prisma.content.findMany({
-    where: {
-      id: { in: matches.map((m) => m.id) },
+  return matches.map((m) => ({
+    subCategory: {
+      id: m.subCategoryId,
+      subCategory: m.subCategory,
     },
-    select: {
-      id: true,
-      isFolder: true,
-      ownerId: true,
-      owner: {
-        select: {
-          userId: true,
-          firstNames: true,
-          lastNames: true,
-          email: true,
-        },
-      },
-      name: true,
-      imagePath: true,
-      isPublic: true,
-      sharedWith: {
-        select: {
-          userId: true,
-        },
-      },
-      license: {
-        include: {
-          composedOf: {
-            select: { composedOf: true },
-            orderBy: { composedOf: { sortIndex: "asc" } },
-          },
-        },
-      },
-      parentFolder: {
-        select: {
-          id: true,
-          name: true,
-          isPublic: true,
-          sharedWith: {
-            select: {
-              userId: true,
-            },
-          },
-        },
-      },
+    category: {
+      id: m.categoryId,
+      category: m.category,
     },
-  });
-
-  // TODO: better way to sort! (For free if combine queries)
-  const relevance = Object.fromEntries(
-    matches.map((m) => [fromUUID(m.id), m.relevance]),
-  );
-
-  const publicContent: ContentStructure[] = preliminaryPublicContent
-    .sort((a, b) => relevance[fromUUID(b.id)] - relevance[fromUUID(a.id)])
-    .map((content) => {
-      const {
-        license,
-        sharedWith: sharedWithOrig,
-        parentFolder,
-        ...content2
-      } = content;
-
-      const { isShared, sharedWith } = processSharedWithForUser(
-        sharedWithOrig,
-        loggedInUserId,
-      );
-
-      return {
-        ...content2,
-        isShared,
-        sharedWith,
-        documents: [],
-        license: license ? processLicense(license) : null,
-        classifications: [],
-        classCode: null,
-        codeValidUntil: null,
-        assignmentStatus: "Unassigned",
-        hasScoreData: false,
-        parentFolder: processParentFolderForUser(parentFolder, loggedInUserId),
-      };
-    });
-
-  return publicContent;
+    system: {
+      id: m.systemId,
+      name: m.systemName,
+      shortName: m.systemShortName,
+      descriptionLabel: m.descriptionLabel,
+      subCategoryLabel: m.subCategoryLabel,
+      categoryLabel: m.categoryLabel,
+      categoriesInDescription: m.categoriesInDescription,
+    },
+  }));
 }
 
-export async function searchUsersWithSharedContent(
-  query: string,
-  loggedInUserId: Buffer,
-) {
+export async function searchClassificationCategoriesWithSharedContent({
+  query,
+  loggedInUserId,
+  systemId,
+  features,
+  ownerId,
+}: {
+  query: string;
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+}): Promise<PartialContentClassification[]> {
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
@@ -1850,88 +2261,1241 @@ export async function searchUsersWithSharedContent(
     .map((s) => s + "*")
     .join(" ");
 
-  const usersWithPublic = await prisma.$queryRaw<
+  const matches = await prisma.$queryRaw<
     {
-      userId: Buffer;
-      firstNames: string | null;
-      lastNames: string;
+      categoryId: number;
+      category: string;
+      systemId: number;
+      systemName: string;
+      systemShortName: string;
+      categoryLabel: string;
+      subCategoryLabel: string;
+      descriptionLabel: string;
+      categoriesInDescription: boolean;
+      relevance: number;
     }[]
   >(Prisma.sql`
   SELECT
-    users.userId, users.firstNames, users.lastNames,
-    MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) as relevance
+    classificationCategories.id categoryId,
+    classificationCategories.category,
+    classificationCategories.sortIndex,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
+    ${returnClassificationMatchClauses({ query_as_prefixes, matchCategory: true })} as relevance
   FROM
-    users
+    content
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
   WHERE
-    users.isAnonymous = FALSE
-    AND users.userId IN (
-      SELECT ownerId FROM content WHERE isDeleted = FALSE AND (
-        isPublic = TRUE
-        OR id IN (
-          SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId}
-        )
-      )
+    content.isDeleted = FALSE
+    AND (
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
     )
     AND
-    MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+    ${returnClassificationMatchClauses({ query_as_prefixes, matchCategory: true })}
+    ${returnClassificationFilterWhereClauses({ systemId })}
+    ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+
+  GROUP BY
+    classificationCategories.id
   ORDER BY
-    relevance DESC
+    relevance DESC, classificationCategories.sortIndex
   LIMIT 100
   `);
 
-  const usersWithPublic2: UserInfo[] = usersWithPublic.map((u) => ({
-    ...u,
-    email: "",
+  return matches.map((m) => ({
+    category: {
+      id: m.categoryId,
+      category: m.category,
+    },
+    system: {
+      id: m.systemId,
+      name: m.systemName,
+      shortName: m.systemShortName,
+      descriptionLabel: m.descriptionLabel,
+      subCategoryLabel: m.subCategoryLabel,
+      categoryLabel: m.categoryLabel,
+      categoriesInDescription: m.categoriesInDescription,
+    },
   }));
-  return usersWithPublic2;
 }
 
-export async function listUserAssigned(userId: Buffer) {
+export async function browseClassificationSharedContent({
+  loggedInUserId,
+  classificationId,
+  features,
+  ownerId,
+  page = 1,
+}: {
+  loggedInUserId: Uint8Array;
+  classificationId: number;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+  page?: number;
+}) {
+  const pageSize = 100;
+
+  const featuresToRequire = features === undefined ? [] : [...features.keys()];
+
+  // TODO: how do we sort these?
+  const results = await prisma.content.findMany({
+    where: {
+      isDeleted: false,
+      OR: [
+        { isPublic: true },
+        { sharedWith: { some: { userId: loggedInUserId } } },
+      ],
+      AND: featuresToRequire.map((feature) => ({
+        contentFeatures: { some: { code: feature } },
+      })),
+      classifications: { some: { classificationId } },
+      ownerId,
+    },
+    select: returnContentStructureFullOwnerSelect(),
+    take: pageSize,
+    skip: (page - 1) * pageSize,
+  });
+
+  const content = results.map((c) => processContent(c));
+
+  return { content };
+}
+
+export async function browseClassificationSubCategorySharedContent({
+  loggedInUserId,
+  subCategoryId,
+  features,
+  ownerId,
+}: {
+  loggedInUserId: Uint8Array;
+  subCategoryId: number;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+}) {
+  // TODO: how do we sort the content within each classification
+
+  const featuresToRequire = features === undefined ? [] : [...features.keys()];
+
+  const preliminaryResults =
+    await prisma.classificationSubCategories.findUniqueOrThrow({
+      where: { id: subCategoryId },
+      select: {
+        subCategory: true,
+        category: {
+          select: {
+            category: true,
+            system: {
+              select: {
+                name: true,
+                shortName: true,
+                categoryLabel: true,
+                subCategoryLabel: true,
+                descriptionLabel: true,
+                categoriesInDescription: true,
+              },
+            },
+          },
+        },
+        descriptions: {
+          where: {
+            classification: {
+              contentClassifications: {
+                some: {
+                  content: {
+                    isDeleted: false,
+                    OR: [
+                      { isPublic: true },
+                      { sharedWith: { some: { userId: loggedInUserId } } },
+                    ],
+                    AND: featuresToRequire.map((feature) => ({
+                      contentFeatures: { some: { code: feature } },
+                    })),
+                    ownerId,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: { sortIndex: "asc" },
+          select: {
+            description: true,
+            id: true,
+            classification: {
+              select: {
+                code: true,
+                id: true,
+                contentClassifications: {
+                  where: {
+                    content: {
+                      isDeleted: false,
+                      OR: [
+                        { isPublic: true },
+                        { sharedWith: { some: { userId: loggedInUserId } } },
+                      ],
+                      AND: featuresToRequire.map((feature) => ({
+                        contentFeatures: { some: { code: feature } },
+                      })),
+                      ownerId,
+                    },
+                  },
+                  select: {
+                    content: {
+                      select: returnContentStructureFullOwnerSelect(),
+                    },
+                  },
+                  take: 100,
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+  const results = {
+    subCategory: preliminaryResults.subCategory,
+    category: preliminaryResults.category,
+    classifications: preliminaryResults.descriptions.map((description) => ({
+      code: description.classification.code,
+      classificationId: description.classification.id,
+      description: description.description,
+      descriptionId: description.id,
+      content: description.classification.contentClassifications.map((cc) =>
+        processContent(cc.content),
+      ),
+    })),
+  };
+
+  return results;
+}
+
+export async function browseClassificationCategorySharedContent({
+  loggedInUserId,
+  categoryId,
+  features,
+  ownerId,
+}: {
+  loggedInUserId: Uint8Array;
+  categoryId: number;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+}) {
+  const featuresToRequire = features === undefined ? [] : [...features.keys()];
+
+  // TODO: how do we sort the content within each classification
+
+  const preliminaryResults =
+    await prisma.classificationCategories.findUniqueOrThrow({
+      where: { id: categoryId },
+      select: {
+        category: true,
+        subCategories: {
+          where: {
+            descriptions: {
+              some: {
+                classification: {
+                  contentClassifications: {
+                    some: {
+                      content: {
+                        isDeleted: false,
+                        OR: [
+                          { isPublic: true },
+                          { sharedWith: { some: { userId: loggedInUserId } } },
+                        ],
+                        AND: featuresToRequire.map((feature) => ({
+                          contentFeatures: { some: { code: feature } },
+                        })),
+                        ownerId,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          orderBy: { sortIndex: "asc" },
+          select: {
+            subCategory: true,
+            id: true,
+            category: {
+              select: {
+                category: true,
+                system: {
+                  select: {
+                    name: true,
+                    shortName: true,
+                    categoryLabel: true,
+                    subCategoryLabel: true,
+                    descriptionLabel: true,
+                    categoriesInDescription: true,
+                  },
+                },
+              },
+            },
+            descriptions: {
+              where: {
+                classification: {
+                  contentClassifications: {
+                    some: {
+                      content: {
+                        isDeleted: false,
+                        OR: [
+                          { isPublic: true },
+                          { sharedWith: { some: { userId: loggedInUserId } } },
+                        ],
+                        AND: featuresToRequire.map((feature) => ({
+                          contentFeatures: { some: { code: feature } },
+                        })),
+                        ownerId,
+                      },
+                    },
+                  },
+                },
+              },
+              orderBy: { sortIndex: "asc" },
+              select: {
+                description: true,
+                id: true,
+                classification: {
+                  select: {
+                    code: true,
+                    id: true,
+                    contentClassifications: {
+                      where: {
+                        content: {
+                          isDeleted: false,
+                          OR: [
+                            { isPublic: true },
+                            {
+                              sharedWith: { some: { userId: loggedInUserId } },
+                            },
+                          ],
+                          AND: featuresToRequire.map((feature) => ({
+                            contentFeatures: { some: { code: feature } },
+                          })),
+                          ownerId,
+                        },
+                      },
+                      select: {
+                        content: {
+                          select: returnContentStructureFullOwnerSelect(),
+                        },
+                      },
+                      take: 10,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+  const results = {
+    category: preliminaryResults.category,
+    subCategories: preliminaryResults.subCategories.map((subCategory) => ({
+      subCategory: subCategory.subCategory,
+      subCategoryId: subCategory.id,
+      classifications: subCategory.descriptions.map((description) => ({
+        code: description.classification.code,
+        classificationId: description.classification.id,
+        description: description.description,
+        descriptionId: description.id,
+        content: description.classification.contentClassifications.map((cc) =>
+          processContent(cc.content),
+        ),
+      })),
+    })),
+  };
+
+  return results;
+}
+
+export async function browseClassificationsWithSharedContent({
+  query,
+  loggedInUserId,
+  subCategoryId,
+  features,
+  ownerId,
+}: {
+  query?: string;
+  loggedInUserId: Uint8Array;
+  subCategoryId: number;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+}): Promise<PartialContentClassification[]> {
+  let matches;
+
+  if (query) {
+    // remove operators that break MySQL BOOLEAN search
+    // and add * at the end of every word so that match beginning of words
+    const query_as_prefixes = query
+      .replace(/[+\-><()~*"@]+/g, " ")
+      .split(" ")
+      .filter((s) => s)
+      .map((s) => s + "*")
+      .join(" ");
+
+    matches = await prisma.$queryRaw<
+      {
+        classificationId: number;
+        code: string;
+        descriptionId: number;
+        description: string;
+        subCategoryId: number;
+        subCategory: string;
+        categoryId: number;
+        category: string;
+        systemId: number;
+        systemName: string;
+        systemShortName: string;
+        categoryLabel: string;
+        subCategoryLabel: string;
+        descriptionLabel: string;
+        categoriesInDescription: boolean;
+        numContent: bigint;
+      }[]
+    >(Prisma.sql`
+  SELECT
+    classifications.id AS classificationId,
+    classifications.code,
+    classificationDescriptions.id AS descriptionId,
+    classificationDescriptions.description,
+    classificationSubCategories.id subCategoryId,
+    classificationSubCategories.subCategory subCategory,
+    classificationCategories.id categoryId,
+    classificationCategories.category,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
+    COUNT(distinct content.id) AS numContent
+  FROM
+    content
+  LEFT JOIN
+    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
+  WHERE
+    content.isDeleted = FALSE
+    AND (
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+    )
+    AND (
+      MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
+    )
+    ${returnClassificationFilterWhereClauses({ subCategoryId })}
+    ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+  GROUP BY
+    classifications.id, classificationDescriptions.id
+  ORDER BY
+    classificationDescriptions.sortIndex
+  `);
+  } else {
+    matches = await prisma.$queryRaw<
+      {
+        classificationId: number;
+        code: string;
+        descriptionId: number;
+        description: string;
+        subCategoryId: number;
+        subCategory: string;
+        categoryId: number;
+        category: string;
+        systemId: number;
+        systemName: string;
+        systemShortName: string;
+        categoryLabel: string;
+        subCategoryLabel: string;
+        descriptionLabel: string;
+        categoriesInDescription: boolean;
+        numContent: bigint;
+      }[]
+    >(Prisma.sql`
+  SELECT
+    classifications.id AS classificationId,
+    classifications.code,
+    classificationDescriptions.id AS descriptionId,
+    classificationDescriptions.description,
+    classificationSubCategories.id subCategoryId,
+    classificationSubCategories.subCategory subCategory,
+    classificationCategories.id categoryId,
+    classificationCategories.category,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
+    COUNT(distinct content.id) AS numContent
+  FROM
+    content
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
+  WHERE
+    content.isDeleted = FALSE
+    AND (
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+    )
+    ${returnClassificationFilterWhereClauses({ subCategoryId })}
+    ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+  GROUP BY
+    classifications.id, classificationDescriptions.id
+  ORDER BY
+    classificationDescriptions.sortIndex
+  `);
+  }
+
+  return matches.map((m) => ({
+    classification: {
+      id: m.classificationId,
+      code: m.code,
+      descriptionId: m.descriptionId,
+      description: m.description,
+    },
+    subCategory: {
+      id: m.subCategoryId,
+      subCategory: m.subCategory,
+    },
+    category: {
+      id: m.categoryId,
+      category: m.category,
+    },
+    system: {
+      id: m.systemId,
+      name: m.systemName,
+      shortName: m.systemShortName,
+      descriptionLabel: m.descriptionLabel,
+      subCategoryLabel: m.subCategoryLabel,
+      categoryLabel: m.categoryLabel,
+      categoriesInDescription: m.categoriesInDescription,
+    },
+    numCommunity: Number(m.numContent),
+  }));
+}
+
+export async function browseClassificationSubCategoriesWithSharedContent({
+  query,
+  loggedInUserId,
+  categoryId,
+  features,
+  ownerId,
+}: {
+  query?: string;
+  loggedInUserId: Uint8Array;
+  categoryId: number;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+}): Promise<PartialContentClassification[]> {
+  let matches;
+
+  if (query) {
+    // remove operators that break MySQL BOOLEAN search
+    // and add * at the end of every word so that match beginning of words
+    const query_as_prefixes = query
+      .replace(/[+\-><()~*"@]+/g, " ")
+      .split(" ")
+      .filter((s) => s)
+      .map((s) => s + "*")
+      .join(" ");
+
+    matches = await prisma.$queryRaw<
+      {
+        subCategoryId: number;
+        subCategory: string;
+        categoryId: number;
+        category: string;
+        systemId: number;
+        systemName: string;
+        systemShortName: string;
+        categoryLabel: string;
+        subCategoryLabel: string;
+        descriptionLabel: string;
+        categoriesInDescription: boolean;
+        numContent: bigint;
+      }[]
+    >(Prisma.sql`
+  SELECT
+    classificationSubCategories.id AS subCategoryId,
+    classificationSubCategories.subCategory,
+    classificationCategories.id categoryId,
+    classificationCategories.category,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
+    COUNT(distinct content.id) AS numContent
+  FROM
+    content
+  LEFT JOIN
+    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
+  WHERE
+    content.isDeleted = FALSE
+    AND (
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+    )
+    AND (
+      MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, prependOperator: true, operator: "OR" })}
+      ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
+    )
+    ${returnClassificationFilterWhereClauses({ categoryId })}
+    ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+  GROUP BY
+    classificationSubCategories.id
+  ORDER BY
+    classificationSubCategories.sortIndex
+  `);
+  } else {
+    matches = await prisma.$queryRaw<
+      {
+        subCategoryId: number;
+        subCategory: string;
+        categoryId: number;
+        category: string;
+        systemId: number;
+        systemName: string;
+        systemShortName: string;
+        categoryLabel: string;
+        subCategoryLabel: string;
+        descriptionLabel: string;
+        categoriesInDescription: boolean;
+        numContent: bigint;
+      }[]
+    >(Prisma.sql`
+  SELECT
+    classificationSubCategories.id AS subCategoryId,
+    classificationSubCategories.subCategory,
+    classificationCategories.id categoryId,
+    classificationCategories.category,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
+    COUNT(distinct content.id) AS numContent
+  FROM
+    content
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
+  WHERE
+    content.isDeleted = FALSE
+    AND (
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+    )
+    ${returnClassificationFilterWhereClauses({ categoryId })}
+    ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+  GROUP BY
+    classificationSubCategories.id
+  ORDER BY
+    classificationSubCategories.sortIndex
+  `);
+  }
+
+  return matches.map((m) => ({
+    subCategory: {
+      id: m.subCategoryId,
+      subCategory: m.subCategory,
+    },
+    category: {
+      id: m.categoryId,
+      category: m.category,
+    },
+    system: {
+      id: m.systemId,
+      name: m.systemName,
+      shortName: m.systemShortName,
+      descriptionLabel: m.descriptionLabel,
+      subCategoryLabel: m.subCategoryLabel,
+      categoryLabel: m.categoryLabel,
+      categoriesInDescription: m.categoriesInDescription,
+    },
+    numCommunity: Number(m.numContent),
+  }));
+}
+
+export async function browseClassificationCategoriesWithSharedContent({
+  query,
+  loggedInUserId,
+  systemId,
+  features,
+  ownerId,
+}: {
+  query?: string;
+  loggedInUserId: Uint8Array;
+  systemId: number;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+}): Promise<PartialContentClassification[]> {
+  let matches;
+
+  if (query) {
+    // remove operators that break MySQL BOOLEAN search
+    // and add * at the end of every word so that match beginning of words
+    const query_as_prefixes = query
+      .replace(/[+\-><()~*"@]+/g, " ")
+      .split(" ")
+      .filter((s) => s)
+      .map((s) => s + "*")
+      .join(" ");
+
+    matches = await prisma.$queryRaw<
+      {
+        categoryId: number;
+        category: string;
+        systemId: number;
+        systemName: string;
+        systemShortName: string;
+        categoryLabel: string;
+        subCategoryLabel: string;
+        descriptionLabel: string;
+        categoriesInDescription: boolean;
+        numContent: bigint;
+      }[]
+    >(Prisma.sql`
+  SELECT
+    classificationCategories.id AS categoryId,
+    classificationCategories.category,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
+    COUNT(distinct content.id) AS numContent
+  FROM
+    content
+  LEFT JOIN
+    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
+  WHERE
+    content.isDeleted = FALSE
+    AND (
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+    )
+    AND (
+      MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, matchSubCategory: true, prependOperator: true, operator: "OR" })}
+      ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
+    )
+    ${returnClassificationFilterWhereClauses({ systemId })}
+    ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+  GROUP BY
+    classificationCategories.id
+  ORDER BY
+    classificationCategories.sortIndex
+  `);
+  } else {
+    matches = await prisma.$queryRaw<
+      {
+        categoryId: number;
+        category: string;
+        systemId: number;
+        systemName: string;
+        systemShortName: string;
+        categoryLabel: string;
+        subCategoryLabel: string;
+        descriptionLabel: string;
+        categoriesInDescription: boolean;
+        numContent: bigint;
+      }[]
+    >(Prisma.sql`
+  SELECT
+    classificationCategories.id AS categoryId,
+    classificationCategories.category,
+    classificationSystems.id systemId,
+    classificationSystems.name systemName,
+    classificationSystems.shortName systemShortName,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
+    COUNT(distinct content.id) AS numContent
+  FROM
+    content
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
+  WHERE
+    content.isDeleted = FALSE
+    AND (
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+    )
+    ${returnClassificationFilterWhereClauses({ systemId })}
+    ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+  GROUP BY
+    classificationCategories.id
+  ORDER BY
+    classificationCategories.sortIndex
+  `);
+  }
+
+  return matches.map((m) => ({
+    category: {
+      id: m.categoryId,
+      category: m.category,
+    },
+    system: {
+      id: m.systemId,
+      name: m.systemName,
+      shortName: m.systemShortName,
+      descriptionLabel: m.descriptionLabel,
+      subCategoryLabel: m.subCategoryLabel,
+      categoryLabel: m.categoryLabel,
+      categoriesInDescription: m.categoriesInDescription,
+    },
+    numCommunity: Number(m.numContent),
+  }));
+}
+
+export async function browseClassificationSystemsWithSharedContent({
+  query,
+  loggedInUserId,
+  features,
+  ownerId,
+}: {
+  query?: string;
+  loggedInUserId: Uint8Array;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+}): Promise<PartialContentClassification[]> {
+  let matches;
+
+  if (query) {
+    // remove operators that break MySQL BOOLEAN search
+    // and add * at the end of every word so that match beginning of words
+    const query_as_prefixes = query
+      .replace(/[+\-><()~*"@]+/g, " ")
+      .split(" ")
+      .filter((s) => s)
+      .map((s) => s + "*")
+      .join(" ");
+
+    matches = await prisma.$queryRaw<
+      {
+        systemId: number | null;
+        systemName: string | null;
+        systemShortName: string | null;
+        systemType: string | null;
+        categoryLabel: string | null;
+        subCategoryLabel: string | null;
+        descriptionLabel: string | null;
+        categoriesInDescription: boolean | null;
+        numContent: bigint;
+      }[]
+    >(Prisma.sql`
+  SELECT
+    classificationSystems.id AS systemId,
+    classificationSystems.name as systemName,
+    classificationSystems.shortName as systemShortName,
+    classificationSystems.type as systemType,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
+    COUNT(distinct content.id) AS numContent
+  FROM
+    content
+  LEFT JOIN
+    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
+  WHERE
+    content.isDeleted = FALSE
+    AND (
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+    )
+    AND (
+      MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, matchSubCategory: true, matchCategory: true, prependOperator: true, operator: "OR" })}
+      ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
+    )
+    ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+  GROUP BY
+    classificationSystems.id
+  ORDER BY
+    classificationSystems.sortIndex
+  `);
+  } else {
+    matches = await prisma.$queryRaw<
+      {
+        systemId: number | null;
+        systemName: string | null;
+        systemShortName: string | null;
+        systemType: string | null;
+        categoryLabel: string | null;
+        subCategoryLabel: string | null;
+        descriptionLabel: string | null;
+        categoriesInDescription: boolean | null;
+        numContent: bigint;
+      }[]
+    >(Prisma.sql`
+  SELECT
+    classificationSystems.id AS systemId,
+    classificationSystems.name as systemName,
+    classificationSystems.shortName as systemShortName,
+    classificationSystems.type as systemType,
+    classificationSystems.categoryLabel,
+    classificationSystems.subCategoryLabel,
+    classificationSystems.descriptionLabel,
+    classificationSystems.categoriesInDescription,
+    COUNT(distinct content.id) AS numContent
+  FROM
+    content
+  ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
+  WHERE
+    content.isDeleted = FALSE
+    AND (
+       content.isPublic = TRUE
+       OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+    )
+    ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+  GROUP BY
+    classificationSystems.id
+  ORDER BY
+    classificationSystems.sortIndex
+  `);
+  }
+
+  return matches.map((m) => {
+    if (m.systemId === null) {
+      return { numCommunity: Number(m.numContent) };
+    }
+    const partialClass: PartialContentClassification = {
+      system: {
+        id: m.systemId,
+        name: m.systemName!,
+        shortName: m.systemShortName!,
+        descriptionLabel: m.descriptionLabel!,
+        subCategoryLabel: m.subCategoryLabel!,
+        categoryLabel: m.categoryLabel!,
+        categoriesInDescription: m.categoriesInDescription!,
+      },
+      numCommunity: Number(m.numContent),
+    };
+
+    return partialClass;
+  });
+}
+
+// TODO: add test
+export async function getSharedContentMatchCount({
+  query,
+  loggedInUserId,
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+  isUnclassified,
+  features,
+  ownerId,
+}: {
+  query?: string;
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+  isUnclassified?: boolean;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+}): Promise<{ numCommunity: number }> {
+  let matches;
+
+  if (query) {
+    // remove operators that break MySQL BOOLEAN search
+    // and add * at the end of every word so that match beginning of words
+    const query_as_prefixes = query
+      .replace(/[+\-><()~*"@]+/g, " ")
+      .split(" ")
+      .filter((s) => s)
+      .map((s) => s + "*")
+      .join(" ");
+
+    const matchClassification =
+      !isUnclassified && classificationId === undefined;
+    const matchSubCategory = matchClassification && subCategoryId === undefined;
+    const matchCategory = matchSubCategory && categoryId === undefined;
+
+    const includeClassification = true;
+    const includeSubCategory = matchSubCategory;
+    const includeCategory = matchCategory;
+
+    matches = await prisma.$queryRaw<
+      {
+        numContent: bigint;
+      }[]
+    >(Prisma.sql`
+      SELECT
+        COUNT(distinct content.id) as numContent
+      FROM
+        content
+      LEFT JOIN
+        (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+      LEFT JOIN
+        users ON content.ownerId = users.userId
+      ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+      ${returnFeatureJoins(features)}
+      WHERE
+        content.isDeleted = FALSE
+        AND (
+           content.isPublic = TRUE
+           OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+        )
+        AND
+        (
+          MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+          OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+          ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
+          ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
+        )
+        ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
+        ${returnFeatureWhereClauses(features)}
+        ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+      `);
+  } else {
+    const includeClassification =
+      isUnclassified ||
+      classificationId !== undefined ||
+      subCategoryId !== undefined;
+    const includeSubCategory =
+      !includeClassification && categoryId !== undefined;
+    const includeCategory = !includeSubCategory && systemId !== undefined;
+
+    matches = await prisma.$queryRaw<
+      {
+        numContent: bigint;
+      }[]
+    >(Prisma.sql`
+      SELECT
+        COUNT(distinct content.id) as numContent
+      FROM
+        content
+      LEFT JOIN
+        (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+      LEFT JOIN
+        users ON content.ownerId = users.userId
+      ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+      ${returnFeatureJoins(features)}
+      WHERE
+        content.isDeleted = FALSE
+        AND (
+           content.isPublic = TRUE
+           OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+        )
+        ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
+        ${returnFeatureWhereClauses(features)}
+        ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+      `);
+  }
+
+  if (matches.length === 0) {
+    return { numCommunity: 0 };
+  } else {
+    return { numCommunity: Number(matches[0].numContent) };
+  }
+}
+
+// TODO: add test
+export async function getSharedContentMatchCountPerAvailableFeature({
+  query,
+  loggedInUserId,
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+  isUnclassified,
+  features,
+  ownerId,
+}: {
+  query?: string;
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+  isUnclassified?: boolean;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+}): Promise<Record<string, { numCommunity?: number; numLibrary?: number }>> {
+  const matchesPerFeature: Record<
+    string,
+    { numCommunity?: number; numLibrary?: number }
+  > = {};
+
+  const availableFeatures = await getAvailableContentFeatures();
+
+  if (query) {
+    // remove operators that break MySQL BOOLEAN search
+    // and add * at the end of every word so that match beginning of words
+    const query_as_prefixes = query
+      .replace(/[+\-><()~*"@]+/g, " ")
+      .split(" ")
+      .filter((s) => s)
+      .map((s) => s + "*")
+      .join(" ");
+
+    const matchClassification =
+      !isUnclassified && classificationId === undefined;
+    const matchSubCategory = matchClassification && subCategoryId === undefined;
+    const matchCategory = matchSubCategory && categoryId === undefined;
+
+    const includeClassification = true;
+    const includeSubCategory = matchSubCategory;
+    const includeCategory = matchCategory;
+
+    for (const feature of availableFeatures) {
+      const newFeatures = new Set(features);
+      newFeatures.add(feature.code);
+
+      const matches = await prisma.$queryRaw<
+        {
+          numContent: bigint;
+        }[]
+      >(Prisma.sql`
+      SELECT
+        COUNT(distinct content.id) as numContent
+      FROM
+        content
+      LEFT JOIN
+        (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+      LEFT JOIN
+        users ON content.ownerId = users.userId
+      ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+      ${returnFeatureJoins(newFeatures)}
+      WHERE
+        content.isDeleted = FALSE
+        AND (
+           content.isPublic = TRUE
+           OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+        )
+        AND
+        (
+          MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+          OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+          ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
+          ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
+        )
+        ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
+        ${returnFeatureWhereClauses(newFeatures)}
+        ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+      `);
+
+      if (matches.length > 0) {
+        matchesPerFeature[feature.code] = {
+          numCommunity: Number(matches[0].numContent),
+        };
+      }
+    }
+  } else {
+    const includeClassification =
+      isUnclassified ||
+      classificationId !== undefined ||
+      subCategoryId !== undefined;
+    const includeSubCategory =
+      !includeClassification && categoryId !== undefined;
+    const includeCategory = !includeSubCategory && systemId !== undefined;
+
+    for (const feature of availableFeatures) {
+      const newFeatures = new Set(features);
+      newFeatures.add(feature.code);
+
+      const matches = await prisma.$queryRaw<
+        {
+          numContent: bigint;
+        }[]
+      >(Prisma.sql`
+      SELECT
+        COUNT(distinct content.id) as numContent
+      FROM
+        content
+      LEFT JOIN
+        (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+      LEFT JOIN
+        users ON content.ownerId = users.userId
+      ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+      ${returnFeatureJoins(newFeatures)}
+      WHERE
+        content.isDeleted = FALSE
+        AND (
+           content.isPublic = TRUE
+           OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+        )
+        ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
+        ${returnFeatureWhereClauses(newFeatures)}
+        ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+      `);
+      if (matches.length > 0) {
+        matchesPerFeature[feature.code] = {
+          numCommunity: Number(matches[0].numContent),
+        };
+      }
+    }
+  }
+  return matchesPerFeature;
+}
+
+export async function listUserAssigned(userId: Uint8Array) {
   const preliminaryAssignments = await prisma.content.findMany({
     where: {
       isDeleted: false,
       isAssigned: true,
       assignmentScores: { some: { userId } },
     },
-    select: {
-      id: true,
-      isFolder: true,
-      ownerId: true,
-      name: true,
-      imagePath: true,
-      isPublic: true,
-      classCode: true,
-      codeValidUntil: true,
-      license: {
-        include: {
-          composedOf: {
-            select: { composedOf: true },
-            orderBy: { composedOf: { sortIndex: "asc" } },
-          },
-        },
-      },
-      parentFolder: { select: { id: true, name: true, isPublic: true } },
-    },
+    select: returnContentStructureNoClassDocsSelect({
+      includeAssignInfo: true,
+    }),
     orderBy: { createdAt: "asc" },
   });
 
-  const assignments: ContentStructure[] = preliminaryAssignments.map((obj) => {
-    const isOpen = obj.codeValidUntil
-      ? DateTime.now() <= DateTime.fromJSDate(obj.codeValidUntil)
-      : false;
-    const assignmentStatus: AssignmentStatus = !isOpen ? "Closed" : "Open";
-    return {
-      ...obj,
-      isShared: false,
-      sharedWith: [],
-      license: obj.license ? processLicense(obj.license) : null,
-      classifications: [],
-      assignmentStatus,
-      documents: [],
-      hasScoreData: false,
-      parentFolder: processParentFolder(obj.parentFolder),
-    };
-  });
+  const assignments = preliminaryAssignments.map((obj) =>
+    processContentNoClassDocs(obj),
+  );
 
   const user: UserInfo = await prisma.users.findUniqueOrThrow({
     where: { userId },
@@ -1973,7 +3537,7 @@ export async function findOrCreateUser({
   return user;
 }
 
-export async function getUserInfo(userId: Buffer) {
+export async function getUserInfo(userId: Uint8Array) {
   const user = await prisma.users.findUniqueOrThrow({
     where: { userId },
     select: {
@@ -1986,6 +3550,18 @@ export async function getUserInfo(userId: Buffer) {
     },
   });
   return user;
+}
+
+export async function getAuthorInfo(userId: Uint8Array): Promise<UserInfo> {
+  const user = await prisma.users.findUniqueOrThrow({
+    where: { userId },
+    select: {
+      userId: true,
+      firstNames: true,
+      lastNames: true,
+    },
+  });
+  return { email: "", ...user };
 }
 
 export async function getUserInfoFromEmail(email: string) {
@@ -2007,7 +3583,7 @@ export async function upgradeAnonymousUser({
   userId,
   email,
 }: {
-  userId: Buffer;
+  userId: Uint8Array;
   email: string;
 }) {
   const user = await prisma.users.update({
@@ -2023,7 +3599,7 @@ export async function updateUser({
   firstNames,
   lastNames,
 }: {
-  userId: Buffer;
+  userId: Uint8Array;
   firstNames: string;
   lastNames: string;
 }) {
@@ -2046,7 +3622,7 @@ export async function getAllDoenetmlVersions() {
   return allDoenetmlVersions;
 }
 
-export async function getIsAdmin(userId: Buffer) {
+export async function getIsAdmin(userId: Uint8Array) {
   const user = await prisma.users.findUnique({ where: { userId } });
   let isAdmin = false;
   if (user) {
@@ -2060,24 +3636,17 @@ export async function getAllRecentPublicActivities() {
     where: { isPublic: true, isDeleted: false, isFolder: false },
     orderBy: { lastEdited: "desc" },
     take: 100,
-    select: {
-      id: true,
-      name: true,
-      imagePath: true,
-      owner: {
-        select: {
-          firstNames: true,
-          lastNames: true,
-        },
-      },
-    },
+    select: returnContentStructureFullOwnerSelect(),
   });
-  return activities;
+
+  const activities2 = activities.map((activity) => processContent(activity));
+
+  return activities2;
 }
 
 export async function addPromotedContentGroup(
   groupName: string,
-  userId: Buffer,
+  userId: Uint8Array,
 ) {
   await mustBeAdmin(
     userId,
@@ -2092,13 +3661,13 @@ export async function addPromotedContentGroup(
 
   const newIndex = getNextSortIndex(lastIndex);
 
-  const { promotedGroupId } = await prisma.promotedContentGroups.create({
+  const { id } = await prisma.promotedContentGroups.create({
     data: {
       groupName,
       sortIndex: newIndex,
     },
   });
-  return promotedGroupId;
+  return id;
 }
 
 export async function updatePromotedContentGroup(
@@ -2106,7 +3675,7 @@ export async function updatePromotedContentGroup(
   newGroupName: string,
   homepage: boolean,
   currentlyFeatured: boolean,
-  userId: Buffer,
+  userId: Uint8Array,
 ) {
   await mustBeAdmin(
     userId,
@@ -2115,7 +3684,7 @@ export async function updatePromotedContentGroup(
 
   await prisma.promotedContentGroups.update({
     where: {
-      promotedGroupId: groupId,
+      id: groupId,
     },
     data: {
       groupName: newGroupName,
@@ -2127,7 +3696,7 @@ export async function updatePromotedContentGroup(
 
 export async function deletePromotedContentGroup(
   groupId: number,
-  userId: Buffer,
+  userId: Uint8Array,
 ) {
   await mustBeAdmin(
     userId,
@@ -2141,7 +3710,7 @@ export async function deletePromotedContentGroup(
   });
   const deleteGroup = prisma.promotedContentGroups.delete({
     where: {
-      promotedGroupId: groupId,
+      id: groupId,
     },
   });
   await prisma.$transaction([deleteEntries, deleteGroup]);
@@ -2155,7 +3724,7 @@ export async function deletePromotedContentGroup(
  */
 export async function movePromotedContentGroup(
   groupId: number,
-  userId: Buffer,
+  userId: Uint8Array,
   desiredPosition: number,
 ) {
   await mustBeAdmin(
@@ -2171,7 +3740,7 @@ export async function movePromotedContentGroup(
   const currentSortIndices = (
     await prisma.promotedContentGroups.findMany({
       where: {
-        promotedGroupId: { not: groupId },
+        id: { not: groupId },
       },
       select: {
         sortIndex: true,
@@ -2191,7 +3760,7 @@ export async function movePromotedContentGroup(
   }) {
     await prisma.promotedContentGroups.updateMany({
       where: {
-        promotedGroupId: { not: groupId },
+        id: { not: groupId },
         sortIndex: sortIndices,
       },
       data: {
@@ -2209,7 +3778,7 @@ export async function movePromotedContentGroup(
   // Move the item!
   await prisma.promotedContentGroups.update({
     where: {
-      promotedGroupId: groupId,
+      id: groupId,
     },
     data: {
       sortIndex: newSortIndex,
@@ -2217,7 +3786,7 @@ export async function movePromotedContentGroup(
   });
 }
 
-export async function loadPromotedContent(userId: Buffer) {
+export async function loadPromotedContent(userId: Uint8Array) {
   const isAdmin = userId ? await getIsAdmin(userId) : false;
   const content = await prisma.promotedContentGroups.findMany({
     where: {
@@ -2229,25 +3798,14 @@ export async function loadPromotedContent(userId: Buffer) {
     },
     select: {
       groupName: true,
-      promotedGroupId: true,
+      id: true,
       currentlyFeatured: true,
       homepage: true,
 
       promotedContent: {
         select: {
           activity: {
-            select: {
-              id: true,
-              name: true,
-              imagePath: true,
-
-              owner: {
-                select: {
-                  firstNames: true,
-                  lastNames: true,
-                },
-              },
-            },
+            select: returnContentStructureFullOwnerSelect(),
           },
         },
         orderBy: { sortIndex: "asc" },
@@ -2255,21 +3813,21 @@ export async function loadPromotedContent(userId: Buffer) {
     },
   });
 
-  const reformattedContent = content.map((groupContent) => {
-    const reformattedActivities = groupContent.promotedContent.map(
-      (promoted) => {
-        return {
-          name: promoted.activity.name,
-          activityId: promoted.activity.id,
-          imagePath: promoted.activity.imagePath,
-          owner: promoted.activity.owner,
-        };
-      },
-    );
+  const reformattedContent: {
+    groupName: string;
+    promotedGroupId: number;
+    currentlyFeatured: boolean;
+    homepage: boolean;
+    promotedContent: ContentStructure[];
+  }[] = content.map((groupContent) => {
+    const reformattedActivities: ContentStructure[] =
+      groupContent.promotedContent.map((content) =>
+        processContent(content.activity),
+      );
 
     return {
       groupName: groupContent.groupName,
-      promotedGroupId: groupContent.promotedGroupId,
+      promotedGroupId: groupContent.id,
       currentlyFeatured: groupContent.currentlyFeatured,
       homepage: groupContent.homepage,
       promotedContent: reformattedActivities,
@@ -2281,8 +3839,8 @@ export async function loadPromotedContent(userId: Buffer) {
 
 export async function addPromotedContent(
   groupId: number,
-  activityId: Buffer,
-  userId: Buffer,
+  activityId: Uint8Array,
+  userId: Uint8Array,
 ) {
   await mustBeAdmin(
     userId,
@@ -2325,8 +3883,8 @@ export async function addPromotedContent(
 
 export async function removePromotedContent(
   groupId: number,
-  activityId: Buffer,
-  userId: Buffer,
+  activityId: Uint8Array,
+  userId: Uint8Array,
 ) {
   await mustBeAdmin(
     userId,
@@ -2368,8 +3926,8 @@ export async function removePromotedContent(
  */
 export async function movePromotedContent(
   groupId: number,
-  activityId: Buffer,
-  userId: Buffer,
+  activityId: Uint8Array,
+  userId: Uint8Array,
   desiredPosition: number,
 ) {
   await mustBeAdmin(
@@ -2450,7 +4008,10 @@ export async function movePromotedContent(
   });
 }
 
-export async function assignActivity(activityId: Buffer, userId: Buffer) {
+export async function assignActivity(
+  activityId: Uint8Array,
+  userId: Uint8Array,
+) {
   const origActivity = await prisma.content.findUniqueOrThrow({
     where: {
       id: activityId,
@@ -2483,13 +4044,15 @@ export async function assignActivity(activityId: Buffer, userId: Buffer) {
 }
 
 function generateClassCode() {
-  return ("00000" + Math.floor(Math.random() * 1000000)).slice(-6);
+  const array = new Uint32Array(1);
+  getRandomValues(array);
+  return array[0].toString().slice(-6);
 }
 
 export async function openAssignmentWithCode(
-  activityId: Buffer,
+  activityId: Uint8Array,
   closeAt: DateTime,
-  loggedInUserId: Buffer,
+  loggedInUserId: Uint8Array,
 ) {
   const initialActivity = await prisma.content.findUniqueOrThrow({
     where: { id: activityId, ownerId: loggedInUserId, isFolder: false },
@@ -2519,9 +4082,9 @@ export async function openAssignmentWithCode(
 }
 
 export async function updateAssignmentSettings(
-  activityId: Buffer,
+  activityId: Uint8Array,
   closeAt: DateTime,
-  loggedInUserId: Buffer,
+  loggedInUserId: Uint8Array,
 ) {
   const codeValidUntil = closeAt.toJSDate();
 
@@ -2541,8 +4104,8 @@ export async function updateAssignmentSettings(
 }
 
 export async function closeAssignmentWithCode(
-  activityId: Buffer,
-  userId: Buffer,
+  activityId: Uint8Array,
+  userId: Uint8Array,
 ) {
   await prisma.content.update({
     where: {
@@ -2573,7 +4136,10 @@ export async function closeAssignmentWithCode(
   }
 }
 
-export async function unassignActivity(activityId: Buffer, userId: Buffer) {
+export async function unassignActivity(
+  activityId: Uint8Array,
+  userId: Uint8Array,
+) {
   await prisma.content.update({
     where: {
       id: activityId,
@@ -2596,7 +4162,10 @@ export async function unassignActivity(activityId: Buffer, userId: Buffer) {
 
 // Note: this function returns `sortIndex` (which is a bigint)
 // so the data shouldn't be sent unchanged to the response
-export async function getAssignment(activityId: Buffer, ownerId: Buffer) {
+export async function getAssignment(
+  activityId: Uint8Array,
+  ownerId: Uint8Array,
+) {
   const assignment = await prisma.content.findUniqueOrThrow({
     where: {
       id: activityId,
@@ -2627,10 +4196,10 @@ export async function saveScoreAndState({
   onSubmission,
   state,
 }: {
-  activityId: Buffer;
-  docId: Buffer;
+  activityId: Uint8Array;
+  docId: Uint8Array;
   docVersionNum: number;
-  userId: Buffer;
+  userId: Uint8Array;
   score: number;
   onSubmission: boolean;
   state: string;
@@ -2800,14 +4369,14 @@ export async function loadState({
   userId,
   withMaxScore,
 }: {
-  activityId: Buffer;
-  docId: Buffer;
+  activityId: Uint8Array;
+  docId: Uint8Array;
   docVersionNum: number;
-  requestedUserId: Buffer;
-  userId: Buffer;
+  requestedUserId: Uint8Array;
+  userId: Uint8Array;
   withMaxScore: boolean;
 }) {
-  if (!requestedUserId.equals(userId)) {
+  if (!isEqualUUID(requestedUserId, userId)) {
     // If user isn't the requested user, then user is allowed to load requested users state
     // only if they are the owner of the assignment.
     // If not user is not owner, then it will throw an error.
@@ -2857,8 +4426,8 @@ export async function getAssignmentScoreData({
   activityId,
   ownerId,
 }: {
-  activityId: Buffer;
-  ownerId: Buffer;
+  activityId: Uint8Array;
+  ownerId: Uint8Array;
 }) {
   const assignment: {
     name: string;
@@ -2904,16 +4473,18 @@ export async function getAssignmentStudentData({
   loggedInUserId,
   studentId,
 }: {
-  activityId: Buffer;
-  loggedInUserId: Buffer;
-  studentId: Buffer;
+  activityId: Uint8Array;
+  loggedInUserId: Uint8Array;
+  studentId: Uint8Array;
 }) {
   const assignmentData = await prisma.assignmentScores.findUniqueOrThrow({
     where: {
       activityId_userId: { activityId, userId: studentId },
       activity: {
         // allow access if logged in user is the student or the owner
-        ownerId: studentId.equals(loggedInUserId) ? undefined : loggedInUserId,
+        ownerId: isEqualUUID(studentId, loggedInUserId)
+          ? undefined
+          : loggedInUserId,
         isDeleted: false,
         isFolder: false,
         isAssigned: true,
@@ -2981,72 +4552,40 @@ export async function getAllAssignmentScores({
   ownerId,
   parentFolderId,
 }: {
-  ownerId: Buffer;
-  parentFolderId: Buffer | null;
+  ownerId: Uint8Array;
+  parentFolderId: Uint8Array | null;
 }) {
-  let orderedActivities;
+  const orderedActivities = await prisma.$queryRaw<
+    {
+      id: Uint8Array;
+      name: string;
+    }[]
+  >(Prisma.sql`
+    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
+      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
+      WHERE ${parentFolderId === null ? Prisma.sql`parentFolderId IS NULL` : Prisma.sql`parentFolderId = ${parentFolderId}`}
+      AND ownerId = ${ownerId}
+      AND (isAssigned = true or isFolder = true) AND isDeleted = false
+      UNION ALL
+      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
+      FROM content AS c
+      INNER JOIN content_tree AS ft
+      ON c.parentFolderId = ft.id
+      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
+    )
+    
+    SELECT c.id, c.name FROM content AS c
+    INNER JOIN content_tree AS ct
+    ON ct.id = c.id
+    WHERE ct.isFolder = FALSE ORDER BY path
+  `);
 
   let folder: {
-    id: Buffer;
+    id: Uint8Array;
     name: string;
   } | null = null;
 
-  // NOTE: the string after `Prisma.sql` is NOT interpreted as a regular string,
-  // but it does special processing with the template variables.
-  // For this reason, one cannot have an operator such as "=" or "IS" as a template variable
-  // or a phrase such as "parentFolderId IS NULL".
-  // To get two versions, one with `parentFolderId IS NULL` and the other with `parentFolderId = ${parentFolderId}`,
-  // we had to make two completely separate raw queries.
-  // See: https://www.prisma.io/docs/orm/prisma-client/queries/raw-database-access/raw-queries#considerations
-  if (parentFolderId === null) {
-    orderedActivities = await prisma.$queryRaw<
-      {
-        id: Buffer;
-        name: string;
-      }[]
-    >(Prisma.sql`
-    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
-      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
-      WHERE parentFolderId IS NULL AND ownerId = ${ownerId}
-      AND (isAssigned = true or isFolder = true) AND isDeleted = false
-      UNION ALL
-      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
-      FROM content AS c
-      INNER JOIN content_tree AS ft
-      ON c.parentFolderId = ft.id
-      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
-    )
-    
-    SELECT c.id, c.name FROM content AS c
-    INNER JOIN content_tree AS ct
-    ON ct.id = c.id
-    WHERE ct.isFolder = FALSE ORDER BY path
-  `);
-  } else {
-    orderedActivities = await prisma.$queryRaw<
-      {
-        id: Buffer;
-        name: string;
-      }[]
-    >(Prisma.sql`
-    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
-      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
-      WHERE parentFolderId = ${parentFolderId} AND ownerId = ${ownerId}
-      AND (isAssigned = true or isFolder = true) AND isDeleted = false
-      UNION ALL
-      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
-      FROM content AS c
-      INNER JOIN content_tree AS ft
-      ON c.parentFolderId = ft.id
-      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
-    )
-    
-    SELECT c.id, c.name FROM content AS c
-    INNER JOIN content_tree AS ct
-    ON ct.id = c.id
-    WHERE ct.isFolder = FALSE ORDER BY path
-  `);
-
+  if (parentFolderId !== null) {
     folder = await prisma.content.findUniqueOrThrow({
       where: { id: parentFolderId, ownerId, isDeleted: false, isFolder: true },
       select: { id: true, name: true },
@@ -3091,9 +4630,9 @@ export async function getStudentData({
   ownerId,
   parentFolderId,
 }: {
-  userId: Buffer;
-  ownerId: Buffer;
-  parentFolderId: Buffer | null;
+  userId: Uint8Array;
+  ownerId: Uint8Array;
+  parentFolderId: Uint8Array | null;
 }) {
   const userData = await prisma.users.findUniqueOrThrow({
     where: {
@@ -3107,79 +4646,42 @@ export async function getStudentData({
     },
   });
 
-  let orderedActivityScores;
+  const orderedActivityScores = await prisma.$queryRaw<
+    {
+      activityId: Uint8Array;
+      activityName: string;
+      score: number | null;
+    }[]
+  >(Prisma.sql`
+    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
+      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
+      WHERE ${parentFolderId === null ? Prisma.sql`parentFolderId IS NULL` : Prisma.sql`parentFolderId = ${parentFolderId}`}
+      AND ownerId = ${ownerId}
+      AND (isAssigned = true or isFolder = true) AND isDeleted = false
+      UNION ALL
+      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
+      FROM content AS c
+      INNER JOIN content_tree AS ft
+      ON c.parentFolderId = ft.id
+      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
+    )
+    
+    SELECT c.id AS activityId, c.name AS activityName, s.score FROM content AS c
+    INNER JOIN content_tree AS ct
+    ON ct.id = c.id
+    LEFT JOIN (
+    	SELECT * FROM assignmentScores WHERE userId=${userId}
+    	) as s
+    ON s.activityId  = c.id 
+    WHERE ct.isFolder = FALSE ORDER BY path
+  `);
 
   let folder: {
-    id: Buffer;
+    id: Uint8Array;
     name: string;
   } | null = null;
 
-  // NOTE: the string after `Prisma.sql` is NOT interpreted as a regular string,
-  // but it does special processing with the template variables.
-  // For this reason, one cannot have an operator such as "=" or "IS" as a template variable
-  // or a phrase such as "parentFolderId IS NULL".
-  // To get two versions, one with `parentFolderId IS NULL` and the other with `parentFolderId = ${parentFolderId}`,
-  // we had to make two completely separate raw queries.
-  // See: https://www.prisma.io/docs/orm/prisma-client/queries/raw-database-access/raw-queries#considerations
-  if (parentFolderId === null) {
-    orderedActivityScores = await prisma.$queryRaw<
-      {
-        activityId: Buffer;
-        activityName: string;
-        score: number | null;
-      }[]
-    >(Prisma.sql`
-    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
-      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
-      WHERE parentFolderId IS NULL AND ownerId = ${ownerId}
-      AND (isAssigned = true or isFolder = true) AND isDeleted = false
-      UNION ALL
-      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
-      FROM content AS c
-      INNER JOIN content_tree AS ft
-      ON c.parentFolderId = ft.id
-      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
-    )
-    
-    SELECT c.id AS activityId, c.name AS activityName, s.score FROM content AS c
-    INNER JOIN content_tree AS ct
-    ON ct.id = c.id
-    LEFT JOIN (
-    	SELECT * FROM assignmentScores WHERE userId=${userId}
-    	) as s
-    ON s.activityId  = c.id 
-    WHERE ct.isFolder = FALSE ORDER BY path
-  `);
-  } else {
-    orderedActivityScores = await prisma.$queryRaw<
-      {
-        activityId: Buffer;
-        activityName: string;
-        score: number | null;
-      }[]
-    >(Prisma.sql`
-    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
-      SELECT id, parentFolderId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
-      WHERE parentFolderId = ${parentFolderId} AND ownerId = ${ownerId}
-      AND (isAssigned = true or isFolder = true) AND isDeleted = false
-      UNION ALL
-      SELECT c.id, c.parentFolderId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
-      FROM content AS c
-      INNER JOIN content_tree AS ft
-      ON c.parentFolderId = ft.id
-      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
-    )
-    
-    SELECT c.id AS activityId, c.name AS activityName, s.score FROM content AS c
-    INNER JOIN content_tree AS ct
-    ON ct.id = c.id
-    LEFT JOIN (
-    	SELECT * FROM assignmentScores WHERE userId=${userId}
-    	) as s
-    ON s.activityId  = c.id 
-    WHERE ct.isFolder = FALSE ORDER BY path
-  `);
-
+  if (parentFolderId !== null) {
     folder = await prisma.content.findUniqueOrThrow({
       where: { id: parentFolderId, ownerId, isDeleted: false, isFolder: true },
       select: { id: true, name: true },
@@ -3189,7 +4691,7 @@ export async function getStudentData({
   return { userData, orderedActivityScores, folder };
 }
 
-export async function getAssignedScores(loggedInUserId: Buffer) {
+export async function getAssignedScores(loggedInUserId: Uint8Array) {
   const scores = await prisma.assignmentScores.findMany({
     where: {
       userId: loggedInUserId,
@@ -3220,8 +4722,8 @@ export async function getAssignmentContent({
   activityId,
   ownerId,
 }: {
-  activityId: Buffer;
-  ownerId: Buffer;
+  activityId: Uint8Array;
+  ownerId: Uint8Array;
 }) {
   const assignmentData = await prisma.documents.findMany({
     where: {
@@ -3263,10 +4765,10 @@ export async function recordSubmittedEvent({
   itemCreditAchieved,
   documentCreditAchieved,
 }: {
-  activityId: Buffer;
-  docId: Buffer;
+  activityId: Uint8Array;
+  docId: Uint8Array;
   docVersionNum: number;
-  userId: Buffer;
+  userId: Uint8Array;
   answerId: string;
   response: string;
   answerNumber?: number;
@@ -3296,15 +4798,15 @@ export async function getAnswersThatHaveSubmittedResponses({
   activityId,
   ownerId,
 }: {
-  activityId: Buffer;
-  ownerId: Buffer;
+  activityId: Uint8Array;
+  ownerId: Uint8Array;
 }) {
   // Using raw query as it seems prisma does not support distinct in count.
   // https://github.com/prisma/prisma/issues/4228
 
   let submittedResponses = await prisma.$queryRaw<
     {
-      docId: Buffer;
+      docId: Uint8Array;
       docVersionNum: number;
       answerId: string;
       answerNumber: number | null;
@@ -3343,10 +4845,10 @@ export async function getDocumentSubmittedResponses({
   ownerId,
   answerId,
 }: {
-  activityId: Buffer;
-  docId: Buffer;
+  activityId: Uint8Array;
+  docId: Uint8Array;
   docVersionNum: number;
-  ownerId: Buffer;
+  ownerId: Uint8Array;
   answerId: string;
 }) {
   // get activity name and make sure that owner is the owner
@@ -3367,7 +4869,7 @@ export async function getDocumentSubmittedResponses({
   // Can we come up with a better solution?
   const rawResponses = await prisma.$queryRaw<
     {
-      userId: Buffer;
+      userId: Uint8Array;
       firstNames: string | null;
       lastNames: string;
       email: string;
@@ -3391,7 +4893,7 @@ select dsr.userId, users.firstNames, users.lastNames, users.email, response, cre
 
   const submittedResponses = [];
   let newResponse;
-  let lastUserId = Buffer.alloc(16);
+  let lastUserId = new Uint8Array(16);
 
   for (const respObj of rawResponses) {
     if (respObj.userId > lastUserId) {
@@ -3436,12 +4938,12 @@ export async function getDocumentSubmittedResponseHistory({
   answerId,
   userId,
 }: {
-  activityId: Buffer;
-  docId: Buffer;
+  activityId: Uint8Array;
+  docId: Uint8Array;
   docVersionNum: number;
-  ownerId: Buffer;
+  ownerId: Uint8Array;
   answerId: string;
-  userId: Buffer;
+  userId: Uint8Array;
 }) {
   // get activity name and make sure that owner is the owner
   const activityName = (
@@ -3498,8 +5000,8 @@ export async function getMyFolderContent({
   folderId,
   loggedInUserId,
 }: {
-  folderId: Buffer | null;
-  loggedInUserId: Buffer;
+  folderId: Uint8Array | null;
+  loggedInUserId: Uint8Array;
 }) {
   let folder: ContentStructure | null = null;
 
@@ -3512,77 +5014,10 @@ export async function getMyFolderContent({
         isFolder: true,
         ownerId: loggedInUserId,
       },
-      select: {
-        id: true,
-        ownerId: true,
-        name: true,
-        imagePath: true,
-        isPublic: true,
-        sharedWith: {
-          select: {
-            user: {
-              select: {
-                userId: true,
-                email: true,
-                firstNames: true,
-                lastNames: true,
-              },
-            },
-          },
-        },
-        license: {
-          include: {
-            composedOf: {
-              select: { composedOf: true },
-              orderBy: { composedOf: { sortIndex: "asc" } },
-            },
-          },
-        },
-        parentFolder: {
-          select: {
-            id: true,
-            name: true,
-            isPublic: true,
-            sharedWith: {
-              select: {
-                user: {
-                  select: {
-                    userId: true,
-                    email: true,
-                    firstNames: true,
-                    lastNames: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      select: returnContentStructureSharedDetailsNoClassDocsSelect(),
     });
 
-    const {
-      sharedWith: sharedWithOrig,
-      license,
-      parentFolder,
-      ...preliminaryFolder2
-    } = preliminaryFolder;
-
-    const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
-
-    folder = {
-      ...preliminaryFolder2,
-      isFolder: true,
-      isShared,
-      sharedWith,
-      assignmentStatus: "Unassigned",
-      classCode: null,
-      codeValidUntil: null,
-      documents: [],
-      hasScoreData: false,
-      license: license ? processLicense(license) : null,
-      parentFolder: processParentFolder(parentFolder),
-      classifications: [],
-    };
+    folder = processContentSharedDetailsNoClassDocs(preliminaryFolder);
   }
 
   const preliminaryContent = await prisma.content.findMany({
@@ -3592,112 +5027,24 @@ export async function getMyFolderContent({
       parentFolderId: folderId,
     },
     select: {
-      id: true,
-      isFolder: true,
-      ownerId: true,
-      name: true,
-      imagePath: true,
-      isPublic: true,
-      sharedWith: {
-        select: {
-          user: {
-            select: {
-              userId: true,
-              email: true,
-              firstNames: true,
-              lastNames: true,
-            },
-          },
-        },
-      },
-      isAssigned: true,
-      classCode: true,
-      codeValidUntil: true,
-      license: {
-        include: {
-          composedOf: {
-            select: { composedOf: true },
-            orderBy: { composedOf: { sortIndex: "asc" } },
-          },
-        },
-      },
-      classifications: {
-        select: {
-          classification: {
-            include: {
-              subCategory: {
-                include: {
-                  category: {
-                    include: {
-                      system: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      documents: { select: { id: true, doenetmlVersion: true } },
-      parentFolder: {
-        select: {
-          id: true,
-          name: true,
-          isPublic: true,
-          sharedWith: {
-            select: {
-              user: {
-                select: {
-                  userId: true,
-                  email: true,
-                  firstNames: true,
-                  lastNames: true,
-                },
-              },
-            },
-          },
-        },
-      },
+      ...returnContentStructureSharedDetailsSelect({
+        includeAssignInfo: true,
+      }),
       _count: { select: { assignmentScores: true } },
     },
     orderBy: { sortIndex: "asc" },
   });
 
-  const content: ContentStructure[] = preliminaryContent.map((obj) => {
-    const {
-      _count,
-      isAssigned,
-      sharedWith: sharedWithOrig,
-      license,
-      classifications,
-      parentFolder,
-      ...activity
-    } = obj;
-    const isOpen = obj.codeValidUntil
-      ? DateTime.now() <= DateTime.fromJSDate(obj.codeValidUntil)
-      : false;
-    const assignmentStatus: AssignmentStatus = !obj.isAssigned
-      ? "Unassigned"
-      : !isOpen
-        ? "Closed"
-        : "Open";
-    const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
+  const content: ContentStructure[] = preliminaryContent.map(
+    processContentSharedDetails,
+  );
 
-    return {
-      ...activity,
-      isShared,
-      sharedWith,
-      license: license ? processLicense(license) : null,
-      classifications: classifications.map((c) => c.classification),
-      assignmentStatus,
-      hasScoreData: _count.assignmentScores > 0,
-      parentFolder: processParentFolder(parentFolder),
-    };
-  });
+  const availableFeatures = await getAvailableContentFeatures();
 
   return {
     content,
     folder,
+    availableFeatures,
   };
 }
 
@@ -3706,8 +5053,8 @@ export async function searchMyFolderContent({
   loggedInUserId,
   query,
 }: {
-  folderId: Buffer | null;
-  loggedInUserId: Buffer;
+  folderId: Uint8Array | null;
+  loggedInUserId: Uint8Array;
   query: string;
 }) {
   let folder: ContentStructure | null = null;
@@ -3721,82 +5068,11 @@ export async function searchMyFolderContent({
         isFolder: true,
         ownerId: loggedInUserId,
       },
-      select: {
-        id: true,
-        ownerId: true,
-        name: true,
-        imagePath: true,
-        isPublic: true,
-        sharedWith: {
-          select: {
-            user: {
-              select: {
-                userId: true,
-                email: true,
-                firstNames: true,
-                lastNames: true,
-              },
-            },
-          },
-        },
-        license: {
-          include: {
-            composedOf: {
-              select: { composedOf: true },
-              orderBy: { composedOf: { sortIndex: "asc" } },
-            },
-          },
-        },
-        parentFolder: {
-          select: {
-            id: true,
-            name: true,
-            isPublic: true,
-            sharedWith: {
-              select: {
-                user: {
-                  select: {
-                    userId: true,
-                    email: true,
-                    firstNames: true,
-                    lastNames: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      select: returnContentStructureSharedDetailsNoClassDocsSelect(),
     });
 
-    const {
-      sharedWith: sharedWithOrig,
-      license,
-      parentFolder,
-      ...preliminaryFolder2
-    } = preliminaryFolder;
-    const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
-
-    folder = {
-      ...preliminaryFolder2,
-      isFolder: true,
-      isShared,
-      sharedWith,
-      assignmentStatus: "Unassigned",
-      classCode: null,
-      codeValidUntil: null,
-      documents: [],
-      hasScoreData: false,
-      license: license ? processLicense(license) : null,
-      parentFolder: processParentFolder(parentFolder),
-      classifications: [],
-    };
+    folder = processContentSharedDetailsNoClassDocs(preliminaryFolder);
   }
-
-  let matches: {
-    id: Buffer;
-    relevance: number;
-  }[];
 
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
@@ -3807,53 +5083,17 @@ export async function searchMyFolderContent({
     .map((s) => s + "*")
     .join(" ");
 
-  if (folderId === null) {
-    matches = await prisma.$queryRaw<
-      {
-        id: Buffer;
-        relevance: number;
-      }[]
-    >(Prisma.sql`
-  SELECT
-    content.id,
-    AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
-    (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
-    MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-    MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    ) as relevance
-  FROM
-    content
-  LEFT JOIN
-    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
-  LEFT JOIN
-    contentClassifications ON content.id = contentClassifications.contentId
-  LEFT JOIN
-    classifications ON contentClassifications.classificationId = classifications.id
-  LEFT JOIN
-    classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
-  WHERE
-    content.ownerId = ${loggedInUserId}
-    AND content.isDeleted = FALSE
-    AND
-    (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-    OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
-  GROUP BY
-    content.id
-  ORDER BY
-    relevance DESC
-  LIMIT 100
-  `);
-  } else {
-    matches = await prisma.$queryRaw<
-      {
-        id: Buffer;
-        relevance: number;
-      }[]
-    >(
-      Prisma.sql`
-    WITH RECURSIVE content_tree(id) AS (
+  const matches = await prisma.$queryRaw<
+    {
+      id: Uint8Array;
+      relevance: number;
+    }[]
+  >(Prisma.sql`
+
+  ${
+    folderId !== null
+      ? Prisma.sql`
+      WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
       WHERE parentFolderId = ${folderId} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
       UNION ALL
@@ -3861,40 +5101,38 @@ export async function searchMyFolderContent({
       INNER JOIN content_tree AS ft
       ON content.parentFolderId = ft.id
       WHERE content.isDeleted = FALSE
-    )
-
-    SELECT
-      content.id,
-      AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
-      (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
-      MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE) +
-      MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      ) as relevance
-    FROM
-      content
-    LEFT JOIN
-      (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
-    LEFT JOIN
-      contentClassifications ON content.id = contentClassifications.contentId
-    LEFT JOIN
-      classifications ON contentClassifications.classificationId = classifications.id
-    LEFT JOIN
-      classificationSubCategories ON classifications.subCategoryId = classificationSubCategories.id
-    WHERE
-      content.id IN (SELECT id from content_tree)
-      AND
-      (MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH(classifications.code, classifications.description) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH(classificationSubCategories.subCategory) AGAINST(${query_as_prefixes} IN BOOLEAN MODE))
-    GROUP BY
-      content.id
-    ORDER BY
-      relevance DESC
-    LIMIT 100
-    `,
-    );
+    )`
+      : Prisma.empty
   }
+  SELECT
+    content.id,
+    AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
+    (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
+    ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, matchSubCategory: true, matchCategory: true, prependOperator: true, operator: "+" })} 
+    ) as relevance
+  FROM
+    content
+  LEFT JOIN
+    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  ${returnClassificationJoins({ includeCategory: true, joinFromContent: true })}
+  WHERE
+    ${
+      folderId !== null
+        ? Prisma.sql`content.id IN (SELECT id from content_tree)`
+        : Prisma.sql`content.ownerId = ${loggedInUserId} AND content.isDeleted = FALSE`
+    }
+    AND
+    (
+      MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, matchSubCategory: true, matchCategory: true, prependOperator: true, operator: "OR" })} 
+    )
+  GROUP BY
+    content.id
+  ORDER BY
+    relevance DESC
+  LIMIT 100
+  `);
 
   // TODO: combine queries
 
@@ -3903,72 +5141,9 @@ export async function searchMyFolderContent({
       id: { in: matches.map((m) => m.id) },
     },
     select: {
-      id: true,
-      isFolder: true,
-      ownerId: true,
-      name: true,
-      imagePath: true,
-      isPublic: true,
-      sharedWith: {
-        select: {
-          user: {
-            select: {
-              userId: true,
-              email: true,
-              firstNames: true,
-              lastNames: true,
-            },
-          },
-        },
-      },
-      isAssigned: true,
-      classCode: true,
-      codeValidUntil: true,
-      license: {
-        include: {
-          composedOf: {
-            select: { composedOf: true },
-            orderBy: { composedOf: { sortIndex: "asc" } },
-          },
-        },
-      },
-      classifications: {
-        select: {
-          classification: {
-            include: {
-              subCategory: {
-                include: {
-                  category: {
-                    include: {
-                      system: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      documents: { select: { id: true, doenetmlVersion: true } },
-      parentFolder: {
-        select: {
-          id: true,
-          name: true,
-          isPublic: true,
-          sharedWith: {
-            select: {
-              user: {
-                select: {
-                  userId: true,
-                  email: true,
-                  firstNames: true,
-                  lastNames: true,
-                },
-              },
-            },
-          },
-        },
-      },
+      ...returnContentStructureSharedDetailsSelect({
+        includeAssignInfo: true,
+      }),
       _count: { select: { assignmentScores: true } },
     },
   });
@@ -3980,41 +5155,14 @@ export async function searchMyFolderContent({
 
   const content: ContentStructure[] = preliminaryResults
     .sort((a, b) => relevance[fromUUID(b.id)] - relevance[fromUUID(a.id)])
-    .map((obj) => {
-      const {
-        _count,
-        isAssigned,
-        sharedWith: sharedWithOrig,
-        license,
-        classifications,
-        parentFolder,
-        ...activity
-      } = obj;
-      const isOpen = obj.codeValidUntil
-        ? DateTime.now() <= DateTime.fromJSDate(obj.codeValidUntil)
-        : false;
-      const assignmentStatus: AssignmentStatus = !obj.isAssigned
-        ? "Unassigned"
-        : !isOpen
-          ? "Closed"
-          : "Open";
-      const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
+    .map(processContentSharedDetails);
 
-      return {
-        ...activity,
-        isShared,
-        sharedWith,
-        license: license ? processLicense(license) : null,
-        classifications: classifications.map((c) => c.classification),
-        assignmentStatus,
-        hasScoreData: _count.assignmentScores > 0,
-        parentFolder: processParentFolder(parentFolder),
-      };
-    });
+  const availableFeatures = await getAvailableContentFeatures();
 
   return {
     content,
     folder,
+    availableFeatures,
   };
 }
 
@@ -4023,9 +5171,9 @@ export async function getSharedFolderContent({
   folderId,
   loggedInUserId,
 }: {
-  ownerId: Buffer;
-  folderId: Buffer | null;
-  loggedInUserId: Buffer;
+  ownerId: Uint8Array;
+  folderId: Uint8Array | null;
+  loggedInUserId: Uint8Array;
 }) {
   let folder: ContentStructure | null = null;
 
@@ -4036,43 +5184,13 @@ export async function getSharedFolderContent({
         ownerId,
         id: folderId,
         isDeleted: false,
+        isFolder: true,
         OR: [
           { isPublic: true },
           { sharedWith: { some: { userId: loggedInUserId } } },
         ],
       },
-      select: {
-        id: true,
-        ownerId: true,
-        name: true,
-        imagePath: true,
-        isPublic: true,
-        sharedWith: {
-          select: {
-            userId: true,
-          },
-        },
-        license: {
-          include: {
-            composedOf: {
-              select: { composedOf: true },
-              orderBy: { composedOf: { sortIndex: "asc" } },
-            },
-          },
-        },
-        parentFolder: {
-          select: {
-            id: true,
-            name: true,
-            isPublic: true,
-            sharedWith: {
-              select: {
-                userId: true,
-              },
-            },
-          },
-        },
-      },
+      select: returnContentStructureNoClassDocsSelect(),
     });
 
     // If parent folder is not public or not shared with me,
@@ -4082,39 +5200,14 @@ export async function getSharedFolderContent({
         preliminaryFolder.parentFolder &&
         (preliminaryFolder.parentFolder.isPublic ||
           preliminaryFolder.parentFolder.sharedWith.findIndex((cs) =>
-            cs.userId.equals(loggedInUserId),
+            isEqualUUID(cs.userId, loggedInUserId),
           ) !== -1)
       )
     ) {
       preliminaryFolder.parentFolder = null;
     }
 
-    const {
-      license,
-      sharedWith: sharedWithOrig,
-      parentFolder,
-      ...preliminaryFolder2
-    } = preliminaryFolder;
-
-    const { isShared, sharedWith } = processSharedWithForUser(
-      sharedWithOrig,
-      loggedInUserId,
-    );
-
-    folder = {
-      ...preliminaryFolder2,
-      isFolder: true,
-      isShared,
-      sharedWith,
-      assignmentStatus: "Unassigned",
-      classCode: null,
-      codeValidUntil: null,
-      documents: [],
-      hasScoreData: false,
-      license: license ? processLicense(license) : null,
-      parentFolder: processParentFolderForUser(parentFolder, loggedInUserId),
-      classifications: [],
-    };
+    folder = processContentNoClassDocs(preliminaryFolder, loggedInUserId);
   }
 
   const preliminarySharedContent = await prisma.content.findMany({
@@ -4127,39 +5220,7 @@ export async function getSharedFolderContent({
         { sharedWith: { some: { userId: loggedInUserId } } },
       ],
     },
-    select: {
-      id: true,
-      isFolder: true,
-      ownerId: true,
-      name: true,
-      imagePath: true,
-      isPublic: true,
-      sharedWith: {
-        select: {
-          userId: true,
-        },
-      },
-      license: {
-        include: {
-          composedOf: {
-            select: { composedOf: true },
-            orderBy: { composedOf: { sortIndex: "asc" } },
-          },
-        },
-      },
-      parentFolder: {
-        select: {
-          id: true,
-          name: true,
-          isPublic: true,
-          sharedWith: {
-            select: {
-              userId: true,
-            },
-          },
-        },
-      },
-    },
+    select: returnContentStructureFullOwnerSelect(),
     orderBy: { sortIndex: "asc" },
   });
 
@@ -4184,72 +5245,14 @@ export async function getSharedFolderContent({
           { sharedWith: { some: { userId: loggedInUserId } } },
         ],
       },
-      select: {
-        id: true,
-        isFolder: true,
-        ownerId: true,
-        name: true,
-        imagePath: true,
-        isPublic: true,
-        sharedWith: {
-          select: {
-            userId: true,
-          },
-        },
-        license: {
-          include: {
-            composedOf: {
-              select: { composedOf: true },
-              orderBy: { composedOf: { sortIndex: "asc" } },
-            },
-          },
-        },
-        parentFolder: {
-          select: {
-            id: true,
-            name: true,
-            isPublic: true,
-            sharedWith: {
-              select: {
-                userId: true,
-              },
-            },
-          },
-        },
-      },
+      select: returnContentStructureFullOwnerSelect(),
       orderBy: { sortIndex: "asc" },
     });
     preliminarySharedContent.push(...orphanedSharedContent);
   }
 
-  const publicContent: ContentStructure[] = preliminarySharedContent.map(
-    (content) => {
-      const {
-        license,
-        sharedWith: sharedWithOrig,
-        parentFolder,
-        ...content2
-      } = content;
-
-      const { isShared, sharedWith } = processSharedWithForUser(
-        sharedWithOrig,
-        loggedInUserId,
-      );
-
-      return {
-        ...content2,
-        isShared,
-        sharedWith,
-        documents: [],
-        license: license ? processLicense(license) : null,
-        classifications: [],
-        classCode: null,
-        codeValidUntil: null,
-        assignmentStatus: "Unassigned",
-        hasScoreData: false,
-        parentFolder: processParentFolderForUser(parentFolder, loggedInUserId),
-      };
-    },
+  const publicContent = preliminarySharedContent.map((content) =>
+    processContent(content, loggedInUserId),
   );
 
   const owner = await prisma.users.findUniqueOrThrow({
@@ -4264,104 +5267,180 @@ export async function getSharedFolderContent({
   };
 }
 
-export async function getAllClassificationInfo() {
+export async function getClassificationCategories() {
   const results = await prisma.classificationSystems.findMany({
     orderBy: {
-      name: "asc",
+      sortIndex: "asc",
     },
     select: {
       id: true,
       name: true,
       categoryLabel: true,
       subCategoryLabel: true,
-      classificationCategory: {
+      type: true,
+      categories: {
         orderBy: {
-          category: "asc",
+          sortIndex: "asc",
         },
         select: {
           id: true,
           category: true,
-          classificationSubCategory: {
+          subCategories: {
             orderBy: {
-              subCategory: "asc",
+              sortIndex: "asc",
             },
             select: {
               id: true,
               subCategory: true,
-              classifications: {
-                orderBy: {
-                  code: "asc",
-                },
-                select: {
-                  id: true,
-                  code: true,
-                  description: true,
-                },
-              },
             },
           },
         },
       },
     },
   });
-  const formattedResults: ClassificationSystemTree[] = results.map((system) => {
-    return {
-      id: system.id,
-      name: system.name,
-      categoryLabel: system.categoryLabel,
-      subCategoryLabel: system.subCategoryLabel,
-      categories: system.classificationCategory.map((category) => {
-        return {
-          id: category.id,
-          category: category.category,
-          subCategories: category.classificationSubCategory.map(
-            (subCategory) => {
+
+  const formattedResults: ClassificationCategoryTree[] = results.map(
+    (system) => {
+      return {
+        id: system.id,
+        name: system.name,
+        type: system.type,
+        categoryLabel: system.categoryLabel,
+        subCategoryLabel: system.subCategoryLabel,
+        categories: system.categories.map((category) => {
+          return {
+            id: category.id,
+            category: category.category,
+            subCategories: category.subCategories.map((subCategory) => {
               return {
                 id: subCategory.id,
                 subCategory: subCategory.subCategory,
-                classifications: subCategory.classifications,
               };
-            },
-          ),
-        };
-      }),
-    };
-  });
+            }),
+          };
+        }),
+      };
+    },
+  );
   return formattedResults;
 }
 
-export async function searchPossibleClassifications(query: string) {
-  const query_words = query.split(" ");
-  const results: ContentClassification[] =
-    await prisma.classifications.findMany({
+export async function searchPossibleClassifications({
+  query = "",
+  systemId,
+  categoryId,
+  subCategoryId,
+}: {
+  query?: string;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+}) {
+  // remove operators that break MySQL BOOLEAN search
+  // and add * at the end of every word so that match beginning of words
+  const query_as_prefixes = query
+    .replace(/[+\-><()~*"@]+/g, " ")
+    .split(" ")
+    .filter((s) => s)
+    .map((s) => s + "*")
+    .join(" ");
+
+  if (query_as_prefixes.length > 0) {
+    const matchClassification = true;
+    const matchSubCategory = subCategoryId === undefined;
+    const matchCategory = matchSubCategory && categoryId === undefined;
+    const matchSystem = matchCategory && systemId === undefined;
+
+    const includeClassification = true;
+    const includeSubCategory = matchSubCategory;
+    const includeCategory = matchCategory;
+    const includeSystem = matchSystem;
+
+    const matches = await prisma.$queryRaw<
+      {
+        id: number;
+        relevance: number;
+      }[]
+    >(Prisma.sql`
+  SELECT
+    classifications.id,
+    AVG(
+    ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, matchSystem, operator: "+" })} 
+    ) as relevance
+  FROM
+    classifications
+    ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, includeSystem })}
+  WHERE
+    (
+      ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, matchSystem, operator: "OR" })} 
+    )
+    ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId })}
+    
+  GROUP BY
+    classifications.id
+  ORDER BY
+    relevance DESC
+  LIMIT 100
+  `);
+
+    // since full text search doesn't match code well, separately match for those
+    // and put matches at the top of the list
+    const query_words = query.split(" ");
+
+    const code_matches = await prisma.classifications.findMany({
       where: {
-        AND: query_words.map((query_word) => ({
-          OR: [
-            { code: { contains: query_word } },
-            { description: { contains: query_word } },
-            { subCategory: { subCategory: { contains: query_word } } },
-            {
-              subCategory: { category: { category: { contains: query_word } } },
-            },
-            {
-              subCategory: {
-                category: { system: { name: { contains: query_word } } },
-              },
-            },
-          ],
+        OR: query_words.map((query_word) => ({
+          code: { contains: query_word },
         })),
-      },
-      include: {
-        subCategory: {
-          include: {
-            category: {
-              include: {
-                system: true,
-              },
+        descriptions: {
+          some: {
+            subCategoryId,
+            subCategory: {
+              categoryId,
+              category: { systemId },
             },
           },
         },
       },
+      select: { id: true },
+    });
+
+    const results: ContentClassification[] =
+      await prisma.classifications.findMany({
+        where: {
+          id: { in: [...matches, ...code_matches].map((m) => m.id) },
+        },
+        select: returnClassificationListSelect(),
+      });
+
+    // TODO: a more efficient way to get desired sort order?
+    const sort_order: Record<string, number> = {};
+    matches.forEach((match) => {
+      sort_order[match.id] = match.relevance;
+    });
+    code_matches.forEach((match) => {
+      sort_order[match.id] = 100 + (sort_order[match.id] || 0); // code matches go at the top
+    });
+    results.sort((a, b) => sort_order[b.id] - sort_order[a.id]);
+
+    return results;
+  }
+
+  const results: ContentClassification[] =
+    await prisma.classifications.findMany({
+      where: {
+        descriptions: {
+          some: {
+            subCategoryId,
+            subCategory: {
+              categoryId,
+              category: { systemId },
+            },
+          },
+        },
+      },
+      take: 100,
+      select: returnClassificationListSelect(),
     });
   return results;
 }
@@ -4374,9 +5453,9 @@ export async function searchPossibleClassifications(query: string) {
  * @param loggedInUserId
  */
 export async function addClassification(
-  activityId: Buffer,
+  activityId: Uint8Array,
   classificationId: number,
-  loggedInUserId: Buffer,
+  loggedInUserId: Uint8Array,
 ) {
   const activity = await prisma.content.findUnique({
     where: {
@@ -4411,9 +5490,9 @@ export async function addClassification(
  * @param loggedInUserId
  */
 export async function removeClassification(
-  activityId: Buffer,
+  activityId: Uint8Array,
   classificationId: number,
-  loggedInUserId: Buffer,
+  loggedInUserId: Uint8Array,
 ) {
   const activity = await prisma.content.findUnique({
     where: {
@@ -4439,6 +5518,8 @@ export async function removeClassification(
   });
 }
 
+// TODO: The getClassifications API is not being used (Jan 2, 2025). Remove?
+
 /**
  * Get all classifications for an activity. The activity must be either public or owned by
  * loggedInUser.
@@ -4446,8 +5527,8 @@ export async function removeClassification(
  * @param loggedInUserId
  */
 export async function getClassifications(
-  activityId: Buffer,
-  loggedInUserId: Buffer,
+  activityId: Uint8Array,
+  loggedInUserId: Uint8Array,
 ) {
   const activity = await prisma.content.findUnique({
     where: {
@@ -4480,24 +5561,130 @@ export async function getClassifications(
     },
     select: {
       classification: {
-        include: {
-          subCategory: {
-            include: {
-              category: {
-                include: {
-                  system: true,
+        select: returnClassificationListSelect(),
+      },
+    },
+  });
+  const formatted: ContentClassification[] = sortClassifications(
+    classifications.map((c) => c.classification),
+  );
+  return formatted;
+}
+
+// TODO: create test
+export async function getClassificationInfo({
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+}: {
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+}): Promise<PartialContentClassification | null> {
+  if (classificationId !== undefined) {
+    const classificationInfo = await prisma.classifications.findUniqueOrThrow({
+      where: { id: classificationId },
+      select: {
+        id: true,
+        code: true,
+        descriptions: {
+          where: { subCategoryId },
+          select: {
+            id: true,
+            description: true,
+            subCategory: {
+              select: {
+                id: true,
+                subCategory: true,
+                category: {
+                  select: {
+                    id: true,
+                    category: true,
+                    system: true,
+                  },
                 },
               },
             },
           },
         },
       },
-    },
-  });
-  const formatted: ContentClassification[] = classifications.map(
-    (c) => c.classification,
-  );
-  return formatted;
+    });
+
+    const description = classificationInfo.descriptions[0];
+
+    return {
+      classification: {
+        id: classificationInfo.id,
+        code: classificationInfo.code,
+        descriptionId: description.id,
+        description: description.description,
+      },
+      subCategory: {
+        id: description.subCategory.id,
+        subCategory: description.subCategory.subCategory,
+      },
+      category: {
+        id: description.subCategory.category.id,
+        category: description.subCategory.category.category,
+      },
+      system: description.subCategory.category.system,
+    };
+  } else if (subCategoryId !== undefined) {
+    const subCategoryInfo =
+      await prisma.classificationSubCategories.findUniqueOrThrow({
+        where: { id: subCategoryId },
+        select: {
+          id: true,
+          subCategory: true,
+          category: {
+            select: {
+              id: true,
+              category: true,
+              system: true,
+            },
+          },
+        },
+      });
+
+    return {
+      subCategory: {
+        id: subCategoryInfo.id,
+        subCategory: subCategoryInfo.subCategory,
+      },
+      category: {
+        id: subCategoryInfo.category.id,
+        category: subCategoryInfo.category.category,
+      },
+      system: subCategoryInfo.category.system,
+    };
+  } else if (categoryId !== undefined) {
+    const categoryInfo =
+      await prisma.classificationCategories.findUniqueOrThrow({
+        where: { id: categoryId },
+        select: {
+          id: true,
+          category: true,
+          system: true,
+        },
+      });
+
+    return {
+      category: {
+        id: categoryInfo.id,
+        category: categoryInfo.category,
+      },
+      system: categoryInfo.system,
+    };
+  } else if (systemId !== undefined) {
+    const systemInfo = await prisma.classificationSystems.findUniqueOrThrow({
+      where: { id: systemId },
+    });
+    return { system: systemInfo };
+  } else {
+    return null;
+  }
 }
 
 export async function getLicense(code: string) {
@@ -4530,194 +5717,13 @@ export async function getAllLicenses() {
   return licenses;
 }
 
-/**
- * Process a list of user info from the SharedWith table
- *
- * Returns:
- * - isShared: true if there were any SharedWith items
- * - sharedWith: an array of UserInfo sorted by last names, then first names, then email.
- */
-function processSharedWith(
-  sharedWithOrig:
-    | {
-        user: UserInfo;
-      }[]
-    | null
-    | undefined,
-): { isShared: boolean; sharedWith: UserInfo[] } {
-  if (sharedWithOrig === null || sharedWithOrig === undefined) {
-    return { isShared: false, sharedWith: [] };
-  }
-
-  const isShared = sharedWithOrig.length > 0;
-
-  const sharedWith = sharedWithOrig
-    .map((cs) => cs.user)
-    .sort(
-      (a, b) =>
-        a.lastNames.localeCompare(b.lastNames) ||
-        a.firstNames?.localeCompare(b.firstNames || "") ||
-        a.email.localeCompare(b.email),
-    );
-
-  return { isShared, sharedWith };
-}
-
-/**
- * Process a list of userIds from the SharedWith table to determine
- * if the content was shared with `determineSharedToUser`
- *
- * Returns:
- * - isShared: true if `determineSharedToUser` is in the list of userIds
- * - sharedWith: any empty array of UserInfo
- *
- * @param sharedWithIds
- * @param determineSharedToUser
- * @returns
- */
-function processSharedWithForUser(
-  sharedWithIds: { userId: Buffer }[] | null | undefined,
-  determineSharedToUser: Buffer,
-): { isShared: boolean; sharedWith: UserInfo[] } {
-  if (sharedWithIds === null || sharedWithIds === undefined) {
-    return { isShared: false, sharedWith: [] };
-  }
-
-  const isShared =
-    sharedWithIds.findIndex((cs) => cs.userId.equals(determineSharedToUser)) !==
-    -1;
-
-  const sharedWith: {
-    userId: Buffer;
-    email: string;
-    firstNames: string | null;
-    lastNames: string;
-  }[] = [];
-
-  return { isShared, sharedWith };
-}
-
-/**
- * Process a parent folder of content to standard form for the parent folder of ContentStructure
- */
-function processParentFolder(
-  parentFolder: {
-    id: Buffer;
-    name: string;
-    isPublic: boolean;
-    sharedWith?: {
-      user: UserInfo;
-    }[];
-  } | null,
-) {
-  if (parentFolder === null) {
-    return null;
-  }
-
-  const { isShared, sharedWith } = processSharedWith(parentFolder.sharedWith);
-
-  return {
-    id: parentFolder.id,
-    name: parentFolder.name,
-    isPublic: parentFolder.isPublic,
-    isShared,
-    sharedWith,
-  };
-}
-
-/**
- * Process a parent folder of content to standard form for the parent folder of ContentStructure
- * where the content sharing is just for the user `determineSharedToUser`.
- */
-function processParentFolderForUser(
-  parentFolder: {
-    id: Buffer;
-    name: string;
-    isPublic: boolean;
-    sharedWith: { userId: Buffer }[];
-  } | null,
-  determineSharedToUser: Buffer,
-) {
-  if (parentFolder === null) {
-    return null;
-  }
-
-  const { isShared, sharedWith } = processSharedWithForUser(
-    parentFolder.sharedWith,
-    determineSharedToUser,
-  );
-
-  return {
-    id: parentFolder.id,
-    name: parentFolder.name,
-    isPublic: parentFolder.isPublic,
-    isShared,
-    sharedWith,
-  };
-}
-
-function processLicense(
-  preliminary_license: {
-    composedOf: {
-      composedOf: {
-        code: string;
-        name: string;
-        description: string;
-        imageURL: string | null;
-        smallImageURL: string | null;
-        licenseURL: string | null;
-        sortIndex: number;
-      };
-    }[];
-  } & {
-    code: string;
-    name: string;
-    description: string;
-    imageURL: string | null;
-    smallImageURL: string | null;
-    licenseURL: string | null;
-    sortIndex: number;
-  },
-): License {
-  if (preliminary_license.composedOf.length > 0) {
-    return {
-      code: preliminary_license.code as LicenseCode,
-      name: preliminary_license.name,
-      description: preliminary_license.description,
-      imageURL: null,
-      smallImageURL: null,
-      licenseURL: null,
-      isComposition: true,
-      composedOf: preliminary_license.composedOf.map((comp) => ({
-        code: comp.composedOf.code as LicenseCode,
-        name: comp.composedOf.name,
-        description: comp.composedOf.description,
-        imageURL: comp.composedOf.imageURL,
-        smallImageURL: comp.composedOf.smallImageURL,
-        licenseURL: comp.composedOf.licenseURL,
-      })),
-    };
-  } else {
-    return {
-      code: preliminary_license.code as LicenseCode,
-      name: preliminary_license.name,
-      description: preliminary_license.description,
-      imageURL: preliminary_license.imageURL,
-      smallImageURL: preliminary_license.smallImageURL,
-      licenseURL: preliminary_license.licenseURL,
-      isComposition: false,
-      composedOf: [],
-    };
-  }
-}
-
 export async function setActivityLicense({
   id,
   ownerId,
   licenseCode,
 }: {
-  id: Buffer;
-  ownerId: Buffer;
+  id: Uint8Array;
+  ownerId: Uint8Array;
   licenseCode: LicenseCode;
 }) {
   await prisma.content.update({
@@ -4731,8 +5737,8 @@ export async function makeActivityPublic({
   ownerId,
   licenseCode,
 }: {
-  id: Buffer;
-  ownerId: Buffer;
+  id: Uint8Array;
+  ownerId: Uint8Array;
   licenseCode: LicenseCode;
 }) {
   await prisma.content.update({
@@ -4745,8 +5751,8 @@ export async function makeActivityPrivate({
   id,
   ownerId,
 }: {
-  id: Buffer;
-  ownerId: Buffer;
+  id: Uint8Array;
+  ownerId: Uint8Array;
 }) {
   await prisma.content.update({
     where: { id, isDeleted: false, ownerId, isFolder: false },
@@ -4760,10 +5766,10 @@ export async function shareActivity({
   licenseCode,
   users,
 }: {
-  id: Buffer;
-  ownerId: Buffer;
+  id: Uint8Array;
+  ownerId: Uint8Array;
   licenseCode: LicenseCode;
-  users: Buffer[];
+  users: Uint8Array[];
 }) {
   await prisma.content.update({
     where: { id, isDeleted: false, ownerId: ownerId, isFolder: false },
@@ -4785,8 +5791,8 @@ export async function shareActivityWithEmail({
   licenseCode,
   email,
 }: {
-  id: Buffer;
-  ownerId: Buffer;
+  id: Uint8Array;
+  ownerId: Uint8Array;
   licenseCode: LicenseCode;
   email: string;
 }) {
@@ -4810,7 +5816,7 @@ export async function shareActivityWithEmail({
     }
   }
 
-  if (userId.equals(ownerId)) {
+  if (isEqualUUID(userId, ownerId)) {
     // cannot share with self
     throw Error("Cannot share with self");
   }
@@ -4823,9 +5829,9 @@ export async function unshareActivity({
   ownerId,
   users,
 }: {
-  id: Buffer;
-  ownerId: Buffer;
-  users: Buffer[];
+  id: Uint8Array;
+  ownerId: Uint8Array;
+  users: Uint8Array[];
 }) {
   await prisma.contentShares.deleteMany({
     where: {
@@ -4840,8 +5846,8 @@ export async function setFolderLicense({
   ownerId,
   licenseCode,
 }: {
-  id: Buffer;
-  ownerId: Buffer;
+  id: Uint8Array;
+  ownerId: Uint8Array;
   licenseCode: LicenseCode;
 }) {
   // Set license for the folder `id` along with all the content inside it,
@@ -4875,8 +5881,8 @@ export async function makeFolderPublic({
   ownerId,
   licenseCode,
 }: {
-  id: Buffer;
-  ownerId: Buffer;
+  id: Uint8Array;
+  ownerId: Uint8Array;
   licenseCode: LicenseCode;
 }) {
   // Make the folder `id` public along with all the content inside it,
@@ -4909,8 +5915,8 @@ export async function makeFolderPrivate({
   id,
   ownerId,
 }: {
-  id: Buffer;
-  ownerId: Buffer;
+  id: Uint8Array;
+  ownerId: Uint8Array;
 }) {
   // Make the folder `id` private along with all the content inside it,
   // recursing to subfolders.
@@ -4944,10 +5950,10 @@ export async function shareFolder({
   licenseCode,
   users,
 }: {
-  id: Buffer;
-  ownerId: Buffer;
+  id: Uint8Array;
+  ownerId: Uint8Array;
   licenseCode: LicenseCode;
-  users: Buffer[];
+  users: Uint8Array[];
 }) {
   // Share the folder `id` to users along with all the content inside it,
   // recursing to subfolders.
@@ -4959,7 +5965,7 @@ export async function shareFolder({
   });
 
   const contentIds = (
-    await prisma.$queryRaw<{ id: Buffer }[]>(Prisma.sql`
+    await prisma.$queryRaw<{ id: Uint8Array }[]>(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
       WHERE id = ${id} AND ownerId = ${ownerId} AND isDeleted = FALSE
@@ -4997,8 +6003,8 @@ export async function shareFolderWithEmail({
   licenseCode,
   email,
 }: {
-  id: Buffer;
-  ownerId: Buffer;
+  id: Uint8Array;
+  ownerId: Uint8Array;
   licenseCode: LicenseCode;
   email: string;
 }) {
@@ -5022,7 +6028,7 @@ export async function shareFolderWithEmail({
     }
   }
 
-  if (userId.equals(ownerId)) {
+  if (isEqualUUID(userId, ownerId)) {
     // cannot share with self
     throw Error("Cannot share with self");
   }
@@ -5035,9 +6041,9 @@ export async function unshareFolder({
   ownerId,
   users,
 }: {
-  id: Buffer;
-  ownerId: Buffer;
-  users: Buffer[];
+  id: Uint8Array;
+  ownerId: Uint8Array;
+  users: Uint8Array[];
 }) {
   // Stop the folder `id` along with all the content inside it,
   // recursing to subfolders.
@@ -5049,7 +6055,7 @@ export async function unshareFolder({
   });
 
   const contentIds = (
-    await prisma.$queryRaw<{ id: Buffer }[]>(Prisma.sql`
+    await prisma.$queryRaw<{ id: Uint8Array }[]>(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
       WHERE id = ${id} AND ownerId = ${ownerId} AND isDeleted = FALSE
@@ -5076,7 +6082,7 @@ export async function unshareFolder({
 }
 
 export async function setPreferredFolderView(
-  loggedInUserId: Buffer,
+  loggedInUserId: Uint8Array,
   cardView: boolean,
 ) {
   return await prisma.users.update({
@@ -5086,7 +6092,7 @@ export async function setPreferredFolderView(
   });
 }
 
-export async function getPreferredFolderView(loggedInUserId: Buffer) {
+export async function getPreferredFolderView(loggedInUserId: Uint8Array) {
   return await prisma.users.findUniqueOrThrow({
     where: { userId: loggedInUserId },
     select: { cardView: true },

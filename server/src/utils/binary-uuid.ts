@@ -23,7 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-export function fromBinaryUUID(buf: Buffer): string {
+export function fromBinaryUUID(uint8: Uint8Array): string {
+  const buf = Buffer.from(uint8);
   return [
     buf.toString("hex", 4, 8),
     buf.toString("hex", 2, 4),
@@ -33,7 +34,7 @@ export function fromBinaryUUID(buf: Buffer): string {
   ].join("-");
 }
 
-export function toBinaryUUID(uuid: string): Buffer {
+export function toBinaryUUID(uuid: string): Uint8Array {
   const buf = Buffer.from(uuid.replace(/-/g, ""), "hex");
   return Buffer.concat([
     buf.subarray(6, 8),

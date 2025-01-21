@@ -11,35 +11,74 @@ export type DoenetmlVersion = {
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
 export type UserInfo = {
-  userId: Buffer;
+  userId: Uint8Array;
   firstNames: string | null;
   lastNames: string;
   email: string;
+  numLibrary?: number;
+  numCommunity?: number;
 };
 
 export type ContentClassification = {
   id: number;
   code: string;
-  description: string;
-  subCategory: {
-    id: number;
-    subCategory: string;
-    category: {
+  descriptions: {
+    description: string;
+    sortIndex: number;
+    subCategory: {
       id: number;
-      category: string;
-      system: {
+      subCategory: string;
+      sortIndex: number;
+      category: {
         id: number;
-        name: string;
-        categoryLabel: string;
-        subCategoryLabel: string;
+        category: string;
+        system: {
+          id: number;
+          name: string;
+          shortName: string;
+          categoryLabel: string;
+          subCategoryLabel: string;
+          descriptionLabel: string;
+          categoriesInDescription: boolean;
+          type: string;
+        };
       };
     };
+  }[];
+};
+
+export type PartialContentClassification = {
+  classification?: {
+    id: number;
+    code: string;
+    descriptionId: number;
+    description: string;
   };
+  subCategory?: {
+    id: number;
+    subCategory: string;
+  };
+  category?: {
+    id: number;
+    category: string;
+  };
+  system?: {
+    id: number;
+    name: string;
+    shortName: string;
+    categoryLabel: string;
+    subCategoryLabel: string;
+    descriptionLabel: string;
+    type?: string;
+    categoriesInDescription: boolean;
+  };
+  numLibrary?: number;
+  numCommunity?: number;
 };
 
 export type ContentStructure = {
-  id: Buffer;
-  ownerId: Buffer;
+  id: Uint8Array;
+  ownerId: Uint8Array;
   owner?: UserInfo;
   name: string;
   imagePath: string | null;
@@ -51,9 +90,16 @@ export type ContentStructure = {
   isShared: boolean;
   sharedWith: UserInfo[];
   license: License | null;
+  contentFeatures: {
+    id: number;
+    code: string;
+    term: string;
+    description: string;
+    sortIndex: number;
+  }[];
   classifications: ContentClassification[];
   documents: {
-    id: Buffer;
+    id: Uint8Array;
     versionNum?: number;
     name?: string;
     source?: string;
@@ -61,7 +107,7 @@ export type ContentStructure = {
   }[];
   hasScoreData: boolean;
   parentFolder: {
-    id: Buffer;
+    id: Uint8Array;
     name: string;
     isPublic: boolean;
     isShared: boolean;
@@ -90,10 +136,10 @@ export type License = {
 };
 
 export type DocHistory = {
-  id: Buffer;
+  id: Uint8Array;
   contributorHistory: {
-    docId: Buffer;
-    prevDocId: Buffer;
+    docId: Uint8Array;
+    prevDocId: Uint8Array;
     prevDocVersionNum: number;
     withLicenseCode: string | null;
     timestampDoc: Date;
@@ -103,7 +149,7 @@ export type DocHistory = {
         source: string;
         activity: {
           name: string;
-          id: Buffer;
+          id: Uint8Array;
           owner: UserInfo;
         };
       };
@@ -113,9 +159,34 @@ export type DocHistory = {
   }[];
 };
 
-export type ClassificationSystemTree = {
+export type DocRemixes = {
+  id: Uint8Array;
+  documentVersions: {
+    versionNumber: number;
+    remixes: {
+      activity: {
+        id: Uint8Array;
+        name: string;
+        owner: {
+          userId: Uint8Array;
+          email: string;
+          firstNames: string | null;
+          lastNames: string;
+        };
+      };
+
+      docId: Uint8Array;
+      withLicenseCode: string | null;
+      timestampDoc: Date;
+      timestampPrevDoc: Date;
+    }[];
+  }[];
+};
+
+export type ClassificationCategoryTree = {
   id: number;
   name: string;
+  type: string;
   categoryLabel: string;
   subCategoryLabel: string;
   categories: {
@@ -124,11 +195,6 @@ export type ClassificationSystemTree = {
     subCategories: {
       id: number;
       subCategory: string;
-      classifications: {
-        id: number;
-        code: string;
-        description: string;
-      }[];
     }[];
   }[];
 };

@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect } from "react";
+import React, { lazy, Suspense, useEffect, useState } from "react";
 import { useLoaderData } from "react-router";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
@@ -21,10 +21,13 @@ import {
   Show,
   SimpleGrid,
   Hide,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
 import axios from "axios";
+import { ContentStructure } from "../../../_utils/types";
+import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 
 export async function loader() {
   const { data: promotedContent } = await axios.get("/api/loadPromotedContent");
@@ -34,8 +37,8 @@ export async function loader() {
 
 const HomeIntroVideo = lazy(() => import("./HomeIntroVideo"));
 
-let doenetmlVersion = "0.7.0-alpha18";
-let doenetML = `
+const doenetmlVersion = "0.7.0-alpha27";
+const doenetML = `
 <example>
 <setup>
 <number name="num_lines">2</number>
@@ -101,7 +104,23 @@ export function Home() {
   const blueColor = useColorModeValue("doenet.lightBlue", "doenet.mainBlue");
   const blackColor = "black";
   const whiteColor = useColorModeValue("white", "gray.900");
-  const textColor = useColorModeValue("doenet.canvas", "doenet.canvastext");
+
+  const [infoContentData, setInfoContentData] =
+    useState<ContentStructure | null>(null);
+
+  const {
+    isOpen: infoIsOpen,
+    onOpen: infoOnOpen,
+    onClose: infoOnClose,
+  } = useDisclosure();
+
+  const infoDrawer = infoContentData ? (
+    <ContentInfoDrawer
+      isOpen={infoIsOpen}
+      onClose={infoOnClose}
+      contentData={infoContentData}
+    />
+  ) : null;
 
   const heroTextAndActions = () => {
     return (
@@ -159,6 +178,7 @@ export function Home() {
 
   return (
     <>
+      {infoDrawer}
       <Center w="100%" bg={"#fefa78"} pl="10px" pr="10px">
         <Text
           fontSize={["18px", "18px", "18px", "24px"]}
@@ -402,7 +422,7 @@ export function Home() {
             color={blackColor}
           >
             Interact with{" "}
-            <Link href="/community" textDecoration="underline">
+            <Link href="/explore" textDecoration="underline">
               our existing content
             </Link>
           </Text>
@@ -416,7 +436,9 @@ export function Home() {
       >
         <Carousel
           title="Doenet Team Favorites"
-          data={favorites.promotedContent}
+          activities={favorites.promotedContent}
+          setInfoContentData={setInfoContentData}
+          infoOnOpen={infoOnOpen}
         />
       </Flex>
 
@@ -511,7 +533,7 @@ export function Home() {
                 addBottomPadding={false}
                 linkSettings={{
                   viewURL: "/activityViewer",
-                  editURL: "/publicEditor",
+                  editURL: "/codeViewer",
                 }}
               />
             </Flex>

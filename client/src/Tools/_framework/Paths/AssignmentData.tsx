@@ -22,11 +22,11 @@ import {
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { DoenetHeading as Heading } from "./Community";
+import { DoenetHeading as Heading } from "../../../Widgets/Heading";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Label } from "recharts";
 import AssignmentPreview from "../ToolPanels/AssignmentPreview";
-import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
+import { Link as ReactRouterLink, useNavigate } from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { UserInfo } from "../../../_utils/types";
 
@@ -35,7 +35,7 @@ export async function loader({ params }) {
     `/api/getAssignmentData/${params.activityId}`,
   );
 
-  let activityId = params.activityId;
+  const activityId = params.activityId;
 
   // TODO: address case where don't have one document
   const doenetML = data.assignmentContent[0].source;
@@ -77,7 +77,7 @@ export function AssignmentData() {
     document.title = `${assignmentData.name} - Doenet`;
   }, [assignmentData.name]);
 
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [scoreData, setScoreData] = useState<
     { count: number; score: number }[]
@@ -101,11 +101,6 @@ export function AssignmentData() {
       hist.map((v, i) => ({ count: v, score: Math.round(i * size * 10) / 10 })),
     );
   }, [assignmentData]);
-
-  const linkStyle = {
-    display: "block",
-    color: "var(--mainBlue)",
-  };
 
   return (
     <>

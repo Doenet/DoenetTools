@@ -13,7 +13,7 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { ContentStructure } from "../../../_utils/types";
 
 /**
@@ -90,6 +90,7 @@ export function CopyActivityAndReportFinish({
 
         <ModalFooter>
           <Button
+            data-test="Go to Activities"
             marginRight="4px"
             onClick={() => {
               navigate(`/activities/${newActivityData?.userId}`);

@@ -1,10 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  FetcherWithComponents,
-  Form,
-  Link,
-  useActionData,
-} from "react-router-dom";
+import React, { ReactElement, useEffect, useRef, useState } from "react";
+import { FetcherWithComponents, Form, Link, useActionData } from "react-router";
 import {
   Box,
   FormLabel,
@@ -31,7 +26,7 @@ import {
   Hide,
   Button,
 } from "@chakra-ui/react";
-import { InfoIcon } from "@chakra-ui/icons";
+import { InfoIcon, WarningIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
 import { ContentStructure, License, LicenseCode } from "../../../_utils/types";
@@ -128,12 +123,14 @@ export function ShareSettings({
   fetcher,
   contentData,
   allLicenses,
+  remixedWithLicense,
 }: {
   fetcher: FetcherWithComponents<any>;
   contentData: ContentStructure;
   allLicenses: License[];
+  remixedWithLicense: LicenseCode | null;
 }) {
-  let license = contentData.license;
+  const license = contentData.license;
 
   const [selectedIsPublic, setSelectedIsPublic] = useState(
     contentData.isPublic,
@@ -161,12 +158,12 @@ export function ShareSettings({
     setSelectedIsPublic(contentData.isPublic);
   }, [contentData.isPublic]);
 
-  let missingLicense = selectedIsPublic && selectedLicenseCode === undefined;
+  const missingLicense = selectedIsPublic && selectedLicenseCode === undefined;
 
-  let placeholder = missingLicense ? "Select license" : undefined;
+  const placeholder = missingLicense ? "Select license" : undefined;
 
-  let contentType = contentData.isFolder ? "Folder" : "Activity";
-  let contentTypeLower = contentData.isFolder ? "folder" : "activity";
+  const contentType = contentData.isFolder ? "Folder" : "Activity";
+  const contentTypeLower = contentData.isFolder ? "folder" : "activity";
 
   const actionResult: any = useActionData();
 
@@ -201,6 +198,102 @@ export function ShareSettings({
     setShowSpinner(null);
     setStatusText(nextStatusText.current);
   }, [contentData]);
+
+  const licenseDeterminedFromRemix =
+    selectedLicenseCode === remixedWithLicense &&
+    remixedWithLicense !== "CCDUAL";
+
+  const licenseNotMatchRemix =
+    remixedWithLicense !== null &&
+    remixedWithLicense !== "CCDUAL" &&
+    selectedLicenseCode !== remixedWithLicense;
+
+  let licenseWarning: ReactElement | null = null;
+  if (licenseNotMatchRemix) {
+    const remixedWithLicenseName = allLicenses.find(
+      (l) => l.code === remixedWithLicense,
+    )?.name;
+
+    const selectedLicenseName = allLicenses.find(
+      (l) => l.code === selectedLicenseCode,
+    )?.name;
+
+    licenseWarning = (
+      <Box background="orange.100" marginTop="20px">
+        <WarningIcon color="orange.500" mr="6px" />
+        Selected license {selectedLicenseName} is not compatible with the
+        license that this activity was remixed from: {remixedWithLicenseName}.{" "}
+        <Link
+          to="https://creativecommons.org/share-your-work/licensing-considerations/compatible-licenses/"
+          target="_blank"
+        >
+          (More information)
+        </Link>
+      </Box>
+    );
+  }
+
+  <Text size="xs" pl="4px" pr="4px">
+    Your code is not being saved in this view. Copy to one of your activities to
+    save changes.
+  </Text>;
+
+  let chooseLicenseForm: ReactElement | null = null;
+  if (licenseDeterminedFromRemix) {
+    const licenseName = allLicenses.find(
+      (l) => l.code === remixedWithLicense,
+    )?.name;
+    chooseLicenseForm = (
+      <Box marginTop="20px" data-test="Cannot Change License">
+        <p>License: {licenseName} </p>
+        <p>
+          (Cannot change license since remixed from activity with this license.)
+        </p>
+      </Box>
+    );
+  } else if (
+    !(contentData.parentFolder?.isPublic || contentData.parentFolder?.isShared)
+  ) {
+    chooseLicenseForm = (
+      <FormControl isInvalid={missingLicense}>
+        <FormLabel mt="20px">Change license</FormLabel>
+        <HStack gap={5}>
+          <Select
+            width="90%"
+            data-test="Select License"
+            placeholder={placeholder}
+            value={selectedLicenseCode}
+            onChange={(e) => {
+              setShowSpinner({ type: "license" });
+              setStatusText("");
+              nextStatusText.current = "Successfully changed license.";
+              const newLicenseCode = e.target.value as LicenseCode;
+              setSelectedLicenseCode(newLicenseCode);
+              fetcher.submit(
+                {
+                  _action: "set license",
+                  id: contentData.id,
+                  licenseCode: newLicenseCode,
+                  isFolder: Boolean(contentData.isFolder),
+                },
+                { method: "post" },
+              );
+            }}
+          >
+            {allLicenses.map((license) => (
+              <option value={license.code} key={license.code}>
+                {license.name}
+              </option>
+            ))}
+          </Select>
+          <Spinner hidden={showSpinner?.type !== "license"} />
+        </HStack>
+        <FormErrorMessage>
+          A license is required to make public.
+        </FormErrorMessage>
+      </FormControl>
+    );
+  }
 
   return (
     <>
@@ -362,11 +455,7 @@ export function ShareSettings({
                       (contentData.parentFolder?.sharedWith.findIndex(
                         (cs) => cs.userId === user.userId,
                       ) ?? -1) !== -1;
-                    console.log({
-                      sharedViaFolder,
-                      sharedWith: contentData.parentFolder?.sharedWith,
-                      user,
-                    });
+
                     return (
                       <Tr key={user.userId}>
                         <Show above="sm">
@@ -449,7 +538,7 @@ export function ShareSettings({
           method="post"
           onSubmit={() => {
             setShowSpinner({ type: "emailShare" });
-            nextStatusText.current = `Successfully shared with ${shareWithEmail}`;
+            nextStatusText.current = `Successfully shared with ${shareWithEmail}.`;
           }}
         >
           <FormControl isInvalid={errorMessage !== ""} marginTop="20px">
@@ -496,6 +585,7 @@ export function ShareSettings({
               <Checkbox
                 marginTop="20px"
                 isChecked={selectedIsPublic}
+                data-test="Public Checkbox"
                 onChange={() => {
                   setShowSpinner({ type: "public" });
                   if (contentData.isPublic) {
@@ -510,7 +600,7 @@ export function ShareSettings({
                     );
                     setSelectedIsPublic(false);
                   } else {
-                    nextStatusText.current = "Successfully shared publicly";
+                    nextStatusText.current = "Successfully shared publicly.";
                     fetcher.submit(
                       {
                         _action: "make content public",
@@ -534,45 +624,8 @@ export function ShareSettings({
           </>
         )}
 
-        {contentData.parentFolder?.isPublic ||
-        contentData.parentFolder?.isShared ? null : (
-          <FormControl isInvalid={missingLicense}>
-            <FormLabel mt="20px">Change license</FormLabel>
-            <HStack gap={5}>
-              <Select
-                width="90%"
-                placeholder={placeholder}
-                value={selectedLicenseCode}
-                onChange={(e) => {
-                  setShowSpinner({ type: "license" });
-                  setStatusText("");
-                  nextStatusText.current = "Successfully changed license.";
-                  let newLicenseCode = e.target.value as LicenseCode;
-                  setSelectedLicenseCode(newLicenseCode);
-                  fetcher.submit(
-                    {
-                      _action: "set license",
-                      id: contentData.id,
-                      licenseCode: newLicenseCode,
-                      isFolder: Boolean(contentData.isFolder),
-                    },
-                    { method: "post" },
-                  );
-                }}
-              >
-                {allLicenses.map((license) => (
-                  <option value={license.code} key={license.code}>
-                    {license.name}
-                  </option>
-                ))}
-              </Select>
-              <Spinner hidden={showSpinner?.type !== "license"} />
-            </HStack>
-            <FormErrorMessage>
-              A license is required to make public.
-            </FormErrorMessage>
-          </FormControl>
-        )}
+        {chooseLicenseForm}
+        {licenseWarning}
       </Box>
     </>
   );

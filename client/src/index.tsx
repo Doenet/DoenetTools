@@ -1,25 +1,18 @@
 import React from "react";
 
-import {
-  createBrowserRouter,
-  redirect,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router";
 import { createRoot } from "react-dom/client";
 
 import "@doenet/doenetml-iframe/style.css";
 
 import { MathJaxContext } from "better-react-mathjax";
 import {
-  loader as communityLoader,
-  action as communityAction,
-  Community,
-} from "./Tools/_framework/Paths/Community";
+  loader as exploreLoader,
+  action as exploreAction,
+  Explore,
+} from "./Tools/_framework/Paths/Explore";
+import { action as communityAdminAction } from "./Tools/_framework/Paths/CommunityAdmin";
 import { loader as adminLoader, Admin } from "./Tools/_framework/Paths/Admin";
-import {
-  loader as libraryLoader,
-  Library,
-} from "./Tools/_framework/Paths/Library";
 import {
   loader as siteLoader,
   SiteHeader,
@@ -37,6 +30,7 @@ import {
 } from "./Tools/_framework/Paths/Activities";
 import {
   loader as sharedActivitiesLoader,
+  action as sharedActivitiesAction,
   SharedActivities,
 } from "./Tools/_framework/Paths/SharedActivities";
 import {
@@ -98,9 +92,9 @@ import {
   action as activityEditorAction,
 } from "./Tools/_framework/Paths/ActivityEditor";
 import {
-  PublicEditor,
-  loader as publicEditorLoader,
-} from "./Tools/_framework/Paths/PublicEditor";
+  CodeViewer,
+  loader as codeViewerLoader,
+} from "./Tools/_framework/Paths/CodeViewer";
 import { mathjaxConfig } from "@doenet/doenetml-iframe";
 import {
   SignIn,
@@ -198,34 +192,49 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "/library",
-        loader: libraryLoader,
-        // sharing an action with the community page is somewhat intentional
-        // as it shows cards and admins have the same actions that they can perform
-        // on cards as they can on the community page
-        // TODO - determine if this is an okay way to share functionality across
-        // pages or a bad idea
-        action: communityAction,
-        element: <Library />,
+        path: "explore",
+        loader: exploreLoader,
+        action: exploreAction,
+        element: <Explore />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "community",
-        loader: communityLoader,
-        action: communityAction,
-        // action: communitySearchAction,
-        element: <Community />,
+        path: "explore/:systemId",
+        loader: exploreLoader,
+        action: exploreAction,
+        element: <Explore />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "explore/:systemId/:categoryId",
+        loader: exploreLoader,
+        action: exploreAction,
+        element: <Explore />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "explore/:systemId/:categoryId/:subCategoryId",
+        loader: exploreLoader,
+        action: exploreAction,
+        element: <Explore />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "explore/:systemId/:categoryId/:subCategoryId/:classificationId",
+        loader: exploreLoader,
+        action: exploreAction,
+        element: <Explore />,
         errorElement: <ErrorPage />,
       },
       {
         path: "admin",
         loader: adminLoader,
-        // sharing an action with the community page is somewhat intentional
+        // sharing an action with the explore page is somewhat intentional
         // as it shows cards and admins have the same actions that they can perform
-        // on cards as they can on the community page
+        // on cards as they can on the explore page
         // TODO - determine if this is an okay way to share functionality across
         // pages or a bad idea
-        action: communityAction,
+        action: communityAdminAction,
         element: <Admin />,
         errorElement: <ErrorPage />,
       },
@@ -246,12 +255,14 @@ const router = createBrowserRouter([
       {
         path: "sharedActivities/:ownerId",
         loader: sharedActivitiesLoader,
+        action: sharedActivitiesAction,
         element: <SharedActivities />,
         errorElement: <ErrorPage />,
       },
       {
         path: "sharedActivities/:ownerId/:folderId",
         loader: sharedActivitiesLoader,
+        action: sharedActivitiesAction,
         element: <SharedActivities />,
         errorElement: <ErrorPage />,
       },
@@ -277,22 +288,22 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "publicEditor",
-        loader: publicEditorLoader,
+        path: "codeViewer",
+        loader: codeViewerLoader,
         errorElement: <ErrorPage />,
-        element: <PublicEditor />,
+        element: <CodeViewer />,
       },
       {
-        path: "publicEditor/:activityId",
-        loader: publicEditorLoader,
+        path: "codeViewer/:activityId",
+        loader: codeViewerLoader,
         errorElement: <ErrorPage />,
-        element: <PublicEditor />,
+        element: <CodeViewer />,
       },
       {
-        path: "publicEditor/:activityId/:docId",
-        loader: publicEditorLoader,
+        path: "codeViewer/:activityId/:docId",
+        loader: codeViewerLoader,
         errorElement: <ErrorPage />,
-        element: <PublicEditor />,
+        element: <CodeViewer />,
       },
       {
         path: "assigned",

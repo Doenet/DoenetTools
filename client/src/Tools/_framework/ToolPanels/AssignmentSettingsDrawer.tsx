@@ -15,7 +15,7 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import { FetcherWithComponents } from "react-router-dom";
+import { FetcherWithComponents } from "react-router";
 import {
   assignActivityActions,
   AssignActivityControls,
@@ -27,7 +27,7 @@ export async function assignmentSettingsActions({
 }: {
   [k: string]: any;
 }) {
-  let result = await assignActivityActions({ formObj });
+  const result = await assignActivityActions({ formObj });
   if (result) {
     return result;
   }

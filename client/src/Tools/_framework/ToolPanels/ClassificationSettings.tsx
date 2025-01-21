@@ -1,22 +1,17 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { Alert, AlertQueue } from "./AlertQueue";
-import { FetcherWithComponents, Form } from "react-router-dom";
+import React, { ReactElement, useEffect, useState } from "react";
+import { FetcherWithComponents } from "react-router";
 import {
   Box,
-  FormControl,
-  FormLabel,
   Text,
   Flex,
   Select,
   Heading,
-  Tag,
   Highlight,
   Spacer,
   Accordion,
   AccordionItem,
   AccordionButton,
-  AccordionPanel,
   AccordionIcon,
   CloseButton,
   HStack,
@@ -24,15 +19,20 @@ import {
   Spinner,
   CardBody,
   Card,
-  CardHeader,
   Button,
+  Input,
 } from "@chakra-ui/react";
-import AsyncSelect from "react-select/async";
 import {
-  ClassificationSystemTree,
+  ClassificationCategoryTree,
   ContentClassification,
   ContentStructure,
 } from "../../../_utils/types";
+import {
+  findClassificationDescriptionIndex,
+  getClassificationAugmentedDescription,
+  reformatClassificationData,
+} from "../../../_utils/activity";
+import { returnClassificationsAccordionPanel } from "../../../_utils/classification";
 
 export async function classificationSettingsActions({
   formObj,
@@ -64,94 +64,187 @@ export async function classificationSettingsActions({
 
 export function ClassificationSettings({
   fetcher,
-  id,
   contentData,
 }: {
   fetcher: FetcherWithComponents<any>;
-  id: string;
   contentData: ContentStructure;
 }) {
-  let [alerts, setAlerts] = useState<Alert[]>([]);
+  const [categoryFilter, setCategoryFilter] = useState<{
+    systemId?: number;
+    systemTreeIndex?: number;
+    categoryId?: number;
+    categoryTreeIndex?: number;
+    subCategoryId?: number;
+    subCategoryTreeIndex?: number;
+  }>({});
 
-  let [classifySelectorInput, setClassifySelectorInput] = useState<string>("");
-  const classificationsAlreadyAdded = contentData.classifications.map(
-    (c2) => c2.id,
-  );
+  const [queryFilter, setQueryFilter] = useState<string | undefined>(undefined);
 
-  const getClassificationOptions = async (inputValue: string) => {
-    let results = await axios.get(
-      `/api/searchPossibleClassifications?q=${inputValue}`,
+  const [classificationOptions, setClassificationOptions] = useState<
+    ContentClassification[]
+  >([]);
+
+  const fetchClassificationOptions = async ({
+    query,
+    systemId,
+    categoryId,
+    subCategoryId,
+  }: {
+    query?: string;
+    systemId?: number;
+    categoryId?: number;
+    subCategoryId?: number;
+  }) => {
+    let searchParameters = "";
+    if (subCategoryId !== undefined) {
+      searchParameters = `subCategory=${subCategoryId}`;
+    } else if (categoryId !== undefined) {
+      searchParameters = `category=${categoryId}`;
+    } else if (systemId !== undefined) {
+      searchParameters = `system=${systemId}`;
+    }
+
+    if (query !== undefined) {
+      if (searchParameters) {
+        searchParameters += "&";
+      }
+      searchParameters += `q=${query}`;
+    }
+
+    const results = await axios.get(
+      `/api/searchPossibleClassifications?${searchParameters}`,
     );
-    let classifications: ContentClassification[] = results.data;
-    let options = classifications
-      .filter((c) => !classificationsAlreadyAdded.includes(c.id))
-      .map((c) => ({
-        value: c.id,
-        label: c,
-      }));
-    return options;
+
+    const classifications: ContentClassification[] = results.data;
+    setClassificationOptions(classifications);
   };
 
-  let [classifySpinnerHidden, setClassifySpinnerHidden] = useState(true);
-  let [classifyItemRemoveSpinner, setClassifyItemRemoveSpinner] = useState(0);
   useEffect(() => {
-    setClassifySpinnerHidden(true);
+    fetchClassificationOptions({ ...categoryFilter, query: queryFilter });
+  }, [categoryFilter, queryFilter]);
+
+  const [classifyItemRemoveSpinner, setClassifyItemRemoveSpinner] = useState(0);
+  useEffect(() => {
     setClassifyItemRemoveSpinner(0);
   }, [contentData]);
 
-  // Non-zero if waiting for server to add classification (stores id)
-  let [dropdownWaitingForAdd, setDropdownWaitingForAdd] = useState(0);
+  // Non-zero if waiting for server to add/remove classification (stores id)
+  const [dropdownWaitingForChange, setDropdownWaitingForChange] = useState(0);
   useEffect(() => {
-    setDropdownWaitingForAdd(0);
+    setDropdownWaitingForChange(0);
   }, [contentData]);
 
-  let [allClassifications, setAllClassifications] = useState<
-    ClassificationSystemTree[]
+  const [classificationCategories, setClassificationCategories] = useState<
+    ClassificationCategoryTree[]
   >([]);
   useEffect(() => {
-    async function setClassifications() {
-      const { data } = await axios.get(`/api/getAllClassificationInfo`);
-      setAllClassifications(data);
+    async function fetchClassificationCategories() {
+      const { data } = await axios.get(`/api/getClassificationCategories`);
+      setClassificationCategories(data);
     }
-    setClassifications();
+    fetchClassificationCategories();
   }, []);
 
-  let [selectedSystem, setSelectedSystem] = useState<number | null>(null);
-  let [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  let [selectedSubCategory, setSelectedSubCategory] = useState<number | null>(
-    null,
-  );
+  let searchTermsTimeout: NodeJS.Timeout;
+  function updateSearchTerms(
+    e: React.FormEvent<HTMLInputElement>,
+    immediate: boolean = false,
+  ) {
+    clearTimeout(searchTermsTimeout);
+    if (immediate) {
+      setQueryFilter((e.target as HTMLInputElement).value);
+    } else {
+      // if not immediate, debounce at half second
+      searchTermsTimeout = setTimeout(() => {
+        setQueryFilter((e.target as HTMLInputElement).value);
+      }, 500);
+    }
+  }
+
+  const selectedClassification =
+    categoryFilter.systemTreeIndex === undefined
+      ? null
+      : classificationCategories[categoryFilter.systemTreeIndex];
+
+  const classificationSystemOptionGroups: ReactElement[] = [];
+
+  let classificationTypeOptions: ReactElement[] = [];
+  let lastType = "";
+
+  for (const [i, system] of classificationCategories.entries()) {
+    if (system.type !== lastType && classificationTypeOptions.length > 0) {
+      if (lastType === "Primary") {
+        // skip optgroup for Primary
+        classificationSystemOptionGroups.push(...classificationTypeOptions);
+      } else {
+        classificationSystemOptionGroups.push(
+          <optgroup label={lastType} key={i}>
+            {classificationTypeOptions}
+          </optgroup>,
+        );
+      }
+      classificationTypeOptions = [];
+    }
+    lastType = system.type;
+
+    classificationTypeOptions.push(
+      <option value={i} key={i}>
+        {system.name}
+      </option>,
+    );
+
+    if (i === classificationCategories.length - 1) {
+      classificationSystemOptionGroups.push(
+        <optgroup label={system.type} key={i + 1}>
+          {classificationTypeOptions}
+        </optgroup>,
+      );
+    }
+  }
 
   return (
     <>
-      <AlertQueue alerts={alerts} />
+      {!contentData.isFolder ? (
+        <Flex
+          flexDirection={["column", "row-reverse"]}
+          columnGap={5}
+          height="100%"
+        >
+          <Flex
+            flexDirection="column"
+            width={["100", "40%"]}
+            rowGap={6}
+            height={["50%", "100%"]}
+            overflowY="auto"
+          >
+            <Text>Existing Classifications</Text>
 
-      <Form method="post">
-        {!contentData.isFolder ? (
-          <FormControl>
-            <Flex flexDirection="column" width="100%" rowGap={6}>
-              {/* <FormLabel mt="16px">Content Classifications</FormLabel> */}
+            {contentData.classifications.length === 0 ? (
+              <Text as="i" mt="-5" ml="3">
+                None added yet.
+              </Text>
+            ) : (
+              <Accordion allowMultiple>
+                {contentData.classifications.map((classification, i) => {
+                  const code = classification.code;
+                  const systemName =
+                    classification.descriptions[0].subCategory.category.system
+                      .name;
 
-              <Text>Existing Classifications</Text>
-
-              {contentData.classifications.length === 0 ? (
-                <Text as="i" mt="-5" ml="3">
-                  None added yet.
-                </Text>
-              ) : (
-                <Accordion allowMultiple>
-                  {contentData.classifications.map((classification, i) => (
+                  return (
                     <AccordionItem key={`classification${i}`}>
                       <HStack>
                         <h2>
                           <AccordionButton>
                             <HStack flex="1" textAlign="left" direction={"row"}>
-                              ;<Text as="b">{classification.code}</Text>
+                              <Text
+                                as="b"
+                                data-test={`Existing Classification ${i + 1}`}
+                              >
+                                {code}
+                              </Text>
                               <Text fontSize={"small"} pt="2px">
-                                {
-                                  classification.subCategory.category.system
-                                    .name
-                                }
+                                {systemName}
                               </Text>
                             </HStack>
                             <AccordionIcon marginLeft="7px" />
@@ -159,10 +252,12 @@ export function ClassificationSettings({
                         </h2>
                         <Spacer />
                         <Tooltip
-                          label={`Remove classification ${classification.code}`}
+                          label={`Remove classification ${code}`}
+                          placement="bottom-end"
                         >
                           <CloseButton
-                            aria-label={`Remove classification ${classification.code}`}
+                            aria-label={`Remove classification ${code}`}
+                            data-test={`Remove Existing ${code}`}
                             hidden={
                               classifyItemRemoveSpinner === classification.id
                             }
@@ -171,7 +266,7 @@ export function ClassificationSettings({
                               fetcher.submit(
                                 {
                                   _action: "remove content classification",
-                                  activityId: id,
+                                  activityId: contentData.id,
                                   classificationId: classification.id,
                                 },
                                 { method: "post" },
@@ -185,258 +280,338 @@ export function ClassificationSettings({
                           }
                         />
                       </HStack>
-                      <AccordionPanel>
-                        <Text>
-                          <Text as="b">
-                            {
-                              classification.subCategory.category.system
-                                .categoryLabel
-                            }
-                            :{" "}
-                          </Text>
-                          {classification.subCategory.category.category}
-                        </Text>
-                        <Text>
-                          <Text as="b">
-                            {
-                              classification.subCategory.category.system
-                                .subCategoryLabel
-                            }
-                            :{" "}
-                          </Text>
-                          {classification.subCategory.subCategory}
-                        </Text>
-                        <Text>
-                          <Text as="b">Description: </Text>
-                          {classification.description}
-                        </Text>
-                      </AccordionPanel>
+                      {returnClassificationsAccordionPanel(classification)}
                     </AccordionItem>
-                  ))}
-                </Accordion>
-              )}
+                  );
+                })}
+              </Accordion>
+            )}
+          </Flex>
 
-              <Text>Add a Classification</Text>
-              <Box rowGap={2}>
+          <Flex
+            flexDirection="column"
+            width={["100", "60%"]}
+            height={["50%", "100%"]}
+            overflowY="scroll"
+            paddingRight={1}
+            paddingLeft={1}
+            borderTopWidth={["thick", "inherit"]}
+            paddingTop={[1, 0]}
+          >
+            <Text>Add a Classification</Text>
+            <Box rowGap={2}>
+              <HStack>
                 <Select
-                  placeholder="Choose a system"
+                  value={categoryFilter.systemTreeIndex ?? ""}
+                  placeholder="Filter by system"
+                  data-test="Filter By System"
                   onChange={(event) => {
                     if (event.target.value) {
-                      setSelectedSystem(Number(event.target.value));
+                      const treeIndex = Number(event.target.value);
+                      setCategoryFilter({
+                        systemId: classificationCategories[treeIndex].id,
+                        systemTreeIndex: treeIndex,
+                      });
                     } else {
-                      setSelectedSystem(null);
+                      setCategoryFilter({});
                     }
-                    setSelectedCategory(null);
-                    setSelectedSubCategory(null);
                   }}
                 >
-                  {allClassifications.map((system, i) => (
-                    <option value={i}>{system.name}</option>
-                  ))}
+                  {classificationSystemOptionGroups}
                 </Select>
+                <CloseButton
+                  aria-label={`Stop filtering by system`}
+                  data-test="Stop Filter By System"
+                  disabled={selectedClassification === null}
+                  onClick={() => {
+                    setCategoryFilter({});
+                  }}
+                />
+              </HStack>
 
+              <HStack>
                 <Select
-                  value={selectedCategory ?? ""}
+                  value={categoryFilter.categoryTreeIndex ?? ""}
                   placeholder={
-                    selectedSystem === null
+                    selectedClassification === null
                       ? "-"
-                      : `Choose a ${allClassifications[selectedSystem].categoryLabel}`
+                      : `Filter by ${selectedClassification.categoryLabel}`
                   }
-                  isDisabled={selectedSystem === null}
+                  data-test="Filter By Category"
+                  isDisabled={categoryFilter.systemId === undefined}
                   onChange={(event) => {
                     if (event.target.value) {
-                      setSelectedCategory(Number(event.target.value));
+                      const treeIndex = Number(event.target.value);
+                      setCategoryFilter((was) => {
+                        const obj = { ...was };
+                        obj.categoryId =
+                          selectedClassification!.categories[treeIndex].id;
+                        obj.categoryTreeIndex = treeIndex;
+                        delete obj.subCategoryId;
+                        delete obj.subCategoryTreeIndex;
+                        return obj;
+                      });
                     } else {
-                      setSelectedCategory(null);
-                    }
-                    setSelectedSubCategory(null);
-                  }}
-                >
-                  {selectedSystem !== null
-                    ? allClassifications[selectedSystem].categories.map(
-                        (category, i) => (
-                          <option value={i}>{category.category}</option>
-                        ),
-                      )
-                    : null}
-                </Select>
-
-                <Select
-                  value={selectedSubCategory ?? ""}
-                  placeholder={
-                    selectedCategory === null
-                      ? "-"
-                      : `Choose a ${allClassifications[selectedSystem!].subCategoryLabel}`
-                  }
-                  isDisabled={selectedCategory === null}
-                  onChange={(event) => {
-                    if (event.target.value) {
-                      setSelectedSubCategory(Number(event.target.value));
-                    } else {
-                      setSelectedSubCategory(null);
+                      setCategoryFilter((was) => {
+                        const obj = { ...was };
+                        delete obj.categoryId;
+                        delete obj.categoryTreeIndex;
+                        delete obj.subCategoryId;
+                        delete obj.subCategoryTreeIndex;
+                        return obj;
+                      });
                     }
                   }}
                 >
-                  {selectedCategory !== null
-                    ? allClassifications[selectedSystem!].categories[
-                        selectedCategory
-                      ].subCategories.map((subCategory, i) => (
-                        <option value={i}>{subCategory.subCategory}</option>
+                  {selectedClassification !== null
+                    ? selectedClassification.categories.map((category, i) => (
+                        <option value={i} key={i}>
+                          {category.category}
+                        </option>
                       ))
                     : null}
                 </Select>
-                {selectedSubCategory !== null
-                  ? allClassifications[selectedSystem!].categories[
-                      selectedCategory!
-                    ].subCategories[selectedSubCategory].classifications.map(
-                      (classification) => (
-                        <Card>
-                          <CardBody>
-                            <Flex>
-                              <Heading size="sm">{classification.code}</Heading>
-                              <Spacer />
-                              {contentData.classifications
-                                .map((c) => c.id)
-                                .includes(classification.id) ? (
-                                <Text as="i">Already added</Text>
-                              ) : (
-                                <Button
-                                  size="sm"
-                                  isDisabled={
-                                    dropdownWaitingForAdd === classification.id
-                                  }
-                                  onClick={() => {
-                                    setDropdownWaitingForAdd(classification.id);
-                                    fetcher.submit(
-                                      {
-                                        _action: "add content classification",
-                                        activityId: id,
-                                        classificationId: classification.id,
-                                      },
-                                      { method: "post" },
-                                    );
-                                  }}
-                                >
-                                  {dropdownWaitingForAdd ===
-                                  classification.id ? (
-                                    <Spinner />
-                                  ) : (
-                                    "Add"
-                                  )}
-                                </Button>
-                              )}
-                            </Flex>
-                            <Text>{classification.description}</Text>
-                          </CardBody>
-                        </Card>
-                      ),
-                    )
-                  : null}
-              </Box>
+                <CloseButton
+                  aria-label={`Stop filtering by ${selectedClassification?.categoryLabel}`}
+                  data-test="Stop Filter By Category"
+                  disabled={categoryFilter.categoryId === undefined}
+                  onClick={() => {
+                    setCategoryFilter((was) => {
+                      const obj = { ...was };
+                      delete obj.categoryId;
+                      delete obj.categoryTreeIndex;
+                      delete obj.subCategoryId;
+                      delete obj.subCategoryTreeIndex;
+                      return obj;
+                    });
+                  }}
+                />
+              </HStack>
 
               <HStack>
-                <Box flex={1} pr="10px">
-                  <AsyncSelect
-                    key={`addClassification_${contentData.classifications.map((c) => c.id).join(",")}`} // force this component to reload when classifications change
-                    placeholder="...or search by keyword"
-                    defaultOptions
-                    isClearable
-                    isDisabled={!classifySpinnerHidden}
-                    value={null}
-                    loadOptions={getClassificationOptions}
-                    onInputChange={(newVal) => {
-                      setClassifySelectorInput(newVal);
-                    }}
-                    onChange={(newValueLabel) => {
-                      if (newValueLabel) {
-                        setClassifySpinnerHidden(false);
-                        fetcher.submit(
-                          {
-                            _action: "add content classification",
-                            activityId: id,
-                            classificationId: newValueLabel.value,
-                          },
-                          { method: "post" },
-                        );
-                      }
-                    }}
-                    formatOptionLabel={(val) =>
-                      val ? (
-                        <Box>
-                          <Flex>
-                            <Heading size="sm">
-                              <Highlight
-                                query={classifySelectorInput.split(" ")}
-                                styles={{ fontWeight: 900 }}
-                              >
-                                {val.label.code +
-                                  (val.label.subCategory.category.category
-                                    ? " (" +
-                                      val.label.subCategory.category.category +
-                                      ")"
-                                    : "")}
-                              </Highlight>
-                            </Heading>
-                            <Spacer />
-                            <Tag>
-                              <Highlight
-                                query={classifySelectorInput.split(" ")}
-                                styles={{ fontWeight: "bold" }}
-                              >
-                                {val.label.subCategory.category.system.name}
-                              </Highlight>
-                            </Tag>
-                          </Flex>
-                          <Text>
-                            <Text as="i">
-                              {
-                                val.label.subCategory.category.system
-                                  .categoryLabel
-                              }
-                              :
-                            </Text>{" "}
-                            <Highlight
-                              query={classifySelectorInput.split(" ")}
-                              styles={{ fontWeight: "bold" }}
-                            >
-                              {val.label.subCategory.category.category}
-                            </Highlight>
-                          </Text>
-                          <Text>
-                            <Text as="i">
-                              {
-                                val.label.subCategory.category.system
-                                  .subCategoryLabel
-                              }
-                              :
-                            </Text>{" "}
-                            <Highlight
-                              query={classifySelectorInput.split(" ")}
-                              styles={{ fontWeight: "bold" }}
-                            >
-                              {val.label.subCategory.subCategory}
-                            </Highlight>
-                          </Text>
-                          <Text>
-                            <Text as="i">Description: </Text>
-                            <Highlight
-                              query={classifySelectorInput.split(" ")}
-                              styles={{ fontWeight: "bold" }}
-                            >
-                              {val.label.description}
-                            </Highlight>
-                          </Text>
-                        </Box>
-                      ) : null
+                <Select
+                  value={categoryFilter.subCategoryTreeIndex ?? ""}
+                  placeholder={
+                    categoryFilter.categoryId === undefined
+                      ? "-"
+                      : `Filter by ${selectedClassification!.subCategoryLabel}`
+                  }
+                  data-test="Filter By Subcategory"
+                  isDisabled={categoryFilter.categoryId === undefined}
+                  onChange={(event) => {
+                    if (event.target.value) {
+                      const treeIndex = Number(event.target.value);
+                      setCategoryFilter((was) => {
+                        const obj = { ...was };
+                        obj.subCategoryId =
+                          selectedClassification!.categories[
+                            categoryFilter.categoryTreeIndex!
+                          ].subCategories[treeIndex].id;
+                        obj.subCategoryTreeIndex = treeIndex;
+                        return obj;
+                      });
+                    } else {
+                      setCategoryFilter((was) => {
+                        const obj = { ...was };
+                        delete obj.subCategoryId;
+                        delete obj.subCategoryTreeIndex;
+                        return obj;
+                      });
                     }
-                  />
-                </Box>
-                <Spinner hidden={classifySpinnerHidden} />
+                  }}
+                >
+                  {categoryFilter.categoryTreeIndex !== undefined
+                    ? selectedClassification!.categories[
+                        categoryFilter.categoryTreeIndex
+                      ].subCategories.map((subCategory, i) => (
+                        <option value={i} key={i}>
+                          {subCategory.subCategory}
+                        </option>
+                      ))
+                    : null}
+                </Select>
+                <CloseButton
+                  aria-label={`Stop filtering by ${selectedClassification?.subCategoryLabel}`}
+                  data-test="Stop Filter By Subcategory"
+                  disabled={categoryFilter.categoryId === undefined}
+                  onClick={() => {
+                    setCategoryFilter((was) => {
+                      const obj = { ...was };
+                      delete obj.subCategoryId;
+                      delete obj.subCategoryTreeIndex;
+                      return obj;
+                    });
+                  }}
+                />
               </HStack>
-            </Flex>
-          </FormControl>
-        ) : null}
-      </Form>
+
+              <Input
+                type="search"
+                data-test="Search Terms"
+                placeholder="Filter by search terms"
+                onInput={updateSearchTerms}
+                onKeyDown={(e) => {
+                  if (e.key == "Enter") {
+                    updateSearchTerms(e, true);
+                  }
+                }}
+                marginBottom={10}
+                marginTop={4}
+              />
+
+              <Box data-test="Matching Classifications">
+                {classificationOptions.length === 0 ? (
+                  <p>No matching classifications</p>
+                ) : null}
+
+                {classificationOptions.map((classification) => {
+                  const added = contentData.classifications
+                    .map((c) => c.id)
+                    .includes(classification.id);
+                  const buttonText = added ? "Remove" : "Add";
+                  const action =
+                    (added ? "remove" : "add") + " content classification";
+
+                  let descriptionIndex = 0;
+
+                  if (selectedClassification !== null) {
+                    descriptionIndex = findClassificationDescriptionIndex({
+                      classification,
+                      systemName: selectedClassification.name,
+                      category:
+                        selectedClassification.categories[
+                          categoryFilter.categoryTreeIndex ?? -1
+                        ]?.category,
+                      subCategory:
+                        selectedClassification.categories[
+                          categoryFilter.categoryTreeIndex ?? -1
+                        ]?.subCategories[
+                          categoryFilter.subCategoryTreeIndex ?? -1
+                        ]?.subCategory,
+                    });
+                  }
+
+                  if (descriptionIndex === -1) {
+                    return null;
+                  }
+
+                  const {
+                    code,
+                    systemName,
+                    categoryLabel,
+                    category,
+                    subCategoryLabel,
+                    subCategory,
+                    description,
+                    descriptionLabel,
+                  } = reformatClassificationData(
+                    classification,
+                    descriptionIndex,
+                  );
+
+                  let aliasNote: ReactElement | null = null;
+
+                  if (descriptionIndex !== 0) {
+                    const aliasedAugmentedDescription =
+                      getClassificationAugmentedDescription(classification, 0);
+
+                    const systemChanged =
+                      systemName !==
+                      classification.descriptions[0].subCategory.category.system
+                        .name;
+
+                    let aliasText = `"${aliasedAugmentedDescription}"`;
+                    if (systemChanged) {
+                      aliasText += ` from ${
+                        classification.descriptions[0].subCategory.category
+                          .system.name
+                      }`;
+                    }
+
+                    aliasNote =
+                      descriptionIndex === 0 ? null : (
+                        <Text>
+                          <Text as="i">Alias of:</Text> {aliasText}
+                        </Text>
+                      );
+                  }
+
+                  return (
+                    <Card
+                      backgroundColor={added ? "lightGray" : "var(--canvas)"}
+                      key={classification.id}
+                    >
+                      <CardBody paddingLeft={2}>
+                        <HStack>
+                          <Heading size="sm">
+                            {code} ({systemName})
+                          </Heading>
+                          <Spacer />
+
+                          <Button
+                            size="sm"
+                            isDisabled={
+                              dropdownWaitingForChange === classification.id
+                            }
+                            onClick={() => {
+                              setDropdownWaitingForChange(classification.id);
+                              fetcher.submit(
+                                {
+                                  _action: action,
+                                  activityId: contentData.id,
+                                  classificationId: classification.id,
+                                },
+                                { method: "post" },
+                              );
+                            }}
+                            data-test={`${buttonText} ${classification.code}`}
+                          >
+                            {dropdownWaitingForChange === classification.id ? (
+                              <Spinner />
+                            ) : (
+                              buttonText
+                            )}
+                          </Button>
+                        </HStack>
+                        <Box>
+                          <Text>
+                            <Text as="i">{categoryLabel}:</Text>{" "}
+                            <Highlight
+                              query={queryFilter?.split(" ") || ""}
+                              styles={{ fontWeight: "bold" }}
+                            >
+                              {category}
+                            </Highlight>
+                          </Text>
+                          <Text>
+                            <Text as="i">{subCategoryLabel}:</Text>{" "}
+                            <Highlight
+                              query={queryFilter?.split(" ") || ""}
+                              styles={{ fontWeight: "bold" }}
+                            >
+                              {subCategory}
+                            </Highlight>
+                          </Text>
+                          <Text>
+                            <Text as="i">{descriptionLabel}:</Text>{" "}
+                            <Highlight
+                              query={(queryFilter || "").split(" ")}
+                              styles={{ fontWeight: "bold" }}
+                            >
+                              {description}
+                            </Highlight>
+                          </Text>
+                          {aliasNote}
+                        </Box>
+                      </CardBody>
+                    </Card>
+                  );
+                })}
+              </Box>
+            </Box>
+          </Flex>
+        </Flex>
+      ) : null}
     </>
   );
 }

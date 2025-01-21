@@ -16,25 +16,30 @@ import "swiper/css/pagination";
 import "swiper/css/keyboard";
 import "./Carousel.css";
 
-import { Box, Flex, IconButton, Text } from "@chakra-ui/react";
-import ContentCard from "./ContentCard";
+import { Box, Flex, IconButton, MenuItem, Text } from "@chakra-ui/react";
+import Card, { CardContent } from "./Card";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { createFullName } from "../_utils/names";
+import { ContentStructure } from "../_utils/types";
 
 SwiperCore.use([Keyboard, Mousewheel]);
 
 export function Carousel({
   title = "",
-  data = [],
+  activities = [],
+  setInfoContentData,
+  infoOnOpen,
 }: {
   title: string;
-  data: any[];
+  activities: ContentStructure[];
+  setInfoContentData: (arg: ContentStructure) => void;
+  infoOnOpen: () => void;
 }) {
   const swiperElRef = useRef<SwiperRef>(null);
 
   const pagination = {
     clickable: true,
-    renderBullet: function (index, className) {
+    renderBullet: function (_index, className) {
       return `<span class="${className}" ></span>`;
     },
   };
@@ -51,7 +56,34 @@ export function Carousel({
     // thresholdTime: 1000,
   };
 
-  let numCards = data.length;
+  const numCards = activities.length;
+
+  const cardContent: CardContent[] = activities.map((activity) => {
+    const menuItems = (
+      <MenuItem
+        data-test={`Activity Information`}
+        onClick={() => {
+          setInfoContentData(activity);
+          infoOnOpen();
+        }}
+      >
+        Activity information
+      </MenuItem>
+    );
+    return {
+      id: activity.id,
+      title: activity.name,
+      cardLink: `/activityViewer/${activity.id}`,
+      cardType: "activity",
+      ownerName:
+        activity.owner !== undefined ? createFullName(activity.owner) : "",
+      menuItems,
+      imagePath: activity.imagePath,
+      isQuestion: activity.isQuestion,
+      isInteractive: activity.isInteractive,
+      containsVideo: activity.containsVideo,
+    };
+  });
 
   return (
     <>
@@ -116,16 +148,14 @@ export function Carousel({
               //   // }
             }}
           >
-            {data.map((cardObj, i) => {
+            {cardContent.map((cardObj, i) => {
               return (
                 <SwiperSlide key={`swipercard${i}`}>
-                  <ContentCard
-                    imagePath={cardObj.imagePath}
-                    title={cardObj.name}
-                    ownerName={createFullName(cardObj.owner)}
-                    cardLink={`/activityViewer/${cardObj.activityId}`}
-                    showPublicStatus={false}
-                    showAssignmentStatus={false}
+                  <Card
+                    cardContent={cardObj}
+                    showOwnerName={true}
+                    showActivityFeatures={true}
+                    listView={false}
                   />
                 </SwiperSlide>
               );

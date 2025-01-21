@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useLoaderData } from "react-router";
-import me from "math-expressions";
-import { MathJax } from "better-react-mathjax";
 import { DateTime } from "luxon";
 
 import {
@@ -16,13 +14,13 @@ import {
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { DoenetHeading as Heading } from "./Community";
+import { DoenetHeading as Heading } from "../../../Widgets/Heading";
 import { parseAndFormatResponse } from "./AssignmentAnswerResponses";
-import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
+import { Link as ReactRouterLink, useNavigate } from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { UserInfo } from "../../../_utils/types";
 
-export async function action({ params, request }) {
+export async function action() {
   return null;
 }
 export async function loader({ params, request }) {
@@ -63,34 +61,24 @@ export async function loader({ params, request }) {
 }
 
 export function AssignmentAnswerResponseHistory() {
-  const {
-    activityId,
-    docId,
-    docVersionNum,
-    answerId,
-    activityName,
-    responseData,
-    maxCredit,
-  } = useLoaderData() as {
-    activityId: string;
-    docId: string;
-    docVersionNum: number;
-    answerId: string;
-    activityName: string;
-    responseData: {
-      user: UserInfo;
-      response: string;
-      creditAchieved: number;
-      submittedAt: string;
-    }[];
-    maxCredit: number;
-  };
+  const { answerId, activityName, responseData, maxCredit } =
+    useLoaderData() as {
+      answerId: string;
+      activityName: string;
+      responseData: {
+        user: UserInfo;
+        response: string;
+        creditAchieved: number;
+        submittedAt: string;
+      }[];
+      maxCredit: number;
+    };
 
   useEffect(() => {
     document.title = `${activityName} - Doenet`;
   }, [activityName]);
 
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [responses, setResponses] = useState<React.JSX.Element[]>([]);
 

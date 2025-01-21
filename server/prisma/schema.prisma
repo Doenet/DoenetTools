@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextIndex"]
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -16,7 +16,7 @@ model Session {
 }
 
 model content {
-  id                  Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
+  id                  Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
   ownerId             Bytes                    @db.Binary(16)
   isFolder            Boolean
   parentFolderId      Bytes?                   @db.Binary(16)
@@ -36,10 +36,12 @@ model content {
   subFolders          content[]                @relation("folderStructure")
   documents           documents[]
   license             licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  contentFeatures     contentFeatures[]
   assignmentScores    assignmentScores[]
   promotedContent     promotedContent[]
   sharedWith          contentShares[]
   classifications     contentClassifications[]
+  contentViews        contentViews[]
   librarySource       libraryActivityInfos?    @relation("librarySource")
   libraryActivity     libraryActivityInfos?    @relation("libraryActivity")
   libraryEvents       libraryEvents[]          @relation("sourceActivity")
@@ -52,7 +54,7 @@ model content {
 }
 
 model documents {
-  id                 Bytes                @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
+  id                 Bytes                @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
   activityId         Bytes                @db.Binary(16)
   source             String               @db.MediumText
   createdAt          DateTime             @default(now())
@@ -113,6 +115,15 @@ model licenseCompositions {
   @@id([composedOfCode, includedInCode])
 }
 
+model contentFeatures {
+  id          Int       @id @default(autoincrement())
+  code        String    @unique
+  term        String    @unique
+  description String
+  sortIndex   Int
+  content     content[]
+}
+
 model contributorHistory {
   docId             Bytes            @db.Binary(16)
   prevDocId         Bytes            @db.Binary(16)
@@ -139,7 +150,7 @@ model contentShares {
 }
 
 model doenetmlVersions {
-  id                 Int                @id @unique @default(autoincrement())
+  id                 Int                @id @default(autoincrement())
   displayedVersion   String             @unique
   fullVersion        String
   default            Boolean            @default(false)
@@ -183,7 +194,7 @@ model documentState {
 }
 
 model documentSubmittedResponses {
-  id                     Bytes            @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
+  id                     Int              @id @default(autoincrement())
   activityId             Bytes            @db.Binary(16)
   docId                  Bytes            @db.Binary(16)
   docVersionNum          Int
@@ -203,8 +214,18 @@ model documentSubmittedResponses {
   @@index([userId])
 }
 
+model contentViews {
+  id         Int      @id @default(autoincrement())
+  activityId Bytes    @db.Binary(16)
+  date       DateTime @default(dbgenerated("(curdate())")) @db.Date
+  userId     Bytes    @db.Binary(16)
+  activity   content  @relation(fields: [activityId], references: [id])
+
+  @@unique([date, activityId, userId])
+}
+
 model users {
-  userId                     Bytes                        @id @default(dbgenerated("(uuid_to_bin(uuid(), 1))")) @db.Binary(16)
+  userId                     Bytes                        @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
   email                      String                       @unique
   firstNames                 String?
   lastNames                  String
@@ -223,7 +244,7 @@ model users {
 }
 
 model promotedContentGroups {
-  promotedGroupId   Int               @id @default(autoincrement())
+  id                Int               @id @default(autoincrement())
   groupName         String            @unique
   currentlyFeatured Boolean           @default(false)
   homepage          Boolean           @default(false)
@@ -236,7 +257,7 @@ model promotedContent {
   promotedGroupId Int
   sortIndex       BigInt
   activity        content               @relation(fields: [activityId], references: [id])
-  promotedGroup   promotedContentGroups @relation(fields: [promotedGroupId], references: [promotedGroupId])
+  promotedGroup   promotedContentGroups @relation(fields: [promotedGroupId], references: [id])
 
   @@id([activityId, promotedGroupId])
 }
@@ -251,45 +272,66 @@ model contentClassifications {
 }
 
 model classificationSystems {
-  id                     Int                        @id @default(autoincrement())
-  name                   String                     @unique
-  categoryLabel          String
-  subCategoryLabel       String
-  classificationCategory classificationCategories[]
+  id                      Int                        @id @default(autoincrement())
+  name                    String                     @unique
+  shortName               String                     @unique
+  categoryLabel           String
+  subCategoryLabel        String
+  descriptionLabel        String
+  sortIndex               Int
+  type                    String
+  categoriesInDescription Boolean                    @default(false)
+  categories              classificationCategories[]
+
+  @@fulltext([name])
 }
 
 model classificationCategories {
-  id                        Int                           @id @default(autoincrement())
-  category                  String
-  systemId                  Int
-  system                    classificationSystems         @relation(fields: [systemId], references: [id])
-  classificationSubCategory classificationSubCategories[]
+  id            Int                           @id @default(autoincrement())
+  category      String
+  systemId      Int
+  sortIndex     Int
+  system        classificationSystems         @relation(fields: [systemId], references: [id])
+  subCategories classificationSubCategories[]
 
   @@unique([category, systemId])
   @@fulltext([category])
 }
 
 model classificationSubCategories {
-  id              Int                      @id @default(autoincrement())
-  categoryId      Int
-  subCategory     String                   @db.VarChar(255)
-  category        classificationCategories @relation(fields: [categoryId], references: [id])
-  classifications classifications[]
+  id           Int                          @id @default(autoincrement())
+  categoryId   Int
+  subCategory  String                       @db.Text
+  sortIndex    Int
+  category     classificationCategories     @relation(fields: [categoryId], references: [id])
+  descriptions classificationDescriptions[]
 
-  @@unique([subCategory, categoryId])
+  @@unique([subCategory(length: 200), categoryId])
   @@fulltext([subCategory])
 }
 
+model classificationDescriptions {
+  id               Int                         @id @default(autoincrement())
+  subCategoryId    Int
+  classificationId Int
+  description      String                      @db.Text
+  sortIndex        Int
+  isPrimary        Boolean                     @default(true)
+  subCategory      classificationSubCategories @relation(fields: [subCategoryId], references: [id])
+  classification   classifications             @relation(fields: [classificationId], references: [id])
+
+  @@unique([classificationId, subCategoryId])
+  @@unique([description(length: 200), subCategoryId])
+  @@fulltext([description])
+}
+
 model classifications {
-  id                     Int                         @id @default(autoincrement())
-  subCategoryId          Int
+  id                     Int                          @id @default(autoincrement())
   code                   String
-  description            String                      @db.Text
-  subCategory            classificationSubCategories @relation(fields: [subCategoryId], references: [id])
+  descriptions           classificationDescriptions[]
   contentClassifications contentClassifications[]
 
-  @@unique([code, subCategoryId])
-  @@fulltext([code, description])
+  @@fulltext([code])
 }
 
 model libraryActivityInfos {
@@ -319,7 +361,7 @@ model libraryEvents {
   userId            Bytes            @db.Binary(16)
   user              users            @relation(fields: [userId], references: [userId])
   sourceActivity    content          @relation(name: "sourceActivity", fields: [sourceActivityId], references: [id])
-  libraryActivity   content?          @relation(name: "libraryActivity", fields: [libraryActivityId], references: [id])
+  libraryActivity   content?         @relation(name: "libraryActivity", fields: [libraryActivityId], references: [id])
 }
 
 enum LibraryEventType {

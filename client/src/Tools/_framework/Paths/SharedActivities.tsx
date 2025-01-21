@@ -1,19 +1,17 @@
 import {
   Box,
-  Icon,
-  Text,
   Flex,
-  Wrap,
   Heading,
   Tooltip,
   List,
   Spacer,
+  MenuItem,
+  useDisclosure,
 } from "@chakra-ui/react";
-import React, { useEffect } from "react";
-import { useLoaderData, useFetcher, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLoaderData, useFetcher, Link } from "react-router";
 
-import { RiEmotionSadLine } from "react-icons/ri";
-import ContentCard from "../../../Widgets/ContentCard";
+import { CardContent } from "../../../Widgets/Card";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
 import { ContentStructure } from "../../../_utils/types";
@@ -21,22 +19,44 @@ import {
   DisplayLicenseItem,
   SmallLicenseBadges,
 } from "../../../Widgets/Licenses";
+import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
+import CardList from "../../../Widgets/CardList";
+import {
+  ToggleViewButtonGroup,
+  toggleViewButtonGroupActions,
+} from "../ToolPanels/ToggleViewButtonGroup";
+
+export async function action({ request }) {
+  const formData = await request.formData();
+  const formObj = Object.fromEntries(formData);
+
+  const resultTLV = await toggleViewButtonGroupActions({ formObj });
+  if (resultTLV) {
+    return resultTLV;
+  }
+
+  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
+}
 
 export async function loader({ params }) {
   const { data } = await axios.get(
     `/api/getSharedFolderContent/${params.ownerId}/${params.folderId ?? ""}`,
   );
 
+  const prefData = await axios.get(`/api/getPreferredFolderView`);
+  const listViewPref = !prefData.data.cardView;
+
   return {
     content: data.content,
     ownerId: params.ownerId,
     owner: data.owner,
     folder: data.folder,
+    listViewPref,
   };
 }
 
 export function SharedActivities() {
-  let { content, ownerId, owner, folder } = useLoaderData() as {
+  const { content, ownerId, owner, folder, listViewPref } = useLoaderData() as {
     content: ContentStructure[];
     ownerId: string;
     owner: {
@@ -44,7 +64,10 @@ export function SharedActivities() {
       lastNames: string;
     };
     folder: ContentStructure | null;
+    listViewPref: boolean;
   };
+
+  const [listView, setListView] = useState(listViewPref);
 
   useEffect(() => {
     document.title = folder
@@ -54,27 +77,53 @@ export function SharedActivities() {
 
   const fetcher = useFetcher();
 
-  let headingText = folder ? (
+  const [infoContentId, setInfoContentId] = useState<string | null>(null);
+
+  const {
+    isOpen: infoIsOpen,
+    onOpen: infoOnOpen,
+    onClose: infoOnClose,
+  } = useDisclosure();
+
+  let contentData: ContentStructure | undefined;
+  if (infoContentId) {
+    const index = content.findIndex((obj) => obj.id == infoContentId);
+    if (index != -1) {
+      contentData = content[index];
+    } else {
+      //Throw error not found
+    }
+  }
+
+  const infoDrawer =
+    contentData && infoContentId ? (
+      <ContentInfoDrawer
+        isOpen={infoIsOpen}
+        onClose={infoOnClose}
+        contentData={contentData}
+      />
+    ) : null;
+
+  const headingText = folder ? (
     <>Folder: {folder.name}</>
   ) : (
     `Shared Activities of ${createFullName(owner)}`
   );
 
-  return (
-    <>
-      <Box
-        backgroundColor="#fff"
-        color="#000"
-        height="80px"
-        width="100%"
-        textAlign="center"
-      >
-        <Tooltip label={headingText}>
-          <Heading as="h2" size="lg" paddingTop=".5em" noOfLines={1}>
-            {headingText}
-          </Heading>
-        </Tooltip>
-      </Box>
+  const heading = (
+    <Box
+      backgroundColor="#fff"
+      color="#000"
+      height="80px"
+      width="100%"
+      textAlign="center"
+    >
+      <Tooltip label={headingText}>
+        <Heading as="h2" size="lg" paddingTop=".5em" noOfLines={1}>
+          {headingText}
+        </Heading>
+      </Tooltip>
+
       {folder ? (
         <Flex
           width="100%"
@@ -82,10 +131,18 @@ export function SharedActivities() {
           paddingRight="15px"
           paddingBottom="5px"
           boxSizing="border-box"
-          marginTop="-30px"
+          marginTop="-45px"
           height="40px"
-          alignItems="center"
         >
+          <Spacer />
+          {folder.license ? (
+            <SmallLicenseBadges license={folder.license} />
+          ) : null}
+        </Flex>
+      ) : null}
+
+      <Flex marginRight=".5em" alignItems="center" paddingLeft="15px">
+        {folder ? (
           <Link
             to={`/sharedActivities/${ownerId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
             style={{
@@ -98,59 +155,71 @@ export function SharedActivities() {
               ? folder.parentFolder.name
               : `Shared Activities of ${createFullName(owner)}`}
           </Link>
-          <Spacer />
-          {folder.license ? (
-            <SmallLicenseBadges license={folder.license} />
-          ) : null}
-        </Flex>
-      ) : null}
+        ) : null}
+        <Spacer />
+        <ToggleViewButtonGroup
+          listView={listView}
+          setListView={setListView}
+          fetcher={fetcher}
+        />
+      </Flex>
+    </Box>
+  );
+
+  const cardContent: CardContent[] = content.map((activity) => {
+    const contentType = activity.isFolder ? "Folder" : "Activity";
+
+    const menuItems = (
+      <MenuItem
+        data-test={`${contentType} Information`}
+        onClick={() => {
+          setInfoContentId(activity.id);
+          infoOnOpen();
+        }}
+      >
+        {contentType} information
+      </MenuItem>
+    );
+
+    return {
+      ...activity,
+      title: activity.name,
+      cardLink: activity.isFolder
+        ? `/sharedActivities/${activity.ownerId}/${activity.id}`
+        : `/activityViewer/${activity.id}`,
+      cardType: activity.isFolder ? "folder" : "activity",
+      menuItems,
+    };
+  });
+
+  const mainPanel = (
+    <CardList
+      showOwnerName={false}
+      showAssignmentStatus={false}
+      showPublicStatus={false}
+      showActivityFeatures={true}
+      emptyMessage={"No Activities Yet"}
+      listView={listView}
+      content={cardContent}
+    />
+  );
+
+  return (
+    <>
+      {infoDrawer}
+      {heading}
       <Flex
         data-test="Shared Activities"
-        padding="10px"
+        padding=".5em 10px"
+        margin="0"
         width="100%"
-        margin="0px"
-        justifyContent="center"
-        background="var(--lightBlue)"
+        background={
+          listView && content.length > 0 ? "white" : "var(--lightBlue)"
+        }
         minHeight="calc(80vh - 130px)"
+        flexDirection="column"
       >
-        <Wrap p="10px" overflow="visible">
-          {content.length < 1 ? (
-            <Flex
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-              alignContent="center"
-              minHeight={200}
-              background="doenet.canvas"
-              padding={20}
-              width="100%"
-              backgroundColor="transparent"
-            >
-              <Icon fontSize="48pt" as={RiEmotionSadLine} />
-              <Text fontSize="36pt">No Activities Yet</Text>
-            </Flex>
-          ) : (
-            <>
-              {content.map((item) => {
-                return (
-                  <ContentCard
-                    key={`Card${item.id}`}
-                    {...item}
-                    title={item.name}
-                    ownerName={createFullName(owner)}
-                    showPublicStatus={false}
-                    showAssignmentStatus={false}
-                    cardLink={
-                      item.isFolder
-                        ? `/sharedActivities/${item.ownerId}/${item.id}`
-                        : `/activityViewer/${item.id}`
-                    }
-                  />
-                );
-              })}
-            </>
-          )}
-        </Wrap>
+        {mainPanel}
       </Flex>
       <Box
         background="gray"

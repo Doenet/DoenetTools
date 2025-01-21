@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import {
   Button,
   Center,
@@ -22,9 +22,9 @@ import {
   Hide,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
-import { BsGithub, BsDiscord } from "react-icons/bs";
+import { BsDiscord } from "react-icons/bs";
 import { Outlet, useLoaderData } from "react-router";
-import { NavLink } from "react-router-dom";
+import { NavLink } from "react-router";
 import RouterLogo from "../RouterLogo";
 import { ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import axios from "axios";
@@ -53,7 +53,7 @@ function NavLinkTab({ to, children, dataTest }) {
   // TODO: use end only when path is "/"
   return (
     <NavLink to={to} end data-test={dataTest}>
-      {({ isActive, isPending }) => {
+      {({ isActive }) => {
         // let spinner = null;
         // if (isPending) {
         //   spinner = <Spinner size="sm" />;
@@ -90,7 +90,7 @@ function NavLinkDropdownTab({ to, children, dataTest }) {
   // TODO: use end only when path is "/"
   return (
     <NavLink to={to} end data-test={dataTest}>
-      {({ isActive, isPending }) => {
+      {({ isActive }) => {
         // let spinner = null;
         // if (isPending) {
         //   spinner = <Spinner size="sm" />;
@@ -177,11 +177,8 @@ export function SiteHeader() {
                   <NavLinkTab to="/" dataTest="Home">
                     Home
                   </NavLinkTab>
-                  <NavLinkTab to="library" dataTest="Library">
-                    Library
-                  </NavLinkTab>
-                  <NavLinkTab to="community" dataTest="Community">
-                    Community
+                  <NavLinkTab to="explore" dataTest="Explore">
+                    Explore
                   </NavLinkTab>
                   {!user || user.isAnonymous ? (
                     <NavLinkTab to="code" dataTest="Class Code">
@@ -293,11 +290,8 @@ export function SiteHeader() {
                         <NavLinkDropdownTab to="/" dataTest="Home">
                           Home
                         </NavLinkDropdownTab>
-                        <NavLinkDropdownTab to="library" dataTest="Library">
-                          Library
-                        </NavLinkDropdownTab>
-                        <NavLinkDropdownTab to="community" dataTest="Community">
-                          Community
+                        <NavLinkDropdownTab to="explore" dataTest="Explore">
+                          Explore
                         </NavLinkDropdownTab>
                         {!user || user.isAnonymous ? (
                           <NavLinkDropdownTab to="code" dataTest="Class Code">

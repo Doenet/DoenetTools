@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Form } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Form } from "react-router";
 import { redirect, useLoaderData } from "react-router";
 import {
   Box,
@@ -12,7 +12,6 @@ import {
 } from "@chakra-ui/react";
 
 export async function action({
-  params,
   request,
   formData,
 }: {
@@ -24,7 +23,7 @@ export async function action({
     formData = await request.formData();
   }
 
-  let formObj = Object.fromEntries(formData);
+  const formObj = Object.fromEntries(formData);
 
   if (formObj._action == "submit code") {
     let code: string = formObj.classCode.trim();
@@ -50,7 +49,7 @@ export function EnterClassCode() {
     document.title = `Enter class code - Doenet`;
   }, []);
 
-  let [classCode, setClassCode] = useState(invalidClassCode);
+  const [classCode, setClassCode] = useState(invalidClassCode);
   const haveInvalidClassCode = Boolean(invalidClassCode);
 
   return (

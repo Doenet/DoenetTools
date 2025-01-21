@@ -15,7 +15,7 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import { FetcherWithComponents } from "react-router-dom";
+import { FetcherWithComponents } from "react-router";
 import {
   generalContentActions,
   GeneralContentControls,
@@ -24,29 +24,32 @@ import {
   supportFilesActions,
   SupportFilesControls,
 } from "./SupportFilesControls";
-import { ContentStructure, DoenetmlVersion } from "../../../_utils/types";
+import {
+  ContentFeature,
+  ContentStructure,
+  DoenetmlVersion,
+} from "../../../_utils/types";
 import {
   ClassificationSettings,
   classificationSettingsActions,
 } from "./ClassificationSettings";
-import axios from "axios";
 
 export async function contentSettingsActions({
   formObj,
 }: {
   [k: string]: any;
 }) {
-  let result2 = await generalContentActions({ formObj });
+  const result2 = await generalContentActions({ formObj });
   if (result2) {
     return result2;
   }
 
-  let result3 = await classificationSettingsActions({ formObj });
+  const result3 = await classificationSettingsActions({ formObj });
   if (result3) {
     return result3;
   }
 
-  let result4 = await supportFilesActions({ formObj });
+  const result4 = await supportFilesActions({ formObj });
   if (result4) {
     return result4;
   }
@@ -58,9 +61,9 @@ export function ContentSettingsDrawer({
   isOpen,
   onClose,
   finalFocusRef,
-  id,
   contentData,
   allDoenetmlVersions,
+  availableFeatures,
   supportingFileData,
   fetcher,
   displayTab = "general",
@@ -68,9 +71,9 @@ export function ContentSettingsDrawer({
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  id: string;
   contentData: ContentStructure;
   allDoenetmlVersions: DoenetmlVersion[];
+  availableFeatures: ContentFeature[];
   supportingFileData?: any;
   fetcher: FetcherWithComponents<any>;
   displayTab?: "general" | "files";
@@ -103,7 +106,7 @@ export function ContentSettingsDrawer({
       placement="right"
       onClose={onClose}
       finalFocusRef={finalFocusRef}
-      size="lg"
+      size="xl"
     >
       <DrawerOverlay />
       <DrawerContent>
@@ -117,8 +120,12 @@ export function ContentSettingsDrawer({
           </Tooltip>
         </DrawerHeader>
 
-        <DrawerBody>
-          <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)}>
+        <DrawerBody overflowY="hidden" paddingRight={[3, 6]}>
+          <Tabs
+            index={tabIndex}
+            onChange={(index) => setTabIndex(index)}
+            overflowY="hidden"
+          >
             <TabList>
               <Tab data-test="General Tab">General</Tab>
 
@@ -131,21 +138,25 @@ export function ContentSettingsDrawer({
                 <Tab data-test="Files Tab">Support Files</Tab>
               ) : null}
             </TabList>
-            <Box overflowY="auto" height="calc(100vh - 130px)">
-              <TabPanels>
-                <TabPanel>
+            <Box height="calc(100vh - 130px)">
+              <TabPanels height="100%">
+                <TabPanel overflowY="auto" height="100%">
                   <GeneralContentControls
                     fetcher={fetcher}
-                    id={id}
                     contentData={contentData}
                     allDoenetmlVersions={allDoenetmlVersions}
+                    availableFeatures={availableFeatures}
                   />
                 </TabPanel>
                 {!contentData.isFolder ? (
-                  <TabPanel>
+                  <TabPanel
+                    overflowY="hidden"
+                    height="100%"
+                    padding={0}
+                    paddingTop={4}
+                  >
                     <ClassificationSettings
                       fetcher={fetcher}
-                      id={id}
                       contentData={contentData}
                     />
                   </TabPanel>
@@ -154,7 +165,7 @@ export function ContentSettingsDrawer({
                   <TabPanel>
                     <SupportFilesControls
                       fetcher={fetcher}
-                      activityId={id}
+                      activityId={contentData.id}
                       supportingFileData={supportingFileData}
                     />
                   </TabPanel>

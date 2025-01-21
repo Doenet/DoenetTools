@@ -3,19 +3,17 @@ import { License } from "../_utils/types";
 import {
   HStack,
   Image,
-  ListIcon,
   ListItem,
   Text,
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
-import { MdCircle } from "react-icons/md";
+import { Link } from "react-router";
 
 export function SmallLicenseBadges({ license }: { license: License }) {
   if (license.isComposition) {
     return (
-      <VStack spacing={1}>
+      <VStack spacing={1} minWidth="80px">
         {license.composedOf.map((comp) => (
           <DisplaySmallLicenseBadge licenseItem={comp} key={comp.code} />
         ))}
@@ -38,7 +36,7 @@ function DisplaySmallLicenseBadge({
   };
 }) {
   let badge: React.JSX.Element | null = null;
-  let imageURL = licenseItem.smallImageURL ?? licenseItem.imageURL;
+  const imageURL = licenseItem.smallImageURL ?? licenseItem.imageURL;
   if (imageURL) {
     badge = (
       <Tooltip
@@ -104,10 +102,7 @@ export function DisplayLicenseItem({
 
   return (
     <ListItem>
-      <HStack>
-        <ListIcon as={MdCircle} margin="0px" />
-        {item}
-      </HStack>
+      <HStack>{item}</HStack>
     </ListItem>
   );
 }

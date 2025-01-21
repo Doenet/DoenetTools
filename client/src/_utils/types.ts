@@ -37,26 +37,71 @@ export type UserInfo = {
   firstNames: string | null;
   lastNames: string;
   email: string;
+  numLibrary?: number;
+  numCommunity?: number;
+};
+
+export type ContentFeature = {
+  id: number;
+  code: string;
+  description: string;
+  term: string;
 };
 
 export type ContentClassification = {
   id: number;
   code: string;
-  description: string;
-  subCategory: {
-    id: number;
-    subCategory: string;
-    category: {
+  descriptions: {
+    description: string;
+    subCategory: {
       id: number;
-      category: string;
-      system: {
+      subCategory: string;
+      sortIndex: number;
+      category: {
         id: number;
-        name: string;
-        categoryLabel: string;
-        subCategoryLabel: string;
+        category: string;
+        system: {
+          id: number;
+          name: string;
+          shortName: string;
+          categoryLabel: string;
+          subCategoryLabel: string;
+          descriptionLabel: string;
+          categoriesInDescription: boolean;
+          type: string;
+        };
       };
     };
+  }[];
+};
+
+export type PartialContentClassification = {
+  classification?: {
+    id: number;
+    code: string;
+    descriptionId: number;
+    description: string;
   };
+  subCategory?: {
+    id: number;
+    subCategory: string;
+  };
+  category?: {
+    id: number;
+    category: string;
+  };
+  system?: {
+    id: number;
+    name: string;
+    shortName: string;
+    categoryLabel: string;
+    subCategoryLabel: string;
+    descriptionLabel: string;
+    type?: string;
+    categoriesInDescription: boolean;
+  };
+  numLibrary?: number;
+  numCommunity?: number;
 };
 
 export type ContentStructure = {
@@ -70,6 +115,13 @@ export type ContentStructure = {
   classCode: string | null;
   codeValidUntil: string | null;
   isPublic: boolean;
+  contentFeatures: {
+    id: number;
+    code: string;
+    term: string;
+    description: string;
+    sortIndex: number;
+  }[];
   isShared: boolean;
   sharedWith: UserInfo[];
   license: License | null;
@@ -95,7 +147,7 @@ export type DocHistoryItem = {
   docId: string;
   prevDocId: string;
   prevDocVersionNum: number;
-  withLicenseCode: string | null;
+  withLicenseCode: LicenseCode | null;
   timestampDoc: DateTime;
   timestampPrevDoc: DateTime;
   prevActivityId: string;
@@ -109,7 +161,7 @@ export type DocRemixItem = {
   docId: string;
   prevDocId: string;
   prevDocVersionNum: number;
-  withLicenseCode: string | null;
+  withLicenseCode: LicenseCode | null;
   isDirect: boolean;
   timestampDoc: DateTime;
   timestampPrevDoc: DateTime;
@@ -118,9 +170,10 @@ export type DocRemixItem = {
   owner: UserInfo;
 };
 
-export type ClassificationSystemTree = {
+export type ClassificationCategoryTree = {
   id: number;
   name: string;
+  type: string;
   categoryLabel: string;
   subCategoryLabel: string;
   categories: {

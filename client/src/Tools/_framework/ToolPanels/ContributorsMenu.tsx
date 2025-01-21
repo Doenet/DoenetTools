@@ -11,8 +11,9 @@ import {
   Text,
   Link as ChakraLink,
   Tooltip,
+  HStack,
 } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { Link as ReactRouterLink } from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { ContentStructure, DocHistoryItem } from "../../../_utils/types";
 
@@ -27,7 +28,7 @@ export default function ContributorsMenu({
     return null;
   }
 
-  let byLine = (
+  const byLine = (
     <>
       by{" "}
       <Tooltip
@@ -59,7 +60,7 @@ export default function ContributorsMenu({
             to={`/activityViewer/${contributorHistory[0].prevActivityId}`}
             aria-label={`Go to ${contributorHistory[0].prevActivityName}`}
           >
-            {contributorHistory[0].prevActivityName} by
+            {contributorHistory[0].prevActivityName} by{" "}
             {createFullName(contributorHistory[0].prevOwner)}
           </ChakraLink>
         </Tooltip>
@@ -122,12 +123,15 @@ export default function ContributorsMenu({
                 {avatars[0]}{" "}
               </ChakraLink>
             </Tooltip>
-            <Text cursor="default">
-              {activity.name} by {createFullName(activity.owner)}
-            </Text>
+            <HStack cursor="default">
+              <Text noOfLines={1} maxWidth="400px">
+                {activity.name}
+              </Text>{" "}
+              <Text>by {createFullName(activity.owner)}</Text>
+            </HStack>
           </MenuItem>
           {contributorHistory.map((contrib_hist, i) => {
-            let menuText = `${contrib_hist.prevActivityName} by ${createFullName(contrib_hist.prevOwner)}`;
+            const menuText = `${contrib_hist.prevActivityName} by ${createFullName(contrib_hist.prevOwner)}`;
             const activityRef = `/activityViewer/${contrib_hist.prevActivityId}`;
             const activityLabel = `Go to ${contrib_hist.prevActivityName}`;
             const userRef = `/sharedActivities/${contrib_hist.prevOwner.userId}`;
