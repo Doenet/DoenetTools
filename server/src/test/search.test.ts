@@ -352,25 +352,36 @@ test("searchSharedContent, document source is more relevant than classification"
     licenseCode: "CCDUAL",
   });
 
-  // create a third activity, in case this is the first test run on a reset database,
-  // just to make sure `banana${code}` is a relevant search term,
-  // i.e., it appears in fewer than half the records
+  // create a bunch more activities, in case this is the first test run on a reset database,
+  // to make sure `banana${code}` is a sufficiently relevant search term
+  await createActivity(ownerId, null);
+  await createActivity(ownerId, null);
+  await createActivity(ownerId, null);
   await createActivity(ownerId, null);
 
-  const { classificationIdA1A, classificationIdA1B, classificationIdA2A } =
-    await createTestClassifications({
-      word: "grape",
-      code,
-    });
+  const {
+    classificationIdA1A,
+    classificationIdA1B,
+    classificationIdA2A,
+    classificationIdA2B,
+    classificationIdB1A,
+    classificationIdB1B,
+    classificationIdB2A,
+    classificationIdB2B,
+  } = await createTestClassifications({
+    word: "grape",
+    code,
+  });
 
   await addClassification(activity2Id, classificationIdA1A, ownerId);
-
   await addClassification(activity2Id, classificationIdA1B, ownerId);
-
   await addClassification(activity2Id, classificationIdA2A, ownerId);
+  await addClassification(activity2Id, classificationIdA2B, ownerId);
+  await addClassification(activity2Id, classificationIdB1A, ownerId);
+  await addClassification(activity2Id, classificationIdB1B, ownerId);
+  await addClassification(activity2Id, classificationIdB2A, ownerId);
+  await addClassification(activity2Id, classificationIdB2B, ownerId);
 
-  // First make sure irrelevant classifications don't help relevance
-  // (as they did when summed over records rather than taking average)
   let results = await searchSharedContent({
     query: `banana${code} muffin${code}`,
     loggedInUserId: userId,
@@ -381,7 +392,7 @@ test("searchSharedContent, document source is more relevant than classification"
 
   // Even adding in three matching classifications doesn't put the match in first
   results = await searchSharedContent({
-    query: `grapeA1A${code} grapeA1B${code} grapeA2A${code} banana${code} muffin${code}`,
+    query: `grapeA1A${code} banana${code} muffin${code}`,
     loggedInUserId: userId,
   });
 
@@ -391,7 +402,7 @@ test("searchSharedContent, document source is more relevant than classification"
   // the classifications do put second activity in first place if don't include
   // document content from the first document
   results = await searchSharedContent({
-    query: `grapeA1A${code} grapeA1B${code} grapeA2A${code} muffin${code}`,
+    query: `grapeA1A${code} muffin${code}`,
     loggedInUserId: userId,
   });
 
