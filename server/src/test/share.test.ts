@@ -1091,7 +1091,7 @@ test("get licenses", async () => {
   const cc_by_sa = await getLicense("CCBYSA");
   expect(cc_by_sa.name).eq("Creative Commons Attribution-ShareAlike 4.0");
   expect(cc_by_sa.imageURL).eq("/creative_commons_by_sa.png");
-  expect(cc_by_sa.smallImageURL).eq("/creative_commons_by_sa_small.png");
+  expect(cc_by_sa.smallImageURL).eq("/by-sa-sm.png");
   expect(cc_by_sa.licenseURL).eq(
     "https://creativecommons.org/licenses/by-sa/4.0/",
   );
@@ -1101,7 +1101,7 @@ test("get licenses", async () => {
     "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
   );
   expect(cc_by_nc_sa.imageURL).eq("/creative_commons_by_nc_sa.png");
-  expect(cc_by_nc_sa.smallImageURL).eq("/creative_commons_by_nc_sa_small.png");
+  expect(cc_by_nc_sa.smallImageURL).eq("/by-nc-sa-sm.png");
   expect(cc_by_nc_sa.licenseURL).eq(
     "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   );
@@ -1115,9 +1115,7 @@ test("get licenses", async () => {
     "Creative Commons Attribution-ShareAlike 4.0",
   );
   expect(cc_dual.composedOf[0].imageURL).eq("/creative_commons_by_sa.png");
-  expect(cc_dual.composedOf[0].smallImageURL).eq(
-    "/creative_commons_by_sa_small.png",
-  );
+  expect(cc_dual.composedOf[0].smallImageURL).eq("/by-sa-sm.png");
   expect(cc_dual.composedOf[0].licenseURL).eq(
     "https://creativecommons.org/licenses/by-sa/4.0/",
   );
@@ -1125,9 +1123,7 @@ test("get licenses", async () => {
     "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
   );
   expect(cc_dual.composedOf[1].imageURL).eq("/creative_commons_by_nc_sa.png");
-  expect(cc_dual.composedOf[1].smallImageURL).eq(
-    "/creative_commons_by_nc_sa_small.png",
-  );
+  expect(cc_dual.composedOf[1].smallImageURL).eq("/by-nc-sa-sm.png");
   expect(cc_dual.composedOf[1].licenseURL).eq(
     "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   );

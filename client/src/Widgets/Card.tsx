@@ -19,11 +19,12 @@ import {
   HStack,
   Spacer,
   Center,
+  Show,
 } from "@chakra-ui/react";
 import { GoKebabVertical } from "react-icons/go";
 import { Link as ReactRouterLink, useFetcher } from "react-router";
 import axios from "axios";
-import { AssignmentStatus } from "../_utils/types";
+import { AssignmentStatus, License } from "../_utils/types";
 import { FaFolder } from "react-icons/fa";
 import { RiDraftFill } from "react-icons/ri";
 
@@ -31,6 +32,7 @@ import { MdAssignment } from "react-icons/md";
 import { BsPeople } from "react-icons/bs";
 import { IconType } from "react-icons/lib";
 import { activityFeatureIcons } from "../_utils/activity";
+import { SmallLicenseBadges } from "./Licenses";
 
 export type CardContent = {
   cardType: "activity" | "folder" | "author";
@@ -52,6 +54,7 @@ export type CardContent = {
   menuItems?: ReactElement;
   closeTime?: string;
   imagePath?: string | null;
+  license?: License | null;
 };
 
 export async function cardActions({ formObj }: { [k: string]: any }) {
@@ -456,6 +459,18 @@ export default function Card({
       activityWidth += 20;
     }
 
+    const licenseBadges =
+      cardContent.license && (cardContent.isPublic || cardContent.isShared) ? (
+        <Show above="xl">
+          <Box height={cardHeight} alignContent="center" marginRight="10px">
+            <SmallLicenseBadges
+              license={cardContent.license}
+              suppressLink={true}
+            />
+          </Box>
+        </Show>
+      ) : null;
+
     card = (
       <ChakraCard
         width={cardWidth}
@@ -513,6 +528,7 @@ export default function Card({
                   {assignmentStatusDisplay}
                   {ownerNameWithAvatar}
                 </Box>
+                {licenseBadges}
               </Flex>
             </ChakraLink>
             {menuDisplay}

@@ -91,7 +91,7 @@ async function main() {
       description:
         "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, even for commercial purposes. If others remix, adapt, or build upon the material, they must license the modified material under identical terms.",
       imageURL: "/creative_commons_by_sa.png",
-      smallImageURL: "/creative_commons_by_sa_small.png",
+      smallImageURL: "/by-sa-sm.png",
       licenseURL: "https://creativecommons.org/licenses/by-sa/4.0/",
       sortIndex: 2,
     },
@@ -101,7 +101,7 @@ async function main() {
       description:
         "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, even for commercial purposes. If others remix, adapt, or build upon the material, they must license the modified material under identical terms.",
       imageURL: "/creative_commons_by_sa.png",
-      smallImageURL: "/creative_commons_by_sa_small.png",
+      smallImageURL: "/by-sa-sm.png",
       licenseURL: "https://creativecommons.org/licenses/by-sa/4.0/",
       sortIndex: 2,
     },
@@ -114,7 +114,7 @@ async function main() {
       description:
         "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, for noncommercial purposes only. If others modify or adapt the material, they must license the modified material under identical terms.",
       imageURL: "/creative_commons_by_nc_sa.png",
-      smallImageURL: "/creative_commons_by_nc_sa_small.png",
+      smallImageURL: "/by-nc-sa-sm.png",
       licenseURL: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       sortIndex: 3,
     },
@@ -124,7 +124,7 @@ async function main() {
       description:
         "This license requires that reusers give credit to the creator. It allows reusers to distribute, remix, adapt, and build upon the material in any medium or format, for noncommercial purposes only. If others modify or adapt the material, they must license the modified material under identical terms.",
       imageURL: "/creative_commons_by_nc_sa.png",
-      smallImageURL: "/creative_commons_by_nc_sa_small.png",
+      smallImageURL: "/by-nc-sa-sm.png",
       licenseURL: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       sortIndex: 3,
     },

@@ -258,7 +258,17 @@ export function Explore() {
     minHeight?: string | { base: string; lg: string },
   ) {
     const cardContent: CardContent[] = matches.map((itemObj) => {
-      const { id, imagePath, name, owner, isFolder, contentFeatures } = itemObj;
+      const {
+        id,
+        imagePath,
+        name,
+        owner,
+        isFolder,
+        contentFeatures,
+        license,
+        isPublic,
+        isShared,
+      } = itemObj;
       const cardLink =
         isFolder && owner != undefined
           ? `/sharedActivities/${owner.userId}/${id}`
@@ -287,6 +297,9 @@ export function Explore() {
         menuItems,
         imagePath,
         contentFeatures,
+        license,
+        isPublic,
+        isShared,
       };
     });
 
@@ -703,7 +716,7 @@ export function Explore() {
 
   const results = (
     <Tabs
-      minHeight={{ base: "calc(100vh - 188px)", lg: "calc(100vh - 133px)" }}
+      minHeight={{ base: "calc(100vh - 188px)", lg: "calc(100vh - 135px)" }}
       variant="enclosed-colored"
       index={currentTab}
       onChange={setCurrentTab}
@@ -727,13 +740,14 @@ export function Explore() {
         <TabPanel padding={0}>
           {displayMatchingContent([], {
             base: "calc(100vh - 230px)",
-            lg: "calc(100vh - 175px)",
+            lg: "calc(100vh - 177px)",
           })}
         </TabPanel>
         <TabPanel padding={0}>
           {trendingContent ? (
             <>
               <Heading
+                size="md"
                 paddingLeft="10px"
                 paddingTop="10px"
                 paddingBottom="10px"
@@ -744,6 +758,7 @@ export function Explore() {
               {displayMatchingContent(trendingContent)}
 
               <Heading
+                size="md"
                 paddingLeft="10px"
                 paddingTop="10px"
                 paddingBottom="10px"
@@ -755,7 +770,7 @@ export function Explore() {
           ) : null}
           {displayMatchingContent(content, {
             base: "calc(100vh - 230px)",
-            lg: "calc(100vh - 175px)",
+            lg: "calc(100vh - 177px)",
           })}
         </TabPanel>
         <TabPanel>{authorMatches}</TabPanel>
@@ -774,7 +789,7 @@ export function Explore() {
           width="100%"
           gridTemplateColumns="300px 1fr"
           gap="0"
-          marginTop={{ base: "0px", lg: "-55px" }}
+          marginTop={{ base: "0px", lg: "-53px" }}
         >
           <GridItem
             marginLeft="0px"
