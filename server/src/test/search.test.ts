@@ -357,20 +357,17 @@ test("searchSharedContent, document source is more relevant than classification"
   // i.e., it appears in fewer than half the records
   await createActivity(ownerId, null);
 
-  const { id: classify1Id } = (
-    await searchPossibleClassifications({ query: "K.CC.1 common core" })
-  ).find((k) => k.code === "K.CC.1")!;
-  await addClassification(activity2Id, classify1Id, ownerId);
+  const { classificationIdA1A, classificationIdA1B, classificationIdA2A } =
+    await createTestClassifications({
+      word: "grape",
+      code,
+    });
 
-  const { id: classify2Id } = (
-    await searchPossibleClassifications({ query: "K.OA.1 common core" })
-  ).find((k) => k.code === "K.OA.1")!;
-  await addClassification(activity2Id, classify2Id, ownerId);
+  await addClassification(activity2Id, classificationIdA1A, ownerId);
 
-  const { id: classify3Id } = (
-    await searchPossibleClassifications({ query: "A.SSE.3" })
-  ).find((k) => k.code === "A.SSE.3 c.")!;
-  await addClassification(activity2Id, classify3Id, ownerId);
+  await addClassification(activity2Id, classificationIdA1B, ownerId);
+
+  await addClassification(activity2Id, classificationIdA2A, ownerId);
 
   // First make sure irrelevant classifications don't help relevance
   // (as they did when summed over records rather than taking average)
@@ -382,14 +379,24 @@ test("searchSharedContent, document source is more relevant than classification"
   expect(results[0].id).eqls(activity1Id);
   expect(results[1].id).eqls(activity2Id);
 
-  // Even adding in two matching classifications doesn't put the match in first
+  // Even adding in three matching classifications doesn't put the match in first
   results = await searchSharedContent({
-    query: `K.CC.1 K.OA.1 A.SSE.3 banana${code} muffin${code}`,
+    query: `grapeA1A${code} grapeA1B${code} grapeA2A${code} banana${code} muffin${code}`,
     loggedInUserId: userId,
   });
 
   expect(results[0].id).eqls(activity1Id);
   expect(results[1].id).eqls(activity2Id);
+
+  // the classifications do put second activity in first place if don't include
+  // document content from the first document
+  results = await searchSharedContent({
+    query: `grapeA1A${code} grapeA1B${code} grapeA2A${code} muffin${code}`,
+    loggedInUserId: userId,
+  });
+
+  expect(results[0].id).eqls(activity2Id);
+  expect(results[1].id).eqls(activity1Id);
 });
 
 test("searchSharedContent, classification increases relevance", async () => {
@@ -399,19 +406,21 @@ test("searchSharedContent, classification increases relevance", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const classifyId = (
-    await searchPossibleClassifications({ query: "K.CC.3 common core" })
-  )[0].id;
-
   // unique code to distinguish content added in this test
   const code = `${Date.now()}`;
+
+  const { classificationIdA1A } = await createTestClassifications({
+    word: "grape",
+    code,
+  });
+
   const { activityId: activity1Id, docId: doc1Id } = await createActivity(
     ownerId,
     null,
   );
   await updateDoc({
     id: doc1Id,
-    source: `banana${code} grape${code}`,
+    source: `banana${code}`,
     ownerId,
   });
   await makeActivityPublic({
@@ -426,7 +435,7 @@ test("searchSharedContent, classification increases relevance", async () => {
   );
   await updateDoc({
     id: doc2Id,
-    source: `banana${code} grape${code}`,
+    source: `banana${code}`,
     ownerId,
   });
   await makeActivityPublic({
@@ -434,31 +443,33 @@ test("searchSharedContent, classification increases relevance", async () => {
     ownerId: ownerId,
     licenseCode: "CCDUAL",
   });
-  await addClassification(activity2Id, classifyId, ownerId);
+  await addClassification(activity2Id, classificationIdA1A, ownerId);
 
   let results = await searchSharedContent({
-    query: `K.CC.3 banana${code} grape${code}`,
+    query: `grapeA1A${code} banana${code}`,
+    loggedInUserId: userId,
+  });
+
+  console.log(results.slice(0, 3));
+  expect(results[0].id).eqls(activity2Id);
+  expect(results[1].id).eqls(activity1Id);
+
+  results = await searchSharedContent({
+    query: `grape${code} banana${code}`,
     loggedInUserId: userId,
   });
   expect(results[0].id).eqls(activity2Id);
   expect(results[1].id).eqls(activity1Id);
 
   results = await searchSharedContent({
-    query: `Kindergarten banana${code} grape${code}`,
+    query: `GrapeA1${code} banana${code}`,
     loggedInUserId: userId,
   });
   expect(results[0].id).eqls(activity2Id);
   expect(results[1].id).eqls(activity1Id);
 
   results = await searchSharedContent({
-    query: `cardiNALITY banana${code} grape${code}`,
-    loggedInUserId: userId,
-  });
-  expect(results[0].id).eqls(activity2Id);
-  expect(results[1].id).eqls(activity1Id);
-
-  results = await searchSharedContent({
-    query: `numeral banana${code} grape${code}`,
+    query: `GrapeA${code} banana${code}`,
     loggedInUserId: userId,
   });
   expect(results[0].id).eqls(activity2Id);
