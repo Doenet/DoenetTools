@@ -6103,59 +6103,74 @@ export async function getLibraryStatus({
   id,
   userId,
 }: {
-  id: Buffer;
-  userId: Buffer;
+  id: Uint8Array;
+  userId: Uint8Array;
 }) {
-  const isAdminOrOwner = await prisma.users.findFirst({
-    where: {
-      OR: [
-        {
-          userId,
-          isAdmin: true,
-        },
-        {
-          userId,
-          content: {
-            some: {
-              id,
-            },
-          },
-        },
-      ],
-    },
-    select: {
-      userId: true,
-    },
-  });
-
-  if (!isAdminOrOwner) {
-    return { status: "none" };
-  }
-
   const info = await prisma.libraryActivityInfos.findUnique({
     where: {
-      sourceActivityId: id,
+      sourceId: id,
     },
     select: {
       status: true,
       comments: true,
-      libraryActivityId: true,
+      activityId: true,
     },
   });
 
   if (!info) {
     return { status: "none" };
-  } else if (info.status === LibraryStatus.PUBLISHED) {
-    return {
-      status: info.status,
-      comments: info.comments,
-      publishedActivityId: info.libraryActivityId,
-    };
   } else {
-    return {
-      status: info?.status,
-      comments: info.comments,
-    };
+    const isAdmin = await prisma.users.findFirst({
+      where: {
+        userId,
+        isAdmin: true,
+      },
+      select: {
+        userId: true,
+      },
+    });
+
+    if (isAdmin) {
+      if (info.activityId) {
+        return info;
+      } else {
+        return {
+          status: info.status,
+          comments: info.comments,
+        };
+      }
+    } else {
+      const isOwner = await prisma.users.findUnique({
+        where: {
+          userId,
+          content: {
+            some: {},
+          },
+        },
+      });
+
+      if (isOwner) {
+        if (info.status === LibraryStatus.PUBLISHED) {
+          return info;
+        } else {
+          return {
+            status: info.status,
+            comments: info.comments,
+            // skip activityId
+          };
+        }
+      } else {
+        if (info.status === LibraryStatus.PUBLISHED) {
+          return {
+            status: info.status,
+            activityId: info.activityId,
+            // skip comments
+          };
+        } else {
+          return { status: "none" };
+        }
+      }
+    }
   }
 }
 
@@ -6163,25 +6178,26 @@ export async function submitLibraryRequest({
   activityId,
   ownerId,
 }: {
-  activityId: Buffer;
-  ownerId: Buffer;
+  activityId: Uint8Array;
+  ownerId: Uint8Array;
 }) {
   const isOwner = await prisma.content.findUnique({
     where: {
       id: activityId,
+      isPublic: true,
       ownerId,
     },
   });
   if (!isOwner) {
     throw new InvalidRequestError(
-      "Activity does not exist or is not owned by you.",
+      "Activity does not exist, is not public, or is not owned by you.",
     );
   }
 
   const updateLibInfo = prisma.libraryActivityInfos.upsert({
     where: {
-      sourceActivityId: activityId,
-      sourceActivity: {
+      sourceId: activityId,
+      source: {
         isPublic: true,
         isFolder: false,
         isDeleted: false,
@@ -6201,7 +6217,7 @@ export async function submitLibraryRequest({
       ownerRequested: true,
     },
     create: {
-      sourceActivityId: activityId,
+      sourceId: activityId,
       status: LibraryStatus.PENDING_REVIEW,
       comments: "",
       ownerRequested: true,
@@ -6210,7 +6226,7 @@ export async function submitLibraryRequest({
 
   const newEvent = prisma.libraryEvents.create({
     data: {
-      sourceActivityId: activityId,
+      sourceId: activityId,
       eventType: LibraryEventType.SUBMIT_REQUEST,
       dateTime: new Date(),
       comments: "",
@@ -6225,13 +6241,13 @@ export async function cancelLibraryRequest({
   activityId,
   ownerId,
 }: {
-  activityId: Buffer;
-  ownerId: Buffer;
+  activityId: Uint8Array;
+  ownerId: Uint8Array;
 }) {
   const updateLibInfo = prisma.libraryActivityInfos.update({
     where: {
-      sourceActivityId: activityId,
-      sourceActivity: {
+      sourceId: activityId,
+      source: {
         isPublic: true,
         isFolder: false,
         isDeleted: false,
@@ -6246,7 +6262,7 @@ export async function cancelLibraryRequest({
 
   const newEvent = prisma.libraryEvents.create({
     data: {
-      sourceActivityId: activityId,
+      sourceId: activityId,
       eventType: LibraryEventType.CANCEL_REQUEST,
       dateTime: new Date(),
       comments: "",
@@ -6274,21 +6290,21 @@ export async function addDraftToLibrary({
   id,
   loggedInUserId,
 }: {
-  id: Buffer;
-  loggedInUserId: Buffer;
+  id: Uint8Array;
+  loggedInUserId: Uint8Array;
 }) {
   await mustBeAdmin(loggedInUserId);
 
   // Cannot add draft if it can already be found in library
   const existingLibId = await prisma.libraryActivityInfos.findUnique({
     where: {
-      sourceActivityId: id,
+      sourceId: id,
       NOT: {
-        libraryActivityId: null,
+        activityId: null,
       },
     },
     select: {
-      libraryActivityId: true,
+      activityId: true,
     },
   });
 
@@ -6304,14 +6320,14 @@ export async function addDraftToLibrary({
 
   await prisma.libraryActivityInfos.upsert({
     where: {
-      sourceActivityId: id,
+      sourceId: id,
     },
     update: {
-      libraryActivityId: draftId,
+      activityId: draftId,
     },
     create: {
-      sourceActivityId: id,
-      libraryActivityId: draftId,
+      sourceId: id,
+      activityId: draftId,
       ownerRequested: false,
       status: LibraryStatus.PENDING_REVIEW,
     },
@@ -6319,8 +6335,8 @@ export async function addDraftToLibrary({
 
   await prisma.libraryEvents.create({
     data: {
-      sourceActivityId: id,
-      libraryActivityId: draftId,
+      sourceId: id,
+      activityId: draftId,
       dateTime: new Date(),
       eventType: LibraryEventType.ADD_DRAFT,
       userId: loggedInUserId,
@@ -6335,20 +6351,19 @@ export async function deleteDraftFromLibrary({
   draftId,
   loggedInUserId,
 }: {
-  draftId: Buffer;
-  loggedInUserId: Buffer;
+  draftId: Uint8Array;
+  loggedInUserId: Uint8Array;
 }) {
   await mustBeAdmin(loggedInUserId);
   const libraryId = await getLibraryAccountId();
-  const { sourceActivityId } =
-    await prisma.libraryActivityInfos.findUniqueOrThrow({
-      where: {
-        libraryActivityId: draftId,
-      },
-      select: {
-        sourceActivityId: true,
-      },
-    });
+  const { sourceId } = await prisma.libraryActivityInfos.findUniqueOrThrow({
+    where: {
+      activityId: draftId,
+    },
+    select: {
+      sourceId: true,
+    },
+  });
 
   const deleteDraft = prisma.content.update({
     where: {
@@ -6359,11 +6374,13 @@ export async function deleteDraftFromLibrary({
       ownerId: libraryId,
     },
     data: {
+      // soft delete activity
       isDeleted: true,
       documents: {
         updateMany: {
           where: {},
           data: {
+            // soft delete documents
             isDeleted: true,
           },
         },
@@ -6371,17 +6388,26 @@ export async function deleteDraftFromLibrary({
     },
   });
 
+  const removeLibraryIdRef = prisma.libraryActivityInfos.update({
+    where: {
+      activityId: draftId,
+    },
+    data: {
+      activityId: null,
+    },
+  });
+
   const logDeletion = prisma.libraryEvents.create({
     data: {
-      sourceActivityId,
-      libraryActivityId: draftId,
+      sourceId,
+      activityId: draftId,
       eventType: LibraryEventType.DELETE_DRAFT,
       dateTime: new Date(),
       userId: loggedInUserId,
     },
   });
 
-  await prisma.$transaction([deleteDraft, logDeletion]);
+  await prisma.$transaction([deleteDraft, removeLibraryIdRef, logDeletion]);
 }
 
 // TODO: Notify owner that their activity has been added to the library
@@ -6390,21 +6416,20 @@ export async function publishActivityToLibrary({
   loggedInUserId,
   comments,
 }: {
-  draftId: Buffer;
-  loggedInUserId: Buffer;
+  draftId: Uint8Array;
+  loggedInUserId: Uint8Array;
   comments: string;
 }) {
   await mustBeAdmin(loggedInUserId);
   const libraryId = await getLibraryAccountId();
-  const { sourceActivityId } =
-    await prisma.libraryActivityInfos.findUniqueOrThrow({
-      where: {
-        libraryActivityId: draftId,
-      },
-      select: {
-        sourceActivityId: true,
-      },
-    });
+  const { sourceId } = await prisma.libraryActivityInfos.findUniqueOrThrow({
+    where: {
+      activityId: draftId,
+    },
+    select: {
+      sourceId: true,
+    },
+  });
 
   await prisma.content.update({
     where: {
@@ -6416,21 +6441,21 @@ export async function publishActivityToLibrary({
       license: {
         isNot: null,
       },
-      libraryActivity: { status: LibraryStatus.PENDING_REVIEW, comments },
     },
     data: {
       // Publish
       isPublic: true,
       // Update status
-      // libraryActivity: {
-      //   update: {
-      //     status: LibraryStatus.PUBLISHED,
-      //   },
-      // },
+      libraryActivity: {
+        update: {
+          status: LibraryStatus.PUBLISHED,
+          comments,
+        },
+      },
       // Log publication
-      libraryEventsEdited: {
+      libraryActivityEvents: {
         create: {
-          sourceActivityId,
+          sourceId,
           eventType: LibraryEventType.PUBLISH,
           dateTime: new Date(),
           userId: loggedInUserId,
@@ -6445,20 +6470,19 @@ export async function unpublishActivityFromLibrary({
   activityId,
   loggedInUserId,
 }: {
-  activityId: Buffer;
-  loggedInUserId: Buffer;
+  activityId: Uint8Array;
+  loggedInUserId: Uint8Array;
 }) {
   await mustBeAdmin(loggedInUserId);
   const libraryId = await getLibraryAccountId();
-  const { sourceActivityId } =
-    await prisma.libraryActivityInfos.findUniqueOrThrow({
-      where: {
-        libraryActivityId: activityId,
-      },
-      select: {
-        sourceActivityId: true,
-      },
-    });
+  const { sourceId } = await prisma.libraryActivityInfos.findUniqueOrThrow({
+    where: {
+      activityId: activityId,
+    },
+    select: {
+      sourceId: true,
+    },
+  });
 
   await prisma.content.update({
     where: {
@@ -6475,12 +6499,13 @@ export async function unpublishActivityFromLibrary({
       isPublic: false,
       libraryActivity: {
         update: {
+          // TODO: should we use the pending review status here or another status?
           status: LibraryStatus.PENDING_REVIEW,
         },
       },
-      libraryEventsEdited: {
+      libraryActivityEvents: {
         create: {
-          sourceActivityId,
+          sourceId,
           eventType: LibraryEventType.UNPUBLISH,
           dateTime: new Date(),
           userId: loggedInUserId,
@@ -6492,40 +6517,90 @@ export async function unpublishActivityFromLibrary({
 
 // TODO: Notify owner that their activity needs revision before it will be accepted into the library
 export async function markLibraryRequestNeedsRevision({
-  sourceActivityId,
+  sourceId,
   comments,
   userId,
 }: {
-  sourceActivityId: Buffer;
+  sourceId: Uint8Array;
   comments: string;
-  userId: Buffer;
+  userId: Uint8Array;
 }) {
   await mustBeAdmin(userId);
 
   await prisma.content.update({
     where: {
-      id: sourceActivityId,
+      id: sourceId,
       isPublic: true,
       isFolder: false,
       isDeleted: false,
-      libraryActivity: {
+      librarySource: {
         status: LibraryStatus.PENDING_REVIEW,
         ownerRequested: true,
       },
     },
     data: {
-      libraryActivity: {
+      librarySource: {
         update: {
           status: LibraryStatus.NEEDS_REVISION,
           comments,
         },
       },
-      libraryEvents: {
+      librarySourceEvents: {
         create: {
           eventType: LibraryEventType.MARK_NEEDS_REVISION,
           dateTime: new Date(),
           userId,
           comments,
+        },
+      },
+    },
+  });
+}
+
+// TODO: Notify owner that the comments have changed
+export async function modifyCommentsOfLibraryRequest({
+  sourceId,
+  comments,
+  userId,
+}: {
+  sourceId: Uint8Array;
+  comments: string;
+  userId: Uint8Array;
+}) {
+  await mustBeAdmin(userId);
+
+  const { activityId } = await prisma.libraryActivityInfos.findUniqueOrThrow({
+    where: {
+      sourceId,
+    },
+    select: {
+      activityId: true,
+    },
+  });
+
+  await prisma.content.update({
+    where: {
+      id: sourceId,
+      isPublic: true,
+      isFolder: false,
+      isDeleted: false,
+      NOT: {
+        librarySource: null,
+      },
+    },
+    data: {
+      librarySource: {
+        update: {
+          comments,
+        },
+      },
+      librarySourceEvents: {
+        create: {
+          activityId,
+          eventType: LibraryEventType.MODIFY_COMMENTS,
+          dateTime: new Date(),
+          comments,
+          userId,
         },
       },
     },

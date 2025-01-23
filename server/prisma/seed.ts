@@ -29,7 +29,7 @@ async function main() {
     create: {
       email: "library@doenet.org",
       lastNames: "Library",
-      isLibrary: true
+      isLibrary: true,
     },
   });
 
