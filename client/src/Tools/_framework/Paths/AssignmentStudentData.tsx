@@ -127,7 +127,7 @@ export function AssignmentStudentData() {
               messageId: event.data.messageId,
               success: true,
               loadedState: true,
-              state: data.state,
+              state: JSON.parse(data.state),
             });
           } else {
             window.postMessage({

@@ -36,7 +36,7 @@ import { createTestUser } from "./utils";
 const currentDoenetmlVersion = {
   id: 2,
   displayedVersion: "0.7",
-  fullVersion: "0.7.0-alpha27",
+  fullVersion: "0.7.0-alpha30",
   default: true,
   deprecated: false,
   removed: false,
