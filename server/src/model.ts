@@ -3,6 +3,7 @@ import { cidFromText } from "./utils/cid";
 import { DateTime } from "luxon";
 import { fromUUID, isEqualUUID } from "./utils/uuid";
 import {
+  ContentType,
   ClassificationCategoryTree,
   ContentClassification,
   ContentStructure,
@@ -11,6 +12,7 @@ import {
   LicenseCode,
   PartialContentClassification,
   UserInfo,
+  NestedActivity,
 } from "./types";
 import {
   returnClassificationJoins,
@@ -155,6 +157,7 @@ export async function createActivity(
 export async function createFolder(
   ownerId: Uint8Array,
   parentFolderId: Uint8Array | null,
+  contentType: ContentType = "folder",
 ) {
   const sortIndex = await getNextSortIndexForFolder(ownerId, parentFolderId);
 
@@ -186,12 +189,34 @@ export async function createFolder(
     }
   }
 
+  let name;
+
+  switch (contentType) {
+    case "singleDoc": {
+      name = "Untitled Activity";
+      break;
+    }
+    case "select": {
+      name = "Untitled Select Activity";
+      break;
+    }
+    case "sequence": {
+      name = "Untitled Sequence Activity";
+      break;
+    }
+    case "folder": {
+      name = "Untitled Folder";
+      break;
+    }
+  }
+
   const folder = await prisma.content.create({
     data: {
       ownerId,
+      type: contentType,
       isFolder: true,
       parentFolderId,
-      name: "Untitled Folder",
+      name,
       imagePath: "/folder_default.jpg",
       isPublic,
       licenseCode,
@@ -246,7 +271,7 @@ function getNextSortIndex(lastIndex: bigint | null) {
 
 export async function deleteActivity(id: Uint8Array, ownerId: Uint8Array) {
   const deleted = await prisma.content.update({
-    where: { id, ownerId, isFolder: false },
+    where: { id, ownerId, type: { not: "folder" } },
     data: {
       isDeleted: true,
       documents: {
@@ -301,11 +326,23 @@ export async function updateContent({
   id,
   name,
   imagePath,
+  shuffle,
+  numToSelect,
+  selectByVariant,
+  paginate,
+  activityLevelAttempts,
+  itemLevelAttempts,
   ownerId,
 }: {
   id: Uint8Array;
   name?: string;
   imagePath?: string;
+  shuffle?: boolean;
+  numToSelect?: number;
+  selectByVariant?: boolean;
+  paginate?: boolean;
+  activityLevelAttempts?: boolean;
+  itemLevelAttempts?: boolean;
   ownerId: Uint8Array;
 }) {
   const updated = await prisma.content.update({
@@ -313,6 +350,12 @@ export async function updateContent({
     data: {
       name,
       imagePath,
+      shuffle,
+      numToSelect,
+      selectByVariant,
+      paginate,
+      activityLevelAttempts,
+      itemLevelAttempts,
     },
   });
 
@@ -320,6 +363,12 @@ export async function updateContent({
     id: updated.id,
     name: updated.name,
     imagePath: updated.imagePath,
+    shuffle: updated.shuffle,
+    numToSelect: updated.numToSelect,
+    selectByVariant: updated.selectByVariant,
+    paginate: updated.paginate,
+    activityLevelAttempts: updated.activityLevelAttempts,
+    itemLevelAttempts: updated.itemLevelAttempts,
   };
 }
 
@@ -931,14 +980,14 @@ export async function getActivityEditorData(
     where: {
       id: activityId,
       isDeleted: false,
-      isFolder: false,
+      type: { not: "folder" },
       OR: [
         { ownerId: loggedInUserId },
         { isPublic: true },
         { sharedWith: { some: { userId: loggedInUserId } } },
       ],
     },
-    select: { isAssigned: true, ownerId: true },
+    select: { isAssigned: true, ownerId: true, type: true },
   });
 
   if (!isEqualUUID(contentCheck.ownerId, loggedInUserId)) {
@@ -946,6 +995,7 @@ export async function getActivityEditorData(
 
     const activity: ContentStructure = {
       id: activityId,
+      type: contentCheck.type,
       name: "",
       ownerId: contentCheck.ownerId,
       imagePath: null,
@@ -956,6 +1006,12 @@ export async function getActivityEditorData(
       isShared: false,
       sharedWith: [],
       license: null,
+      numToSelect: 1,
+      selectByVariant: false,
+      shuffle: false,
+      paginate: true,
+      activityLevelAttempts: false,
+      itemLevelAttempts: false,
       contentFeatures: [],
       classifications: [],
       documents: [],
@@ -966,65 +1022,72 @@ export async function getActivityEditorData(
   }
 
   const isAssigned = contentCheck.isAssigned;
+  const availableFeatures = await getAvailableContentFeatures();
 
   let activity: ContentStructure;
 
-  // TODO: add pagination or a hard limit in the number of documents one can add to an activity
+  if (contentCheck.type === "singleDoc") {
+    const contentSelect = returnContentStructureSharedDetailsSelect({
+      includeAssignInfo: true,
+    });
 
-  const contentSelect = returnContentStructureSharedDetailsSelect({
-    includeAssignInfo: true,
-  });
-
-  if (isAssigned) {
-    // modify `contentSelect` to include assigned doenetMl and to count assignment scores
-    const documents = {
-      ...contentSelect.documents,
-      select: {
-        id: true,
-        name: true,
-        assignedVersion: {
-          select: {
-            versionNum: true,
-            source: true,
-            doenetmlVersion: true,
+    if (isAssigned) {
+      // modify `contentSelect` to include assigned doenetMl and to count assignment scores
+      const documents = {
+        ...contentSelect.documents,
+        select: {
+          id: true,
+          name: true,
+          assignedVersion: {
+            select: {
+              versionNum: true,
+              source: true,
+              doenetmlVersion: true,
+            },
           },
         },
-      },
-    };
-    const contentSelectWithAssignedVersion = {
-      ...contentSelect,
-      documents,
-      _count: { select: { assignmentScores: true } },
-    };
+      };
+      const contentSelectWithAssignedVersion = {
+        ...contentSelect,
+        documents,
+        _count: { select: { assignmentScores: true } },
+      };
 
-    const assignedActivity = await prisma.content.findUniqueOrThrow({
-      where: {
-        id: activityId,
-        isDeleted: false,
-        ownerId: loggedInUserId,
-        isFolder: false,
-      },
-      select: contentSelectWithAssignedVersion,
-    });
+      const assignedActivity = await prisma.content.findUniqueOrThrow({
+        where: {
+          id: activityId,
+          isDeleted: false,
+          ownerId: loggedInUserId,
+          isFolder: false,
+        },
+        select: contentSelectWithAssignedVersion,
+      });
 
-    activity = processContentSharedDetailsAssignedDoc(assignedActivity);
+      activity = processContentSharedDetailsAssignedDoc(assignedActivity);
+    } else {
+      const unassignedActivity = await prisma.content.findUniqueOrThrow({
+        where: {
+          id: activityId,
+          isDeleted: false,
+          ownerId: loggedInUserId,
+          isFolder: false,
+        },
+        select: contentSelect,
+      });
+
+      activity = processContentSharedDetails(unassignedActivity);
+    }
+
+    return { notMe: false, activity, availableFeatures };
   } else {
-    const unassignedActivity = await prisma.content.findUniqueOrThrow({
-      where: {
-        id: activityId,
-        isDeleted: false,
-        ownerId: loggedInUserId,
-        isFolder: false,
-      },
-      select: contentSelect,
-    });
+    // have a sequence or select activity
+    const activity: NestedActivity = await getNestedActivity(
+      activityId,
+      loggedInUserId,
+    );
 
-    activity = processContentSharedDetails(unassignedActivity);
+    return { notMe: false, activity, availableFeatures };
   }
-
-  const availableFeatures = await getAvailableContentFeatures();
-
-  return { notMe: false, activity, availableFeatures };
 }
 
 /**
@@ -1064,35 +1127,138 @@ export async function getActivityViewerData(
   activityId: Uint8Array,
   loggedInUserId: Uint8Array,
 ) {
-  const preliminaryActivity = await prisma.content.findUniqueOrThrow({
+  const { type: activityType } = await prisma.content.findUniqueOrThrow({
     where: {
       id: activityId,
       isDeleted: false,
-      isFolder: false,
+      type: { not: "folder" },
       OR: [
         { ownerId: loggedInUserId },
         { isPublic: true },
         { sharedWith: { some: { userId: loggedInUserId } } },
       ],
     },
+    select: { type: true },
+  });
+
+  if (activityType === "singleDoc") {
+    const preliminaryActivity = await prisma.content.findUniqueOrThrow({
+      where: {
+        id: activityId,
+        isDeleted: false,
+        isFolder: false,
+        OR: [
+          { ownerId: loggedInUserId },
+          { isPublic: true },
+          { sharedWith: { some: { userId: loggedInUserId } } },
+        ],
+      },
+      select: returnContentStructureFullOwnerSelect(),
+    });
+
+    const activity = processContent(preliminaryActivity, loggedInUserId);
+
+    const docHistories = await getDocumentContributorHistories({
+      docIds: activity.documents.map((doc) => doc.id),
+      loggedInUserId,
+    });
+
+    if (!isEqualUUID(loggedInUserId, activity.ownerId)) {
+      await recordActivityView(activityId, loggedInUserId);
+    }
+
+    return {
+      activityType,
+      activity,
+      docHistories,
+    };
+  } else {
+    const activity: NestedActivity = await getNestedActivity(
+      activityId,
+      loggedInUserId,
+    );
+
+    return { activityType, activity };
+  }
+}
+
+async function getNestedActivity(
+  activityId: Uint8Array<ArrayBufferLike>,
+  loggedInUserId: Uint8Array<ArrayBufferLike>,
+) {
+  // first, get an ordered list of all the content inside the `activityId` folder
+  const matches = await prisma.$queryRaw<
+    {
+      id: Uint8Array;
+      parentFolderId: Uint8Array;
+    }[]
+  >(Prisma.sql`
+    WITH RECURSIVE content_tree(id, parentFolderId, sortIndex) AS (
+    SELECT id, parentFolderId, sortIndex FROM content
+    WHERE parentFolderId = ${activityId}
+      AND (
+        ownerId = ${loggedInUserId}
+        OR isPublic = TRUE
+        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+      )
+      AND isDeleted = FALSE
+    UNION ALL
+    SELECT content.id, content.parentFolderId, content.sortIndex FROM content
+    INNER JOIN content_tree AS ft
+    ON content.parentFolderId = ft.id
+    WHERE content.isDeleted = FALSE
+      AND (
+        ownerId = ${loggedInUserId}
+        OR isPublic = TRUE
+        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+      )
+  )
+  SELECT id, parentFolderId from content_tree
+    ORDER BY
+      parentFolderId, sortIndex
+`);
+
+  // Next, get all the details on the content
+  const preliminaryList = await prisma.content.findMany({
+    where: {
+      id: { in: [activityId, ...matches.map((m) => m.id)] },
+    },
     select: returnContentStructureFullOwnerSelect(),
+    orderBy: [{ parentFolderId: "asc" }, { sortIndex: "asc" }],
   });
 
-  const activity = processContent(preliminaryActivity, loggedInUserId);
+  const idx = preliminaryList.findIndex((c) => isEqualUUID(c.id, activityId));
+  const activity: NestedActivity = {
+    type: "nested",
+    structure: processContent(preliminaryList[idx], loggedInUserId),
+    children: [],
+  };
 
-  const docHistories = await getDocumentContributorHistories({
-    docIds: activity.documents.map((doc) => doc.id),
-    loggedInUserId,
-  });
+  preliminaryList.splice(idx, 1);
 
-  if (!isEqualUUID(loggedInUserId, activity.ownerId)) {
-    await recordActivityView(activityId, loggedInUserId);
+  function findDescendants(id: Uint8Array) {
+    const children: NestedActivity[] = [];
+    for (let i = 0; i < preliminaryList.length; i++) {
+      if (isEqualUUID(preliminaryList[i].parentFolder!.id, id)) {
+        children.push({
+          type: "nested",
+          structure: processContent(preliminaryList[i], loggedInUserId),
+          children: [],
+        });
+        preliminaryList.splice(i, 1);
+        i--;
+      }
+    }
+
+    for (const child of children) {
+      child.children = findDescendants(child.structure.id);
+    }
+
+    return children;
   }
 
-  return {
-    activity,
-    docHistories,
-  };
+  activity.children = findDescendants(activity.structure.id);
+  return activity;
 }
 
 export async function getDocumentSource(
@@ -5455,7 +5621,7 @@ export async function addClassification(
   const activity = await prisma.content.findUnique({
     where: {
       id: activityId,
-      isFolder: false,
+      type: { not: "folder" },
       isDeleted: false,
       ownerId: loggedInUserId,
     },
@@ -5492,7 +5658,7 @@ export async function removeClassification(
   const activity = await prisma.content.findUnique({
     where: {
       id: activityId,
-      isFolder: false,
+      type: { not: "folder" },
       isDeleted: false,
       ownerId: loggedInUserId,
     },

@@ -305,13 +305,18 @@ export function ShareSettings({
           padding="10px"
         >
           {!(contentData.isPublic || contentData.isShared) ? (
-            contentData.isFolder ? (
+            contentData.type === "folder" ? (
               <p>
                 Folder is private. However, shared items within the folder can
                 still be found.
               </p>
-            ) : (
+            ) : contentData.type === "singleDoc" ? (
               <p>Activity is private.</p>
+            ) : (
+              <p>
+                Activity is private. However, shared items within the activity
+                can still be found.
+              </p>
             )
           ) : license === null ? (
             <Box
@@ -355,8 +360,8 @@ export function ShareSettings({
         {contentData.parentFolder?.isPublic ||
         contentData.parentFolder?.isShared ? (
           <p style={{ marginTop: "10px" }}>
-            This {contentTypeLower} is inside a shared folder and inherits its
-            settings.
+            This {contentTypeLower} is inside a shared folder/activity and
+            inherits its settings.
           </p>
         ) : null}
 

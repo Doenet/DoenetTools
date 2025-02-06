@@ -24,7 +24,7 @@ import {
 import { GoKebabVertical } from "react-icons/go";
 import { Link as ReactRouterLink, useFetcher } from "react-router";
 import axios from "axios";
-import { AssignmentStatus, License } from "../_utils/types";
+import { ContentStructure } from "../_utils/types";
 import { FaFolder } from "react-icons/fa";
 import { RiDraftFill } from "react-icons/ri";
 
@@ -38,23 +38,11 @@ export type CardContent = {
   cardType: "activity" | "folder" | "author";
   menuRef?: (arg: HTMLButtonElement) => void;
   cardLink?: string;
-  id: string;
-  assignmentStatus?: AssignmentStatus;
-  isPublic?: boolean;
-  isShared?: boolean;
-  contentFeatures?: {
-    id: number;
-    code: string;
-    term: string;
-    description: string;
-    sortIndex: number;
-  }[];
-  title: string;
+  content: ContentStructure;
   ownerName?: string;
   menuItems?: ReactElement;
   closeTime?: string;
-  imagePath?: string | null;
-  license?: License | null;
+  indentLevel?: number;
 };
 
 export async function cardActions({ formObj }: { [k: string]: any }) {
@@ -85,6 +73,7 @@ export default function Card({
   showPublicStatus = false,
   showActivityFeatures = false,
   listView = false,
+  indentLevel = 0,
 }: {
   cardContent: CardContent;
   showOwnerName?: boolean;
@@ -94,19 +83,19 @@ export default function Card({
   showPublicStatus?: boolean;
   showActivityFeatures?: boolean;
   listView?: boolean;
+  indentLevel?: number;
 }) {
   const {
     id,
-    title,
-    menuItems,
-    cardType,
+    name: title,
     assignmentStatus = "Unassigned",
-    closeTime,
     isPublic,
     isShared,
-    cardLink = "",
-    ownerName,
-  } = cardContent;
+    license,
+    contentFeatures,
+  } = cardContent.content;
+
+  const { menuItems, cardType, closeTime, cardLink, ownerName } = cardContent;
 
   const [cardTitle, setCardTitle] = useState(title);
   const fetcher = useFetcher();
@@ -164,7 +153,7 @@ export default function Card({
         data-test="Card Image Link"
         height="120px"
         width="180px"
-        src={cardContent.imagePath || "/activity_default.jpg"}
+        src={cardContent.content.imagePath || "/activity_default.jpg"}
         alt="Activity Card Image"
         borderTopRadius="md"
         objectFit="cover"
@@ -276,7 +265,7 @@ export default function Card({
   if (showActivityFeatures) {
     const placeholdersForMissingFeatures = listView;
     let isQuestionIcon: ReactElement | null = null;
-    const isQuestionFeature = cardContent.contentFeatures?.find(
+    const isQuestionFeature = contentFeatures?.find(
       (feature) => feature.code === "isQuestion",
     );
     if (isQuestionFeature) {
@@ -297,7 +286,7 @@ export default function Card({
     }
 
     let isInteractiveIcon: ReactElement | null = null;
-    const isInteractiveFeature = cardContent.contentFeatures?.find(
+    const isInteractiveFeature = contentFeatures?.find(
       (feature) => feature.code === "isInteractive",
     );
 
@@ -322,7 +311,7 @@ export default function Card({
     }
 
     let containsVideoIcon: ReactElement | null = null;
-    const containsVideoFeature = cardContent.contentFeatures?.find(
+    const containsVideoFeature = contentFeatures?.find(
       (feature) => feature.code === "containsVideo",
     );
     if (containsVideoFeature) {
@@ -378,8 +367,9 @@ export default function Card({
   //Note: when we have a menu width 140px becomes 120px
   let card: ReactElement;
   if (listView) {
-    const cardWidth = "100%";
+    const cardWidth = `calc(100% - ${30 * indentLevel}px)`;
     const cardHeight = "40px";
+    const leftMargin = `${30 * indentLevel}px`;
     let initialIcon: ReactElement;
 
     if (cardType === "author") {
@@ -460,13 +450,10 @@ export default function Card({
     }
 
     const licenseBadges =
-      cardContent.license && (cardContent.isPublic || cardContent.isShared) ? (
+      license && (isPublic || isShared) ? (
         <Show above="xl">
           <Box height={cardHeight} alignContent="center" marginRight="10px">
-            <SmallLicenseBadges
-              license={cardContent.license}
-              suppressLink={true}
-            />
+            <SmallLicenseBadges license={license} suppressLink={true} />
           </Box>
         </Show>
       ) : null;
@@ -477,19 +464,21 @@ export default function Card({
         height={cardHeight}
         p="0"
         m="0"
+        marginLeft={leftMargin}
         data-test="Activity Card"
         variant="unstyled"
         borderBottom="2px solid gray"
         borderRadius={0}
-        _hover={{ backgroundColor: "#eeeeee" }}
+        _hover={{ backgroundColor: cardLink ? "#eeeeee" : "ffffff" }}
       >
         <CardBody>
           <HStack gap={0}>
             <ChakraLink
               as={ReactRouterLink}
               to={cardLink}
-              width={menuItems ? `calc(${cardWidth} - 16px)` : cardWidth}
+              width={menuItems ? "calc(100% - 16px)" : "100%"}
               _hover={{ textDecoration: "none" }}
+              cursor={cardLink ? "pointer" : "default"}
             >
               <Flex width="100%">
                 <Box m="0" p="0" width={["26px", "29px"]}>

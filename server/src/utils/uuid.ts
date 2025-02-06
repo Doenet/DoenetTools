@@ -1,4 +1,10 @@
-import { ContentStructure, DocHistory, DocRemixes, UserInfo } from "../types";
+import {
+  ContentStructure,
+  DocHistory,
+  DocRemixes,
+  NestedActivity,
+  UserInfo,
+} from "../types";
 import { fromBinaryUUID, toBinaryUUID } from "./binary-uuid";
 import short from "short-uuid";
 
@@ -57,6 +63,22 @@ export function contentStructureConvertUUID(content: ContentStructure) {
     sharedWith,
     documents,
     parentFolder,
+  };
+}
+
+export type ConvertedNestedActivity = {
+  type: "nested";
+  structure: ReturnType<typeof contentStructureConvertUUID>;
+  children: ConvertedNestedActivity[];
+};
+
+export function nestedActivityConvertUUID(
+  activity: NestedActivity,
+): ConvertedNestedActivity {
+  return {
+    type: activity.type,
+    structure: contentStructureConvertUUID(activity.structure),
+    children: activity.children.map(nestedActivityConvertUUID),
   };
 }
 

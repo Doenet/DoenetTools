@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import {
   useLoaderData,
   useNavigate,
@@ -6,6 +6,7 @@ import {
   useOutletContext,
 } from "react-router";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
+import { ActivityViewer } from "@doenet/assignment-viewer";
 
 import {
   Box,
@@ -39,7 +40,11 @@ import { processContributorHistory } from "../../../_utils/processRemixes";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import { MdOutlineInfo } from "react-icons/md";
-import { getClassificationAugmentedDescription } from "../../../_utils/activity";
+import {
+  compileActivityFromContent,
+  getClassificationAugmentedDescription,
+} from "../../../_utils/activity";
+import { ActivitySource } from "../../../_utils/viewerTypes";
 
 export async function loader({ params }) {
   try {
@@ -47,32 +52,48 @@ export async function loader({ params }) {
       `/api/getActivityViewerData/${params.activityId}`,
     );
 
+    const activityType = activityData.activityType;
+
     const activityId = params.activityId;
-    let docId = params.docId;
-    if (!docId) {
-      // If docId was not supplied in the url,
-      // then use the first docId from the activity.
-      // TODO: what happens if activity has no documents?
-      docId = activityData.activity.documents[0].id;
+
+    if (activityType === "singleDoc") {
+      let docId = params.docId;
+      if (!docId) {
+        // If docId was not supplied in the url,
+        // then use the first docId from the activity.
+        // TODO: what happens if activity has no documents?
+        docId = activityData.activity.documents[0].id;
+      }
+
+      const doenetML = activityData.activity.documents[0].source;
+
+      const doenetmlVersion: DoenetmlVersion =
+        activityData.activity.documents[0].doenetmlVersion;
+
+      const contributorHistory = await processContributorHistory(
+        activityData.docHistories[0],
+      );
+
+      return {
+        activityType,
+        activityId,
+        doenetML,
+        activity: activityData.activity,
+        docId,
+        contributorHistory,
+        doenetmlVersion,
+      };
+    } else {
+      const activityJson = compileActivityFromContent(activityData.content);
+
+      return {
+        activityType,
+        activityId,
+        activityJson,
+        activity: activityData.content.structure,
+        contributorHistory: [],
+      };
     }
-
-    const doenetML = activityData.activity.documents[0].source;
-
-    const doenetmlVersion: DoenetmlVersion =
-      activityData.activity.documents[0].doenetmlVersion;
-
-    const contributorHistory = await processContributorHistory(
-      activityData.docHistories[0],
-    );
-
-    return {
-      activityId,
-      doenetML,
-      activity: activityData.activity,
-      docId,
-      contributorHistory,
-      doenetmlVersion,
-    };
   } catch (e) {
     if (e.response?.status === 404) {
       throw Error("Activity not found");
@@ -82,22 +103,26 @@ export async function loader({ params }) {
   }
 }
 
-export function ActivityViewer() {
-  const {
-    activityId,
-    doenetML,
-    activity,
-    docId,
-    contributorHistory,
-    doenetmlVersion,
-  } = useLoaderData() as {
-    activityId: string;
-    doenetML: string;
-    activity: ContentStructure;
-    docId: string;
-    contributorHistory: DocHistoryItem[];
-    doenetmlVersion: DoenetmlVersion;
-  };
+export function ActivityViewerWrapper() {
+  const data = useLoaderData() as
+    | {
+        activityType: "singleDoc";
+        activityId: string;
+        doenetML: string;
+        activity: ContentStructure;
+        docId: string;
+        contributorHistory: DocHistoryItem[];
+        doenetmlVersion: DoenetmlVersion;
+      }
+    | {
+        activityType: "sequence" | "select";
+        activityId: string;
+        activity: ContentStructure;
+        activityJson: ActivitySource;
+        contributorHistory: DocHistoryItem[];
+      };
+
+  const { activityId, activity, contributorHistory } = data;
 
   const {
     isOpen: copyDialogIsOpen,
@@ -125,6 +150,55 @@ export function ActivityViewer() {
   }, [activity.name]);
 
   const haveClassifications = activity.classifications.length > 0;
+
+  let viewer: ReactElement;
+
+  if (data.activityType === "singleDoc") {
+    const { doenetML, doenetmlVersion } = data;
+
+    viewer = (
+      <DoenetViewer
+        key={`HPpageViewer`}
+        doenetML={doenetML}
+        doenetmlVersion={doenetmlVersion.fullVersion}
+        flags={{
+          showCorrectness: true,
+          solutionDisplayMode: "button",
+          showFeedback: true,
+          showHints: true,
+          autoSubmit: false,
+          allowLoadState: false,
+          allowSaveState: false,
+          allowLocalState: false,
+          allowSaveSubmissions: false,
+          allowSaveEvents: false,
+        }}
+        attemptNumber={1}
+        idsIncludeActivityId={false}
+        // setIsInErrorState={setIsInErrorState}
+        location={location}
+        navigate={navigate}
+        linkSettings={{
+          viewURL: "/activityViewer",
+          editURL: "/codeViewer",
+        }}
+        includeVariantSelector={false}
+      />
+    );
+  } else {
+    viewer = (
+      <ActivityViewer
+        source={data.activityJson}
+        requestedVariantIndex={1}
+        userId={"hi"}
+        linkSettings={{ viewUrl: "", editURL: "" }}
+        paginate={activity.paginate}
+        activityLevelAttempts={activity.activityLevelAttempts}
+        itemLevelAttempts={activity.itemLevelAttempts}
+        showTitle={false}
+      />
+    );
+  }
 
   return (
     <>
@@ -193,16 +267,18 @@ export function ActivityViewer() {
                       <Spacer />
                       <VStack mt="10px" alignItems="flex-end" spacing="4">
                         <HStack>
-                          <Button
-                            size="xs"
-                            colorScheme="blue"
-                            data-test="See Inside"
-                            onClick={() => {
-                              navigate(`/codeViewer/${activityId}/${docId}`);
-                            }}
-                          >
-                            See Inside
-                          </Button>
+                          {activity.type === "singleDoc" ? (
+                            <Button
+                              size="xs"
+                              colorScheme="blue"
+                              data-test="See Inside"
+                              onClick={() => {
+                                navigate(`/codeViewer/${activityId}`);
+                              }}
+                            >
+                              See Inside
+                            </Button>
+                          ) : null}
                           {user ? (
                             <Button
                               data-test="Copy to Activities Button"
@@ -252,33 +328,7 @@ export function ActivityViewer() {
             <GridItem area="centerContent">
               <VStack gap={0}>
                 <Box background="var(--canvas)" width="100%" height="100%">
-                  <DoenetViewer
-                    key={`HPpageViewer`}
-                    doenetML={doenetML}
-                    doenetmlVersion={doenetmlVersion.fullVersion}
-                    flags={{
-                      showCorrectness: true,
-                      solutionDisplayMode: "button",
-                      showFeedback: true,
-                      showHints: true,
-                      autoSubmit: false,
-                      allowLoadState: false,
-                      allowSaveState: false,
-                      allowLocalState: false,
-                      allowSaveSubmissions: false,
-                      allowSaveEvents: false,
-                    }}
-                    attemptNumber={1}
-                    idsIncludeActivityId={false}
-                    // setIsInErrorState={setIsInErrorState}
-                    location={location}
-                    navigate={navigate}
-                    linkSettings={{
-                      viewURL: "/activityViewer",
-                      editURL: "/codeViewer",
-                    }}
-                    includeVariantSelector={false}
-                  />
+                  {viewer}
                 </Box>
                 <Box
                   width="100%"

@@ -16,37 +16,51 @@ model Session {
 }
 
 model content {
-  id               Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
-  ownerId          Bytes                    @db.Binary(16)
-  isFolder         Boolean
-  parentFolderId   Bytes?                   @db.Binary(16)
-  name             String
-  createdAt        DateTime                 @default(now())
-  lastEdited       DateTime                 @default(now())
-  imagePath        String?
-  isAssigned       Boolean                  @default(false)
-  classCode        String?                  @db.VarChar(45)
-  codeValidUntil   DateTime?
-  isPublic         Boolean                  @default(false)
-  isDeleted        Boolean                  @default(false)
-  sortIndex        BigInt
-  licenseCode      String?                  @default("CCDUAL") @db.VarChar(10)
-  owner            users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  parentFolder     content?                 @relation("folderStructure", fields: [parentFolderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  subFolders       content[]                @relation("folderStructure")
-  documents        documents[]
-  license          licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
-  contentFeatures  contentFeatures[]
-  assignmentScores assignmentScores[]
-  promotedContent  promotedContent[]
-  sharedWith       contentShares[]
-  classifications  contentClassifications[]
-  contentViews     contentViews[]
+  id                    Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
+  type                  ContentType              @default(singleDoc)
+  ownerId               Bytes                    @db.Binary(16)
+  isFolder              Boolean
+  parentFolderId        Bytes?                   @db.Binary(16)
+  name                  String
+  createdAt             DateTime                 @default(now())
+  lastEdited            DateTime                 @default(now())
+  imagePath             String?
+  isAssigned            Boolean                  @default(false)
+  classCode             String?                  @db.VarChar(45)
+  codeValidUntil        DateTime?
+  isPublic              Boolean                  @default(false)
+  isDeleted             Boolean                  @default(false)
+  sortIndex             BigInt
+  licenseCode           String?                  @default("CCDUAL") @db.VarChar(10)
+  numToSelect           Int                      @default(1) @db.UnsignedSmallInt
+  selectByVariant       Boolean                  @default(false)
+  shuffle               Boolean                  @default(false)
+  paginate              Boolean                  @default(false)
+  activityLevelAttempts Boolean                  @default(false)
+  itemLevelAttempts     Boolean                  @default(false)
+  owner                 users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  parentFolder          content?                 @relation("folderStructure", fields: [parentFolderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subFolders            content[]                @relation("folderStructure")
+  documents             documents[]
+  license               licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  contentFeatures       contentFeatures[]
+  assignmentScores      assignmentScores[]
+  promotedContent       promotedContent[]
+  sharedWith            contentShares[]
+  classifications       contentClassifications[]
+  contentViews          contentViews[]
 
   @@index([ownerId, parentFolderId, sortIndex])
   @@index([classCode])
   @@index([parentFolderId, isFolder])
   @@fulltext([name])
+}
+
+enum ContentType {
+  singleDoc
+  select
+  sequence
+  folder
 }
 
 model documents {

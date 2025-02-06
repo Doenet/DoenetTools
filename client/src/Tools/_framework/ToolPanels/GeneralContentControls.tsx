@@ -18,6 +18,9 @@ import {
   Checkbox,
   Heading,
   Tooltip,
+  RadioGroup,
+  HStack,
+  Radio,
 } from "@chakra-ui/react";
 import { FaFileImage } from "react-icons/fa";
 import { readAndCompressImage } from "browser-image-resizer";
@@ -30,10 +33,33 @@ import { activityFeatureIcons } from "../../../_utils/activity";
 
 export async function generalContentActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "update general") {
+    let activityLevelAttempts: boolean | undefined = undefined;
+    let itemLevelAttempts: boolean | undefined = undefined;
+    if (formObj.attemptButtons) {
+      if (formObj.attemptButtons === "none") {
+        activityLevelAttempts = itemLevelAttempts = false;
+      } else if (formObj.attemptButtons === "activity") {
+        activityLevelAttempts = true;
+        itemLevelAttempts = false;
+      } else if (formObj.attemptButtons === "item") {
+        itemLevelAttempts = true;
+        activityLevelAttempts = false;
+      }
+    }
     await axios.post("/api/updateContentSettings", {
       name: formObj.name,
       imagePath: formObj.imagePath,
       id: formObj.id,
+      shuffle: formObj.shuffle ? formObj.shuffle === "true" : undefined,
+      numToSelect: formObj.numToSelect
+        ? Number(formObj.numToSelect)
+        : undefined,
+      selectByVariant: formObj.selectByVariant
+        ? formObj.selectByVariant === "true"
+        : undefined,
+      paginate: formObj.paginate ? formObj.paginate === "true" : undefined,
+      activityLevelAttempts,
+      itemLevelAttempts,
     });
 
     if (formObj.doenetmlVersionId) {
@@ -68,11 +94,13 @@ export async function generalContentActions({ formObj }: { [k: string]: any }) {
 export function GeneralContentControls({
   fetcher,
   contentData,
+  contentDataIsChild = false,
   allDoenetmlVersions,
   availableFeatures,
 }: {
   fetcher: FetcherWithComponents<any>;
   contentData: ContentStructure;
+  contentDataIsChild?: boolean;
   allDoenetmlVersions: DoenetmlVersion[];
   availableFeatures: ContentFeature[];
 }) {
@@ -87,9 +115,10 @@ export function GeneralContentControls({
   // (And same for other variables using this pattern)
   // It appears this file is using optimistic UI without a recourse
   // should the optimism be unmerited.
-  const doenetmlVersionInit: DoenetmlVersion | null = contentData.isFolder
-    ? null
-    : contentData.documents[0].doenetmlVersion;
+  const doenetmlVersionInit: DoenetmlVersion | null =
+    contentData.type === "singleDoc"
+      ? contentData.documents[0].doenetmlVersion
+      : null;
 
   const [nameValue, setName] = useState(name);
   const lastAcceptedNameValue = useRef(name);
@@ -101,8 +130,25 @@ export function GeneralContentControls({
 
   const [doenetmlVersion, setDoenetmlVersion] = useState(doenetmlVersionInit);
 
-  const contentType = contentData.isFolder ? "Folder" : "Activity";
-  const contentTypeLower = contentData.isFolder ? "folder" : "activity";
+  const [shuffle, setShuffle] = useState(contentData.shuffle);
+  const [numToSelectText, setNumToSelectText] = useState(
+    contentData.numToSelect.toString(),
+  );
+  const [selectByVariant, setSelectByVariant] = useState(
+    contentData.selectByVariant,
+  );
+  const [paginate, setPaginate] = useState(contentData.paginate);
+  const [attemptButtons, setAttemptButtons] = useState<string>(
+    contentData.activityLevelAttempts
+      ? "activity"
+      : contentData.itemLevelAttempts
+        ? "item"
+        : "none",
+  );
+
+  const contentType = contentData.type === "folder" ? "Folder" : "Activity";
+  const contentTypeLower =
+    contentData.type === "folder" ? "folder" : "activity";
 
   function saveDataToServer({
     nextDoenetmlVersionId,
@@ -233,52 +279,70 @@ export function GeneralContentControls({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
+  function saveNumToSelect(text: string) {
+    let num = Math.round(Number(text));
+    if (!Number.isInteger(num) && num >= 1) {
+      num = 1;
+    }
+    setNumToSelectText(num.toString());
+    fetcher.submit(
+      {
+        _action: "update general",
+        id: contentData.id,
+        numToSelect: num,
+      },
+      { method: "post" },
+    );
+  }
+
   return (
     <>
       <AlertQueue alerts={alerts} />
       <Form method="post">
-        <FormControl>
-          <FormLabel>Thumbnail</FormLabel>
-          <Box>
-            {isDragActive ? (
-              <VStack
-                spacing={4}
-                p="24px"
-                border="2px dashed #949494"
-                borderRadius="lg"
-                width="90%"
-                {...getRootProps()}
-              >
-                <input {...getInputProps()} />
+        {contentData.type === "singleDoc" ? (
+          <FormControl>
+            <FormLabel>Thumbnail</FormLabel>
+            <Box>
+              {isDragActive ? (
+                <VStack
+                  spacing={4}
+                  p="24px"
+                  border="2px dashed #949494"
+                  borderRadius="lg"
+                  width="90%"
+                  {...getRootProps()}
+                >
+                  <input {...getInputProps()} />
 
-                <Icon fontSize="24pt" color="#949494" as={FaFileImage} />
-                <Text color="#949494" fontSize="24pt">
-                  Drop Image Here
-                </Text>
-              </VStack>
-            ) : (
-              <Card
-                width="180px"
-                height="120px"
-                p="0"
-                m="0"
-                cursor="pointer"
-                {...getRootProps()}
-              >
-                <input {...getInputProps()} />
-
-                <Image
+                  <Icon fontSize="24pt" color="#949494" as={FaFileImage} />
+                  <Text color="#949494" fontSize="24pt">
+                    Drop Image Here
+                  </Text>
+                </VStack>
+              ) : (
+                <Card
+                  width="180px"
                   height="120px"
-                  maxWidth="180px"
-                  src={imagePath ?? ""}
-                  alt="Activity Card Image"
-                  borderTopRadius="md"
-                  objectFit="cover"
-                />
-              </Card>
-            )}
-          </Box>
-        </FormControl>
+                  p="0"
+                  m="0"
+                  cursor="pointer"
+                  {...getRootProps()}
+                >
+                  <input {...getInputProps()} />
+
+                  <Image
+                    height="120px"
+                    maxWidth="180px"
+                    src={imagePath ?? ""}
+                    alt="Activity Card Image"
+                    borderTopRadius="md"
+                    objectFit="cover"
+                  />
+                </Card>
+              )}
+            </Box>
+          </FormControl>
+        ) : null}
 
         <FormControl isInvalid={nameIsInvalid}>
           <FormLabel mt="16px">Name</FormLabel>
@@ -311,7 +375,7 @@ export function GeneralContentControls({
         <input type="hidden" name="id" value={contentData.id} />
       </Form>
 
-      {!contentData.isFolder ? (
+      {contentData.type !== "folder" ? (
         <Box backgroundColor="#F5F5F5" padding="10px" marginTop="20px">
           <Heading size="sm">Activity features</Heading>
           <VStack alignItems="flex-start" gap={0}>
@@ -361,7 +425,7 @@ export function GeneralContentControls({
         </Box>
       ) : null}
 
-      {!contentData.isFolder ? (
+      {contentData.type === "singleDoc" ? (
         <FormControl>
           <FormLabel mt="16px">DoenetML version</FormLabel>
           <Select
@@ -403,6 +467,131 @@ export function GeneralContentControls({
           {doenetmlVersion.deprecationMessage}
         </p>
       )}
+      {contentData.type === "sequence" ? (
+        <Box marginTop="20px">
+          <Heading size="sm">Sequence settings</Heading>
+
+          <Checkbox
+            marginTop="10px"
+            isChecked={shuffle}
+            data-test={`Shuffle Checkbox`}
+            onChange={() => {
+              setShuffle(!shuffle);
+
+              fetcher.submit(
+                {
+                  _action: "update general",
+                  id: contentData.id,
+                  shuffle: !shuffle,
+                },
+                { method: "post" },
+              );
+            }}
+          >
+            shuffle items
+          </Checkbox>
+        </Box>
+      ) : null}
+      {contentData.type === "select" ? (
+        <Box marginTop="20px">
+          <Heading size="sm" marginBottom="10px">
+            Select settings
+          </Heading>
+
+          <VStack alignItems="flex-start" gap={0}>
+            <p>
+              Number to select:{" "}
+              <Input
+                name="numToSelect"
+                size="sm"
+                width="50px"
+                data-test="Number To Select"
+                value={numToSelectText}
+                onChange={(e) => {
+                  setNumToSelectText(e.target.value);
+                }}
+                onBlur={() => saveNumToSelect(numToSelectText)}
+                onKeyDown={(e) => {
+                  if (e.key == "Enter") {
+                    saveNumToSelect(numToSelectText);
+                  }
+                }}
+              />
+            </p>
+
+            <Checkbox
+              marginTop="10px"
+              isChecked={selectByVariant}
+              data-test={`Select By Variant Checkbox`}
+              onChange={() => {
+                setSelectByVariant(!selectByVariant);
+
+                fetcher.submit(
+                  {
+                    _action: "update general",
+                    id: contentData.id,
+                    selectByVariant: !selectByVariant,
+                  },
+                  { method: "post" },
+                );
+              }}
+            >
+              Select by variant
+            </Checkbox>
+          </VStack>
+        </Box>
+      ) : null}
+      {!contentDataIsChild &&
+      (contentData.type === "select" || contentData.type === "sequence") ? (
+        <Box marginTop="20px">
+          <Heading size="sm">Additional settings</Heading>
+
+          <VStack alignItems="flex-start" gap={0}>
+            <Checkbox
+              marginTop="10px"
+              isChecked={paginate}
+              data-test={`Paginate Checkbox`}
+              onChange={() => {
+                setPaginate(!paginate);
+
+                fetcher.submit(
+                  {
+                    _action: "update general",
+                    id: contentData.id,
+                    paginate: !paginate,
+                  },
+                  { method: "post" },
+                );
+              }}
+            >
+              Paginate
+            </Checkbox>
+
+            <RadioGroup
+              marginTop="10px"
+              onChange={(v) => {
+                setAttemptButtons(v);
+                fetcher.submit(
+                  {
+                    _action: "update general",
+                    id: contentData.id,
+                    attemptButtons: v,
+                  },
+                  { method: "post" },
+                );
+              }}
+              value={attemptButtons}
+            >
+              <HStack>
+                <Text>Show new attempt buttons:</Text>
+                <Radio value="none">None</Radio>
+                <Radio value="activity">Activity</Radio>
+                <Radio value="item">Item</Radio>
+              </HStack>
+            </RadioGroup>
+          </VStack>
+        </Box>
+      ) : null}
     </>
   );
 }

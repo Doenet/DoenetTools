@@ -1,10 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { redirect, useLoaderData } from "react-router";
 
-import { DoenetEditor, DoenetViewer } from "@doenet/doenetml-iframe";
-
 import {
-  Box,
   Button,
   ButtonGroup,
   Center,
@@ -31,7 +28,6 @@ import {
 import { FaCog } from "react-icons/fa";
 import { useFetcher } from "react-router";
 import axios from "axios";
-import { useLocation, useNavigate } from "react-router";
 import {
   contentSettingsActions,
   ContentSettingsDrawer,
@@ -42,14 +38,22 @@ import {
   assignmentSettingsActions,
   AssignmentSettingsDrawer,
 } from "../ToolPanels/AssignmentSettingsDrawer";
-import { ShareDrawer } from "../ToolPanels/ShareDrawer";
-import { sharingActions } from "../ToolPanels/ShareSettings";
+import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 import {
   ContentFeature,
   ContentStructure,
+  ContentType,
   DoenetmlVersion,
   License,
+  NestedActivity,
 } from "../../../_utils/types";
+import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
+import {
+  NestedActivityEditor,
+  nestedActivityEditorActions,
+} from "../ToolPanels/NestedActivityEditor";
+import { compileActivityFromContent } from "../../../_utils/activity";
+import { ActivitySource } from "../../../_utils/viewerTypes";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -74,14 +78,18 @@ export async function action({ params, request }) {
     return resultCS;
   }
 
-  const resultSA = await sharingActions({ formObj });
-  if (resultSA) {
-    return resultSA;
+  const resultSD = await shareDrawerActions({ formObj });
+  if (resultSD) {
+    return resultSD;
   }
-
   const resultAS = await assignmentSettingsActions({ formObj });
   if (resultAS) {
     return resultAS;
+  }
+
+  const resultNAE = await nestedActivityEditorActions({ formObj }, { params });
+  if (resultNAE) {
+    return resultNAE;
   }
 
   if (formObj._action == "go to data") {
@@ -97,88 +105,88 @@ export async function loader({ params }) {
   } = await axios.get(`/api/getActivityEditorData/${params.activityId}`);
 
   if (notMe) {
-    return redirect(
-      `/codeViewer/${params.activityId}${params.docId ? "/" + params.docId : ""}`,
-    );
+    return redirect(`/codeViewer/${params.activityId}`);
   }
 
   const activityId = params.activityId;
-  let docId = params.docId;
-  if (!docId) {
-    // If docId was not supplied in the url,
-    // then use the first docId from the activity.
-    // TODO: what happens if activity has no documents?
-    docId = activityData.documents[0].id;
-  }
 
-  // If docId isn't in the activity, use the first docId
-  let docInOrder = activityData.documents.map((x) => x.id).indexOf(docId);
-  if (docInOrder === -1) {
-    docInOrder = 0;
-    docId = activityData.documents[docInOrder].id;
-  }
+  // const supportingFileResp = await axios.get(
+  //   `/api/loadSupportingFileInfo/${activityId}`,
+  // );
 
-  const doenetML = activityData.documents[docInOrder].source;
-  const doenetmlVersion: DoenetmlVersion =
-    activityData.documents[docInOrder].doenetmlVersion;
+  // const supportingFileData = supportingFileResp.data;
 
-  const supportingFileResp = await axios.get(
-    `/api/loadSupportingFileInfo/${activityId}`,
-  );
-
-  const supportingFileData = supportingFileResp.data;
-
-  //This code isn't depreciated but only works on Chrome
-  //navigator.userAgentData.platform.indexOf("linux") != -1
+  // //Win, Mac or Linux
   // let platform = "Linux";
-  // if (navigator.userAgentData.platform.indexOf("win") != -1) {
+  // if (navigator.platform.indexOf("Win") != -1) {
   //   platform = "Win";
-  // } else if (navigator.userAgentData.platform.indexOf("mac") != -1) {
+  // } else if (navigator.platform.indexOf("Mac") != -1) {
   //   platform = "Mac";
   // }
-  //Win, Mac or Linux
-  let platform = "Linux";
-  if (navigator.platform.indexOf("Win") != -1) {
-    platform = "Win";
-  } else if (navigator.platform.indexOf("Mac") != -1) {
-    platform = "Mac";
-  }
-
-  const { data: allDoenetmlVersions } = await axios.get(
-    "/api/getAllDoenetmlVersions",
-  );
 
   const { data: allLicenses } = await axios.get("/api/getAllLicenses");
 
-  return {
-    platform,
-    activityData,
-    docId,
-    doenetML,
-    doenetmlVersion,
-    activityId,
-    supportingFileData,
-    allDoenetmlVersions,
-    allLicenses,
-    availableFeatures,
-  };
+  if (activityData.type === "nested") {
+    const activityJson = compileActivityFromContent(activityData);
+
+    return {
+      type: activityData.type,
+      // platform,
+      activityData,
+      activityJson,
+      activityId,
+      // supportingFileData,
+      allDoenetmlVersions: [],
+      allLicenses,
+      availableFeatures,
+    };
+  } else {
+    const docId = activityData.documents[0].id;
+
+    const doenetML = activityData.documents[0].source;
+    const doenetmlVersion: DoenetmlVersion =
+      activityData.documents[0].doenetmlVersion;
+
+    const { data: allDoenetmlVersions } = await axios.get(
+      "/api/getAllDoenetmlVersions",
+    );
+
+    return {
+      type: activityData.type,
+      // platform,
+      activityData,
+      docId,
+      doenetML,
+      doenetmlVersion,
+      activityId,
+      // supportingFileData,
+      allDoenetmlVersions,
+      allLicenses,
+      availableFeatures,
+    };
+  }
 }
 
 //This is separate as <Editable> wasn't updating when defaultValue was changed
 function EditableName({ dataTest }) {
-  const { activityData } = useLoaderData() as { activityData: any };
-  const [name, setName] = useState(activityData.name);
+  const { activityData } = useLoaderData() as {
+    activityData: ContentStructure | NestedActivity;
+  };
+  const baseData =
+    activityData.type === "nested" ? activityData.structure : activityData;
+
+  const [name, setName] = useState(baseData.name);
   const fetcher = useFetcher();
 
-  const lastActivityDataName = useRef(activityData.name);
+  const lastBaseDataName = useRef(baseData.name);
 
   //Update when something else updates the name
-  if (activityData.name != lastActivityDataName.current) {
-    if (name != activityData.name) {
-      setName(activityData.name);
+  if (baseData.name != lastBaseDataName.current) {
+    if (name != baseData.name) {
+      setName(baseData.name);
     }
   }
-  lastActivityDataName.current = activityData.name;
+  lastBaseDataName.current = baseData.name;
 
   return (
     <Editable
@@ -210,25 +218,41 @@ function EditableName({ dataTest }) {
 }
 
 export function ActivityEditor() {
+  const data = useLoaderData() as {
+    activityId: string;
+    allDoenetmlVersions: DoenetmlVersion[];
+    allLicenses: License[];
+    availableFeatures: ContentFeature[];
+  } & (
+    | {
+        type: ContentType;
+        doenetML: string;
+        doenetmlVersion: DoenetmlVersion;
+        docId: string;
+        activityData: ContentStructure;
+      }
+    | {
+        type: "nested";
+        activityData: NestedActivity;
+        activityJson: ActivitySource;
+      }
+  );
+
   const {
     activityId,
-    doenetML,
-    doenetmlVersion,
-    docId,
     activityData,
     allDoenetmlVersions,
     allLicenses,
     availableFeatures,
-  } = useLoaderData() as {
-    activityId: string;
-    doenetML: string;
-    doenetmlVersion: DoenetmlVersion;
-    docId: string;
-    activityData: ContentStructure;
-    allDoenetmlVersions: DoenetmlVersion[];
-    allLicenses: License[];
-    availableFeatures: ContentFeature[];
-  };
+  } = data;
+
+  const baseData =
+    activityData.type === "nested" ? activityData.structure : activityData;
+
+  const finalFocusRef = useRef<HTMLElement | null>(null);
+  const settingsBtnRef = useRef<HTMLButtonElement>(null);
+  const sharingBtnRef = useRef<HTMLButtonElement>(null);
+  const assignBtnRef = useRef<HTMLButtonElement>(null);
 
   const {
     isOpen: settingsAreOpen,
@@ -254,33 +278,13 @@ export function ActivityEditor() {
     onClose: invitationOnClose,
   } = useDisclosure();
 
-  const textEditorDoenetML = useRef(doenetML);
-  const savedDoenetML = useRef(doenetML);
-
-  const assignmentStatus = activityData.assignmentStatus;
+  const assignmentStatus = baseData.assignmentStatus;
 
   const readOnly = assignmentStatus !== "Unassigned";
   const readOnlyRef = useRef(readOnly);
   readOnlyRef.current = readOnly;
 
   const [mode, setMode] = useState<"Edit" | "View">(readOnly ? "View" : "Edit");
-
-  const initialWarnings = doenetmlVersion.deprecated
-    ? [
-        {
-          level: 1,
-          message: `DoenetML version
-            ${doenetmlVersion.displayedVersion} is deprecated.
-            ${doenetmlVersion.deprecationMessage}`,
-        },
-      ]
-    : [];
-
-  const inTheMiddleOfSaving = useRef(false);
-  const postponedSaving = useRef(false);
-
-  const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     if (readOnly) {
@@ -290,59 +294,10 @@ export function ActivityEditor() {
     }
   }, [readOnly]);
 
-  const handleSaveDoc = useCallback(async () => {
-    if (
-      readOnlyRef.current ||
-      savedDoenetML.current === textEditorDoenetML.current
-    ) {
-      // do not attempt to save doenetml if assigned
-      return;
-    }
-
-    const newDoenetML = textEditorDoenetML.current;
-    if (inTheMiddleOfSaving.current) {
-      postponedSaving.current = true;
-    } else {
-      inTheMiddleOfSaving.current = true;
-
-      //Save in localStorage
-      // localStorage.setItem(cid,doenetML)
-
-      try {
-        const params = {
-          doenetML: newDoenetML,
-          docId,
-        };
-        await axios.post("/api/saveDoenetML", params);
-        savedDoenetML.current = newDoenetML;
-      } catch (error) {
-        alert(error.message);
-      }
-
-      inTheMiddleOfSaving.current = false;
-
-      //If we postponed then potentially
-      //some changes were saved again while we were saving
-      //so save again
-      if (postponedSaving.current) {
-        postponedSaving.current = false;
-        handleSaveDoc();
-      }
-    }
-  }, [docId]);
-
-  // save draft when leave page
   useEffect(() => {
-    return () => {
-      handleSaveDoc();
-    };
-  }, [handleSaveDoc]);
+    document.title = `${baseData.name} - Doenet`;
+  }, [baseData.name]);
 
-  useEffect(() => {
-    document.title = `${activityData.name} - Doenet`;
-  }, [activityData.name]);
-
-  const controlsBtnRef = useRef<HTMLButtonElement>(null);
   const [displaySettingsTab, setSettingsDisplayTab] =
     useState<"general">("general");
 
@@ -353,39 +308,109 @@ export function ActivityEditor() {
       ? ["Edit", "Edit activity", <MdModeEditOutline />]
       : ["See Inside", "See read-only view of source", <MdOutlineEditOff />];
 
+  const textEditorDoenetML = useRef("Need to get DoenetML in some cases");
+
+  const [settingsContentId, setSettingsContentId] = useState<string | null>(
+    null,
+  );
+
+  let contentData: ContentStructure | undefined;
+  let contentDataIsChild = false;
+  if (settingsContentId) {
+    if (settingsContentId === baseData.id) {
+      contentData = baseData;
+    } else {
+      if (data.type === "nested") {
+        function matchSettingsContentId(
+          na: NestedActivity,
+        ): ContentStructure | undefined {
+          if (na.structure.id === settingsContentId) {
+            return na.structure;
+          }
+          for (const child of na.children) {
+            const res = matchSettingsContentId(child);
+            if (res) {
+              return res;
+            }
+          }
+        }
+        contentData = matchSettingsContentId(data.activityData);
+        contentDataIsChild = true;
+      }
+    }
+  }
+
+  let editor: ReactElement;
+
+  if (data.type === "nested") {
+    editor = (
+      <NestedActivityEditor
+        activity={data.activityData}
+        activityJson={data.activityJson}
+        assignmentStatus={assignmentStatus}
+        mode={mode}
+        fetcher={fetcher}
+        setSettingsContentId={setSettingsContentId}
+        settingsOnOpen={settingsOnOpen}
+        sharingOnOpen={sharingOnOpen}
+        finalFocusRef={finalFocusRef}
+      />
+    );
+  } else {
+    editor = (
+      <ActivityDoenetMLEditor
+        doenetML={data.doenetML}
+        doenetmlVersion={data.doenetmlVersion}
+        assignmentStatus={assignmentStatus}
+        mode={mode}
+        docId={data.docId}
+      />
+    );
+  }
+
+  const settingsDrawer = contentData ? (
+    <ContentSettingsDrawer
+      isOpen={settingsAreOpen}
+      onClose={settingsOnClose}
+      finalFocusRef={finalFocusRef}
+      fetcher={fetcher}
+      contentData={contentData}
+      contentDataIsChild={contentDataIsChild}
+      allDoenetmlVersions={allDoenetmlVersions}
+      availableFeatures={availableFeatures}
+      displayTab={displaySettingsTab}
+    />
+  ) : null;
+
+  const shareDrawer = contentData ? (
+    <ShareDrawer
+      isOpen={sharingIsOpen}
+      onClose={sharingOnClose}
+      finalFocusRef={finalFocusRef}
+      fetcher={fetcher}
+      contentData={contentData}
+      allLicenses={allLicenses}
+      currentDoenetML={textEditorDoenetML}
+    />
+  ) : null;
+
   return (
     <>
-      <ContentSettingsDrawer
-        isOpen={settingsAreOpen}
-        onClose={settingsOnClose}
-        finalFocusRef={controlsBtnRef}
-        fetcher={fetcher}
-        contentData={activityData}
-        allDoenetmlVersions={allDoenetmlVersions}
-        availableFeatures={availableFeatures}
-        displayTab={displaySettingsTab}
-      />
-      <ShareDrawer
-        isOpen={sharingIsOpen}
-        onClose={sharingOnClose}
-        finalFocusRef={controlsBtnRef}
-        fetcher={fetcher}
-        contentData={activityData}
-        allLicenses={allLicenses}
-        currentDoenetML={textEditorDoenetML}
-      />
+      {settingsDrawer}
+      {shareDrawer}
+
       <AssignmentSettingsDrawer
         isOpen={assignmentSettingsAreOpen}
         onClose={assignmentSettingsOnClose}
-        finalFocusRef={controlsBtnRef}
+        finalFocusRef={finalFocusRef}
         fetcher={fetcher}
         id={activityId}
-        contentData={activityData}
+        contentData={baseData}
       />
       <AssignmentInvitation
         isOpen={invitationIsOpen}
         onClose={invitationOnClose}
-        activityData={activityData}
+        activityData={baseData}
       />
       <Grid
         background="doenet.lightBlue"
@@ -473,8 +498,10 @@ export function ActivityEditor() {
                       pr={{ base: "0px", md: "10px" }}
                       leftIcon={<MdOutlineAssignment />}
                       onClick={() => {
+                        finalFocusRef.current = assignBtnRef.current;
                         assignmentSettingsOnOpen();
                       }}
+                      ref={assignBtnRef}
                     >
                       <Show above="md">Assign</Show>
                     </Button>
@@ -491,9 +518,11 @@ export function ActivityEditor() {
                       pr={{ base: "0px", md: "10px" }}
                       leftIcon={<MdOutlineGroup />}
                       onClick={() => {
+                        finalFocusRef.current = sharingBtnRef.current;
+                        setSettingsContentId(baseData.id);
                         sharingOnOpen();
                       }}
-                      ref={controlsBtnRef}
+                      ref={sharingBtnRef}
                     >
                       <Show above="md">Share</Show>
                     </Button>
@@ -510,10 +539,12 @@ export function ActivityEditor() {
                       pr={{ base: "0px", md: "10px" }}
                       leftIcon={<FaCog />}
                       onClick={() => {
+                        finalFocusRef.current = settingsBtnRef.current;
                         setSettingsDisplayTab("general");
+                        setSettingsContentId(baseData.id);
                         settingsOnOpen();
                       }}
-                      ref={controlsBtnRef}
+                      ref={settingsBtnRef}
                     >
                       <Show above="md">Settings</Show>
                     </Button>
@@ -539,7 +570,7 @@ export function ActivityEditor() {
                 {assignmentStatus === "Open" ? (
                   <>
                     <Text size="xs">
-                      {` Assignment is open with code ${activityData.classCode}. ${mode == "Edit" ? "It cannot be edited." : ""}`}
+                      {` Assignment is open with code ${baseData.classCode}. ${mode == "Edit" ? "It cannot be edited." : ""}`}
                     </Text>
                     <Button
                       onClick={invitationOnOpen}
@@ -556,7 +587,7 @@ export function ActivityEditor() {
                     {`Activity is a closed assignment${mode == "Edit" ? " and cannot be edited." : "."}`}
                   </Text>
                 )}
-                {activityData.hasScoreData ? (
+                {baseData.hasScoreData ? (
                   <Tooltip label="View data">
                     <Button
                       data-test="Assignment Setting Button"
@@ -579,99 +610,7 @@ export function ActivityEditor() {
                 ) : null}
               </Center>
             ) : null}
-            {mode == "Edit" && (
-              <DoenetEditor
-                height={`calc(100vh - ${readOnly ? 120 : 80}px)`}
-                width="100%"
-                doenetML={textEditorDoenetML.current}
-                doenetmlChangeCallback={handleSaveDoc}
-                immediateDoenetmlChangeCallback={(newDoenetML: string) => {
-                  textEditorDoenetML.current = newDoenetML;
-                }}
-                doenetmlVersion={doenetmlVersion.fullVersion}
-                initialWarnings={initialWarnings}
-                border="none"
-                readOnly={readOnly}
-              />
-            )}
-
-            {mode == "View" && (
-              <Grid
-                width="100%"
-                height={`calc(100vh - ${readOnly ? 120 : 80}px)`}
-                templateAreas={`"leftGutter viewer rightGutter"`}
-                templateColumns={`1fr minmax(300px,850px) 1fr`}
-                overflow="hidden"
-              >
-                <GridItem
-                  area="leftGutter"
-                  background="doenet.lightBlue"
-                  width="100%"
-                  paddingTop="10px"
-                  alignSelf="start"
-                ></GridItem>
-                <GridItem
-                  area="rightGutter"
-                  background="doenet.lightBlue"
-                  width="100%"
-                  paddingTop="10px"
-                  alignSelf="start"
-                />
-                <GridItem
-                  area="viewer"
-                  width="100%"
-                  placeSelf="center"
-                  minHeight="100%"
-                  maxWidth="850px"
-                  overflow="hidden"
-                >
-                  <VStack
-                    spacing={0}
-                    margin="10px 0px 10px 0px" //Only need when there is an outline
-                  >
-                    <Box
-                      h={"calc(100vh - 100px)"}
-                      background="var(--canvas)"
-                      borderWidth="1px"
-                      borderStyle="solid"
-                      borderColor="doenet.mediumGray"
-                      padding="0px 0px 20px 0px"
-                      flexGrow={1}
-                      overflow="scroll"
-                      w="100%"
-                      id="viewer-container"
-                    >
-                      <DoenetViewer
-                        doenetML={textEditorDoenetML.current}
-                        doenetmlVersion={doenetmlVersion.fullVersion}
-                        flags={{
-                          showCorrectness: true,
-                          solutionDisplayMode: "button",
-                          showFeedback: true,
-                          showHints: true,
-                          autoSubmit: false,
-                          allowLoadState: false,
-                          allowSaveState: false,
-                          allowLocalState: false,
-                          allowSaveSubmissions: false,
-                          allowSaveEvents: false,
-                        }}
-                        attemptNumber={1}
-                        idsIncludeActivityId={false}
-                        paginate={true}
-                        location={location}
-                        navigate={navigate}
-                        linkSettings={{
-                          viewURL: "/activityViewer",
-                          editURL: "/codeViewer",
-                        }}
-                        includeVariantSelector={true}
-                      />
-                    </Box>
-                  </VStack>
-                </GridItem>
-              </Grid>
-            )}
+            {editor}
           </VStack>
         </GridItem>
       </Grid>

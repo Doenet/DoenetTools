@@ -1,6 +1,7 @@
 import { TbPuzzle } from "react-icons/tb";
 import { MdOutlineOndemandVideo, MdOutlineSwipeLeft } from "react-icons/md";
-import { ContentClassification } from "./types";
+import { ContentClassification, NestedActivity } from "./types";
+import { ActivitySource } from "./viewerTypes";
 
 export const activityFeatureIcons = {
   isQuestion: TbPuzzle,
@@ -94,4 +95,46 @@ export function findClassificationDescriptionIndex({
     }
     return c.subCategory === subCategory;
   });
+}
+
+export function compileActivityFromContent(
+  activity: NestedActivity,
+): ActivitySource {
+  const children = activity.children.map(compileActivityFromContent);
+
+  const structure = activity.structure;
+
+  switch (structure.type) {
+    case "singleDoc": {
+      return {
+        id: structure.id,
+        type: structure.type,
+        isDescription: false,
+        doenetML: structure.documents[0].source!,
+        version: structure.documents[0].doenetmlVersion.fullVersion,
+      };
+    }
+    case "select": {
+      return {
+        id: structure.id,
+        type: structure.type,
+        title: structure.name,
+        numToSelect: structure.numToSelect,
+        selectByVariant: structure.selectByVariant,
+        items: children,
+      };
+    }
+    case "sequence": {
+      return {
+        id: structure.id,
+        type: structure.type,
+        title: structure.name,
+        shuffle: structure.shuffle,
+        items: children,
+      };
+    }
+    case "folder": {
+      throw Error("No folder here");
+    }
+  }
 }

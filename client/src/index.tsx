@@ -35,7 +35,7 @@ import {
 } from "./Tools/_framework/Paths/SharedActivities";
 import {
   loader as activityViewerLoader,
-  ActivityViewer,
+  ActivityViewerWrapper,
 } from "./Tools/_framework/Paths/ActivityViewer";
 import {
   loader as assignedLoader,
@@ -270,20 +270,12 @@ const router = createBrowserRouter([
         path: "activityViewer/:activityId",
         loader: activityViewerLoader,
         errorElement: <ErrorPage />,
-        element: <ActivityViewer />,
+        element: <ActivityViewerWrapper />,
       },
       {
         path: "activityEditor/:activityId",
         loader: activityEditorLoader,
         action: activityEditorAction,
-        element: <ActivityEditor />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "activityEditor/:activityId/:docId",
-        loader: activityEditorLoader,
-        action: activityEditorAction,
-        // errorElement: <div>Error!</div>,
         element: <ActivityEditor />,
         errorElement: <ErrorPage />,
       },
@@ -295,12 +287,6 @@ const router = createBrowserRouter([
       },
       {
         path: "codeViewer/:activityId",
-        loader: codeViewerLoader,
-        errorElement: <ErrorPage />,
-        element: <CodeViewer />,
-      },
-      {
-        path: "codeViewer/:activityId/:docId",
         loader: codeViewerLoader,
         errorElement: <ErrorPage />,
         element: <CodeViewer />,

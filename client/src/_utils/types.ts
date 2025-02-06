@@ -104,8 +104,11 @@ export type PartialContentClassification = {
   numCommunity?: number;
 };
 
+export type ContentType = "singleDoc" | "select" | "sequence" | "folder";
+
 export type ContentStructure = {
   id: string;
+  type: ContentType;
   ownerId: number;
   owner?: UserInfo;
   name: string;
@@ -125,6 +128,12 @@ export type ContentStructure = {
   isShared: boolean;
   sharedWith: UserInfo[];
   license: License | null;
+  numToSelect: number;
+  selectByVariant: boolean;
+  shuffle: boolean;
+  paginate: boolean;
+  activityLevelAttempts: boolean;
+  itemLevelAttempts: boolean;
   classifications: ContentClassification[];
   documents: {
     id: string;
@@ -141,6 +150,12 @@ export type ContentStructure = {
     isShared: boolean;
     sharedWith: UserInfo[];
   } | null;
+};
+
+export type NestedActivity = {
+  type: "nested";
+  structure: ContentStructure;
+  children: NestedActivity[];
 };
 
 export type DocHistoryItem = {

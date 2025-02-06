@@ -62,6 +62,7 @@ export function ContentSettingsDrawer({
   onClose,
   finalFocusRef,
   contentData,
+  contentDataIsChild = false,
   allDoenetmlVersions,
   availableFeatures,
   supportingFileData,
@@ -72,6 +73,7 @@ export function ContentSettingsDrawer({
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
   contentData: ContentStructure;
+  contentDataIsChild?: boolean;
   allDoenetmlVersions: DoenetmlVersion[];
   availableFeatures: ContentFeature[];
   supportingFileData?: any;
@@ -100,6 +102,15 @@ export function ContentSettingsDrawer({
     setTabIndex(initialTabIndex);
   }, [displayTab, isOpen]);
 
+  const contentType =
+    contentData.type === "singleDoc"
+      ? "Activity"
+      : contentData.type === "select"
+        ? "Select Activity"
+        : contentData.type === "sequence"
+          ? "Sequence Activity"
+          : "Folder";
+
   return (
     <Drawer
       isOpen={isOpen}
@@ -112,7 +123,7 @@ export function ContentSettingsDrawer({
       <DrawerContent>
         <DrawerCloseButton data-test="Close Settings Button" />
         <DrawerHeader textAlign="center" height="70px">
-          {contentData.isFolder ? "Folder" : "Activity"} Controls
+          {contentType} Controls
           <Tooltip label={contentData.name}>
             <Text fontSize="smaller" noOfLines={1}>
               {contentData.name}
@@ -129,7 +140,7 @@ export function ContentSettingsDrawer({
             <TabList>
               <Tab data-test="General Tab">General</Tab>
 
-              {!contentData.isFolder ? (
+              {contentData.type !== "folder" ? (
                 <Tab data-test="Classifications">
                   Classifications ({contentData.classifications.length})
                 </Tab>
@@ -144,11 +155,12 @@ export function ContentSettingsDrawer({
                   <GeneralContentControls
                     fetcher={fetcher}
                     contentData={contentData}
+                    contentDataIsChild={contentDataIsChild}
                     allDoenetmlVersions={allDoenetmlVersions}
                     availableFeatures={availableFeatures}
                   />
                 </TabPanel>
-                {!contentData.isFolder ? (
+                {contentData.type !== "folder" ? (
                   <TabPanel
                     overflowY="hidden"
                     height="100%"

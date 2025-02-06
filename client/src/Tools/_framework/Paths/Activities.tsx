@@ -100,6 +100,7 @@ export async function action({ request, params }) {
     //Create an activity and redirect to the editor for it
     const { data } = await axios.post(
       `/api/createActivity/${params.folderId ?? ""}`,
+      { type: formObj.type },
     );
 
     const { activityId } = data;
@@ -441,9 +442,17 @@ export function Activities() {
     );
   }
 
+  const folderType =
+    folder?.type === "select"
+      ? "Select Activity"
+      : folder?.type === "sequence"
+        ? "Sequence Activity"
+        : "Folder";
+
   const headingText = folder ? (
     <>
-      {folder.isPublic ? "Public " : ""}Folder: {folder.name}
+      {folder.isPublic ? "Public " : ""}
+      {folderType}: {folder.name}
     </>
   ) : (
     `My Activities`
@@ -606,12 +615,36 @@ export function Activities() {
                   onClick={async () => {
                     setHaveContentSpinner(true);
                     fetcher.submit(
-                      { _action: "Add Activity" },
+                      { _action: "Add Activity", type: "singleDoc" },
                       { method: "post" },
                     );
                   }}
                 >
                   Activity
+                </MenuItem>
+                <MenuItem
+                  data-test="Add Select Activity Button"
+                  onClick={async () => {
+                    setHaveContentSpinner(true);
+                    fetcher.submit(
+                      { _action: "Add Activity", type: "select" },
+                      { method: "post" },
+                    );
+                  }}
+                >
+                  Select Activity
+                </MenuItem>
+                <MenuItem
+                  data-test="Add Sequence Activity Button"
+                  onClick={async () => {
+                    setHaveContentSpinner(true);
+                    fetcher.submit(
+                      { _action: "Add Activity", type: "sequence" },
+                      { method: "post" },
+                    );
+                  }}
+                >
+                  Sequence Activity
                 </MenuItem>
                 <MenuItem
                   data-test="Add Folder Button"
@@ -727,15 +760,10 @@ export function Activities() {
     const getCardMenuRef = (element: HTMLButtonElement) => {
       cardMenuRefs.current[position] = element;
     };
-    const justCreated = folderJustCreated === activity.id;
-    if (justCreated) {
-      folderJustCreated = "";
-    }
 
     return {
       menuRef: getCardMenuRef,
-      ...activity,
-      title: activity.name,
+      content: activity,
       closeTime: formatTime(activity.codeValidUntil),
       menuItems: getCardMenuList({
         id: activity.id,
@@ -743,17 +771,17 @@ export function Activities() {
         numCards: content.length,
         assignmentStatus: activity.assignmentStatus,
         isPublic: activity.isPublic,
+        isFolder: activity.isFolder,
         isShared: activity.isShared,
         sharedWith: activity.sharedWith,
         licenseCode: activity.license?.code ?? null,
         parentFolderId: activity.parentFolder?.id ?? null,
       }),
-      cardLink: activity.isFolder
-        ? `/activities/${activity.ownerId}/${activity.id}`
-        : `/activityEditor/${activity.id}`,
-      editableTitle: true,
-      autoFocusTitle: justCreated,
-      cardType: activity.isFolder ? "folder" : "activity",
+      cardLink:
+        activity.type === "folder"
+          ? `/activities/${activity.ownerId}/${activity.id}`
+          : `/activityEditor/${activity.id}`,
+      cardType: activity.type === "folder" ? "folder" : "activity",
     };
   });
 
@@ -767,6 +795,7 @@ export function Activities() {
       listView={listView}
       content={cardContent}
       editableTitles={true}
+      folderJustCreated={folderJustCreated}
     />
   );
 

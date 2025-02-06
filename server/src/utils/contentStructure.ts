@@ -2,6 +2,7 @@ import {
   AssignmentStatus,
   ContentClassification,
   ContentStructure,
+  ContentType,
   License,
   LicenseCode,
   UserInfo,
@@ -201,6 +202,7 @@ export function returnContentStructureNoClassDocsSelect({
   return {
     id: true,
     name: true,
+    type: true,
     ownerId: true,
     imagePath: true,
     isFolder: true,
@@ -208,6 +210,12 @@ export function returnContentStructureNoClassDocsSelect({
     isAssigned: includeAssignInfo,
     classCode: includeAssignInfo,
     codeValidUntil: includeAssignInfo,
+    numToSelect: true,
+    selectByVariant: true,
+    shuffle: true,
+    paginate: true,
+    activityLevelAttempts: true,
+    itemLevelAttempts: true,
     contentFeatures: true,
     sharedWith: {
       select: {
@@ -448,6 +456,7 @@ type PreliminaryLicense = {
 
 type PreliminaryContentNoClassDocs = {
   id: Uint8Array;
+  type: ContentType;
   name: string;
   ownerId: Uint8Array;
   owner?: UserInfo;
@@ -457,6 +466,12 @@ type PreliminaryContentNoClassDocs = {
   isAssigned?: boolean;
   classCode?: string | null;
   codeValidUntil?: Date | null;
+  numToSelect: number;
+  selectByVariant: boolean;
+  shuffle: boolean;
+  paginate: boolean;
+  activityLevelAttempts: boolean;
+  itemLevelAttempts: boolean;
   contentFeatures: {
     id: number;
     code: string;

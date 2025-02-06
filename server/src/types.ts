@@ -75,9 +75,15 @@ export type PartialContentClassification = {
   numLibrary?: number;
   numCommunity?: number;
 };
+export type ContentType = "singleDoc" | "select" | "sequence" | "folder";
+
+export function isContentType(type: string): type is ContentType {
+  return ["singleDoc", "select", "sequence", "folder"].includes(type);
+}
 
 export type ContentStructure = {
   id: Uint8Array;
+  type: ContentType;
   ownerId: Uint8Array;
   owner?: UserInfo;
   name: string;
@@ -90,6 +96,12 @@ export type ContentStructure = {
   isShared: boolean;
   sharedWith: UserInfo[];
   license: License | null;
+  numToSelect: number;
+  selectByVariant: boolean;
+  shuffle: boolean;
+  paginate: boolean;
+  activityLevelAttempts: boolean;
+  itemLevelAttempts: boolean;
   contentFeatures: {
     id: number;
     code: string;
@@ -197,4 +209,10 @@ export type ClassificationCategoryTree = {
       subCategory: string;
     }[];
   }[];
+};
+
+export type NestedActivity = {
+  type: "nested";
+  structure: ContentStructure;
+  children: NestedActivity[];
 };

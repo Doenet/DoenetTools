@@ -20,13 +20,13 @@ export function GeneralContentInfo({
   contentData: ContentStructure;
 }) {
   const license = contentData.license;
-  const contentType = contentData.isFolder ? "Folder" : "Activity";
+  const contentType = contentData.type === "folder" ? "Folder" : "Activity";
 
   const containsFeatures = contentData.contentFeatures.length > 0;
 
   return (
     <Box>
-      {!contentData.isFolder && containsFeatures ? (
+      {contentData.type !== "folder" && containsFeatures ? (
         <Box borderBottom="2px" marginBottom={4} paddingBottom={4}>
           <Heading size="sm">Activity features</Heading>
           <UnorderedList>
@@ -90,7 +90,7 @@ export function GeneralContentInfo({
         )}
       </Box>
 
-      {!contentData.isFolder
+      {contentData.type === "singleDoc"
         ? `DoenetML version: ${contentData.documents[0].doenetmlVersion.fullVersion}`
         : null}
     </Box>

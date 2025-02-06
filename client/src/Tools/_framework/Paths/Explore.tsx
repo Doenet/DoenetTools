@@ -258,23 +258,11 @@ export function Explore() {
     minHeight?: string | { base: string; lg: string },
   ) {
     const cardContent: CardContent[] = matches.map((itemObj) => {
-      const {
-        id,
-        imagePath,
-        name,
-        owner,
-        isFolder,
-        contentFeatures,
-        license,
-        isPublic,
-        isShared,
-      } = itemObj;
+      const { id, owner, type: contentType } = itemObj;
       const cardLink =
-        isFolder && owner != undefined
+        contentType === "folder" && owner != undefined
           ? `/sharedActivities/${owner.userId}/${id}`
           : `/activityViewer/${id}`;
-
-      const contentType = isFolder ? "Folder" : "Activity";
 
       const menuItems = (
         <MenuItem
@@ -290,16 +278,11 @@ export function Explore() {
 
       return {
         id,
-        title: name,
+        content: itemObj,
         ownerName: owner !== undefined ? createFullName(owner) : "",
         cardLink,
-        cardType: isFolder ? "folder" : "activity",
+        cardType: contentType === "folder" ? "folder" : "activity",
         menuItems,
-        imagePath,
-        contentFeatures,
-        license,
-        isPublic,
-        isShared,
       };
     });
 

@@ -123,8 +123,15 @@ import {
   studentDataConvertUUID,
   isEqualUUID,
   docRemixesConvertUUID,
+  nestedActivityConvertUUID,
 } from "./utils/uuid";
-import { LicenseCode, PartialContentClassification, UserInfo } from "./types";
+import {
+  ContentType,
+  isContentType,
+  LicenseCode,
+  PartialContentClassification,
+  UserInfo,
+} from "./types";
 import { add_test_apis } from "./test/test_apis";
 
 const client = new SESClient({ region: "us-east-2" });
@@ -580,10 +587,28 @@ app.post(
       res.sendStatus(403);
       return;
     }
+
+    const body = req.body;
+    const contentType: ContentType | undefined = isContentType(body.type)
+      ? body.type
+      : "singleDoc";
     const loggedInUserId = req.user.userId;
+
     try {
-      const { activityId, docId } = await createActivity(loggedInUserId, null);
-      res.send({ activityId: fromUUID(activityId), docId: fromUUID(docId) });
+      if (contentType === "singleDoc") {
+        const { activityId, docId } = await createActivity(
+          loggedInUserId,
+          null,
+        );
+        res.send({ activityId: fromUUID(activityId), docId: fromUUID(docId) });
+      } else {
+        const { folderId: activityId } = await createFolder(
+          loggedInUserId,
+          null,
+          contentType,
+        );
+        res.send({ activityId: fromUUID(activityId) });
+      }
     } catch (e) {
       next(e);
     }
@@ -599,12 +624,27 @@ app.post(
     }
     const loggedInUserId = req.user.userId;
     const parentFolderId = toUUID(req.params.parentFolderId);
+
+    const body = req.body;
+    const contentType: ContentType | undefined = isContentType(body.type)
+      ? body.type
+      : "singleDoc";
+
     try {
-      const { activityId, docId } = await createActivity(
-        loggedInUserId,
-        parentFolderId,
-      );
-      res.send({ activityId: fromUUID(activityId), docId: fromUUID(docId) });
+      if (contentType === "singleDoc") {
+        const { activityId, docId } = await createActivity(
+          loggedInUserId,
+          parentFolderId,
+        );
+        res.send({ activityId: fromUUID(activityId), docId: fromUUID(docId) });
+      } else {
+        const { folderId: activityId } = await createFolder(
+          loggedInUserId,
+          parentFolderId,
+          contentType,
+        );
+        res.send({ activityId: fromUUID(activityId) });
+      }
     } catch (e) {
       next(e);
     }
@@ -1706,11 +1746,19 @@ app.get(
         activityId,
         loggedInUserId,
       );
-      res.send({
-        notMe: editorData.notMe,
-        activity: contentStructureConvertUUID(editorData.activity),
-        availableFeatures: editorData.availableFeatures,
-      });
+      if (editorData.activity.type === "nested") {
+        res.send({
+          notMe: editorData.notMe,
+          activity: nestedActivityConvertUUID(editorData.activity),
+          availableFeatures: editorData.availableFeatures,
+        });
+      } else {
+        res.send({
+          notMe: editorData.notMe,
+          activity: contentStructureConvertUUID(editorData.activity),
+          availableFeatures: editorData.availableFeatures,
+        });
+      }
     } catch (e) {
       if (
         e instanceof Prisma.PrismaClientKnownRequestError &&
@@ -1783,15 +1831,24 @@ app.get(
     const activityId = toUUID(req.params.activityId);
 
     try {
-      const { activity, docHistories } = await getActivityViewerData(
-        activityId,
-        loggedInUserId,
-      );
-      // TODO: process docHistories to convert UUIDs
-      res.send({
-        activity: contentStructureConvertUUID(activity),
-        docHistories: docHistories.map(docHistoryConvertUUID),
-      });
+      const result = await getActivityViewerData(activityId, loggedInUserId);
+
+      if (result?.activityType === "singleDoc") {
+        const { activityType, activity, docHistories } = result;
+        res.send({
+          activityType,
+          activity: contentStructureConvertUUID(activity),
+          docHistories: docHistories.map(docHistoryConvertUUID),
+        });
+      } else {
+        const { activityType, activity } = result;
+
+        res.send({
+          activityType,
+          content: nestedActivityConvertUUID(activity),
+        });
+        return;
+      }
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);
@@ -1921,12 +1978,24 @@ app.post(
     const id = toUUID(body.id);
     const imagePath = body.imagePath;
     const name = body.name;
+    const shuffle = body.shuffle;
+    const numToSelect = body.numToSelect;
+    const selectByVariant = body.selectByVariant;
+    const paginate = body.paginate;
+    const activityLevelAttempts = body.activityLevelAttempts;
+    const itemLevelAttempts = body.itemLevelAttempts;
 
     try {
       await updateContent({
         id,
         imagePath,
         name,
+        shuffle,
+        numToSelect,
+        selectByVariant,
+        paginate,
+        activityLevelAttempts,
+        itemLevelAttempts,
         ownerId: loggedInUserId,
       });
       res.send({});
@@ -2002,63 +2071,95 @@ app.post(
   },
 );
 
-app.post("/api/moveContent", async (req: Request, res: Response) => {
-  if (!req.user) {
-    res.sendStatus(403);
-    return;
-  }
-  const loggedInUserId = req.user.userId;
-  const id = toUUID(req.body.id);
-  const desiredParentFolderId = req.body.desiredParentFolderId
-    ? toUUID(req.body.desiredParentFolderId)
-    : null;
-  const desiredPosition = Number(req.body.desiredPosition);
+app.post(
+  "/api/moveContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    const loggedInUserId = req.user.userId;
+    const id = toUUID(req.body.id);
+    const desiredParentFolderId = req.body.desiredParentFolderId
+      ? toUUID(req.body.desiredParentFolderId)
+      : null;
+    const desiredPosition = Number(req.body.desiredPosition);
 
-  await moveContent({
-    id,
-    desiredParentFolderId,
-    desiredPosition,
-    ownerId: loggedInUserId,
-  });
+    try {
+      await moveContent({
+        id,
+        desiredParentFolderId,
+        desiredPosition,
+        ownerId: loggedInUserId,
+      });
 
-  res.send({});
-});
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
 
-app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
-  if (!req.user) {
-    res.sendStatus(403);
-    return;
-  }
-  const loggedInUserId = req.user.userId;
-  const targetActivityId = toUUID(req.body.activityId);
-  const desiredParentFolderId = req.body.desiredParentFolderId
-    ? toUUID(req.body.desiredParentFolderId)
-    : null;
+app.post(
+  "/api/duplicateActivity",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    const loggedInUserId = req.user.userId;
+    const targetActivityId = toUUID(req.body.activityId);
+    const desiredParentFolderId = req.body.desiredParentFolderId
+      ? toUUID(req.body.desiredParentFolderId)
+      : null;
 
-  const newActivityId = await copyActivityToFolder(
-    targetActivityId,
-    loggedInUserId,
-    desiredParentFolderId,
-  );
+    try {
+      const newActivityId = await copyActivityToFolder(
+        targetActivityId,
+        loggedInUserId,
+        desiredParentFolderId,
+      );
 
-  res.send({
-    newActivityId: fromUUID(newActivityId),
-    userId: fromUUID(loggedInUserId),
-  });
-});
+      res.send({
+        newActivityId: fromUUID(newActivityId),
+        userId: fromUUID(loggedInUserId),
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
 
-app.post("/api/assignActivity", async (req: Request, res: Response) => {
-  if (!req.user) {
-    res.sendStatus(403);
-    return;
-  }
-  const loggedInUserId = req.user.userId;
-  const activityId = toUUID(req.body.id);
+app.post(
+  "/api/assignActivity",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    const loggedInUserId = req.user.userId;
+    const activityId = toUUID(req.body.id);
+    try {
+      await assignActivity(activityId, loggedInUserId);
 
-  await assignActivity(activityId, loggedInUserId);
-
-  res.send({ userId: fromUUID(loggedInUserId) });
-});
+      res.send({ userId: fromUUID(loggedInUserId) });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
 
 app.post(
   "/api/openAssignmentWithCode",
