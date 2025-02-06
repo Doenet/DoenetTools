@@ -461,7 +461,6 @@ test("searchSharedContent, classification increases relevance", async () => {
     loggedInUserId: userId,
   });
 
-  console.log(results.slice(0, 3));
   expect(results[0].id).eqls(activity2Id);
   expect(results[1].id).eqls(activity1Id);
 

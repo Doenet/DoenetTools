@@ -65,6 +65,13 @@ test("New activity starts out private, then delete it", async () => {
     classCode: null,
     codeValidUntil: null,
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [
       {
@@ -77,6 +84,11 @@ test("New activity starts out private, then delete it", async () => {
     hasScoreData: false,
     parentFolder: null,
   };
+
+  if (activityContent.type === "nested") {
+    throw Error("Should not get nested");
+  }
+
   expect(activityContent.license?.code).eq("CCDUAL");
 
   // set license to null as it is too long to compare in its entirety.
@@ -117,6 +129,9 @@ test("Test updating various activity properties", async () => {
     activityId,
     userId,
   );
+  if (activityContent.type === "nested") {
+    throw Error("Should not get nested");
+  }
   const docId = activityContent.documents[0].id;
   expect(activityContent.name).toBe(activityName);
   const source = "Here comes some content, I made you some content";
@@ -125,9 +140,15 @@ test("Test updating various activity properties", async () => {
     activityId,
     userId,
   );
+  if (activityContent2.type === "nested") {
+    throw Error("Should not get nested");
+  }
   expect(activityContent2.documents[0].source).toBe(source);
 
   const activityViewerContent = await getActivityViewerData(activityId, userId);
+  if (activityViewerContent.activityType !== "singleDoc") {
+    throw Error("Should not get nested");
+  }
   expect(activityViewerContent.activity.name).toBe(activityName);
   expect(activityViewerContent.activity.documents[0].source).toBe(source);
 });
@@ -191,6 +212,9 @@ test("updateDoc updates document properties", async () => {
     ownerId: userId,
   });
   const activityViewerContent = await getActivityViewerData(activityId, userId);
+  if (activityViewerContent.activityType !== "singleDoc") {
+    throw Error("Should not get nested");
+  }
   expect(activityViewerContent.activity.name).toBe(newName);
   expect(activityViewerContent.activity.documents[0].source).toBe(newContent);
 });
@@ -255,6 +279,9 @@ test("get activity/document data only if owner or limited data for public/shared
   await openAssignmentWithCode(activityId, closeAt, ownerId);
 
   let data = await getActivityEditorData(activityId, ownerId);
+  if (data.activity.type === "nested") {
+    throw Error("Should not get nested");
+  }
   expect(data.notMe).eq(false);
   expect(data.activity.assignmentStatus).eq("Open");
 
@@ -273,6 +300,13 @@ test("get activity/document data only if owner or limited data for public/shared
     isShared: false,
     sharedWith: [],
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [],
     hasScoreData: false,
@@ -314,6 +348,13 @@ test("get activity/document data only if owner or limited data for public/shared
     isShared: false,
     sharedWith: [],
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [],
     hasScoreData: false,
@@ -400,6 +441,9 @@ test("activity editor data and my folder contents before and after assigned", as
     activityId,
     ownerId,
   );
+  if (preAssignedData.type === "nested") {
+    throw Error("Should not get nested");
+  }
   let expectedData: ContentStructure = {
     id: activityId,
     name: "Untitled Activity",
@@ -414,6 +458,13 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode: null,
     codeValidUntil: null,
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [
       {
@@ -449,6 +500,9 @@ test("activity editor data and my folder contents before and after assigned", as
     activityId,
     ownerId,
   );
+  if (openedData.type === "nested") {
+    throw Error("Should not get nested");
+  }
   expectedData = {
     id: activityId,
     name: "Untitled Activity",
@@ -463,6 +517,13 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [
       {
@@ -496,6 +557,9 @@ test("activity editor data and my folder contents before and after assigned", as
     activityId,
     ownerId,
   );
+  if (closedData.type === "nested") {
+    throw Error("Should not get nested");
+  }
   expectedData = {
     id: activityId,
     name: "Untitled Activity",
@@ -510,6 +574,13 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: null,
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [
       {
@@ -548,6 +619,9 @@ test("activity editor data and my folder contents before and after assigned", as
     activityId,
     ownerId,
   );
+  if (openedData2.type === "nested") {
+    throw Error("Should not get nested");
+  }
   expectedData = {
     id: activityId,
     name: "Untitled Activity",
@@ -562,6 +636,13 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [
       {
@@ -603,6 +684,9 @@ test("activity editor data and my folder contents before and after assigned", as
     activityId,
     ownerId,
   );
+  if (openedData3.type === "nested") {
+    throw Error("Should not get nested");
+  }
   expectedData = {
     id: activityId,
     name: "Untitled Activity",
@@ -617,6 +701,13 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [
       {
@@ -649,6 +740,9 @@ test("activity editor data and my folder contents before and after assigned", as
     activityId,
     ownerId,
   );
+  if (closedData2.type === "nested") {
+    throw Error("Should not get nested");
+  }
   expectedData = {
     id: activityId,
     name: "Untitled Activity",
@@ -663,6 +757,13 @@ test("activity editor data and my folder contents before and after assigned", as
     classCode,
     codeValidUntil: null,
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [
       {
@@ -702,11 +803,17 @@ test("activity editor data shows its parent folder is public", async () => {
   const { activityId } = await createActivity(ownerId, null);
 
   let { activity: data } = await getActivityEditorData(activityId, ownerId);
+  if (data.type === "nested") {
+    throw Error("Should not get nested");
+  }
   expect(data.isPublic).eq(false);
   expect(data.parentFolder).eq(null);
 
   await makeActivityPublic({ id: activityId, ownerId, licenseCode: "CCBYSA" });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
+  if (data.type === "nested") {
+    throw Error("Should not get nested");
+  }
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCBYSA");
   expect(data.parentFolder).eq(null);
@@ -720,29 +827,44 @@ test("activity editor data shows its parent folder is public", async () => {
   });
 
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
+  if (data.type === "nested") {
+    throw Error("Should not get nested");
+  }
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCBYSA");
   expect(data.parentFolder?.isPublic).eq(false);
 
   await makeFolderPublic({ id: folderId, ownerId, licenseCode: "CCBYNCSA" });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
+  if (data.type === "nested") {
+    throw Error("Should not get nested");
+  }
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCBYNCSA");
   expect(data.parentFolder?.isPublic).eq(true);
 
   await makeFolderPrivate({ id: folderId, ownerId });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
+  if (data.type === "nested") {
+    throw Error("Should not get nested");
+  }
   expect(data.isPublic).eq(false);
   expect(data.parentFolder?.isPublic).eq(false);
 
   await makeFolderPublic({ id: folderId, ownerId, licenseCode: "CCDUAL" });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
+  if (data.type === "nested") {
+    throw Error("Should not get nested");
+  }
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCDUAL");
   expect(data.parentFolder?.isPublic).eq(true);
 
   await makeActivityPrivate({ id: activityId, ownerId });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
+  if (data.type === "nested") {
+    throw Error("Should not get nested");
+  }
   expect(data.isPublic).eq(false);
   expect(data.parentFolder?.isPublic).eq(true);
 });

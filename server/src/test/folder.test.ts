@@ -1424,6 +1424,9 @@ test("copyActivityToFolder copies a public document to a new owner", async () =>
 
   const activityData = await getActivityViewerData(newActivityId, newOwnerId);
 
+  if (activityData.activityType !== "singleDoc") {
+    throw Error("Should not get nested");
+  }
   const contribHist = activityData.docHistories[0].contributorHistory;
   expect(contribHist.length).eq(1);
 
@@ -1457,6 +1460,9 @@ test("copyActivityToFolder copies a shared document to a new owner", async () =>
   expect(newActivity.isPublic).toBe(false);
 
   const activityData = await getActivityViewerData(newActivityId, newOwnerId);
+  if (activityData.activityType !== "singleDoc") {
+    throw Error("Should not get nested");
+  }
 
   expect(activityData.activity.isShared).eq(false);
 
@@ -1497,6 +1503,9 @@ test("copyActivityToFolder remixes correct versions", async () => {
 
   // history should be version 1 of activity 1
   const activityData2 = await getActivityViewerData(activityId2, ownerId2);
+  if (activityData2.activityType !== "singleDoc") {
+    throw Error("Should not get nested");
+  }
   const contribHist2 = activityData2.docHistories[0].contributorHistory;
   expect(contribHist2.length).eq(1);
   expect(contribHist2[0].prevDocId).eqls(docId1);
@@ -1519,6 +1528,9 @@ test("copyActivityToFolder remixes correct versions", async () => {
 
   // history should be version 2 of activity 1
   const activityData3 = await getActivityViewerData(activityId3, ownerId3);
+  if (activityData3.activityType !== "singleDoc") {
+    throw Error("Should not get nested");
+  }
   const contribHist3 = activityData3.docHistories[0].contributorHistory;
   expect(contribHist3.length).eq(1);
   expect(contribHist3[0].prevDocId).eqls(docId1);
@@ -1549,6 +1561,9 @@ test("copyActivityToFolder copies content classifications", async () => {
 
   const activityData = await getActivityEditorData(newActivityId, newOwnerId);
 
+  if (activityData.activity.type === "nested") {
+    throw Error("Should not get nested");
+  }
   expect(activityData.activity.classifications).toHaveLength(1);
   expect(activityData.activity.classifications[0].id).eq(classifyId);
 });
@@ -1599,10 +1614,16 @@ test("copyActivityToFolder copies content featuers", async () => {
   );
 
   const activityData1 = await getActivityEditorData(newActivityId1, newOwnerId);
+  if (activityData1.activity.type === "nested") {
+    throw Error("Should not get nested");
+  }
   expect(activityData1.activity.contentFeatures).toHaveLength(1);
   expect(activityData1.activity.contentFeatures[0].code).eq("isQuestion");
 
   const activityData2 = await getActivityEditorData(newActivityId2, newOwnerId);
+  if (activityData2.activity.type === "nested") {
+    throw Error("Should not get nested");
+  }
   expect(activityData2.activity.contentFeatures).toHaveLength(2);
   expect(activityData2.activity.contentFeatures[0].code).eq("isInteractive");
   expect(activityData2.activity.contentFeatures[1].code).eq("containsVideo");

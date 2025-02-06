@@ -1009,7 +1009,7 @@ export async function getActivityEditorData(
       numToSelect: 1,
       selectByVariant: false,
       shuffle: false,
-      paginate: true,
+      paginate: false,
       activityLevelAttempts: false,
       itemLevelAttempts: false,
       contentFeatures: [],
