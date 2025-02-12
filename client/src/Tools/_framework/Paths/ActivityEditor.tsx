@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
-import { redirect, useLoaderData } from "react-router";
+import { redirect, useLoaderData, useOutletContext } from "react-router";
 
 import {
   Button,
@@ -54,6 +54,7 @@ import {
 } from "../ToolPanels/NestedActivityEditor";
 import { compileActivityFromContent } from "../../../_utils/activity";
 import { ActivitySource } from "../../../_utils/viewerTypes";
+import { UserAndRecent } from "./SiteHeader";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -302,8 +303,12 @@ export function ActivityEditor() {
     document.title = `${baseData.name} - Doenet`;
   }, [baseData.name]);
 
+  const { addRecentEdited } = useOutletContext<UserAndRecent>();
+  console.log({ addRecentEdited });
+
   const [displaySettingsTab, setSettingsDisplayTab] =
     useState<"general">("general");
+  const [highlightRename, setHighlightRename] = useState(false);
 
   const fetcher = useFetcher();
 
@@ -356,6 +361,8 @@ export function ActivityEditor() {
         settingsOnOpen={settingsOnOpen}
         sharingOnOpen={sharingOnOpen}
         finalFocusRef={finalFocusRef}
+        setSettingsDisplayTab={setSettingsDisplayTab}
+        setHighlightRename={setHighlightRename}
       />
     );
   } else {
@@ -380,6 +387,7 @@ export function ActivityEditor() {
       allDoenetmlVersions={allDoenetmlVersions}
       availableFeatures={availableFeatures}
       displayTab={displaySettingsTab}
+      highlightRename={highlightRename}
     />
   ) : null;
 

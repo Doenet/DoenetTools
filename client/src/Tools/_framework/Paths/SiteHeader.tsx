@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   Center,
@@ -40,6 +40,12 @@ export type User =
       isAdmin: boolean;
     }
   | undefined;
+
+export type UserAndRecent = {
+  user: User;
+  recentEdited: { id: string; name: string }[];
+  addRecentEdited: ({ id, name }: { id: string; name: string }) => void;
+};
 
 export async function loader() {
   const {
@@ -128,6 +134,25 @@ export function SiteHeader() {
     { base: false, md: true },
     { ssr: false },
   );
+
+  const [recentEdited, setRecentEdited] = useState<
+    {
+      id: string;
+      name: string;
+    }[]
+  >([]);
+
+  function addRecentEdited({ id, name }: { id: string; name: string }) {
+    setRecentEdited((was) => {
+      let arr = [...was];
+      const ind = arr.map((a) => a.id).indexOf(id);
+      if (ind !== -1) {
+        arr.splice(ind, 1);
+      }
+      arr = [{ id, name }, ...arr].slice(0, 5);
+      return arr;
+    });
+  }
 
   return (
     <>
@@ -329,7 +354,7 @@ export function SiteHeader() {
         </GridItem>
         <GridItem area="main" as="main" margin="0" overflowY="auto">
           <SkipNavContent />
-          <Outlet context={user} />
+          <Outlet context={{ user, recentEdited, addRecentEdited }} />
         </GridItem>
       </Grid>
     </>

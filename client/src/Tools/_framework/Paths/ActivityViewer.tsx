@@ -29,7 +29,7 @@ import axios from "axios";
 import ContributorsMenu from "../ToolPanels/ContributorsMenu";
 
 import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
-import { User } from "./SiteHeader";
+import { UserAndRecent } from "./SiteHeader";
 import { createFullName } from "../../../_utils/names";
 import {
   ContentStructure,
@@ -143,7 +143,7 @@ export function ActivityViewerWrapper() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const user = useOutletContext<User>();
+  const { user } = useOutletContext<UserAndRecent>();
 
   useEffect(() => {
     document.title = `${activity.name} - Doenet`;

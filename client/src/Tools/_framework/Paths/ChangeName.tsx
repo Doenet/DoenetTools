@@ -16,7 +16,7 @@ import {
   useOutletContext,
 } from "react-router";
 import axios from "axios";
-import { User } from "./SiteHeader";
+import { UserAndRecent } from "./SiteHeader";
 import { createFullName } from "../../../_utils/names";
 
 export async function action({
@@ -59,7 +59,7 @@ export function ChangeName({
     redirectTo: string | undefined;
   };
 
-  const user = useOutletContext<User>();
+  const { user } = useOutletContext<UserAndRecent>();
 
   const navigate = useNavigate();
 

@@ -15,7 +15,7 @@ import {
 import { Form } from "react-router";
 import { useNavigate, useOutletContext } from "react-router";
 import "./google-signin.css";
-import { User } from "./SiteHeader";
+import { UserAndRecent } from "./SiteHeader";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -31,7 +31,7 @@ export async function action({ request }) {
 }
 
 export function SignIn() {
-  const user = useOutletContext<User>();
+  const { user } = useOutletContext<UserAndRecent>();
 
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [email, setEmail] = useState("");

@@ -18,7 +18,7 @@ import { WarningIcon } from "@chakra-ui/icons";
 import { BsPlayBtnFill } from "react-icons/bs";
 import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
 import axios from "axios";
-import { User } from "./SiteHeader";
+import { UserAndRecent } from "./SiteHeader";
 import { ContentStructure, DoenetmlVersion } from "../../../_utils/types";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import { MdOutlineInfo } from "react-icons/md";
@@ -81,7 +81,7 @@ export function CodeViewer() {
     onClose: infoOnClose,
   } = useDisclosure();
 
-  const user = useOutletContext<User>();
+  const { user } = useOutletContext<UserAndRecent>();
   const navigate = useNavigate();
 
   const label = activityData?.name ?? "Public Editor";
