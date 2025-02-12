@@ -17,6 +17,7 @@ import {
   Spacer,
   Show,
   Badge,
+  Checkbox,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
 import { ContentStructure } from "../_utils/types";
@@ -48,6 +49,8 @@ export default function Card({
   showActivityFeatures = false,
   listView = false,
   indentLevel = 0,
+  selectedCards,
+  selectCallback,
 }: {
   cardContent: CardContent;
   showOwnerName?: boolean;
@@ -56,8 +59,11 @@ export default function Card({
   showActivityFeatures?: boolean;
   listView?: boolean;
   indentLevel?: number;
+  selectedCards?: Set<string>;
+  selectCallback?: (checked: Record<string, boolean>) => void;
 }) {
   const {
+    id,
     name: title,
     assignmentStatus = "Unassigned",
     isPublic,
@@ -253,6 +259,20 @@ export default function Card({
     );
   }
 
+  let selectCheckbox: ReactElement | null = null;
+
+  if (selectedCards) {
+    selectCheckbox = (
+      <Checkbox
+        margin="5px"
+        isChecked={selectedCards.has(id)}
+        onChange={(e) => {
+          selectCallback?.({ [id]: e.target.checked });
+        }}
+      ></Checkbox>
+    );
+  }
+
   //Note: when we have a menu width 140px becomes 120px
   let card: ReactElement;
   if (listView) {
@@ -394,6 +414,7 @@ export default function Card({
       >
         <CardBody>
           <HStack gap={0}>
+            {selectCheckbox}
             <ChakraLink
               as={ReactRouterLink}
               to={cardLink}

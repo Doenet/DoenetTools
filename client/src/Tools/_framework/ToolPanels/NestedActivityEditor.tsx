@@ -27,7 +27,7 @@ import {
   useOutletContext,
 } from "react-router";
 import MoveContentToFolder, { moveContentActions } from "./MoveContentToFolder";
-import { User } from "../Paths/SiteHeader";
+import { UserAndRecent } from "../Paths/SiteHeader";
 import CardList from "../../../Widgets/CardList";
 import axios from "axios";
 import { ActivitySource } from "../../../_utils/viewerTypes";
@@ -106,6 +106,8 @@ export function NestedActivityEditor({
   settingsOnOpen,
   sharingOnOpen,
   finalFocusRef,
+  setSettingsDisplayTab,
+  setHighlightRename,
 }: {
   activity: NestedActivity;
   activityJson: ActivitySource;
@@ -116,6 +118,8 @@ export function NestedActivityEditor({
   settingsOnOpen: () => void;
   sharingOnOpen: () => void;
   finalFocusRef: React.MutableRefObject<HTMLElement | null>;
+  setSettingsDisplayTab: (arg: "general") => void;
+  setHighlightRename: (arg: boolean) => void;
 }) {
   const structure = activity.structure;
   const contentTypeName = contentTypeToName[structure.type];
@@ -126,7 +130,7 @@ export function NestedActivityEditor({
 
   const readOnly = assignmentStatus !== "Unassigned";
 
-  const user = useOutletContext<User>();
+  const { user } = useOutletContext<UserAndRecent>();
 
   const [haveContentSpinner, setHaveContentSpinner] = useState(false);
 
@@ -341,6 +345,17 @@ export function NestedActivityEditor({
   }) {
     return (
       <>
+        <MenuItem
+          data-test="Rename Menu Item"
+          onClick={() => {
+            setSettingsContentId(id);
+            setSettingsDisplayTab("general");
+            setHighlightRename(true);
+            settingsOnOpen();
+          }}
+        >
+          Rename
+        </MenuItem>
         {!content.isFolder ? (
           <>
             <MenuItem
@@ -434,8 +449,9 @@ export function NestedActivityEditor({
         <MenuItem
           data-test="Settings Menu Item"
           onClick={() => {
-            // setSettingsDisplayTab("general");
+            setSettingsDisplayTab("general");
             setSettingsContentId(content.id);
+            setHighlightRename(false);
             settingsOnOpen();
           }}
         >

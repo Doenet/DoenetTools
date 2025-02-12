@@ -11,6 +11,8 @@ export default function CardList({
   showActivityFeatures = false,
   emptyMessage,
   listView,
+  selectedCards,
+  selectCallback,
 }: {
   content: (
     | CardContent
@@ -27,6 +29,8 @@ export default function CardList({
   showActivityFeatures?: boolean;
   emptyMessage: string;
   listView: boolean;
+  selectedCards?: Set<string>;
+  selectCallback?: (checked: Record<string, boolean>) => void;
 }) {
   if (content.length === 0) {
     return (
@@ -100,6 +104,8 @@ export default function CardList({
           showActivityFeatures={showActivityFeatures}
           listView={listView}
           indentLevel={cardContent.indentLevel}
+          selectedCards={selectedCards}
+          selectCallback={selectCallback}
         />
       );
     }

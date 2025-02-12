@@ -24,12 +24,18 @@ import {
   Input,
   Show,
   Hide,
+  CloseButton,
+  HStack,
+  Menu,
+  MenuButton,
+  MenuList,
 } from "@chakra-ui/react";
 import {
   Link as ReactRouterLink,
   useLoaderData,
   useLocation,
   useNavigate,
+  useOutletContext,
 } from "react-router";
 import Searchbar from "../../../Widgets/SearchBar";
 import { Form, useFetcher } from "react-router";
@@ -52,6 +58,7 @@ import { MdFilterAlt, MdFilterAltOff } from "react-icons/md";
 import { clearQueryParameter } from "../../../_utils/explore";
 import { FilterPanel } from "../ToolPanels/FilterPanel";
 import { ExploreFilterDrawer } from "../ToolPanels/ExploreFilterDrawer";
+import { UserAndRecent } from "./SiteHeader";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -191,11 +198,18 @@ export function Explore() {
     !totalCount.numCurated && totalCount.numCommunity ? 1 : 0,
   );
 
+  const { recentEdited } = useOutletContext<UserAndRecent>();
+
+  console.log({ recentEdited });
+
   const [searchString, setSearchString] = useState(q || "");
 
   const fetcher = useFetcher();
 
   const [listView, setListView] = useState(listViewPref);
+
+  const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set());
+  const numSelected = selectedCards.size;
 
   const { search } = useLocation();
   const navigate = useNavigate();
@@ -253,6 +267,24 @@ export function Explore() {
     />
   );
 
+  useEffect(() => {
+    setSelectedCards(new Set());
+  }, [content, trendingContent]);
+
+  function selectCardCallback(checked: Record<string, boolean>) {
+    setSelectedCards((was) => {
+      const obj = new Set([...was]);
+      for (const id in checked) {
+        if (checked[id]) {
+          obj.add(id);
+        } else {
+          obj.delete(id);
+        }
+      }
+      return obj;
+    });
+  }
+
   function displayMatchingContent(
     matches: ContentStructure[],
     minHeight?: string | { base: string; lg: string },
@@ -302,6 +334,8 @@ export function Explore() {
           content={cardContent}
           emptyMessage={"No Matches Found!"}
           listView={listView}
+          selectedCards={selectedCards}
+          selectCallback={selectCardCallback}
         />
       </Box>
     );
@@ -623,12 +657,11 @@ export function Explore() {
         flexDirection="column"
         justifyContent="center"
         alignItems="center"
-        height="100px"
+        height={q ? "120px" : "80px"}
         background="doenet.canvas"
       >
         <Flex
           fontSize={{ base: "16px", md: "24px" }}
-          backgroundColor={q ? "gray.100" : "inherit"}
           width="100%"
           justifyContent="center"
           marginBottom="2px"
@@ -636,6 +669,7 @@ export function Explore() {
           alignItems="center"
           pl="4px"
           pr="4px"
+          hidden={!q}
         >
           {q ? (
             <>
@@ -667,7 +701,52 @@ export function Explore() {
           ) : null}
         </Flex>
 
-        <Flex width="100%">
+        <Flex
+          width="100%"
+          height="40px"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Flex
+            height="30px"
+            width="100%"
+            alignContent="center"
+            hidden={numSelected === 0}
+            backgroundColor="gray.100"
+            justifyContent="center"
+          >
+            <HStack>
+              <CloseButton
+                size="sm"
+                onClick={() => setSelectedCards(new Set())}
+              />{" "}
+              <Text>{numSelected} selected</Text>
+              <Menu>
+                <MenuButton
+                  as={Button}
+                  size="xs"
+                  colorScheme="blue"
+                  data-test="Selected New Button"
+                >
+                  Add to
+                </MenuButton>
+                <MenuList>
+                  <MenuItem onClick={() => console.log("Add this somewhere")}>
+                    Problem set
+                  </MenuItem>
+                  <MenuItem onClick={() => console.log("Add this somewhere")}>
+                    Folder
+                  </MenuItem>
+                  <MenuItem onClick={() => console.log("Add this somewhere")}>
+                    Question Bank
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+            </HStack>
+          </Flex>
+        </Flex>
+
+        <Flex width="100%" height="40px">
           <Show below="lg">
             <Button
               onClick={filterOnOpen}
@@ -698,7 +777,10 @@ export function Explore() {
 
   const results = (
     <Tabs
-      minHeight={{ base: "calc(100vh - 188px)", lg: "calc(100vh - 135px)" }}
+      minHeight={{
+        base: `calc(100vh - ${q ? "208" : "168"}px)`,
+        lg: `calc(100vh - ${q ? "168" : "128"}px)`,
+      }}
       variant="enclosed-colored"
       index={currentTab}
       onChange={setCurrentTab}
@@ -721,8 +803,8 @@ export function Explore() {
       <TabPanels data-test="Search Results">
         <TabPanel padding={0}>
           {displayMatchingContent([], {
-            base: "calc(100vh - 230px)",
-            lg: "calc(100vh - 177px)",
+            base: `calc(100vh - ${q ? "250" : "210"}px)`,
+            lg: `calc(100vh - ${q ? "210" : "170"}px)`,
           })}
         </TabPanel>
         <TabPanel padding={0}>
@@ -751,8 +833,8 @@ export function Explore() {
             </>
           ) : null}
           {displayMatchingContent(content, {
-            base: "calc(100vh - 230px)",
-            lg: "calc(100vh - 177px)",
+            base: `calc(100vh - ${q ? "250" : "210"}px)`,
+            lg: `calc(100vh - ${q ? "210" : "170"}px)`,
           })}
         </TabPanel>
         <TabPanel>{authorMatches}</TabPanel>
@@ -771,7 +853,7 @@ export function Explore() {
           width="100%"
           gridTemplateColumns="300px 1fr"
           gap="0"
-          marginTop={{ base: "0px", lg: "-53px" }}
+          marginTop={{ base: "0px", lg: "-40px" }}
         >
           <GridItem
             marginLeft="0px"
