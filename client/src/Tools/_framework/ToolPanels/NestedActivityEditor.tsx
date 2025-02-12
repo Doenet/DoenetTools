@@ -20,7 +20,7 @@ import {
   Spinner,
   useDisclosure,
 } from "@chakra-ui/react";
-import { cardActions, CardContent } from "../../../Widgets/Card";
+import { CardContent } from "../../../Widgets/Card";
 import {
   FetcherWithComponents,
   redirect,
@@ -32,9 +32,6 @@ import CardList from "../../../Widgets/CardList";
 import axios from "axios";
 import { ActivitySource } from "../../../_utils/viewerTypes";
 import { ActivityViewer } from "@doenet/assignment-viewer";
-
-// what is a better solution than this?
-let folderJustCreated = ""; // if a folder was just created, set autoFocusName true for the card with the matching id
 
 export async function nestedActivityEditorActions(
   {
@@ -48,16 +45,9 @@ export async function nestedActivityEditorActions(
     [k: string]: any;
   },
 ) {
-  folderJustCreated = "";
-
   const resultMC = await moveContentActions({ formObj });
   if (resultMC) {
     return resultMC;
-  }
-
-  const resultCC = await cardActions({ formObj });
-  if (resultCC) {
-    return resultCC;
   }
 
   if (formObj?._action == "Add Activity") {
@@ -72,7 +62,6 @@ export async function nestedActivityEditorActions(
     if (formObj.type === "singleDoc") {
       return redirect(`/activityEditor/${activityId}`);
     } else {
-      folderJustCreated = activityId;
       return true;
     }
   } else if (formObj?._action == "Delete Activity") {
@@ -465,8 +454,6 @@ export function NestedActivityEditor({
       }
       listView={true}
       content={cardContent}
-      editableTitles={true}
-      folderJustCreated={folderJustCreated}
     />
   );
 

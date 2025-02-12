@@ -13,16 +13,12 @@ import {
   MenuList,
   Link as ChakraLink,
   Tooltip,
-  Editable,
-  EditablePreview,
-  EditableInput,
   HStack,
   Spacer,
   Show,
   Badge,
 } from "@chakra-ui/react";
-import { Link as ReactRouterLink, useFetcher } from "react-router";
-import axios from "axios";
+import { Link as ReactRouterLink } from "react-router";
 import { ContentStructure } from "../_utils/types";
 import { FaFolder } from "react-icons/fa";
 import { RiArchive2Fill } from "react-icons/ri";
@@ -44,30 +40,9 @@ export type CardContent = {
   indentLevel?: number;
 };
 
-export async function cardActions({ formObj }: { [k: string]: any }) {
-  if (formObj._action == "update title") {
-    //Don't let name be blank
-    let name = formObj?.cardTitle?.trim();
-    if (name == "") {
-      name =
-        "Untitled " + (formObj.isFolder === "true" ? "Folder" : "Activity");
-    }
-
-    await axios.post(`/api/updateContentName`, {
-      id: formObj.id,
-      name,
-    });
-    return true;
-  }
-
-  return null;
-}
-
 export default function Card({
   cardContent,
   showOwnerName = false,
-  editableTitle = false,
-  autoFocusTitle = false,
   showAssignmentStatus = false,
   showPublicStatus = false,
   showActivityFeatures = false,
@@ -76,8 +51,6 @@ export default function Card({
 }: {
   cardContent: CardContent;
   showOwnerName?: boolean;
-  editableTitle?: boolean;
-  autoFocusTitle?: boolean;
   showAssignmentStatus?: boolean;
   showPublicStatus?: boolean;
   showActivityFeatures?: boolean;
@@ -85,7 +58,6 @@ export default function Card({
   indentLevel?: number;
 }) {
   const {
-    id,
     name: title,
     assignmentStatus = "Unassigned",
     isPublic,
@@ -99,7 +71,6 @@ export default function Card({
   const { menuItems, closeTime, cardLink, ownerName } = cardContent;
 
   const [cardTitle, setCardTitle] = useState(title);
-  const fetcher = useFetcher();
 
   let contentTypeName;
   if (contentType === "folder") {
@@ -136,24 +107,6 @@ export default function Card({
     }
   }
 
-  function saveUpdatedTitle() {
-    if (cardTitle !== title && id !== undefined) {
-      fetcher.submit(
-        {
-          _action: "update title",
-          id,
-          cardTitle,
-          isFolder: contentType === "folder",
-        },
-        { method: "post" },
-      );
-    }
-    // set default title here so it isn't blank while waiting for activity.title to be set to default on backend
-    if (cardTitle.length === 0) {
-      setCardTitle("Untitled " + contentTypeName);
-    }
-  }
-
   let image: ReactElement | null = null;
 
   if (!listView) {
@@ -171,70 +124,7 @@ export default function Card({
     );
   }
 
-  const titleDisplay = (
-    <Tooltip label={cardTitle}>
-      <Editable
-        value={cardTitle}
-        data-test="Editable Title"
-        startWithEditView={autoFocusTitle}
-        isDisabled={!editableTitle}
-        cursor={editableTitle ? "auto" : "pointer"}
-        onClick={(e) => {
-          if (editableTitle) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
-        }}
-        onChange={(txt) => setCardTitle(txt)}
-        onSubmit={() => saveUpdatedTitle()}
-        fontSize="sm"
-      >
-        <EditablePreview
-          maxHeight="1.5em"
-          noOfLines={1}
-          padding=".1em"
-          onClick={(e) => {
-            if (editableTitle) {
-              e.preventDefault();
-              e.stopPropagation();
-            }
-          }}
-        />
-        <EditableInput
-          size={1000}
-          onClick={(e) => {
-            if (editableTitle) {
-              e.preventDefault();
-              e.stopPropagation();
-            }
-          }}
-          maxLength={191}
-          padding="0"
-          onBlur={() => {
-            // prevent click default/propagation behavior one time (i.e., right now as user is clicking to blur input)
-            const clickListener = (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            };
-            document.addEventListener("click", clickListener, {
-              capture: true,
-              once: true,
-            });
-            // unless the user presses a key; in that case, don't prevent any click behavior, as they could be navigating with the keyboard
-            document.addEventListener(
-              "keyup",
-              () => {
-                document.removeEventListener("click", clickListener, {
-                  capture: true,
-                });
-              },
-              { once: true },
-            );
-          }}
-        />
-      </Editable>
-    </Tooltip>
-  );
+  const titleDisplay = <Tooltip label={cardTitle}>{cardTitle}</Tooltip>;
 
   const menuDisplay = menuItems ? (
     <Menu>

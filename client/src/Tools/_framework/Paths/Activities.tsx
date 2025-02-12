@@ -29,7 +29,7 @@ import {
   Form,
 } from "react-router";
 
-import { cardActions, CardContent } from "../../../Widgets/Card";
+import { CardContent } from "../../../Widgets/Card";
 import CardList from "../../../Widgets/CardList";
 import axios from "axios";
 import MoveContentToFolder, {
@@ -60,12 +60,7 @@ import {
   toggleViewButtonGroupActions,
 } from "../ToolPanels/ToggleViewButtonGroup";
 
-// what is a better solution than this?
-let folderJustCreated = ""; // if a folder was just created, set autoFocusName true for the card with the matching id
-
 export async function action({ request, params }) {
-  folderJustCreated = "";
-
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
@@ -81,11 +76,6 @@ export async function action({ request, params }) {
   const resultAS = await assignmentSettingsActions({ formObj });
   if (resultAS) {
     return resultAS;
-  }
-
-  const resultCC = await cardActions({ formObj });
-  if (resultCC) {
-    return resultCC;
   }
 
   const resultMC = await moveContentActions({ formObj });
@@ -108,10 +98,7 @@ export async function action({ request, params }) {
     const { activityId } = data;
     return redirect(`/activityEditor/${activityId}`);
   } else if (formObj?._action == "Add Folder") {
-    const { data } = await axios.post(
-      `/api/createFolder/${params.folderId ?? ""}`,
-    );
-    folderJustCreated = data.folderId;
+    await axios.post(`/api/createFolder/${params.folderId ?? ""}`);
 
     return true;
   } else if (formObj?._action == "Delete Activity") {
@@ -795,8 +782,6 @@ export function Activities() {
       emptyMessage={emptyMessage}
       listView={listView}
       content={cardContent}
-      editableTitles={true}
-      folderJustCreated={folderJustCreated}
     />
   );
 

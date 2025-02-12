@@ -295,6 +295,10 @@ export function ActivityEditor() {
   }, [readOnly]);
 
   useEffect(() => {
+    setMode("Edit");
+  }, [activityId]);
+
+  useEffect(() => {
     document.title = `${baseData.name} - Doenet`;
   }, [baseData.name]);
 

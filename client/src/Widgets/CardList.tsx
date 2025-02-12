@@ -11,8 +11,6 @@ export default function CardList({
   showActivityFeatures = false,
   emptyMessage,
   listView,
-  folderJustCreated,
-  editableTitles = false,
 }: {
   content: (
     | CardContent
@@ -29,8 +27,6 @@ export default function CardList({
   showActivityFeatures?: boolean;
   emptyMessage: string;
   listView: boolean;
-  folderJustCreated?: string;
-  editableTitles?: boolean;
 }) {
   if (content.length === 0) {
     return (
@@ -94,10 +90,6 @@ export default function CardList({
         </Box>
       );
     } else {
-      const justCreated = folderJustCreated === cardContent.content.id;
-      if (justCreated) {
-        folderJustCreated = "";
-      }
       return (
         <Card
           key={`Card${cardContent.content.id}`}
@@ -106,8 +98,6 @@ export default function CardList({
           showAssignmentStatus={showAssignmentStatus}
           showPublicStatus={showPublicStatus}
           showActivityFeatures={showActivityFeatures}
-          editableTitle={editableTitles}
-          autoFocusTitle={justCreated}
           listView={listView}
           indentLevel={cardContent.indentLevel}
         />
