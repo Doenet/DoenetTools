@@ -80,14 +80,13 @@ export async function nestedActivityEditorActions(
   } else if (formObj?._action == "Duplicate Activity") {
     await axios.post(`/api/duplicateActivity`, {
       activityId: formObj.id,
-      desiredParentFolderId: formObj.folderId,
+      desiredParentId: formObj.folderId,
     });
     return true;
   } else if (formObj?._action == "Move") {
     await axios.post(`/api/moveContent`, {
       id: formObj.id,
-      desiredParentFolderId:
-        formObj.folderId === "null" ? null : formObj.folderId,
+      desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
       desiredPosition: formObj.desiredPosition,
     });
     return true;
@@ -307,7 +306,7 @@ export function NestedActivityEditor({
       ...na.children.flatMap((c, i) =>
         createCardContent(c, indentLevel + 1, i, {
           id: structure.id,
-          parent: structure.parentFolder?.id,
+          parent: structure.parent?.id,
           positionInParent,
           children: na.children,
         }),

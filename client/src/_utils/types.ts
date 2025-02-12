@@ -145,7 +145,7 @@ export type ContentStructure = {
     doenetmlVersion: DoenetmlVersion;
   }[];
   hasScoreData: boolean;
-  parentFolder: {
+  parent: {
     id: string;
     name: string;
     type: ContentType;

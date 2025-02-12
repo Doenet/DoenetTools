@@ -539,13 +539,13 @@ test("moving content into public folder makes it public", async () => {
   // move content into public folder
   await moveContent({
     id: activity1Id,
-    desiredParentFolderId: publicFolderId,
+    desiredParentId: publicFolderId,
     ownerId,
     desiredPosition: 0,
   });
   await moveContent({
     id: folder1Id,
-    desiredParentFolderId: publicFolderId,
+    desiredParentId: publicFolderId,
     ownerId,
     desiredPosition: 1,
   });
@@ -588,13 +588,13 @@ test("moving content into public folder makes it public", async () => {
 
   await moveContent({
     id: activity1Id,
-    desiredParentFolderId: privateFolderId,
+    desiredParentId: privateFolderId,
     ownerId,
     desiredPosition: 0,
   });
   await moveContent({
     id: folder1Id,
-    desiredParentFolderId: privateFolderId,
+    desiredParentId: privateFolderId,
     ownerId,
     desiredPosition: 1,
   });
@@ -695,13 +695,13 @@ test("moving content into shared folder shares it", async () => {
   // move content into shared folder
   await moveContent({
     id: activity1Id,
-    desiredParentFolderId: sharedFolderId,
+    desiredParentId: sharedFolderId,
     ownerId,
     desiredPosition: 0,
   });
   await moveContent({
     id: folder1Id,
-    desiredParentFolderId: sharedFolderId,
+    desiredParentId: sharedFolderId,
     ownerId,
     desiredPosition: 1,
   });
@@ -748,13 +748,13 @@ test("moving content into shared folder shares it", async () => {
 
   await moveContent({
     id: activity1Id,
-    desiredParentFolderId: privateFolderId,
+    desiredParentId: privateFolderId,
     ownerId,
     desiredPosition: 0,
   });
   await moveContent({
     id: folder1Id,
-    desiredParentFolderId: privateFolderId,
+    desiredParentId: privateFolderId,
     ownerId,
     desiredPosition: 1,
   });

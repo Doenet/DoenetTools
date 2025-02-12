@@ -84,7 +84,7 @@ test("New activity starts out private, then delete it", async () => {
       },
     ],
     hasScoreData: false,
-    parentFolder: null,
+    parent: null,
   };
 
   if (activityContent.type === "nested") {
@@ -314,7 +314,7 @@ test("get activity/document data only if owner or limited data for public/shared
     classifications: [],
     documents: [],
     hasScoreData: false,
-    parentFolder: null,
+    parent: null,
   });
 
   await getActivityViewerData(activityId, user1Id);
@@ -364,7 +364,7 @@ test("get activity/document data only if owner or limited data for public/shared
     classifications: [],
     documents: [],
     hasScoreData: false,
-    parentFolder: null,
+    parent: null,
   });
 
   await getActivityViewerData(activityId, user1Id);
@@ -483,7 +483,7 @@ test("activity editor data and my folder contents before and after assigned", as
       },
     ],
     hasScoreData: false,
-    parentFolder: null,
+    parent: null,
   };
   preAssignedData.license = null; // skip trying to check big license object
   expect(preAssignedData).eqls(expectedData);
@@ -545,7 +545,7 @@ test("activity editor data and my folder contents before and after assigned", as
       },
     ],
     hasScoreData: false,
-    parentFolder: null,
+    parent: null,
   };
 
   openedData.license = null; // skip trying to check big license object
@@ -603,7 +603,7 @@ test("activity editor data and my folder contents before and after assigned", as
       },
     ],
     hasScoreData: false,
-    parentFolder: null,
+    parent: null,
   };
 
   closedData.license = null; // skip trying to check big license object
@@ -668,7 +668,7 @@ test("activity editor data and my folder contents before and after assigned", as
       },
     ],
     hasScoreData: false,
-    parentFolder: null,
+    parent: null,
   };
 
   openedData2.license = null; // skip trying to check big license object
@@ -735,7 +735,7 @@ test("activity editor data and my folder contents before and after assigned", as
       },
     ],
     hasScoreData: true,
-    parentFolder: null,
+    parent: null,
   };
 
   openedData3.license = null; // skip trying to check big license object
@@ -793,7 +793,7 @@ test("activity editor data and my folder contents before and after assigned", as
       },
     ],
     hasScoreData: true,
-    parentFolder: null,
+    parent: null,
   };
 
   closedData2.license = null; // skip trying to check big license object
@@ -825,7 +825,7 @@ test("activity editor data shows its parent folder is public", async () => {
     throw Error("Should not get nested");
   }
   expect(data.isPublic).eq(false);
-  expect(data.parentFolder).eq(null);
+  expect(data.parent).eq(null);
 
   await makeActivityPublic({ id: activityId, ownerId, licenseCode: "CCBYSA" });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
@@ -834,12 +834,12 @@ test("activity editor data shows its parent folder is public", async () => {
   }
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCBYSA");
-  expect(data.parentFolder).eq(null);
+  expect(data.parent).eq(null);
 
   const { folderId } = await createFolder(ownerId, null);
   await moveContent({
     id: activityId,
-    desiredParentFolderId: folderId,
+    desiredParentId: folderId,
     desiredPosition: 0,
     ownerId,
   });
@@ -850,7 +850,7 @@ test("activity editor data shows its parent folder is public", async () => {
   }
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCBYSA");
-  expect(data.parentFolder?.isPublic).eq(false);
+  expect(data.parent?.isPublic).eq(false);
 
   await makeFolderPublic({ id: folderId, ownerId, licenseCode: "CCBYNCSA" });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
@@ -859,7 +859,7 @@ test("activity editor data shows its parent folder is public", async () => {
   }
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCBYNCSA");
-  expect(data.parentFolder?.isPublic).eq(true);
+  expect(data.parent?.isPublic).eq(true);
 
   await makeFolderPrivate({ id: folderId, ownerId });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
@@ -867,7 +867,7 @@ test("activity editor data shows its parent folder is public", async () => {
     throw Error("Should not get nested");
   }
   expect(data.isPublic).eq(false);
-  expect(data.parentFolder?.isPublic).eq(false);
+  expect(data.parent?.isPublic).eq(false);
 
   await makeFolderPublic({ id: folderId, ownerId, licenseCode: "CCDUAL" });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
@@ -876,7 +876,7 @@ test("activity editor data shows its parent folder is public", async () => {
   }
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCDUAL");
-  expect(data.parentFolder?.isPublic).eq(true);
+  expect(data.parent?.isPublic).eq(true);
 
   await makeActivityPrivate({ id: activityId, ownerId });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
@@ -884,7 +884,7 @@ test("activity editor data shows its parent folder is public", async () => {
     throw Error("Should not get nested");
   }
   expect(data.isPublic).eq(false);
-  expect(data.parentFolder?.isPublic).eq(true);
+  expect(data.parent?.isPublic).eq(true);
 });
 
 test("getDocumentSource gets source", async () => {

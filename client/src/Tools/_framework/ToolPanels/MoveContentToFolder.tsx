@@ -24,14 +24,14 @@ import { ContentStructure, LicenseCode, UserInfo } from "../../../_utils/types";
 
 type ActiveView = {
   // If folder name and id are null, the active view is the root
-  // If parentFolderId is null, then the parent of active view is the root
+  // If parentId is null, then the parent of active view is the root
   folderId: string | null;
   folderName: string | null;
   folderIsPublic: boolean;
   folderIsShared: boolean;
   folderSharedWith: UserInfo[];
   folderLicenseCode: LicenseCode | null;
-  parentFolderId: string | null;
+  parentId: string | null;
   contents: {
     isFolder: boolean;
     name: string;
@@ -43,8 +43,7 @@ export async function moveContentActions({ formObj }: { [k: string]: any }) {
   if (formObj?._action == "Move to folder") {
     await axios.post(`/api/moveContent`, {
       id: formObj.id,
-      desiredParentFolderId:
-        formObj.folderId === "null" ? null : formObj.folderId,
+      desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
       desiredPosition: formObj.desiredPosition,
     });
     return true;
@@ -100,7 +99,7 @@ export default function MoveContentToFolder({
     folderSharedWith: [],
     folderLicenseCode: null,
     folderId: null,
-    parentFolderId: null,
+    parentId: null,
     contents: [],
   });
 
@@ -118,7 +117,7 @@ export default function MoveContentToFolder({
     const folderIsShared: boolean = folder?.isShared ?? false;
     const folderSharedWith: UserInfo[] = folder?.sharedWith ?? [];
     const folderLicenseCode: LicenseCode | null = folder?.license?.code ?? null;
-    const parentFolderId: string | null = folder?.parentFolder?.id ?? null;
+    const parentId: string | null = folder?.parent?.id ?? null;
     const contentFromApi: ContentStructure[] = data.content;
 
     const content = contentFromApi
@@ -146,7 +145,7 @@ export default function MoveContentToFolder({
       folderIsShared,
       folderSharedWith,
       folderLicenseCode,
-      parentFolderId,
+      parentId,
       contents: content,
     });
 
@@ -190,7 +189,7 @@ export default function MoveContentToFolder({
                   <IconButton
                     icon={<ArrowBackIcon />}
                     aria-label="Back"
-                    onClick={() => updateActiveView(activeView.parentFolderId)}
+                    onClick={() => updateActiveView(activeView.parentId)}
                   />
                   <Text noOfLines={1}>{activeView.folderName}</Text>
                 </>

@@ -137,22 +137,22 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
       expect.objectContaining({
         id: publicActivity1Id,
         isPublic: true,
-        parentFolder: null,
+        parent: null,
       }),
       expect.objectContaining({
         id: privateActivity1Id,
         isPublic: false,
-        parentFolder: null,
+        parent: null,
       }),
       expect.objectContaining({
         id: publicFolder1Id,
         isPublic: true,
-        parentFolder: null,
+        parent: null,
       }),
       expect.objectContaining({
         id: privateFolder1Id,
         isPublic: false,
-        parentFolder: null,
+        parent: null,
       }),
     ]),
   });
@@ -190,14 +190,14 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
     folderId: publicFolder1Id,
   });
   expect(ownerContent.folder?.id).eqls(publicFolder1Id);
-  expect(ownerContent.folder?.parentFolder).eq(null);
+  expect(ownerContent.folder?.parent).eq(null);
   expect(ownerContent.content.length).eq(4);
   expect(ownerContent).toMatchObject({
     content: expect.arrayContaining([
       expect.objectContaining({
         id: publicActivity2Id,
         isPublic: true,
-        parentFolder: {
+        parent: {
           id: publicFolder1Id,
           isPublic: true,
           isShared: false,
@@ -209,7 +209,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
       expect.objectContaining({
         id: privateActivity2Id,
         isPublic: false,
-        parentFolder: {
+        parent: {
           id: publicFolder1Id,
           isPublic: true,
           isShared: false,
@@ -221,7 +221,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
       expect.objectContaining({
         id: publicFolder2Id,
         isPublic: true,
-        parentFolder: {
+        parent: {
           id: publicFolder1Id,
           isPublic: true,
           isShared: false,
@@ -233,7 +233,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
       expect.objectContaining({
         id: privateFolder2Id,
         isPublic: false,
-        parentFolder: {
+        parent: {
           id: publicFolder1Id,
           isPublic: true,
           isShared: false,
@@ -252,7 +252,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
   });
   expect(publicContent.content.length).eq(2);
   expect(publicContent.folder?.id).eqls(publicFolder1Id);
-  expect(publicContent.folder?.parentFolder).eq(null);
+  expect(publicContent.folder?.parent).eq(null);
   expect(publicContent).toMatchObject({
     content: expect.arrayContaining([
       expect.objectContaining({
@@ -277,14 +277,14 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
     folderId: privateFolder1Id,
   });
   expect(ownerContent.folder?.id).eqls(privateFolder1Id);
-  expect(ownerContent.folder?.parentFolder).eq(null);
+  expect(ownerContent.folder?.parent).eq(null);
   expect(ownerContent.content.length).eq(4);
   expect(ownerContent).toMatchObject({
     content: expect.arrayContaining([
       expect.objectContaining({
         id: publicActivity3Id,
         isPublic: true,
-        parentFolder: {
+        parent: {
           id: privateFolder1Id,
           isPublic: false,
           isShared: false,
@@ -296,7 +296,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
       expect.objectContaining({
         id: privateActivity3Id,
         isPublic: false,
-        parentFolder: {
+        parent: {
           id: privateFolder1Id,
           isPublic: false,
           isShared: false,
@@ -308,7 +308,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
       expect.objectContaining({
         id: publicFolder3Id,
         isPublic: true,
-        parentFolder: {
+        parent: {
           id: privateFolder1Id,
           isPublic: false,
           isShared: false,
@@ -320,7 +320,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
       expect.objectContaining({
         id: privateFolder3Id,
         isPublic: false,
-        parentFolder: {
+        parent: {
           id: privateFolder1Id,
           isPublic: false,
           isShared: false,
@@ -353,7 +353,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
     folderId: publicFolder3Id,
   });
   expect(ownerContent.folder?.id).eqls(publicFolder3Id);
-  expect(ownerContent.folder?.parentFolder?.id).eqls(privateFolder1Id);
+  expect(ownerContent.folder?.parent?.id).eqls(privateFolder1Id);
   expect(ownerContent.content.length).eq(0);
 
   publicContent = await getSharedFolderContent({
@@ -362,7 +362,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
     loggedInUserId: userId,
   });
   expect(publicContent.folder?.id).eqls(publicFolder3Id);
-  expect(publicContent.folder?.parentFolder).eq(null);
+  expect(publicContent.folder?.parent).eq(null);
   expect(publicContent.content.length).eq(0);
 
   // If other user tries to access folder, throws error
@@ -528,22 +528,22 @@ test(
         expect.objectContaining({
           id: sharedActivity1Id,
           isShared: true,
-          parentFolder: null,
+          parent: null,
         }),
         expect.objectContaining({
           id: privateActivity1Id,
           isShared: false,
-          parentFolder: null,
+          parent: null,
         }),
         expect.objectContaining({
           id: sharedFolder1Id,
           isShared: true,
-          parentFolder: null,
+          parent: null,
         }),
         expect.objectContaining({
           id: privateFolder1Id,
           isShared: false,
-          parentFolder: null,
+          parent: null,
         }),
       ]),
     });
@@ -616,7 +616,7 @@ test(
       folderId: sharedFolder1Id,
     });
     expect(ownerContent.folder?.id).eqls(sharedFolder1Id);
-    expect(ownerContent.folder?.parentFolder).eq(null);
+    expect(ownerContent.folder?.parent).eq(null);
     expect(ownerContent.content.length).eq(4);
     expect(ownerContent).toMatchObject({
       content: expect.arrayContaining([
@@ -624,7 +624,7 @@ test(
           id: sharedActivity2Id,
           isShared: true,
           sharedWith: [userFields2, userFields1],
-          parentFolder: {
+          parent: {
             id: sharedFolder1Id,
             isPublic: false,
             isShared: true,
@@ -637,7 +637,7 @@ test(
           id: privateActivity2Id,
           isShared: false,
           sharedWith: [],
-          parentFolder: {
+          parent: {
             id: sharedFolder1Id,
             isPublic: false,
             isShared: true,
@@ -650,7 +650,7 @@ test(
           id: sharedFolder2Id,
           isShared: true,
           sharedWith: [userFields2, userFields1],
-          parentFolder: {
+          parent: {
             id: sharedFolder1Id,
             isPublic: false,
             isShared: true,
@@ -663,7 +663,7 @@ test(
           id: privateFolder2Id,
           isShared: false,
           sharedWith: [],
-          parentFolder: {
+          parent: {
             id: sharedFolder1Id,
             isPublic: false,
             isShared: true,
@@ -682,7 +682,7 @@ test(
     });
     expect(sharedContent.content.length).eq(2);
     expect(sharedContent.folder?.id).eqls(sharedFolder1Id);
-    expect(sharedContent.folder?.parentFolder).eq(null);
+    expect(sharedContent.folder?.parent).eq(null);
     expect(sharedContent).toMatchObject({
       content: expect.arrayContaining([
         expect.objectContaining({
@@ -701,7 +701,7 @@ test(
     });
     expect(sharedContent.content.length).eq(2);
     expect(sharedContent.folder?.id).eqls(sharedFolder1Id);
-    expect(sharedContent.folder?.parentFolder).eq(null);
+    expect(sharedContent.folder?.parent).eq(null);
     expect(sharedContent).toMatchObject({
       content: expect.arrayContaining([
         expect.objectContaining({
@@ -735,7 +735,7 @@ test(
       folderId: privateFolder1Id,
     });
     expect(ownerContent.folder?.id).eqls(privateFolder1Id);
-    expect(ownerContent.folder?.parentFolder).eq(null);
+    expect(ownerContent.folder?.parent).eq(null);
     expect(ownerContent.content.length).eq(4);
     expect(ownerContent).toMatchObject({
       content: expect.arrayContaining([
@@ -743,7 +743,7 @@ test(
           id: sharedActivity3Id,
           isShared: true,
           sharedWith: [userFields2, userFields1],
-          parentFolder: {
+          parent: {
             id: privateFolder1Id,
             isPublic: false,
             isShared: false,
@@ -756,7 +756,7 @@ test(
           id: privateActivity3Id,
           isShared: false,
           sharedWith: [],
-          parentFolder: {
+          parent: {
             id: privateFolder1Id,
             isPublic: false,
             isShared: false,
@@ -769,7 +769,7 @@ test(
           id: sharedFolder3Id,
           isShared: true,
           sharedWith: [userFields2, userFields1],
-          parentFolder: {
+          parent: {
             id: privateFolder1Id,
             isPublic: false,
             isShared: false,
@@ -782,7 +782,7 @@ test(
           id: privateFolder3Id,
           isShared: false,
           sharedWith: [],
-          parentFolder: {
+          parent: {
             id: privateFolder1Id,
             isPublic: false,
             isShared: false,
@@ -815,7 +815,7 @@ test(
       folderId: sharedFolder3Id,
     });
     expect(ownerContent.folder?.id).eqls(sharedFolder3Id);
-    expect(ownerContent.folder?.parentFolder?.id).eqls(privateFolder1Id);
+    expect(ownerContent.folder?.parent?.id).eqls(privateFolder1Id);
     expect(ownerContent.content.length).eq(0);
 
     sharedContent = await getSharedFolderContent({
@@ -824,7 +824,7 @@ test(
       loggedInUserId: user1Id,
     });
     expect(sharedContent.folder?.id).eqls(sharedFolder3Id);
-    expect(sharedContent.folder?.parentFolder).eq(null);
+    expect(sharedContent.folder?.parent).eq(null);
     expect(sharedContent.content.length).eq(0);
 
     // If other user tries to access folder, throws error
@@ -1088,7 +1088,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     id: activity1Id,
-    desiredParentFolderId: null,
+    desiredParentId: null,
     desiredPosition: 1,
     ownerId,
   });
@@ -1105,7 +1105,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     id: folder1Id,
-    desiredParentFolderId: null,
+    desiredParentId: null,
     desiredPosition: 0,
     ownerId,
   });
@@ -1122,7 +1122,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     id: activity2Id,
-    desiredParentFolderId: null,
+    desiredParentId: null,
     desiredPosition: 10,
     ownerId,
   });
@@ -1139,7 +1139,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     id: folder3Id,
-    desiredParentFolderId: null,
+    desiredParentId: null,
     desiredPosition: -10,
     ownerId,
   });
@@ -1156,7 +1156,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     id: folder3Id,
-    desiredParentFolderId: folder1Id,
+    desiredParentId: folder1Id,
     desiredPosition: 0,
     ownerId,
   });
@@ -1181,7 +1181,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     id: activity3Id,
-    desiredParentFolderId: null,
+    desiredParentId: null,
     desiredPosition: 2,
     ownerId,
   });
@@ -1206,7 +1206,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     id: folder2Id,
-    desiredParentFolderId: folder3Id,
+    desiredParentId: folder3Id,
     desiredPosition: 2,
     ownerId,
   });
@@ -1223,13 +1223,13 @@ test("move content to different locations", async () => {
 
   await moveContent({
     id: activity3Id,
-    desiredParentFolderId: folder3Id,
+    desiredParentId: folder3Id,
     desiredPosition: 0,
     ownerId,
   });
   await moveContent({
     id: activity1Id,
-    desiredParentFolderId: folder2Id,
+    desiredParentId: folder2Id,
     desiredPosition: 1,
     ownerId,
   });
@@ -1267,7 +1267,7 @@ test("cannot move folder into itself or a subfolder of itself", async () => {
   await expect(
     moveContent({
       id: folder1Id,
-      desiredParentFolderId: folder1Id,
+      desiredParentId: folder1Id,
       desiredPosition: 0,
       ownerId,
     }),
@@ -1276,7 +1276,7 @@ test("cannot move folder into itself or a subfolder of itself", async () => {
   await expect(
     moveContent({
       id: folder1Id,
-      desiredParentFolderId: folder2Id,
+      desiredParentId: folder2Id,
       desiredPosition: 0,
       ownerId,
     }),
@@ -1285,7 +1285,7 @@ test("cannot move folder into itself or a subfolder of itself", async () => {
   await expect(
     moveContent({
       id: folder1Id,
-      desiredParentFolderId: folder3Id,
+      desiredParentId: folder3Id,
       desiredPosition: 0,
       ownerId,
     }),
@@ -1294,7 +1294,7 @@ test("cannot move folder into itself or a subfolder of itself", async () => {
   await expect(
     moveContent({
       id: folder1Id,
-      desiredParentFolderId: folder4Id,
+      desiredParentId: folder4Id,
       desiredPosition: 0,
       ownerId,
     }),
@@ -1324,31 +1324,31 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
   for (let i = 0; i < 5; i++) {
     await moveContent({
       id: activity1Id,
-      desiredParentFolderId: null,
+      desiredParentId: null,
       desiredPosition: 3,
       ownerId,
     });
     await moveContent({
       id: activity2Id,
-      desiredParentFolderId: null,
+      desiredParentId: null,
       desiredPosition: 3,
       ownerId,
     });
     await moveContent({
       id: activity3Id,
-      desiredParentFolderId: null,
+      desiredParentId: null,
       desiredPosition: 3,
       ownerId,
     });
     await moveContent({
       id: activity4Id,
-      desiredParentFolderId: null,
+      desiredParentId: null,
       desiredPosition: 3,
       ownerId,
     });
     await moveContent({
       id: activity6Id,
-      desiredParentFolderId: null,
+      desiredParentId: null,
       desiredPosition: 3,
       ownerId,
     });
@@ -1358,13 +1358,13 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
     }
     await moveContent({
       id: activity5Id,
-      desiredParentFolderId: null,
+      desiredParentId: null,
       desiredPosition: 3,
       ownerId,
     });
     await moveContent({
       id: activity4Id,
-      desiredParentFolderId: null,
+      desiredParentId: null,
       desiredPosition: 3,
       ownerId,
     });
@@ -1389,13 +1389,13 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
   // this time to the left since fewer items are to the left.
   await moveContent({
     id: activity5Id,
-    desiredParentFolderId: null,
+    desiredParentId: null,
     desiredPosition: 2,
     ownerId,
   });
   await moveContent({
     id: activity4Id,
-    desiredParentFolderId: null,
+    desiredParentId: null,
     desiredPosition: 2,
     ownerId,
   });

@@ -864,7 +864,7 @@ test("get all assignment data from anonymous user", async () => {
     await getStudentData({
       userId: newUser1.userId,
       ownerId,
-      parentFolderId: null,
+      parentId: null,
     }),
   );
 
@@ -895,7 +895,7 @@ test("get all assignment data from anonymous user", async () => {
     await getStudentData({
       userId: newUser1.userId,
       ownerId,
-      parentFolderId: null,
+      parentId: null,
     }),
   );
 
@@ -925,7 +925,7 @@ test("get all assignment data from anonymous user", async () => {
     await getStudentData({
       userId: newUser1.userId,
       ownerId,
-      parentFolderId: null,
+      parentId: null,
     }),
   );
 
@@ -977,7 +977,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   const { folderId: folder1Id } = await createFolder(ownerId, baseFolderId);
   await moveContent({
     id: folder1Id,
-    desiredParentFolderId: baseFolderId,
+    desiredParentId: baseFolderId,
     desiredPosition: 0,
     ownerId,
   });
@@ -992,7 +992,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   await updateContent({ id: activity2Id, name: "Activity 2", ownerId });
   await moveContent({
     id: activity2Id,
-    desiredParentFolderId: baseFolderId,
+    desiredParentId: baseFolderId,
     desiredPosition: 1,
     ownerId,
   });
@@ -1011,7 +1011,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   // move activity 1a to right places
   await moveContent({
     id: activity1aId,
-    desiredParentFolderId: folder1Id,
+    desiredParentId: folder1Id,
     desiredPosition: 0,
     ownerId,
   });
@@ -1042,7 +1042,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   // after creating its content move folder 1c2 into the right place
   await moveContent({
     id: folder1c2Id,
-    desiredParentFolderId: folder1cId,
+    desiredParentId: folder1cId,
     desiredPosition: 1,
     ownerId,
   });
@@ -1052,7 +1052,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   await updateContent({ id: activity1b, name: "Activity 1b", ownerId });
   await moveContent({
     id: activity1b,
-    desiredParentFolderId: folder1Id,
+    desiredParentId: folder1Id,
     desiredPosition: 1,
     ownerId,
   });
@@ -1060,7 +1060,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   // move activity 1e to end of folder 1
   await moveContent({
     id: activity1eId,
-    desiredParentFolderId: folder1Id,
+    desiredParentId: folder1Id,
     desiredPosition: 100,
     ownerId,
   });
@@ -1280,7 +1280,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   let scoreData = allAssignmentScoresConvertUUID(
     await getAllAssignmentScores({
       ownerId,
-      parentFolderId: null,
+      parentId: null,
     }),
   );
   expect(scoreData.orderedActivities).eqls(desiredNullFolder);
@@ -1293,7 +1293,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     await getStudentData({
       userId: newUserId,
       ownerId,
-      parentFolderId: null,
+      parentId: null,
     }),
   );
   expect(
@@ -1308,7 +1308,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   scoreData = allAssignmentScoresConvertUUID(
     await getAllAssignmentScores({
       ownerId,
-      parentFolderId: baseFolderId,
+      parentId: baseFolderId,
     }),
   );
   expect(scoreData.orderedActivities).eqls(desiredBaseFolder);
@@ -1321,7 +1321,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     await getStudentData({
       userId: newUserId,
       ownerId,
-      parentFolderId: baseFolderId,
+      parentId: baseFolderId,
     }),
   );
   expect(
@@ -1336,7 +1336,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   scoreData = allAssignmentScoresConvertUUID(
     await getAllAssignmentScores({
       ownerId,
-      parentFolderId: folder1Id,
+      parentId: folder1Id,
     }),
   );
   expect(scoreData.orderedActivities).eqls(desiredFolder1);
@@ -1349,7 +1349,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     await getStudentData({
       userId: newUserId,
       ownerId,
-      parentFolderId: folder1Id,
+      parentId: folder1Id,
     }),
   );
   expect(
@@ -1364,7 +1364,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   scoreData = allAssignmentScoresConvertUUID(
     await getAllAssignmentScores({
       ownerId,
-      parentFolderId: folder3Id,
+      parentId: folder3Id,
     }),
   );
   expect(scoreData.orderedActivities).eqls(desiredFolder3);
@@ -1377,7 +1377,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     await getStudentData({
       userId: newUserId,
       ownerId,
-      parentFolderId: folder3Id,
+      parentId: folder3Id,
     }),
   );
   expect(
@@ -1392,7 +1392,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   scoreData = allAssignmentScoresConvertUUID(
     await getAllAssignmentScores({
       ownerId,
-      parentFolderId: folder1cId,
+      parentId: folder1cId,
     }),
   );
   expect(scoreData.orderedActivities).eqls(desiredFolder1c);
@@ -1405,7 +1405,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     await getStudentData({
       userId: newUserId,
       ownerId,
-      parentFolderId: folder1cId,
+      parentId: folder1cId,
     }),
   );
   expect(
@@ -1420,7 +1420,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   scoreData = allAssignmentScoresConvertUUID(
     await getAllAssignmentScores({
       ownerId,
-      parentFolderId: folder1dId,
+      parentId: folder1dId,
     }),
   );
   expect(scoreData.orderedActivities).eqls([]);
@@ -1431,7 +1431,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     await getStudentData({
       userId: newUserId,
       ownerId,
-      parentFolderId: folder1dId,
+      parentId: folder1dId,
     }),
   );
   expect(studentData.orderedActivityScores).eqls([]);
@@ -1457,7 +1457,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   let scoreData = allAssignmentScoresConvertUUID(
     await getAllAssignmentScores({
       ownerId,
-      parentFolderId: null,
+      parentId: null,
     }),
   );
 
@@ -1496,7 +1496,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   scoreData = allAssignmentScoresConvertUUID(
     await getAllAssignmentScores({
       ownerId,
-      parentFolderId: null,
+      parentId: null,
     }),
   );
 
@@ -1528,7 +1528,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   scoreData = allAssignmentScoresConvertUUID(
     await getAllAssignmentScores({
       ownerId,
-      parentFolderId: null,
+      parentId: null,
     }),
   );
 
@@ -1582,7 +1582,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   scoreData = allAssignmentScoresConvertUUID(
     await getAllAssignmentScores({
       ownerId,
-      parentFolderId: null,
+      parentId: null,
     }),
   );
 
@@ -1650,7 +1650,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   scoreData = allAssignmentScoresConvertUUID(
     await getAllAssignmentScores({
       ownerId,
-      parentFolderId: null,
+      parentId: null,
     }),
   );
 

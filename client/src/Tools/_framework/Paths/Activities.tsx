@@ -116,15 +116,13 @@ export async function action({ request, params }) {
   } else if (formObj?._action == "Duplicate Activity") {
     await axios.post(`/api/duplicateActivity`, {
       activityId: formObj.id,
-      desiredParentFolderId:
-        formObj.folderId === "null" ? null : formObj.folderId,
+      desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
     });
     return true;
   } else if (formObj?._action == "Move") {
     await axios.post(`/api/moveContent`, {
       id: formObj.id,
-      desiredParentFolderId:
-        formObj.folderId === "null" ? null : formObj.folderId,
+      desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
       desiredPosition: formObj.desiredPosition,
     });
     return true;
@@ -290,7 +288,7 @@ export function Activities() {
     isShared,
     sharedWith,
     licenseCode,
-    parentFolderId,
+    parentId,
   }: {
     id: string;
     position: number;
@@ -301,7 +299,7 @@ export function Activities() {
     isShared: boolean;
     sharedWith: UserInfo[];
     licenseCode: LicenseCode | null;
-    parentFolderId: string | null;
+    parentId: string | null;
   }) {
     return (
       <>
@@ -433,7 +431,7 @@ export function Activities() {
             data-test="Go to containing folder"
             onClick={() => {
               navigate(
-                `/activities/${userId}${parentFolderId ? "/" + parentFolderId : ""}`,
+                `/activities/${userId}${parentId ? "/" + parentId : ""}`,
               );
             }}
           >
@@ -702,7 +700,7 @@ export function Activities() {
           {folder && !haveQuery ? (
             <Box>
               <Link
-                to={`/activities/${userId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
+                to={`/activities/${userId}${folder.parent ? "/" + folder.parent.id : ""}`}
                 style={{
                   color: "var(--mainBlue)",
                 }}
@@ -710,9 +708,7 @@ export function Activities() {
                 <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
                   <Show above="sm">
                     &lt; Back to{" "}
-                    {folder.parentFolder
-                      ? folder.parentFolder.name
-                      : `My Activities`}
+                    {folder.parent ? folder.parent.name : `My Activities`}
                   </Show>
                   <Hide above="sm">&lt; Back</Hide>
                 </Text>
@@ -778,7 +774,7 @@ export function Activities() {
         isShared: activity.isShared,
         sharedWith: activity.sharedWith,
         licenseCode: activity.license?.code ?? null,
-        parentFolderId: activity.parentFolder?.id ?? null,
+        parentId: activity.parent?.id ?? null,
       }),
       cardLink:
         activity.type === "folder"

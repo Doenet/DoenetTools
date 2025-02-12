@@ -130,15 +130,15 @@ export function SharedActivities() {
       <Flex marginRight=".5em" alignItems="center" paddingLeft="15px">
         {folder ? (
           <Link
-            to={`/sharedActivities/${ownerId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
+            to={`/sharedActivities/${ownerId}${folder.parent ? "/" + folder.parent.id : ""}`}
             style={{
               color: "var(--mainBlue)",
             }}
           >
             {" "}
             &lt; Back to{" "}
-            {folder.parentFolder
-              ? folder.parentFolder.name
+            {folder.parent
+              ? folder.parent.name
               : `Shared Activities of ${createFullName(owner)}`}
           </Link>
         ) : null}

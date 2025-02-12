@@ -616,14 +616,14 @@ app.post(
 );
 
 app.post(
-  "/api/createActivity/:parentFolderId",
+  "/api/createActivity/:parentId",
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       res.sendStatus(403);
       return;
     }
     const loggedInUserId = req.user.userId;
-    const parentFolderId = toUUID(req.params.parentFolderId);
+    const parentId = toUUID(req.params.parentId);
 
     const body = req.body;
     const contentType: ContentType = isContentType(body.type)
@@ -634,13 +634,13 @@ app.post(
       if (contentType === "singleDoc") {
         const { activityId, docId } = await createActivity(
           loggedInUserId,
-          parentFolderId,
+          parentId,
         );
         res.send({ activityId: fromUUID(activityId), docId: fromUUID(docId) });
       } else {
         const { folderId: activityId } = await createFolder(
           loggedInUserId,
-          parentFolderId,
+          parentId,
           contentType,
         );
         res.send({ activityId: fromUUID(activityId) });
@@ -669,16 +669,16 @@ app.post(
 );
 
 app.post(
-  "/api/createFolder/:parentFolderId",
+  "/api/createFolder/:parentId",
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       res.sendStatus(403);
       return;
     }
     const loggedInUserId = req.user.userId;
-    const parentFolderId = toUUID(req.params.parentFolderId);
+    const parentId = toUUID(req.params.parentId);
     try {
-      const { folderId } = await createFolder(loggedInUserId, parentFolderId);
+      const { folderId } = await createFolder(loggedInUserId, parentId);
       res.send({ folderId: fromUUID(folderId) });
     } catch (e) {
       next(e);
@@ -2085,15 +2085,15 @@ app.post(
     }
     const loggedInUserId = req.user.userId;
     const id = toUUID(req.body.id);
-    const desiredParentFolderId = req.body.desiredParentFolderId
-      ? toUUID(req.body.desiredParentFolderId)
+    const desiredParentId = req.body.desiredParentId
+      ? toUUID(req.body.desiredParentId)
       : null;
     const desiredPosition = Number(req.body.desiredPosition);
 
     try {
       await moveContent({
         id,
-        desiredParentFolderId,
+        desiredParentId,
         desiredPosition,
         ownerId: loggedInUserId,
       });
@@ -2118,15 +2118,15 @@ app.post(
     }
     const loggedInUserId = req.user.userId;
     const targetActivityId = toUUID(req.body.activityId);
-    const desiredParentFolderId = req.body.desiredParentFolderId
-      ? toUUID(req.body.desiredParentFolderId)
+    const desiredParentId = req.body.desiredParentId
+      ? toUUID(req.body.desiredParentId)
       : null;
 
     try {
       const newActivityId = await copyActivityToFolder(
         targetActivityId,
         loggedInUserId,
-        desiredParentFolderId,
+        desiredParentId,
       );
 
       res.send({
@@ -2472,7 +2472,7 @@ app.get(
     try {
       const data = await getAllAssignmentScores({
         ownerId: loggedInUserId,
-        parentFolderId: null,
+        parentId: null,
       });
       res.send(allAssignmentScoresConvertUUID(data));
     } catch (e) {
@@ -2486,19 +2486,19 @@ app.get(
 );
 
 app.get(
-  "/api/getAllAssignmentScores/:parentFolderId",
+  "/api/getAllAssignmentScores/:parentId",
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       res.sendStatus(403);
       return;
     }
     const loggedInUserId = req.user.userId;
-    const folderId = toUUID(req.params.parentFolderId);
+    const folderId = toUUID(req.params.parentId);
 
     try {
       const data = await getAllAssignmentScores({
         ownerId: loggedInUserId,
-        parentFolderId: folderId,
+        parentId: folderId,
       });
       res.send(allAssignmentScoresConvertUUID(data));
     } catch (e) {
@@ -2526,7 +2526,7 @@ app.get(
       const data = await getStudentData({
         userId: userId,
         ownerId: loggedInUserId,
-        parentFolderId: null,
+        parentId: null,
       });
       res.send(studentDataConvertUUID(data));
     } catch (e) {
@@ -2540,7 +2540,7 @@ app.get(
 );
 
 app.get(
-  "/api/getStudentData/:userId/:parentFolderId",
+  "/api/getStudentData/:userId/:parentId",
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       res.sendStatus(403);
@@ -2548,14 +2548,14 @@ app.get(
     }
     const loggedInUserId = req.user.userId;
     const userId = toUUID(req.params.userId);
-    const parentFolderId = toUUID(req.params.parentFolderId);
+    const parentId = toUUID(req.params.parentId);
 
     try {
       // TODO: convert UUIDs
       const data = await getStudentData({
         userId: userId,
         ownerId: loggedInUserId,
-        parentFolderId,
+        parentId,
       });
       res.send(studentDataConvertUUID(data));
     } catch (e) {

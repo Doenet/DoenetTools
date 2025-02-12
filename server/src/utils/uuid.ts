@@ -39,11 +39,11 @@ export function compareUUID(UUID1: Uint8Array, UUID2: Uint8Array) {
 }
 
 export function contentStructureConvertUUID(content: ContentStructure) {
-  const parentFolder = content.parentFolder
+  const parent = content.parent
     ? {
-        ...content.parentFolder,
-        id: fromUUID(content.parentFolder.id),
-        sharedWith: content.parentFolder.sharedWith.map(userConvertUUID),
+        ...content.parent,
+        id: fromUUID(content.parent.id),
+        sharedWith: content.parent.sharedWith.map(userConvertUUID),
       }
     : null;
 
@@ -62,7 +62,7 @@ export function contentStructureConvertUUID(content: ContentStructure) {
     owner,
     sharedWith,
     documents,
-    parentFolder,
+    parent,
   };
 }
 

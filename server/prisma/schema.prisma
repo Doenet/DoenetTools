@@ -20,7 +20,7 @@ model content {
   type                  ContentType              @default(singleDoc)
   ownerId               Bytes                    @db.Binary(16)
   isFolder              Boolean
-  parentFolderId        Bytes?                   @db.Binary(16)
+  parentId              Bytes?                   @db.Binary(16)
   name                  String
   createdAt             DateTime                 @default(now())
   lastEdited            DateTime                 @default(now())
@@ -39,8 +39,8 @@ model content {
   activityLevelAttempts Boolean                  @default(false)
   itemLevelAttempts     Boolean                  @default(false)
   owner                 users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  parentFolder          content?                 @relation("folderStructure", fields: [parentFolderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  subFolders            content[]                @relation("folderStructure")
+  parent                content?                 @relation("childParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children              content[]                @relation("childParent")
   documents             documents[]
   license               licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
   contentFeatures       contentFeatures[]
@@ -50,9 +50,9 @@ model content {
   classifications       contentClassifications[]
   contentViews          contentViews[]
 
-  @@index([ownerId, parentFolderId, sortIndex])
+  @@index([ownerId, parentId, sortIndex])
   @@index([classCode])
-  @@index([parentFolderId, isFolder])
+  @@index([parentId, isFolder])
   @@fulltext([name])
 }
 

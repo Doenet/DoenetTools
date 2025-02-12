@@ -252,9 +252,7 @@ export function ShareSettings({
         </p>
       </Box>
     );
-  } else if (
-    !(contentData.parentFolder?.isPublic || contentData.parentFolder?.isShared)
-  ) {
+  } else if (!(contentData.parent?.isPublic || contentData.parent?.isShared)) {
     chooseLicenseForm = (
       <FormControl isInvalid={missingLicense}>
         <FormLabel mt="20px">Change license</FormLabel>
@@ -363,11 +361,10 @@ export function ShareSettings({
       </Box>
 
       <Box>
-        {contentData.parentFolder?.isPublic ||
-        contentData.parentFolder?.isShared ? (
+        {contentData.parent?.isPublic || contentData.parent?.isShared ? (
           <p style={{ marginTop: "10px" }}>
             This {contentTypeNameLower} is inside a shared{" "}
-            {contentTypeToName[contentData.parentFolder.type].toLowerCase()} and
+            {contentTypeToName[contentData.parent.type].toLowerCase()} and
             inherits its settings.
           </p>
         ) : null}
@@ -431,7 +428,7 @@ export function ShareSettings({
                         </Td>
                       </Hide>
                       <Td>
-                        {contentData.parentFolder?.isPublic ? (
+                        {contentData.parent?.isPublic ? (
                           <Text>(inherited)</Text>
                         ) : (
                           <Tooltip label={`Stop sharing publicly`}>
@@ -464,7 +461,7 @@ export function ShareSettings({
                   ) : null}
                   {contentData.sharedWith.map((user) => {
                     const sharedViaFolder =
-                      (contentData.parentFolder?.sharedWith.findIndex(
+                      (contentData.parent?.sharedWith.findIndex(
                         (cs) => cs.userId === user.userId,
                       ) ?? -1) !== -1;
 
@@ -591,7 +588,7 @@ export function ShareSettings({
           </FormControl>
         </Form>
 
-        {contentData.parentFolder?.isPublic ? null : (
+        {contentData.parent?.isPublic ? null : (
           <>
             <HStack gap={5}>
               <Checkbox

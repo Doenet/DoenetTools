@@ -98,7 +98,7 @@ function processSharedWithForUser(
  * the function is designed to be used with one of the `SharedDetails` functions
  *
  */
-function processParentFolder(parentFolder: {
+function processParent(parent: {
   id: Uint8Array;
   name: string;
   type: ContentType;
@@ -107,13 +107,13 @@ function processParentFolder(parentFolder: {
     user: UserInfo;
   }[];
 }) {
-  const { isShared, sharedWith } = processSharedWith(parentFolder.sharedWith);
+  const { isShared, sharedWith } = processSharedWith(parent.sharedWith);
 
   return {
-    id: parentFolder.id,
-    name: parentFolder.name,
-    type: parentFolder.type,
-    isPublic: parentFolder.isPublic,
+    id: parent.id,
+    name: parent.name,
+    type: parent.type,
+    isPublic: parent.isPublic,
     isShared,
     sharedWith,
   };
@@ -128,8 +128,8 @@ function processParentFolder(parentFolder: {
  *
  * If `determineSharedToUser` is no specified, then `isShared` will be `false`.
  */
-function processParentFolderForUser(
-  parentFolder: {
+function processParentForUser(
+  parent: {
     id: Uint8Array;
     name: string;
     type: ContentType;
@@ -139,15 +139,15 @@ function processParentFolderForUser(
   determineSharedToUser?: Uint8Array,
 ) {
   const { isShared, sharedWith } = processSharedWithForUser(
-    parentFolder.sharedWith,
+    parent.sharedWith,
     determineSharedToUser,
   );
 
   return {
-    id: parentFolder.id,
-    name: parentFolder.name,
-    type: parentFolder.type,
-    isPublic: parentFolder.isPublic,
+    id: parent.id,
+    name: parent.name,
+    type: parent.type,
+    isPublic: parent.isPublic,
     isShared,
     sharedWith,
   };
@@ -234,7 +234,7 @@ export function returnContentStructureNoClassDocsSelect({
         },
       },
     },
-    parentFolder: {
+    parent: {
       select: {
         id: true,
         name: true,
@@ -278,19 +278,19 @@ export function returnContentStructureSharedDetailsNoClassDocsSelect({
     },
   };
 
-  const parentFolderSelect = {
-    ...selectBase.parentFolder.select,
+  const parentSelect = {
+    ...selectBase.parent.select,
     sharedWith,
   };
-  const parentFolder = {
-    ...selectBase.parentFolder,
-    select: parentFolderSelect,
+  const parent = {
+    ...selectBase.parent,
+    select: parentSelect,
   };
 
   const selectedSharedDetails = {
     ...selectBase,
     sharedWith,
-    parentFolder,
+    parent,
   };
 
   return selectedSharedDetails;
@@ -421,19 +421,19 @@ export function returnContentStructureSharedDetailsSelect({
     },
   };
 
-  const parentFolderSelect = {
-    ...selectBase.parentFolder.select,
+  const parentSelect = {
+    ...selectBase.parent.select,
     sharedWith,
   };
-  const parentFolder = {
-    ...selectBase.parentFolder,
-    select: parentFolderSelect,
+  const parent = {
+    ...selectBase.parent,
+    select: parentSelect,
   };
 
   const selectedSharedDetails = {
     ...selectBase,
     sharedWith,
-    parentFolder,
+    parent,
   };
 
   return selectedSharedDetails;
@@ -488,7 +488,7 @@ type PreliminaryContentNoClassDocs = {
   }[];
   sharedWith: { userId: Uint8Array }[];
   license: PreliminaryLicense | null;
-  parentFolder?: {
+  parent?: {
     id: Uint8Array;
     name: string;
     type: ContentType;
@@ -499,10 +499,10 @@ type PreliminaryContentNoClassDocs = {
 
 type PreliminaryContentSharedDetailsNoClassDocs = Omit<
   PreliminaryContentNoClassDocs,
-  "sharedWith" | "parentFolder"
+  "sharedWith" | "parent"
 > & {
   sharedWith: { user: UserInfo }[];
-  parentFolder?: {
+  parent?: {
     id: Uint8Array;
     name: string;
     type: ContentType;
@@ -538,10 +538,10 @@ type PreliminaryContent = PreliminaryContentNoClassDocs & {
 
 type PreliminaryContentSharedDetails = Omit<
   PreliminaryContent,
-  "sharedWith" | "parentFolder"
+  "sharedWith" | "parent"
 > & {
   sharedWith: { user: UserInfo }[];
-  parentFolder?: {
+  parent?: {
     id: Uint8Array;
     name: string;
     type: ContentType;
@@ -589,7 +589,7 @@ export function processContentNoClassDocs(
     codeValidUntil,
     sharedWith: sharedWithOrig,
     license,
-    parentFolder,
+    parent,
     ...preliminaryContent2
   } = preliminaryContent;
 
@@ -617,9 +617,7 @@ export function processContentNoClassDocs(
     documents: [],
     assignmentStatus,
     hasScoreData: false,
-    parentFolder: parentFolder
-      ? processParentFolderForUser(parentFolder, forUserId)
-      : null,
+    parent: parent ? processParentForUser(parent, forUserId) : null,
   };
 
   return content;
@@ -638,7 +636,7 @@ export function processContentSharedDetailsNoClassDocs(
     codeValidUntil,
     sharedWith: sharedWithOrig,
     license,
-    parentFolder,
+    parent,
     ...preliminaryContent2
   } = preliminaryContent;
 
@@ -663,7 +661,7 @@ export function processContentSharedDetailsNoClassDocs(
     documents: [],
     assignmentStatus,
     hasScoreData: false,
-    parentFolder: parentFolder ? processParentFolder(parentFolder) : null,
+    parent: parent ? processParent(parent) : null,
   };
 
   return content;
@@ -685,7 +683,7 @@ export function processContent(
     sharedWith: sharedWithOrig,
     license,
     classifications,
-    parentFolder,
+    parent,
     ...preliminaryContent2
   } = preliminaryContent;
 
@@ -716,9 +714,7 @@ export function processContent(
     baseComponentCounts: preliminaryContent2.documents[0]?.baseComponentCounts,
     assignmentStatus,
     hasScoreData: _count ? _count.assignmentScores > 0 : false,
-    parentFolder: parentFolder
-      ? processParentFolderForUser(parentFolder, forUserId)
-      : null,
+    parent: parent ? processParentForUser(parent, forUserId) : null,
   };
 
   return content;
@@ -739,7 +735,7 @@ export function processContentSharedDetails(
     sharedWith: sharedWithOrig,
     license,
     classifications,
-    parentFolder,
+    parent,
     documents: documentsOrig,
     ...preliminaryContent2
   } = preliminaryContent;
@@ -776,7 +772,7 @@ export function processContentSharedDetails(
     baseComponentCounts: documentsOrig[0]?.baseComponentCounts,
     assignmentStatus,
     hasScoreData: _count ? _count.assignmentScores > 0 : false,
-    parentFolder: parentFolder ? processParentFolder(parentFolder) : null,
+    parent: parent ? processParent(parent) : null,
   };
 
   return content;
@@ -798,7 +794,7 @@ export function processContentSharedDetailsAssignedDoc(
     sharedWith: sharedWithOrig,
     license,
     classifications,
-    parentFolder,
+    parent,
     documents: documentsOrig,
     ...preliminaryContent2
   } = preliminaryContent;
@@ -836,7 +832,7 @@ export function processContentSharedDetailsAssignedDoc(
     ),
     assignmentStatus,
     hasScoreData: _count ? _count.assignmentScores > 0 : false,
-    parentFolder: parentFolder ? processParentFolder(parentFolder) : null,
+    parent: parent ? processParent(parent) : null,
   };
 
   return content;

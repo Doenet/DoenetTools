@@ -120,7 +120,7 @@ export type ContentStructure = {
     doenetmlVersion: DoenetmlVersion;
   }[];
   hasScoreData: boolean;
-  parentFolder: {
+  parent: {
     id: Uint8Array;
     name: string;
     type: ContentType;
