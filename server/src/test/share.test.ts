@@ -823,9 +823,6 @@ test("share with email throws error when no match", async () => {
   });
 
   const { activity } = await getActivityEditorData(activityId, ownerId);
-  if (activity.type === "nested") {
-    throw Error("Should not get nested");
-  }
   expect(activity.sharedWith.map((obj) => obj.email)).eqls([user.email]);
 
   await expect(
@@ -876,9 +873,6 @@ test("share with email throws error when share with self", async () => {
     email: user.email,
   });
   const { activity } = await getActivityEditorData(activityId, ownerId);
-  if (activity.type === "nested") {
-    throw Error("Should not get nested");
-  }
   expect(activity.sharedWith.map((obj) => obj.email)).eqls([user.email]);
 
   await expect(
@@ -1147,9 +1141,6 @@ test("set license to make public", async () => {
     activityId,
     ownerId,
   );
-  if (activityData.type === "nested") {
-    throw Error("Should not get nested");
-  }
   expect(activityData.isPublic).eq(true);
 
   expect(activityData.license?.code).eq("CCBYSA");
@@ -1167,9 +1158,6 @@ test("set license to make public", async () => {
     activityId,
     ownerId,
   ));
-  if (activityData.type === "nested") {
-    throw Error("Should not get nested");
-  }
   expect(activityData.isPublic).eq(false);
 
   // make public with CCBYNCSA license
@@ -1182,9 +1170,6 @@ test("set license to make public", async () => {
     activityId,
     ownerId,
   ));
-  if (activityData.type === "nested") {
-    throw Error("Should not get nested");
-  }
   expect(activityData.isPublic).eq(true);
 
   expect(activityData.license?.code).eq("CCBYNCSA");
@@ -1207,9 +1192,6 @@ test("set license to make public", async () => {
     activityId,
     ownerId,
   ));
-  if (activityData.type === "nested") {
-    throw Error("Should not get nested");
-  }
   expect(activityData.isPublic).eq(true);
 
   expect(activityData.license?.code).eq("CCDUAL");

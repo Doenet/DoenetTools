@@ -1,6 +1,6 @@
 import { TbPuzzle } from "react-icons/tb";
 import { MdOutlineOndemandVideo, MdOutlineSwipeLeft } from "react-icons/md";
-import { ContentClassification, NestedActivity } from "./types";
+import { ContentClassification, ContentStructure } from "./types";
 import { ActivitySource } from "./viewerTypes";
 
 export const activityFeatureIcons = {
@@ -98,42 +98,40 @@ export function findClassificationDescriptionIndex({
 }
 
 export function compileActivityFromContent(
-  activity: NestedActivity,
+  activity: ContentStructure,
 ): ActivitySource {
   const children = activity.children.map(compileActivityFromContent);
 
-  const structure = activity.structure;
-
-  switch (structure.type) {
+  switch (activity.type) {
     case "singleDoc": {
       return {
-        id: structure.id,
-        type: structure.type,
+        id: activity.id,
+        type: activity.type,
         isDescription: false,
-        doenetML: structure.documents[0].source!,
-        version: structure.documents[0].doenetmlVersion.fullVersion,
-        numVariants: structure.numVariants,
-        baseComponentCounts: structure.baseComponentCounts
-          ? JSON.parse(structure.baseComponentCounts)
+        doenetML: activity.documents[0].source!,
+        version: activity.documents[0].doenetmlVersion.fullVersion,
+        numVariants: activity.numVariants,
+        baseComponentCounts: activity.baseComponentCounts
+          ? JSON.parse(activity.baseComponentCounts)
           : undefined,
       };
     }
     case "select": {
       return {
-        id: structure.id,
-        type: structure.type,
-        title: structure.name,
-        numToSelect: structure.numToSelect,
-        selectByVariant: structure.selectByVariant,
+        id: activity.id,
+        type: activity.type,
+        title: activity.name,
+        numToSelect: activity.numToSelect,
+        selectByVariant: activity.selectByVariant,
         items: children,
       };
     }
     case "sequence": {
       return {
-        id: structure.id,
-        type: structure.type,
-        title: structure.name,
-        shuffle: structure.shuffle,
+        id: activity.id,
+        type: activity.type,
+        title: activity.name,
+        shuffle: activity.shuffle,
         items: children,
       };
     }

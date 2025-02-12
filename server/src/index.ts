@@ -123,7 +123,6 @@ import {
   studentDataConvertUUID,
   isEqualUUID,
   docRemixesConvertUUID,
-  nestedActivityConvertUUID,
 } from "./utils/uuid";
 import {
   ContentType,
@@ -1746,19 +1745,11 @@ app.get(
         activityId,
         loggedInUserId,
       );
-      if (editorData.activity.type === "nested") {
-        res.send({
-          notMe: editorData.notMe,
-          activity: nestedActivityConvertUUID(editorData.activity),
-          availableFeatures: editorData.availableFeatures,
-        });
-      } else {
-        res.send({
-          notMe: editorData.notMe,
-          activity: contentStructureConvertUUID(editorData.activity),
-          availableFeatures: editorData.availableFeatures,
-        });
-      }
+      res.send({
+        notMe: editorData.notMe,
+        activity: contentStructureConvertUUID(editorData.activity),
+        availableFeatures: editorData.availableFeatures,
+      });
     } catch (e) {
       if (
         e instanceof Prisma.PrismaClientKnownRequestError &&
@@ -1831,24 +1822,15 @@ app.get(
     const activityId = toUUID(req.params.activityId);
 
     try {
-      const result = await getActivityViewerData(activityId, loggedInUserId);
+      const { activity, docHistories } = await getActivityViewerData(
+        activityId,
+        loggedInUserId,
+      );
 
-      if (result?.activityType === "singleDoc") {
-        const { activityType, activity, docHistories } = result;
-        res.send({
-          activityType,
-          activity: contentStructureConvertUUID(activity),
-          docHistories: docHistories.map(docHistoryConvertUUID),
-        });
-      } else {
-        const { activityType, activity } = result;
-
-        res.send({
-          activityType,
-          content: nestedActivityConvertUUID(activity),
-        });
-        return;
-      }
+      res.send({
+        activity: contentStructureConvertUUID(activity),
+        docHistories: docHistories?.map(docHistoryConvertUUID),
+      });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);

@@ -128,6 +128,7 @@ export type ContentStructure = {
     isShared: boolean;
     sharedWith: UserInfo[];
   } | null;
+  children: ContentStructure[];
 };
 
 export type LicenseCode = "CCDUAL" | "CCBYSA" | "CCBYNCSA";
@@ -212,10 +213,4 @@ export type ClassificationCategoryTree = {
       subCategory: string;
     }[];
   }[];
-};
-
-export type NestedActivity = {
-  type: "nested";
-  structure: ContentStructure;
-  children: NestedActivity[];
 };

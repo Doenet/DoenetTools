@@ -42,10 +42,8 @@ import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 import {
   ContentFeature,
   ContentStructure,
-  ContentType,
   DoenetmlVersion,
   License,
-  NestedActivity,
 } from "../../../_utils/types";
 import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
 import {
@@ -131,21 +129,7 @@ export async function loader({ params }) {
     "/api/getAllDoenetmlVersions",
   );
 
-  if (activityData.type === "nested") {
-    const activityJson = compileActivityFromContent(activityData);
-
-    return {
-      type: activityData.type,
-      // platform,
-      activityData,
-      activityJson,
-      activityId,
-      // supportingFileData,
-      allDoenetmlVersions,
-      allLicenses,
-      availableFeatures,
-    };
-  } else {
+  if (activityData.type === "singleDoc") {
     const docId = activityData.documents[0].id;
 
     const doenetML = activityData.documents[0].source;
@@ -165,29 +149,41 @@ export async function loader({ params }) {
       allLicenses,
       availableFeatures,
     };
+  } else {
+    const activityJson = compileActivityFromContent(activityData);
+
+    return {
+      type: activityData.type,
+      // platform,
+      activityData,
+      activityJson,
+      activityId,
+      // supportingFileData,
+      allDoenetmlVersions,
+      allLicenses,
+      availableFeatures,
+    };
   }
 }
 
 //This is separate as <Editable> wasn't updating when defaultValue was changed
 function EditableName({ dataTest }) {
   const { activityData } = useLoaderData() as {
-    activityData: ContentStructure | NestedActivity;
+    activityData: ContentStructure;
   };
-  const baseData =
-    activityData.type === "nested" ? activityData.structure : activityData;
 
-  const [name, setName] = useState(baseData.name);
+  const [name, setName] = useState(activityData.name);
   const fetcher = useFetcher();
 
-  const lastBaseDataName = useRef(baseData.name);
+  const lastBaseDataName = useRef(activityData.name);
 
   //Update when something else updates the name
-  if (baseData.name != lastBaseDataName.current) {
-    if (name != baseData.name) {
-      setName(baseData.name);
+  if (activityData.name != lastBaseDataName.current) {
+    if (name != activityData.name) {
+      setName(activityData.name);
     }
   }
-  lastBaseDataName.current = baseData.name;
+  lastBaseDataName.current = activityData.name;
 
   return (
     <Editable
@@ -224,17 +220,16 @@ export function ActivityEditor() {
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
     availableFeatures: ContentFeature[];
+    activityData: ContentStructure;
   } & (
     | {
-        type: ContentType;
+        type: "singleDoc";
         doenetML: string;
         doenetmlVersion: DoenetmlVersion;
         docId: string;
-        activityData: ContentStructure;
       }
     | {
-        type: "nested";
-        activityData: NestedActivity;
+        type: "select" | "sequence";
         activityJson: ActivitySource;
       }
   );
@@ -246,9 +241,6 @@ export function ActivityEditor() {
     allLicenses,
     availableFeatures,
   } = data;
-
-  const baseData =
-    activityData.type === "nested" ? activityData.structure : activityData;
 
   const finalFocusRef = useRef<HTMLElement | null>(null);
   const settingsBtnRef = useRef<HTMLButtonElement>(null);
@@ -279,7 +271,7 @@ export function ActivityEditor() {
     onClose: invitationOnClose,
   } = useDisclosure();
 
-  const assignmentStatus = baseData.assignmentStatus;
+  const assignmentStatus = activityData.assignmentStatus;
 
   const readOnly = assignmentStatus !== "Unassigned";
   const readOnlyRef = useRef(readOnly);
@@ -300,8 +292,8 @@ export function ActivityEditor() {
   }, [activityId]);
 
   useEffect(() => {
-    document.title = `${baseData.name} - Doenet`;
-  }, [baseData.name]);
+    document.title = `${activityData.name} - Doenet`;
+  }, [activityData.name]);
 
   const { addRecentEdited } = useOutletContext<UserAndRecent>();
   console.log({ addRecentEdited });
@@ -325,17 +317,17 @@ export function ActivityEditor() {
 
   let contentData: ContentStructure | undefined;
   if (settingsContentId) {
-    if (settingsContentId === baseData.id) {
-      contentData = baseData;
+    if (settingsContentId === activityData.id) {
+      contentData = activityData;
     } else {
-      if (data.type === "nested") {
+      if (data.type !== "singleDoc") {
         function matchSettingsContentId(
-          na: NestedActivity,
+          content: ContentStructure,
         ): ContentStructure | undefined {
-          if (na.structure.id === settingsContentId) {
-            return na.structure;
+          if (content.id === settingsContentId) {
+            return content;
           }
-          for (const child of na.children) {
+          for (const child of content.children) {
             const res = matchSettingsContentId(child);
             if (res) {
               return res;
@@ -349,7 +341,17 @@ export function ActivityEditor() {
 
   let editor: ReactElement;
 
-  if (data.type === "nested") {
+  if (data.type === "singleDoc") {
+    editor = (
+      <ActivityDoenetMLEditor
+        doenetML={data.doenetML}
+        doenetmlVersion={data.doenetmlVersion}
+        assignmentStatus={assignmentStatus}
+        mode={mode}
+        docId={data.docId}
+      />
+    );
+  } else {
     editor = (
       <NestedActivityEditor
         activity={data.activityData}
@@ -363,16 +365,6 @@ export function ActivityEditor() {
         finalFocusRef={finalFocusRef}
         setSettingsDisplayTab={setSettingsDisplayTab}
         setHighlightRename={setHighlightRename}
-      />
-    );
-  } else {
-    editor = (
-      <ActivityDoenetMLEditor
-        doenetML={data.doenetML}
-        doenetmlVersion={data.doenetmlVersion}
-        assignmentStatus={assignmentStatus}
-        mode={mode}
-        docId={data.docId}
       />
     );
   }
@@ -414,12 +406,12 @@ export function ActivityEditor() {
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
         id={activityId}
-        contentData={baseData}
+        contentData={activityData}
       />
       <AssignmentInvitation
         isOpen={invitationIsOpen}
         onClose={invitationOnClose}
-        activityData={baseData}
+        activityData={activityData}
       />
       <Grid
         background="doenet.lightBlue"
@@ -528,7 +520,7 @@ export function ActivityEditor() {
                       leftIcon={<MdOutlineGroup />}
                       onClick={() => {
                         finalFocusRef.current = sharingBtnRef.current;
-                        setSettingsContentId(baseData.id);
+                        setSettingsContentId(activityData.id);
                         sharingOnOpen();
                       }}
                       ref={sharingBtnRef}
@@ -550,7 +542,7 @@ export function ActivityEditor() {
                       onClick={() => {
                         finalFocusRef.current = settingsBtnRef.current;
                         setSettingsDisplayTab("general");
-                        setSettingsContentId(baseData.id);
+                        setSettingsContentId(activityData.id);
                         settingsOnOpen();
                       }}
                       ref={settingsBtnRef}
@@ -579,7 +571,7 @@ export function ActivityEditor() {
                 {assignmentStatus === "Open" ? (
                   <>
                     <Text size="xs">
-                      {` Assignment is open with code ${baseData.classCode}. ${mode == "Edit" ? "It cannot be edited." : ""}`}
+                      {` Assignment is open with code ${activityData.classCode}. ${mode == "Edit" ? "It cannot be edited." : ""}`}
                     </Text>
                     <Button
                       onClick={invitationOnOpen}
@@ -596,7 +588,7 @@ export function ActivityEditor() {
                     {`Activity is a closed assignment${mode == "Edit" ? " and cannot be edited." : "."}`}
                   </Text>
                 )}
-                {baseData.hasScoreData ? (
+                {activityData.hasScoreData ? (
                   <Tooltip label="View data">
                     <Button
                       data-test="Assignment Setting Button"

@@ -153,12 +153,7 @@ export type ContentStructure = {
     isShared: boolean;
     sharedWith: UserInfo[];
   } | null;
-};
-
-export type NestedActivity = {
-  type: "nested";
-  structure: ContentStructure;
-  children: NestedActivity[];
+  children: ContentStructure[];
 };
 
 export type DocHistoryItem = {

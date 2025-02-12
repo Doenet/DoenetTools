@@ -615,6 +615,7 @@ export function processContentNoClassDocs(
     license: license ? processLicense(license) : null,
     classifications: [],
     documents: [],
+    children: [],
     assignmentStatus,
     hasScoreData: false,
     parent: parent ? processParentForUser(parent, forUserId) : null,
@@ -659,6 +660,7 @@ export function processContentSharedDetailsNoClassDocs(
     license: license ? processLicense(license) : null,
     classifications: [],
     documents: [],
+    children: [],
     assignmentStatus,
     hasScoreData: false,
     parent: parent ? processParent(parent) : null,
@@ -715,6 +717,7 @@ export function processContent(
     assignmentStatus,
     hasScoreData: _count ? _count.assignmentScores > 0 : false,
     parent: parent ? processParentForUser(parent, forUserId) : null,
+    children: [],
   };
 
   return content;
@@ -773,6 +776,7 @@ export function processContentSharedDetails(
     assignmentStatus,
     hasScoreData: _count ? _count.assignmentScores > 0 : false,
     parent: parent ? processParent(parent) : null,
+    children: [],
   };
 
   return content;
@@ -833,6 +837,7 @@ export function processContentSharedDetailsAssignedDoc(
     assignmentStatus,
     hasScoreData: _count ? _count.assignmentScores > 0 : false,
     parent: parent ? processParent(parent) : null,
+    children: [],
   };
 
   return content;

@@ -12,7 +12,6 @@ import {
   LicenseCode,
   PartialContentClassification,
   UserInfo,
-  NestedActivity,
 } from "./types";
 import {
   returnClassificationJoins,
@@ -1026,6 +1025,7 @@ export async function getActivityEditorData(
       documents: [],
       hasScoreData: false,
       parent: null,
+      children: [],
     };
     return { notMe: true, activity };
   }
@@ -1092,10 +1092,7 @@ export async function getActivityEditorData(
     return { notMe: false, activity, availableFeatures };
   } else {
     // have a sequence or select activity
-    const activity: NestedActivity = await getNestedActivity(
-      activityId,
-      loggedInUserId,
-    );
+    const activity = await getNestedActivity(activityId, loggedInUserId);
 
     return { notMe: false, activity, availableFeatures };
   }
@@ -1179,17 +1176,13 @@ export async function getActivityViewerData(
     }
 
     return {
-      activityType,
       activity,
       docHistories,
     };
   } else {
-    const activity: NestedActivity = await getNestedActivity(
-      activityId,
-      loggedInUserId,
-    );
+    const activity = await getNestedActivity(activityId, loggedInUserId);
 
-    return { activityType, activity };
+    return { activity };
   }
 }
 
@@ -1239,36 +1232,28 @@ async function getNestedActivity(
   });
 
   const idx = preliminaryList.findIndex((c) => isEqualUUID(c.id, activityId));
-  const activity: NestedActivity = {
-    type: "nested",
-    structure: processContent(preliminaryList[idx], loggedInUserId),
-    children: [],
-  };
+  const activity = processContent(preliminaryList[idx], loggedInUserId);
 
   preliminaryList.splice(idx, 1);
 
   function findDescendants(id: Uint8Array) {
-    const children: NestedActivity[] = [];
+    const children: ContentStructure[] = [];
     for (let i = 0; i < preliminaryList.length; i++) {
       if (isEqualUUID(preliminaryList[i].parent!.id, id)) {
-        children.push({
-          type: "nested",
-          structure: processContent(preliminaryList[i], loggedInUserId),
-          children: [],
-        });
+        children.push(processContent(preliminaryList[i], loggedInUserId));
         preliminaryList.splice(i, 1);
         i--;
       }
     }
 
     for (const child of children) {
-      child.children = findDescendants(child.structure.id);
+      child.children = findDescendants(child.id);
     }
 
     return children;
   }
 
-  activity.children = findDescendants(activity.structure.id);
+  activity.children = findDescendants(activity.id);
   return activity;
 }
 

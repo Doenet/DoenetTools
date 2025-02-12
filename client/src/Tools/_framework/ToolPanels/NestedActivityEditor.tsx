@@ -3,7 +3,6 @@ import {
   AssignmentStatus,
   ContentStructure,
   LicenseCode,
-  NestedActivity,
   UserInfo,
 } from "../../../_utils/types";
 import {
@@ -108,7 +107,7 @@ export function NestedActivityEditor({
   setSettingsDisplayTab,
   setHighlightRename,
 }: {
-  activity: NestedActivity;
+  activity: ContentStructure;
   activityJson: ActivitySource;
   assignmentStatus: AssignmentStatus;
   mode: "Edit" | "View";
@@ -120,8 +119,7 @@ export function NestedActivityEditor({
   setSettingsDisplayTab: (arg: "general") => void;
   setHighlightRename: (arg: boolean) => void;
 }) {
-  const structure = activity.structure;
-  const contentTypeName = contentTypeToName[structure.type];
+  const contentTypeName = contentTypeToName[activity.type];
 
   // refs to the menu button of each content card,
   // which should be given focus when drawers are closed
@@ -167,13 +165,13 @@ export function NestedActivityEditor({
       sharedWith={moveToFolderData.sharedWith}
       licenseCode={moveToFolderData.licenseCode}
       userId={user!.userId}
-      currentParentId={structure.id}
+      currentParentId={activity.id}
       finalFocusRef={finalFocusRef}
     />
   );
 
-  function countCards(na: NestedActivity, init = true): number {
-    const childCounts = na.children.reduce(
+  function countCards(content: ContentStructure, init = true): number {
+    const childCounts = content.children.reduce(
       (a, c) => a + countCards(c, false),
       0,
     );
@@ -181,10 +179,7 @@ export function NestedActivityEditor({
     if (init) {
       // don't count the initial activity
       return childCounts;
-    } else if (
-      na.structure.type === "select" ||
-      na.structure.type === "sequence"
-    ) {
+    } else if (content.type === "select" || content.type === "sequence") {
       // for non-initial select and sequence, count the activity and the blank after them
       return childCounts + 2;
     } else {
@@ -198,21 +193,19 @@ export function NestedActivityEditor({
   let idx = 0;
 
   function createCardContent(
-    na: NestedActivity,
+    content: ContentStructure,
     indentLevel = -1,
     positionInParent = 0,
     parentInfo?: {
       id: string;
       parent?: string;
       positionInParent: number;
-      children: NestedActivity[];
+      children: ContentStructure[];
     },
   ) {
     const getCardMenuRef = (element: HTMLButtonElement) => {
       cardMenuRefs.current[idx] = element;
     };
-
-    const structure = na.structure;
 
     const cards: (
       | CardContent
@@ -234,14 +227,14 @@ export function NestedActivityEditor({
         // If previous sibling is a single doc, take its position.
         // Either become the last child of sibling
         const previousSibling = parentInfo.children[positionInParent - 1];
-        if (previousSibling.structure.type === "singleDoc") {
+        if (previousSibling.type === "singleDoc") {
           nextPositionUp = {
             parent: parentInfo.id,
             position: positionInParent - 1,
           };
         } else {
           nextPositionUp = {
-            parent: previousSibling.structure.id,
+            parent: previousSibling.id,
             position: previousSibling.children.length,
           };
         }
@@ -261,14 +254,14 @@ export function NestedActivityEditor({
         // If next sibling is a single doc, take its position.
         // Either become the first child of sibling
         const nextSibling = parentInfo.children[positionInParent + 1];
-        if (nextSibling.structure.type === "singleDoc") {
+        if (nextSibling.type === "singleDoc") {
           nextPositionDown = {
             parent: parentInfo.id,
             position: positionInParent + 1,
           };
         } else {
           nextPositionDown = {
-            parent: nextSibling.structure.id,
+            parent: nextSibling.id,
             position: 0,
           };
         }
@@ -285,16 +278,16 @@ export function NestedActivityEditor({
 
       cards.push({
         menuRef: getCardMenuRef,
-        content: structure,
+        content: content,
         menuItems: getCardMenuList({
-          id: structure.id,
-          content: structure,
+          id: content.id,
+          content: content,
           nextPositionUp,
           nextPositionDown,
         }),
         cardLink:
-          structure.type === "singleDoc"
-            ? `/activityEditor/${structure.id}`
+          content.type === "singleDoc"
+            ? `/activityEditor/${content.id}`
             : undefined,
         indentLevel,
       });
@@ -303,26 +296,26 @@ export function NestedActivityEditor({
     }
 
     cards.push(
-      ...na.children.flatMap((c, i) =>
+      ...content.children.flatMap((c, i) =>
         createCardContent(c, indentLevel + 1, i, {
-          id: structure.id,
-          parent: structure.parent?.id,
+          id: content.id,
+          parent: content.parent?.id,
           positionInParent,
-          children: na.children,
+          children: content.children,
         }),
       ),
     );
 
     if (
       parentInfo &&
-      (structure.type === "select" || structure.type === "sequence")
+      (content.type === "select" || content.type === "sequence")
     ) {
       idx++;
       cards.push({
         cardType: "afterParent",
-        parentId: structure.id,
+        parentId: content.id,
         indentLevel: indentLevel + 1,
-        empty: na.children.length === 0,
+        empty: content.children.length === 0,
       });
     }
 
@@ -364,7 +357,7 @@ export function NestedActivityEditor({
                   {
                     _action: "Duplicate Activity",
                     id,
-                    folderId: activity.structure.id,
+                    folderId: activity.id,
                   },
                   { method: "post" },
                 );
@@ -466,7 +459,7 @@ export function NestedActivityEditor({
       showAssignmentStatus={true}
       showPublicStatus={true}
       showActivityFeatures={true}
-      emptyMessage={`${contentTypeName} is empty. Add or move documents ${structure.type === "sequence" ? "or question banks " : null}here to begin.`}
+      emptyMessage={`${contentTypeName} is empty. Add or move documents ${activity.type === "sequence" ? "or question banks " : null}here to begin.`}
       listView={true}
       content={cardContent}
     />
@@ -478,9 +471,9 @@ export function NestedActivityEditor({
       requestedVariantIndex={1}
       userId={"hi"}
       linkSettings={{ viewUrl: "", editURL: "" }}
-      paginate={activity.structure.paginate}
-      activityLevelAttempts={activity.structure.activityLevelAttempts}
-      itemLevelAttempts={activity.structure.itemLevelAttempts}
+      paginate={activity.paginate}
+      activityLevelAttempts={activity.activityLevelAttempts}
+      itemLevelAttempts={activity.itemLevelAttempts}
       showTitle={false}
     />
   );
@@ -517,7 +510,7 @@ export function NestedActivityEditor({
           >
             Blank Document
           </MenuItem>
-          {structure.type === "sequence" ? (
+          {activity.type === "sequence" ? (
             <MenuItem
               data-test="Add Question Bank Button"
               onClick={async () => {
