@@ -122,7 +122,7 @@ export async function createActivity(
       ownerId,
       isFolder: false,
       parentFolderId,
-      name: "Untitled Activity",
+      name: "Untitled Document",
       imagePath: "/activity_default.jpg",
       isPublic,
       licenseCode,
@@ -132,7 +132,7 @@ export async function createActivity(
           {
             source: "",
             doenetmlVersionId: defaultDoenetmlVersion.id,
-            name: "Untitled Document",
+            name: "Untitled sub-document",
             baseComponentCounts: "{}",
           },
         ],
@@ -194,15 +194,15 @@ export async function createFolder(
 
   switch (contentType) {
     case "singleDoc": {
-      name = "Untitled Activity";
+      name = "Untitled Document";
       break;
     }
     case "select": {
-      name = "Untitled Select Activity";
+      name = "Untitled Question Bank";
       break;
     }
     case "sequence": {
-      name = "Untitled Sequence Activity";
+      name = "Untitled Problem Set";
       break;
     }
     case "folder": {
@@ -1054,6 +1054,8 @@ export async function getActivityEditorData(
               versionNum: true,
               source: true,
               doenetmlVersion: true,
+              baseComponentCounts: true,
+              numVariants: true,
             },
           },
         },

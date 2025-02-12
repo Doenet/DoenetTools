@@ -272,6 +272,7 @@ export function Activities() {
 
   const [displaySettingsTab, setSettingsDisplayTab] =
     useState<"general">("general");
+  const [highlightRename, setHighlightRename] = useState(false);
 
   useEffect(() => {
     document.title = `Activities - Doenet`;
@@ -304,6 +305,17 @@ export function Activities() {
   }) {
     return (
       <>
+        <MenuItem
+          data-test="Rename Menu Item"
+          onClick={() => {
+            setSettingsContentId(id);
+            setSettingsDisplayTab("general");
+            setHighlightRename(true);
+            settingsOnOpen();
+          }}
+        >
+          Rename
+        </MenuItem>
         {!isFolder ? (
           <>
             <MenuItem
@@ -410,6 +422,7 @@ export function Activities() {
           onClick={() => {
             setSettingsContentId(id);
             setSettingsDisplayTab("general");
+            setHighlightRename(false);
             settingsOnOpen();
           }}
         >
@@ -474,6 +487,7 @@ export function Activities() {
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
         displayTab={displaySettingsTab}
+        highlightRename={highlightRename}
       />
     ) : null;
 

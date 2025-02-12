@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Alert, AlertQueue } from "./AlertQueue";
 import { FetcherWithComponents, Form } from "react-router";
@@ -94,15 +94,15 @@ export async function generalContentActions({ formObj }: { [k: string]: any }) {
 export function GeneralContentControls({
   fetcher,
   contentData,
-  contentDataIsChild = false,
   allDoenetmlVersions,
   availableFeatures,
+  highlightRename = false,
 }: {
   fetcher: FetcherWithComponents<any>;
   contentData: ContentStructure;
-  contentDataIsChild?: boolean;
   allDoenetmlVersions: DoenetmlVersion[];
   availableFeatures: ContentFeature[];
+  highlightRename?: boolean;
 }) {
   const { name, imagePath: dataImagePath } = contentData;
 
@@ -145,6 +145,15 @@ export function GeneralContentControls({
         ? "item"
         : "none",
   );
+
+  const nameInput = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (highlightRename) {
+      nameInput.current?.focus();
+      nameInput.current?.select();
+    }
+  }, [highlightRename]);
 
   const contentType = contentData.type === "folder" ? "Folder" : "Activity";
   const contentTypeLower =
@@ -348,6 +357,7 @@ export function GeneralContentControls({
           <FormLabel mt="16px">Name</FormLabel>
 
           <Input
+            ref={nameInput}
             name="name"
             size="sm"
             // width="392px"
@@ -476,84 +486,29 @@ export function GeneralContentControls({
 
       {contentData.type === "sequence" ? (
         <Box marginTop="20px">
-          <Heading size="sm">Sequence settings</Heading>
-
-          <Checkbox
-            marginTop="10px"
-            isChecked={shuffle}
-            data-test={`Shuffle Checkbox`}
-            onChange={() => {
-              setShuffle(!shuffle);
-
-              fetcher.submit(
-                {
-                  _action: "update general",
-                  id: contentData.id,
-                  shuffle: !shuffle,
-                },
-                { method: "post" },
-              );
-            }}
-          >
-            shuffle items
-          </Checkbox>
-        </Box>
-      ) : null}
-      {contentData.type === "select" ? (
-        <Box marginTop="20px">
-          <Heading size="sm" marginBottom="10px">
-            Select settings
-          </Heading>
+          <Heading size="sm">Problem set settings</Heading>
 
           <VStack alignItems="flex-start" gap={0}>
-            <p>
-              Number to select:{" "}
-              <Input
-                name="numToSelect"
-                size="sm"
-                width="50px"
-                data-test="Number To Select"
-                value={numToSelectText}
-                onChange={(e) => {
-                  setNumToSelectText(e.target.value);
-                }}
-                onBlur={() => saveNumToSelect(numToSelectText)}
-                onKeyDown={(e) => {
-                  if (e.key == "Enter") {
-                    saveNumToSelect(numToSelectText);
-                  }
-                }}
-              />
-            </p>
-
             <Checkbox
               marginTop="10px"
-              isChecked={selectByVariant}
-              data-test={`Select By Variant Checkbox`}
+              isChecked={shuffle}
+              data-test={`Shuffle Checkbox`}
               onChange={() => {
-                setSelectByVariant(!selectByVariant);
+                setShuffle(!shuffle);
 
                 fetcher.submit(
                   {
                     _action: "update general",
                     id: contentData.id,
-                    selectByVariant: !selectByVariant,
+                    shuffle: !shuffle,
                   },
                   { method: "post" },
                 );
               }}
             >
-              Select by variant
+              shuffle items
             </Checkbox>
-          </VStack>
-        </Box>
-      ) : null}
-      {!contentDataIsChild &&
-      (contentData.type === "select" || contentData.type === "sequence") ? (
-        <Box marginTop="20px">
-          <Heading size="sm">Additional settings</Heading>
 
-          <VStack alignItems="flex-start" gap={0}>
             <Checkbox
               marginTop="10px"
               isChecked={paginate}
@@ -596,6 +551,55 @@ export function GeneralContentControls({
                 <Radio value="item">Item</Radio>
               </HStack>
             </RadioGroup>
+          </VStack>
+        </Box>
+      ) : null}
+      {contentData.type === "select" ? (
+        <Box marginTop="20px">
+          <Heading size="sm" marginBottom="10px">
+            Question bank settings
+          </Heading>
+
+          <VStack alignItems="flex-start" gap={0}>
+            <p>
+              Number to select:{" "}
+              <Input
+                name="numToSelect"
+                size="sm"
+                width="50px"
+                data-test="Number To Select"
+                value={numToSelectText}
+                onChange={(e) => {
+                  setNumToSelectText(e.target.value);
+                }}
+                onBlur={() => saveNumToSelect(numToSelectText)}
+                onKeyDown={(e) => {
+                  if (e.key == "Enter") {
+                    saveNumToSelect(numToSelectText);
+                  }
+                }}
+              />
+            </p>
+
+            <Checkbox
+              marginTop="10px"
+              isChecked={selectByVariant}
+              data-test={`Select By Variant Checkbox`}
+              onChange={() => {
+                setSelectByVariant(!selectByVariant);
+
+                fetcher.submit(
+                  {
+                    _action: "update general",
+                    id: contentData.id,
+                    selectByVariant: !selectByVariant,
+                  },
+                  { method: "post" },
+                );
+              }}
+            >
+              Select by variant
+            </Checkbox>
           </VStack>
         </Box>
       ) : null}

@@ -101,6 +101,7 @@ function processSharedWithForUser(
 function processParentFolder(parentFolder: {
   id: Uint8Array;
   name: string;
+  type: ContentType;
   isPublic: boolean;
   sharedWith?: {
     user: UserInfo;
@@ -111,6 +112,7 @@ function processParentFolder(parentFolder: {
   return {
     id: parentFolder.id,
     name: parentFolder.name,
+    type: parentFolder.type,
     isPublic: parentFolder.isPublic,
     isShared,
     sharedWith,
@@ -130,6 +132,7 @@ function processParentFolderForUser(
   parentFolder: {
     id: Uint8Array;
     name: string;
+    type: ContentType;
     isPublic: boolean;
     sharedWith: { userId: Uint8Array }[];
   },
@@ -143,6 +146,7 @@ function processParentFolderForUser(
   return {
     id: parentFolder.id,
     name: parentFolder.name,
+    type: parentFolder.type,
     isPublic: parentFolder.isPublic,
     isShared,
     sharedWith,
@@ -234,6 +238,7 @@ export function returnContentStructureNoClassDocsSelect({
       select: {
         id: true,
         name: true,
+        type: true,
         isPublic: true,
         sharedWith: {
           select: {
@@ -486,6 +491,7 @@ type PreliminaryContentNoClassDocs = {
   parentFolder?: {
     id: Uint8Array;
     name: string;
+    type: ContentType;
     isPublic: boolean;
     sharedWith: { userId: Uint8Array }[];
   } | null;
@@ -499,6 +505,7 @@ type PreliminaryContentSharedDetailsNoClassDocs = Omit<
   parentFolder?: {
     id: Uint8Array;
     name: string;
+    type: ContentType;
     isPublic: boolean;
     sharedWith: { user: UserInfo }[];
   } | null;
@@ -537,6 +544,7 @@ type PreliminaryContentSharedDetails = Omit<
   parentFolder?: {
     id: Uint8Array;
     name: string;
+    type: ContentType;
     isPublic: boolean;
     sharedWith: { user: UserInfo }[];
   } | null;
@@ -561,6 +569,8 @@ type PreliminaryContentSharedDetailsAssignedDoc = Omit<
         deprecationMessage: string;
       };
       versionNum: number;
+      numVariants: number;
+      baseComponentCounts: string;
     } | null;
   }[];
 };
@@ -730,6 +740,7 @@ export function processContentSharedDetails(
     license,
     classifications,
     parentFolder,
+    documents: documentsOrig,
     ...preliminaryContent2
   } = preliminaryContent;
 
@@ -743,8 +754,16 @@ export function processContentSharedDetails(
       : "Open";
   const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
 
+  const documents = documentsOrig.map((doc) => ({
+    id: doc.id,
+    name: doc.name,
+    source: doc.source,
+    doenetmlVersion: doc.doenetmlVersion,
+  }));
+
   const content: ContentStructure = {
     ...preliminaryContent2,
+    documents,
     isShared,
     sharedWith,
     classCode: classCode ?? null,
@@ -753,8 +772,8 @@ export function processContentSharedDetails(
     classifications: sortClassifications(
       classifications.map((c) => c.classification),
     ),
-    numVariants: preliminaryContent2.documents[0]?.numVariants,
-    baseComponentCounts: preliminaryContent2.documents[0]?.baseComponentCounts,
+    numVariants: documentsOrig[0]?.numVariants,
+    baseComponentCounts: documentsOrig[0]?.baseComponentCounts,
     assignmentStatus,
     hasScoreData: _count ? _count.assignmentScores > 0 : false,
     parentFolder: parentFolder ? processParentFolder(parentFolder) : null,
@@ -806,6 +825,8 @@ export function processContentSharedDetailsAssignedDoc(
     ...preliminaryContent2,
     isShared,
     sharedWith,
+    numVariants: documentsOrig[0].assignedVersion?.numVariants,
+    baseComponentCounts: documentsOrig[0].assignedVersion?.baseComponentCounts,
     documents,
     classCode: classCode ?? null,
     codeValidUntil: codeValidUntil ?? null,

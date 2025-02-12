@@ -148,6 +148,7 @@ export type ContentStructure = {
   parentFolder: {
     id: string;
     name: string;
+    type: ContentType;
     isPublic: boolean;
     isShared: boolean;
     sharedWith: UserInfo[];

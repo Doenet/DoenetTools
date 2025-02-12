@@ -31,6 +31,7 @@ import axios from "axios";
 import { createFullName } from "../../../_utils/names";
 import { ContentStructure, License, LicenseCode } from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
+import { contentTypeToName } from "../../../_utils/activity";
 
 export async function sharingActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "make content public") {
@@ -162,8 +163,8 @@ export function ShareSettings({
 
   const placeholder = missingLicense ? "Select license" : undefined;
 
-  const contentType = contentData.isFolder ? "Folder" : "Activity";
-  const contentTypeLower = contentData.isFolder ? "folder" : "activity";
+  const contentTypeName = contentTypeToName[contentData.type];
+  const contentTypeNameLower = contentTypeName.toLowerCase();
 
   const actionResult: any = useActionData();
 
@@ -314,8 +315,8 @@ export function ShareSettings({
               <p>Activity is private.</p>
             ) : (
               <p>
-                Activity is private. However, shared items within the activity
-                can still be found.
+                This {contentTypeNameLower} is private. However, shared items
+                within the {contentTypeNameLower} can still be found.
               </p>
             )
           ) : license === null ? (
@@ -325,15 +326,18 @@ export function ShareSettings({
               background="orange.100"
               padding="5px"
             >
-              <InfoIcon color="orange.500" mr="2px" /> {contentType} is shared
-              without specifying a license. Please select a license below to
-              inform other how they can use your content.
+              <InfoIcon color="orange.500" mr="2px" /> This{" "}
+              {contentTypeNameLower} is shared without specifying a license.
+              Please select a license below to inform other how they can use
+              your content.
             </Box>
           ) : (
             <>
               {license.isComposition ? (
                 <>
-                  <p>{contentType} is shared with these licenses:</p>
+                  <p>
+                    This {contentTypeNameLower} is shared with these licenses:
+                  </p>
                   <List spacing="20px" marginTop="10px">
                     {license.composedOf.map((comp) => (
                       <DisplayLicenseItem licenseItem={comp} key={comp.code} />
@@ -345,7 +349,9 @@ export function ShareSettings({
                 </>
               ) : (
                 <>
-                  <p>{contentType} is shared using the license:</p>
+                  <p>
+                    This {contentTypeNameLower} is shared using the license:
+                  </p>
                   <List marginTop="10px">
                     <DisplayLicenseItem licenseItem={license} />
                   </List>
@@ -360,7 +366,8 @@ export function ShareSettings({
         {contentData.parentFolder?.isPublic ||
         contentData.parentFolder?.isShared ? (
           <p style={{ marginTop: "10px" }}>
-            This {contentTypeLower} is inside a shared folder/activity and
+            This {contentTypeNameLower} is inside a shared{" "}
+            {contentTypeToName[contentData.parentFolder.type].toLowerCase()} and
             inherits its settings.
           </p>
         ) : null}

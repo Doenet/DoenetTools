@@ -26,7 +26,7 @@ import { FaEllipsisVertical, FaListOl } from "react-icons/fa6";
 import { MdAssignment } from "react-icons/md";
 import { BsPeople } from "react-icons/bs";
 import { IconType } from "react-icons/lib";
-import { activityFeatureIcons } from "../_utils/activity";
+import { activityFeatureIcons, contentTypeToName } from "../_utils/activity";
 import { SmallLicenseBadges } from "./Licenses";
 import { IoDiceOutline } from "react-icons/io5";
 
@@ -72,17 +72,7 @@ export default function Card({
 
   const [cardTitle, setCardTitle] = useState(title);
 
-  let contentTypeName;
-  if (contentType === "folder") {
-    contentTypeName = "Folder";
-  } else if (contentType === "singleDoc") {
-    contentTypeName = "Document";
-  } else if (contentType === "sequence") {
-    contentTypeName = "Problem Set";
-  } else {
-    // select
-    contentTypeName = "Question Bank";
-  }
+  const contentTypeName = contentTypeToName[contentType];
 
   useEffect(() => {
     setCardTitle(title);

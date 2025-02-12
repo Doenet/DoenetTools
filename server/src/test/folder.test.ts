@@ -203,6 +203,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
           isShared: false,
           sharedWith: [],
           name: ownerContent.folder?.name,
+          type: "folder",
         },
       }),
       expect.objectContaining({
@@ -214,6 +215,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
           isShared: false,
           sharedWith: [],
           name: ownerContent.folder?.name,
+          type: "folder",
         },
       }),
       expect.objectContaining({
@@ -225,6 +227,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
           isShared: false,
           sharedWith: [],
           name: ownerContent.folder?.name,
+          type: "folder",
         },
       }),
       expect.objectContaining({
@@ -236,6 +239,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
           isShared: false,
           sharedWith: [],
           name: ownerContent.folder?.name,
+          type: "folder",
         },
       }),
     ]),
@@ -286,6 +290,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
           isShared: false,
           sharedWith: [],
           name: ownerContent.folder?.name,
+          type: "folder",
         },
       }),
       expect.objectContaining({
@@ -297,6 +302,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
           isShared: false,
           sharedWith: [],
           name: ownerContent.folder?.name,
+          type: "folder",
         },
       }),
       expect.objectContaining({
@@ -308,6 +314,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
           isShared: false,
           sharedWith: [],
           name: ownerContent.folder?.name,
+          type: "folder",
         },
       }),
       expect.objectContaining({
@@ -319,6 +326,7 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
           isShared: false,
           sharedWith: [],
           name: ownerContent.folder?.name,
+          type: "folder",
         },
       }),
     ]),
@@ -622,6 +630,7 @@ test(
             isShared: true,
             sharedWith: [userFields2, userFields1],
             name: ownerContent.folder?.name,
+            type: "folder",
           },
         }),
         expect.objectContaining({
@@ -634,6 +643,7 @@ test(
             isShared: true,
             sharedWith: [userFields2, userFields1],
             name: ownerContent.folder?.name,
+            type: "folder",
           },
         }),
         expect.objectContaining({
@@ -646,6 +656,7 @@ test(
             isShared: true,
             sharedWith: [userFields2, userFields1],
             name: ownerContent.folder?.name,
+            type: "folder",
           },
         }),
         expect.objectContaining({
@@ -658,6 +669,7 @@ test(
             isShared: true,
             sharedWith: [userFields2, userFields1],
             name: ownerContent.folder?.name,
+            type: "folder",
           },
         }),
       ]),
@@ -737,6 +749,7 @@ test(
             isShared: false,
             sharedWith: [],
             name: ownerContent.folder?.name,
+            type: "folder",
           },
         }),
         expect.objectContaining({
@@ -749,6 +762,7 @@ test(
             isShared: false,
             sharedWith: [],
             name: ownerContent.folder?.name,
+            type: "folder",
           },
         }),
         expect.objectContaining({
@@ -761,6 +775,7 @@ test(
             isShared: false,
             sharedWith: [],
             name: ownerContent.folder?.name,
+            type: "folder",
           },
         }),
         expect.objectContaining({
@@ -773,6 +788,7 @@ test(
             isShared: false,
             sharedWith: [],
             name: ownerContent.folder?.name,
+            type: "folder",
           },
         }),
       ]),

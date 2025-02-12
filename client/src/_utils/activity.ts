@@ -142,3 +142,10 @@ export function compileActivityFromContent(
     }
   }
 }
+
+export const contentTypeToName = {
+  singleDoc: "Document",
+  select: "Question Bank",
+  sequence: "Problem Set",
+  folder: "Folder",
+};

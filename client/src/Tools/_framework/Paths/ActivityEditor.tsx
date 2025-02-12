@@ -126,6 +126,10 @@ export async function loader({ params }) {
 
   const { data: allLicenses } = await axios.get("/api/getAllLicenses");
 
+  const { data: allDoenetmlVersions } = await axios.get(
+    "/api/getAllDoenetmlVersions",
+  );
+
   if (activityData.type === "nested") {
     const activityJson = compileActivityFromContent(activityData);
 
@@ -136,7 +140,7 @@ export async function loader({ params }) {
       activityJson,
       activityId,
       // supportingFileData,
-      allDoenetmlVersions: [],
+      allDoenetmlVersions,
       allLicenses,
       availableFeatures,
     };
@@ -146,10 +150,6 @@ export async function loader({ params }) {
     const doenetML = activityData.documents[0].source;
     const doenetmlVersion: DoenetmlVersion =
       activityData.documents[0].doenetmlVersion;
-
-    const { data: allDoenetmlVersions } = await axios.get(
-      "/api/getAllDoenetmlVersions",
-    );
 
     return {
       type: activityData.type,
@@ -319,7 +319,6 @@ export function ActivityEditor() {
   );
 
   let contentData: ContentStructure | undefined;
-  let contentDataIsChild = false;
   if (settingsContentId) {
     if (settingsContentId === baseData.id) {
       contentData = baseData;
@@ -339,7 +338,6 @@ export function ActivityEditor() {
           }
         }
         contentData = matchSettingsContentId(data.activityData);
-        contentDataIsChild = true;
       }
     }
   }
@@ -379,7 +377,6 @@ export function ActivityEditor() {
       finalFocusRef={finalFocusRef}
       fetcher={fetcher}
       contentData={contentData}
-      contentDataIsChild={contentDataIsChild}
       allDoenetmlVersions={allDoenetmlVersions}
       availableFeatures={availableFeatures}
       displayTab={displaySettingsTab}

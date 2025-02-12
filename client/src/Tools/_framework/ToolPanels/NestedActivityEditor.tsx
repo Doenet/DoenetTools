@@ -32,6 +32,7 @@ import CardList from "../../../Widgets/CardList";
 import axios from "axios";
 import { ActivitySource } from "../../../_utils/viewerTypes";
 import { ActivityViewer } from "@doenet/assignment-viewer";
+import { contentTypeToName } from "../../../_utils/activity";
 
 export async function nestedActivityEditorActions(
   {
@@ -117,6 +118,7 @@ export function NestedActivityEditor({
   finalFocusRef: React.MutableRefObject<HTMLElement | null>;
 }) {
   const structure = activity.structure;
+  const contentTypeName = contentTypeToName[structure.type];
 
   // refs to the menu button of each content card,
   // which should be given focus when drawers are closed
@@ -449,9 +451,7 @@ export function NestedActivityEditor({
       showAssignmentStatus={true}
       showPublicStatus={true}
       showActivityFeatures={true}
-      emptyMessage={
-        "Activity is empty. Add or move activities into this activity to begin."
-      }
+      emptyMessage={`${contentTypeName} is empty. Add or move documents ${structure.type === "sequence" ? "or question banks " : null}here to begin.`}
       listView={true}
       content={cardContent}
     />
@@ -491,7 +491,7 @@ export function NestedActivityEditor({
         </MenuButton>
         <MenuList>
           <MenuItem
-            data-test="Add Activity Button"
+            data-test="Add Document Button"
             onClick={async () => {
               setHaveContentSpinner(true);
               fetcher.submit(
@@ -500,32 +500,22 @@ export function NestedActivityEditor({
               );
             }}
           >
-            Activity
+            Blank Document
           </MenuItem>
-          <MenuItem
-            data-test="Add Select Activity Button"
-            onClick={async () => {
-              setHaveContentSpinner(true);
-              fetcher.submit(
-                { _action: "Add Activity", type: "select" },
-                { method: "post" },
-              );
-            }}
-          >
-            Select Activity
-          </MenuItem>
-          <MenuItem
-            data-test="Add Sequence Activity Button"
-            onClick={async () => {
-              setHaveContentSpinner(true);
-              fetcher.submit(
-                { _action: "Add Activity", type: "sequence" },
-                { method: "post" },
-              );
-            }}
-          >
-            Sequence Activity
-          </MenuItem>
+          {structure.type === "sequence" ? (
+            <MenuItem
+              data-test="Add Question Bank Button"
+              onClick={async () => {
+                setHaveContentSpinner(true);
+                fetcher.submit(
+                  { _action: "Add Activity", type: "select" },
+                  { method: "post" },
+                );
+              }}
+            >
+              Empty Question Bank
+            </MenuItem>
+          ) : null}
         </MenuList>
       </Menu>
     </Flex>

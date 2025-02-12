@@ -33,6 +33,7 @@ import {
   ClassificationSettings,
   classificationSettingsActions,
 } from "./ClassificationSettings";
+import { contentTypeToName } from "../../../_utils/activity";
 
 export async function contentSettingsActions({
   formObj,
@@ -62,23 +63,23 @@ export function ContentSettingsDrawer({
   onClose,
   finalFocusRef,
   contentData,
-  contentDataIsChild = false,
   allDoenetmlVersions,
   availableFeatures,
   supportingFileData,
   fetcher,
   displayTab = "general",
+  highlightRename = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
   contentData: ContentStructure;
-  contentDataIsChild?: boolean;
   allDoenetmlVersions: DoenetmlVersion[];
   availableFeatures: ContentFeature[];
   supportingFileData?: any;
   fetcher: FetcherWithComponents<any>;
   displayTab?: "general" | "files";
+  highlightRename?: boolean;
 }) {
   const haveSupportingFiles = Boolean(supportingFileData);
   const numTabs = haveSupportingFiles ? 4 : 3;
@@ -102,14 +103,7 @@ export function ContentSettingsDrawer({
     setTabIndex(initialTabIndex);
   }, [displayTab, isOpen]);
 
-  const contentType =
-    contentData.type === "singleDoc"
-      ? "Activity"
-      : contentData.type === "select"
-        ? "Select Activity"
-        : contentData.type === "sequence"
-          ? "Sequence Activity"
-          : "Folder";
+  const contentTypeName = contentTypeToName[contentData.type];
 
   return (
     <Drawer
@@ -123,7 +117,7 @@ export function ContentSettingsDrawer({
       <DrawerContent>
         <DrawerCloseButton data-test="Close Settings Button" />
         <DrawerHeader textAlign="center" height="70px">
-          {contentType} Controls
+          {contentTypeName} Controls
           <Tooltip label={contentData.name}>
             <Text fontSize="smaller" noOfLines={1}>
               {contentData.name}
@@ -155,9 +149,9 @@ export function ContentSettingsDrawer({
                   <GeneralContentControls
                     fetcher={fetcher}
                     contentData={contentData}
-                    contentDataIsChild={contentDataIsChild}
                     allDoenetmlVersions={allDoenetmlVersions}
                     availableFeatures={availableFeatures}
+                    highlightRename={highlightRename}
                   />
                 </TabPanel>
                 {contentData.type !== "folder" ? (

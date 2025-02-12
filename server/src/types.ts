@@ -123,6 +123,7 @@ export type ContentStructure = {
   parentFolder: {
     id: Uint8Array;
     name: string;
+    type: ContentType;
     isPublic: boolean;
     isShared: boolean;
     sharedWith: UserInfo[];
