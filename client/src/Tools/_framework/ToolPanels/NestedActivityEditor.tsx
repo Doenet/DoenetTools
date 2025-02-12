@@ -20,7 +20,7 @@ import {
   Spinner,
   useDisclosure,
 } from "@chakra-ui/react";
-import { CardContent } from "../../../Widgets/Card";
+import { cardActions, CardContent } from "../../../Widgets/Card";
 import {
   FetcherWithComponents,
   redirect,
@@ -48,9 +48,16 @@ export async function nestedActivityEditorActions(
     [k: string]: any;
   },
 ) {
+  folderJustCreated = "";
+
   const resultMC = await moveContentActions({ formObj });
   if (resultMC) {
     return resultMC;
+  }
+
+  const resultCC = await cardActions({ formObj });
+  if (resultCC) {
+    return resultCC;
   }
 
   if (formObj?._action == "Add Activity") {
@@ -295,7 +302,6 @@ export function NestedActivityEditor({
           structure.type === "singleDoc"
             ? `/activityEditor/${structure.id}`
             : undefined,
-        cardType: "activity",
         indentLevel,
       });
 

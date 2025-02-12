@@ -311,6 +311,8 @@ export function returnContentStructureBaseSelect({
         name: true,
         source: true,
         doenetmlVersion: true,
+        numVariants: true,
+        baseComponentCounts: true,
       },
       orderBy: { id: "asc" as const },
     },
@@ -516,6 +518,8 @@ type PreliminaryContent = PreliminaryContentNoClassDocs & {
       removed: boolean;
       deprecationMessage: string;
     };
+    numVariants: number;
+    baseComponentCounts: string;
   }[];
   classifications: {
     classification: ContentClassification;
@@ -698,6 +702,8 @@ export function processContent(
     classifications: sortClassifications(
       classifications.map((c) => c.classification),
     ),
+    numVariants: preliminaryContent2.documents[0]?.numVariants,
+    baseComponentCounts: preliminaryContent2.documents[0]?.baseComponentCounts,
     assignmentStatus,
     hasScoreData: _count ? _count.assignmentScores > 0 : false,
     parentFolder: parentFolder
@@ -747,6 +753,8 @@ export function processContentSharedDetails(
     classifications: sortClassifications(
       classifications.map((c) => c.classification),
     ),
+    numVariants: preliminaryContent2.documents[0]?.numVariants,
+    baseComponentCounts: preliminaryContent2.documents[0]?.baseComponentCounts,
     assignmentStatus,
     hasScoreData: _count ? _count.assignmentScores > 0 : false,
     parentFolder: parentFolder ? processParentFolder(parentFolder) : null,

@@ -467,6 +467,13 @@ export function GeneralContentControls({
           {doenetmlVersion.deprecationMessage}
         </p>
       )}
+
+      {(contentData.numVariants ?? 1) > 1 ? (
+        <Box marginTop="20px">
+          This activity has {contentData.numVariants} variants.
+        </Box>
+      ) : null}
+
       {contentData.type === "sequence" ? (
         <Box marginTop="20px">
           <Heading size="sm">Sequence settings</Heading>

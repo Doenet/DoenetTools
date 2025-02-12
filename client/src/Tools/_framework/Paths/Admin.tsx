@@ -96,15 +96,9 @@ export function Admin() {
                     <Card
                       key={`Card${activity.id}`}
                       cardContent={{
-                        cardType: "activity",
                         cardLink,
-                        id: activity.id,
-                        title: activity.name,
+                        content: activity,
                         ownerName: createFullName(activity.owner!),
-                        imagePath: activity.imagePath,
-                        isQuestion: activity.isQuestion,
-                        isInteractive: activity.isInteractive,
-                        containsVideo: activity.containsVideo,
                         menuItems: (
                           <MoveToGroupMenuItem
                             activityId={activity.id}

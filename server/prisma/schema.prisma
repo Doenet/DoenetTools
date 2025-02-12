@@ -64,20 +64,22 @@ enum ContentType {
 }
 
 model documents {
-  id                 Bytes                @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
-  activityId         Bytes                @db.Binary(16)
-  source             String               @db.MediumText
-  createdAt          DateTime             @default(now())
-  lastEdited         DateTime             @default(now())
-  name               String
-  isDeleted          Boolean              @default(false)
-  assignedVersionNum Int?
-  doenetmlVersionId  Int
-  assignedVersion    documentVersions?    @relation("assignedVersion", fields: [id, assignedVersionNum], references: [docId, versionNum], onDelete: NoAction, onUpdate: NoAction)
-  documentVersions   documentVersions[]
-  activity           content              @relation(fields: [activityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  doenetmlVersion    doenetmlVersions     @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  contributorHistory contributorHistory[]
+  id                  Bytes                @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
+  activityId          Bytes                @db.Binary(16)
+  source              String               @db.MediumText
+  createdAt           DateTime             @default(now())
+  lastEdited          DateTime             @default(now())
+  name                String
+  numVariants         Int                  @default(1)
+  baseComponentCounts String               @db.Text
+  isDeleted           Boolean              @default(false)
+  assignedVersionNum  Int?
+  doenetmlVersionId   Int
+  assignedVersion     documentVersions?    @relation("assignedVersion", fields: [id, assignedVersionNum], references: [docId, versionNum], onDelete: NoAction, onUpdate: NoAction)
+  documentVersions    documentVersions[]
+  activity            content              @relation(fields: [activityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  doenetmlVersion     doenetmlVersions     @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  contributorHistory  contributorHistory[]
 
   @@unique([id, assignedVersionNum]) // needed for the 1-1 relation "assignedVersion" with documentVersions
   @@fulltext([source])
@@ -89,6 +91,8 @@ model documentVersions {
   cid                        String
   source                     String                       @db.MediumText
   createdAt                  DateTime                     @default(now())
+  numVariants                Int                          @default(1)
+  baseComponentCounts        String                       @db.Text
   doenetmlVersionId          Int
   document                   documents                    @relation(fields: [docId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   doenetmlVersion            doenetmlVersions             @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)

@@ -27,6 +27,10 @@ export type SingleDocSource = {
   doenetML: string;
   /** The version of DoenetML that should be used to render this activity. */
   version: string;
+  /** The number of variants present in `doenetML` */
+  numVariants?: number;
+  /** The number each component type among the base level children (direct children of document) in `doenetML` */
+  baseComponentCounts?: Record<string, number | undefined>;
 };
 
 /** The current state of a single doc activity, including all attempts. */

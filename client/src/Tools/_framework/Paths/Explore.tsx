@@ -272,7 +272,7 @@ export function Explore() {
             infoOnOpen();
           }}
         >
-          {contentType} information
+          {contentType === "folder" ? "Folder" : "Activity"} information
         </MenuItem>
       );
 
@@ -281,7 +281,6 @@ export function Explore() {
         content: itemObj,
         ownerName: owner !== undefined ? createFullName(owner) : "",
         cardLink,
-        cardType: contentType === "folder" ? "folder" : "activity",
         menuItems,
       };
     });

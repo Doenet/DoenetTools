@@ -112,6 +112,10 @@ export function compileActivityFromContent(
         isDescription: false,
         doenetML: structure.documents[0].source!,
         version: structure.documents[0].doenetmlVersion.fullVersion,
+        numVariants: structure.numVariants,
+        baseComponentCounts: structure.baseComponentCounts
+          ? JSON.parse(structure.baseComponentCounts)
+          : undefined,
       };
     }
     case "select": {

@@ -64,6 +64,8 @@ import {
 let folderJustCreated = ""; // if a folder was just created, set autoFocusName true for the card with the matching id
 
 export async function action({ request, params }) {
+  folderJustCreated = "";
+
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
@@ -611,7 +613,7 @@ export function Activities() {
               </MenuButton>
               <MenuList>
                 <MenuItem
-                  data-test="Add Activity Button"
+                  data-test="Add Document Button"
                   onClick={async () => {
                     setHaveContentSpinner(true);
                     fetcher.submit(
@@ -620,22 +622,10 @@ export function Activities() {
                     );
                   }}
                 >
-                  Activity
+                  Document
                 </MenuItem>
                 <MenuItem
-                  data-test="Add Select Activity Button"
-                  onClick={async () => {
-                    setHaveContentSpinner(true);
-                    fetcher.submit(
-                      { _action: "Add Activity", type: "select" },
-                      { method: "post" },
-                    );
-                  }}
-                >
-                  Select Activity
-                </MenuItem>
-                <MenuItem
-                  data-test="Add Sequence Activity Button"
+                  data-test="Add Problem Set Button"
                   onClick={async () => {
                     setHaveContentSpinner(true);
                     fetcher.submit(
@@ -644,7 +634,7 @@ export function Activities() {
                     );
                   }}
                 >
-                  Sequence Activity
+                  Problem Set
                 </MenuItem>
                 <MenuItem
                   data-test="Add Folder Button"
@@ -657,6 +647,18 @@ export function Activities() {
                   }}
                 >
                   Folder
+                </MenuItem>
+                <MenuItem
+                  data-test="Add Question Bank Button"
+                  onClick={async () => {
+                    setHaveContentSpinner(true);
+                    fetcher.submit(
+                      { _action: "Add Activity", type: "select" },
+                      { method: "post" },
+                    );
+                  }}
+                >
+                  Question Bank
                 </MenuItem>
               </MenuList>
             </Menu>
@@ -781,7 +783,6 @@ export function Activities() {
         activity.type === "folder"
           ? `/activities/${activity.ownerId}/${activity.id}`
           : `/activityEditor/${activity.id}`,
-      cardType: activity.type === "folder" ? "folder" : "activity",
     };
   });
 

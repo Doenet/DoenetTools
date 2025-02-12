@@ -96,6 +96,8 @@ export type ContentStructure = {
   isShared: boolean;
   sharedWith: UserInfo[];
   license: License | null;
+  numVariants?: number;
+  baseComponentCounts?: string;
   numToSelect: number;
   selectByVariant: boolean;
   shuffle: boolean;

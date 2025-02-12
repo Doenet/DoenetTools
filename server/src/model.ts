@@ -133,6 +133,7 @@ export async function createActivity(
             source: "",
             doenetmlVersionId: defaultDoenetmlVersion.id,
             name: "Untitled Document",
+            baseComponentCounts: "{}",
           },
         ],
       },
@@ -412,12 +413,16 @@ export async function updateDoc({
   source,
   name,
   doenetmlVersionId,
+  numVariants,
+  baseComponentCounts,
   ownerId,
 }: {
   id: Uint8Array;
   source?: string;
   name?: string;
   doenetmlVersionId?: number;
+  numVariants?: number;
+  baseComponentCounts?: string;
   ownerId: Uint8Array;
 }) {
   // check if activity is assigned
@@ -441,6 +446,8 @@ export async function updateDoc({
       source,
       name,
       doenetmlVersionId,
+      numVariants,
+      baseComponentCounts: baseComponentCounts,
       lastEdited: DateTime.now().toJSDate(),
     },
   });
@@ -949,6 +956,8 @@ async function createDocumentVersion(docId: Uint8Array): Promise<{
         cid,
         doenetmlVersionId: doc.doenetmlVersionId,
         source: doc.source,
+        numVariants: doc.numVariants,
+        baseComponentCounts: doc.baseComponentCounts,
       },
     });
   }
@@ -1006,6 +1015,8 @@ export async function getActivityEditorData(
       isShared: false,
       sharedWith: [],
       license: null,
+      numVariants: 1,
+      baseComponentCounts: "{}",
       numToSelect: 1,
       selectByVariant: false,
       shuffle: false,
@@ -5339,7 +5350,7 @@ export async function getSharedFolderContent({
   let folder: ContentStructure | null = null;
 
   if (folderId !== null) {
-    // if ask for a folder, make sure it exists and is owned by logged in user
+    // if ask for a folder, make sure it exists and is viewable by logged in user
     const preliminaryFolder = await prisma.content.findUniqueOrThrow({
       where: {
         ownerId,

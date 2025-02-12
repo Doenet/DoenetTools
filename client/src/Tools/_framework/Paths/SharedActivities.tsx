@@ -168,8 +168,7 @@ export function SharedActivities() {
     );
 
     return {
-      ...activity,
-      title: activity.name,
+      content: activity,
       cardLink: activity.isFolder
         ? `/sharedActivities/${activity.ownerId}/${activity.id}`
         : `/activityViewer/${activity.id}`,

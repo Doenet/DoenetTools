@@ -18,24 +18,23 @@ import {
   EditableInput,
   HStack,
   Spacer,
-  Center,
   Show,
+  Badge,
 } from "@chakra-ui/react";
-import { GoKebabVertical } from "react-icons/go";
 import { Link as ReactRouterLink, useFetcher } from "react-router";
 import axios from "axios";
 import { ContentStructure } from "../_utils/types";
 import { FaFolder } from "react-icons/fa";
-import { RiDraftFill } from "react-icons/ri";
-
+import { RiArchive2Fill } from "react-icons/ri";
+import { FaEllipsisVertical, FaListOl } from "react-icons/fa6";
 import { MdAssignment } from "react-icons/md";
 import { BsPeople } from "react-icons/bs";
 import { IconType } from "react-icons/lib";
 import { activityFeatureIcons } from "../_utils/activity";
 import { SmallLicenseBadges } from "./Licenses";
+import { IoDiceOutline } from "react-icons/io5";
 
 export type CardContent = {
-  cardType: "activity" | "folder" | "author";
   menuRef?: (arg: HTMLButtonElement) => void;
   cardLink?: string;
   content: ContentStructure;
@@ -93,20 +92,30 @@ export default function Card({
     isShared,
     license,
     contentFeatures,
+    numVariants,
+    type: contentType,
   } = cardContent.content;
 
-  const { menuItems, cardType, closeTime, cardLink, ownerName } = cardContent;
+  const { menuItems, closeTime, cardLink, ownerName } = cardContent;
 
   const [cardTitle, setCardTitle] = useState(title);
   const fetcher = useFetcher();
 
-  const cardTypeUpper = cardType[0].toUpperCase() + cardType.slice(1);
+  let contentTypeName;
+  if (contentType === "folder") {
+    contentTypeName = "Folder";
+  } else if (contentType === "singleDoc") {
+    contentTypeName = "Document";
+  } else if (contentType === "sequence") {
+    contentTypeName = "Problem Set";
+  } else {
+    // select
+    contentTypeName = "Question Bank";
+  }
 
   useEffect(() => {
     setCardTitle(title);
   }, [title]);
-
-  showOwnerName = showOwnerName && !(cardType === "author");
 
   // from ActivityEditor.tsx
   const lastActivityDataName = useRef(title);
@@ -116,7 +125,7 @@ export default function Card({
   }
   lastActivityDataName.current = title;
 
-  if (cardType !== "activity") {
+  if (contentType === "folder") {
     showAssignmentStatus = false;
   }
   let assignmentStatusString = "";
@@ -134,14 +143,14 @@ export default function Card({
           _action: "update title",
           id,
           cardTitle,
-          isFolder: cardType === "folder",
+          isFolder: contentType === "folder",
         },
         { method: "post" },
       );
     }
     // set default title here so it isn't blank while waiting for activity.title to be set to default on backend
     if (cardTitle.length === 0) {
-      setCardTitle("Untitled " + cardTypeUpper);
+      setCardTitle("Untitled " + contentTypeName);
     }
   }
 
@@ -237,7 +246,7 @@ export default function Card({
         position="relative"
         ref={cardContent.menuRef}
       >
-        <Icon color="#949494" as={GoKebabVertical} boxSize={4} />
+        <Icon color="#949494" as={FaEllipsisVertical} boxSize={4} />
       </MenuButton>
       <MenuList zIndex="1000">{menuItems}</MenuList>
     </Menu>
@@ -247,7 +256,7 @@ export default function Card({
 
   if (showPublicStatus && (isPublic || isShared)) {
     sharedIcon = (
-      <Tooltip label={(isPublic ? "Public " : "Shared ") + cardTypeUpper}>
+      <Tooltip label={(isPublic ? "Public " : "Shared ") + contentTypeName}>
         <Box width="20px">
           <Icon
             as={BsPeople}
@@ -370,42 +379,45 @@ export default function Card({
     const cardWidth = `calc(100% - ${30 * indentLevel}px)`;
     const cardHeight = "40px";
     const leftMargin = `${30 * indentLevel}px`;
-    let initialIcon: ReactElement;
 
-    if (cardType === "author") {
-      initialIcon = (
-        <Avatar size="sm" name={ownerName} marginLeft="1em" marginTop="4px" />
-      );
+    let iconImage: IconType;
+    let iconColor: string;
+    if (contentType === "folder") {
+      iconImage = FaFolder;
+      iconColor = "#e6b800";
+    } else if (contentType === "singleDoc") {
+      iconImage = MdAssignment;
+      iconColor = "#ff6600";
+    } else if (contentType === "sequence") {
+      iconImage = FaListOl;
+      iconColor = "#cc3399";
     } else {
-      let iconImage: IconType;
-      let iconColor: string;
-      if (cardType === "folder") {
-        iconImage = FaFolder;
-        iconColor = "#e6b800";
-      } else if (assignmentStatus === "Unassigned") {
-        iconImage = RiDraftFill;
-        iconColor = "#ff6600";
-      } else {
-        iconImage = MdAssignment;
-        if (assignmentStatus === "Open") {
-          iconColor = "#009933";
-        } else {
-          iconColor = "#cc3399";
-        }
-      }
+      // select
+      iconImage = RiArchive2Fill;
+      iconColor = "#009933";
 
-      initialIcon = (
-        <Icon
-          as={iconImage}
-          color={iconColor}
-          boxSizing="content-box"
-          width="24px"
-          height={cardHeight}
-          paddingLeft={["2px", "5px"]}
-          verticalAlign="middle"
-        />
-      );
+      // if (assignmentStatus === "Open") {
+      //   iconColor = "#009933";
+      // } else {
+      //   iconColor = "#cc3399";
+      // }
     }
+
+    const initialIcon = (
+      <Tooltip label={contentTypeName}>
+        <Box>
+          <Icon
+            as={iconImage}
+            color={iconColor}
+            boxSizing="content-box"
+            width="24px"
+            height={cardHeight}
+            paddingLeft={["2px", "5px"]}
+            verticalAlign="middle"
+          />
+        </Box>
+      </Tooltip>
+    );
 
     const assignmentStatusDisplay = showAssignmentStatus ? (
       <Tooltip label={assignmentStatusString}>
@@ -449,14 +461,43 @@ export default function Card({
       activityWidth += 20;
     }
 
-    const licenseBadges =
-      license && (isPublic || isShared) ? (
-        <Show above="xl">
-          <Box height={cardHeight} alignContent="center" marginRight="10px">
+    const licenseBadges = (
+      <Show above="xl">
+        <Box
+          height={cardHeight}
+          width="80px"
+          alignContent="center"
+          marginRight="10px"
+        >
+          {license && (isPublic || isShared) ? (
             <SmallLicenseBadges license={license} suppressLink={true} />
-          </Box>
-        </Show>
-      ) : null;
+          ) : null}
+        </Box>
+      </Show>
+    );
+
+    const variantsDisplay = (
+      <Show above="lg">
+        <Flex height={cardHeight} width="60px" alignContent="center">
+          {(numVariants ?? 1) > 1 ? (
+            <Box alignContent="center">
+              <Tooltip label={`This activity has ${numVariants} variants`}>
+                <Badge>
+                  {" "}
+                  <Icon
+                    as={IoDiceOutline}
+                    color="#666699"
+                    boxSize={5}
+                    verticalAlign="middle"
+                  />
+                  {numVariants}
+                </Badge>
+              </Tooltip>
+            </Box>
+          ) : null}
+        </Flex>
+      </Show>
+    );
 
     card = (
       <ChakraCard
@@ -517,6 +558,7 @@ export default function Card({
                   {assignmentStatusDisplay}
                   {ownerNameWithAvatar}
                 </Box>
+                {variantsDisplay}
                 {licenseBadges}
               </Flex>
             </ChakraLink>
@@ -540,19 +582,7 @@ export default function Card({
       </Tooltip>
     ) : null;
 
-    let cardImage =
-      cardType === "author" ? (
-        <Center
-          height="120px"
-          width="180px"
-          borderTopRadius="md"
-          background="black"
-        >
-          <Avatar w="100px" h="100px" fontSize="60pt" name={ownerName} />
-        </Center>
-      ) : (
-        image
-      );
+    let cardImage = image;
 
     cardImage = (
       <ChakraLink

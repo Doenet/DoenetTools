@@ -90,6 +90,12 @@ export function GeneralContentInfo({
         )}
       </Box>
 
+      {(contentData.numVariants ?? 1) > 1 ? (
+        <Box marginBottom="20px">
+          This activity has {contentData.numVariants} variants.
+        </Box>
+      ) : null}
+
       {contentData.type === "singleDoc"
         ? `DoenetML version: ${contentData.documents[0].doenetmlVersion.fullVersion}`
         : null}

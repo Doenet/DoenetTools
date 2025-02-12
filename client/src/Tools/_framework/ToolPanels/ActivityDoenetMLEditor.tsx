@@ -24,6 +24,10 @@ export function ActivityDoenetMLEditor({
   const textEditorDoenetML = useRef(doenetML);
   const savedDoenetML = useRef(doenetML);
 
+  const numVariants = useRef(1);
+  const baseComponentCounts = useRef<string>("{}");
+  const documentStructureChanged = useRef(false);
+
   const readOnly = assignmentStatus !== "Unassigned";
   const readOnlyRef = useRef(readOnly);
   readOnlyRef.current = readOnly;
@@ -35,6 +39,7 @@ export function ActivityDoenetMLEditor({
           message: `DoenetML version
             ${doenetmlVersion.displayedVersion} is deprecated.
             ${doenetmlVersion.deprecationMessage}`,
+          doenetMLrange: {},
         },
       ]
     : [];
@@ -45,7 +50,8 @@ export function ActivityDoenetMLEditor({
   const handleSaveDoc = useCallback(async () => {
     if (
       readOnlyRef.current ||
-      savedDoenetML.current === textEditorDoenetML.current
+      (savedDoenetML.current === textEditorDoenetML.current &&
+        !documentStructureChanged.current)
     ) {
       // do not attempt to save doenetml if assigned
       return;
@@ -64,9 +70,12 @@ export function ActivityDoenetMLEditor({
         const params = {
           doenetML: newDoenetML,
           docId,
+          numVariants: numVariants.current,
+          baseComponentCounts: baseComponentCounts.current,
         };
         await axios.post("/api/saveDoenetML", params);
         savedDoenetML.current = newDoenetML;
+        documentStructureChanged.current = false;
       } catch (error) {
         alert(error.message);
       }
@@ -92,7 +101,6 @@ export function ActivityDoenetMLEditor({
 
   return (
     <>
-      {" "}
       {mode == "Edit" && (
         <DoenetEditor
           height={`calc(100vh - ${readOnly ? 120 : 80}px)`}
@@ -101,6 +109,17 @@ export function ActivityDoenetMLEditor({
           doenetmlChangeCallback={handleSaveDoc}
           immediateDoenetmlChangeCallback={(newDoenetML: string) => {
             textEditorDoenetML.current = newDoenetML;
+          }}
+          documentStructureCallback={(x: any) => {
+            if (Array.isArray(x.args?.allPossibleVariants)) {
+              numVariants.current = x.args.allPossibleVariants.length;
+            }
+            if (typeof x.args?.baseComponentCounts === "object") {
+              baseComponentCounts.current = JSON.stringify(
+                x.args.baseComponentCounts,
+              );
+            }
+            documentStructureChanged.current = true;
           }}
           doenetmlVersion={doenetmlVersion.fullVersion}
           initialWarnings={initialWarnings}
@@ -162,12 +181,9 @@ export function ActivityDoenetMLEditor({
                   allowLoadState: false,
                   allowSaveState: false,
                   allowLocalState: false,
-                  allowSaveSubmissions: false,
                   allowSaveEvents: false,
                 }}
                 attemptNumber={1}
-                idsIncludeActivityId={false}
-                paginate={true}
                 location={location}
                 navigate={navigate}
                 linkSettings={{

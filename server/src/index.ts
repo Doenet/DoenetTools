@@ -589,7 +589,7 @@ app.post(
     }
 
     const body = req.body;
-    const contentType: ContentType | undefined = isContentType(body.type)
+    const contentType: ContentType = isContentType(body.type)
       ? body.type
       : "singleDoc";
     const loggedInUserId = req.user.userId;
@@ -626,7 +626,7 @@ app.post(
     const parentFolderId = toUUID(req.params.parentFolderId);
 
     const body = req.body;
-    const contentType: ContentType | undefined = isContentType(body.type)
+    const contentType: ContentType = isContentType(body.type)
       ? body.type
       : "singleDoc";
 
@@ -1948,11 +1948,16 @@ app.post(
     const body = req.body;
     const doenetML = body.doenetML;
     const docId = toUUID(body.docId);
+    const numVariants = body.numVariants;
+    const baseComponentCounts = body.baseComponentCounts;
+
     try {
       await updateDoc({
         id: docId,
         source: doenetML,
         ownerId: loggedInUserId,
+        numVariants,
+        baseComponentCounts,
       });
       res.send({});
     } catch (e) {

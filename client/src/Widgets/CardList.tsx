@@ -74,7 +74,7 @@ export default function CardList({
   // }
 
   let cards: ReactElement | ReactElement[] = content.map((cardContent) => {
-    if (cardContent.cardType === "afterParent") {
+    if ("cardType" in cardContent) {
       const indentLevel = cardContent.indentLevel;
       return (
         <Box
