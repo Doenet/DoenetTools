@@ -2,15 +2,18 @@ import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { redirect, useLoaderData } from "react-router";
 
 import {
+  Box,
   Button,
   ButtonGroup,
   Center,
   Editable,
   EditableInput,
   EditablePreview,
+  Flex,
   Grid,
   GridItem,
   HStack,
+  Icon,
   Show,
   Text,
   Tooltip,
@@ -50,7 +53,11 @@ import {
   NestedActivityEditor,
   nestedActivityEditorActions,
 } from "../ToolPanels/NestedActivityEditor";
-import { compileActivityFromContent } from "../../../_utils/activity";
+import {
+  compileActivityFromContent,
+  contentTypeToName,
+  getIconInfo,
+} from "../../../_utils/activity";
 import { ActivitySource } from "../../../_utils/viewerTypes";
 
 export async function action({ params, request }) {
@@ -391,6 +398,27 @@ export function ActivityEditor() {
     />
   ) : null;
 
+  const contentTypeName = contentTypeToName[data.type];
+
+  const { iconImage, iconColor } = getIconInfo(data.type);
+
+  const typeIcon = (
+    <Tooltip label={contentTypeName}>
+      <Box>
+        <Icon
+          as={iconImage}
+          color={iconColor}
+          boxSizing="content-box"
+          width="24px"
+          height="24px"
+          paddingRight="10px"
+          verticalAlign="middle"
+          aria-label={contentTypeName}
+        />
+      </Box>
+    </Tooltip>
+  );
+
   return (
     <>
       {settingsDrawer}
@@ -471,7 +499,10 @@ export function ActivityEditor() {
               </HStack>
             </GridItem>
             <GridItem area="label">
-              <EditableName dataTest="Activity Name Editable" />
+              <Flex justifyContent="center" alignItems="center">
+                {typeIcon}
+                <EditableName dataTest="Activity Name Editable" />
+              </Flex>
             </GridItem>
             <GridItem
               area="rightControls"

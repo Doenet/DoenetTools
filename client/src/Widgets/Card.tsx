@@ -21,13 +21,13 @@ import {
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
 import { ContentStructure, ContentType } from "../_utils/types";
-import { FaFolder } from "react-icons/fa";
-import { RiArchive2Fill } from "react-icons/ri";
-import { FaEllipsisVertical, FaListOl } from "react-icons/fa6";
-import { MdAssignment } from "react-icons/md";
+import { FaEllipsisVertical } from "react-icons/fa6";
 import { BsPeople } from "react-icons/bs";
-import { IconType } from "react-icons/lib";
-import { activityFeatureIcons, contentTypeToName } from "../_utils/activity";
+import {
+  activityFeatureIcons,
+  contentTypeToName,
+  getIconInfo,
+} from "../_utils/activity";
 import { SmallLicenseBadges } from "./Licenses";
 import { IoDiceOutline } from "react-icons/io5";
 
@@ -290,28 +290,7 @@ export default function Card({
     const cardHeight = "40px";
     const leftMargin = `${30 * indentLevel}px`;
 
-    let iconImage: IconType;
-    let iconColor: string;
-    if (contentType === "folder") {
-      iconImage = FaFolder;
-      iconColor = "#e6b800";
-    } else if (contentType === "singleDoc") {
-      iconImage = MdAssignment;
-      iconColor = "#ff6600";
-    } else if (contentType === "sequence") {
-      iconImage = FaListOl;
-      iconColor = "#cc3399";
-    } else {
-      // select
-      iconImage = RiArchive2Fill;
-      iconColor = "#009933";
-
-      // if (assignmentStatus === "Open") {
-      //   iconColor = "#009933";
-      // } else {
-      //   iconColor = "#cc3399";
-      // }
-    }
+    const { iconImage, iconColor } = getIconInfo(contentType);
 
     const initialIcon = (
       <Tooltip label={contentTypeName}>
@@ -324,6 +303,7 @@ export default function Card({
             height={cardHeight}
             paddingLeft={["2px", "5px"]}
             verticalAlign="middle"
+            aria-label={contentTypeName}
           />
         </Box>
       </Tooltip>

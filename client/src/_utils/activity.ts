@@ -1,7 +1,15 @@
 import { TbPuzzle } from "react-icons/tb";
-import { MdOutlineOndemandVideo, MdOutlineSwipeLeft } from "react-icons/md";
-import { ContentClassification, ContentStructure } from "./types";
+import {
+  MdAssignment,
+  MdOutlineOndemandVideo,
+  MdOutlineSwipeLeft,
+} from "react-icons/md";
+import { ContentClassification, ContentStructure, ContentType } from "./types";
 import { ActivitySource } from "./viewerTypes";
+import { IconType } from "react-icons/lib";
+import { FaFolder } from "react-icons/fa";
+import { FaListOl } from "react-icons/fa6";
+import { RiArchive2Fill } from "react-icons/ri";
 
 export const activityFeatureIcons = {
   isQuestion: TbPuzzle,
@@ -147,3 +155,24 @@ export const contentTypeToName = {
   sequence: "Problem Set",
   folder: "Folder",
 };
+
+export function getIconInfo(contentType: ContentType) {
+  let iconImage: IconType;
+  let iconColor: string;
+  if (contentType === "folder") {
+    iconImage = FaFolder;
+    iconColor = "#e6b800";
+  } else if (contentType === "singleDoc") {
+    iconImage = MdAssignment;
+    iconColor = "#ff6600";
+  } else if (contentType === "sequence") {
+    iconImage = FaListOl;
+    iconColor = "#cc3399";
+  } else {
+    // select
+    iconImage = RiArchive2Fill;
+    iconColor = "#009933";
+  }
+
+  return { iconImage, iconColor };
+}
