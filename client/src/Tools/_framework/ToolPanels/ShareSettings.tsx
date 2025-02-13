@@ -234,11 +234,6 @@ export function ShareSettings({
     );
   }
 
-  <Text size="xs" pl="4px" pr="4px">
-    Your code is not being saved in this view. Copy to one of your activities to
-    save changes.
-  </Text>;
-
   let chooseLicenseForm: ReactElement | null = null;
   if (licenseDeterminedFromRemix) {
     const licenseName = allLicenses.find(
@@ -252,7 +247,7 @@ export function ShareSettings({
         </p>
       </Box>
     );
-  } else if (!(contentData.parent?.isPublic || contentData.parent?.isShared)) {
+  } else {
     chooseLicenseForm = (
       <FormControl isInvalid={missingLicense}>
         <FormLabel mt="20px">Change license</FormLabel>
