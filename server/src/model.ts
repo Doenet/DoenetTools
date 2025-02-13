@@ -316,12 +316,12 @@ export async function updateContent({
   id,
   name,
   imagePath,
-  loggedInUserId,
+  ownerId: loggedInUserId,
 }: {
   id: Uint8Array;
   name?: string;
   imagePath?: string;
-  loggedInUserId: Uint8Array;
+  ownerId: Uint8Array;
 }) {
   const isAdmin = await getIsAdmin(loggedInUserId);
 
@@ -342,11 +342,11 @@ export async function updateContent({
 
 export async function updateContentFeatures({
   id,
-  loggedInUserId,
+  ownerId: loggedInUserId,
   features,
 }: {
   id: Uint8Array;
-  loggedInUserId: Uint8Array;
+  ownerId: Uint8Array;
   features: Record<string, boolean>;
 }) {
   const isAdmin = await getIsAdmin(loggedInUserId);
@@ -381,13 +381,13 @@ export async function updateDoc({
   source,
   name,
   doenetmlVersionId,
-  loggedInUserId,
+  ownerId: loggedInUserId,
 }: {
   id: Uint8Array;
   source?: string;
   name?: string;
   doenetmlVersionId?: number;
-  loggedInUserId: Uint8Array;
+  ownerId: Uint8Array;
 }) {
   const isAdmin = await getIsAdmin(loggedInUserId);
   // check if activity is assigned
@@ -469,13 +469,13 @@ export async function moveContent({
   id,
   desiredParentFolderId,
   desiredPosition,
-  loggedInUserId,
+  ownerId: loggedInUserId,
   inLibrary = false, // Not exposed to API call
 }: {
   id: Uint8Array;
   desiredParentFolderId: Uint8Array | null;
   desiredPosition: number;
-  loggedInUserId: Uint8Array;
+  ownerId: Uint8Array;
   inLibrary?: boolean;
 }) {
   if (!Number.isInteger(desiredPosition)) {
@@ -1246,11 +1246,11 @@ export async function getActivityContributorHistory({
 export async function getDocumentContributorHistories({
   docIds,
   loggedInUserId,
-  isAdmin,
+  isAdmin = false,
 }: {
   docIds: Uint8Array[];
   loggedInUserId: Uint8Array;
-  isAdmin: boolean;
+  isAdmin?: boolean;
 }) {
   const docHistories: DocHistory[] = await prisma.documents.findMany({
     where: {
@@ -1339,11 +1339,11 @@ export async function getActivityRemixes({
 export async function getDocumentDirectRemixes({
   docIds,
   loggedInUserId,
-  isAdmin,
+  isAdmin = false,
 }: {
   docIds: Uint8Array[];
   loggedInUserId: Uint8Array;
-  isAdmin: boolean;
+  isAdmin?: boolean;
 }) {
   const docRemixes = await prisma.documents.findMany({
     where: {
@@ -1418,11 +1418,11 @@ export async function getDocumentDirectRemixes({
 export async function getDocumentRemixes({
   docIds,
   loggedInUserId,
-  isAdmin,
+  isAdmin = false,
 }: {
   docIds: Uint8Array[];
   loggedInUserId: Uint8Array;
-  isAdmin: boolean;
+  isAdmin?: boolean;
 }) {
   const docRemixes = await prisma.documents.findMany({
     where: {

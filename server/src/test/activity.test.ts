@@ -116,7 +116,7 @@ test("Test updating various activity properties", async () => {
   await updateContent({
     id: activityId,
     name: activityName,
-    loggedInUserId: userId,
+    ownerId: userId,
   });
   const { activity: activityContent } = await getActivityEditorData(
     activityId,
@@ -125,7 +125,7 @@ test("Test updating various activity properties", async () => {
   const docId = activityContent.documents[0].id;
   expect(activityContent.name).toBe(activityName);
   const source = "Here comes some content, I made you some content";
-  await updateDoc({ id: docId, source, loggedInUserId: userId });
+  await updateDoc({ id: docId, source, ownerId: userId });
   const { activity: activityContent2 } = await getActivityEditorData(
     activityId,
     userId,
@@ -192,12 +192,12 @@ test("updateDoc updates document properties", async () => {
   await updateContent({
     id: activityId,
     name: newName,
-    loggedInUserId: userId,
+    ownerId: userId,
   });
   await updateDoc({
     id: docId,
     source: newContent,
-    loggedInUserId: userId,
+    ownerId: userId,
   });
   const activityViewerContent = await getActivityViewerData(activityId, userId);
   expect(activityViewerContent.activity.name).toBe(newName);
@@ -230,7 +230,7 @@ test("updateContent does not update properties when passed undefined values", as
   const ownerId = owner.userId;
   const { activityId } = await createActivity(ownerId, null);
   const originalActivity = await getActivity(activityId);
-  await updateContent({ id: activityId, loggedInUserId: ownerId });
+  await updateContent({ id: activityId, ownerId: ownerId });
   const updatedActivity = await getActivity(activityId);
   expect(updatedActivity).toEqual(originalActivity);
 });
@@ -354,7 +354,7 @@ test("get public activity editor data only if public or shared", async () => {
 
   const { activityId, docId } = await createActivity(ownerId, null);
   const doenetML = "hi!";
-  await updateDoc({ id: docId, source: doenetML, loggedInUserId: ownerId });
+  await updateDoc({ id: docId, source: doenetML, ownerId: ownerId });
 
   await expect(getSharedEditorData(activityId, user1Id)).rejects.toThrow(
     PrismaClientKnownRequestError,
@@ -362,7 +362,7 @@ test("get public activity editor data only if public or shared", async () => {
 
   await updateContent({
     id: activityId,
-    loggedInUserId: ownerId,
+    ownerId,
     name: "Some content",
   });
   await makeActivityPublic({
@@ -725,7 +725,7 @@ test("activity editor data shows its parent folder is public", async () => {
     id: activityId,
     desiredParentFolderId: folderId,
     desiredPosition: 0,
-    loggedInUserId: ownerId,
+    ownerId,
   });
 
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
@@ -763,7 +763,7 @@ test("getDocumentSource gets source", async () => {
   await updateDoc({
     id: docId,
     source: "some content",
-    loggedInUserId: ownerId,
+    ownerId,
   });
 
   const documentSource = await getDocumentSource(docId, ownerId);

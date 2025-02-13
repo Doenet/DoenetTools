@@ -666,12 +666,12 @@ app.post(
       res.sendStatus(403);
       return;
     }
-    const loggedInUserId = req.user.userId;
+    const ownerId = req.user.userId;
     const body = req.body;
     const id = toUUID(body.id);
     const name = body.name;
     try {
-      await updateContent({ id, name, loggedInUserId });
+      await updateContent({ id, name, ownerId });
       res.send({});
     } catch (e) {
       if (
@@ -1900,7 +1900,7 @@ app.post(
       res.sendStatus(403);
       return;
     }
-    const loggedInUserId = req.user.userId;
+    const ownerId = req.user.userId;
     const body = req.body;
     const doenetML = body.doenetML;
     const docId = toUUID(body.docId);
@@ -1908,7 +1908,7 @@ app.post(
       await updateDoc({
         id: docId,
         source: doenetML,
-        loggedInUserId,
+        ownerId,
       });
       res.send({});
     } catch (e) {
@@ -1929,7 +1929,7 @@ app.post(
       return;
     }
 
-    const loggedInUserId = req.user.userId;
+    const ownerId = req.user.userId;
     const body = req.body;
     const id = toUUID(body.id);
     const imagePath = body.imagePath;
@@ -1940,7 +1940,7 @@ app.post(
         id,
         imagePath,
         name,
-        loggedInUserId,
+        ownerId,
       });
       res.send({});
     } catch (e) {
@@ -1960,7 +1960,7 @@ app.post(
       res.sendStatus(403);
       return;
     }
-    const loggedInUserId = req.user.userId;
+    const ownerId = req.user.userId;
     const body = req.body;
     const docId = toUUID(body.docId);
     const name = body.name;
@@ -1972,7 +1972,7 @@ app.post(
         id: docId,
         name,
         doenetmlVersionId,
-        loggedInUserId,
+        ownerId,
       });
       res.send({});
     } catch (e) {
@@ -1993,7 +1993,7 @@ app.post(
       return;
     }
 
-    const loggedInUserId = req.user.userId;
+    const ownerId = req.user.userId;
     const body = req.body;
     const id = toUUID(body.id);
     const features: Record<string, boolean> = body.features;
@@ -2002,8 +2002,8 @@ app.post(
       await updateContentFeatures({
         id,
         features,
-        loggedInUserId,
-      });
+        ownerId
+    });
       res.send({});
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -2022,7 +2022,7 @@ app.post(
       res.sendStatus(403);
       return;
     }
-    const loggedInUserId = req.user.userId;
+    const ownerId = req.user.userId;
     const id = toUUID(req.body.id);
     const desiredParentFolderId = req.body.desiredParentFolderId
       ? toUUID(req.body.desiredParentFolderId)
@@ -2034,7 +2034,7 @@ app.post(
         id,
         desiredParentFolderId,
         desiredPosition,
-        loggedInUserId,
+        ownerId,
       });
       res.send({});
     } catch (e) {
@@ -3127,7 +3127,7 @@ app.post(
       res.sendStatus(403);
       return;
     }
-    const loggedInUserId = req.user.userId;
+    const ownerId = req.user.userId;
     const id = toUUID(req.body.id);
     const desiredParentFolderId = req.body.desiredParentFolderId
       ? toUUID(req.body.desiredParentFolderId)
@@ -3139,7 +3139,7 @@ app.post(
         id,
         desiredParentFolderId,
         desiredPosition,
-        loggedInUserId,
+        ownerId,
         inLibrary: true,
       });
       res.send({});
