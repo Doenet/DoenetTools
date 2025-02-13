@@ -770,14 +770,14 @@ async function calculateNewSortIndex(
  * Return the id of the newly created activity
  *
  * @param origActivityId
- * @param userId
- * @param folderId
+ * @param ownerId
+ * @param desiredParentId
  */
 export async function copyActivityToFolder(
   origActivityId: Uint8Array,
-  userId: Uint8Array,
-  folderId: Uint8Array | null,
-  prependCopy = true,
+  ownerId: Uint8Array,
+  desiredParentId: Uint8Array | null,
+  prependCopy = false,
 ) {
   const origActivity = await prisma.content.findUniqueOrThrow({
     where: {
@@ -785,9 +785,9 @@ export async function copyActivityToFolder(
       isDeleted: false,
       isFolder: false,
       OR: [
-        { ownerId: userId },
+        { ownerId: ownerId },
         { isPublic: true },
-        { sharedWith: { some: { userId } } },
+        { sharedWith: { some: { userId: ownerId } } },
       ],
     },
     include: {
@@ -799,15 +799,57 @@ export async function copyActivityToFolder(
     },
   });
 
-  const sortIndex = await getNextSortIndexForFolder(userId, folderId);
+  if (origActivity.type !== "singleDoc") {
+    throw Error(
+      "Cannot copy anything but a single document with copyActivityToFolder",
+    );
+  }
+
+  let desiredFolderIsPublic = false;
+  let desiredFolderLicenseCode: LicenseCode = "CCDUAL";
+  let desiredFolderShares: Uint8Array[] = [];
+
+  if (desiredParentId !== null) {
+    // if desired parent is specified, make sure it exists and is owned by `ownerId`
+    const parent = await prisma.content.findUniqueOrThrow({
+      where: {
+        id: desiredParentId,
+        ownerId,
+        isDeleted: false,
+        isFolder: true,
+      },
+      select: {
+        isPublic: true,
+        licenseCode: true,
+        sharedWith: { select: { userId: true } },
+      },
+    });
+
+    // If the parent folder is shared, then we'll need to share the resulting content, as well,
+    // with the same license.
+    if (parent.isPublic) {
+      desiredFolderIsPublic = true;
+      if (parent.licenseCode) {
+        desiredFolderLicenseCode = parent.licenseCode as LicenseCode;
+      }
+    }
+    if (parent.sharedWith.length > 0) {
+      desiredFolderShares = parent.sharedWith.map((cs) => cs.userId);
+      if (parent.licenseCode) {
+        desiredFolderLicenseCode = parent.licenseCode as LicenseCode;
+      }
+    }
+  }
+
+  const sortIndex = await getNextSortIndexForFolder(ownerId, desiredParentId);
 
   const newActivity = await prisma.content.create({
     data: {
       name: (prependCopy ? "Copy of " : "") + origActivity.name,
       isFolder: false,
       imagePath: origActivity.imagePath,
-      ownerId: userId,
-      parentId: folderId,
+      ownerId: ownerId,
+      parentId: desiredParentId,
       sortIndex,
       classifications: {
         create: origActivity.classifications.map((c) => ({
@@ -817,7 +859,9 @@ export async function copyActivityToFolder(
       contentFeatures: {
         connect: origActivity.contentFeatures.map((cf) => ({ id: cf.id })),
       },
-      licenseCode: origActivity.licenseCode,
+      isPublic: desiredFolderIsPublic,
+      licenseCode: origActivity.licenseCode ?? desiredFolderLicenseCode,
+      sharedWith: { create: desiredFolderShares.map((u) => ({ userId: u })) },
     },
   });
 
@@ -912,13 +956,150 @@ export async function copyActivityToFolder(
   return newActivity.id;
 }
 
+export async function copyFolderToFolder(
+  origId: Uint8Array,
+  ownerId: Uint8Array,
+  desiredParentId: Uint8Array | null,
+) {
+  // make sure content exists and is owned by `ownerId`
+  const originalContent = await prisma.content.findUniqueOrThrow({
+    where: {
+      id: origId,
+      ownerId,
+      isDeleted: false,
+    },
+    select: {
+      id: true,
+      isFolder: true,
+      type: true,
+      name: true,
+      licenseCode: true,
+      numToSelect: true,
+      selectByVariant: true,
+      shuffle: true,
+      paginate: true,
+      activityLevelAttempts: true,
+      itemLevelAttempts: true,
+      children: {
+        where: { isDeleted: false },
+        select: { id: true, type: true },
+      },
+    },
+  });
+
+  if (originalContent.type === "singleDoc") {
+    throw Error("copyFolderToFolder cannot copy a document");
+  }
+
+  let desiredFolderIsPublic = false;
+  let desiredFolderLicenseCode: LicenseCode = "CCDUAL";
+  let desiredFolderShares: Uint8Array[] = [];
+
+  if (desiredParentId !== null) {
+    // if desired parent is specified, make sure it exists and is owned by `ownerId`
+    const parent = await prisma.content.findUniqueOrThrow({
+      where: {
+        id: desiredParentId,
+        ownerId,
+        isDeleted: false,
+        isFolder: true,
+      },
+      select: {
+        isPublic: true,
+        licenseCode: true,
+        sharedWith: { select: { userId: true } },
+      },
+    });
+
+    // If the parent folder is shared, then we'll need to share the resulting content, as well,
+    // with the same license.
+    if (parent.isPublic) {
+      desiredFolderIsPublic = true;
+      if (parent.licenseCode) {
+        desiredFolderLicenseCode = parent.licenseCode as LicenseCode;
+      }
+    }
+    if (parent.sharedWith.length > 0) {
+      desiredFolderShares = parent.sharedWith.map((cs) => cs.userId);
+      if (parent.licenseCode) {
+        desiredFolderLicenseCode = parent.licenseCode as LicenseCode;
+      }
+    }
+
+    // if content is a folder and moving it to another folder,
+    // make sure that folder is not itself or a subfolder of itself
+
+    if (isEqualUUID(desiredParentId, originalContent.id)) {
+      throw Error("Cannot move content into itself");
+    }
+
+    const subfolders = await prisma.$queryRaw<
+      {
+        id: Uint8Array;
+      }[]
+    >(Prisma.sql`
+        WITH RECURSIVE folder_tree(id) AS (
+          SELECT id FROM content
+          WHERE parentId = ${originalContent.id} AND isFolder = TRUE 
+          UNION ALL
+          SELECT c.id FROM content AS c
+          INNER JOIN folder_tree AS ft
+          ON c.parentId = ft.id
+          WHERE c.isFolder = TRUE 
+        )
+
+        SELECT * FROM folder_tree
+        `);
+
+    if (
+      subfolders.findIndex((sf) => isEqualUUID(sf.id, desiredParentId)) !== -1
+    ) {
+      throw Error("Cannot move content into a subfolder of itself");
+    }
+  }
+
+  const sortIndex = await getNextSortIndexForFolder(ownerId, desiredParentId);
+
+  // Duplicate the folder itself
+
+  const newFolder = await prisma.content.create({
+    data: {
+      name: originalContent.name,
+      isFolder: originalContent.isFolder,
+      type: originalContent.type,
+      ownerId,
+      parentId: desiredParentId,
+      sortIndex,
+      licenseCode: originalContent.licenseCode ?? desiredFolderLicenseCode,
+      isPublic: desiredFolderIsPublic,
+      sharedWith: {
+        create: desiredFolderShares.map((u) => ({ userId: u })),
+      },
+      numToSelect: originalContent.numToSelect,
+      selectByVariant: originalContent.selectByVariant,
+      shuffle: originalContent.shuffle,
+      paginate: originalContent.paginate,
+      activityLevelAttempts: originalContent.activityLevelAttempts,
+      itemLevelAttempts: originalContent.itemLevelAttempts,
+    },
+  });
+
+  for (const child of originalContent.children) {
+    if (child.type === "singleDoc") {
+      await copyActivityToFolder(child.id, ownerId, newFolder.id);
+    } else {
+      await copyFolderToFolder(child.id, ownerId, newFolder.id);
+    }
+  }
+
+  return newFolder.id;
+}
+
 export async function copyContent(
   origContent: { contentId: Uint8Array; type: ContentType }[],
   userId: Uint8Array,
   parentId: Uint8Array | null,
 ) {
-  console.log("copy content", origContent, parentId);
-
   const newContentIds: Uint8Array[] = [];
 
   for (const { contentId, type } of origContent) {
@@ -927,7 +1108,7 @@ export async function copyContent(
         await copyActivityToFolder(contentId, userId, parentId, false),
       );
     } else {
-      console.log("todo!!!");
+      newContentIds.push(await copyFolderToFolder(contentId, userId, parentId));
     }
   }
 

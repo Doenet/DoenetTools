@@ -42,19 +42,26 @@ export function CopyContentAndReportFinish({
 
   const navigate = useNavigate();
 
+  const [errMsg, setErrMsg] = useState("");
+
   useEffect(() => {
     async function copyContent() {
       document.body.style.cursor = "wait";
 
-      const { data } = await axios.post(`/api/copyContent`, {
-        sourceContent: sourceContent.map((s) => ({
-          contentId: s.id,
-          type: s.type,
-        })),
-        desiredParentId: desiredParent ? desiredParent.id : null,
-      });
+      try {
+        const { data } = await axios.post(`/api/copyContent`, {
+          sourceContent: sourceContent.map((s) => ({
+            contentId: s.id,
+            type: s.type,
+          })),
+          desiredParentId: desiredParent ? desiredParent.id : null,
+        });
 
-      setNewActivityData(data);
+        setNewActivityData(data);
+      } catch (e) {
+        console.error(e);
+        setErrMsg("An error occurred while copying.");
+      }
       document.body.style.cursor = "default";
     }
 
@@ -64,6 +71,7 @@ export function CopyContentAndReportFinish({
       }
     } else {
       setNewActivityData(null);
+      setErrMsg("");
     }
   }, [isOpen]);
 
@@ -106,13 +114,17 @@ export function CopyContentAndReportFinish({
         </ModalHeader>
         {newActivityData !== null ? <ModalCloseButton /> : null}
         <ModalBody>
-          {newActivityData === null ? (
-            <HStack>
-              <Text>Copying...</Text>
-              <Spinner />
-            </HStack>
+          {errMsg === "" ? (
+            newActivityData === null ? (
+              <HStack>
+                <Text>Copying...</Text>
+                <Spinner />
+              </HStack>
+            ) : (
+              <>The content has been copied to {destinationDescription}.</>
+            )
           ) : (
-            <>The content has been copied to {destinationDescription}.</>
+            <>{errMsg}</>
           )}
         </ModalBody>
 
@@ -123,7 +135,7 @@ export function CopyContentAndReportFinish({
             onClick={() => {
               navigate(destinationUrl);
             }}
-            isDisabled={newActivityData === null}
+            isDisabled={newActivityData === null && errMsg === ""}
           >
             {destinationAction}
           </Button>
@@ -131,7 +143,7 @@ export function CopyContentAndReportFinish({
             onClick={() => {
               onClose();
             }}
-            isDisabled={newActivityData === null}
+            isDisabled={newActivityData === null && errMsg === ""}
           >
             Close
           </Button>

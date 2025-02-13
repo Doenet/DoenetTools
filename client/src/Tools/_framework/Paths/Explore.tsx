@@ -86,16 +86,6 @@ export async function action({ request }) {
     return resultTLV;
   }
 
-  if (formObj?._action === "retrieve recent") {
-    const { data } = await axios.get(`/api/getRecentContent`, {
-      params: {
-        mode: "edit",
-        restrictToTypes: ["sequence", "select", "folder"],
-      },
-    });
-    return data;
-  }
-
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
@@ -319,18 +309,6 @@ export function Explore() {
   );
 
   const [recentContent, setRecentContent] = useState<ContentDescription[]>([]);
-
-  useEffect(() => {
-    const rc: ContentDescription[] = [];
-    if (Array.isArray(fetcher.data)) {
-      for (const item of fetcher.data) {
-        if (isContentDescription(item)) {
-          rc.push(item);
-        }
-      }
-      setRecentContent(rc);
-    }
-  }, [fetcher.data]);
 
   useEffect(() => {
     setSelectedCards((was) => {
@@ -819,11 +797,23 @@ export function Explore() {
               <CloseButton size="sm" onClick={() => setSelectedCards({})} />{" "}
               <Text>{numSelected} selected</Text>
               <Menu
-                onOpen={() => {
-                  fetcher.submit(
-                    { _action: "retrieve recent" },
-                    { method: "post" },
-                  );
+                onOpen={async () => {
+                  const { data } = await axios.get(`/api/getRecentContent`, {
+                    params: {
+                      mode: "edit",
+                      restrictToTypes: ["sequence", "select", "folder"],
+                    },
+                  });
+
+                  const rc: ContentDescription[] = [];
+                  if (Array.isArray(data)) {
+                    for (const item of data) {
+                      if (isContentDescription(item)) {
+                        rc.push(item);
+                      }
+                    }
+                    setRecentContent(rc);
+                  }
                 }}
               >
                 <MenuButton
