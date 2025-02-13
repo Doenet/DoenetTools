@@ -96,6 +96,14 @@ import {
   getSharedContentMatchCountPerAvailableFeature,
   getAuthorInfo,
   browseTrendingContent,
+  getCurationFolderContent,
+  addDraftToLibrary,
+  getLibraryStatus,
+  publishActivityToLibrary,
+  unpublishActivityFromLibrary,
+  deleteDraftFromLibrary,
+  modifyCommentsOfLibraryRequest,
+  markLibraryRequestNeedsRevision,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -124,7 +132,12 @@ import {
   isEqualUUID,
   docRemixesConvertUUID,
 } from "./utils/uuid";
-import { LicenseCode, PartialContentClassification, UserInfo } from "./types";
+import {
+  LibraryInfo,
+  LicenseCode,
+  PartialContentClassification,
+  UserInfo,
+} from "./types";
 import { add_test_apis } from "./test/test_apis";
 
 const client = new SESClient({ region: "us-east-2" });
@@ -658,7 +671,7 @@ app.post(
     const id = toUUID(body.id);
     const name = body.name;
     try {
-      await updateContent({ id, name, ownerId: loggedInUserId });
+      await updateContent({ id, name, loggedInUserId });
       res.send({});
     } catch (e) {
       if (
@@ -703,7 +716,7 @@ app.post(
     try {
       await setActivityLicense({
         id,
-        ownerId: loggedInUserId,
+        loggedInUserId,
         licenseCode,
       });
       res.send({});
@@ -1707,7 +1720,7 @@ app.get(
         loggedInUserId,
       );
       res.send({
-        notMe: editorData.notMe,
+        editableByMe: editorData.editableByMe,
         activity: contentStructureConvertUUID(editorData.activity),
         availableFeatures: editorData.availableFeatures,
       });
@@ -1895,7 +1908,7 @@ app.post(
       await updateDoc({
         id: docId,
         source: doenetML,
-        ownerId: loggedInUserId,
+        loggedInUserId,
       });
       res.send({});
     } catch (e) {
@@ -1927,7 +1940,7 @@ app.post(
         id,
         imagePath,
         name,
-        ownerId: loggedInUserId,
+        loggedInUserId,
       });
       res.send({});
     } catch (e) {
@@ -1959,7 +1972,7 @@ app.post(
         id: docId,
         name,
         doenetmlVersionId,
-        ownerId: loggedInUserId,
+        loggedInUserId,
       });
       res.send({});
     } catch (e) {
@@ -1989,7 +2002,7 @@ app.post(
       await updateContentFeatures({
         id,
         features,
-        ownerId: loggedInUserId,
+        loggedInUserId,
       });
       res.send({});
     } catch (e) {
@@ -2002,27 +2015,37 @@ app.post(
   },
 );
 
-app.post("/api/moveContent", async (req: Request, res: Response) => {
-  if (!req.user) {
-    res.sendStatus(403);
-    return;
-  }
-  const loggedInUserId = req.user.userId;
-  const id = toUUID(req.body.id);
-  const desiredParentFolderId = req.body.desiredParentFolderId
-    ? toUUID(req.body.desiredParentFolderId)
-    : null;
-  const desiredPosition = Number(req.body.desiredPosition);
+app.post(
+  "/api/moveContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    const loggedInUserId = req.user.userId;
+    const id = toUUID(req.body.id);
+    const desiredParentFolderId = req.body.desiredParentFolderId
+      ? toUUID(req.body.desiredParentFolderId)
+      : null;
+    const desiredPosition = Number(req.body.desiredPosition);
 
-  await moveContent({
-    id,
-    desiredParentFolderId,
-    desiredPosition,
-    ownerId: loggedInUserId,
-  });
-
-  res.send({});
-});
+    try {
+      await moveContent({
+        id,
+        desiredParentFolderId,
+        desiredPosition,
+        loggedInUserId,
+      });
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
 
 app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
   if (!req.user) {
@@ -2809,6 +2832,423 @@ app.get(
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.status(404).send("No content found");
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getCurationFolderContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = req.user?.userId;
+
+    if (!loggedInUserId) {
+      res.sendStatus(404);
+      return;
+    }
+
+    try {
+      const contentData = await getCurationFolderContent({
+        folderId: null,
+        loggedInUserId,
+      });
+
+      const allDoenetmlVersions = await getAllDoenetmlVersions();
+      const allLicenses = await getAllLicenses();
+      res.send({
+        allDoenetmlVersions,
+        allLicenses,
+        content: contentData.content.map(contentStructureConvertUUID),
+        folder: contentData.folder
+          ? contentStructureConvertUUID(contentData.folder)
+          : null,
+        availableFeatures: contentData.availableFeatures,
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getCurationFolderContent/:folderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const folderId = toUUID(req.params.folderId);
+    const loggedInUserId = req.user?.userId;
+
+    if (!loggedInUserId) {
+      res.sendStatus(404);
+      return;
+    }
+
+    try {
+      const contentData = await getCurationFolderContent({
+        folderId,
+        loggedInUserId,
+      });
+      const allDoenetmlVersions = await getAllDoenetmlVersions();
+      const allLicenses = await getAllLicenses();
+      res.send({
+        allDoenetmlVersions,
+        allLicenses,
+        content: contentData.content.map(contentStructureConvertUUID),
+        folder: contentData.folder
+          ? contentStructureConvertUUID(contentData.folder)
+          : null,
+        availableFeatures: contentData.availableFeatures,
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/searchCurationFolderContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    const loggedInUserId = req.user?.userId;
+    const query = req.query.q as string;
+
+    if (!loggedInUserId) {
+      res.sendStatus(404);
+      return;
+    }
+
+    try {
+      const contentData = await searchMyFolderContent({
+        folderId: null,
+        loggedInUserId,
+        query,
+        inLibrary: true,
+      });
+
+      const allDoenetmlVersions = await getAllDoenetmlVersions();
+      const allLicenses = await getAllLicenses();
+      res.send({
+        allDoenetmlVersions,
+        allLicenses,
+        content: contentData.content.map(contentStructureConvertUUID),
+        folder: contentData.folder
+          ? contentStructureConvertUUID(contentData.folder)
+          : null,
+        availableFeatures: contentData.availableFeatures,
+      });
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2001"
+      ) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/searchCurationFolderContent/:folderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    const loggedInUserId = req.user?.userId;
+    const folderId = toUUID(req.params.folderId);
+    const query = req.query.q as string;
+
+    if (!loggedInUserId) {
+      res.sendStatus(404);
+      return;
+    }
+
+    try {
+      const contentData = await searchMyFolderContent({
+        folderId,
+        loggedInUserId,
+        query,
+        inLibrary: true,
+      });
+      const allDoenetmlVersions = await getAllDoenetmlVersions();
+      const allLicenses = await getAllLicenses();
+      res.send({
+        allDoenetmlVersions,
+        allLicenses,
+        content: contentData.content.map(contentStructureConvertUUID),
+        folder: contentData.folder
+          ? contentStructureConvertUUID(contentData.folder)
+          : null,
+        availableFeatures: contentData.availableFeatures,
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getLibraryStatus/:activityId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+
+    const activityId = toUUID(req.params.activityId);
+    const loggedInUserId = req.user?.userId;
+
+    try {
+      const status: LibraryInfo = await getLibraryStatus({
+        id: activityId,
+        userId: loggedInUserId,
+      });
+      const statusNew = {
+        ...status,
+        activityId: status.activityId ? fromUUID(status.activityId) : null,
+      };
+      res.send(statusNew);
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/addDraftToLibrary",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    const loggedInUserId = req.user.userId;
+    const id = toUUID(req.body.activityId);
+
+    try {
+      const { draftId } = await addDraftToLibrary({
+        id,
+        loggedInUserId,
+      });
+      res.send({
+        newActivityId: fromUUID(draftId),
+        userId: fromUUID(loggedInUserId),
+      });
+    } catch (e) {
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/deleteDraftFromLibrary",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    const loggedInUserId = req.user.userId;
+    const id = toUUID(req.body.activityId);
+    try {
+      await deleteDraftFromLibrary({
+        draftId: id,
+        loggedInUserId,
+      });
+      res.send({});
+    } catch (e) {
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/createCurationFolder/",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    const loggedInUserId = req.user.userId;
+    try {
+      const { folderId } = await createFolder(loggedInUserId, null, true);
+      res.send({ folderId: fromUUID(folderId) });
+    } catch (e) {
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/createCurationFolder/:parentFolderId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    const loggedInUserId = req.user.userId;
+    const parentFolderId = toUUID(req.params.parentFolderId);
+    try {
+      const { folderId } = await createFolder(
+        loggedInUserId,
+        parentFolderId,
+        true,
+      );
+      res.send({ folderId: fromUUID(folderId) });
+    } catch (e) {
+      next(e);
+    }
+  },
+);
+
+app.post(
+  "/api/moveCurationContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    const loggedInUserId = req.user.userId;
+    const id = toUUID(req.body.id);
+    const desiredParentFolderId = req.body.desiredParentFolderId
+      ? toUUID(req.body.desiredParentFolderId)
+      : null;
+    const desiredPosition = Number(req.body.desiredPosition);
+
+    try {
+      await moveContent({
+        id,
+        desiredParentFolderId,
+        desiredPosition,
+        loggedInUserId,
+        inLibrary: true,
+      });
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/publishActivityToLibrary",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    const loggedInUserId = req.user.userId;
+    const id = toUUID(req.body.id);
+    const comments = req.body.comments;
+
+    try {
+      await publishActivityToLibrary({ draftId: id, loggedInUserId, comments });
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/unpublishActivityFromLibrary",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    const loggedInUserId = req.user.userId;
+    const id = toUUID(req.body.id);
+
+    try {
+      await unpublishActivityFromLibrary({ activityId: id, loggedInUserId });
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/modifyCommentsOfLibraryRequest",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    const loggedInUserId = req.user.userId;
+    const sourceId = toUUID(req.body.sourceId);
+    const comments = req.body.comments;
+
+    try {
+      await modifyCommentsOfLibraryRequest({
+        sourceId,
+        comments,
+        userId: loggedInUserId,
+      });
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/markLibraryRequestNeedsRevision",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    const loggedInUserId = req.user.userId;
+    try {
+      const sourceId = toUUID(req.body.sourceId);
+      const comments = req.body.comments;
+
+      await markLibraryRequestNeedsRevision({
+        sourceId,
+        comments,
+        userId: loggedInUserId,
+      });
+      res.send({});
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
       } else {
         next(e);
       }

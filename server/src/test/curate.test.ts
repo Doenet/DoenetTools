@@ -16,10 +16,11 @@ import {
   unpublishActivityFromLibrary,
 } from "../model";
 import { createTestAdminUser, createTestUser } from "./utils";
+import { LibraryInfo } from "../types";
 
 async function expectStatusIs(
   activityId: Uint8Array,
-  desiredStatus: any,
+  desiredStatus: LibraryInfo,
   userId: Uint8Array,
 ) {
   const actualStatus = await getLibraryStatus({
@@ -37,7 +38,11 @@ test("user privileges for library", async () => {
   const { activityId } = await createActivity(ownerId, null);
 
   // No library status for private activity
-  const statusNone = { status: "none" };
+  const statusNone: LibraryInfo = {
+    status: "none",
+    sourceId: activityId,
+    activityId: null,
+  };
   await expectStatusIs(activityId, statusNone, ownerId);
   await expectStatusIs(activityId, statusNone, adminId);
   await expectStatusIs(activityId, statusNone, randomUserId);
@@ -62,9 +67,11 @@ test("user privileges for library", async () => {
     licenseCode: "CCDUAL",
   });
 
-  const statusPending = {
+  const statusPending: LibraryInfo = {
     status: "PENDING_REVIEW",
     comments: "",
+    sourceId: activityId,
+    activityId: null,
   };
 
   // Only owner can request review
@@ -108,9 +115,11 @@ test("user privileges for library", async () => {
   await expectCancelRequestFails(randomUserId);
   await expectCancelRequestFails(adminId);
 
-  const statusCancelled = {
+  const statusCancelled: LibraryInfo = {
+    sourceId: activityId,
     status: "REQUEST_REMOVED",
     comments: "",
+    activityId: null,
   };
   const statusCancelledWithDraft = {
     ...statusCancelled,
@@ -143,11 +152,13 @@ test("user privileges for library", async () => {
     comments: "Please fix such and such.",
   });
 
-  const statusNeedsRev = {
+  const statusNeedsRev: LibraryInfo = {
+    sourceId: activityId,
     status: "NEEDS_REVISION",
     comments: "Please fix such and such.",
+    activityId: null,
   };
-  const statusNeedsRevWithDraft = {
+  const statusNeedsRevWithDraft: LibraryInfo = {
     ...statusNeedsRev,
     activityId: draftId,
   };
@@ -166,9 +177,11 @@ test("user privileges for library", async () => {
     ).rejects.toThrowError();
   }
 
-  const statusNewComments = {
+  const statusNewComments: LibraryInfo = {
+    sourceId: activityId,
     status: "NEEDS_REVISION",
     comments: "I have new comments.",
+    activityId: null,
   };
   const statusNewCommentsWithDraft = {
     ...statusNewComments,
@@ -202,11 +215,12 @@ test("user privileges for library", async () => {
   await expectStatusIs(activityId, statusNewComments, ownerId);
   await expectStatusIs(activityId, statusNewCommentsWithDraft, adminId);
 
-  const publicStatusPublished = {
+  const publicStatusPublished: LibraryInfo = {
+    sourceId: activityId,
     status: "PUBLISHED",
     activityId: draftId,
   };
-  const privateStatusPublished = {
+  const privateStatusPublished: LibraryInfo = {
     ...publicStatusPublished,
     comments: "Awesome problem set!",
   };
@@ -234,9 +248,11 @@ test("user privileges for library", async () => {
   await expectStatusIs(activityId, privateStatusPublished, ownerId);
   await expectStatusIs(activityId, privateStatusPublished, adminId);
 
-  const statusUnpublished = {
+  const statusUnpublished: LibraryInfo = {
+    sourceId: activityId,
     status: "PENDING_REVIEW",
     comments: "Awesome problem set!",
+    activityId: null,
   };
   const statusUnpublishedWithDraft = {
     ...statusUnpublished,
@@ -298,9 +314,11 @@ test("owner requests library review, admin publishes", async () => {
     licenseCode: "CCDUAL",
   });
 
-  let status = {
+  let status: LibraryInfo = {
+    sourceId: activityId,
     status: "PENDING_REVIEW",
     comments: "",
+    activityId: null,
   };
   await submitLibraryRequest({ ownerId, activityId });
   await expectStatusIs(activityId, status, ownerId);
@@ -316,7 +334,8 @@ test("owner requests library review, admin publishes", async () => {
     loggedInUserId: adminId,
     comments: "some feedback",
   });
-  const statusPublished = {
+  const statusPublished: LibraryInfo = {
+    sourceId: activityId,
     status: "PUBLISHED",
     comments: "some feedback",
     activityId: draftId,
@@ -339,11 +358,13 @@ test("admin publishes to library without owner request", async () => {
     loggedInUserId: adminId,
   });
 
-  const status = {
+  const status: LibraryInfo = {
+    sourceId: activityId,
     status: "PENDING_REVIEW",
     comments: "",
+    activityId: null,
   };
-  const statusWithDraft = {
+  const statusWithDraft: LibraryInfo = {
     ...status,
     activityId: draftId,
   };
@@ -355,7 +376,8 @@ test("admin publishes to library without owner request", async () => {
     loggedInUserId: adminId,
     comments: "some feedback",
   });
-  const statusPublished = {
+  const statusPublished: LibraryInfo = {
+    sourceId: activityId,
     status: "PUBLISHED",
     comments: "some feedback",
     activityId: draftId,
@@ -386,7 +408,8 @@ test("published activity in library with unavailable source activity", async () 
     comments: "some feedback",
   });
 
-  const status = {
+  const status: LibraryInfo = {
+    sourceId: activityId,
     status: "PUBLISHED",
     comments: "some feedback",
     activityId: draftId,
@@ -423,3 +446,27 @@ test("deleting draft does not delete owner's original", async () => {
   expect(original.id).eqls(activityId);
   expect(original.isDeleted).eqls(false);
 });
+
+test.todo("getCurationContent and all its variations (and search!)");
+
+test.todo("Admin can add folder in library");
+
+test.todo("Add classification in library");
+
+test.todo("Remove classification in library");
+
+test.todo("Edit DoenetML in library");
+
+test.todo("Rename activity in library");
+
+test.todo("Move activity in library");
+
+test.todo("Move activity to new folder in library");
+
+test.todo("Cannot use normal sharing endpoints for library activities");
+
+test.todo("Cannot add new non-remixed activity to library");
+
+test.todo("Can view remix history of library activity");
+
+test.todo("Library draft not visible to non-admin");

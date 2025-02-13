@@ -289,6 +289,7 @@ export function returnContentStructureSharedDetailsNoClassDocsSelect({
  */
 export function returnContentStructureBaseSelect({
   includeAssignInfo = false,
+  isAdmin = false,
 } = {}) {
   const folderSelect = returnContentStructureNoClassDocsSelect({
     includeAssignInfo,
@@ -305,6 +306,24 @@ export function returnContentStructureBaseSelect({
         doenetmlVersion: true,
       },
       orderBy: { id: "asc" as const },
+    },
+    librarySource: {
+      select: {
+        status: true,
+        sourceId: true,
+        activityId: true,
+        comments: isAdmin ? true : undefined,
+        ownerRequested: isAdmin ? true : undefined,
+      },
+    },
+    libraryActivity: {
+      select: {
+        status: true,
+        sourceId: true,
+        activityId: true,
+        comments: isAdmin ? true : undefined,
+        ownerRequested: isAdmin ? true : undefined,
+      },
     },
     classifications: {
       select: {
@@ -370,6 +389,7 @@ export function returnContentStructureFullOwnerSelect() {
         email: true,
         firstNames: true,
         lastNames: true,
+        isLibrary: true,
       },
     },
   };
@@ -386,11 +406,14 @@ export function returnContentStructureFullOwnerSelect() {
  */
 export function returnContentStructureSharedDetailsSelect({
   includeAssignInfo = false,
+  isAdmin = false,
 }: {
   includeAssignInfo?: boolean;
+  isAdmin?: boolean;
 } = {}) {
   const selectBase = returnContentStructureBaseSelect({
     includeAssignInfo,
+    isAdmin,
   });
 
   const sharedWith = {

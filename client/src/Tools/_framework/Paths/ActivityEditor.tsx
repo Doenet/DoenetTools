@@ -93,10 +93,10 @@ export async function action({ params, request }) {
 
 export async function loader({ params }) {
   const {
-    data: { notMe, activity: activityData, availableFeatures },
+    data: { editableByMe, activity: activityData, availableFeatures },
   } = await axios.get(`/api/getActivityEditorData/${params.activityId}`);
 
-  if (notMe) {
+  if (!editableByMe) {
     return redirect(
       `/codeViewer/${params.activityId}${params.docId ? "/" + params.docId : ""}`,
     );

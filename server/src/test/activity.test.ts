@@ -23,6 +23,7 @@ import {
   makeFolderPrivate,
   shareActivity,
   getDocumentSource,
+  InvalidRequestError,
 } from "../model";
 import { DateTime } from "luxon";
 import { ContentStructure } from "../types";
@@ -96,7 +97,7 @@ test("New activity starts out private, then delete it", async () => {
   await deleteActivity(activityId, userId);
 
   await expect(getActivityEditorData(activityId, userId)).rejects.toThrow(
-    PrismaClientKnownRequestError,
+    InvalidRequestError,
   );
 
   const dataAfterDelete = await getMyFolderContent({
@@ -112,7 +113,11 @@ test("Test updating various activity properties", async () => {
   const userId = user.userId;
   const { activityId } = await createActivity(userId, null);
   const activityName = "Test Name";
-  await updateContent({ id: activityId, name: activityName, ownerId: userId });
+  await updateContent({
+    id: activityId,
+    name: activityName,
+    loggedInUserId: userId,
+  });
   const { activity: activityContent } = await getActivityEditorData(
     activityId,
     userId,
@@ -120,7 +125,7 @@ test("Test updating various activity properties", async () => {
   const docId = activityContent.documents[0].id;
   expect(activityContent.name).toBe(activityName);
   const source = "Here comes some content, I made you some content";
-  await updateDoc({ id: docId, source, ownerId: userId });
+  await updateDoc({ id: docId, source, loggedInUserId: userId });
   const { activity: activityContent2 } = await getActivityEditorData(
     activityId,
     userId,
@@ -152,10 +157,10 @@ test("deleteActivity marks a activity and document as deleted and prevents its r
     PrismaClientKnownRequestError,
   );
   await expect(getActivityViewerData(activityId, userId)).rejects.toThrow(
-    PrismaClientKnownRequestError,
+    InvalidRequestError,
   );
   await expect(getActivityEditorData(activityId, userId)).rejects.toThrow(
-    PrismaClientKnownRequestError,
+    InvalidRequestError,
   );
   await expect(getDoc(docId)).rejects.toThrow(PrismaClientKnownRequestError);
   await expect(getDocumentSource(docId, userId)).rejects.toThrow(
@@ -184,11 +189,15 @@ test("updateDoc updates document properties", async () => {
   const { activityId, docId } = await createActivity(userId, null);
   const newName = "Updated Name";
   const newContent = "Updated Content";
-  await updateContent({ id: activityId, name: newName, ownerId: userId });
+  await updateContent({
+    id: activityId,
+    name: newName,
+    loggedInUserId: userId,
+  });
   await updateDoc({
     id: docId,
     source: newContent,
-    ownerId: userId,
+    loggedInUserId: userId,
   });
   const activityViewerContent = await getActivityViewerData(activityId, userId);
   expect(activityViewerContent.activity.name).toBe(newName);
@@ -221,7 +230,7 @@ test("updateContent does not update properties when passed undefined values", as
   const ownerId = owner.userId;
   const { activityId } = await createActivity(ownerId, null);
   const originalActivity = await getActivity(activityId);
-  await updateContent({ id: activityId, ownerId });
+  await updateContent({ id: activityId, loggedInUserId: ownerId });
   const updatedActivity = await getActivity(activityId);
   expect(updatedActivity).toEqual(originalActivity);
 });
@@ -255,11 +264,11 @@ test("get activity/document data only if owner or limited data for public/shared
   await openAssignmentWithCode(activityId, closeAt, ownerId);
 
   let data = await getActivityEditorData(activityId, ownerId);
-  expect(data.notMe).eq(false);
+  expect(data.editableByMe).eq(true);
   expect(data.activity.assignmentStatus).eq("Open");
 
   data = await getActivityEditorData(activityId, user1Id);
-  expect(data.notMe).eq(true);
+  expect(data.editableByMe).eq(false);
   expect(data.activity).eqls({
     id: activityId,
     name: "",
@@ -300,7 +309,7 @@ test("get activity/document data only if owner or limited data for public/shared
     users: [user1Id],
   });
   data = await getActivityEditorData(activityId, user1Id);
-  expect(data.notMe).eq(true);
+  expect(data.editableByMe).eq(false);
   expect(data.activity).eqls({
     id: activityId,
     name: "",
@@ -345,7 +354,7 @@ test("get public activity editor data only if public or shared", async () => {
 
   const { activityId, docId } = await createActivity(ownerId, null);
   const doenetML = "hi!";
-  await updateDoc({ id: docId, source: doenetML, ownerId });
+  await updateDoc({ id: docId, source: doenetML, loggedInUserId: ownerId });
 
   await expect(getSharedEditorData(activityId, user1Id)).rejects.toThrow(
     PrismaClientKnownRequestError,
@@ -353,7 +362,7 @@ test("get public activity editor data only if public or shared", async () => {
 
   await updateContent({
     id: activityId,
-    ownerId,
+    loggedInUserId: ownerId,
     name: "Some content",
   });
   await makeActivityPublic({
@@ -716,7 +725,7 @@ test("activity editor data shows its parent folder is public", async () => {
     id: activityId,
     desiredParentFolderId: folderId,
     desiredPosition: 0,
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
@@ -751,7 +760,11 @@ test("getDocumentSource gets source", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const { docId } = await createActivity(ownerId, null);
-  await updateDoc({ id: docId, source: "some content", ownerId });
+  await updateDoc({
+    id: docId,
+    source: "some content",
+    loggedInUserId: ownerId,
+  });
 
   const documentSource = await getDocumentSource(docId, ownerId);
   expect(documentSource.source).eq("some content");

@@ -19,7 +19,7 @@ export type License = {
   imageURL: string | null;
   smallImageURL: string | null;
   licenseURL: string | null;
-  isComposition: boolean;
+  isComposition: boolean; 
   composedOf: {
     code: LicenseCode;
     name: string;
@@ -31,6 +31,19 @@ export type License = {
 };
 
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
+
+export type LibraryInfo = {
+  sourceId: string;
+  activityId: string | null;
+  onwerRequested?: boolean;
+  status:
+    | "none"
+    | "PENDING_REVIEW"
+    | "REQUEST_REMOVED"
+    | "PUBLISHED"
+    | "NEEDS_REVISION";
+  comments?: string;
+};
 
 export type UserInfo = {
   userId: string;
@@ -126,6 +139,8 @@ export type ContentStructure = {
   sharedWith: UserInfo[];
   license: License | null;
   classifications: ContentClassification[];
+  librarySource?: LibraryInfo;
+  libraryActivity?: LibraryInfo;
   documents: {
     id: string;
     versionNum?: number;
