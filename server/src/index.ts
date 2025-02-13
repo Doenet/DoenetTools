@@ -96,6 +96,9 @@ import {
   getSharedContentMatchCountPerAvailableFeature,
   getAuthorInfo,
   browseTrendingContent,
+  recordRecentContent,
+  getRecentContent,
+  copyContent,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -110,7 +113,6 @@ import { Strategy as AnonymIdStrategy } from "passport-anonym-uuid";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
 import * as fs from "fs/promises";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import {
   fromUUID,
   contentStructureConvertUUID,
@@ -1745,6 +1747,10 @@ app.get(
         activityId,
         loggedInUserId,
       );
+      if (!editorData.notMe) {
+        // record that this activity was accessed via editor
+        await recordRecentContent(loggedInUserId, "edit", activityId);
+      }
       res.send({
         notMe: editorData.notMe,
         activity: contentStructureConvertUUID(editorData.activity),
@@ -2113,6 +2119,49 @@ app.post(
 
       res.send({
         newActivityId: fromUUID(newActivityId),
+        userId: fromUUID(loggedInUserId),
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/copyContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    try {
+      const loggedInUserId = req.user.userId;
+      const sourceContent = req.body.sourceContent.map(
+        ({ contentId, type }: { contentId: string; type: ContentType }) => ({
+          contentId: toUUID(contentId),
+          type,
+        }),
+      );
+      const desiredParentId = req.body.desiredParentId
+        ? toUUID(req.body.desiredParentId)
+        : null;
+
+      const newContentIds = await copyContent(
+        sourceContent,
+        loggedInUserId,
+        desiredParentId,
+      );
+
+      if (desiredParentId) {
+        await recordRecentContent(loggedInUserId, "edit", desiredParentId);
+      }
+
+      res.send({
+        newContentIds: newContentIds.map(fromUUID),
         userId: fromUUID(loggedInUserId),
       });
     } catch (e) {
@@ -2737,6 +2786,8 @@ app.get(
       });
       const allDoenetmlVersions = await getAllDoenetmlVersions();
       const allLicenses = await getAllLicenses();
+      // record that opened this folder
+      await recordRecentContent(loggedInUserId, "edit", folderId);
       res.send({
         allDoenetmlVersions,
         allLicenses,
@@ -3050,10 +3101,6 @@ app.post(
       const results = await setPreferredFolderView(loggedInUserId, cardView);
       res.send(results);
     } catch (e) {
-      if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
-        res.status(404).send("Not logged in");
-        return;
-      }
       next(e);
     }
   },
@@ -3074,10 +3121,42 @@ app.get(
       const results = await getPreferredFolderView(loggedInUserId);
       res.send(results);
     } catch (e) {
-      if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
-        res.status(404).send("Not logged in");
-        return;
+      next(e);
+    }
+  },
+);
+
+app.get(
+  "/api/getRecentContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      // if not signed in, don't have any recent content
+      res.send([]);
+      return;
+    }
+
+    try {
+      const mode = req.query.mode === "edit" ? "edit" : "view";
+      const restrictToTypes: ContentType[] = [];
+      if (Array.isArray(req.query.restrictToTypes)) {
+        for (const t of req.query.restrictToTypes) {
+          if (
+            typeof t === "string" &&
+            ["sequence", "select", "folder", "singleDoc"].includes(t)
+          ) {
+            restrictToTypes.push(t as ContentType);
+          }
+        }
       }
+      const loggedInUserId = req.user.userId;
+
+      const results = await getRecentContent(
+        loggedInUserId,
+        mode,
+        restrictToTypes,
+      );
+      res.send(results.map((r) => ({ ...r, id: fromUUID(r.id) })));
+    } catch (e) {
       next(e);
     }
   },

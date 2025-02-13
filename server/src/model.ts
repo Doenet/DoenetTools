@@ -777,6 +777,7 @@ export async function copyActivityToFolder(
   origActivityId: Uint8Array,
   userId: Uint8Array,
   folderId: Uint8Array | null,
+  prependCopy = true,
 ) {
   const origActivity = await prisma.content.findUniqueOrThrow({
     where: {
@@ -802,7 +803,7 @@ export async function copyActivityToFolder(
 
   const newActivity = await prisma.content.create({
     data: {
-      name: `Copy of ${origActivity.name}`,
+      name: (prependCopy ? "Copy of " : "") + origActivity.name,
       isFolder: false,
       imagePath: origActivity.imagePath,
       ownerId: userId,
@@ -909,6 +910,28 @@ export async function copyActivityToFolder(
   }
 
   return newActivity.id;
+}
+
+export async function copyContent(
+  origContent: { contentId: Uint8Array; type: ContentType }[],
+  userId: Uint8Array,
+  parentId: Uint8Array | null,
+) {
+  console.log("copy content", origContent, parentId);
+
+  const newContentIds: Uint8Array[] = [];
+
+  for (const { contentId, type } of origContent) {
+    if (type === "singleDoc") {
+      newContentIds.push(
+        await copyActivityToFolder(contentId, userId, parentId, false),
+      );
+    } else {
+      console.log("todo!!!");
+    }
+  }
+
+  return newContentIds;
 }
 
 // Note: createDocumentVersion does not currently incorporate access control,
@@ -6254,4 +6277,74 @@ export async function getPreferredFolderView(loggedInUserId: Uint8Array) {
     where: { userId: loggedInUserId },
     select: { cardView: true },
   });
+}
+
+export async function recordRecentContent(
+  loggedInUserId: Uint8Array,
+  mode: "edit" | "view",
+  contentId: Uint8Array,
+) {
+  await prisma.recentContent.upsert({
+    where: {
+      userId_mode_contentId: { userId: loggedInUserId, mode, contentId },
+    },
+    update: { accessed: DateTime.now().toJSDate() },
+    create: { userId: loggedInUserId, mode, contentId },
+  });
+}
+
+export async function getRecentContent(
+  loggedInUserId: Uint8Array,
+  mode: "edit" | "view",
+  restrictToTypes: ContentType[] = [],
+) {
+  const results = await prisma.recentContent.findMany({
+    where:
+      restrictToTypes.length > 0
+        ? {
+            userId: loggedInUserId,
+            mode,
+            OR: restrictToTypes.map((t) => ({ content: { type: t } })),
+          }
+        : {
+            userId: loggedInUserId,
+            mode,
+          },
+    select: {
+      content: {
+        select: {
+          id: true,
+          name: true,
+          type: true,
+        },
+      },
+    },
+    take: 10,
+    orderBy: { accessed: "desc" },
+  });
+  return results.map((r) => r.content);
+}
+
+/**
+ * Delete all but the most recent 100 recentContent records for each user.
+ *
+ * Get `getRecentContent` retrieves the most recent 10,
+ * possibly filtered by content type,
+ * so this query could remove items that would have been retrieved in `getRecentContent`
+ * if the viewed types were unbalanced.
+ *
+ * Note: this query seem pretty slow even on a test database, so not sure if it is workable in production.
+ * We could alternatively just purge records older than some given date.
+ */
+export async function purgeOldRecentContent() {
+  await prisma.$queryRaw(Prisma.sql`
+  DELETE rc FROM recentContent as rc
+  WHERE accessed < (
+    SELECT ac FROM (
+      SELECT accessed ac from recentContent as rc2
+      WHERE rc2.userid = rc.userId
+      ORDER BY accessed DESC
+      LIMIT 1 OFFSET 99
+    ) as sub
+  )`);
 }

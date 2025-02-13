@@ -26,7 +26,7 @@ import {
   useOutletContext,
 } from "react-router";
 import MoveContentToFolder, { moveContentActions } from "./MoveContentToFolder";
-import { UserAndRecent } from "../Paths/SiteHeader";
+import { User } from "../Paths/SiteHeader";
 import CardList from "../../../Widgets/CardList";
 import axios from "axios";
 import { ActivitySource } from "../../../_utils/viewerTypes";
@@ -127,7 +127,7 @@ export function NestedActivityEditor({
 
   const readOnly = assignmentStatus !== "Unassigned";
 
-  const { user } = useOutletContext<UserAndRecent>();
+  const user = useOutletContext<User>();
 
   const [haveContentSpinner, setHaveContentSpinner] = useState(false);
 

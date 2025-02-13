@@ -28,8 +28,8 @@ import {
 import axios from "axios";
 import ContributorsMenu from "../ToolPanels/ContributorsMenu";
 
-import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
-import { UserAndRecent } from "./SiteHeader";
+import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
+import { User } from "./SiteHeader";
 import { createFullName } from "../../../_utils/names";
 import {
   ContentStructure,
@@ -48,49 +48,47 @@ import { ActivitySource } from "../../../_utils/viewerTypes";
 
 export async function loader({ params }) {
   try {
-    const { data: activityData } = await axios.get(
-      `/api/getActivityViewerData/${params.activityId}`,
-    );
-
-    const activityType = activityData.activityType;
+    const {
+      data: { activity, docHistories },
+    } = await axios.get(`/api/getActivityViewerData/${params.activityId}`);
 
     const activityId = params.activityId;
 
-    if (activityType === "singleDoc") {
+    if (activity.type === "singleDoc") {
       let docId = params.docId;
       if (!docId) {
         // If docId was not supplied in the url,
         // then use the first docId from the activity.
         // TODO: what happens if activity has no documents?
-        docId = activityData.activity.documents[0].id;
+        docId = activity.documents[0].id;
       }
 
-      const doenetML = activityData.activity.documents[0].source;
+      const doenetML = activity.documents[0].source;
 
       const doenetmlVersion: DoenetmlVersion =
-        activityData.activity.documents[0].doenetmlVersion;
+        activity.documents[0].doenetmlVersion;
 
       const contributorHistory = await processContributorHistory(
-        activityData.docHistories[0],
+        docHistories[0],
       );
 
       return {
-        activityType,
+        type: activity.type,
         activityId,
         doenetML,
-        activity: activityData.activity,
+        activity,
         docId,
         contributorHistory,
         doenetmlVersion,
       };
     } else {
-      const activityJson = compileActivityFromContent(activityData.content);
+      const activityJson = compileActivityFromContent(activity);
 
       return {
-        activityType,
+        type: activity.type,
         activityId,
         activityJson,
-        activity: activityData.content.structure,
+        activity,
         contributorHistory: [],
       };
     }
@@ -104,23 +102,22 @@ export async function loader({ params }) {
 }
 
 export function ActivityViewerWrapper() {
-  const data = useLoaderData() as
+  const data = useLoaderData() as {
+    activityId: string;
+    activity: ContentStructure;
+    contributorHistory: DocHistoryItem[];
+  } & (
     | {
-        activityType: "singleDoc";
-        activityId: string;
+        type: "singleDoc";
         doenetML: string;
-        activity: ContentStructure;
         docId: string;
-        contributorHistory: DocHistoryItem[];
         doenetmlVersion: DoenetmlVersion;
       }
     | {
-        activityType: "sequence" | "select";
-        activityId: string;
-        activity: ContentStructure;
+        type: "sequence" | "select";
         activityJson: ActivitySource;
-        contributorHistory: DocHistoryItem[];
-      };
+      }
+  );
 
   const { activityId, activity, contributorHistory } = data;
 
@@ -143,7 +140,7 @@ export function ActivityViewerWrapper() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { user } = useOutletContext<UserAndRecent>();
+  const user = useOutletContext<User>();
 
   useEffect(() => {
     document.title = `${activity.name} - Doenet`;
@@ -153,7 +150,7 @@ export function ActivityViewerWrapper() {
 
   let viewer: ReactElement;
 
-  if (data.activityType === "singleDoc") {
+  if (data.type === "singleDoc") {
     const { doenetML, doenetmlVersion } = data;
 
     viewer = (
@@ -202,10 +199,11 @@ export function ActivityViewerWrapper() {
 
   return (
     <>
-      <CopyActivityAndReportFinish
+      <CopyContentAndReportFinish
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        activityData={activity}
+        sourceContent={[activity]}
+        desiredParent={null}
       />
       <ContentInfoDrawer
         isOpen={infoIsOpen}

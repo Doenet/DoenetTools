@@ -29,13 +29,13 @@ import {
   Menu,
   MenuButton,
   MenuList,
+  MenuGroup,
 } from "@chakra-ui/react";
 import {
   Link as ReactRouterLink,
   useLoaderData,
   useLocation,
   useNavigate,
-  useOutletContext,
 } from "react-router";
 import Searchbar from "../../../Widgets/SearchBar";
 import { Form, useFetcher } from "react-router";
@@ -44,6 +44,7 @@ import { createFullName } from "../../../_utils/names";
 import {
   ContentFeature,
   ContentStructure,
+  ContentType,
   PartialContentClassification,
   UserInfo,
 } from "../../../_utils/types";
@@ -58,7 +59,23 @@ import { MdFilterAlt, MdFilterAltOff } from "react-icons/md";
 import { clearQueryParameter } from "../../../_utils/explore";
 import { FilterPanel } from "../ToolPanels/FilterPanel";
 import { ExploreFilterDrawer } from "../ToolPanels/ExploreFilterDrawer";
-import { UserAndRecent } from "./SiteHeader";
+import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
+
+type ContentDescription = {
+  id: string;
+  name: string;
+  type: ContentType;
+};
+function isContentDescription(obj: unknown): obj is ContentDescription {
+  const typedObj = obj as ContentDescription;
+  return (
+    typedObj !== null &&
+    typeof typedObj === "object" &&
+    typeof typedObj.id === "string" &&
+    typeof typedObj.name === "string" &&
+    ["singleDoc", "folder", "sequence", "select"].includes(typedObj.type)
+  );
+}
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -67,6 +84,16 @@ export async function action({ request }) {
   const resultTLV = await toggleViewButtonGroupActions({ formObj });
   if (resultTLV) {
     return resultTLV;
+  }
+
+  if (formObj?._action === "retrieve recent") {
+    const { data } = await axios.get(`/api/getRecentContent`, {
+      params: {
+        mode: "edit",
+        restrictToTypes: ["sequence", "select", "folder"],
+      },
+    });
+    return data;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
@@ -198,18 +225,27 @@ export function Explore() {
     !totalCount.numCurated && totalCount.numCommunity ? 1 : 0,
   );
 
-  const { recentEdited } = useOutletContext<UserAndRecent>();
-
-  console.log({ recentEdited });
-
   const [searchString, setSearchString] = useState(q || "");
 
   const fetcher = useFetcher();
 
   const [listView, setListView] = useState(listViewPref);
 
-  const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set());
-  const numSelected = selectedCards.size;
+  const [selectedCards, setSelectedCards] = useState<
+    Record<string, ContentType>
+  >({});
+  const numSelected = Object.keys(selectedCards).length;
+
+  const [contentToCopy, setContentToCopy] = useState<
+    { id: string; type: ContentType }[]
+  >([]);
+
+  const [allowedParentsForSelected, setAllowedParentsForSelected] = useState<
+    ContentType[]
+  >([]);
+
+  const [copyDestination, setCopyDestination] =
+    useState<ContentDescription | null>(null);
 
   const { search } = useLocation();
   const navigate = useNavigate();
@@ -267,23 +303,87 @@ export function Explore() {
     />
   );
 
+  const {
+    isOpen: copyDialogIsOpen,
+    onOpen: copyDialogOnOpen,
+    onClose: copyDialogOnClose,
+  } = useDisclosure();
+
+  const copyContentModal = (
+    <CopyContentAndReportFinish
+      isOpen={copyDialogIsOpen}
+      onClose={copyDialogOnClose}
+      sourceContent={contentToCopy}
+      desiredParent={copyDestination}
+    />
+  );
+
+  const [recentContent, setRecentContent] = useState<ContentDescription[]>([]);
+
   useEffect(() => {
-    setSelectedCards(new Set());
+    const rc: ContentDescription[] = [];
+    if (Array.isArray(fetcher.data)) {
+      for (const item of fetcher.data) {
+        if (isContentDescription(item)) {
+          rc.push(item);
+        }
+      }
+      setRecentContent(rc);
+    }
+  }, [fetcher.data]);
+
+  useEffect(() => {
+    setSelectedCards((was) => {
+      let foundMissing = false;
+      const newList = content.map((c) => c.id);
+      if (trendingContent) {
+        newList.push(...trendingContent.map((c) => c.id));
+      }
+      for (const id in was) {
+        if (!newList.includes(id)) {
+          foundMissing = true;
+          break;
+        }
+      }
+      if (foundMissing) {
+        return {};
+      } else {
+        return was;
+      }
+    });
   }, [content, trendingContent]);
 
-  function selectCardCallback(checked: Record<string, boolean>) {
+  function selectCardCallback(
+    changes: Record<string, { checked: boolean; type: ContentType }>,
+  ) {
     setSelectedCards((was) => {
-      const obj = new Set([...was]);
-      for (const id in checked) {
-        if (checked[id]) {
-          obj.add(id);
+      const obj = { ...was };
+      for (const id in changes) {
+        if (changes[id].checked) {
+          obj[id] = changes[id].type;
         } else {
-          obj.delete(id);
+          delete obj[id];
         }
       }
       return obj;
     });
   }
+
+  useEffect(() => {
+    const selectedTypes = new Set(Object.values(selectedCards));
+    const allowedParents: ContentType[] = ["folder"];
+    if (!selectedTypes.has("folder") && !selectedTypes.has("sequence")) {
+      allowedParents.push("sequence");
+      if (!selectedTypes.has("select")) {
+        allowedParents.push("select");
+      }
+    }
+
+    setAllowedParentsForSelected(allowedParents);
+    setContentToCopy(
+      Object.entries(selectedCards).map(([id, type]) => ({ id, type })),
+    );
+  }, [selectedCards]);
 
   function displayMatchingContent(
     matches: ContentStructure[],
@@ -716,30 +816,86 @@ export function Explore() {
             justifyContent="center"
           >
             <HStack>
-              <CloseButton
-                size="sm"
-                onClick={() => setSelectedCards(new Set())}
-              />{" "}
+              <CloseButton size="sm" onClick={() => setSelectedCards({})} />{" "}
               <Text>{numSelected} selected</Text>
-              <Menu>
+              <Menu
+                onOpen={() => {
+                  fetcher.submit(
+                    { _action: "retrieve recent" },
+                    { method: "post" },
+                  );
+                }}
+              >
                 <MenuButton
                   as={Button}
                   size="xs"
                   colorScheme="blue"
                   data-test="Selected New Button"
                 >
-                  Add to
+                  Add selected to
                 </MenuButton>
                 <MenuList>
-                  <MenuItem onClick={() => console.log("Add this somewhere")}>
-                    Problem set
-                  </MenuItem>
+                  <Tooltip
+                    openDelay={500}
+                    label={
+                      !allowedParentsForSelected.includes("sequence")
+                        ? "Some selected items cannot be added to a problem set"
+                        : null
+                    }
+                  >
+                    <MenuItem
+                      isDisabled={
+                        !allowedParentsForSelected.includes("sequence")
+                      }
+                      onClick={() => console.log("Add this somewhere")}
+                    >
+                      Problem set
+                    </MenuItem>
+                  </Tooltip>
                   <MenuItem onClick={() => console.log("Add this somewhere")}>
                     Folder
                   </MenuItem>
-                  <MenuItem onClick={() => console.log("Add this somewhere")}>
-                    Question Bank
-                  </MenuItem>
+                  <Tooltip
+                    openDelay={500}
+                    label={
+                      !allowedParentsForSelected.includes("select")
+                        ? "Some selected items cannot be added to a question bank"
+                        : null
+                    }
+                  >
+                    <MenuItem
+                      isDisabled={!allowedParentsForSelected.includes("select")}
+                      onClick={() => console.log("Add this somewhere")}
+                    >
+                      Question Bank
+                    </MenuItem>
+                  </Tooltip>
+                  {recentContent.length > 0 ? (
+                    <MenuGroup title="Recent">
+                      {recentContent.map((rc) => (
+                        <Tooltip
+                          openDelay={500}
+                          label={
+                            !allowedParentsForSelected.includes(rc.type)
+                              ? `Some selected items cannot be added to a ${rc.type === "select" ? "question bank" : "problem set"}`
+                              : null
+                          }
+                        >
+                          <MenuItem
+                            isDisabled={
+                              !allowedParentsForSelected.includes(rc.type)
+                            }
+                            onClick={() => {
+                              setCopyDestination(rc);
+                              copyDialogOnOpen();
+                            }}
+                          >
+                            {rc.name}
+                          </MenuItem>
+                        </Tooltip>
+                      ))}
+                    </MenuGroup>
+                  ) : null}
                 </MenuList>
               </Menu>
             </HStack>
@@ -847,6 +1003,7 @@ export function Explore() {
     <>
       {infoDrawer}
       {filterDrawer}
+      {copyContentModal}
       {heading}
       <Hide below="lg">
         <Grid

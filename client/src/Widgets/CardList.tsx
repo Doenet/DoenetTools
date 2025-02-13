@@ -2,6 +2,7 @@ import React, { ReactElement } from "react";
 import { Text, Icon, Box, Flex, Wrap } from "@chakra-ui/react";
 import Card, { CardContent } from "./Card";
 import { MdInfoOutline } from "react-icons/md";
+import { ContentType } from "../_utils/types";
 
 export default function CardList({
   content,
@@ -29,8 +30,16 @@ export default function CardList({
   showActivityFeatures?: boolean;
   emptyMessage: string;
   listView: boolean;
-  selectedCards?: Set<string>;
-  selectCallback?: (checked: Record<string, boolean>) => void;
+  selectedCards?: Record<string, ContentType>;
+  selectCallback?: (
+    changes: Record<
+      string,
+      {
+        checked: boolean;
+        type: ContentType;
+      }
+    >,
+  ) => void;
 }) {
   if (content.length === 0) {
     return (

@@ -20,7 +20,7 @@ import {
   Checkbox,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
-import { ContentStructure } from "../_utils/types";
+import { ContentStructure, ContentType } from "../_utils/types";
 import { FaFolder } from "react-icons/fa";
 import { RiArchive2Fill } from "react-icons/ri";
 import { FaEllipsisVertical, FaListOl } from "react-icons/fa6";
@@ -59,8 +59,16 @@ export default function Card({
   showActivityFeatures?: boolean;
   listView?: boolean;
   indentLevel?: number;
-  selectedCards?: Set<string>;
-  selectCallback?: (checked: Record<string, boolean>) => void;
+  selectedCards?: Record<string, ContentType>;
+  selectCallback?: (
+    changes: Record<
+      string,
+      {
+        checked: boolean;
+        type: ContentType;
+      }
+    >,
+  ) => void;
 }) {
   const {
     id,
@@ -265,9 +273,11 @@ export default function Card({
     selectCheckbox = (
       <Checkbox
         margin="5px"
-        isChecked={selectedCards.has(id)}
+        isChecked={id in selectedCards}
         onChange={(e) => {
-          selectCallback?.({ [id]: e.target.checked });
+          selectCallback?.({
+            [id]: { checked: e.target.checked, type: contentType },
+          });
         }}
       ></Checkbox>
     );

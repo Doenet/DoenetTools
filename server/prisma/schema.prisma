@@ -49,6 +49,7 @@ model content {
   sharedWith            contentShares[]
   classifications       contentClassifications[]
   contentViews          contentViews[]
+  recentContent         recentContent[]
 
   @@index([ownerId, parentId, sortIndex])
   @@index([classCode])
@@ -61,6 +62,23 @@ enum ContentType {
   select
   sequence
   folder
+}
+
+model recentContent {
+  id        Int        @id @default(autoincrement())
+  userId    Bytes      @db.Binary(16)
+  contentId Bytes      @db.Binary(16)
+  accessed  DateTime   @default(now())
+  mode      RecentMode
+  user      users      @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  content   content    @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([userId, mode, contentId])
+}
+
+enum RecentMode {
+  edit
+  view
 }
 
 model documents {
@@ -251,6 +269,7 @@ model users {
   documentState              documentState[]
   documentSubmittedResponses documentSubmittedResponses[]
   sharedWithMe               contentShares[]
+  recentContent              recentContent[]
 
   @@fulltext([firstNames, lastNames])
 }

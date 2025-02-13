@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
-import { redirect, useLoaderData, useOutletContext } from "react-router";
+import { redirect, useLoaderData } from "react-router";
 
 import {
   Button,
@@ -52,7 +52,6 @@ import {
 } from "../ToolPanels/NestedActivityEditor";
 import { compileActivityFromContent } from "../../../_utils/activity";
 import { ActivitySource } from "../../../_utils/viewerTypes";
-import { UserAndRecent } from "./SiteHeader";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -294,9 +293,6 @@ export function ActivityEditor() {
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
   }, [activityData.name]);
-
-  const { addRecentEdited } = useOutletContext<UserAndRecent>();
-  console.log({ addRecentEdited });
 
   const [displaySettingsTab, setSettingsDisplayTab] =
     useState<"general">("general");
