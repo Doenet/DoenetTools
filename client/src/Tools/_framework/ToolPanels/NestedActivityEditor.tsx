@@ -11,17 +11,21 @@ import {
   Flex,
   Grid,
   GridItem,
+  Hide,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
+  Show,
   Spacer,
   Spinner,
+  Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { CardContent } from "../../../Widgets/Card";
 import {
   FetcherWithComponents,
+  Link,
   redirect,
   useOutletContext,
 } from "react-router";
@@ -478,6 +482,18 @@ export function NestedActivityEditor({
     />
   );
 
+  let parentLink: string;
+
+  if (activity.parent) {
+    if (activity.parent.type === "folder") {
+      parentLink = `/activities/${user?.userId}/${activity.parent.id}`;
+    } else {
+      parentLink = `/activityEditor/${activity.parent.id}`;
+    }
+  } else {
+    parentLink = `/activities/${user?.userId}`;
+  }
+
   const heading = (
     <Flex
       backgroundColor="#fff"
@@ -485,8 +501,25 @@ export function NestedActivityEditor({
       height="40px"
       width="100%"
       textAlign="center"
-      paddingRight="10px"
+      paddingX="10px"
+      alignItems="center"
     >
+      <Box>
+        <Link
+          to={parentLink}
+          style={{
+            color: "var(--mainBlue)",
+          }}
+        >
+          <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
+            <Show above="sm">
+              &lt; Back to{" "}
+              {activity.parent ? activity.parent.name : `My Activities`}
+            </Show>
+            <Hide above="sm">&lt; Back</Hide>
+          </Text>
+        </Link>
+      </Box>
       <Spacer />
       <Menu>
         <MenuButton
