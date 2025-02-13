@@ -19,7 +19,7 @@ export type License = {
   imageURL: string | null;
   smallImageURL: string | null;
   licenseURL: string | null;
-  isComposition: boolean; 
+  isComposition: boolean;
   composedOf: {
     code: LicenseCode;
     name: string;

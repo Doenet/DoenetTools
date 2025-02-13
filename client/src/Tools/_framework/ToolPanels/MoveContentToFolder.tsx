@@ -282,7 +282,9 @@ export default function MoveContentToFolder({
               }}
             >
               <Text noOfLines={1}>
-                Move to {activeView.folderName ?? (inCurationLibrary? "Curation" : "My Activities")}
+                Move to{" "}
+                {activeView.folderName ??
+                  (inCurationLibrary ? "Curation" : "My Activities")}
               </Text>
             </Button>
           </ModalFooter>

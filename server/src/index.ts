@@ -2002,8 +2002,8 @@ app.post(
       await updateContentFeatures({
         id,
         features,
-        ownerId
-    });
+        ownerId,
+      });
       res.send({});
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {

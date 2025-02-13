@@ -312,9 +312,9 @@ export function ActivityViewer() {
                               as={ReactRouterLink}
                               to={`/activityViewer/${activity.librarySource.activityId}`}
                               // style={{ color: "var(--mainBlue)" }}
-                          >
+                            >
                               Go to existing remix in library.
-                          </Button>
+                            </Button>
                           ) : (
                             <></>
                           )}

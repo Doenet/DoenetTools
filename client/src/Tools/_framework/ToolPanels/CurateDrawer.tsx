@@ -32,9 +32,8 @@ import {
 import { curateActions, CurateSettings } from "./CurateSettings";
 
 export async function curateDrawerActions({ formObj }: { [k: string]: any }) {
-
   const result1 = await curateActions({ formObj });
-  if(result1) {
+  if (result1) {
     return result1;
   }
 
@@ -67,7 +66,6 @@ export function CurateDrawer({
   const [haveChangedHistoryItem, setHaveChangedHistoryItem] = useState(false);
   const [remixes, setRemixes] = useState<DocRemixItem[] | null>(null);
   const [thisCid, setThisCid] = useState<string | null>(null);
-
 
   useEffect(() => {
     async function getHistoryAndRemixes() {
@@ -160,10 +158,7 @@ export function CurateDrawer({
             <Box overflowY="auto" height="calc(100vh - 130px)">
               <TabPanels>
                 <TabPanel>
-                  <CurateSettings
-                    fetcher={fetcher}
-                    contentData={contentData}
-                  />
+                  <CurateSettings fetcher={fetcher} contentData={contentData} />
                 </TabPanel>
                 {!contentData.isFolder ? (
                   <TabPanel>

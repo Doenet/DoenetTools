@@ -47,7 +47,7 @@ export function CopyActivityAndReportFinish({
       document.body.style.cursor = "wait";
 
       let response;
-      if(copyToLibrary) {
+      if (copyToLibrary) {
         response = await axios.post(`/api/addDraftToLibrary`, {
           activityId: activityData.id,
         });
@@ -103,7 +103,7 @@ export function CopyActivityAndReportFinish({
             data-test="Go to Activities"
             marginRight="4px"
             onClick={() => {
-              if(copyToLibrary) {
+              if (copyToLibrary) {
                 navigate(`/curation`);
               } else {
                 navigate(`/activities/${newActivityData?.userId}`);

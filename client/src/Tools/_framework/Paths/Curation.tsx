@@ -69,7 +69,7 @@ export async function action({ request, params }) {
   const formObj = Object.fromEntries(formData);
 
   const resultsCurate = await curateDrawerActions({ formObj });
-  if(resultsCurate) {
+  if (resultsCurate) {
     return resultsCurate;
   }
 
@@ -113,7 +113,6 @@ export async function action({ request, params }) {
     //     folderId: formObj.id === "null" ? null : formObj.id,
     //   });
     //   return true;
-
   } else if (formObj?._action == "Move") {
     await axios.post(`/api/moveCurationContent`, {
       id: formObj.id,
@@ -123,11 +122,11 @@ export async function action({ request, params }) {
     });
     return true;
 
-  // } else if (formObj?._action == "Set List View Preferred") {
-  //   await axios.post(`/api/setPreferredFolderView`, {
-  //     cardView: formObj.listViewPref === "false",
-  //   });
-  //   return true;
+    // } else if (formObj?._action == "Set List View Preferred") {
+    //   await axios.post(`/api/setPreferredFolderView`, {
+    //     cardView: formObj.listViewPref === "false",
+    //   });
+    //   return true;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);

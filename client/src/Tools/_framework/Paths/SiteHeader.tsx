@@ -200,13 +200,12 @@ export function SiteHeader() {
                         <NavLinkTab to="curation" dataTest="Curation">
                           Curation
                         </NavLinkTab>
-                      )}                      
+                      )}
                       {user.isAdmin && (
                         <NavLinkTab to="oldAdmin" dataTest="Admin">
                           Old Admin
                         </NavLinkTab>
                       )}
-
                     </>
                   )}
                 </HStack>
