@@ -10,11 +10,25 @@ export type DoenetmlVersion = {
 
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
+export type LibraryInfo = {
+  sourceId: Uint8Array;
+  activityId: Uint8Array | null;
+  ownerRequested?: boolean;
+  status:
+    | "none"
+    | "PENDING_REVIEW"
+    | "REQUEST_REMOVED"
+    | "PUBLISHED"
+    | "NEEDS_REVISION";
+  comments?: string;
+};
+
 export type UserInfo = {
   userId: Uint8Array;
   firstNames: string | null;
   lastNames: string;
   email: string;
+  // isLibrary: boolean;
   numLibrary?: number;
   numCommunity?: number;
 };
@@ -98,6 +112,8 @@ export type ContentStructure = {
     sortIndex: number;
   }[];
   classifications: ContentClassification[];
+  librarySource?: LibraryInfo;
+  libraryActivity?: LibraryInfo;
   documents: {
     id: Uint8Array;
     versionNum?: number;
@@ -114,6 +130,35 @@ export type ContentStructure = {
     sharedWith: UserInfo[];
   } | null;
 };
+
+export function createContentStructure({
+  activityId,
+  ownerId,
+}: {
+  activityId: Uint8Array;
+  ownerId: Uint8Array;
+}) {
+  const defaultStructure: ContentStructure = {
+    id: activityId,
+    name: "",
+    ownerId: ownerId,
+    imagePath: null,
+    assignmentStatus: "Unassigned",
+    classCode: null,
+    codeValidUntil: null,
+    isPublic: false,
+    isShared: false,
+    sharedWith: [],
+    license: null,
+    contentFeatures: [],
+    classifications: [],
+    librarySource: { status: "none", sourceId: activityId, activityId: null },
+    documents: [],
+    hasScoreData: false,
+    parentFolder: null,
+  };
+  return defaultStructure;
+}
 
 export type LicenseCode = "CCDUAL" | "CCBYSA" | "CCBYNCSA";
 

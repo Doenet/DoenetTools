@@ -18,6 +18,7 @@ import { ContentStructure } from "../../../_utils/types";
 
 /**
  * A modal that immediately upon opening copies an activity into a user's Activities.
+ * Alternatively, if the `copyToLibrary` flag is set and the user is an admin, it copies the activity into the library as a draft.
  *
  * When the copy is finished, the modal allows the user to close it or navigate to their Activities list.
  */
@@ -26,11 +27,13 @@ export function CopyActivityAndReportFinish({
   onClose,
   finalFocusRef,
   activityData,
+  copyToLibrary,
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
   activityData: ContentStructure;
+  copyToLibrary: boolean;
 }) {
   const [newActivityData, setNewActivityData] = useState<{
     newActivityId: string;
@@ -43,11 +46,18 @@ export function CopyActivityAndReportFinish({
     async function copyActivity() {
       document.body.style.cursor = "wait";
 
-      const { data } = await axios.post(`/api/duplicateActivity`, {
-        activityId: activityData.id,
-      });
+      let response;
+      if(copyToLibrary) {
+        response = await axios.post(`/api/addDraftToLibrary`, {
+          activityId: activityData.id,
+        });
+      } else {
+        response = await axios.post(`/api/duplicateActivity`, {
+          activityId: activityData.id,
+        });
+      }
 
-      setNewActivityData(data);
+      setNewActivityData(response.data);
       document.body.style.cursor = "default";
     }
 
@@ -83,7 +93,7 @@ export function CopyActivityAndReportFinish({
           ) : (
             <>
               The activity <strong>{activityData.name}</strong> has been copied
-              to your activities.
+              to {copyToLibrary ? `the library` : `your activities`}.
             </>
           )}
         </ModalBody>
@@ -93,11 +103,15 @@ export function CopyActivityAndReportFinish({
             data-test="Go to Activities"
             marginRight="4px"
             onClick={() => {
-              navigate(`/activities/${newActivityData?.userId}`);
+              if(copyToLibrary) {
+                navigate(`/curation`);
+              } else {
+                navigate(`/activities/${newActivityData?.userId}`);
+              }
             }}
             isDisabled={newActivityData === null}
           >
-            Go to Activities
+            Go to {copyToLibrary ? `Library` : `Activities`}
           </Button>
           <Button
             onClick={() => {

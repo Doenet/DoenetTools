@@ -49,7 +49,7 @@ const ActivitiesGrid = styled.div`
   height: 100vh;
 `;
 
-export function Admin() {
+export function OldAdmin() {
   const { carouselData, publicActivities } = useLoaderData() as {
     carouselData: {
       groupName: string;

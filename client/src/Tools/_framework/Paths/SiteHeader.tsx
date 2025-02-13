@@ -197,10 +197,16 @@ export function SiteHeader() {
                         Assigned to Me
                       </NavLinkTab>
                       {user.isAdmin && (
-                        <NavLinkTab to="admin" dataTest="Admin">
-                          Admin
+                        <NavLinkTab to="curation" dataTest="Curation">
+                          Curation
+                        </NavLinkTab>
+                      )}                      
+                      {user.isAdmin && (
+                        <NavLinkTab to="oldAdmin" dataTest="Admin">
+                          Old Admin
                         </NavLinkTab>
                       )}
+
                     </>
                   )}
                 </HStack>
@@ -313,8 +319,19 @@ export function SiteHeader() {
                               Assigned
                             </NavLinkDropdownTab>
                             {user.isAdmin && (
-                              <NavLinkDropdownTab to="admin" dataTest="Admin">
-                                Admin
+                              <NavLinkDropdownTab
+                                to="curation"
+                                dataTest="Curation"
+                              >
+                                Curation
+                              </NavLinkDropdownTab>
+                            )}
+                            {user.isAdmin && (
+                              <NavLinkDropdownTab
+                                to="oldAdmin"
+                                dataTest="Admin"
+                              >
+                                Old Admin
                               </NavLinkDropdownTab>
                             )}
                           </>
