@@ -99,6 +99,7 @@ export function CodeViewer() {
             onClose={copyDialogOnClose}
             sourceContent={[activityData]}
             desiredParent={null}
+            action="Copy"
           />
           <ContentInfoDrawer
             isOpen={infoIsOpen}

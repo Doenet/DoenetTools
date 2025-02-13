@@ -59,16 +59,13 @@ export default function Card({
   showActivityFeatures?: boolean;
   listView?: boolean;
   indentLevel?: number;
-  selectedCards?: Record<string, ContentType>;
-  selectCallback?: (
-    changes: Record<
-      string,
-      {
-        checked: boolean;
-        type: ContentType;
-      }
-    >,
-  ) => void;
+  selectedCards?: string[];
+  selectCallback?: (arg: {
+    id: string;
+    name: string;
+    checked: boolean;
+    type: ContentType;
+  }) => void;
 }) {
   const {
     id,
@@ -273,10 +270,13 @@ export default function Card({
     selectCheckbox = (
       <Checkbox
         margin="5px"
-        isChecked={id in selectedCards}
+        isChecked={selectedCards.includes(id)}
         onChange={(e) => {
           selectCallback?.({
-            [id]: { checked: e.target.checked, type: contentType },
+            id,
+            checked: e.target.checked,
+            type: contentType,
+            name: title,
           });
         }}
       ></Checkbox>

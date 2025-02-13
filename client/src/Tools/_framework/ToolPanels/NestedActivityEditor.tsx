@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   AssignmentStatus,
   ContentStructure,
+  ContentType,
   LicenseCode,
   UserInfo,
 } from "../../../_utils/types";
@@ -29,13 +30,16 @@ import {
   redirect,
   useOutletContext,
 } from "react-router";
-import MoveContentToFolder, { moveContentActions } from "./MoveContentToFolder";
+import MoveCopyContent, { moveCopyContentActions } from "./MoveCopyContent";
 import { User } from "../Paths/SiteHeader";
 import CardList from "../../../Widgets/CardList";
 import axios from "axios";
 import { ActivitySource } from "../../../_utils/viewerTypes";
 import { ActivityViewer } from "@doenet/assignment-viewer";
-import { contentTypeToName } from "../../../_utils/activity";
+import {
+  contentTypeToName,
+  getAllowedParentTypes,
+} from "../../../_utils/activity";
 
 export async function nestedActivityEditorActions(
   {
@@ -49,7 +53,7 @@ export async function nestedActivityEditorActions(
     [k: string]: any;
   },
 ) {
-  const resultMC = await moveContentActions({ formObj });
+  const resultMC = await moveCopyContentActions({ formObj });
   if (resultMC) {
     return resultMC;
   }
@@ -141,12 +145,16 @@ export function NestedActivityEditor({
 
   const [moveToFolderData, setMoveToFolderData] = useState<{
     id: string;
+    name: string;
+    type: ContentType;
     isPublic: boolean;
     isShared: boolean;
     sharedWith: UserInfo[];
     licenseCode: LicenseCode | null;
   }>({
     id: "",
+    name: "",
+    type: "singleDoc",
     isPublic: false,
     isShared: false,
     sharedWith: [],
@@ -160,17 +168,15 @@ export function NestedActivityEditor({
   } = useDisclosure();
 
   const moveContentModal = (
-    <MoveContentToFolder
+    <MoveCopyContent
       isOpen={moveToFolderIsOpen}
       onClose={moveToFolderOnClose}
-      id={moveToFolderData.id}
-      isPublic={moveToFolderData.isPublic}
-      isShared={moveToFolderData.isShared}
-      sharedWith={moveToFolderData.sharedWith}
-      licenseCode={moveToFolderData.licenseCode}
+      sourceContent={[moveToFolderData]}
       userId={user!.userId}
       currentParentId={activity.id}
       finalFocusRef={finalFocusRef}
+      allowedParentTypes={getAllowedParentTypes([moveToFolderData.type])}
+      action="Move"
     />
   );
 
@@ -412,6 +418,8 @@ export function NestedActivityEditor({
           onClick={() => {
             setMoveToFolderData({
               id,
+              name: content.name,
+              type: content.type,
               isPublic: content.isPublic,
               isShared: content.isShared,
               sharedWith: content.sharedWith,

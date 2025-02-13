@@ -2071,14 +2071,15 @@ app.post(
       res.sendStatus(403);
       return;
     }
-    const loggedInUserId = req.user.userId;
-    const id = toUUID(req.body.id);
-    const desiredParentId = req.body.desiredParentId
-      ? toUUID(req.body.desiredParentId)
-      : null;
-    const desiredPosition = Number(req.body.desiredPosition);
 
     try {
+      const loggedInUserId = req.user.userId;
+      const id = toUUID(req.body.id);
+      const desiredParentId = req.body.desiredParentId
+        ? toUUID(req.body.desiredParentId)
+        : null;
+      const desiredPosition = Number(req.body.desiredPosition);
+
       await moveContent({
         id,
         desiredParentId,
@@ -2115,6 +2116,7 @@ app.post(
         targetActivityId,
         loggedInUserId,
         desiredParentId,
+        true,
       );
 
       res.send({

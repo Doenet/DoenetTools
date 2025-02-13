@@ -30,16 +30,13 @@ export default function CardList({
   showActivityFeatures?: boolean;
   emptyMessage: string;
   listView: boolean;
-  selectedCards?: Record<string, ContentType>;
-  selectCallback?: (
-    changes: Record<
-      string,
-      {
-        checked: boolean;
-        type: ContentType;
-      }
-    >,
-  ) => void;
+  selectedCards?: string[];
+  selectCallback?: (arg: {
+    id: string;
+    name: string;
+    checked: boolean;
+    type: ContentType;
+  }) => void;
 }) {
   if (content.length === 0) {
     return (

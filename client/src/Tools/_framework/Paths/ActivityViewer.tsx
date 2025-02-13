@@ -204,6 +204,7 @@ export function ActivityViewerWrapper() {
         onClose={copyDialogOnClose}
         sourceContent={[activity]}
         desiredParent={null}
+        action="Copy"
       />
       <ContentInfoDrawer
         isOpen={infoIsOpen}

@@ -16,14 +16,14 @@ test("add and check recent content", async () => {
 
   const activityIds: Uint8Array[] = [];
 
-  // add ten activities
-  for (let i = 0; i < 10; i++) {
+  // add 5 activities
+  for (let i = 0; i < 5; i++) {
     const { activityId } = await createActivity(userId, null);
     await recordRecentContent(userId, "edit", activityId);
     activityIds.push(activityId);
   }
 
-  // get recent should get all ten
+  // get recent should get all five
   let recent = await getRecentContent(userId, "edit", []);
   expect(recent.map((r) => r.id)).eqls([...activityIds].reverse());
 
@@ -36,7 +36,7 @@ test("add and check recent content", async () => {
 
   // get the most recent 10
   recent = await getRecentContent(userId, "edit", []);
-  expect(recent.map((r) => r.id)).eqls([...activityIds].reverse().slice(0, 10));
+  expect(recent.map((r) => r.id)).eqls([...activityIds].reverse().slice(0, 5));
 });
 
 test("add and check recent content, different types", async () => {
@@ -45,8 +45,8 @@ test("add and check recent content, different types", async () => {
 
   const contents: { id: Uint8Array; type: ContentType }[] = [];
 
-  // add ten items of each content type
-  for (let i = 0; i < 10; i++) {
+  // add five items of each content type
+  for (let i = 0; i < 5; i++) {
     const { activityId } = await createActivity(userId, null);
     await recordRecentContent(userId, "edit", activityId);
     contents.push({ id: activityId, type: "singleDoc" });
@@ -68,16 +68,16 @@ test("add and check recent content, different types", async () => {
     contents.push({ id: selectId, type: "select" });
   }
 
-  // get recent with no arguments should get the most recent 10
+  // get recent with no arguments should get the most recent 5
   let recent = await getRecentContent(userId, "edit", []);
   expect(recent.map((r) => r.id)).eqls(
     contents
       .map((c) => c.id)
       .reverse()
-      .slice(0, 10),
+      .slice(0, 5),
   );
 
-  // get just the 10 from each type
+  // get just the 5 from each type
   for (const type of ["singleDoc", "folder", "sequence", "select"]) {
     recent = await getRecentContent(userId, "edit", [type as ContentType]);
     expect(recent.map((r) => r.id)).eqls(
@@ -117,10 +117,10 @@ test("add and check recent content, different types", async () => {
     contents
       .map((c) => c.id)
       .reverse()
-      .slice(0, 10),
+      .slice(0, 5),
   );
 
-  // get just the most recent 10 from each type
+  // get just the most recent 5 from each type
   for (const type of ["singleDoc", "folder", "sequence", "select"]) {
     recent = await getRecentContent(userId, "edit", [type as ContentType]);
     expect(recent.map((r) => r.id)).eqls(
@@ -128,7 +128,7 @@ test("add and check recent content, different types", async () => {
         .filter((c) => c.type === type)
         .map((c) => c.id)
         .reverse()
-        .slice(0, 10),
+        .slice(0, 5),
     );
   }
 });

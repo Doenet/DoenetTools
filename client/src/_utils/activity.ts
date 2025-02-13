@@ -156,6 +156,17 @@ export const contentTypeToName = {
   folder: "Folder",
 };
 
+export function getAllowedParentTypes(childTypes: ContentType[]) {
+  const allowedParentTypes: ContentType[] = ["folder"];
+  if (!childTypes.includes("folder") && !childTypes.includes("sequence")) {
+    allowedParentTypes.push("sequence");
+    if (!childTypes.includes("select")) {
+      allowedParentTypes.push("select");
+    }
+  }
+  return allowedParentTypes;
+}
+
 export function getIconInfo(contentType: ContentType) {
   let iconImage: IconType;
   let iconColor: string;

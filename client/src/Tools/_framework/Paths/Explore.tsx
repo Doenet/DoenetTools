@@ -30,12 +30,14 @@ import {
   MenuButton,
   MenuList,
   MenuGroup,
+  Icon,
 } from "@chakra-ui/react";
 import {
   Link as ReactRouterLink,
   useLoaderData,
   useLocation,
   useNavigate,
+  useOutletContext,
 } from "react-router";
 import Searchbar from "../../../Widgets/SearchBar";
 import { Form, useFetcher } from "react-router";
@@ -60,6 +62,15 @@ import { clearQueryParameter } from "../../../_utils/explore";
 import { FilterPanel } from "../ToolPanels/FilterPanel";
 import { ExploreFilterDrawer } from "../ToolPanels/ExploreFilterDrawer";
 import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
+import {
+  contentTypeToName,
+  getAllowedParentTypes,
+  getIconInfo,
+} from "../../../_utils/activity";
+import MoveCopyContent, {
+  moveCopyContentActions,
+} from "../ToolPanels/MoveCopyContent";
+import { User } from "./SiteHeader";
 
 type ContentDescription = {
   id: string;
@@ -84,6 +95,11 @@ export async function action({ request }) {
   const resultTLV = await toggleViewButtonGroupActions({ formObj });
   if (resultTLV) {
     return resultTLV;
+  }
+
+  const resultMC = await moveCopyContentActions({ formObj });
+  if (resultMC) {
+    return resultMC;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
@@ -211,6 +227,8 @@ export function Explore() {
     listViewPref: boolean;
   };
 
+  const user = useOutletContext<User>();
+
   const [currentTab, setCurrentTab] = useState(
     !totalCount.numCurated && totalCount.numCommunity ? 1 : 0,
   );
@@ -221,18 +239,14 @@ export function Explore() {
 
   const [listView, setListView] = useState(listViewPref);
 
-  const [selectedCards, setSelectedCards] = useState<
-    Record<string, ContentType>
-  >({});
-  const numSelected = Object.keys(selectedCards).length;
-
-  const [contentToCopy, setContentToCopy] = useState<
-    { id: string; type: ContentType }[]
-  >([]);
+  const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
+  const numSelected = selectedCards.length;
 
   const [allowedParentsForSelected, setAllowedParentsForSelected] = useState<
     ContentType[]
   >([]);
+
+  const [addToType, setAddToType] = useState<ContentType>("folder");
 
   const [copyDestination, setCopyDestination] =
     useState<ContentDescription | null>(null);
@@ -303,10 +317,29 @@ export function Explore() {
     <CopyContentAndReportFinish
       isOpen={copyDialogIsOpen}
       onClose={copyDialogOnClose}
-      sourceContent={contentToCopy}
+      sourceContent={selectedCards}
       desiredParent={copyDestination}
+      action="Add"
     />
   );
+
+  const {
+    isOpen: moveCopyContentIsOpen,
+    onOpen: moveCopyContentOnOpen,
+    onClose: moveCopyContentOnClose,
+  } = useDisclosure();
+
+  const moveCopyContentModal = user ? (
+    <MoveCopyContent
+      isOpen={moveCopyContentIsOpen}
+      onClose={moveCopyContentOnClose}
+      sourceContent={selectedCards}
+      userId={user.userId}
+      currentParentId={null}
+      allowedParentTypes={[addToType]}
+      action="Add"
+    />
+  ) : null;
 
   const [recentContent, setRecentContent] = useState<ContentDescription[]>([]);
 
@@ -317,50 +350,53 @@ export function Explore() {
       if (trendingContent) {
         newList.push(...trendingContent.map((c) => c.id));
       }
-      for (const id in was) {
-        if (!newList.includes(id)) {
+      for (const c of was) {
+        if (!newList.includes(c.id)) {
           foundMissing = true;
           break;
         }
       }
       if (foundMissing) {
-        return {};
+        return [];
       } else {
         return was;
       }
     });
   }, [content, trendingContent]);
 
-  function selectCardCallback(
-    changes: Record<string, { checked: boolean; type: ContentType }>,
-  ) {
+  function selectCardCallback({
+    id,
+    name,
+    checked,
+    type,
+  }: {
+    id: string;
+    name: string;
+    checked: boolean;
+    type: ContentType;
+  }) {
     setSelectedCards((was) => {
-      const obj = { ...was };
-      for (const id in changes) {
-        if (changes[id].checked) {
-          obj[id] = changes[id].type;
+      const arr = [...was];
+      const idx = was.findIndex((c) => c.id === id);
+      if (checked) {
+        if (idx === -1) {
+          arr.push({ id, name, type });
         } else {
-          delete obj[id];
+          arr[idx] = { id, name, type };
         }
+      } else if (idx !== -1) {
+        arr.splice(idx, 1);
       }
-      return obj;
+      return arr;
     });
   }
 
   useEffect(() => {
-    const selectedTypes = new Set(Object.values(selectedCards));
-    const allowedParents: ContentType[] = ["folder"];
-    if (!selectedTypes.has("folder") && !selectedTypes.has("sequence")) {
-      allowedParents.push("sequence");
-      if (!selectedTypes.has("select")) {
-        allowedParents.push("select");
-      }
-    }
+    const allowedParents = getAllowedParentTypes(
+      selectedCards.map((c) => c.type),
+    );
 
     setAllowedParentsForSelected(allowedParents);
-    setContentToCopy(
-      Object.entries(selectedCards).map(([id, type]) => ({ id, type })),
-    );
   }, [selectedCards]);
 
   function displayMatchingContent(
@@ -412,7 +448,7 @@ export function Explore() {
           content={cardContent}
           emptyMessage={"No Matches Found!"}
           listView={listView}
-          selectedCards={selectedCards}
+          selectedCards={user ? selectedCards.map((c) => c.id) : undefined}
           selectCallback={selectCardCallback}
         />
       </Box>
@@ -706,6 +742,23 @@ export function Explore() {
   const numActiveFiltersInfo =
     numActiveFilters > 0 ? `(${numActiveFilters})` : "";
 
+  const menuIcons: Record<string, ReactElement> = {};
+
+  for (const t of ["folder", "sequence", "select", "singleDoc"]) {
+    const ct = t as ContentType;
+    const { iconImage, iconColor } = getIconInfo(ct);
+    const icon = (
+      <Icon
+        as={iconImage}
+        color={iconColor}
+        marginRight="5px"
+        aria-label={contentTypeToName[ct]}
+      />
+    );
+
+    menuIcons[t] = icon;
+  }
+
   const heading = (
     <>
       <Flex
@@ -794,14 +847,14 @@ export function Explore() {
             justifyContent="center"
           >
             <HStack>
-              <CloseButton size="sm" onClick={() => setSelectedCards({})} />{" "}
+              <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
               <Text>{numSelected} selected</Text>
               <Menu
                 onOpen={async () => {
                   const { data } = await axios.get(`/api/getRecentContent`, {
                     params: {
                       mode: "edit",
-                      restrictToTypes: ["sequence", "select", "folder"],
+                      restrictToTypes: allowedParentsForSelected,
                     },
                   });
 
@@ -837,13 +890,21 @@ export function Explore() {
                       isDisabled={
                         !allowedParentsForSelected.includes("sequence")
                       }
-                      onClick={() => console.log("Add this somewhere")}
+                      onClick={() => {
+                        setAddToType("sequence");
+                        moveCopyContentOnOpen();
+                      }}
                     >
-                      Problem set
+                      {menuIcons.sequence} Problem set
                     </MenuItem>
                   </Tooltip>
-                  <MenuItem onClick={() => console.log("Add this somewhere")}>
-                    Folder
+                  <MenuItem
+                    onClick={() => {
+                      setAddToType("folder");
+                      moveCopyContentOnOpen();
+                    }}
+                  >
+                    {menuIcons.folder} Folder
                   </MenuItem>
                   <Tooltip
                     openDelay={500}
@@ -855,15 +916,27 @@ export function Explore() {
                   >
                     <MenuItem
                       isDisabled={!allowedParentsForSelected.includes("select")}
-                      onClick={() => console.log("Add this somewhere")}
+                      onClick={() => {
+                        setAddToType("select");
+                        moveCopyContentOnOpen();
+                      }}
                     >
-                      Question Bank
+                      {menuIcons.select} Question bank
                     </MenuItem>
                   </Tooltip>
+                  <MenuItem
+                    onClick={() => {
+                      setCopyDestination(null);
+                      copyDialogOnOpen();
+                    }}
+                  >
+                    My Activities
+                  </MenuItem>
                   {recentContent.length > 0 ? (
                     <MenuGroup title="Recent">
                       {recentContent.map((rc) => (
                         <Tooltip
+                          key={rc.id}
                           openDelay={500}
                           label={
                             !allowedParentsForSelected.includes(rc.type)
@@ -880,7 +953,7 @@ export function Explore() {
                               copyDialogOnOpen();
                             }}
                           >
-                            {rc.name}
+                            {menuIcons[rc.type]} {rc.name}
                           </MenuItem>
                         </Tooltip>
                       ))}
@@ -994,6 +1067,7 @@ export function Explore() {
       {infoDrawer}
       {filterDrawer}
       {copyContentModal}
+      {moveCopyContentModal}
       {heading}
       <Hide below="lg">
         <Grid

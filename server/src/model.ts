@@ -515,14 +515,18 @@ export async function moveContent({
   }
 
   // make sure content exists and is owned by `ownerId`
-  const content = await prisma.content.findUniqueOrThrow({
+  const content = (await prisma.content.findUniqueOrThrow({
     where: {
       id,
       ownerId,
       isDeleted: false,
     },
-    select: { id: true, isFolder: true },
-  });
+    select: { id: true, isFolder: true, licenseCode: true },
+  })) as {
+    id: Uint8Array;
+    isFolder: boolean;
+    licenseCode: LicenseCode | null;
+  };
 
   let desiredFolderIsPublic = false;
   let desiredFolderLicenseCode: LicenseCode = "CCDUAL";
@@ -544,8 +548,7 @@ export async function moveContent({
       },
     });
 
-    // If the parent folder is shared, then we'll need to share the resulting content, as well,
-    // with the same license.
+    // If the parent folder is shared, then we'll need to share the resulting content, as well.
     if (parent.isPublic) {
       desiredFolderIsPublic = true;
       if (parent.licenseCode) {
@@ -652,13 +655,13 @@ export async function moveContent({
       await makeFolderPublic({
         id: content.id,
         ownerId,
-        licenseCode: desiredFolderLicenseCode,
+        licenseCode: content.licenseCode ?? desiredFolderLicenseCode,
       });
     } else {
       await makeActivityPublic({
         id: content.id,
         ownerId,
-        licenseCode: desiredFolderLicenseCode,
+        licenseCode: content.licenseCode ?? desiredFolderLicenseCode,
       });
     }
   }
@@ -668,14 +671,14 @@ export async function moveContent({
       await shareFolder({
         id: content.id,
         ownerId,
-        licenseCode: desiredFolderLicenseCode,
+        licenseCode: content.licenseCode ?? desiredFolderLicenseCode,
         users: desiredFolderShares,
       });
     } else {
       await shareActivity({
         id: content.id,
         ownerId,
-        licenseCode: desiredFolderLicenseCode,
+        licenseCode: content.licenseCode ?? desiredFolderLicenseCode,
         users: desiredFolderShares,
       });
     }
@@ -6500,7 +6503,7 @@ export async function getRecentContent(
         },
       },
     },
-    take: 10,
+    take: 5,
     orderBy: { accessed: "desc" },
   });
   return results.map((r) => r.content);

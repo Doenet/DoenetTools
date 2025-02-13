@@ -28,12 +28,14 @@ export function CopyContentAndReportFinish({
   finalFocusRef,
   sourceContent,
   desiredParent,
+  action,
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
   sourceContent: { id: string; type: ContentType }[];
   desiredParent: { id: string; name: string; type: ContentType } | null;
+  action: "Copy" | "Add";
 }) {
   const [newActivityData, setNewActivityData] = useState<{
     newActivityIds: string[];
@@ -43,6 +45,10 @@ export function CopyContentAndReportFinish({
   const navigate = useNavigate();
 
   const [errMsg, setErrMsg] = useState("");
+  const actionPastWord = action === "Add" ? "added" : "copied";
+  const actionProgressiveWord = action === "Add" ? "adding" : "copying";
+
+  const numItems = sourceContent.length;
 
   useEffect(() => {
     async function copyContent() {
@@ -60,7 +66,7 @@ export function CopyContentAndReportFinish({
         setNewActivityData(data);
       } catch (e) {
         console.error(e);
-        setErrMsg("An error occurred while copying.");
+        setErrMsg(`An error occurred while ${actionProgressiveWord}.`);
       }
       document.body.style.cursor = "default";
     }
@@ -73,7 +79,7 @@ export function CopyContentAndReportFinish({
       setNewActivityData(null);
       setErrMsg("");
     }
-  }, [isOpen]);
+  }, [isOpen, actionProgressiveWord]);
 
   let destinationDescription: ReactElement;
   let destinationAction: string;
@@ -83,7 +89,7 @@ export function CopyContentAndReportFinish({
     const typeName = contentTypeToName[desiredParent.type].toLowerCase();
     destinationDescription = (
       <>
-        the {typeName} <strong>{desiredParent.name}</strong>
+        <strong>{desiredParent.name}</strong>
       </>
     );
     if (desiredParent.type === "folder") {
@@ -110,7 +116,9 @@ export function CopyContentAndReportFinish({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader textAlign="center">
-          {newActivityData === null ? `Copying` : `Copy finished`}
+          {newActivityData === null
+            ? actionProgressiveWord
+            : `${action} finished`}
         </ModalHeader>
         {newActivityData !== null ? <ModalCloseButton /> : null}
         <ModalBody>
@@ -121,7 +129,10 @@ export function CopyContentAndReportFinish({
                 <Spinner />
               </HStack>
             ) : (
-              <>The content has been copied to {destinationDescription}.</>
+              <>
+                {numItems} item{numItems > 1 ? "s " : " "}
+                {actionPastWord} to: {destinationDescription}
+              </>
             )
           ) : (
             <>{errMsg}</>

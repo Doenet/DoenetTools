@@ -32,9 +32,9 @@ import {
 import { CardContent } from "../../../Widgets/Card";
 import CardList from "../../../Widgets/CardList";
 import axios from "axios";
-import MoveContentToFolder, {
-  moveContentActions,
-} from "../ToolPanels/MoveContentToFolder";
+import MoveCopyContent, {
+  moveCopyContentActions,
+} from "../ToolPanels/MoveCopyContent";
 import {
   contentSettingsActions,
   ContentSettingsDrawer,
@@ -47,6 +47,7 @@ import {
   AssignmentStatus,
   ContentFeature,
   ContentStructure,
+  ContentType,
   DoenetmlVersion,
   License,
   LicenseCode,
@@ -59,6 +60,7 @@ import {
   ToggleViewButtonGroup,
   toggleViewButtonGroupActions,
 } from "../ToolPanels/ToggleViewButtonGroup";
+import { getAllowedParentTypes } from "../../../_utils/activity";
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -78,7 +80,7 @@ export async function action({ request, params }) {
     return resultAS;
   }
 
-  const resultMC = await moveContentActions({ formObj });
+  const resultMC = await moveCopyContentActions({ formObj });
   if (resultMC) {
     return resultMC;
   }
@@ -250,12 +252,16 @@ export function Activities() {
 
   const [moveToFolderData, setMoveToFolderData] = useState<{
     id: string;
+    name: string;
+    type: ContentType;
     isPublic: boolean;
     isShared: boolean;
     sharedWith: UserInfo[];
     licenseCode: LicenseCode | null;
   }>({
     id: "",
+    name: "",
+    type: "singleDoc",
     isPublic: false,
     isShared: false,
     sharedWith: [],
@@ -263,9 +269,9 @@ export function Activities() {
   });
 
   const {
-    isOpen: moveToFolderIsOpen,
-    onOpen: moveToFolderOnOpen,
-    onClose: moveToFolderOnClose,
+    isOpen: moveCopyContentIsOpen,
+    onOpen: moveCopyContentOnOpen,
+    onClose: moveCopyContentOnClose,
   } = useDisclosure();
 
   const [displaySettingsTab, setSettingsDisplayTab] =
@@ -280,9 +286,11 @@ export function Activities() {
 
   function getCardMenuList({
     id,
+    name,
     position,
     numCards,
     assignmentStatus,
+    contentType,
     isFolder,
     isPublic,
     isShared,
@@ -291,9 +299,11 @@ export function Activities() {
     parentId,
   }: {
     id: string;
+    name: string;
     position: number;
     numCards: number;
     assignmentStatus: AssignmentStatus;
+    contentType: ContentType;
     isFolder?: boolean;
     isPublic: boolean;
     isShared: boolean;
@@ -371,15 +381,17 @@ export function Activities() {
             onClick={() => {
               setMoveToFolderData({
                 id,
+                name,
+                type: contentType,
                 isPublic,
                 isShared,
                 sharedWith,
                 licenseCode,
               });
-              moveToFolderOnOpen();
+              moveCopyContentOnOpen();
             }}
           >
-            Move to Folder
+            Move&hellip;
           </MenuItem>
         )}
         <MenuItem
@@ -512,18 +524,16 @@ export function Activities() {
       />
     ) : null;
 
-  const moveContentModal = (
-    <MoveContentToFolder
-      isOpen={moveToFolderIsOpen}
-      onClose={moveToFolderOnClose}
-      id={moveToFolderData.id}
-      isPublic={moveToFolderData.isPublic}
-      isShared={moveToFolderData.isShared}
-      sharedWith={moveToFolderData.sharedWith}
-      licenseCode={moveToFolderData.licenseCode}
+  const moveCopyContentModal = (
+    <MoveCopyContent
+      isOpen={moveCopyContentIsOpen}
+      onClose={moveCopyContentOnClose}
+      sourceContent={[moveToFolderData]}
       userId={userId}
       currentParentId={folderId}
       finalFocusRef={finalFocusRef}
+      allowedParentTypes={getAllowedParentTypes([moveToFolderData.type])}
+      action="Move"
     />
   );
 
@@ -766,9 +776,11 @@ export function Activities() {
       closeTime: formatTime(activity.codeValidUntil),
       menuItems: getCardMenuList({
         id: activity.id,
+        name: activity.name,
         position,
         numCards: content.length,
         assignmentStatus: activity.assignmentStatus,
+        contentType: activity.type,
         isPublic: activity.isPublic,
         isFolder: activity.isFolder,
         isShared: activity.isShared,
@@ -800,7 +812,7 @@ export function Activities() {
       {settingsDrawer}
       {shareDrawer}
       {assignmentDrawer}
-      {moveContentModal}
+      {moveCopyContentModal}
 
       {heading}
 
