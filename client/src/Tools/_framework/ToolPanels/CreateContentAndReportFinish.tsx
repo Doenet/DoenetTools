@@ -1,4 +1,4 @@
-import React, { ReactElement, RefObject, useEffect, useState } from "react";
+import React, { RefObject, useEffect, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -18,35 +18,32 @@ import { ContentType } from "../../../_utils/types";
 import { contentTypeToName } from "../../../_utils/activity";
 
 /**
- * A modal that immediately upon opening copies source content into a parent or Activities
+ * A modal that immediately creates a new item in Activities and copies source content into that item
  *
- * When the copy is finished, the modal allows the user to close it or navigate to the parent.
+ * When the copy is finished, the modal allows the user to close it or navigate to the new item.
  */
-export function CopyContentAndReportFinish({
+export function CreateContentAndReportFinish({
   isOpen,
   onClose,
   finalFocusRef,
   sourceContent,
-  desiredParent,
-  action,
+  desiredParentType,
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
   sourceContent: { id: string; type: ContentType }[];
-  desiredParent: { id: string; name: string; type: ContentType } | null;
-  action: "Copy" | "Add";
+  desiredParentType: ContentType;
 }) {
   const [newActivityData, setNewActivityData] = useState<{
     newContentIds: string[];
+    newParentId: string[];
     userId: string;
   } | null>(null);
 
   const navigate = useNavigate();
 
   const [errMsg, setErrMsg] = useState("");
-  const actionPastWord = action === "Add" ? "added" : "copied";
-  const actionProgressiveWord = action === "Add" ? "Adding" : "Copying";
 
   const numItems = sourceContent.length;
 
@@ -55,20 +52,18 @@ export function CopyContentAndReportFinish({
       document.body.style.cursor = "wait";
 
       try {
-        const { data } = await axios.post(`/api/copyContent`, {
+        const { data } = await axios.post(`/api/createContentCopyInChildren`, {
           sourceContent: sourceContent.map((s) => ({
             contentId: s.id,
             type: s.type,
           })),
-          desiredParentId: desiredParent ? desiredParent.id : null,
+          desiredParentType,
         });
 
         setNewActivityData(data);
       } catch (e) {
         console.error(e);
-        setErrMsg(
-          `An error occurred while ${actionProgressiveWord.toLowerCase()}.`,
-        );
+        setErrMsg(`An error occurred while creating content.`);
       }
       document.body.style.cursor = "default";
     }
@@ -81,30 +76,19 @@ export function CopyContentAndReportFinish({
       setNewActivityData(null);
       setErrMsg("");
     }
-  }, [isOpen, actionProgressiveWord]);
+  }, [isOpen]);
 
-  let destinationDescription: ReactElement;
   let destinationAction: string;
   let destinationUrl: string;
 
-  if (desiredParent) {
-    const typeName = contentTypeToName[desiredParent.type].toLowerCase();
-    destinationDescription = (
-      <>
-        <strong>{desiredParent.name}</strong>
-      </>
-    );
-    if (desiredParent.type === "folder") {
-      destinationAction = "Go to folder";
-      destinationUrl = `/activities/${newActivityData?.userId}/${desiredParent.id}`;
-    } else {
-      destinationAction = `Open ${typeName}`;
-      destinationUrl = `/activityEditor/${desiredParent.id}`;
-    }
+  const typeName = contentTypeToName[desiredParentType].toLowerCase();
+
+  if (desiredParentType === "folder") {
+    destinationAction = "Go to folder";
+    destinationUrl = `/activities/${newActivityData?.userId}/${newActivityData?.newParentId}`;
   } else {
-    destinationDescription = <>your Activities</>;
-    destinationAction = "Go to Activities";
-    destinationUrl = `/activities/${newActivityData?.userId}`;
+    destinationAction = `Open ${typeName}`;
+    destinationUrl = `/activityEditor/${newActivityData?.newParentId}`;
   }
 
   return (
@@ -118,22 +102,20 @@ export function CopyContentAndReportFinish({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader textAlign="center">
-          {newActivityData === null
-            ? actionProgressiveWord
-            : `${action} finished`}
+          {newActivityData === null ? "Creating" : `Create finished`}
         </ModalHeader>
         {newActivityData !== null ? <ModalCloseButton /> : null}
         <ModalBody>
           {errMsg === "" ? (
             newActivityData === null ? (
               <HStack>
-                <Text>{actionProgressiveWord}...</Text>
+                <Text>Creating...</Text>
                 <Spinner />
               </HStack>
             ) : (
               <>
-                {numItems} item{numItems > 1 ? "s " : " "}
-                {actionPastWord} to: {destinationDescription}
+                {typeName} created with {numItems} item
+                {numItems > 1 ? "s " : " "}
               </>
             )
           ) : (
@@ -143,7 +125,7 @@ export function CopyContentAndReportFinish({
 
         <ModalFooter>
           <Button
-            data-test="Go to Activities"
+            data-test="Go to Created"
             marginRight="4px"
             onClick={() => {
               navigate(destinationUrl);

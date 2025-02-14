@@ -2144,6 +2144,52 @@ app.post(
 );
 
 app.post(
+  "/api/createContentCopyInChildren",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    try {
+      const loggedInUserId = req.user.userId;
+      const sourceContent = req.body.sourceContent.map(
+        ({ contentId, type }: { contentId: string; type: ContentType }) => ({
+          contentId: toUUID(contentId),
+          type,
+        }),
+      );
+      const desiredParentType = req.body.desiredParentType;
+
+      const { folderId } = await createFolder(
+        loggedInUserId,
+        null,
+        desiredParentType,
+      );
+
+      const newContentIds = await copyContent(
+        sourceContent,
+        loggedInUserId,
+        folderId,
+      );
+
+      await recordRecentContent(loggedInUserId, "edit", folderId);
+
+      res.send({
+        newContentIds: newContentIds.map(fromUUID),
+        newParentId: fromUUID(folderId),
+        userId: fromUUID(loggedInUserId),
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
   "/api/assignActivity",
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {

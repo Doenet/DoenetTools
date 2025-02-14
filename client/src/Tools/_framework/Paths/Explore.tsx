@@ -73,6 +73,7 @@ import MoveCopyContent, {
   moveCopyContentActions,
 } from "../ToolPanels/MoveCopyContent";
 import { User } from "./SiteHeader";
+import { CreateContentAndReportFinish } from "../ToolPanels/CreateContentAndReportFinish";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -233,6 +234,7 @@ export function Explore() {
   >([]);
 
   const [addToType, setAddToType] = useState<ContentType>("folder");
+  const [createNewType, setCreateNewType] = useState<ContentType>("folder");
 
   const [copyDestination, setCopyDestination] =
     useState<ContentDescription | null>(null);
@@ -326,6 +328,21 @@ export function Explore() {
       action="Add"
     />
   ) : null;
+
+  const {
+    isOpen: createDialogIsOpen,
+    onOpen: createDialogOnOpen,
+    onClose: createDialogOnClose,
+  } = useDisclosure();
+
+  const createContentModal = (
+    <CreateContentAndReportFinish
+      isOpen={createDialogIsOpen}
+      onClose={createDialogOnClose}
+      sourceContent={selectedCards}
+      desiredParentType={createNewType}
+    />
+  );
 
   const [recentContent, setRecentContent] = useState<ContentDescription[]>([]);
 
@@ -859,7 +876,7 @@ export function Explore() {
                   as={Button}
                   size="xs"
                   colorScheme="blue"
-                  data-test="Selected New Button"
+                  data-test="Add Selected Button"
                 >
                   Add selected to
                 </MenuButton>
@@ -945,6 +962,64 @@ export function Explore() {
                       ))}
                     </MenuGroup>
                   ) : null}
+                </MenuList>
+              </Menu>
+              <Menu>
+                <MenuButton
+                  as={Button}
+                  size="xs"
+                  colorScheme="blue"
+                  data-test="Create From Selected Button"
+                >
+                  Create from selected
+                </MenuButton>
+                <MenuList>
+                  <Tooltip
+                    openDelay={500}
+                    label={
+                      !allowedParentsForSelected.includes("sequence")
+                        ? "Some selected items cannot be added to a problem set"
+                        : null
+                    }
+                  >
+                    <MenuItem
+                      isDisabled={
+                        !allowedParentsForSelected.includes("sequence")
+                      }
+                      onClick={() => {
+                        setCreateNewType("sequence");
+                        createDialogOnOpen();
+                      }}
+                    >
+                      {menuIcons.sequence} Problem set
+                    </MenuItem>
+                  </Tooltip>
+                  <MenuItem
+                    onClick={() => {
+                      setCreateNewType("folder");
+                      createDialogOnOpen();
+                    }}
+                  >
+                    {menuIcons.folder} Folder
+                  </MenuItem>
+                  <Tooltip
+                    openDelay={500}
+                    label={
+                      !allowedParentsForSelected.includes("select")
+                        ? "Some selected items cannot be added to a question bank"
+                        : null
+                    }
+                  >
+                    <MenuItem
+                      isDisabled={!allowedParentsForSelected.includes("select")}
+                      onClick={() => {
+                        setCreateNewType("select");
+                        createDialogOnOpen();
+                      }}
+                    >
+                      {menuIcons.select} Question bank
+                    </MenuItem>
+                  </Tooltip>
                 </MenuList>
               </Menu>
             </HStack>
@@ -1054,6 +1129,7 @@ export function Explore() {
       {filterDrawer}
       {copyContentModal}
       {moveCopyContentModal}
+      {createContentModal}
       {heading}
       <Hide below="lg">
         <Grid
