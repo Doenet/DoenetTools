@@ -13,11 +13,6 @@ import {
   Icon,
   List,
   ListItem,
-  Menu,
-  MenuButton,
-  MenuGroup,
-  MenuItem,
-  MenuList,
   Show,
   Text,
   Tooltip,
@@ -30,12 +25,10 @@ import { useFetcher } from "react-router";
 import axios from "axios";
 import {} from "../ToolPanels/ContentSettingsDrawer";
 import {
-  ContentDescription,
   ContentStructure,
   ContentType,
   DocHistoryItem,
   DoenetmlVersion,
-  isContentDescription,
 } from "../../../_utils/types";
 import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
 import { CompoundActivityEditor } from "../ToolPanels/CompoundActivityEditor";
@@ -52,19 +45,19 @@ import ContributorsMenu from "../ToolPanels/ContributorsMenu";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import { createFullName } from "../../../_utils/names";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
-import MoveCopyContent, {
-  moveCopyContentActions,
-} from "../ToolPanels/MoveCopyContent";
 import { User } from "./SiteHeader";
-import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
+import {
+  AddContentToMenu,
+  addContentToMenuActions,
+} from "../ToolPanels/AddContentToMenu";
 
 export async function action({ request }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
-  const resultMC = await moveCopyContentActions({ formObj });
-  if (resultMC) {
-    return resultMC;
+  const resultACM = await addContentToMenuActions({ formObj });
+  if (resultACM) {
+    return resultACM;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
@@ -137,7 +130,6 @@ export function ActivityViewer() {
   const navigate = useNavigate();
 
   const infoBtnRef = useRef<HTMLButtonElement>(null);
-  const sharingBtnRef = useRef<HTMLButtonElement>(null);
 
   const [mode, setMode] = useState<"Edit" | "View">(
     contentType === "select" ? "Edit" : "View",
@@ -262,49 +254,6 @@ export function ActivityViewer() {
     </Tooltip>
   );
 
-  const [addToType, setAddToType] = useState<ContentType>("folder");
-
-  const [copyDestination, setCopyDestination] =
-    useState<ContentDescription | null>(null);
-
-  const {
-    isOpen: copyDialogIsOpen,
-    onOpen: copyDialogOnOpen,
-    onClose: copyDialogOnClose,
-  } = useDisclosure();
-
-  const copyContentModal =
-    user && contentData ? (
-      <CopyContentAndReportFinish
-        isOpen={copyDialogIsOpen}
-        onClose={copyDialogOnClose}
-        sourceContent={[contentData]}
-        desiredParent={copyDestination}
-        action="Add"
-      />
-    ) : null;
-
-  const {
-    isOpen: moveCopyContentIsOpen,
-    onOpen: moveCopyContentOnOpen,
-    onClose: moveCopyContentOnClose,
-  } = useDisclosure();
-
-  const moveCopyContentModal =
-    user && contentData ? (
-      <MoveCopyContent
-        isOpen={moveCopyContentIsOpen}
-        onClose={moveCopyContentOnClose}
-        sourceContent={[contentData]}
-        userId={user.userId}
-        currentParentId={null}
-        allowedParentTypes={[addToType]}
-        action="Add"
-      />
-    ) : null;
-
-  const [recentContent, setRecentContent] = useState<ContentDescription[]>([]);
-
   const allowedParents = getAllowedParentTypes([activityData.type]);
 
   const allowedParentWords = allowedParents.map((ct) =>
@@ -336,137 +285,20 @@ export function ActivityViewer() {
     menuIcons[t] = icon;
   }
   const addToMenu = (
-    <Menu
-      onOpen={async () => {
-        const { data } = await axios.get(`/api/getRecentContent`, {
-          params: {
-            mode: "edit",
-            restrictToTypes: allowedParents,
-          },
-        });
-
-        const rc: ContentDescription[] = [];
-        if (Array.isArray(data)) {
-          for (const item of data) {
-            if (isContentDescription(item)) {
-              rc.push(item);
-            }
-          }
-          setRecentContent(rc);
-        }
-      }}
-    >
-      <Tooltip
-        hasArrow
-        label={`Add ${contentTypeName.toLowerCase()} to ${allowedParentsPhrase}`}
-        placement="bottom-end"
-      >
-        <MenuButton
-          as={Button}
-          data-test="Add To Button"
-          size="sm"
-          pr={{ base: "0px", md: "10px" }}
-          colorScheme="blue"
-          leftIcon={<MdOutlineAdd />}
-          onClick={() => {}}
-          ref={sharingBtnRef}
-        >
-          <Show above="md">Add to</Show>
-        </MenuButton>
-      </Tooltip>
-
-      <MenuList>
-        <Tooltip
-          openDelay={500}
-          label={
-            !allowedParents.includes("sequence")
-              ? "Item cannot be added to a problem set"
-              : null
-          }
-        >
-          <MenuItem
-            isDisabled={!allowedParents.includes("sequence")}
-            onClick={() => {
-              setSettingsContentId(activityData.id);
-              setAddToType("sequence");
-              moveCopyContentOnOpen();
-            }}
-          >
-            {menuIcons.sequence} Problem set
-          </MenuItem>
-        </Tooltip>
-        <MenuItem
-          onClick={() => {
-            setSettingsContentId(activityData.id);
-            setAddToType("folder");
-            moveCopyContentOnOpen();
-          }}
-        >
-          {menuIcons.folder} Folder
-        </MenuItem>
-        <Tooltip
-          openDelay={500}
-          label={
-            !allowedParents.includes("select")
-              ? "Item cannot be added to a question bank"
-              : null
-          }
-        >
-          <MenuItem
-            isDisabled={!allowedParents.includes("select")}
-            onClick={() => {
-              setSettingsContentId(activityData.id);
-              setAddToType("select");
-              moveCopyContentOnOpen();
-            }}
-          >
-            {menuIcons.select} Question bank
-          </MenuItem>
-        </Tooltip>
-        <MenuItem
-          onClick={() => {
-            setSettingsContentId(activityData.id);
-            setCopyDestination(null);
-            copyDialogOnOpen();
-          }}
-        >
-          My Activities
-        </MenuItem>
-        {recentContent.length > 0 ? (
-          <MenuGroup title="Recent">
-            {recentContent.map((rc) => (
-              <Tooltip
-                key={rc.id}
-                openDelay={500}
-                label={
-                  !allowedParents.includes(rc.type)
-                    ? `Item cannot be added to a ${rc.type === "select" ? "question bank" : "problem set"}`
-                    : null
-                }
-              >
-                <MenuItem
-                  isDisabled={!allowedParents.includes(rc.type)}
-                  onClick={() => {
-                    setSettingsContentId(activityData.id);
-                    setCopyDestination(rc);
-                    copyDialogOnOpen();
-                  }}
-                >
-                  {menuIcons[rc.type]} {rc.name}
-                </MenuItem>
-              </Tooltip>
-            ))}
-          </MenuGroup>
-        ) : null}
-      </MenuList>
-    </Menu>
+    <AddContentToMenu
+      sourceContent={[activityData]}
+      size="sm"
+      label={<Show above="md">Add to</Show>}
+      addRightPadding={true}
+      colorScheme="blue"
+      toolTip={`Add ${contentTypeName.toLowerCase()} to ${allowedParentsPhrase}`}
+      leftIcon={<MdOutlineAdd />}
+    />
   );
 
   return (
     <>
       {infoDrawer}
-      {moveCopyContentModal}
-      {copyContentModal}
       <Grid
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height
@@ -545,22 +377,20 @@ export function ActivityViewer() {
               >
                 <HStack mr={{ base: "5px", sm: "10px" }}>
                   <ButtonGroup size="sm" isAttached variant="outline">
-                    <Tooltip hasArrow label="Add to" placement="bottom-end">
-                      {user ? (
-                        addToMenu
-                      ) : (
-                        <Button
-                          data-test="Nav to signIn"
-                          colorScheme="blue"
-                          size="sm"
-                          onClick={() => {
-                            navigate("/signIn");
-                          }}
-                        >
-                          Sign In To Add Content
-                        </Button>
-                      )}
-                    </Tooltip>
+                    {user ? (
+                      addToMenu
+                    ) : (
+                      <Button
+                        data-test="Nav to signIn"
+                        colorScheme="blue"
+                        size="sm"
+                        onClick={() => {
+                          navigate("/signIn");
+                        }}
+                      >
+                        Sign In To Add Content
+                      </Button>
+                    )}
 
                     <Tooltip
                       hasArrow

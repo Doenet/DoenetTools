@@ -88,7 +88,7 @@ export async function moveCopyContentActions({
   return null;
 }
 
-export default function MoveCopyContent({
+export function MoveCopyContent({
   isOpen,
   onClose,
   sourceContent,

@@ -32,7 +32,8 @@ import {
 import { CardContent } from "../../../Widgets/Card";
 import CardList from "../../../Widgets/CardList";
 import axios from "axios";
-import MoveCopyContent, {
+import {
+  MoveCopyContent,
   moveCopyContentActions,
 } from "../ToolPanels/MoveCopyContent";
 import {

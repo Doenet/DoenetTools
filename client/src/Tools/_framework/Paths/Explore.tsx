@@ -29,7 +29,6 @@ import {
   Menu,
   MenuButton,
   MenuList,
-  MenuGroup,
   Icon,
 } from "@chakra-ui/react";
 import {
@@ -48,7 +47,6 @@ import {
   ContentFeature,
   ContentStructure,
   ContentType,
-  isContentDescription,
   PartialContentClassification,
   UserInfo,
 } from "../../../_utils/types";
@@ -63,17 +61,17 @@ import { MdFilterAlt, MdFilterAltOff } from "react-icons/md";
 import { clearQueryParameter } from "../../../_utils/explore";
 import { FilterPanel } from "../ToolPanels/FilterPanel";
 import { ExploreFilterDrawer } from "../ToolPanels/ExploreFilterDrawer";
-import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
 import {
   contentTypeToName,
   getAllowedParentTypes,
   getIconInfo,
 } from "../../../_utils/activity";
-import MoveCopyContent, {
-  moveCopyContentActions,
-} from "../ToolPanels/MoveCopyContent";
 import { User } from "./SiteHeader";
 import { CreateContentAndReportFinish } from "../ToolPanels/CreateContentAndReportFinish";
+import {
+  AddContentToMenu,
+  addContentToMenuActions,
+} from "../ToolPanels/AddContentToMenu";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -84,9 +82,9 @@ export async function action({ request }) {
     return resultTLV;
   }
 
-  const resultMC = await moveCopyContentActions({ formObj });
-  if (resultMC) {
-    return resultMC;
+  const resultACM = await addContentToMenuActions({ formObj });
+  if (resultACM) {
+    return resultACM;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
@@ -233,11 +231,7 @@ export function Explore() {
     ContentType[]
   >([]);
 
-  const [addToType, setAddToType] = useState<ContentType>("folder");
   const [createNewType, setCreateNewType] = useState<ContentType>("folder");
-
-  const [copyDestination, setCopyDestination] =
-    useState<ContentDescription | null>(null);
 
   const { search } = useLocation();
   const navigate = useNavigate();
@@ -296,40 +290,6 @@ export function Explore() {
   );
 
   const {
-    isOpen: copyDialogIsOpen,
-    onOpen: copyDialogOnOpen,
-    onClose: copyDialogOnClose,
-  } = useDisclosure();
-
-  const copyContentModal = (
-    <CopyContentAndReportFinish
-      isOpen={copyDialogIsOpen}
-      onClose={copyDialogOnClose}
-      sourceContent={selectedCards}
-      desiredParent={copyDestination}
-      action="Add"
-    />
-  );
-
-  const {
-    isOpen: moveCopyContentIsOpen,
-    onOpen: moveCopyContentOnOpen,
-    onClose: moveCopyContentOnClose,
-  } = useDisclosure();
-
-  const moveCopyContentModal = user ? (
-    <MoveCopyContent
-      isOpen={moveCopyContentIsOpen}
-      onClose={moveCopyContentOnClose}
-      sourceContent={selectedCards}
-      userId={user.userId}
-      currentParentId={null}
-      allowedParentTypes={[addToType]}
-      action="Add"
-    />
-  ) : null;
-
-  const {
     isOpen: createDialogIsOpen,
     onOpen: createDialogOnOpen,
     onClose: createDialogOnClose,
@@ -343,8 +303,6 @@ export function Explore() {
       desiredParentType={createNewType}
     />
   );
-
-  const [recentContent, setRecentContent] = useState<ContentDescription[]>([]);
 
   useEffect(() => {
     setSelectedCards((was) => {
@@ -852,118 +810,12 @@ export function Explore() {
             <HStack>
               <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
               <Text>{numSelected} selected</Text>
-              <Menu
-                onOpen={async () => {
-                  const { data } = await axios.get(`/api/getRecentContent`, {
-                    params: {
-                      mode: "edit",
-                      restrictToTypes: allowedParentsForSelected,
-                    },
-                  });
-
-                  const rc: ContentDescription[] = [];
-                  if (Array.isArray(data)) {
-                    for (const item of data) {
-                      if (isContentDescription(item)) {
-                        rc.push(item);
-                      }
-                    }
-                    setRecentContent(rc);
-                  }
-                }}
-              >
-                <MenuButton
-                  as={Button}
-                  size="xs"
-                  colorScheme="blue"
-                  data-test="Add Selected Button"
-                >
-                  Add selected to
-                </MenuButton>
-                <MenuList>
-                  <Tooltip
-                    openDelay={500}
-                    label={
-                      !allowedParentsForSelected.includes("sequence")
-                        ? "Some selected items cannot be added to a problem set"
-                        : null
-                    }
-                  >
-                    <MenuItem
-                      isDisabled={
-                        !allowedParentsForSelected.includes("sequence")
-                      }
-                      onClick={() => {
-                        setAddToType("sequence");
-                        moveCopyContentOnOpen();
-                      }}
-                    >
-                      {menuIcons.sequence} Problem set
-                    </MenuItem>
-                  </Tooltip>
-                  <MenuItem
-                    onClick={() => {
-                      setAddToType("folder");
-                      moveCopyContentOnOpen();
-                    }}
-                  >
-                    {menuIcons.folder} Folder
-                  </MenuItem>
-                  <Tooltip
-                    openDelay={500}
-                    label={
-                      !allowedParentsForSelected.includes("select")
-                        ? "Some selected items cannot be added to a question bank"
-                        : null
-                    }
-                  >
-                    <MenuItem
-                      isDisabled={!allowedParentsForSelected.includes("select")}
-                      onClick={() => {
-                        setAddToType("select");
-                        moveCopyContentOnOpen();
-                      }}
-                    >
-                      {menuIcons.select} Question bank
-                    </MenuItem>
-                  </Tooltip>
-                  <MenuItem
-                    onClick={() => {
-                      setCopyDestination(null);
-                      copyDialogOnOpen();
-                    }}
-                  >
-                    My Activities
-                  </MenuItem>
-                  {recentContent.length > 0 ? (
-                    <MenuGroup title="Recent">
-                      {recentContent.map((rc) => (
-                        <Tooltip
-                          key={rc.id}
-                          openDelay={500}
-                          label={
-                            !allowedParentsForSelected.includes(rc.type)
-                              ? `Some selected items cannot be added to a ${rc.type === "select" ? "question bank" : "problem set"}`
-                              : null
-                          }
-                        >
-                          <MenuItem
-                            isDisabled={
-                              !allowedParentsForSelected.includes(rc.type)
-                            }
-                            onClick={() => {
-                              setCopyDestination(rc);
-                              copyDialogOnOpen();
-                            }}
-                          >
-                            {menuIcons[rc.type]} {rc.name}
-                          </MenuItem>
-                        </Tooltip>
-                      ))}
-                    </MenuGroup>
-                  ) : null}
-                </MenuList>
-              </Menu>
+              <AddContentToMenu
+                sourceContent={selectedCards}
+                size="xs"
+                colorScheme="blue"
+                label="Add selected to"
+              />
               <Menu>
                 <MenuButton
                   as={Button}
@@ -1127,8 +979,6 @@ export function Explore() {
     <>
       {infoDrawer}
       {filterDrawer}
-      {copyContentModal}
-      {moveCopyContentModal}
       {createContentModal}
       {heading}
       <Hide below="lg">

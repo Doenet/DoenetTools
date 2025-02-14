@@ -30,7 +30,7 @@ import {
   redirect,
   useOutletContext,
 } from "react-router";
-import MoveCopyContent, { moveCopyContentActions } from "./MoveCopyContent";
+import { MoveCopyContent, moveCopyContentActions } from "./MoveCopyContent";
 import { User } from "../Paths/SiteHeader";
 import CardList from "../../../Widgets/CardList";
 import axios from "axios";
