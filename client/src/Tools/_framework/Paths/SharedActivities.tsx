@@ -169,10 +169,10 @@ export function SharedActivities() {
 
     return {
       content: activity,
-      cardLink: activity.isFolder
-        ? `/sharedActivities/${activity.ownerId}/${activity.id}`
-        : `/activityViewer/${activity.id}`,
-      cardType: activity.isFolder ? "folder" : "activity",
+      cardLink:
+        activity.type == "folder"
+          ? `/sharedActivities/${activity.ownerId}/${activity.id}`
+          : `/activityViewer/${activity.id}`,
       menuItems,
     };
   });
