@@ -7,7 +7,6 @@ import cookieParser from "cookie-parser";
 import { DateTime } from "luxon";
 import {
   prisma,
-  copyActivityToFolder,
   createActivity,
   createFolder,
   deleteActivity,
@@ -2099,41 +2098,6 @@ app.post(
 );
 
 app.post(
-  "/api/duplicateActivity",
-  async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user) {
-      res.sendStatus(403);
-      return;
-    }
-    const loggedInUserId = req.user.userId;
-    const targetActivityId = toUUID(req.body.activityId);
-    const desiredParentId = req.body.desiredParentId
-      ? toUUID(req.body.desiredParentId)
-      : null;
-
-    try {
-      const newActivityId = await copyActivityToFolder(
-        targetActivityId,
-        loggedInUserId,
-        desiredParentId,
-        true,
-      );
-
-      res.send({
-        newActivityId: fromUUID(newActivityId),
-        userId: fromUUID(loggedInUserId),
-      });
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.sendStatus(403);
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.post(
   "/api/copyContent",
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
@@ -2152,10 +2116,13 @@ app.post(
         ? toUUID(req.body.desiredParentId)
         : null;
 
+      const prependCopy = Boolean(req.body.prependCopy);
+
       const newContentIds = await copyContent(
         sourceContent,
         loggedInUserId,
         desiredParentId,
+        prependCopy,
       );
 
       if (desiredParentId) {

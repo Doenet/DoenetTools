@@ -60,7 +60,10 @@ import {
   ToggleViewButtonGroup,
   toggleViewButtonGroupActions,
 } from "../ToolPanels/ToggleViewButtonGroup";
-import { getAllowedParentTypes } from "../../../_utils/activity";
+import {
+  contentTypeToName,
+  getAllowedParentTypes,
+} from "../../../_utils/activity";
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -115,10 +118,11 @@ export async function action({ request, params }) {
     });
 
     return true;
-  } else if (formObj?._action == "Duplicate Activity") {
-    await axios.post(`/api/duplicateActivity`, {
-      activityId: formObj.id,
+  } else if (formObj?._action == "Duplicate Content") {
+    await axios.post(`/api/copyContent`, {
+      sourceContent: [{ contentId: formObj.id, type: formObj.contentType }],
       desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
+      prependCopy: true,
     });
     return true;
   } else if (formObj?._action == "Move") {
@@ -311,6 +315,8 @@ export function Activities() {
     licenseCode: LicenseCode | null;
     parentId: string | null;
   }) {
+    const contentTypeName = contentTypeToName[contentType];
+
     return (
       <>
         <MenuItem
@@ -324,21 +330,22 @@ export function Activities() {
         >
           Rename
         </MenuItem>
-        {!isFolder ? (
-          <>
-            <MenuItem
-              data-test={"Duplicate Activity"}
-              onClick={() => {
-                fetcher.submit(
-                  { _action: "Duplicate Activity", id, folderId },
-                  { method: "post" },
-                );
-              }}
-            >
-              Duplicate Activity
-            </MenuItem>
-          </>
-        ) : null}
+        <MenuItem
+          data-test={"Duplicate Content"}
+          onClick={() => {
+            fetcher.submit(
+              {
+                _action: "Duplicate Content",
+                id,
+                folderId,
+                contentType,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Duplicate {contentTypeName}
+        </MenuItem>
         {position > 0 && !haveQuery ? (
           <MenuItem
             data-test="Move Left Menu Item"

@@ -84,10 +84,11 @@ export async function nestedActivityEditorActions(
     });
 
     return true;
-  } else if (formObj?._action == "Duplicate Activity") {
-    await axios.post(`/api/duplicateActivity`, {
-      activityId: formObj.id,
-      desiredParentId: formObj.folderId,
+  } else if (formObj?._action == "Duplicate Content") {
+    await axios.post(`/api/copyContent`, {
+      sourceContent: [{ contentId: formObj.id, type: formObj.contentType }],
+      desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
+      prependCopy: true,
     });
     return true;
   } else if (formObj?._action == "Move") {
@@ -358,25 +359,22 @@ export function NestedActivityEditor({
         >
           Rename
         </MenuItem>
-        {!content.isFolder ? (
-          <>
-            <MenuItem
-              data-test={"Duplicate Activity"}
-              onClick={() => {
-                fetcher.submit(
-                  {
-                    _action: "Duplicate Activity",
-                    id,
-                    folderId: activity.id,
-                  },
-                  { method: "post" },
-                );
-              }}
-            >
-              Duplicate Activity
-            </MenuItem>
-          </>
-        ) : null}
+        <MenuItem
+          data-test={"Duplicate Content"}
+          onClick={() => {
+            fetcher.submit(
+              {
+                _action: "Duplicate Content",
+                id,
+                folderId: activity.id,
+                contentType: content.type,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Duplicate {contentTypeToName[content.type]}
+        </MenuItem>
         {nextPositionUp ? (
           <MenuItem
             data-test="Move Up Menu Item"

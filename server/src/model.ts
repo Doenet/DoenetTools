@@ -963,6 +963,7 @@ export async function copyFolderToFolder(
   origId: Uint8Array,
   ownerId: Uint8Array,
   desiredParentId: Uint8Array | null,
+  prependCopy = false,
 ) {
   // make sure content exists and is owned by `ownerId`
   const originalContent = await prisma.content.findUniqueOrThrow({
@@ -1067,7 +1068,7 @@ export async function copyFolderToFolder(
 
   const newFolder = await prisma.content.create({
     data: {
-      name: originalContent.name,
+      name: (prependCopy ? "Copy of " : "") + originalContent.name,
       isFolder: originalContent.isFolder,
       type: originalContent.type,
       ownerId,
@@ -1089,9 +1090,9 @@ export async function copyFolderToFolder(
 
   for (const child of originalContent.children) {
     if (child.type === "singleDoc") {
-      await copyActivityToFolder(child.id, ownerId, newFolder.id);
+      await copyActivityToFolder(child.id, ownerId, newFolder.id, false);
     } else {
-      await copyFolderToFolder(child.id, ownerId, newFolder.id);
+      await copyFolderToFolder(child.id, ownerId, newFolder.id, false);
     }
   }
 
@@ -1102,16 +1103,19 @@ export async function copyContent(
   origContent: { contentId: Uint8Array; type: ContentType }[],
   userId: Uint8Array,
   parentId: Uint8Array | null,
+  prependCopy = false,
 ) {
   const newContentIds: Uint8Array[] = [];
 
   for (const { contentId, type } of origContent) {
     if (type === "singleDoc") {
       newContentIds.push(
-        await copyActivityToFolder(contentId, userId, parentId, false),
+        await copyActivityToFolder(contentId, userId, parentId, prependCopy),
       );
     } else {
-      newContentIds.push(await copyFolderToFolder(contentId, userId, parentId));
+      newContentIds.push(
+        await copyFolderToFolder(contentId, userId, parentId, prependCopy),
+      );
     }
   }
 
