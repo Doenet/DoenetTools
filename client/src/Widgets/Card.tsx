@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, ReactElement } from "react";
+import React, { ReactElement } from "react";
 import {
   Box,
   Image,
@@ -81,21 +81,7 @@ export default function Card({
 
   const { menuItems, closeTime, cardLink, ownerName } = cardContent;
 
-  const [cardTitle, setCardTitle] = useState(title);
-
   const contentTypeName = contentTypeToName[contentType];
-
-  useEffect(() => {
-    setCardTitle(title);
-  }, [title]);
-
-  // from ActivityEditor.tsx
-  const lastActivityDataName = useRef(title);
-  //Update when something else updates the name
-  if (title != lastActivityDataName.current && cardTitle != title) {
-    setCardTitle(title);
-  }
-  lastActivityDataName.current = title;
 
   if (contentType === "folder") {
     showAssignmentStatus = false;
@@ -125,7 +111,11 @@ export default function Card({
     );
   }
 
-  const titleDisplay = <Tooltip label={cardTitle}>{cardTitle}</Tooltip>;
+  const titleDisplay = (
+    <Tooltip label={title}>
+      <Text noOfLines={1}>{title}</Text>
+    </Tooltip>
+  );
 
   const menuDisplay = menuItems ? (
     <Menu>
@@ -436,8 +426,7 @@ export default function Card({
                   height={cardHeight}
                   alignContent="center"
                 >
-                  <HStack>{titleDisplay}</HStack>{" "}
-                  {/* HStack makes region to right of title part of the link */}
+                  {titleDisplay}
                 </Box>
                 <Box
                   width={

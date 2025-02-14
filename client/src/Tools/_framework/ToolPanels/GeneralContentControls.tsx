@@ -357,6 +357,7 @@ export function GeneralContentControls({
           <FormLabel mt="16px">Name</FormLabel>
 
           <Input
+            maxLength={191}
             ref={nameInput}
             name="name"
             size="sm"
