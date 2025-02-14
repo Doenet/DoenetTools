@@ -15,14 +15,6 @@ import {
   VStack,
   Hide,
   Spinner,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  Textarea,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -49,7 +41,6 @@ import {
   ContentFeature,
   ContentStructure,
   DoenetmlVersion,
-  License,
   LicenseCode,
   UserInfo,
 } from "./../../../_utils/types";
@@ -172,7 +163,6 @@ export function Curation() {
     folderId,
     content,
     allDoenetmlVersions,
-    allLicenses,
     availableFeatures,
     userId,
     folder,
@@ -182,7 +172,6 @@ export function Curation() {
     folderId: string | null;
     content: ContentStructure[];
     allDoenetmlVersions: DoenetmlVersion[];
-    allLicenses: License[];
     availableFeatures: ContentFeature[];
     userId: string;
     folder: ContentStructure | null;
@@ -204,22 +193,6 @@ export function Curation() {
     onOpen: curateOnOpen,
     onClose: curateOnClose,
   } = useDisclosure();
-
-  const {
-    isOpen: publishIsOpen,
-    onOpen: publishOnOpen,
-    onClose: publishOnClose,
-  } = useDisclosure();
-
-  let [publishData, setPublishData] = useState<{
-    id: string;
-    name: string;
-    libraryInfo: LibraryInfo;
-  }>({
-    id: "",
-    name: "",
-    libraryInfo: { status: "none", sourceId: "", activityId: null },
-  });
 
   // refs to the menu button of each content card,
   // which should be given focus when drawers are closed
@@ -282,17 +255,14 @@ export function Curation() {
 
   function getCardMenuList({
     id,
-    name,
     position,
     numCards,
-    assignmentStatus,
     isFolder,
     isPublic,
     isShared,
     sharedWith,
     licenseCode,
     parentFolderId,
-    libraryActivity,
   }: {
     id: string;
     name: string;
@@ -463,51 +433,6 @@ export function Curation() {
       finalFocusRef={finalFocusRef}
       inCurationLibrary={true}
     />
-  );
-
-  let [publishComments, setPublishComments] = useState<string>("");
-
-  const publishActivityModal = (
-    <Modal isOpen={publishIsOpen} onClose={publishOnClose}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Publish "{publishData.name}"</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <Text>
-            Please edit these comments, which will be sent to the original
-            activity's author.
-          </Text>
-          <Textarea
-            placeholder="Enter your comments here"
-            value={publishComments}
-            onChange={(e) => setPublishComments(e.target.value)}
-          ></Textarea>
-        </ModalBody>
-
-        <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={publishOnClose}>
-            Cancel
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => {
-              fetcher.submit(
-                {
-                  _action: "Publish",
-                  id: publishData.id,
-                  comments: publishComments,
-                },
-                { method: "post" },
-              );
-              publishOnClose();
-            }}
-          >
-            Publish with comments
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
   );
 
   const heading = (
@@ -716,8 +641,6 @@ export function Curation() {
       {settingsDrawer}
       {curateDrawer}
       {moveContentModal}
-
-      {/* {publishActivityModal} */}
 
       {heading}
 

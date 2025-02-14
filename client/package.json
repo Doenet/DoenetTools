@@ -23,8 +23,8 @@
     "publish:db": "docker compose exec -T -w /var/lib/mysql mysql mysqldump -u root -phelloworld --databases --add-drop-database --add-drop-table doenet_local > ./docker/volumes/db_init/db_template.sql",
     "reset:db": "docker compose exec -T mysql mysql -u root -phelloworld doenet_local < ./docker/mysql/db_template.sql",
     "reset:volumes": "docker volume rm doenet_node_modules doenet_vendor",
-    "format": "prettier --write \"src/**/*.{js,jsx,json,css}\" \"cypress/**/*.{js,jsx,json,css}\"",
-    "lint": "eslint \"src/**/*.{js,jsx}\"",
+    "format": "prettier --write \"src/**/*.{js,jsx,json,css}\" \"cypress/**/*.{js,jsx,json,css}\" --end-of-line auto",
+    "lint": "eslint",
     "realtime": "node realtime/realtime.js",
     "compile_grammar": "npx lezer-generator --output src/Parser/doenet.js src/Parser/doenet.grammar"
   },

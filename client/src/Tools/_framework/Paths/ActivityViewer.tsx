@@ -25,10 +25,8 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverBody,
-  PopoverFooter,
   PopoverArrow,
   PopoverCloseButton,
-  PopoverAnchor,
   Spacer,
   Text,
   Tooltip,
@@ -43,7 +41,6 @@ import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReport
 import { User } from "./SiteHeader";
 import { createFullName } from "../../../_utils/names";
 import {
-  LibraryInfo,
   ContentStructure,
   DocHistoryItem,
   DoenetmlVersion,

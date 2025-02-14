@@ -937,6 +937,7 @@ function filterViewableActivity(loggedInUserId: Uint8Array, isAdmin: boolean) {
   // 2. The activity is public
   // 3. The activity is shared with you
   // 4. You are an admin and the activity is in the library
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const visibilityOptions: any[] = [
     { ownerId: loggedInUserId },
     { isPublic: true },
@@ -963,7 +964,8 @@ function filterEditableContent(loggedInUserId: Uint8Array, isAdmin: boolean) {
   // For content to be editable, one of these conditions must be true:
   // 1. You are the owner
   // 2. You are an admin and the activity is in the library
-  const editabilityOptions: any = [{ ownerId: loggedInUserId }];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const editabilityOptions: any[] = [{ ownerId: loggedInUserId }];
   if (isAdmin) {
     editabilityOptions.push({ owner: { isLibrary: true } });
   }
