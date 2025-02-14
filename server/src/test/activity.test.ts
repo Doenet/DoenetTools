@@ -249,10 +249,10 @@ test("get activity/document data only if owner or limited data for public/shared
   await getDocumentSource(docId, ownerId);
 
   await expect(getActivityEditorData(activityId, user1Id)).rejects.toThrow(
-    PrismaClientKnownRequestError,
+    InvalidRequestError,
   );
   await expect(getActivityViewerData(activityId, user1Id)).rejects.toThrow(
-    PrismaClientKnownRequestError,
+    InvalidRequestError,
   );
   await expect(getDocumentSource(docId, user1Id)).rejects.toThrow(
     PrismaClientKnownRequestError,
@@ -293,10 +293,10 @@ test("get activity/document data only if owner or limited data for public/shared
 
   await makeActivityPrivate({ id: activityId, ownerId });
   await expect(getActivityEditorData(activityId, user1Id)).rejects.toThrow(
-    PrismaClientKnownRequestError,
+    InvalidRequestError,
   );
   await expect(getActivityViewerData(activityId, user1Id)).rejects.toThrow(
-    PrismaClientKnownRequestError,
+    InvalidRequestError,
   );
   await expect(getDocumentSource(docId, user1Id)).rejects.toThrow(
     PrismaClientKnownRequestError,
@@ -333,10 +333,10 @@ test("get activity/document data only if owner or limited data for public/shared
   await getDocumentSource(docId, user1Id);
 
   await expect(getActivityEditorData(activityId, user2Id)).rejects.toThrow(
-    PrismaClientKnownRequestError,
+    InvalidRequestError,
   );
   await expect(getActivityViewerData(activityId, user2Id)).rejects.toThrow(
-    PrismaClientKnownRequestError,
+    InvalidRequestError,
   );
   await expect(getDocumentSource(docId, user2Id)).rejects.toThrow(
     PrismaClientKnownRequestError,

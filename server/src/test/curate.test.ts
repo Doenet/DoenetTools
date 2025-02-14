@@ -314,7 +314,7 @@ test("owner requests library review, admin publishes", async () => {
     licenseCode: "CCDUAL",
   });
 
-  let status: LibraryInfo = {
+  const status: LibraryInfo = {
     sourceId: activityId,
     status: "PENDING_REVIEW",
     comments: "",

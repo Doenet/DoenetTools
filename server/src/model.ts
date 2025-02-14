@@ -937,7 +937,7 @@ function filterViewableActivity(loggedInUserId: Uint8Array, isAdmin: boolean) {
   // 2. The activity is public
   // 3. The activity is shared with you
   // 4. You are an admin and the activity is in the library
-  let visibilityOptions: any = [
+  const visibilityOptions: any[] = [
     { ownerId: loggedInUserId },
     { isPublic: true },
     { sharedWith: { some: { userId: loggedInUserId } } },
@@ -963,7 +963,7 @@ function filterEditableContent(loggedInUserId: Uint8Array, isAdmin: boolean) {
   // For content to be editable, one of these conditions must be true:
   // 1. You are the owner
   // 2. You are an admin and the activity is in the library
-  let editabilityOptions: any = [{ ownerId: loggedInUserId }];
+  const editabilityOptions: any = [{ ownerId: loggedInUserId }];
   if (isAdmin) {
     editabilityOptions.push({ owner: { isLibrary: true } });
   }
@@ -1348,7 +1348,9 @@ export async function getDocumentDirectRemixes({
   const docRemixes = await prisma.documents.findMany({
     where: {
       id: { in: docIds },
-      ...filterViewableActivity(loggedInUserId, isAdmin),
+      activity: {
+        ...filterViewableActivity(loggedInUserId, isAdmin),
+      },
     },
     select: {
       id: true,
@@ -3579,7 +3581,8 @@ export async function findOrCreateUser({
     });
   }
 
-  return user;
+  const { isLibrary: _isLibrary, ...userNoLibrary } = user;
+  return userNoLibrary;
 }
 
 export async function getUserInfo(userId: Uint8Array) {
@@ -3652,7 +3655,8 @@ export async function updateUser({
     where: { userId },
     data: { firstNames, lastNames },
   });
-  return user;
+  const { isLibrary: _isLibrary, ...userNoLibrary } = user;
+  return userNoLibrary;
 }
 
 export async function getAllDoenetmlVersions() {
@@ -6699,7 +6703,7 @@ export async function getCurationFolderContent({
     orderBy: { sortIndex: "asc" },
   });
 
-  let content: ContentStructure[] = preliminaryContent.map(
+  const content: ContentStructure[] = preliminaryContent.map(
     processContentSharedDetails,
   );
 

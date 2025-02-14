@@ -152,7 +152,6 @@ export function createContentStructure({
     license: null,
     contentFeatures: [],
     classifications: [],
-    librarySource: { status: "none", sourceId: activityId, activityId: null },
     documents: [],
     hasScoreData: false,
     parentFolder: null,

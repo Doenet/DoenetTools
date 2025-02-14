@@ -2,6 +2,7 @@ import {
   AssignmentStatus,
   ContentClassification,
   ContentStructure,
+  LibraryInfo,
   License,
   LicenseCode,
   UserInfo,
@@ -389,7 +390,7 @@ export function returnContentStructureFullOwnerSelect() {
         email: true,
         firstNames: true,
         lastNames: true,
-        isLibrary: true,
+        // isLibrary: true,
       },
     },
   };
@@ -525,6 +526,8 @@ type PreliminaryContent = PreliminaryContentNoClassDocs & {
       deprecationMessage: string;
     };
   }[];
+  libraryActivity: LibraryInfo | null;
+  librarySource: LibraryInfo | null;
   classifications: {
     classification: ContentClassification;
   }[];
@@ -680,6 +683,8 @@ export function processContent(
     license,
     classifications,
     parentFolder,
+    libraryActivity,
+    librarySource,
     ...preliminaryContent2
   } = preliminaryContent;
 
@@ -695,9 +700,21 @@ export function processContent(
     sharedWithOrig,
     forUserId,
   );
+  // Don't include library fields if the values are null
+  const libraryInfos: {
+    libraryActivity?: LibraryInfo;
+    librarySource?: LibraryInfo;
+  } = {};
+  if (libraryActivity) {
+    libraryInfos.libraryActivity = libraryActivity;
+  }
+  if (librarySource) {
+    libraryInfos.librarySource = librarySource;
+  }
 
   const content: ContentStructure = {
     ...preliminaryContent2,
+    ...libraryInfos,
     isShared,
     sharedWith,
     classCode: classCode ?? null,
@@ -732,6 +749,8 @@ export function processContentSharedDetails(
     license,
     classifications,
     parentFolder,
+    libraryActivity,
+    librarySource,
     ...preliminaryContent2
   } = preliminaryContent;
 
@@ -745,8 +764,21 @@ export function processContentSharedDetails(
       : "Open";
   const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
 
+  // Don't include library fields if the values are null
+  const libraryInfos: {
+    libraryActivity?: LibraryInfo;
+    librarySource?: LibraryInfo;
+  } = {};
+  if (libraryActivity) {
+    libraryInfos.libraryActivity = libraryActivity;
+  }
+  if (librarySource) {
+    libraryInfos.librarySource = librarySource;
+  }
+
   const content: ContentStructure = {
     ...preliminaryContent2,
+    ...libraryInfos,
     isShared,
     sharedWith,
     classCode: classCode ?? null,
@@ -780,6 +812,8 @@ export function processContentSharedDetailsAssignedDoc(
     license,
     classifications,
     parentFolder,
+    libraryActivity,
+    librarySource,
     documents: documentsOrig,
     ...preliminaryContent2
   } = preliminaryContent;
@@ -794,6 +828,18 @@ export function processContentSharedDetailsAssignedDoc(
       : "Open";
   const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
 
+  // Don't include library fields if the values are null
+  const libraryInfos: {
+    libraryActivity?: LibraryInfo;
+    librarySource?: LibraryInfo;
+  } = {};
+  if (libraryActivity) {
+    libraryInfos.libraryActivity = libraryActivity;
+  }
+  if (librarySource) {
+    libraryInfos.librarySource = librarySource;
+  }
+
   const documents = documentsOrig.map((doc) => ({
     id: doc.id,
     versionNum: doc.assignedVersion!.versionNum,
@@ -804,6 +850,7 @@ export function processContentSharedDetailsAssignedDoc(
 
   const content: ContentStructure = {
     ...preliminaryContent2,
+    ...libraryInfos,
     isShared,
     sharedWith,
     documents,
