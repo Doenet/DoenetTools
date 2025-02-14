@@ -44,9 +44,11 @@ import { Form, useFetcher } from "react-router";
 import { CardContent } from "../../../Widgets/Card";
 import { createFullName } from "../../../_utils/names";
 import {
+  ContentDescription,
   ContentFeature,
   ContentStructure,
   ContentType,
+  isContentDescription,
   PartialContentClassification,
   UserInfo,
 } from "../../../_utils/types";
@@ -71,22 +73,6 @@ import MoveCopyContent, {
   moveCopyContentActions,
 } from "../ToolPanels/MoveCopyContent";
 import { User } from "./SiteHeader";
-
-type ContentDescription = {
-  id: string;
-  name: string;
-  type: ContentType;
-};
-function isContentDescription(obj: unknown): obj is ContentDescription {
-  const typedObj = obj as ContentDescription;
-  return (
-    typedObj !== null &&
-    typeof typedObj === "object" &&
-    typeof typedObj.id === "string" &&
-    typeof typedObj.name === "string" &&
-    ["singleDoc", "folder", "sequence", "select"].includes(typedObj.type)
-  );
-}
 
 export async function action({ request }) {
   const formData = await request.formData();

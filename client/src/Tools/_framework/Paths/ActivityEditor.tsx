@@ -50,9 +50,9 @@ import {
 } from "../../../_utils/types";
 import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
 import {
-  NestedActivityEditor,
-  nestedActivityEditorActions,
-} from "../ToolPanels/NestedActivityEditor";
+  CompoundActivityEditor,
+  compoundActivityEditorActions,
+} from "../ToolPanels/CompoundActivityEditor";
 import {
   compileActivityFromContent,
   contentTypeToName,
@@ -92,7 +92,10 @@ export async function action({ params, request }) {
     return resultAS;
   }
 
-  const resultNAE = await nestedActivityEditorActions({ formObj }, { params });
+  const resultNAE = await compoundActivityEditorActions(
+    { formObj },
+    { params },
+  );
   if (resultNAE) {
     return resultNAE;
   }
@@ -291,11 +294,7 @@ export function ActivityEditor() {
     } else {
       setMode("Edit");
     }
-  }, [readOnly]);
-
-  useEffect(() => {
-    setMode("Edit");
-  }, [activityId]);
+  }, [readOnly, activityId]);
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
@@ -352,11 +351,12 @@ export function ActivityEditor() {
         assignmentStatus={assignmentStatus}
         mode={mode}
         docId={data.docId}
+        headerHeight={`${readOnly ? 120 : 80}px`}
       />
     );
   } else {
     editor = (
-      <NestedActivityEditor
+      <CompoundActivityEditor
         activity={data.activityData}
         activityJson={data.activityJson}
         assignmentStatus={assignmentStatus}
@@ -368,6 +368,7 @@ export function ActivityEditor() {
         finalFocusRef={finalFocusRef}
         setSettingsDisplayTab={setSettingsDisplayTab}
         setHighlightRename={setHighlightRename}
+        headerHeight={`${readOnly ? 120 : 80}px`}
       />
     );
   }
@@ -453,6 +454,8 @@ export function ActivityEditor() {
           background="doenet.canvas"
           width="100%"
           zIndex="500"
+          borderBottom={mode === "View" ? "1px solid" : undefined}
+          borderColor="doenet.mediumGray"
         >
           <Grid
             templateAreas={`"leftControls label rightControls"`}

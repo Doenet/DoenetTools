@@ -8,15 +8,19 @@ import axios from "axios";
 export function ActivityDoenetMLEditor({
   doenetML,
   doenetmlVersion,
-  assignmentStatus,
+  assignmentStatus = "Unassigned",
+  asViewer,
   docId,
   mode,
+  headerHeight,
 }: {
   doenetML: string;
   doenetmlVersion: DoenetmlVersion;
-  assignmentStatus: AssignmentStatus;
+  assignmentStatus?: AssignmentStatus;
+  asViewer?: boolean;
   docId: string;
   mode: "Edit" | "View";
+  headerHeight: string;
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,7 +32,7 @@ export function ActivityDoenetMLEditor({
   const baseComponentCounts = useRef<string>("{}");
   const documentStructureChanged = useRef(false);
 
-  const readOnly = assignmentStatus !== "Unassigned";
+  const readOnly = asViewer || assignmentStatus !== "Unassigned";
   const readOnlyRef = useRef(readOnly);
   readOnlyRef.current = readOnly;
 
@@ -103,7 +107,7 @@ export function ActivityDoenetMLEditor({
     <>
       {mode == "Edit" && (
         <DoenetEditor
-          height={`calc(100vh - ${readOnly ? 120 : 80}px)`}
+          height={`calc(100vh - ${headerHeight})`}
           width="100%"
           doenetML={textEditorDoenetML.current}
           doenetmlChangeCallback={handleSaveDoc}
@@ -130,10 +134,8 @@ export function ActivityDoenetMLEditor({
       {mode == "View" && (
         <Grid
           width="100%"
-          height={`calc(100vh - ${readOnly ? 120 : 80}px)`}
           templateAreas={`"leftGutter viewer rightGutter"`}
           templateColumns={`1fr minmax(300px,850px) 1fr`}
-          overflow="hidden"
         >
           <GridItem
             area="leftGutter"
@@ -158,14 +160,9 @@ export function ActivityDoenetMLEditor({
             overflow="hidden"
           >
             <Box
-              h={`calc(100vh - ${readOnly ? 120 : 80}px)`}
               background="var(--canvas)"
-              borderWidth="1px"
-              borderStyle="solid"
-              borderColor="doenet.mediumGray"
               padding="0px 0px 20px 0px"
               flexGrow={1}
-              overflowY="scroll"
               w="100%"
               id="viewer-container"
             >

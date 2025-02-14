@@ -41,7 +41,7 @@ import {
   getAllowedParentTypes,
 } from "../../../_utils/activity";
 
-export async function nestedActivityEditorActions(
+export async function compoundActivityEditorActions(
   {
     formObj,
   }: {
@@ -103,10 +103,11 @@ export async function nestedActivityEditorActions(
   return null;
 }
 
-export function NestedActivityEditor({
+export function CompoundActivityEditor({
   activity,
   activityJson,
-  assignmentStatus,
+  assignmentStatus = "Unassigned",
+  asViewer,
   mode,
   fetcher,
   setSettingsContentId,
@@ -115,18 +116,21 @@ export function NestedActivityEditor({
   finalFocusRef,
   setSettingsDisplayTab,
   setHighlightRename,
+  headerHeight,
 }: {
   activity: ContentStructure;
   activityJson: ActivitySource;
-  assignmentStatus: AssignmentStatus;
+  assignmentStatus?: AssignmentStatus;
+  asViewer?: boolean;
   mode: "Edit" | "View";
   fetcher: FetcherWithComponents<any>;
-  setSettingsContentId: (value: React.SetStateAction<string | null>) => void;
-  settingsOnOpen: () => void;
-  sharingOnOpen: () => void;
-  finalFocusRef: React.MutableRefObject<HTMLElement | null>;
-  setSettingsDisplayTab: (arg: "general") => void;
-  setHighlightRename: (arg: boolean) => void;
+  setSettingsContentId?: (value: React.SetStateAction<string | null>) => void;
+  settingsOnOpen?: () => void;
+  sharingOnOpen?: () => void;
+  finalFocusRef?: React.MutableRefObject<HTMLElement | null>;
+  setSettingsDisplayTab?: (arg: "general") => void;
+  setHighlightRename?: (arg: boolean) => void;
+  headerHeight: string;
 }) {
   const contentTypeName = contentTypeToName[activity.type];
 
@@ -134,7 +138,7 @@ export function NestedActivityEditor({
   // which should be given focus when drawers are closed
   const cardMenuRefs = useRef<HTMLButtonElement[]>([]);
 
-  const readOnly = assignmentStatus !== "Unassigned";
+  const readOnly = asViewer || assignmentStatus !== "Unassigned";
 
   const user = useOutletContext<User>();
 
@@ -168,18 +172,18 @@ export function NestedActivityEditor({
     onClose: moveToFolderOnClose,
   } = useDisclosure();
 
-  const moveContentModal = (
+  const moveContentModal = user ? (
     <MoveCopyContent
       isOpen={moveToFolderIsOpen}
       onClose={moveToFolderOnClose}
       sourceContent={[moveToFolderData]}
-      userId={user!.userId}
+      userId={user.userId}
       currentParentId={activity.id}
       finalFocusRef={finalFocusRef}
       allowedParentTypes={getAllowedParentTypes([moveToFolderData.type])}
       action="Move"
     />
-  );
+  ) : null;
 
   function countCards(content: ContentStructure, init = true): number {
     const childCounts = content.children.reduce(
@@ -298,7 +302,9 @@ export function NestedActivityEditor({
         }),
         cardLink:
           content.type === "singleDoc"
-            ? `/activityEditor/${content.id}`
+            ? asViewer
+              ? `/activityViewer/${content.id}`
+              : `/activityEditor/${content.id}`
             : undefined,
         indentLevel,
       });
@@ -349,17 +355,19 @@ export function NestedActivityEditor({
     return (
       <>
         <MenuItem
+          hidden={readOnly}
           data-test="Rename Menu Item"
           onClick={() => {
-            setSettingsContentId(id);
-            setSettingsDisplayTab("general");
-            setHighlightRename(true);
-            settingsOnOpen();
+            setSettingsContentId?.(id);
+            setSettingsDisplayTab?.("general");
+            setHighlightRename?.(true);
+            settingsOnOpen?.();
           }}
         >
           Rename
         </MenuItem>
         <MenuItem
+          hidden={readOnly}
           data-test={"Duplicate Content"}
           onClick={() => {
             fetcher.submit(
@@ -377,6 +385,7 @@ export function NestedActivityEditor({
         </MenuItem>
         {nextPositionUp ? (
           <MenuItem
+            hidden={readOnly}
             data-test="Move Up Menu Item"
             onClick={() => {
               fetcher.submit(
@@ -395,6 +404,7 @@ export function NestedActivityEditor({
         ) : null}
         {nextPositionDown ? (
           <MenuItem
+            hidden={readOnly}
             data-test="Move Down Menu Item"
             onClick={() => {
               fetcher.submit(
@@ -412,6 +422,7 @@ export function NestedActivityEditor({
           </MenuItem>
         ) : null}
         <MenuItem
+          hidden={readOnly}
           data-test="Move to Folder"
           onClick={() => {
             setMoveToFolderData({
@@ -429,6 +440,7 @@ export function NestedActivityEditor({
           Move to Folder
         </MenuItem>
         <MenuItem
+          hidden={readOnly}
           data-test="Delete Menu Item"
           onClick={() => {
             fetcher.submit(
@@ -440,10 +452,11 @@ export function NestedActivityEditor({
           Delete
         </MenuItem>
         <MenuItem
+          hidden={readOnly}
           data-test="Share Menu Item"
           onClick={() => {
-            setSettingsContentId(content.id);
-            sharingOnOpen();
+            setSettingsContentId?.(content.id);
+            sharingOnOpen?.();
           }}
         >
           Share
@@ -451,13 +464,15 @@ export function NestedActivityEditor({
         <MenuItem
           data-test="Settings Menu Item"
           onClick={() => {
-            setSettingsDisplayTab("general");
-            setSettingsContentId(content.id);
-            setHighlightRename(false);
-            settingsOnOpen();
+            setSettingsDisplayTab?.("general");
+            setSettingsContentId?.(content.id);
+            setHighlightRename?.(false);
+            settingsOnOpen?.();
           }}
         >
-          Settings
+          {readOnly
+            ? contentTypeToName[content.type] + " Information"
+            : "Settings"}
         </MenuItem>
       </>
     );
@@ -510,7 +525,7 @@ export function NestedActivityEditor({
       paddingX="10px"
       alignItems="center"
     >
-      <Box>
+      <Box hidden={asViewer}>
         <Link
           to={parentLink}
           style={{
@@ -529,6 +544,7 @@ export function NestedActivityEditor({
       <Spacer />
       <Menu>
         <MenuButton
+          hidden={asViewer}
           as={Button}
           size="sm"
           colorScheme="blue"
@@ -580,7 +596,7 @@ export function NestedActivityEditor({
             margin="0px"
             width="100%"
             background={numCards > 0 ? "white" : "var(--lightBlue)"}
-            minHeight="calc(100vh - 120px)"
+            minHeight={`calc(100vh - ${headerHeight} - 40px)`}
             direction="column"
           >
             {cardList}
@@ -590,10 +606,8 @@ export function NestedActivityEditor({
       {mode === "View" ? (
         <Grid
           width="100%"
-          height={`calc(100vh - ${readOnly ? 120 : 80}px)`}
           templateAreas={`"leftGutter viewer rightGutter"`}
           templateColumns={`1fr minmax(300px,850px) 1fr`}
-          overflow="hidden"
         >
           <GridItem
             area="leftGutter"
@@ -618,14 +632,9 @@ export function NestedActivityEditor({
             overflow="hidden"
           >
             <Box
-              h={`calc(100vh - ${readOnly ? 120 : 80}px)`}
               background="var(--canvas)"
-              borderWidth="1px"
-              borderStyle="solid"
-              borderColor="doenet.mediumGray"
               padding="0px 0px 20px 0px"
               flexGrow={1}
-              overflowY="scroll"
               w="100%"
               id="viewer-container"
             >

@@ -203,3 +203,20 @@ export type ClassificationCategoryTree = {
     }[];
   }[];
 };
+
+export type ContentDescription = {
+  id: string;
+  name: string;
+  type: ContentType;
+};
+
+export function isContentDescription(obj: unknown): obj is ContentDescription {
+  const typedObj = obj as ContentDescription;
+  return (
+    typedObj !== null &&
+    typeof typedObj === "object" &&
+    typeof typedObj.id === "string" &&
+    typeof typedObj.name === "string" &&
+    ["singleDoc", "folder", "sequence", "select"].includes(typedObj.type)
+  );
+}

@@ -35,7 +35,8 @@ import {
 } from "./Tools/_framework/Paths/SharedActivities";
 import {
   loader as activityViewerLoader,
-  ActivityViewerWrapper,
+  action as activityViewerAction,
+  ActivityViewer,
 } from "./Tools/_framework/Paths/ActivityViewer";
 import {
   loader as assignedLoader,
@@ -269,8 +270,9 @@ const router = createBrowserRouter([
       {
         path: "activityViewer/:activityId",
         loader: activityViewerLoader,
+        action: activityViewerAction,
         errorElement: <ErrorPage />,
-        element: <ActivityViewerWrapper />,
+        element: <ActivityViewer />,
       },
       {
         path: "activityEditor/:activityId",

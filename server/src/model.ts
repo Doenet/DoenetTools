@@ -1303,7 +1303,7 @@ export async function getActivityEditorData(
     return { notMe: false, activity, availableFeatures };
   } else {
     // have a sequence or select activity
-    const activity = await getNestedActivity(activityId, loggedInUserId);
+    const activity = await getCompoundActivity(activityId, loggedInUserId);
 
     return { notMe: false, activity, availableFeatures };
   }
@@ -1391,13 +1391,13 @@ export async function getActivityViewerData(
       docHistories,
     };
   } else {
-    const activity = await getNestedActivity(activityId, loggedInUserId);
+    const activity = await getCompoundActivity(activityId, loggedInUserId);
 
     return { activity };
   }
 }
 
-async function getNestedActivity(
+async function getCompoundActivity(
   activityId: Uint8Array<ArrayBufferLike>,
   loggedInUserId: Uint8Array<ArrayBufferLike>,
 ) {

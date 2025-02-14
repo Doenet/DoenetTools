@@ -164,7 +164,7 @@ export function getAllowedParentTypes(childTypes: ContentType[]) {
       allowedParentTypes.push("select");
     }
   }
-  return allowedParentTypes;
+  return allowedParentTypes.reverse();
 }
 
 export function getIconInfo(contentType: ContentType) {
