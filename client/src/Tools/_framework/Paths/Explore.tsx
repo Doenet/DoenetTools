@@ -67,7 +67,7 @@ import {
   getIconInfo,
 } from "../../../_utils/activity";
 import { User } from "./SiteHeader";
-import { CreateContentAndReportFinish } from "../ToolPanels/CreateContentAndReportFinish";
+import { CreateContentAndPromptName } from "../ToolPanels/CreateContentAndPromptName";
 import {
   AddContentToMenu,
   addContentToMenuActions,
@@ -296,7 +296,7 @@ export function Explore() {
   } = useDisclosure();
 
   const createContentModal = (
-    <CreateContentAndReportFinish
+    <CreateContentAndPromptName
       isOpen={createDialogIsOpen}
       onClose={createDialogOnClose}
       sourceContent={selectedCards}

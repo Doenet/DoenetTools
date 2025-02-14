@@ -227,7 +227,7 @@ export async function createFolder(
     },
   });
 
-  return { folderId: folder.id };
+  return { folderId: folder.id, folderName: folder.name };
 }
 
 /**

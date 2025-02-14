@@ -1,4 +1,4 @@
-import React, { RefObject, useEffect, useState } from "react";
+import React, { RefObject, useEffect, useRef, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -11,6 +11,10 @@ import {
   HStack,
   Text,
   Spinner,
+  Input,
+  VStack,
+  Box,
+  Flex,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router";
@@ -22,7 +26,7 @@ import { contentTypeToName } from "../../../_utils/activity";
  *
  * When the copy is finished, the modal allows the user to close it or navigate to the new item.
  */
-export function CreateContentAndReportFinish({
+export function CreateContentAndPromptName({
   isOpen,
   onClose,
   finalFocusRef,
@@ -37,13 +41,16 @@ export function CreateContentAndReportFinish({
 }) {
   const [newActivityData, setNewActivityData] = useState<{
     newContentIds: string[];
-    newParentId: string[];
+    newParentId: string;
+    newParentName: string;
     userId: string;
   } | null>(null);
 
   const navigate = useNavigate();
 
   const [errMsg, setErrMsg] = useState("");
+
+  const nameRef = useRef<HTMLInputElement>(null);
 
   const numItems = sourceContent.length;
 
@@ -78,10 +85,16 @@ export function CreateContentAndReportFinish({
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    nameRef.current?.select();
+  }, [newActivityData]);
+
   let destinationAction: string;
   let destinationUrl: string;
 
   const typeName = contentTypeToName[desiredParentType].toLowerCase();
+  const typeNameInitialCapital =
+    typeName[0].toUpperCase() + typeName.substring(1);
 
   if (desiredParentType === "folder") {
     destinationAction = "Go to folder";
@@ -89,6 +102,15 @@ export function CreateContentAndReportFinish({
   } else {
     destinationAction = `Open ${typeName}`;
     destinationUrl = `/activityEditor/${newActivityData?.newParentId}`;
+  }
+
+  function saveName(newName: string) {
+    if (newActivityData) {
+      axios.post("/api/updateContentSettings", {
+        name: newName,
+        id: newActivityData?.newParentId,
+      });
+    }
   }
 
   return (
@@ -114,8 +136,33 @@ export function CreateContentAndReportFinish({
               </HStack>
             ) : (
               <>
-                {typeName} created with {numItems} item
-                {numItems > 1 ? "s " : " "}
+                <Flex flexDirection="column">
+                  <Box>
+                    {typeNameInitialCapital} created with {numItems} item
+                    {numItems > 1 ? "s " : " "}
+                  </Box>
+                  <Flex marginTop="10px">
+                    Name:
+                    <Input
+                      ref={nameRef}
+                      marginLeft="10px"
+                      maxLength={191}
+                      name="name"
+                      size="sm"
+                      width="100%"
+                      defaultValue={newActivityData.newParentName}
+                      data-test="Content Name"
+                      onBlur={(e) => {
+                        saveName(e.target.value);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key == "Enter") {
+                          saveName((e.target as HTMLInputElement).value);
+                        }
+                      }}
+                    />
+                  </Flex>
+                </Flex>
               </>
             )
           ) : (

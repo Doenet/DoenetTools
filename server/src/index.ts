@@ -2161,7 +2161,7 @@ app.post(
       );
       const desiredParentType = req.body.desiredParentType;
 
-      const { folderId } = await createFolder(
+      const { folderId, folderName } = await createFolder(
         loggedInUserId,
         null,
         desiredParentType,
@@ -2178,6 +2178,7 @@ app.post(
       res.send({
         newContentIds: newContentIds.map(fromUUID),
         newParentId: fromUUID(folderId),
+        newParentName: folderName,
         userId: fromUUID(loggedInUserId),
       });
     } catch (e) {
