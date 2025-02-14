@@ -965,11 +965,15 @@ export async function copyFolderToFolder(
   desiredParentId: Uint8Array | null,
   prependCopy = false,
 ) {
-  // make sure content exists and is owned by `ownerId`
+  // make sure content exists and is viewable by `ownerId`
   const originalContent = await prisma.content.findUniqueOrThrow({
     where: {
       id: origId,
-      ownerId,
+      OR: [
+        { ownerId },
+        { isPublic: true },
+        { sharedWith: { some: { userId: ownerId } } },
+      ],
       isDeleted: false,
     },
     select: {
@@ -1120,6 +1124,42 @@ export async function copyContent(
   }
 
   return newContentIds;
+}
+
+export async function checkIfFolderContains(
+  folderId: Uint8Array | null,
+  contentType: ContentType,
+  loggedInUserId: Uint8Array,
+) {
+  // Note: now sure how to perform this calculation efficiently. Do we need to cache these values instead?
+  // Would it be better to do a single recursive query rather than recurse will individual queries
+  // even though we may be able to short circuit with an early return?
+
+  const children = await prisma.content.findMany({
+    where: {
+      parentId: folderId,
+      ownerId: loggedInUserId,
+      isDeleted: false,
+    },
+    select: {
+      id: true,
+      type: true,
+    },
+  });
+
+  if (children.map((c) => c.type).includes(contentType)) {
+    return true;
+  }
+
+  for (const child of children) {
+    if (child.type !== "singleDoc") {
+      if (await checkIfFolderContains(child.id, contentType, loggedInUserId)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 // Note: createDocumentVersion does not currently incorporate access control,

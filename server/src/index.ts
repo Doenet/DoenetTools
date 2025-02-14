@@ -98,6 +98,7 @@ import {
   recordRecentContent,
   getRecentContent,
   copyContent,
+  checkIfFolderContains,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -2179,6 +2180,43 @@ app.post(
         newParentId: fromUUID(folderId),
         userId: fromUUID(loggedInUserId),
       });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/checkIfFolderContains",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    try {
+      const loggedInUserId = req.user.userId;
+      const folderId =
+        typeof req.query.folderId === "string"
+          ? toUUID(req.query.folderId)
+          : null;
+
+      const contentType = req.query.contentType;
+
+      if (isContentType(contentType)) {
+        const containsType = await checkIfFolderContains(
+          folderId,
+          contentType,
+          loggedInUserId,
+        );
+
+        res.send({ contentType, containsType });
+      } else {
+        res.send({ contentType, containsType: false });
+      }
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(403);

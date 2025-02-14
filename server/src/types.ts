@@ -77,8 +77,11 @@ export type PartialContentClassification = {
 };
 export type ContentType = "singleDoc" | "select" | "sequence" | "folder";
 
-export function isContentType(type: string): type is ContentType {
-  return ["singleDoc", "select", "sequence", "folder"].includes(type);
+export function isContentType(type: unknown): type is ContentType {
+  return (
+    typeof type === "string" &&
+    ["singleDoc", "select", "sequence", "folder"].includes(type)
+  );
 }
 
 export type ContentStructure = {

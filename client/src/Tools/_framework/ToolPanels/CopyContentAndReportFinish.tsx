@@ -102,7 +102,7 @@ export function CopyContentAndReportFinish({
       destinationUrl = `/activityEditor/${desiredParent.id}`;
     }
   } else {
-    destinationDescription = <>your Activities</>;
+    destinationDescription = <>My Activities</>;
     destinationAction = "Go to Activities";
     destinationUrl = `/activities/${newActivityData?.userId}`;
   }

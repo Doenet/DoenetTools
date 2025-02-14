@@ -78,6 +78,8 @@ export function AddContentToMenu({
   const [copyDestination, setCopyDestination] =
     useState<ContentDescription | null>(null);
 
+  const [baseContains, setBaseContains] = useState<ContentType[]>([]);
+
   useEffect(() => {
     const allowedParents = getAllowedParentTypes(
       sourceContent.map((c) => c.type),
@@ -163,22 +165,39 @@ export function AddContentToMenu({
       {moveCopyContentModal}
       <Menu
         onOpen={async () => {
-          const { data } = await axios.get(`/api/getRecentContent`, {
-            params: {
-              mode: "edit",
-              restrictToTypes: allowedParents,
+          const { data: recentContentData } = await axios.get(
+            `/api/getRecentContent`,
+            {
+              params: {
+                mode: "edit",
+                restrictToTypes: allowedParents,
+              },
             },
-          });
-
+          );
           const rc: ContentDescription[] = [];
-          if (Array.isArray(data)) {
-            for (const item of data) {
+          if (Array.isArray(recentContentData)) {
+            for (const item of recentContentData) {
               if (isContentDescription(item)) {
                 rc.push(item);
               }
             }
             setRecentContent(rc);
           }
+
+          const foundTypes: ContentType[] = [];
+
+          for (const ct of ["folder", "sequence", "select"]) {
+            const { data: containsFolderData } = await axios.get(
+              `/api/checkIfFolderContains`,
+              { params: { contentType: ct } },
+            );
+
+            if (containsFolderData.containsType) {
+              foundTypes.push(ct as ContentType);
+            }
+          }
+
+          setBaseContains(foundTypes);
         }}
       >
         {menuButton}
@@ -186,13 +205,18 @@ export function AddContentToMenu({
           <Tooltip
             openDelay={500}
             label={
-              !allowedParents.includes("sequence")
-                ? "Some selected items cannot be added to a problem set"
-                : null
+              !baseContains.includes("sequence")
+                ? "No existing problem sets"
+                : !allowedParents.includes("sequence")
+                  ? "Some selected items cannot be added to a problem set"
+                  : null
             }
           >
             <MenuItem
-              isDisabled={!allowedParents.includes("sequence")}
+              isDisabled={
+                !baseContains.includes("sequence") ||
+                !allowedParents.includes("sequence")
+              }
               onClick={() => {
                 setAddToType("sequence");
                 moveCopyContentOnOpen();
@@ -200,25 +224,38 @@ export function AddContentToMenu({
             >
               {menuIcons.sequence} Problem set
             </MenuItem>
-          </Tooltip>
-          <MenuItem
-            onClick={() => {
-              setAddToType("folder");
-              moveCopyContentOnOpen();
-            }}
-          >
-            {menuIcons.folder} Folder
-          </MenuItem>
+          </Tooltip>{" "}
           <Tooltip
             openDelay={500}
             label={
-              !allowedParents.includes("select")
-                ? "Some selected items cannot be added to a question bank"
-                : null
+              !baseContains.includes("folder") ? "No existing folders" : null
             }
           >
             <MenuItem
-              isDisabled={!allowedParents.includes("select")}
+              isDisabled={!baseContains.includes("folder")}
+              onClick={() => {
+                setAddToType("folder");
+                moveCopyContentOnOpen();
+              }}
+            >
+              {menuIcons.folder} Folder
+            </MenuItem>
+          </Tooltip>
+          <Tooltip
+            openDelay={500}
+            label={
+              !baseContains.includes("select")
+                ? "No existing question banks"
+                : !allowedParents.includes("select")
+                  ? "Some selected items cannot be added to a question bank"
+                  : null
+            }
+          >
+            <MenuItem
+              isDisabled={
+                !baseContains.includes("select") ||
+                !allowedParents.includes("select")
+              }
               onClick={() => {
                 setAddToType("select");
                 moveCopyContentOnOpen();

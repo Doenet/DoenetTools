@@ -1,6 +1,7 @@
 import { expect, test } from "vitest";
 import {
   addClassification,
+  checkIfFolderContains,
   copyActivityToFolder,
   createActivity,
   createFolder,
@@ -31,6 +32,7 @@ import {
 } from "../model";
 import { createTestUser } from "./utils";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { ContentType } from "../types";
 
 test("getMyFolderContent returns both public and private content, getSharedFolderContent returns only public", async () => {
   const owner = await createTestUser();
@@ -1636,4 +1638,127 @@ test("set and get preferred folder view", async () => {
 
   result = await getPreferredFolderView(userId);
   expect(result).eqls({ cardView: true });
+});
+
+test("check if folder contains content type", async () => {
+  const { userId } = await createTestUser();
+
+  // initially shouldn't have any content types
+  for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
+    expect(await checkIfFolderContains(null, ct as ContentType, userId)).eq(
+      false,
+    );
+  }
+
+  // add a single document to base folder
+  await createActivity(userId, null);
+  for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
+    expect(await checkIfFolderContains(null, ct as ContentType, userId)).eq(
+      ct === "singleDoc",
+    );
+  }
+
+  // add a folder to base folder
+  const { folderId: folderId1 } = await createFolder(userId, null);
+  for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
+    expect(await checkIfFolderContains(null, ct as ContentType, userId)).eq(
+      ct === "singleDoc" || ct === "folder",
+    );
+  }
+
+  // add a question bank to base folder
+  await createFolder(userId, null, "select");
+  for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
+    expect(await checkIfFolderContains(null, ct as ContentType, userId)).eq(
+      ct !== "sequence",
+    );
+  }
+
+  // add problem set to base folder
+  await createFolder(userId, null, "sequence");
+  for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
+    expect(await checkIfFolderContains(null, ct as ContentType, userId)).eq(
+      true,
+    );
+  }
+
+  // folder1 starts out with nothing
+  for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
+    expect(
+      await checkIfFolderContains(folderId1, ct as ContentType, userId),
+    ).eq(false);
+  }
+
+  // add a folder to folder 1
+  const { folderId: folderId2 } = await createFolder(userId, folderId1);
+  for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
+    expect(
+      await checkIfFolderContains(folderId1, ct as ContentType, userId),
+    ).eq(ct === "folder");
+  }
+
+  // add a folder to folder 2, still checking folder 1
+  const { folderId: folderId3 } = await createFolder(userId, folderId2);
+  for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
+    expect(
+      await checkIfFolderContains(folderId1, ct as ContentType, userId),
+    ).eq(ct === "folder");
+  }
+
+  // add a problem set to folder 3, still checking folder 1
+  const { folderId: problemSetId4 } = await createFolder(
+    userId,
+    folderId3,
+    "sequence",
+  );
+  for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
+    expect(
+      await checkIfFolderContains(folderId1, ct as ContentType, userId),
+    ).eq(ct === "folder" || ct === "sequence");
+  }
+
+  // add a question bank to problem set 4 still checking folder 1
+  const { folderId: questionBank5 } = await createFolder(
+    userId,
+    problemSetId4,
+    "select",
+  );
+  for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
+    expect(
+      await checkIfFolderContains(folderId1, ct as ContentType, userId),
+    ).eq(ct !== "singleDoc");
+  }
+
+  // add a document to problem set 5 still checking folder 1
+  await createActivity(userId, questionBank5);
+  for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
+    expect(
+      await checkIfFolderContains(folderId1, ct as ContentType, userId),
+    ).eq(true);
+  }
+
+  // check chain from folder 1 up
+  for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
+    expect(
+      await checkIfFolderContains(folderId2, ct as ContentType, userId),
+    ).eq(true);
+  }
+
+  for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
+    expect(
+      await checkIfFolderContains(folderId3, ct as ContentType, userId),
+    ).eq(ct !== "folder");
+  }
+
+  for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
+    expect(
+      await checkIfFolderContains(problemSetId4, ct as ContentType, userId),
+    ).eq(ct === "select" || ct === "singleDoc");
+  }
+
+  for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
+    expect(
+      await checkIfFolderContains(questionBank5, ct as ContentType, userId),
+    ).eq(ct === "singleDoc");
+  }
 });

@@ -41,7 +41,7 @@ type ActiveView = {
   parentId: string | null;
   contents: {
     type: ContentType;
-    isFolder: boolean;
+    canOpen: boolean;
     name: string;
     id: string;
   }[];
@@ -167,24 +167,53 @@ export function MoveCopyContent({
     const parentId: string | null = folder?.parent?.id ?? null;
     const contentFromApi: ContentStructure[] = data.content;
 
-    const content = contentFromApi
-      .map((item) => {
-        return {
-          type: item.type,
-          isFolder: Boolean(item.isFolder),
-          name: item.name,
-          id: item.id,
-        };
-      })
-      .sort((a, b) => {
-        if (a.isFolder && !b.isFolder) {
-          return -1;
-        } else if (b.isFolder && !a.isFolder) {
-          return 1;
-        } else {
-          return 0;
+    const content: {
+      type: ContentType;
+      canOpen: boolean;
+      name: string;
+      id: string;
+    }[] = [];
+
+    for (const item of contentFromApi) {
+      let canOpen = false;
+      if (allowedParentTypes.includes(item.type)) {
+        canOpen = true;
+      } else if (
+        item.type === "folder" ||
+        (item.type === "sequence" && allowedParentTypes.includes("select"))
+      ) {
+        // if items is a folder or item is a sequence and we are looking for a select,
+        // then it is possible that a descendant is of allowed parent type.
+        // Check for that possibility
+        for (const ct of allowedParentTypes) {
+          const { data: containsFolderData } = await axios.get(
+            `/api/checkIfFolderContains`,
+            { params: { folderId: item.id, contentType: ct } },
+          );
+
+          if (containsFolderData.containsType) {
+            canOpen = true;
+            break;
+          }
         }
+      }
+      content.push({
+        type: item.type,
+        canOpen,
+        name: item.name,
+        id: item.id,
       });
+    }
+
+    content.sort((a, b) => {
+      if (a.type !== "singleDoc" && b.type === "singleDoc") {
+        return -1;
+      } else if (b.type !== "singleDoc" && a.type === "singleDoc") {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
 
     setActiveView({
       folderId: newActiveFolderId,
@@ -247,15 +276,14 @@ export function MoveCopyContent({
               leftIcon={icon}
               onClick={() => {
                 if (
-                  content.isFolder &&
+                  content.type !== "singleDoc" &&
                   sourceContent.every((c) => c.id !== content.id)
                 )
                   updateActiveView(content.id);
               }}
               isDisabled={
                 sourceContent.some((c) => c.id === content.id) ||
-                (!allowedParentTypes.includes(content.type) &&
-                  content.type !== "folder")
+                !content.canOpen
               }
             >
               <Text width="100%" textAlign="left" noOfLines={1}>
