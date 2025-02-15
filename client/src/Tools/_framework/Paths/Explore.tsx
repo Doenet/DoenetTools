@@ -149,6 +149,7 @@ export function Explore() {
     authorInfo,
     content,
     trendingContent,
+    curatedContent,
     matchedClassifications,
     matchedSubCategories,
     matchedCategories,
@@ -169,6 +170,7 @@ export function Explore() {
     authorInfo: UserInfo | null;
     content: ContentStructure[];
     trendingContent: ContentStructure[];
+    curatedContent: ContentStructure[];
     matchedClassifications: PartialContentClassification[] | null | undefined;
     matchedSubCategories: PartialContentClassification[] | null | undefined;
     matchedCategories: PartialContentClassification[] | null | undefined;
@@ -725,7 +727,7 @@ export function Explore() {
 
       <TabPanels data-test="Search Results">
         <TabPanel padding={0}>
-          {displayMatchingContent([], {
+          {displayMatchingContent(curatedContent, {
             base: "calc(100vh - 230px)",
             lg: "calc(100vh - 175px)",
           })}

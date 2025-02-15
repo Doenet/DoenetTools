@@ -113,7 +113,7 @@ export type PartialContentClassification = {
     type?: string;
     categoriesInDescription: boolean;
   };
-  numLibrary?: number;
+  numCurated?: number;
   numCommunity?: number;
 };
 

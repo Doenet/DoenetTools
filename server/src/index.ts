@@ -104,6 +104,8 @@ import {
   deleteDraftFromLibrary,
   modifyCommentsOfLibraryRequest,
   markLibraryRequestNeedsRevision,
+  browsePublishedLibraryContent,
+  searchPublishedLibraryContent,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -1165,6 +1167,20 @@ app.post(
         })
       ).map(contentStructureConvertUUID);
 
+      const curatedContent = (
+        await searchPublishedLibraryContent({
+          query,
+          loggedInUserId,
+          systemId,
+          categoryId,
+          subCategoryId,
+          classificationId,
+          isUnclassified,
+          features,
+          ownerId,
+        })
+      ).map(contentStructureConvertUUID);
+
       let matchedClassifications: PartialContentClassification[] | null = null;
       let matchedSubCategories: PartialContentClassification[] | null = null;
       let matchedCategories: PartialContentClassification[] | null = null;
@@ -1285,6 +1301,7 @@ app.post(
         matchedAuthors,
         authorInfo,
         content,
+        curatedContent,
         matchedClassifications,
         matchedSubCategories,
         matchedCategories,
@@ -1348,6 +1365,19 @@ app.post(
 
       const recentContent = (
         await browseSharedContent({
+          loggedInUserId,
+          systemId,
+          categoryId,
+          subCategoryId,
+          classificationId,
+          isUnclassified,
+          features,
+          ownerId,
+        })
+      ).map(contentStructureConvertUUID);
+
+      const curatedContent = (
+        await browsePublishedLibraryContent({
           loggedInUserId,
           systemId,
           categoryId,
@@ -1455,6 +1485,7 @@ app.post(
         authorInfo,
         recentContent,
         trendingContent,
+        curatedContent,
         classificationBrowse,
         subCategoryBrowse,
         categoryBrowse,

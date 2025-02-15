@@ -1556,7 +1556,7 @@ export async function getAssignmentDataFromCode(
   return { assignmentFound: true, assignment };
 }
 
-export async function searchSharedContent({
+export async function searchPublishedLibraryContent({
   query,
   loggedInUserId,
   systemId,
@@ -1580,6 +1580,8 @@ export async function searchSharedContent({
   page?: number;
 }) {
   const pageSize = 100;
+
+  const libraryId = await getLibraryAccountId();
 
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
@@ -1621,6 +1623,115 @@ export async function searchSharedContent({
   ${returnFeatureJoins(features)}
   WHERE
     content.isDeleted = FALSE
+    AND content.ownerId = ${libraryId}
+    AND content.isPublic = TRUE
+    AND
+    (
+      MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
+      ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
+    )
+    ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
+    ${returnFeatureWhereClauses(features)}
+    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
+  GROUP BY
+    content.id
+  ORDER BY
+    relevance DESC
+  LIMIT ${pageSize}
+  OFFSET ${(page - 1) * pageSize}
+  `);
+
+  // TODO: combine queries
+
+  const preliminarySharedContent = await prisma.content.findMany({
+    where: {
+      id: { in: matches.map((m) => m.id) },
+    },
+    select: returnContentStructureFullOwnerSelect(),
+  });
+
+  // TODO: better way to sort! (For free if combine queries)
+  const relevance = Object.fromEntries(
+    matches.map((m) => [fromUUID(m.id), m.relevance]),
+  );
+
+  const sharedContent = preliminarySharedContent
+    .sort((a, b) => relevance[fromUUID(b.id)] - relevance[fromUUID(a.id)])
+    .map((content) => processContent(content, loggedInUserId));
+
+  return sharedContent;
+}
+
+export async function searchSharedContent({
+  query,
+  loggedInUserId,
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+  isUnclassified,
+  features,
+  ownerId,
+  page = 1,
+}: {
+  query: string;
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+  isUnclassified?: boolean;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+  page?: number;
+}) {
+  const pageSize = 100;
+
+  const libraryId = await getLibraryAccountId();
+
+  // remove operators that break MySQL BOOLEAN search
+  // and add * at the end of every word so that match beginning of words
+  const query_as_prefixes = query
+    .replace(/[+\-><()~*"@]+/g, " ")
+    .split(" ")
+    .filter((s) => s)
+    .map((s) => s + "*")
+    .join(" ");
+
+  const matchClassification = !isUnclassified && classificationId === undefined;
+  const matchSubCategory = matchClassification && subCategoryId === undefined;
+  const matchCategory = matchSubCategory && categoryId === undefined;
+
+  const includeClassification = true;
+  const includeSubCategory = matchSubCategory;
+  const includeCategory = matchCategory;
+
+  const matches = await prisma.$queryRaw<
+    {
+      id: Uint8Array;
+      relevance: number;
+    }[]
+  >(Prisma.sql`
+  SELECT
+    content.id,
+    AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*5)
+    +(MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*5)
+    ${ownerId === undefined ? Prisma.sql`+ MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
+    ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "+" })}
+    ) as relevance
+  FROM
+    content
+  LEFT JOIN
+    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  LEFT JOIN
+    users ON content.ownerId = users.userId
+  ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
+  ${returnFeatureJoins(features)}
+  WHERE
+    content.isDeleted = FALSE
+    AND content.ownerId <> ${libraryId}
     AND (
        content.isPublic = TRUE
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -1664,6 +1775,81 @@ export async function searchSharedContent({
   return sharedContent;
 }
 
+// TODO: add tests of this api if we're sure we want to keep it
+export async function browsePublishedLibraryContent({
+  loggedInUserId,
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+  isUnclassified,
+  features,
+  ownerId,
+  page = 1,
+}: {
+  loggedInUserId: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+  isUnclassified?: boolean;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+  page?: number;
+}) {
+  const pageSize = 100;
+
+  const classificationsFilter = isUnclassified
+    ? {
+        none: {},
+      }
+    : classificationId !== undefined
+      ? { some: { classification: { id: classificationId } } }
+      : subCategoryId !== undefined ||
+          categoryId !== undefined ||
+          systemId !== undefined
+        ? {
+            some: {
+              classification: {
+                descriptions: {
+                  some: {
+                    subCategoryId,
+                    subCategory: {
+                      categoryId,
+                      category: { systemId },
+                    },
+                  },
+                },
+              },
+            },
+          }
+        : undefined;
+
+  const featuresToRequire = features === undefined ? [] : [...features.keys()];
+
+  const preliminarySharedContent = await prisma.content.findMany({
+    where: {
+      isDeleted: false,
+      owner: { isLibrary: true },
+      isPublic: true,
+      AND: featuresToRequire.map((feature) => ({
+        contentFeatures: { some: { code: feature } },
+      })),
+      ownerId,
+      classifications: classificationsFilter,
+    },
+    select: returnContentStructureFullOwnerSelect(),
+    orderBy: { createdAt: "desc" },
+    take: pageSize,
+    skip: (page - 1) * pageSize,
+  });
+
+  const sharedContent = preliminarySharedContent.map((content) =>
+    processContent(content, loggedInUserId),
+  );
+
+  return sharedContent;
+}
 // TODO: add tests of this api if we're sure we want to keep it
 export async function browseSharedContent({
   loggedInUserId,
@@ -1719,6 +1905,7 @@ export async function browseSharedContent({
   const preliminarySharedContent = await prisma.content.findMany({
     where: {
       isDeleted: false,
+      owner: { isLibrary: false },
       OR: [
         { isPublic: true },
         { sharedWith: { some: { userId: loggedInUserId } } },
@@ -1774,6 +1961,8 @@ export async function browseTrendingContent({
   const includeSubCategory = matchSubCategory;
   const includeCategory = matchCategory;
 
+  const libraryId = await getLibraryAccountId();
+
   const matches = await prisma.$queryRaw<
     {
       id: Uint8Array;
@@ -1796,6 +1985,7 @@ export async function browseTrendingContent({
     contentViews ON contentViews.activityId = content.id
   WHERE
     content.isDeleted = FALSE
+    AND content.ownerId <> ${libraryId}
     AND (
        content.isPublic = TRUE
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -1858,6 +2048,8 @@ export async function searchUsersWithSharedContent({
 }) {
   const pageSize = 100;
 
+  const libraryId = await getLibraryAccountId();
+
   // remove operators that break MySQL BOOLEAN search
   // and add * at the end of every word so that match beginning of words
   const query_as_prefixes = query
@@ -1889,6 +2081,7 @@ export async function searchUsersWithSharedContent({
     users
   WHERE
     users.isAnonymous = FALSE
+    AND users.userId <> ${libraryId}
     AND users.userId IN (
       SELECT ownerId 
         FROM content 
@@ -1945,6 +2138,8 @@ export async function browseUsersWithSharedContent({
 }) {
   let usersWithShared;
 
+  const libraryId = await getLibraryAccountId();
+
   if (query) {
     // remove operators that break MySQL BOOLEAN search
     // and add * at the end of every word so that match beginning of words
@@ -1980,6 +2175,7 @@ export async function browseUsersWithSharedContent({
         content on content.ownerId = users.userId
       WHERE
         users.isAnonymous = FALSE
+        AND users.userId <> ${libraryId}
         AND content.id IN (
           SELECT content.id
           FROM content
@@ -2033,6 +2229,7 @@ export async function browseUsersWithSharedContent({
         content on content.ownerId = users.userId
       WHERE
         users.isAnonymous = FALSE
+        AND users.userId <> ${libraryId}
         AND content.id IN (
           SELECT content.id
           FROM content
@@ -2711,6 +2908,7 @@ export async function browseClassificationsWithSharedContent({
         descriptionLabel: string;
         categoriesInDescription: boolean;
         numContent: bigint;
+        numCurated: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -2729,11 +2927,14 @@ export async function browseClassificationsWithSharedContent({
     classificationSystems.subCategoryLabel,
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
-    COUNT(distinct content.id) AS numContent
+    COUNT(distinct content.id) AS numContent,
+    COUNT(libraryActivityInfos.activityId) AS numCurated
   FROM
     content
   LEFT JOIN
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  LEFT JOIN
+    libraryActivityInfos ON content.id = libraryActivityInfos.activityId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
@@ -2775,6 +2976,7 @@ export async function browseClassificationsWithSharedContent({
         descriptionLabel: string;
         categoriesInDescription: boolean;
         numContent: bigint;
+        numCurated: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -2793,9 +2995,12 @@ export async function browseClassificationsWithSharedContent({
     classificationSystems.subCategoryLabel,
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
-    COUNT(distinct content.id) AS numContent
+    COUNT(distinct content.id) AS numContent,
+    COUNT(libraryActivityInfos.activityId) AS numCurated
   FROM
     content
+  LEFT JOIN
+    libraryActivityInfos ON content.id = libraryActivityInfos.activityId
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
@@ -2838,7 +3043,8 @@ export async function browseClassificationsWithSharedContent({
       categoryLabel: m.categoryLabel,
       categoriesInDescription: m.categoriesInDescription,
     },
-    numCommunity: Number(m.numContent),
+    numCommunity: Number(m.numContent) - Number(m.numCurated),
+    numCurated: Number(m.numCurated),
   }));
 }
 
@@ -2881,6 +3087,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
         descriptionLabel: string;
         categoriesInDescription: boolean;
         numContent: bigint;
+        numCurated: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -2895,11 +3102,14 @@ export async function browseClassificationSubCategoriesWithSharedContent({
     classificationSystems.subCategoryLabel,
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
-    COUNT(distinct content.id) AS numContent
+    COUNT(distinct content.id) AS numContent,
+    COUNT(libraryActivityInfos.activityId) AS numCurated
   FROM
     content
   LEFT JOIN
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  LEFT JOIN
+    libraryActivityInfos ON content.id = libraryActivityInfos.activityId        
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
@@ -2938,6 +3148,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
         descriptionLabel: string;
         categoriesInDescription: boolean;
         numContent: bigint;
+        numCurated: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -2952,9 +3163,13 @@ export async function browseClassificationSubCategoriesWithSharedContent({
     classificationSystems.subCategoryLabel,
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
-    COUNT(distinct content.id) AS numContent
+    COUNT(distinct content.id) AS numContent,
+    COUNT(libraryActivityInfos.activityId) AS numCurated
+
   FROM
     content
+  LEFT JOIN
+    libraryActivityInfos ON content.id = libraryActivityInfos.activityId    
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
@@ -2991,7 +3206,8 @@ export async function browseClassificationSubCategoriesWithSharedContent({
       categoryLabel: m.categoryLabel,
       categoriesInDescription: m.categoriesInDescription,
     },
-    numCommunity: Number(m.numContent),
+    numCommunity: Number(m.numContent) - Number(m.numCurated),
+    numCurated: Number(m.numCurated),
   }));
 }
 
@@ -3032,6 +3248,7 @@ export async function browseClassificationCategoriesWithSharedContent({
         descriptionLabel: string;
         categoriesInDescription: boolean;
         numContent: bigint;
+        numCurated: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -3044,11 +3261,14 @@ export async function browseClassificationCategoriesWithSharedContent({
     classificationSystems.subCategoryLabel,
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
-    COUNT(distinct content.id) AS numContent
+    COUNT(distinct content.id) AS numContent,
+    COUNT(libraryActivityInfos.activityId) AS numCurated
   FROM
     content
   LEFT JOIN
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  LEFT JOIN
+      libraryActivityInfos ON content.id = libraryActivityInfos.activityId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
@@ -3085,6 +3305,7 @@ export async function browseClassificationCategoriesWithSharedContent({
         descriptionLabel: string;
         categoriesInDescription: boolean;
         numContent: bigint;
+        numCurated: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -3097,9 +3318,12 @@ export async function browseClassificationCategoriesWithSharedContent({
     classificationSystems.subCategoryLabel,
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
-    COUNT(distinct content.id) AS numContent
+    COUNT(distinct content.id) AS numContent,
+    COUNT(libraryActivityInfos.activityId) AS numCurated
   FROM
     content
+  LEFT JOIN
+    libraryActivityInfos ON content.id = libraryActivityInfos.activityId
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
@@ -3132,7 +3356,8 @@ export async function browseClassificationCategoriesWithSharedContent({
       categoryLabel: m.categoryLabel,
       categoriesInDescription: m.categoriesInDescription,
     },
-    numCommunity: Number(m.numContent),
+    numCurated: Number(m.numCurated),
+    numCommunity: Number(m.numContent) - Number(m.numCurated),
   }));
 }
 
@@ -3170,6 +3395,7 @@ export async function browseClassificationSystemsWithSharedContent({
         descriptionLabel: string | null;
         categoriesInDescription: boolean | null;
         numContent: bigint;
+        numCurated: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -3181,11 +3407,14 @@ export async function browseClassificationSystemsWithSharedContent({
     classificationSystems.subCategoryLabel,
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
-    COUNT(distinct content.id) AS numContent
+    COUNT(distinct content.id) AS numContent,
+    COUNT(libraryActivityInfos.activityId) AS numCurated
   FROM
     content
   LEFT JOIN
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  LEFT JOIN
+      libraryActivityInfos ON content.id = libraryActivityInfos.activityId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
@@ -3220,6 +3449,7 @@ export async function browseClassificationSystemsWithSharedContent({
         descriptionLabel: string | null;
         categoriesInDescription: boolean | null;
         numContent: bigint;
+        numCurated: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -3231,9 +3461,12 @@ export async function browseClassificationSystemsWithSharedContent({
     classificationSystems.subCategoryLabel,
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
-    COUNT(distinct content.id) AS numContent
+    COUNT(distinct content.id) AS numContent,
+    COUNT(libraryActivityInfos.activityId) AS numCurated
   FROM
     content
+  LEFT JOIN
+    libraryActivityInfos ON content.id = libraryActivityInfos.activityId    
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
@@ -3252,8 +3485,11 @@ export async function browseClassificationSystemsWithSharedContent({
   }
 
   return matches.map((m) => {
+    const numCommunity = Number(m.numContent) - Number(m.numCurated);
+    const numCurated = Number(m.numCurated);
+
     if (m.systemId === null) {
-      return { numCommunity: Number(m.numContent) };
+      return { numCommunity, numCurated };
     }
     const partialClass: PartialContentClassification = {
       system: {
@@ -3265,7 +3501,8 @@ export async function browseClassificationSystemsWithSharedContent({
         categoryLabel: m.categoryLabel!,
         categoriesInDescription: m.categoriesInDescription!,
       },
-      numCommunity: Number(m.numContent),
+      numCommunity,
+      numCurated,
     };
 
     return partialClass;
@@ -3293,7 +3530,7 @@ export async function getSharedContentMatchCount({
   isUnclassified?: boolean;
   features?: Set<string>;
   ownerId?: Uint8Array;
-}): Promise<{ numCommunity: number }> {
+}): Promise<{ numCommunity: number; numCurated: number }> {
   let matches;
 
   if (query) {
@@ -3318,16 +3555,20 @@ export async function getSharedContentMatchCount({
     matches = await prisma.$queryRaw<
       {
         numContent: bigint;
+        curatedContent: bigint;
       }[]
     >(Prisma.sql`
       SELECT
-        COUNT(distinct content.id) as numContent
+        COUNT(distinct content.id) as numContent,
+        COUNT(libraryActivityInfos.activityId) as curatedContent
       FROM
         content
       LEFT JOIN
         (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
       LEFT JOIN
         users ON content.ownerId = users.userId
+      LEFT JOIN
+        libraryActivityInfos ON content.id = libraryActivityInfos.activityId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
       ${returnFeatureJoins(features)}
       WHERE
@@ -3359,16 +3600,20 @@ export async function getSharedContentMatchCount({
     matches = await prisma.$queryRaw<
       {
         numContent: bigint;
+        curatedContent: bigint;
       }[]
     >(Prisma.sql`
       SELECT
-        COUNT(distinct content.id) as numContent
+        COUNT(distinct content.id) as numContent,
+        COUNT(libraryActivityInfos.activityId) as curatedContent
       FROM
         content
       LEFT JOIN
         (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
       LEFT JOIN
         users ON content.ownerId = users.userId
+      LEFT JOIN
+        libraryActivityInfos ON content.id = libraryActivityInfos.activityId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
       ${returnFeatureJoins(features)}
       WHERE
@@ -3384,9 +3629,11 @@ export async function getSharedContentMatchCount({
   }
 
   if (matches.length === 0) {
-    return { numCommunity: 0 };
+    return { numCommunity: 0, numCurated: 0 };
   } else {
-    return { numCommunity: Number(matches[0].numContent) };
+    const numTotal = Number(matches[0].numContent);
+    const numCurated = Number(matches[0].curatedContent);
+    return { numCommunity: numTotal - numCurated, numCurated };
   }
 }
 
@@ -3411,10 +3658,10 @@ export async function getSharedContentMatchCountPerAvailableFeature({
   isUnclassified?: boolean;
   features?: Set<string>;
   ownerId?: Uint8Array;
-}): Promise<Record<string, { numCommunity?: number; numLibrary?: number }>> {
+}): Promise<Record<string, { numCommunity?: number; numCurated?: number }>> {
   const matchesPerFeature: Record<
     string,
-    { numCommunity?: number; numLibrary?: number }
+    { numCommunity?: number; numCurated?: number }
   > = {};
 
   const availableFeatures = await getAvailableContentFeatures();
@@ -3445,16 +3692,20 @@ export async function getSharedContentMatchCountPerAvailableFeature({
       const matches = await prisma.$queryRaw<
         {
           numContent: bigint;
+          numCurated: bigint;
         }[]
       >(Prisma.sql`
       SELECT
-        COUNT(distinct content.id) as numContent
+        COUNT(distinct content.id) as numContent,
+        COUNT(libraryActivityInfos.activityId) as numCurated
       FROM
         content
       LEFT JOIN
         (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
       LEFT JOIN
         users ON content.ownerId = users.userId
+      LEFT JOIN
+        libraryActivityInfos ON content.id = libraryActivityInfos.activityId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
       ${returnFeatureJoins(newFeatures)}
       WHERE
@@ -3476,8 +3727,11 @@ export async function getSharedContentMatchCountPerAvailableFeature({
       `);
 
       if (matches.length > 0) {
+        const numTotal = Number(matches[0].numContent);
+        const numCurated = Number(matches[0].numCurated);
         matchesPerFeature[feature.code] = {
-          numCommunity: Number(matches[0].numContent),
+          numCommunity: numTotal - numCurated,
+          numCurated: numCurated,
         };
       }
     }
@@ -3497,16 +3751,20 @@ export async function getSharedContentMatchCountPerAvailableFeature({
       const matches = await prisma.$queryRaw<
         {
           numContent: bigint;
+          numCurated: bigint;
         }[]
       >(Prisma.sql`
       SELECT
-        COUNT(distinct content.id) as numContent
+        COUNT(distinct content.id) as numContent,
+        COUNT(libraryActivityInfos.activityId) as numCurated
       FROM
         content
       LEFT JOIN
         (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
       LEFT JOIN
         users ON content.ownerId = users.userId
+      LEFT JOIN
+        libraryActivityInfos ON content.id = libraryActivityInfos.activityId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
       ${returnFeatureJoins(newFeatures)}
       WHERE
@@ -3520,8 +3778,11 @@ export async function getSharedContentMatchCountPerAvailableFeature({
         ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
       `);
       if (matches.length > 0) {
+        const numTotal = Number(matches[0].numContent);
+        const numCurated = Number(matches[0].numCurated);
         matchesPerFeature[feature.code] = {
-          numCommunity: Number(matches[0].numContent),
+          numCommunity: numTotal - numCurated,
+          numCurated: numCurated,
         };
       }
     }
