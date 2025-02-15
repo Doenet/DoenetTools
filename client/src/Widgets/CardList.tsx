@@ -14,6 +14,7 @@ export default function CardList({
   listView,
   selectedCards,
   selectCallback,
+  disableSelectFor,
 }: {
   content: (
     | CardContent
@@ -37,6 +38,7 @@ export default function CardList({
     checked: boolean;
     type: ContentType;
   }) => void;
+  disableSelectFor?: string[];
 }) {
   if (content.length === 0) {
     return (
@@ -112,6 +114,7 @@ export default function CardList({
           indentLevel={cardContent.indentLevel}
           selectedCards={selectedCards}
           selectCallback={selectCallback}
+          disableSelect={disableSelectFor?.includes(cardContent.content.id)}
         />
       );
     }

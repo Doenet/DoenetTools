@@ -51,6 +51,7 @@ export default function Card({
   indentLevel = 0,
   selectedCards,
   selectCallback,
+  disableSelect = false,
 }: {
   cardContent: CardContent;
   showOwnerName?: boolean;
@@ -66,6 +67,7 @@ export default function Card({
     checked: boolean;
     type: ContentType;
   }) => void;
+  disableSelect?: boolean;
 }) {
   const {
     id,
@@ -260,6 +262,7 @@ export default function Card({
     selectCheckbox = (
       <Checkbox
         margin="5px"
+        isDisabled={disableSelect}
         isChecked={selectedCards.includes(id)}
         onChange={(e) => {
           selectCallback?.({

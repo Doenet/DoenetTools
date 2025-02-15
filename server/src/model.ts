@@ -1480,7 +1480,7 @@ export async function getActivityViewerData(
     });
 
     if (!isEqualUUID(loggedInUserId, activity.ownerId)) {
-      await recordActivityView(activityId, loggedInUserId);
+      await recordContentView(activityId, loggedInUserId);
     }
 
     return {
@@ -1489,6 +1489,10 @@ export async function getActivityViewerData(
     };
   } else {
     const activity = await getCompoundActivity(activityId, loggedInUserId);
+
+    if (!isEqualUUID(loggedInUserId, activity.ownerId)) {
+      await recordContentView(activityId, loggedInUserId);
+    }
 
     return { activity };
   }
@@ -1587,7 +1591,7 @@ export async function getDocumentSource(
   return { source: document.source };
 }
 
-export async function recordActivityView(
+export async function recordContentView(
   activityId: Uint8Array,
   loggedInUserId: Uint8Array,
 ) {
@@ -1966,7 +1970,7 @@ export async function getAssignmentDataFromCode(
   }
 
   if (!isEqualUUID(loggedInUserId, assignment.ownerId)) {
-    await recordActivityView(assignment.id, loggedInUserId);
+    await recordContentView(assignment.id, loggedInUserId);
   }
 
   return { assignmentFound: true, assignment };
@@ -5724,6 +5728,10 @@ export async function getSharedFolderContent({
     where: { userId: ownerId },
     select: { firstNames: true, lastNames: true },
   });
+
+  if (folder && !isEqualUUID(loggedInUserId, folder.ownerId)) {
+    await recordContentView(folder.id, loggedInUserId);
+  }
 
   return {
     content: publicContent,

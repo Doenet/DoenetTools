@@ -28,6 +28,7 @@ import {
   FetcherWithComponents,
   Link,
   redirect,
+  useNavigate,
   useOutletContext,
 } from "react-router";
 import { MoveCopyContent, moveCopyContentActions } from "./MoveCopyContent";
@@ -141,6 +142,7 @@ export function CompoundActivityEditor({
   const readOnly = asViewer || assignmentStatus !== "Unassigned";
 
   const user = useOutletContext<User>();
+  const navigate = useNavigate();
 
   const [haveContentSpinner, setHaveContentSpinner] = useState(false);
 
@@ -484,7 +486,7 @@ export function CompoundActivityEditor({
       showAssignmentStatus={true}
       showPublicStatus={true}
       showActivityFeatures={true}
-      emptyMessage={`${contentTypeName} is empty. Add or move documents ${activity.type === "sequence" ? "or question banks " : null}here to begin.`}
+      emptyMessage={`${contentTypeName} is empty. Add or move documents ${activity.type === "sequence" ? "or question banks " : ""}here to begin.`}
       listView={true}
       content={cardContent}
     />
@@ -579,6 +581,14 @@ export function CompoundActivityEditor({
               Empty Question Bank
             </MenuItem>
           ) : null}
+          <MenuItem
+            data-test="Add Explore Items"
+            onClick={async () => {
+              navigate(`/explore?addTo=${activity.id}`);
+            }}
+          >
+            Items from Explore
+          </MenuItem>
         </MenuList>
       </Menu>
     </Flex>

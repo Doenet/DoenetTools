@@ -72,6 +72,7 @@ import {
   AddContentToMenu,
   addContentToMenuActions,
 } from "../ToolPanels/AddContentToMenu";
+import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -123,6 +124,18 @@ export async function loader({ params, request }) {
 
   const authorId = url.searchParams.get("author");
 
+  const addToId = url.searchParams.get("addTo");
+  let addTo: ContentDescription | undefined = undefined;
+
+  if (addToId) {
+    try {
+      const { data } = await axios.get(`/api/getContentDescription/${addToId}`);
+      addTo = data;
+    } catch (_e) {
+      console.error(`Could not get description of ${addToId}`);
+    }
+  }
+
   const q = url.searchParams.get("q");
 
   if (q) {
@@ -144,6 +157,7 @@ export async function loader({ params, request }) {
       features,
       availableFeatures,
       listViewPref,
+      addTo,
     };
   } else {
     const { data: browseData } = await axios.post("/api/browseSharedContent", {
@@ -162,6 +176,7 @@ export async function loader({ params, request }) {
       features,
       availableFeatures,
       listViewPref,
+      addTo,
     };
   }
 }
@@ -187,6 +202,7 @@ export function Explore() {
     features,
     availableFeatures,
     listViewPref,
+    addTo,
   } = useLoaderData() as {
     q?: string;
     topAuthors: UserInfo[] | null;
@@ -210,6 +226,7 @@ export function Explore() {
     features: Set<string>;
     availableFeatures: ContentFeature[];
     listViewPref: boolean;
+    addTo?: ContentDescription;
   };
 
   const user = useOutletContext<User>();
@@ -303,6 +320,23 @@ export function Explore() {
       desiredParentType={createNewType}
     />
   );
+
+  const {
+    isOpen: copyDialogIsOpen,
+    onOpen: copyDialogOnOpen,
+    onClose: copyDialogOnClose,
+  } = useDisclosure();
+
+  const copyContentModal =
+    addTo !== undefined ? (
+      <CopyContentAndReportFinish
+        isOpen={copyDialogIsOpen}
+        onClose={copyDialogOnClose}
+        sourceContent={selectedCards}
+        desiredParent={addTo}
+        action="Add"
+      />
+    ) : null;
 
   useEffect(() => {
     setSelectedCards((was) => {
@@ -411,6 +445,7 @@ export function Explore() {
           listView={listView}
           selectedCards={user ? selectedCards.map((c) => c.id) : undefined}
           selectCallback={selectCardCallback}
+          disableSelectFor={addTo ? [addTo.id] : undefined}
         />
       </Box>
     );
@@ -681,6 +716,11 @@ export function Explore() {
       );
     }
   }
+  if (addTo) {
+    extraFormInputs.push(
+      <Input type="hidden" name="addTo" key="addTo" value={addTo.id} />,
+    );
+  }
 
   let numActiveFilters = features.size;
 
@@ -803,77 +843,112 @@ export function Explore() {
             height="30px"
             width="100%"
             alignContent="center"
-            hidden={numSelected === 0}
+            hidden={numSelected === 0 && addTo === undefined}
             backgroundColor="gray.100"
             justifyContent="center"
           >
-            <HStack>
+            {addTo !== undefined ? (
+              <HStack hidden={numSelected > 0}>
+                <CloseButton
+                  size="sm"
+                  onClick={() => {
+                    const newSearch = clearQueryParameter("addTo", search);
+                    navigate(`.${newSearch}`);
+                  }}
+                />{" "}
+                <Text noOfLines={1}>
+                  Adding items to: {menuIcons[addTo.type]}
+                  <strong>{addTo.name}</strong>
+                </Text>
+              </HStack>
+            ) : null}
+            <HStack hidden={numSelected === 0}>
               <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
               <Text>{numSelected} selected</Text>
-              <AddContentToMenu
-                sourceContent={selectedCards}
-                size="xs"
-                colorScheme="blue"
-                label="Add selected to"
-              />
-              <Menu>
-                <MenuButton
-                  as={Button}
+              <HStack hidden={addTo !== undefined}>
+                <AddContentToMenu
+                  sourceContent={selectedCards}
                   size="xs"
                   colorScheme="blue"
-                  data-test="Create From Selected Button"
-                >
-                  Create from selected
-                </MenuButton>
-                <MenuList>
-                  <Tooltip
-                    openDelay={500}
-                    label={
-                      !allowedParentsForSelected.includes("sequence")
-                        ? "Some selected items cannot be added to a problem set"
-                        : null
-                    }
+                  label="Add selected to"
+                />
+                <Menu>
+                  <MenuButton
+                    as={Button}
+                    size="xs"
+                    colorScheme="blue"
+                    data-test="Create From Selected Button"
                   >
-                    <MenuItem
-                      isDisabled={
+                    Create from selected
+                  </MenuButton>
+                  <MenuList>
+                    <Tooltip
+                      openDelay={500}
+                      label={
                         !allowedParentsForSelected.includes("sequence")
+                          ? "Some selected items cannot be added to a problem set"
+                          : null
                       }
-                      onClick={() => {
-                        setCreateNewType("sequence");
-                        createDialogOnOpen();
-                      }}
                     >
-                      {menuIcons.sequence} Problem set
-                    </MenuItem>
-                  </Tooltip>
-                  <MenuItem
-                    onClick={() => {
-                      setCreateNewType("folder");
-                      createDialogOnOpen();
-                    }}
-                  >
-                    {menuIcons.folder} Folder
-                  </MenuItem>
-                  <Tooltip
-                    openDelay={500}
-                    label={
-                      !allowedParentsForSelected.includes("select")
-                        ? "Some selected items cannot be added to a question bank"
-                        : null
-                    }
-                  >
+                      <MenuItem
+                        isDisabled={
+                          !allowedParentsForSelected.includes("sequence")
+                        }
+                        onClick={() => {
+                          setCreateNewType("sequence");
+                          createDialogOnOpen();
+                        }}
+                      >
+                        {menuIcons.sequence} Problem set
+                      </MenuItem>
+                    </Tooltip>
                     <MenuItem
-                      isDisabled={!allowedParentsForSelected.includes("select")}
                       onClick={() => {
-                        setCreateNewType("select");
+                        setCreateNewType("folder");
                         createDialogOnOpen();
                       }}
                     >
-                      {menuIcons.select} Question bank
+                      {menuIcons.folder} Folder
                     </MenuItem>
-                  </Tooltip>
-                </MenuList>
-              </Menu>
+                    <Tooltip
+                      openDelay={500}
+                      label={
+                        !allowedParentsForSelected.includes("select")
+                          ? "Some selected items cannot be added to a question bank"
+                          : null
+                      }
+                    >
+                      <MenuItem
+                        isDisabled={
+                          !allowedParentsForSelected.includes("select")
+                        }
+                        onClick={() => {
+                          setCreateNewType("select");
+                          createDialogOnOpen();
+                        }}
+                      >
+                        {menuIcons.select} Question bank
+                      </MenuItem>
+                    </Tooltip>
+                  </MenuList>
+                </Menu>
+              </HStack>
+              {addTo !== undefined ? (
+                <Button
+                  hidden={addTo === undefined}
+                  size="xs"
+                  colorScheme="blue"
+                  onClick={() => {
+                    copyDialogOnOpen();
+                  }}
+                >
+                  Add selected to {menuIcons[addTo.type]}
+                  <strong>
+                    {addTo.name.substring(0, 10)}
+                    {addTo.name.length > 10 ? "..." : ""}
+                  </strong>
+                </Button>
+              ) : null}
             </HStack>
           </Flex>
         </Flex>
@@ -980,6 +1055,7 @@ export function Explore() {
       {infoDrawer}
       {filterDrawer}
       {createContentModal}
+      {copyContentModal}
       {heading}
       <Hide below="lg">
         <Grid
