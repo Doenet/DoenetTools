@@ -465,7 +465,7 @@ export async function getDoc(id: Uint8Array) {
  *
  * `desiredPosition` is the 0-based index in the array of content with parent folder `desiredParentFolderId`
  * and owner `ownerId` sorted by `sortIndex`.
- * 
+ *
  * If the content is in the library account, set `inLibrary` to `true`. This will allows admins to make changes.
  */
 export async function moveContent({
@@ -738,19 +738,16 @@ async function calculateNewSortIndex(
 }
 
 /**
- * Copies the activity given by `origActivityId` into `folderId` of `ownerId`.
- *
- * Places the activity at the end of the folder.
+ * Copies the activity given by `origActivityId` into `folderId`, as the last item in that folder.
  *
  * Adds `origActivityId` and its contributor history to the contributor history of the new activity.
  *
- * Throws an error if `userId` doesn't have access to `origActivityId`
+ * Throws an error if `userId` doesn't have access to `origActivityId`.
  *
- * Return the id of the newly created activity
- *
- * @param origActivityId
+ * @param origActivityId - an existing activity
  * @param userId
- * @param folderId
+ * @param folderId - must be an existing folder which is owned by `userId` or, if the user is an admin, an existing _library_ folder
+ * @returns new activity id
  */
 export async function copyActivityToFolder(
   origActivityId: Uint8Array,
@@ -936,13 +933,13 @@ async function createDocumentVersion(docId: Uint8Array): Promise<{
 
 /**
  * Filter Prisma's `where` clause to exclude unviewable activities
- * 
+ *
  * For an activity to be viewable, one of these conditions must be true:
  * 1. You are the owner
  * 2. The activity is public
  * 3. The activity is shared with you
  * 4. You are an admin and the activity is in the library.
- * 
+ *
  * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
  */
 function filterViewableActivity(loggedInUserId: Uint8Array, isAdmin: boolean) {
@@ -968,11 +965,11 @@ function filterViewableActivity(loggedInUserId: Uint8Array, isAdmin: boolean) {
 
 /**
  * Filter Prisma's `where` clause to exclude uneditable activities.
- * 
+ *
  * For an activity to be editable, one of these conditions must be true:
  * 1. You are the owner
  * 2. You are an admin and the activity is in the library
- * 
+ *
  * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
  */
 function filterEditableActivity(loggedInUserId: Uint8Array, isAdmin: boolean) {
@@ -984,17 +981,17 @@ function filterEditableActivity(loggedInUserId: Uint8Array, isAdmin: boolean) {
 
 /**
  * Filter Prisma's `where` clause to exclude uneditable content.
- * 
+ *
  * For content to be editable, one of these conditions must be true:
  * 1. You are the owner
  * 2. You are an admin and the content is in the library
- * 
+ *
  * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
  */
 function filterEditableContent(loggedInUserId: Uint8Array, isAdmin: boolean) {
-  const editabilityOptions: (  
-    | { ownerId: Uint8Array }  
-    | { owner: { isLibrary: boolean } }  
+  const editabilityOptions: (
+    | { ownerId: Uint8Array }
+    | { owner: { isLibrary: boolean } }
   )[] = [{ ownerId: loggedInUserId }];
 
   if (isAdmin) {
@@ -1006,29 +1003,29 @@ function filterEditableContent(loggedInUserId: Uint8Array, isAdmin: boolean) {
   };
 }
 
-/** 
+/**
  * Get edit and view permissions for this activity.
- * 
+ *
  * For an activity to be editable, one of these conditions must be true:
  * 1. You are the owner
  * 2. You are an admin and the activity is in the library
- * 
+ *
  * For an activity to be viewable, these conditions also work:
- * 
+ *
  * 3. The activity is public
  * 4. The activity is shared with you
- * 
- * @param activityId 
+ *
+ * @param activityId
  * @param loggedInUserId
- * @returns 
+ * @returns
  */
 async function checkActivityPermissions(
   activityId: Uint8Array,
   loggedInUserId: Uint8Array,
 ): Promise<{
-  editable: boolean,
-  viewable: boolean,
-  ownerId: Uint8Array | null
+  editable: boolean;
+  viewable: boolean;
+  ownerId: Uint8Array | null;
 }> {
   const isAdmin = await getIsAdmin(loggedInUserId);
 
@@ -1607,116 +1604,23 @@ export async function getAssignmentDataFromCode(
   return { assignmentFound: true, assignment };
 }
 
-export async function searchPublishedLibraryContent({
-  query,
-  loggedInUserId,
-  systemId,
-  categoryId,
-  subCategoryId,
-  classificationId,
-  isUnclassified,
-  features,
-  ownerId,
-  page = 1,
-}: {
-  query: string;
-  loggedInUserId: Uint8Array;
-  systemId?: number;
-  categoryId?: number;
-  subCategoryId?: number;
-  classificationId?: number;
-  isUnclassified?: boolean;
-  features?: Set<string>;
-  ownerId?: Uint8Array;
-  page?: number;
-}) {
-  const pageSize = 100;
-
-  const libraryId = await getLibraryAccountId();
-
-  // remove operators that break MySQL BOOLEAN search
-  // and add * at the end of every word so that match beginning of words
+/**
+ * Remove operators that break MySQL BOOLEAN search and add * at the end of every word so that match beginning of words
+ * @returns sanitized query
+ */
+function sanitizeQuery(query: string) {
   const query_as_prefixes = query
     .replace(/[+\-><()~*"@]+/g, " ")
     .split(" ")
     .filter((s) => s)
     .map((s) => s + "*")
     .join(" ");
-
-  const matchClassification = !isUnclassified && classificationId === undefined;
-  const matchSubCategory = matchClassification && subCategoryId === undefined;
-  const matchCategory = matchSubCategory && categoryId === undefined;
-
-  const includeClassification = true;
-  const includeSubCategory = matchSubCategory;
-  const includeCategory = matchCategory;
-
-  const matches = await prisma.$queryRaw<
-    {
-      id: Uint8Array;
-      relevance: number;
-    }[]
-  >(Prisma.sql`
-  SELECT
-    content.id,
-    AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*5)
-    +(MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*5)
-    ${ownerId === undefined ? Prisma.sql`+ MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
-    ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "+" })}
-    ) as relevance
-  FROM
-    content
-  LEFT JOIN
-    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
-  LEFT JOIN
-    users ON content.ownerId = users.userId
-  ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
-  ${returnFeatureJoins(features)}
-  WHERE
-    content.isDeleted = FALSE
-    AND content.ownerId = ${libraryId}
-    AND content.isPublic = TRUE
-    AND
-    (
-      MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
-      ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
-    )
-    ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
-    ${returnFeatureWhereClauses(features)}
-    ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
-  GROUP BY
-    content.id
-  ORDER BY
-    relevance DESC
-  LIMIT ${pageSize}
-  OFFSET ${(page - 1) * pageSize}
-  `);
-
-  // TODO: combine queries
-
-  const preliminarySharedContent = await prisma.content.findMany({
-    where: {
-      id: { in: matches.map((m) => m.id) },
-    },
-    select: returnContentStructureFullOwnerSelect(),
-  });
-
-  // TODO: better way to sort! (For free if combine queries)
-  const relevance = Object.fromEntries(
-    matches.map((m) => [fromUUID(m.id), m.relevance]),
-  );
-
-  const sharedContent = preliminarySharedContent
-    .sort((a, b) => relevance[fromUUID(b.id)] - relevance[fromUUID(a.id)])
-    .map((content) => processContent(content, loggedInUserId));
-
-  return sharedContent;
+  return query_as_prefixes;
 }
 
 export async function searchSharedContent({
   query,
+  isCurated,
   loggedInUserId,
   systemId,
   categoryId,
@@ -1728,6 +1632,7 @@ export async function searchSharedContent({
   page = 1,
 }: {
   query: string;
+  isCurated: boolean;
   loggedInUserId: Uint8Array;
   systemId?: number;
   categoryId?: number;
@@ -1740,16 +1645,7 @@ export async function searchSharedContent({
 }) {
   const pageSize = 100;
 
-  const libraryId = await getLibraryAccountId();
-
-  // remove operators that break MySQL BOOLEAN search
-  // and add * at the end of every word so that match beginning of words
-  const query_as_prefixes = query
-    .replace(/[+\-><()~*"@]+/g, " ")
-    .split(" ")
-    .filter((s) => s)
-    .map((s) => s + "*")
-    .join(" ");
+  const query_as_prefixes = sanitizeQuery(query);
 
   const matchClassification = !isUnclassified && classificationId === undefined;
   const matchSubCategory = matchClassification && subCategoryId === undefined;
@@ -1782,7 +1678,7 @@ export async function searchSharedContent({
   ${returnFeatureJoins(features)}
   WHERE
     content.isDeleted = FALSE
-    AND content.ownerId <> ${libraryId}
+    AND users.isLibrary = ${isCurated ? Prisma.sql`TRUE` : Prisma.sql`FALSE`}
     AND (
        content.isPublic = TRUE
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -1827,82 +1723,8 @@ export async function searchSharedContent({
 }
 
 // TODO: add tests of this api if we're sure we want to keep it
-export async function browsePublishedLibraryContent({
-  loggedInUserId,
-  systemId,
-  categoryId,
-  subCategoryId,
-  classificationId,
-  isUnclassified,
-  features,
-  ownerId,
-  page = 1,
-}: {
-  loggedInUserId: Uint8Array;
-  systemId?: number;
-  categoryId?: number;
-  subCategoryId?: number;
-  classificationId?: number;
-  isUnclassified?: boolean;
-  features?: Set<string>;
-  ownerId?: Uint8Array;
-  page?: number;
-}) {
-  const pageSize = 100;
-
-  const classificationsFilter = isUnclassified
-    ? {
-        none: {},
-      }
-    : classificationId !== undefined
-      ? { some: { classification: { id: classificationId } } }
-      : subCategoryId !== undefined ||
-          categoryId !== undefined ||
-          systemId !== undefined
-        ? {
-            some: {
-              classification: {
-                descriptions: {
-                  some: {
-                    subCategoryId,
-                    subCategory: {
-                      categoryId,
-                      category: { systemId },
-                    },
-                  },
-                },
-              },
-            },
-          }
-        : undefined;
-
-  const featuresToRequire = features === undefined ? [] : [...features.keys()];
-
-  const preliminarySharedContent = await prisma.content.findMany({
-    where: {
-      isDeleted: false,
-      owner: { isLibrary: true },
-      isPublic: true,
-      AND: featuresToRequire.map((feature) => ({
-        contentFeatures: { some: { code: feature } },
-      })),
-      ownerId,
-      classifications: classificationsFilter,
-    },
-    select: returnContentStructureFullOwnerSelect(),
-    orderBy: { createdAt: "desc" },
-    take: pageSize,
-    skip: (page - 1) * pageSize,
-  });
-
-  const sharedContent = preliminarySharedContent.map((content) =>
-    processContent(content, loggedInUserId),
-  );
-
-  return sharedContent;
-}
-// TODO: add tests of this api if we're sure we want to keep it
 export async function browseSharedContent({
+  isCurated,
   loggedInUserId,
   systemId,
   categoryId,
@@ -1913,6 +1735,7 @@ export async function browseSharedContent({
   ownerId,
   page = 1,
 }: {
+  isCurated: boolean;
   loggedInUserId: Uint8Array;
   systemId?: number;
   categoryId?: number;
@@ -1956,7 +1779,7 @@ export async function browseSharedContent({
   const preliminarySharedContent = await prisma.content.findMany({
     where: {
       isDeleted: false,
-      owner: { isLibrary: false },
+      owner: { isLibrary: isCurated },
       OR: [
         { isPublic: true },
         { sharedWith: { some: { userId: loggedInUserId } } },
@@ -2101,14 +1924,7 @@ export async function searchUsersWithSharedContent({
 
   const libraryId = await getLibraryAccountId();
 
-  // remove operators that break MySQL BOOLEAN search
-  // and add * at the end of every word so that match beginning of words
-  const query_as_prefixes = query
-    .replace(/[+\-><()~*"@]+/g, " ")
-    .split(" ")
-    .filter((s) => s)
-    .map((s) => s + "*")
-    .join(" ");
+  const query_as_prefixes = sanitizeQuery(query);
 
   const includeClassification =
     classificationId !== undefined ||
@@ -2189,17 +2005,8 @@ export async function browseUsersWithSharedContent({
 }) {
   let usersWithShared;
 
-  const libraryId = await getLibraryAccountId();
-
   if (query) {
-    // remove operators that break MySQL BOOLEAN search
-    // and add * at the end of every word so that match beginning of words
-    const query_as_prefixes = query
-      .replace(/[+\-><()~*"@]+/g, " ")
-      .split(" ")
-      .filter((s) => s)
-      .map((s) => s + "*")
-      .join(" ");
+    const query_as_prefixes = sanitizeQuery(query);
 
     const matchClassification =
       !isUnclassified && classificationId === undefined;
@@ -2226,7 +2033,7 @@ export async function browseUsersWithSharedContent({
         content on content.ownerId = users.userId
       WHERE
         users.isAnonymous = FALSE
-        AND users.userId <> ${libraryId}
+        AND users.isLibrary = FALSE
         AND content.id IN (
           SELECT content.id
           FROM content
@@ -2280,7 +2087,7 @@ export async function browseUsersWithSharedContent({
         content on content.ownerId = users.userId
       WHERE
         users.isAnonymous = FALSE
-        AND users.userId <> ${libraryId}
+        AND users.isLibrary = FALSE
         AND content.id IN (
           SELECT content.id
           FROM content
@@ -2333,15 +2140,7 @@ export async function searchClassificationsWithSharedContent({
   features?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
-  // remove operators that break MySQL BOOLEAN search
-  // and add * at the end of every word so that match beginning of words
-  const query_as_prefixes = query
-    .replace(/[+\-><()~*"@]+/g, " ")
-    .split(" ")
-    .filter((s) => s)
-    .map((s) => s + "*")
-    .join(" ");
-
+  const query_as_prefixes = sanitizeQuery(query);
   const queryRegEx = query
     .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
     .replace(/\s+/g, "|");
@@ -2454,14 +2253,7 @@ export async function searchClassificationSubCategoriesWithSharedContent({
   features?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
-  // remove operators that break MySQL BOOLEAN search
-  // and add * at the end of every word so that match beginning of words
-  const query_as_prefixes = query
-    .replace(/[+\-><()~*"@]+/g, " ")
-    .split(" ")
-    .filter((s) => s)
-    .map((s) => s + "*")
-    .join(" ");
+  const query_as_prefixes = sanitizeQuery(query);
 
   const matches = await prisma.$queryRaw<
     {
@@ -2549,14 +2341,7 @@ export async function searchClassificationCategoriesWithSharedContent({
   features?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
-  // remove operators that break MySQL BOOLEAN search
-  // and add * at the end of every word so that match beginning of words
-  const query_as_prefixes = query
-    .replace(/[+\-><()~*"@]+/g, " ")
-    .split(" ")
-    .filter((s) => s)
-    .map((s) => s + "*")
-    .join(" ");
+  const query_as_prefixes = sanitizeQuery(query);
 
   const matches = await prisma.$queryRaw<
     {
@@ -2932,14 +2717,7 @@ export async function browseClassificationsWithSharedContent({
   let matches;
 
   if (query) {
-    // remove operators that break MySQL BOOLEAN search
-    // and add * at the end of every word so that match beginning of words
-    const query_as_prefixes = query
-      .replace(/[+\-><()~*"@]+/g, " ")
-      .split(" ")
-      .filter((s) => s)
-      .map((s) => s + "*")
-      .join(" ");
+    const query_as_prefixes = sanitizeQuery(query);
 
     matches = await prisma.$queryRaw<
       {
@@ -2979,7 +2757,7 @@ export async function browseClassificationsWithSharedContent({
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent,
-    COUNT(libraryActivityInfos.activityId) AS numCurated
+    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
   FROM
     content
   LEFT JOIN
@@ -3047,7 +2825,7 @@ export async function browseClassificationsWithSharedContent({
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent,
-    COUNT(libraryActivityInfos.activityId) AS numCurated
+    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
   FROM
     content
   LEFT JOIN
@@ -3115,14 +2893,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
   let matches;
 
   if (query) {
-    // remove operators that break MySQL BOOLEAN search
-    // and add * at the end of every word so that match beginning of words
-    const query_as_prefixes = query
-      .replace(/[+\-><()~*"@]+/g, " ")
-      .split(" ")
-      .filter((s) => s)
-      .map((s) => s + "*")
-      .join(" ");
+    const query_as_prefixes = sanitizeQuery(query);
 
     matches = await prisma.$queryRaw<
       {
@@ -3154,7 +2925,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent,
-    COUNT(libraryActivityInfos.activityId) AS numCurated
+    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
   FROM
     content
   LEFT JOIN
@@ -3215,7 +2986,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent,
-    COUNT(libraryActivityInfos.activityId) AS numCurated
+    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
 
   FROM
     content
@@ -3278,14 +3049,7 @@ export async function browseClassificationCategoriesWithSharedContent({
   let matches;
 
   if (query) {
-    // remove operators that break MySQL BOOLEAN search
-    // and add * at the end of every word so that match beginning of words
-    const query_as_prefixes = query
-      .replace(/[+\-><()~*"@]+/g, " ")
-      .split(" ")
-      .filter((s) => s)
-      .map((s) => s + "*")
-      .join(" ");
+    const query_as_prefixes = sanitizeQuery(query);
 
     matches = await prisma.$queryRaw<
       {
@@ -3313,7 +3077,7 @@ export async function browseClassificationCategoriesWithSharedContent({
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent,
-    COUNT(libraryActivityInfos.activityId) AS numCurated
+    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
   FROM
     content
   LEFT JOIN
@@ -3370,7 +3134,7 @@ export async function browseClassificationCategoriesWithSharedContent({
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent,
-    COUNT(libraryActivityInfos.activityId) AS numCurated
+    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
   FROM
     content
   LEFT JOIN
@@ -3426,14 +3190,7 @@ export async function browseClassificationSystemsWithSharedContent({
   let matches;
 
   if (query) {
-    // remove operators that break MySQL BOOLEAN search
-    // and add * at the end of every word so that match beginning of words
-    const query_as_prefixes = query
-      .replace(/[+\-><()~*"@]+/g, " ")
-      .split(" ")
-      .filter((s) => s)
-      .map((s) => s + "*")
-      .join(" ");
+    const query_as_prefixes = sanitizeQuery(query);
 
     matches = await prisma.$queryRaw<
       {
@@ -3459,7 +3216,7 @@ export async function browseClassificationSystemsWithSharedContent({
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent,
-    COUNT(libraryActivityInfos.activityId) AS numCurated
+    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
   FROM
     content
   LEFT JOIN
@@ -3513,7 +3270,7 @@ export async function browseClassificationSystemsWithSharedContent({
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent,
-    COUNT(libraryActivityInfos.activityId) AS numCurated
+    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
   FROM
     content
   LEFT JOIN
@@ -3585,14 +3342,7 @@ export async function getSharedContentMatchCount({
   let matches;
 
   if (query) {
-    // remove operators that break MySQL BOOLEAN search
-    // and add * at the end of every word so that match beginning of words
-    const query_as_prefixes = query
-      .replace(/[+\-><()~*"@]+/g, " ")
-      .split(" ")
-      .filter((s) => s)
-      .map((s) => s + "*")
-      .join(" ");
+    const query_as_prefixes = sanitizeQuery(query);
 
     const matchClassification =
       !isUnclassified && classificationId === undefined;
@@ -3611,7 +3361,7 @@ export async function getSharedContentMatchCount({
     >(Prisma.sql`
       SELECT
         COUNT(distinct content.id) as numContent,
-        COUNT(libraryActivityInfos.activityId) as curatedContent
+        COUNT(distinct libraryActivityInfos.activityId) as curatedContent
       FROM
         content
       LEFT JOIN
@@ -3656,7 +3406,7 @@ export async function getSharedContentMatchCount({
     >(Prisma.sql`
       SELECT
         COUNT(distinct content.id) as numContent,
-        COUNT(libraryActivityInfos.activityId) as curatedContent
+        COUNT(distinct libraryActivityInfos.activityId) as curatedContent
       FROM
         content
       LEFT JOIN
@@ -3718,14 +3468,7 @@ export async function getSharedContentMatchCountPerAvailableFeature({
   const availableFeatures = await getAvailableContentFeatures();
 
   if (query) {
-    // remove operators that break MySQL BOOLEAN search
-    // and add * at the end of every word so that match beginning of words
-    const query_as_prefixes = query
-      .replace(/[+\-><()~*"@]+/g, " ")
-      .split(" ")
-      .filter((s) => s)
-      .map((s) => s + "*")
-      .join(" ");
+    const query_as_prefixes = sanitizeQuery(query);
 
     const matchClassification =
       !isUnclassified && classificationId === undefined;
@@ -3748,7 +3491,7 @@ export async function getSharedContentMatchCountPerAvailableFeature({
       >(Prisma.sql`
       SELECT
         COUNT(distinct content.id) as numContent,
-        COUNT(libraryActivityInfos.activityId) as numCurated
+        COUNT(distinct libraryActivityInfos.activityId) as numCurated
       FROM
         content
       LEFT JOIN
@@ -3807,7 +3550,7 @@ export async function getSharedContentMatchCountPerAvailableFeature({
       >(Prisma.sql`
       SELECT
         COUNT(distinct content.id) as numContent,
-        COUNT(libraryActivityInfos.activityId) as numCurated
+        COUNT(distinct libraryActivityInfos.activityId) as numCurated
       FROM
         content
       LEFT JOIN
@@ -6462,7 +6205,7 @@ export async function getPreferredFolderView(loggedInUserId: Uint8Array) {
 }
 
 /**
- * 
+ *
  * Depending on user's access privileges, this function will hide some information.
  * - Admins see everything
  * - Owner of original activity does not see unpublished drafts
@@ -6493,7 +6236,7 @@ export async function getLibraryStatus({
     return blankLibraryInfo(id);
   }
 
-  const {activityId, comments, ...basicInfo} = info;
+  const { activityId, comments, ...basicInfo } = info;
   const isPublished = info.status === LibraryStatus.PUBLISHED;
 
   // Admin
@@ -6503,28 +6246,27 @@ export async function getLibraryStatus({
   }
 
   //Owner
-  const isOwner = await prisma.users.findUnique({
-    where: { userId },
-    select: { userId: true }
+  const isOwner = await prisma.content.findUnique({
+    where: { id, ownerId: userId },
+    select: { ownerId: true },
   });
-  if(isOwner) {
+  if (isOwner) {
     return {
       activityId: isPublished ? activityId : null,
       comments,
-      ...basicInfo
+      ...basicInfo,
     };
   }
 
   // All other users
-  if(isPublished) {
-    // exclude comments
+  if (isPublished) {
     return {
       activityId,
-      ...basicInfo
-    }
-  } else {
-    return blankLibraryInfo(id);
+      ...basicInfo,
+    };
   }
+
+  return blankLibraryInfo(id);
 }
 
 /**
@@ -6598,7 +6340,7 @@ export async function submitLibraryRequest({
  * Set library status to `REQUEST_REMOVED`. Also logs event in library history.
  * @param activityId - must be existing public activity
  * @param ownerId - must be owner of activityId
- * 
+ *
  */
 export async function cancelLibraryRequest({
   activityId,

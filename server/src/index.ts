@@ -104,8 +104,6 @@ import {
   deleteDraftFromLibrary,
   modifyCommentsOfLibraryRequest,
   markLibraryRequestNeedsRevision,
-  browsePublishedLibraryContent,
-  searchPublishedLibraryContent,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -1156,6 +1154,7 @@ app.post(
       const content = (
         await searchSharedContent({
           query,
+          isCurated: false,
           loggedInUserId,
           systemId,
           categoryId,
@@ -1168,8 +1167,9 @@ app.post(
       ).map(contentStructureConvertUUID);
 
       const curatedContent = (
-        await searchPublishedLibraryContent({
+        await searchSharedContent({
           query,
+          isCurated: true,
           loggedInUserId,
           systemId,
           categoryId,
@@ -1366,6 +1366,7 @@ app.post(
       const recentContent = (
         await browseSharedContent({
           loggedInUserId,
+          isCurated: false,
           systemId,
           categoryId,
           subCategoryId,
@@ -1377,7 +1378,8 @@ app.post(
       ).map(contentStructureConvertUUID);
 
       const curatedContent = (
-        await browsePublishedLibraryContent({
+        await browseSharedContent({
+          isCurated: true,
           loggedInUserId,
           systemId,
           categoryId,

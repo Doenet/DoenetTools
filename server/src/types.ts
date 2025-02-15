@@ -28,7 +28,7 @@ export function blankLibraryInfo(sourceId: Uint8Array): LibraryInfo {
     sourceId,
     activityId: null,
     status: "none",
-  }
+  };
 }
 
 export type UserInfo = {
