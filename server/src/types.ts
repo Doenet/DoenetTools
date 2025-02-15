@@ -23,6 +23,14 @@ export type LibraryInfo = {
   comments?: string;
 };
 
+export function blankLibraryInfo(sourceId: Uint8Array): LibraryInfo {
+  return {
+    sourceId,
+    activityId: null,
+    status: "none",
+  }
+}
+
 export type UserInfo = {
   userId: Uint8Array;
   firstNames: string | null;

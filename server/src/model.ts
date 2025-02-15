@@ -18,6 +18,7 @@ import {
   LicenseCode,
   PartialContentClassification,
   UserInfo,
+  blankLibraryInfo,
 } from "./types";
 import {
   returnClassificationJoins,
@@ -464,13 +465,15 @@ export async function getDoc(id: Uint8Array) {
  *
  * `desiredPosition` is the 0-based index in the array of content with parent folder `desiredParentFolderId`
  * and owner `ownerId` sorted by `sortIndex`.
+ * 
+ * If the content is in the library account, set `inLibrary` to `true`. This will allows admins to make changes.
  */
 export async function moveContent({
   id,
   desiredParentFolderId,
   desiredPosition,
   ownerId: loggedInUserId,
-  inLibrary = false, // Not exposed to API call
+  inLibrary = false,
 }: {
   id: Uint8Array;
   desiredParentFolderId: Uint8Array | null;
@@ -931,14 +934,24 @@ async function createDocumentVersion(docId: Uint8Array): Promise<{
   return docVersion;
 }
 
+/**
+ * Filter Prisma's `where` clause to exclude unviewable activities
+ * 
+ * For an activity to be viewable, one of these conditions must be true:
+ * 1. You are the owner
+ * 2. The activity is public
+ * 3. The activity is shared with you
+ * 4. You are an admin and the activity is in the library.
+ * 
+ * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
+ */
 function filterViewableActivity(loggedInUserId: Uint8Array, isAdmin: boolean) {
-  // For an activity to be viewable, one of these conditions must be true:
-  // 1. You are the owner
-  // 2. The activity is public
-  // 3. The activity is shared with you
-  // 4. You are an admin and the activity is in the library
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const visibilityOptions: any[] = [
+  const visibilityOptions: (
+    | { ownerId: Uint8Array }
+    | { isPublic: boolean }
+    | { sharedWith: { some: { userId: Uint8Array } } }
+    | { owner: { isLibrary: boolean } }
+  )[] = [
     { ownerId: loggedInUserId },
     { isPublic: true },
     { sharedWith: { some: { userId: loggedInUserId } } },
@@ -953,6 +966,15 @@ function filterViewableActivity(loggedInUserId: Uint8Array, isAdmin: boolean) {
   };
 }
 
+/**
+ * Filter Prisma's `where` clause to exclude uneditable activities.
+ * 
+ * For an activity to be editable, one of these conditions must be true:
+ * 1. You are the owner
+ * 2. You are an admin and the activity is in the library
+ * 
+ * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
+ */
 function filterEditableActivity(loggedInUserId: Uint8Array, isAdmin: boolean) {
   return {
     ...filterEditableContent(loggedInUserId, isAdmin),
@@ -960,12 +982,21 @@ function filterEditableActivity(loggedInUserId: Uint8Array, isAdmin: boolean) {
   };
 }
 
+/**
+ * Filter Prisma's `where` clause to exclude uneditable content.
+ * 
+ * For content to be editable, one of these conditions must be true:
+ * 1. You are the owner
+ * 2. You are an admin and the content is in the library
+ * 
+ * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
+ */
 function filterEditableContent(loggedInUserId: Uint8Array, isAdmin: boolean) {
-  // For content to be editable, one of these conditions must be true:
-  // 1. You are the owner
-  // 2. You are an admin and the activity is in the library
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const editabilityOptions: any[] = [{ ownerId: loggedInUserId }];
+  const editabilityOptions: (  
+    | { ownerId: Uint8Array }  
+    | { owner: { isLibrary: boolean } }  
+  )[] = [{ ownerId: loggedInUserId }];
+
   if (isAdmin) {
     editabilityOptions.push({ owner: { isLibrary: true } });
   }
@@ -975,10 +1006,30 @@ function filterEditableContent(loggedInUserId: Uint8Array, isAdmin: boolean) {
   };
 }
 
+/** 
+ * Get edit and view permissions for this activity.
+ * 
+ * For an activity to be editable, one of these conditions must be true:
+ * 1. You are the owner
+ * 2. You are an admin and the activity is in the library
+ * 
+ * For an activity to be viewable, these conditions also work:
+ * 
+ * 3. The activity is public
+ * 4. The activity is shared with you
+ * 
+ * @param activityId 
+ * @param loggedInUserId
+ * @returns 
+ */
 async function checkActivityPermissions(
   activityId: Uint8Array,
   loggedInUserId: Uint8Array,
-) {
+): Promise<{
+  editable: boolean,
+  viewable: boolean,
+  ownerId: Uint8Array | null
+}> {
   const isAdmin = await getIsAdmin(loggedInUserId);
 
   const viewable = await prisma.content.findUnique({
@@ -6410,6 +6461,14 @@ export async function getPreferredFolderView(loggedInUserId: Uint8Array) {
   });
 }
 
+/**
+ * 
+ * Depending on user's access privileges, this function will hide some information.
+ * - Admins see everything
+ * - Owner of original activity does not see unpublished drafts
+ * - All other users do not see admin comments, pending requests, or unpublished drafts
+ * @param id - must be existing public activity
+ */
 export async function getLibraryStatus({
   id,
   userId,
@@ -6429,67 +6488,50 @@ export async function getLibraryStatus({
     },
   });
 
+  // No info in database
   if (!info) {
-    return { status: "none", sourceId: id, activityId: null };
-  } else {
-    const isAdmin = await prisma.users.findFirst({
-      where: {
-        userId,
-        isAdmin: true,
-      },
-      select: {
-        userId: true,
-      },
-    });
+    return blankLibraryInfo(id);
+  }
 
-    if (isAdmin) {
-      if (info.activityId) {
-        return info;
-      } else {
-        return {
-          status: info.status,
-          comments: info.comments,
-          sourceId: info.sourceId,
-          activityId: null,
-        };
-      }
-    } else {
-      const isOwner = await prisma.users.findUnique({
-        where: {
-          userId,
-          content: {
-            some: {},
-          },
-        },
-      });
+  const {activityId, comments, ...basicInfo} = info;
+  const isPublished = info.status === LibraryStatus.PUBLISHED;
 
-      if (isOwner) {
-        if (info.status === LibraryStatus.PUBLISHED) {
-          return info;
-        } else {
-          return {
-            status: info.status,
-            comments: info.comments,
-            sourceId: info.sourceId,
-            activityId: null,
-          };
-        }
-      } else {
-        if (info.status === LibraryStatus.PUBLISHED) {
-          return {
-            status: info.status,
-            sourceId: info.sourceId,
-            activityId: info.activityId,
-            // skip comments
-          };
-        } else {
-          return { status: "none", sourceId: info.sourceId, activityId: null };
-        }
-      }
+  // Admin
+  const isAdmin = await getIsAdmin(userId);
+  if (isAdmin) {
+    return info;
+  }
+
+  //Owner
+  const isOwner = await prisma.users.findUnique({
+    where: { userId },
+    select: { userId: true }
+  });
+  if(isOwner) {
+    return {
+      activityId: isPublished ? activityId : null,
+      comments,
+      ...basicInfo
+    };
+  }
+
+  // All other users
+  if(isPublished) {
+    // exclude comments
+    return {
+      activityId,
+      ...basicInfo
     }
+  } else {
+    return blankLibraryInfo(id);
   }
 }
 
+/**
+ * Set library status to `PENDING_REVIEW`. Also logs event in library history.
+ * @param activityId - must be existing public activity
+ * @param ownerId - must be owner of activityId
+ */
 export async function submitLibraryRequest({
   activityId,
   ownerId,
@@ -6552,7 +6594,12 @@ export async function submitLibraryRequest({
 
   await prisma.$transaction([updateLibInfo, newEvent]);
 }
-
+/**
+ * Set library status to `REQUEST_REMOVED`. Also logs event in library history.
+ * @param activityId - must be existing public activity
+ * @param ownerId - must be owner of activityId
+ * 
+ */
 export async function cancelLibraryRequest({
   activityId,
   ownerId,
@@ -6602,6 +6649,11 @@ async function getLibraryAccountId() {
   return libraryId;
 }
 
+/**
+ * Remix activity into library account
+ * @param id - must be existing public activity
+ * @param loggedInUserId - must be admin
+ */
 export async function addDraftToLibrary({
   id,
   loggedInUserId,
@@ -6662,7 +6714,11 @@ export async function addDraftToLibrary({
 
   return { draftId };
 }
-
+/**
+ * Soft delete draft and log event.
+ * @param draftId - must be existing draft (private activity) in library account
+ * @param loggedInUserId - must be admin
+ */
 export async function deleteDraftFromLibrary({
   draftId,
   loggedInUserId,
@@ -6726,7 +6782,12 @@ export async function deleteDraftFromLibrary({
   await prisma.$transaction([deleteDraft, removeLibraryIdRef, logDeletion]);
 }
 
-// TODO: Notify owner that their activity has been added to the library
+/**
+ * Make library activity public and log event.
+ * @param draftId - must be existing draft (private activity) in library account
+ * @param loggedInUserId - must be admin
+ * @todo notify owner
+ */
 export async function publishActivityToLibrary({
   draftId,
   loggedInUserId,
@@ -6782,6 +6843,11 @@ export async function publishActivityToLibrary({
   });
 }
 
+/**
+ * Make library activity private and log event.
+ * @param activityId - must be existing published (public) activity in library account
+ * @param loggedInUserId - must be admin
+ */
 export async function unpublishActivityFromLibrary({
   activityId,
   loggedInUserId,
@@ -6831,7 +6897,13 @@ export async function unpublishActivityFromLibrary({
   });
 }
 
-// TODO: Notify owner that their activity needs revision before it will be accepted into the library
+/**
+ * Set library status to `NEEDS_REVISION` and log event.
+ * @param sourceId - original activity, must exist and be public, must have status `PENDING REVIEW`
+ * @param comments - will be displayed to original owner
+ * @param userId - must be admin
+ * @todo notify owner
+ */
 export async function markLibraryRequestNeedsRevision({
   sourceId,
   comments,
@@ -6873,7 +6945,13 @@ export async function markLibraryRequestNeedsRevision({
   });
 }
 
-// TODO: Notify owner that the comments have changed
+/**
+ * Change comments to owner and log event.
+ * @param sourceId - original activity, must be public and have library status
+ * @param comments - updated comments sent to owner
+ * @param userId - must be admin
+ * @todo notify owner
+ */
 export async function modifyCommentsOfLibraryRequest({
   sourceId,
   comments,
@@ -6923,6 +7001,11 @@ export async function modifyCommentsOfLibraryRequest({
   });
 }
 
+/**
+ * Get contents of folder in library account. Similar to {@link getMyFolderContent}
+ * @param folderId - existing folder in library account or `null` for root folder
+ * @param loggedInUserId - must be admin
+ */
 export async function getCurationFolderContent({
   folderId,
   loggedInUserId,
