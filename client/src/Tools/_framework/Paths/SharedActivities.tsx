@@ -7,14 +7,28 @@ import {
   Spacer,
   MenuItem,
   useDisclosure,
+  HStack,
+  CloseButton,
+  Text,
+  Button,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { useLoaderData, useFetcher, Link } from "react-router";
+import {
+  useLoaderData,
+  useFetcher,
+  Link,
+  useOutletContext,
+  useNavigate,
+} from "react-router";
 
 import { CardContent } from "../../../Widgets/Card";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
-import { ContentStructure } from "../../../_utils/types";
+import {
+  ContentDescription,
+  ContentStructure,
+  ContentType,
+} from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import CardList from "../../../Widgets/CardList";
@@ -22,6 +36,14 @@ import {
   ToggleViewButtonGroup,
   toggleViewButtonGroupActions,
 } from "../ToolPanels/ToggleViewButtonGroup";
+import { menuIcons } from "../../../_utils/activity";
+import { User } from "./SiteHeader";
+import {
+  AddContentToMenu,
+  addContentToMenuActions,
+} from "../ToolPanels/AddContentToMenu";
+import { CreateContentMenu } from "../ToolPanels/CreateContentMenu";
+import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -32,10 +54,15 @@ export async function action({ request }) {
     return resultTLV;
   }
 
+  const resultACM = await addContentToMenuActions({ formObj });
+  if (resultACM) {
+    return resultACM;
+  }
+
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
-export async function loader({ params }) {
+export async function loader({ params, request }) {
   const { data } = await axios.get(
     `/api/getSharedFolderContent/${params.ownerId}/${params.folderId ?? ""}`,
   );
@@ -43,28 +70,51 @@ export async function loader({ params }) {
   const prefData = await axios.get(`/api/getPreferredFolderView`);
   const listViewPref = !prefData.data.cardView;
 
+  const url = new URL(request.url);
+  const addToId = url.searchParams.get("addTo");
+  let addTo: ContentDescription | undefined = undefined;
+
+  if (addToId) {
+    try {
+      const { data } = await axios.get(`/api/getContentDescription/${addToId}`);
+      addTo = data;
+    } catch (_e) {
+      console.error(`Could not get description of ${addToId}`);
+    }
+  }
+
   return {
     content: data.content,
     ownerId: params.ownerId,
     owner: data.owner,
     folder: data.folder,
     listViewPref,
+    addTo,
   };
 }
 
 export function SharedActivities() {
-  const { content, ownerId, owner, folder, listViewPref } = useLoaderData() as {
-    content: ContentStructure[];
-    ownerId: string;
-    owner: {
-      firstNames: string | null;
-      lastNames: string;
+  const { content, ownerId, owner, folder, listViewPref, addTo } =
+    useLoaderData() as {
+      content: ContentStructure[];
+      ownerId: string;
+      owner: {
+        firstNames: string | null;
+        lastNames: string;
+      };
+      folder: ContentStructure | null;
+      listViewPref: boolean;
+      addTo?: ContentDescription;
     };
-    folder: ContentStructure | null;
-    listViewPref: boolean;
-  };
+
+  const user = useOutletContext<User>();
+
+  const navigate = useNavigate();
 
   const [listView, setListView] = useState(listViewPref);
+
+  const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
+  const numSelected = selectedCards.length;
 
   useEffect(() => {
     document.title = folder
@@ -101,6 +151,50 @@ export function SharedActivities() {
       />
     ) : null;
 
+  const {
+    isOpen: copyDialogIsOpen,
+    onOpen: copyDialogOnOpen,
+    onClose: copyDialogOnClose,
+  } = useDisclosure();
+
+  const copyContentModal =
+    addTo !== undefined ? (
+      <CopyContentAndReportFinish
+        isOpen={copyDialogIsOpen}
+        onClose={copyDialogOnClose}
+        sourceContent={selectedCards}
+        desiredParent={addTo}
+        action="Add"
+      />
+    ) : null;
+
+  function selectCardCallback({
+    id,
+    name,
+    checked,
+    type,
+  }: {
+    id: string;
+    name: string;
+    checked: boolean;
+    type: ContentType;
+  }) {
+    setSelectedCards((was) => {
+      const arr = [...was];
+      const idx = was.findIndex((c) => c.id === id);
+      if (checked) {
+        if (idx === -1) {
+          arr.push({ id, name, type });
+        } else {
+          arr[idx] = { id, name, type };
+        }
+      } else if (idx !== -1) {
+        arr.splice(idx, 1);
+      }
+      return arr;
+    });
+  }
+
   const headingText = folder ? (
     <>Folder: {folder.name}</>
   ) : (
@@ -111,7 +205,7 @@ export function SharedActivities() {
     <Box
       backgroundColor="#fff"
       color="#000"
-      height="80px"
+      height="120px"
       width="100%"
       textAlign="center"
     >
@@ -126,6 +220,71 @@ export function SharedActivities() {
           {headingText}
         </Heading>
       </Tooltip>
+
+      <Flex
+        width="100%"
+        height="40px"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Flex
+          height="30px"
+          width="100%"
+          alignContent="center"
+          hidden={numSelected === 0 && addTo === undefined}
+          backgroundColor="gray.100"
+          justifyContent="center"
+        >
+          {addTo !== undefined ? (
+            <HStack hidden={numSelected > 0}>
+              <CloseButton
+                size="sm"
+                onClick={() => {
+                  navigate(`.`);
+                }}
+              />{" "}
+              <Text noOfLines={1}>
+                Adding items to: {menuIcons[addTo.type]}
+                <strong>{addTo.name}</strong>
+              </Text>
+            </HStack>
+          ) : null}
+          <HStack hidden={numSelected === 0}>
+            <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
+            <Text>{numSelected} selected</Text>
+            <HStack hidden={addTo !== undefined}>
+              <AddContentToMenu
+                sourceContent={selectedCards}
+                size="xs"
+                colorScheme="blue"
+                label="Add selected to"
+              />
+              <CreateContentMenu
+                sourceContent={selectedCards}
+                size="xs"
+                colorScheme="blue"
+                label="Create from selected"
+              />
+            </HStack>
+            {addTo !== undefined ? (
+              <Button
+                hidden={addTo === undefined}
+                size="xs"
+                colorScheme="blue"
+                onClick={() => {
+                  copyDialogOnOpen();
+                }}
+              >
+                Add selected to {menuIcons[addTo.type]}
+                <strong>
+                  {addTo.name.substring(0, 10)}
+                  {addTo.name.length > 10 ? "..." : ""}
+                </strong>
+              </Button>
+            ) : null}
+          </HStack>
+        </Flex>
+      </Flex>
 
       <Flex marginRight=".5em" alignItems="center" paddingLeft="15px">
         {folder ? (
@@ -152,6 +311,7 @@ export function SharedActivities() {
     </Box>
   );
 
+  const addToParams = addTo ? `?addTo=${addTo.id}` : "";
   const cardContent: CardContent[] = content.map((activity) => {
     const contentType = activity.isFolder ? "Folder" : "Activity";
 
@@ -171,8 +331,8 @@ export function SharedActivities() {
       content: activity,
       cardLink:
         activity.type == "folder"
-          ? `/sharedActivities/${activity.ownerId}/${activity.id}`
-          : `/activityViewer/${activity.id}`,
+          ? `/sharedActivities/${activity.ownerId}/${activity.id}${addToParams}`
+          : `/activityViewer/${activity.id}${addToParams}`,
       menuItems,
     };
   });
@@ -186,12 +346,16 @@ export function SharedActivities() {
       emptyMessage={"No Activities Yet"}
       listView={listView}
       content={cardContent}
+      selectedCards={user ? selectedCards.map((c) => c.id) : undefined}
+      selectCallback={selectCardCallback}
+      disableSelectFor={addTo ? [addTo.id] : undefined}
     />
   );
 
   return (
     <>
       {infoDrawer}
+      {copyContentModal}
       {heading}
       <Flex
         data-test="Shared Activities"

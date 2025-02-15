@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   AssignmentStatus,
+  ContentDescription,
   ContentStructure,
   ContentType,
   LicenseCode,
@@ -9,10 +10,12 @@ import {
 import {
   Box,
   Button,
+  CloseButton,
   Flex,
   Grid,
   GridItem,
   Hide,
+  HStack,
   Menu,
   MenuButton,
   MenuItem,
@@ -40,7 +43,11 @@ import { ActivityViewer } from "@doenet/assignment-viewer";
 import {
   contentTypeToName,
   getAllowedParentTypes,
+  menuIcons,
 } from "../../../_utils/activity";
+import { CopyContentAndReportFinish } from "./CopyContentAndReportFinish";
+import { CreateContentMenu } from "./CreateContentMenu";
+import { AddContentToMenu } from "./AddContentToMenu";
 
 export async function compoundActivityEditorActions(
   {
@@ -118,6 +125,7 @@ export function CompoundActivityEditor({
   setSettingsDisplayTab,
   setHighlightRename,
   headerHeight,
+  addTo,
 }: {
   activity: ContentStructure;
   activityJson: ActivitySource;
@@ -132,6 +140,7 @@ export function CompoundActivityEditor({
   setSettingsDisplayTab?: (arg: "general") => void;
   setHighlightRename?: (arg: boolean) => void;
   headerHeight: string;
+  addTo?: ContentDescription;
 }) {
   const contentTypeName = contentTypeToName[activity.type];
 
@@ -143,6 +152,9 @@ export function CompoundActivityEditor({
 
   const user = useOutletContext<User>();
   const navigate = useNavigate();
+
+  const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
+  const numSelected = selectedCards.length;
 
   const [haveContentSpinner, setHaveContentSpinner] = useState(false);
 
@@ -186,6 +198,50 @@ export function CompoundActivityEditor({
       action="Move"
     />
   ) : null;
+
+  const {
+    isOpen: copyDialogIsOpen,
+    onOpen: copyDialogOnOpen,
+    onClose: copyDialogOnClose,
+  } = useDisclosure();
+
+  const copyContentModal =
+    addTo !== undefined ? (
+      <CopyContentAndReportFinish
+        isOpen={copyDialogIsOpen}
+        onClose={copyDialogOnClose}
+        sourceContent={selectedCards}
+        desiredParent={addTo}
+        action="Add"
+      />
+    ) : null;
+
+  function selectCardCallback({
+    id,
+    name,
+    checked,
+    type,
+  }: {
+    id: string;
+    name: string;
+    checked: boolean;
+    type: ContentType;
+  }) {
+    setSelectedCards((was) => {
+      const arr = [...was];
+      const idx = was.findIndex((c) => c.id === id);
+      if (checked) {
+        if (idx === -1) {
+          arr.push({ id, name, type });
+        } else {
+          arr[idx] = { id, name, type };
+        }
+      } else if (idx !== -1) {
+        arr.splice(idx, 1);
+      }
+      return arr;
+    });
+  }
 
   function countCards(content: ContentStructure, init = true): number {
     const childCounts = content.children.reduce(
@@ -489,6 +545,9 @@ export function CompoundActivityEditor({
       emptyMessage={`${contentTypeName} is empty. Add or move documents ${activity.type === "sequence" ? "or question banks " : ""}here to begin.`}
       listView={true}
       content={cardContent}
+      selectedCards={user ? selectedCards.map((c) => c.id) : undefined}
+      selectCallback={selectCardCallback}
+      disableSelectFor={addTo ? [addTo.id] : undefined}
     />
   );
 
@@ -544,6 +603,66 @@ export function CompoundActivityEditor({
         </Link>
       </Box>
       <Spacer />
+
+      <Flex
+        height="30px"
+        width="100%"
+        alignContent="center"
+        hidden={numSelected === 0 && addTo === undefined}
+        backgroundColor="gray.100"
+        justifyContent="center"
+      >
+        {addTo !== undefined ? (
+          <HStack hidden={numSelected > 0}>
+            <CloseButton
+              size="sm"
+              onClick={() => {
+                navigate(`.`);
+              }}
+            />{" "}
+            <Text noOfLines={1}>
+              Adding items to: {menuIcons[addTo.type]}
+              <strong>{addTo.name}</strong>
+            </Text>
+          </HStack>
+        ) : null}
+        <HStack hidden={numSelected === 0}>
+          <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
+          <Text>{numSelected} selected</Text>
+          <HStack hidden={addTo !== undefined}>
+            <AddContentToMenu
+              sourceContent={selectedCards}
+              size="xs"
+              colorScheme="blue"
+              label="Add selected to"
+            />
+            <CreateContentMenu
+              sourceContent={selectedCards}
+              size="xs"
+              colorScheme="blue"
+              label="Create from selected"
+            />
+          </HStack>
+          {addTo !== undefined ? (
+            <Button
+              hidden={addTo === undefined}
+              size="xs"
+              colorScheme="blue"
+              onClick={() => {
+                copyDialogOnOpen();
+              }}
+            >
+              Add selected to {menuIcons[addTo.type]}
+              <strong>
+                {addTo.name.substring(0, 10)}
+                {addTo.name.length > 10 ? "..." : ""}
+              </strong>
+            </Button>
+          ) : null}
+        </HStack>
+      </Flex>
+
+      <Spacer />
       <Menu>
         <MenuButton
           hidden={asViewer}
@@ -597,6 +716,7 @@ export function CompoundActivityEditor({
   return (
     <>
       {moveContentModal}
+      {copyContentModal}
       {mode === "Edit" ? (
         <>
           {heading}

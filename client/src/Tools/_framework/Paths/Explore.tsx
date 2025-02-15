@@ -26,10 +26,6 @@ import {
   Hide,
   CloseButton,
   HStack,
-  Menu,
-  MenuButton,
-  MenuList,
-  Icon,
 } from "@chakra-ui/react";
 import {
   Link as ReactRouterLink,
@@ -61,18 +57,14 @@ import { MdFilterAlt, MdFilterAltOff } from "react-icons/md";
 import { clearQueryParameter } from "../../../_utils/explore";
 import { FilterPanel } from "../ToolPanels/FilterPanel";
 import { ExploreFilterDrawer } from "../ToolPanels/ExploreFilterDrawer";
-import {
-  contentTypeToName,
-  getAllowedParentTypes,
-  getIconInfo,
-} from "../../../_utils/activity";
+import { menuIcons } from "../../../_utils/activity";
 import { User } from "./SiteHeader";
-import { CreateContentAndPromptName } from "../ToolPanels/CreateContentAndPromptName";
 import {
   AddContentToMenu,
   addContentToMenuActions,
 } from "../ToolPanels/AddContentToMenu";
 import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
+import { CreateContentMenu } from "../ToolPanels/CreateContentMenu";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -244,12 +236,6 @@ export function Explore() {
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
   const numSelected = selectedCards.length;
 
-  const [allowedParentsForSelected, setAllowedParentsForSelected] = useState<
-    ContentType[]
-  >([]);
-
-  const [createNewType, setCreateNewType] = useState<ContentType>("folder");
-
   const { search } = useLocation();
   const navigate = useNavigate();
 
@@ -303,21 +289,6 @@ export function Explore() {
       availableFeatures={availableFeatures}
       search={search}
       navigate={navigate}
-    />
-  );
-
-  const {
-    isOpen: createDialogIsOpen,
-    onOpen: createDialogOnOpen,
-    onClose: createDialogOnClose,
-  } = useDisclosure();
-
-  const createContentModal = (
-    <CreateContentAndPromptName
-      isOpen={createDialogIsOpen}
-      onClose={createDialogOnClose}
-      sourceContent={selectedCards}
-      desiredParentType={createNewType}
     />
   );
 
@@ -386,24 +357,17 @@ export function Explore() {
     });
   }
 
-  useEffect(() => {
-    const allowedParents = getAllowedParentTypes(
-      selectedCards.map((c) => c.type),
-    );
-
-    setAllowedParentsForSelected(allowedParents);
-  }, [selectedCards]);
-
   function displayMatchingContent(
     matches: ContentStructure[],
     minHeight?: string | { base: string; lg: string },
   ) {
+    const addToParams = addTo ? `?addTo=${addTo.id}` : "";
     const cardContent: CardContent[] = matches.map((itemObj) => {
       const { id, owner, type: contentType } = itemObj;
       const cardLink =
         contentType === "folder" && owner != undefined
-          ? `/sharedActivities/${owner.userId}/${id}`
-          : `/activityViewer/${id}`;
+          ? `/sharedActivities/${owner.userId}/${id}${addToParams}`
+          : `/activityViewer/${id}${addToParams}`;
 
       const menuItems = (
         <MenuItem
@@ -743,23 +707,6 @@ export function Explore() {
   const numActiveFiltersInfo =
     numActiveFilters > 0 ? `(${numActiveFilters})` : "";
 
-  const menuIcons: Record<string, ReactElement> = {};
-
-  for (const t of ["folder", "sequence", "select", "singleDoc"]) {
-    const ct = t as ContentType;
-    const { iconImage, iconColor } = getIconInfo(ct);
-    const icon = (
-      <Icon
-        as={iconImage}
-        color={iconColor}
-        marginRight="5px"
-        aria-label={contentTypeToName[ct]}
-      />
-    );
-
-    menuIcons[t] = icon;
-  }
-
   const heading = (
     <>
       <Flex
@@ -872,66 +819,12 @@ export function Explore() {
                   colorScheme="blue"
                   label="Add selected to"
                 />
-                <Menu>
-                  <MenuButton
-                    as={Button}
-                    size="xs"
-                    colorScheme="blue"
-                    data-test="Create From Selected Button"
-                  >
-                    Create from selected
-                  </MenuButton>
-                  <MenuList>
-                    <Tooltip
-                      openDelay={500}
-                      label={
-                        !allowedParentsForSelected.includes("sequence")
-                          ? "Some selected items cannot be added to a problem set"
-                          : null
-                      }
-                    >
-                      <MenuItem
-                        isDisabled={
-                          !allowedParentsForSelected.includes("sequence")
-                        }
-                        onClick={() => {
-                          setCreateNewType("sequence");
-                          createDialogOnOpen();
-                        }}
-                      >
-                        {menuIcons.sequence} Problem set
-                      </MenuItem>
-                    </Tooltip>
-                    <MenuItem
-                      onClick={() => {
-                        setCreateNewType("folder");
-                        createDialogOnOpen();
-                      }}
-                    >
-                      {menuIcons.folder} Folder
-                    </MenuItem>
-                    <Tooltip
-                      openDelay={500}
-                      label={
-                        !allowedParentsForSelected.includes("select")
-                          ? "Some selected items cannot be added to a question bank"
-                          : null
-                      }
-                    >
-                      <MenuItem
-                        isDisabled={
-                          !allowedParentsForSelected.includes("select")
-                        }
-                        onClick={() => {
-                          setCreateNewType("select");
-                          createDialogOnOpen();
-                        }}
-                      >
-                        {menuIcons.select} Question bank
-                      </MenuItem>
-                    </Tooltip>
-                  </MenuList>
-                </Menu>
+                <CreateContentMenu
+                  sourceContent={selectedCards}
+                  size="xs"
+                  colorScheme="blue"
+                  label="Create from selected"
+                />
               </HStack>
               {addTo !== undefined ? (
                 <Button
@@ -1054,7 +947,6 @@ export function Explore() {
     <>
       {infoDrawer}
       {filterDrawer}
-      {createContentModal}
       {copyContentModal}
       {heading}
       <Hide below="lg">

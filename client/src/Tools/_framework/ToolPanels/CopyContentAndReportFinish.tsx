@@ -48,8 +48,6 @@ export function CopyContentAndReportFinish({
   const actionPastWord = action === "Add" ? "added" : "copied";
   const actionProgressiveWord = action === "Add" ? "Adding" : "Copying";
 
-  const numItems = sourceContent.length;
-
   useEffect(() => {
     async function copyContent() {
       document.body.style.cursor = "wait";
@@ -132,7 +130,8 @@ export function CopyContentAndReportFinish({
               </HStack>
             ) : (
               <>
-                {numItems} item{numItems > 1 ? "s " : " "}
+                {newActivityData.newContentIds.length} item
+                {newActivityData.newContentIds.length > 1 ? "s " : " "}
                 {actionPastWord} to: {destinationDescription}
               </>
             )

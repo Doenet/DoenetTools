@@ -51,8 +51,6 @@ export function CreateContentAndPromptName({
 
   const nameRef = useRef<HTMLInputElement>(null);
 
-  const numItems = sourceContent.length;
-
   useEffect(() => {
     async function copyContent() {
       document.body.style.cursor = "wait";
@@ -137,8 +135,9 @@ export function CreateContentAndPromptName({
               <>
                 <Flex flexDirection="column">
                   <Box>
-                    {typeNameInitialCapital} created with {numItems} item
-                    {numItems > 1 ? "s " : " "}
+                    {typeNameInitialCapital} created with{" "}
+                    {newActivityData.newContentIds.length} item
+                    {newActivityData.newContentIds.length > 1 ? "s " : " "}
                   </Box>
                   <Flex marginTop="10px">
                     Name:

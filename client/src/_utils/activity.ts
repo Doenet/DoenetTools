@@ -10,6 +10,8 @@ import { IconType } from "react-icons/lib";
 import { FaFolder } from "react-icons/fa";
 import { FaListOl } from "react-icons/fa6";
 import { RiArchive2Fill } from "react-icons/ri";
+import React, { ReactElement } from "react";
+import { Icon } from "@chakra-ui/react";
 
 export const activityFeatureIcons = {
   isQuestion: TbPuzzle,
@@ -186,4 +188,19 @@ export function getIconInfo(contentType: ContentType) {
   }
 
   return { iconImage, iconColor };
+}
+
+export const menuIcons: Record<string, ReactElement> = {};
+
+for (const t of ["folder", "sequence", "select", "singleDoc"]) {
+  const ct = t as ContentType;
+  const { iconImage, iconColor } = getIconInfo(ct);
+  const icon = React.createElement(Icon, {
+    as: iconImage,
+    color: iconColor,
+    marginRight: "5px",
+    "aria-label": contentTypeToName[ct],
+  });
+
+  menuIcons[t] = icon;
 }

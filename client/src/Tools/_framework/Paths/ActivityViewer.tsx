@@ -13,6 +13,10 @@ import {
   Icon,
   List,
   ListItem,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Show,
   Text,
   Tooltip,
@@ -25,6 +29,7 @@ import { useFetcher } from "react-router";
 import axios from "axios";
 import {} from "../ToolPanels/ContentSettingsDrawer";
 import {
+  ContentDescription,
   ContentStructure,
   ContentType,
   DocHistoryItem,
@@ -50,6 +55,8 @@ import {
   AddContentToMenu,
   addContentToMenuActions,
 } from "../ToolPanels/AddContentToMenu";
+import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
+import { CloseIcon } from "@chakra-ui/icons";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -63,12 +70,25 @@ export async function action({ request }) {
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
-export async function loader({ params }) {
+export async function loader({ params, request }) {
   const {
     data: { activity: activityData, docHistories },
   } = await axios.get(`/api/getActivityViewerData/${params.activityId}`);
 
   const activityId = params.activityId;
+
+  const url = new URL(request.url);
+  const addToId = url.searchParams.get("addTo");
+  let addTo: ContentDescription | undefined = undefined;
+
+  if (addToId) {
+    try {
+      const { data } = await axios.get(`/api/getContentDescription/${addToId}`);
+      addTo = data;
+    } catch (_e) {
+      console.error(`Could not get description of ${addToId}`);
+    }
+  }
 
   if (activityData.type === "singleDoc") {
     const docId = activityData.documents[0].id;
@@ -87,6 +107,7 @@ export async function loader({ params }) {
       doenetmlVersion,
       activityId,
       contributorHistory,
+      addTo,
     };
   } else {
     const activityJson = compileActivityFromContent(activityData);
@@ -97,6 +118,7 @@ export async function loader({ params }) {
       activityJson,
       activityId,
       contributorHistory: [],
+      addTo,
     };
   }
 }
@@ -106,6 +128,7 @@ export function ActivityViewer() {
     activityId: string;
     activityData: ContentStructure;
     contributorHistory: DocHistoryItem[];
+    addTo?: ContentDescription;
   } & (
     | {
         type: "singleDoc";
@@ -124,6 +147,7 @@ export function ActivityViewer() {
     type: contentType,
     activityData,
     contributorHistory,
+    addTo,
   } = data;
 
   const user = useOutletContext<User>();
@@ -194,6 +218,23 @@ export function ActivityViewer() {
     />
   ) : null;
 
+  const {
+    isOpen: copyDialogIsOpen,
+    onOpen: copyDialogOnOpen,
+    onClose: copyDialogOnClose,
+  } = useDisclosure();
+
+  const copyContentModal =
+    addTo !== undefined ? (
+      <CopyContentAndReportFinish
+        isOpen={copyDialogIsOpen}
+        onClose={copyDialogOnClose}
+        sourceContent={[activityData]}
+        desiredParent={addTo}
+        action="Add"
+      />
+    ) : null;
+
   const fetcher = useFetcher();
 
   const [editLabel, editTooltip, editIcon] = [
@@ -229,6 +270,7 @@ export function ActivityViewer() {
         setSettingsContentId={setSettingsContentId}
         settingsOnOpen={infoOnOpen}
         setSettingsDisplayTab={setDisplayInfoTab}
+        addTo={addTo}
       />
     );
   }
@@ -284,21 +326,61 @@ export function ActivityViewer() {
 
     menuIcons[t] = icon;
   }
-  const addToMenu = (
-    <AddContentToMenu
-      sourceContent={[activityData]}
-      size="sm"
-      label={<Show above="md">Add to</Show>}
-      addRightPadding={true}
-      colorScheme="blue"
-      toolTip={`Add ${contentTypeName.toLowerCase()} to ${allowedParentsPhrase}`}
-      leftIcon={<MdOutlineAdd />}
-    />
-  );
+  let addToMenu: ReactElement;
+
+  if (addTo) {
+    addToMenu = (
+      <Menu>
+        <MenuButton
+          as={Button}
+          size="sm"
+          colorScheme="blue"
+          leftIcon={<MdOutlineAdd />}
+          paddingRight={{ base: "0px", md: "10px" }}
+        >
+          <Show above="md">Add to</Show>
+        </MenuButton>
+        <MenuList>
+          <MenuItem
+            onClick={() => {
+              copyDialogOnOpen();
+            }}
+          >
+            {menuIcons[addTo.type]}{" "}
+            {addTo.name.substring(0, 20) +
+              (addTo.name.length > 20 ? "..." : "")}
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              navigate(".");
+            }}
+          >
+            <CloseIcon marginRight="10px" />
+            Stop adding to:{" "}
+            {addTo.name.substring(0, 20) +
+              (addTo.name.length > 20 ? "..." : "")}
+          </MenuItem>
+        </MenuList>
+      </Menu>
+    );
+  } else {
+    addToMenu = (
+      <AddContentToMenu
+        sourceContent={[activityData]}
+        size="sm"
+        label={<Show above="md">Add to</Show>}
+        addRightPadding={true}
+        colorScheme="blue"
+        toolTip={`Add ${contentTypeName.toLowerCase()} to ${allowedParentsPhrase}`}
+        leftIcon={<MdOutlineAdd />}
+      />
+    );
+  }
 
   return (
     <>
       {infoDrawer}
+      {copyContentModal}
       <Grid
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height

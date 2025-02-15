@@ -55,8 +55,9 @@ export async function moveCopyContentActions({
   if (formObj?._action == "Move or copy") {
     try {
       const sourceContent = JSON.parse(formObj.sourceContent);
+      let numItems = sourceContent.length;
       if (formObj.action === "Add") {
-        await axios.post(`/api/copyContent`, {
+        const { data } = await axios.post(`/api/copyContent`, {
           sourceContent: sourceContent.map((c) => ({
             contentId: c.id,
             type: c.type,
@@ -64,6 +65,7 @@ export async function moveCopyContentActions({
           desiredParentId:
             formObj.folderId === "null" ? null : formObj.folderId,
         });
+        numItems = data.newContentIds?.length;
       } else {
         if (sourceContent.length === 1) {
           await axios.post(`/api/moveContent`, {
@@ -76,7 +78,7 @@ export async function moveCopyContentActions({
           throw Error("Have not implemented moving more than one content");
         }
       }
-      return { success: true };
+      return { success: true, numItems };
     } catch (e) {
       return {
         success: false,
@@ -119,6 +121,7 @@ export function MoveCopyContent({
   const [contentName, setContentName] = useState<string>("");
 
   const [actionFinished, setActionFinished] = useState(false);
+  const [numItems, setNumItems] = useState(0);
   const [errMsg, setErrMsg] = useState("");
   const actionPastWord = action === "Add" ? "added" : "moved";
 
@@ -246,6 +249,7 @@ export function MoveCopyContent({
     if (fetcher.data) {
       if (fetcher.data.success === true) {
         setActionFinished(true);
+        setNumItems(fetcher.data.numItems);
       } else if (fetcher.data.success === false) {
         setErrMsg(fetcher.data.message);
       }
@@ -413,8 +417,8 @@ export function MoveCopyContent({
               errMsg
             ) : actionFinished ? (
               <>
-                {sourceContent.length === 1 ? "1 item" : contentName}{" "}
-                {actionPastWord} to: {destinationDescription}
+                {`${numItems} item${numItems > 0 ? "s" : ""}`} {actionPastWord}{" "}
+                to: {destinationDescription}
               </>
             ) : (
               optionList

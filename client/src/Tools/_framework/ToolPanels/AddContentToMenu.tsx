@@ -6,7 +6,6 @@ import {
 } from "../../../_utils/types";
 import {
   Button,
-  Icon,
   Menu,
   MenuButton,
   MenuGroup,
@@ -21,11 +20,7 @@ import { MoveCopyContent, moveCopyContentActions } from "./MoveCopyContent";
 import { CopyContentAndReportFinish } from "./CopyContentAndReportFinish";
 import { useOutletContext } from "react-router";
 import { User } from "../Paths/SiteHeader";
-import {
-  contentTypeToName,
-  getAllowedParentTypes,
-  getIconInfo,
-} from "../../../_utils/activity";
+import { getAllowedParentTypes, menuIcons } from "../../../_utils/activity";
 
 export async function addContentToMenuActions({
   formObj,
@@ -48,6 +43,7 @@ export function AddContentToMenu({
   leftIcon,
   addRightPadding = false,
   toolTip,
+  followAllowedParents = false,
 }: {
   sourceContent: ContentDescription[];
   size?: ResponsiveValue<(string & {}) | "xs" | "sm" | "md" | "lg">;
@@ -69,6 +65,7 @@ export function AddContentToMenu({
   leftIcon?: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
   addRightPadding?: boolean;
   toolTip?: string;
+  followAllowedParents?: boolean;
 }) {
   const user = useOutletContext<User>();
 
@@ -122,23 +119,6 @@ export function AddContentToMenu({
     />
   ) : null;
 
-  const menuIcons: Record<string, ReactElement> = {};
-
-  for (const t of ["folder", "sequence", "select", "singleDoc"]) {
-    const ct = t as ContentType;
-    const { iconImage, iconColor } = getIconInfo(ct);
-    const icon = (
-      <Icon
-        as={iconImage}
-        color={iconColor}
-        marginRight="5px"
-        aria-label={contentTypeToName[ct]}
-      />
-    );
-
-    menuIcons[t] = icon;
-  }
-
   let menuButton = (
     <MenuButton
       as={Button}
@@ -170,7 +150,7 @@ export function AddContentToMenu({
             {
               params: {
                 mode: "edit",
-                restrictToTypes: allowedParents,
+                restrictToTypes: followAllowedParents ? allowedParents : null,
               },
             },
           );
@@ -207,7 +187,7 @@ export function AddContentToMenu({
             label={
               !baseContains.includes("sequence")
                 ? "No existing problem sets"
-                : !allowedParents.includes("sequence")
+                : followAllowedParents && !allowedParents.includes("sequence")
                   ? "Some selected items cannot be added to a problem set"
                   : null
             }
@@ -215,7 +195,7 @@ export function AddContentToMenu({
             <MenuItem
               isDisabled={
                 !baseContains.includes("sequence") ||
-                !allowedParents.includes("sequence")
+                (followAllowedParents && !allowedParents.includes("sequence"))
               }
               onClick={() => {
                 setAddToType("sequence");
@@ -246,7 +226,7 @@ export function AddContentToMenu({
             label={
               !baseContains.includes("select")
                 ? "No existing question banks"
-                : !allowedParents.includes("select")
+                : followAllowedParents && !allowedParents.includes("select")
                   ? "Some selected items cannot be added to a question bank"
                   : null
             }
@@ -254,7 +234,7 @@ export function AddContentToMenu({
             <MenuItem
               isDisabled={
                 !baseContains.includes("select") ||
-                !allowedParents.includes("select")
+                (followAllowedParents && !allowedParents.includes("select"))
               }
               onClick={() => {
                 setAddToType("select");
@@ -279,19 +259,23 @@ export function AddContentToMenu({
                   key={rc.id}
                   openDelay={500}
                   label={
-                    !allowedParents.includes(rc.type)
+                    followAllowedParents && !allowedParents.includes(rc.type)
                       ? `Some selected items cannot be added to a ${rc.type === "select" ? "question bank" : "problem set"}`
                       : null
                   }
                 >
                   <MenuItem
-                    isDisabled={!allowedParents.includes(rc.type)}
+                    isDisabled={
+                      followAllowedParents && !allowedParents.includes(rc.type)
+                    }
                     onClick={() => {
                       setCopyDestination(rc);
                       copyDialogOnOpen();
                     }}
                   >
-                    {menuIcons[rc.type]} {rc.name}
+                    {menuIcons[rc.type]}{" "}
+                    {rc.name.substring(0, 20) +
+                      (rc.name.length > 20 ? "..." : "")}
                   </MenuItem>
                 </Tooltip>
               ))}
