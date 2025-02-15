@@ -361,7 +361,7 @@ export default function Card({
         <Flex height={cardHeight} width="60px" alignContent="center">
           {(numVariants ?? 1) > 1 ? (
             <Box alignContent="center">
-              <Tooltip label={`This activity has ${numVariants} variants`}>
+              <Tooltip label={`This document has ${numVariants} variants`}>
                 <Badge>
                   {" "}
                   <Icon

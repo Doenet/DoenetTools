@@ -23,6 +23,8 @@ import {
   makeFolderPrivate,
   shareActivity,
   getDocumentSource,
+  getContentDescription,
+  shareFolder,
 } from "../model";
 import { DateTime } from "luxon";
 import { ContentStructure } from "../types";
@@ -846,4 +848,62 @@ test("getDocumentSource gets source", async () => {
 
   const documentSource = await getDocumentSource(docId, ownerId);
   expect(documentSource.source).eq("some content");
+});
+
+test.only("getContentDescription gets name and type", async () => {
+  const { userId: ownerId } = await createTestUser();
+
+  const { activityId } = await createActivity(ownerId, null);
+  await updateContent({ id: activityId, name: "Activity 1", ownerId });
+  expect(await getContentDescription(activityId, ownerId)).eqls({
+    id: activityId,
+    name: "Activity 1",
+    type: "singleDoc",
+  });
+
+  const { folderId } = await createFolder(ownerId, null);
+  await updateContent({ id: folderId, name: "Folder 2", ownerId });
+  expect(await getContentDescription(folderId, ownerId)).eqls({
+    id: folderId,
+    name: "Folder 2",
+    type: "folder",
+  });
+
+  const { folderId: sequenceId } = await createFolder(
+    ownerId,
+    null,
+    "sequence",
+  );
+  await updateContent({ id: sequenceId, name: "Sequence 3", ownerId });
+  expect(await getContentDescription(sequenceId, ownerId)).eqls({
+    id: sequenceId,
+    name: "Sequence 3",
+    type: "sequence",
+  });
+
+  const { folderId: selectId } = await createFolder(ownerId, null, "select");
+  await updateContent({ id: selectId, name: "Select 4", ownerId });
+  expect(await getContentDescription(selectId, ownerId)).eqls({
+    id: selectId,
+    name: "Select 4",
+    type: "select",
+  });
+
+  const { userId: userId } = await createTestUser();
+  await expect(getContentDescription(selectId, userId)).rejects.toThrow(
+    "not found",
+  );
+
+  await shareFolder({
+    id: selectId,
+    ownerId,
+    licenseCode: "CCDUAL",
+    users: [userId],
+  });
+
+  expect(await getContentDescription(selectId, userId)).eqls({
+    id: selectId,
+    name: "Select 4",
+    type: "select",
+  });
 });

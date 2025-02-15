@@ -481,7 +481,7 @@ export function GeneralContentControls({
 
       {(contentData.numVariants ?? 1) > 1 ? (
         <Box marginTop="20px">
-          This activity has {contentData.numVariants} variants.
+          This document has {contentData.numVariants} variants.
         </Box>
       ) : null}
 

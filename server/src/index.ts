@@ -99,6 +99,7 @@ import {
   getRecentContent,
   copyContent,
   checkIfFolderContains,
+  getContentDescription,
 } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
@@ -1820,6 +1821,32 @@ app.get("/api/getAllLicenses", async (_req: Request, res: Response) => {
   const allLicenses = await getAllLicenses();
   res.send(allLicenses);
 });
+
+app.get(
+  "/api/getContentDescription/:contentId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
+    const contentId = toUUID(req.params.contentId);
+
+    try {
+      const contentDescription = await getContentDescription(
+        contentId,
+        loggedInUserId,
+      );
+
+      res.send({
+        ...contentDescription,
+        id: fromUUID(contentDescription.id),
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
 
 app.get(
   "/api/getActivityViewerData/:activityId",

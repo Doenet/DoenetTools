@@ -484,6 +484,24 @@ export async function getActivityName(id: Uint8Array) {
   });
 }
 
+export async function getContentDescription(
+  id: Uint8Array,
+  loggedInUserId: Uint8Array,
+) {
+  return await prisma.content.findUniqueOrThrow({
+    where: {
+      id,
+      isDeleted: false,
+      OR: [
+        { ownerId: loggedInUserId },
+        { isPublic: true },
+        { sharedWith: { some: { userId: loggedInUserId } } },
+      ],
+    },
+    select: { id: true, name: true, type: true },
+  });
+}
+
 // Note: getDoc does not currently incorporate access control,
 // by relies on calling functions to determine access
 export async function getDoc(id: Uint8Array) {
@@ -1002,6 +1020,7 @@ export async function copyFolderToFolder(
   let desiredFolderIsPublic = false;
   let desiredFolderLicenseCode: LicenseCode = "CCDUAL";
   let desiredFolderShares: Uint8Array[] = [];
+  let desiredFolderType: ContentType = "folder";
 
   if (desiredParentId !== null) {
     // if desired parent is specified, make sure it exists and is owned by `ownerId`
@@ -1014,10 +1033,13 @@ export async function copyFolderToFolder(
       },
       select: {
         isPublic: true,
+        type: true,
         licenseCode: true,
         sharedWith: { select: { userId: true } },
       },
     });
+
+    desiredFolderType = parent.type;
 
     // If the parent folder is shared, then we'll need to share the resulting content, as well,
     // with the same license.
@@ -1068,39 +1090,74 @@ export async function copyFolderToFolder(
 
   const sortIndex = await getNextSortIndexForFolder(ownerId, desiredParentId);
 
-  // Duplicate the folder itself
+  // if `originalContent` is not allowed to be a child of `desiredParentId`,
+  // then copy the children of `originalContent` rather than the content itself
 
-  const newFolder = await prisma.content.create({
-    data: {
-      name: (prependCopy ? "Copy of " : "") + originalContent.name,
-      isFolder: originalContent.isFolder,
-      type: originalContent.type,
-      ownerId,
-      parentId: desiredParentId,
-      sortIndex,
-      licenseCode: originalContent.licenseCode ?? desiredFolderLicenseCode,
-      isPublic: desiredFolderIsPublic,
-      sharedWith: {
-        create: desiredFolderShares.map((u) => ({ userId: u })),
-      },
-      numToSelect: originalContent.numToSelect,
-      selectByVariant: originalContent.selectByVariant,
-      shuffle: originalContent.shuffle,
-      paginate: originalContent.paginate,
-      activityLevelAttempts: originalContent.activityLevelAttempts,
-      itemLevelAttempts: originalContent.itemLevelAttempts,
-    },
-  });
+  const copyJustChildren =
+    (desiredFolderType === "sequence" &&
+      (originalContent.type === "sequence" ||
+        originalContent.type === "folder")) ||
+    desiredFolderType === "select";
 
-  for (const child of originalContent.children) {
-    if (child.type === "singleDoc") {
-      await copyActivityToFolder(child.id, ownerId, newFolder.id, false);
-    } else {
-      await copyFolderToFolder(child.id, ownerId, newFolder.id, false);
+  if (copyJustChildren) {
+    const newIds: Uint8Array[] = [];
+
+    // copy just the children of originalContent into `desireParentId`
+    for (const child of originalContent.children) {
+      if (child.type === "singleDoc") {
+        const contentId = await copyActivityToFolder(
+          child.id,
+          ownerId,
+          desiredParentId,
+          false,
+        );
+        newIds.push(contentId);
+      } else {
+        const contentIds = await copyFolderToFolder(
+          child.id,
+          ownerId,
+          desiredParentId,
+          false,
+        );
+        newIds.push(...contentIds);
+      }
     }
-  }
+    return newIds;
+  } else {
+    // Duplicate the folder itself and make it a child of `desiredParentId`.
 
-  return newFolder.id;
+    const newFolder = await prisma.content.create({
+      data: {
+        name: (prependCopy ? "Copy of " : "") + originalContent.name,
+        isFolder: originalContent.isFolder,
+        type: originalContent.type,
+        ownerId,
+        parentId: desiredParentId,
+        sortIndex,
+        licenseCode: originalContent.licenseCode ?? desiredFolderLicenseCode,
+        isPublic: desiredFolderIsPublic,
+        sharedWith: {
+          create: desiredFolderShares.map((u) => ({ userId: u })),
+        },
+        numToSelect: originalContent.numToSelect,
+        selectByVariant: originalContent.selectByVariant,
+        shuffle: originalContent.shuffle,
+        paginate: originalContent.paginate,
+        activityLevelAttempts: originalContent.activityLevelAttempts,
+        itemLevelAttempts: originalContent.itemLevelAttempts,
+      },
+    });
+
+    for (const child of originalContent.children) {
+      if (child.type === "singleDoc") {
+        await copyActivityToFolder(child.id, ownerId, newFolder.id, false);
+      } else {
+        await copyFolderToFolder(child.id, ownerId, newFolder.id, false);
+      }
+    }
+
+    return [newFolder.id];
+  }
 }
 
 export async function copyContent(
@@ -1118,7 +1175,7 @@ export async function copyContent(
       );
     } else {
       newContentIds.push(
-        await copyFolderToFolder(contentId, userId, parentId, prependCopy),
+        ...(await copyFolderToFolder(contentId, userId, parentId, prependCopy)),
       );
     }
   }
