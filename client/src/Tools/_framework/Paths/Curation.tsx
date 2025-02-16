@@ -7,9 +7,6 @@ import {
   MenuItem,
   Heading,
   Tooltip,
-  Menu,
-  MenuButton,
-  MenuList,
   IconButton,
   Input,
   Spacer,
@@ -21,7 +18,6 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  redirect,
   useLoaderData,
   useNavigate,
   useFetcher,
@@ -41,52 +37,38 @@ import {
   ContentSettingsDrawer,
 } from "../ToolPanels/ContentSettingsDrawer";
 import {
-  assignmentSettingsActions,
-  AssignmentSettingsDrawer,
-} from "../ToolPanels/AssignmentSettingsDrawer";
-import {
-  AssignmentStatus,
   ContentFeature,
   ContentStructure,
-  ContentType,
   DoenetmlVersion,
-  License,
   LicenseCode,
   UserInfo,
+  ContentType,
 } from "./../../../_utils/types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
-import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 import { formatTime } from "../../../_utils/dateUtilityFunction";
 import {
   ToggleViewButtonGroup,
   toggleViewButtonGroupActions,
 } from "../ToolPanels/ToggleViewButtonGroup";
-import {
-  contentTypeToName,
-  getAllowedParentTypes,
-} from "../../../_utils/activity";
+import { getAllowedParentTypes } from "../../../_utils/activity";
 import {
   CreateFolderModal,
   createFolderModalActions,
 } from "../ToolPanels/CreateFolderModal";
-import { DeleteModal, deleteModalActions } from "../ToolPanels/DeleteModal";
+import { CurateDrawer, curateDrawerActions } from "../ToolPanels/CurateDrawer";
 
-export async function action({ request, params }) {
+export async function action({ request }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
+
+  const resultsCurate = await curateDrawerActions({ formObj });
+  if (resultsCurate) {
+    return resultsCurate;
+  }
 
   const resultCS = await contentSettingsActions({ formObj });
   if (resultCS) {
     return resultCS;
-  }
-
-  const resultSD = await shareDrawerActions({ formObj });
-  if (resultSD) {
-    return resultSD;
-  }
-  const resultAS = await assignmentSettingsActions({ formObj });
-  if (resultAS) {
-    return resultAS;
   }
 
   const resultMC = await moveCopyContentActions({ formObj });
@@ -104,39 +86,33 @@ export async function action({ request, params }) {
     return resultCF;
   }
 
-  const resultDM = await deleteModalActions({ formObj });
-  if (resultDM) {
-    return resultDM;
-  }
-
-  if (formObj?._action == "Add Activity") {
-    //Create an activity and redirect to the editor for it
-    const { data } = await axios.post(
-      `/api/createActivity/${params.folderId ?? ""}`,
-      { type: formObj.type },
-    );
-
-    const { activityId } = data;
-    return redirect(`/activityEditor/${activityId}`);
-  } else if (formObj?._action == "Duplicate Content") {
-    await axios.post(`/api/copyContent`, {
-      sourceContent: [{ contentId: formObj.id, type: formObj.contentType }],
-      desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
-      prependCopy: true,
+  if (formObj?._action == "Delete Draft") {
+    await axios.post(`/api/deleteDraftFromLibrary`, {
+      activityId: formObj.id,
     });
     return true;
+
+    // TODO: Figure out how to delete folders in library (some activities may be published)
+    // One idea is that you can only delete folders that are empty (or have only drafts?)
+
+    // } else if (formObj?._action == "Delete Folder") {
+    //   await axios.post(`/api/deleteCurationFolder`, {
+    //     folderId: formObj.id === "null" ? null : formObj.id,
+    //   });
+    //   return true;
   } else if (formObj?._action == "Move") {
-    await axios.post(`/api/moveContent`, {
+    await axios.post(`/api/moveCurationContent`, {
       id: formObj.id,
       desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
       desiredPosition: formObj.desiredPosition,
     });
     return true;
-  } else if (formObj?._action == "Set List View Preferred") {
-    await axios.post(`/api/setPreferredFolderView`, {
-      cardView: formObj.listViewPref === "false",
-    });
-    return true;
+
+    // } else if (formObj?._action == "Set List View Preferred") {
+    //   await axios.post(`/api/setPreferredFolderView`, {
+    //     cardView: formObj.listViewPref === "false",
+    //   });
+    //   return true;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
@@ -149,20 +125,14 @@ export async function loader({ params, request }) {
   let data;
   if (q) {
     const results = await axios.get(
-      `/api/searchMyFolderContent/${params.userId}/${params.folderId ?? ""}?q=${q}`,
+      `/api/searchCurationFolderContent/${params.folderId ?? ""}?q=${q}`,
     );
     data = results.data;
   } else {
     const results = await axios.get(
-      `/api/getMyFolderContent/${params.userId}/${params.folderId ?? ""}`,
+      `/api/getCurationFolderContent/${params.folderId ?? ""}`,
     );
     data = results.data;
-  }
-
-  if (data.notMe) {
-    return redirect(
-      `/sharedActivities/${params.userId}${params.folderId ? "/" + params.folderId : ""}`,
-    );
   }
 
   const prefData = await axios.get(`/api/getPreferredFolderView`);
@@ -181,12 +151,11 @@ export async function loader({ params, request }) {
   };
 }
 
-export function Activities() {
+export function Curation() {
   const {
     folderId,
     content,
     allDoenetmlVersions,
-    allLicenses,
     availableFeatures,
     userId,
     folder,
@@ -196,13 +165,13 @@ export function Activities() {
     folderId: string | null;
     content: ContentStructure[];
     allDoenetmlVersions: DoenetmlVersion[];
-    allLicenses: License[];
     availableFeatures: ContentFeature[];
     userId: string;
     folder: ContentStructure | null;
     listViewPref: boolean;
     query: string | null;
   };
+
   const [settingsContentId, setSettingsContentId] = useState<string | null>(
     null,
   );
@@ -213,27 +182,15 @@ export function Activities() {
   } = useDisclosure();
 
   const {
-    isOpen: sharingIsOpen,
-    onOpen: sharingOnOpen,
-    onClose: sharingOnClose,
-  } = useDisclosure();
-
-  const {
-    isOpen: assignmentSettingsAreOpen,
-    onOpen: assignmentSettingsOnOpen,
-    onClose: assignmentSettingsOnClose,
+    isOpen: curateIsOpen,
+    onOpen: curateOnOpen,
+    onClose: curateOnClose,
   } = useDisclosure();
 
   const {
     isOpen: createFolderIsOpen,
     onOpen: createFolderOnOpen,
     onClose: createFolderOnClose,
-  } = useDisclosure();
-
-  const {
-    isOpen: deleteContentIsOpen,
-    onOpen: deleteContentOnOpen,
-    onClose: deleteContentOnClose,
   } = useDisclosure();
 
   // refs to the menu button of each content card,
@@ -295,7 +252,7 @@ export function Activities() {
   const [highlightRename, setHighlightRename] = useState(false);
 
   useEffect(() => {
-    document.title = `Activities - Doenet`;
+    document.title = `Curation - Doenet`;
   }, []);
 
   const fetcher = useFetcher();
@@ -305,7 +262,6 @@ export function Activities() {
     name,
     position,
     numCards,
-    assignmentStatus,
     contentType,
     isFolder,
     isPublic,
@@ -318,7 +274,6 @@ export function Activities() {
     name: string;
     position: number;
     numCards: number;
-    assignmentStatus: AssignmentStatus;
     contentType: ContentType;
     isFolder: boolean;
     isPublic: boolean;
@@ -327,10 +282,9 @@ export function Activities() {
     licenseCode: LicenseCode | null;
     parentId: string | null;
   }) {
-    const contentTypeName = contentTypeToName[contentType];
-
     return (
       <>
+        {" "}
         <MenuItem
           data-test="Rename Menu Item"
           onClick={() => {
@@ -341,22 +295,6 @@ export function Activities() {
           }}
         >
           Rename
-        </MenuItem>
-        <MenuItem
-          data-test={"Duplicate Content"}
-          onClick={() => {
-            fetcher.submit(
-              {
-                _action: "Duplicate Content",
-                id,
-                folderId,
-                contentType,
-              },
-              { method: "post" },
-            );
-          }}
-        >
-          Duplicate {contentTypeName}
         </MenuItem>
         {position > 0 && !haveQuery ? (
           <MenuItem
@@ -410,40 +348,36 @@ export function Activities() {
               moveCopyContentOnOpen();
             }}
           >
-            Move&hellip;
+            Move to Folder
           </MenuItem>
         )}
-        <MenuItem
-          data-test="Delete Menu Item"
-          onClick={() => {
-            setSettingsContentId(id);
-            deleteContentOnOpen();
-          }}
-        >
-          Delete
-        </MenuItem>
-        {!isFolder ? (
+        {!isFolder && !isPublic ? (
           <MenuItem
-            data-test="Assign Activity Menu Item"
+            data-test="Delete Draft"
             onClick={() => {
-              setSettingsContentId(id);
-              assignmentSettingsOnOpen();
+              fetcher.submit(
+                {
+                  _action: "Delete Draft",
+                  id,
+                },
+                { method: "post" },
+              );
             }}
           >
-            {assignmentStatus === "Unassigned"
-              ? "Assign Activity"
-              : "Manage Assignment"}
+            Delete Draft
           </MenuItem>
         ) : null}
-        <MenuItem
-          data-test="Share Menu Item"
-          onClick={() => {
-            setSettingsContentId(id);
-            sharingOnOpen();
-          }}
-        >
-          Share
-        </MenuItem>
+        {isFolder ? null : (
+          <MenuItem
+            data-test="Curate Menu Item"
+            onClick={() => {
+              setSettingsContentId(id);
+              curateOnOpen();
+            }}
+          >
+            Curate
+          </MenuItem>
+        )}
         <MenuItem
           data-test="Settings Menu Item"
           onClick={() => {
@@ -459,9 +393,7 @@ export function Activities() {
           <MenuItem
             data-test="Go to containing folder"
             onClick={() => {
-              navigate(
-                `/activities/${userId}${parentId ? "/" + parentId : ""}`,
-              );
+              navigate(`/curation/${parentId ? "/" + parentId : ""}`);
             }}
           >
             Go to containing folder
@@ -484,7 +416,7 @@ export function Activities() {
       {folderType}: {folder.name}
     </>
   ) : (
-    `My Activities`
+    `Curation`
   );
 
   let contentData: ContentStructure | undefined;
@@ -518,23 +450,11 @@ export function Activities() {
       />
     ) : null;
 
-  const shareDrawer =
+  const curateDrawer =
     contentData && settingsContentId ? (
-      <ShareDrawer
-        isOpen={sharingIsOpen}
-        onClose={sharingOnClose}
-        contentData={contentData}
-        allLicenses={allLicenses}
-        finalFocusRef={finalFocusRef}
-        fetcher={fetcher}
-      />
-    ) : null;
-  const assignmentDrawer =
-    contentData && settingsContentId ? (
-      <AssignmentSettingsDrawer
-        isOpen={assignmentSettingsAreOpen}
-        onClose={assignmentSettingsOnClose}
-        id={settingsContentId}
+      <CurateDrawer
+        isOpen={curateIsOpen}
+        onClose={curateOnClose}
         contentData={contentData}
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
@@ -563,17 +483,6 @@ export function Activities() {
       finalFocusRef={finalFocusRef}
     />
   );
-
-  const deleteModal =
-    contentData && settingsContentId ? (
-      <DeleteModal
-        isOpen={deleteContentIsOpen}
-        onClose={deleteContentOnClose}
-        content={contentData}
-        fetcher={fetcher}
-        finalFocusRef={finalFocusRef}
-      />
-    ) : null;
 
   const heading = (
     <Box
@@ -607,9 +516,7 @@ export function Activities() {
                   colorScheme="blue"
                   width="250px"
                   ref={searchRef}
-                  placeholder={
-                    folder ? `Search in folder` : `Search my activities`
-                  }
+                  placeholder={folder ? `Search in folder` : `Search curation`}
                   value={searchString}
                   name="q"
                   onInput={(e) => {
@@ -622,16 +529,14 @@ export function Activities() {
                   }}
                 />
                 <Tooltip
-                  label={folder ? `Search in folder` : `Search my activities`}
+                  label={folder ? `Search in folder` : `Search curation`}
                   placement="bottom-end"
                 >
                   <IconButton
                     size="sm"
                     colorScheme="blue"
                     icon={<MdOutlineSearch />}
-                    aria-label={
-                      folder ? `Search in folder` : `Search my activities`
-                    }
+                    aria-label={folder ? `Search in folder` : `Search curation`}
                     type="submit"
                     onClick={(e) => {
                       if (focusSearch) {
@@ -648,89 +553,17 @@ export function Activities() {
                 </Tooltip>
               </Form>
             </Flex>
-            <Menu>
-              <MenuButton
-                as={Button}
-                size="sm"
-                colorScheme="blue"
-                hidden={searchOpen}
-                data-test="New Button"
-              >
-                {haveContentSpinner ? <Spinner size="sm" /> : "New"}
-              </MenuButton>
-              <MenuList>
-                <MenuItem
-                  data-test="Add Document Button"
-                  onClick={async () => {
-                    setHaveContentSpinner(true);
-                    fetcher.submit(
-                      { _action: "Add Activity", type: "singleDoc" },
-                      { method: "post" },
-                    );
-                  }}
-                >
-                  Document
-                </MenuItem>
-                <MenuItem
-                  data-test="Add Problem Set Button"
-                  onClick={async () => {
-                    setHaveContentSpinner(true);
-                    fetcher.submit(
-                      { _action: "Add Activity", type: "sequence" },
-                      { method: "post" },
-                    );
-                  }}
-                >
-                  Problem Set
-                </MenuItem>
-                <MenuItem
-                  data-test="Add Folder Button"
-                  onClick={() => {
-                    createFolderOnOpen();
-                  }}
-                >
-                  Folder
-                </MenuItem>
-                <MenuItem
-                  data-test="Add Question Bank Button"
-                  onClick={async () => {
-                    setHaveContentSpinner(true);
-                    fetcher.submit(
-                      { _action: "Add Activity", type: "select" },
-                      { method: "post" },
-                    );
-                  }}
-                >
-                  Question Bank
-                </MenuItem>
-              </MenuList>
-            </Menu>
-
-            {folderId !== null ? (
-              <Button
-                colorScheme="blue"
-                size="sm"
-                ref={folderSettingsRef}
-                onClick={() => {
-                  setSettingsContentId(folderId);
-                  sharingOnOpen();
-                }}
-                hidden={searchOpen}
-              >
-                Share
-              </Button>
-            ) : null}
             <Button
-              colorScheme="blue"
+              as={Button}
               size="sm"
-              onClick={() =>
-                navigate(
-                  `/allAssignmentScores${folderId ? "/" + folderId : ""}`,
-                )
-              }
+              colorScheme="blue"
               hidden={searchOpen}
+              data-test="New Folder Button"
+              onClick={() => {
+                createFolderOnOpen();
+              }}
             >
-              See Scores
+              {haveContentSpinner ? <Spinner size="sm" /> : "New Folder"}
             </Button>
           </HStack>
         </Flex>
@@ -744,7 +577,7 @@ export function Activities() {
           {folder && !haveQuery ? (
             <Box>
               <Link
-                to={`/activities/${userId}${folder.parent ? "/" + folder.parent.id : ""}`}
+                to={`/curation${folder.parent ? "/" + folder.parent.id : ""}`}
                 style={{
                   color: "var(--mainBlue)",
                 }}
@@ -752,7 +585,7 @@ export function Activities() {
                 <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
                   <Show above="sm">
                     &lt; Back to{" "}
-                    {folder.parent ? folder.parent.name : `My Activities`}
+                    {folder.parent ? folder.parent.name : `Curation`}
                   </Show>
                   <Hide above="sm">&lt; Back</Hide>
                 </Text>
@@ -813,26 +646,24 @@ export function Activities() {
         name: activity.name,
         position,
         numCards: content.length,
-        assignmentStatus: activity.assignmentStatus,
         contentType: activity.type,
         isPublic: activity.isPublic,
-        isFolder: activity.isFolder!,
         isShared: activity.isShared,
         sharedWith: activity.sharedWith,
         licenseCode: activity.license?.code ?? null,
         parentId: activity.parent?.id ?? null,
+        isFolder: activity.isFolder!,
       }),
-      cardLink:
-        activity.type === "folder"
-          ? `/activities/${activity.ownerId}/${activity.id}`
-          : `/activityEditor/${activity.id}`,
+      cardLink: activity.isFolder
+        ? `/curation/${activity.id}`
+        : `/activityEditor/${activity.id}`,
     };
   });
 
   const mainPanel = (
     <CardList
       showOwnerName={false}
-      showAssignmentStatus={true}
+      showAssignmentStatus={false}
       showPublicStatus={true}
       showActivityFeatures={true}
       emptyMessage={emptyMessage}
@@ -844,11 +675,9 @@ export function Activities() {
   return (
     <>
       {settingsDrawer}
-      {shareDrawer}
-      {assignmentDrawer}
+      {curateDrawer}
       {moveCopyContentModal}
       {createFolderModal}
-      {deleteModal}
 
       {heading}
 

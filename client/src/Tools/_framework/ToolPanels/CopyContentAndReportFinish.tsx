@@ -19,6 +19,7 @@ import { contentTypeToName } from "../../../_utils/activity";
 
 /**
  * A modal that immediately upon opening copies source content into a parent or Activities
+ * Alternatively, if the `copyToLibrary` flag is set and the user is an admin, it copies the activity into the library as a draft.
  *
  * When the copy is finished, the modal allows the user to close it or navigate to the parent.
  */
@@ -29,6 +30,7 @@ export function CopyContentAndReportFinish({
   sourceContent,
   desiredParent,
   action,
+  copyToLibrary,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -36,6 +38,7 @@ export function CopyContentAndReportFinish({
   sourceContent: { id: string; type: ContentType }[];
   desiredParent: { id: string; name: string; type: ContentType } | null;
   action: "Copy" | "Add";
+  copyToLibrary?: boolean;
 }) {
   const [newActivityData, setNewActivityData] = useState<{
     newContentIds: string[];
@@ -53,15 +56,28 @@ export function CopyContentAndReportFinish({
       document.body.style.cursor = "wait";
 
       try {
-        const { data } = await axios.post(`/api/copyContent`, {
-          sourceContent: sourceContent.map((s) => ({
-            contentId: s.id,
-            type: s.type,
-          })),
-          desiredParentId: desiredParent ? desiredParent.id : null,
-        });
+        if (copyToLibrary) {
+          let userId: string = "";
+          const newContentIds: string[] = [];
+          for (const s of sourceContent) {
+            const { data } = await axios.post(`/api/addDraftToLibrary`, {
+              activityId: s.id,
+            });
+            userId = data.userId;
+            newContentIds.push(data.newActivityId);
+          }
+          setNewActivityData({ newContentIds, userId });
+        } else {
+          const { data } = await axios.post(`/api/copyContent`, {
+            sourceContent: sourceContent.map((s) => ({
+              contentId: s.id,
+              type: s.type,
+            })),
+            desiredParentId: desiredParent ? desiredParent.id : null,
+          });
 
-        setNewActivityData(data);
+          setNewActivityData(data);
+        }
       } catch (e) {
         console.error(e);
         setErrMsg(
@@ -100,8 +116,14 @@ export function CopyContentAndReportFinish({
       destinationUrl = `/activityEditor/${desiredParent.id}`;
     }
   } else {
-    destinationDescription = <>My Activities</>;
-    destinationAction = "Go to Activities";
+    destinationDescription = copyToLibrary ? (
+      <>the library</>
+    ) : (
+      <>My Activities</>
+    );
+    destinationAction = copyToLibrary
+      ? "Go to the library"
+      : "Go to Activities";
     destinationUrl = `/activities/${newActivityData?.userId}`;
   }
 

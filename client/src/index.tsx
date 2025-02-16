@@ -12,7 +12,16 @@ import {
   Explore,
 } from "./Tools/_framework/Paths/Explore";
 import { action as communityAdminAction } from "./Tools/_framework/Paths/CommunityAdmin";
-import { loader as adminLoader, Admin } from "./Tools/_framework/Paths/Admin";
+import {
+  loader as adminLoader,
+  OldAdmin,
+} from "./Tools/_framework/Paths/OldAdmin";
+import {
+  loader as curationLoader,
+  action as curationAction,
+  Curation,
+} from "./Tools/_framework/Paths/Curation";
+
 import {
   loader as siteLoader,
   SiteHeader,
@@ -228,7 +237,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "admin",
+        path: "oldAdmin",
         loader: adminLoader,
         // sharing an action with the explore page is somewhat intentional
         // as it shows cards and admins have the same actions that they can perform
@@ -236,7 +245,21 @@ const router = createBrowserRouter([
         // TODO - determine if this is an okay way to share functionality across
         // pages or a bad idea
         action: communityAdminAction,
-        element: <Admin />,
+        element: <OldAdmin />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "curation",
+        loader: curationLoader,
+        action: curationAction,
+        element: <Curation />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "curation/:folderId",
+        loader: curationLoader,
+        action: curationAction,
+        element: <Curation />,
         errorElement: <ErrorPage />,
       },
       {

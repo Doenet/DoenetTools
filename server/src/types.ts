@@ -10,6 +10,27 @@ export type DoenetmlVersion = {
 
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
+export type LibraryInfo = {
+  sourceId: Uint8Array;
+  activityId: Uint8Array | null;
+  ownerRequested?: boolean;
+  status:
+    | "none"
+    | "PENDING_REVIEW"
+    | "REQUEST_REMOVED"
+    | "PUBLISHED"
+    | "NEEDS_REVISION";
+  comments?: string;
+};
+
+export function blankLibraryInfo(sourceId: Uint8Array): LibraryInfo {
+  return {
+    sourceId,
+    activityId: null,
+    status: "none",
+  };
+}
+
 export type UserInfo = {
   userId: Uint8Array;
   firstNames: string | null;
@@ -72,7 +93,7 @@ export type PartialContentClassification = {
     type?: string;
     categoriesInDescription: boolean;
   };
-  numLibrary?: number;
+  numCurated?: number;
   numCommunity?: number;
 };
 export type ContentType = "singleDoc" | "select" | "sequence" | "folder";
@@ -115,6 +136,8 @@ export type ContentStructure = {
     sortIndex: number;
   }[];
   classifications: ContentClassification[];
+  librarySourceInfo?: LibraryInfo;
+  libraryActivityInfo?: LibraryInfo;
   documents: {
     id: Uint8Array;
     versionNum?: number;
@@ -133,6 +156,42 @@ export type ContentStructure = {
   } | null;
   children: ContentStructure[];
 };
+
+export function createContentStructure({
+  activityId,
+  ownerId,
+}: {
+  activityId: Uint8Array;
+  ownerId: Uint8Array;
+}) {
+  const defaultStructure: ContentStructure = {
+    id: activityId,
+    type: "singleDoc",
+    name: "",
+    ownerId: ownerId,
+    imagePath: null,
+    assignmentStatus: "Unassigned",
+    classCode: null,
+    codeValidUntil: null,
+    isPublic: false,
+    isShared: false,
+    sharedWith: [],
+    license: null,
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
+    contentFeatures: [],
+    classifications: [],
+    documents: [],
+    hasScoreData: false,
+    parent: null,
+    children: [],
+  };
+  return defaultStructure;
+}
 
 export type LicenseCode = "CCDUAL" | "CCBYSA" | "CCBYNCSA";
 

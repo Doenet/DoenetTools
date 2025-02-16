@@ -1,5 +1,10 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
-import { useLoaderData, useNavigate, useOutletContext } from "react-router";
+import {
+  useLoaderData,
+  useNavigate,
+  useOutletContext,
+  Link as ReactRouterLink,
+} from "react-router";
 
 import {
   Box,
@@ -11,12 +16,21 @@ import {
   Heading,
   HStack,
   Icon,
+  IconButton,
+  Link as ChakraLink,
   List,
   ListItem,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverHeader,
+  PopoverBody,
+  PopoverArrow,
+  PopoverCloseButton,
   Show,
   Text,
   Tooltip,
@@ -26,12 +40,12 @@ import {
 import { BsPlayBtnFill } from "react-icons/bs";
 import { MdOutlineAdd, MdOutlineEditOff, MdOutlineInfo } from "react-icons/md";
 import { useFetcher } from "react-router";
+
 import axios from "axios";
 import {} from "../ToolPanels/ContentSettingsDrawer";
 import {
   ContentDescription,
   ContentStructure,
-  ContentType,
   DocHistoryItem,
   DoenetmlVersion,
 } from "../../../_utils/types";
@@ -43,6 +57,7 @@ import {
   getAllowedParentTypes,
   getClassificationAugmentedDescription,
   getIconInfo,
+  menuIcons,
 } from "../../../_utils/activity";
 import { ActivitySource } from "../../../_utils/viewerTypes";
 import { processContributorHistory } from "../../../_utils/processRemixes";
@@ -57,6 +72,8 @@ import {
 } from "../ToolPanels/AddContentToMenu";
 import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
 import { CloseIcon } from "@chakra-ui/icons";
+import { BsBookmarkCheck } from "react-icons/bs";
+import { ImCheckmark } from "react-icons/im";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -142,6 +159,7 @@ export function ActivityViewer() {
       }
   );
 
+  const [copyToLibrary, setCopyToLibrary] = useState<boolean>(false);
   const {
     activityId,
     type: contentType,
@@ -225,13 +243,14 @@ export function ActivityViewer() {
   } = useDisclosure();
 
   const copyContentModal =
-    addTo !== undefined ? (
+    addTo !== undefined || copyToLibrary ? (
       <CopyContentAndReportFinish
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
         sourceContent={[activityData]}
-        desiredParent={addTo}
+        desiredParent={addTo ?? null}
         action="Add"
+        copyToLibrary={copyToLibrary}
       />
     ) : null;
 
@@ -310,22 +329,6 @@ export function ActivityViewer() {
       " or " + allowedParentWords[allowedParentWords.length - 1];
   }
 
-  const menuIcons: Record<string, ReactElement> = {};
-
-  for (const t of ["folder", "sequence", "select", "singleDoc"]) {
-    const ct = t as ContentType;
-    const { iconImage, iconColor } = getIconInfo(ct);
-    const icon = (
-      <Icon
-        as={iconImage}
-        color={iconColor}
-        marginRight="5px"
-        aria-label={contentTypeToName[ct]}
-      />
-    );
-
-    menuIcons[t] = icon;
-  }
   let addToMenu: ReactElement;
 
   if (addTo) {
@@ -343,6 +346,7 @@ export function ActivityViewer() {
         <MenuList>
           <MenuItem
             onClick={() => {
+              setCopyToLibrary(false);
               copyDialogOnOpen();
             }}
           >
@@ -374,6 +378,28 @@ export function ActivityViewer() {
         toolTip={`Add ${contentTypeName.toLowerCase()} to ${allowedParentsPhrase}`}
         leftIcon={<MdOutlineAdd />}
       />
+    );
+  }
+
+  let curateButton: ReactElement | null = null;
+
+  if (
+    user?.isAdmin &&
+    !activityData.librarySourceInfo &&
+    !activityData.libraryActivityInfo
+  ) {
+    curateButton = (
+      <Button
+        data-test="Add Draft to Library Button"
+        size="sm"
+        colorScheme="blue"
+        onClick={() => {
+          setCopyToLibrary(true);
+          copyDialogOnOpen();
+        }}
+      >
+        Add Draft to Library
+      </Button>
     );
   }
 
@@ -450,6 +476,71 @@ export function ActivityViewer() {
                   <Text fontSize="1.4em" fontWeight="bold" noOfLines={1}>
                     {activityData.name}
                   </Text>
+
+                  {activityData.libraryActivityInfo?.status === "PUBLISHED" ? (
+                    <>
+                      <Tooltip label="This activity is curated.">
+                        <Box marginLeft="5px">
+                          <ImCheckmark color="green" />
+                        </Box>
+                      </Tooltip>
+                    </>
+                  ) : null}
+                  {activityData.librarySourceInfo?.status === "PUBLISHED" ? (
+                    <Popover>
+                      <PopoverTrigger>
+                        <IconButton
+                          marginLeft="5px"
+                          variant="unstyled"
+                          icon={
+                            <BsBookmarkCheck
+                              style={{ color: "var(--mainBlue)" }}
+                            />
+                          }
+                          aria-label="A peer-reviewed version is available."
+                          data-test="Library source"
+                        />
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <PopoverArrow />
+                        <PopoverCloseButton />
+                        <PopoverHeader style={{ fontWeight: "bold" }}>
+                          This activity has been peer-reviewed!
+                        </PopoverHeader>
+                        <PopoverBody>
+                          A{" "}
+                          <ChakraLink
+                            as={ReactRouterLink}
+                            to={`/activityViewer/${activityData.librarySourceInfo.activityId}`}
+                            style={{ color: "var(--mainBlue)" }}
+                          >
+                            peer-reviewed
+                          </ChakraLink>{" "}
+                          version is available.
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Popover>
+                  ) : (
+                    <></>
+                  )}
+                  {user?.isAdmin &&
+                  activityData.librarySourceInfo &&
+                  activityData.librarySourceInfo?.status !== "PUBLISHED" ? (
+                    <Button
+                      marginLeft="10px"
+                      data-test="Go to curated draft"
+                      size="sm"
+                      colorScheme="blue"
+                      as={ReactRouterLink}
+                      to={`/activityViewer/${activityData.librarySourceInfo.activityId}`}
+
+                      // style={{ color: "var(--mainBlue)" }}
+                    >
+                      Go to curated draft
+                    </Button>
+                  ) : (
+                    <></>
+                  )}
                 </Flex>
               </GridItem>
               <GridItem
@@ -474,6 +565,7 @@ export function ActivityViewer() {
                       </Button>
                     )}
 
+                    {curateButton}
                     <Tooltip
                       hasArrow
                       label={`${contentTypeName} Information`}

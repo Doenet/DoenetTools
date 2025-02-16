@@ -107,6 +107,7 @@ test("searchSharedContent returns public/shared activities and folders matching 
 
   const searchResults = await searchSharedContent({
     query: sessionNumber,
+    isCurated: false,
     loggedInUserId: userId,
   });
   expect(searchResults.length).eq(4);
@@ -217,6 +218,7 @@ test("searchSharedContent returns public/shared activities and folders even in a
 
   const searchResults = await searchSharedContent({
     query: sessionNumber,
+    isCurated: false,
     loggedInUserId: userId,
   });
   expect(searchResults.length).eq(4);
@@ -251,6 +253,7 @@ test("searchSharedContent, document source matches", async () => {
   // apple doesn't hit
   let results = await searchSharedContent({
     query: "apple",
+    isCurated: false,
     loggedInUserId: userId,
   });
   expect(results.filter((r) => isEqualUUID(r.id, activityId))).toHaveLength(0);
@@ -258,6 +261,7 @@ test("searchSharedContent, document source matches", async () => {
   // first part of a word hits
   results = await searchSharedContent({
     query: `b${code}ana`,
+    isCurated: false,
     loggedInUserId: userId,
   });
   expect(results.filter((r) => isEqualUUID(r.id, activityId))).toHaveLength(1);
@@ -265,6 +269,7 @@ test("searchSharedContent, document source matches", async () => {
   // full word hits
   results = await searchSharedContent({
     query: `b${code}ananas`,
+    isCurated: false,
     loggedInUserId: userId,
   });
   expect(results.filter((r) => isEqualUUID(r.id, activityId))).toHaveLength(1);
@@ -293,12 +298,14 @@ test("searchSharedContent, owner name matches", async () => {
 
   let results = await searchSharedContent({
     query: `Arya${code}`,
+    isCurated: false,
     loggedInUserId: userId,
   });
   expect(results.filter((r) => isEqualUUID(r.id, activityId))).toHaveLength(1);
 
   results = await searchSharedContent({
     query: `Arya${code} Abbas`,
+    isCurated: false,
     loggedInUserId: userId,
   });
   expect(results.filter((r) => isEqualUUID(r.id, activityId))).toHaveLength(1);
@@ -375,6 +382,7 @@ test("searchSharedContent, document source is more relevant than classification"
 
   let results = await searchSharedContent({
     query: `banana${code} muffin${code}`,
+    isCurated: false,
     loggedInUserId: userId,
   });
 
@@ -385,6 +393,7 @@ test("searchSharedContent, document source is more relevant than classification"
   results = await searchSharedContent({
     query: `grapeA1A${code} banana${code} muffin${code}`,
     loggedInUserId: userId,
+    isCurated: false,
   });
 
   expect(results[0].id).eqls(activity1Id);
@@ -395,6 +404,7 @@ test("searchSharedContent, document source is more relevant than classification"
   results = await searchSharedContent({
     query: `grapeA1A${code} muffin${code}`,
     loggedInUserId: userId,
+    isCurated: false,
   });
 
   expect(results[0].id).eqls(activity2Id);
@@ -450,6 +460,7 @@ test("searchSharedContent, classification increases relevance", async () => {
   let results = await searchSharedContent({
     query: `grapeA1A${code} banana${code}`,
     loggedInUserId: userId,
+    isCurated: false,
   });
 
   expect(results[0].id).eqls(activity2Id);
@@ -458,6 +469,7 @@ test("searchSharedContent, classification increases relevance", async () => {
   results = await searchSharedContent({
     query: `grape${code} banana${code}`,
     loggedInUserId: userId,
+    isCurated: false,
   });
   expect(results[0].id).eqls(activity2Id);
   expect(results[1].id).eqls(activity1Id);
@@ -465,6 +477,7 @@ test("searchSharedContent, classification increases relevance", async () => {
   results = await searchSharedContent({
     query: `GrapeA1${code} banana${code}`,
     loggedInUserId: userId,
+    isCurated: false,
   });
   expect(results[0].id).eqls(activity2Id);
   expect(results[1].id).eqls(activity1Id);
@@ -472,6 +485,7 @@ test("searchSharedContent, classification increases relevance", async () => {
   results = await searchSharedContent({
     query: `GrapeA${code} banana${code}`,
     loggedInUserId: userId,
+    isCurated: false,
   });
   expect(results[0].id).eqls(activity2Id);
   expect(results[1].id).eqls(activity1Id);
@@ -494,6 +508,7 @@ test("searchSharedContent, handle tags in search", async () => {
 
   const results = await searchSharedContent({
     query: `<point>`,
+    isCurated: false,
     loggedInUserId: userId,
   });
   expect(results.length).gte(1);
@@ -653,6 +668,7 @@ test("searchSharedContent, filter by classification", async () => {
   // get all six activities with no filtering
   let results = await searchSharedContent({
     query: `banana${code}`,
+    isCurated: false,
     loggedInUserId: userId,
   });
   expect(results.length).eq(6);
@@ -660,6 +676,7 @@ test("searchSharedContent, filter by classification", async () => {
   // filtering by unclassified reduces it to one activity
   results = await searchSharedContent({
     query: `banana${code}`,
+    isCurated: false,
     loggedInUserId: userId,
     isUnclassified: true,
   });
@@ -668,6 +685,7 @@ test("searchSharedContent, filter by classification", async () => {
   // filtering by system reduces it to four activities
   results = await searchSharedContent({
     query: `banana${code}`,
+    isCurated: false,
     loggedInUserId: userId,
     systemId: systemId1,
   });
@@ -676,6 +694,7 @@ test("searchSharedContent, filter by classification", async () => {
   // filtering by category reduces it to three activities
   results = await searchSharedContent({
     query: `banana${code}`,
+    isCurated: false,
     loggedInUserId: userId,
     categoryId: categoryId1,
   });
@@ -684,6 +703,7 @@ test("searchSharedContent, filter by classification", async () => {
   // filtering by subCategory reduces it to two activities
   results = await searchSharedContent({
     query: `banana${code}`,
+    isCurated: false,
     loggedInUserId: userId,
     subCategoryId: subCategoryId1,
   });
@@ -692,6 +712,7 @@ test("searchSharedContent, filter by classification", async () => {
   // filtering by classification reduces it to one activity
   results = await searchSharedContent({
     query: `banana${code}`,
+    isCurated: false,
     loggedInUserId: userId,
     classificationId: classifyId1,
   });
@@ -896,6 +917,7 @@ test("searchSharedContent, filter by activity feature", async () => {
   // get all eight activities with no filtering
   let results = await searchSharedContent({
     query: `banana${code}`,
+    isCurated: false,
     loggedInUserId: userId,
   });
   expect(results.map((c) => c.id)).eqls([
@@ -912,6 +934,7 @@ test("searchSharedContent, filter by activity feature", async () => {
   // filter to the four that are questions
   results = await searchSharedContent({
     query: `banana${code}`,
+    isCurated: false,
     loggedInUserId: userId,
     features: new Set(["isQuestion"]),
   });
@@ -925,6 +948,7 @@ test("searchSharedContent, filter by activity feature", async () => {
   // filter to the four that are interactive
   results = await searchSharedContent({
     query: `banana${code}`,
+    isCurated: false,
     loggedInUserId: userId,
     features: new Set(["isInteractive"]),
   });
@@ -938,6 +962,7 @@ test("searchSharedContent, filter by activity feature", async () => {
   // filter to the four that are contain videos
   results = await searchSharedContent({
     query: `banana${code}`,
+    isCurated: false,
     loggedInUserId: userId,
     features: new Set(["containsVideo"]),
   });
@@ -951,6 +976,7 @@ test("searchSharedContent, filter by activity feature", async () => {
   // filter to the two have are a question and interactive
   results = await searchSharedContent({
     query: `banana${code}`,
+    isCurated: false,
     loggedInUserId: userId,
     features: new Set(["isQuestion", "isInteractive"]),
   });
@@ -959,6 +985,7 @@ test("searchSharedContent, filter by activity feature", async () => {
   // filter to the two have are a question and contain a video
   results = await searchSharedContent({
     query: `banana${code}`,
+    isCurated: false,
     loggedInUserId: userId,
     features: new Set(["isQuestion", "containsVideo"]),
   });
@@ -967,6 +994,7 @@ test("searchSharedContent, filter by activity feature", async () => {
   // filter to the two have are interactive and contain a video
   results = await searchSharedContent({
     query: `banana${code}`,
+    isCurated: false,
     loggedInUserId: userId,
     features: new Set(["isInteractive", "containsVideo"]),
   });
@@ -975,6 +1003,7 @@ test("searchSharedContent, filter by activity feature", async () => {
   // filter to the one that has all three features
   results = await searchSharedContent({
     query: `banana${code}`,
+    isCurated: false,
     loggedInUserId: userId,
     features: new Set(["isQuestion", "isInteractive", "containsVideo"]),
   });
@@ -1024,6 +1053,7 @@ test("searchSharedContent, filter by owner", async () => {
   // get both activities with no filtering
   let results = await searchSharedContent({
     query: `banana${code}`,
+    isCurated: false,
     loggedInUserId: userId,
   });
   expect(results.map((c) => c.id)).eqls([activity1Id, activity2Id]);
@@ -1031,6 +1061,7 @@ test("searchSharedContent, filter by owner", async () => {
   // filter for owner 1
   results = await searchSharedContent({
     query: `banana${code}`,
+    isCurated: false,
     loggedInUserId: userId,
     ownerId: owner1Id,
   });
@@ -1039,6 +1070,7 @@ test("searchSharedContent, filter by owner", async () => {
   // filter for owner 2
   results = await searchSharedContent({
     query: `banana${code}`,
+    isCurated: false,
     loggedInUserId: userId,
     ownerId: owner2Id,
   });

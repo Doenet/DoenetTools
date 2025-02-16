@@ -99,6 +99,7 @@ export function MoveCopyContent({
   finalFocusRef,
   allowedParentTypes,
   action,
+  inCurationLibrary = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -115,6 +116,7 @@ export function MoveCopyContent({
   finalFocusRef?: RefObject<HTMLElement>;
   allowedParentTypes: ContentType[];
   action: "Move" | "Add";
+  inCurationLibrary?: boolean;
 }) {
   // Set when the modal opens
   const [parentId, setParentId] = useState<string | null>(null);
@@ -156,9 +158,13 @@ export function MoveCopyContent({
     newActiveFolderId: string | null,
     modalJustOpened: boolean = false,
   ) {
-    const { data } = await axios.get(
-      `/api/getMyFolderContent/${userId}/${newActiveFolderId ?? ""}`,
-    );
+    const { data } = inCurationLibrary
+      ? await axios.get(
+          `/api/getCurationFolderContent/${newActiveFolderId ?? ""}`,
+        )
+      : await axios.get(
+          `/api/getMyFolderContent/${userId}/${newActiveFolderId ?? ""}`,
+        );
 
     const folder: ContentStructure | null = data.folder;
     const folderName: string | null = folder?.name ?? null;
@@ -339,7 +345,11 @@ export function MoveCopyContent({
         }}
       >
         <Text noOfLines={1}>
-          {action} to <em>{activeView.folderName ?? "My Activities"}</em>
+          {action} to{" "}
+          <em>
+            {activeView.folderName ??
+              (inCurationLibrary ? "Curation" : "My Activities")}
+          </em>
         </Text>
       </Button>
     </>
@@ -407,7 +417,7 @@ export function MoveCopyContent({
                   <Text noOfLines={1}>{activeView.folderName}</Text>
                 </>
               ) : (
-                <Text>My Activities</Text>
+                <Text>{inCurationLibrary ? "Curation" : "My Activities"}</Text>
               )}
             </HStack>
           </ModalHeader>

@@ -1,17 +1,25 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import {
+  PrismaClient,
+  Prisma,
+  LibraryStatus,
+  LibraryEventType,
+} from "@prisma/client";
 import { cidFromText } from "./utils/cid";
 import { DateTime } from "luxon";
 import { fromUUID, isEqualUUID } from "./utils/uuid";
 import {
   ContentType,
+  LibraryInfo,
   ClassificationCategoryTree,
   ContentClassification,
   ContentStructure,
+  createContentStructure,
   DocHistory,
   DocRemixes,
   LicenseCode,
   PartialContentClassification,
   UserInfo,
+  blankLibraryInfo,
 } from "./types";
 import {
   returnClassificationJoins,
@@ -155,10 +163,17 @@ export async function createActivity(
 }
 
 export async function createFolder(
-  ownerId: Uint8Array,
+  loggedInUserId: Uint8Array,
   parentId: Uint8Array | null,
   contentType: ContentType = "folder",
+  inLibrary: boolean = false,
 ) {
+  let ownerId = loggedInUserId;
+  if (inLibrary) {
+    await mustBeAdmin(loggedInUserId);
+    ownerId = await getLibraryAccountId();
+  }
+
   const sortIndex = await getNextSortIndexForFolder(ownerId, parentId);
 
   let isPublic = false;
@@ -288,6 +303,7 @@ export async function deleteActivity(id: Uint8Array, ownerId: Uint8Array) {
   return { id: deleted.id, isDeleted: deleted.isDeleted };
 }
 
+// TODO: Figure out how to delete folder in library (some contents may be published)
 export async function deleteFolder(id: Uint8Array, ownerId: Uint8Array) {
   // Delete the folder `id` along with all the content inside it,
   // recursing to subfolders, and including the documents of activities.
@@ -332,7 +348,7 @@ export async function updateContent({
   paginate,
   activityLevelAttempts,
   itemLevelAttempts,
-  ownerId,
+  ownerId: loggedInUserId,
 }: {
   id: Uint8Array;
   name?: string;
@@ -345,8 +361,10 @@ export async function updateContent({
   itemLevelAttempts?: boolean;
   ownerId: Uint8Array;
 }) {
+  const isAdmin = await getIsAdmin(loggedInUserId);
+
   const updated = await prisma.content.update({
-    where: { id, ownerId, isDeleted: false },
+    where: { id, ...filterEditableContent(loggedInUserId, isAdmin) },
     data: {
       name,
       imagePath,
@@ -374,15 +392,16 @@ export async function updateContent({
 
 export async function updateContentFeatures({
   id,
-  ownerId,
+  ownerId: loggedInUserId,
   features,
 }: {
   id: Uint8Array;
   ownerId: Uint8Array;
   features: Record<string, boolean>;
 }) {
+  const isAdmin = await getIsAdmin(loggedInUserId);
   const updated = await prisma.content.update({
-    where: { id, ownerId, isDeleted: false },
+    where: { id, ...filterEditableActivity(loggedInUserId, isAdmin) },
     data: {
       contentFeatures: {
         connect: Object.entries(features)
@@ -414,7 +433,7 @@ export async function updateDoc({
   doenetmlVersionId,
   numVariants,
   baseComponentCounts,
-  ownerId,
+  ownerId: loggedInUserId,
 }: {
   id: Uint8Array;
   source?: string;
@@ -424,13 +443,13 @@ export async function updateDoc({
   baseComponentCounts?: string;
   ownerId: Uint8Array;
 }) {
+  const isAdmin = await getIsAdmin(loggedInUserId);
   // check if activity is assigned
   const isAssigned = (
     await prisma.content.findFirstOrThrow({
       where: {
-        ownerId,
-        isDeleted: false,
         documents: { some: { id, isDeleted: false } },
+        ...filterEditableActivity(loggedInUserId, isAdmin),
       },
     })
   ).isAssigned;
@@ -440,7 +459,10 @@ export async function updateDoc({
   }
 
   const updated = await prisma.documents.update({
-    where: { id, activity: { ownerId } },
+    where: {
+      id,
+      activity: { ...filterEditableActivity(loggedInUserId, isAdmin) },
+    },
     data: {
       source,
       name,
@@ -516,20 +538,30 @@ export async function getDoc(id: Uint8Array) {
  *
  * `desiredPosition` is the 0-based index in the array of content with parent folder `desiredParentId`
  * and owner `ownerId` sorted by `sortIndex`.
+ *
+ * If the content is in the library account, set `inLibrary` to `true`. This will allows admins to make changes.
  */
 export async function moveContent({
   id,
   desiredParentId,
   desiredPosition,
-  ownerId,
+  ownerId: loggedInUserId,
+  inLibrary = false,
 }: {
   id: Uint8Array;
   desiredParentId: Uint8Array | null;
   desiredPosition: number;
   ownerId: Uint8Array;
+  inLibrary?: boolean;
 }) {
   if (!Number.isInteger(desiredPosition)) {
     throw Error("desiredPosition must be an integer");
+  }
+
+  let ownerId = loggedInUserId;
+  if (inLibrary) {
+    await mustBeAdmin(loggedInUserId);
+    ownerId = await getLibraryAccountId();
   }
 
   // make sure content exists and is owned by `ownerId`
@@ -780,36 +812,28 @@ async function calculateNewSortIndex(
 }
 
 /**
- * Copies the activity given by `origActivityId` into `folderId` of `ownerId`.
- *
- * Places the activity at the end of the folder.
+ * Copies the activity given by `origActivityId` into `folderId`, as the last item in that folder.
  *
  * Adds `origActivityId` and its contributor history to the contributor history of the new activity.
  *
- * Throws an error if `userId` doesn't have access to `origActivityId`
+ * Throws an error if `userId` doesn't have access to `origActivityId`.
  *
- * Return the id of the newly created activity
- *
- * @param origActivityId
- * @param ownerId
- * @param desiredParentId
+ * @param origActivityId - an existing activity
+ * @param userId
+ * @param desiredParentId - must be an existing folder which is owned by `userId` or, if the user is an admin, an existing _library_ folder
+ * @returns new activity id
  */
 export async function copyActivityToFolder(
   origActivityId: Uint8Array,
-  ownerId: Uint8Array,
+  userId: Uint8Array,
   desiredParentId: Uint8Array | null,
   prependCopy = false,
 ) {
+  const isAdmin = await getIsAdmin(userId);
   const origActivity = await prisma.content.findUniqueOrThrow({
     where: {
       id: origActivityId,
-      isDeleted: false,
-      isFolder: false,
-      OR: [
-        { ownerId: ownerId },
-        { isPublic: true },
-        { sharedWith: { some: { userId: ownerId } } },
-      ],
+      ...filterViewableActivity(userId, isAdmin),
     },
     include: {
       documents: {
@@ -831,11 +855,11 @@ export async function copyActivityToFolder(
   let desiredFolderShares: Uint8Array[] = [];
 
   if (desiredParentId !== null) {
-    // if desired parent is specified, make sure it exists and is owned by `ownerId`
+    // if desired parent is specified, make sure it exists and is owned by `userId`
     const parent = await prisma.content.findUniqueOrThrow({
       where: {
         id: desiredParentId,
-        ownerId,
+        ownerId: userId,
         isDeleted: false,
         isFolder: true,
       },
@@ -862,14 +886,14 @@ export async function copyActivityToFolder(
     }
   }
 
-  const sortIndex = await getNextSortIndexForFolder(ownerId, desiredParentId);
+  const sortIndex = await getNextSortIndexForFolder(userId, desiredParentId);
 
   const newActivity = await prisma.content.create({
     data: {
       name: (prependCopy ? "Copy of " : "") + origActivity.name,
       isFolder: false,
       imagePath: origActivity.imagePath,
-      ownerId: ownerId,
+      ownerId: userId,
       parentId: desiredParentId,
       sortIndex,
       classifications: {
@@ -1271,6 +1295,137 @@ async function createDocumentVersion(docId: Uint8Array): Promise<{
 }
 
 /**
+ * Filter Prisma's `where` clause to exclude unviewable activities
+ *
+ * For an activity to be viewable, one of these conditions must be true:
+ * 1. You are the owner
+ * 2. The activity is public
+ * 3. The activity is shared with you
+ * 4. You are an admin and the activity is in the library.
+ *
+ * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
+ */
+function filterViewableActivity(loggedInUserId: Uint8Array, isAdmin: boolean) {
+  const visibilityOptions: (
+    | { ownerId: Uint8Array }
+    | { isPublic: boolean }
+    | { sharedWith: { some: { userId: Uint8Array } } }
+    | { owner: { isLibrary: boolean } }
+  )[] = [
+    { ownerId: loggedInUserId },
+    { isPublic: true },
+    { sharedWith: { some: { userId: loggedInUserId } } },
+  ];
+  if (isAdmin) {
+    visibilityOptions.push({ owner: { isLibrary: true } });
+  }
+  return {
+    isDeleted: false,
+    type: { not: "folder" as const },
+    OR: visibilityOptions,
+  };
+}
+
+/**
+ * Filter Prisma's `where` clause to exclude uneditable activities.
+ *
+ * For an activity to be editable, one of these conditions must be true:
+ * 1. You are the owner
+ * 2. You are an admin and the activity is in the library
+ *
+ * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
+ */
+function filterEditableActivity(loggedInUserId: Uint8Array, isAdmin: boolean) {
+  return {
+    ...filterEditableContent(loggedInUserId, isAdmin),
+    type: { not: "folder" as const },
+  };
+}
+
+/**
+ * Filter Prisma's `where` clause to exclude uneditable content.
+ *
+ * For content to be editable, one of these conditions must be true:
+ * 1. You are the owner
+ * 2. You are an admin and the content is in the library
+ *
+ * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
+ */
+function filterEditableContent(loggedInUserId: Uint8Array, isAdmin: boolean) {
+  const editabilityOptions: (
+    | { ownerId: Uint8Array }
+    | { owner: { isLibrary: boolean } }
+  )[] = [{ ownerId: loggedInUserId }];
+
+  if (isAdmin) {
+    editabilityOptions.push({ owner: { isLibrary: true } });
+  }
+  return {
+    isDeleted: false,
+    OR: editabilityOptions,
+  };
+}
+
+/**
+ * Get edit and view permissions for this activity.
+ *
+ * For an activity to be editable, one of these conditions must be true:
+ * 1. You are the owner
+ * 2. You are an admin and the activity is in the library
+ *
+ * For an activity to be viewable, these conditions also work:
+ *
+ * 3. The activity is public
+ * 4. The activity is shared with you
+ *
+ * @param activityId
+ * @param loggedInUserId
+ * @returns
+ */
+async function checkActivityPermissions(
+  activityId: Uint8Array,
+  loggedInUserId: Uint8Array,
+): Promise<{
+  editable: boolean;
+  viewable: boolean;
+  ownerId: Uint8Array | null;
+}> {
+  const isAdmin = await getIsAdmin(loggedInUserId);
+
+  const viewable = await prisma.content.findUnique({
+    where: {
+      id: activityId,
+      ...filterViewableActivity(loggedInUserId, isAdmin),
+    },
+    select: {
+      // We will use these fields to determine if it is editable
+      owner: {
+        select: {
+          userId: true,
+          isLibrary: true,
+        },
+      },
+    },
+  });
+
+  if (!viewable) {
+    return { editable: false, viewable: false, ownerId: null };
+  }
+
+  // For an activity to be editable, either
+  // 1. You are the owner
+  // 2. You are an admin and the activity is in the library
+  if (
+    isEqualUUID(viewable.owner.userId, loggedInUserId) ||
+    (viewable.owner.isLibrary && isAdmin)
+  ) {
+    return { editable: true, viewable: true, ownerId: viewable.owner.userId };
+  } else {
+    return { editable: false, viewable: true, ownerId: viewable.owner.userId };
+  }
+}
+
+/**
  * Get the data needed to edit `activityId` of `ownerId`.
  *
  * The data returned depends on whether or not `isAssigned` is set.
@@ -1288,122 +1443,99 @@ export async function getActivityEditorData(
   activityId: Uint8Array,
   loggedInUserId: Uint8Array,
 ) {
-  // TODO: is there a way to combine these queries and avoid any race condition?
+  // TODO: add pagination or a hard limit i n the number of documents one can add to an activity
 
-  const contentCheck = await prisma.content.findUniqueOrThrow({
-    where: {
-      id: activityId,
-      isDeleted: false,
-      type: { not: "folder" },
-      OR: [
-        { ownerId: loggedInUserId },
-        { isPublic: true },
-        { sharedWith: { some: { userId: loggedInUserId } } },
-      ],
-    },
-    select: { isAssigned: true, ownerId: true, type: true },
-  });
-
-  if (!isEqualUUID(contentCheck.ownerId, loggedInUserId)) {
-    // activity is public or shared but not owned by the logged in user
-
-    const activity: ContentStructure = {
-      id: activityId,
-      type: contentCheck.type,
-      name: "",
-      ownerId: contentCheck.ownerId,
-      imagePath: null,
-      assignmentStatus: "Unassigned",
-      classCode: null,
-      codeValidUntil: null,
-      isPublic: false,
-      isShared: false,
-      sharedWith: [],
-      license: null,
-      numVariants: 1,
-      baseComponentCounts: "{}",
-      numToSelect: 1,
-      selectByVariant: false,
-      shuffle: false,
-      paginate: false,
-      activityLevelAttempts: false,
-      itemLevelAttempts: false,
-      contentFeatures: [],
-      classifications: [],
-      documents: [],
-      hasScoreData: false,
-      parent: null,
-      children: [],
-    };
-    return { notMe: true, activity };
+  const activityPermissions = await checkActivityPermissions(
+    activityId,
+    loggedInUserId,
+  );
+  if (activityPermissions.viewable === false) {
+    throw new InvalidRequestError(
+      "This activity does not exist or is not visible.",
+    );
   }
 
-  const isAssigned = contentCheck.isAssigned;
-  const availableFeatures = await getAvailableContentFeatures();
+  let activity: ContentStructure = createContentStructure({
+    activityId,
+    ownerId: activityPermissions.ownerId!,
+  });
 
-  let activity: ContentStructure;
+  if (activityPermissions.editable === false) {
+    return { editableByMe: false, activity };
+  }
 
-  if (contentCheck.type === "singleDoc") {
-    const contentSelect = returnContentStructureSharedDetailsSelect({
-      includeAssignInfo: true,
+  const { isAssigned, type: contentType } =
+    await prisma.content.findUniqueOrThrow({
+      where: {
+        id: activityId,
+      },
+      select: {
+        isAssigned: true,
+        type: true,
+      },
     });
 
-    if (isAssigned) {
-      // modify `contentSelect` to include assigned doenetMl and to count assignment scores
-      const documents = {
-        ...contentSelect.documents,
-        select: {
-          id: true,
-          name: true,
-          assignedVersion: {
-            select: {
-              versionNum: true,
-              source: true,
-              doenetmlVersion: true,
-              baseComponentCounts: true,
-              numVariants: true,
-            },
-          },
-        },
-      };
-      const contentSelectWithAssignedVersion = {
-        ...contentSelect,
-        documents,
-        _count: { select: { assignmentScores: true } },
-      };
+  const availableFeatures = await getAvailableContentFeatures();
 
-      const assignedActivity = await prisma.content.findUniqueOrThrow({
-        where: {
-          id: activityId,
-          isDeleted: false,
-          ownerId: loggedInUserId,
-          isFolder: false,
-        },
-        select: contentSelectWithAssignedVersion,
-      });
-
-      activity = processContentSharedDetailsAssignedDoc(assignedActivity);
-    } else {
-      const unassignedActivity = await prisma.content.findUniqueOrThrow({
-        where: {
-          id: activityId,
-          isDeleted: false,
-          ownerId: loggedInUserId,
-          isFolder: false,
-        },
-        select: contentSelect,
-      });
-
-      activity = processContentSharedDetails(unassignedActivity);
-    }
-
-    return { notMe: false, activity, availableFeatures };
-  } else {
+  if (contentType !== "singleDoc") {
     // have a sequence or select activity
     const activity = await getCompoundActivity(activityId, loggedInUserId);
 
-    return { notMe: false, activity, availableFeatures };
+    return { editableByMe: true, activity, availableFeatures };
   }
+
+  const contentSelect = returnContentStructureSharedDetailsSelect({
+    includeAssignInfo: true,
+  });
+
+  if (isAssigned) {
+    // modify `contentSelect` to include assigned doenetMl and to count assignment scores
+    const documents = {
+      ...contentSelect.documents,
+      select: {
+        id: true,
+        name: true,
+        assignedVersion: {
+          select: {
+            versionNum: true,
+            source: true,
+            doenetmlVersion: true,
+            baseComponentCounts: true,
+            numVariants: true,
+          },
+        },
+      },
+    };
+    const contentSelectWithAssignedVersion = {
+      ...contentSelect,
+      documents,
+      _count: { select: { assignmentScores: true } },
+    };
+
+    const assignedActivity = await prisma.content.findUniqueOrThrow({
+      where: {
+        id: activityId,
+        isDeleted: false,
+        isFolder: false,
+      },
+      select: contentSelectWithAssignedVersion,
+    });
+
+    activity = processContentSharedDetailsAssignedDoc(assignedActivity);
+  } else {
+    const unassignedActivity = await prisma.content.findUniqueOrThrow({
+      where: {
+        id: activityId,
+        isDeleted: false,
+        isFolder: false,
+      },
+      select: contentSelect,
+    });
+
+    activity = processContentSharedDetails(unassignedActivity);
+  }
+
+  return { editableByMe: true, activity, availableFeatures };
 }
 
 /**
@@ -1422,13 +1554,7 @@ export async function getSharedEditorData(
   const preliminaryActivity = await prisma.content.findUniqueOrThrow({
     where: {
       id: activityId,
-      isDeleted: false,
-      isFolder: false,
-      OR: [
-        { ownerId: loggedInUserId },
-        { isPublic: true },
-        { sharedWith: { some: { userId: loggedInUserId } } },
-      ],
+      ...filterViewableActivity(loggedInUserId, false),
     },
     select: returnContentStructureFullOwnerSelect(),
   });
@@ -1443,59 +1569,55 @@ export async function getActivityViewerData(
   activityId: Uint8Array,
   loggedInUserId: Uint8Array,
 ) {
-  const { type: activityType } = await prisma.content.findUniqueOrThrow({
+  const isAdmin = await getIsAdmin(loggedInUserId);
+
+  const getTypeOwner = await prisma.content.findUnique({
     where: {
       id: activityId,
-      isDeleted: false,
-      type: { not: "folder" },
-      OR: [
-        { ownerId: loggedInUserId },
-        { isPublic: true },
-        { sharedWith: { some: { userId: loggedInUserId } } },
-      ],
+      ...filterViewableActivity(loggedInUserId, isAdmin),
     },
-    select: { type: true },
+    select: { type: true, ownerId: true },
   });
 
-  if (activityType === "singleDoc") {
-    const preliminaryActivity = await prisma.content.findUniqueOrThrow({
-      where: {
-        id: activityId,
-        isDeleted: false,
-        isFolder: false,
-        OR: [
-          { ownerId: loggedInUserId },
-          { isPublic: true },
-          { sharedWith: { some: { userId: loggedInUserId } } },
-        ],
-      },
-      select: returnContentStructureFullOwnerSelect(),
-    });
+  if (!getTypeOwner) {
+    throw new InvalidRequestError(
+      "This activity does not exist or is not visible.",
+    );
+  }
 
-    const activity = processContent(preliminaryActivity, loggedInUserId);
+  if (!isEqualUUID(loggedInUserId, getTypeOwner.ownerId)) {
+    await recordContentView(activityId, loggedInUserId);
+  }
 
-    const docHistories = await getDocumentContributorHistories({
-      docIds: activity.documents.map((doc) => doc.id),
-      loggedInUserId,
-    });
-
-    if (!isEqualUUID(loggedInUserId, activity.ownerId)) {
-      await recordContentView(activityId, loggedInUserId);
-    }
-
-    return {
-      activity,
-      docHistories,
-    };
-  } else {
+  if (getTypeOwner.type !== "singleDoc") {
     const activity = await getCompoundActivity(activityId, loggedInUserId);
-
-    if (!isEqualUUID(loggedInUserId, activity.ownerId)) {
-      await recordContentView(activityId, loggedInUserId);
-    }
-
     return { activity };
   }
+
+  const preliminaryActivity = await prisma.content.findUniqueOrThrow({
+    where: {
+      id: activityId,
+      ...filterViewableActivity(loggedInUserId, isAdmin),
+    },
+    select: returnContentStructureFullOwnerSelect(),
+  });
+
+  const activity = processContent(preliminaryActivity, loggedInUserId);
+
+  const docHistories = await getDocumentContributorHistories({
+    docIds: activity.documents.map((doc) => doc.id),
+    loggedInUserId,
+    isAdmin,
+  });
+
+  if (!isEqualUUID(loggedInUserId, activity.ownerId)) {
+    await recordContentView(activityId, loggedInUserId);
+  }
+
+  return {
+    activity,
+    docHistories,
+  };
 }
 
 async function getCompoundActivity(
@@ -1573,16 +1695,13 @@ export async function getDocumentSource(
   docId: Uint8Array,
   loggedInUserId: Uint8Array,
 ) {
+  const isAdmin = await getIsAdmin(loggedInUserId);
   const document = await prisma.documents.findUniqueOrThrow({
     where: {
       id: docId,
       isDeleted: false,
       activity: {
-        OR: [
-          { ownerId: loggedInUserId },
-          { isPublic: true },
-          { sharedWith: { some: { userId: loggedInUserId } } },
-        ],
+        ...filterViewableActivity(loggedInUserId, isAdmin),
       },
     },
     select: { source: true },
@@ -1619,16 +1738,11 @@ export async function getActivityContributorHistory({
   activityId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
+  const isAdmin = await getIsAdmin(loggedInUserId);
   const activity = await prisma.content.findUniqueOrThrow({
     where: {
       id: activityId,
-      isDeleted: false,
-      isFolder: false,
-      OR: [
-        { ownerId: loggedInUserId },
-        { isPublic: true },
-        { sharedWith: { some: { userId: loggedInUserId } } },
-      ],
+      ...filterViewableActivity(loggedInUserId, isAdmin),
     },
     select: { documents: { select: { id: true } } },
   });
@@ -1636,6 +1750,7 @@ export async function getActivityContributorHistory({
   const docHistories = await getDocumentContributorHistories({
     docIds: activity.documents.map((doc) => doc.id),
     loggedInUserId,
+    isAdmin,
   });
 
   return { docHistories };
@@ -1644,20 +1759,18 @@ export async function getActivityContributorHistory({
 export async function getDocumentContributorHistories({
   docIds,
   loggedInUserId,
+  isAdmin = false,
 }: {
   docIds: Uint8Array[];
   loggedInUserId: Uint8Array;
+  isAdmin?: boolean;
 }) {
   const docHistories: DocHistory[] = await prisma.documents.findMany({
     where: {
       id: { in: docIds },
       isDeleted: false,
       activity: {
-        OR: [
-          { ownerId: loggedInUserId },
-          { isPublic: true },
-          { sharedWith: { some: { userId: loggedInUserId } } },
-        ],
+        ...filterViewableActivity(loggedInUserId, isAdmin),
       },
     },
     select: {
@@ -1667,11 +1780,7 @@ export async function getDocumentContributorHistories({
           prevDoc: {
             document: {
               activity: {
-                OR: [
-                  { ownerId: loggedInUserId },
-                  { isPublic: true },
-                  { sharedWith: { some: { userId: loggedInUserId } } },
-                ],
+                ...filterViewableActivity(loggedInUserId, isAdmin),
               },
             },
           },
@@ -1707,7 +1816,6 @@ export async function getDocumentContributorHistories({
       },
     },
   });
-
   return docHistories;
 }
 
@@ -1718,16 +1826,11 @@ export async function getActivityRemixes({
   activityId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
+  const isAdmin = await getIsAdmin(loggedInUserId);
   const activity = await prisma.content.findUniqueOrThrow({
     where: {
       id: activityId,
-      isDeleted: false,
-      isFolder: false,
-      OR: [
-        { ownerId: loggedInUserId },
-        { isPublic: true },
-        { sharedWith: { some: { userId: loggedInUserId } } },
-      ],
+      ...filterViewableActivity(loggedInUserId, isAdmin),
     },
     select: { documents: { select: { id: true } } },
   });
@@ -1735,6 +1838,7 @@ export async function getActivityRemixes({
   const docRemixes = await getDocumentRemixes({
     docIds: activity.documents.map((doc) => doc.id),
     loggedInUserId,
+    isAdmin,
   });
 
   // const docDirectRemixes = await getDocumentDirectRemixes({
@@ -1748,20 +1852,17 @@ export async function getActivityRemixes({
 export async function getDocumentDirectRemixes({
   docIds,
   loggedInUserId,
+  isAdmin = false,
 }: {
   docIds: Uint8Array[];
   loggedInUserId: Uint8Array;
+  isAdmin?: boolean;
 }) {
   const docRemixes = await prisma.documents.findMany({
     where: {
       id: { in: docIds },
-      isDeleted: false,
       activity: {
-        OR: [
-          { ownerId: loggedInUserId },
-          { isPublic: true },
-          { sharedWith: { some: { userId: loggedInUserId } } },
-        ],
+        ...filterViewableActivity(loggedInUserId, isAdmin),
       },
     },
     select: {
@@ -1774,11 +1875,7 @@ export async function getDocumentDirectRemixes({
               document: {
                 isDeleted: false,
                 activity: {
-                  OR: [
-                    { ownerId: loggedInUserId },
-                    { isPublic: true },
-                    { sharedWith: { some: { userId: loggedInUserId } } },
-                  ],
+                  ...filterViewableActivity(loggedInUserId, isAdmin),
                 },
               },
               timestampDoc: {
@@ -1836,20 +1933,18 @@ export async function getDocumentDirectRemixes({
 export async function getDocumentRemixes({
   docIds,
   loggedInUserId,
+  isAdmin = false,
 }: {
   docIds: Uint8Array[];
   loggedInUserId: Uint8Array;
+  isAdmin?: boolean;
 }) {
   const docRemixes = await prisma.documents.findMany({
     where: {
       id: { in: docIds },
       isDeleted: false,
       activity: {
-        OR: [
-          { ownerId: loggedInUserId },
-          { isPublic: true },
-          { sharedWith: { some: { userId: loggedInUserId } } },
-        ],
+        ...filterViewableActivity(loggedInUserId, isAdmin),
       },
     },
     select: {
@@ -1862,11 +1957,7 @@ export async function getDocumentRemixes({
               document: {
                 isDeleted: false,
                 activity: {
-                  OR: [
-                    { ownerId: loggedInUserId },
-                    { isPublic: true },
-                    { sharedWith: { some: { userId: loggedInUserId } } },
-                  ],
+                  ...filterViewableActivity(loggedInUserId, isAdmin),
                 },
               },
             },
@@ -1976,8 +2067,23 @@ export async function getAssignmentDataFromCode(
   return { assignmentFound: true, assignment };
 }
 
+/**
+ * Remove operators that break MySQL BOOLEAN search and add * at the end of every word so that match beginning of words
+ * @returns sanitized query
+ */
+function sanitizeQuery(query: string) {
+  const query_as_prefixes = query
+    .replace(/[+\-><()~*"@]+/g, " ")
+    .split(" ")
+    .filter((s) => s)
+    .map((s) => s + "*")
+    .join(" ");
+  return query_as_prefixes;
+}
+
 export async function searchSharedContent({
   query,
+  isCurated,
   loggedInUserId,
   systemId,
   categoryId,
@@ -1989,6 +2095,7 @@ export async function searchSharedContent({
   page = 1,
 }: {
   query: string;
+  isCurated: boolean;
   loggedInUserId: Uint8Array;
   systemId?: number;
   categoryId?: number;
@@ -2001,14 +2108,7 @@ export async function searchSharedContent({
 }) {
   const pageSize = 100;
 
-  // remove operators that break MySQL BOOLEAN search
-  // and add * at the end of every word so that match beginning of words
-  const query_as_prefixes = query
-    .replace(/[+\-><()~*"@]+/g, " ")
-    .split(" ")
-    .filter((s) => s)
-    .map((s) => s + "*")
-    .join(" ");
+  const query_as_prefixes = sanitizeQuery(query);
 
   const matchClassification = !isUnclassified && classificationId === undefined;
   const matchSubCategory = matchClassification && subCategoryId === undefined;
@@ -2041,6 +2141,7 @@ export async function searchSharedContent({
   ${returnFeatureJoins(features)}
   WHERE
     content.isDeleted = FALSE
+    AND users.isLibrary = ${isCurated ? Prisma.sql`TRUE` : Prisma.sql`FALSE`}
     AND (
        content.isPublic = TRUE
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -2086,6 +2187,7 @@ export async function searchSharedContent({
 
 // TODO: add tests of this api if we're sure we want to keep it
 export async function browseSharedContent({
+  isCurated,
   loggedInUserId,
   systemId,
   categoryId,
@@ -2096,6 +2198,7 @@ export async function browseSharedContent({
   ownerId,
   page = 1,
 }: {
+  isCurated: boolean;
   loggedInUserId: Uint8Array;
   systemId?: number;
   categoryId?: number;
@@ -2139,6 +2242,7 @@ export async function browseSharedContent({
   const preliminarySharedContent = await prisma.content.findMany({
     where: {
       isDeleted: false,
+      owner: { isLibrary: isCurated },
       OR: [
         { isPublic: true },
         { sharedWith: { some: { userId: loggedInUserId } } },
@@ -2194,6 +2298,8 @@ export async function browseTrendingContent({
   const includeSubCategory = matchSubCategory;
   const includeCategory = matchCategory;
 
+  const libraryId = await getLibraryAccountId();
+
   const matches = await prisma.$queryRaw<
     {
       id: Uint8Array;
@@ -2216,6 +2322,7 @@ export async function browseTrendingContent({
     contentViews ON contentViews.activityId = content.id
   WHERE
     content.isDeleted = FALSE
+    AND content.ownerId <> ${libraryId}
     AND (
        content.isPublic = TRUE
        OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -2278,14 +2385,9 @@ export async function searchUsersWithSharedContent({
 }) {
   const pageSize = 100;
 
-  // remove operators that break MySQL BOOLEAN search
-  // and add * at the end of every word so that match beginning of words
-  const query_as_prefixes = query
-    .replace(/[+\-><()~*"@]+/g, " ")
-    .split(" ")
-    .filter((s) => s)
-    .map((s) => s + "*")
-    .join(" ");
+  const libraryId = await getLibraryAccountId();
+
+  const query_as_prefixes = sanitizeQuery(query);
 
   const includeClassification =
     classificationId !== undefined ||
@@ -2309,6 +2411,7 @@ export async function searchUsersWithSharedContent({
     users
   WHERE
     users.isAnonymous = FALSE
+    AND users.userId <> ${libraryId}
     AND users.userId IN (
       SELECT ownerId 
         FROM content 
@@ -2366,14 +2469,7 @@ export async function browseUsersWithSharedContent({
   let usersWithShared;
 
   if (query) {
-    // remove operators that break MySQL BOOLEAN search
-    // and add * at the end of every word so that match beginning of words
-    const query_as_prefixes = query
-      .replace(/[+\-><()~*"@]+/g, " ")
-      .split(" ")
-      .filter((s) => s)
-      .map((s) => s + "*")
-      .join(" ");
+    const query_as_prefixes = sanitizeQuery(query);
 
     const matchClassification =
       !isUnclassified && classificationId === undefined;
@@ -2400,6 +2496,7 @@ export async function browseUsersWithSharedContent({
         content on content.ownerId = users.userId
       WHERE
         users.isAnonymous = FALSE
+        AND users.isLibrary = FALSE
         AND content.id IN (
           SELECT content.id
           FROM content
@@ -2453,6 +2550,7 @@ export async function browseUsersWithSharedContent({
         content on content.ownerId = users.userId
       WHERE
         users.isAnonymous = FALSE
+        AND users.isLibrary = FALSE
         AND content.id IN (
           SELECT content.id
           FROM content
@@ -2505,15 +2603,7 @@ export async function searchClassificationsWithSharedContent({
   features?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
-  // remove operators that break MySQL BOOLEAN search
-  // and add * at the end of every word so that match beginning of words
-  const query_as_prefixes = query
-    .replace(/[+\-><()~*"@]+/g, " ")
-    .split(" ")
-    .filter((s) => s)
-    .map((s) => s + "*")
-    .join(" ");
-
+  const query_as_prefixes = sanitizeQuery(query);
   const queryRegEx = query
     .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
     .replace(/\s+/g, "|");
@@ -2626,14 +2716,7 @@ export async function searchClassificationSubCategoriesWithSharedContent({
   features?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
-  // remove operators that break MySQL BOOLEAN search
-  // and add * at the end of every word so that match beginning of words
-  const query_as_prefixes = query
-    .replace(/[+\-><()~*"@]+/g, " ")
-    .split(" ")
-    .filter((s) => s)
-    .map((s) => s + "*")
-    .join(" ");
+  const query_as_prefixes = sanitizeQuery(query);
 
   const matches = await prisma.$queryRaw<
     {
@@ -2721,14 +2804,7 @@ export async function searchClassificationCategoriesWithSharedContent({
   features?: Set<string>;
   ownerId?: Uint8Array;
 }): Promise<PartialContentClassification[]> {
-  // remove operators that break MySQL BOOLEAN search
-  // and add * at the end of every word so that match beginning of words
-  const query_as_prefixes = query
-    .replace(/[+\-><()~*"@]+/g, " ")
-    .split(" ")
-    .filter((s) => s)
-    .map((s) => s + "*")
-    .join(" ");
+  const query_as_prefixes = sanitizeQuery(query);
 
   const matches = await prisma.$queryRaw<
     {
@@ -3104,14 +3180,7 @@ export async function browseClassificationsWithSharedContent({
   let matches;
 
   if (query) {
-    // remove operators that break MySQL BOOLEAN search
-    // and add * at the end of every word so that match beginning of words
-    const query_as_prefixes = query
-      .replace(/[+\-><()~*"@]+/g, " ")
-      .split(" ")
-      .filter((s) => s)
-      .map((s) => s + "*")
-      .join(" ");
+    const query_as_prefixes = sanitizeQuery(query);
 
     matches = await prisma.$queryRaw<
       {
@@ -3131,6 +3200,7 @@ export async function browseClassificationsWithSharedContent({
         descriptionLabel: string;
         categoriesInDescription: boolean;
         numContent: bigint;
+        numCurated: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -3149,11 +3219,14 @@ export async function browseClassificationsWithSharedContent({
     classificationSystems.subCategoryLabel,
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
-    COUNT(distinct content.id) AS numContent
+    COUNT(distinct content.id) AS numContent,
+    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
   FROM
     content
   LEFT JOIN
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  LEFT JOIN
+    libraryActivityInfos ON content.id = libraryActivityInfos.activityId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
@@ -3195,6 +3268,7 @@ export async function browseClassificationsWithSharedContent({
         descriptionLabel: string;
         categoriesInDescription: boolean;
         numContent: bigint;
+        numCurated: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -3213,9 +3287,12 @@ export async function browseClassificationsWithSharedContent({
     classificationSystems.subCategoryLabel,
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
-    COUNT(distinct content.id) AS numContent
+    COUNT(distinct content.id) AS numContent,
+    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
   FROM
     content
+  LEFT JOIN
+    libraryActivityInfos ON content.id = libraryActivityInfos.activityId
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
@@ -3258,7 +3335,8 @@ export async function browseClassificationsWithSharedContent({
       categoryLabel: m.categoryLabel,
       categoriesInDescription: m.categoriesInDescription,
     },
-    numCommunity: Number(m.numContent),
+    numCommunity: Number(m.numContent) - Number(m.numCurated),
+    numCurated: Number(m.numCurated),
   }));
 }
 
@@ -3278,14 +3356,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
   let matches;
 
   if (query) {
-    // remove operators that break MySQL BOOLEAN search
-    // and add * at the end of every word so that match beginning of words
-    const query_as_prefixes = query
-      .replace(/[+\-><()~*"@]+/g, " ")
-      .split(" ")
-      .filter((s) => s)
-      .map((s) => s + "*")
-      .join(" ");
+    const query_as_prefixes = sanitizeQuery(query);
 
     matches = await prisma.$queryRaw<
       {
@@ -3301,6 +3372,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
         descriptionLabel: string;
         categoriesInDescription: boolean;
         numContent: bigint;
+        numCurated: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -3315,11 +3387,14 @@ export async function browseClassificationSubCategoriesWithSharedContent({
     classificationSystems.subCategoryLabel,
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
-    COUNT(distinct content.id) AS numContent
+    COUNT(distinct content.id) AS numContent,
+    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
   FROM
     content
   LEFT JOIN
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  LEFT JOIN
+    libraryActivityInfos ON content.id = libraryActivityInfos.activityId        
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
@@ -3358,6 +3433,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
         descriptionLabel: string;
         categoriesInDescription: boolean;
         numContent: bigint;
+        numCurated: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -3372,9 +3448,13 @@ export async function browseClassificationSubCategoriesWithSharedContent({
     classificationSystems.subCategoryLabel,
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
-    COUNT(distinct content.id) AS numContent
+    COUNT(distinct content.id) AS numContent,
+    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
+
   FROM
     content
+  LEFT JOIN
+    libraryActivityInfos ON content.id = libraryActivityInfos.activityId    
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
@@ -3411,7 +3491,8 @@ export async function browseClassificationSubCategoriesWithSharedContent({
       categoryLabel: m.categoryLabel,
       categoriesInDescription: m.categoriesInDescription,
     },
-    numCommunity: Number(m.numContent),
+    numCommunity: Number(m.numContent) - Number(m.numCurated),
+    numCurated: Number(m.numCurated),
   }));
 }
 
@@ -3431,14 +3512,7 @@ export async function browseClassificationCategoriesWithSharedContent({
   let matches;
 
   if (query) {
-    // remove operators that break MySQL BOOLEAN search
-    // and add * at the end of every word so that match beginning of words
-    const query_as_prefixes = query
-      .replace(/[+\-><()~*"@]+/g, " ")
-      .split(" ")
-      .filter((s) => s)
-      .map((s) => s + "*")
-      .join(" ");
+    const query_as_prefixes = sanitizeQuery(query);
 
     matches = await prisma.$queryRaw<
       {
@@ -3452,6 +3526,7 @@ export async function browseClassificationCategoriesWithSharedContent({
         descriptionLabel: string;
         categoriesInDescription: boolean;
         numContent: bigint;
+        numCurated: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -3464,11 +3539,14 @@ export async function browseClassificationCategoriesWithSharedContent({
     classificationSystems.subCategoryLabel,
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
-    COUNT(distinct content.id) AS numContent
+    COUNT(distinct content.id) AS numContent,
+    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
   FROM
     content
   LEFT JOIN
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  LEFT JOIN
+      libraryActivityInfos ON content.id = libraryActivityInfos.activityId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
@@ -3505,6 +3583,7 @@ export async function browseClassificationCategoriesWithSharedContent({
         descriptionLabel: string;
         categoriesInDescription: boolean;
         numContent: bigint;
+        numCurated: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -3517,9 +3596,12 @@ export async function browseClassificationCategoriesWithSharedContent({
     classificationSystems.subCategoryLabel,
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
-    COUNT(distinct content.id) AS numContent
+    COUNT(distinct content.id) AS numContent,
+    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
   FROM
     content
+  LEFT JOIN
+    libraryActivityInfos ON content.id = libraryActivityInfos.activityId
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
@@ -3552,7 +3634,8 @@ export async function browseClassificationCategoriesWithSharedContent({
       categoryLabel: m.categoryLabel,
       categoriesInDescription: m.categoriesInDescription,
     },
-    numCommunity: Number(m.numContent),
+    numCurated: Number(m.numCurated),
+    numCommunity: Number(m.numContent) - Number(m.numCurated),
   }));
 }
 
@@ -3570,14 +3653,7 @@ export async function browseClassificationSystemsWithSharedContent({
   let matches;
 
   if (query) {
-    // remove operators that break MySQL BOOLEAN search
-    // and add * at the end of every word so that match beginning of words
-    const query_as_prefixes = query
-      .replace(/[+\-><()~*"@]+/g, " ")
-      .split(" ")
-      .filter((s) => s)
-      .map((s) => s + "*")
-      .join(" ");
+    const query_as_prefixes = sanitizeQuery(query);
 
     matches = await prisma.$queryRaw<
       {
@@ -3590,6 +3666,7 @@ export async function browseClassificationSystemsWithSharedContent({
         descriptionLabel: string | null;
         categoriesInDescription: boolean | null;
         numContent: bigint;
+        numCurated: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -3601,11 +3678,14 @@ export async function browseClassificationSystemsWithSharedContent({
     classificationSystems.subCategoryLabel,
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
-    COUNT(distinct content.id) AS numContent
+    COUNT(distinct content.id) AS numContent,
+    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
   FROM
     content
   LEFT JOIN
     (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
+  LEFT JOIN
+      libraryActivityInfos ON content.id = libraryActivityInfos.activityId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
@@ -3640,6 +3720,7 @@ export async function browseClassificationSystemsWithSharedContent({
         descriptionLabel: string | null;
         categoriesInDescription: boolean | null;
         numContent: bigint;
+        numCurated: bigint;
       }[]
     >(Prisma.sql`
   SELECT
@@ -3651,9 +3732,12 @@ export async function browseClassificationSystemsWithSharedContent({
     classificationSystems.subCategoryLabel,
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
-    COUNT(distinct content.id) AS numContent
+    COUNT(distinct content.id) AS numContent,
+    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
   FROM
     content
+  LEFT JOIN
+    libraryActivityInfos ON content.id = libraryActivityInfos.activityId    
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
@@ -3672,8 +3756,11 @@ export async function browseClassificationSystemsWithSharedContent({
   }
 
   return matches.map((m) => {
+    const numCommunity = Number(m.numContent) - Number(m.numCurated);
+    const numCurated = Number(m.numCurated);
+
     if (m.systemId === null) {
-      return { numCommunity: Number(m.numContent) };
+      return { numCommunity, numCurated };
     }
     const partialClass: PartialContentClassification = {
       system: {
@@ -3685,7 +3772,8 @@ export async function browseClassificationSystemsWithSharedContent({
         categoryLabel: m.categoryLabel!,
         categoriesInDescription: m.categoriesInDescription!,
       },
-      numCommunity: Number(m.numContent),
+      numCommunity,
+      numCurated,
     };
 
     return partialClass;
@@ -3713,18 +3801,11 @@ export async function getSharedContentMatchCount({
   isUnclassified?: boolean;
   features?: Set<string>;
   ownerId?: Uint8Array;
-}): Promise<{ numCommunity: number }> {
+}): Promise<{ numCommunity: number; numCurated: number }> {
   let matches;
 
   if (query) {
-    // remove operators that break MySQL BOOLEAN search
-    // and add * at the end of every word so that match beginning of words
-    const query_as_prefixes = query
-      .replace(/[+\-><()~*"@]+/g, " ")
-      .split(" ")
-      .filter((s) => s)
-      .map((s) => s + "*")
-      .join(" ");
+    const query_as_prefixes = sanitizeQuery(query);
 
     const matchClassification =
       !isUnclassified && classificationId === undefined;
@@ -3738,16 +3819,20 @@ export async function getSharedContentMatchCount({
     matches = await prisma.$queryRaw<
       {
         numContent: bigint;
+        curatedContent: bigint;
       }[]
     >(Prisma.sql`
       SELECT
-        COUNT(distinct content.id) as numContent
+        COUNT(distinct content.id) as numContent,
+        COUNT(distinct libraryActivityInfos.activityId) as curatedContent
       FROM
         content
       LEFT JOIN
         (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
       LEFT JOIN
         users ON content.ownerId = users.userId
+      LEFT JOIN
+        libraryActivityInfos ON content.id = libraryActivityInfos.activityId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
       ${returnFeatureJoins(features)}
       WHERE
@@ -3779,16 +3864,20 @@ export async function getSharedContentMatchCount({
     matches = await prisma.$queryRaw<
       {
         numContent: bigint;
+        curatedContent: bigint;
       }[]
     >(Prisma.sql`
       SELECT
-        COUNT(distinct content.id) as numContent
+        COUNT(distinct content.id) as numContent,
+        COUNT(distinct libraryActivityInfos.activityId) as curatedContent
       FROM
         content
       LEFT JOIN
         (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
       LEFT JOIN
         users ON content.ownerId = users.userId
+      LEFT JOIN
+        libraryActivityInfos ON content.id = libraryActivityInfos.activityId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
       ${returnFeatureJoins(features)}
       WHERE
@@ -3804,9 +3893,11 @@ export async function getSharedContentMatchCount({
   }
 
   if (matches.length === 0) {
-    return { numCommunity: 0 };
+    return { numCommunity: 0, numCurated: 0 };
   } else {
-    return { numCommunity: Number(matches[0].numContent) };
+    const numTotal = Number(matches[0].numContent);
+    const numCurated = Number(matches[0].curatedContent);
+    return { numCommunity: numTotal - numCurated, numCurated };
   }
 }
 
@@ -3831,23 +3922,16 @@ export async function getSharedContentMatchCountPerAvailableFeature({
   isUnclassified?: boolean;
   features?: Set<string>;
   ownerId?: Uint8Array;
-}): Promise<Record<string, { numCommunity?: number; numLibrary?: number }>> {
+}): Promise<Record<string, { numCommunity?: number; numCurated?: number }>> {
   const matchesPerFeature: Record<
     string,
-    { numCommunity?: number; numLibrary?: number }
+    { numCommunity?: number; numCurated?: number }
   > = {};
 
   const availableFeatures = await getAvailableContentFeatures();
 
   if (query) {
-    // remove operators that break MySQL BOOLEAN search
-    // and add * at the end of every word so that match beginning of words
-    const query_as_prefixes = query
-      .replace(/[+\-><()~*"@]+/g, " ")
-      .split(" ")
-      .filter((s) => s)
-      .map((s) => s + "*")
-      .join(" ");
+    const query_as_prefixes = sanitizeQuery(query);
 
     const matchClassification =
       !isUnclassified && classificationId === undefined;
@@ -3865,16 +3949,20 @@ export async function getSharedContentMatchCountPerAvailableFeature({
       const matches = await prisma.$queryRaw<
         {
           numContent: bigint;
+          numCurated: bigint;
         }[]
       >(Prisma.sql`
       SELECT
-        COUNT(distinct content.id) as numContent
+        COUNT(distinct content.id) as numContent,
+        COUNT(distinct libraryActivityInfos.activityId) as numCurated
       FROM
         content
       LEFT JOIN
         (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
       LEFT JOIN
         users ON content.ownerId = users.userId
+      LEFT JOIN
+        libraryActivityInfos ON content.id = libraryActivityInfos.activityId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
       ${returnFeatureJoins(newFeatures)}
       WHERE
@@ -3896,8 +3984,11 @@ export async function getSharedContentMatchCountPerAvailableFeature({
       `);
 
       if (matches.length > 0) {
+        const numTotal = Number(matches[0].numContent);
+        const numCurated = Number(matches[0].numCurated);
         matchesPerFeature[feature.code] = {
-          numCommunity: Number(matches[0].numContent),
+          numCommunity: numTotal - numCurated,
+          numCurated: numCurated,
         };
       }
     }
@@ -3917,16 +4008,20 @@ export async function getSharedContentMatchCountPerAvailableFeature({
       const matches = await prisma.$queryRaw<
         {
           numContent: bigint;
+          numCurated: bigint;
         }[]
       >(Prisma.sql`
       SELECT
-        COUNT(distinct content.id) as numContent
+        COUNT(distinct content.id) as numContent,
+        COUNT(distinct libraryActivityInfos.activityId) as numCurated
       FROM
         content
       LEFT JOIN
         (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
       LEFT JOIN
         users ON content.ownerId = users.userId
+      LEFT JOIN
+        libraryActivityInfos ON content.id = libraryActivityInfos.activityId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
       ${returnFeatureJoins(newFeatures)}
       WHERE
@@ -3940,8 +4035,11 @@ export async function getSharedContentMatchCountPerAvailableFeature({
         ${ownerId === undefined ? Prisma.empty : Prisma.sql`AND content.ownerId=${ownerId}`}
       `);
       if (matches.length > 0) {
+        const numTotal = Number(matches[0].numContent);
+        const numCurated = Number(matches[0].numCurated);
         matchesPerFeature[feature.code] = {
-          numCommunity: Number(matches[0].numContent),
+          numCommunity: numTotal - numCurated,
+          numCurated: numCurated,
         };
       }
     }
@@ -4003,7 +4101,8 @@ export async function findOrCreateUser({
     });
   }
 
-  return user;
+  const { isLibrary: _isLibrary, ...userNoLibrary } = user;
+  return userNoLibrary;
 }
 
 export async function getUserInfo(userId: Uint8Array) {
@@ -4076,7 +4175,8 @@ export async function updateUser({
     where: { userId },
     data: { firstNames, lastNames },
   });
-  return user;
+  const { isLibrary: _isLibrary, ...userNoLibrary } = user;
+  return userNoLibrary;
 }
 
 export async function getAllDoenetmlVersions() {
@@ -5468,10 +5568,14 @@ export async function getDocumentSubmittedResponseHistory({
 export async function getMyFolderContent({
   folderId,
   loggedInUserId,
+  isLibrary = false,
 }: {
   folderId: Uint8Array | null;
   loggedInUserId: Uint8Array;
+  isLibrary?: boolean;
 }) {
+  const ownerId = isLibrary ? await getLibraryAccountId() : loggedInUserId;
+
   let folder: ContentStructure | null = null;
 
   if (folderId !== null) {
@@ -5479,9 +5583,8 @@ export async function getMyFolderContent({
     const preliminaryFolder = await prisma.content.findUniqueOrThrow({
       where: {
         id: folderId,
-        isDeleted: false,
         isFolder: true,
-        ownerId: loggedInUserId,
+        ...filterEditableContent(ownerId, false),
       },
       select: returnContentStructureSharedDetailsNoClassDocsSelect(),
     });
@@ -5491,7 +5594,7 @@ export async function getMyFolderContent({
 
   const preliminaryContent = await prisma.content.findMany({
     where: {
-      ownerId: loggedInUserId,
+      ownerId,
       isDeleted: false,
       parentId: folderId,
     },
@@ -5521,11 +5624,19 @@ export async function searchMyFolderContent({
   folderId,
   loggedInUserId,
   query,
+  inLibrary = false, // Not to be exposed in API call
 }: {
   folderId: Uint8Array | null;
   loggedInUserId: Uint8Array;
   query: string;
+  inLibrary?: boolean;
 }) {
+  let ownerId = loggedInUserId;
+  if (inLibrary) {
+    await mustBeAdmin(loggedInUserId);
+    ownerId = await getLibraryAccountId();
+  }
+
   let folder: ContentStructure | null = null;
 
   if (folderId !== null) {
@@ -5535,7 +5646,7 @@ export async function searchMyFolderContent({
         id: folderId,
         isDeleted: false,
         isFolder: true,
-        ownerId: loggedInUserId,
+        ownerId,
       },
       select: returnContentStructureSharedDetailsNoClassDocsSelect(),
     });
@@ -5564,7 +5675,7 @@ export async function searchMyFolderContent({
       ? Prisma.sql`
       WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
-      WHERE parentId = ${folderId} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
+      WHERE parentId = ${folderId} AND ownerId = ${ownerId} AND isDeleted = FALSE
       UNION ALL
       SELECT content.id FROM content
       INNER JOIN content_tree AS ft
@@ -5588,7 +5699,7 @@ export async function searchMyFolderContent({
     ${
       folderId !== null
         ? Prisma.sql`content.id IN (SELECT id from content_tree)`
-        : Prisma.sql`content.ownerId = ${loggedInUserId} AND content.isDeleted = FALSE`
+        : Prisma.sql`content.ownerId = ${ownerId} AND content.isDeleted = FALSE`
     }
     AND
     (
@@ -5930,12 +6041,11 @@ export async function addClassification(
   classificationId: number,
   loggedInUserId: Uint8Array,
 ) {
+  const isAdmin = await getIsAdmin(loggedInUserId);
   const activity = await prisma.content.findUnique({
     where: {
       id: activityId,
-      type: { not: "folder" },
-      isDeleted: false,
-      ownerId: loggedInUserId,
+      ...filterEditableActivity(loggedInUserId, isAdmin),
     },
     select: {
       // not using this, we just need to select one field
@@ -5967,12 +6077,11 @@ export async function removeClassification(
   classificationId: number,
   loggedInUserId: Uint8Array,
 ) {
+  const isAdmin = await getIsAdmin(loggedInUserId);
   const activity = await prisma.content.findUnique({
     where: {
       id: activityId,
-      type: { not: "folder" },
-      isDeleted: false,
-      ownerId: loggedInUserId,
+      ...filterEditableActivity(loggedInUserId, isAdmin),
     },
     select: {
       // not using this, we just need to select one field
@@ -6003,19 +6112,11 @@ export async function getClassifications(
   activityId: Uint8Array,
   loggedInUserId: Uint8Array,
 ) {
+  const isAdmin = await getIsAdmin(loggedInUserId);
   const activity = await prisma.content.findUnique({
     where: {
       id: activityId,
-      isFolder: false,
-      isDeleted: false,
-      OR: [
-        {
-          ownerId: loggedInUserId,
-        },
-        {
-          isPublic: true,
-        },
-      ],
+      ...filterViewableActivity(loggedInUserId, isAdmin),
     },
     select: {
       // not using this, we just need to select one field
@@ -6192,15 +6293,16 @@ export async function getAllLicenses() {
 
 export async function setActivityLicense({
   id,
-  ownerId,
+  loggedInUserId,
   licenseCode,
 }: {
   id: Uint8Array;
-  ownerId: Uint8Array;
+  loggedInUserId: Uint8Array;
   licenseCode: LicenseCode;
 }) {
+  const isAdmin = await getIsAdmin(loggedInUserId);
   await prisma.content.update({
-    where: { id, isDeleted: false, ownerId: ownerId, isFolder: false },
+    where: { id, ...filterEditableActivity(loggedInUserId, isAdmin) },
     data: { licenseCode },
   });
 }
@@ -6640,4 +6742,558 @@ export async function purgeOldRecentContent() {
       LIMIT 1 OFFSET 99
     ) as sub
   )`);
+}
+
+/**
+ *
+ * Depending on user's access privileges, this function will hide some information.
+ * - Admins see everything
+ * - Owner of original activity does not see unpublished drafts
+ * - All other users do not see admin comments, pending requests, or unpublished drafts
+ * @param id - must be existing public activity
+ */
+export async function getLibraryStatus({
+  id,
+  userId,
+}: {
+  id: Uint8Array;
+  userId: Uint8Array;
+}): Promise<LibraryInfo> {
+  const info = await prisma.libraryActivityInfos.findUnique({
+    where: {
+      sourceId: id,
+    },
+    select: {
+      status: true,
+      comments: true,
+      sourceId: true,
+      activityId: true,
+    },
+  });
+
+  // No info in database
+  if (!info) {
+    return blankLibraryInfo(id);
+  }
+
+  const { activityId, comments, ...basicInfo } = info;
+  const isPublished = info.status === LibraryStatus.PUBLISHED;
+
+  // Admin
+  const isAdmin = await getIsAdmin(userId);
+  if (isAdmin) {
+    return info;
+  }
+
+  //Owner
+  const isOwner = await prisma.content.findUnique({
+    where: { id, ownerId: userId },
+    select: { ownerId: true },
+  });
+  if (isOwner) {
+    return {
+      activityId: isPublished ? activityId : null,
+      comments,
+      ...basicInfo,
+    };
+  }
+
+  // All other users
+  if (isPublished) {
+    return {
+      activityId,
+      ...basicInfo,
+    };
+  }
+
+  return blankLibraryInfo(id);
+}
+
+/**
+ * Set library status to `PENDING_REVIEW`. Also logs event in library history.
+ * @param activityId - must be existing public activity
+ * @param ownerId - must be owner of activityId
+ */
+export async function submitLibraryRequest({
+  activityId,
+  ownerId,
+}: {
+  activityId: Uint8Array;
+  ownerId: Uint8Array;
+}) {
+  const isOwner = await prisma.content.findUnique({
+    where: {
+      id: activityId,
+      isPublic: true,
+      ownerId,
+    },
+    select: { id: true },
+  });
+  if (!isOwner) {
+    throw new InvalidRequestError(
+      "Activity does not exist, is not public, or is not owned by you.",
+    );
+  }
+
+  const updateLibInfo = prisma.libraryActivityInfos.upsert({
+    where: {
+      sourceId: activityId,
+      source: {
+        isPublic: true,
+        isFolder: false,
+        isDeleted: false,
+        ownerId,
+      },
+      OR: [
+        {
+          status: LibraryStatus.NEEDS_REVISION,
+        },
+        {
+          status: LibraryStatus.REQUEST_REMOVED,
+        },
+      ],
+    },
+    update: {
+      status: LibraryStatus.PENDING_REVIEW,
+      ownerRequested: true,
+    },
+    create: {
+      sourceId: activityId,
+      status: LibraryStatus.PENDING_REVIEW,
+      comments: "",
+      ownerRequested: true,
+    },
+  });
+
+  const newEvent = prisma.libraryEvents.create({
+    data: {
+      sourceId: activityId,
+      eventType: LibraryEventType.SUBMIT_REQUEST,
+      dateTime: new Date(),
+      comments: "",
+      userId: ownerId,
+    },
+  });
+
+  await prisma.$transaction([updateLibInfo, newEvent]);
+}
+/**
+ * Set library status to `REQUEST_REMOVED`. Also logs event in library history.
+ * @param activityId - must be existing public activity
+ * @param ownerId - must be owner of activityId
+ *
+ */
+export async function cancelLibraryRequest({
+  activityId,
+  ownerId,
+}: {
+  activityId: Uint8Array;
+  ownerId: Uint8Array;
+}) {
+  const updateLibInfo = prisma.libraryActivityInfos.update({
+    where: {
+      sourceId: activityId,
+      source: {
+        isPublic: true,
+        isFolder: false,
+        isDeleted: false,
+        ownerId,
+      },
+      status: LibraryStatus.PENDING_REVIEW,
+    },
+    data: {
+      status: LibraryStatus.REQUEST_REMOVED,
+    },
+  });
+
+  const newEvent = prisma.libraryEvents.create({
+    data: {
+      sourceId: activityId,
+      eventType: LibraryEventType.CANCEL_REQUEST,
+      dateTime: new Date(),
+      comments: "",
+      userId: ownerId,
+    },
+  });
+
+  await prisma.$transaction([updateLibInfo, newEvent]);
+}
+
+async function getLibraryAccountId() {
+  const library = await prisma.users.findFirstOrThrow({
+    where: {
+      isLibrary: true,
+    },
+    select: {
+      userId: true,
+    },
+  });
+  const libraryId = library!.userId;
+  return libraryId;
+}
+
+/**
+ * Remix activity into library account.
+ * Error if a draft already exists in the library
+ * @param id - must be existing public activity not owned by library
+ * @param loggedInUserId - must be admin
+ */
+export async function addDraftToLibrary({
+  id,
+  loggedInUserId,
+}: {
+  id: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
+  await mustBeAdmin(loggedInUserId);
+
+  const sourceIsLibOrDraftExists = await prisma.libraryActivityInfos.findFirst({
+    where: {
+      OR: [
+        {
+          sourceId: id,
+          NOT: { activityId: null },
+        },
+        {
+          activityId: id,
+          activity: {
+            owner: {
+              isLibrary: true,
+            },
+          },
+        },
+      ],
+    },
+    select: {
+      activityId: true,
+    },
+  });
+
+  if (sourceIsLibOrDraftExists) {
+    if (sourceIsLibOrDraftExists.activityId !== null) {
+      throw new InvalidRequestError(
+        `Already included in library, see activity ${fromUUID(sourceIsLibOrDraftExists.activityId!)}`,
+      );
+    } else {
+      throw new InvalidRequestError(`Cannot add draft of curated activity`);
+    }
+  }
+
+  const libraryId = await getLibraryAccountId();
+
+  const draftId = await copyActivityToFolder(id, libraryId, null);
+
+  await prisma.libraryActivityInfos.upsert({
+    where: {
+      sourceId: id,
+    },
+    update: {
+      activityId: draftId,
+    },
+    create: {
+      sourceId: id,
+      activityId: draftId,
+      ownerRequested: false,
+      status: LibraryStatus.PENDING_REVIEW,
+    },
+  });
+
+  await prisma.libraryEvents.create({
+    data: {
+      sourceId: id,
+      activityId: draftId,
+      dateTime: new Date(),
+      eventType: LibraryEventType.ADD_DRAFT,
+      userId: loggedInUserId,
+      comments: "",
+    },
+  });
+
+  return { draftId };
+}
+/**
+ * Soft delete draft and log event.
+ * @param draftId - must be existing draft (private activity) in library account
+ * @param loggedInUserId - must be admin
+ */
+export async function deleteDraftFromLibrary({
+  draftId,
+  loggedInUserId,
+}: {
+  draftId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
+  await mustBeAdmin(loggedInUserId);
+  const libraryId = await getLibraryAccountId();
+  const { sourceId } = await prisma.libraryActivityInfos.findUniqueOrThrow({
+    where: {
+      activityId: draftId,
+    },
+    select: {
+      sourceId: true,
+    },
+  });
+
+  const deleteDraft = prisma.content.update({
+    where: {
+      id: draftId,
+      isPublic: false, // This is key! We're only deleting unpublished drafts here
+      isDeleted: false,
+      isFolder: false,
+      ownerId: libraryId,
+    },
+    data: {
+      // soft delete activity
+      isDeleted: true,
+      documents: {
+        updateMany: {
+          where: {},
+          data: {
+            // soft delete documents
+            isDeleted: true,
+          },
+        },
+      },
+    },
+  });
+
+  const removeLibraryIdRef = prisma.libraryActivityInfos.update({
+    where: {
+      activityId: draftId,
+    },
+    data: {
+      activityId: null,
+    },
+  });
+
+  const logDeletion = prisma.libraryEvents.create({
+    data: {
+      sourceId,
+      activityId: draftId,
+      eventType: LibraryEventType.DELETE_DRAFT,
+      dateTime: new Date(),
+      userId: loggedInUserId,
+    },
+  });
+
+  await prisma.$transaction([deleteDraft, removeLibraryIdRef, logDeletion]);
+}
+
+/**
+ * Make library activity public and log event.
+ * @param draftId - must be existing draft (private activity) in library account
+ * @param loggedInUserId - must be admin
+ * @todo notify owner
+ */
+export async function publishActivityToLibrary({
+  draftId,
+  loggedInUserId,
+  comments,
+}: {
+  draftId: Uint8Array;
+  loggedInUserId: Uint8Array;
+  comments: string;
+}) {
+  await mustBeAdmin(loggedInUserId);
+  const libraryId = await getLibraryAccountId();
+  const { sourceId } = await prisma.libraryActivityInfos.findUniqueOrThrow({
+    where: {
+      activityId: draftId,
+    },
+    select: {
+      sourceId: true,
+    },
+  });
+
+  await prisma.content.update({
+    where: {
+      id: draftId,
+      isPublic: false,
+      isDeleted: false,
+      isFolder: false,
+      ownerId: libraryId,
+      license: {
+        isNot: null,
+      },
+    },
+    data: {
+      // Publish
+      isPublic: true,
+      // Update status
+      libraryActivityInfo: {
+        update: {
+          status: LibraryStatus.PUBLISHED,
+          comments,
+        },
+      },
+      // Log publication
+      libraryActivityEvents: {
+        create: {
+          sourceId,
+          eventType: LibraryEventType.PUBLISH,
+          dateTime: new Date(),
+          userId: loggedInUserId,
+          comments,
+        },
+      },
+    },
+  });
+}
+
+/**
+ * Make library activity private and log event.
+ * @param activityId - must be existing published (public) activity in library account
+ * @param loggedInUserId - must be admin
+ */
+export async function unpublishActivityFromLibrary({
+  activityId,
+  loggedInUserId,
+}: {
+  activityId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
+  await mustBeAdmin(loggedInUserId);
+  const libraryId = await getLibraryAccountId();
+  const { sourceId } = await prisma.libraryActivityInfos.findUniqueOrThrow({
+    where: {
+      activityId: activityId,
+    },
+    select: {
+      sourceId: true,
+    },
+  });
+
+  await prisma.content.update({
+    where: {
+      id: activityId,
+      isPublic: true,
+      isFolder: false,
+      isDeleted: false,
+      ownerId: libraryId,
+      libraryActivityInfo: {
+        status: LibraryStatus.PUBLISHED,
+      },
+    },
+    data: {
+      isPublic: false,
+      libraryActivityInfo: {
+        update: {
+          // TODO: should we use the pending review status here or another status?
+          status: LibraryStatus.PENDING_REVIEW,
+        },
+      },
+      libraryActivityEvents: {
+        create: {
+          sourceId,
+          eventType: LibraryEventType.UNPUBLISH,
+          dateTime: new Date(),
+          userId: loggedInUserId,
+        },
+      },
+    },
+  });
+}
+
+/**
+ * Set library status to `NEEDS_REVISION` and log event.
+ * @param sourceId - original activity, must exist and be public, must have status `PENDING REVIEW`
+ * @param comments - will be displayed to original owner
+ * @param userId - must be admin
+ * @todo notify owner
+ */
+export async function markLibraryRequestNeedsRevision({
+  sourceId,
+  comments,
+  userId,
+}: {
+  sourceId: Uint8Array;
+  comments: string;
+  userId: Uint8Array;
+}) {
+  await mustBeAdmin(userId);
+
+  await prisma.content.update({
+    where: {
+      id: sourceId,
+      isPublic: true,
+      isFolder: false,
+      isDeleted: false,
+      librarySourceInfo: {
+        status: LibraryStatus.PENDING_REVIEW,
+        ownerRequested: true,
+      },
+    },
+    data: {
+      librarySourceInfo: {
+        update: {
+          status: LibraryStatus.NEEDS_REVISION,
+          comments,
+        },
+      },
+      librarySourceEvents: {
+        create: {
+          eventType: LibraryEventType.MARK_NEEDS_REVISION,
+          dateTime: new Date(),
+          userId,
+          comments,
+        },
+      },
+    },
+  });
+}
+
+/**
+ * Change comments to owner and log event.
+ * @param sourceId - original activity, must be public and have library status
+ * @param comments - updated comments sent to owner
+ * @param userId - must be admin
+ * @todo notify owner
+ */
+export async function modifyCommentsOfLibraryRequest({
+  sourceId,
+  comments,
+  userId,
+}: {
+  sourceId: Uint8Array;
+  comments: string;
+  userId: Uint8Array;
+}) {
+  await mustBeAdmin(userId);
+
+  const { activityId } = await prisma.libraryActivityInfos.findUniqueOrThrow({
+    where: {
+      sourceId,
+    },
+    select: {
+      activityId: true,
+    },
+  });
+
+  await prisma.content.update({
+    where: {
+      id: sourceId,
+      isPublic: true,
+      isFolder: false,
+      isDeleted: false,
+      NOT: {
+        librarySourceInfo: null,
+      },
+    },
+    data: {
+      librarySourceInfo: {
+        update: {
+          comments,
+        },
+      },
+      librarySourceEvents: {
+        create: {
+          activityId,
+          eventType: LibraryEventType.MODIFY_COMMENTS,
+          dateTime: new Date(),
+          comments,
+          userId,
+        },
+      },
+    },
+  });
 }

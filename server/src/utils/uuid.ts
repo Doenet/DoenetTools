@@ -1,4 +1,10 @@
-import { ContentStructure, DocHistory, DocRemixes, UserInfo } from "../types";
+import {
+  ContentStructure,
+  DocHistory,
+  DocRemixes,
+  LibraryInfo,
+  UserInfo,
+} from "../types";
 import { fromBinaryUUID, toBinaryUUID } from "./binary-uuid";
 import short from "short-uuid";
 
@@ -52,6 +58,12 @@ export function contentStructureConvertNoChildrenUUID(
   }));
 
   const { children: _skipChildren, ...contentNoChildren } = content;
+  const librarySourceInfo = content.librarySourceInfo
+    ? libraryInfoConvertUUID(content.librarySourceInfo)
+    : undefined;
+  const libraryActivityInfo = content.libraryActivityInfo
+    ? libraryInfoConvertUUID(content.libraryActivityInfo)
+    : undefined;
 
   return {
     ...contentNoChildren,
@@ -61,6 +73,8 @@ export function contentStructureConvertNoChildrenUUID(
     sharedWith,
     documents,
     parent,
+    librarySourceInfo,
+    libraryActivityInfo,
   };
 }
 
@@ -254,5 +268,19 @@ export function studentDataConvertUUID({
       score: act.score,
     })),
     folder: folder ? { id: fromUUID(folder.id), name: folder.name } : null,
+  };
+}
+
+export function libraryInfoConvertUUID(libraryInfo: LibraryInfo) {
+  const sourceId = fromUUID(libraryInfo.sourceId);
+  const activityId = libraryInfo.activityId
+    ? fromUUID(libraryInfo.activityId)
+    : null;
+  return {
+    sourceId,
+    activityId,
+    status: libraryInfo.status,
+    ownerRequested: libraryInfo.ownerRequested,
+    comments: libraryInfo.comments,
   };
 }

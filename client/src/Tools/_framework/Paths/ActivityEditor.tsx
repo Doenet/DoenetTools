@@ -59,6 +59,7 @@ import {
   getIconInfo,
 } from "../../../_utils/activity";
 import { ActivitySource } from "../../../_utils/viewerTypes";
+import { CurateDrawer, curateDrawerActions } from "../ToolPanels/CurateDrawer";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -83,10 +84,16 @@ export async function action({ params, request }) {
     return resultCS;
   }
 
+  const resultCurate = await curateDrawerActions({ formObj });
+  if (resultCurate) {
+    return resultCurate;
+  }
+
   const resultSD = await shareDrawerActions({ formObj });
   if (resultSD) {
     return resultSD;
   }
+
   const resultAS = await assignmentSettingsActions({ formObj });
   if (resultAS) {
     return resultAS;
@@ -109,10 +116,10 @@ export async function action({ params, request }) {
 
 export async function loader({ params }) {
   const {
-    data: { notMe, activity: activityData, availableFeatures },
+    data: { editableByMe, activity: activityData, availableFeatures },
   } = await axios.get(`/api/getActivityEditorData/${params.activityId}`);
 
-  if (notMe) {
+  if (!editableByMe) {
     return redirect(`/codeViewer/${params.activityId}`);
   }
 
@@ -253,6 +260,7 @@ export function ActivityEditor() {
   } = data;
 
   const finalFocusRef = useRef<HTMLElement | null>(null);
+  const curateBtnRef = useRef<HTMLButtonElement>(null);
   const settingsBtnRef = useRef<HTMLButtonElement>(null);
   const sharingBtnRef = useRef<HTMLButtonElement>(null);
   const assignBtnRef = useRef<HTMLButtonElement>(null);
@@ -288,6 +296,8 @@ export function ActivityEditor() {
   readOnlyRef.current = readOnly;
 
   const [mode, setMode] = useState<"Edit" | "View">(readOnly ? "View" : "Edit");
+
+  const isLibraryActivity = Boolean(activityData.libraryActivityInfo);
 
   useEffect(() => {
     if (readOnly) {
@@ -388,16 +398,44 @@ export function ActivityEditor() {
     />
   ) : null;
 
-  const shareDrawer = contentData ? (
-    <ShareDrawer
+  const shareDrawer =
+    contentData && !isLibraryActivity ? (
+      <ShareDrawer
+        isOpen={sharingIsOpen}
+        onClose={sharingOnClose}
+        finalFocusRef={finalFocusRef}
+        fetcher={fetcher}
+        contentData={contentData}
+        allLicenses={allLicenses}
+        currentDoenetML={textEditorDoenetML}
+      />
+    ) : null;
+
+  const curateDrawer = isLibraryActivity ? (
+    <CurateDrawer
       isOpen={sharingIsOpen}
       onClose={sharingOnClose}
-      finalFocusRef={finalFocusRef}
+      contentData={activityData}
       fetcher={fetcher}
-      contentData={contentData}
-      allLicenses={allLicenses}
-      currentDoenetML={textEditorDoenetML}
     />
+  ) : null;
+
+  const assignmentDrawers = !isLibraryActivity ? (
+    <>
+      <AssignmentSettingsDrawer
+        isOpen={assignmentSettingsAreOpen}
+        onClose={assignmentSettingsOnClose}
+        finalFocusRef={finalFocusRef}
+        fetcher={fetcher}
+        id={activityId}
+        contentData={activityData}
+      />
+      <AssignmentInvitation
+        isOpen={invitationIsOpen}
+        onClose={invitationOnClose}
+        activityData={activityData}
+      />
+    </>
   ) : null;
 
   const contentTypeName = contentTypeToName[data.type];
@@ -425,20 +463,9 @@ export function ActivityEditor() {
     <>
       {settingsDrawer}
       {shareDrawer}
+      {curateDrawer}
+      {assignmentDrawers}
 
-      <AssignmentSettingsDrawer
-        isOpen={assignmentSettingsAreOpen}
-        onClose={assignmentSettingsOnClose}
-        finalFocusRef={finalFocusRef}
-        fetcher={fetcher}
-        id={activityId}
-        contentData={activityData}
-      />
-      <AssignmentInvitation
-        isOpen={invitationIsOpen}
-        onClose={invitationOnClose}
-        activityData={activityData}
-      />
       <Grid
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height
@@ -515,51 +542,74 @@ export function ActivityEditor() {
             >
               <HStack mr={{ base: "5px", sm: "10px" }}>
                 <ButtonGroup size="sm" isAttached variant="outline">
-                  <Tooltip
-                    hasArrow
-                    label={
-                      assignmentStatus === "Unassigned"
-                        ? "Assign Activity"
-                        : "Manage Assignment"
-                    }
-                    placement="bottom-end"
-                  >
-                    <Button
-                      data-test="Assign Activity Button"
-                      size="sm"
-                      pr={{ base: "0px", md: "10px" }}
-                      leftIcon={<MdOutlineAssignment />}
-                      onClick={() => {
-                        finalFocusRef.current = assignBtnRef.current;
-                        assignmentSettingsOnOpen();
-                      }}
-                      ref={assignBtnRef}
+                  {isLibraryActivity ? (
+                    <Tooltip
+                      hasArrow
+                      label="Open Curation Controls"
+                      placement="bottom-end"
                     >
-                      <Show above="md">Assign</Show>
-                    </Button>
-                  </Tooltip>
+                      <Button
+                        data-test="Curate Button"
+                        size="sm"
+                        pr={{ base: "0px", md: "10px" }}
+                        leftIcon={<MdOutlineGroup />}
+                        onClick={() => {
+                          finalFocusRef.current = curateBtnRef.current;
+                          sharingOnOpen();
+                        }}
+                        ref={curateBtnRef}
+                      >
+                        <Show above="md">Curate</Show>
+                      </Button>
+                    </Tooltip>
+                  ) : (
+                    <>
+                      <Tooltip
+                        hasArrow
+                        label={
+                          assignmentStatus === "Unassigned"
+                            ? "Assign Activity"
+                            : "Manage Assignment"
+                        }
+                        placement="bottom-end"
+                      >
+                        <Button
+                          data-test="Assign Activity Button"
+                          size="sm"
+                          pr={{ base: "0px", md: "10px" }}
+                          leftIcon={<MdOutlineAssignment />}
+                          onClick={() => {
+                            finalFocusRef.current = assignBtnRef.current;
+                            assignmentSettingsOnOpen();
+                          }}
+                          ref={assignBtnRef}
+                        >
+                          <Show above="md">Assign</Show>
+                        </Button>
+                      </Tooltip>
 
-                  <Tooltip
-                    hasArrow
-                    label="Open Sharing Controls"
-                    placement="bottom-end"
-                  >
-                    <Button
-                      data-test="Sharing Button"
-                      size="sm"
-                      pr={{ base: "0px", md: "10px" }}
-                      leftIcon={<MdOutlineGroup />}
-                      onClick={() => {
-                        finalFocusRef.current = sharingBtnRef.current;
-                        setSettingsContentId(activityData.id);
-                        sharingOnOpen();
-                      }}
-                      ref={sharingBtnRef}
-                    >
-                      <Show above="md">Share</Show>
-                    </Button>
-                  </Tooltip>
-
+                      <Tooltip
+                        hasArrow
+                        label="Open Sharing Controls"
+                        placement="bottom-end"
+                      >
+                        <Button
+                          data-test="Sharing Button"
+                          size="sm"
+                          pr={{ base: "0px", md: "10px" }}
+                          leftIcon={<MdOutlineGroup />}
+                          onClick={() => {
+                            finalFocusRef.current = sharingBtnRef.current;
+                            setSettingsContentId(activityData.id);
+                            sharingOnOpen();
+                          }}
+                          ref={sharingBtnRef}
+                        >
+                          <Show above="md">Share</Show>
+                        </Button>
+                      </Tooltip>
+                    </>
+                  )}
                   <Tooltip
                     hasArrow
                     label="Open Settings"

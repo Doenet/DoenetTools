@@ -50,6 +50,10 @@ model content {
   classifications       contentClassifications[]
   contentViews          contentViews[]
   recentContent         recentContent[]
+  librarySourceInfo     libraryActivityInfos?    @relation("source")
+  libraryActivityInfo   libraryActivityInfos?    @relation("activity")
+  librarySourceEvents   libraryEvents[]          @relation("source")
+  libraryActivityEvents libraryEvents[]          @relation("activity")
 
   @@index([ownerId, parentId, sortIndex])
   @@index([classCode])
@@ -262,6 +266,7 @@ model users {
   firstNames                 String?
   lastNames                  String
   isAdmin                    Boolean                      @default(false)
+  isLibrary                  Boolean                      @default(false)
   isAnonymous                Boolean                      @default(false)
   cardView                   Boolean                      @default(false)
   content                    content[]
@@ -270,6 +275,7 @@ model users {
   documentSubmittedResponses documentSubmittedResponses[]
   sharedWithMe               contentShares[]
   recentContent              recentContent[]
+  libraryEvents              libraryEvents[]
 
   @@fulltext([firstNames, lastNames])
 }
@@ -363,4 +369,48 @@ model classifications {
   contentClassifications contentClassifications[]
 
   @@fulltext([code])
+}
+
+model libraryActivityInfos {
+  sourceId       Bytes         @id @db.Binary(16)
+  activityId     Bytes?        @unique @db.Binary(16)
+  ownerRequested Boolean
+  status         LibraryStatus
+  comments       String        @default("")
+  source         content       @relation(name: "source", fields: [sourceId], references: [id])
+  activity       content?      @relation(name: "activity", fields: [activityId], references: [id])
+}
+
+enum LibraryStatus {
+  PENDING_REVIEW
+  REQUEST_REMOVED
+  PUBLISHED
+  NEEDS_REVISION
+}
+
+model libraryEvents {
+  id         Bytes            @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
+  sourceId   Bytes            @db.Binary(16)
+  activityId Bytes?           @db.Binary(16)
+  eventType  LibraryEventType
+  dateTime   DateTime
+  comments   String           @default("")
+  userId     Bytes            @db.Binary(16)
+  user       users            @relation(fields: [userId], references: [userId])
+  source     content          @relation(name: "source", fields: [sourceId], references: [id])
+  activity   content?         @relation(name: "activity", fields: [activityId], references: [id])
+}
+
+enum LibraryEventType {
+  // Activity owners can:
+  SUBMIT_REQUEST
+  CANCEL_REQUEST
+  // Admins can:
+  ADD_DRAFT
+  DELETE_DRAFT
+  PUBLISH
+  UNPUBLISH
+  // And admins can communicate with owner
+  MARK_NEEDS_REVISION
+  MODIFY_COMMENTS
 }
