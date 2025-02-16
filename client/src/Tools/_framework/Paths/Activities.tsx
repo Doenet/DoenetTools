@@ -65,6 +65,10 @@ import {
   contentTypeToName,
   getAllowedParentTypes,
 } from "../../../_utils/activity";
+import {
+  CreateFolderModal,
+  createFolderModalActions,
+} from "../ToolPanels/CreateFolderModal";
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -94,6 +98,11 @@ export async function action({ request, params }) {
     return resultTLV;
   }
 
+  const resultCF = await createFolderModalActions({ formObj });
+  if (resultCF) {
+    return resultCF;
+  }
+
   if (formObj?._action == "Add Activity") {
     //Create an activity and redirect to the editor for it
     const { data } = await axios.post(
@@ -103,10 +112,6 @@ export async function action({ request, params }) {
 
     const { activityId } = data;
     return redirect(`/activityEditor/${activityId}`);
-  } else if (formObj?._action == "Add Folder") {
-    await axios.post(`/api/createFolder/${params.folderId ?? ""}`);
-
-    return true;
   } else if (formObj?._action == "Delete Activity") {
     await axios.post(`/api/deleteActivity`, {
       activityId: formObj.id,
@@ -223,6 +228,12 @@ export function Activities() {
     isOpen: assignmentSettingsAreOpen,
     onOpen: assignmentSettingsOnOpen,
     onClose: assignmentSettingsOnClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: createFolderIsOpen,
+    onOpen: createFolderOnOpen,
+    onClose: createFolderOnClose,
   } = useDisclosure();
 
   // refs to the menu button of each content card,
@@ -545,6 +556,16 @@ export function Activities() {
     />
   );
 
+  const createFolderModal = (
+    <CreateFolderModal
+      isOpen={createFolderIsOpen}
+      onClose={createFolderOnClose}
+      parentFolder={folderId}
+      fetcher={fetcher}
+      finalFocusRef={finalFocusRef}
+    />
+  );
+
   const heading = (
     <Box
       backgroundColor="#fff"
@@ -656,11 +677,7 @@ export function Activities() {
                 <MenuItem
                   data-test="Add Folder Button"
                   onClick={() => {
-                    setHaveContentSpinner(true);
-                    fetcher.submit(
-                      { _action: "Add Folder" },
-                      { method: "post" },
-                    );
+                    createFolderOnOpen();
                   }}
                 >
                   Folder
@@ -821,6 +838,7 @@ export function Activities() {
       {shareDrawer}
       {assignmentDrawer}
       {moveCopyContentModal}
+      {createFolderModal}
 
       {heading}
 
