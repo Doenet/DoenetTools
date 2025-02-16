@@ -6583,7 +6583,7 @@ export async function publishActivityToLibrary({
       // Publish
       isPublic: true,
       // Update status
-      libraryActivity: {
+      libraryActivityInfo: {
         update: {
           status: LibraryStatus.PUBLISHED,
           comments,
@@ -6633,13 +6633,13 @@ export async function unpublishActivityFromLibrary({
       isFolder: false,
       isDeleted: false,
       ownerId: libraryId,
-      libraryActivity: {
+      libraryActivityInfo: {
         status: LibraryStatus.PUBLISHED,
       },
     },
     data: {
       isPublic: false,
-      libraryActivity: {
+      libraryActivityInfo: {
         update: {
           // TODO: should we use the pending review status here or another status?
           status: LibraryStatus.PENDING_REVIEW,
@@ -6681,13 +6681,13 @@ export async function markLibraryRequestNeedsRevision({
       isPublic: true,
       isFolder: false,
       isDeleted: false,
-      librarySource: {
+      librarySourceInfo: {
         status: LibraryStatus.PENDING_REVIEW,
         ownerRequested: true,
       },
     },
     data: {
-      librarySource: {
+      librarySourceInfo: {
         update: {
           status: LibraryStatus.NEEDS_REVISION,
           comments,
@@ -6739,11 +6739,11 @@ export async function modifyCommentsOfLibraryRequest({
       isFolder: false,
       isDeleted: false,
       NOT: {
-        librarySource: null,
+        librarySourceInfo: null,
       },
     },
     data: {
-      librarySource: {
+      librarySourceInfo: {
         update: {
           comments,
         },

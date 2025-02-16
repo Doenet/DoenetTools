@@ -203,7 +203,7 @@ export function ActivityViewer() {
                           {activity.name}
                         </Text>
                       </Tooltip>
-                      {activity.libraryActivity?.status === "PUBLISHED" ? (
+                      {activity.libraryActivityInfo?.status === "PUBLISHED" ? (
                         <>
                           <Tooltip label="This activity is curated.">
                             <Box marginLeft="5px">
@@ -212,7 +212,7 @@ export function ActivityViewer() {
                           </Tooltip>
                         </>
                       ) : null}
-                      {activity.librarySource?.status === "PUBLISHED" ? (
+                      {activity.librarySourceInfo?.status === "PUBLISHED" ? (
                         <Popover>
                           <PopoverTrigger>
                             <IconButton
@@ -237,7 +237,7 @@ export function ActivityViewer() {
                               A{" "}
                               <ChakraLink
                                 as={ReactRouterLink}
-                                to={`/activityViewer/${activity.librarySource.activityId}`}
+                                to={`/activityViewer/${activity.librarySourceInfo.activityId}`}
                                 style={{ color: "var(--mainBlue)" }}
                               >
                                 peer-reviewed
@@ -293,8 +293,8 @@ export function ActivityViewer() {
                             </Button>
                           )}
                           {user?.isAdmin &&
-                          !activity.librarySource &&
-                          !activity.libraryActivity ? (
+                          !activity.librarySourceInfo &&
+                          !activity.libraryActivityInfo ? (
                             <Button
                               data-test="Add Draft to Library Button"
                               size="xs"
@@ -309,12 +309,12 @@ export function ActivityViewer() {
                           ) : (
                             <></>
                           )}
-                          {user?.isAdmin && activity.librarySource ? (
+                          {user?.isAdmin && activity.librarySourceInfo ? (
                             <Button
                               data-test="Go to existing remix in library"
                               size="xs"
                               as={ReactRouterLink}
-                              to={`/activityViewer/${activity.librarySource.activityId}`}
+                              to={`/activityViewer/${activity.librarySourceInfo.activityId}`}
                               // style={{ color: "var(--mainBlue)" }}
                             >
                               Go to existing remix in library

@@ -139,8 +139,8 @@ export type ContentStructure = {
   sharedWith: UserInfo[];
   license: License | null;
   classifications: ContentClassification[];
-  librarySource?: LibraryInfo;
-  libraryActivity?: LibraryInfo;
+  librarySourceInfo?: LibraryInfo;
+  libraryActivityInfo?: LibraryInfo;
   documents: {
     id: string;
     versionNum?: number;

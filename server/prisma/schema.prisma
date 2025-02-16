@@ -42,8 +42,8 @@ model content {
   sharedWith            contentShares[]
   classifications       contentClassifications[]
   contentViews          contentViews[]
-  librarySource         libraryActivityInfos?    @relation("source")
-  libraryActivity       libraryActivityInfos?    @relation("activity")
+  librarySourceInfo     libraryActivityInfos?    @relation("source")
+  libraryActivityInfo   libraryActivityInfos?    @relation("activity")
   librarySourceEvents   libraryEvents[]          @relation("source")
   libraryActivityEvents libraryEvents[]          @relation("activity")
 

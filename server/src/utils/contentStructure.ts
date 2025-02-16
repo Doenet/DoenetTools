@@ -308,7 +308,7 @@ export function returnContentStructureBaseSelect({
       },
       orderBy: { id: "asc" as const },
     },
-    librarySource: {
+    librarySourceInfo: {
       select: {
         status: true,
         sourceId: true,
@@ -317,7 +317,7 @@ export function returnContentStructureBaseSelect({
         ownerRequested: isAdmin,
       },
     },
-    libraryActivity: {
+    libraryActivityInfo: {
       select: {
         status: true,
         sourceId: true,
@@ -525,8 +525,8 @@ type PreliminaryContent = PreliminaryContentNoClassDocs & {
       deprecationMessage: string;
     };
   }[];
-  libraryActivity: LibraryInfo | null;
-  librarySource: LibraryInfo | null;
+  libraryActivityInfo: LibraryInfo | null;
+  librarySourceInfo: LibraryInfo | null;
   classifications: {
     classification: ContentClassification;
   }[];
@@ -682,8 +682,8 @@ export function processContent(
     license,
     classifications,
     parentFolder,
-    libraryActivity,
-    librarySource,
+    libraryActivityInfo,
+    librarySourceInfo,
     ...preliminaryContent2
   } = preliminaryContent;
 
@@ -701,14 +701,14 @@ export function processContent(
   );
   // Don't include library fields if the values are null
   const libraryInfos: {
-    libraryActivity?: LibraryInfo;
-    librarySource?: LibraryInfo;
+    libraryActivityInfo?: LibraryInfo;
+    librarySourceInfo?: LibraryInfo;
   } = {};
-  if (libraryActivity) {
-    libraryInfos.libraryActivity = libraryActivity;
+  if (libraryActivityInfo) {
+    libraryInfos.libraryActivityInfo = libraryActivityInfo;
   }
-  if (librarySource) {
-    libraryInfos.librarySource = librarySource;
+  if (librarySourceInfo) {
+    libraryInfos.librarySourceInfo = librarySourceInfo;
   }
 
   const content: ContentStructure = {
@@ -748,8 +748,8 @@ export function processContentSharedDetails(
     license,
     classifications,
     parentFolder,
-    libraryActivity,
-    librarySource,
+    libraryActivityInfo,
+    librarySourceInfo,
     ...preliminaryContent2
   } = preliminaryContent;
 
@@ -765,14 +765,14 @@ export function processContentSharedDetails(
 
   // Don't include library fields if the values are null
   const libraryInfos: {
-    libraryActivity?: LibraryInfo;
-    librarySource?: LibraryInfo;
+    libraryActivityInfo?: LibraryInfo;
+    librarySourceInfo?: LibraryInfo;
   } = {};
-  if (libraryActivity) {
-    libraryInfos.libraryActivity = libraryActivity;
+  if (libraryActivityInfo) {
+    libraryInfos.libraryActivityInfo = libraryActivityInfo;
   }
-  if (librarySource) {
-    libraryInfos.librarySource = librarySource;
+  if (librarySourceInfo) {
+    libraryInfos.librarySourceInfo = librarySourceInfo;
   }
 
   const content: ContentStructure = {
@@ -811,8 +811,8 @@ export function processContentSharedDetailsAssignedDoc(
     license,
     classifications,
     parentFolder,
-    libraryActivity,
-    librarySource,
+    libraryActivityInfo,
+    librarySourceInfo,
     documents: documentsOrig,
     ...preliminaryContent2
   } = preliminaryContent;
@@ -829,14 +829,14 @@ export function processContentSharedDetailsAssignedDoc(
 
   // Don't include library fields if the values are null
   const libraryInfos: {
-    libraryActivity?: LibraryInfo;
-    librarySource?: LibraryInfo;
+    libraryActivityInfo?: LibraryInfo;
+    librarySourceInfo?: LibraryInfo;
   } = {};
-  if (libraryActivity) {
-    libraryInfos.libraryActivity = libraryActivity;
+  if (libraryActivityInfo) {
+    libraryInfos.libraryActivityInfo = libraryActivityInfo;
   }
-  if (librarySource) {
-    libraryInfos.librarySource = librarySource;
+  if (librarySourceInfo) {
+    libraryInfos.librarySourceInfo = librarySourceInfo;
   }
 
   const documents = documentsOrig.map((doc) => ({

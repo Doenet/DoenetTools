@@ -42,10 +42,10 @@ export function CurateSettings({
   contentData: ContentStructure;
 }) {
   const license = contentData.license!;
-  const sourceId = contentData.libraryActivity!.sourceId;
+  const sourceId = contentData.libraryActivityInfo!.sourceId;
   const activityId = contentData.id;
-  const existingComments = contentData.libraryActivity?.comments ?? "";
-  const status = contentData.libraryActivity!.status;
+  const existingComments = contentData.libraryActivityInfo?.comments ?? "";
+  const status = contentData.libraryActivityInfo!.status;
   // const userRequested = contentData;
 
   const [comments, setComments] = useState<string>(existingComments);
@@ -151,7 +151,7 @@ export function CurateSettings({
       )}
 
       {/* {status === "PENDING_REVIEW" &&
-      contentData.libraryActivity!.onwerRequested ? (
+      contentData.libraryActivityInfo!.onwerRequested ? (
         <Button
           onClick={() => {
             setUnsavedComments(false);

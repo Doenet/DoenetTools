@@ -119,8 +119,8 @@ export type ContentStructure = {
     sortIndex: number;
   }[];
   classifications: ContentClassification[];
-  librarySource?: LibraryInfo;
-  libraryActivity?: LibraryInfo;
+  librarySourceInfo?: LibraryInfo;
+  libraryActivityInfo?: LibraryInfo;
   documents: {
     id: Uint8Array;
     versionNum?: number;

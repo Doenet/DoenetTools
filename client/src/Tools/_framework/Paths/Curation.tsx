@@ -275,7 +275,7 @@ export function Curation() {
     sharedWith: UserInfo[];
     licenseCode: LicenseCode | null;
     parentFolderId: string | null;
-    libraryActivity: LibraryInfo;
+    libraryActivityInfo: LibraryInfo;
   }) {
     return (
       <>
@@ -627,7 +627,7 @@ export function Curation() {
         sharedWith: activity.sharedWith,
         licenseCode: activity.license?.code ?? null,
         parentFolderId: activity.parentFolder?.id ?? null,
-        libraryActivity: activity.libraryActivity!,
+        libraryActivityInfo: activity.libraryActivityInfo!,
         isFolder: activity.isFolder!,
       }),
       cardLink: activity.isFolder

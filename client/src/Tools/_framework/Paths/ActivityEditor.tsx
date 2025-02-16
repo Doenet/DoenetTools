@@ -271,7 +271,7 @@ export function ActivityEditor() {
 
   const [mode, setMode] = useState<"Edit" | "View">(readOnly ? "View" : "Edit");
 
-  const isLibraryActivity = Boolean(activityData.libraryActivity);
+  const isLibraryActivity = Boolean(activityData.libraryActivityInfo);
 
   const initialWarnings = doenetmlVersion.deprecated
     ? [

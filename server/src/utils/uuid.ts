@@ -55,11 +55,11 @@ export function contentStructureConvertUUID(content: ContentStructure) {
     id: fromUUID(doc.id),
   }));
 
-  const librarySource = content.librarySource
-    ? libraryInfoConvertUUID(content.librarySource)
+  const librarySourceInfo = content.librarySourceInfo
+    ? libraryInfoConvertUUID(content.librarySourceInfo)
     : undefined;
-  const libraryActivity = content.libraryActivity
-    ? libraryInfoConvertUUID(content.libraryActivity)
+  const libraryActivityInfo = content.libraryActivityInfo
+    ? libraryInfoConvertUUID(content.libraryActivityInfo)
     : undefined;
 
   return {
@@ -70,8 +70,8 @@ export function contentStructureConvertUUID(content: ContentStructure) {
     sharedWith,
     documents,
     parentFolder,
-    librarySource,
-    libraryActivity,
+    librarySourceInfo,
+    libraryActivityInfo,
   };
 }
 
