@@ -30,7 +30,7 @@ export function ToggleViewButtonGroup({
   setListView: (arg: boolean) => void;
 }) {
   return (
-    <ButtonGroup size="sm" isAttached variant="outline" marginBottom=".5em">
+    <ButtonGroup size="sm" isAttached variant="outline" marginBottom="2px">
       <Tooltip label="Toggle list view" openDelay={500}>
         <IconButton
           size="lg"

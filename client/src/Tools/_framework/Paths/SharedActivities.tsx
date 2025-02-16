@@ -15,10 +15,7 @@ import { CardContent } from "../../../Widgets/Card";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
 import { ContentStructure } from "../../../_utils/types";
-import {
-  DisplayLicenseItem,
-  SmallLicenseBadges,
-} from "../../../Widgets/Licenses";
+import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import CardList from "../../../Widgets/CardList";
 import {
@@ -119,27 +116,16 @@ export function SharedActivities() {
       textAlign="center"
     >
       <Tooltip label={headingText}>
-        <Heading as="h2" size="lg" paddingTop=".5em" noOfLines={1}>
+        <Heading
+          as="h2"
+          size="lg"
+          paddingTop="10px"
+          noOfLines={1}
+          height="46px"
+        >
           {headingText}
         </Heading>
       </Tooltip>
-
-      {folder ? (
-        <Flex
-          width="100%"
-          paddingLeft="15px"
-          paddingRight="15px"
-          paddingBottom="5px"
-          boxSizing="border-box"
-          marginTop="-45px"
-          height="40px"
-        >
-          <Spacer />
-          {folder.license ? (
-            <SmallLicenseBadges license={folder.license} />
-          ) : null}
-        </Flex>
-      ) : null}
 
       <Flex marginRight=".5em" alignItems="center" paddingLeft="15px">
         {folder ? (
