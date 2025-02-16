@@ -447,7 +447,7 @@ test("deleting draft does not delete owner's original", async () => {
   expect(original.isDeleted).eqls(false);
 });
 
-test.only("Cannot add draft of curated activity", async () => {
+test("Cannot add draft of curated activity", async () => {
   // Setup
   const { userId: adminId } = await createTestAdminUser();
   const { activityId } = await createActivity(adminId, null);
