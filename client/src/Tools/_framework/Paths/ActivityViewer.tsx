@@ -204,15 +204,20 @@ export function ActivityViewer() {
                         </Text>
                       </Tooltip>
                       {activity.libraryActivity?.status === "PUBLISHED" ? (
-                        <Tooltip label="This activity is curated.">
-                          <ImCheckmark />
-                        </Tooltip>
+                        <>
+                          <Tooltip label="This activity is curated.">
+                            <Box marginLeft="5px">
+                              <ImCheckmark color="green" />
+                            </Box>
+                          </Tooltip>
+                        </>
                       ) : null}
                       {activity.librarySource?.status === "PUBLISHED" ? (
                         <Popover>
                           <PopoverTrigger>
                             <IconButton
-                              variant="ghost"
+                              marginLeft="5px"
+                              variant="unstyled"
                               icon={
                                 <BsBookmarkCheck
                                   style={{ color: "var(--mainBlue)" }}
@@ -287,7 +292,9 @@ export function ActivityViewer() {
                               Sign In To Copy to Activities
                             </Button>
                           )}
-                          {user?.isAdmin && !activity.librarySource ? (
+                          {user?.isAdmin &&
+                          !activity.librarySource &&
+                          !activity.libraryActivity ? (
                             <Button
                               data-test="Add Draft to Library Button"
                               size="xs"
@@ -310,7 +317,7 @@ export function ActivityViewer() {
                               to={`/activityViewer/${activity.librarySource.activityId}`}
                               // style={{ color: "var(--mainBlue)" }}
                             >
-                              Go to existing remix in library.
+                              Go to existing remix in library
                             </Button>
                           ) : (
                             <></>

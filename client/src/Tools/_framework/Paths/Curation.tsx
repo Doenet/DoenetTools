@@ -332,6 +332,22 @@ export function Curation() {
             Move to Folder
           </MenuItem>
         )}
+        {!isFolder && !isPublic ? (
+          <MenuItem
+            data-test="Delete Draft"
+            onClick={() => {
+              fetcher.submit(
+                {
+                  _action: "Delete Draft",
+                  id,
+                },
+                { method: "post" },
+              );
+            }}
+          >
+            Delete Draft
+          </MenuItem>
+        ) : null}
         {isFolder ? null : (
           <MenuItem
             data-test="Curate Menu Item"

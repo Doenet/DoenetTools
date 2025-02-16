@@ -420,7 +420,7 @@ test("published activity in library with unavailable source activity", async () 
   await expectStatusIs(activityId, status, adminId);
   await expectStatusIs(activityId, status, ownerId);
 
-  // Onwer deletes activity, remix still published
+  // Owner deletes activity, remix still published
   await deleteActivity(activityId, ownerId);
   await expectStatusIs(activityId, status, adminId);
   await expectStatusIs(activityId, status, ownerId);
@@ -445,6 +445,31 @@ test("deleting draft does not delete owner's original", async () => {
   const original = await getActivity(activityId);
   expect(original.id).eqls(activityId);
   expect(original.isDeleted).eqls(false);
+});
+
+test.only("Cannot add draft of curated activity", async () => {
+  // Setup
+  const { userId: adminId } = await createTestAdminUser();
+  const { activityId } = await createActivity(adminId, null);
+  await makeActivityPublic({
+    id: activityId,
+    ownerId: adminId,
+    licenseCode: "CCDUAL",
+  });
+  const { draftId: curatedId } = await addDraftToLibrary({
+    id: activityId,
+    loggedInUserId: adminId,
+  });
+  await publishActivityToLibrary({
+    draftId: curatedId,
+    loggedInUserId: adminId,
+    comments: "",
+  });
+
+  // Throws error
+  await expect(() =>
+    addDraftToLibrary({ id: curatedId, loggedInUserId: adminId }),
+  ).rejects.toThrowError();
 });
 
 test.todo("getCurationContent and all its variations (and search!)");

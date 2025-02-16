@@ -183,7 +183,7 @@ export function CurateSettings({
           );
         }}
       >
-        Edit comments
+        Save comments
       </Button>
     </>
   );

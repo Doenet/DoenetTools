@@ -313,8 +313,8 @@ export function returnContentStructureBaseSelect({
         status: true,
         sourceId: true,
         activityId: true,
-        comments: isAdmin ? true : undefined,
-        ownerRequested: isAdmin ? true : undefined,
+        comments: isAdmin,
+        ownerRequested: isAdmin,
       },
     },
     libraryActivity: {
@@ -322,8 +322,8 @@ export function returnContentStructureBaseSelect({
         status: true,
         sourceId: true,
         activityId: true,
-        comments: isAdmin ? true : undefined,
-        ownerRequested: isAdmin ? true : undefined,
+        comments: isAdmin,
+        ownerRequested: isAdmin,
       },
     },
     classifications: {
@@ -390,7 +390,6 @@ export function returnContentStructureFullOwnerSelect() {
         email: true,
         firstNames: true,
         lastNames: true,
-        // isLibrary: true,
       },
     },
   };

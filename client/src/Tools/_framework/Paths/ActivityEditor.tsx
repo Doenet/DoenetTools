@@ -271,6 +271,8 @@ export function ActivityEditor() {
 
   const [mode, setMode] = useState<"Edit" | "View">(readOnly ? "View" : "Edit");
 
+  const isLibraryActivity = Boolean(activityData.libraryActivity);
+
   const initialWarnings = doenetmlVersion.deprecated
     ? [
         {
@@ -372,7 +374,7 @@ export function ActivityEditor() {
         displayTab={displaySettingsTab}
       />
 
-      {activityData.libraryActivity ? (
+      {isLibraryActivity ? (
         <CurateDrawer
           isOpen={sharingIsOpen}
           onClose={sharingOnClose}
@@ -477,7 +479,7 @@ export function ActivityEditor() {
             >
               <HStack mr={{ base: "5px", sm: "10px" }}>
                 <ButtonGroup size="sm" isAttached variant="outline">
-                  {activityData.libraryActivity ? (
+                  {isLibraryActivity ? (
                     <Tooltip
                       hasArrow
                       label="Open Curation Controls"

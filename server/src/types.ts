@@ -36,7 +36,6 @@ export type UserInfo = {
   firstNames: string | null;
   lastNames: string;
   email: string;
-  // isLibrary: boolean;
   numLibrary?: number;
   numCommunity?: number;
 };

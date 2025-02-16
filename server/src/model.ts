@@ -6287,6 +6287,7 @@ export async function submitLibraryRequest({
       isPublic: true,
       ownerId,
     },
+    select: { id: true },
   });
   if (!isOwner) {
     throw new InvalidRequestError(
@@ -6392,8 +6393,9 @@ async function getLibraryAccountId() {
 }
 
 /**
- * Remix activity into library account
- * @param id - must be existing public activity
+ * Remix activity into library account.
+ * Error if a draft already exists in the library
+ * @param id - must be existing public activity not owned by library
  * @param loggedInUserId - must be admin
  */
 export async function addDraftToLibrary({
@@ -6405,23 +6407,36 @@ export async function addDraftToLibrary({
 }) {
   await mustBeAdmin(loggedInUserId);
 
-  // Cannot add draft if it can already be found in library
-  const existingLibId = await prisma.libraryActivityInfos.findUnique({
+  const sourceIsLibOrDraftExists = await prisma.libraryActivityInfos.findFirst({
     where: {
-      sourceId: id,
-      NOT: {
-        activityId: null,
-      },
+      OR: [
+        {
+          sourceId: id,
+          NOT: { activityId: null },
+        },
+        {
+          activityId: id,
+          activity: {
+            owner: {
+              isLibrary: true,
+            },
+          },
+        },
+      ],
     },
     select: {
       activityId: true,
     },
   });
 
-  if (existingLibId) {
-    throw new InvalidRequestError(
-      `Already included in library, see activity ${existingLibId}`,
-    );
+  if (sourceIsLibOrDraftExists) {
+    if (sourceIsLibOrDraftExists.activityId !== null) {
+      throw new InvalidRequestError(
+        `Already included in library, see activity ${fromUUID(sourceIsLibOrDraftExists.activityId!)}`,
+      );
+    } else {
+      throw new InvalidRequestError(`Cannot add draft of curated activity`);
+    }
   }
 
   const libraryId = await getLibraryAccountId();
