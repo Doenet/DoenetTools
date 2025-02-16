@@ -5105,10 +5105,14 @@ export async function getDocumentSubmittedResponseHistory({
 export async function getMyFolderContent({
   folderId,
   loggedInUserId,
+  isLibrary = false,
 }: {
   folderId: Uint8Array | null;
   loggedInUserId: Uint8Array;
+  isLibrary?: boolean;
 }) {
+  const ownerId = isLibrary ? await getLibraryAccountId() : loggedInUserId;
+
   let folder: ContentStructure | null = null;
 
   if (folderId !== null) {
@@ -5116,9 +5120,8 @@ export async function getMyFolderContent({
     const preliminaryFolder = await prisma.content.findUniqueOrThrow({
       where: {
         id: folderId,
-        isDeleted: false,
         isFolder: true,
-        ownerId: loggedInUserId,
+        ...filterEditableContent(ownerId, false),
       },
       select: returnContentStructureSharedDetailsNoClassDocsSelect(),
     });
@@ -5128,7 +5131,7 @@ export async function getMyFolderContent({
 
   const preliminaryContent = await prisma.content.findMany({
     where: {
-      ownerId: loggedInUserId,
+      ownerId,
       isDeleted: false,
       parentFolderId: folderId,
     },
@@ -6756,65 +6759,4 @@ export async function modifyCommentsOfLibraryRequest({
       },
     },
   });
-}
-
-/**
- * Get contents of folder in library account. Similar to {@link getMyFolderContent}
- * @param folderId - existing folder in library account or `null` for root folder
- * @param loggedInUserId - must be admin
- */
-export async function getCurationFolderContent({
-  folderId,
-  loggedInUserId,
-}: {
-  folderId: Uint8Array | null;
-  loggedInUserId: Uint8Array;
-}) {
-  await mustBeAdmin(loggedInUserId);
-  const libraryId = await getLibraryAccountId();
-
-  let folder: ContentStructure | null = null;
-
-  if (folderId !== null) {
-    // if ask for a folder, make sure it exists and is owned by the library
-    const preliminaryFolder = await prisma.content.findUniqueOrThrow({
-      where: {
-        id: folderId,
-        isDeleted: false,
-        isFolder: true,
-        ownerId: libraryId,
-      },
-      select: returnContentStructureSharedDetailsNoClassDocsSelect(),
-    });
-
-    folder = processContentSharedDetailsNoClassDocs(preliminaryFolder);
-  }
-
-  const preliminaryContent = await prisma.content.findMany({
-    where: {
-      ownerId: libraryId,
-      isDeleted: false,
-      parentFolderId: folderId,
-    },
-    select: {
-      ...returnContentStructureSharedDetailsSelect({
-        includeAssignInfo: true,
-        isAdmin: true,
-      }),
-      _count: { select: { assignmentScores: true } },
-    },
-    orderBy: { sortIndex: "asc" },
-  });
-
-  const content: ContentStructure[] = preliminaryContent.map(
-    processContentSharedDetails,
-  );
-
-  const availableFeatures = await getAvailableContentFeatures();
-
-  return {
-    content,
-    folder,
-    availableFeatures,
-  };
 }

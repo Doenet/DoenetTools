@@ -96,7 +96,6 @@ import {
   getSharedContentMatchCountPerAvailableFeature,
   getAuthorInfo,
   browseTrendingContent,
-  getCurationFolderContent,
   addDraftToLibrary,
   getLibraryStatus,
   publishActivityToLibrary,
@@ -2883,7 +2882,8 @@ app.get(
     }
 
     try {
-      const contentData = await getCurationFolderContent({
+      const contentData = await getMyFolderContent({
+        isLibrary: true,
         folderId: null,
         loggedInUserId,
       });
@@ -2921,7 +2921,8 @@ app.get(
     }
 
     try {
-      const contentData = await getCurationFolderContent({
+      const contentData = await getMyFolderContent({
+        isLibrary: true,
         folderId,
         loggedInUserId,
       });
