@@ -48,6 +48,7 @@ import {
 import { CopyContentAndReportFinish } from "./CopyContentAndReportFinish";
 import { CreateContentMenu } from "./CreateContentMenu";
 import { AddContentToMenu } from "./AddContentToMenu";
+import { DeleteModal, deleteModalActions } from "./DeleteModal";
 
 export async function compoundActivityEditorActions(
   {
@@ -66,6 +67,11 @@ export async function compoundActivityEditorActions(
     return resultMC;
   }
 
+  const resultDM = await deleteModalActions({ formObj });
+  if (resultDM) {
+    return resultDM;
+  }
+
   if (formObj?._action == "Add Activity") {
     //Create an activity and redirect to the editor for it
     const { data } = await axios.post(
@@ -80,18 +86,6 @@ export async function compoundActivityEditorActions(
     } else {
       return true;
     }
-  } else if (formObj?._action == "Delete Activity") {
-    await axios.post(`/api/deleteActivity`, {
-      activityId: formObj.id,
-    });
-
-    return true;
-  } else if (formObj?._action == "Delete Folder") {
-    await axios.post(`/api/deleteFolder`, {
-      folderId: formObj.id,
-    });
-
-    return true;
   } else if (formObj?._action == "Duplicate Content") {
     await axios.post(`/api/copyContent`, {
       sourceContent: [{ contentId: formObj.id, type: formObj.contentType }],
@@ -158,6 +152,9 @@ export function CompoundActivityEditor({
 
   const [haveContentSpinner, setHaveContentSpinner] = useState(false);
 
+  const [contentToDelete, setContentToDelete] =
+    useState<ContentDescription | null>(null);
+
   useEffect(() => {
     setHaveContentSpinner(false);
   }, [activity]);
@@ -215,6 +212,22 @@ export function CompoundActivityEditor({
         action="Add"
       />
     ) : null;
+
+  const {
+    isOpen: deleteContentIsOpen,
+    onOpen: deleteContentOnOpen,
+    onClose: deleteContentOnClose,
+  } = useDisclosure();
+
+  const deleteModal = contentToDelete ? (
+    <DeleteModal
+      isOpen={deleteContentIsOpen}
+      onClose={deleteContentOnClose}
+      content={contentToDelete}
+      fetcher={fetcher}
+      finalFocusRef={finalFocusRef}
+    />
+  ) : null;
 
   function selectCardCallback({
     id,
@@ -501,10 +514,8 @@ export function CompoundActivityEditor({
           hidden={readOnly}
           data-test="Delete Menu Item"
           onClick={() => {
-            fetcher.submit(
-              { _action: "Delete Activity", id },
-              { method: "post" },
-            );
+            setContentToDelete(content);
+            deleteContentOnOpen();
           }}
         >
           Delete
@@ -717,6 +728,7 @@ export function CompoundActivityEditor({
     <>
       {moveContentModal}
       {copyContentModal}
+      {deleteModal}
       {mode === "Edit" ? (
         <>
           {heading}

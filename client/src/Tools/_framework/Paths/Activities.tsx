@@ -69,6 +69,7 @@ import {
   CreateFolderModal,
   createFolderModalActions,
 } from "../ToolPanels/CreateFolderModal";
+import { DeleteModal, deleteModalActions } from "../ToolPanels/DeleteModal";
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -103,6 +104,11 @@ export async function action({ request, params }) {
     return resultCF;
   }
 
+  const resultDM = await deleteModalActions({ formObj });
+  if (resultDM) {
+    return resultDM;
+  }
+
   if (formObj?._action == "Add Activity") {
     //Create an activity and redirect to the editor for it
     const { data } = await axios.post(
@@ -112,18 +118,6 @@ export async function action({ request, params }) {
 
     const { activityId } = data;
     return redirect(`/activityEditor/${activityId}`);
-  } else if (formObj?._action == "Delete Activity") {
-    await axios.post(`/api/deleteActivity`, {
-      activityId: formObj.id,
-    });
-
-    return true;
-  } else if (formObj?._action == "Delete Folder") {
-    await axios.post(`/api/deleteFolder`, {
-      folderId: formObj.id === "null" ? null : formObj.id,
-    });
-
-    return true;
   } else if (formObj?._action == "Duplicate Content") {
     await axios.post(`/api/copyContent`, {
       sourceContent: [{ contentId: formObj.id, type: formObj.contentType }],
@@ -234,6 +228,12 @@ export function Activities() {
     isOpen: createFolderIsOpen,
     onOpen: createFolderOnOpen,
     onClose: createFolderOnClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: deleteContentIsOpen,
+    onOpen: deleteContentOnOpen,
+    onClose: deleteContentOnClose,
   } = useDisclosure();
 
   // refs to the menu button of each content card,
@@ -416,10 +416,8 @@ export function Activities() {
         <MenuItem
           data-test="Delete Menu Item"
           onClick={() => {
-            fetcher.submit(
-              { _action: isFolder ? "Delete Folder" : "Delete Activity", id },
-              { method: "post" },
-            );
+            setSettingsContentId(id);
+            deleteContentOnOpen();
           }}
         >
           Delete
@@ -565,6 +563,17 @@ export function Activities() {
       finalFocusRef={finalFocusRef}
     />
   );
+
+  const deleteModal =
+    contentData && settingsContentId ? (
+      <DeleteModal
+        isOpen={deleteContentIsOpen}
+        onClose={deleteContentOnClose}
+        content={contentData}
+        fetcher={fetcher}
+        finalFocusRef={finalFocusRef}
+      />
+    ) : null;
 
   const heading = (
     <Box
@@ -839,6 +848,7 @@ export function Activities() {
       {assignmentDrawer}
       {moveCopyContentModal}
       {createFolderModal}
+      {deleteModal}
 
       {heading}
 
