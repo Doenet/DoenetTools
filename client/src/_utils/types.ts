@@ -32,6 +32,19 @@ export type License = {
 
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
+export type LibraryInfo = {
+  sourceId: string;
+  activityId: string | null;
+  onwerRequested?: boolean;
+  status:
+    | "none"
+    | "PENDING_REVIEW"
+    | "REQUEST_REMOVED"
+    | "PUBLISHED"
+    | "NEEDS_REVISION";
+  comments?: string;
+};
+
 export type UserInfo = {
   userId: string;
   firstNames: string | null;
@@ -100,7 +113,7 @@ export type PartialContentClassification = {
     type?: string;
     categoriesInDescription: boolean;
   };
-  numLibrary?: number;
+  numCurated?: number;
   numCommunity?: number;
 };
 
@@ -126,6 +139,8 @@ export type ContentStructure = {
   sharedWith: UserInfo[];
   license: License | null;
   classifications: ContentClassification[];
+  librarySourceInfo?: LibraryInfo;
+  libraryActivityInfo?: LibraryInfo;
   documents: {
     id: string;
     versionNum?: number;

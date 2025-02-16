@@ -4,6 +4,7 @@ import {
   useNavigate,
   useLocation,
   useOutletContext,
+  Link as ReactRouterLink,
 } from "react-router";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
@@ -16,14 +17,23 @@ import {
   Heading,
   HStack,
   IconButton,
+  Link as ChakraLink,
   List,
   ListItem,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverHeader,
+  PopoverBody,
+  PopoverArrow,
+  PopoverCloseButton,
   Spacer,
   Text,
   Tooltip,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
+
 import axios from "axios";
 import ContributorsMenu from "../ToolPanels/ContributorsMenu";
 
@@ -39,6 +49,8 @@ import { processContributorHistory } from "../../../_utils/processRemixes";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import { MdOutlineInfo } from "react-icons/md";
+import { BsBookmarkCheck } from "react-icons/bs";
+import { ImCheckmark } from "react-icons/im";
 import { getClassificationAugmentedDescription } from "../../../_utils/activity";
 
 export async function loader({ params }) {
@@ -72,6 +84,7 @@ export async function loader({ params }) {
       docId,
       contributorHistory,
       doenetmlVersion,
+      // libraryStatus,
     };
   } catch (e) {
     if (e.response?.status === 404) {
@@ -99,6 +112,7 @@ export function ActivityViewer() {
     doenetmlVersion: DoenetmlVersion;
   };
 
+  const [copyToLibrary, setCopyToLibrary] = useState<boolean>(false);
   const {
     isOpen: copyDialogIsOpen,
     onOpen: copyDialogOnOpen,
@@ -132,6 +146,7 @@ export function ActivityViewer() {
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
         activityData={activity}
+        copyToLibrary={copyToLibrary}
       />
       <ContentInfoDrawer
         isOpen={infoIsOpen}
@@ -178,13 +193,63 @@ export function ActivityViewer() {
                     alignItems="flex-start"
                     mt="10px"
                   >
-                    <Box width="100%" textAlign="center">
+                    <Flex
+                      width="100%"
+                      justifyContent="center"
+                      alignItems="center"
+                    >
                       <Tooltip label={activity.name}>
                         <Text fontSize="1.4em" fontWeight="bold" noOfLines={1}>
                           {activity.name}
                         </Text>
                       </Tooltip>
-                    </Box>
+                      {activity.libraryActivityInfo?.status === "PUBLISHED" ? (
+                        <>
+                          <Tooltip label="This activity is curated.">
+                            <Box marginLeft="5px">
+                              <ImCheckmark color="green" />
+                            </Box>
+                          </Tooltip>
+                        </>
+                      ) : null}
+                      {activity.librarySourceInfo?.status === "PUBLISHED" ? (
+                        <Popover>
+                          <PopoverTrigger>
+                            <IconButton
+                              marginLeft="5px"
+                              variant="unstyled"
+                              icon={
+                                <BsBookmarkCheck
+                                  style={{ color: "var(--mainBlue)" }}
+                                />
+                              }
+                              aria-label="A peer-reviewed version is available."
+                              data-test="Library source"
+                            />
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverHeader style={{ fontWeight: "bold" }}>
+                              This activity has been peer-reviewed!
+                            </PopoverHeader>
+                            <PopoverBody>
+                              A{" "}
+                              <ChakraLink
+                                as={ReactRouterLink}
+                                to={`/activityViewer/${activity.librarySourceInfo.activityId}`}
+                                style={{ color: "var(--mainBlue)" }}
+                              >
+                                peer-reviewed
+                              </ChakraLink>{" "}
+                              version is available.
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Popover>
+                      ) : (
+                        <></>
+                      )}
+                    </Flex>
                     <Flex mt="10px" width="100%">
                       <ContributorsMenu
                         activity={activity}
@@ -209,6 +274,7 @@ export function ActivityViewer() {
                               size="xs"
                               colorScheme="blue"
                               onClick={() => {
+                                setCopyToLibrary(false);
                                 copyDialogOnOpen();
                               }}
                             >
@@ -225,6 +291,36 @@ export function ActivityViewer() {
                             >
                               Sign In To Copy to Activities
                             </Button>
+                          )}
+                          {user?.isAdmin &&
+                          !activity.librarySourceInfo &&
+                          !activity.libraryActivityInfo ? (
+                            <Button
+                              data-test="Add Draft to Library Button"
+                              size="xs"
+                              colorScheme="blue"
+                              onClick={() => {
+                                setCopyToLibrary(true);
+                                copyDialogOnOpen();
+                              }}
+                            >
+                              Add Draft to Library
+                            </Button>
+                          ) : (
+                            <></>
+                          )}
+                          {user?.isAdmin && activity.librarySourceInfo ? (
+                            <Button
+                              data-test="Go to existing remix in library"
+                              size="xs"
+                              as={ReactRouterLink}
+                              to={`/activityViewer/${activity.librarySourceInfo.activityId}`}
+                              // style={{ color: "var(--mainBlue)" }}
+                            >
+                              Go to existing remix in library
+                            </Button>
+                          ) : (
+                            <></>
                           )}
                           <Tooltip
                             label={`Activity information`}

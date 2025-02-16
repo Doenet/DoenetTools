@@ -48,6 +48,14 @@ export async function moveContentActions({ formObj }: { [k: string]: any }) {
       desiredPosition: formObj.desiredPosition,
     });
     return true;
+  } else if (formObj?._action == "curated move to folder") {
+    await axios.post(`/api/moveCurationContent`, {
+      id: formObj.id,
+      desiredParentFolderId:
+        formObj.folderId === "null" ? null : formObj.folderId,
+      desiredPosition: formObj.desiredPosition,
+    });
+    return true;
   }
 
   return null;
@@ -64,6 +72,7 @@ export default function MoveContentToFolder({
   userId,
   currentParentId,
   finalFocusRef,
+  inCurationLibrary = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -75,6 +84,7 @@ export default function MoveContentToFolder({
   userId: string;
   currentParentId: string | null;
   finalFocusRef: RefObject<HTMLElement>;
+  inCurationLibrary?: boolean;
 }) {
   // Set when the modal opens
   const [parentId, setParentId] = useState<string | null>(null);
@@ -108,9 +118,13 @@ export default function MoveContentToFolder({
     newActiveFolderId: string | null,
     modalJustOpened: boolean = false,
   ) {
-    const { data } = await axios.get(
-      `/api/getMyFolderContent/${userId}/${newActiveFolderId ?? ""}`,
-    );
+    const { data } = inCurationLibrary
+      ? await axios.get(
+          `/api/getCurationFolderContent/${newActiveFolderId ?? ""}`,
+        )
+      : await axios.get(
+          `/api/getMyFolderContent/${userId}/${newActiveFolderId ?? ""}`,
+        );
 
     const folder: ContentStructure | null = data.folder;
     const folderName: string | null = folder?.name ?? null;
@@ -195,7 +209,7 @@ export default function MoveContentToFolder({
                   <Text noOfLines={1}>{activeView.folderName}</Text>
                 </>
               ) : (
-                <Text>My Activities</Text>
+                <Text>{inCurationLibrary ? "Curation" : "My Activities"}</Text>
               )}
             </HStack>
           </ModalHeader>
@@ -268,7 +282,9 @@ export default function MoveContentToFolder({
               }}
             >
               <Text noOfLines={1}>
-                Move to {activeView.folderName ?? "My Activities"}
+                Move to{" "}
+                {activeView.folderName ??
+                  (inCurationLibrary ? "Curation" : "My Activities")}
               </Text>
             </Button>
           </ModalFooter>
@@ -278,9 +294,12 @@ export default function MoveContentToFolder({
   );
 
   function performMove() {
+    const actionName = inCurationLibrary
+      ? "curated move to folder"
+      : "Move to folder";
     fetcher.submit(
       {
-        _action: "Move to folder",
+        _action: actionName,
         id,
         folderId: activeView.folderId,
         desiredPosition: activeView.contents.length, // place it as the last item

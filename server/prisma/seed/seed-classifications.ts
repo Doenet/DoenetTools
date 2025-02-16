@@ -186,16 +186,21 @@ async function addClassificationFromData({
         systemId,
         baseSortIndex + Number(classification.sortIndex),
       );
-      lastCategory = classification.category;
     }
-    if (classification.subCategory !== lastSubCategory) {
+    if (
+      classification.subCategory !== lastSubCategory ||
+      classification.category !== lastCategory
+    ) {
       lastSubCategoryId = await upsertClassificationSubCategory(
         classification.subCategory,
         lastCategoryId,
         baseSortIndex + Number(classification.sortIndex),
       );
-      lastSubCategory = classification.subCategory;
     }
+
+    lastCategory = classification.category;
+    lastSubCategory = classification.subCategory;
+
     if (typeof classification.description === "string") {
       await upsertClassification(
         classification.code,
