@@ -496,29 +496,22 @@ export async function getActivity(id: Uint8Array) {
   });
 }
 
-export async function getActivityName(id: Uint8Array) {
-  return await prisma.content.findUniqueOrThrow({
-    where: { id, isDeleted: false, isFolder: false },
-    select: {
-      id: true,
-      name: true,
-    },
-  });
-}
-
+/**
+ * Return the id, name, and content type of the content with `id`,
+ * assuming it is viewable by `loggedInUserId`.
+ *
+ * Throws an error if not viewable by `loggedInUserId`.
+ */
 export async function getContentDescription(
   id: Uint8Array,
   loggedInUserId: Uint8Array,
 ) {
+  const isAdmin = await getIsAdmin(loggedInUserId);
+
   return await prisma.content.findUniqueOrThrow({
     where: {
       id,
-      isDeleted: false,
-      OR: [
-        { ownerId: loggedInUserId },
-        { isPublic: true },
-        { sharedWith: { some: { userId: loggedInUserId } } },
-      ],
+      ...filterViewableContent(loggedInUserId, isAdmin),
     },
     select: { id: true, name: true, type: true },
   });
@@ -1001,6 +994,15 @@ export async function copyActivityToFolder(
   return newActivity.id;
 }
 
+/**
+ * Copy the folder `origId` to `desiredParentId` (or to the base folder of `ownerId` if `null`).
+ * If `prependCopy` is `true`, prepend the phrase "Copy of" to the name
+ * of `origId` when copying (though do not prepend "Copy of" to its descendants).
+ *
+ * If any folder (either `origId` or a descendant folder) is shared, then all of its descendants
+ * will be shared with the same users. The descendants will use the license of their corresponding
+ * original content (falling back to the license of the folder only if they don't have a license specified).
+ */
 export async function copyFolderToFolder(
   origId: Uint8Array,
   ownerId: Uint8Array,
@@ -1184,6 +1186,11 @@ export async function copyFolderToFolder(
   }
 }
 
+/**
+ * Copy all `origContent` to `parentId` (or the base folder of `userId` if `null).
+ * If `prependCopy` is `true`, prepend the phrase "Copy of" to the names
+ * of all `origContent` when copying (though do not prepend "Copy of" to their descendants).
+ */
 export async function copyContent(
   origContent: { contentId: Uint8Array; type: ContentType }[],
   userId: Uint8Array,
@@ -1207,12 +1214,15 @@ export async function copyContent(
   return newContentIds;
 }
 
+/**
+ * Check if `folderId` has any descendants of type `contentId`.
+ */
 export async function checkIfFolderContains(
   folderId: Uint8Array | null,
   contentType: ContentType,
   loggedInUserId: Uint8Array,
 ) {
-  // Note: now sure how to perform this calculation efficiently. Do we need to cache these values instead?
+  // Note: not sure how to perform this calculation efficiently. Do we need to cache these values instead?
   // Would it be better to do a single recursive query rather than recurse will individual queries
   // even though we may be able to short circuit with an early return?
 
@@ -1306,6 +1316,24 @@ async function createDocumentVersion(docId: Uint8Array): Promise<{
  * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
  */
 function filterViewableActivity(loggedInUserId: Uint8Array, isAdmin: boolean) {
+  return {
+    ...filterViewableContent(loggedInUserId, isAdmin),
+    type: { not: "folder" as const },
+  };
+}
+
+/**
+ * Filter Prisma's `where` clause to exclude unviewable content
+ *
+ * For content to be viewable, one of these conditions must be true:
+ * 1. You are the owner
+ * 2. The content is public
+ * 3. The content is shared with you
+ * 4. You are an admin and the content is in the library.
+ *
+ * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
+ */
+function filterViewableContent(loggedInUserId: Uint8Array, isAdmin: boolean) {
   const visibilityOptions: (
     | { ownerId: Uint8Array }
     | { isPublic: boolean }
@@ -1321,7 +1349,6 @@ function filterViewableActivity(loggedInUserId: Uint8Array, isAdmin: boolean) {
   }
   return {
     isDeleted: false,
-    type: { not: "folder" as const },
     OR: visibilityOptions,
   };
 }
@@ -1620,7 +1647,13 @@ export async function getActivityViewerData(
   };
 }
 
-async function getCompoundActivity(
+/**
+ * Get the content structure for `activityId`, recursing to all descendants
+ * to populate the `children` field of it and its descendants.
+ *
+ * Used for displaying the entire contents of a `select` or `sequence` activity.
+ */
+export async function getCompoundActivity(
   activityId: Uint8Array<ArrayBufferLike>,
   loggedInUserId: Uint8Array<ArrayBufferLike>,
 ) {
@@ -6674,6 +6707,11 @@ export async function getPreferredFolderView(loggedInUserId: Uint8Array) {
   });
 }
 
+/**
+ * Record the fact that `contentId` was edited/viewed by `loggedInUserId`.
+ *
+ * Used for creating a list of recent content with {@link getRecentContent}.
+ */
 export async function recordRecentContent(
   loggedInUserId: Uint8Array,
   mode: "edit" | "view",
@@ -6688,6 +6726,11 @@ export async function recordRecentContent(
   });
 }
 
+/**
+ * Get a list of the 5 most recent items recorded by {@link recordRecentContent}
+ * that were edited/viewed by `loggedInUserId`,
+ * optionally filtered to just the content types of `restrictToTypes`.
+ */
 export async function getRecentContent(
   loggedInUserId: Uint8Array,
   mode: "edit" | "view",

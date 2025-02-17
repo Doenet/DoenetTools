@@ -26,6 +26,8 @@ import {
   getContentDescription,
   shareFolder,
   InvalidRequestError,
+  getCompoundActivity,
+  deleteFolder,
 } from "../model";
 import { DateTime } from "luxon";
 import { ContentStructure } from "../types";
@@ -915,4 +917,53 @@ test("getContentDescription gets name and type", async () => {
     name: "Select 4",
     type: "select",
   });
+});
+
+test("get compound activity", async () => {
+  const { userId: ownerId } = await createTestUser();
+
+  const { folderId: sequenceId } = await createFolder(
+    ownerId,
+    null,
+    "sequence",
+  );
+
+  const { folderId: selectIdDelete } = await createFolder(
+    ownerId,
+    sequenceId,
+    "select",
+  );
+
+  const { activityId: _activityIdDelete1 } = await createActivity(
+    ownerId,
+    selectIdDelete,
+  );
+
+  const { folderId: selectId } = await createFolder(
+    ownerId,
+    sequenceId,
+    "select",
+  );
+
+  const { activityId: activityId1 } = await createActivity(ownerId, selectId);
+  const { activityId: activityId2 } = await createActivity(ownerId, selectId);
+  const { activityId: activityIdDelete2 } = await createActivity(
+    ownerId,
+    selectId,
+  );
+  const { activityId: activityId3 } = await createActivity(ownerId, sequenceId);
+
+  await deleteActivity(activityIdDelete2, ownerId);
+  await deleteFolder(selectIdDelete, ownerId);
+
+  const sequence = await getCompoundActivity(sequenceId, ownerId);
+
+  expect(sequence.id).eqls(sequenceId);
+  expect(sequence.type).eq("sequence");
+
+  expect(sequence.children.map((c) => c.id)).eqls([selectId, activityId3]);
+
+  const select = sequence.children[0];
+  expect(select.type).eq("select");
+  expect(select.children.map((c) => c.id)).eqls([activityId1, activityId2]);
 });
