@@ -508,7 +508,7 @@ export function CompoundActivityEditor({
             moveToFolderOnOpen();
           }}
         >
-          Move to Folder
+          Move&hellip;
         </MenuItem>
         <MenuItem
           hidden={readOnly}
@@ -718,6 +718,14 @@ export function CompoundActivityEditor({
             }}
           >
             Items from Explore
+          </MenuItem>
+          <MenuItem
+            data-test="Add My Activities Items"
+            onClick={async () => {
+              navigate(`/activities/${user!.userId}?addTo=${activity.id}`);
+            }}
+          >
+            Items from My Activities
           </MenuItem>
         </MenuList>
       </Menu>

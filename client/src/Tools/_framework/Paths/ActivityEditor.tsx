@@ -693,6 +693,15 @@ export function ActivityEditor() {
               </Center>
             ) : null}
             {editor}
+            <Box
+              hidden={mode === "Edit"}
+              maxWidth="850px"
+              width="100%"
+              height="30vh"
+              background="var(--canvas)"
+              padding="0px"
+              margin="0px"
+            />
           </VStack>
         </GridItem>
       </Grid>

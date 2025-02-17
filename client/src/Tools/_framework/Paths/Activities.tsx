@@ -18,6 +18,7 @@ import {
   VStack,
   Hide,
   Spinner,
+  CloseButton,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -46,6 +47,7 @@ import {
 } from "../ToolPanels/AssignmentSettingsDrawer";
 import {
   AssignmentStatus,
+  ContentDescription,
   ContentFeature,
   ContentStructure,
   ContentType,
@@ -64,12 +66,19 @@ import {
 import {
   contentTypeToName,
   getAllowedParentTypes,
+  menuIcons,
 } from "../../../_utils/activity";
 import {
   CreateFolderModal,
   createFolderModalActions,
 } from "../ToolPanels/CreateFolderModal";
 import { DeleteModal, deleteModalActions } from "../ToolPanels/DeleteModal";
+import {
+  AddContentToMenu,
+  addContentToMenuActions,
+} from "../ToolPanels/AddContentToMenu";
+import { CreateContentMenu } from "../ToolPanels/CreateContentMenu";
+import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -107,6 +116,11 @@ export async function action({ request, params }) {
   const resultDM = await deleteModalActions({ formObj });
   if (resultDM) {
     return resultDM;
+  }
+
+  const resultACM = await addContentToMenuActions({ formObj });
+  if (resultACM) {
+    return resultACM;
   }
 
   if (formObj?._action == "Add Activity") {
@@ -168,6 +182,18 @@ export async function loader({ params, request }) {
   const prefData = await axios.get(`/api/getPreferredFolderView`);
   const listViewPref = !prefData.data.cardView;
 
+  const addToId = url.searchParams.get("addTo");
+  let addTo: ContentDescription | undefined = undefined;
+
+  if (addToId) {
+    try {
+      const { data } = await axios.get(`/api/getContentDescription/${addToId}`);
+      addTo = data;
+    } catch (_e) {
+      console.error(`Could not get description of ${addToId}`);
+    }
+  }
+
   return {
     folderId: params.folderId ? params.folderId : null,
     content: data.content,
@@ -178,6 +204,7 @@ export async function loader({ params, request }) {
     folder: data.folder,
     listViewPref,
     query: q,
+    addTo,
   };
 }
 
@@ -192,6 +219,7 @@ export function Activities() {
     folder,
     listViewPref,
     query,
+    addTo,
   } = useLoaderData() as {
     folderId: string | null;
     content: ContentStructure[];
@@ -202,6 +230,7 @@ export function Activities() {
     folder: ContentStructure | null;
     listViewPref: boolean;
     query: string | null;
+    addTo: ContentDescription | undefined;
   };
   const [settingsContentId, setSettingsContentId] = useState<string | null>(
     null,
@@ -265,6 +294,54 @@ export function Activities() {
   const navigate = useNavigate();
 
   const [listView, setListView] = useState(listViewPref);
+
+  const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
+  const numSelected = selectedCards.length;
+
+  useEffect(() => {
+    setSelectedCards((was) => {
+      let foundMissing = false;
+      const newList = content.map((c) => c.id);
+      for (const c of was) {
+        if (!newList.includes(c.id)) {
+          foundMissing = true;
+          break;
+        }
+      }
+      if (foundMissing) {
+        return [];
+      } else {
+        return was;
+      }
+    });
+  }, [content]);
+
+  function selectCardCallback({
+    id,
+    name,
+    checked,
+    type,
+  }: {
+    id: string;
+    name: string;
+    checked: boolean;
+    type: ContentType;
+  }) {
+    setSelectedCards((was) => {
+      const arr = [...was];
+      const idx = was.findIndex((c) => c.id === id);
+      if (checked) {
+        if (idx === -1) {
+          arr.push({ id, name, type });
+        } else {
+          arr[idx] = { id, name, type };
+        }
+      } else if (idx !== -1) {
+        arr.splice(idx, 1);
+      }
+      return arr;
+    });
+  }
 
   const [moveToFolderData, setMoveToFolderData] = useState<{
     id: string;
@@ -575,6 +652,23 @@ export function Activities() {
       />
     ) : null;
 
+  const {
+    isOpen: copyDialogIsOpen,
+    onOpen: copyDialogOnOpen,
+    onClose: copyDialogOnClose,
+  } = useDisclosure();
+
+  const copyContentModal =
+    addTo !== undefined ? (
+      <CopyContentAndReportFinish
+        isOpen={copyDialogIsOpen}
+        onClose={copyDialogOnClose}
+        sourceContent={selectedCards}
+        desiredParent={addTo}
+        action="Add"
+      />
+    ) : null;
+
   const heading = (
     <Box
       backgroundColor="#fff"
@@ -595,6 +689,70 @@ export function Activities() {
         <Tooltip label={headingText}>{headingText}</Tooltip>
       </Heading>
       <VStack width="100%">
+        <Flex
+          width="100%"
+          height="40px"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Flex
+            height="30px"
+            width="100%"
+            alignContent="center"
+            hidden={numSelected === 0 && addTo === undefined}
+            backgroundColor="gray.100"
+            justifyContent="center"
+          >
+            {addTo !== undefined ? (
+              <HStack hidden={numSelected > 0}>
+                <CloseButton
+                  size="sm"
+                  onClick={() => {
+                    navigate(`.`);
+                  }}
+                />{" "}
+                <Text noOfLines={1}>
+                  Adding items to: {menuIcons[addTo.type]}
+                  <strong>{addTo.name}</strong>
+                </Text>
+              </HStack>
+            ) : null}
+            <HStack hidden={numSelected === 0}>
+              <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
+              <Text>{numSelected} selected</Text>
+              <HStack hidden={addTo !== undefined}>
+                <AddContentToMenu
+                  sourceContent={selectedCards}
+                  size="xs"
+                  colorScheme="blue"
+                  label="Copy selected to"
+                />
+                <CreateContentMenu
+                  sourceContent={selectedCards}
+                  size="xs"
+                  colorScheme="blue"
+                  label="Create from selected"
+                />
+              </HStack>
+              {addTo !== undefined ? (
+                <Button
+                  hidden={addTo === undefined}
+                  size="xs"
+                  colorScheme="blue"
+                  onClick={() => {
+                    copyDialogOnOpen();
+                  }}
+                >
+                  Add selected to {menuIcons[addTo.type]}
+                  <strong>
+                    {addTo.name.substring(0, 10)}
+                    {addTo.name.length > 10 ? "..." : ""}
+                  </strong>
+                </Button>
+              ) : null}
+            </HStack>
+          </Flex>
+        </Flex>
         <Flex marginRight="1em" width="100%">
           <Spacer />
           <HStack>
@@ -838,6 +996,9 @@ export function Activities() {
       emptyMessage={emptyMessage}
       listView={listView}
       content={cardContent}
+      selectedCards={selectedCards.map((c) => c.id)}
+      selectCallback={selectCardCallback}
+      disableSelectFor={addTo ? [addTo.id] : undefined}
     />
   );
 
@@ -849,6 +1010,7 @@ export function Activities() {
       {moveCopyContentModal}
       {createFolderModal}
       {deleteModal}
+      {copyContentModal}
 
       {heading}
 
