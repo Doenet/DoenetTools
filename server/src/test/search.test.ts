@@ -134,7 +134,7 @@ test("searchSharedContent returns public/shared activities and folders even in a
   // Create unique session number for names in this test
   const sessionNumber = Date.now().toString();
 
-  const { folderId: parentFolderId } = await createFolder(ownerId, null);
+  const { folderId: parentId } = await createFolder(ownerId, null);
 
   const publicActivityName = `public activity ${sessionNumber}`;
   const privateActivityName = `private activity ${sessionNumber}`;
@@ -145,7 +145,7 @@ test("searchSharedContent returns public/shared activities and folders even in a
 
   const { activityId: publicActivityId } = await createActivity(
     ownerId,
-    parentFolderId,
+    parentId,
   );
   await updateContent({
     id: publicActivityId,
@@ -160,7 +160,7 @@ test("searchSharedContent returns public/shared activities and folders even in a
 
   const { activityId: privateActivityId } = await createActivity(
     ownerId,
-    parentFolderId,
+    parentId,
   );
   await updateContent({
     id: privateActivityId,
@@ -170,7 +170,7 @@ test("searchSharedContent returns public/shared activities and folders even in a
 
   const { activityId: sharedActivityId } = await createActivity(
     ownerId,
-    parentFolderId,
+    parentId,
   );
   await updateContent({
     id: sharedActivityId,
@@ -184,10 +184,7 @@ test("searchSharedContent returns public/shared activities and folders even in a
     users: [userId],
   });
 
-  const { folderId: publicFolderId } = await createFolder(
-    ownerId,
-    parentFolderId,
-  );
+  const { folderId: publicFolderId } = await createFolder(ownerId, parentId);
   await updateContent({
     id: publicFolderId,
     name: publicFolderName,
@@ -199,20 +196,14 @@ test("searchSharedContent returns public/shared activities and folders even in a
     ownerId,
   });
 
-  const { folderId: privateFolderId } = await createFolder(
-    ownerId,
-    parentFolderId,
-  );
+  const { folderId: privateFolderId } = await createFolder(ownerId, parentId);
   await updateContent({
     id: privateFolderId,
     name: privateFolderName,
     ownerId,
   });
 
-  const { folderId: sharedFolderId } = await createFolder(
-    ownerId,
-    parentFolderId,
-  );
+  const { folderId: sharedFolderId } = await createFolder(ownerId, parentId);
   await updateContent({
     id: sharedFolderId,
     name: sharedFolderName,
@@ -2499,12 +2490,12 @@ test(
         .sort((a, b) => compareUUID(a.id, b.id))
         .map((c) => ({
           id: fromUUID(c.id),
-          parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
+          parentId: c.parent ? fromUUID(c.parent.id) : null,
         })),
     ).eqls([
-      { id: fromUUID(folder1Id), parentFolderId: fromUUID(baseFolderId) },
-      { id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) },
-      { id: fromUUID(activityRootId), parentFolderId: null },
+      { id: fromUUID(folder1Id), parentId: fromUUID(baseFolderId) },
+      { id: fromUUID(activity1aId), parentId: fromUUID(folder1Id) },
+      { id: fromUUID(activityRootId), parentId: null },
     ]);
 
     searchResults = await searchMyFolderContent({
@@ -2520,11 +2511,11 @@ test(
         .sort((a, b) => compareUUID(a.id, b.id))
         .map((c) => ({
           id: fromUUID(c.id),
-          parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
+          parentId: c.parent ? fromUUID(c.parent.id) : null,
         })),
     ).eqls([
-      { id: fromUUID(folder1Id), parentFolderId: fromUUID(baseFolderId) },
-      { id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) },
+      { id: fromUUID(folder1Id), parentId: fromUUID(baseFolderId) },
+      { id: fromUUID(activity1aId), parentId: fromUUID(folder1Id) },
     ]);
 
     searchResults = await searchMyFolderContent({
@@ -2540,11 +2531,9 @@ test(
         .sort((a, b) => compareUUID(a.id, b.id))
         .map((c) => ({
           id: fromUUID(c.id),
-          parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
+          parentId: c.parent ? fromUUID(c.parent.id) : null,
         })),
-    ).eqls([
-      { id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) },
-    ]);
+    ).eqls([{ id: fromUUID(activity1aId), parentId: fromUUID(folder1Id) }]);
 
     searchResults = await searchMyFolderContent({
       folderId: folder1cId,
@@ -2568,12 +2557,12 @@ test(
         .sort((a, b) => compareUUID(a.id, b.id))
         .map((c) => ({
           id: fromUUID(c.id),
-          parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
+          parentId: c.parent ? fromUUID(c.parent.id) : null,
         })),
     ).eqls([
-      { id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) },
-      { id: fromUUID(activity2Id), parentFolderId: fromUUID(baseFolderId) },
-      { id: fromUUID(activityRootId), parentFolderId: null },
+      { id: fromUUID(activity1aId), parentId: fromUUID(folder1Id) },
+      { id: fromUUID(activity2Id), parentId: fromUUID(baseFolderId) },
+      { id: fromUUID(activityRootId), parentId: null },
     ]);
 
     searchResults = await searchMyFolderContent({
@@ -2589,11 +2578,11 @@ test(
         .sort((a, b) => compareUUID(a.id, b.id))
         .map((c) => ({
           id: fromUUID(c.id),
-          parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
+          parentId: c.parent ? fromUUID(c.parent.id) : null,
         })),
     ).eqls([
-      { id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) },
-      { id: fromUUID(activity2Id), parentFolderId: fromUUID(baseFolderId) },
+      { id: fromUUID(activity1aId), parentId: fromUUID(folder1Id) },
+      { id: fromUUID(activity2Id), parentId: fromUUID(baseFolderId) },
     ]);
 
     searchResults = await searchMyFolderContent({
@@ -2609,11 +2598,9 @@ test(
         .sort((a, b) => compareUUID(a.id, b.id))
         .map((c) => ({
           id: fromUUID(c.id),
-          parentFolderId: c.parentFolder ? fromUUID(c.parentFolder.id) : null,
+          parentId: c.parent ? fromUUID(c.parent.id) : null,
         })),
-    ).eqls([
-      { id: fromUUID(activity1aId), parentFolderId: fromUUID(folder1Id) },
-    ]);
+    ).eqls([{ id: fromUUID(activity1aId), parentId: fromUUID(folder1Id) }]);
 
     searchResults = await searchMyFolderContent({
       folderId: folder1cId,

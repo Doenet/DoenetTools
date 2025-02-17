@@ -18,6 +18,7 @@ import {
   VStack,
   Hide,
   Spinner,
+  CloseButton,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -29,12 +30,13 @@ import {
   Form,
 } from "react-router";
 
-import { cardActions, CardContent } from "../../../Widgets/Card";
+import { CardContent } from "../../../Widgets/Card";
 import CardList from "../../../Widgets/CardList";
 import axios from "axios";
-import MoveContentToFolder, {
-  moveContentActions,
-} from "../ToolPanels/MoveContentToFolder";
+import {
+  MoveCopyContent,
+  moveCopyContentActions,
+} from "../ToolPanels/MoveCopyContent";
 import {
   contentSettingsActions,
   ContentSettingsDrawer,
@@ -45,8 +47,10 @@ import {
 } from "../ToolPanels/AssignmentSettingsDrawer";
 import {
   AssignmentStatus,
+  ContentDescription,
   ContentFeature,
   ContentStructure,
+  ContentType,
   DoenetmlVersion,
   License,
   LicenseCode,
@@ -59,9 +63,22 @@ import {
   ToggleViewButtonGroup,
   toggleViewButtonGroupActions,
 } from "../ToolPanels/ToggleViewButtonGroup";
-
-// what is a better solution than this?
-let folderJustCreated = ""; // if a folder was just created, set autoFocusName true for the card with the matching id
+import {
+  contentTypeToName,
+  getAllowedParentTypes,
+  menuIcons,
+} from "../../../_utils/activity";
+import {
+  CreateFolderModal,
+  createFolderModalActions,
+} from "../ToolPanels/CreateFolderModal";
+import { DeleteModal, deleteModalActions } from "../ToolPanels/DeleteModal";
+import {
+  AddContentToMenu,
+  addContentToMenuActions,
+} from "../ToolPanels/AddContentToMenu";
+import { CreateContentMenu } from "../ToolPanels/CreateContentMenu";
+import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -81,12 +98,7 @@ export async function action({ request, params }) {
     return resultAS;
   }
 
-  const resultCC = await cardActions({ formObj });
-  if (resultCC) {
-    return resultCC;
-  }
-
-  const resultMC = await moveContentActions({ formObj });
+  const resultMC = await moveCopyContentActions({ formObj });
   if (resultMC) {
     return resultMC;
   }
@@ -96,45 +108,41 @@ export async function action({ request, params }) {
     return resultTLV;
   }
 
+  const resultCF = await createFolderModalActions({ formObj });
+  if (resultCF) {
+    return resultCF;
+  }
+
+  const resultDM = await deleteModalActions({ formObj });
+  if (resultDM) {
+    return resultDM;
+  }
+
+  const resultACM = await addContentToMenuActions({ formObj });
+  if (resultACM) {
+    return resultACM;
+  }
+
   if (formObj?._action == "Add Activity") {
     //Create an activity and redirect to the editor for it
     const { data } = await axios.post(
       `/api/createActivity/${params.folderId ?? ""}`,
+      { type: formObj.type },
     );
 
     const { activityId } = data;
     return redirect(`/activityEditor/${activityId}`);
-  } else if (formObj?._action == "Add Folder") {
-    const { data } = await axios.post(
-      `/api/createFolder/${params.folderId ?? ""}`,
-    );
-    folderJustCreated = data.folderId;
-
-    return true;
-  } else if (formObj?._action == "Delete Activity") {
-    await axios.post(`/api/deleteActivity`, {
-      activityId: formObj.id,
-    });
-
-    return true;
-  } else if (formObj?._action == "Delete Folder") {
-    await axios.post(`/api/deleteFolder`, {
-      folderId: formObj.id === "null" ? null : formObj.id,
-    });
-
-    return true;
-  } else if (formObj?._action == "Duplicate Activity") {
-    await axios.post(`/api/duplicateActivity`, {
-      activityId: formObj.id,
-      desiredParentFolderId:
-        formObj.folderId === "null" ? null : formObj.folderId,
+  } else if (formObj?._action == "Duplicate Content") {
+    await axios.post(`/api/copyContent`, {
+      sourceContent: [{ contentId: formObj.id, type: formObj.contentType }],
+      desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
+      prependCopy: true,
     });
     return true;
   } else if (formObj?._action == "Move") {
     await axios.post(`/api/moveContent`, {
       id: formObj.id,
-      desiredParentFolderId:
-        formObj.folderId === "null" ? null : formObj.folderId,
+      desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
       desiredPosition: formObj.desiredPosition,
     });
     return true;
@@ -174,6 +182,18 @@ export async function loader({ params, request }) {
   const prefData = await axios.get(`/api/getPreferredFolderView`);
   const listViewPref = !prefData.data.cardView;
 
+  const addToId = url.searchParams.get("addTo");
+  let addTo: ContentDescription | undefined = undefined;
+
+  if (addToId) {
+    try {
+      const { data } = await axios.get(`/api/getContentDescription/${addToId}`);
+      addTo = data;
+    } catch (_e) {
+      console.error(`Could not get description of ${addToId}`);
+    }
+  }
+
   return {
     folderId: params.folderId ? params.folderId : null,
     content: data.content,
@@ -184,6 +204,7 @@ export async function loader({ params, request }) {
     folder: data.folder,
     listViewPref,
     query: q,
+    addTo,
   };
 }
 
@@ -198,6 +219,7 @@ export function Activities() {
     folder,
     listViewPref,
     query,
+    addTo,
   } = useLoaderData() as {
     folderId: string | null;
     content: ContentStructure[];
@@ -208,6 +230,7 @@ export function Activities() {
     folder: ContentStructure | null;
     listViewPref: boolean;
     query: string | null;
+    addTo: ContentDescription | undefined;
   };
   const [settingsContentId, setSettingsContentId] = useState<string | null>(
     null,
@@ -228,6 +251,18 @@ export function Activities() {
     isOpen: assignmentSettingsAreOpen,
     onOpen: assignmentSettingsOnOpen,
     onClose: assignmentSettingsOnClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: createFolderIsOpen,
+    onOpen: createFolderOnOpen,
+    onClose: createFolderOnClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: deleteContentIsOpen,
+    onOpen: deleteContentOnOpen,
+    onClose: deleteContentOnClose,
   } = useDisclosure();
 
   // refs to the menu button of each content card,
@@ -260,14 +295,66 @@ export function Activities() {
 
   const [listView, setListView] = useState(listViewPref);
 
+  const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
+  const numSelected = selectedCards.length;
+
+  useEffect(() => {
+    setSelectedCards((was) => {
+      let foundMissing = false;
+      const newList = content.map((c) => c.id);
+      for (const c of was) {
+        if (!newList.includes(c.id)) {
+          foundMissing = true;
+          break;
+        }
+      }
+      if (foundMissing) {
+        return [];
+      } else {
+        return was;
+      }
+    });
+  }, [content]);
+
+  function selectCardCallback({
+    id,
+    name,
+    checked,
+    type,
+  }: {
+    id: string;
+    name: string;
+    checked: boolean;
+    type: ContentType;
+  }) {
+    setSelectedCards((was) => {
+      const arr = [...was];
+      const idx = was.findIndex((c) => c.id === id);
+      if (checked) {
+        if (idx === -1) {
+          arr.push({ id, name, type });
+        } else {
+          arr[idx] = { id, name, type };
+        }
+      } else if (idx !== -1) {
+        arr.splice(idx, 1);
+      }
+      return arr;
+    });
+  }
+
   const [moveToFolderData, setMoveToFolderData] = useState<{
     id: string;
+    name: string;
+    type: ContentType;
     isPublic: boolean;
     isShared: boolean;
     sharedWith: UserInfo[];
     licenseCode: LicenseCode | null;
   }>({
     id: "",
+    name: "",
+    type: "singleDoc",
     isPublic: false,
     isShared: false,
     sharedWith: [],
@@ -275,13 +362,14 @@ export function Activities() {
   });
 
   const {
-    isOpen: moveToFolderIsOpen,
-    onOpen: moveToFolderOnOpen,
-    onClose: moveToFolderOnClose,
+    isOpen: moveCopyContentIsOpen,
+    onOpen: moveCopyContentOnOpen,
+    onClose: moveCopyContentOnClose,
   } = useDisclosure();
 
   const [displaySettingsTab, setSettingsDisplayTab] =
     useState<"general">("general");
+  const [highlightRename, setHighlightRename] = useState(false);
 
   useEffect(() => {
     document.title = `Activities - Doenet`;
@@ -291,44 +379,62 @@ export function Activities() {
 
   function getCardMenuList({
     id,
+    name,
     position,
     numCards,
     assignmentStatus,
+    contentType,
     isFolder,
     isPublic,
     isShared,
     sharedWith,
     licenseCode,
-    parentFolderId,
+    parentId,
   }: {
     id: string;
+    name: string;
     position: number;
     numCards: number;
     assignmentStatus: AssignmentStatus;
-    isFolder?: boolean;
+    contentType: ContentType;
+    isFolder: boolean;
     isPublic: boolean;
     isShared: boolean;
     sharedWith: UserInfo[];
     licenseCode: LicenseCode | null;
-    parentFolderId: string | null;
+    parentId: string | null;
   }) {
+    const contentTypeName = contentTypeToName[contentType];
+
     return (
       <>
-        {!isFolder ? (
-          <>
-            <MenuItem
-              data-test={"Duplicate Activity"}
-              onClick={() => {
-                fetcher.submit(
-                  { _action: "Duplicate Activity", id, folderId },
-                  { method: "post" },
-                );
-              }}
-            >
-              Duplicate Activity
-            </MenuItem>
-          </>
-        ) : null}
+        <MenuItem
+          data-test="Rename Menu Item"
+          onClick={() => {
+            setSettingsContentId(id);
+            setSettingsDisplayTab("general");
+            setHighlightRename(true);
+            settingsOnOpen();
+          }}
+        >
+          Rename
+        </MenuItem>
+        <MenuItem
+          data-test={"Duplicate Content"}
+          onClick={() => {
+            fetcher.submit(
+              {
+                _action: "Duplicate Content",
+                id,
+                folderId,
+                contentType,
+              },
+              { method: "post" },
+            );
+          }}
+        >
+          Duplicate {contentTypeName}
+        </MenuItem>
         {position > 0 && !haveQuery ? (
           <MenuItem
             data-test="Move Left Menu Item"
@@ -371,24 +477,24 @@ export function Activities() {
             onClick={() => {
               setMoveToFolderData({
                 id,
+                name,
+                type: contentType,
                 isPublic,
                 isShared,
                 sharedWith,
                 licenseCode,
               });
-              moveToFolderOnOpen();
+              moveCopyContentOnOpen();
             }}
           >
-            Move to Folder
+            Move&hellip;
           </MenuItem>
         )}
         <MenuItem
           data-test="Delete Menu Item"
           onClick={() => {
-            fetcher.submit(
-              { _action: isFolder ? "Delete Folder" : "Delete Activity", id },
-              { method: "post" },
-            );
+            setSettingsContentId(id);
+            deleteContentOnOpen();
           }}
         >
           Delete
@@ -420,6 +526,7 @@ export function Activities() {
           onClick={() => {
             setSettingsContentId(id);
             setSettingsDisplayTab("general");
+            setHighlightRename(false);
             settingsOnOpen();
           }}
         >
@@ -430,7 +537,7 @@ export function Activities() {
             data-test="Go to containing folder"
             onClick={() => {
               navigate(
-                `/activities/${userId}${parentFolderId ? "/" + parentFolderId : ""}`,
+                `/activities/${userId}${parentId ? "/" + parentId : ""}`,
               );
             }}
           >
@@ -441,9 +548,17 @@ export function Activities() {
     );
   }
 
+  const folderType =
+    folder?.type === "select"
+      ? "Select Activity"
+      : folder?.type === "sequence"
+        ? "Sequence Activity"
+        : "Folder";
+
   const headingText = folder ? (
     <>
-      {folder.isPublic ? "Public " : ""}Folder: {folder.name}
+      {folder.isPublic ? "Public " : ""}
+      {folderType}: {folder.name}
     </>
   ) : (
     `My Activities`
@@ -476,6 +591,7 @@ export function Activities() {
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
         displayTab={displaySettingsTab}
+        highlightRename={highlightRename}
       />
     ) : null;
 
@@ -502,20 +618,56 @@ export function Activities() {
       />
     ) : null;
 
-  const moveContentModal = (
-    <MoveContentToFolder
-      isOpen={moveToFolderIsOpen}
-      onClose={moveToFolderOnClose}
-      id={moveToFolderData.id}
-      isPublic={moveToFolderData.isPublic}
-      isShared={moveToFolderData.isShared}
-      sharedWith={moveToFolderData.sharedWith}
-      licenseCode={moveToFolderData.licenseCode}
+  const moveCopyContentModal = (
+    <MoveCopyContent
+      isOpen={moveCopyContentIsOpen}
+      onClose={moveCopyContentOnClose}
+      sourceContent={[moveToFolderData]}
       userId={userId}
       currentParentId={folderId}
       finalFocusRef={finalFocusRef}
+      allowedParentTypes={getAllowedParentTypes([moveToFolderData.type])}
+      action="Move"
     />
   );
+
+  const createFolderModal = (
+    <CreateFolderModal
+      isOpen={createFolderIsOpen}
+      onClose={createFolderOnClose}
+      parentFolder={folderId}
+      fetcher={fetcher}
+      finalFocusRef={finalFocusRef}
+    />
+  );
+
+  const deleteModal =
+    contentData && settingsContentId ? (
+      <DeleteModal
+        isOpen={deleteContentIsOpen}
+        onClose={deleteContentOnClose}
+        content={contentData}
+        fetcher={fetcher}
+        finalFocusRef={finalFocusRef}
+      />
+    ) : null;
+
+  const {
+    isOpen: copyDialogIsOpen,
+    onOpen: copyDialogOnOpen,
+    onClose: copyDialogOnClose,
+  } = useDisclosure();
+
+  const copyContentModal =
+    addTo !== undefined ? (
+      <CopyContentAndReportFinish
+        isOpen={copyDialogIsOpen}
+        onClose={copyDialogOnClose}
+        sourceContent={selectedCards}
+        desiredParent={addTo}
+        action="Add"
+      />
+    ) : null;
 
   const heading = (
     <Box
@@ -537,6 +689,70 @@ export function Activities() {
         <Tooltip label={headingText}>{headingText}</Tooltip>
       </Heading>
       <VStack width="100%">
+        <Flex
+          width="100%"
+          height="40px"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Flex
+            height="30px"
+            width="100%"
+            alignContent="center"
+            hidden={numSelected === 0 && addTo === undefined}
+            backgroundColor="gray.100"
+            justifyContent="center"
+          >
+            {addTo !== undefined ? (
+              <HStack hidden={numSelected > 0}>
+                <CloseButton
+                  size="sm"
+                  onClick={() => {
+                    navigate(`.`);
+                  }}
+                />{" "}
+                <Text noOfLines={1}>
+                  Adding items to: {menuIcons[addTo.type]}
+                  <strong>{addTo.name}</strong>
+                </Text>
+              </HStack>
+            ) : null}
+            <HStack hidden={numSelected === 0}>
+              <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
+              <Text>{numSelected} selected</Text>
+              <HStack hidden={addTo !== undefined}>
+                <AddContentToMenu
+                  sourceContent={selectedCards}
+                  size="xs"
+                  colorScheme="blue"
+                  label="Copy selected to"
+                />
+                <CreateContentMenu
+                  sourceContent={selectedCards}
+                  size="xs"
+                  colorScheme="blue"
+                  label="Create from selected"
+                />
+              </HStack>
+              {addTo !== undefined ? (
+                <Button
+                  hidden={addTo === undefined}
+                  size="xs"
+                  colorScheme="blue"
+                  onClick={() => {
+                    copyDialogOnOpen();
+                  }}
+                >
+                  Add selected to {menuIcons[addTo.type]}
+                  <strong>
+                    {addTo.name.substring(0, 10)}
+                    {addTo.name.length > 10 ? "..." : ""}
+                  </strong>
+                </Button>
+              ) : null}
+            </HStack>
+          </Flex>
+        </Flex>
         <Flex marginRight="1em" width="100%">
           <Spacer />
           <HStack>
@@ -602,28 +818,48 @@ export function Activities() {
               </MenuButton>
               <MenuList>
                 <MenuItem
-                  data-test="Add Activity Button"
+                  data-test="Add Document Button"
                   onClick={async () => {
                     setHaveContentSpinner(true);
                     fetcher.submit(
-                      { _action: "Add Activity" },
+                      { _action: "Add Activity", type: "singleDoc" },
                       { method: "post" },
                     );
                   }}
                 >
-                  Activity
+                  Document
+                </MenuItem>
+                <MenuItem
+                  data-test="Add Problem Set Button"
+                  onClick={async () => {
+                    setHaveContentSpinner(true);
+                    fetcher.submit(
+                      { _action: "Add Activity", type: "sequence" },
+                      { method: "post" },
+                    );
+                  }}
+                >
+                  Problem Set
                 </MenuItem>
                 <MenuItem
                   data-test="Add Folder Button"
                   onClick={() => {
+                    createFolderOnOpen();
+                  }}
+                >
+                  Folder
+                </MenuItem>
+                <MenuItem
+                  data-test="Add Question Bank Button"
+                  onClick={async () => {
                     setHaveContentSpinner(true);
                     fetcher.submit(
-                      { _action: "Add Folder" },
+                      { _action: "Add Activity", type: "select" },
                       { method: "post" },
                     );
                   }}
                 >
-                  Folder
+                  Question Bank
                 </MenuItem>
               </MenuList>
             </Menu>
@@ -666,7 +902,7 @@ export function Activities() {
           {folder && !haveQuery ? (
             <Box>
               <Link
-                to={`/activities/${userId}${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
+                to={`/activities/${userId}${folder.parent ? "/" + folder.parent.id : ""}`}
                 style={{
                   color: "var(--mainBlue)",
                 }}
@@ -674,9 +910,7 @@ export function Activities() {
                 <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
                   <Show above="sm">
                     &lt; Back to{" "}
-                    {folder.parentFolder
-                      ? folder.parentFolder.name
-                      : `My Activities`}
+                    {folder.parent ? folder.parent.name : `My Activities`}
                   </Show>
                   <Hide above="sm">&lt; Back</Hide>
                 </Text>
@@ -727,33 +961,29 @@ export function Activities() {
     const getCardMenuRef = (element: HTMLButtonElement) => {
       cardMenuRefs.current[position] = element;
     };
-    const justCreated = folderJustCreated === activity.id;
-    if (justCreated) {
-      folderJustCreated = "";
-    }
 
     return {
       menuRef: getCardMenuRef,
-      ...activity,
-      title: activity.name,
+      content: activity,
       closeTime: formatTime(activity.codeValidUntil),
       menuItems: getCardMenuList({
         id: activity.id,
+        name: activity.name,
         position,
         numCards: content.length,
         assignmentStatus: activity.assignmentStatus,
+        contentType: activity.type,
         isPublic: activity.isPublic,
+        isFolder: activity.isFolder!,
         isShared: activity.isShared,
         sharedWith: activity.sharedWith,
         licenseCode: activity.license?.code ?? null,
-        parentFolderId: activity.parentFolder?.id ?? null,
+        parentId: activity.parent?.id ?? null,
       }),
-      cardLink: activity.isFolder
-        ? `/activities/${activity.ownerId}/${activity.id}`
-        : `/activityEditor/${activity.id}`,
-      editableTitle: true,
-      autoFocusTitle: justCreated,
-      cardType: activity.isFolder ? "folder" : "activity",
+      cardLink:
+        activity.type === "folder"
+          ? `/activities/${activity.ownerId}/${activity.id}`
+          : `/activityEditor/${activity.id}`,
     };
   });
 
@@ -766,7 +996,9 @@ export function Activities() {
       emptyMessage={emptyMessage}
       listView={listView}
       content={cardContent}
-      editableTitles={true}
+      selectedCards={selectedCards.map((c) => c.id)}
+      selectCallback={selectCardCallback}
+      disableSelectFor={addTo ? [addTo.id] : undefined}
     />
   );
 
@@ -775,7 +1007,10 @@ export function Activities() {
       {settingsDrawer}
       {shareDrawer}
       {assignmentDrawer}
-      {moveContentModal}
+      {moveCopyContentModal}
+      {createFolderModal}
+      {deleteModal}
+      {copyContentModal}
 
       {heading}
 

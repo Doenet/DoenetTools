@@ -71,17 +71,11 @@ export function Carousel({
       </MenuItem>
     );
     return {
-      id: activity.id,
-      title: activity.name,
+      content: activity,
       cardLink: `/activityViewer/${activity.id}`,
-      cardType: "activity",
       ownerName:
         activity.owner !== undefined ? createFullName(activity.owner) : "",
       menuItems,
-      imagePath: activity.imagePath,
-      isQuestion: activity.isQuestion,
-      isInteractive: activity.isInteractive,
-      containsVideo: activity.containsVideo,
     };
   });
 

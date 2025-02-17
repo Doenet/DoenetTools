@@ -25,24 +25,24 @@ import {
   Form,
 } from "react-router";
 
-import { cardActions, CardContent } from "../../../Widgets/Card";
+import { CardContent } from "../../../Widgets/Card";
 import CardList from "../../../Widgets/CardList";
 import axios from "axios";
-import MoveContentToFolder, {
-  moveContentActions,
-} from "../ToolPanels/MoveContentToFolder";
+import {
+  MoveCopyContent,
+  moveCopyContentActions,
+} from "../ToolPanels/MoveCopyContent";
 import {
   contentSettingsActions,
   ContentSettingsDrawer,
 } from "../ToolPanels/ContentSettingsDrawer";
 import {
-  LibraryInfo,
-  AssignmentStatus,
   ContentFeature,
   ContentStructure,
   DoenetmlVersion,
   LicenseCode,
   UserInfo,
+  ContentType,
 } from "./../../../_utils/types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { formatTime } from "../../../_utils/dateUtilityFunction";
@@ -50,12 +50,14 @@ import {
   ToggleViewButtonGroup,
   toggleViewButtonGroupActions,
 } from "../ToolPanels/ToggleViewButtonGroup";
+import { getAllowedParentTypes } from "../../../_utils/activity";
+import {
+  CreateFolderModal,
+  createFolderModalActions,
+} from "../ToolPanels/CreateFolderModal";
 import { CurateDrawer, curateDrawerActions } from "../ToolPanels/CurateDrawer";
 
-// what is a better solution than this?
-let folderJustCreated = ""; // if a folder was just created, set autoFocusName true for the card with the matching id
-
-export async function action({ request, params }) {
+export async function action({ request }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
@@ -69,12 +71,7 @@ export async function action({ request, params }) {
     return resultCS;
   }
 
-  const resultCC = await cardActions({ formObj });
-  if (resultCC) {
-    return resultCC;
-  }
-
-  const resultMC = await moveContentActions({ formObj });
+  const resultMC = await moveCopyContentActions({ formObj });
   if (resultMC) {
     return resultMC;
   }
@@ -84,15 +81,15 @@ export async function action({ request, params }) {
     return resultTLV;
   }
 
-  if (formObj?._action == "Add Folder") {
-    const { data } = await axios.post(
-      `/api/createCurationFolder/${params.folderId ?? ""}`,
-    );
-    folderJustCreated = data.folderId;
-    return true;
-  } else if (formObj?._action == "Delete Draft") {
+  const resultCF = await createFolderModalActions({ formObj });
+  if (resultCF) {
+    return resultCF;
+  }
+
+  if (formObj?._action == "Delete Draft") {
     await axios.post(`/api/deleteDraftFromLibrary`, {
       activityId: formObj.id,
+      contentType: formObj.contentType,
     });
     return true;
 
@@ -107,8 +104,7 @@ export async function action({ request, params }) {
   } else if (formObj?._action == "Move") {
     await axios.post(`/api/moveCurationContent`, {
       id: formObj.id,
-      desiredParentFolderId:
-        formObj.folderId === "null" ? null : formObj.folderId,
+      desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
       desiredPosition: formObj.desiredPosition,
     });
     return true;
@@ -142,8 +138,6 @@ export async function loader({ params, request }) {
 
   const prefData = await axios.get(`/api/getPreferredFolderView`);
   const listViewPref = !prefData.data.cardView;
-
-  console.log(data.content);
 
   return {
     folderId: params.folderId ? params.folderId : null,
@@ -194,6 +188,12 @@ export function Curation() {
     onClose: curateOnClose,
   } = useDisclosure();
 
+  const {
+    isOpen: createFolderIsOpen,
+    onOpen: createFolderOnOpen,
+    onClose: createFolderOnClose,
+  } = useDisclosure();
+
   // refs to the menu button of each content card,
   // which should be given focus when drawers are closed
   const cardMenuRefs = useRef<HTMLButtonElement[]>([]);
@@ -226,12 +226,16 @@ export function Curation() {
 
   const [moveToFolderData, setMoveToFolderData] = useState<{
     id: string;
+    name: string;
+    type: ContentType;
     isPublic: boolean;
     isShared: boolean;
     sharedWith: UserInfo[];
     licenseCode: LicenseCode | null;
   }>({
     id: "",
+    name: "",
+    type: "singleDoc",
     isPublic: false,
     isShared: false,
     sharedWith: [],
@@ -239,13 +243,14 @@ export function Curation() {
   });
 
   const {
-    isOpen: moveToFolderIsOpen,
-    onOpen: moveToFolderOnOpen,
-    onClose: moveToFolderOnClose,
+    isOpen: moveCopyContentIsOpen,
+    onOpen: moveCopyContentOnOpen,
+    onClose: moveCopyContentOnClose,
   } = useDisclosure();
 
   const [displaySettingsTab, setSettingsDisplayTab] =
     useState<"general">("general");
+  const [highlightRename, setHighlightRename] = useState(false);
 
   useEffect(() => {
     document.title = `Curation - Doenet`;
@@ -255,30 +260,43 @@ export function Curation() {
 
   function getCardMenuList({
     id,
+    name,
     position,
     numCards,
+    contentType,
     isFolder,
     isPublic,
     isShared,
     sharedWith,
     licenseCode,
-    parentFolderId,
+    parentId,
   }: {
     id: string;
     name: string;
     position: number;
     numCards: number;
-    assignmentStatus: AssignmentStatus;
+    contentType: ContentType;
     isFolder: boolean;
     isPublic: boolean;
     isShared: boolean;
     sharedWith: UserInfo[];
     licenseCode: LicenseCode | null;
-    parentFolderId: string | null;
-    libraryActivityInfo: LibraryInfo;
+    parentId: string | null;
   }) {
     return (
       <>
+        {" "}
+        <MenuItem
+          data-test="Rename Menu Item"
+          onClick={() => {
+            setSettingsContentId(id);
+            setSettingsDisplayTab("general");
+            setHighlightRename(true);
+            settingsOnOpen();
+          }}
+        >
+          Rename
+        </MenuItem>
         {position > 0 && !haveQuery ? (
           <MenuItem
             data-test="Move Left Menu Item"
@@ -321,18 +339,20 @@ export function Curation() {
             onClick={() => {
               setMoveToFolderData({
                 id,
+                name,
+                type: contentType,
                 isPublic,
                 isShared,
                 sharedWith,
                 licenseCode,
               });
-              moveToFolderOnOpen();
+              moveCopyContentOnOpen();
             }}
           >
             Move to Folder
           </MenuItem>
         )}
-        {!isFolder && !isPublic ? (
+        {contentType !== "folder" && !isPublic ? (
           <MenuItem
             data-test="Delete Draft"
             onClick={() => {
@@ -340,6 +360,7 @@ export function Curation() {
                 {
                   _action: "Delete Draft",
                   id,
+                  contentType,
                 },
                 { method: "post" },
               );
@@ -359,12 +380,12 @@ export function Curation() {
             Curate
           </MenuItem>
         )}
-
         <MenuItem
           data-test="Settings Menu Item"
           onClick={() => {
             setSettingsContentId(id);
             setSettingsDisplayTab("general");
+            setHighlightRename(false);
             settingsOnOpen();
           }}
         >
@@ -374,9 +395,7 @@ export function Curation() {
           <MenuItem
             data-test="Go to containing folder"
             onClick={() => {
-              navigate(
-                `/curation/${parentFolderId ? "/" + parentFolderId : ""}`,
-              );
+              navigate(`/curation/${parentId ? "/" + parentId : ""}`);
             }}
           >
             Go to containing folder
@@ -386,9 +405,17 @@ export function Curation() {
     );
   }
 
+  const folderType =
+    folder?.type === "select"
+      ? "Select Activity"
+      : folder?.type === "sequence"
+        ? "Sequence Activity"
+        : "Folder";
+
   const headingText = folder ? (
     <>
-      {folder.isPublic ? "Public " : ""}Folder: {folder.name}
+      {folder.isPublic ? "Public " : ""}
+      {folderType}: {folder.name}
     </>
   ) : (
     `Curation`
@@ -421,6 +448,7 @@ export function Curation() {
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
         displayTab={displaySettingsTab}
+        highlightRename={highlightRename}
       />
     ) : null;
 
@@ -435,19 +463,26 @@ export function Curation() {
       />
     ) : null;
 
-  const moveContentModal = (
-    <MoveContentToFolder
-      isOpen={moveToFolderIsOpen}
-      onClose={moveToFolderOnClose}
-      id={moveToFolderData.id}
-      isPublic={moveToFolderData.isPublic}
-      isShared={moveToFolderData.isShared}
-      sharedWith={moveToFolderData.sharedWith}
-      licenseCode={moveToFolderData.licenseCode}
+  const moveCopyContentModal = (
+    <MoveCopyContent
+      isOpen={moveCopyContentIsOpen}
+      onClose={moveCopyContentOnClose}
+      sourceContent={[moveToFolderData]}
       userId={userId}
       currentParentId={folderId}
       finalFocusRef={finalFocusRef}
-      inCurationLibrary={true}
+      allowedParentTypes={getAllowedParentTypes([moveToFolderData.type])}
+      action="Move"
+    />
+  );
+
+  const createFolderModal = (
+    <CreateFolderModal
+      isOpen={createFolderIsOpen}
+      onClose={createFolderOnClose}
+      parentFolder={folderId}
+      fetcher={fetcher}
+      finalFocusRef={finalFocusRef}
     />
   );
 
@@ -527,8 +562,7 @@ export function Curation() {
               hidden={searchOpen}
               data-test="New Folder Button"
               onClick={() => {
-                setHaveContentSpinner(true);
-                fetcher.submit({ _action: "Add Folder" }, { method: "post" });
+                createFolderOnOpen();
               }}
             >
               {haveContentSpinner ? <Spinner size="sm" /> : "New Folder"}
@@ -545,7 +579,7 @@ export function Curation() {
           {folder && !haveQuery ? (
             <Box>
               <Link
-                to={`/curation${folder.parentFolder ? "/" + folder.parentFolder.id : ""}`}
+                to={`/curation${folder.parent ? "/" + folder.parent.id : ""}`}
                 style={{
                   color: "var(--mainBlue)",
                 }}
@@ -553,9 +587,7 @@ export function Curation() {
                 <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
                   <Show above="sm">
                     &lt; Back to{" "}
-                    {folder.parentFolder
-                      ? folder.parentFolder.name
-                      : `Curation`}
+                    {folder.parent ? folder.parent.name : `Curation`}
                   </Show>
                   <Hide above="sm">&lt; Back</Hide>
                 </Text>
@@ -606,49 +638,39 @@ export function Curation() {
     const getCardMenuRef = (element: HTMLButtonElement) => {
       cardMenuRefs.current[position] = element;
     };
-    const justCreated = folderJustCreated === activity.id;
-    if (justCreated) {
-      folderJustCreated = "";
-    }
 
     return {
       menuRef: getCardMenuRef,
-      ...activity,
-      title: activity.name,
+      content: activity,
       closeTime: formatTime(activity.codeValidUntil),
       menuItems: getCardMenuList({
         id: activity.id,
         name: activity.name,
         position,
         numCards: content.length,
-        assignmentStatus: activity.assignmentStatus,
+        contentType: activity.type,
         isPublic: activity.isPublic,
         isShared: activity.isShared,
         sharedWith: activity.sharedWith,
         licenseCode: activity.license?.code ?? null,
-        parentFolderId: activity.parentFolder?.id ?? null,
-        libraryActivityInfo: activity.libraryActivityInfo!,
+        parentId: activity.parent?.id ?? null,
         isFolder: activity.isFolder!,
       }),
       cardLink: activity.isFolder
         ? `/curation/${activity.id}`
         : `/activityEditor/${activity.id}`,
-      editableTitle: true,
-      autoFocusTitle: justCreated,
-      cardType: activity.isFolder ? "folder" : "activity",
     };
   });
 
   const mainPanel = (
     <CardList
       showOwnerName={false}
-      showAssignmentStatus={true}
+      showAssignmentStatus={false}
       showPublicStatus={true}
       showActivityFeatures={true}
       emptyMessage={emptyMessage}
       listView={listView}
       content={cardContent}
-      editableTitles={true}
     />
   );
 
@@ -656,7 +678,8 @@ export function Curation() {
     <>
       {settingsDrawer}
       {curateDrawer}
-      {moveContentModal}
+      {moveCopyContentModal}
+      {createFolderModal}
 
       {heading}
 

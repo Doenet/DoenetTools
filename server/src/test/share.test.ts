@@ -539,13 +539,13 @@ test("moving content into public folder makes it public", async () => {
   // move content into public folder
   await moveContent({
     id: activity1Id,
-    desiredParentFolderId: publicFolderId,
+    desiredParentId: publicFolderId,
     ownerId,
     desiredPosition: 0,
   });
   await moveContent({
     id: folder1Id,
-    desiredParentFolderId: publicFolderId,
+    desiredParentId: publicFolderId,
     ownerId,
     desiredPosition: 1,
   });
@@ -558,10 +558,10 @@ test("moving content into public folder makes it public", async () => {
 
   expect(content[0].id).eqls(activity1Id);
   expect(content[0].isPublic).eq(true);
-  expect(content[0].license?.code).eq("CCBYSA");
+  expect(content[0].license?.code).eq("CCDUAL");
   expect(content[1].id).eqls(folder1Id);
   expect(content[1].isPublic).eq(true);
-  expect(content[1].license?.code).eq("CCBYSA");
+  expect(content[1].license?.code).eq("CCDUAL");
 
   results = await getMyFolderContent({
     folderId: folder1Id,
@@ -570,7 +570,7 @@ test("moving content into public folder makes it public", async () => {
   content = results.content;
   expect(content[0].id).eqls(folder2Id);
   expect(content[0].isPublic).eq(true);
-  expect(content[0].license?.code).eq("CCBYSA");
+  expect(content[0].license?.code).eq("CCDUAL");
 
   results = await getMyFolderContent({
     folderId: folder2Id,
@@ -579,7 +579,7 @@ test("moving content into public folder makes it public", async () => {
   content = results.content;
   expect(content[0].id).eqls(activity2Id);
   expect(content[0].isPublic).eq(true);
-  expect(content[0].license?.code).eq("CCBYSA");
+  expect(content[0].license?.code).eq("CCDUAL");
 
   // Create a private folder and move content into that folder.
   // The content stays public.
@@ -588,13 +588,13 @@ test("moving content into public folder makes it public", async () => {
 
   await moveContent({
     id: activity1Id,
-    desiredParentFolderId: privateFolderId,
+    desiredParentId: privateFolderId,
     ownerId,
     desiredPosition: 0,
   });
   await moveContent({
     id: folder1Id,
-    desiredParentFolderId: privateFolderId,
+    desiredParentId: privateFolderId,
     ownerId,
     desiredPosition: 1,
   });
@@ -607,10 +607,10 @@ test("moving content into public folder makes it public", async () => {
 
   expect(content[0].id).eqls(activity1Id);
   expect(content[0].isPublic).eq(true);
-  expect(content[0].license?.code).eq("CCBYSA");
+  expect(content[0].license?.code).eq("CCDUAL");
   expect(content[1].id).eqls(folder1Id);
   expect(content[1].isPublic).eq(true);
-  expect(content[1].license?.code).eq("CCBYSA");
+  expect(content[1].license?.code).eq("CCDUAL");
 
   results = await getMyFolderContent({
     folderId: folder1Id,
@@ -619,7 +619,7 @@ test("moving content into public folder makes it public", async () => {
   content = results.content;
   expect(content[0].id).eqls(folder2Id);
   expect(content[0].isPublic).eq(true);
-  expect(content[0].license?.code).eq("CCBYSA");
+  expect(content[0].license?.code).eq("CCDUAL");
 
   results = await getMyFolderContent({
     folderId: folder2Id,
@@ -628,7 +628,7 @@ test("moving content into public folder makes it public", async () => {
   content = results.content;
   expect(content[0].id).eqls(activity2Id);
   expect(content[0].isPublic).eq(true);
-  expect(content[0].license?.code).eq("CCBYSA");
+  expect(content[0].license?.code).eq("CCDUAL");
 });
 
 test("moving content into shared folder shares it", async () => {
@@ -695,13 +695,13 @@ test("moving content into shared folder shares it", async () => {
   // move content into shared folder
   await moveContent({
     id: activity1Id,
-    desiredParentFolderId: sharedFolderId,
+    desiredParentId: sharedFolderId,
     ownerId,
     desiredPosition: 0,
   });
   await moveContent({
     id: folder1Id,
-    desiredParentFolderId: sharedFolderId,
+    desiredParentId: sharedFolderId,
     ownerId,
     desiredPosition: 1,
   });
@@ -715,11 +715,11 @@ test("moving content into shared folder shares it", async () => {
   expect(content[0].id).eqls(activity1Id);
   expect(content[0].isShared).eq(true);
   expect(content[0].sharedWith).eqls([userFields]);
-  expect(content[0].license?.code).eq("CCBYSA");
+  expect(content[0].license?.code).eq("CCDUAL");
   expect(content[1].id).eqls(folder1Id);
   expect(content[1].isShared).eq(true);
   expect(content[1].sharedWith).eqls([userFields]);
-  expect(content[1].license?.code).eq("CCBYSA");
+  expect(content[1].license?.code).eq("CCDUAL");
 
   results = await getMyFolderContent({
     folderId: folder1Id,
@@ -729,7 +729,7 @@ test("moving content into shared folder shares it", async () => {
   expect(content[0].id).eqls(folder2Id);
   expect(content[0].isShared).eq(true);
   expect(content[0].sharedWith).eqls([userFields]);
-  expect(content[0].license?.code).eq("CCBYSA");
+  expect(content[0].license?.code).eq("CCDUAL");
 
   results = await getMyFolderContent({
     folderId: folder2Id,
@@ -739,7 +739,7 @@ test("moving content into shared folder shares it", async () => {
   expect(content[0].id).eqls(activity2Id);
   expect(content[0].isShared).eq(true);
   expect(content[0].sharedWith).eqls([userFields]);
-  expect(content[0].license?.code).eq("CCBYSA");
+  expect(content[0].license?.code).eq("CCDUAL");
 
   // Create a private folder and move content into that folder.
   // The content stays shared.
@@ -748,13 +748,13 @@ test("moving content into shared folder shares it", async () => {
 
   await moveContent({
     id: activity1Id,
-    desiredParentFolderId: privateFolderId,
+    desiredParentId: privateFolderId,
     ownerId,
     desiredPosition: 0,
   });
   await moveContent({
     id: folder1Id,
-    desiredParentFolderId: privateFolderId,
+    desiredParentId: privateFolderId,
     ownerId,
     desiredPosition: 1,
   });
@@ -768,11 +768,11 @@ test("moving content into shared folder shares it", async () => {
   expect(content[0].id).eqls(activity1Id);
   expect(content[0].isShared).eq(true);
   expect(content[0].sharedWith).eqls([userFields]);
-  expect(content[0].license?.code).eq("CCBYSA");
+  expect(content[0].license?.code).eq("CCDUAL");
   expect(content[1].id).eqls(folder1Id);
   expect(content[1].isShared).eq(true);
   expect(content[1].sharedWith).eqls([userFields]);
-  expect(content[1].license?.code).eq("CCBYSA");
+  expect(content[1].license?.code).eq("CCDUAL");
 
   results = await getMyFolderContent({
     folderId: folder1Id,
@@ -782,7 +782,7 @@ test("moving content into shared folder shares it", async () => {
   expect(content[0].id).eqls(folder2Id);
   expect(content[0].isShared).eq(true);
   expect(content[0].sharedWith).eqls([userFields]);
-  expect(content[0].license?.code).eq("CCBYSA");
+  expect(content[0].license?.code).eq("CCDUAL");
 
   results = await getMyFolderContent({
     folderId: folder2Id,
@@ -792,7 +792,7 @@ test("moving content into shared folder shares it", async () => {
   expect(content[0].id).eqls(activity2Id);
   expect(content[0].isShared).eq(true);
   expect(content[0].sharedWith).eqls([userFields]);
-  expect(content[0].license?.code).eq("CCBYSA");
+  expect(content[0].license?.code).eq("CCDUAL");
 });
 
 test("share with email throws error when no match", async () => {
@@ -822,11 +822,8 @@ test("share with email throws error when no match", async () => {
     email: user.email,
   });
 
-  expect(
-    (await getActivityEditorData(activityId, ownerId)).activity.sharedWith.map(
-      (obj) => obj.email,
-    ),
-  ).eqls([user.email]);
+  const { activity } = await getActivityEditorData(activityId, ownerId);
+  expect(activity.sharedWith.map((obj) => obj.email)).eqls([user.email]);
 
   await expect(
     shareFolderWithEmail({
@@ -875,11 +872,8 @@ test("share with email throws error when share with self", async () => {
     licenseCode: "CCBYSA",
     email: user.email,
   });
-  expect(
-    (await getActivityEditorData(activityId, ownerId)).activity.sharedWith.map(
-      (obj) => obj.email,
-    ),
-  ).eqls([user.email]);
+  const { activity } = await getActivityEditorData(activityId, ownerId);
+  expect(activity.sharedWith.map((obj) => obj.email)).eqls([user.email]);
 
   await expect(
     shareFolderWithEmail({

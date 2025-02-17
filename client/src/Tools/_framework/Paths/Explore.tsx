@@ -24,20 +24,25 @@ import {
   Input,
   Show,
   Hide,
+  CloseButton,
+  HStack,
 } from "@chakra-ui/react";
 import {
   Link as ReactRouterLink,
   useLoaderData,
   useLocation,
   useNavigate,
+  useOutletContext,
 } from "react-router";
 import Searchbar from "../../../Widgets/SearchBar";
 import { Form, useFetcher } from "react-router";
 import { CardContent } from "../../../Widgets/Card";
 import { createFullName } from "../../../_utils/names";
 import {
+  ContentDescription,
   ContentFeature,
   ContentStructure,
+  ContentType,
   PartialContentClassification,
   UserInfo,
 } from "../../../_utils/types";
@@ -52,6 +57,14 @@ import { MdFilterAlt, MdFilterAltOff } from "react-icons/md";
 import { clearQueryParameter } from "../../../_utils/explore";
 import { FilterPanel } from "../ToolPanels/FilterPanel";
 import { ExploreFilterDrawer } from "../ToolPanels/ExploreFilterDrawer";
+import { menuIcons } from "../../../_utils/activity";
+import { User } from "./SiteHeader";
+import {
+  AddContentToMenu,
+  addContentToMenuActions,
+} from "../ToolPanels/AddContentToMenu";
+import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
+import { CreateContentMenu } from "../ToolPanels/CreateContentMenu";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -60,6 +73,11 @@ export async function action({ request }) {
   const resultTLV = await toggleViewButtonGroupActions({ formObj });
   if (resultTLV) {
     return resultTLV;
+  }
+
+  const resultACM = await addContentToMenuActions({ formObj });
+  if (resultACM) {
+    return resultACM;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
@@ -98,6 +116,18 @@ export async function loader({ params, request }) {
 
   const authorId = url.searchParams.get("author");
 
+  const addToId = url.searchParams.get("addTo");
+  let addTo: ContentDescription | undefined = undefined;
+
+  if (addToId) {
+    try {
+      const { data } = await axios.get(`/api/getContentDescription/${addToId}`);
+      addTo = data;
+    } catch (_e) {
+      console.error(`Could not get description of ${addToId}`);
+    }
+  }
+
   const q = url.searchParams.get("q");
 
   if (q) {
@@ -119,6 +149,7 @@ export async function loader({ params, request }) {
       features,
       availableFeatures,
       listViewPref,
+      addTo,
     };
   } else {
     const { data: browseData } = await axios.post("/api/browseSharedContent", {
@@ -137,6 +168,7 @@ export async function loader({ params, request }) {
       features,
       availableFeatures,
       listViewPref,
+      addTo,
     };
   }
 }
@@ -163,6 +195,7 @@ export function Explore() {
     features,
     availableFeatures,
     listViewPref,
+    addTo,
   } = useLoaderData() as {
     q?: string;
     topAuthors: UserInfo[] | null;
@@ -187,7 +220,10 @@ export function Explore() {
     features: Set<string>;
     availableFeatures: ContentFeature[];
     listViewPref: boolean;
+    addTo?: ContentDescription;
   };
+
+  const user = useOutletContext<User>();
 
   const [currentTab, setCurrentTab] = useState(
     !totalCount.numCurated && totalCount.numCommunity ? 1 : 0,
@@ -198,6 +234,9 @@ export function Explore() {
   const fetcher = useFetcher();
 
   const [listView, setListView] = useState(listViewPref);
+
+  const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
+  const numSelected = selectedCards.length;
 
   const { search } = useLocation();
   const navigate = useNavigate();
@@ -255,28 +294,82 @@ export function Explore() {
     />
   );
 
+  const {
+    isOpen: copyDialogIsOpen,
+    onOpen: copyDialogOnOpen,
+    onClose: copyDialogOnClose,
+  } = useDisclosure();
+
+  const copyContentModal =
+    addTo !== undefined ? (
+      <CopyContentAndReportFinish
+        isOpen={copyDialogIsOpen}
+        onClose={copyDialogOnClose}
+        sourceContent={selectedCards}
+        desiredParent={addTo}
+        action="Add"
+      />
+    ) : null;
+
+  useEffect(() => {
+    setSelectedCards((was) => {
+      let foundMissing = false;
+      const newList = content.map((c) => c.id);
+      if (trendingContent) {
+        newList.push(...trendingContent.map((c) => c.id));
+      }
+      for (const c of was) {
+        if (!newList.includes(c.id)) {
+          foundMissing = true;
+          break;
+        }
+      }
+      if (foundMissing) {
+        return [];
+      } else {
+        return was;
+      }
+    });
+  }, [content, trendingContent]);
+
+  function selectCardCallback({
+    id,
+    name,
+    checked,
+    type,
+  }: {
+    id: string;
+    name: string;
+    checked: boolean;
+    type: ContentType;
+  }) {
+    setSelectedCards((was) => {
+      const arr = [...was];
+      const idx = was.findIndex((c) => c.id === id);
+      if (checked) {
+        if (idx === -1) {
+          arr.push({ id, name, type });
+        } else {
+          arr[idx] = { id, name, type };
+        }
+      } else if (idx !== -1) {
+        arr.splice(idx, 1);
+      }
+      return arr;
+    });
+  }
+
   function displayMatchingContent(
     matches: ContentStructure[],
     minHeight?: string | { base: string; lg: string },
   ) {
+    const addToParams = addTo ? `?addTo=${addTo.id}` : "";
     const cardContent: CardContent[] = matches.map((itemObj) => {
-      const {
-        id,
-        imagePath,
-        name,
-        owner,
-        isFolder,
-        contentFeatures,
-        license,
-        isPublic,
-        isShared,
-      } = itemObj;
+      const { id, owner, type: contentType } = itemObj;
       const cardLink =
-        isFolder && owner != undefined
-          ? `/sharedActivities/${owner.userId}/${id}`
-          : `/activityViewer/${id}`;
-
-      const contentType = isFolder ? "Folder" : "Activity";
+        contentType === "folder" && owner != undefined
+          ? `/sharedActivities/${owner.userId}/${id}${addToParams}`
+          : `/activityViewer/${id}${addToParams}`;
 
       const menuItems = (
         <MenuItem
@@ -286,22 +379,16 @@ export function Explore() {
             infoOnOpen();
           }}
         >
-          {contentType} information
+          {contentType === "folder" ? "Folder" : "Activity"} information
         </MenuItem>
       );
 
       return {
         id,
-        title: name,
+        content: itemObj,
         ownerName: owner !== undefined ? createFullName(owner) : "",
         cardLink,
-        cardType: isFolder ? "folder" : "activity",
         menuItems,
-        imagePath,
-        contentFeatures,
-        license,
-        isPublic,
-        isShared,
       };
     });
 
@@ -322,6 +409,9 @@ export function Explore() {
           content={cardContent}
           emptyMessage={"No Matches Found!"}
           listView={listView}
+          selectedCards={user ? selectedCards.map((c) => c.id) : undefined}
+          selectCallback={selectCardCallback}
+          disableSelectFor={addTo ? [addTo.id] : undefined}
         />
       </Box>
     );
@@ -592,6 +682,11 @@ export function Explore() {
       );
     }
   }
+  if (addTo) {
+    extraFormInputs.push(
+      <Input type="hidden" name="addTo" key="addTo" value={addTo.id} />,
+    );
+  }
 
   let numActiveFilters = features.size;
 
@@ -643,12 +738,11 @@ export function Explore() {
         flexDirection="column"
         justifyContent="center"
         alignItems="center"
-        height="100px"
+        height={q ? "120px" : "80px"}
         background="doenet.canvas"
       >
         <Flex
           fontSize={{ base: "16px", md: "24px" }}
-          backgroundColor={q ? "gray.100" : "inherit"}
           width="100%"
           justifyContent="center"
           marginBottom="2px"
@@ -656,6 +750,7 @@ export function Explore() {
           alignItems="center"
           pl="4px"
           pr="4px"
+          hidden={!q}
         >
           {q ? (
             <>
@@ -687,7 +782,73 @@ export function Explore() {
           ) : null}
         </Flex>
 
-        <Flex width="100%">
+        <Flex
+          width="100%"
+          height="40px"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Flex
+            height="30px"
+            width="100%"
+            alignContent="center"
+            hidden={numSelected === 0 && addTo === undefined}
+            backgroundColor="gray.100"
+            justifyContent="center"
+          >
+            {addTo !== undefined ? (
+              <HStack hidden={numSelected > 0}>
+                <CloseButton
+                  size="sm"
+                  onClick={() => {
+                    const newSearch = clearQueryParameter("addTo", search);
+                    navigate(`.${newSearch}`);
+                  }}
+                />{" "}
+                <Text noOfLines={1}>
+                  Adding items to: {menuIcons[addTo.type]}
+                  <strong>{addTo.name}</strong>
+                </Text>
+              </HStack>
+            ) : null}
+            <HStack hidden={numSelected === 0}>
+              <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
+              <Text>{numSelected} selected</Text>
+              <HStack hidden={addTo !== undefined}>
+                <AddContentToMenu
+                  sourceContent={selectedCards}
+                  size="xs"
+                  colorScheme="blue"
+                  label="Add selected to"
+                />
+                <CreateContentMenu
+                  sourceContent={selectedCards}
+                  size="xs"
+                  colorScheme="blue"
+                  label="Create from selected"
+                />
+              </HStack>
+              {addTo !== undefined ? (
+                <Button
+                  hidden={addTo === undefined}
+                  size="xs"
+                  colorScheme="blue"
+                  onClick={() => {
+                    copyDialogOnOpen();
+                  }}
+                >
+                  Add selected to {menuIcons[addTo.type]}
+                  <strong>
+                    {addTo.name.substring(0, 10)}
+                    {addTo.name.length > 10 ? "..." : ""}
+                  </strong>
+                </Button>
+              ) : null}
+            </HStack>
+          </Flex>
+        </Flex>
+
+        <Flex width="100%" height="40px">
           <Show below="lg">
             <Button
               onClick={filterOnOpen}
@@ -718,7 +879,10 @@ export function Explore() {
 
   const results = (
     <Tabs
-      minHeight={{ base: "calc(100vh - 188px)", lg: "calc(100vh - 135px)" }}
+      minHeight={{
+        base: `calc(100vh - ${q ? "208" : "168"}px)`,
+        lg: `calc(100vh - ${q ? "168" : "128"}px)`,
+      }}
       variant="enclosed-colored"
       index={currentTab}
       onChange={setCurrentTab}
@@ -741,8 +905,8 @@ export function Explore() {
       <TabPanels data-test="Search Results">
         <TabPanel padding={0}>
           {displayMatchingContent(curatedContent, {
-            base: "calc(100vh - 230px)",
-            lg: "calc(100vh - 177px)",
+            base: `calc(100vh - ${q ? "250" : "210"}px)`,
+            lg: `calc(100vh - ${q ? "210" : "170"}px)`,
           })}
         </TabPanel>
         <TabPanel padding={0}>
@@ -771,8 +935,8 @@ export function Explore() {
             </>
           ) : null}
           {displayMatchingContent(content, {
-            base: "calc(100vh - 230px)",
-            lg: "calc(100vh - 177px)",
+            base: `calc(100vh - ${q ? "250" : "210"}px)`,
+            lg: `calc(100vh - ${q ? "210" : "170"}px)`,
           })}
         </TabPanel>
         <TabPanel>{authorMatches}</TabPanel>
@@ -785,13 +949,14 @@ export function Explore() {
     <>
       {infoDrawer}
       {filterDrawer}
+      {copyContentModal}
       {heading}
       <Hide below="lg">
         <Grid
           width="100%"
           gridTemplateColumns="300px 1fr"
           gap="0"
-          marginTop={{ base: "0px", lg: "-53px" }}
+          marginTop={{ base: "0px", lg: "-40px" }}
         >
           <GridItem
             marginLeft="0px"

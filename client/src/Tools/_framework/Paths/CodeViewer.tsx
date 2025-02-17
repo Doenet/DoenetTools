@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
 import { BsPlayBtnFill } from "react-icons/bs";
-import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
+import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
 import axios from "axios";
 import { User } from "./SiteHeader";
 import { ContentStructure, DoenetmlVersion } from "../../../_utils/types";
@@ -94,10 +94,12 @@ export function CodeViewer() {
     <>
       {activityData ? (
         <>
-          <CopyActivityAndReportFinish
+          <CopyContentAndReportFinish
             isOpen={copyDialogIsOpen}
             onClose={copyDialogOnClose}
-            activityData={activityData}
+            sourceContent={[activityData]}
+            desiredParent={null}
+            action="Copy"
           />
           <ContentInfoDrawer
             isOpen={infoIsOpen}

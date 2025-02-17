@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, ReactElement } from "react";
+import React, { ReactElement } from "react";
 import {
   Box,
   Image,
@@ -13,121 +13,79 @@ import {
   MenuList,
   Link as ChakraLink,
   Tooltip,
-  Editable,
-  EditablePreview,
-  EditableInput,
   HStack,
   Spacer,
-  Center,
   Show,
+  Badge,
+  Checkbox,
 } from "@chakra-ui/react";
-import { GoKebabVertical } from "react-icons/go";
-import { Link as ReactRouterLink, useFetcher } from "react-router";
-import axios from "axios";
-import { AssignmentStatus, License } from "../_utils/types";
-import { FaFolder } from "react-icons/fa";
-import { RiDraftFill } from "react-icons/ri";
-
-import { MdAssignment } from "react-icons/md";
+import { Link as ReactRouterLink } from "react-router";
+import { ContentStructure, ContentType } from "../_utils/types";
+import { FaEllipsisVertical } from "react-icons/fa6";
 import { BsPeople } from "react-icons/bs";
-import { IconType } from "react-icons/lib";
-import { activityFeatureIcons } from "../_utils/activity";
+import {
+  activityFeatureIcons,
+  contentTypeToName,
+  getIconInfo,
+} from "../_utils/activity";
 import { SmallLicenseBadges } from "./Licenses";
+import { IoDiceOutline } from "react-icons/io5";
 
 export type CardContent = {
-  cardType: "activity" | "folder" | "author";
   menuRef?: (arg: HTMLButtonElement) => void;
   cardLink?: string;
-  id: string;
-  assignmentStatus?: AssignmentStatus;
-  isPublic?: boolean;
-  isShared?: boolean;
-  contentFeatures?: {
-    id: number;
-    code: string;
-    term: string;
-    description: string;
-    sortIndex: number;
-  }[];
-  title: string;
+  content: ContentStructure;
   ownerName?: string;
   menuItems?: ReactElement;
   closeTime?: string;
-  imagePath?: string | null;
-  license?: License | null;
+  indentLevel?: number;
 };
-
-export async function cardActions({ formObj }: { [k: string]: any }) {
-  if (formObj._action == "update title") {
-    //Don't let name be blank
-    let name = formObj?.cardTitle?.trim();
-    if (name == "") {
-      name =
-        "Untitled " + (formObj.isFolder === "true" ? "Folder" : "Activity");
-    }
-
-    await axios.post(`/api/updateContentName`, {
-      id: formObj.id,
-      name,
-    });
-    return true;
-  }
-
-  return null;
-}
 
 export default function Card({
   cardContent,
   showOwnerName = false,
-  editableTitle = false,
-  autoFocusTitle = false,
   showAssignmentStatus = false,
   showPublicStatus = false,
   showActivityFeatures = false,
   listView = false,
+  indentLevel = 0,
+  selectedCards,
+  selectCallback,
+  disableSelect = false,
 }: {
   cardContent: CardContent;
   showOwnerName?: boolean;
-  editableTitle?: boolean;
-  autoFocusTitle?: boolean;
   showAssignmentStatus?: boolean;
   showPublicStatus?: boolean;
   showActivityFeatures?: boolean;
   listView?: boolean;
+  indentLevel?: number;
+  selectedCards?: string[];
+  selectCallback?: (arg: {
+    id: string;
+    name: string;
+    checked: boolean;
+    type: ContentType;
+  }) => void;
+  disableSelect?: boolean;
 }) {
   const {
     id,
-    title,
-    menuItems,
-    cardType,
+    name: title,
     assignmentStatus = "Unassigned",
-    closeTime,
     isPublic,
     isShared,
-    cardLink = "",
-    ownerName,
-  } = cardContent;
+    license,
+    contentFeatures,
+    numVariants,
+    type: contentType,
+  } = cardContent.content;
 
-  const [cardTitle, setCardTitle] = useState(title);
-  const fetcher = useFetcher();
+  const { menuItems, closeTime, cardLink, ownerName } = cardContent;
 
-  const cardTypeUpper = cardType[0].toUpperCase() + cardType.slice(1);
+  const contentTypeName = contentTypeToName[contentType];
 
-  useEffect(() => {
-    setCardTitle(title);
-  }, [title]);
-
-  showOwnerName = showOwnerName && !(cardType === "author");
-
-  // from ActivityEditor.tsx
-  const lastActivityDataName = useRef(title);
-  //Update when something else updates the name
-  if (title != lastActivityDataName.current && cardTitle != title) {
-    setCardTitle(title);
-  }
-  lastActivityDataName.current = title;
-
-  if (cardType !== "activity") {
+  if (contentType === "folder") {
     showAssignmentStatus = false;
   }
   let assignmentStatusString = "";
@@ -135,24 +93,6 @@ export default function Card({
     assignmentStatusString = assignmentStatus;
     if (assignmentStatus === "Open" && closeTime !== undefined) {
       assignmentStatusString = assignmentStatusString + " until " + closeTime;
-    }
-  }
-
-  function saveUpdatedTitle() {
-    if (cardTitle !== title && id !== undefined) {
-      fetcher.submit(
-        {
-          _action: "update title",
-          id,
-          cardTitle,
-          isFolder: cardType === "folder",
-        },
-        { method: "post" },
-      );
-    }
-    // set default title here so it isn't blank while waiting for activity.title to be set to default on backend
-    if (cardTitle.length === 0) {
-      setCardTitle("Untitled " + cardTypeUpper);
     }
   }
 
@@ -164,7 +104,7 @@ export default function Card({
         data-test="Card Image Link"
         height="120px"
         width="180px"
-        src={cardContent.imagePath || "/activity_default.jpg"}
+        src={cardContent.content.imagePath || "/activity_default.jpg"}
         alt="Activity Card Image"
         borderTopRadius="md"
         objectFit="cover"
@@ -174,67 +114,8 @@ export default function Card({
   }
 
   const titleDisplay = (
-    <Tooltip label={cardTitle}>
-      <Editable
-        value={cardTitle}
-        data-test="Editable Title"
-        startWithEditView={autoFocusTitle}
-        isDisabled={!editableTitle}
-        cursor={editableTitle ? "auto" : "pointer"}
-        onClick={(e) => {
-          if (editableTitle) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
-        }}
-        onChange={(txt) => setCardTitle(txt)}
-        onSubmit={() => saveUpdatedTitle()}
-        fontSize="sm"
-      >
-        <EditablePreview
-          maxHeight="1.5em"
-          noOfLines={1}
-          padding=".1em"
-          onClick={(e) => {
-            if (editableTitle) {
-              e.preventDefault();
-              e.stopPropagation();
-            }
-          }}
-        />
-        <EditableInput
-          size={1000}
-          onClick={(e) => {
-            if (editableTitle) {
-              e.preventDefault();
-              e.stopPropagation();
-            }
-          }}
-          maxLength={191}
-          padding="0"
-          onBlur={() => {
-            // prevent click default/propagation behavior one time (i.e., right now as user is clicking to blur input)
-            const clickListener = (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            };
-            document.addEventListener("click", clickListener, {
-              capture: true,
-              once: true,
-            });
-            // unless the user presses a key; in that case, don't prevent any click behavior, as they could be navigating with the keyboard
-            document.addEventListener(
-              "keyup",
-              () => {
-                document.removeEventListener("click", clickListener, {
-                  capture: true,
-                });
-              },
-              { once: true },
-            );
-          }}
-        />
-      </Editable>
+    <Tooltip label={title}>
+      <Text noOfLines={1}>{title}</Text>
     </Tooltip>
   );
 
@@ -248,7 +129,7 @@ export default function Card({
         position="relative"
         ref={cardContent.menuRef}
       >
-        <Icon color="#949494" as={GoKebabVertical} boxSize={4} />
+        <Icon color="#949494" as={FaEllipsisVertical} boxSize={4} />
       </MenuButton>
       <MenuList zIndex="1000">{menuItems}</MenuList>
     </Menu>
@@ -258,7 +139,7 @@ export default function Card({
 
   if (showPublicStatus && (isPublic || isShared)) {
     sharedIcon = (
-      <Tooltip label={(isPublic ? "Public " : "Shared ") + cardTypeUpper}>
+      <Tooltip label={(isPublic ? "Public " : "Shared ") + contentTypeName}>
         <Box width="20px">
           <Icon
             as={BsPeople}
@@ -276,7 +157,7 @@ export default function Card({
   if (showActivityFeatures) {
     const placeholdersForMissingFeatures = listView;
     let isQuestionIcon: ReactElement | null = null;
-    const isQuestionFeature = cardContent.contentFeatures?.find(
+    const isQuestionFeature = contentFeatures?.find(
       (feature) => feature.code === "isQuestion",
     );
     if (isQuestionFeature) {
@@ -297,7 +178,7 @@ export default function Card({
     }
 
     let isInteractiveIcon: ReactElement | null = null;
-    const isInteractiveFeature = cardContent.contentFeatures?.find(
+    const isInteractiveFeature = contentFeatures?.find(
       (feature) => feature.code === "isInteractive",
     );
 
@@ -322,7 +203,7 @@ export default function Card({
     }
 
     let containsVideoIcon: ReactElement | null = null;
-    const containsVideoFeature = cardContent.contentFeatures?.find(
+    const containsVideoFeature = contentFeatures?.find(
       (feature) => feature.code === "containsVideo",
     );
     if (containsVideoFeature) {
@@ -375,47 +256,51 @@ export default function Card({
     );
   }
 
+  let selectCheckbox: ReactElement | null = null;
+
+  if (selectedCards) {
+    selectCheckbox = (
+      <Checkbox
+        margin="5px"
+        isDisabled={disableSelect}
+        isChecked={selectedCards.includes(id)}
+        onChange={(e) => {
+          selectCallback?.({
+            id,
+            checked: e.target.checked,
+            type: contentType,
+            name: title,
+          });
+        }}
+      ></Checkbox>
+    );
+  }
+
   //Note: when we have a menu width 140px becomes 120px
   let card: ReactElement;
   if (listView) {
-    const cardWidth = "100%";
+    const cardWidth = `calc(100% - ${30 * indentLevel}px)`;
     const cardHeight = "40px";
-    let initialIcon: ReactElement;
+    const leftMargin = `${30 * indentLevel}px`;
 
-    if (cardType === "author") {
-      initialIcon = (
-        <Avatar size="sm" name={ownerName} marginLeft="1em" marginTop="4px" />
-      );
-    } else {
-      let iconImage: IconType;
-      let iconColor: string;
-      if (cardType === "folder") {
-        iconImage = FaFolder;
-        iconColor = "#e6b800";
-      } else if (assignmentStatus === "Unassigned") {
-        iconImage = RiDraftFill;
-        iconColor = "#ff6600";
-      } else {
-        iconImage = MdAssignment;
-        if (assignmentStatus === "Open") {
-          iconColor = "#009933";
-        } else {
-          iconColor = "#cc3399";
-        }
-      }
+    const { iconImage, iconColor } = getIconInfo(contentType);
 
-      initialIcon = (
-        <Icon
-          as={iconImage}
-          color={iconColor}
-          boxSizing="content-box"
-          width="24px"
-          height={cardHeight}
-          paddingLeft={["2px", "5px"]}
-          verticalAlign="middle"
-        />
-      );
-    }
+    const initialIcon = (
+      <Tooltip label={contentTypeName}>
+        <Box>
+          <Icon
+            as={iconImage}
+            color={iconColor}
+            boxSizing="content-box"
+            width="24px"
+            height={cardHeight}
+            paddingLeft={["2px", "5px"]}
+            verticalAlign="middle"
+            aria-label={contentTypeName}
+          />
+        </Box>
+      </Tooltip>
+    );
 
     const assignmentStatusDisplay = showAssignmentStatus ? (
       <Tooltip label={assignmentStatusString}>
@@ -459,17 +344,43 @@ export default function Card({
       activityWidth += 20;
     }
 
-    const licenseBadges =
-      cardContent.license && (cardContent.isPublic || cardContent.isShared) ? (
-        <Show above="xl">
-          <Box height={cardHeight} alignContent="center" marginRight="10px">
-            <SmallLicenseBadges
-              license={cardContent.license}
-              suppressLink={true}
-            />
-          </Box>
-        </Show>
-      ) : null;
+    const licenseBadges = (
+      <Show above="xl">
+        <Box
+          height={cardHeight}
+          width="80px"
+          alignContent="center"
+          marginRight="10px"
+        >
+          {license && (isPublic || isShared) ? (
+            <SmallLicenseBadges license={license} suppressLink={true} />
+          ) : null}
+        </Box>
+      </Show>
+    );
+
+    const variantsDisplay = (
+      <Show above="lg">
+        <Flex height={cardHeight} width="60px" alignContent="center">
+          {(numVariants ?? 1) > 1 ? (
+            <Box alignContent="center">
+              <Tooltip label={`This document has ${numVariants} variants`}>
+                <Badge>
+                  {" "}
+                  <Icon
+                    as={IoDiceOutline}
+                    color="#666699"
+                    boxSize={5}
+                    verticalAlign="middle"
+                  />
+                  {numVariants}
+                </Badge>
+              </Tooltip>
+            </Box>
+          ) : null}
+        </Flex>
+      </Show>
+    );
 
     card = (
       <ChakraCard
@@ -477,19 +388,22 @@ export default function Card({
         height={cardHeight}
         p="0"
         m="0"
+        marginLeft={leftMargin}
         data-test="Activity Card"
         variant="unstyled"
         borderBottom="2px solid gray"
         borderRadius={0}
-        _hover={{ backgroundColor: "#eeeeee" }}
+        _hover={{ backgroundColor: cardLink ? "#eeeeee" : "ffffff" }}
       >
         <CardBody>
           <HStack gap={0}>
+            {selectCheckbox}
             <ChakraLink
               as={ReactRouterLink}
               to={cardLink}
-              width={menuItems ? `calc(${cardWidth} - 16px)` : cardWidth}
+              width={menuItems ? "calc(100% - 16px)" : "100%"}
               _hover={{ textDecoration: "none" }}
+              cursor={cardLink ? "pointer" : "default"}
             >
               <Flex width="100%">
                 <Box m="0" p="0" width={["26px", "29px"]}>
@@ -515,8 +429,7 @@ export default function Card({
                   height={cardHeight}
                   alignContent="center"
                 >
-                  <HStack>{titleDisplay}</HStack>{" "}
-                  {/* HStack makes region to right of title part of the link */}
+                  {titleDisplay}
                 </Box>
                 <Box
                   width={
@@ -528,6 +441,7 @@ export default function Card({
                   {assignmentStatusDisplay}
                   {ownerNameWithAvatar}
                 </Box>
+                {variantsDisplay}
                 {licenseBadges}
               </Flex>
             </ChakraLink>
@@ -551,19 +465,7 @@ export default function Card({
       </Tooltip>
     ) : null;
 
-    let cardImage =
-      cardType === "author" ? (
-        <Center
-          height="120px"
-          width="180px"
-          borderTopRadius="md"
-          background="black"
-        >
-          <Avatar w="100px" h="100px" fontSize="60pt" name={ownerName} />
-        </Center>
-      ) : (
-        image
-      );
+    let cardImage = image;
 
     cardImage = (
       <ChakraLink

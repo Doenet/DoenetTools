@@ -33,6 +33,7 @@ import {
   ClassificationSettings,
   classificationSettingsActions,
 } from "./ClassificationSettings";
+import { contentTypeToName } from "../../../_utils/activity";
 
 export async function contentSettingsActions({
   formObj,
@@ -67,6 +68,7 @@ export function ContentSettingsDrawer({
   supportingFileData,
   fetcher,
   displayTab = "general",
+  highlightRename = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -77,6 +79,7 @@ export function ContentSettingsDrawer({
   supportingFileData?: any;
   fetcher: FetcherWithComponents<any>;
   displayTab?: "general" | "files";
+  highlightRename?: boolean;
 }) {
   const haveSupportingFiles = Boolean(supportingFileData);
   const numTabs = haveSupportingFiles ? 4 : 3;
@@ -100,6 +103,8 @@ export function ContentSettingsDrawer({
     setTabIndex(initialTabIndex);
   }, [displayTab, isOpen]);
 
+  const contentTypeName = contentTypeToName[contentData.type];
+
   return (
     <Drawer
       isOpen={isOpen}
@@ -112,7 +117,7 @@ export function ContentSettingsDrawer({
       <DrawerContent>
         <DrawerCloseButton data-test="Close Settings Button" />
         <DrawerHeader textAlign="center" height="70px">
-          {contentData.isFolder ? "Folder" : "Activity"} Controls
+          {contentTypeName} Controls
           <Tooltip label={contentData.name}>
             <Text fontSize="smaller" noOfLines={1}>
               {contentData.name}
@@ -129,7 +134,7 @@ export function ContentSettingsDrawer({
             <TabList>
               <Tab data-test="General Tab">General</Tab>
 
-              {!contentData.isFolder ? (
+              {contentData.type !== "folder" ? (
                 <Tab data-test="Classifications">
                   Classifications ({contentData.classifications.length})
                 </Tab>
@@ -146,9 +151,10 @@ export function ContentSettingsDrawer({
                     contentData={contentData}
                     allDoenetmlVersions={allDoenetmlVersions}
                     availableFeatures={availableFeatures}
+                    highlightRename={highlightRename}
                   />
                 </TabPanel>
-                {!contentData.isFolder ? (
+                {contentData.type !== "folder" ? (
                   <TabPanel
                     overflowY="hidden"
                     height="100%"

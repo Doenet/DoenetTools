@@ -17,9 +17,10 @@ model Session {
 
 model content {
   id                    Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
+  type                  ContentType              @default(singleDoc)
   ownerId               Bytes                    @db.Binary(16)
   isFolder              Boolean
-  parentFolderId        Bytes?                   @db.Binary(16)
+  parentId              Bytes?                   @db.Binary(16)
   name                  String
   createdAt             DateTime                 @default(now())
   lastEdited            DateTime                 @default(now())
@@ -31,9 +32,15 @@ model content {
   isDeleted             Boolean                  @default(false)
   sortIndex             BigInt
   licenseCode           String?                  @default("CCDUAL") @db.VarChar(10)
+  numToSelect           Int                      @default(1) @db.UnsignedSmallInt
+  selectByVariant       Boolean                  @default(false)
+  shuffle               Boolean                  @default(false)
+  paginate              Boolean                  @default(false)
+  activityLevelAttempts Boolean                  @default(false)
+  itemLevelAttempts     Boolean                  @default(false)
   owner                 users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  parentFolder          content?                 @relation("folderStructure", fields: [parentFolderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  subFolders            content[]                @relation("folderStructure")
+  parent                content?                 @relation("childParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children              content[]                @relation("childParent")
   documents             documents[]
   license               licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
   contentFeatures       contentFeatures[]
@@ -42,32 +49,59 @@ model content {
   sharedWith            contentShares[]
   classifications       contentClassifications[]
   contentViews          contentViews[]
+  recentContent         recentContent[]
   librarySourceInfo     libraryActivityInfos?    @relation("source")
   libraryActivityInfo   libraryActivityInfos?    @relation("activity")
   librarySourceEvents   libraryEvents[]          @relation("source")
   libraryActivityEvents libraryEvents[]          @relation("activity")
 
-  @@index([ownerId, parentFolderId, sortIndex])
+  @@index([ownerId, parentId, sortIndex])
   @@index([classCode])
-  @@index([parentFolderId, isFolder])
+  @@index([parentId, isFolder])
   @@fulltext([name])
 }
 
+enum ContentType {
+  singleDoc
+  select
+  sequence
+  folder
+}
+
+model recentContent {
+  id        Int        @id @default(autoincrement())
+  userId    Bytes      @db.Binary(16)
+  contentId Bytes      @db.Binary(16)
+  accessed  DateTime   @default(now())
+  mode      RecentMode
+  user      users      @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  content   content    @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([userId, mode, contentId])
+}
+
+enum RecentMode {
+  edit
+  view
+}
+
 model documents {
-  id                 Bytes                @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
-  activityId         Bytes                @db.Binary(16)
-  source             String               @db.MediumText
-  createdAt          DateTime             @default(now())
-  lastEdited         DateTime             @default(now())
-  name               String
-  isDeleted          Boolean              @default(false)
-  assignedVersionNum Int?
-  doenetmlVersionId  Int
-  assignedVersion    documentVersions?    @relation("assignedVersion", fields: [id, assignedVersionNum], references: [docId, versionNum], onDelete: NoAction, onUpdate: NoAction)
-  documentVersions   documentVersions[]
-  activity           content              @relation(fields: [activityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  doenetmlVersion    doenetmlVersions     @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  contributorHistory contributorHistory[]
+  id                  Bytes                @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
+  activityId          Bytes                @db.Binary(16)
+  source              String               @db.MediumText
+  createdAt           DateTime             @default(now())
+  lastEdited          DateTime             @default(now())
+  name                String
+  numVariants         Int                  @default(1)
+  baseComponentCounts String               @db.Text
+  isDeleted           Boolean              @default(false)
+  assignedVersionNum  Int?
+  doenetmlVersionId   Int
+  assignedVersion     documentVersions?    @relation("assignedVersion", fields: [id, assignedVersionNum], references: [docId, versionNum], onDelete: NoAction, onUpdate: NoAction)
+  documentVersions    documentVersions[]
+  activity            content              @relation(fields: [activityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  doenetmlVersion     doenetmlVersions     @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  contributorHistory  contributorHistory[]
 
   @@unique([id, assignedVersionNum]) // needed for the 1-1 relation "assignedVersion" with documentVersions
   @@fulltext([source])
@@ -79,6 +113,8 @@ model documentVersions {
   cid                        String
   source                     String                       @db.MediumText
   createdAt                  DateTime                     @default(now())
+  numVariants                Int                          @default(1)
+  baseComponentCounts        String                       @db.Text
   doenetmlVersionId          Int
   document                   documents                    @relation(fields: [docId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   doenetmlVersion            doenetmlVersions             @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -238,6 +274,7 @@ model users {
   documentState              documentState[]
   documentSubmittedResponses documentSubmittedResponses[]
   sharedWithMe               contentShares[]
+  recentContent              recentContent[]
   libraryEvents              libraryEvents[]
 
   @@fulltext([firstNames, lastNames])

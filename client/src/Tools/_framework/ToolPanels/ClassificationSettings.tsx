@@ -40,21 +40,17 @@ export async function classificationSettingsActions({
   [k: string]: any;
 }) {
   if (formObj._action == "add content classification") {
-    if (formObj.isFolder !== "true") {
-      await axios.post("/api/addClassification", {
-        activityId: formObj.activityId,
-        classificationId: Number(formObj.classificationId),
-      });
-      return true;
-    }
+    await axios.post("/api/addClassification", {
+      activityId: formObj.activityId,
+      classificationId: Number(formObj.classificationId),
+    });
+    return true;
   } else if (formObj._action == "remove content classification") {
-    if (formObj.isFolder !== "true") {
-      await axios.post("/api/removeClassification", {
-        activityId: formObj.activityId,
-        classificationId: Number(formObj.classificationId),
-      });
-      return true;
-    }
+    await axios.post("/api/removeClassification", {
+      activityId: formObj.activityId,
+      classificationId: Number(formObj.classificationId),
+    });
+    return true;
   } else if (formObj?._action == "noop") {
     return true;
   }
@@ -204,7 +200,7 @@ export function ClassificationSettings({
 
   return (
     <>
-      {!contentData.isFolder ? (
+      {contentData.type !== "folder" ? (
         <Flex
           flexDirection={["column", "row-reverse"]}
           columnGap={5}

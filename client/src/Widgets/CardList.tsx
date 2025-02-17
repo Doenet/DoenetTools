@@ -1,7 +1,8 @@
 import React, { ReactElement } from "react";
 import { Text, Icon, Box, Flex, Wrap } from "@chakra-ui/react";
-import { RiEmotionSadLine } from "react-icons/ri";
 import Card, { CardContent } from "./Card";
+import { MdInfoOutline } from "react-icons/md";
+import { ContentType } from "../_utils/types";
 
 export default function CardList({
   content,
@@ -11,18 +12,33 @@ export default function CardList({
   showActivityFeatures = false,
   emptyMessage,
   listView,
-  folderJustCreated,
-  editableTitles = false,
+  selectedCards,
+  selectCallback,
+  disableSelectFor,
 }: {
-  content: CardContent[];
+  content: (
+    | CardContent
+    | {
+        cardType: "afterParent";
+        parentId: string;
+        indentLevel: number;
+        empty: boolean;
+      }
+  )[];
   showOwnerName?: boolean;
   showAssignmentStatus?: boolean;
   showPublicStatus?: boolean;
   showActivityFeatures?: boolean;
   emptyMessage: string;
   listView: boolean;
-  folderJustCreated?: string;
-  editableTitles?: boolean;
+  selectedCards?: string[];
+  selectCallback?: (arg: {
+    id: string;
+    name: string;
+    checked: boolean;
+    type: ContentType;
+  }) => void;
+  disableSelectFor?: string[];
 }) {
   if (content.length === 0) {
     return (
@@ -36,8 +52,9 @@ export default function CardList({
         padding={20}
         width="100%"
         backgroundColor="transparent"
+        textAlign="center"
       >
-        <Icon fontSize="48pt" as={RiEmotionSadLine} />
+        <Icon fontSize="48pt" as={MdInfoOutline} />
         <Text fontSize="36pt">{emptyMessage}</Text>
       </Flex>
     );
@@ -65,23 +82,42 @@ export default function CardList({
   // }
 
   let cards: ReactElement | ReactElement[] = content.map((cardContent) => {
-    const justCreated = folderJustCreated === cardContent.id;
-    if (justCreated) {
-      folderJustCreated = "";
+    if ("cardType" in cardContent) {
+      const indentLevel = cardContent.indentLevel;
+      return (
+        <Box
+          key={`afterParent${cardContent.parentId}`}
+          width={`calc(100% - ${30 * indentLevel}px)`}
+          marginLeft={`${30 * indentLevel}px`}
+          height={cardContent.empty ? "30px" : "10px"}
+          borderBottom="2px solid gray"
+          alignContent="center"
+          paddingLeft="20px"
+          fontStyle="italic"
+          color="GrayText"
+        >
+          {cardContent.empty
+            ? "(Above question bank is empty. Move documents to this slot to fill it.)"
+            : null}
+        </Box>
+      );
+    } else {
+      return (
+        <Card
+          key={`Card${cardContent.content.id}`}
+          cardContent={cardContent}
+          showOwnerName={showOwnerName}
+          showAssignmentStatus={showAssignmentStatus}
+          showPublicStatus={showPublicStatus}
+          showActivityFeatures={showActivityFeatures}
+          listView={listView}
+          indentLevel={cardContent.indentLevel}
+          selectedCards={selectedCards}
+          selectCallback={selectCallback}
+          disableSelect={disableSelectFor?.includes(cardContent.content.id)}
+        />
+      );
     }
-    return (
-      <Card
-        key={`Card${cardContent.id}`}
-        cardContent={cardContent}
-        showOwnerName={showOwnerName}
-        showAssignmentStatus={showAssignmentStatus}
-        showPublicStatus={showPublicStatus}
-        showActivityFeatures={showActivityFeatures}
-        editableTitle={editableTitles}
-        autoFocusTitle={justCreated}
-        listView={listView}
-      />
-    );
   });
 
   if (listView) {

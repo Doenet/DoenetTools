@@ -38,12 +38,14 @@ export function compareUUID(UUID1: Uint8Array, UUID2: Uint8Array) {
   return Buffer.from(UUID1).compare(UUID2);
 }
 
-export function contentStructureConvertUUID(content: ContentStructure) {
-  const parentFolder = content.parentFolder
+export function contentStructureConvertNoChildrenUUID(
+  content: ContentStructure,
+) {
+  const parent = content.parent
     ? {
-        ...content.parentFolder,
-        id: fromUUID(content.parentFolder.id),
-        sharedWith: content.parentFolder.sharedWith.map(userConvertUUID),
+        ...content.parent,
+        id: fromUUID(content.parent.id),
+        sharedWith: content.parent.sharedWith.map(userConvertUUID),
       }
     : null;
 
@@ -55,6 +57,7 @@ export function contentStructureConvertUUID(content: ContentStructure) {
     id: fromUUID(doc.id),
   }));
 
+  const { children: _skipChildren, ...contentNoChildren } = content;
   const librarySourceInfo = content.librarySourceInfo
     ? libraryInfoConvertUUID(content.librarySourceInfo)
     : undefined;
@@ -63,16 +66,30 @@ export function contentStructureConvertUUID(content: ContentStructure) {
     : undefined;
 
   return {
-    ...content,
+    ...contentNoChildren,
     id: fromUUID(content.id),
     ownerId: fromUUID(content.ownerId),
     owner,
     sharedWith,
     documents,
-    parentFolder,
+    parent,
     librarySourceInfo,
     libraryActivityInfo,
   };
+}
+
+type ConvertedContentStructure = ReturnType<
+  typeof contentStructureConvertNoChildrenUUID
+> & { children: ConvertedContentStructure[] };
+
+export function contentStructureConvertUUID(
+  content: ContentStructure,
+): ConvertedContentStructure {
+  const contentNoChildren = contentStructureConvertNoChildrenUUID(content);
+
+  const children = content.children.map(contentStructureConvertUUID);
+
+  return { ...contentNoChildren, children };
 }
 
 export function userConvertUUID(user: UserInfo) {

@@ -14,7 +14,7 @@ CREATE TABLE `content` (
     `id` BINARY(16) NOT NULL DEFAULT (uuid_to_bin(uuid(), 1)),
     `ownerId` BINARY(16) NOT NULL,
     `isFolder` BOOLEAN NOT NULL,
-    `parentFolderId` BINARY(16) NULL,
+    `parentId` BINARY(16) NULL,
     `name` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `lastEdited` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -27,9 +27,9 @@ CREATE TABLE `content` (
     `sortIndex` BIGINT NOT NULL,
     `licenseCode` VARCHAR(10) NULL DEFAULT 'CCDUAL',
 
-    INDEX `content_ownerId_parentFolderId_sortIndex_idx`(`ownerId`, `parentFolderId`, `sortIndex`),
+    INDEX `content_ownerId_parentId_sortIndex_idx`(`ownerId`, `parentId`, `sortIndex`),
     INDEX `content_classCode_idx`(`classCode`),
-    INDEX `content_parentFolderId_isFolder_idx`(`parentFolderId`, `isFolder`),
+    INDEX `content_parentId_isFolder_idx`(`parentId`, `isFolder`),
     FULLTEXT INDEX `content_name_idx`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -243,7 +243,7 @@ CREATE TABLE `classificationSystems` (
 ALTER TABLE `content` ADD CONSTRAINT `content_ownerId_fkey` FOREIGN KEY (`ownerId`) REFERENCES `users`(`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE `content` ADD CONSTRAINT `content_parentFolderId_fkey` FOREIGN KEY (`parentFolderId`) REFERENCES `content`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `content` ADD CONSTRAINT `content_parentId_fkey` FOREIGN KEY (`parentId`) REFERENCES `content`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE `content` ADD CONSTRAINT `content_licenseCode_fkey` FOREIGN KEY (`licenseCode`) REFERENCES `licenses`(`code`) ON DELETE NO ACTION ON UPDATE NO ACTION;

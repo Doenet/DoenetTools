@@ -36,7 +36,8 @@ import {
 import { formatBytes } from "../../../_utils/formatting";
 import { MdOutlineCloudUpload } from "react-icons/md";
 import { FaFileImage } from "react-icons/fa";
-import { GoKebabVertical } from "react-icons/go";
+import { FaEllipsisVertical } from "react-icons/fa6";
+
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { BsClipboardPlus } from "react-icons/bs";
 
@@ -340,7 +341,7 @@ export function SupportFilesControls({
                             <MenuButton
                               as={IconButton}
                               aria-label="Options"
-                              icon={<GoKebabVertical />}
+                              icon={<FaEllipsisVertical />}
                               variant="ghost"
                             />
                             <MenuList>
@@ -517,7 +518,7 @@ export function SupportFilesControls({
                           <MenuButton
                             as={IconButton}
                             aria-label="Options"
-                            icon={<GoKebabVertical />}
+                            icon={<FaEllipsisVertical />}
                             variant="ghost"
                           />
                           <MenuList>
