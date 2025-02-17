@@ -863,7 +863,7 @@ test("getDocumentSource gets source", async () => {
   expect(documentSource.source).eq("some content");
 });
 
-test.only("getContentDescription gets name and type", async () => {
+test("getContentDescription gets name and type", async () => {
   const { userId: ownerId } = await createTestUser();
 
   const { activityId } = await createActivity(ownerId, null);
