@@ -6940,9 +6940,11 @@ async function getLibraryAccountId() {
  */
 export async function addDraftToLibrary({
   id,
+  contentType,
   loggedInUserId,
 }: {
   id: Uint8Array;
+  contentType: ContentType;
   loggedInUserId: Uint8Array;
 }) {
   await mustBeAdmin(loggedInUserId);
@@ -6981,7 +6983,13 @@ export async function addDraftToLibrary({
 
   const libraryId = await getLibraryAccountId();
 
-  const draftId = await copyActivityToFolder(id, libraryId, null);
+  let draftId;
+
+  if (contentType === "singleDoc") {
+    draftId = await copyActivityToFolder(id, libraryId, null);
+  } else {
+    draftId = (await copyFolderToFolder(id, libraryId, null))[0];
+  }
 
   await prisma.libraryActivityInfos.upsert({
     where: {
@@ -7019,9 +7027,11 @@ export async function addDraftToLibrary({
 export async function deleteDraftFromLibrary({
   draftId,
   loggedInUserId,
+  contentType,
 }: {
   draftId: Uint8Array;
   loggedInUserId: Uint8Array;
+  contentType: ContentType;
 }) {
   await mustBeAdmin(loggedInUserId);
   const libraryId = await getLibraryAccountId();
@@ -7034,28 +7044,65 @@ export async function deleteDraftFromLibrary({
     },
   });
 
-  const deleteDraft = prisma.content.update({
+  if (contentType === "folder") {
+    throw new InvalidRequestError(
+      "Cannot delete a folder as a draft library content",
+    );
+  }
+
+  // Verify the folder exists
+  await prisma.content.findUniqueOrThrow({
     where: {
       id: draftId,
       isPublic: false, // This is key! We're only deleting unpublished drafts here
-      isDeleted: false,
-      isFolder: false,
       ownerId: libraryId,
+      type: contentType,
+      isDeleted: false,
     },
-    data: {
-      // soft delete activity
-      isDeleted: true,
-      documents: {
-        updateMany: {
-          where: {},
-          data: {
-            // soft delete documents
-            isDeleted: true,
+    select: { id: true },
+  });
+
+  let deleteDraft;
+
+  if (contentType === "singleDoc") {
+    deleteDraft = prisma.content.update({
+      where: {
+        id: draftId,
+        isPublic: false,
+        isDeleted: false,
+        isFolder: false,
+        ownerId: libraryId,
+      },
+      data: {
+        // soft delete activity
+        isDeleted: true,
+        documents: {
+          updateMany: {
+            where: {},
+            data: {
+              // soft delete documents
+              isDeleted: true,
+            },
           },
         },
       },
-    },
-  });
+    });
+  } else {
+    deleteDraft = prisma.$queryRaw(Prisma.sql`
+    WITH RECURSIVE content_tree(id) AS (
+      SELECT id FROM content
+      WHERE id = ${draftId} AND ownerId = ${libraryId} AND isPublic = FALSE
+      UNION ALL
+      SELECT content.id FROM content
+      INNER JOIN content_tree AS ft
+      ON content.parentId = ft.id
+    )
+
+    UPDATE content LEFT JOIN documents ON documents.activityId  = content.id
+      SET content.isDeleted = TRUE, documents.isDeleted = TRUE
+      WHERE content.id IN (SELECT id from content_tree);
+    `);
+  }
 
   const removeLibraryIdRef = prisma.libraryActivityInfos.update({
     where: {

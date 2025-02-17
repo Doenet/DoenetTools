@@ -44,6 +44,7 @@ export function AddContentToMenu({
   addRightPadding = false,
   toolTip,
   followAllowedParents = false,
+  addCopyToLibraryOption = false,
 }: {
   sourceContent: ContentDescription[];
   size?: ResponsiveValue<(string & {}) | "xs" | "sm" | "md" | "lg">;
@@ -66,6 +67,7 @@ export function AddContentToMenu({
   addRightPadding?: boolean;
   toolTip?: string;
   followAllowedParents?: boolean;
+  addCopyToLibraryOption?: boolean;
 }) {
   const user = useOutletContext<User>();
 
@@ -76,6 +78,8 @@ export function AddContentToMenu({
     useState<ContentDescription | null>(null);
 
   const [baseContains, setBaseContains] = useState<ContentType[]>([]);
+
+  const [copyToLibrary, setCopyToLibrary] = useState<boolean>(false);
 
   useEffect(() => {
     const allowedParents = getAllowedParentTypes(
@@ -98,6 +102,7 @@ export function AddContentToMenu({
       sourceContent={sourceContent}
       desiredParent={copyDestination}
       action="Add"
+      copyToLibrary={copyToLibrary}
     />
   );
 
@@ -182,6 +187,16 @@ export function AddContentToMenu({
       >
         {menuButton}
         <MenuList>
+          {addCopyToLibraryOption ? (
+            <MenuItem
+              onClick={() => {
+                setCopyToLibrary(true);
+                copyDialogOnOpen();
+              }}
+            >
+              Add Draft to Library
+            </MenuItem>
+          ) : null}
           <Tooltip
             openDelay={500}
             label={
@@ -247,6 +262,7 @@ export function AddContentToMenu({
           <MenuItem
             onClick={() => {
               setCopyDestination(null);
+              setCopyToLibrary(false);
               copyDialogOnOpen();
             }}
           >
@@ -270,6 +286,7 @@ export function AddContentToMenu({
                     }
                     onClick={() => {
                       setCopyDestination(rc);
+                      setCopyToLibrary(false);
                       copyDialogOnOpen();
                     }}
                   >

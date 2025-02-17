@@ -159,7 +159,6 @@ export function ActivityViewer() {
       }
   );
 
-  const [copyToLibrary, setCopyToLibrary] = useState<boolean>(false);
   const {
     activityId,
     type: contentType,
@@ -243,14 +242,13 @@ export function ActivityViewer() {
   } = useDisclosure();
 
   const copyContentModal =
-    addTo !== undefined || copyToLibrary ? (
+    addTo !== undefined ? (
       <CopyContentAndReportFinish
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
         sourceContent={[activityData]}
         desiredParent={addTo ?? null}
         action="Add"
-        copyToLibrary={copyToLibrary}
       />
     ) : null;
 
@@ -346,7 +344,6 @@ export function ActivityViewer() {
         <MenuList>
           <MenuItem
             onClick={() => {
-              setCopyToLibrary(false);
               copyDialogOnOpen();
             }}
           >
@@ -377,29 +374,12 @@ export function ActivityViewer() {
         colorScheme="blue"
         toolTip={`Add ${contentTypeName.toLowerCase()} to ${allowedParentsPhrase}`}
         leftIcon={<MdOutlineAdd />}
+        addCopyToLibraryOption={
+          user?.isAdmin &&
+          !activityData.librarySourceInfo?.activityId &&
+          !activityData.libraryActivityInfo
+        }
       />
-    );
-  }
-
-  let curateButton: ReactElement | null = null;
-
-  if (
-    user?.isAdmin &&
-    !activityData.librarySourceInfo &&
-    !activityData.libraryActivityInfo
-  ) {
-    curateButton = (
-      <Button
-        data-test="Add Draft to Library Button"
-        size="sm"
-        colorScheme="blue"
-        onClick={() => {
-          setCopyToLibrary(true);
-          copyDialogOnOpen();
-        }}
-      >
-        Add Draft to Library
-      </Button>
     );
   }
 
@@ -524,7 +504,7 @@ export function ActivityViewer() {
                     <></>
                   )}
                   {user?.isAdmin &&
-                  activityData.librarySourceInfo &&
+                  activityData.librarySourceInfo?.activityId &&
                   activityData.librarySourceInfo?.status !== "PUBLISHED" ? (
                     <Button
                       marginLeft="10px"
@@ -565,7 +545,6 @@ export function ActivityViewer() {
                       </Button>
                     )}
 
-                    {curateButton}
                     <Tooltip
                       hasArrow
                       label={`${contentTypeName} Information`}

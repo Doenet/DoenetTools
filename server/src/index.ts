@@ -1905,10 +1905,9 @@ app.get(
 app.get(
   "/api/getActivityViewerData/:activityId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
-    const activityId = toUUID(req.params.activityId);
-
     try {
+      const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
+      const activityId = toUUID(req.params.activityId);
       const { activity, docHistories } = await getActivityViewerData(
         activityId,
         loggedInUserId,
@@ -3294,12 +3293,15 @@ app.post(
       res.sendStatus(403);
       return;
     }
-    const loggedInUserId = req.user.userId;
-    const id = toUUID(req.body.activityId);
 
     try {
+      const loggedInUserId = req.user.userId;
+      const id = toUUID(req.body.activityId);
+      const contentType = req.body.type;
+
       const { draftId } = await addDraftToLibrary({
         id,
+        contentType,
         loggedInUserId,
       });
       res.send({
@@ -3319,12 +3321,15 @@ app.post(
       res.sendStatus(403);
       return;
     }
-    const loggedInUserId = req.user.userId;
-    const id = toUUID(req.body.activityId);
     try {
+      const loggedInUserId = req.user.userId;
+      const id = toUUID(req.body.activityId);
+      const contentType = req.body.contentType;
+
       await deleteDraftFromLibrary({
         draftId: id,
         loggedInUserId,
+        contentType,
       });
       res.send({});
     } catch (e) {

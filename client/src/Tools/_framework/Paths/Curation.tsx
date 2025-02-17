@@ -89,6 +89,7 @@ export async function action({ request }) {
   if (formObj?._action == "Delete Draft") {
     await axios.post(`/api/deleteDraftFromLibrary`, {
       activityId: formObj.id,
+      contentType: formObj.contentType,
     });
     return true;
 
@@ -351,7 +352,7 @@ export function Curation() {
             Move to Folder
           </MenuItem>
         )}
-        {!isFolder && !isPublic ? (
+        {contentType !== "folder" && !isPublic ? (
           <MenuItem
             data-test="Delete Draft"
             onClick={() => {
@@ -359,6 +360,7 @@ export function Curation() {
                 {
                   _action: "Delete Draft",
                   id,
+                  contentType,
                 },
                 { method: "post" },
               );

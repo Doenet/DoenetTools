@@ -62,6 +62,7 @@ export function CopyContentAndReportFinish({
           for (const s of sourceContent) {
             const { data } = await axios.post(`/api/addDraftToLibrary`, {
               activityId: s.id,
+              type: s.type,
             });
             userId = data.userId;
             newContentIds.push(data.newActivityId);
@@ -124,7 +125,7 @@ export function CopyContentAndReportFinish({
     destinationAction = copyToLibrary
       ? "Go to the library"
       : "Go to Activities";
-    destinationUrl = `/activities/${newActivityData?.userId}`;
+    destinationUrl = `/${copyToLibrary ? "curation" : "activities"}/${newActivityData?.userId}`;
   }
 
   return (
