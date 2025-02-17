@@ -35,7 +35,7 @@ import {
   useOutletContext,
 } from "react-router";
 import { MoveCopyContent, moveCopyContentActions } from "./MoveCopyContent";
-import { User } from "../Paths/SiteHeader";
+import { SiteContext } from "../Paths/SiteHeader";
 import CardList from "../../../Widgets/CardList";
 import axios from "axios";
 import { ActivitySource } from "../../../_utils/viewerTypes";
@@ -144,7 +144,7 @@ export function CompoundActivityEditor({
 
   const readOnly = asViewer || assignmentStatus !== "Unassigned";
 
-  const user = useOutletContext<User>();
+  const { user } = useOutletContext<SiteContext>();
   const navigate = useNavigate();
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);

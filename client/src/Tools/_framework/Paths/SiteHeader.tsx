@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   Center,
@@ -40,6 +40,12 @@ export type User =
       isAdmin: boolean;
     }
   | undefined;
+
+export type SiteContext = {
+  user: User;
+  exploreTab: number | null;
+  setExploreTab: (arg: number | null) => void;
+};
 
 export async function loader() {
   const {
@@ -123,6 +129,10 @@ function NavLinkDropdownTab({ to, children, dataTest }) {
 
 export function SiteHeader() {
   const { user } = useLoaderData() as { user: User };
+
+  const [exploreTab, setExploreTab] = useState<number | null>(null);
+
+  const siteContext: SiteContext = { user, exploreTab, setExploreTab };
 
   const helpMenuShouldFocusFirst = useBreakpointValue(
     { base: false, md: true },
@@ -345,7 +355,7 @@ export function SiteHeader() {
         </GridItem>
         <GridItem area="main" as="main" margin="0" overflowY="auto">
           <SkipNavContent />
-          <Outlet context={user} />
+          <Outlet context={siteContext} />
         </GridItem>
       </Grid>
     </>
