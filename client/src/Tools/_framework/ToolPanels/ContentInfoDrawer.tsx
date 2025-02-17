@@ -93,7 +93,7 @@ export function ContentInfoDrawer({
       setRemixes(doc0Remixes);
     }
 
-    if (!contentData.isFolder) {
+    if (contentData.type === "singleDoc") {
       getHistoryAndRemixes();
     }
   }, [contentData]);
@@ -132,7 +132,7 @@ export function ContentInfoDrawer({
       <DrawerContent>
         <DrawerCloseButton data-test="Close Settings Button" />
         <DrawerHeader textAlign="center" height="70px">
-          {contentData.isFolder ? "Folder" : "Activity"} Information
+          {contentData.type === "folder" ? "Folder" : "Activity"} Information
           <Tooltip label={contentData.name}>
             <Text fontSize="smaller" noOfLines={1}>
               {contentData.name}
@@ -145,11 +145,13 @@ export function ContentInfoDrawer({
             <TabList>
               <Tab data-test="General Tab">General</Tab>
 
-              {!contentData.isFolder ? (
+              {contentData.type !== "folder" ? (
+                <Tab data-test="Classifications">
+                  Classifications ({contentData.classifications.length})
+                </Tab>
+              ) : null}
+              {contentData.type === "singleDoc" ? (
                 <>
-                  <Tab data-test="Classifications">
-                    Classifications ({contentData.classifications.length})
-                  </Tab>
                   <Tab data-test="Remixed From Tab">
                     Remixed From{" "}
                     {contributorHistory !== null
@@ -168,12 +170,12 @@ export function ContentInfoDrawer({
                 <TabPanel height="100%">
                   <GeneralContentInfo contentData={contentData} />
                 </TabPanel>
-                {!contentData.isFolder ? (
+                {contentData.type !== "folder" ? (
                   <TabPanel overflowY="hidden" height="100%">
                     <ClassificationInfo contentData={contentData} />
                   </TabPanel>
                 ) : null}
-                {!contentData.isFolder ? (
+                {contentData.type === "singleDoc" ? (
                   <TabPanel>
                     <RemixedFrom
                       contributorHistory={contributorHistory}
@@ -181,7 +183,7 @@ export function ContentInfoDrawer({
                     />
                   </TabPanel>
                 ) : null}
-                {!contentData.isFolder ? (
+                {contentData.type === "singleDoc" ? (
                   <TabPanel>
                     <Remixes remixes={remixes} />
                   </TabPanel>

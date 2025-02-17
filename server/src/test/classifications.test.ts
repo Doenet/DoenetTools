@@ -402,7 +402,6 @@ test("Classifications show as primary, sorted by primary", async () => {
   await addClassification(activityId, algebraClassificationId, userId);
 
   const { activity } = await getActivityEditorData(activityId, userId);
-
   expect(activity.classifications[0].code).eq("CalcMV.CV.1");
   expect(activity.classifications[1].code).eq("Alg.FN.1");
   expect(activity.classifications[2].code).eq("Trig.PC.1");

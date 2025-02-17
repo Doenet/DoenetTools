@@ -98,13 +98,11 @@ export function Assigned() {
 
   const cardContent: CardContent[] = assignments.map((assignment) => {
     return {
-      ...assignment,
-      title: assignment.name,
+      content: assignment,
       cardLink:
         assignment.assignmentStatus === "Open"
           ? `/code/${assignment.classCode}`
           : `/assignedData/${assignment.id}`,
-      cardType: assignment.isFolder ? "folder" : "activity",
       closeTime: formatTime(assignment.codeValidUntil),
     };
   });

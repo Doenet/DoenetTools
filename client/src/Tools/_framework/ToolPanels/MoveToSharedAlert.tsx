@@ -18,14 +18,11 @@ export default function MoveToSharedAlert({
   onClose,
   performMove,
   folderName,
-  contentIsPublic,
 }: {
   isOpen: boolean;
   onClose: () => void;
   performMove: () => void;
   folderName: string | null;
-  contentIsPublic: boolean;
-  licenseChange: boolean;
 }) {
   return (
     <>
@@ -49,13 +46,11 @@ export default function MoveToSharedAlert({
               >
                 {folderName}
               </Text>
-              is a shared folder
-              {contentIsPublic ? " with a different license" : ""}.
+              is a shared folder.
             </p>
             <p style={{ marginTop: "10px" }}>
               {" "}
-              Moving to this folder will make the share the content with the
-              same people and with the same license.
+              Moving to this folder will share the content with the same people.
             </p>
           </ModalBody>
           <ModalFooter>

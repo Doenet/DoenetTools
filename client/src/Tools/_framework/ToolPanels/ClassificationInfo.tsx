@@ -21,7 +21,7 @@ export function ClassificationInfo({
 
   return (
     <>
-      {!contentData.isFolder ? (
+      {contentData.type !== "folder" ? (
         <Flex
           flexDirection="column"
           width="100%"

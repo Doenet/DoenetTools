@@ -96,9 +96,18 @@ export type PartialContentClassification = {
   numCurated?: number;
   numCommunity?: number;
 };
+export type ContentType = "singleDoc" | "select" | "sequence" | "folder";
+
+export function isContentType(type: unknown): type is ContentType {
+  return (
+    typeof type === "string" &&
+    ["singleDoc", "select", "sequence", "folder"].includes(type)
+  );
+}
 
 export type ContentStructure = {
   id: Uint8Array;
+  type: ContentType;
   ownerId: Uint8Array;
   owner?: UserInfo;
   name: string;
@@ -111,6 +120,14 @@ export type ContentStructure = {
   isShared: boolean;
   sharedWith: UserInfo[];
   license: License | null;
+  numVariants?: number;
+  baseComponentCounts?: string;
+  numToSelect: number;
+  selectByVariant: boolean;
+  shuffle: boolean;
+  paginate: boolean;
+  activityLevelAttempts: boolean;
+  itemLevelAttempts: boolean;
   contentFeatures: {
     id: number;
     code: string;
@@ -129,13 +146,15 @@ export type ContentStructure = {
     doenetmlVersion: DoenetmlVersion;
   }[];
   hasScoreData: boolean;
-  parentFolder: {
+  parent: {
     id: Uint8Array;
     name: string;
+    type: ContentType;
     isPublic: boolean;
     isShared: boolean;
     sharedWith: UserInfo[];
   } | null;
+  children: ContentStructure[];
 };
 
 export function createContentStructure({
@@ -147,6 +166,7 @@ export function createContentStructure({
 }) {
   const defaultStructure: ContentStructure = {
     id: activityId,
+    type: "singleDoc",
     name: "",
     ownerId: ownerId,
     imagePath: null,
@@ -157,11 +177,18 @@ export function createContentStructure({
     isShared: false,
     sharedWith: [],
     license: null,
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     contentFeatures: [],
     classifications: [],
     documents: [],
     hasScoreData: false,
-    parentFolder: null,
+    parent: null,
+    children: [],
   };
   return defaultStructure;
 }

@@ -86,7 +86,11 @@ test("user privileges for library", async () => {
   // Only admin can add draft
   async function expectAddDraftFails(userId: Uint8Array) {
     await expect(() =>
-      addDraftToLibrary({ id: activityId, loggedInUserId: userId }),
+      addDraftToLibrary({
+        id: activityId,
+        contentType: "singleDoc",
+        loggedInUserId: userId,
+      }),
     ).rejects.toThrowError();
   }
 
@@ -95,6 +99,7 @@ test("user privileges for library", async () => {
 
   const { draftId } = await addDraftToLibrary({
     id: activityId,
+    contentType: "singleDoc",
     loggedInUserId: adminId,
   });
   const statusPendingWithDraft = {
@@ -269,12 +274,20 @@ test("user privileges for library", async () => {
   // Only admin can delete draft
   async function expectDeleteDraftFails(userId: Uint8Array) {
     await expect(() =>
-      deleteDraftFromLibrary({ draftId, loggedInUserId: userId }),
+      deleteDraftFromLibrary({
+        draftId,
+        contentType: "singleDoc",
+        loggedInUserId: userId,
+      }),
     ).rejects.toThrowError();
   }
   await expectDeleteDraftFails(ownerId);
   await expectDeleteDraftFails(randomUserId);
-  await deleteDraftFromLibrary({ draftId, loggedInUserId: adminId });
+  await deleteDraftFromLibrary({
+    draftId,
+    contentType: "singleDoc",
+    loggedInUserId: adminId,
+  });
   await expectStatusIs(activityId, statusNone, randomUserId);
   await expectStatusIs(activityId, statusUnpublished, ownerId);
   await expectStatusIs(activityId, statusUnpublished, adminId);
@@ -325,6 +338,7 @@ test("owner requests library review, admin publishes", async () => {
 
   const { draftId } = await addDraftToLibrary({
     id: activityId,
+    contentType: "singleDoc",
     loggedInUserId: adminId,
   });
   await expectStatusIs(activityId, status, ownerId);
@@ -355,6 +369,7 @@ test("admin publishes to library without owner request", async () => {
   });
   const { draftId } = await addDraftToLibrary({
     id: activityId,
+    contentType: "singleDoc",
     loggedInUserId: adminId,
   });
 
@@ -400,6 +415,7 @@ test("published activity in library with unavailable source activity", async () 
   // Publish
   const { draftId } = await addDraftToLibrary({
     id: activityId,
+    contentType: "singleDoc",
     loggedInUserId: adminId,
   });
   await publishActivityToLibrary({
@@ -438,10 +454,15 @@ test("deleting draft does not delete owner's original", async () => {
   });
   const { draftId } = await addDraftToLibrary({
     id: activityId,
+    contentType: "singleDoc",
     loggedInUserId: adminId,
   });
 
-  await deleteDraftFromLibrary({ draftId, loggedInUserId: adminId });
+  await deleteDraftFromLibrary({
+    draftId,
+    contentType: "singleDoc",
+    loggedInUserId: adminId,
+  });
   const original = await getActivity(activityId);
   expect(original.id).eqls(activityId);
   expect(original.isDeleted).eqls(false);
@@ -458,6 +479,7 @@ test("Cannot add draft of curated activity", async () => {
   });
   const { draftId: curatedId } = await addDraftToLibrary({
     id: activityId,
+    contentType: "singleDoc",
     loggedInUserId: adminId,
   });
   await publishActivityToLibrary({
@@ -468,7 +490,11 @@ test("Cannot add draft of curated activity", async () => {
 
   // Throws error
   await expect(() =>
-    addDraftToLibrary({ id: curatedId, loggedInUserId: adminId }),
+    addDraftToLibrary({
+      id: curatedId,
+      contentType: "singleDoc",
+      loggedInUserId: adminId,
+    }),
   ).rejects.toThrowError();
 });
 

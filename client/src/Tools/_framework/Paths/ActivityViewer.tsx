@@ -1,25 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useRef, useState } from "react";
 import {
   useLoaderData,
   useNavigate,
-  useLocation,
   useOutletContext,
   Link as ReactRouterLink,
 } from "react-router";
-import { DoenetViewer } from "@doenet/doenetml-iframe";
 
 import {
   Box,
   Button,
+  ButtonGroup,
   Flex,
   Grid,
   GridItem,
   Heading,
   HStack,
+  Icon,
   IconButton,
   Link as ChakraLink,
   List,
   ListItem,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -27,97 +31,194 @@ import {
   PopoverBody,
   PopoverArrow,
   PopoverCloseButton,
-  Spacer,
+  Show,
   Text,
   Tooltip,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
+import { BsPlayBtnFill } from "react-icons/bs";
+import { MdOutlineAdd, MdOutlineEditOff, MdOutlineInfo } from "react-icons/md";
+import { useFetcher } from "react-router";
 
 import axios from "axios";
-import ContributorsMenu from "../ToolPanels/ContributorsMenu";
-
-import { CopyActivityAndReportFinish } from "../ToolPanels/CopyActivityAndReportFinish";
-import { User } from "./SiteHeader";
-import { createFullName } from "../../../_utils/names";
+import {} from "../ToolPanels/ContentSettingsDrawer";
 import {
+  ContentDescription,
   ContentStructure,
   DocHistoryItem,
   DoenetmlVersion,
 } from "../../../_utils/types";
+import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
+import { CompoundActivityEditor } from "../ToolPanels/CompoundActivityEditor";
+import {
+  compileActivityFromContent,
+  contentTypeToName,
+  getAllowedParentTypes,
+  getClassificationAugmentedDescription,
+  getIconInfo,
+  menuIcons,
+} from "../../../_utils/activity";
+import { ActivitySource } from "../../../_utils/viewerTypes";
 import { processContributorHistory } from "../../../_utils/processRemixes";
-import { DisplayLicenseItem } from "../../../Widgets/Licenses";
+import ContributorsMenu from "../ToolPanels/ContributorsMenu";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
-import { MdOutlineInfo } from "react-icons/md";
+import { createFullName } from "../../../_utils/names";
+import { DisplayLicenseItem } from "../../../Widgets/Licenses";
+import { User } from "./SiteHeader";
+import {
+  AddContentToMenu,
+  addContentToMenuActions,
+} from "../ToolPanels/AddContentToMenu";
+import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
+import { CloseIcon } from "@chakra-ui/icons";
 import { BsBookmarkCheck } from "react-icons/bs";
 import { ImCheckmark } from "react-icons/im";
-import { getClassificationAugmentedDescription } from "../../../_utils/activity";
 
-export async function loader({ params }) {
-  try {
-    const { data: activityData } = await axios.get(
-      `/api/getActivityViewerData/${params.activityId}`,
-    );
+export async function action({ request }) {
+  const formData = await request.formData();
+  const formObj = Object.fromEntries(formData);
 
-    const activityId = params.activityId;
-    let docId = params.docId;
-    if (!docId) {
-      // If docId was not supplied in the url,
-      // then use the first docId from the activity.
-      // TODO: what happens if activity has no documents?
-      docId = activityData.activity.documents[0].id;
+  const resultACM = await addContentToMenuActions({ formObj });
+  if (resultACM) {
+    return resultACM;
+  }
+
+  throw Error(`Action "${formObj?._action}" not defined or not handled.`);
+}
+
+export async function loader({ params, request }) {
+  const {
+    data: { activity: activityData, docHistories },
+  } = await axios.get(`/api/getActivityViewerData/${params.activityId}`);
+
+  const activityId = params.activityId;
+
+  const url = new URL(request.url);
+  const addToId = url.searchParams.get("addTo");
+  let addTo: ContentDescription | undefined = undefined;
+
+  if (addToId) {
+    try {
+      const { data } = await axios.get(`/api/getContentDescription/${addToId}`);
+      addTo = data;
+    } catch (_e) {
+      console.error(`Could not get description of ${addToId}`);
     }
+  }
 
-    const doenetML = activityData.activity.documents[0].source;
+  if (activityData.type === "singleDoc") {
+    const docId = activityData.documents[0].id;
 
+    const doenetML = activityData.documents[0].source;
     const doenetmlVersion: DoenetmlVersion =
-      activityData.activity.documents[0].doenetmlVersion;
+      activityData.documents[0].doenetmlVersion;
 
-    const contributorHistory = await processContributorHistory(
-      activityData.docHistories[0],
-    );
+    const contributorHistory = await processContributorHistory(docHistories[0]);
 
     return {
-      activityId,
-      doenetML,
-      activity: activityData.activity,
+      type: activityData.type,
+      activityData,
       docId,
-      contributorHistory,
+      doenetML,
       doenetmlVersion,
-      // libraryStatus,
+      activityId,
+      contributorHistory,
+      addTo,
     };
-  } catch (e) {
-    if (e.response?.status === 404) {
-      throw Error("Activity not found");
-    } else {
-      throw e;
-    }
+  } else {
+    const activityJson = compileActivityFromContent(activityData);
+
+    return {
+      type: activityData.type,
+      activityData,
+      activityJson,
+      activityId,
+      contributorHistory: [],
+      addTo,
+    };
   }
 }
 
 export function ActivityViewer() {
+  const data = useLoaderData() as {
+    activityId: string;
+    activityData: ContentStructure;
+    contributorHistory: DocHistoryItem[];
+    addTo?: ContentDescription;
+  } & (
+    | {
+        type: "singleDoc";
+        doenetML: string;
+        doenetmlVersion: DoenetmlVersion;
+        docId: string;
+      }
+    | {
+        type: "select" | "sequence";
+        activityJson: ActivitySource;
+      }
+  );
+
   const {
     activityId,
-    doenetML,
-    activity,
-    docId,
+    type: contentType,
+    activityData,
     contributorHistory,
-    doenetmlVersion,
-  } = useLoaderData() as {
-    activityId: string;
-    doenetML: string;
-    activity: ContentStructure;
-    docId: string;
-    contributorHistory: DocHistoryItem[];
-    doenetmlVersion: DoenetmlVersion;
-  };
+    addTo,
+  } = data;
 
-  const [copyToLibrary, setCopyToLibrary] = useState<boolean>(false);
-  const {
-    isOpen: copyDialogIsOpen,
-    onOpen: copyDialogOnOpen,
-    onClose: copyDialogOnClose,
-  } = useDisclosure();
+  const user = useOutletContext<User>();
+  const navigate = useNavigate();
+
+  const infoBtnRef = useRef<HTMLButtonElement>(null);
+
+  const [mode, setMode] = useState<"Edit" | "View">(
+    contentType === "select" ? "Edit" : "View",
+  );
+
+  useEffect(() => {
+    if (contentType === "select") {
+      setMode("Edit");
+    } else {
+      setMode("View");
+    }
+  }, [contentType, activityId]);
+
+  useEffect(() => {
+    document.title = `${activityData.name} - Doenet`;
+  }, [activityData.name]);
+
+  const [displayInfoTab, setDisplayInfoTab] = useState<
+    "general" | "classifications"
+  >("general");
+
+  const [settingsContentId, setSettingsContentId] = useState<string | null>(
+    null,
+  );
+
+  let contentData: ContentStructure | undefined;
+  if (settingsContentId) {
+    if (settingsContentId === activityData.id) {
+      contentData = activityData;
+    } else {
+      if (data.type !== "singleDoc") {
+        function matchSettingsContentId(
+          content: ContentStructure,
+        ): ContentStructure | undefined {
+          if (content.id === settingsContentId) {
+            return content;
+          }
+          for (const child of content.children) {
+            const res = matchSettingsContentId(child);
+            if (res) {
+              return res;
+            }
+          }
+        }
+        contentData = matchSettingsContentId(data.activityData);
+      }
+    }
+  }
 
   const {
     isOpen: infoIsOpen,
@@ -125,355 +226,468 @@ export function ActivityViewer() {
     onClose: infoOnClose,
   } = useDisclosure();
 
-  const [displayInfoTab, setDisplayInfoTab] = useState<
-    "general" | "classifications"
-  >("general");
+  const infoDrawer = contentData ? (
+    <ContentInfoDrawer
+      isOpen={infoIsOpen}
+      onClose={infoOnClose}
+      contentData={contentData}
+      displayTab={displayInfoTab}
+    />
+  ) : null;
 
-  const navigate = useNavigate();
-  const location = useLocation();
+  const {
+    isOpen: copyDialogIsOpen,
+    onOpen: copyDialogOnOpen,
+    onClose: copyDialogOnClose,
+  } = useDisclosure();
 
-  const user = useOutletContext<User>();
+  const copyContentModal =
+    addTo !== undefined ? (
+      <CopyContentAndReportFinish
+        isOpen={copyDialogIsOpen}
+        onClose={copyDialogOnClose}
+        sourceContent={[activityData]}
+        desiredParent={addTo ?? null}
+        action="Add"
+      />
+    ) : null;
 
-  useEffect(() => {
-    document.title = `${activity.name} - Doenet`;
-  }, [activity.name]);
+  const fetcher = useFetcher();
 
-  const haveClassifications = activity.classifications.length > 0;
+  const [editLabel, editTooltip, editIcon] = [
+    "See Inside",
+    "See read-only view of source",
+    <MdOutlineEditOff />,
+  ];
+
+  const haveClassifications = activityData.classifications.length > 0;
+
+  let editor: ReactElement;
+
+  if (data.type === "singleDoc") {
+    editor = (
+      <ActivityDoenetMLEditor
+        doenetML={data.doenetML}
+        doenetmlVersion={data.doenetmlVersion}
+        asViewer={true}
+        mode={mode}
+        docId={data.docId}
+        headerHeight="140px"
+      />
+    );
+  } else {
+    editor = (
+      <CompoundActivityEditor
+        activity={activityData}
+        activityJson={data.activityJson}
+        asViewer={true}
+        mode={mode}
+        fetcher={fetcher}
+        headerHeight="140px"
+        setSettingsContentId={setSettingsContentId}
+        settingsOnOpen={infoOnOpen}
+        setSettingsDisplayTab={setDisplayInfoTab}
+        addTo={addTo}
+      />
+    );
+  }
+
+  const contentTypeName = contentTypeToName[data.type];
+
+  const { iconImage, iconColor } = getIconInfo(data.type);
+
+  const typeIcon = (
+    <Tooltip label={contentTypeName}>
+      <Box>
+        <Icon
+          as={iconImage}
+          color={iconColor}
+          boxSizing="content-box"
+          width="24px"
+          height="24px"
+          paddingRight="10px"
+          verticalAlign="middle"
+          aria-label={contentTypeName}
+        />
+      </Box>
+    </Tooltip>
+  );
+
+  const allowedParents = getAllowedParentTypes([activityData.type]);
+
+  const allowedParentWords = allowedParents.map((ct) =>
+    contentTypeToName[ct].toLowerCase(),
+  );
+
+  let allowedParentsPhrase = allowedParentWords
+    .slice(0, Math.max(1, allowedParentWords.length - 1))
+    .join(", ");
+  if (allowedParentWords.length > 1) {
+    allowedParentsPhrase +=
+      " or " + allowedParentWords[allowedParentWords.length - 1];
+  }
+
+  let addToMenu: ReactElement;
+
+  if (addTo) {
+    addToMenu = (
+      <Menu>
+        <MenuButton
+          as={Button}
+          size="sm"
+          colorScheme="blue"
+          leftIcon={<MdOutlineAdd />}
+          paddingRight={{ base: "0px", md: "10px" }}
+        >
+          <Show above="md">Add to</Show>
+        </MenuButton>
+        <MenuList>
+          <MenuItem
+            onClick={() => {
+              copyDialogOnOpen();
+            }}
+          >
+            {menuIcons[addTo.type]}{" "}
+            {addTo.name.substring(0, 20) +
+              (addTo.name.length > 20 ? "..." : "")}
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              navigate(".");
+            }}
+          >
+            <CloseIcon marginRight="10px" />
+            Stop adding to:{" "}
+            {addTo.name.substring(0, 20) +
+              (addTo.name.length > 20 ? "..." : "")}
+          </MenuItem>
+        </MenuList>
+      </Menu>
+    );
+  } else {
+    addToMenu = (
+      <AddContentToMenu
+        sourceContent={[activityData]}
+        size="sm"
+        label={<Show above="md">Add to</Show>}
+        addRightPadding={true}
+        colorScheme="blue"
+        toolTip={`Add ${contentTypeName.toLowerCase()} to ${allowedParentsPhrase}`}
+        leftIcon={<MdOutlineAdd />}
+        addCopyToLibraryOption={
+          user?.isAdmin &&
+          !activityData.librarySourceInfo?.activityId &&
+          !activityData.libraryActivityInfo
+        }
+      />
+    );
+  }
 
   return (
     <>
-      <CopyActivityAndReportFinish
-        isOpen={copyDialogIsOpen}
-        onClose={copyDialogOnClose}
-        activityData={activity}
-        copyToLibrary={copyToLibrary}
-      />
-      <ContentInfoDrawer
-        isOpen={infoIsOpen}
-        onClose={infoOnClose}
-        contentData={activity}
-        displayTab={displayInfoTab}
-      />
-      <Box background="doenet.lightBlue" height="100%">
-        <Flex
-          background="doenet.lightBlue"
-          alignItems="center"
+      {infoDrawer}
+      {copyContentModal}
+      <Grid
+        background="doenet.lightBlue"
+        minHeight="calc(100vh - 40px)" //40px header height
+        templateAreas={`"header"
+      "centerContent"
+      `}
+        templateRows="100px auto"
+        position="relative"
+      >
+        <GridItem
+          area="header"
+          height="100px"
+          background="doenet.mainGray"
           width="100%"
-          direction="column"
         >
-          <Grid
-            templateAreas={`"header"
-            "centerContent"
-            `}
-            templateRows="100px calc(100% - 100px)"
-            width="100%"
-            maxWidth="850px"
-          >
-            <GridItem area="header" height="100px" background="doenet.mainGray">
-              <Grid
-                width="100%"
-                height="100px"
-                templateAreas={`"leftHeader headerContent rightHeader"`}
-                templateColumns={`1fr minmax(100px,800px) 1fr`}
-                background="doenet.mainGray"
-              >
-                <GridItem
-                  area="leftHeader"
-                  paddingLeft="10px"
-                  background="doenet.mainGray"
-                ></GridItem>
-                <GridItem
-                  area="rightHeader"
-                  paddingRight="10px"
-                  background="doenet.mainGray"
-                ></GridItem>
-                <GridItem area="headerContent" maxWidth="800px" width="100%">
-                  <Flex
-                    flexDirection="column"
-                    alignItems="flex-start"
-                    mt="10px"
-                  >
-                    <Flex
-                      width="100%"
-                      justifyContent="center"
-                      alignItems="center"
-                    >
-                      <Tooltip label={activity.name}>
-                        <Text fontSize="1.4em" fontWeight="bold" noOfLines={1}>
-                          {activity.name}
-                        </Text>
+          <Flex flexDirection="column" alignItems="flex-start" mt="10px">
+            <Grid
+              templateAreas={`"leftControls label rightControls"`}
+              templateColumns={{
+                base: "82px calc(100% - 197px) 115px",
+                sm: "87px calc(100% - 217px) 120px",
+                md: "1fr 350px 1fr",
+                lg: "1fr 450px 1fr",
+              }}
+              width="100%"
+              height="40px"
+            >
+              <GridItem area="leftControls">
+                <HStack ml={{ base: "5px", sm: "10px" }} mt="4px">
+                  <ButtonGroup size="sm" isAttached variant="outline">
+                    <Tooltip hasArrow label="View Activity">
+                      <Button
+                        data-test="View Mode Button"
+                        isActive={mode == "View"}
+                        size="sm"
+                        pr={{ base: "0px", md: "10px" }}
+                        colorScheme="blue"
+                        leftIcon={<BsPlayBtnFill />}
+                        onClick={() => {
+                          setMode("View");
+                        }}
+                      >
+                        <Show above="md">View</Show>
+                      </Button>
+                    </Tooltip>
+                    <Tooltip hasArrow label={editTooltip}>
+                      <Button
+                        isActive={mode == "Edit"}
+                        data-test="Edit Mode Button"
+                        size="sm"
+                        pr={{ base: "0px", md: "10px" }}
+                        colorScheme="blue"
+                        leftIcon={editIcon}
+                        onClick={() => {
+                          setMode("Edit");
+                        }}
+                      >
+                        <Show above="md">{editLabel}</Show>
+                      </Button>
+                    </Tooltip>
+                  </ButtonGroup>
+                </HStack>
+              </GridItem>
+              <GridItem area="label">
+                <Flex justifyContent="center" alignItems="center">
+                  {typeIcon}
+                  <Text fontSize="1.4em" fontWeight="bold" noOfLines={1}>
+                    {activityData.name}
+                  </Text>
+
+                  {activityData.libraryActivityInfo?.status === "PUBLISHED" ? (
+                    <>
+                      <Tooltip label="This activity is curated.">
+                        <Box marginLeft="5px">
+                          <ImCheckmark color="green" />
+                        </Box>
                       </Tooltip>
-                      {activity.libraryActivityInfo?.status === "PUBLISHED" ? (
-                        <>
-                          <Tooltip label="This activity is curated.">
-                            <Box marginLeft="5px">
-                              <ImCheckmark color="green" />
-                            </Box>
-                          </Tooltip>
-                        </>
-                      ) : null}
-                      {activity.librarySourceInfo?.status === "PUBLISHED" ? (
-                        <Popover>
-                          <PopoverTrigger>
-                            <IconButton
-                              marginLeft="5px"
-                              variant="unstyled"
-                              icon={
-                                <BsBookmarkCheck
-                                  style={{ color: "var(--mainBlue)" }}
-                                />
-                              }
-                              aria-label="A peer-reviewed version is available."
-                              data-test="Library source"
-                            />
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <PopoverArrow />
-                            <PopoverCloseButton />
-                            <PopoverHeader style={{ fontWeight: "bold" }}>
-                              This activity has been peer-reviewed!
-                            </PopoverHeader>
-                            <PopoverBody>
-                              A{" "}
-                              <ChakraLink
-                                as={ReactRouterLink}
-                                to={`/activityViewer/${activity.librarySourceInfo.activityId}`}
-                                style={{ color: "var(--mainBlue)" }}
-                              >
-                                peer-reviewed
-                              </ChakraLink>{" "}
-                              version is available.
-                            </PopoverBody>
-                          </PopoverContent>
-                        </Popover>
-                      ) : (
-                        <></>
-                      )}
-                    </Flex>
-                    <Flex mt="10px" width="100%">
-                      <ContributorsMenu
-                        activity={activity}
-                        contributorHistory={contributorHistory}
-                      />
-                      <Spacer />
-                      <VStack mt="10px" alignItems="flex-end" spacing="4">
-                        <HStack>
-                          <Button
-                            size="xs"
-                            colorScheme="blue"
-                            data-test="See Inside"
-                            onClick={() => {
-                              navigate(`/codeViewer/${activityId}/${docId}`);
-                            }}
-                          >
-                            See Inside
-                          </Button>
-                          {user ? (
-                            <Button
-                              data-test="Copy to Activities Button"
-                              size="xs"
-                              colorScheme="blue"
-                              onClick={() => {
-                                setCopyToLibrary(false);
-                                copyDialogOnOpen();
-                              }}
-                            >
-                              Copy to Activities
-                            </Button>
-                          ) : (
-                            <Button
-                              data-test="Nav to signIn"
-                              colorScheme="blue"
-                              size="xs"
-                              onClick={() => {
-                                navigate("/signIn");
-                              }}
-                            >
-                              Sign In To Copy to Activities
-                            </Button>
-                          )}
-                          {user?.isAdmin &&
-                          !activity.librarySourceInfo &&
-                          !activity.libraryActivityInfo ? (
-                            <Button
-                              data-test="Add Draft to Library Button"
-                              size="xs"
-                              colorScheme="blue"
-                              onClick={() => {
-                                setCopyToLibrary(true);
-                                copyDialogOnOpen();
-                              }}
-                            >
-                              Add Draft to Library
-                            </Button>
-                          ) : (
-                            <></>
-                          )}
-                          {user?.isAdmin && activity.librarySourceInfo ? (
-                            <Button
-                              data-test="Go to existing remix in library"
-                              size="xs"
-                              as={ReactRouterLink}
-                              to={`/activityViewer/${activity.librarySourceInfo.activityId}`}
-                              // style={{ color: "var(--mainBlue)" }}
-                            >
-                              Go to existing remix in library
-                            </Button>
-                          ) : (
-                            <></>
-                          )}
-                          <Tooltip
-                            label={`Activity information`}
-                            placement="bottom-end"
-                          >
-                            <IconButton
-                              size="xs"
-                              colorScheme="blue"
-                              icon={<MdOutlineInfo />}
-                              aria-label="Activity information"
-                              data-test="Activity Information"
-                              onClick={() => {
-                                setDisplayInfoTab("general");
-                                infoOnOpen();
-                              }}
-                            />
-                          </Tooltip>
-                        </HStack>
-                      </VStack>
-                    </Flex>
-                  </Flex>
-                </GridItem>
-              </Grid>
-            </GridItem>
-            <GridItem area="centerContent">
-              <VStack gap={0}>
-                <Box background="var(--canvas)" width="100%" height="100%">
-                  <DoenetViewer
-                    key={`HPpageViewer`}
-                    doenetML={doenetML}
-                    doenetmlVersion={doenetmlVersion.fullVersion}
-                    flags={{
-                      showCorrectness: true,
-                      solutionDisplayMode: "button",
-                      showFeedback: true,
-                      showHints: true,
-                      autoSubmit: false,
-                      allowLoadState: false,
-                      allowSaveState: false,
-                      allowLocalState: false,
-                      allowSaveSubmissions: false,
-                      allowSaveEvents: false,
-                    }}
-                    attemptNumber={1}
-                    idsIncludeActivityId={false}
-                    // setIsInErrorState={setIsInErrorState}
-                    location={location}
-                    navigate={navigate}
-                    linkSettings={{
-                      viewURL: "/activityViewer",
-                      editURL: "/codeViewer",
-                    }}
-                    includeVariantSelector={false}
-                  />
-                </Box>
-                <Box
-                  width="100%"
-                  height="30vh"
-                  background="var(--canvas)"
-                  padding="0px"
-                  margin="0px"
-                />
-                <Flex
-                  background="gray"
-                  width="100%"
-                  color="var(--canvas)"
-                  padding="20px"
-                  minHeight="20vh"
-                >
-                  <Box width={haveClassifications ? "70%" : "100%"}>
-                    {activity.license ? (
-                      activity.license.isComposition ? (
-                        <>
-                          <p>
-                            <strong>{activity.name}</strong> by{" "}
-                            {createFullName(activity.owner!)} is shared with
-                            these licenses:
-                          </p>
-                          <List spacing="20px" marginTop="10px">
-                            {activity.license.composedOf.map((comp) => (
-                              <DisplayLicenseItem
-                                licenseItem={comp}
-                                key={comp.code}
-                              />
-                            ))}
-                          </List>
-                          <p style={{ marginTop: "10px" }}>
-                            You are free to use either license when reusing this
-                            work.
-                          </p>
-                        </>
-                      ) : (
-                        <>
-                          <p>
-                            <strong>{activity.name}</strong> by{" "}
-                            {createFullName(activity.owner!)} is shared using
-                            the license:
-                          </p>
-                          <List marginTop="10px">
-                            <DisplayLicenseItem
-                              licenseItem={activity.license}
-                            />
-                          </List>
-                        </>
-                      )
-                    ) : (
-                      <p>
-                        <strong>{activity.name}</strong> by{" "}
-                        {createFullName(activity.owner!)} is shared, but a
-                        license was not specified. Contact the author to
-                        determine in what ways you can reuse this activity.
-                      </p>
-                    )}
-                  </Box>
-                  {haveClassifications ? (
-                    <Box
-                      cursor="pointer"
-                      onClick={() => {
-                        setDisplayInfoTab("classifications");
-                        infoOnOpen();
-                      }}
-                      marginLeft="40px"
-                    >
-                      <Heading size="sm">Classifications</Heading>
-                      <List data-test="Classifications Footer">
-                        {activity.classifications.map((classification, i) => {
-                          return (
-                            <Tooltip
-                              key={i}
-                              label={getClassificationAugmentedDescription(
-                                classification,
-                              )}
-                            >
-                              <ListItem>
-                                {classification.code} (
-                                {
-                                  classification.descriptions[0].subCategory
-                                    .category.system.shortName
-                                }
-                                )
-                              </ListItem>
-                            </Tooltip>
-                          );
-                        })}
-                      </List>
-                    </Box>
+                    </>
                   ) : null}
+                  {activityData.librarySourceInfo?.status === "PUBLISHED" ? (
+                    <Popover>
+                      <PopoverTrigger>
+                        <IconButton
+                          marginLeft="5px"
+                          variant="unstyled"
+                          icon={
+                            <BsBookmarkCheck
+                              style={{ color: "var(--mainBlue)" }}
+                            />
+                          }
+                          aria-label="A peer-reviewed version is available."
+                          data-test="Library source"
+                        />
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <PopoverArrow />
+                        <PopoverCloseButton />
+                        <PopoverHeader style={{ fontWeight: "bold" }}>
+                          This activity has been peer-reviewed!
+                        </PopoverHeader>
+                        <PopoverBody>
+                          A{" "}
+                          <ChakraLink
+                            as={ReactRouterLink}
+                            to={`/activityViewer/${activityData.librarySourceInfo.activityId}`}
+                            style={{ color: "var(--mainBlue)" }}
+                          >
+                            peer-reviewed
+                          </ChakraLink>{" "}
+                          version is available.
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Popover>
+                  ) : (
+                    <></>
+                  )}
+                  {user?.isAdmin &&
+                  activityData.librarySourceInfo?.activityId &&
+                  activityData.librarySourceInfo?.status !== "PUBLISHED" ? (
+                    <Button
+                      marginLeft="10px"
+                      data-test="Go to curated draft"
+                      size="sm"
+                      colorScheme="blue"
+                      as={ReactRouterLink}
+                      to={`/activityViewer/${activityData.librarySourceInfo.activityId}`}
+
+                      // style={{ color: "var(--mainBlue)" }}
+                    >
+                      Go to curated draft
+                    </Button>
+                  ) : (
+                    <></>
+                  )}
                 </Flex>
-              </VStack>
-            </GridItem>
-          </Grid>
-        </Flex>
-      </Box>
+              </GridItem>
+              <GridItem
+                area="rightControls"
+                display="flex"
+                justifyContent="flex-end"
+              >
+                <HStack mr={{ base: "5px", sm: "10px" }}>
+                  <ButtonGroup size="sm" isAttached variant="outline">
+                    {user ? (
+                      addToMenu
+                    ) : (
+                      <Button
+                        data-test="Nav to signIn"
+                        colorScheme="blue"
+                        size="sm"
+                        onClick={() => {
+                          navigate("/signIn");
+                        }}
+                      >
+                        Sign In To Add Content
+                      </Button>
+                    )}
+
+                    <Tooltip
+                      hasArrow
+                      label={`${contentTypeName} Information`}
+                      placement="bottom-end"
+                    >
+                      <Button
+                        data-test="Info Button"
+                        size="sm"
+                        pr={{ base: "0px", md: "10px" }}
+                        colorScheme="blue"
+                        leftIcon={<MdOutlineInfo />}
+                        onClick={() => {
+                          setDisplayInfoTab("general");
+                          setSettingsContentId(activityData.id);
+                          infoOnOpen();
+                        }}
+                        ref={infoBtnRef}
+                      >
+                        <Show above="md">Info</Show>
+                      </Button>
+                    </Tooltip>
+                  </ButtonGroup>
+                </HStack>
+              </GridItem>
+            </Grid>
+
+            <ContributorsMenu
+              activity={activityData}
+              contributorHistory={contributorHistory}
+            />
+          </Flex>
+        </GridItem>
+
+        <GridItem area="centerContent">
+          <VStack gap={0}>
+            <Box
+              background="var(--canvas)"
+              width={mode === "Edit" ? "100%" : undefined}
+              height="100%"
+            >
+              {editor}
+            </Box>
+            <Box
+              hidden={mode === "Edit"}
+              maxWidth="850px"
+              width="100%"
+              height="30vh"
+              background="var(--canvas)"
+              padding="0px"
+              margin="0px"
+            />
+            <Flex
+              hidden={mode === "Edit"}
+              background="gray"
+              maxWidth="850px"
+              width="100%"
+              color="var(--canvas)"
+              padding="20px"
+              minHeight="20vh"
+            >
+              <Box width={haveClassifications ? "70%" : "100%"}>
+                {activityData.license ? (
+                  activityData.license.isComposition ? (
+                    <>
+                      <p>
+                        <strong>{activityData.name}</strong> by{" "}
+                        {createFullName(activityData.owner!)} is shared with
+                        these licenses:
+                      </p>
+                      <List spacing="20px" marginTop="10px">
+                        {activityData.license.composedOf.map((comp) => (
+                          <DisplayLicenseItem
+                            licenseItem={comp}
+                            key={comp.code}
+                          />
+                        ))}
+                      </List>
+                      <p style={{ marginTop: "10px" }}>
+                        You are free to use either license when reusing this
+                        work.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p>
+                        <strong>{activityData.name}</strong> by{" "}
+                        {createFullName(activityData.owner!)} is shared using
+                        the license:
+                      </p>
+                      <List marginTop="10px">
+                        <DisplayLicenseItem
+                          licenseItem={activityData.license}
+                        />
+                      </List>
+                    </>
+                  )
+                ) : (
+                  <p>
+                    <strong>{activityData.name}</strong> by{" "}
+                    {createFullName(activityData.owner!)} is shared, but a
+                    license was not specified. Contact the author to determine
+                    in what ways you can reuse this activity.
+                  </p>
+                )}
+              </Box>
+              {haveClassifications ? (
+                <Box
+                  cursor="pointer"
+                  onClick={() => {
+                    setDisplayInfoTab("classifications");
+                    setSettingsContentId(activityData.id);
+                    infoOnOpen();
+                  }}
+                  marginLeft="40px"
+                >
+                  <Heading size="sm">Classifications</Heading>
+                  <List data-test="Classifications Footer">
+                    {activityData.classifications.map((classification, i) => {
+                      return (
+                        <Tooltip
+                          key={i}
+                          label={getClassificationAugmentedDescription(
+                            classification,
+                          )}
+                        >
+                          <ListItem>
+                            {classification.code} (
+                            {
+                              classification.descriptions[0].subCategory
+                                .category.system.shortName
+                            }
+                            )
+                          </ListItem>
+                        </Tooltip>
+                      );
+                    })}
+                  </List>
+                </Box>
+              ) : null}
+            </Flex>
+          </VStack>
+        </GridItem>
+      </Grid>
     </>
   );
 }

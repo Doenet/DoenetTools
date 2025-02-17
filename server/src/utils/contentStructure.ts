@@ -2,6 +2,7 @@ import {
   AssignmentStatus,
   ContentClassification,
   ContentStructure,
+  ContentType,
   LibraryInfo,
   License,
   LicenseCode,
@@ -98,20 +99,22 @@ function processSharedWithForUser(
  * the function is designed to be used with one of the `SharedDetails` functions
  *
  */
-function processParentFolder(parentFolder: {
+function processParent(parent: {
   id: Uint8Array;
   name: string;
+  type: ContentType;
   isPublic: boolean;
   sharedWith?: {
     user: UserInfo;
   }[];
 }) {
-  const { isShared, sharedWith } = processSharedWith(parentFolder.sharedWith);
+  const { isShared, sharedWith } = processSharedWith(parent.sharedWith);
 
   return {
-    id: parentFolder.id,
-    name: parentFolder.name,
-    isPublic: parentFolder.isPublic,
+    id: parent.id,
+    name: parent.name,
+    type: parent.type,
+    isPublic: parent.isPublic,
     isShared,
     sharedWith,
   };
@@ -126,24 +129,26 @@ function processParentFolder(parentFolder: {
  *
  * If `determineSharedToUser` is no specified, then `isShared` will be `false`.
  */
-function processParentFolderForUser(
-  parentFolder: {
+function processParentForUser(
+  parent: {
     id: Uint8Array;
     name: string;
+    type: ContentType;
     isPublic: boolean;
     sharedWith: { userId: Uint8Array }[];
   },
   determineSharedToUser?: Uint8Array,
 ) {
   const { isShared, sharedWith } = processSharedWithForUser(
-    parentFolder.sharedWith,
+    parent.sharedWith,
     determineSharedToUser,
   );
 
   return {
-    id: parentFolder.id,
-    name: parentFolder.name,
-    isPublic: parentFolder.isPublic,
+    id: parent.id,
+    name: parent.name,
+    type: parent.type,
+    isPublic: parent.isPublic,
     isShared,
     sharedWith,
   };
@@ -202,6 +207,7 @@ export function returnContentStructureNoClassDocsSelect({
   return {
     id: true,
     name: true,
+    type: true,
     ownerId: true,
     imagePath: true,
     isFolder: true,
@@ -209,6 +215,12 @@ export function returnContentStructureNoClassDocsSelect({
     isAssigned: includeAssignInfo,
     classCode: includeAssignInfo,
     codeValidUntil: includeAssignInfo,
+    numToSelect: true,
+    selectByVariant: true,
+    shuffle: true,
+    paginate: true,
+    activityLevelAttempts: true,
+    itemLevelAttempts: true,
     contentFeatures: true,
     sharedWith: {
       select: {
@@ -223,10 +235,11 @@ export function returnContentStructureNoClassDocsSelect({
         },
       },
     },
-    parentFolder: {
+    parent: {
       select: {
         id: true,
         name: true,
+        type: true,
         isPublic: true,
         sharedWith: {
           select: {
@@ -266,19 +279,19 @@ export function returnContentStructureSharedDetailsNoClassDocsSelect({
     },
   };
 
-  const parentFolderSelect = {
-    ...selectBase.parentFolder.select,
+  const parentSelect = {
+    ...selectBase.parent.select,
     sharedWith,
   };
-  const parentFolder = {
-    ...selectBase.parentFolder,
-    select: parentFolderSelect,
+  const parent = {
+    ...selectBase.parent,
+    select: parentSelect,
   };
 
   const selectedSharedDetails = {
     ...selectBase,
     sharedWith,
-    parentFolder,
+    parent,
   };
 
   return selectedSharedDetails;
@@ -305,6 +318,8 @@ export function returnContentStructureBaseSelect({
         name: true,
         source: true,
         doenetmlVersion: true,
+        numVariants: true,
+        baseComponentCounts: true,
       },
       orderBy: { id: "asc" as const },
     },
@@ -429,19 +444,19 @@ export function returnContentStructureSharedDetailsSelect({
     },
   };
 
-  const parentFolderSelect = {
-    ...selectBase.parentFolder.select,
+  const parentSelect = {
+    ...selectBase.parent.select,
     sharedWith,
   };
-  const parentFolder = {
-    ...selectBase.parentFolder,
-    select: parentFolderSelect,
+  const parent = {
+    ...selectBase.parent,
+    select: parentSelect,
   };
 
   const selectedSharedDetails = {
     ...selectBase,
     sharedWith,
-    parentFolder,
+    parent,
   };
 
   return selectedSharedDetails;
@@ -471,6 +486,7 @@ type PreliminaryLicense = {
 
 type PreliminaryContentNoClassDocs = {
   id: Uint8Array;
+  type: ContentType;
   name: string;
   ownerId: Uint8Array;
   owner?: UserInfo;
@@ -480,6 +496,12 @@ type PreliminaryContentNoClassDocs = {
   isAssigned?: boolean;
   classCode?: string | null;
   codeValidUntil?: Date | null;
+  numToSelect: number;
+  selectByVariant: boolean;
+  shuffle: boolean;
+  paginate: boolean;
+  activityLevelAttempts: boolean;
+  itemLevelAttempts: boolean;
   contentFeatures: {
     id: number;
     code: string;
@@ -489,9 +511,10 @@ type PreliminaryContentNoClassDocs = {
   }[];
   sharedWith: { userId: Uint8Array }[];
   license: PreliminaryLicense | null;
-  parentFolder?: {
+  parent?: {
     id: Uint8Array;
     name: string;
+    type: ContentType;
     isPublic: boolean;
     sharedWith: { userId: Uint8Array }[];
   } | null;
@@ -499,12 +522,13 @@ type PreliminaryContentNoClassDocs = {
 
 type PreliminaryContentSharedDetailsNoClassDocs = Omit<
   PreliminaryContentNoClassDocs,
-  "sharedWith" | "parentFolder"
+  "sharedWith" | "parent"
 > & {
   sharedWith: { user: UserInfo }[];
-  parentFolder?: {
+  parent?: {
     id: Uint8Array;
     name: string;
+    type: ContentType;
     isPublic: boolean;
     sharedWith: { user: UserInfo }[];
   } | null;
@@ -524,6 +548,8 @@ type PreliminaryContent = PreliminaryContentNoClassDocs & {
       removed: boolean;
       deprecationMessage: string;
     };
+    numVariants: number;
+    baseComponentCounts: string;
   }[];
   libraryActivityInfo: LibraryInfo | null;
   librarySourceInfo: LibraryInfo | null;
@@ -537,12 +563,13 @@ type PreliminaryContent = PreliminaryContentNoClassDocs & {
 
 type PreliminaryContentSharedDetails = Omit<
   PreliminaryContent,
-  "sharedWith" | "parentFolder"
+  "sharedWith" | "parent"
 > & {
   sharedWith: { user: UserInfo }[];
-  parentFolder?: {
+  parent?: {
     id: Uint8Array;
     name: string;
+    type: ContentType;
     isPublic: boolean;
     sharedWith: { user: UserInfo }[];
   } | null;
@@ -567,6 +594,8 @@ type PreliminaryContentSharedDetailsAssignedDoc = Omit<
         deprecationMessage: string;
       };
       versionNum: number;
+      numVariants: number;
+      baseComponentCounts: string;
     } | null;
   }[];
 };
@@ -585,7 +614,7 @@ export function processContentNoClassDocs(
     codeValidUntil,
     sharedWith: sharedWithOrig,
     license,
-    parentFolder,
+    parent,
     ...preliminaryContent2
   } = preliminaryContent;
 
@@ -611,11 +640,10 @@ export function processContentNoClassDocs(
     license: license ? processLicense(license) : null,
     classifications: [],
     documents: [],
+    children: [],
     assignmentStatus,
     hasScoreData: false,
-    parentFolder: parentFolder
-      ? processParentFolderForUser(parentFolder, forUserId)
-      : null,
+    parent: parent ? processParentForUser(parent, forUserId) : null,
   };
 
   return content;
@@ -634,7 +662,7 @@ export function processContentSharedDetailsNoClassDocs(
     codeValidUntil,
     sharedWith: sharedWithOrig,
     license,
-    parentFolder,
+    parent,
     ...preliminaryContent2
   } = preliminaryContent;
 
@@ -657,9 +685,10 @@ export function processContentSharedDetailsNoClassDocs(
     license: license ? processLicense(license) : null,
     classifications: [],
     documents: [],
+    children: [],
     assignmentStatus,
     hasScoreData: false,
-    parentFolder: parentFolder ? processParentFolder(parentFolder) : null,
+    parent: parent ? processParent(parent) : null,
   };
 
   return content;
@@ -681,7 +710,7 @@ export function processContent(
     sharedWith: sharedWithOrig,
     license,
     classifications,
-    parentFolder,
+    parent,
     libraryActivityInfo,
     librarySourceInfo,
     ...preliminaryContent2
@@ -722,11 +751,12 @@ export function processContent(
     classifications: sortClassifications(
       classifications.map((c) => c.classification),
     ),
+    numVariants: preliminaryContent2.documents[0]?.numVariants,
+    baseComponentCounts: preliminaryContent2.documents[0]?.baseComponentCounts,
     assignmentStatus,
     hasScoreData: _count ? _count.assignmentScores > 0 : false,
-    parentFolder: parentFolder
-      ? processParentFolderForUser(parentFolder, forUserId)
-      : null,
+    parent: parent ? processParentForUser(parent, forUserId) : null,
+    children: [],
   };
 
   return content;
@@ -747,7 +777,8 @@ export function processContentSharedDetails(
     sharedWith: sharedWithOrig,
     license,
     classifications,
-    parentFolder,
+    parent,
+    documents: documentsOrig,
     libraryActivityInfo,
     librarySourceInfo,
     ...preliminaryContent2
@@ -762,6 +793,13 @@ export function processContentSharedDetails(
       ? "Closed"
       : "Open";
   const { isShared, sharedWith } = processSharedWith(sharedWithOrig);
+
+  const documents = documentsOrig.map((doc) => ({
+    id: doc.id,
+    name: doc.name,
+    source: doc.source,
+    doenetmlVersion: doc.doenetmlVersion,
+  }));
 
   // Don't include library fields if the values are null
   const libraryInfos: {
@@ -778,6 +816,7 @@ export function processContentSharedDetails(
   const content: ContentStructure = {
     ...preliminaryContent2,
     ...libraryInfos,
+    documents,
     isShared,
     sharedWith,
     classCode: classCode ?? null,
@@ -786,9 +825,12 @@ export function processContentSharedDetails(
     classifications: sortClassifications(
       classifications.map((c) => c.classification),
     ),
+    numVariants: documentsOrig[0]?.numVariants,
+    baseComponentCounts: documentsOrig[0]?.baseComponentCounts,
     assignmentStatus,
     hasScoreData: _count ? _count.assignmentScores > 0 : false,
-    parentFolder: parentFolder ? processParentFolder(parentFolder) : null,
+    parent: parent ? processParent(parent) : null,
+    children: [],
   };
 
   return content;
@@ -810,7 +852,7 @@ export function processContentSharedDetailsAssignedDoc(
     sharedWith: sharedWithOrig,
     license,
     classifications,
-    parentFolder,
+    parent,
     libraryActivityInfo,
     librarySourceInfo,
     documents: documentsOrig,
@@ -852,6 +894,8 @@ export function processContentSharedDetailsAssignedDoc(
     ...libraryInfos,
     isShared,
     sharedWith,
+    numVariants: documentsOrig[0].assignedVersion?.numVariants,
+    baseComponentCounts: documentsOrig[0].assignedVersion?.baseComponentCounts,
     documents,
     classCode: classCode ?? null,
     codeValidUntil: codeValidUntil ?? null,
@@ -861,7 +905,8 @@ export function processContentSharedDetailsAssignedDoc(
     ),
     assignmentStatus,
     hasScoreData: _count ? _count.assignmentScores > 0 : false,
-    parentFolder: parentFolder ? processParentFolder(parentFolder) : null,
+    parent: parent ? processParent(parent) : null,
+    children: [],
   };
 
   return content;

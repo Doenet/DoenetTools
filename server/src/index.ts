@@ -7,7 +7,6 @@ import cookieParser from "cookie-parser";
 import { DateTime } from "luxon";
 import {
   prisma,
-  copyActivityToFolder,
   createActivity,
   createFolder,
   deleteActivity,
@@ -96,6 +95,11 @@ import {
   getSharedContentMatchCountPerAvailableFeature,
   getAuthorInfo,
   browseTrendingContent,
+  recordRecentContent,
+  getRecentContent,
+  copyContent,
+  checkIfFolderContains,
+  getContentDescription,
   addDraftToLibrary,
   getLibraryStatus,
   publishActivityToLibrary,
@@ -117,7 +121,6 @@ import { Strategy as AnonymIdStrategy } from "passport-anonym-uuid";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
 import * as fs from "fs/promises";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import {
   fromUUID,
   contentStructureConvertUUID,
@@ -132,6 +135,8 @@ import {
   docRemixesConvertUUID,
 } from "./utils/uuid";
 import {
+  ContentType,
+  isContentType,
   LibraryInfo,
   LicenseCode,
   PartialContentClassification,
@@ -592,10 +597,28 @@ app.post(
       res.sendStatus(403);
       return;
     }
+
+    const body = req.body;
+    const contentType: ContentType = isContentType(body.type)
+      ? body.type
+      : "singleDoc";
     const loggedInUserId = req.user.userId;
+
     try {
-      const { activityId, docId } = await createActivity(loggedInUserId, null);
-      res.send({ activityId: fromUUID(activityId), docId: fromUUID(docId) });
+      if (contentType === "singleDoc") {
+        const { activityId, docId } = await createActivity(
+          loggedInUserId,
+          null,
+        );
+        res.send({ activityId: fromUUID(activityId), docId: fromUUID(docId) });
+      } else {
+        const { folderId: activityId } = await createFolder(
+          loggedInUserId,
+          null,
+          contentType,
+        );
+        res.send({ activityId: fromUUID(activityId) });
+      }
     } catch (e) {
       next(e);
     }
@@ -603,20 +626,35 @@ app.post(
 );
 
 app.post(
-  "/api/createActivity/:parentFolderId",
+  "/api/createActivity/:parentId",
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       res.sendStatus(403);
       return;
     }
     const loggedInUserId = req.user.userId;
-    const parentFolderId = toUUID(req.params.parentFolderId);
+    const parentId = toUUID(req.params.parentId);
+
+    const body = req.body;
+    const contentType: ContentType = isContentType(body.type)
+      ? body.type
+      : "singleDoc";
+
     try {
-      const { activityId, docId } = await createActivity(
-        loggedInUserId,
-        parentFolderId,
-      );
-      res.send({ activityId: fromUUID(activityId), docId: fromUUID(docId) });
+      if (contentType === "singleDoc") {
+        const { activityId, docId } = await createActivity(
+          loggedInUserId,
+          parentId,
+        );
+        res.send({ activityId: fromUUID(activityId), docId: fromUUID(docId) });
+      } else {
+        const { folderId: activityId } = await createFolder(
+          loggedInUserId,
+          parentId,
+          contentType,
+        );
+        res.send({ activityId: fromUUID(activityId) });
+      }
     } catch (e) {
       next(e);
     }
@@ -641,16 +679,29 @@ app.post(
 );
 
 app.post(
-  "/api/createFolder/:parentFolderId",
+  "/api/createFolder/:parentId",
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       res.sendStatus(403);
       return;
     }
-    const loggedInUserId = req.user.userId;
-    const parentFolderId = toUUID(req.params.parentFolderId);
+
     try {
-      const { folderId } = await createFolder(loggedInUserId, parentFolderId);
+      const loggedInUserId = req.user.userId;
+      const parentId = toUUID(req.params.parentId);
+      const folderName =
+        typeof req.body.folderName === "string"
+          ? req.body.folderName
+          : undefined;
+
+      const { folderId } = await createFolder(loggedInUserId, parentId);
+      if (folderName) {
+        await updateContent({
+          id: folderId,
+          name: folderName,
+          ownerId: loggedInUserId,
+        });
+      }
       res.send({ folderId: fromUUID(folderId) });
     } catch (e) {
       next(e);
@@ -1751,6 +1802,10 @@ app.get(
         activityId,
         loggedInUserId,
       );
+      if (editorData.editableByMe) {
+        // record that this activity was accessed via editor
+        await recordRecentContent(loggedInUserId, "edit", activityId);
+      }
       res.send({
         editableByMe: editorData.editableByMe,
         activity: contentStructureConvertUUID(editorData.activity),
@@ -1822,20 +1877,45 @@ app.get("/api/getAllLicenses", async (_req: Request, res: Response) => {
 });
 
 app.get(
-  "/api/getActivityViewerData/:activityId",
+  "/api/getContentDescription/:contentId",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
-    const activityId = toUUID(req.params.activityId);
+    const contentId = toUUID(req.params.contentId);
 
     try {
+      const contentDescription = await getContentDescription(
+        contentId,
+        loggedInUserId,
+      );
+
+      res.send({
+        ...contentDescription,
+        id: fromUUID(contentDescription.id),
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(404);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/getActivityViewerData/:activityId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
+      const activityId = toUUID(req.params.activityId);
       const { activity, docHistories } = await getActivityViewerData(
         activityId,
         loggedInUserId,
       );
-      // TODO: process docHistories to convert UUIDs
+
       res.send({
         activity: contentStructureConvertUUID(activity),
-        docHistories: docHistories.map(docHistoryConvertUUID),
+        docHistories: docHistories?.map(docHistoryConvertUUID),
       });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -1936,11 +2016,16 @@ app.post(
     const body = req.body;
     const doenetML = body.doenetML;
     const docId = toUUID(body.docId);
+    const numVariants = body.numVariants;
+    const baseComponentCounts = body.baseComponentCounts;
+
     try {
       await updateDoc({
         id: docId,
         source: doenetML,
         ownerId,
+        numVariants,
+        baseComponentCounts,
       });
       res.send({});
     } catch (e) {
@@ -1966,12 +2051,24 @@ app.post(
     const id = toUUID(body.id);
     const imagePath = body.imagePath;
     const name = body.name;
+    const shuffle = body.shuffle;
+    const numToSelect = body.numToSelect;
+    const selectByVariant = body.selectByVariant;
+    const paginate = body.paginate;
+    const activityLevelAttempts = body.activityLevelAttempts;
+    const itemLevelAttempts = body.itemLevelAttempts;
 
     try {
       await updateContent({
         id,
         imagePath,
         name,
+        shuffle,
+        numToSelect,
+        selectByVariant,
+        paginate,
+        activityLevelAttempts,
+        itemLevelAttempts,
         ownerId,
       });
       res.send({});
@@ -2054,17 +2151,18 @@ app.post(
       res.sendStatus(403);
       return;
     }
-    const ownerId = req.user.userId;
-    const id = toUUID(req.body.id);
-    const desiredParentFolderId = req.body.desiredParentFolderId
-      ? toUUID(req.body.desiredParentFolderId)
-      : null;
-    const desiredPosition = Number(req.body.desiredPosition);
 
     try {
+      const ownerId = req.user.userId;
+      const id = toUUID(req.body.id);
+      const desiredParentId = req.body.desiredParentId
+        ? toUUID(req.body.desiredParentId)
+        : null;
+      const desiredPosition = Number(req.body.desiredPosition);
+
       await moveContent({
         id,
-        desiredParentFolderId,
+        desiredParentId,
         desiredPosition,
         ownerId,
       });
@@ -2079,41 +2177,158 @@ app.post(
   },
 );
 
-app.post("/api/duplicateActivity", async (req: Request, res: Response) => {
-  if (!req.user) {
-    res.sendStatus(403);
-    return;
-  }
-  const loggedInUserId = req.user.userId;
-  const targetActivityId = toUUID(req.body.activityId);
-  const desiredParentFolderId = req.body.desiredParentFolderId
-    ? toUUID(req.body.desiredParentFolderId)
-    : null;
+app.post(
+  "/api/copyContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    try {
+      const loggedInUserId = req.user.userId;
+      const sourceContent = req.body.sourceContent.map(
+        ({ contentId, type }: { contentId: string; type: ContentType }) => ({
+          contentId: toUUID(contentId),
+          type,
+        }),
+      );
+      const desiredParentId = req.body.desiredParentId
+        ? toUUID(req.body.desiredParentId)
+        : null;
 
-  const newActivityId = await copyActivityToFolder(
-    targetActivityId,
-    loggedInUserId,
-    desiredParentFolderId,
-  );
+      const prependCopy = Boolean(req.body.prependCopy);
 
-  res.send({
-    newActivityId: fromUUID(newActivityId),
-    userId: fromUUID(loggedInUserId),
-  });
-});
+      const newContentIds = await copyContent(
+        sourceContent,
+        loggedInUserId,
+        desiredParentId,
+        prependCopy,
+      );
 
-app.post("/api/assignActivity", async (req: Request, res: Response) => {
-  if (!req.user) {
-    res.sendStatus(403);
-    return;
-  }
-  const loggedInUserId = req.user.userId;
-  const activityId = toUUID(req.body.id);
+      if (desiredParentId) {
+        await recordRecentContent(loggedInUserId, "edit", desiredParentId);
+      }
 
-  await assignActivity(activityId, loggedInUserId);
+      res.send({
+        newContentIds: newContentIds.map(fromUUID),
+        userId: fromUUID(loggedInUserId),
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
 
-  res.send({ userId: fromUUID(loggedInUserId) });
-});
+app.post(
+  "/api/createContentCopyInChildren",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    try {
+      const loggedInUserId = req.user.userId;
+      const sourceContent = req.body.sourceContent.map(
+        ({ contentId, type }: { contentId: string; type: ContentType }) => ({
+          contentId: toUUID(contentId),
+          type,
+        }),
+      );
+      const desiredParentType = req.body.desiredParentType;
+
+      const { folderId, folderName } = await createFolder(
+        loggedInUserId,
+        null,
+        desiredParentType,
+      );
+
+      const newContentIds = await copyContent(
+        sourceContent,
+        loggedInUserId,
+        folderId,
+      );
+
+      await recordRecentContent(loggedInUserId, "edit", folderId);
+
+      res.send({
+        newContentIds: newContentIds.map(fromUUID),
+        newParentId: fromUUID(folderId),
+        newParentName: folderName,
+        userId: fromUUID(loggedInUserId),
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.get(
+  "/api/checkIfFolderContains",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    try {
+      const loggedInUserId = req.user.userId;
+      const folderId =
+        typeof req.query.folderId === "string"
+          ? toUUID(req.query.folderId)
+          : null;
+
+      const contentType = req.query.contentType;
+
+      if (isContentType(contentType)) {
+        const containsType = await checkIfFolderContains(
+          folderId,
+          contentType,
+          loggedInUserId,
+        );
+
+        res.send({ contentType, containsType });
+      } else {
+        res.send({ contentType, containsType: false });
+      }
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
+
+app.post(
+  "/api/assignActivity",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      res.sendStatus(403);
+      return;
+    }
+    const loggedInUserId = req.user.userId;
+    const activityId = toUUID(req.body.id);
+    try {
+      await assignActivity(activityId, loggedInUserId);
+
+      res.send({ userId: fromUUID(loggedInUserId) });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        res.sendStatus(403);
+      } else {
+        next(e);
+      }
+    }
+  },
+);
 
 app.post(
   "/api/openAssignmentWithCode",
@@ -2421,7 +2636,7 @@ app.get(
     try {
       const data = await getAllAssignmentScores({
         ownerId: loggedInUserId,
-        parentFolderId: null,
+        parentId: null,
       });
       res.send(allAssignmentScoresConvertUUID(data));
     } catch (e) {
@@ -2435,19 +2650,19 @@ app.get(
 );
 
 app.get(
-  "/api/getAllAssignmentScores/:parentFolderId",
+  "/api/getAllAssignmentScores/:parentId",
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       res.sendStatus(403);
       return;
     }
     const loggedInUserId = req.user.userId;
-    const folderId = toUUID(req.params.parentFolderId);
+    const folderId = toUUID(req.params.parentId);
 
     try {
       const data = await getAllAssignmentScores({
         ownerId: loggedInUserId,
-        parentFolderId: folderId,
+        parentId: folderId,
       });
       res.send(allAssignmentScoresConvertUUID(data));
     } catch (e) {
@@ -2475,7 +2690,7 @@ app.get(
       const data = await getStudentData({
         userId: userId,
         ownerId: loggedInUserId,
-        parentFolderId: null,
+        parentId: null,
       });
       res.send(studentDataConvertUUID(data));
     } catch (e) {
@@ -2489,7 +2704,7 @@ app.get(
 );
 
 app.get(
-  "/api/getStudentData/:userId/:parentFolderId",
+  "/api/getStudentData/:userId/:parentId",
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       res.sendStatus(403);
@@ -2497,14 +2712,14 @@ app.get(
     }
     const loggedInUserId = req.user.userId;
     const userId = toUUID(req.params.userId);
-    const parentFolderId = toUUID(req.params.parentFolderId);
+    const parentId = toUUID(req.params.parentId);
 
     try {
       // TODO: convert UUIDs
       const data = await getStudentData({
         userId: userId,
         ownerId: loggedInUserId,
-        parentFolderId,
+        parentId,
       });
       res.send(studentDataConvertUUID(data));
     } catch (e) {
@@ -2704,6 +2919,8 @@ app.get(
       });
       const allDoenetmlVersions = await getAllDoenetmlVersions();
       const allLicenses = await getAllLicenses();
+      // record that opened this folder
+      await recordRecentContent(loggedInUserId, "edit", folderId);
       res.send({
         allDoenetmlVersions,
         allLicenses,
@@ -3076,12 +3293,15 @@ app.post(
       res.sendStatus(403);
       return;
     }
-    const loggedInUserId = req.user.userId;
-    const id = toUUID(req.body.activityId);
 
     try {
+      const loggedInUserId = req.user.userId;
+      const id = toUUID(req.body.activityId);
+      const contentType = req.body.type;
+
       const { draftId } = await addDraftToLibrary({
         id,
+        contentType,
         loggedInUserId,
       });
       res.send({
@@ -3101,12 +3321,15 @@ app.post(
       res.sendStatus(403);
       return;
     }
-    const loggedInUserId = req.user.userId;
-    const id = toUUID(req.body.activityId);
     try {
+      const loggedInUserId = req.user.userId;
+      const id = toUUID(req.body.activityId);
+      const contentType = req.body.contentType;
+
       await deleteDraftFromLibrary({
         draftId: id,
         loggedInUserId,
+        contentType,
       });
       res.send({});
     } catch (e) {
@@ -3124,7 +3347,12 @@ app.post(
     }
     const loggedInUserId = req.user.userId;
     try {
-      const { folderId } = await createFolder(loggedInUserId, null, true);
+      const { folderId } = await createFolder(
+        loggedInUserId,
+        null,
+        "folder",
+        true,
+      );
       res.send({ folderId: fromUUID(folderId) });
     } catch (e) {
       next(e);
@@ -3145,6 +3373,7 @@ app.post(
       const { folderId } = await createFolder(
         loggedInUserId,
         parentFolderId,
+        "folder",
         true,
       );
       res.send({ folderId: fromUUID(folderId) });
@@ -3163,15 +3392,15 @@ app.post(
     }
     const ownerId = req.user.userId;
     const id = toUUID(req.body.id);
-    const desiredParentFolderId = req.body.desiredParentFolderId
-      ? toUUID(req.body.desiredParentFolderId)
+    const desiredParentId = req.body.desiredParentId
+      ? toUUID(req.body.desiredParentId)
       : null;
     const desiredPosition = Number(req.body.desiredPosition);
 
     try {
       await moveContent({
         id,
-        desiredParentFolderId,
+        desiredParentId,
         desiredPosition,
         ownerId,
         inLibrary: true,
@@ -3436,10 +3665,6 @@ app.post(
       const results = await setPreferredFolderView(loggedInUserId, cardView);
       res.send(results);
     } catch (e) {
-      if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
-        res.status(404).send("Not logged in");
-        return;
-      }
       next(e);
     }
   },
@@ -3460,10 +3685,42 @@ app.get(
       const results = await getPreferredFolderView(loggedInUserId);
       res.send(results);
     } catch (e) {
-      if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
-        res.status(404).send("Not logged in");
-        return;
+      next(e);
+    }
+  },
+);
+
+app.get(
+  "/api/getRecentContent",
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      // if not signed in, don't have any recent content
+      res.send([]);
+      return;
+    }
+
+    try {
+      const mode = req.query.mode === "edit" ? "edit" : "view";
+      const restrictToTypes: ContentType[] = [];
+      if (Array.isArray(req.query.restrictToTypes)) {
+        for (const t of req.query.restrictToTypes) {
+          if (
+            typeof t === "string" &&
+            ["sequence", "select", "folder", "singleDoc"].includes(t)
+          ) {
+            restrictToTypes.push(t as ContentType);
+          }
+        }
       }
+      const loggedInUserId = req.user.userId;
+
+      const results = await getRecentContent(
+        loggedInUserId,
+        mode,
+        restrictToTypes,
+      );
+      res.send(results.map((r) => ({ ...r, id: fromUUID(r.id) })));
+    } catch (e) {
       next(e);
     }
   },

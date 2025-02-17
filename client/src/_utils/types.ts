@@ -117,8 +117,11 @@ export type PartialContentClassification = {
   numCommunity?: number;
 };
 
+export type ContentType = "singleDoc" | "select" | "sequence" | "folder";
+
 export type ContentStructure = {
   id: string;
+  type: ContentType;
   ownerId: number;
   owner?: UserInfo;
   name: string;
@@ -138,6 +141,14 @@ export type ContentStructure = {
   isShared: boolean;
   sharedWith: UserInfo[];
   license: License | null;
+  numVariants?: number;
+  baseComponentCounts?: string;
+  numToSelect: number;
+  selectByVariant: boolean;
+  shuffle: boolean;
+  paginate: boolean;
+  activityLevelAttempts: boolean;
+  itemLevelAttempts: boolean;
   classifications: ContentClassification[];
   librarySourceInfo?: LibraryInfo;
   libraryActivityInfo?: LibraryInfo;
@@ -149,13 +160,15 @@ export type ContentStructure = {
     doenetmlVersion: DoenetmlVersion;
   }[];
   hasScoreData: boolean;
-  parentFolder: {
+  parent: {
     id: string;
     name: string;
+    type: ContentType;
     isPublic: boolean;
     isShared: boolean;
     sharedWith: UserInfo[];
   } | null;
+  children: ContentStructure[];
 };
 
 export type DocHistoryItem = {
@@ -205,3 +218,20 @@ export type ClassificationCategoryTree = {
     }[];
   }[];
 };
+
+export type ContentDescription = {
+  id: string;
+  name: string;
+  type: ContentType;
+};
+
+export function isContentDescription(obj: unknown): obj is ContentDescription {
+  const typedObj = obj as ContentDescription;
+  return (
+    typedObj !== null &&
+    typeof typedObj === "object" &&
+    typeof typedObj.id === "string" &&
+    typeof typedObj.name === "string" &&
+    ["singleDoc", "folder", "sequence", "select"].includes(typedObj.type)
+  );
+}

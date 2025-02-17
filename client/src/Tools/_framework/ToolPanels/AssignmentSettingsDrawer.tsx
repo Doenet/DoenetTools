@@ -92,7 +92,7 @@ export function AssignmentSettingsDrawer({
         <DrawerBody>
           <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)}>
             <TabList>
-              {!contentData.isFolder ? (
+              {contentData.type !== "folder" ? (
                 <Tab data-test="Assignment Tab">
                   {contentData.assignmentStatus === "Unassigned"
                     ? "Assign Activity"
@@ -102,7 +102,7 @@ export function AssignmentSettingsDrawer({
             </TabList>
             <Box overflowY="auto" height="calc(100vh - 130px)">
               <TabPanels>
-                {!contentData.isFolder ? (
+                {contentData.type !== "folder" ? (
                   <TabPanel>
                     <AssignActivityControls
                       fetcher={fetcher}

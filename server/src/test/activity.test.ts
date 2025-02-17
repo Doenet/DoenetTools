@@ -23,7 +23,11 @@ import {
   makeFolderPrivate,
   shareActivity,
   getDocumentSource,
+  getContentDescription,
+  shareFolder,
   InvalidRequestError,
+  getCompoundActivity,
+  deleteFolder,
 } from "../model";
 import { DateTime } from "luxon";
 import { ContentStructure } from "../types";
@@ -37,7 +41,7 @@ import { createTestUser } from "./utils";
 const currentDoenetmlVersion = {
   id: 2,
   displayedVersion: "0.7",
-  fullVersion: "0.7.0-alpha27",
+  fullVersion: "0.7.0-alpha31",
   default: true,
   deprecated: false,
   removed: false,
@@ -54,7 +58,7 @@ test("New activity starts out private, then delete it", async () => {
   );
   const expectedContent: ContentStructure = {
     id: activityId,
-    name: "Untitled Activity",
+    name: "Untitled Document",
     ownerId: userId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
@@ -62,22 +66,33 @@ test("New activity starts out private, then delete it", async () => {
     isShared: false,
     contentFeatures: [],
     sharedWith: [],
+    baseComponentCounts: "{}",
+    numVariants: 1,
     assignmentStatus: "Unassigned",
     classCode: null,
     codeValidUntil: null,
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [
       {
         id: docId,
         source: "",
-        name: "Untitled Document",
+        name: "Untitled sub-document",
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
     hasScoreData: false,
-    parentFolder: null,
+    parent: null,
+    children: [],
   };
+
   expect(activityContent.license?.code).eq("CCDUAL");
 
   // set license to null as it is too long to compare in its entirety.
@@ -282,10 +297,18 @@ test("get activity/document data only if owner or limited data for public/shared
     isShared: false,
     sharedWith: [],
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [],
     hasScoreData: false,
-    parentFolder: null,
+    parent: null,
+    children: [],
   });
 
   await getActivityViewerData(activityId, user1Id);
@@ -323,10 +346,18 @@ test("get activity/document data only if owner or limited data for public/shared
     isShared: false,
     sharedWith: [],
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [],
     hasScoreData: false,
-    parentFolder: null,
+    parent: null,
+    children: [],
   });
 
   await getActivityViewerData(activityId, user1Id);
@@ -411,7 +442,7 @@ test("activity editor data and my folder contents before and after assigned", as
   );
   let expectedData: ContentStructure = {
     id: activityId,
-    name: "Untitled Activity",
+    name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
     isFolder: false,
@@ -419,21 +450,31 @@ test("activity editor data and my folder contents before and after assigned", as
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
+    baseComponentCounts: "{}",
+    numVariants: 1,
     assignmentStatus: "Unassigned",
     classCode: null,
     codeValidUntil: null,
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [
       {
         id: docId,
         source: "",
-        name: "Untitled Document",
+        name: "Untitled sub-document",
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
     hasScoreData: false,
-    parentFolder: null,
+    parent: null,
+    children: [],
   };
   preAssignedData.license = null; // skip trying to check big license object
   expect(preAssignedData).eqls(expectedData);
@@ -460,7 +501,7 @@ test("activity editor data and my folder contents before and after assigned", as
   );
   expectedData = {
     id: activityId,
-    name: "Untitled Activity",
+    name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
     isFolder: false,
@@ -468,22 +509,32 @@ test("activity editor data and my folder contents before and after assigned", as
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
+    baseComponentCounts: "{}",
+    numVariants: 1,
     assignmentStatus: "Open",
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [
       {
         id: docId,
         versionNum: 1,
         source: "",
-        name: "Untitled Document",
+        name: "Untitled sub-document",
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
     hasScoreData: false,
-    parentFolder: null,
+    parent: null,
+    children: [],
   };
 
   openedData.license = null; // skip trying to check big license object
@@ -507,7 +558,7 @@ test("activity editor data and my folder contents before and after assigned", as
   );
   expectedData = {
     id: activityId,
-    name: "Untitled Activity",
+    name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
     isFolder: false,
@@ -515,21 +566,31 @@ test("activity editor data and my folder contents before and after assigned", as
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
+    baseComponentCounts: "{}",
+    numVariants: 1,
     assignmentStatus: "Unassigned",
     classCode,
     codeValidUntil: null,
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [
       {
         id: docId,
         source: "",
-        name: "Untitled Document",
+        name: "Untitled sub-document",
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
     hasScoreData: false,
-    parentFolder: null,
+    parent: null,
+    children: [],
   };
 
   closedData.license = null; // skip trying to check big license object
@@ -559,7 +620,7 @@ test("activity editor data and my folder contents before and after assigned", as
   );
   expectedData = {
     id: activityId,
-    name: "Untitled Activity",
+    name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
     isFolder: false,
@@ -567,22 +628,32 @@ test("activity editor data and my folder contents before and after assigned", as
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
+    baseComponentCounts: "{}",
+    numVariants: 1,
     assignmentStatus: "Open",
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [
       {
         id: docId,
         versionNum: 1,
         source: "",
-        name: "Untitled Document",
+        name: "Untitled sub-document",
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
     hasScoreData: false,
-    parentFolder: null,
+    parent: null,
+    children: [],
   };
 
   openedData2.license = null; // skip trying to check big license object
@@ -614,7 +685,7 @@ test("activity editor data and my folder contents before and after assigned", as
   );
   expectedData = {
     id: activityId,
-    name: "Untitled Activity",
+    name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
     isFolder: false,
@@ -622,22 +693,32 @@ test("activity editor data and my folder contents before and after assigned", as
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
+    baseComponentCounts: "{}",
+    numVariants: 1,
     assignmentStatus: "Open",
     classCode,
     codeValidUntil: closeAt.toJSDate(),
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [
       {
         id: docId,
         versionNum: 1,
         source: "",
-        name: "Untitled Document",
+        name: "Untitled sub-document",
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
     hasScoreData: true,
-    parentFolder: null,
+    parent: null,
+    children: [],
   };
 
   openedData3.license = null; // skip trying to check big license object
@@ -660,7 +741,7 @@ test("activity editor data and my folder contents before and after assigned", as
   );
   expectedData = {
     id: activityId,
-    name: "Untitled Activity",
+    name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
     isFolder: false,
@@ -668,22 +749,32 @@ test("activity editor data and my folder contents before and after assigned", as
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
+    baseComponentCounts: "{}",
+    numVariants: 1,
     assignmentStatus: "Closed",
     classCode,
     codeValidUntil: null,
     license: null,
+    type: "singleDoc",
+    numToSelect: 1,
+    selectByVariant: false,
+    shuffle: false,
+    paginate: false,
+    activityLevelAttempts: false,
+    itemLevelAttempts: false,
     classifications: [],
     documents: [
       {
         id: docId,
         versionNum: 1,
         source: "",
-        name: "Untitled Document",
+        name: "Untitled sub-document",
         doenetmlVersion: currentDoenetmlVersion,
       },
     ],
     hasScoreData: true,
-    parentFolder: null,
+    parent: null,
+    children: [],
   };
 
   closedData2.license = null; // skip trying to check big license object
@@ -712,18 +803,18 @@ test("activity editor data shows its parent folder is public", async () => {
 
   let { activity: data } = await getActivityEditorData(activityId, ownerId);
   expect(data.isPublic).eq(false);
-  expect(data.parentFolder).eq(null);
+  expect(data.parent).eq(null);
 
   await makeActivityPublic({ id: activityId, ownerId, licenseCode: "CCBYSA" });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCBYSA");
-  expect(data.parentFolder).eq(null);
+  expect(data.parent).eq(null);
 
   const { folderId } = await createFolder(ownerId, null);
   await moveContent({
     id: activityId,
-    desiredParentFolderId: folderId,
+    desiredParentId: folderId,
     desiredPosition: 0,
     ownerId,
   });
@@ -731,29 +822,29 @@ test("activity editor data shows its parent folder is public", async () => {
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCBYSA");
-  expect(data.parentFolder?.isPublic).eq(false);
+  expect(data.parent?.isPublic).eq(false);
 
   await makeFolderPublic({ id: folderId, ownerId, licenseCode: "CCBYNCSA" });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCBYNCSA");
-  expect(data.parentFolder?.isPublic).eq(true);
+  expect(data.parent?.isPublic).eq(true);
 
   await makeFolderPrivate({ id: folderId, ownerId });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
   expect(data.isPublic).eq(false);
-  expect(data.parentFolder?.isPublic).eq(false);
+  expect(data.parent?.isPublic).eq(false);
 
   await makeFolderPublic({ id: folderId, ownerId, licenseCode: "CCDUAL" });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCDUAL");
-  expect(data.parentFolder?.isPublic).eq(true);
+  expect(data.parent?.isPublic).eq(true);
 
   await makeActivityPrivate({ id: activityId, ownerId });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
   expect(data.isPublic).eq(false);
-  expect(data.parentFolder?.isPublic).eq(true);
+  expect(data.parent?.isPublic).eq(true);
 });
 
 test("getDocumentSource gets source", async () => {
@@ -768,4 +859,111 @@ test("getDocumentSource gets source", async () => {
 
   const documentSource = await getDocumentSource(docId, ownerId);
   expect(documentSource.source).eq("some content");
+});
+
+test("getContentDescription gets name and type", async () => {
+  const { userId: ownerId } = await createTestUser();
+
+  const { activityId } = await createActivity(ownerId, null);
+  await updateContent({ id: activityId, name: "Activity 1", ownerId });
+  expect(await getContentDescription(activityId, ownerId)).eqls({
+    id: activityId,
+    name: "Activity 1",
+    type: "singleDoc",
+  });
+
+  const { folderId } = await createFolder(ownerId, null);
+  await updateContent({ id: folderId, name: "Folder 2", ownerId });
+  expect(await getContentDescription(folderId, ownerId)).eqls({
+    id: folderId,
+    name: "Folder 2",
+    type: "folder",
+  });
+
+  const { folderId: sequenceId } = await createFolder(
+    ownerId,
+    null,
+    "sequence",
+  );
+  await updateContent({ id: sequenceId, name: "Sequence 3", ownerId });
+  expect(await getContentDescription(sequenceId, ownerId)).eqls({
+    id: sequenceId,
+    name: "Sequence 3",
+    type: "sequence",
+  });
+
+  const { folderId: selectId } = await createFolder(ownerId, null, "select");
+  await updateContent({ id: selectId, name: "Select 4", ownerId });
+  expect(await getContentDescription(selectId, ownerId)).eqls({
+    id: selectId,
+    name: "Select 4",
+    type: "select",
+  });
+
+  const { userId: userId } = await createTestUser();
+  await expect(getContentDescription(selectId, userId)).rejects.toThrow(
+    "not found",
+  );
+
+  await shareFolder({
+    id: selectId,
+    ownerId,
+    licenseCode: "CCDUAL",
+    users: [userId],
+  });
+
+  expect(await getContentDescription(selectId, userId)).eqls({
+    id: selectId,
+    name: "Select 4",
+    type: "select",
+  });
+});
+
+test("get compound activity", async () => {
+  const { userId: ownerId } = await createTestUser();
+
+  const { folderId: sequenceId } = await createFolder(
+    ownerId,
+    null,
+    "sequence",
+  );
+
+  const { folderId: selectIdDelete } = await createFolder(
+    ownerId,
+    sequenceId,
+    "select",
+  );
+
+  const { activityId: _activityIdDelete1 } = await createActivity(
+    ownerId,
+    selectIdDelete,
+  );
+
+  const { folderId: selectId } = await createFolder(
+    ownerId,
+    sequenceId,
+    "select",
+  );
+
+  const { activityId: activityId1 } = await createActivity(ownerId, selectId);
+  const { activityId: activityId2 } = await createActivity(ownerId, selectId);
+  const { activityId: activityIdDelete2 } = await createActivity(
+    ownerId,
+    selectId,
+  );
+  const { activityId: activityId3 } = await createActivity(ownerId, sequenceId);
+
+  await deleteActivity(activityIdDelete2, ownerId);
+  await deleteFolder(selectIdDelete, ownerId);
+
+  const sequence = await getCompoundActivity(sequenceId, ownerId);
+
+  expect(sequence.id).eqls(sequenceId);
+  expect(sequence.type).eq("sequence");
+
+  expect(sequence.children.map((c) => c.id)).eqls([selectId, activityId3]);
+
+  const select = sequence.children[0];
+  expect(select.type).eq("select");
+  expect(select.children.map((c) => c.id)).eqls([activityId1, activityId2]);
 });

@@ -1,6 +1,17 @@
 import { TbPuzzle } from "react-icons/tb";
-import { MdOutlineOndemandVideo, MdOutlineSwipeLeft } from "react-icons/md";
-import { ContentClassification } from "./types";
+import {
+  MdAssignment,
+  MdOutlineOndemandVideo,
+  MdOutlineSwipeLeft,
+} from "react-icons/md";
+import { ContentClassification, ContentStructure, ContentType } from "./types";
+import { ActivitySource } from "./viewerTypes";
+import { IconType } from "react-icons/lib";
+import { FaFolder } from "react-icons/fa";
+import { FaListOl } from "react-icons/fa6";
+import { RiArchive2Fill } from "react-icons/ri";
+import React, { ReactElement } from "react";
+import { Icon } from "@chakra-ui/react";
 
 export const activityFeatureIcons = {
   isQuestion: TbPuzzle,
@@ -94,4 +105,102 @@ export function findClassificationDescriptionIndex({
     }
     return c.subCategory === subCategory;
   });
+}
+
+export function compileActivityFromContent(
+  activity: ContentStructure,
+): ActivitySource {
+  const children = activity.children.map(compileActivityFromContent);
+
+  switch (activity.type) {
+    case "singleDoc": {
+      return {
+        id: activity.id,
+        type: activity.type,
+        isDescription: false,
+        doenetML: activity.documents[0].source!,
+        version: activity.documents[0].doenetmlVersion.fullVersion,
+        numVariants: activity.numVariants,
+        baseComponentCounts: activity.baseComponentCounts
+          ? JSON.parse(activity.baseComponentCounts)
+          : undefined,
+      };
+    }
+    case "select": {
+      return {
+        id: activity.id,
+        type: activity.type,
+        title: activity.name,
+        numToSelect: activity.numToSelect,
+        selectByVariant: activity.selectByVariant,
+        items: children,
+      };
+    }
+    case "sequence": {
+      return {
+        id: activity.id,
+        type: activity.type,
+        title: activity.name,
+        shuffle: activity.shuffle,
+        items: children,
+      };
+    }
+    case "folder": {
+      throw Error("No folder here");
+    }
+  }
+}
+
+export const contentTypeToName = {
+  singleDoc: "Document",
+  select: "Question Bank",
+  sequence: "Problem Set",
+  folder: "Folder",
+};
+
+export function getAllowedParentTypes(childTypes: ContentType[]) {
+  const allowedParentTypes: ContentType[] = ["folder"];
+  if (!childTypes.includes("folder") && !childTypes.includes("sequence")) {
+    allowedParentTypes.push("sequence");
+    if (!childTypes.includes("select")) {
+      allowedParentTypes.push("select");
+    }
+  }
+  return allowedParentTypes.reverse();
+}
+
+export function getIconInfo(contentType: ContentType) {
+  let iconImage: IconType;
+  let iconColor: string;
+  if (contentType === "folder") {
+    iconImage = FaFolder;
+    iconColor = "#e6b800";
+  } else if (contentType === "singleDoc") {
+    iconImage = MdAssignment;
+    iconColor = "#ff6600";
+  } else if (contentType === "sequence") {
+    iconImage = FaListOl;
+    iconColor = "#cc3399";
+  } else {
+    // select
+    iconImage = RiArchive2Fill;
+    iconColor = "#009933";
+  }
+
+  return { iconImage, iconColor };
+}
+
+export const menuIcons: Record<string, ReactElement> = {};
+
+for (const t of ["folder", "sequence", "select", "singleDoc"]) {
+  const ct = t as ContentType;
+  const { iconImage, iconColor } = getIconInfo(ct);
+  const icon = React.createElement(Icon, {
+    as: iconImage,
+    color: iconColor,
+    marginRight: "5px",
+    "aria-label": contentTypeToName[ct],
+  });
+
+  menuIcons[t] = icon;
 }
