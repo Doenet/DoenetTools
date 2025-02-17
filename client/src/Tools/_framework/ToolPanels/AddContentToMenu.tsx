@@ -19,7 +19,7 @@ import axios from "axios";
 import { MoveCopyContent, moveCopyContentActions } from "./MoveCopyContent";
 import { CopyContentAndReportFinish } from "./CopyContentAndReportFinish";
 import { useOutletContext } from "react-router";
-import { User } from "../Paths/SiteHeader";
+import { SiteContext } from "../Paths/SiteHeader";
 import { getAllowedParentTypes, menuIcons } from "../../../_utils/activity";
 
 export async function addContentToMenuActions({
@@ -69,7 +69,7 @@ export function AddContentToMenu({
   followAllowedParents?: boolean;
   addCopyToLibraryOption?: boolean;
 }) {
-  const user = useOutletContext<User>();
+  const { user } = useOutletContext<SiteContext>();
 
   const [recentContent, setRecentContent] = useState<ContentDescription[]>([]);
   const [addToType, setAddToType] = useState<ContentType>("folder");

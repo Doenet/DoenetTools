@@ -58,7 +58,7 @@ import { clearQueryParameter } from "../../../_utils/explore";
 import { FilterPanel } from "../ToolPanels/FilterPanel";
 import { ExploreFilterDrawer } from "../ToolPanels/ExploreFilterDrawer";
 import { menuIcons } from "../../../_utils/activity";
-import { User } from "./SiteHeader";
+import { SiteContext } from "./SiteHeader";
 import {
   AddContentToMenu,
   addContentToMenuActions,
@@ -223,11 +223,11 @@ export function Explore() {
     addTo?: ContentDescription;
   };
 
-  const user = useOutletContext<User>();
-
-  const [currentTab, setCurrentTab] = useState(
-    !totalCount.numCurated && totalCount.numCommunity ? 1 : 0,
-  );
+  const {
+    user,
+    exploreTab: currentTab,
+    setExploreTab: setCurrentTab,
+  } = useOutletContext<SiteContext>();
 
   const [searchString, setSearchString] = useState(q || "");
 
@@ -247,7 +247,7 @@ export function Explore() {
 
   useEffect(() => {
     setSearchString(q || "");
-    if (!q && currentTab > 1) {
+    if (currentTab == null || (!q && currentTab > 1)) {
       setCurrentTab(!totalCount.numCurated && totalCount.numCommunity ? 1 : 0);
     }
   }, [q]);
@@ -884,7 +884,7 @@ export function Explore() {
         lg: `calc(100vh - ${q ? "168" : "128"}px)`,
       }}
       variant="enclosed-colored"
-      index={currentTab}
+      index={currentTab ?? 0}
       onChange={setCurrentTab}
     >
       <TabList>

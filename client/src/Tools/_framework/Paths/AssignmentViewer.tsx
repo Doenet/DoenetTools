@@ -11,7 +11,7 @@ import {
   action as enterClassCodeAction,
 } from "./EnterClassCode";
 import { ChangeName, action as changeNameAction } from "./ChangeName";
-import { User } from "./SiteHeader";
+import { SiteContext } from "./SiteHeader";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -95,7 +95,7 @@ export function AssignmentViewer() {
     doenetmlVersion: string;
   };
 
-  const user = useOutletContext<User>();
+  const { user } = useOutletContext<SiteContext>();
 
   const navigate = useNavigate();
   const location = useLocation();

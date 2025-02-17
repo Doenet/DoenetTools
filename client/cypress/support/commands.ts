@@ -38,10 +38,12 @@ declare global {
         email,
         firstNames,
         lastNames,
+        isAdmin,
       }?: {
         email?: string;
         firstNames?: string;
         lastNames?: string;
+        isAdmin?: boolean;
       }): Chainable<null>;
 
       /**
@@ -52,6 +54,7 @@ declare global {
         doenetML,
         classifications,
         makePublic,
+        publishInLibrary,
       }: {
         activityName: string;
         doenetML: string;
@@ -62,6 +65,7 @@ declare global {
           code: string;
         }[];
         makePublic?: boolean;
+        publishInLibrary?: boolean;
       }): Chainable<string>;
     }
   }
@@ -73,7 +77,13 @@ Cypress.Commands.add(
     email,
     firstNames,
     lastNames,
-  }: { email?: string; firstNames?: string; lastNames?: string } = {}) => {
+    isAdmin = false,
+  }: {
+    email?: string;
+    firstNames?: string;
+    lastNames?: string;
+    isAdmin?: boolean;
+  } = {}) => {
     if (!email) {
       const code = Date.now().toString();
       email = `test${code}@doenet.org`;
@@ -85,7 +95,7 @@ Cypress.Commands.add(
       cy.request({
         method: "POST",
         url: "/api/login/createOrLoginAsTest",
-        body: { email, firstNames, lastNames },
+        body: { email, firstNames, lastNames, isAdmin },
       });
     });
   },
@@ -98,6 +108,7 @@ Cypress.Commands.add(
     doenetML,
     classifications,
     makePublic = false,
+    publishInLibrary = false,
   }: {
     activityName: string;
     doenetML: string;
@@ -108,6 +119,7 @@ Cypress.Commands.add(
       code: string;
     }[];
     makePublic?: boolean;
+    publishInLibrary?: boolean;
   }) => {
     cy.request({
       method: "POST",
@@ -135,6 +147,26 @@ Cypress.Commands.add(
             id: activityId,
             licenseCode: "CCDUAL",
           },
+        });
+      }
+
+      if (publishInLibrary) {
+        cy.request({
+          method: "POST",
+          url: "/api/addDraftToLibrary",
+          body: {
+            activityId,
+            type: "singleDoc",
+          },
+        }).then((resp) => {
+          cy.request({
+            method: "POST",
+            url: "/api/publishActivityToLibrary",
+            body: {
+              id: resp.body.newActivityId,
+              comment: "Publish it!",
+            },
+          });
         });
       }
 

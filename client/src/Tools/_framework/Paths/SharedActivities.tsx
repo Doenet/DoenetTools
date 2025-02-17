@@ -37,7 +37,7 @@ import {
   toggleViewButtonGroupActions,
 } from "../ToolPanels/ToggleViewButtonGroup";
 import { menuIcons } from "../../../_utils/activity";
-import { User } from "./SiteHeader";
+import { SiteContext } from "./SiteHeader";
 import {
   AddContentToMenu,
   addContentToMenuActions,
@@ -107,7 +107,7 @@ export function SharedActivities() {
       addTo?: ContentDescription;
     };
 
-  const user = useOutletContext<User>();
+  const { user } = useOutletContext<SiteContext>();
 
   const navigate = useNavigate();
 

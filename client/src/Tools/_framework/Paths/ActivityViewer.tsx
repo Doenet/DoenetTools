@@ -65,7 +65,7 @@ import ContributorsMenu from "../ToolPanels/ContributorsMenu";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import { createFullName } from "../../../_utils/names";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
-import { User } from "./SiteHeader";
+import { SiteContext } from "./SiteHeader";
 import {
   AddContentToMenu,
   addContentToMenuActions,
@@ -167,7 +167,7 @@ export function ActivityViewer() {
     addTo,
   } = data;
 
-  const user = useOutletContext<User>();
+  const { user } = useOutletContext<SiteContext>();
   const navigate = useNavigate();
 
   const infoBtnRef = useRef<HTMLButtonElement>(null);
