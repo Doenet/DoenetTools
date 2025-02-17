@@ -125,7 +125,9 @@ export function CopyContentAndReportFinish({
     destinationAction = copyToLibrary
       ? "Go to the library"
       : "Go to Activities";
-    destinationUrl = `/${copyToLibrary ? "curation" : "activities"}/${newActivityData?.userId}`;
+    destinationUrl = copyToLibrary
+      ? "/curation"
+      : `/activities/${newActivityData?.userId}`;
   }
 
   return (
