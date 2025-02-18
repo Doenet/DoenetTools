@@ -673,7 +673,7 @@ export function Activities() {
     <Box
       backgroundColor="#fff"
       color="#000"
-      height="130px"
+      height={{ base: "170px", md: "180px" }}
       width="100%"
       textAlign="center"
     >
@@ -1024,7 +1024,7 @@ export function Activities() {
         background={
           listView && content.length > 0 ? "white" : "var(--lightBlue)"
         }
-        minHeight="calc(100vh - 189px)"
+        minHeight={{ base: "calc(100vh - 225px)", md: "calc(100vh - 235px)" }}
         direction="column"
       >
         {mainPanel}
