@@ -15,7 +15,7 @@ import { isEqualUUID } from "./uuid";
  */
 export function filterViewableActivity(
   loggedInUserId: Uint8Array,
-  isAdmin: boolean,
+  isAdmin: boolean = false,
 ) {
   return {
     ...filterViewableContent(loggedInUserId, isAdmin),
@@ -36,7 +36,7 @@ export function filterViewableActivity(
  */
 export function filterViewableContent(
   loggedInUserId: Uint8Array,
-  isAdmin: boolean,
+  isAdmin: boolean = false,
 ) {
   const visibilityOptions: (
     | { ownerId: Uint8Array }
@@ -68,7 +68,7 @@ export function filterViewableContent(
  */
 export function filterEditableActivity(
   loggedInUserId: Uint8Array,
-  isAdmin: boolean,
+  isAdmin: boolean = false,
 ) {
   return {
     ...filterEditableContent(loggedInUserId, isAdmin),
@@ -87,7 +87,7 @@ export function filterEditableActivity(
  */
 export function filterEditableContent(
   loggedInUserId: Uint8Array,
-  isAdmin: boolean,
+  isAdmin: boolean = false,
 ) {
   const editabilityOptions: (
     | { ownerId: Uint8Array }

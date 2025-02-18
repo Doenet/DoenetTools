@@ -1,13 +1,3 @@
-const SORT_INCREMENT = 2 ** 32;
-
-type ShiftIndicesCallbackFunction = ({
-  shift,
-  sortIndices,
-}: {
-  shift: { increment: number } | { decrement: number };
-  sortIndices: { gte: number } | { lte: number };
-}) => Promise<void>;
-
 /**
  * Move the content with `id` to position `desiredPosition` in the folder `desiredParentId`
  * (where an undefined `desiredParentId` indicates the root folder of `ownerId`).
