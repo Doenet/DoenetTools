@@ -1,9 +1,14 @@
 // TODO: do we still save score and state if assignment isn't open?
+
+import { Prisma } from "@prisma/client";
+import { prisma } from "../model";
+import { isEqualUUID } from "../utils/uuid";
+
 // If not, how do we communicate that fact
 export async function saveScoreAndState({
   activityId,
   docId,
-  docVersionNum,
+  activityRevisionNum,
   userId,
   score,
   onSubmission,
@@ -11,7 +16,7 @@ export async function saveScoreAndState({
 }: {
   activityId: Uint8Array;
   docId: Uint8Array;
-  docVersionNum: number;
+  activityRevisionNum: number;
   userId: Uint8Array;
   score: number;
   onSubmission: boolean;
@@ -25,12 +30,11 @@ export async function saveScoreAndState({
     create: { activityId, userId },
   });
 
-  const stateWithMaxScore = await prisma.documentState.findUnique({
+  const stateWithMaxScore = await prisma.activityState.findUnique({
     where: {
-      activityId_docId_docVersionNum_userId_hasMaxScore: {
+      activityId_activityRevisionNum_userId_hasMaxScore: {
         activityId,
-        docId,
-        docVersionNum,
+        activityRevisionNum,
         userId,
         hasMaxScore: true,
       },
@@ -53,12 +57,11 @@ export async function saveScoreAndState({
     // if there is a non-latest document state record,
     // delete it as latest is now maxScore as well
     try {
-      await prisma.documentState.delete({
+      await prisma.activityState.delete({
         where: {
-          activityId_docId_docVersionNum_userId_isLatest: {
+          activityId_activityRevisionNum_userId_isLatest: {
             activityId,
-            docId,
-            docVersionNum,
+            activityRevisionNum,
             userId,
             isLatest: false,
           },
@@ -77,12 +80,11 @@ export async function saveScoreAndState({
     // since the latest is not with max score,
     // mark the record with hasMaxScore as not the latest
     try {
-      await prisma.documentState.update({
+      await prisma.activityState.update({
         where: {
-          activityId_docId_docVersionNum_userId_hasMaxScore: {
+          activityId_activityRevisionNum_userId_hasMaxScore: {
             activityId,
-            docId,
-            docVersionNum,
+            activityRevisionNum,
             userId,
             hasMaxScore: true,
           },
@@ -102,13 +104,12 @@ export async function saveScoreAndState({
     }
   }
 
-  // add/update the latest document state and maxScore
-  await prisma.documentState.upsert({
+  // add/update the latest activity state and maxScore
+  await prisma.activityState.upsert({
     where: {
-      activityId_docId_docVersionNum_userId_isLatest: {
+      activityId_activityRevisionNum_userId_isLatest: {
         activityId,
-        docId,
-        docVersionNum,
+        activityRevisionNum,
         userId,
         isLatest: true,
       },
@@ -120,8 +121,7 @@ export async function saveScoreAndState({
     },
     create: {
       activityId,
-      docId,
-      docVersionNum,
+      activityRevisionNum,
       userId,
       isLatest: true,
       hasMaxScore,
@@ -136,7 +136,7 @@ export async function saveScoreAndState({
 
   if (hasStrictMaxScore) {
     // recalculate the score using the new maximum scores from each document
-    const documentStates = await prisma.documentState.findMany({
+    const activityStates = await prisma.activityState.findMany({
       where: {
         assignmentScore: {
           activityId,
@@ -148,7 +148,7 @@ export async function saveScoreAndState({
         score: true,
       },
     });
-    const documentMaxScores = documentStates.map((x) => x.score);
+    const activityMaxScores = activityStates.map((x) => x.score);
 
     // since some document might not have a score recorded yet,
     // count the number of actual documents for the assignment
@@ -163,7 +163,7 @@ export async function saveScoreAndState({
     const numDocuments = assignmentDocumentsAggregation._count.id;
 
     const averageScore =
-      documentMaxScores.reduce((a, c) => a + c) / numDocuments;
+      activityMaxScores.reduce((a, c) => a + c) / numDocuments;
 
     await prisma.assignmentScores.update({
       where: { activityId_userId: { activityId, userId } },

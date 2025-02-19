@@ -16,32 +16,37 @@ model Session {
 }
 
 model content {
+  // General metadata
   id                    Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
   type                  ContentType              @default(singleDoc)
   ownerId               Bytes                    @db.Binary(16)
-  source                String?                  @db.MediumText
-  doenetmlVersionId     Int?
-  parentId              Bytes?                   @db.Binary(16)
   name                  String
-  createdAt             DateTime                 @default(now())
-  lastEdited            DateTime                 @default(now())
-  imagePath             String?
-  numVariants           Int                      @default(1)
-  baseComponentCounts   String?                  @db.Text
-  isAssigned            Boolean                  @default(false)
-  assignedRevisionNum   Int?
-  classCode             String?                  @db.VarChar(45)
-  codeValidUntil        DateTime?
+  parentId              Bytes?                   @db.Binary(16)
   isPublic              Boolean                  @default(false)
   isDeleted             Boolean                  @default(false)
+  createdAt             DateTime                 @default(now())
   sortIndex             BigInt
   licenseCode           String?                  @default("CCDUAL") @db.VarChar(10)
-  numToSelect           Int                      @default(1) @db.UnsignedSmallInt
-  selectByVariant       Boolean                  @default(false)
+  imagePath             String?
+  lastEdited            DateTime                 @default(now())
+  // Specific to document type
+  source                String?                  @db.MediumText
+  doenetmlVersionId     Int?
+  numVariants           Int                      @default(1)
+  baseComponentCounts   String?                  @db.Text
+  // Specific to sequence type
   shuffle               Boolean                  @default(false)
   paginate              Boolean                  @default(false)
   activityLevelAttempts Boolean                  @default(false)
   itemLevelAttempts     Boolean                  @default(false)
+  // Specific to select type
+  numToSelect           Int                      @default(1) @db.UnsignedSmallInt
+  selectByVariant       Boolean                  @default(false)
+  // Assignments
+  isAssigned            Boolean                  @default(false)
+  assignedRevisionNum   Int?
+  classCode             String?                  @db.VarChar(45)
+  codeValidUntil        DateTime?
   owner                 users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   parent                content?                 @relation("childParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   children              content[]                @relation("childParent")

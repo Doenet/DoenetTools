@@ -1,3 +1,7 @@
+import { prisma } from "../model";
+import { filterViewableActivity } from "../utils/permissions";
+import { getIsAdmin } from "./curate";
+
 export async function getActivityContributorHistory({
   activityId,
   loggedInUserId,

@@ -1,4 +1,14 @@
-import { returnContentStructureFullOwnerSelect } from "../utils/contentStructure";
+import { ContentType } from "@prisma/client";
+import { prisma } from "../model";
+import { ContentStructure } from "../types";
+import {
+  processContent,
+  returnContentStructureFullOwnerSelect,
+} from "../utils/contentStructure";
+import { InvalidRequestError } from "../utils/error";
+import { getNextSortIndex, ShiftIndicesCallbackFunction } from "../utils/sort";
+import { getIsAdmin, mustBeAdmin } from "./curate";
+import { filterViewableContent } from "../utils/permissions";
 
 export async function addPromotedContentGroup(
   groupName: string,
@@ -205,8 +215,10 @@ export async function addPromotedContent(
   const activity = await prisma.content.findUnique({
     where: {
       id: activityId,
+      NOT: {
+        type: ContentType.folder,
+      },
       isPublic: true,
-      isFolder: false,
       isDeleted: false,
     },
     select: {
@@ -250,7 +262,9 @@ export async function removePromotedContent(
     where: {
       id: activityId,
       isPublic: true,
-      isFolder: false,
+      NOT: {
+        type: ContentType.folder,
+      },
       isDeleted: false,
     },
     select: {
@@ -294,7 +308,9 @@ export async function movePromotedContent(
     where: {
       id: activityId,
       isPublic: true,
-      isFolder: false,
+      NOT: {
+        type: ContentType.folder,
+      },
       isDeleted: false,
     },
     select: {
@@ -366,7 +382,13 @@ export async function movePromotedContent(
 
 export async function getAllRecentPublicActivities() {
   const activities = await prisma.content.findMany({
-    where: { isPublic: true, isDeleted: false, isFolder: false },
+    where: {
+      isPublic: true,
+      isDeleted: false,
+      NOT: {
+        type: ContentType.folder,
+      },
+    },
     orderBy: { lastEdited: "desc" },
     take: 100,
     select: returnContentStructureFullOwnerSelect(),
