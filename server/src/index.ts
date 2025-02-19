@@ -673,9 +673,20 @@ app.post(
       res.sendStatus(403);
       return;
     }
-    const loggedInUserId = req.user.userId;
     try {
+      const loggedInUserId = req.user.userId;
+      const folderName =
+        typeof req.body.folderName === "string"
+          ? req.body.folderName
+          : undefined;
       const { folderId } = await createFolder(loggedInUserId, null);
+      if (folderName) {
+        await updateContent({
+          id: folderId,
+          name: folderName,
+          ownerId: loggedInUserId,
+        });
+      }
       res.send({ folderId: fromUUID(folderId) });
     } catch (e) {
       next(e);

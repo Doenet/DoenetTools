@@ -22,7 +22,7 @@ CREATE TABLE `content` (
     `lastEdited` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `imagePath` VARCHAR(191) NULL,
     `numVariants` INTEGER NOT NULL DEFAULT 1,
-    `baseComponentCounts` TEXT NOT NULL,
+    `baseComponentCounts` TEXT NULL,
     `isAssigned` BOOLEAN NOT NULL DEFAULT false,
     `assignedRevisionNum` INTEGER NULL,
     `classCode` VARCHAR(45) NULL,
@@ -60,17 +60,17 @@ CREATE TABLE `recentContent` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `contentRevisions` (
+CREATE TABLE `activityRevisions` (
     `activityId` BINARY(16) NOT NULL,
     `revisionNum` INTEGER NOT NULL,
     `cid` VARCHAR(191) NOT NULL,
-    `source` MEDIUMTEXT NOT NULL,
+    `source` MEDIUMTEXT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `numVariants` INTEGER NOT NULL DEFAULT 1,
-    `baseComponentCounts` TEXT NOT NULL,
-    `doenetmlVersionId` INTEGER NOT NULL,
+    `baseComponentCounts` TEXT NULL,
+    `doenetmlVersionId` INTEGER NULL,
 
-    UNIQUE INDEX `contentRevisions_activityId_cid_key`(`activityId`, `cid`),
+    UNIQUE INDEX `activityRevisions_activityId_cid_key`(`activityId`, `cid`),
     PRIMARY KEY (`activityId`, `revisionNum`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -110,15 +110,15 @@ CREATE TABLE `contentFeatures` (
 
 -- CreateTable
 CREATE TABLE `contributorHistory` (
-    `contentId` BINARY(16) NOT NULL,
-    `prevContentId` BINARY(16) NOT NULL,
-    `prevContentRevisionNum` INTEGER NOT NULL,
+    `activityId` BINARY(16) NOT NULL,
+    `prevActivityId` BINARY(16) NOT NULL,
+    `prevActivityRevisionNum` INTEGER NOT NULL,
     `withLicenseCode` VARCHAR(10) NULL,
     `timestampDoc` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `timestampPrevDoc` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    INDEX `contributorHistory_prevContentId_prevContentRevisionNum_idx`(`prevContentId`, `prevContentRevisionNum`),
-    PRIMARY KEY (`contentId`, `prevContentId`)
+    INDEX `contributorHistory_prevActivityId_prevActivityRevisionNum_idx`(`prevActivityId`, `prevActivityRevisionNum`),
+    PRIMARY KEY (`activityId`, `prevActivityId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -146,35 +146,35 @@ CREATE TABLE `doenetmlVersions` (
 
 -- CreateTable
 CREATE TABLE `assignmentScores` (
-    `contentId` BINARY(16) NOT NULL,
+    `activityId` BINARY(16) NOT NULL,
     `userId` BINARY(16) NOT NULL,
     `score` DOUBLE NOT NULL DEFAULT 0,
 
-    INDEX `assignmentScores_contentId_idx`(`contentId`),
+    INDEX `assignmentScores_activityId_idx`(`activityId`),
     INDEX `assignmentScores_userId_idx`(`userId`),
-    PRIMARY KEY (`contentId`, `userId`)
+    PRIMARY KEY (`activityId`, `userId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `contentState` (
-    `contentId` BINARY(16) NOT NULL,
-    `contentRevisionNum` INTEGER NOT NULL,
+CREATE TABLE `activityState` (
+    `activityId` BINARY(16) NOT NULL,
+    `activityRevisionNum` INTEGER NOT NULL,
     `userId` BINARY(16) NOT NULL,
     `isLatest` BOOLEAN NOT NULL DEFAULT true,
     `hasMaxScore` BOOLEAN NOT NULL DEFAULT false,
     `state` MEDIUMTEXT NULL,
     `score` DOUBLE NOT NULL DEFAULT 0,
 
-    INDEX `contentState_userId_idx`(`userId`),
-    UNIQUE INDEX `contentState_contentId_contentRevisionNum_userId_hasMaxScore_key`(`contentId`, `contentRevisionNum`, `userId`, `hasMaxScore`),
-    PRIMARY KEY (`contentId`, `contentRevisionNum`, `userId`, `isLatest`)
+    INDEX `activityState_userId_idx`(`userId`),
+    UNIQUE INDEX `activityState_activityId_activityRevisionNum_userId_hasMaxSc_key`(`activityId`, `activityRevisionNum`, `userId`, `hasMaxScore`),
+    PRIMARY KEY (`activityId`, `activityRevisionNum`, `userId`, `isLatest`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `submittedResponses` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `contentId` BINARY(16) NOT NULL,
-    `contentRevisionNum` INTEGER NOT NULL,
+    `activityId` BINARY(16) NOT NULL,
+    `activityRevisionNum` INTEGER NOT NULL,
     `userId` BINARY(16) NOT NULL,
     `answerId` VARCHAR(191) NOT NULL,
     `response` TEXT NOT NULL,
@@ -185,7 +185,7 @@ CREATE TABLE `submittedResponses` (
     `contentCreditAchieved` DOUBLE NOT NULL,
     `submittedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    INDEX `submittedResponses_contentId_contentRevisionNum_answerId_idx`(`contentId`, `contentRevisionNum`, `answerId`),
+    INDEX `submittedResponses_activityId_activityRevisionNum_answerId_idx`(`activityId`, `activityRevisionNum`, `answerId`),
     INDEX `submittedResponses_userId_idx`(`userId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -356,7 +356,7 @@ ALTER TABLE `content` ADD CONSTRAINT `content_parentId_fkey` FOREIGN KEY (`paren
 ALTER TABLE `content` ADD CONSTRAINT `content_licenseCode_fkey` FOREIGN KEY (`licenseCode`) REFERENCES `licenses`(`code`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE `content` ADD CONSTRAINT `content_id_assignedRevisionNum_fkey` FOREIGN KEY (`id`, `assignedRevisionNum`) REFERENCES `contentRevisions`(`activityId`, `revisionNum`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `content` ADD CONSTRAINT `content_id_assignedRevisionNum_fkey` FOREIGN KEY (`id`, `assignedRevisionNum`) REFERENCES `activityRevisions`(`activityId`, `revisionNum`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE `content` ADD CONSTRAINT `content_doenetmlVersionId_fkey` FOREIGN KEY (`doenetmlVersionId`) REFERENCES `doenetmlVersions`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -368,10 +368,10 @@ ALTER TABLE `recentContent` ADD CONSTRAINT `recentContent_userId_fkey` FOREIGN K
 ALTER TABLE `recentContent` ADD CONSTRAINT `recentContent_contentId_fkey` FOREIGN KEY (`contentId`) REFERENCES `content`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE `contentRevisions` ADD CONSTRAINT `contentRevisions_activityId_fkey` FOREIGN KEY (`activityId`) REFERENCES `content`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `activityRevisions` ADD CONSTRAINT `activityRevisions_activityId_fkey` FOREIGN KEY (`activityId`) REFERENCES `content`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE `contentRevisions` ADD CONSTRAINT `contentRevisions_doenetmlVersionId_fkey` FOREIGN KEY (`doenetmlVersionId`) REFERENCES `doenetmlVersions`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `activityRevisions` ADD CONSTRAINT `activityRevisions_doenetmlVersionId_fkey` FOREIGN KEY (`doenetmlVersionId`) REFERENCES `doenetmlVersions`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE `licenseCompositions` ADD CONSTRAINT `licenseCompositions_composedOfCode_fkey` FOREIGN KEY (`composedOfCode`) REFERENCES `licenses`(`code`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -380,10 +380,10 @@ ALTER TABLE `licenseCompositions` ADD CONSTRAINT `licenseCompositions_composedOf
 ALTER TABLE `licenseCompositions` ADD CONSTRAINT `licenseCompositions_includedInCode_fkey` FOREIGN KEY (`includedInCode`) REFERENCES `licenses`(`code`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `contributorHistory` ADD CONSTRAINT `contributorHistory_contentId_fkey` FOREIGN KEY (`contentId`) REFERENCES `content`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `contributorHistory` ADD CONSTRAINT `contributorHistory_activityId_fkey` FOREIGN KEY (`activityId`) REFERENCES `content`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE `contributorHistory` ADD CONSTRAINT `contributorHistory_prevContentId_prevContentRevisionNum_fkey` FOREIGN KEY (`prevContentId`, `prevContentRevisionNum`) REFERENCES `contentRevisions`(`activityId`, `revisionNum`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `contributorHistory` ADD CONSTRAINT `contributorHistory_prevActivityId_prevActivityRevisionNum_fkey` FOREIGN KEY (`prevActivityId`, `prevActivityRevisionNum`) REFERENCES `activityRevisions`(`activityId`, `revisionNum`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE `contributorHistory` ADD CONSTRAINT `contributorHistory_withLicenseCode_fkey` FOREIGN KEY (`withLicenseCode`) REFERENCES `licenses`(`code`) ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -395,22 +395,22 @@ ALTER TABLE `contentShares` ADD CONSTRAINT `contentShares_contentId_fkey` FOREIG
 ALTER TABLE `contentShares` ADD CONSTRAINT `contentShares_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE `assignmentScores` ADD CONSTRAINT `assignmentScores_contentId_fkey` FOREIGN KEY (`contentId`) REFERENCES `content`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `assignmentScores` ADD CONSTRAINT `assignmentScores_activityId_fkey` FOREIGN KEY (`activityId`) REFERENCES `content`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE `assignmentScores` ADD CONSTRAINT `assignmentScores_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE `contentState` ADD CONSTRAINT `contentState_contentId_userId_fkey` FOREIGN KEY (`contentId`, `userId`) REFERENCES `assignmentScores`(`contentId`, `userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `activityState` ADD CONSTRAINT `activityState_activityId_userId_fkey` FOREIGN KEY (`activityId`, `userId`) REFERENCES `assignmentScores`(`activityId`, `userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE `contentState` ADD CONSTRAINT `contentState_contentId_contentRevisionNum_fkey` FOREIGN KEY (`contentId`, `contentRevisionNum`) REFERENCES `contentRevisions`(`activityId`, `revisionNum`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `activityState` ADD CONSTRAINT `activityState_activityId_activityRevisionNum_fkey` FOREIGN KEY (`activityId`, `activityRevisionNum`) REFERENCES `activityRevisions`(`activityId`, `revisionNum`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE `contentState` ADD CONSTRAINT `contentState_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `activityState` ADD CONSTRAINT `activityState_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE `submittedResponses` ADD CONSTRAINT `submittedResponses_contentId_contentRevisionNum_fkey` FOREIGN KEY (`contentId`, `contentRevisionNum`) REFERENCES `contentRevisions`(`activityId`, `revisionNum`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `submittedResponses` ADD CONSTRAINT `submittedResponses_activityId_activityRevisionNum_fkey` FOREIGN KEY (`activityId`, `activityRevisionNum`) REFERENCES `activityRevisions`(`activityId`, `revisionNum`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE `submittedResponses` ADD CONSTRAINT `submittedResponses_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;

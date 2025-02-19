@@ -1,16 +1,33 @@
+import { ContentType, Prisma } from "@prisma/client";
+import { prisma } from "../model";
+import { getIsAdmin, getLibraryAccountId, mustBeAdmin } from "./curate";
+import {
+  filterEditableContent,
+  filterViewableContent,
+} from "../utils/permissions";
+import { getNextSortIndexForParent } from "../utils/sort";
+import { DateTime } from "luxon";
+import { cidFromText } from "../utils/cid";
+
 /**
- * Creates a new activity in folderId of ownerId.
+ * Creates a new content of type `contentType` in `parentId` of `ownerId`,
+ * putting the content in the base folder of `ownerId` if `parentId` is `null`.
  *
- * Places the activity at the end of the folder.
- *
- * @param ownerId
- * @param folderId
+ * Places the content at the end of the parent.
  */
-export async function createActivity(
-  ownerId: Uint8Array,
+export async function createContent(
+  loggedInUserId: Uint8Array,
+  contentType: ContentType,
   parentId: Uint8Array | null,
+  inLibrary: boolean = false,
 ) {
-  const sortIndex = await getNextSortIndexForFolder(ownerId, parentId);
+  let ownerId = loggedInUserId;
+  if (inLibrary) {
+    await mustBeAdmin(loggedInUserId);
+    ownerId = await getLibraryAccountId();
+  }
+
+  const sortIndex = await getNextSortIndexForParent(ownerId, parentId);
 
   const defaultDoenetmlVersion = await prisma.doenetmlVersions.findFirstOrThrow(
     {
@@ -22,10 +39,15 @@ export async function createActivity(
   let licenseCode = undefined;
   let sharedWith: Uint8Array[] = [];
 
-  // If parent folder isn't null, check if it is shared and get its license
+  // If parent isn't `null`, check if it is shared and get its license
   if (parentId !== null) {
     const parent = await prisma.content.findUniqueOrThrow({
-      where: { id: parentId, isFolder: true, isDeleted: false, ownerId },
+      where: {
+        id: parentId,
+        type: { not: "singleDoc" },
+        isDeleted: false,
+        ownerId,
+      },
       select: {
         isPublic: true,
         licenseCode: true,
@@ -39,86 +61,6 @@ export async function createActivity(
       }
     }
 
-    if (parent.sharedWith.length > 0) {
-      sharedWith = parent.sharedWith.map((cs) => cs.userId);
-      if (parent.licenseCode) {
-        licenseCode = parent.licenseCode;
-      }
-    }
-  }
-
-  const activity = await prisma.content.create({
-    data: {
-      ownerId,
-      isFolder: false,
-      parentId,
-      name: "Untitled Document",
-      imagePath: "/activity_default.jpg",
-      isPublic,
-      licenseCode,
-      sortIndex,
-      documents: {
-        create: [
-          {
-            source: "",
-            doenetmlVersionId: defaultDoenetmlVersion.id,
-            name: "Untitled sub-document",
-            baseComponentCounts: "{}",
-          },
-        ],
-      },
-      sharedWith: {
-        createMany: { data: sharedWith.map((userId) => ({ userId })) },
-      },
-    },
-  });
-
-  const activityId = activity.id;
-
-  const activityWithDoc = await prisma.content.findUniqueOrThrow({
-    where: { id: activityId },
-    select: { documents: { select: { id: true } } },
-  });
-
-  const docId = activityWithDoc.documents[0].id;
-
-  return { activityId, docId };
-}
-
-export async function createFolder(
-  loggedInUserId: Uint8Array,
-  parentId: Uint8Array | null,
-  contentType: ContentType = "folder",
-  inLibrary: boolean = false,
-) {
-  let ownerId = loggedInUserId;
-  if (inLibrary) {
-    await mustBeAdmin(loggedInUserId);
-    ownerId = await getLibraryAccountId();
-  }
-
-  const sortIndex = await getNextSortIndexForFolder(ownerId, parentId);
-
-  let isPublic = false;
-  let licenseCode = undefined;
-  let sharedWith: Uint8Array[] = [];
-
-  // If parent folder isn't null, check if it is shared and get its license
-  if (parentId !== null) {
-    const parent = await prisma.content.findUniqueOrThrow({
-      where: { id: parentId, isFolder: true, isDeleted: false, ownerId },
-      select: {
-        isPublic: true,
-        licenseCode: true,
-        sharedWith: { select: { userId: true } },
-      },
-    });
-    if (parent.isPublic) {
-      isPublic = true;
-      if (parent.licenseCode) {
-        licenseCode = parent.licenseCode;
-      }
-    }
     if (parent.sharedWith.length > 0) {
       sharedWith = parent.sharedWith.map((cs) => cs.userId);
       if (parent.licenseCode) {
@@ -148,122 +90,71 @@ export async function createFolder(
     }
   }
 
-  const folder = await prisma.content.create({
+  const imagePath =
+    contentType === "folder" ? "/folder_default.jpg" : "/activity_default.jpg";
+
+  const content = await prisma.content.create({
     data: {
       ownerId,
       type: contentType,
-      isFolder: true,
       parentId,
       name,
-      imagePath: "/folder_default.jpg",
+      imagePath,
       isPublic,
       licenseCode,
       sortIndex,
+      doenetmlVersionId:
+        contentType === "singleDoc" ? defaultDoenetmlVersion.id : null,
+      baseComponentCounts: contentType === "singleDoc" ? "{}" : null,
       sharedWith: {
         createMany: { data: sharedWith.map((userId) => ({ userId })) },
       },
     },
   });
 
-  return { folderId: folder.id, folderName: folder.name };
+  return { id: content.id, name: content.name };
 }
 
 /**
- * For folder given by `folderId` and `ownerId`,
- * find the `sortIndex` that will place a new item as the last entry in the folder.
- * If `folderId` is undefined, then the root folder of `ownerID` is used.
- *
- * Throws an error if `folderId` is supplied but isn't a folder owned by `ownerId`.
- *
- * @param ownerId
- * @param folderId
+ * Delete the content `id` along with all the content inside it,
+ * recursing to its children
  */
-async function getNextSortIndexForFolder(
-  ownerId: Uint8Array,
-  folderId: Uint8Array | null,
-) {
-  if (folderId !== null) {
-    // if a folderId is present, verify that it is a folder is owned by ownerId
-    await prisma.content.findUniqueOrThrow({
-      where: { id: folderId, ownerId, isFolder: true },
-    });
-  }
+export function deleteContent(id: Uint8Array, ownerId: Uint8Array) {
+  // TODO: Figure out how to delete folder in library (some contents may be published)
 
-  const lastIndex = (
-    await prisma.content.aggregate({
-      where: { ownerId, parentId: folderId },
-      _max: { sortIndex: true },
-    })
-  )._max.sortIndex;
-
-  return getNextSortIndex(lastIndex);
-}
-
-function getNextSortIndex(lastIndex: bigint | null) {
-  // The new index is a multiple of SORT_INCREMENT and is at least SORT_INCREMENT after lastIndex.
-  // It is set to zero if it is the first item in the folder.
-  return lastIndex === null
-    ? 0
-    : Math.ceil(Number(lastIndex) / SORT_INCREMENT + 1) * SORT_INCREMENT;
-}
-
-export async function deleteActivity(id: Uint8Array, ownerId: Uint8Array) {
-  const deleted = await prisma.content.update({
-    where: { id, ownerId, type: { not: "folder" } },
-    data: {
-      isDeleted: true,
-      documents: {
-        updateMany: {
-          where: {},
-          data: {
-            isDeleted: true,
-          },
-        },
-      },
-    },
-  });
-
-  return { id: deleted.id, isDeleted: deleted.isDeleted };
-}
-
-// TODO: Figure out how to delete folder in library (some contents may be published)
-export async function deleteFolder(id: Uint8Array, ownerId: Uint8Array) {
-  // Delete the folder `id` along with all the content inside it,
-  // recursing to subfolders, and including the documents of activities.
-
-  // Verify the folder exists
-  await prisma.content.findUniqueOrThrow({
-    where: { id, ownerId, isFolder: true, isDeleted: false },
-    select: { id: true },
-  });
-
-  await prisma.$queryRaw(Prisma.sql`
+  return prisma.$queryRaw(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
-      WHERE id = ${id} AND ownerId = ${ownerId}
+      WHERE id = ${id} AND ownerId = ${ownerId} AND isDeleted = FALSE
       UNION ALL
       SELECT content.id FROM content
       INNER JOIN content_tree AS ft
       ON content.parentId = ft.id
     )
 
-    UPDATE content LEFT JOIN documents ON documents.activityId  = content.id
-      SET content.isDeleted = TRUE, documents.isDeleted = TRUE
+    UPDATE content
+      SET content.isDeleted = TRUE
       WHERE content.id IN (SELECT id from content_tree);
     `);
 }
 
-// Note: currently (June 4, 2024) unused and untested
-export async function deleteDocument(id: Uint8Array, ownerId: Uint8Array) {
-  await prisma.documents.update({
-    where: { id, activity: { ownerId } },
-    data: { isDeleted: true },
-  });
-}
-
+/**
+ * Update the content with `id`, changing any of the parameters that are given:
+ * `name`, `source`, `doenetmlVersionId`, `numVariants`, `baseComponentCounts`,
+ * `imagePath`, `shuffle`, `numToSelect`, `selectByVariant`,
+ * `paginate`, `activityLevelAttempts`, and/or `itemLevelAttempts`.
+ *
+ * For the change to succeed, either
+ * - the content must be owned by `loggedInUserId`, or
+ * - the content must be in the library and `loggedInUserId` must be an admin.
+ */
 export async function updateContent({
   id,
   name,
+  source,
+  doenetmlVersionId,
+  numVariants,
+  baseComponentCounts,
   imagePath,
   shuffle,
   numToSelect,
@@ -271,10 +162,14 @@ export async function updateContent({
   paginate,
   activityLevelAttempts,
   itemLevelAttempts,
-  ownerId: loggedInUserId,
+  loggedInUserId,
 }: {
   id: Uint8Array;
   name?: string;
+  source?: string;
+  doenetmlVersionId?: number;
+  numVariants?: number;
+  baseComponentCounts?: string;
   imagePath?: string;
   shuffle?: boolean;
   numToSelect?: number;
@@ -282,7 +177,7 @@ export async function updateContent({
   paginate?: boolean;
   activityLevelAttempts?: boolean;
   itemLevelAttempts?: boolean;
-  ownerId: Uint8Array;
+  loggedInUserId: Uint8Array;
 }) {
   const isAdmin = await getIsAdmin(loggedInUserId);
 
@@ -290,6 +185,10 @@ export async function updateContent({
     where: { id, ...filterEditableContent(loggedInUserId, isAdmin) },
     data: {
       name,
+      source,
+      doenetmlVersionId,
+      numVariants,
+      baseComponentCounts,
       imagePath,
       shuffle,
       numToSelect,
@@ -297,12 +196,17 @@ export async function updateContent({
       paginate,
       activityLevelAttempts,
       itemLevelAttempts,
+      lastEdited: DateTime.now().toJSDate(),
     },
   });
 
   return {
     id: updated.id,
     name: updated.name,
+    source: updated.source,
+    doenetmlVersionId: updated.doenetmlVersionId,
+    numVariants: updated.numVariants,
+    baseComponentCounts: updated.baseComponentCounts,
     imagePath: updated.imagePath,
     shuffle: updated.shuffle,
     numToSelect: updated.numToSelect,
@@ -313,18 +217,25 @@ export async function updateContent({
   };
 }
 
+/**
+ * Add or remove the content features specified in `features` to the content with `id`.
+ *
+ * For the change to succeed, either
+ * - the content must be owned by `loggedInUserId`, or
+ * - the content must be in the library and `loggedInUserId` must be an admin.
+ */
 export async function updateContentFeatures({
   id,
-  ownerId: loggedInUserId,
+  loggedInUserId,
   features,
 }: {
   id: Uint8Array;
-  ownerId: Uint8Array;
+  loggedInUserId: Uint8Array;
   features: Record<string, boolean>;
 }) {
   const isAdmin = await getIsAdmin(loggedInUserId);
   const updated = await prisma.content.update({
-    where: { id, ...filterEditableActivity(loggedInUserId, isAdmin) },
+    where: { id, ...filterEditableContent(loggedInUserId, isAdmin) },
     data: {
       contentFeatures: {
         connect: Object.entries(features)
@@ -341,76 +252,6 @@ export async function updateContentFeatures({
   return {
     id: updated.id,
   };
-}
-
-export async function updateDoc({
-  id,
-  source,
-  name,
-  doenetmlVersionId,
-  numVariants,
-  baseComponentCounts,
-  ownerId: loggedInUserId,
-}: {
-  id: Uint8Array;
-  source?: string;
-  name?: string;
-  doenetmlVersionId?: number;
-  numVariants?: number;
-  baseComponentCounts?: string;
-  ownerId: Uint8Array;
-}) {
-  const isAdmin = await getIsAdmin(loggedInUserId);
-  // check if activity is assigned
-  const isAssigned = (
-    await prisma.content.findFirstOrThrow({
-      where: {
-        documents: { some: { id, isDeleted: false } },
-        ...filterEditableActivity(loggedInUserId, isAdmin),
-      },
-    })
-  ).isAssigned;
-
-  if (isAssigned && (source !== undefined || doenetmlVersionId !== undefined)) {
-    throw Error("Cannot change source of assigned document");
-  }
-
-  const updated = await prisma.documents.update({
-    where: {
-      id,
-      activity: { ...filterEditableActivity(loggedInUserId, isAdmin) },
-    },
-    data: {
-      source,
-      name,
-      doenetmlVersionId,
-      numVariants,
-      baseComponentCounts: baseComponentCounts,
-      lastEdited: DateTime.now().toJSDate(),
-    },
-  });
-
-  return {
-    id: updated.id,
-    name: updated.name,
-    source: updated.source,
-    doenetmlVersionId: updated.doenetmlVersionId,
-  };
-}
-
-// Note: getActivity does not currently incorporate access control,
-// by relies on calling functions to determine access.
-// Also, the results of getActivity shouldn't be sent unchanged to the response,
-// as the sortIndex (bigint) cannot be serialized
-export async function getActivity(id: Uint8Array) {
-  return await prisma.content.findUniqueOrThrow({
-    where: { id, isDeleted: false, isFolder: false },
-    include: {
-      documents: {
-        where: { isDeleted: false },
-      },
-    },
-  });
 }
 
 /**
@@ -434,26 +275,21 @@ export async function getContentDescription(
   });
 }
 
-// Note: getDoc does not currently incorporate access control,
-// by relies on calling functions to determine access
-export async function getDoc(id: Uint8Array) {
-  return await prisma.documents.findUniqueOrThrow({
-    where: { id, isDeleted: false },
-  });
-}
-
+/**
+ * Get the source from the document with `contentId`.
+ *
+ * Throws an error if not viewable by `loggedInUserId`.
+ */
 export async function getDocumentSource(
-  docId: Uint8Array,
+  contentId: Uint8Array,
   loggedInUserId: Uint8Array,
 ) {
   const isAdmin = await getIsAdmin(loggedInUserId);
-  const document = await prisma.documents.findUniqueOrThrow({
+  const document = await prisma.content.findUniqueOrThrow({
     where: {
-      id: docId,
-      isDeleted: false,
-      activity: {
-        ...filterViewableActivity(loggedInUserId, isAdmin),
-      },
+      id: contentId,
+      type: "singleDoc",
+      ...filterViewableContent(loggedInUserId, isAdmin),
     },
     select: { source: true },
   });
@@ -461,6 +297,9 @@ export async function getDocumentSource(
   return { source: document.source };
 }
 
+/**
+ * Get a list of all currently available DoenetML versions.
+ */
 export async function getAllDoenetmlVersions() {
   const allDoenetmlVersions = await prisma.doenetmlVersions.findMany({
     where: {
@@ -473,53 +312,57 @@ export async function getAllDoenetmlVersions() {
   return allDoenetmlVersions;
 }
 
-// Note: createDocumentVersion does not currently incorporate access control,
+// Note: createActivityRevision does not currently incorporate access control,
 // by relies on calling functions to determine access
-async function createDocumentVersion(docId: Uint8Array): Promise<{
-  versionNum: number;
-  docId: Uint8Array;
-  cid: string | null;
+
+/**
+ * Create a new record in `activityRevisions` corresponding to the current state of
+ * `activityId` in `content`.
+ */
+export async function createActivityRevision(activityId: Uint8Array): Promise<{
+  activityId: Uint8Array;
+  revisionNum: number;
+  cid: string;
   source: string | null;
-  createdAt: Date | null;
-  doenetmlVersionId: number;
+  doenetmlVersionId: number | null;
+  numVariants: number;
+  baseComponentCounts: string | null;
+  createdAt: Date;
 }> {
-  const doc = await prisma.documents.findUniqueOrThrow({
-    where: { id: docId, isDeleted: false },
-    include: {
-      activity: { select: { name: true } },
-    },
+  const content = await prisma.content.findUniqueOrThrow({
+    where: { id: activityId, isDeleted: false },
   });
 
   // TODO: cid should really include the doenetmlVersion
-  const cid = await cidFromText(doc.source || "");
+  const cid = await cidFromText(content.source || "");
 
-  let docVersion = await prisma.documentVersions.findUnique({
-    where: { docId_cid: { docId, cid } },
+  let activityVersion = await prisma.activityRevisions.findUnique({
+    where: { activityId_cid: { activityId, cid } },
   });
 
-  if (!docVersion) {
+  if (!activityVersion) {
     // TODO: not sure how to make an atomic operation of this with the ORM.
     // Should we write a raw SQL query to accomplish this in one query?
 
-    const aggregations = await prisma.documentVersions.aggregate({
-      _max: { versionNum: true },
-      where: { docId },
+    const aggregations = await prisma.activityRevisions.aggregate({
+      _max: { revisionNum: true },
+      where: { activityId },
     });
-    const lastVersionNum = aggregations._max.versionNum;
+    const lastVersionNum = aggregations._max.revisionNum;
     const newVersionNum = lastVersionNum ? lastVersionNum + 1 : 1;
 
-    docVersion = await prisma.documentVersions.create({
+    activityVersion = await prisma.activityRevisions.create({
       data: {
-        versionNum: newVersionNum,
-        docId,
+        revisionNum: newVersionNum,
+        activityId,
         cid,
-        doenetmlVersionId: doc.doenetmlVersionId,
-        source: doc.source,
-        numVariants: doc.numVariants,
-        baseComponentCounts: doc.baseComponentCounts,
+        doenetmlVersionId: content.doenetmlVersionId,
+        source: content.source,
+        numVariants: content.numVariants,
+        baseComponentCounts: content.baseComponentCounts,
       },
     });
   }
 
-  return docVersion;
+  return activityVersion;
 }
