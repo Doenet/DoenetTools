@@ -208,7 +208,7 @@ export async function cancelLibraryRequest({
   await prisma.$transaction([updateLibInfo, newEvent]);
 }
 
-async function getLibraryAccountId() {
+export async function getLibraryAccountId() {
   const library = await prisma.users.findFirstOrThrow({
     where: {
       isLibrary: true,

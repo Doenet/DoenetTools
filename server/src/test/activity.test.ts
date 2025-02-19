@@ -1,39 +1,37 @@
 import { expect, test } from "vitest";
-import {
-  createActivity,
-  deleteActivity,
-  getAllDoenetmlVersions,
-  getDoc,
-  getActivityEditorData,
-  getActivityViewerData,
-  getMyFolderContent,
-  updateDoc,
-  updateContent,
-  getActivity,
-  openAssignmentWithCode,
-  closeAssignmentWithCode,
-  saveScoreAndState,
-  unassignActivity,
-  createFolder,
-  moveContent,
-  getSharedEditorData,
-  makeActivityPublic,
-  makeActivityPrivate,
-  makeFolderPublic,
-  makeFolderPrivate,
-  shareActivity,
-  getDocumentSource,
-  getContentDescription,
-  shareFolder,
-  InvalidRequestError,
-  getCompoundActivity,
-  deleteFolder,
-} from "../model";
+
 import { DateTime } from "luxon";
-import { ContentStructure } from "../types";
+import { Content, Doc } from "../types";
 
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { createTestUser } from "./utils";
+import { createTestUser, getContent } from "./utils";
+import {
+  createContent,
+  deleteContent,
+  getAllDoenetmlVersions,
+  getActivitySource,
+  updateContent,
+  getContentDescription,
+} from "../apis/activity";
+import {
+  getActivityEditorData,
+  getActivityViewerData,
+  getSharedEditorData,
+} from "../apis/activity_edit_view";
+import { getMyFolderContent } from "../apis/content_list";
+import { InvalidRequestError } from "../utils/error";
+import {
+  modifyContentSharedWith,
+  setContentIsPublic,
+  setContentLicense,
+} from "../apis/share";
+import {
+  closeAssignmentWithCode,
+  openAssignmentWithCode,
+  unassignActivity,
+} from "../apis/assign";
+import { saveScoreAndState } from "../apis/scores";
+import { moveContent } from "../apis/copy_move";
 
 // const EMPTY_DOC_CID =
 //   "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
@@ -51,46 +49,33 @@ const currentDoenetmlVersion = {
 test("New activity starts out private, then delete it", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const { activityId, docId } = await createActivity(userId, null);
+  const { id: activityId } = await createContent(userId, "singleDoc", null);
   const { activity: activityContent } = await getActivityEditorData(
     activityId,
     userId,
   );
-  const expectedContent: ContentStructure = {
+
+  if (!activityContent) {
+    throw Error("Shouldn't happen");
+  }
+
+  const expectedContent: Doc = {
     id: activityId,
     name: "Untitled Document",
     ownerId: userId,
     imagePath: "/activity_default.jpg",
     isPublic: false,
-    isFolder: false,
     isShared: false,
     contentFeatures: [],
     sharedWith: [],
     baseComponentCounts: "{}",
     numVariants: 1,
-    assignmentStatus: "Unassigned",
-    classCode: null,
-    codeValidUntil: null,
     license: null,
     type: "singleDoc",
-    numToSelect: 1,
-    selectByVariant: false,
-    shuffle: false,
-    paginate: false,
-    activityLevelAttempts: false,
-    itemLevelAttempts: false,
     classifications: [],
-    documents: [
-      {
-        id: docId,
-        source: "",
-        name: "Untitled sub-document",
-        doenetmlVersion: currentDoenetmlVersion,
-      },
-    ],
-    hasScoreData: false,
+    source: "",
+    doenetmlVersion: currentDoenetmlVersion,
     parent: null,
-    children: [],
   };
 
   expect(activityContent.license?.code).eq("CCDUAL");
@@ -107,9 +92,9 @@ test("New activity starts out private, then delete it", async () => {
 
   expect(data.content.length).toBe(1);
   expect(data.content[0].isPublic).eq(false);
-  expect(data.content[0].assignmentStatus).eq("Unassigned");
+  expect(data.content[0].assignmentInfo).eq(undefined);
 
-  await deleteActivity(activityId, userId);
+  await deleteContent(activityId, userId);
 
   await expect(getActivityEditorData(activityId, userId)).rejects.toThrow(
     InvalidRequestError,
@@ -126,59 +111,53 @@ test("New activity starts out private, then delete it", async () => {
 test("Test updating various activity properties", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const { activityId } = await createActivity(userId, null);
+  const { id: activityId } = await createContent(userId, "singleDoc", null);
   const activityName = "Test Name";
+  const source = "Here comes some content, I made you some content";
   await updateContent({
     id: activityId,
     name: activityName,
-    ownerId: userId,
+    loggedInUserId: userId,
+    source,
   });
   const { activity: activityContent } = await getActivityEditorData(
     activityId,
     userId,
   );
-  const docId = activityContent.documents[0].id;
+  if (activityContent === undefined || activityContent.type !== "singleDoc") {
+    throw Error("shouldn't happen");
+  }
   expect(activityContent.name).toBe(activityName);
-  const source = "Here comes some content, I made you some content";
-  await updateDoc({ id: docId, source, ownerId: userId });
-  const { activity: activityContent2 } = await getActivityEditorData(
-    activityId,
-    userId,
-  );
-  expect(activityContent2.documents[0].source).toBe(source);
+  expect(activityContent.source).toBe(source);
 
   const activityViewerContent = await getActivityViewerData(activityId, userId);
+  if (activityViewerContent.activity.type !== "singleDoc") {
+    throw Error("shouldn't happen");
+  }
   expect(activityViewerContent.activity.name).toBe(activityName);
-  expect(activityViewerContent.activity.documents[0].source).toBe(source);
+  expect(activityViewerContent.activity.source).toBe(source);
 });
 
-test("deleteActivity marks a activity and document as deleted and prevents its retrieval", async () => {
+test("deleteContent marks a activity and document as deleted and prevents its retrieval", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const { activityId, docId } = await createActivity(userId, null);
+  const { id: activityId } = await createContent(userId, "singleDoc", null);
 
   // activity can be retrieved
-  await getActivity(activityId);
   await getActivityViewerData(activityId, userId);
   await getActivityEditorData(activityId, userId);
-  await getDoc(docId);
-  await getDocumentSource(docId, userId);
+  await getActivitySource(activityId, userId);
 
-  const deleteResult = await deleteActivity(activityId, userId);
-  expect(deleteResult.isDeleted).toBe(true);
+  await deleteContent(activityId, userId);
 
   // cannot retrieve activity
-  await expect(getActivity(activityId)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
   await expect(getActivityViewerData(activityId, userId)).rejects.toThrow(
     InvalidRequestError,
   );
   await expect(getActivityEditorData(activityId, userId)).rejects.toThrow(
     InvalidRequestError,
   );
-  await expect(getDoc(docId)).rejects.toThrow(PrismaClientKnownRequestError);
-  await expect(getDocumentSource(docId, userId)).rejects.toThrow(
+  await expect(getActivitySource(activityId, userId)).rejects.toThrow(
     PrismaClientKnownRequestError,
   );
 });
@@ -188,35 +167,31 @@ test("only owner can delete an activity", async () => {
   const ownerId = owner.userId;
   const user2 = await createTestUser();
   const user2Id = user2.userId;
-  const { activityId } = await createActivity(ownerId, null);
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
 
-  await expect(deleteActivity(activityId, user2Id)).rejects.toThrow(
-    "Record to update not found",
-  );
+  await expect(deleteContent(activityId, user2Id)).rejects.toThrow("not found");
 
-  const deleteResult = await deleteActivity(activityId, ownerId);
-  expect(deleteResult.isDeleted).toBe(true);
+  await deleteContent(activityId, ownerId);
 });
 
 test("updateDoc updates document properties", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const { activityId, docId } = await createActivity(userId, null);
+  const { id: activityId } = await createContent(userId, "singleDoc", null);
   const newName = "Updated Name";
   const newContent = "Updated Content";
   await updateContent({
     id: activityId,
     name: newName,
-    ownerId: userId,
-  });
-  await updateDoc({
-    id: docId,
     source: newContent,
-    ownerId: userId,
+    loggedInUserId: userId,
   });
-  const activityViewerContent = await getActivityViewerData(activityId, userId);
-  expect(activityViewerContent.activity.name).toBe(newName);
-  expect(activityViewerContent.activity.documents[0].source).toBe(newContent);
+  const { activity } = await getActivityViewerData(activityId, userId);
+  if (activity.type !== "singleDoc") {
+    throw Error("shouldn't happen");
+  }
+  expect(activity.name).toBe(newName);
+  expect(activity.source).toBe(newContent);
 });
 
 test("getAllDoenetmlVersions retrieves all non-removed versions", async () => {
@@ -230,23 +205,13 @@ test("getAllDoenetmlVersions retrieves all non-removed versions", async () => {
   });
 });
 
-test("deleteActivity prevents a document from being retrieved", async () => {
-  const owner = await createTestUser();
-  const ownerId = owner.userId;
-  const { activityId } = await createActivity(ownerId, null);
-  await deleteActivity(activityId, ownerId);
-  await expect(getActivity(activityId)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
-});
-
 test("updateContent does not update properties when passed undefined values", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId } = await createActivity(ownerId, null);
-  const originalActivity = await getActivity(activityId);
-  await updateContent({ id: activityId, ownerId: ownerId });
-  const updatedActivity = await getActivity(activityId);
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const originalActivity = await getContent(activityId);
+  await updateContent({ id: activityId, loggedInUserId: ownerId });
+  const updatedActivity = await getContent(activityId);
   expect(updatedActivity).toEqual(originalActivity);
 });
 
@@ -257,11 +222,11 @@ test("get activity/document data only if owner or limited data for public/shared
   const user1Id = user1.userId;
   const user2 = await createTestUser();
   const user2Id = user2.userId;
-  const { activityId, docId } = await createActivity(ownerId, null);
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
 
   await getActivityEditorData(activityId, ownerId);
   await getActivityViewerData(activityId, ownerId);
-  await getDocumentSource(docId, ownerId);
+  await getActivitySource(activityId, ownerId);
 
   await expect(getActivityEditorData(activityId, user1Id)).rejects.toThrow(
     InvalidRequestError,
@@ -269,99 +234,62 @@ test("get activity/document data only if owner or limited data for public/shared
   await expect(getActivityViewerData(activityId, user1Id)).rejects.toThrow(
     InvalidRequestError,
   );
-  await expect(getDocumentSource(docId, user1Id)).rejects.toThrow(
+  await expect(getActivitySource(activityId, user1Id)).rejects.toThrow(
     PrismaClientKnownRequestError,
   );
 
-  await makeActivityPublic({ id: activityId, ownerId, licenseCode: "CCDUAL" });
+  await setContentIsPublic({
+    id: activityId,
+    loggedInUserId: ownerId,
+    isPublic: true,
+  });
 
   const closeAt = DateTime.now().plus({ days: 1 });
   await openAssignmentWithCode(activityId, closeAt, ownerId);
 
   let data = await getActivityEditorData(activityId, ownerId);
   expect(data.editableByMe).eq(true);
-  expect(data.activity.assignmentStatus).eq("Open");
+  if (data.activity === undefined) {
+    throw Error("Shouldn't happen");
+  }
+  expect(data.activity.assignmentInfo?.assignmentStatus).eq("Open");
 
   data = await getActivityEditorData(activityId, user1Id);
   expect(data.editableByMe).eq(false);
-  expect(data.activity).eqls({
-    id: activityId,
-    name: "",
-    ownerId,
-    imagePath: null,
-    assignmentStatus: "Unassigned",
-    classCode: null,
-    codeValidUntil: null,
-    isPublic: false,
-    contentFeatures: [],
-    isShared: false,
-    sharedWith: [],
-    license: null,
-    type: "singleDoc",
-    numToSelect: 1,
-    selectByVariant: false,
-    shuffle: false,
-    paginate: false,
-    activityLevelAttempts: false,
-    itemLevelAttempts: false,
-    classifications: [],
-    documents: [],
-    hasScoreData: false,
-    parent: null,
-    children: [],
-  });
+  expect(data.activity).eq(undefined);
+  expect(data.activityId).eq(activityId);
 
   await getActivityViewerData(activityId, user1Id);
-  await getDocumentSource(docId, user1Id);
+  await getActivitySource(activityId, user1Id);
 
-  await makeActivityPrivate({ id: activityId, ownerId });
+  await setContentIsPublic({
+    id: activityId,
+    loggedInUserId: ownerId,
+    isPublic: false,
+  });
   await expect(getActivityEditorData(activityId, user1Id)).rejects.toThrow(
     InvalidRequestError,
   );
   await expect(getActivityViewerData(activityId, user1Id)).rejects.toThrow(
     InvalidRequestError,
   );
-  await expect(getDocumentSource(docId, user1Id)).rejects.toThrow(
+  await expect(getActivitySource(activityId, user1Id)).rejects.toThrow(
     PrismaClientKnownRequestError,
   );
 
-  await shareActivity({
+  await modifyContentSharedWith({
+    action: "share",
     id: activityId,
-    ownerId,
-    licenseCode: "CCDUAL",
+    loggedInUserId: ownerId,
     users: [user1Id],
   });
   data = await getActivityEditorData(activityId, user1Id);
   expect(data.editableByMe).eq(false);
-  expect(data.activity).eqls({
-    id: activityId,
-    name: "",
-    ownerId,
-    imagePath: null,
-    assignmentStatus: "Unassigned",
-    classCode: null,
-    codeValidUntil: null,
-    isPublic: false,
-    contentFeatures: [],
-    isShared: false,
-    sharedWith: [],
-    license: null,
-    type: "singleDoc",
-    numToSelect: 1,
-    selectByVariant: false,
-    shuffle: false,
-    paginate: false,
-    activityLevelAttempts: false,
-    itemLevelAttempts: false,
-    classifications: [],
-    documents: [],
-    hasScoreData: false,
-    parent: null,
-    children: [],
-  });
+  expect(data.activity).eq(undefined);
+  expect(data.activityId).eq(activityId);
 
   await getActivityViewerData(activityId, user1Id);
-  await getDocumentSource(docId, user1Id);
+  await getActivitySource(activityId, user1Id);
 
   await expect(getActivityEditorData(activityId, user2Id)).rejects.toThrow(
     InvalidRequestError,
@@ -369,7 +297,7 @@ test("get activity/document data only if owner or limited data for public/shared
   await expect(getActivityViewerData(activityId, user2Id)).rejects.toThrow(
     InvalidRequestError,
   );
-  await expect(getDocumentSource(docId, user2Id)).rejects.toThrow(
+  await expect(getActivitySource(activityId, user2Id)).rejects.toThrow(
     PrismaClientKnownRequestError,
   );
 });
@@ -383,9 +311,13 @@ test("get public activity editor data only if public or shared", async () => {
   const user2 = await createTestUser();
   const user2Id = user2.userId;
 
-  const { activityId, docId } = await createActivity(ownerId, null);
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
   const doenetML = "hi!";
-  await updateDoc({ id: docId, source: doenetML, ownerId: ownerId });
+  await updateContent({
+    id: activityId,
+    source: doenetML,
+    loggedInUserId: ownerId,
+  });
 
   await expect(getSharedEditorData(activityId, user1Id)).rejects.toThrow(
     PrismaClientKnownRequestError,
@@ -393,38 +325,45 @@ test("get public activity editor data only if public or shared", async () => {
 
   await updateContent({
     id: activityId,
-    ownerId,
+    loggedInUserId: ownerId,
     name: "Some content",
   });
-  await makeActivityPublic({
+  await setContentIsPublic({
     id: activityId,
-    licenseCode: "CCDUAL",
-    ownerId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
 
   let sharedData = await getSharedEditorData(activityId, user1Id);
+  if (sharedData.type !== "singleDoc") {
+    throw Error("shouldn't happen");
+  }
   expect(sharedData.name).eq("Some content");
-  expect(sharedData.documents[0].source).eq(doenetML);
+  expect(sharedData.source).eq(doenetML);
 
-  await makeActivityPrivate({
+  await setContentIsPublic({
     id: activityId,
-    ownerId,
+    loggedInUserId: ownerId,
+    isPublic: false,
   });
 
   await expect(getSharedEditorData(activityId, user1Id)).rejects.toThrow(
     PrismaClientKnownRequestError,
   );
 
-  await shareActivity({
+  await modifyContentSharedWith({
+    action: "share",
     id: activityId,
-    licenseCode: "CCDUAL",
-    ownerId,
+    loggedInUserId: ownerId,
     users: [user1Id],
   });
 
   sharedData = await getSharedEditorData(activityId, user1Id);
+  if (sharedData.type !== "singleDoc") {
+    throw Error("shouldn't happen");
+  }
   expect(sharedData.name).eq("Some content");
-  expect(sharedData.documents[0].source).eq(doenetML);
+  expect(sharedData.source).eq(doenetML);
 
   await expect(getSharedEditorData(activityId, user2Id)).rejects.toThrow(
     PrismaClientKnownRequestError,
@@ -434,48 +373,33 @@ test("get public activity editor data only if public or shared", async () => {
 test("activity editor data and my folder contents before and after assigned", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId, docId } = await createActivity(ownerId, null);
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
 
   const { activity: preAssignedData } = await getActivityEditorData(
     activityId,
     ownerId,
   );
-  let expectedData: ContentStructure = {
+  let expectedData: Content = {
     id: activityId,
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
-    isFolder: false,
     isPublic: false,
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
     baseComponentCounts: "{}",
     numVariants: 1,
-    assignmentStatus: "Unassigned",
-    classCode: null,
-    codeValidUntil: null,
     license: null,
     type: "singleDoc",
-    numToSelect: 1,
-    selectByVariant: false,
-    shuffle: false,
-    paginate: false,
-    activityLevelAttempts: false,
-    itemLevelAttempts: false,
     classifications: [],
-    documents: [
-      {
-        id: docId,
-        source: "",
-        name: "Untitled sub-document",
-        doenetmlVersion: currentDoenetmlVersion,
-      },
-    ],
-    hasScoreData: false,
+    source: "",
+    doenetmlVersion: currentDoenetmlVersion,
     parent: null,
-    children: [],
   };
+  if (preAssignedData === undefined) {
+    throw Error("shouldn't happen");
+  }
   preAssignedData.license = null; // skip trying to check big license object
   expect(preAssignedData).eqls(expectedData);
 
@@ -504,39 +428,30 @@ test("activity editor data and my folder contents before and after assigned", as
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
-    isFolder: false,
     isPublic: false,
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
     baseComponentCounts: "{}",
     numVariants: 1,
-    assignmentStatus: "Open",
-    classCode,
-    codeValidUntil: closeAt.toJSDate(),
     license: null,
     type: "singleDoc",
-    numToSelect: 1,
-    selectByVariant: false,
-    shuffle: false,
-    paginate: false,
-    activityLevelAttempts: false,
-    itemLevelAttempts: false,
     classifications: [],
-    documents: [
-      {
-        id: docId,
-        versionNum: 1,
-        source: "",
-        name: "Untitled sub-document",
-        doenetmlVersion: currentDoenetmlVersion,
-      },
-    ],
-    hasScoreData: false,
+    revisionNum: 1,
+    source: "",
+    doenetmlVersion: currentDoenetmlVersion,
     parent: null,
-    children: [],
+    assignmentInfo: {
+      assignmentStatus: "Open",
+      classCode,
+      codeValidUntil: closeAt.toJSDate(),
+      hasScoreData: false,
+    },
   };
 
+  if (openedData === undefined) {
+    throw Error("shouldn't happen");
+  }
   openedData.license = null; // skip trying to check big license object
   expect(openedData).eqls(expectedData);
 
@@ -545,8 +460,7 @@ test("activity editor data and my folder contents before and after assigned", as
     folderId: null,
     loggedInUserId: ownerId,
   });
-  delete expectedData.documents[0].versionNum;
-  expectedData.isFolder = false;
+  delete expectedData.revisionNum;
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
@@ -561,38 +475,22 @@ test("activity editor data and my folder contents before and after assigned", as
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
-    isFolder: false,
     isPublic: false,
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
     baseComponentCounts: "{}",
     numVariants: 1,
-    assignmentStatus: "Unassigned",
-    classCode,
-    codeValidUntil: null,
     license: null,
     type: "singleDoc",
-    numToSelect: 1,
-    selectByVariant: false,
-    shuffle: false,
-    paginate: false,
-    activityLevelAttempts: false,
-    itemLevelAttempts: false,
     classifications: [],
-    documents: [
-      {
-        id: docId,
-        source: "",
-        name: "Untitled sub-document",
-        doenetmlVersion: currentDoenetmlVersion,
-      },
-    ],
-    hasScoreData: false,
+    source: "",
+    doenetmlVersion: currentDoenetmlVersion,
     parent: null,
-    children: [],
   };
-
+  if (closedData === undefined) {
+    throw Error("shouldn't happen");
+  }
   closedData.license = null; // skip trying to check big license object
   expect(closedData).eqls(expectedData);
 
@@ -623,39 +521,30 @@ test("activity editor data and my folder contents before and after assigned", as
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
-    isFolder: false,
     isPublic: false,
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
     baseComponentCounts: "{}",
     numVariants: 1,
-    assignmentStatus: "Open",
-    classCode,
-    codeValidUntil: closeAt.toJSDate(),
     license: null,
     type: "singleDoc",
-    numToSelect: 1,
-    selectByVariant: false,
-    shuffle: false,
-    paginate: false,
-    activityLevelAttempts: false,
-    itemLevelAttempts: false,
     classifications: [],
-    documents: [
-      {
-        id: docId,
-        versionNum: 1,
-        source: "",
-        name: "Untitled sub-document",
-        doenetmlVersion: currentDoenetmlVersion,
-      },
-    ],
-    hasScoreData: false,
+    revisionNum: 1,
+    source: "",
+    doenetmlVersion: currentDoenetmlVersion,
     parent: null,
-    children: [],
+    assignmentInfo: {
+      assignmentStatus: "Open",
+      classCode,
+      codeValidUntil: closeAt.toJSDate(),
+      hasScoreData: false,
+    },
   };
 
+  if (openedData2 === undefined) {
+    throw Error("shouldn't happen");
+  }
   openedData2.license = null; // skip trying to check big license object
   expect(openedData2).eqls(expectedData);
 
@@ -664,15 +553,14 @@ test("activity editor data and my folder contents before and after assigned", as
     folderId: null,
     loggedInUserId: ownerId,
   });
-  delete expectedData.documents[0].versionNum;
+  delete expectedData.revisionNum;
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
   // just add some data (doesn't matter that it is owner themselves)
   await saveScoreAndState({
     activityId,
-    docId,
-    docVersionNum: 1,
+    activityRevisionNum: 1,
     userId: ownerId,
     score: 0.5,
     onSubmission: true,
@@ -688,39 +576,29 @@ test("activity editor data and my folder contents before and after assigned", as
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
-    isFolder: false,
     isPublic: false,
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
     baseComponentCounts: "{}",
     numVariants: 1,
-    assignmentStatus: "Open",
-    classCode,
-    codeValidUntil: closeAt.toJSDate(),
     license: null,
     type: "singleDoc",
-    numToSelect: 1,
-    selectByVariant: false,
-    shuffle: false,
-    paginate: false,
-    activityLevelAttempts: false,
-    itemLevelAttempts: false,
     classifications: [],
-    documents: [
-      {
-        id: docId,
-        versionNum: 1,
-        source: "",
-        name: "Untitled sub-document",
-        doenetmlVersion: currentDoenetmlVersion,
-      },
-    ],
-    hasScoreData: true,
+    revisionNum: 1,
+    source: "",
+    doenetmlVersion: currentDoenetmlVersion,
     parent: null,
-    children: [],
+    assignmentInfo: {
+      assignmentStatus: "Open",
+      classCode,
+      codeValidUntil: closeAt.toJSDate(),
+      hasScoreData: true,
+    },
   };
-
+  if (openedData3 === undefined) {
+    throw Error("shouldn't happen");
+  }
   openedData3.license = null; // skip trying to check big license object
   expect(openedData3).eqls(expectedData);
 
@@ -729,7 +607,7 @@ test("activity editor data and my folder contents before and after assigned", as
     folderId: null,
     loggedInUserId: ownerId,
   });
-  delete expectedData.documents[0].versionNum;
+  delete expectedData.revisionNum;
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
@@ -744,39 +622,30 @@ test("activity editor data and my folder contents before and after assigned", as
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
-    isFolder: false,
     isPublic: false,
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
     baseComponentCounts: "{}",
     numVariants: 1,
-    assignmentStatus: "Closed",
-    classCode,
-    codeValidUntil: null,
     license: null,
     type: "singleDoc",
-    numToSelect: 1,
-    selectByVariant: false,
-    shuffle: false,
-    paginate: false,
-    activityLevelAttempts: false,
-    itemLevelAttempts: false,
     classifications: [],
-    documents: [
-      {
-        id: docId,
-        versionNum: 1,
-        source: "",
-        name: "Untitled sub-document",
-        doenetmlVersion: currentDoenetmlVersion,
-      },
-    ],
-    hasScoreData: true,
+    revisionNum: 1,
+    source: "",
+    doenetmlVersion: currentDoenetmlVersion,
     parent: null,
-    children: [],
+    assignmentInfo: {
+      assignmentStatus: "Closed",
+      classCode,
+      codeValidUntil: null,
+      hasScoreData: true,
+    },
   };
 
+  if (closedData2 === undefined) {
+    throw Error("shouldn't happen");
+  }
   closedData2.license = null; // skip trying to check big license object
   expect(closedData2).eqls(expectedData);
 
@@ -785,7 +654,7 @@ test("activity editor data and my folder contents before and after assigned", as
     folderId: null,
     loggedInUserId: ownerId,
   });
-  delete expectedData.documents[0].versionNum;
+  delete expectedData.revisionNum;
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
@@ -799,101 +668,161 @@ test("activity editor data shows its parent folder is public", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { activityId } = await createActivity(ownerId, null);
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
 
   let { activity: data } = await getActivityEditorData(activityId, ownerId);
+  if (data === undefined) {
+    throw Error("shouldn't happen");
+  }
   expect(data.isPublic).eq(false);
   expect(data.parent).eq(null);
 
-  await makeActivityPublic({ id: activityId, ownerId, licenseCode: "CCBYSA" });
+  await setContentLicense({
+    id: activityId,
+    loggedInUserId: ownerId,
+    licenseCode: "CCBYSA",
+  });
+  await setContentIsPublic({
+    id: activityId,
+    loggedInUserId: ownerId,
+    isPublic: true,
+  });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
+  if (data === undefined) {
+    throw Error("shouldn't happen");
+  }
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCBYSA");
   expect(data.parent).eq(null);
 
-  const { folderId } = await createFolder(ownerId, null);
+  const { id: folderId } = await createContent(ownerId, "folder", null);
   await moveContent({
     id: activityId,
     desiredParentId: folderId,
     desiredPosition: 0,
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
+  if (data === undefined) {
+    throw Error("shouldn't happen");
+  }
   expect(data.isPublic).eq(true);
   expect(data.license?.code).eq("CCBYSA");
   expect(data.parent?.isPublic).eq(false);
 
-  await makeFolderPublic({ id: folderId, ownerId, licenseCode: "CCBYNCSA" });
+  await setContentLicense({
+    id: folderId,
+    loggedInUserId: ownerId,
+    licenseCode: "CCBYNCSA",
+  });
+  await setContentIsPublic({
+    id: folderId,
+    loggedInUserId: ownerId,
+    isPublic: true,
+  });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
+  if (data === undefined) {
+    throw Error("shouldn't happen");
+  }
+  // setting folder public also sets children to be public
   expect(data.isPublic).eq(true);
-  expect(data.license?.code).eq("CCBYNCSA");
+  // changing license of folder does not change license of content
+  expect(data.license?.code).eq("CCBYSA");
   expect(data.parent?.isPublic).eq(true);
 
-  await makeFolderPrivate({ id: folderId, ownerId });
+  await setContentIsPublic({
+    id: folderId,
+    loggedInUserId: ownerId,
+    isPublic: false,
+  });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
+  if (data === undefined) {
+    throw Error("shouldn't happen");
+  }
+  // setting folder private also sets children to be private
   expect(data.isPublic).eq(false);
   expect(data.parent?.isPublic).eq(false);
 
-  await makeFolderPublic({ id: folderId, ownerId, licenseCode: "CCDUAL" });
+  await setContentLicense({
+    id: folderId,
+    loggedInUserId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  await setContentIsPublic({
+    id: folderId,
+    loggedInUserId: ownerId,
+    isPublic: true,
+  });
   ({ activity: data } = await getActivityEditorData(activityId, ownerId));
+  if (data === undefined) {
+    throw Error("shouldn't happen");
+  }
   expect(data.isPublic).eq(true);
-  expect(data.license?.code).eq("CCDUAL");
-  expect(data.parent?.isPublic).eq(true);
-
-  await makeActivityPrivate({ id: activityId, ownerId });
-  ({ activity: data } = await getActivityEditorData(activityId, ownerId));
-  expect(data.isPublic).eq(false);
+  // changing license of folder does not change license of content
+  expect(data.license?.code).eq("CCBYSA");
   expect(data.parent?.isPublic).eq(true);
 });
 
-test("getDocumentSource gets source", async () => {
+test("getActivitySource gets source", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { docId } = await createActivity(ownerId, null);
-  await updateDoc({
-    id: docId,
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    id: activityId,
     source: "some content",
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
-  const documentSource = await getDocumentSource(docId, ownerId);
-  expect(documentSource.source).eq("some content");
+  const activitySource = await getActivitySource(activityId, ownerId);
+  expect(activitySource.source).eq("some content");
 });
 
 test("getContentDescription gets name and type", async () => {
   const { userId: ownerId } = await createTestUser();
 
-  const { activityId } = await createActivity(ownerId, null);
-  await updateContent({ id: activityId, name: "Activity 1", ownerId });
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    id: activityId,
+    name: "Activity 1",
+    loggedInUserId: ownerId,
+  });
   expect(await getContentDescription(activityId, ownerId)).eqls({
     id: activityId,
     name: "Activity 1",
     type: "singleDoc",
   });
 
-  const { folderId } = await createFolder(ownerId, null);
-  await updateContent({ id: folderId, name: "Folder 2", ownerId });
+  const { id: folderId } = await createContent(ownerId, "folder", null);
+  await updateContent({
+    id: folderId,
+    name: "Folder 2",
+    loggedInUserId: ownerId,
+  });
   expect(await getContentDescription(folderId, ownerId)).eqls({
     id: folderId,
     name: "Folder 2",
     type: "folder",
   });
 
-  const { folderId: sequenceId } = await createFolder(
-    ownerId,
-    null,
-    "sequence",
-  );
-  await updateContent({ id: sequenceId, name: "Sequence 3", ownerId });
+  const { id: sequenceId } = await createContent(ownerId, "sequence", null);
+  await updateContent({
+    id: sequenceId,
+    name: "Sequence 3",
+    loggedInUserId: ownerId,
+  });
   expect(await getContentDescription(sequenceId, ownerId)).eqls({
     id: sequenceId,
     name: "Sequence 3",
     type: "sequence",
   });
 
-  const { folderId: selectId } = await createFolder(ownerId, null, "select");
-  await updateContent({ id: selectId, name: "Select 4", ownerId });
+  const { id: selectId } = await createContent(ownerId, "select", null);
+  await updateContent({
+    id: selectId,
+    name: "Select 4",
+    loggedInUserId: ownerId,
+  });
   expect(await getContentDescription(selectId, ownerId)).eqls({
     id: selectId,
     name: "Select 4",
@@ -905,10 +834,10 @@ test("getContentDescription gets name and type", async () => {
     "not found",
   );
 
-  await shareFolder({
+  await modifyContentSharedWith({
+    action: "share",
     id: selectId,
-    ownerId,
-    licenseCode: "CCDUAL",
+    loggedInUserId: ownerId,
     users: [userId],
   });
 
@@ -922,41 +851,54 @@ test("getContentDescription gets name and type", async () => {
 test("get compound activity", async () => {
   const { userId: ownerId } = await createTestUser();
 
-  const { folderId: sequenceId } = await createFolder(
-    ownerId,
-    null,
-    "sequence",
-  );
+  const { id: sequenceId } = await createContent(ownerId, "sequence", null);
 
-  const { folderId: selectIdDelete } = await createFolder(
+  const { id: selectIdDelete } = await createContent(
     ownerId,
-    sequenceId,
     "select",
+    sequenceId,
   );
 
-  const { activityId: _activityIdDelete1 } = await createActivity(
+  const { id: _activityIdDelete1 } = await createContent(
     ownerId,
+    "singleDoc",
     selectIdDelete,
   );
 
-  const { folderId: selectId } = await createFolder(
-    ownerId,
-    sequenceId,
-    "select",
-  );
+  const { id: selectId } = await createContent(ownerId, "select", sequenceId);
 
-  const { activityId: activityId1 } = await createActivity(ownerId, selectId);
-  const { activityId: activityId2 } = await createActivity(ownerId, selectId);
-  const { activityId: activityIdDelete2 } = await createActivity(
+  const { id: activityId1 } = await createContent(
     ownerId,
+    "singleDoc",
     selectId,
   );
-  const { activityId: activityId3 } = await createActivity(ownerId, sequenceId);
+  const { id: activityId2 } = await createContent(
+    ownerId,
+    "singleDoc",
+    selectId,
+  );
+  const { id: activityIdDelete2 } = await createContent(
+    ownerId,
+    "singleDoc",
+    selectId,
+  );
+  const { id: activityId3 } = await createContent(
+    ownerId,
+    "singleDoc",
+    sequenceId,
+  );
 
-  await deleteActivity(activityIdDelete2, ownerId);
-  await deleteFolder(selectIdDelete, ownerId);
+  await deleteContent(activityIdDelete2, ownerId);
+  await deleteContent(selectIdDelete, ownerId);
 
-  const sequence = await getCompoundActivity(sequenceId, ownerId);
+  const { activity: sequence } = await getActivityViewerData(
+    sequenceId,
+    ownerId,
+  );
+
+  if (sequence.type !== "sequence") {
+    throw Error("shouldn't happen");
+  }
 
   expect(sequence.id).eqls(sequenceId);
   expect(sequence.type).eq("sequence");
@@ -964,6 +906,9 @@ test("get compound activity", async () => {
   expect(sequence.children.map((c) => c.id)).eqls([selectId, activityId3]);
 
   const select = sequence.children[0];
+  if (select.type !== "select") {
+    throw Error("shouldn't happen");
+  }
   expect(select.type).eq("select");
   expect(select.children.map((c) => c.id)).eqls([activityId1, activityId2]);
 });

@@ -108,7 +108,7 @@ model activityRevisions {
   numVariants         Int                  @default(1)
   baseComponentCounts String?              @db.Text
   doenetmlVersionId   Int?
-  content             content              @relation(fields: [activityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  activity            content              @relation(fields: [activityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   doenetmlVersion     doenetmlVersions?    @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   contributorHistory  contributorHistory[]
   activityState       activityState[]
@@ -156,10 +156,10 @@ model contributorHistory {
   prevActivityId          Bytes             @db.Binary(16)
   prevActivityRevisionNum Int
   withLicenseCode         String?           @db.VarChar(10)
-  timestampDoc            DateTime          @default(now())
-  timestampPrevDoc        DateTime          @default(now())
-  content                 content           @relation(fields: [activityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  prevContent             activityRevisions @relation(fields: [prevActivityId, prevActivityRevisionNum], references: [activityId, revisionNum], onDelete: NoAction, onUpdate: NoAction)
+  timestampActivity       DateTime          @default(now())
+  timestampPrevActivity   DateTime          @default(now())
+  activity                content           @relation(fields: [activityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  prevActivity            activityRevisions @relation(fields: [prevActivityId, prevActivityRevisionNum], references: [activityId, revisionNum], onDelete: NoAction, onUpdate: NoAction)
   withLicense             licenses?         @relation(fields: [withLicenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([activityId, prevActivityId])
@@ -213,8 +213,8 @@ model activityState {
   activityRevision    activityRevisions @relation(fields: [activityId, activityRevisionNum], references: [activityId, revisionNum], onDelete: NoAction, onUpdate: NoAction)
   user                users             @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
-  @@id([activityId, activityRevisionNum, userId, isLatest])
-  @@unique([activityId, activityRevisionNum, userId, hasMaxScore])
+  @@id([activityId, userId, isLatest])
+  @@unique([activityId, userId, hasMaxScore])
   @@index([userId])
 }
 

@@ -1,3 +1,6 @@
+import { ContentType } from "@prisma/client";
+import { prisma } from "./model";
+
 export type DoenetmlVersion = {
   id: number;
   displayedVersion: string;
@@ -39,6 +42,21 @@ export type UserInfo = {
   numLibrary?: number;
   numCommunity?: number;
 };
+
+export function isUserInfo(obj: unknown): obj is UserInfo {
+  const typedObj = obj as UserInfo;
+  return (
+    typedObj !== null &&
+    typeof typedObj === "object" &&
+    typedObj.userId instanceof Uint8Array &&
+    (typedObj.firstNames === null || typeof typedObj.firstNames === "string") &&
+    typeof typedObj.lastNames === "string" &&
+    (typedObj.numLibrary === undefined ||
+      typeof typedObj.numLibrary === "number") &&
+    (typedObj.numCommunity === undefined ||
+      typeof typedObj.numCommunity === "number")
+  );
+}
 
 export type ContentClassification = {
   id: number;
@@ -96,7 +114,6 @@ export type PartialContentClassification = {
   numCurated?: number;
   numCommunity?: number;
 };
-export type ContentType = "singleDoc" | "select" | "sequence" | "folder";
 
 export function isContentType(type: unknown): type is ContentType {
   return (
@@ -105,29 +122,16 @@ export function isContentType(type: unknown): type is ContentType {
   );
 }
 
-export type ContentStructure = {
+export type ContentBase = {
   id: Uint8Array;
-  type: ContentType;
   ownerId: Uint8Array;
   owner?: UserInfo;
   name: string;
   imagePath: string | null;
-  assignmentStatus: AssignmentStatus;
-  isFolder?: boolean;
-  classCode: string | null;
-  codeValidUntil: Date | null;
   isPublic: boolean;
   isShared: boolean;
   sharedWith: UserInfo[];
   license: License | null;
-  numVariants?: number;
-  baseComponentCounts?: string;
-  numToSelect: number;
-  selectByVariant: boolean;
-  shuffle: boolean;
-  paginate: boolean;
-  activityLevelAttempts: boolean;
-  itemLevelAttempts: boolean;
   contentFeatures: {
     id: number;
     code: string;
@@ -138,14 +142,6 @@ export type ContentStructure = {
   classifications: ContentClassification[];
   librarySourceInfo?: LibraryInfo;
   libraryActivityInfo?: LibraryInfo;
-  documents: {
-    id: Uint8Array;
-    versionNum?: number;
-    name?: string;
-    source?: string;
-    doenetmlVersion: DoenetmlVersion;
-  }[];
-  hasScoreData: boolean;
   parent: {
     id: Uint8Array;
     name: string;
@@ -154,43 +150,116 @@ export type ContentStructure = {
     isShared: boolean;
     sharedWith: UserInfo[];
   } | null;
-  children: ContentStructure[];
+  assignmentInfo?: AssignmentInfo;
 };
 
-export function createContentStructure({
-  activityId,
+export type Doc = ContentBase & {
+  type: "singleDoc";
+  numVariants: number;
+  baseComponentCounts: string;
+  revisionNum?: number;
+  source: string;
+  doenetmlVersion: DoenetmlVersion;
+};
+
+export type QuestionBank = ContentBase & {
+  type: "select";
+  numToSelect: number;
+  selectByVariant: boolean;
+  children: Content[];
+};
+
+export type ProblemSet = ContentBase & {
+  type: "sequence";
+  shuffle: boolean;
+  paginate: boolean;
+  activityLevelAttempts: boolean;
+  itemLevelAttempts: boolean;
+  children: Content[];
+};
+
+export type Folder = ContentBase & {
+  type: "folder";
+  children: Content[];
+};
+
+export type Activity = Doc | QuestionBank | ProblemSet;
+
+export type Content = Doc | QuestionBank | ProblemSet | Folder;
+
+export type AssignmentInfo = {
+  assignmentStatus: AssignmentStatus;
+  classCode: string | null;
+  codeValidUntil: Date | null;
+  hasScoreData: boolean;
+};
+
+export async function createContentInfo({
+  contentId,
   ownerId,
+  contentType,
 }: {
-  activityId: Uint8Array;
+  contentId: Uint8Array;
   ownerId: Uint8Array;
-}) {
-  const defaultStructure: ContentStructure = {
-    id: activityId,
-    type: "singleDoc",
+  contentType: ContentType;
+}): Promise<Content> {
+  const contentBase: ContentBase = {
+    id: contentId,
     name: "",
     ownerId: ownerId,
     imagePath: null,
-    assignmentStatus: "Unassigned",
-    classCode: null,
-    codeValidUntil: null,
     isPublic: false,
     isShared: false,
     sharedWith: [],
     license: null,
-    numToSelect: 1,
-    selectByVariant: false,
-    shuffle: false,
-    paginate: false,
-    activityLevelAttempts: false,
-    itemLevelAttempts: false,
+    parent: null,
     contentFeatures: [],
     classifications: [],
-    documents: [],
-    hasScoreData: false,
-    parent: null,
-    children: [],
   };
-  return defaultStructure;
+
+  switch (contentType) {
+    case "singleDoc": {
+      const defaultDoenetmlVersion =
+        await prisma.doenetmlVersions.findFirstOrThrow({
+          where: { default: true },
+        });
+      return {
+        type: "singleDoc",
+        numVariants: 1,
+        baseComponentCounts: "{}",
+        source: "",
+        doenetmlVersion: defaultDoenetmlVersion,
+        ...contentBase,
+      };
+    }
+    case "select": {
+      return {
+        type: "select",
+        numToSelect: 1,
+        selectByVariant: false,
+        children: [],
+        ...contentBase,
+      };
+    }
+    case "sequence": {
+      return {
+        type: "sequence",
+        shuffle: false,
+        paginate: false,
+        activityLevelAttempts: false,
+        itemLevelAttempts: false,
+        children: [],
+        ...contentBase,
+      };
+    }
+    case "folder": {
+      return {
+        type: "folder",
+        children: [],
+        ...contentBase,
+      };
+    }
+  }
 }
 
 export type LicenseCode = "CCDUAL" | "CCBYSA" | "CCBYNCSA";
@@ -213,26 +282,24 @@ export type License = {
   }[];
 };
 
-export type DocHistory = {
+export type ActivityHistory = {
   id: Uint8Array;
   contributorHistory: {
-    docId: Uint8Array;
-    prevDocId: Uint8Array;
-    prevDocVersionNum: number;
+    activityId: Uint8Array;
+    prevActivityId: Uint8Array;
+    prevActivityRevisionNum: number;
     withLicenseCode: string | null;
-    timestampDoc: Date;
-    timestampPrevDoc: Date;
-    prevDoc: {
-      document: {
-        source: string;
-        activity: {
-          name: string;
-          id: Uint8Array;
-          owner: UserInfo;
-        };
-      };
-      versionNum: number;
+    timestampActivity: Date;
+    timestampPrevActivity: Date;
+    prevActivity: {
+      revisionNum: number;
       cid: string;
+      source: string | null;
+      activity: {
+        name: string;
+        id: Uint8Array;
+        owner: UserInfo;
+      };
     };
   }[];
 };

@@ -1,10 +1,14 @@
-import { ContentType, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../model";
 import { LicenseCode } from "../types";
 import { processLicense } from "../utils/contentStructure";
-import { filterEditableActivity } from "../utils/permissions";
+import {
+  filterEditableActivity,
+  filterEditableContent,
+} from "../utils/permissions";
 import { getIsAdmin } from "./curate";
 import { isEqualUUID } from "../utils/uuid";
+import { InvalidRequestError } from "../utils/error";
 
 export async function getLicense(code: string) {
   const preliminary_license = await prisma.licenses.findUniqueOrThrow({
@@ -47,7 +51,7 @@ export async function setContentLicense({
 }) {
   const isAdmin = await getIsAdmin(loggedInUserId);
   await prisma.content.update({
-    where: { id, ...filterEditableActivity(loggedInUserId, isAdmin) },
+    where: { id, ...filterEditableContent(loggedInUserId, isAdmin) },
     data: { licenseCode },
   });
 }
@@ -55,24 +59,39 @@ export async function setContentLicense({
 /**
  * Set the `isPublic` flag on a content `id` along with all of its children.
  * Recurses to grandchildren/subfolders.
+ *
+ * If parent is public, however, it does not all the content to be set to private.
  */
-export function setContentIsPublic({
+export async function setContentIsPublic({
   id,
-  ownerId,
+  loggedInUserId,
   isPublic,
 }: {
   id: Uint8Array;
-  ownerId: Uint8Array;
+  loggedInUserId: Uint8Array;
   isPublic: boolean;
 }) {
+  if (!isPublic) {
+    const content = await prisma.content.findUniqueOrThrow({
+      where: { id, ...filterEditableContent(loggedInUserId) },
+      select: { parent: { select: { isPublic: true } } },
+    });
+
+    if (content.parent !== null && content.parent.isPublic) {
+      throw new InvalidRequestError(
+        "Content has a public parent -- cannot make it private.",
+      );
+    }
+  }
+
   return prisma.$queryRaw(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
-      WHERE id = ${id} AND ownerId = ${ownerId} AND isDeleted = FALSE
+      WHERE id = ${id} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
       UNION ALL
       SELECT content.id FROM content
-      INNER JOIN content_tree AS ft
-      ON content.parentId = ft.id
+      INNER JOIN content_tree AS ct
+      ON content.parentId = ct.id
       WHERE content.isDeleted = FALSE
     )
 
@@ -89,29 +108,33 @@ export function setContentIsPublic({
 export async function modifyContentSharedWith({
   action,
   id,
-  ownerId,
+  loggedInUserId,
   users,
 }: {
   action: "share" | "unshare";
   id: Uint8Array;
-  ownerId: Uint8Array;
+  loggedInUserId: Uint8Array;
   users: Uint8Array[];
 }) {
   const contentIds = (
     await prisma.$queryRaw<{ id: Uint8Array }[]>(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
-      WHERE id = ${id} AND ownerId = ${ownerId} AND isDeleted = FALSE
+      WHERE id = ${id} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
       UNION ALL
       SELECT content.id FROM content
-      INNER JOIN content_tree AS ft
-      ON content.parentId = ft.id
+      INNER JOIN content_tree AS ct
+      ON content.parentId = ct.id
       WHERE content.isDeleted = FALSE
     )
 
     SELECT id from content_tree;
     `)
   ).map((obj) => obj.id);
+
+  if (contentIds.length === 0) {
+    throw new InvalidRequestError("Content does not exist or is not editable");
+  }
 
   const relevantContentShares = users.flatMap((userId) =>
     contentIds.map((contentId) => ({ userId, contentId })),
@@ -135,11 +158,11 @@ export async function modifyContentSharedWith({
 
 export async function shareContentWithEmail({
   id,
-  ownerId,
+  loggedInUserId,
   email,
 }: {
   id: Uint8Array;
-  ownerId: Uint8Array;
+  loggedInUserId: Uint8Array;
   email: string;
 }) {
   let userId;
@@ -162,14 +185,14 @@ export async function shareContentWithEmail({
     }
   }
 
-  if (isEqualUUID(userId, ownerId)) {
+  if (isEqualUUID(userId, loggedInUserId)) {
     throw Error("Cannot share with self");
   }
 
   await modifyContentSharedWith({
     action: "share",
     id,
-    ownerId,
+    loggedInUserId,
     users: [userId],
   });
 }

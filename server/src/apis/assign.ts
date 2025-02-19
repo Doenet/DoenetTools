@@ -1,36 +1,33 @@
+import { DateTime } from "luxon";
+import { prisma } from "../model";
+import { createActivityRevision } from "./activity";
+import { filterEditableActivity } from "../utils/permissions";
+import { getRandomValues } from "crypto";
+import { Prisma } from "@prisma/client";
+
 export async function assignActivity(
   activityId: Uint8Array,
-  userId: Uint8Array,
+  loggedInUserId: Uint8Array,
 ) {
-  const origActivity = await prisma.content.findUniqueOrThrow({
+  // verify
+  await prisma.content.findUniqueOrThrow({
     where: {
       id: activityId,
-      isDeleted: false,
-      isFolder: false,
-      ownerId: userId,
       isAssigned: false,
+      ...filterEditableActivity(loggedInUserId),
     },
-    include: {
-      documents: {
-        where: { isDeleted: false },
-      },
-    },
+    select: { id: true },
   });
+
+  const newRevision = await createActivityRevision(activityId);
 
   await prisma.content.update({
     where: { id: activityId },
     data: {
       isAssigned: true,
+      assignedRevisionNum: newRevision.revisionNum,
     },
   });
-
-  for (const doc of origActivity.documents) {
-    const docVersion = await createDocumentVersion(doc.id);
-    await prisma.documents.update({
-      where: { id: doc.id },
-      data: { assignedVersionNum: docVersion.versionNum },
-    });
-  }
 }
 
 function generateClassCode() {
@@ -45,7 +42,7 @@ export async function openAssignmentWithCode(
   loggedInUserId: Uint8Array,
 ) {
   const initialActivity = await prisma.content.findUniqueOrThrow({
-    where: { id: activityId, ownerId: loggedInUserId, isFolder: false },
+    where: { id: activityId, ownerId: loggedInUserId, type: { not: "folder" } },
     select: { classCode: true, isAssigned: true },
   });
 
@@ -100,10 +97,8 @@ export async function closeAssignmentWithCode(
   await prisma.content.update({
     where: {
       id: activityId,
-      isDeleted: false,
-      isFolder: false,
-      ownerId: userId,
       isAssigned: true,
+      ...filterEditableActivity(userId),
     },
     data: {
       codeValidUntil: null,
@@ -133,20 +128,14 @@ export async function unassignActivity(
   await prisma.content.update({
     where: {
       id: activityId,
-      isDeleted: false,
-      isFolder: false,
-      ownerId: userId,
       isAssigned: true,
       assignmentScores: { none: { activityId } },
+      ...filterEditableActivity(userId),
     },
     data: {
       isAssigned: false,
+      assignedRevisionNum: null,
     },
-  });
-
-  await prisma.documents.updateMany({
-    where: { activityId },
-    data: { assignedVersionNum: null },
   });
 }
 

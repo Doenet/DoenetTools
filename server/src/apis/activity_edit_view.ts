@@ -1,3 +1,18 @@
+import { ContentType, Prisma } from "@prisma/client";
+import { Content, createContentInfo } from "../types";
+import { InvalidRequestError } from "../utils/error";
+import {
+  checkActivityPermissions,
+  filterViewableActivity,
+} from "../utils/permissions";
+import { prisma } from "../model";
+import { getAvailableContentFeatures } from "./classification";
+import { processContent, returnContentSelect } from "../utils/contentStructure";
+import { getIsAdmin } from "./curate";
+import { isEqualUUID } from "../utils/uuid";
+import { recordContentView } from "./explore";
+import { getActivityContributorHistory } from "./remix";
+
 /**
  * Get the data needed to edit `activityId` of `ownerId`.
  *
@@ -22,31 +37,33 @@ export async function getActivityEditorData(
     activityId,
     loggedInUserId,
   );
-  if (activityPermissions.viewable === false) {
+  if (activityPermissions.viewable === false || !activityPermissions.ownerId) {
     throw new InvalidRequestError(
       "This activity does not exist or is not visible.",
     );
   }
 
-  let activity: ContentStructure = createContentStructure({
-    activityId,
-    ownerId: activityPermissions.ownerId!,
-  });
-
   if (activityPermissions.editable === false) {
-    return { editableByMe: false, activity };
+    return { editableByMe: false, activityId };
   }
 
   const { isAssigned, type: contentType } =
     await prisma.content.findUniqueOrThrow({
       where: {
         id: activityId,
+        type: { not: "folder" },
       },
       select: {
         isAssigned: true,
         type: true,
       },
     });
+
+  let activity: Content = await createContentInfo({
+    contentId: activityId,
+    contentType,
+    ownerId: activityPermissions.ownerId,
+  });
 
   const availableFeatures = await getAvailableContentFeatures();
 
@@ -57,56 +74,22 @@ export async function getActivityEditorData(
     return { editableByMe: true, activity, availableFeatures };
   }
 
-  const contentSelect = returnContentStructureSharedDetailsSelect({
+  const contentSelect = returnContentSelect({
     includeAssignInfo: true,
+    includeAssignedRevision: isAssigned,
+    countAssignmentScores: true,
+    includeClassifications: true,
   });
 
-  if (isAssigned) {
-    // modify `contentSelect` to include assigned doenetMl and to count assignment scores
-    const documents = {
-      ...contentSelect.documents,
-      select: {
-        id: true,
-        name: true,
-        assignedVersion: {
-          select: {
-            versionNum: true,
-            source: true,
-            doenetmlVersion: true,
-            baseComponentCounts: true,
-            numVariants: true,
-          },
-        },
-      },
-    };
-    const contentSelectWithAssignedVersion = {
-      ...contentSelect,
-      documents,
-      _count: { select: { assignmentScores: true } },
-    };
+  const preliminaryActivity = await prisma.content.findUniqueOrThrow({
+    where: {
+      id: activityId,
+      isDeleted: false,
+    },
+    select: contentSelect,
+  });
 
-    const assignedActivity = await prisma.content.findUniqueOrThrow({
-      where: {
-        id: activityId,
-        isDeleted: false,
-        isFolder: false,
-      },
-      select: contentSelectWithAssignedVersion,
-    });
-
-    activity = processContentSharedDetailsAssignedDoc(assignedActivity);
-  } else {
-    const unassignedActivity = await prisma.content.findUniqueOrThrow({
-      where: {
-        id: activityId,
-        isDeleted: false,
-        isFolder: false,
-      },
-      select: contentSelect,
-    });
-
-    activity = processContentSharedDetails(unassignedActivity);
-  }
+  activity = processContent(preliminaryActivity);
 
   return { editableByMe: true, activity, availableFeatures };
 }
@@ -116,7 +99,6 @@ export async function getActivityEditorData(
  *
  * We return current source from the documents table
  *
- * @param activityId
  */
 export async function getSharedEditorData(
   activityId: Uint8Array,
@@ -129,7 +111,7 @@ export async function getSharedEditorData(
       id: activityId,
       ...filterViewableActivity(loggedInUserId, false),
     },
-    select: returnContentStructureFullOwnerSelect(),
+    select: returnContentSelect({}),
   });
 
   const activity = processContent(preliminaryActivity, loggedInUserId);
@@ -137,7 +119,6 @@ export async function getSharedEditorData(
   return activity;
 }
 
-// TODO: generalize this to multi-document activities
 export async function getActivityViewerData(
   activityId: Uint8Array,
   loggedInUserId: Uint8Array,
@@ -172,24 +153,20 @@ export async function getActivityViewerData(
       id: activityId,
       ...filterViewableActivity(loggedInUserId, isAdmin),
     },
-    select: returnContentStructureFullOwnerSelect(),
+    select: returnContentSelect({ includeOwnerDetails: true }),
   });
 
   const activity = processContent(preliminaryActivity, loggedInUserId);
 
-  const docHistories = await getDocumentContributorHistories({
-    docIds: activity.documents.map((doc) => doc.id),
+  const activityHistory = await getActivityContributorHistory({
+    activityId,
     loggedInUserId,
     isAdmin,
   });
 
-  if (!isEqualUUID(loggedInUserId, activity.ownerId)) {
-    await recordContentView(activityId, loggedInUserId);
-  }
-
   return {
     activity,
-    docHistories,
+    activityHistory,
   };
 }
 
@@ -199,7 +176,7 @@ export async function getActivityViewerData(
  *
  * Used for displaying the entire contents of a `select` or `sequence` activity.
  */
-export async function getCompoundActivity(
+async function getCompoundActivity(
   activityId: Uint8Array<ArrayBufferLike>,
   loggedInUserId: Uint8Array<ArrayBufferLike>,
 ) {
@@ -240,7 +217,7 @@ export async function getCompoundActivity(
     where: {
       id: { in: [activityId, ...matches.map((m) => m.id)] },
     },
-    select: returnContentStructureFullOwnerSelect(),
+    select: returnContentSelect({ includeOwnerDetails: true }),
     orderBy: [{ parentId: "asc" }, { sortIndex: "asc" }],
   });
 
@@ -250,7 +227,7 @@ export async function getCompoundActivity(
   preliminaryList.splice(idx, 1);
 
   function findDescendants(id: Uint8Array) {
-    const children: ContentStructure[] = [];
+    const children: Content[] = [];
     for (let i = 0; i < preliminaryList.length; i++) {
       if (isEqualUUID(preliminaryList[i].parent!.id, id)) {
         children.push(processContent(preliminaryList[i], loggedInUserId));
@@ -260,12 +237,17 @@ export async function getCompoundActivity(
     }
 
     for (const child of children) {
-      child.children = findDescendants(child.id);
+      if (child.type !== "singleDoc") {
+        child.children = findDescendants(child.id);
+      }
     }
 
     return children;
   }
 
-  activity.children = findDescendants(activity.id);
+  if (activity.type !== "singleDoc") {
+    activity.children = findDescendants(activity.id);
+  }
+
   return activity;
 }

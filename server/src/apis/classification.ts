@@ -1,3 +1,5 @@
+import { prisma } from "../model";
+
 export async function getClassificationCategories() {
   const results = await prisma.classificationSystems.findMany({
     orderBy: {

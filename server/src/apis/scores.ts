@@ -7,7 +7,6 @@ import { isEqualUUID } from "../utils/uuid";
 // If not, how do we communicate that fact
 export async function saveScoreAndState({
   activityId,
-  docId,
   activityRevisionNum,
   userId,
   score,
@@ -15,7 +14,6 @@ export async function saveScoreAndState({
   state,
 }: {
   activityId: Uint8Array;
-  docId: Uint8Array;
   activityRevisionNum: number;
   userId: Uint8Array;
   score: number;
@@ -23,7 +21,7 @@ export async function saveScoreAndState({
   state: string;
 }) {
   // make sure have an assignmentScores record
-  // so that can satisfy foreign key constraints on documentState
+  // so that can satisfy foreign key constraints on activityState
   await prisma.assignmentScores.upsert({
     where: { activityId_userId: { activityId, userId } },
     update: {},
@@ -32,9 +30,8 @@ export async function saveScoreAndState({
 
   const stateWithMaxScore = await prisma.activityState.findUnique({
     where: {
-      activityId_activityRevisionNum_userId_hasMaxScore: {
+      activityId_userId_hasMaxScore: {
         activityId,
-        activityRevisionNum,
         userId,
         hasMaxScore: true,
       },
@@ -59,19 +56,19 @@ export async function saveScoreAndState({
     try {
       await prisma.activityState.delete({
         where: {
-          activityId_activityRevisionNum_userId_isLatest: {
+          activityId_userId_isLatest: {
             activityId,
-            activityRevisionNum,
             userId,
             isLatest: false,
           },
         },
       });
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        if (e.code === "P2001") {
-          // if error was that record doesn't exist, then ignore it
-        }
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2025"
+      ) {
+        // if error was that record doesn't exist, then ignore it
       } else {
         throw e;
       }
@@ -82,9 +79,8 @@ export async function saveScoreAndState({
     try {
       await prisma.activityState.update({
         where: {
-          activityId_activityRevisionNum_userId_hasMaxScore: {
+          activityId_userId_hasMaxScore: {
             activityId,
-            activityRevisionNum,
             userId,
             hasMaxScore: true,
           },
@@ -94,10 +90,11 @@ export async function saveScoreAndState({
         },
       });
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        if (e.code === "P2001") {
-          // if error was that record doesn't exist, then ignore it
-        }
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2025"
+      ) {
+        // if error was that record doesn't exist, then ignore it
       } else {
         throw e;
       }
@@ -107,9 +104,8 @@ export async function saveScoreAndState({
   // add/update the latest activity state and maxScore
   await prisma.activityState.upsert({
     where: {
-      activityId_activityRevisionNum_userId_isLatest: {
+      activityId_userId_isLatest: {
         activityId,
-        activityRevisionNum,
         userId,
         isLatest: true,
       },
@@ -118,6 +114,7 @@ export async function saveScoreAndState({
       score,
       state,
       hasMaxScore,
+      activityRevisionNum,
     },
     create: {
       activityId,
@@ -135,40 +132,10 @@ export async function saveScoreAndState({
   // unless the score increased
 
   if (hasStrictMaxScore) {
-    // recalculate the score using the new maximum scores from each document
-    const activityStates = await prisma.activityState.findMany({
-      where: {
-        assignmentScore: {
-          activityId,
-          userId,
-        },
-        hasMaxScore: true,
-      },
-      select: {
-        score: true,
-      },
-    });
-    const activityMaxScores = activityStates.map((x) => x.score);
-
-    // since some document might not have a score recorded yet,
-    // count the number of actual documents for the assignment
-    const assignmentDocumentsAggregation = await prisma.documents.aggregate({
-      _count: {
-        id: true,
-      },
-      where: {
-        activityId,
-      },
-    });
-    const numDocuments = assignmentDocumentsAggregation._count.id;
-
-    const averageScore =
-      activityMaxScores.reduce((a, c) => a + c) / numDocuments;
-
     await prisma.assignmentScores.update({
       where: { activityId_userId: { activityId, userId } },
       data: {
-        score: averageScore,
+        score,
       },
     });
   }

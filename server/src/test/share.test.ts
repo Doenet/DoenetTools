@@ -23,7 +23,9 @@ import {
   unshareFolder,
   updateUser,
 } from "../model";
-import { createTestUser } from "./utils";
+import { createTestUser, getContent } from "./utils";
+import { createContent } from "../apis/activity";
+import { setContentIsPublic, setContentLicense } from "../apis/share";
 
 test("content in public folder is created as public", async () => {
   const owner = await createTestUser();
@@ -92,6 +94,83 @@ test("content in shared folder is created shared", async () => {
   expect(content[1].sharedWith).eqls([userFields]);
   expect(content[1].license?.code).eq("CCBYSA");
 });
+
+test("if content has a public parent, cannot make it private", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  const { id: folderId } = await createContent(ownerId, "folder", null);
+  await setContentLicense({
+    id: folderId,
+    loggedInUserId: ownerId,
+    licenseCode: "CCBYNCSA",
+  });
+  await setContentIsPublic({
+    id: folderId,
+    loggedInUserId: ownerId,
+    isPublic: true,
+  });
+
+  // creating content inside a public folder make it public with same license
+  const { id: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    folderId,
+  );
+  let activity = await getContent(activityId);
+  expect(activity.isPublic).eq(true);
+  expect(activity.licenseCode).eq("CCBYNCSA");
+
+  // change license of content is OK
+  await setContentLicense({
+    id: activityId,
+    loggedInUserId: ownerId,
+    licenseCode: "CCDUAL",
+  });
+  activity = await getContent(activityId);
+  expect(activity.isPublic).eq(true);
+  expect(activity.licenseCode).eq("CCDUAL");
+
+  // since have public parent, cannot make child private
+  await expect(
+    setContentIsPublic({
+      id: activityId,
+      loggedInUserId: ownerId,
+      isPublic: false,
+    }),
+  ).rejects.toThrow("cannot make it private");
+
+  // make parent private, activity becomes private
+
+  await setContentIsPublic({
+    id: folderId,
+    loggedInUserId: ownerId,
+    isPublic: false,
+  });
+
+  activity = await getContent(activityId);
+  expect(activity.isPublic).eq(false);
+
+  // make the content public
+  await setContentIsPublic({
+    id: activityId,
+    loggedInUserId: ownerId,
+    isPublic: true,
+  });
+  activity = await getContent(activityId);
+  expect(activity.isPublic).eq(true);
+
+  // can make it private now
+  await setContentIsPublic({
+    id: activityId,
+    loggedInUserId: ownerId,
+    isPublic: false,
+  });
+  activity = await getContent(activityId);
+  expect(activity.isPublic).eq(false);
+});
+
+// TODO: make test, if content has a parent that is shared with a user, cannot unshare with that user
 
 test("making folder public/private also makes its content public/private", async () => {
   const owner = await createTestUser();

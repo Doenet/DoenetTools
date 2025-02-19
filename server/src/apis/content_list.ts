@@ -1,3 +1,10 @@
+import { getLibraryAccountId } from "./curate";
+import { prisma } from "../model";
+import { filterEditableContent } from "../utils/permissions";
+import { processContent, returnContentSelect } from "../utils/contentStructure";
+import { Content } from "../types";
+import { getAvailableContentFeatures } from "./classification";
+
 export async function getMyFolderContent({
   folderId,
   loggedInUserId,
@@ -9,20 +16,20 @@ export async function getMyFolderContent({
 }) {
   const ownerId = isLibrary ? await getLibraryAccountId() : loggedInUserId;
 
-  let folder: ContentStructure | null = null;
+  let folder: Content | null = null;
 
   if (folderId !== null) {
     // if ask for a folder, make sure it exists and is owned by logged in user
     const preliminaryFolder = await prisma.content.findUniqueOrThrow({
       where: {
         id: folderId,
-        isFolder: true,
+        type: "folder",
         ...filterEditableContent(ownerId, false),
       },
-      select: returnContentStructureSharedDetailsNoClassDocsSelect(),
+      select: returnContentSelect({ includeShareDetails: true }),
     });
 
-    folder = processContentSharedDetailsNoClassDocs(preliminaryFolder);
+    folder = processContent(preliminaryFolder);
   }
 
   const preliminaryContent = await prisma.content.findMany({
@@ -31,18 +38,15 @@ export async function getMyFolderContent({
       isDeleted: false,
       parentId: folderId,
     },
-    select: {
-      ...returnContentStructureSharedDetailsSelect({
-        includeAssignInfo: true,
-      }),
-      _count: { select: { assignmentScores: true } },
-    },
+    select: returnContentSelect({
+      includeAssignInfo: true,
+      countAssignmentScores: true,
+      includeShareDetails: true,
+    }),
     orderBy: { sortIndex: "asc" },
   });
 
-  const content: ContentStructure[] = preliminaryContent.map(
-    processContentSharedDetails,
-  );
+  const content: Content[] = preliminaryContent.map(processContent);
 
   const availableFeatures = await getAvailableContentFeatures();
 

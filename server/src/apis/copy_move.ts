@@ -1,3 +1,12 @@
+import { Prisma } from "@prisma/client";
+import { prisma } from "../model";
+import { LicenseCode } from "../types";
+import { filterEditableContent } from "../utils/permissions";
+import { isEqualUUID } from "../utils/uuid";
+import { getLibraryAccountId, mustBeAdmin } from "./curate";
+import { ShiftIndicesCallbackFunction, SORT_INCREMENT } from "../utils/sort";
+import { modifyContentSharedWith, setContentIsPublic } from "./share";
+
 /**
  * Move the content with `id` to position `desiredPosition` in the folder `desiredParentId`
  * (where an undefined `desiredParentId` indicates the root folder of `ownerId`).
@@ -11,13 +20,13 @@ export async function moveContent({
   id,
   desiredParentId,
   desiredPosition,
-  ownerId: loggedInUserId,
+  loggedInUserId,
   inLibrary = false,
 }: {
   id: Uint8Array;
   desiredParentId: Uint8Array | null;
   desiredPosition: number;
-  ownerId: Uint8Array;
+  loggedInUserId: Uint8Array;
   inLibrary?: boolean;
 }) {
   if (!Number.isInteger(desiredPosition)) {
@@ -31,31 +40,25 @@ export async function moveContent({
   }
 
   // make sure content exists and is owned by `ownerId`
-  const content = (await prisma.content.findUniqueOrThrow({
+  const content = await prisma.content.findUniqueOrThrow({
     where: {
       id,
-      ownerId,
-      isDeleted: false,
+      ...filterEditableContent(ownerId),
     },
-    select: { id: true, isFolder: true, licenseCode: true },
-  })) as {
-    id: Uint8Array;
-    isFolder: boolean;
-    licenseCode: LicenseCode | null;
-  };
+    select: { id: true, type: true, licenseCode: true },
+  });
 
-  let desiredFolderIsPublic = false;
-  let desiredFolderLicenseCode: LicenseCode = "CCDUAL";
-  let desiredFolderShares: Uint8Array[] = [];
+  let desiredParentIsPublic = false;
+  let desiredParentLicenseCode: LicenseCode = "CCDUAL";
+  let desiredParentShares: Uint8Array[] = [];
 
   if (desiredParentId !== null) {
-    // if desired parent folder is specified, make sure it exists and is owned by `ownerId`
+    // if desired parent is specified, make sure it exists and is owned by `ownerId`
     const parent = await prisma.content.findUniqueOrThrow({
       where: {
         id: desiredParentId,
-        ownerId,
-        isDeleted: false,
-        isFolder: true,
+        type: { not: "singleDoc" },
+        ...filterEditableContent(ownerId),
       },
       select: {
         isPublic: true,
@@ -64,48 +67,49 @@ export async function moveContent({
       },
     });
 
-    // If the parent folder is shared, then we'll need to share the resulting content, as well.
+    // If the parent is shared, then we'll need to share the resulting content, as well.
     if (parent.isPublic) {
-      desiredFolderIsPublic = true;
+      desiredParentIsPublic = true;
       if (parent.licenseCode) {
-        desiredFolderLicenseCode = parent.licenseCode as LicenseCode;
+        desiredParentLicenseCode = parent.licenseCode as LicenseCode;
       }
     }
     if (parent.sharedWith.length > 0) {
-      desiredFolderShares = parent.sharedWith.map((cs) => cs.userId);
+      desiredParentShares = parent.sharedWith.map((cs) => cs.userId);
       if (parent.licenseCode) {
-        desiredFolderLicenseCode = parent.licenseCode as LicenseCode;
+        desiredParentLicenseCode = parent.licenseCode as LicenseCode;
       }
     }
 
-    if (content.isFolder) {
-      // if content is a folder and moving it to another folder,
-      // make sure that folder is not itself or a subfolder of itself
+    if (content.type !== "singleDoc") {
+      // if content is has children and moving it to another parent,
+      // make sure that parent is not the content or a descendant of the content
 
       if (isEqualUUID(desiredParentId, content.id)) {
-        throw Error("Cannot move folder into itself");
+        throw Error("Cannot move content into itself");
       }
 
-      const subfolders = await prisma.$queryRaw<
+      const descendants = await prisma.$queryRaw<
         {
           id: Uint8Array;
         }[]
       >(Prisma.sql`
-        WITH RECURSIVE folder_tree(id) AS (
+        WITH RECURSIVE content_tree(id) AS (
           SELECT id FROM content
           WHERE parentId = ${content.id} AND isFolder = TRUE 
           UNION ALL
           SELECT c.id FROM content AS c
-          INNER JOIN folder_tree AS ft
-          ON c.parentId = ft.id
+          INNER JOIN content_tree AS ct
+          ON c.parentId = ct.id
           WHERE c.isFolder = TRUE 
         )
 
-        SELECT * FROM folder_tree
+        SELECT * FROM content_tree
         `);
 
       if (
-        subfolders.findIndex((sf) => isEqualUUID(sf.id, desiredParentId)) !== -1
+        descendants.findIndex((sf) => isEqualUUID(sf.id, desiredParentId)) !==
+        -1
       ) {
         throw Error("Cannot move folder into a subfolder of itself");
       }
@@ -157,47 +161,41 @@ export async function moveContent({
     shiftCallback,
   );
 
+  const data =
+    content.licenseCode === undefined
+      ? {
+          sortIndex: newSortIndex,
+          parentId: desiredParentId,
+          // content did not have a license code before,
+          // use license from parent
+          licenseCode: desiredParentLicenseCode,
+        }
+      : {
+          sortIndex: newSortIndex,
+          parentId: desiredParentId,
+        };
+
   // Move the item!
   await prisma.content.update({
     where: { id },
-    data: {
-      sortIndex: newSortIndex,
-      parentId: desiredParentId,
-    },
+    data,
   });
 
-  if (desiredFolderIsPublic) {
-    if (content.isFolder) {
-      await makeFolderPublic({
-        id: content.id,
-        ownerId,
-        licenseCode: content.licenseCode ?? desiredFolderLicenseCode,
-      });
-    } else {
-      await makeActivityPublic({
-        id: content.id,
-        ownerId,
-        licenseCode: content.licenseCode ?? desiredFolderLicenseCode,
-      });
-    }
+  if (desiredParentIsPublic) {
+    await setContentIsPublic({
+      id: content.id,
+      loggedInUserId: ownerId,
+      isPublic: true,
+    });
   }
 
-  if (desiredFolderShares.length > 0) {
-    if (content.isFolder) {
-      await shareFolder({
-        id: content.id,
-        ownerId,
-        licenseCode: content.licenseCode ?? desiredFolderLicenseCode,
-        users: desiredFolderShares,
-      });
-    } else {
-      await shareActivity({
-        id: content.id,
-        ownerId,
-        licenseCode: content.licenseCode ?? desiredFolderLicenseCode,
-        users: desiredFolderShares,
-      });
-    }
+  if (desiredParentShares.length > 0) {
+    await modifyContentSharedWith({
+      action: "share",
+      id: content.id,
+      loggedInUserId: ownerId,
+      users: desiredParentShares,
+    });
   }
 }
 
@@ -209,9 +207,6 @@ export async function moveContent({
  * in order to fit a new item at `desiredPosition`,
  * then `shiftIndicesCallback` will be called to increment or decrement a subset of the sort indices.
  *
- * @param currentItems
- * @param desiredPosition
- * @param shiftIndicesCallback
  * @returns a promise resolving to the new sortIndex
  */
 async function calculateNewSortIndex(
@@ -316,9 +311,9 @@ export async function copyActivityToFolder(
     );
   }
 
-  let desiredFolderIsPublic = false;
-  let desiredFolderLicenseCode: LicenseCode = "CCDUAL";
-  let desiredFolderShares: Uint8Array[] = [];
+  let desiredParentIsPublic = false;
+  let desiredParentLicenseCode: LicenseCode = "CCDUAL";
+  let desiredParentShares: Uint8Array[] = [];
 
   if (desiredParentId !== null) {
     // if desired parent is specified, make sure it exists and is owned by `userId`
@@ -339,15 +334,15 @@ export async function copyActivityToFolder(
     // If the parent folder is shared, then we'll need to share the resulting content, as well,
     // with the same license.
     if (parent.isPublic) {
-      desiredFolderIsPublic = true;
+      desiredParentIsPublic = true;
       if (parent.licenseCode) {
-        desiredFolderLicenseCode = parent.licenseCode as LicenseCode;
+        desiredParentLicenseCode = parent.licenseCode as LicenseCode;
       }
     }
     if (parent.sharedWith.length > 0) {
-      desiredFolderShares = parent.sharedWith.map((cs) => cs.userId);
+      desiredParentShares = parent.sharedWith.map((cs) => cs.userId);
       if (parent.licenseCode) {
-        desiredFolderLicenseCode = parent.licenseCode as LicenseCode;
+        desiredParentLicenseCode = parent.licenseCode as LicenseCode;
       }
     }
   }
@@ -370,9 +365,9 @@ export async function copyActivityToFolder(
       contentFeatures: {
         connect: origActivity.contentFeatures.map((cf) => ({ id: cf.id })),
       },
-      isPublic: desiredFolderIsPublic,
-      licenseCode: origActivity.licenseCode ?? desiredFolderLicenseCode,
-      sharedWith: { create: desiredFolderShares.map((u) => ({ userId: u })) },
+      isPublic: desiredParentIsPublic,
+      licenseCode: origActivity.licenseCode ?? desiredParentLicenseCode,
+      sharedWith: { create: desiredParentShares.map((u) => ({ userId: u })) },
     },
   });
 
@@ -516,10 +511,10 @@ export async function copyFolderToFolder(
     throw Error("copyFolderToFolder cannot copy a document");
   }
 
-  let desiredFolderIsPublic = false;
-  let desiredFolderLicenseCode: LicenseCode = "CCDUAL";
-  let desiredFolderShares: Uint8Array[] = [];
-  let desiredFolderType: ContentType = "folder";
+  let desiredParentIsPublic = false;
+  let desiredParentLicenseCode: LicenseCode = "CCDUAL";
+  let desiredParentShares: Uint8Array[] = [];
+  let desiredParentType: ContentType = "folder";
 
   if (desiredParentId !== null) {
     // if desired parent is specified, make sure it exists and is owned by `ownerId`
@@ -538,20 +533,20 @@ export async function copyFolderToFolder(
       },
     });
 
-    desiredFolderType = parent.type;
+    desiredParentType = parent.type;
 
     // If the parent folder is shared, then we'll need to share the resulting content, as well,
     // with the same license.
     if (parent.isPublic) {
-      desiredFolderIsPublic = true;
+      desiredParentIsPublic = true;
       if (parent.licenseCode) {
-        desiredFolderLicenseCode = parent.licenseCode as LicenseCode;
+        desiredParentLicenseCode = parent.licenseCode as LicenseCode;
       }
     }
     if (parent.sharedWith.length > 0) {
-      desiredFolderShares = parent.sharedWith.map((cs) => cs.userId);
+      desiredParentShares = parent.sharedWith.map((cs) => cs.userId);
       if (parent.licenseCode) {
-        desiredFolderLicenseCode = parent.licenseCode as LicenseCode;
+        desiredParentLicenseCode = parent.licenseCode as LicenseCode;
       }
     }
 
@@ -572,8 +567,8 @@ export async function copyFolderToFolder(
           WHERE parentId = ${originalContent.id} AND isFolder = TRUE 
           UNION ALL
           SELECT c.id FROM content AS c
-          INNER JOIN folder_tree AS ft
-          ON c.parentId = ft.id
+          INNER JOIN folder_tree AS ct
+          ON c.parentId = ct.id
           WHERE c.isFolder = TRUE 
         )
 
@@ -593,10 +588,10 @@ export async function copyFolderToFolder(
   // then copy the children of `originalContent` rather than the content itself
 
   const copyJustChildren =
-    (desiredFolderType === "sequence" &&
+    (desiredParentType === "sequence" &&
       (originalContent.type === "sequence" ||
         originalContent.type === "folder")) ||
-    desiredFolderType === "select";
+    desiredParentType === "select";
 
   if (copyJustChildren) {
     const newIds: Uint8Array[] = [];
@@ -633,10 +628,10 @@ export async function copyFolderToFolder(
         ownerId,
         parentId: desiredParentId,
         sortIndex,
-        licenseCode: originalContent.licenseCode ?? desiredFolderLicenseCode,
-        isPublic: desiredFolderIsPublic,
+        licenseCode: originalContent.licenseCode ?? desiredParentLicenseCode,
+        isPublic: desiredParentIsPublic,
         sharedWith: {
-          create: desiredFolderShares.map((u) => ({ userId: u })),
+          create: desiredParentShares.map((u) => ({ userId: u })),
         },
         numToSelect: originalContent.numToSelect,
         selectByVariant: originalContent.selectByVariant,

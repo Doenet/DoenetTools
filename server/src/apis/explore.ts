@@ -1,3 +1,6 @@
+import { Prisma } from "@prisma/client";
+import { prisma } from "../model";
+
 /**
  * Remove operators that break MySQL BOOLEAN search and add * at the end of every word so that match beginning of words
  * @returns sanitized query
@@ -1979,12 +1982,12 @@ export async function getSharedContentMatchCountPerAvailableFeature({
 }
 
 export async function recordContentView(
-  activityId: Uint8Array,
+  contentId: Uint8Array,
   loggedInUserId: Uint8Array,
 ) {
   try {
     await prisma.contentViews.create({
-      data: { activityId, userId: loggedInUserId },
+      data: { contentId, userId: loggedInUserId },
     });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {

@@ -1,6 +1,6 @@
 import {
-  ContentStructure,
-  DocHistory,
+  Content,
+  ActivityHistory,
   DocRemixes,
   LibraryInfo,
   UserInfo,
@@ -38,9 +38,7 @@ export function compareUUID(UUID1: Uint8Array, UUID2: Uint8Array) {
   return Buffer.from(UUID1).compare(UUID2);
 }
 
-export function contentStructureConvertNoChildrenUUID(
-  content: ContentStructure,
-) {
+export function contentStructureConvertNoChildrenUUID(content: Content) {
   const parent = content.parent
     ? {
         ...content.parent,
@@ -83,7 +81,7 @@ type ConvertedContentStructure = ReturnType<
 > & { children: ConvertedContentStructure[] };
 
 export function contentStructureConvertUUID(
-  content: ContentStructure,
+  content: Content,
 ): ConvertedContentStructure {
   const contentNoChildren = contentStructureConvertNoChildrenUUID(content);
 
@@ -96,7 +94,7 @@ export function userConvertUUID(user: UserInfo) {
   return { ...user, userId: fromUUID(user.userId) };
 }
 
-export function docHistoryConvertUUID(docHistory: DocHistory) {
+export function docHistoryConvertUUID(docHistory: ActivityHistory) {
   return {
     id: fromUUID(docHistory.id),
     contributorHistory: docHistory.contributorHistory.map((ch) => {

@@ -103,6 +103,7 @@ export async function createContent(
       isPublic,
       licenseCode,
       sortIndex,
+      source: contentType === "singleDoc" ? "" : null,
       doenetmlVersionId:
         contentType === "singleDoc" ? defaultDoenetmlVersion.id : null,
       baseComponentCounts: contentType === "singleDoc" ? "{}" : null,
@@ -119,13 +120,25 @@ export async function createContent(
  * Delete the content `id` along with all the content inside it,
  * recursing to its children
  */
-export function deleteContent(id: Uint8Array, ownerId: Uint8Array) {
+export async function deleteContent(
+  id: Uint8Array,
+  loggedInUserId: Uint8Array,
+) {
   // TODO: Figure out how to delete folder in library (some contents may be published)
+
+  // throw error if content does not exist or isn't visible
+  await prisma.content.findUniqueOrThrow({
+    where: {
+      id,
+      ...filterEditableContent(loggedInUserId),
+    },
+    select: { id: true },
+  });
 
   return prisma.$queryRaw(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
-      WHERE id = ${id} AND ownerId = ${ownerId} AND isDeleted = FALSE
+      WHERE id = ${id} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
       UNION ALL
       SELECT content.id FROM content
       INNER JOIN content_tree AS ft
@@ -179,9 +192,28 @@ export async function updateContent({
   itemLevelAttempts?: boolean;
   loggedInUserId: Uint8Array;
 }) {
+  if (
+    [
+      name,
+      source,
+      doenetmlVersionId,
+      numVariants,
+      baseComponentCounts,
+      imagePath,
+      shuffle,
+      selectByVariant,
+      paginate,
+      activityLevelAttempts,
+      itemLevelAttempts,
+    ].every((x) => x === undefined)
+  ) {
+    // if not information passed in, don't update anything, including `lastEdited`.
+    return false;
+  }
+
   const isAdmin = await getIsAdmin(loggedInUserId);
 
-  const updated = await prisma.content.update({
+  await prisma.content.update({
     where: { id, ...filterEditableContent(loggedInUserId, isAdmin) },
     data: {
       name,
@@ -200,21 +232,7 @@ export async function updateContent({
     },
   });
 
-  return {
-    id: updated.id,
-    name: updated.name,
-    source: updated.source,
-    doenetmlVersionId: updated.doenetmlVersionId,
-    numVariants: updated.numVariants,
-    baseComponentCounts: updated.baseComponentCounts,
-    imagePath: updated.imagePath,
-    shuffle: updated.shuffle,
-    numToSelect: updated.numToSelect,
-    selectByVariant: updated.selectByVariant,
-    paginate: updated.paginate,
-    activityLevelAttempts: updated.activityLevelAttempts,
-    itemLevelAttempts: updated.itemLevelAttempts,
-  };
+  return true;
 }
 
 /**
@@ -276,18 +294,18 @@ export async function getContentDescription(
 }
 
 /**
- * Get the source from the document with `contentId`.
+ * Get the source from the activity with `activityId`.
  *
  * Throws an error if not viewable by `loggedInUserId`.
  */
-export async function getDocumentSource(
-  contentId: Uint8Array,
+export async function getActivitySource(
+  activityId: Uint8Array,
   loggedInUserId: Uint8Array,
 ) {
   const isAdmin = await getIsAdmin(loggedInUserId);
   const document = await prisma.content.findUniqueOrThrow({
     where: {
-      id: contentId,
+      id: activityId,
       type: "singleDoc",
       ...filterViewableContent(loggedInUserId, isAdmin),
     },
@@ -312,12 +330,12 @@ export async function getAllDoenetmlVersions() {
   return allDoenetmlVersions;
 }
 
-// Note: createActivityRevision does not currently incorporate access control,
-// by relies on calling functions to determine access
-
 /**
  * Create a new record in `activityRevisions` corresponding to the current state of
  * `activityId` in `content`.
+ *
+ * Note: createActivityRevision does not currently incorporate access control
+ * bit relies on calling functions to determine access
  */
 export async function createActivityRevision(activityId: Uint8Array): Promise<{
   activityId: Uint8Array;

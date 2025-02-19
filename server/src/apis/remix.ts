@@ -1,81 +1,54 @@
 import { prisma } from "../model";
+import { ActivityHistory } from "../types";
 import { filterViewableActivity } from "../utils/permissions";
 import { getIsAdmin } from "./curate";
 
 export async function getActivityContributorHistory({
   activityId,
   loggedInUserId,
+  isAdmin,
 }: {
   activityId: Uint8Array;
   loggedInUserId: Uint8Array;
-}) {
-  const isAdmin = await getIsAdmin(loggedInUserId);
-  const activity = await prisma.content.findUniqueOrThrow({
-    where: {
-      id: activityId,
-      ...filterViewableActivity(loggedInUserId, isAdmin),
-    },
-    select: { documents: { select: { id: true } } },
-  });
-
-  const docHistories = await getDocumentContributorHistories({
-    docIds: activity.documents.map((doc) => doc.id),
-    loggedInUserId,
-    isAdmin,
-  });
-
-  return { docHistories };
-}
-
-export async function getDocumentContributorHistories({
-  docIds,
-  loggedInUserId,
-  isAdmin = false,
-}: {
-  docIds: Uint8Array[];
-  loggedInUserId: Uint8Array;
   isAdmin?: boolean;
 }) {
-  const docHistories: DocHistory[] = await prisma.documents.findMany({
-    where: {
-      id: { in: docIds },
-      isDeleted: false,
-      activity: {
+  if (isAdmin === undefined) {
+    isAdmin = await getIsAdmin(loggedInUserId);
+  }
+
+  const activityHistory: ActivityHistory =
+    await prisma.content.findUniqueOrThrow({
+      where: {
+        id: activityId,
         ...filterViewableActivity(loggedInUserId, isAdmin),
       },
-    },
-    select: {
-      id: true,
-      contributorHistory: {
-        where: {
-          prevDoc: {
-            document: {
+      select: {
+        id: true,
+        contributorHistory: {
+          where: {
+            prevActivity: {
               activity: {
                 ...filterViewableActivity(loggedInUserId, isAdmin),
               },
             },
           },
-        },
-        orderBy: { timestampPrevDoc: "desc" },
-        include: {
-          prevDoc: {
-            select: {
-              cid: true,
-              versionNum: true,
-              document: {
-                select: {
-                  source: true,
-                  activity: {
-                    select: {
-                      id: true,
-                      name: true,
-                      owner: {
-                        select: {
-                          userId: true,
-                          email: true,
-                          firstNames: true,
-                          lastNames: true,
-                        },
+          orderBy: { timestampPrevActivity: "desc" },
+          include: {
+            prevActivity: {
+              select: {
+                cid: true,
+                revisionNum: true,
+                source: true,
+                activity: {
+                  select: {
+                    id: true,
+                    name: true,
+                    owner: {
+                      select: {
+                        userId: true,
+                        email: true,
+                        firstNames: true,
+                        lastNames: true,
                       },
                     },
                   },
@@ -85,9 +58,8 @@ export async function getDocumentContributorHistories({
           },
         },
       },
-    },
-  });
-  return docHistories;
+    });
+  return activityHistory;
 }
 
 export async function getActivityRemixes({

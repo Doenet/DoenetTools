@@ -1,5 +1,6 @@
 import { onTestFinished } from "vitest";
-import { findOrCreateUser, prisma } from "../model";
+import { prisma } from "../model";
+import { findOrCreateUser } from "../apis/user";
 
 // create an isolated user for each test, will allow tests to be run in parallel
 export async function createTestUser(isAdmin = false, isAnonymous = false) {
