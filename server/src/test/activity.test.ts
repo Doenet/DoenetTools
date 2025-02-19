@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 import { Content, Doc } from "../types";
 
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { createTestUser, getContent } from "./utils";
+import { createTestUser } from "./utils";
 import {
   createContent,
   deleteContent,
@@ -18,7 +18,7 @@ import {
   getActivityViewerData,
   getSharedEditorData,
 } from "../apis/activity_edit_view";
-import { getMyFolderContent } from "../apis/content_list";
+import { getMyContent } from "../apis/content_list";
 import { InvalidRequestError } from "../utils/error";
 import {
   modifyContentSharedWith,
@@ -32,6 +32,7 @@ import {
 } from "../apis/assign";
 import { saveScoreAndState } from "../apis/scores";
 import { moveContent } from "../apis/copy_move";
+import { prisma } from "../model";
 
 // const EMPTY_DOC_CID =
 //   "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku";
@@ -85,9 +86,9 @@ test("New activity starts out private, then delete it", async () => {
 
   expect(activityContent).toStrictEqual(expectedContent);
 
-  const data = await getMyFolderContent({
+  const data = await getMyContent({
     loggedInUserId: userId,
-    folderId: null,
+    parentId: null,
   });
 
   expect(data.content.length).toBe(1);
@@ -100,9 +101,9 @@ test("New activity starts out private, then delete it", async () => {
     InvalidRequestError,
   );
 
-  const dataAfterDelete = await getMyFolderContent({
+  const dataAfterDelete = await getMyContent({
     loggedInUserId: userId,
-    folderId: null,
+    parentId: null,
   });
 
   expect(dataAfterDelete.content.length).toBe(0);
@@ -152,7 +153,7 @@ test("deleteContent marks a activity and document as deleted and prevents its re
 
   // cannot retrieve activity
   await expect(getActivityViewerData(activityId, userId)).rejects.toThrow(
-    InvalidRequestError,
+    PrismaClientKnownRequestError,
   );
   await expect(getActivityEditorData(activityId, userId)).rejects.toThrow(
     InvalidRequestError,
@@ -209,9 +210,14 @@ test("updateContent does not update properties when passed undefined values", as
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const { id: activityId } = await createContent(ownerId, "singleDoc", null);
-  const originalActivity = await getContent(activityId);
+
+  const originalActivity = await prisma.content.findUniqueOrThrow({
+    where: { id: activityId },
+  });
   await updateContent({ id: activityId, loggedInUserId: ownerId });
-  const updatedActivity = await getContent(activityId);
+  const updatedActivity = await prisma.content.findUniqueOrThrow({
+    where: { id: activityId },
+  });
   expect(updatedActivity).toEqual(originalActivity);
 });
 
@@ -232,7 +238,7 @@ test("get activity/document data only if owner or limited data for public/shared
     InvalidRequestError,
   );
   await expect(getActivityViewerData(activityId, user1Id)).rejects.toThrow(
-    InvalidRequestError,
+    PrismaClientKnownRequestError,
   );
   await expect(getActivitySource(activityId, user1Id)).rejects.toThrow(
     PrismaClientKnownRequestError,
@@ -271,7 +277,7 @@ test("get activity/document data only if owner or limited data for public/shared
     InvalidRequestError,
   );
   await expect(getActivityViewerData(activityId, user1Id)).rejects.toThrow(
-    InvalidRequestError,
+    PrismaClientKnownRequestError,
   );
   await expect(getActivitySource(activityId, user1Id)).rejects.toThrow(
     PrismaClientKnownRequestError,
@@ -295,7 +301,7 @@ test("get activity/document data only if owner or limited data for public/shared
     InvalidRequestError,
   );
   await expect(getActivityViewerData(activityId, user2Id)).rejects.toThrow(
-    InvalidRequestError,
+    PrismaClientKnownRequestError,
   );
   await expect(getActivitySource(activityId, user2Id)).rejects.toThrow(
     PrismaClientKnownRequestError,
@@ -404,8 +410,8 @@ test("activity editor data and my folder contents before and after assigned", as
   expect(preAssignedData).eqls(expectedData);
 
   // get my folder content returns same data
-  let folderData = await getMyFolderContent({
-    folderId: null,
+  let folderData = await getMyContent({
+    parentId: null,
     loggedInUserId: ownerId,
   });
   folderData.content[0].license = null; // skip trying to check big license object
@@ -456,8 +462,8 @@ test("activity editor data and my folder contents before and after assigned", as
   expect(openedData).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
-  folderData = await getMyFolderContent({
-    folderId: null,
+  folderData = await getMyContent({
+    parentId: null,
     loggedInUserId: ownerId,
   });
   delete expectedData.revisionNum;
@@ -495,8 +501,8 @@ test("activity editor data and my folder contents before and after assigned", as
   expect(closedData).eqls(expectedData);
 
   // get my folder content returns same data
-  folderData = await getMyFolderContent({
-    folderId: null,
+  folderData = await getMyContent({
+    parentId: null,
     loggedInUserId: ownerId,
   });
   folderData.content[0].license = null; // skip trying to check big license object
@@ -549,8 +555,8 @@ test("activity editor data and my folder contents before and after assigned", as
   expect(openedData2).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
-  folderData = await getMyFolderContent({
-    folderId: null,
+  folderData = await getMyContent({
+    parentId: null,
     loggedInUserId: ownerId,
   });
   delete expectedData.revisionNum;
@@ -603,8 +609,8 @@ test("activity editor data and my folder contents before and after assigned", as
   expect(openedData3).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
-  folderData = await getMyFolderContent({
-    folderId: null,
+  folderData = await getMyContent({
+    parentId: null,
     loggedInUserId: ownerId,
   });
   delete expectedData.revisionNum;
@@ -650,8 +656,8 @@ test("activity editor data and my folder contents before and after assigned", as
   expect(closedData2).eqls(expectedData);
 
   // get my folder content returns same data, with differences in some optional fields
-  folderData = await getMyFolderContent({
-    folderId: null,
+  folderData = await getMyContent({
+    parentId: null,
     loggedInUserId: ownerId,
   });
   delete expectedData.revisionNum;

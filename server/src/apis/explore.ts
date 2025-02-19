@@ -1,19 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../model";
-
-/**
- * Remove operators that break MySQL BOOLEAN search and add * at the end of every word so that match beginning of words
- * @returns sanitized query
- */
-function sanitizeQuery(query: string) {
-  const query_as_prefixes = query
-    .replace(/[+\-><()~*"@]+/g, " ")
-    .split(" ")
-    .filter((s) => s)
-    .map((s) => s + "*")
-    .join(" ");
-  return query_as_prefixes;
-}
+import { sanitizeQuery } from "../utils/search";
 
 export async function searchSharedContent({
   query,

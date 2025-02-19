@@ -12,8 +12,9 @@ import {
   DoenetmlVersion,
 } from "../types";
 import { sortClassifications } from "./classificationsFeatures";
-import { isEqualUUID } from "./uuid";
+import { fromUUID, isEqualUUID } from "./uuid";
 import { DateTime } from "luxon";
+import { ActivitySource } from "./viewerTypes";
 
 /**
  * Process a list of user info from the SharedWith table
@@ -595,4 +596,44 @@ export function returnClassificationListSelect() {
       orderBy: { isPrimary: "desc" as const },
     },
   };
+}
+
+export function compileActivityFromContent(activity: Content): ActivitySource {
+  switch (activity.type) {
+    case "singleDoc": {
+      return {
+        id: fromUUID(activity.id),
+        type: activity.type,
+        isDescription: false,
+        doenetML: activity.source!,
+        version: activity.doenetmlVersion.fullVersion,
+        numVariants: activity.numVariants,
+        baseComponentCounts: activity.baseComponentCounts
+          ? JSON.parse(activity.baseComponentCounts)
+          : undefined,
+      };
+    }
+    case "select": {
+      return {
+        id: fromUUID(activity.id),
+        type: activity.type,
+        title: activity.name,
+        numToSelect: activity.numToSelect,
+        selectByVariant: activity.selectByVariant,
+        items: activity.children.map(compileActivityFromContent),
+      };
+    }
+    case "sequence": {
+      return {
+        id: fromUUID(activity.id),
+        type: activity.type,
+        title: activity.name,
+        shuffle: activity.shuffle,
+        items: activity.children.map(compileActivityFromContent),
+      };
+    }
+    case "folder": {
+      throw Error("No folder here");
+    }
+  }
 }

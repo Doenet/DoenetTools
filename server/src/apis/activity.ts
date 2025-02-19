@@ -8,6 +8,8 @@ import {
 import { getNextSortIndexForParent } from "../utils/sort";
 import { DateTime } from "luxon";
 import { cidFromText } from "../utils/cid";
+import { getContent } from "./activity_edit_view";
+import { compileActivityFromContent } from "../utils/contentStructure";
 
 /**
  * Creates a new content of type `contentType` in `parentId` of `ownerId`,
@@ -332,12 +334,16 @@ export async function getAllDoenetmlVersions() {
 
 /**
  * Create a new record in `activityRevisions` corresponding to the current state of
- * `activityId` in `content`.
+ * `activityId`.
  *
- * Note: createActivityRevision does not currently incorporate access control
- * bit relies on calling functions to determine access
+ * For documents, it stores the source and resulting cid.
+ * For other activities, it compiles the activity json
+ * and uses the stringified json for the source and resulting cid.
  */
-export async function createActivityRevision(activityId: Uint8Array): Promise<{
+export async function createActivityRevision(
+  activityId: Uint8Array,
+  loggedInUserId: Uint8Array,
+): Promise<{
   activityId: Uint8Array;
   revisionNum: number;
   cid: string;
@@ -347,12 +353,24 @@ export async function createActivityRevision(activityId: Uint8Array): Promise<{
   baseComponentCounts: string | null;
   createdAt: Date;
 }> {
-  const content = await prisma.content.findUniqueOrThrow({
-    where: { id: activityId, isDeleted: false },
-  });
+  const content = await getContent({ contentId: activityId, loggedInUserId });
 
-  // TODO: cid should really include the doenetmlVersion
-  const cid = await cidFromText(content.source || "");
+  let source: string | null = null;
+  let numVariants = 1;
+  let doenetmlVersionId: number | null = null;
+  let baseComponentCounts: string | null = null;
+  let cid: string;
+
+  if (content.type === "singleDoc") {
+    source = content.source;
+    numVariants = content.numVariants;
+    doenetmlVersionId = content.doenetmlVersion.id;
+    baseComponentCounts = content.baseComponentCounts;
+    cid = await cidFromText(content.doenetmlVersion.fullVersion + "|" + source);
+  } else {
+    source = JSON.stringify(compileActivityFromContent(content));
+    cid = await cidFromText(source);
+  }
 
   let activityVersion = await prisma.activityRevisions.findUnique({
     where: { activityId_cid: { activityId, cid } },
@@ -374,10 +392,10 @@ export async function createActivityRevision(activityId: Uint8Array): Promise<{
         revisionNum: newVersionNum,
         activityId,
         cid,
-        doenetmlVersionId: content.doenetmlVersionId,
-        source: content.source,
-        numVariants: content.numVariants,
-        baseComponentCounts: content.baseComponentCounts,
+        doenetmlVersionId,
+        source,
+        numVariants,
+        baseComponentCounts,
       },
     });
   }

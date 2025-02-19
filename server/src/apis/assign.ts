@@ -19,7 +19,7 @@ export async function assignActivity(
     select: { id: true },
   });
 
-  const newRevision = await createActivityRevision(activityId);
+  const newRevision = await createActivityRevision(activityId, loggedInUserId);
 
   await prisma.content.update({
     where: { id: activityId },

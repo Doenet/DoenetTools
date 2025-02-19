@@ -41,12 +41,6 @@ export async function createTestAnonymousUser() {
   return await createTestUser(false, true);
 }
 
-export async function getContent(id: Uint8Array) {
-  return await prisma.content.findUniqueOrThrow({
-    where: { id, isDeleted: false },
-  });
-}
-
 export async function createTestClassifications({
   systemId: originalSystemId,
   word,

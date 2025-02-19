@@ -1,15 +1,16 @@
+import { Prisma } from "@prisma/client";
 import { getIsAdmin } from "../apis/curate";
 import { prisma } from "../model";
 import { isEqualUUID } from "./uuid";
 
 /**
- * Filter Prisma's `where` clause to exclude unviewable activities
+ * Filter Prisma's `where` clause to exclude unviewable activities for `loggedInUserId`
  *
  * For an activity to be viewable, one of these conditions must be true:
- * 1. You are the owner
- * 2. The activity is public
- * 3. The activity is shared with you
- * 4. You are an admin and the activity is in the library.
+ * 1. `loggedInUserId` is the owner
+ * 2. The content is public
+ * 3. The content is shared with `loggedInUserId`
+ * 4. `loggedInUserId` is an admin and the content is in the library.
  *
  * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
  */
@@ -24,13 +25,13 @@ export function filterViewableActivity(
 }
 
 /**
- * Filter Prisma's `where` clause to exclude unviewable content
+ * Filter Prisma's `where` clause to exclude unviewable content for `loggedInUserId`
  *
  * For content to be viewable, one of these conditions must be true:
- * 1. You are the owner
+ * 1. `loggedInUserId` is the owner
  * 2. The content is public
- * 3. The content is shared with you
- * 4. You are an admin and the content is in the library.
+ * 3. The content is shared with `loggedInUserId`
+ * 4. `loggedInUserId` is an admin and the content is in the library.
  *
  * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
  */
@@ -58,11 +59,49 @@ export function filterViewableContent(
 }
 
 /**
- * Filter Prisma's `where` clause to exclude uneditable activities.
+ * Return a MySQL cause to be added to a WHERE statement, filtering to content viewable by `loggedInUserId`.
+ *
+ * For content to be viewable, one of these conditions must be true:
+ * 1. `loggedInUserId` is the owner
+ * 2. The content is public
+ * 3. The content is shared with `loggedInUserId`
+ * 4. `loggedInUserId` is an admin and the content is in the library.
+ *
+ * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
+ */
+export function viewableContentWhere(
+  loggedInUserId: Uint8Array,
+  isAdmin: boolean = false,
+) {
+  let visibilityOptions = Prisma.sql`
+      content.ownerId = ${loggedInUserId}
+      OR content.isPublic = TRUE
+      OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
+  `;
+
+  if (isAdmin) {
+    visibilityOptions = Prisma.sql`
+        ${visibilityOptions}
+        OR (SELECT isLibrary FROM user WHERE userId = content.ownerId) = TRUE
+        `;
+  }
+
+  const whereStatement = Prisma.sql`
+    isDeleted = FALSE
+    AND (
+      ${visibilityOptions}
+    )
+  `;
+
+  return whereStatement;
+}
+
+/**
+ * Filter Prisma's `where` clause to exclude uneditable activities by `loggedInUserId`
  *
  * For an activity to be editable, one of these conditions must be true:
- * 1. You are the owner
- * 2. You are an admin and the activity is in the library
+ * 1. `loggedInUserId` is the owner
+ * 4. `loggedInUserId` is an admin and the content is in the library.
  *
  * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
  */
@@ -77,11 +116,11 @@ export function filterEditableActivity(
 }
 
 /**
- * Filter Prisma's `where` clause to exclude uneditable content.
+ * Filter Prisma's `where` clause to exclude uneditable content by `loggedInUserId`
  *
  * For content to be editable, one of these conditions must be true:
- * 1. You are the owner
- * 2. You are an admin and the content is in the library
+ * 1. `loggedInUserId` is the owner
+ * 4. `loggedInUserId` is an admin and the content is in the library.
  *
  * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
  */
