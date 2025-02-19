@@ -1,4 +1,14 @@
-import { InvalidRequestError, prisma } from "../model";
+import {
+  ContentType,
+  LibraryEventType,
+  LibraryStatus,
+  Prisma,
+} from "@prisma/client";
+import { prisma } from "../model";
+import { blankLibraryInfo, LibraryInfo } from "../types";
+import { InvalidRequestError } from "../utils/error";
+import { fromUUID } from "../utils/uuid";
+import { copyActivityToFolder, copyFolderToFolder } from "./copy_move";
 
 export async function mustBeAdmin(
   userId: Uint8Array,
@@ -115,7 +125,9 @@ export async function submitLibraryRequest({
       sourceId: activityId,
       source: {
         isPublic: true,
-        isFolder: false,
+        NOT: {
+          type: ContentType.folder,
+        },
         isDeleted: false,
         ownerId,
       },
@@ -170,7 +182,9 @@ export async function cancelLibraryRequest({
       sourceId: activityId,
       source: {
         isPublic: true,
-        isFolder: false,
+        NOT: {
+          type: ContentType.folder,
+        },
         isDeleted: false,
         ownerId,
       },
@@ -337,47 +351,7 @@ export async function deleteDraftFromLibrary({
     select: { id: true },
   });
 
-  let deleteDraft;
-
-  if (contentType === "singleDoc") {
-    deleteDraft = prisma.content.update({
-      where: {
-        id: draftId,
-        isPublic: false,
-        isDeleted: false,
-        isFolder: false,
-        ownerId: libraryId,
-      },
-      data: {
-        // soft delete activity
-        isDeleted: true,
-        documents: {
-          updateMany: {
-            where: {},
-            data: {
-              // soft delete documents
-              isDeleted: true,
-            },
-          },
-        },
-      },
-    });
-  } else {
-    deleteDraft = prisma.$queryRaw(Prisma.sql`
-      WITH RECURSIVE content_tree(id) AS (
-        SELECT id FROM content
-        WHERE id = ${draftId} AND ownerId = ${libraryId} AND isPublic = FALSE
-        UNION ALL
-        SELECT content.id FROM content
-        INNER JOIN content_tree AS ft
-        ON content.parentId = ft.id
-      )
-  
-      UPDATE content LEFT JOIN documents ON documents.activityId  = content.id
-        SET content.isDeleted = TRUE, documents.isDeleted = TRUE
-        WHERE content.id IN (SELECT id from content_tree);
-      `);
-  }
+  const deleteDraft = deleteContent(draftId, libraryId, contentType);
 
   const removeLibraryIdRef = prisma.libraryActivityInfos.update({
     where: {
@@ -432,7 +406,9 @@ export async function publishActivityToLibrary({
       id: draftId,
       isPublic: false,
       isDeleted: false,
-      isFolder: false,
+      NOT: {
+        type: ContentType.folder,
+      },
       ownerId: libraryId,
       license: {
         isNot: null,
@@ -489,7 +465,9 @@ export async function unpublishActivityFromLibrary({
     where: {
       id: activityId,
       isPublic: true,
-      isFolder: false,
+      NOT: {
+        type: ContentType.folder,
+      },
       isDeleted: false,
       ownerId: libraryId,
       libraryActivityInfo: {
@@ -538,7 +516,9 @@ export async function markLibraryRequestNeedsRevision({
     where: {
       id: sourceId,
       isPublic: true,
-      isFolder: false,
+      NOT: {
+        type: ContentType.folder,
+      },
       isDeleted: false,
       librarySourceInfo: {
         status: LibraryStatus.PENDING_REVIEW,
@@ -595,9 +575,9 @@ export async function modifyCommentsOfLibraryRequest({
     where: {
       id: sourceId,
       isPublic: true,
-      isFolder: false,
       isDeleted: false,
       NOT: {
+        type: ContentType.folder,
         librarySourceInfo: null,
       },
     },

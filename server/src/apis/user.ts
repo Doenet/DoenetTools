@@ -1,3 +1,6 @@
+import { prisma } from "../model";
+import { UserInfo } from "../types";
+
 export async function findOrCreateUser({
   email,
   firstNames,
