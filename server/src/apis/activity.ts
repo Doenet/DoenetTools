@@ -164,7 +164,7 @@ export async function deleteContent(
  * - the content must be in the library and `loggedInUserId` must be an admin.
  */
 export async function updateContent({
-  id,
+  contentId,
   name,
   source,
   doenetmlVersionId,
@@ -179,7 +179,7 @@ export async function updateContent({
   itemLevelAttempts,
   loggedInUserId,
 }: {
-  id: Uint8Array;
+  contentId: Uint8Array;
   name?: string;
   source?: string;
   doenetmlVersionId?: number;
@@ -216,7 +216,7 @@ export async function updateContent({
   const isAdmin = await getIsAdmin(loggedInUserId);
 
   await prisma.content.update({
-    where: { id, ...filterEditableContent(loggedInUserId, isAdmin) },
+    where: { id: contentId, ...filterEditableContent(loggedInUserId, isAdmin) },
     data: {
       name,
       source,
@@ -238,24 +238,24 @@ export async function updateContent({
 }
 
 /**
- * Add or remove the content features specified in `features` to the content with `id`.
+ * Add or remove the content features specified in `features` to the content with `contentId`.
  *
  * For the change to succeed, either
  * - the content must be owned by `loggedInUserId`, or
  * - the content must be in the library and `loggedInUserId` must be an admin.
  */
 export async function updateContentFeatures({
-  id,
+  contentId,
   loggedInUserId,
   features,
 }: {
-  id: Uint8Array;
+  contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   features: Record<string, boolean>;
 }) {
   const isAdmin = await getIsAdmin(loggedInUserId);
   const updated = await prisma.content.update({
-    where: { id, ...filterEditableContent(loggedInUserId, isAdmin) },
+    where: { id: contentId, ...filterEditableContent(loggedInUserId, isAdmin) },
     data: {
       contentFeatures: {
         connect: Object.entries(features)

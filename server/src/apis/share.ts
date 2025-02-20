@@ -104,18 +104,18 @@ export async function setContentIsPublic({
  */
 export async function modifyContentSharedWith({
   action,
-  id,
+  contentId,
   loggedInUserId,
   users,
 }: {
   action: "share" | "unshare";
-  id: Uint8Array;
+  contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   users: Uint8Array[];
 }) {
   if (action === "unshare") {
     const content = await prisma.content.findUniqueOrThrow({
-      where: { id, ...filterEditableContent(loggedInUserId) },
+      where: { id: contentId, ...filterEditableContent(loggedInUserId) },
       select: {
         parent: { select: { sharedWith: { select: { userId: true } } } },
       },
@@ -137,7 +137,7 @@ export async function modifyContentSharedWith({
     await prisma.$queryRaw<{ id: Uint8Array }[]>(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
-      WHERE id = ${id} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
+      WHERE id = ${contentId} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
       UNION ALL
       SELECT content.id FROM content
       INNER JOIN content_tree AS ct
@@ -208,7 +208,7 @@ export async function shareContentWithEmail({
 
   await modifyContentSharedWith({
     action: "share",
-    id,
+    contentId: id,
     loggedInUserId,
     users: [userId],
   });

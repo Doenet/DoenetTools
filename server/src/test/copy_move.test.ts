@@ -11,7 +11,7 @@ test("copy folder", async () => {
 
   const { id: folder0Id } = await createContent(ownerId, "folder", null);
   await updateContent({
-    id: folder0Id,
+    contentId: folder0Id,
     loggedInUserId: ownerId,
     name: "Base folder",
   });
@@ -22,13 +22,13 @@ test("copy folder", async () => {
     folder0Id,
   );
   await updateContent({
-    id: activity1Id,
+    contentId: activity1Id,
     loggedInUserId: ownerId,
     name: "Activity 1",
   });
   const { id: folder1Id } = await createContent(ownerId, "folder", folder0Id);
   await updateContent({
-    id: folder1Id,
+    contentId: folder1Id,
     loggedInUserId: ownerId,
     name: "Folder 1",
   });
@@ -39,13 +39,13 @@ test("copy folder", async () => {
     folder1Id,
   );
   await updateContent({
-    id: activity2Id,
+    contentId: activity2Id,
     loggedInUserId: ownerId,
     name: "Activity 2",
   });
   const { id: folder2Id } = await createContent(ownerId, "folder", folder1Id);
   await updateContent({
-    id: folder2Id,
+    contentId: folder2Id,
     loggedInUserId: ownerId,
     name: "Folder 2",
   });
@@ -56,13 +56,13 @@ test("copy folder", async () => {
     folder2Id,
   );
   await updateContent({
-    id: activity3Id,
+    contentId: activity3Id,
     loggedInUserId: ownerId,
     name: "Activity 3",
   });
   const { id: folder3Id } = await createContent(ownerId, "folder", folder2Id);
   await updateContent({
-    id: folder3Id,
+    contentId: folder3Id,
     loggedInUserId: ownerId,
     name: "Folder 3",
   });
@@ -74,7 +74,7 @@ test("copy folder", async () => {
   ).rejects.toThrow("not found");
 
   await setContentIsPublic({
-    id: folder0Id,
+    contentId: folder0Id,
     loggedInUserId: ownerId,
     isPublic: true,
   });
@@ -132,7 +132,7 @@ test("copy problem set", async () => {
 
   const { id: folder0Id } = await createContent(ownerId, "sequence", null);
   await updateContent({
-    id: folder0Id,
+    contentId: folder0Id,
     loggedInUserId: ownerId,
     name: "Problem set",
   });
@@ -143,14 +143,14 @@ test("copy problem set", async () => {
     folder0Id,
   );
   await updateContent({
-    id: activity1Id,
+    contentId: activity1Id,
     loggedInUserId: ownerId,
     name: "Question 1",
   });
 
   const { id: folder1Id } = await createContent(ownerId, "select", folder0Id);
   await updateContent({
-    id: folder1Id,
+    contentId: folder1Id,
     loggedInUserId: ownerId,
     name: "Question bank 2",
   });
@@ -161,7 +161,7 @@ test("copy problem set", async () => {
     folder1Id,
   );
   await updateContent({
-    id: activity2AId,
+    contentId: activity2AId,
     loggedInUserId: ownerId,
     name: "Question 2A",
   });
@@ -171,14 +171,14 @@ test("copy problem set", async () => {
     folder1Id,
   );
   await updateContent({
-    id: activity2BId,
+    contentId: activity2BId,
     loggedInUserId: ownerId,
     name: "Question 2B",
   });
 
   const { id: folder2Id } = await createContent(ownerId, "select", folder0Id);
   await updateContent({
-    id: folder2Id,
+    contentId: folder2Id,
     loggedInUserId: ownerId,
     name: "Question bank 3",
   });
@@ -189,7 +189,7 @@ test("copy problem set", async () => {
     folder2Id,
   );
   await updateContent({
-    id: activity3AId,
+    contentId: activity3AId,
     loggedInUserId: ownerId,
     name: "Question 3A",
   });
@@ -199,7 +199,7 @@ test("copy problem set", async () => {
     folder2Id,
   );
   await updateContent({
-    id: activity3BId,
+    contentId: activity3BId,
     loggedInUserId: ownerId,
     name: "Question 3B",
   });

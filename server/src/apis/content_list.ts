@@ -36,6 +36,7 @@ export async function getMyContent({
       select: returnContentSelect({ includeShareDetails: true }),
     });
 
+    //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
     folder = processContent(preliminaryFolder);
   }
 
@@ -53,6 +54,7 @@ export async function getMyContent({
     orderBy: { sortIndex: "asc" },
   });
 
+  //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
   const content: Content[] = preliminaryContent.map(processContent);
 
   const availableFeatures = await getAvailableContentFeatures();
@@ -93,6 +95,7 @@ export async function searchMyContent({
       select: returnContentSelect({ includeShareDetails: true }),
     });
 
+    //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
     folder = processContent(preliminaryFolder);
   }
 
@@ -169,6 +172,7 @@ export async function searchMyContent({
 
   const content: Content[] = preliminaryResults
     .sort((a, b) => relevance[fromUUID(b.id)] - relevance[fromUUID(a.id)])
+    //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
     .map(processContent);
 
   const availableFeatures = await getAvailableContentFeatures();
@@ -222,6 +226,7 @@ export async function getSharedContent({
       preliminaryFolder.parent = null;
     }
 
+    //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
     folder = processContent(preliminaryFolder, loggedInUserId);
   }
 
@@ -269,6 +274,7 @@ export async function getSharedContent({
   }
 
   const publicContent = preliminarySharedContent.map((content) =>
+    //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
     processContent(content, loggedInUserId),
   );
 

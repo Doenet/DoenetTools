@@ -1,4 +1,24 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../model";
+import {
+  ClassificationCategoryTree,
+  ContentClassification,
+  PartialContentClassification,
+} from "../types";
+import { sanitizeQuery } from "../utils/search";
+import {
+  returnClassificationFilterWhereClauses,
+  returnClassificationJoins,
+  returnClassificationMatchClauses,
+  sortClassifications,
+} from "../utils/classificationsFeatures";
+import { returnClassificationListSelect } from "../utils/contentStructure";
+import { getIsAdmin } from "./curate";
+import {
+  filterEditableActivity,
+  filterViewableActivity,
+} from "../utils/permissions";
+import { InvalidRequestError } from "../utils/error";
 
 export async function getClassificationCategories() {
   const results = await prisma.classificationSystems.findMany({
@@ -69,14 +89,7 @@ export async function searchPossibleClassifications({
   categoryId?: number;
   subCategoryId?: number;
 }) {
-  // remove operators that break MySQL BOOLEAN search
-  // and add * at the end of every word so that match beginning of words
-  const query_as_prefixes = query
-    .replace(/[+\-><()~*"@]+/g, " ")
-    .split(" ")
-    .filter((s) => s)
-    .map((s) => s + "*")
-    .join(" ");
+  const query_as_prefixes = sanitizeQuery(query);
 
   if (query_as_prefixes.length > 0) {
     const matchClassification = true;

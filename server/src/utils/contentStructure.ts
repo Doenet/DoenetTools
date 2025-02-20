@@ -191,15 +191,17 @@ export function returnContentSelect({
       }
     : false;
 
-  const classifications = includeClassifications
+  const classificationsObj = includeClassifications
     ? {
-        select: {
-          classification: {
-            select: returnClassificationListSelect(),
+        classifications: {
+          select: {
+            classification: {
+              select: returnClassificationListSelect(),
+            },
           },
         },
       }
-    : false;
+    : {};
 
   const owner = includeOwnerDetails
     ? {
@@ -248,7 +250,7 @@ export function returnContentSelect({
     },
     librarySourceInfo,
     libraryActivityInfo,
-    classifications,
+    ...classificationsObj,
     _count,
   };
 
@@ -366,7 +368,7 @@ type PreliminaryContent = {
   };
 
   // from document select
-  source?: string;
+  source?: string | null;
   doenetmlVersion?: {
     id: number;
     default: boolean;
@@ -375,9 +377,9 @@ type PreliminaryContent = {
     deprecated: boolean;
     removed: boolean;
     deprecationMessage: string;
-  };
+  } | null;
   numVariants?: number;
-  baseComponentCounts?: string;
+  baseComponentCounts?: string | null;
   assignedRevision?: {
     source: string;
     doenetmlVersion: {
@@ -496,9 +498,12 @@ export function processContent(
 
       if (
         sourceOrig !== undefined &&
+        sourceOrig !== null &&
         numVariantsOrig !== undefined &&
         baseComponentCountsOrig !== undefined &&
-        doenetmlVersionOrig !== undefined
+        baseComponentCountsOrig !== null &&
+        doenetmlVersionOrig !== undefined &&
+        doenetmlVersionOrig !== null
       ) {
         docInfo = {
           source: sourceOrig,

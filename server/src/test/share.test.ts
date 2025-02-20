@@ -76,7 +76,7 @@ test.only("content in shared folder is created shared", async () => {
   await modifyContentSharedWith({
     action: "share",
     loggedInUserId: ownerId,
-    id: publicFolderId,
+    contentId: publicFolderId,
     users: [userId],
   });
 
@@ -489,7 +489,7 @@ test(
     // unshare with user 1
     await modifyContentSharedWith({
       action: "unshare",
-      id: sharedFolderId,
+      contentId: sharedFolderId,
       loggedInUserId: ownerId,
       users: [user1Id],
     });
@@ -532,7 +532,7 @@ test(
     // share middle folder with user3
     await modifyContentSharedWith({
       action: "share",
-      id: folder2Id,
+      contentId: folder2Id,
       loggedInUserId: ownerId,
       users: [user3Id],
     });
@@ -575,7 +575,7 @@ test(
     // unshare with user 2
     await modifyContentSharedWith({
       action: "unshare",
-      id: sharedFolderId,
+      contentId: sharedFolderId,
       loggedInUserId: ownerId,
       users: [user2Id],
     });
@@ -779,7 +779,7 @@ test("moving content into shared folder shares it", async () => {
   const { id: sharedFolderId } = await createContent(ownerId, "folder", null);
   await modifyContentSharedWith({
     action: "share",
-    id: sharedFolderId,
+    contentId: sharedFolderId,
     loggedInUserId: ownerId,
     users: [userId],
   });

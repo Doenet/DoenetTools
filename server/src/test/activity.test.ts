@@ -116,7 +116,7 @@ test("Test updating various activity properties", async () => {
   const activityName = "Test Name";
   const source = "Here comes some content, I made you some content";
   await updateContent({
-    id: activityId,
+    contentId: activityId,
     name: activityName,
     loggedInUserId: userId,
     source,
@@ -182,7 +182,7 @@ test("updateDoc updates document properties", async () => {
   const newName = "Updated Name";
   const newContent = "Updated Content";
   await updateContent({
-    id: activityId,
+    contentId: activityId,
     name: newName,
     source: newContent,
     loggedInUserId: userId,
@@ -214,7 +214,7 @@ test("updateContent does not update properties when passed undefined values", as
   const originalActivity = await prisma.content.findUniqueOrThrow({
     where: { id: activityId },
   });
-  await updateContent({ id: activityId, loggedInUserId: ownerId });
+  await updateContent({ contentId: activityId, loggedInUserId: ownerId });
   const updatedActivity = await prisma.content.findUniqueOrThrow({
     where: { id: activityId },
   });
@@ -245,7 +245,7 @@ test("get activity/document data only if owner or limited data for public/shared
   );
 
   await setContentIsPublic({
-    id: activityId,
+    contentId: activityId,
     loggedInUserId: ownerId,
     isPublic: true,
   });
@@ -269,7 +269,7 @@ test("get activity/document data only if owner or limited data for public/shared
   await getActivitySource(activityId, user1Id);
 
   await setContentIsPublic({
-    id: activityId,
+    contentId: activityId,
     loggedInUserId: ownerId,
     isPublic: false,
   });
@@ -285,7 +285,7 @@ test("get activity/document data only if owner or limited data for public/shared
 
   await modifyContentSharedWith({
     action: "share",
-    id: activityId,
+    contentId: activityId,
     loggedInUserId: ownerId,
     users: [user1Id],
   });
@@ -320,7 +320,7 @@ test("get public activity editor data only if public or shared", async () => {
   const { id: activityId } = await createContent(ownerId, "singleDoc", null);
   const doenetML = "hi!";
   await updateContent({
-    id: activityId,
+    contentId: activityId,
     source: doenetML,
     loggedInUserId: ownerId,
   });
@@ -330,12 +330,12 @@ test("get public activity editor data only if public or shared", async () => {
   );
 
   await updateContent({
-    id: activityId,
+    contentId: activityId,
     loggedInUserId: ownerId,
     name: "Some content",
   });
   await setContentIsPublic({
-    id: activityId,
+    contentId: activityId,
     loggedInUserId: ownerId,
     isPublic: true,
   });
@@ -348,7 +348,7 @@ test("get public activity editor data only if public or shared", async () => {
   expect(sharedData.source).eq(doenetML);
 
   await setContentIsPublic({
-    id: activityId,
+    contentId: activityId,
     loggedInUserId: ownerId,
     isPublic: false,
   });
@@ -359,7 +359,7 @@ test("get public activity editor data only if public or shared", async () => {
 
   await modifyContentSharedWith({
     action: "share",
-    id: activityId,
+    contentId: activityId,
     loggedInUserId: ownerId,
     users: [user1Id],
   });
@@ -567,7 +567,7 @@ test("activity editor data and my folder contents before and after assigned", as
   await saveScoreAndState({
     activityId,
     activityRevisionNum: 1,
-    userId: ownerId,
+    loggedInUserId: ownerId,
     score: 0.5,
     onSubmission: true,
     state: "document state 1",
@@ -684,12 +684,12 @@ test("activity editor data shows its parent folder is public", async () => {
   expect(data.parent).eq(null);
 
   await setContentLicense({
-    id: activityId,
+    contentId: activityId,
     loggedInUserId: ownerId,
     licenseCode: "CCBYSA",
   });
   await setContentIsPublic({
-    id: activityId,
+    contentId: activityId,
     loggedInUserId: ownerId,
     isPublic: true,
   });
@@ -718,12 +718,12 @@ test("activity editor data shows its parent folder is public", async () => {
   expect(data.parent?.isPublic).eq(false);
 
   await setContentLicense({
-    id: folderId,
+    contentId: folderId,
     loggedInUserId: ownerId,
     licenseCode: "CCBYNCSA",
   });
   await setContentIsPublic({
-    id: folderId,
+    contentId: folderId,
     loggedInUserId: ownerId,
     isPublic: true,
   });
@@ -738,7 +738,7 @@ test("activity editor data shows its parent folder is public", async () => {
   expect(data.parent?.isPublic).eq(true);
 
   await setContentIsPublic({
-    id: folderId,
+    contentId: folderId,
     loggedInUserId: ownerId,
     isPublic: false,
   });
@@ -751,12 +751,12 @@ test("activity editor data shows its parent folder is public", async () => {
   expect(data.parent?.isPublic).eq(false);
 
   await setContentLicense({
-    id: folderId,
+    contentId: folderId,
     loggedInUserId: ownerId,
     licenseCode: "CCDUAL",
   });
   await setContentIsPublic({
-    id: folderId,
+    contentId: folderId,
     loggedInUserId: ownerId,
     isPublic: true,
   });
@@ -775,7 +775,7 @@ test("getActivitySource gets source", async () => {
   const ownerId = owner.userId;
   const { id: activityId } = await createContent(ownerId, "singleDoc", null);
   await updateContent({
-    id: activityId,
+    contentId: activityId,
     source: "some content",
     loggedInUserId: ownerId,
   });
@@ -789,7 +789,7 @@ test("getContentDescription gets name and type", async () => {
 
   const { id: activityId } = await createContent(ownerId, "singleDoc", null);
   await updateContent({
-    id: activityId,
+    contentId: activityId,
     name: "Activity 1",
     loggedInUserId: ownerId,
   });
@@ -801,7 +801,7 @@ test("getContentDescription gets name and type", async () => {
 
   const { id: folderId } = await createContent(ownerId, "folder", null);
   await updateContent({
-    id: folderId,
+    contentId: folderId,
     name: "Folder 2",
     loggedInUserId: ownerId,
   });
@@ -813,7 +813,7 @@ test("getContentDescription gets name and type", async () => {
 
   const { id: sequenceId } = await createContent(ownerId, "sequence", null);
   await updateContent({
-    id: sequenceId,
+    contentId: sequenceId,
     name: "Sequence 3",
     loggedInUserId: ownerId,
   });
@@ -825,7 +825,7 @@ test("getContentDescription gets name and type", async () => {
 
   const { id: selectId } = await createContent(ownerId, "select", null);
   await updateContent({
-    id: selectId,
+    contentId: selectId,
     name: "Select 4",
     loggedInUserId: ownerId,
   });
@@ -842,7 +842,7 @@ test("getContentDescription gets name and type", async () => {
 
   await modifyContentSharedWith({
     action: "share",
-    id: selectId,
+    contentId: selectId,
     loggedInUserId: ownerId,
     users: [userId],
   });

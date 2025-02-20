@@ -1,16 +1,39 @@
 import { expect, test } from "vitest";
 import { createTestUser } from "./utils";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { getMyContent, getSharedContent } from "../apis/content_list";
-import { createContent, deleteContent } from "../apis/activity";
+import {
+  getMyContent,
+  getPreferredFolderView,
+  getSharedContent,
+  setPreferredFolderView,
+} from "../apis/content_list";
+import {
+  createContent,
+  deleteContent,
+  updateContent,
+  updateContentFeatures,
+} from "../apis/activity";
 import {
   modifyContentSharedWith,
   setContentIsPublic,
   shareContentWithEmail,
 } from "../apis/share";
 import { updateUser } from "../apis/user";
-import { getContent } from "../apis/activity_edit_view";
-import { moveContent } from "../apis/copy_move";
+import {
+  getActivityEditorData,
+  getActivityViewerData,
+  getContent,
+} from "../apis/activity_edit_view";
+import {
+  checkIfContentContains,
+  copyContent,
+  moveContent,
+} from "../apis/copy_move";
+import {
+  addClassification,
+  searchPossibleClassifications,
+} from "../apis/classification";
+import { ContentType } from "@prisma/client";
 
 test("getMyContent returns both public and private content, getSharedFolderContent returns only public", async () => {
   const owner = await createTestUser();
@@ -70,14 +93,14 @@ test("getMyContent returns both public and private content, getSharedFolderConte
 
   // make public activity 1 public
   await setContentIsPublic({
-    id: publicActivity1Id,
+    contentId: publicActivity1Id,
     isPublic: true,
     loggedInUserId: ownerId,
   });
 
   // make public folder 1 and all items in folder 1 public
   await setContentIsPublic({
-    id: publicFolder1Id,
+    contentId: publicFolder1Id,
     isPublic: true,
     loggedInUserId: ownerId,
   });
@@ -85,12 +108,12 @@ test("getMyContent returns both public and private content, getSharedFolderConte
   // public content inside private folder 1
   // has to be made public explicitly
   await setContentIsPublic({
-    id: publicActivity3Id,
+    contentId: publicActivity3Id,
     isPublic: true,
     loggedInUserId: ownerId,
   });
   await setContentIsPublic({
-    id: publicFolder3Id,
+    contentId: publicFolder3Id,
     isPublic: true,
     loggedInUserId: ownerId,
   });
@@ -426,7 +449,7 @@ test(
     // sure folder 1 and all items in folder 1
     await modifyContentSharedWith({
       action: "share",
-      id: sharedFolder1Id,
+      contentId: sharedFolder1Id,
       loggedInUserId: ownerId,
       users: [user1Id, user2Id],
     });
@@ -435,7 +458,7 @@ test(
     // has to be shared explicitly
     await modifyContentSharedWith({
       action: "share",
-      id: sharedActivity3Id,
+      contentId: sharedActivity3Id,
       loggedInUserId: ownerId,
       users: [user1Id, user2Id],
     });
@@ -1158,7 +1181,7 @@ test("move content to different locations", async () => {
   ]);
 });
 
-test.only("cannot move content into itself or a descendant of itself", async () => {
+test("cannot move content into itself or a descendant of itself", async () => {
   const ownerId = (await createTestUser()).userId;
 
   const { id: folder1Id } = await createContent(ownerId, "folder", null);
@@ -1213,12 +1236,12 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
 
   const ownerId = (await createTestUser()).userId;
 
-  const { activityId: activity1Id } = await createActivity(ownerId, null);
-  const { activityId: activity2Id } = await createActivity(ownerId, null);
-  const { activityId: activity3Id } = await createActivity(ownerId, null);
-  const { activityId: activity4Id } = await createActivity(ownerId, null);
-  const { activityId: activity5Id } = await createActivity(ownerId, null);
-  const { activityId: activity6Id } = await createActivity(ownerId, null);
+  const { id: activity1Id } = await createContent(ownerId, "singleDoc", null);
+  const { id: activity2Id } = await createContent(ownerId, "singleDoc", null);
+  const { id: activity3Id } = await createContent(ownerId, "singleDoc", null);
+  const { id: activity4Id } = await createContent(ownerId, "singleDoc", null);
+  const { id: activity5Id } = await createContent(ownerId, "singleDoc", null);
+  const { id: activity6Id } = await createContent(ownerId, "singleDoc", null);
 
   // With the current algorithm and parameters,
   // the sort indices will need to be shifted after 32 inserts in between a pair of items.
@@ -1228,31 +1251,31 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
       id: activity1Id,
       desiredParentId: null,
       desiredPosition: 3,
-      ownerId,
+      loggedInUserId: ownerId,
     });
     await moveContent({
       id: activity2Id,
       desiredParentId: null,
       desiredPosition: 3,
-      ownerId,
+      loggedInUserId: ownerId,
     });
     await moveContent({
       id: activity3Id,
       desiredParentId: null,
       desiredPosition: 3,
-      ownerId,
+      loggedInUserId: ownerId,
     });
     await moveContent({
       id: activity4Id,
       desiredParentId: null,
       desiredPosition: 3,
-      ownerId,
+      loggedInUserId: ownerId,
     });
     await moveContent({
       id: activity6Id,
       desiredParentId: null,
       desiredPosition: 3,
-      ownerId,
+      loggedInUserId: ownerId,
     });
     if (i === 4) {
       // This is the 33rd insert, so we invoked a shift to the right
@@ -1262,19 +1285,19 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
       id: activity5Id,
       desiredParentId: null,
       desiredPosition: 3,
-      ownerId,
+      loggedInUserId: ownerId,
     });
     await moveContent({
       id: activity4Id,
       desiredParentId: null,
       desiredPosition: 3,
-      ownerId,
+      loggedInUserId: ownerId,
     });
   }
 
   let contentList = await getMyContent({
     loggedInUserId: ownerId,
-    folderId: null,
+    parentId: null,
   });
   expect(contentList.content.map((item) => item.id)).eqls([
     activity1Id,
@@ -1293,18 +1316,18 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
     id: activity5Id,
     desiredParentId: null,
     desiredPosition: 2,
-    ownerId,
+    loggedInUserId: ownerId,
   });
   await moveContent({
     id: activity4Id,
     desiredParentId: null,
     desiredPosition: 2,
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
   contentList = await getMyContent({
     loggedInUserId: ownerId,
-    folderId: null,
+    parentId: null,
   });
   expect(contentList.content.map((item) => item.id)).eqls([
     activity1Id,
@@ -1316,61 +1339,67 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
   ]);
 });
 
-test("copyActivityToFolder copies a public document to a new owner", async () => {
+test("copyContent copies a public document to a new owner", async () => {
   const originalOwnerId = (await createTestUser()).userId;
   const newOwnerId = (await createTestUser()).userId;
-  const { activityId, docId } = await createActivity(originalOwnerId, null);
-  // cannot copy if not yet public
-  await expect(
-    copyActivityToFolder(activityId, newOwnerId, null),
-  ).rejects.toThrow(PrismaClientKnownRequestError);
-
-  // Make the activity public before copying
-  await makeActivityPublic({
-    id: activityId,
-    ownerId: originalOwnerId,
-    licenseCode: "CCDUAL",
-  });
-  const newActivityId = await copyActivityToFolder(
-    activityId,
-    newOwnerId,
+  const { id: activityId } = await createContent(
+    originalOwnerId,
+    "singleDoc",
     null,
   );
-  const newActivity = await getActivity(newActivityId);
+  // cannot copy if not yet public
+  await expect(copyContent(activityId, newOwnerId, null)).rejects.toThrow(
+    PrismaClientKnownRequestError,
+  );
+
+  // Make the activity public before copying
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: originalOwnerId,
+    isPublic: true,
+  });
+  const [newActivityId] = await copyContent(activityId, newOwnerId, null);
+  const newActivity = await getContent({
+    contentId: newActivityId,
+    loggedInUserId: newOwnerId,
+  });
   expect(newActivity.ownerId).eqls(newOwnerId);
   expect(newActivity.isPublic).toBe(false);
 
   const activityData = await getActivityViewerData(newActivityId, newOwnerId);
 
-  const contribHist = activityData.docHistories![0].contributorHistory;
+  const contribHist = activityData.activityHistory.contributorHistory;
   expect(contribHist.length).eq(1);
 
-  expect(contribHist[0].prevDocId).eqls(docId);
-  expect(contribHist[0].prevDocVersionNum).eq(1);
+  expect(contribHist[0].prevActivityId).eqls(activityId);
+  expect(contribHist[0].prevActivityRevisionNum).eq(1);
 });
 
-test("copyActivityToFolder copies a shared document to a new owner", async () => {
+test("copyContent copies a shared document to a new owner", async () => {
   const originalOwnerId = (await createTestUser()).userId;
   const newOwnerId = (await createTestUser()).userId;
-  const { activityId, docId } = await createActivity(originalOwnerId, null);
-  // cannot copy if not yet shared
-  await expect(
-    copyActivityToFolder(activityId, newOwnerId, null),
-  ).rejects.toThrow(PrismaClientKnownRequestError);
-
-  // Make the activity public before copying
-  await shareActivity({
-    id: activityId,
-    ownerId: originalOwnerId,
-    licenseCode: "CCDUAL",
-    users: [newOwnerId],
-  });
-  const newActivityId = await copyActivityToFolder(
-    activityId,
-    newOwnerId,
+  const { id: activityId } = await createContent(
+    originalOwnerId,
+    "singleDoc",
     null,
   );
-  const newActivity = await getActivity(newActivityId);
+  // cannot copy if not yet shared
+  await expect(copyContent(activityId, newOwnerId, null)).rejects.toThrow(
+    PrismaClientKnownRequestError,
+  );
+
+  // Make the activity public before copying
+  await modifyContentSharedWith({
+    action: "share",
+    contentId: activityId,
+    loggedInUserId: originalOwnerId,
+    users: [newOwnerId],
+  });
+  const [newActivityId] = await copyContent(activityId, newOwnerId, null);
+  const newActivity = await getContent({
+    contentId: newActivityId,
+    loggedInUserId: newOwnerId,
+  });
   expect(newActivity.ownerId).eqls(newOwnerId);
   expect(newActivity.isPublic).toBe(false);
 
@@ -1378,75 +1407,88 @@ test("copyActivityToFolder copies a shared document to a new owner", async () =>
 
   expect(activityData.activity.isShared).eq(false);
 
-  const contribHist = activityData.docHistories![0].contributorHistory;
+  const contribHist = activityData.activityHistory.contributorHistory;
   expect(contribHist.length).eq(1);
 
-  expect(contribHist[0].prevDocId).eqls(docId);
-  expect(contribHist[0].prevDocVersionNum).eq(1);
+  expect(contribHist[0].prevActivityId).eqls(activityId);
+  expect(contribHist[0].prevActivityRevisionNum).eq(1);
 });
 
-test("copyActivityToFolder remixes correct versions", async () => {
+test("copyContent remixes correct versions", async () => {
   const ownerId1 = (await createTestUser()).userId;
   const ownerId2 = (await createTestUser()).userId;
   const ownerId3 = (await createTestUser()).userId;
 
   // create activity 1 by owner 1
-  const { activityId: activityId1, docId: docId1 } = await createActivity(
-    ownerId1,
-    null,
-  );
+  const { id: activityId1 } = await createContent(ownerId1, "singleDoc", null);
   const activity1Content = "<p>Hello!</p>";
-  await makeActivityPublic({
-    id: activityId1,
-    ownerId: ownerId1,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activityId1,
+    loggedInUserId: ownerId1,
+    isPublic: true,
   });
-  await updateDoc({
-    id: docId1,
+  await updateContent({
+    contentId: activityId1,
     source: activity1Content,
-    ownerId: ownerId1,
+    loggedInUserId: ownerId1,
   });
 
   // copy activity 1 to owner 2's root folder
-  const activityId2 = await copyActivityToFolder(activityId1, ownerId2, null);
-  const activity2 = await getActivity(activityId2);
+  const [activityId2] = await copyContent(activityId1, ownerId2, null);
+  const activity2 = await getContent({
+    contentId: activityId2,
+    loggedInUserId: ownerId2,
+  });
+  if (activity2.type !== "singleDoc") {
+    throw Error("shouldn't happen");
+  }
   expect(activity2.ownerId).eqls(ownerId2);
-  expect(activity2.documents[0].source).eq(activity1Content);
+  expect(activity2.source).eq(activity1Content);
 
   // history should be version 1 of activity 1
   const activityData2 = await getActivityViewerData(activityId2, ownerId2);
-  const contribHist2 = activityData2.docHistories![0].contributorHistory;
+  const contribHist2 = activityData2.activityHistory.contributorHistory;
   expect(contribHist2.length).eq(1);
-  expect(contribHist2[0].prevDocId).eqls(docId1);
-  expect(contribHist2[0].prevDocVersionNum).eq(1);
+  expect(contribHist2[0].prevActivityId).eqls(activityId1);
+  expect(contribHist2[0].prevActivityRevisionNum).eq(1);
 
   // modify activity 1 so that will have a new version
   const activity1ContentModified = "<p>Bye</p>";
-  await updateDoc({
-    id: docId1,
+  await updateContent({
+    contentId: activityId1,
     source: activity1ContentModified,
-    ownerId: ownerId1,
+    loggedInUserId: ownerId1,
   });
 
   // copy activity 1 to owner 3's Activities page
-  const activityId3 = await copyActivityToFolder(activityId1, ownerId3, null);
+  const [activityId3] = await copyContent(activityId1, ownerId3, null);
 
-  const activity3 = await getActivity(activityId3);
+  const activity3 = await getContent({
+    contentId: activityId3,
+    loggedInUserId: ownerId3,
+  });
+  if (activity3.type !== "singleDoc") {
+    throw Error("shouldn't happen");
+  }
   expect(activity3.ownerId).eqls(ownerId3);
-  expect(activity3.documents[0].source).eq(activity1ContentModified);
+  expect(activity3.source).eq(activity1ContentModified);
 
   // history should be version 2 of activity 1
   const activityData3 = await getActivityViewerData(activityId3, ownerId3);
-  const contribHist3 = activityData3.docHistories![0].contributorHistory;
+  const contribHist3 = activityData3.activityHistory.contributorHistory;
   expect(contribHist3.length).eq(1);
-  expect(contribHist3[0].prevDocId).eqls(docId1);
-  expect(contribHist3[0].prevDocVersionNum).eq(2);
+  expect(contribHist3[0].prevActivityId).eqls(activityId1);
+  expect(contribHist3[0].prevActivityRevisionNum).eq(2);
 });
 
-test("copyActivityToFolder copies content classifications", async () => {
+test("copyContent copies content classifications", async () => {
   const originalOwnerId = (await createTestUser()).userId;
   const newOwnerId = (await createTestUser()).userId;
-  const { activityId } = await createActivity(originalOwnerId, null);
+  const { id: activityId } = await createContent(
+    originalOwnerId,
+    "singleDoc",
+    null,
+  );
 
   const { id: classifyId } = (
     await searchPossibleClassifications({ query: "K.CC.1 common core" })
@@ -1454,76 +1496,66 @@ test("copyActivityToFolder copies content classifications", async () => {
 
   await addClassification(activityId, classifyId, originalOwnerId);
 
-  await makeActivityPublic({
-    id: activityId,
-    ownerId: originalOwnerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: originalOwnerId,
+    isPublic: true,
   });
-  const newActivityId = await copyActivityToFolder(
-    activityId,
-    newOwnerId,
-    null,
-  );
+  const [newActivityId] = await copyContent(activityId, newOwnerId, null);
 
   const activityData = await getActivityEditorData(newActivityId, newOwnerId);
 
-  expect(activityData.activity.classifications).toHaveLength(1);
-  expect(activityData.activity.classifications[0].id).eq(classifyId);
+  expect(activityData.activity!.classifications).toHaveLength(1);
+  expect(activityData.activity!.classifications[0].id).eq(classifyId);
 });
 
-test("copyActivityToFolder copies content features", async () => {
+test("copyContent copies content features", async () => {
   const originalOwnerId = (await createTestUser()).userId;
   const newOwnerId = (await createTestUser()).userId;
-  const { activityId: activityId1 } = await createActivity(
+  const { id: activityId1 } = await createContent(
     originalOwnerId,
+    "singleDoc",
     null,
   );
-  const { activityId: activityId2 } = await createActivity(
+  const { id: activityId2 } = await createContent(
     originalOwnerId,
+    "singleDoc",
     null,
   );
 
   await updateContentFeatures({
-    id: activityId1,
-    ownerId: originalOwnerId,
+    contentId: activityId1,
+    loggedInUserId: originalOwnerId,
     features: { isQuestion: true },
   });
   await updateContentFeatures({
-    id: activityId2,
-    ownerId: originalOwnerId,
+    contentId: activityId2,
+    loggedInUserId: originalOwnerId,
     features: { containsVideo: true, isInteractive: true },
   });
 
-  await makeActivityPublic({
-    id: activityId1,
-    ownerId: originalOwnerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activityId1,
+    loggedInUserId: originalOwnerId,
+    isPublic: true,
   });
-  await makeActivityPublic({
-    id: activityId2,
-    ownerId: originalOwnerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activityId2,
+    loggedInUserId: originalOwnerId,
+    isPublic: true,
   });
 
-  const newActivityId1 = await copyActivityToFolder(
-    activityId1,
-    newOwnerId,
-    null,
-  );
-  const newActivityId2 = await copyActivityToFolder(
-    activityId2,
-    newOwnerId,
-    null,
-  );
+  const [newActivityId1] = await copyContent(activityId1, newOwnerId, null);
+  const [newActivityId2] = await copyContent(activityId2, newOwnerId, null);
 
   const activityData1 = await getActivityEditorData(newActivityId1, newOwnerId);
-  expect(activityData1.activity.contentFeatures).toHaveLength(1);
-  expect(activityData1.activity.contentFeatures[0].code).eq("isQuestion");
+  expect(activityData1.activity!.contentFeatures).toHaveLength(1);
+  expect(activityData1.activity!.contentFeatures[0].code).eq("isQuestion");
 
   const activityData2 = await getActivityEditorData(newActivityId2, newOwnerId);
-  expect(activityData2.activity.contentFeatures).toHaveLength(2);
-  expect(activityData2.activity.contentFeatures[0].code).eq("isInteractive");
-  expect(activityData2.activity.contentFeatures[1].code).eq("containsVideo");
+  expect(activityData2.activity!.contentFeatures).toHaveLength(2);
+  expect(activityData2.activity!.contentFeatures[0].code).eq("isInteractive");
+  expect(activityData2.activity!.contentFeatures[1].code).eq("containsVideo");
 });
 
 test("set and get preferred folder view", async () => {
@@ -1540,44 +1572,44 @@ test("set and get preferred folder view", async () => {
   expect(result).eqls({ cardView: true });
 });
 
-test("check if folder contains content type", async () => {
+test("check if content contains content type", async () => {
   const { userId } = await createTestUser();
 
   // initially shouldn't have any content types
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
-    expect(await checkIfFolderContains(null, ct as ContentType, userId)).eq(
+    expect(await checkIfContentContains(null, ct as ContentType, userId)).eq(
       false,
     );
   }
 
   // add a single document to base folder
-  await createActivity(userId, null);
+  await createContent(userId, "singleDoc", null);
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
-    expect(await checkIfFolderContains(null, ct as ContentType, userId)).eq(
+    expect(await checkIfContentContains(null, ct as ContentType, userId)).eq(
       ct === "singleDoc",
     );
   }
 
   // add a folder to base folder
-  const { folderId: folderId1 } = await createFolder(userId, null);
+  const { id: folderId1 } = await createContent(userId, "folder", null);
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
-    expect(await checkIfFolderContains(null, ct as ContentType, userId)).eq(
+    expect(await checkIfContentContains(null, ct as ContentType, userId)).eq(
       ct === "singleDoc" || ct === "folder",
     );
   }
 
   // add a question bank to base folder
-  await createFolder(userId, null, "select");
+  await createContent(userId, "select", null);
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
-    expect(await checkIfFolderContains(null, ct as ContentType, userId)).eq(
+    expect(await checkIfContentContains(null, ct as ContentType, userId)).eq(
       ct !== "sequence",
     );
   }
 
   // add problem set to base folder
-  await createFolder(userId, null, "sequence");
+  await createContent(userId, "sequence", null);
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
-    expect(await checkIfFolderContains(null, ct as ContentType, userId)).eq(
+    expect(await checkIfContentContains(null, ct as ContentType, userId)).eq(
       true,
     );
   }
@@ -1585,80 +1617,80 @@ test("check if folder contains content type", async () => {
   // folder1 starts out with nothing
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfFolderContains(folderId1, ct as ContentType, userId),
+      await checkIfContentContains(folderId1, ct as ContentType, userId),
     ).eq(false);
   }
 
   // add a folder to folder 1
-  const { folderId: folderId2 } = await createFolder(userId, folderId1);
+  const { id: folderId2 } = await createContent(userId, "folder", folderId1);
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfFolderContains(folderId1, ct as ContentType, userId),
+      await checkIfContentContains(folderId1, ct as ContentType, userId),
     ).eq(ct === "folder");
   }
 
   // add a folder to folder 2, still checking folder 1
-  const { folderId: folderId3 } = await createFolder(userId, folderId2);
+  const { id: folderId3 } = await createContent(userId, "folder", folderId2);
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfFolderContains(folderId1, ct as ContentType, userId),
+      await checkIfContentContains(folderId1, ct as ContentType, userId),
     ).eq(ct === "folder");
   }
 
   // add a problem set to folder 3, still checking folder 1
-  const { folderId: problemSetId4 } = await createFolder(
+  const { id: problemSetId4 } = await createContent(
     userId,
-    folderId3,
     "sequence",
+    folderId3,
   );
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfFolderContains(folderId1, ct as ContentType, userId),
+      await checkIfContentContains(folderId1, ct as ContentType, userId),
     ).eq(ct === "folder" || ct === "sequence");
   }
 
   // add a question bank to problem set 4 still checking folder 1
-  const { folderId: questionBank5 } = await createFolder(
+  const { id: questionBank5 } = await createContent(
     userId,
-    problemSetId4,
     "select",
+    problemSetId4,
   );
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfFolderContains(folderId1, ct as ContentType, userId),
+      await checkIfContentContains(folderId1, ct as ContentType, userId),
     ).eq(ct !== "singleDoc");
   }
 
   // add a document to problem set 5 still checking folder 1
-  await createActivity(userId, questionBank5);
+  await createContent(userId, "singleDoc", questionBank5);
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfFolderContains(folderId1, ct as ContentType, userId),
+      await checkIfContentContains(folderId1, ct as ContentType, userId),
     ).eq(true);
   }
 
   // check chain from folder 1 up
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfFolderContains(folderId2, ct as ContentType, userId),
+      await checkIfContentContains(folderId2, ct as ContentType, userId),
     ).eq(true);
   }
 
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfFolderContains(folderId3, ct as ContentType, userId),
+      await checkIfContentContains(folderId3, ct as ContentType, userId),
     ).eq(ct !== "folder");
   }
 
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfFolderContains(problemSetId4, ct as ContentType, userId),
+      await checkIfContentContains(problemSetId4, ct as ContentType, userId),
     ).eq(ct === "select" || ct === "singleDoc");
   }
 
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfFolderContains(questionBank5, ct as ContentType, userId),
+      await checkIfContentContains(questionBank5, ct as ContentType, userId),
     ).eq(ct === "singleDoc");
   }
 });

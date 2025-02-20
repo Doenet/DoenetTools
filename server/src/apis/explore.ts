@@ -1,6 +1,19 @@
-import { Prisma } from "@prisma/client";
+import { ContentType, Prisma } from "@prisma/client";
 import { prisma } from "../model";
 import { sanitizeQuery } from "../utils/search";
+import {
+  returnClassificationFilterWhereClauses,
+  returnClassificationJoins,
+  returnClassificationMatchClauses,
+  returnFeatureJoins,
+  returnFeatureWhereClauses,
+} from "../utils/classificationsFeatures";
+import { processContent, returnContentSelect } from "../utils/contentStructure";
+import { fromUUID } from "../utils/uuid";
+import { getLibraryAccountId } from "./curate";
+import { PartialContentClassification, UserInfo } from "../types";
+import { getAvailableContentFeatures } from "./classification";
+import { DateTime } from "luxon";
 
 export async function searchSharedContent({
   query,
@@ -48,14 +61,12 @@ export async function searchSharedContent({
   SELECT
     content.id,
     AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*5)
-    +(MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*5)
+    +(MATCH(content.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*5)
     ${ownerId === undefined ? Prisma.sql`+ MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "+" })}
     ) as relevance
   FROM
     content
-  LEFT JOIN
-    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
   LEFT JOIN
     users ON content.ownerId = users.userId
   ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
@@ -70,7 +81,7 @@ export async function searchSharedContent({
     AND
     (
       MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(content.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
       ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
     )
@@ -91,7 +102,7 @@ export async function searchSharedContent({
     where: {
       id: { in: matches.map((m) => m.id) },
     },
-    select: returnContentStructureFullOwnerSelect(),
+    select: returnContentSelect({ includeOwnerDetails: true }),
   });
 
   // TODO: better way to sort! (For free if combine queries)
@@ -101,6 +112,7 @@ export async function searchSharedContent({
 
   const sharedContent = preliminarySharedContent
     .sort((a, b) => relevance[fromUUID(b.id)] - relevance[fromUUID(a.id)])
+    //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
     .map((content) => processContent(content, loggedInUserId));
 
   return sharedContent;
@@ -174,13 +186,14 @@ export async function browseSharedContent({
       ownerId,
       classifications: classificationsFilter,
     },
-    select: returnContentStructureFullOwnerSelect(),
+    select: returnContentSelect({ includeOwnerDetails: true }),
     orderBy: { createdAt: "desc" },
     take: pageSize,
     skip: (page - 1) * pageSize,
   });
 
   const sharedContent = preliminarySharedContent.map((content) =>
+    //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
     processContent(content, loggedInUserId),
   );
 
@@ -234,8 +247,6 @@ export async function browseTrendingContent({
   FROM
     content
   LEFT JOIN
-    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
-  LEFT JOIN
     users ON content.ownerId = users.userId
   ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
   ${returnFeatureJoins(features)}
@@ -265,7 +276,7 @@ export async function browseTrendingContent({
     where: {
       id: { in: matches.map((m) => m.id) },
     },
-    select: returnContentStructureFullOwnerSelect(),
+    select: returnContentSelect({ includeOwnerDetails: true }),
     orderBy: { createdAt: "desc" },
   });
 
@@ -278,6 +289,7 @@ export async function browseTrendingContent({
   // will still be sorted in descending createdAt order
   const sharedContent = preliminarySharedContent
     .sort((a, b) => numViews[fromUUID(b.id)] - numViews[fromUUID(a.id)])
+    //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
     .map((content) => processContent(content, loggedInUserId));
 
   return sharedContent;
@@ -421,8 +433,6 @@ export async function browseUsersWithSharedContent({
         AND content.id IN (
           SELECT content.id
           FROM content
-          LEFT JOIN
-            (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
           ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
           ${returnFeatureJoins(features)}
           WHERE
@@ -433,7 +443,7 @@ export async function browseUsersWithSharedContent({
             )
             AND (
               MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-              OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+              OR MATCH(content.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
               ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
             )
             ${returnClassificationFilterWhereClauses({ systemId, categoryId, subCategoryId, classificationId, isUnclassified })}
@@ -478,8 +488,7 @@ export async function browseUsersWithSharedContent({
           ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
           ${returnFeatureJoins(features)}
           WHERE
-            content.isFolder = FALSE
-            AND content.isDeleted = FALSE
+            content.isDeleted = FALSE
             AND (
               content.isPublic = TRUE
               OR content.id IN (SELECT contentId FROM contentShares WHERE userId = ${loggedInUserId})
@@ -824,11 +833,12 @@ export async function browseClassificationSharedContent({
       classifications: { some: { classificationId } },
       ownerId,
     },
-    select: returnContentStructureFullOwnerSelect(),
+    select: returnContentSelect({ includeOwnerDetails: true }),
     take: pageSize,
     skip: (page - 1) * pageSize,
   });
 
+  //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
   const content = results.map((c) => processContent(c));
 
   return { content };
@@ -913,7 +923,9 @@ export async function browseClassificationSubCategorySharedContent({
                   },
                   select: {
                     content: {
-                      select: returnContentStructureFullOwnerSelect(),
+                      select: returnContentSelect({
+                        includeOwnerDetails: true,
+                      }),
                     },
                   },
                   take: 100,
@@ -934,6 +946,7 @@ export async function browseClassificationSubCategorySharedContent({
       description: description.description,
       descriptionId: description.id,
       content: description.classification.contentClassifications.map((cc) =>
+        //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
         processContent(cc.content),
       ),
     })),
@@ -1051,7 +1064,9 @@ export async function browseClassificationCategorySharedContent({
                       },
                       select: {
                         content: {
-                          select: returnContentStructureFullOwnerSelect(),
+                          select: returnContentSelect({
+                            includeOwnerDetails: true,
+                          }),
                         },
                       },
                       take: 10,
@@ -1076,6 +1091,7 @@ export async function browseClassificationCategorySharedContent({
         description: description.description,
         descriptionId: description.id,
         content: description.classification.contentClassifications.map((cc) =>
+          //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
           processContent(cc.content),
         ),
       })),
@@ -1145,8 +1161,6 @@ export async function browseClassificationsWithSharedContent({
   FROM
     content
   LEFT JOIN
-    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
-  LEFT JOIN
     libraryActivityInfos ON content.id = libraryActivityInfos.activityId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
@@ -1159,7 +1173,7 @@ export async function browseClassificationsWithSharedContent({
     )
     AND (
       MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(content.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
     ${returnClassificationFilterWhereClauses({ subCategoryId })}
@@ -1313,8 +1327,6 @@ export async function browseClassificationSubCategoriesWithSharedContent({
   FROM
     content
   LEFT JOIN
-    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
-  LEFT JOIN
     libraryActivityInfos ON content.id = libraryActivityInfos.activityId        
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
@@ -1327,7 +1339,7 @@ export async function browseClassificationSubCategoriesWithSharedContent({
     )
     AND (
       MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(content.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, prependOperator: true, operator: "OR" })}
       ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
@@ -1465,8 +1477,6 @@ export async function browseClassificationCategoriesWithSharedContent({
   FROM
     content
   LEFT JOIN
-    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
-  LEFT JOIN
       libraryActivityInfos ON content.id = libraryActivityInfos.activityId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
@@ -1479,7 +1489,7 @@ export async function browseClassificationCategoriesWithSharedContent({
     )
     AND (
       MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(content.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, matchSubCategory: true, prependOperator: true, operator: "OR" })}
       ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
@@ -1604,8 +1614,6 @@ export async function browseClassificationSystemsWithSharedContent({
   FROM
     content
   LEFT JOIN
-    (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
-  LEFT JOIN
       libraryActivityInfos ON content.id = libraryActivityInfos.activityId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
@@ -1618,7 +1626,7 @@ export async function browseClassificationSystemsWithSharedContent({
     )
     AND (
       MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-      OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+      OR MATCH(content.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
       ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, matchSubCategory: true, matchCategory: true, prependOperator: true, operator: "OR" })}
       ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
     )
@@ -1749,8 +1757,6 @@ export async function getSharedContentMatchCount({
       FROM
         content
       LEFT JOIN
-        (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
-      LEFT JOIN
         users ON content.ownerId = users.userId
       LEFT JOIN
         libraryActivityInfos ON content.id = libraryActivityInfos.activityId
@@ -1765,7 +1771,7 @@ export async function getSharedContentMatchCount({
         AND
         (
           MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-          OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+          OR MATCH(content.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
           ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
           ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
         )
@@ -1793,8 +1799,6 @@ export async function getSharedContentMatchCount({
         COUNT(distinct libraryActivityInfos.activityId) as curatedContent
       FROM
         content
-      LEFT JOIN
-        (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
       LEFT JOIN
         users ON content.ownerId = users.userId
       LEFT JOIN
@@ -1879,8 +1883,6 @@ export async function getSharedContentMatchCountPerAvailableFeature({
       FROM
         content
       LEFT JOIN
-        (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
-      LEFT JOIN
         users ON content.ownerId = users.userId
       LEFT JOIN
         libraryActivityInfos ON content.id = libraryActivityInfos.activityId
@@ -1895,7 +1897,7 @@ export async function getSharedContentMatchCountPerAvailableFeature({
         AND
         (
           MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-          OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+          OR MATCH(content.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
           ${ownerId === undefined ? Prisma.sql`OR MATCH(users.firstNames, users.lastNames) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)` : Prisma.empty}
           ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification, matchSubCategory, matchCategory, prependOperator: true, operator: "OR" })}
         )
@@ -1937,8 +1939,6 @@ export async function getSharedContentMatchCountPerAvailableFeature({
         COUNT(distinct libraryActivityInfos.activityId) as numCurated
       FROM
         content
-      LEFT JOIN
-        (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
       LEFT JOIN
         users ON content.ownerId = users.userId
       LEFT JOIN

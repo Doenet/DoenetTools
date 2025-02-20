@@ -8,9 +8,9 @@ import {
 import { isEqualUUID } from "../utils/uuid";
 import { getIsAdmin, getLibraryAccountId, mustBeAdmin } from "./curate";
 import {
+  calculateNewSortIndex,
   getNextSortIndexForParent,
   ShiftIndicesCallbackFunction,
-  SORT_INCREMENT,
 } from "../utils/sort";
 import { modifyContentSharedWith, setContentIsPublic } from "./share";
 import { createActivityRevision } from "./activity";
@@ -191,7 +191,7 @@ export async function moveContent({
 
   if (desiredParentIsPublic) {
     await setContentIsPublic({
-      id: content.id,
+      contentId: content.id,
       loggedInUserId: ownerId,
       isPublic: true,
     });
@@ -200,7 +200,7 @@ export async function moveContent({
   if (desiredParentShares.length > 0) {
     await modifyContentSharedWith({
       action: "share",
-      id: content.id,
+      contentId: content.id,
       loggedInUserId: ownerId,
       users: desiredParentShares,
     });
