@@ -201,6 +201,7 @@ export async function getContent({
 
   // 4. piece together all those details into a tree of the form given by `Content`
   const idx = preliminaryList.findIndex((c) => isEqualUUID(c.id, contentId));
+  //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
   const activity = processContent(preliminaryList[idx], loggedInUserId);
 
   preliminaryList.splice(idx, 1);
@@ -209,6 +210,7 @@ export async function getContent({
     const children: Content[] = [];
     for (let i = 0; i < preliminaryList.length; i++) {
       if (isEqualUUID(preliminaryList[i].parent!.id, id)) {
+        //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
         children.push(processContent(preliminaryList[i], loggedInUserId));
         preliminaryList.splice(i, 1);
         i--;

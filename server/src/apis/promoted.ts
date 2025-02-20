@@ -1,10 +1,14 @@
 import { ContentType } from "@prisma/client";
 import { prisma } from "../model";
 import { InvalidRequestError } from "../utils/error";
-import { calculateNewSortIndex, getNextSortIndex, ShiftIndicesCallbackFunction } from "../utils/sort";
+import {
+  calculateNewSortIndex,
+  getNextSortIndex,
+  ShiftIndicesCallbackFunction,
+} from "../utils/sort";
 import { getIsAdmin, mustBeAdmin } from "./curate";
-import { filterViewableContent } from "../utils/permissions";
 import { Content } from "../types";
+import { processContent, returnContentSelect } from "../utils/contentStructure";
 
 export async function addPromotedContentGroup(
   groupName: string,
@@ -167,7 +171,7 @@ export async function loadPromotedContent(userId: Uint8Array) {
       promotedContent: {
         select: {
           activity: {
-            select: returnContentStructureFullOwnerSelect(),
+            select: returnContentSelect({ includeOwnerDetails: true }),
           },
         },
         orderBy: { sortIndex: "asc" },
@@ -182,10 +186,10 @@ export async function loadPromotedContent(userId: Uint8Array) {
     homepage: boolean;
     promotedContent: Content[];
   }[] = content.map((groupContent) => {
-    const reformattedActivities: Content[] =
-      groupContent.promotedContent.map((content) =>
-        processContent(content.activity),
-      );
+    const reformattedActivities: Content[] = groupContent.promotedContent.map(
+      //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
+      (content) => processContent(content.activity),
+    );
 
     return {
       groupName: groupContent.groupName,
@@ -387,9 +391,10 @@ export async function getAllRecentPublicActivities() {
     },
     orderBy: { lastEdited: "desc" },
     take: 100,
-    select: returnContentStructureFullOwnerSelect(),
+    select: returnContentSelect({ includeOwnerDetails: true }),
   });
 
+  //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
   const activities2 = activities.map((activity) => processContent(activity));
 
   return activities2;

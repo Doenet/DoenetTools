@@ -1,14 +1,10 @@
-import {
-  ContentType,
-  LibraryEventType,
-  LibraryStatus,
-  Prisma,
-} from "@prisma/client";
+import { ContentType, LibraryEventType, LibraryStatus } from "@prisma/client";
 import { prisma } from "../model";
 import { blankLibraryInfo, LibraryInfo } from "../types";
 import { InvalidRequestError } from "../utils/error";
 import { fromUUID } from "../utils/uuid";
-import { copyActivityToFolder, copyFolderToFolder } from "./copy_move";
+import { deleteContent } from "./activity";
+import { copyContent } from "./copy_move";
 
 export async function mustBeAdmin(
   userId: Uint8Array,
@@ -229,11 +225,9 @@ export async function getLibraryAccountId() {
  */
 export async function addDraftToLibrary({
   id,
-  contentType,
   loggedInUserId,
 }: {
   id: Uint8Array;
-  contentType: ContentType;
   loggedInUserId: Uint8Array;
 }) {
   await mustBeAdmin(loggedInUserId);
@@ -272,13 +266,7 @@ export async function addDraftToLibrary({
 
   const libraryId = await getLibraryAccountId();
 
-  let draftId;
-
-  if (contentType === "singleDoc") {
-    draftId = await copyActivityToFolder(id, libraryId, null);
-  } else {
-    draftId = (await copyFolderToFolder(id, libraryId, null))[0];
-  }
+  const [draftId] = await copyContent(id, libraryId, null);
 
   await prisma.libraryActivityInfos.upsert({
     where: {
@@ -351,7 +339,7 @@ export async function deleteDraftFromLibrary({
     select: { id: true },
   });
 
-  const deleteDraft = deleteContent(draftId, libraryId, contentType);
+  const deleteDraft = deleteContent(draftId, libraryId);
 
   const removeLibraryIdRef = prisma.libraryActivityInfos.update({
     where: {
