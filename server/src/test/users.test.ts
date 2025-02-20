@@ -1,13 +1,7 @@
 import { expect, test } from "vitest";
 import { createTestAnonymousUser, createTestUser } from "./utils";
-import {
-  findOrCreateUser,
-  getMyFolderContent,
-  getUserInfo,
-  updateUser,
-  upgradeAnonymousUser,
-} from "../model";
 import { fromUUID } from "../utils/uuid";
+import { findOrCreateUser, getUserInfo, updateUser, upgradeAnonymousUser } from "../apis/user";
 
 test("New user has no content", async () => {
   const user = await createTestUser();
