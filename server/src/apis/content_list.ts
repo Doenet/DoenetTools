@@ -125,13 +125,11 @@ export async function searchMyContent({
     SELECT
       content.id,
       AVG((MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) + 
-      (MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
+      (MATCH(content.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)*100) +
       ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, matchSubCategory: true, matchCategory: true, prependOperator: true, operator: "+" })} 
       ) as relevance
     FROM
       content
-    LEFT JOIN
-      (SELECT * from documents WHERE isDeleted = FALSE) AS documents ON content.id = documents.activityId
     ${returnClassificationJoins({ includeCategory: true, joinFromContent: true })}
     WHERE
       ${
@@ -142,7 +140,7 @@ export async function searchMyContent({
       AND
       (
         MATCH(content.name) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
-        OR MATCH(documents.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
+        OR MATCH(content.source) AGAINST(${query_as_prefixes} IN BOOLEAN MODE)
         ${returnClassificationMatchClauses({ query_as_prefixes, matchClassification: true, matchSubCategory: true, matchCategory: true, prependOperator: true, operator: "OR" })} 
       )
     GROUP BY

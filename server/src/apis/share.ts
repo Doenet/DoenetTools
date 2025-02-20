@@ -174,11 +174,11 @@ export async function modifyContentSharedWith({
 }
 
 export async function shareContentWithEmail({
-  id,
+  contentId,
   loggedInUserId,
   email,
 }: {
-  id: Uint8Array;
+  contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   email: string;
 }) {
@@ -208,7 +208,7 @@ export async function shareContentWithEmail({
 
   await modifyContentSharedWith({
     action: "share",
-    contentId: id,
+    contentId: contentId,
     loggedInUserId,
     users: [userId],
   });

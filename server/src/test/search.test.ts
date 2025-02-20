@@ -1,28 +1,30 @@
 import { expect, test } from "vitest";
+import { createTestClassifications, createTestUser } from "./utils";
+import { compareUUID, fromUUID, isEqualUUID } from "../utils/uuid";
+import {
+  createContent,
+  deleteContent,
+  updateContent,
+  updateContentFeatures,
+} from "../apis/activity";
+import {
+  modifyContentSharedWith,
+  setContentIsPublic,
+  shareContentWithEmail,
+} from "../apis/share";
 import {
   addClassification,
-  createActivity,
-  createFolder,
-  deleteActivity,
-  makeActivityPublic,
-  makeFolderPublic,
+  searchPossibleClassifications,
+} from "../apis/classification";
+import {
   searchClassificationCategoriesWithSharedContent,
   searchClassificationSubCategoriesWithSharedContent,
   searchClassificationsWithSharedContent,
-  searchMyFolderContent,
-  searchPossibleClassifications,
   searchSharedContent,
   searchUsersWithSharedContent,
-  shareActivity,
-  shareActivityWithEmail,
-  shareFolder,
-  updateContent,
-  updateContentFeatures,
-  updateDoc,
-  updateUser,
-} from "../model";
-import { createTestClassifications, createTestUser } from "./utils";
-import { compareUUID, fromUUID, isEqualUUID } from "../utils/uuid";
+} from "../apis/explore";
+import { searchMyContent } from "../apis/content_list";
+import { updateUser } from "../apis/user";
 
 test("searchSharedContent returns public/shared activities and folders matching the query", async () => {
   const owner = await createTestUser();
@@ -41,67 +43,78 @@ test("searchSharedContent returns public/shared activities and folders matching 
   const privateFolderName = `private folder ${sessionNumber}`;
   const sharedFolderName = `shared folder ${sessionNumber}`;
 
-  const { activityId: publicActivityId } = await createActivity(ownerId, null);
+  const { id: publicActivityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
   await updateContent({
-    id: publicActivityId,
+    contentId: publicActivityId,
     name: publicActivityName,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: publicActivityId,
-    licenseCode: "CCDUAL",
-    ownerId,
+  await setContentIsPublic({
+    contentId: publicActivityId,
+    isPublic: true,
+    loggedInUserId: ownerId,
   });
 
-  const { activityId: privateActivityId } = await createActivity(ownerId, null);
+  const { id: privateActivityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
   await updateContent({
-    id: privateActivityId,
+    contentId: privateActivityId,
     name: privateActivityName,
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
-  const { activityId: sharedActivityId } = await createActivity(ownerId, null);
+  const { id: sharedActivityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
   await updateContent({
-    id: sharedActivityId,
+    contentId: sharedActivityId,
     name: sharedActivityName,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await shareActivityWithEmail({
-    id: sharedActivityId,
-    licenseCode: "CCDUAL",
-    ownerId,
+  await shareContentWithEmail({
+    contentId: sharedActivityId,
+    loggedInUserId: ownerId,
     email: user.email,
   });
 
-  const { folderId: publicFolderId } = await createFolder(ownerId, null);
+  const { id: publicFolderId } = await createContent(ownerId, "folder", null);
   await updateContent({
-    id: publicFolderId,
+    contentId: publicFolderId,
     name: publicFolderName,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeFolderPublic({
-    id: publicFolderId,
-    licenseCode: "CCDUAL",
-    ownerId,
+  await setContentIsPublic({
+    contentId: publicFolderId,
+    isPublic: true,
+    loggedInUserId: ownerId,
   });
 
-  const { folderId: privateFolderId } = await createFolder(ownerId, null);
+  const { id: privateFolderId } = await createContent(ownerId, "folder", null);
   await updateContent({
-    id: privateFolderId,
+    contentId: privateFolderId,
     name: privateFolderName,
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
-  const { folderId: sharedFolderId } = await createFolder(ownerId, null);
+  const { id: sharedFolderId } = await createContent(ownerId, "folder", null);
   await updateContent({
-    id: sharedFolderId,
+    contentId: sharedFolderId,
     name: sharedFolderName,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await shareFolder({
-    id: sharedFolderId,
-    licenseCode: "CCDUAL",
-    ownerId,
+  await modifyContentSharedWith({
+    action: "share",
+    contentId: sharedFolderId,
+    loggedInUserId: ownerId,
     users: [userId],
   });
 
@@ -134,7 +147,7 @@ test("searchSharedContent returns public/shared activities and folders even in a
   // Create unique session number for names in this test
   const sessionNumber = Date.now().toString();
 
-  const { folderId: parentId } = await createFolder(ownerId, null);
+  const { id: parentId } = await createContent(ownerId, "folder", null);
 
   const publicActivityName = `public activity ${sessionNumber}`;
   const privateActivityName = `private activity ${sessionNumber}`;
@@ -143,76 +156,91 @@ test("searchSharedContent returns public/shared activities and folders even in a
   const privateFolderName = `private folder ${sessionNumber}`;
   const sharedFolderName = `shared folder ${sessionNumber}`;
 
-  const { activityId: publicActivityId } = await createActivity(
+  const { id: publicActivityId } = await createContent(
     ownerId,
+    "singleDoc",
     parentId,
   );
   await updateContent({
-    id: publicActivityId,
+    contentId: publicActivityId,
     name: publicActivityName,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: publicActivityId,
-    licenseCode: "CCDUAL",
-    ownerId,
+  await setContentIsPublic({
+    contentId: publicActivityId,
+    isPublic: true,
+    loggedInUserId: ownerId,
   });
 
-  const { activityId: privateActivityId } = await createActivity(
+  const { id: privateActivityId } = await createContent(
     ownerId,
+    "singleDoc",
     parentId,
   );
   await updateContent({
-    id: privateActivityId,
+    contentId: privateActivityId,
     name: privateActivityName,
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
-  const { activityId: sharedActivityId } = await createActivity(
+  const { id: sharedActivityId } = await createContent(
     ownerId,
+    "singleDoc",
     parentId,
   );
   await updateContent({
-    id: sharedActivityId,
+    contentId: sharedActivityId,
     name: sharedActivityName,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await shareActivity({
-    id: sharedActivityId,
-    licenseCode: "CCDUAL",
-    ownerId,
+  await modifyContentSharedWith({
+    action: "share",
+    contentId: sharedActivityId,
+    loggedInUserId: ownerId,
     users: [userId],
   });
 
-  const { folderId: publicFolderId } = await createFolder(ownerId, parentId);
+  const { id: publicFolderId } = await createContent(
+    ownerId,
+    "folder",
+    parentId,
+  );
   await updateContent({
-    id: publicFolderId,
+    contentId: publicFolderId,
     name: publicFolderName,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeFolderPublic({
-    id: publicFolderId,
-    licenseCode: "CCDUAL",
-    ownerId,
+  await setContentIsPublic({
+    contentId: publicFolderId,
+    isPublic: true,
+    loggedInUserId: ownerId,
   });
 
-  const { folderId: privateFolderId } = await createFolder(ownerId, parentId);
+  const { id: privateFolderId } = await createContent(
+    ownerId,
+    "folder",
+    parentId,
+  );
   await updateContent({
-    id: privateFolderId,
+    contentId: privateFolderId,
     name: privateFolderName,
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
-  const { folderId: sharedFolderId } = await createFolder(ownerId, parentId);
+  const { id: sharedFolderId } = await createContent(
+    ownerId,
+    "folder",
+    parentId,
+  );
   await updateContent({
-    id: sharedFolderId,
+    contentId: sharedFolderId,
     name: sharedFolderName,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await shareFolder({
-    id: sharedFolderId,
-    licenseCode: "CCDUAL",
-    ownerId,
+  await modifyContentSharedWith({
+    action: "share",
+    contentId: sharedFolderId,
+    loggedInUserId: ownerId,
     users: [userId],
   });
 
@@ -242,12 +270,16 @@ test("searchSharedContent, document source matches", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const code = Date.now().toString();
-  const { activityId, docId } = await createActivity(ownerId, null);
-  await updateDoc({ id: docId, source: `b${code}ananas`, ownerId });
-  await makeActivityPublic({
-    id: activityId,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activityId,
+    source: `b${code}ananas`,
+    loggedInUserId: ownerId,
+  });
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
 
   // apple doesn't hit
@@ -289,11 +321,11 @@ test("searchSharedContent, owner name matches", async () => {
     firstNames: `Arya${code}`,
     lastNames: "Abbas",
   });
-  const { activityId } = await createActivity(ownerId, null);
-  await makeActivityPublic({
-    id: activityId,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
 
   let results = await searchSharedContent({
@@ -320,42 +352,36 @@ test("searchSharedContent, document source is more relevant than classification"
 
   // unique code to distinguish content added in this test
   const code = `${Date.now()}`;
-  const { activityId: activity1Id, docId: doc1Id } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: doc1Id,
+  const { id: activity1Id } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activity1Id,
     source: `banana${code} muffin${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activity1Id,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity1Id,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
 
-  const { activityId: activity2Id, docId: doc2Id } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: doc2Id,
+  const { id: activity2Id } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activity2Id,
     source: `apple${code} muffin${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activity2Id,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity2Id,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
 
   // create a bunch more activities, in case this is the first test run on a reset database,
   // to make sure `banana${code}` is a sufficiently relevant search term
-  await createActivity(ownerId, null);
-  await createActivity(ownerId, null);
-  await createActivity(ownerId, null);
-  await createActivity(ownerId, null);
+  await createContent(ownerId, "singleDoc", null);
+  await createContent(ownerId, "singleDoc", null);
+  await createContent(ownerId, "singleDoc", null);
+  await createContent(ownerId, "singleDoc", null);
 
   const {
     classificationIdA1A,
@@ -426,34 +452,28 @@ test("searchSharedContent, classification increases relevance", async () => {
     code,
   });
 
-  const { activityId: activity1Id, docId: doc1Id } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: doc1Id,
+  const { id: activity1Id } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activity1Id,
     source: `banana${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activity1Id,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity1Id,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
 
-  const { activityId: activity2Id, docId: doc2Id } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: doc2Id,
+  const { id: activity2Id } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activity2Id,
     source: `banana${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activity2Id,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity2Id,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   await addClassification(activity2Id, classificationIdA1A, ownerId);
 
@@ -498,12 +518,16 @@ test("searchSharedContent, handle tags in search", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { activityId, docId } = await createActivity(ownerId, null);
-  await updateDoc({ id: docId, source: "point", ownerId });
-  await makeActivityPublic({
-    id: activityId,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activityId,
+    source: "point",
+    loggedInUserId: ownerId,
+  });
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
 
   const results = await searchSharedContent({
@@ -548,120 +572,99 @@ test("searchSharedContent, filter by classification", async () => {
 
   // Create identical activities, with only difference being which classification is used
   // classifyId1
-  const { activityId: activity1Id, docId: doc1Id } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: doc1Id,
+  const { id: activity1Id } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activity1Id,
     source: `banana${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activity1Id,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity1Id,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   await addClassification(activity1Id, classifyId1, ownerId);
 
   // classifyId2
-  const { activityId: activity2Id, docId: doc2Id } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: doc2Id,
+  const { id: activity2Id } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activity2Id,
     source: `banana${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activity2Id,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity2Id,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   await addClassification(activity2Id, classifyId2, ownerId);
 
   // classifyId3
-  const { activityId: activity3Id, docId: doc3Id } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: doc3Id,
+  const { id: activity3Id } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activity3Id,
     source: `banana${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activity3Id,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity3Id,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   await addClassification(activity3Id, classifyId3, ownerId);
 
   // classifyId4
-  const { activityId: activity4Id, docId: doc4Id } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: doc4Id,
+  const { id: activity4Id } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activity4Id,
     source: `banana${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activity4Id,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity4Id,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   await addClassification(activity4Id, classifyId4, ownerId);
 
   // classifyId5
-  const { activityId: activity5Id, docId: doc5Id } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: doc5Id,
+  const { id: activity5Id } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activity5Id,
     source: `banana${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activity5Id,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity5Id,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   await addClassification(activity5Id, classifyId5, ownerId);
 
   // unclassified
-  const { activityId: activity6Id, docId: doc6Id } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: doc6Id,
+  const { id: activity6Id } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activity6Id,
     source: `banana${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activity6Id,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity6Id,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
 
   // Create one more distractor activity with classification 1 but different text
-  const { activityId: activity7Id, docId: doc7Id } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: doc7Id,
+  const { id: activity7Id } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activity7Id,
     source: `grape${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activity7Id,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity7Id,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   await addClassification(activity7Id, classifyId1, ownerId);
 
@@ -731,186 +734,159 @@ test("searchSharedContent, filter by activity feature", async () => {
 
   // Create identical activities, with only difference being the activity features
   // no features
-  const { activityId: activityNId, docId: docNId } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: docNId,
+  const { id: activityNId } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activityNId,
     source: `banana${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activityNId,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activityNId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
 
   // is question
-  const { activityId: activityQId, docId: docQId } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: docQId,
+  const { id: activityQId } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activityQId,
     source: `banana${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activityQId,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activityQId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   await updateContentFeatures({
-    id: activityQId,
-    ownerId,
+    contentId: activityQId,
+    loggedInUserId: ownerId,
     features: { isQuestion: true },
   });
 
   // is interactive
-  const { activityId: activityIId, docId: docIId } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: docIId,
+  const { id: activityIId } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activityIId,
     source: `banana${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activityIId,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activityIId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   await updateContentFeatures({
-    id: activityIId,
-    ownerId,
+    contentId: activityIId,
+    loggedInUserId: ownerId,
     features: { isInteractive: true },
   });
 
   // contains video
-  const { activityId: activityVId, docId: docVId } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: docVId,
+  const { id: activityVId } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activityVId,
     source: `banana${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activityVId,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activityVId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   await updateContentFeatures({
-    id: activityVId,
-    ownerId,
+    contentId: activityVId,
+    loggedInUserId: ownerId,
     features: { containsVideo: true },
   });
 
   // is question and interactive
-  const { activityId: activityQIId, docId: docQIId } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: docQIId,
+  const { id: activityQIId } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activityQIId,
     source: `banana${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activityQIId,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activityQIId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   await updateContentFeatures({
-    id: activityQIId,
-    ownerId,
+    contentId: activityQIId,
+    loggedInUserId: ownerId,
     features: { isQuestion: true, isInteractive: true },
   });
 
   // is question and contains video
-  const { activityId: activityQVId, docId: docQVId } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: docQVId,
+  const { id: activityQVId } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activityQVId,
     source: `banana${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activityQVId,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activityQVId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   await updateContentFeatures({
-    id: activityQVId,
-    ownerId,
+    contentId: activityQVId,
+    loggedInUserId: ownerId,
     features: { isQuestion: true, containsVideo: true },
   });
 
   // is interactive and contains video
-  const { activityId: activityIVId, docId: docIVId } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: docIVId,
+  const { id: activityIVId } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activityIVId,
     source: `banana${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activityIVId,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activityIVId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   await updateContentFeatures({
-    id: activityIVId,
-    ownerId,
+    contentId: activityIVId,
+    loggedInUserId: ownerId,
     features: { isInteractive: true, containsVideo: true },
   });
 
   // is question, is interactive, and contains video
-  const { activityId: activityQIVId, docId: docQIVId } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: docQIVId,
+  const { id: activityQIVId } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activityQIVId,
     source: `banana${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activityQIVId,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activityQIVId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   await updateContentFeatures({
-    id: activityQIVId,
-    ownerId,
+    contentId: activityQIVId,
+    loggedInUserId: ownerId,
     features: { isQuestion: true, isInteractive: true, containsVideo: true },
   });
 
   // Create one more distractor activity with all features but different text
-  const { activityId: activityDId, docId: docDId } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateDoc({
-    id: docDId,
+  const { id: activityDId } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activityDId,
     source: `grape${code}`,
-    ownerId,
+    loggedInUserId: ownerId,
   });
-  await makeActivityPublic({
-    id: activityDId,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activityDId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   await updateContentFeatures({
-    id: activityDId,
-    ownerId,
+    contentId: activityDId,
+    loggedInUserId: ownerId,
     features: { isQuestion: true, isInteractive: true, containsVideo: true },
   });
 
@@ -1020,34 +996,28 @@ test("searchSharedContent, filter by owner", async () => {
   const code = `${Date.now()}`;
 
   // Create identical activities, with only difference being the owner
-  const { activityId: activity1Id, docId: doc1Id } = await createActivity(
-    owner1Id,
-    null,
-  );
-  await updateDoc({
-    id: doc1Id,
+  const { id: activity1Id } = await createContent(owner1Id, "singleDoc", null);
+  await updateContent({
+    contentId: activity1Id,
     source: `banana${code}`,
-    ownerId: owner1Id,
+    loggedInUserId: owner1Id,
   });
-  await makeActivityPublic({
-    id: activity1Id,
-    ownerId: owner1Id,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity1Id,
+    loggedInUserId: owner1Id,
+    isPublic: true,
   });
 
-  const { activityId: activity2Id, docId: doc2Id } = await createActivity(
-    owner2Id,
-    null,
-  );
-  await updateDoc({
-    id: doc2Id,
+  const { id: activity2Id } = await createContent(owner2Id, "singleDoc", null);
+  await updateContent({
+    contentId: activity2Id,
     source: `banana${code}`,
-    ownerId: owner2Id,
+    loggedInUserId: owner2Id,
   });
-  await makeActivityPublic({
-    id: activity2Id,
-    ownerId: owner2Id,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity2Id,
+    loggedInUserId: owner2Id,
+    isPublic: true,
   });
 
   // get both activities with no filtering
@@ -1087,57 +1057,59 @@ test("searchUsersWithSharedContent returns only users with public/shared/non-del
   const owner1 = await createTestUser();
   const owner1Id = owner1.userId;
 
-  await createActivity(owner1Id, null);
-  await createActivity(owner1Id, null);
-  const { folderId: folder1aId } = await createFolder(owner1Id, null);
-  await createActivity(owner1Id, folder1aId);
-  const { activityId: activity1dId } = await createActivity(owner1Id, null);
-  await makeActivityPublic({
-    id: activity1dId,
-    ownerId: owner1Id,
-    licenseCode: "CCDUAL",
+  await createContent(owner1Id, "singleDoc", null);
+  await createContent(owner1Id, "singleDoc", null);
+  const { id: folder1aId } = await createContent(owner1Id, "folder", null);
+  await createContent(owner1Id, "singleDoc", folder1aId);
+  const { id: activity1dId } = await createContent(owner1Id, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activity1dId,
+    loggedInUserId: owner1Id,
+    isPublic: true,
   });
-  await deleteActivity(activity1dId, owner1Id);
+  await deleteContent(activity1dId, owner1Id);
 
   // owner 2 has a public activity
   const owner2 = await createTestUser();
   const owner2Id = owner2.userId;
 
-  const { folderId: folder2aId } = await createFolder(owner2Id, null);
-  const { activityId: activity2aId } = await createActivity(
+  const { id: folder2aId } = await createContent(owner2Id, "folder", null);
+  const { id: activity2aId } = await createContent(
     owner2Id,
+    "singleDoc",
     folder2aId,
   );
-  await makeActivityPublic({
-    id: activity2aId,
-    ownerId: owner2Id,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity2aId,
+    loggedInUserId: owner2Id,
+    isPublic: true,
   });
 
   // owner 3 has a public folder
   const owner3 = await createTestUser();
   const owner3Id = owner3.userId;
 
-  const { folderId: folder3aId } = await createFolder(owner3Id, null);
-  await makeFolderPublic({
-    id: folder3aId,
-    ownerId: owner3Id,
-    licenseCode: "CCDUAL",
+  const { id: folder3aId } = await createContent(owner3Id, "folder", null);
+  await setContentIsPublic({
+    contentId: folder3aId,
+    loggedInUserId: owner3Id,
+    isPublic: true,
   });
 
   // owner 4 has a activity shared with user1
   const owner4 = await createTestUser();
   const owner4Id = owner4.userId;
 
-  const { folderId: folder4aId } = await createFolder(owner4Id, null);
-  const { activityId: activity4aId } = await createActivity(
+  const { id: folder4aId } = await createContent(owner4Id, "folder", null);
+  const { id: activity4aId } = await createContent(
     owner4Id,
+    "singleDoc",
     folder4aId,
   );
-  await shareActivity({
-    id: activity4aId,
-    ownerId: owner4Id,
-    licenseCode: "CCDUAL",
+  await modifyContentSharedWith({
+    contentId: activity4aId,
+    loggedInUserId: owner4Id,
+    action: "share",
     users: [user1Id],
   });
 
@@ -1145,11 +1117,11 @@ test("searchUsersWithSharedContent returns only users with public/shared/non-del
   const owner5 = await createTestUser();
   const owner5Id = owner5.userId;
 
-  const { folderId: folder5aId } = await createFolder(owner5Id, null);
-  await shareFolder({
-    id: folder5aId,
-    ownerId: owner5Id,
-    licenseCode: "CCDUAL",
+  const { id: folder5aId } = await createContent(owner5Id, "folder", null);
+  await modifyContentSharedWith({
+    contentId: folder5aId,
+    loggedInUserId: owner5Id,
+    action: "share",
     users: [user1Id],
   });
 
@@ -1157,15 +1129,16 @@ test("searchUsersWithSharedContent returns only users with public/shared/non-del
   const owner6 = await createTestUser();
   const owner6Id = owner6.userId;
 
-  const { folderId: folder6aId } = await createFolder(owner6Id, null);
-  const { activityId: activity6aId } = await createActivity(
+  const { id: folder6aId } = await createContent(owner6Id, "folder", null);
+  const { id: activity6aId } = await createContent(
     owner6Id,
+    "singleDoc",
     folder6aId,
   );
-  await shareActivity({
-    id: activity6aId,
-    ownerId: owner6Id,
-    licenseCode: "CCDUAL",
+  await modifyContentSharedWith({
+    contentId: activity6aId,
+    loggedInUserId: owner6Id,
+    action: "share",
     users: [user2Id],
   });
 
@@ -1173,11 +1146,11 @@ test("searchUsersWithSharedContent returns only users with public/shared/non-del
   const owner7 = await createTestUser();
   const owner7Id = owner7.userId;
 
-  const { folderId: folder7aId } = await createFolder(owner7Id, null);
-  await shareFolder({
-    id: folder7aId,
-    ownerId: owner7Id,
-    licenseCode: "CCDUAL",
+  const { id: folder7aId } = await createContent(owner7Id, "folder", null);
+  await modifyContentSharedWith({
+    contentId: folder7aId,
+    loggedInUserId: owner7Id,
+    action: "share",
     users: [user2Id],
   });
 
@@ -1300,17 +1273,17 @@ test("searchUsersWithSharedContent, filter by system, category, sub category, cl
     firstNames: "Fred",
     lastNames: ownerLastNames,
   });
-  const { activityId: activity1aId } = await createActivity(owner1Id, null);
-  const { activityId: activity1bId } = await createActivity(owner1Id, null);
-  await makeActivityPublic({
-    id: activity1aId,
-    ownerId: owner1Id,
-    licenseCode: "CCDUAL",
+  const { id: activity1aId } = await createContent(owner1Id, "singleDoc", null);
+  const { id: activity1bId } = await createContent(owner1Id, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activity1aId,
+    loggedInUserId: owner1Id,
+    isPublic: true,
   });
-  await makeActivityPublic({
-    id: activity1bId,
-    ownerId: owner1Id,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity1bId,
+    loggedInUserId: owner1Id,
+    isPublic: true,
   });
 
   // owner 2 has content in classification FA1
@@ -1320,17 +1293,17 @@ test("searchUsersWithSharedContent, filter by system, category, sub category, cl
     firstNames: "Wilma",
     lastNames: ownerLastNames,
   });
-  const { activityId: activity2aId } = await createActivity(owner2Id, null);
-  const { activityId: activity2bId } = await createActivity(owner2Id, null);
-  await makeActivityPublic({
-    id: activity2aId,
-    ownerId: owner2Id,
-    licenseCode: "CCDUAL",
+  const { id: activity2aId } = await createContent(owner2Id, "singleDoc", null);
+  const { id: activity2bId } = await createContent(owner2Id, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activity2aId,
+    loggedInUserId: owner2Id,
+    isPublic: true,
   });
-  await makeActivityPublic({
-    id: activity2bId,
-    ownerId: owner2Id,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity2bId,
+    loggedInUserId: owner2Id,
+    isPublic: true,
   });
   await addClassification(activity2aId, classificationIdFA1, owner2Id);
   await addClassification(activity2bId, classificationIdFA1, owner2Id);
@@ -1343,17 +1316,17 @@ test("searchUsersWithSharedContent, filter by system, category, sub category, cl
     lastNames: ownerLastNames,
   });
 
-  const { activityId: activity3aId } = await createActivity(owner3Id, null);
-  const { activityId: activity3bId } = await createActivity(owner3Id, null);
-  await makeActivityPublic({
-    id: activity3aId,
-    ownerId: owner3Id,
-    licenseCode: "CCDUAL",
+  const { id: activity3aId } = await createContent(owner3Id, "singleDoc", null);
+  const { id: activity3bId } = await createContent(owner3Id, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activity3aId,
+    loggedInUserId: owner3Id,
+    isPublic: true,
   });
-  await makeActivityPublic({
-    id: activity3bId,
-    ownerId: owner3Id,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity3bId,
+    loggedInUserId: owner3Id,
+    isPublic: true,
   });
   await addClassification(activity3aId, classificationIdSD2, owner3Id);
 
@@ -1453,21 +1426,21 @@ test("searchUsersWithSharedContent, filter by activity feature", async () => {
     firstNames: "Fred",
     lastNames: ownerLastNames,
   });
-  const { activityId: activity1aId } = await createActivity(owner1Id, null);
-  const { activityId: activity1bId } = await createActivity(owner1Id, null);
-  await makeActivityPublic({
-    id: activity1aId,
-    ownerId: owner1Id,
-    licenseCode: "CCDUAL",
+  const { id: activity1aId } = await createContent(owner1Id, "singleDoc", null);
+  const { id: activity1bId } = await createContent(owner1Id, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activity1aId,
+    loggedInUserId: owner1Id,
+    isPublic: true,
   });
-  await makeActivityPublic({
-    id: activity1bId,
-    ownerId: owner1Id,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity1bId,
+    loggedInUserId: owner1Id,
+    isPublic: true,
   });
   await updateContentFeatures({
-    id: activity1bId,
-    ownerId: owner1Id,
+    contentId: activity1bId,
+    loggedInUserId: owner1Id,
     features: { isQuestion: true },
   });
 
@@ -1478,37 +1451,37 @@ test("searchUsersWithSharedContent, filter by activity feature", async () => {
     firstNames: "Wilma",
     lastNames: ownerLastNames,
   });
-  const { activityId: activity2aId } = await createActivity(owner2Id, null);
-  const { activityId: activity2bId } = await createActivity(owner2Id, null);
-  const { activityId: activity2cId } = await createActivity(owner2Id, null);
-  await makeActivityPublic({
-    id: activity2aId,
-    ownerId: owner2Id,
-    licenseCode: "CCDUAL",
+  const { id: activity2aId } = await createContent(owner2Id, "singleDoc", null);
+  const { id: activity2bId } = await createContent(owner2Id, "singleDoc", null);
+  const { id: activity2cId } = await createContent(owner2Id, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activity2aId,
+    loggedInUserId: owner2Id,
+    isPublic: true,
   });
-  await makeActivityPublic({
-    id: activity2bId,
-    ownerId: owner2Id,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity2bId,
+    loggedInUserId: owner2Id,
+    isPublic: true,
   });
-  await makeActivityPublic({
-    id: activity2cId,
-    ownerId: owner2Id,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity2cId,
+    loggedInUserId: owner2Id,
+    isPublic: true,
   });
   await updateContentFeatures({
-    id: activity2aId,
-    ownerId: owner2Id,
+    contentId: activity2aId,
+    loggedInUserId: owner2Id,
     features: { isQuestion: true, isInteractive: true },
   });
   await updateContentFeatures({
-    id: activity2bId,
-    ownerId: owner2Id,
+    contentId: activity2bId,
+    loggedInUserId: owner2Id,
     features: { isQuestion: true, containsVideo: true },
   });
   await updateContentFeatures({
-    id: activity2cId,
-    ownerId: owner2Id,
+    contentId: activity2cId,
+    loggedInUserId: owner2Id,
     features: { containsVideo: true, isInteractive: true },
   });
 
@@ -1520,26 +1493,26 @@ test("searchUsersWithSharedContent, filter by activity feature", async () => {
     lastNames: ownerLastNames,
   });
 
-  const { activityId: activity3aId } = await createActivity(owner3Id, null);
-  const { activityId: activity3bId } = await createActivity(owner3Id, null);
-  await makeActivityPublic({
-    id: activity3aId,
-    ownerId: owner3Id,
-    licenseCode: "CCDUAL",
+  const { id: activity3aId } = await createContent(owner3Id, "singleDoc", null);
+  const { id: activity3bId } = await createContent(owner3Id, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activity3aId,
+    loggedInUserId: owner3Id,
+    isPublic: true,
   });
-  await makeActivityPublic({
-    id: activity3bId,
-    ownerId: owner3Id,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activity3bId,
+    loggedInUserId: owner3Id,
+    isPublic: true,
   });
   await updateContentFeatures({
-    id: activity3aId,
-    ownerId: owner3Id,
+    contentId: activity3aId,
+    loggedInUserId: owner3Id,
     features: { isInteractive: true },
   });
   await updateContentFeatures({
-    id: activity3bId,
-    ownerId: owner3Id,
+    contentId: activity3bId,
+    loggedInUserId: owner3Id,
     features: { containsVideo: true },
   });
 
@@ -1627,7 +1600,6 @@ test("searchClassificationsWithSharedContent, returns only classifications with 
   const user2Id = user2.userId;
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const licenseCode = "CCDUAL";
 
   // create a made up classification tree
   const code = Date.now().toString();
@@ -1646,19 +1618,43 @@ test("searchClassificationsWithSharedContent, returns only classifications with 
     classificationIdB2B,
   } = await createTestClassifications({ systemId, word, code });
 
-  const { activityId: activityIdPrivate } = await createActivity(ownerId, null);
-  const { activityId: activityIdPublic } = await createActivity(ownerId, null);
-  const { activityId: activityIdShared } = await createActivity(ownerId, null);
-  const { activityId: activityIdDeleted } = await createActivity(ownerId, null);
-
-  await makeActivityPublic({ id: activityIdPublic, licenseCode, ownerId });
-  await shareActivity({
-    id: activityIdShared,
+  const { id: activityIdPrivate } = await createContent(
     ownerId,
-    licenseCode,
+    "singleDoc",
+    null,
+  );
+  const { id: activityIdPublic } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
+  const { id: activityIdShared } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
+  const { id: activityIdDeleted } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
+
+  await setContentIsPublic({
+    contentId: activityIdPublic,
+    isPublic: true,
+    loggedInUserId: ownerId,
+  });
+  await modifyContentSharedWith({
+    contentId: activityIdShared,
+    loggedInUserId: ownerId,
+    action: "share",
     users: [user1Id],
   });
-  await makeActivityPublic({ id: activityIdDeleted, licenseCode, ownerId });
+  await setContentIsPublic({
+    contentId: activityIdDeleted,
+    isPublic: true,
+    loggedInUserId: ownerId,
+  });
 
   // add private, shared, deleted content to classificationIdA1A
   await addClassification(activityIdPrivate, classificationIdA1A, ownerId);
@@ -1672,7 +1668,7 @@ test("searchClassificationsWithSharedContent, returns only classifications with 
   await addClassification(activityIdDeleted, classificationIdB2B, ownerId);
 
   // actually delete the deleted activity
-  await deleteActivity(activityIdDeleted, ownerId);
+  await deleteContent(activityIdDeleted, ownerId);
 
   // user1 gets classifications with shared and public content
   let resultsClass = await searchClassificationsWithSharedContent({
@@ -1754,81 +1750,81 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
   } = await createTestClassifications({ systemId, word, code });
 
   // add activity 1A to classificationIdA1A, classificationIdB1A
-  const { activityId: activityId1A } = await createActivity(ownerId, null);
-  await makeActivityPublic({
-    id: activityId1A,
-    licenseCode: "CCDUAL",
-    ownerId,
+  const { id: activityId1A } = await createContent(ownerId, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activityId1A,
+    isPublic: true,
+    loggedInUserId: ownerId,
   });
   await addClassification(activityId1A, classificationIdA1A, ownerId);
   await addClassification(activityId1A, classificationIdB1A, ownerId);
 
   // add activity 2A to classificationIdA2A, classificationIdB2A
-  const { activityId: activityId2A } = await createActivity(ownerId, null);
-  await makeActivityPublic({
-    id: activityId2A,
-    licenseCode: "CCDUAL",
-    ownerId,
+  const { id: activityId2A } = await createContent(ownerId, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activityId2A,
+    isPublic: true,
+    loggedInUserId: ownerId,
   });
   await addClassification(activityId2A, classificationIdA2A, ownerId);
   await addClassification(activityId2A, classificationIdB2A, ownerId);
 
   // add activity 1B to classificationIdA1B, classificationIdB1B
-  const { activityId: activityId1B } = await createActivity(ownerId, null);
-  await makeActivityPublic({
-    id: activityId1B,
-    licenseCode: "CCDUAL",
-    ownerId,
+  const { id: activityId1B } = await createContent(ownerId, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activityId1B,
+    isPublic: true,
+    loggedInUserId: ownerId,
   });
   await addClassification(activityId1B, classificationIdA1B, ownerId);
   await addClassification(activityId1B, classificationIdB1B, ownerId);
 
   // add activity 2B to classificationIdA2B, classificationIdB2B
-  const { activityId: activityId2B } = await createActivity(ownerId, null);
-  await makeActivityPublic({
-    id: activityId2B,
-    licenseCode: "CCDUAL",
-    ownerId,
+  const { id: activityId2B } = await createContent(ownerId, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activityId2B,
+    isPublic: true,
+    loggedInUserId: ownerId,
   });
   await addClassification(activityId2B, classificationIdA2B, ownerId);
   await addClassification(activityId2B, classificationIdB2B, ownerId);
 
   // add activity A1 to classificationIdA1A, classificationIdA1A
-  const { activityId: activityId1 } = await createActivity(ownerId, null);
-  await makeActivityPublic({
-    id: activityId1,
-    licenseCode: "CCDUAL",
-    ownerId,
+  const { id: activityId1 } = await createContent(ownerId, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activityId1,
+    isPublic: true,
+    loggedInUserId: ownerId,
   });
   await addClassification(activityId1, classificationIdA1A, ownerId);
   await addClassification(activityId1, classificationIdA1B, ownerId);
 
   // add activity A2 to classificationIdA2A, classificationIdA2A
-  const { activityId: activityIdA2 } = await createActivity(ownerId, null);
-  await makeActivityPublic({
-    id: activityIdA2,
-    licenseCode: "CCDUAL",
-    ownerId,
+  const { id: activityIdA2 } = await createContent(ownerId, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activityIdA2,
+    isPublic: true,
+    loggedInUserId: ownerId,
   });
   await addClassification(activityIdA2, classificationIdA2A, ownerId);
   await addClassification(activityIdA2, classificationIdA2B, ownerId);
 
   // add activity B1 to classificationIdB1A, classificationIdB1A
-  const { activityId: activityIdB1 } = await createActivity(ownerId, null);
-  await makeActivityPublic({
-    id: activityIdB1,
-    licenseCode: "CCDUAL",
-    ownerId,
+  const { id: activityIdB1 } = await createContent(ownerId, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activityIdB1,
+    isPublic: true,
+    loggedInUserId: ownerId,
   });
   await addClassification(activityIdB1, classificationIdB1A, ownerId);
   await addClassification(activityIdB1, classificationIdB1B, ownerId);
 
   // add activity B2 to classificationIdB2A, classificationIdB2A
-  const { activityId: activityIdB2 } = await createActivity(ownerId, null);
-  await makeActivityPublic({
-    id: activityIdB2,
-    licenseCode: "CCDUAL",
-    ownerId,
+  const { id: activityIdB2 } = await createContent(ownerId, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activityIdB2,
+    isPublic: true,
+    loggedInUserId: ownerId,
   });
   await addClassification(activityIdB2, classificationIdB2A, ownerId);
   await addClassification(activityIdB2, classificationIdB2B, ownerId);
@@ -1962,7 +1958,6 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
   const userId = user.userId;
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const licenseCode = "CCDUAL";
 
   // create a made up classification tree
   const code = Date.now().toString();
@@ -1978,14 +1973,30 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
   } = await createTestClassifications({ word, code });
 
   // add two activities to A1A and B2B
-  const { activityId: activityIdA1 } = await createActivity(ownerId, null);
-  const { activityId: activityIdA2 } = await createActivity(ownerId, null);
-  const { activityId: activityIdB1 } = await createActivity(ownerId, null);
-  const { activityId: activityIdB2 } = await createActivity(ownerId, null);
-  await makeActivityPublic({ id: activityIdA1, licenseCode, ownerId });
-  await makeActivityPublic({ id: activityIdA2, licenseCode, ownerId });
-  await makeActivityPublic({ id: activityIdB1, licenseCode, ownerId });
-  await makeActivityPublic({ id: activityIdB2, licenseCode, ownerId });
+  const { id: activityIdA1 } = await createContent(ownerId, "singleDoc", null);
+  const { id: activityIdA2 } = await createContent(ownerId, "singleDoc", null);
+  const { id: activityIdB1 } = await createContent(ownerId, "singleDoc", null);
+  const { id: activityIdB2 } = await createContent(ownerId, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activityIdA1,
+    isPublic: true,
+    loggedInUserId: ownerId,
+  });
+  await setContentIsPublic({
+    contentId: activityIdA2,
+    isPublic: true,
+    loggedInUserId: ownerId,
+  });
+  await setContentIsPublic({
+    contentId: activityIdB1,
+    isPublic: true,
+    loggedInUserId: ownerId,
+  });
+  await setContentIsPublic({
+    contentId: activityIdB2,
+    isPublic: true,
+    loggedInUserId: ownerId,
+  });
   await addClassification(activityIdA1, classificationIdA1A, ownerId);
   await addClassification(activityIdA2, classificationIdA1A, ownerId);
   await addClassification(activityIdB1, classificationIdB2B, ownerId);
@@ -1993,18 +2004,18 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
 
   // add single activity feature to three of the activities
   await updateContentFeatures({
-    id: activityIdA1,
-    ownerId,
+    contentId: activityIdA1,
+    loggedInUserId: ownerId,
     features: { isQuestion: true },
   });
   await updateContentFeatures({
-    id: activityIdA2,
-    ownerId,
+    contentId: activityIdA2,
+    loggedInUserId: ownerId,
     features: { isInteractive: true },
   });
   await updateContentFeatures({
-    id: activityIdB1,
-    ownerId,
+    contentId: activityIdB1,
+    loggedInUserId: ownerId,
     features: { containsVideo: true },
   });
 
@@ -2155,18 +2166,18 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
 
   // add second feature to the three activities
   await updateContentFeatures({
-    id: activityIdA1,
-    ownerId,
+    contentId: activityIdA1,
+    loggedInUserId: ownerId,
     features: { isInteractive: true },
   });
   await updateContentFeatures({
-    id: activityIdA2,
-    ownerId,
+    contentId: activityIdA2,
+    loggedInUserId: ownerId,
     features: { containsVideo: true },
   });
   await updateContentFeatures({
-    id: activityIdB1,
-    ownerId,
+    contentId: activityIdB1,
+    loggedInUserId: ownerId,
     features: { isQuestion: true },
   });
 
@@ -2264,7 +2275,6 @@ test("searchClassificationsWithSharedContent, filter by owner", async () => {
   const { userId: owner1Id } = await createTestUser();
   const { userId: owner2Id } = await createTestUser();
   const { userId: owner3Id } = await createTestUser();
-  const licenseCode = "CCDUAL";
 
   // create a made up classification tree
   const code = Date.now().toString();
@@ -2280,29 +2290,29 @@ test("searchClassificationsWithSharedContent, filter by owner", async () => {
   } = await createTestClassifications({ word, code });
 
   // add two activities to A1A and B2B
-  const { activityId: activityIdA1 } = await createActivity(owner1Id, null);
-  const { activityId: activityIdA2 } = await createActivity(owner2Id, null);
-  const { activityId: activityIdB1 } = await createActivity(owner2Id, null);
-  const { activityId: activityIdB2 } = await createActivity(owner3Id, null);
-  await makeActivityPublic({
-    id: activityIdA1,
-    licenseCode,
-    ownerId: owner1Id,
+  const { id: activityIdA1 } = await createContent(owner1Id, "singleDoc", null);
+  const { id: activityIdA2 } = await createContent(owner2Id, "singleDoc", null);
+  const { id: activityIdB1 } = await createContent(owner2Id, "singleDoc", null);
+  const { id: activityIdB2 } = await createContent(owner3Id, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activityIdA1,
+    isPublic: true,
+    loggedInUserId: owner1Id,
   });
-  await makeActivityPublic({
-    id: activityIdA2,
-    licenseCode,
-    ownerId: owner2Id,
+  await setContentIsPublic({
+    contentId: activityIdA2,
+    isPublic: true,
+    loggedInUserId: owner2Id,
   });
-  await makeActivityPublic({
-    id: activityIdB1,
-    licenseCode,
-    ownerId: owner2Id,
+  await setContentIsPublic({
+    contentId: activityIdB1,
+    isPublic: true,
+    loggedInUserId: owner2Id,
   });
-  await makeActivityPublic({
-    id: activityIdB2,
-    licenseCode,
-    ownerId: owner3Id,
+  await setContentIsPublic({
+    contentId: activityIdB2,
+    isPublic: true,
+    loggedInUserId: owner3Id,
   });
   await addClassification(activityIdA1, classificationIdA1A, owner1Id);
   await addClassification(activityIdA2, classificationIdA1A, owner2Id);
@@ -2413,72 +2423,126 @@ test(
     // Activity gone (deleted)
     // Activity root, first
 
-    const { folderId: baseFolderId } = await createFolder(ownerId, null);
-    await updateContent({ id: baseFolderId, ownerId, name: "The Base Folder" });
-    const { folderId: folder1Id } = await createFolder(ownerId, baseFolderId);
-    await updateContent({ id: folder1Id, ownerId, name: "The first topic" });
-
-    const { activityId: activity1aId } = await createActivity(
+    const { id: baseFolderId } = await createContent(ownerId, "folder", null);
+    await updateContent({
+      contentId: baseFolderId,
+      loggedInUserId: ownerId,
+      name: "The Base Folder",
+    });
+    const { id: folder1Id } = await createContent(
       ownerId,
+      "folder",
+      baseFolderId,
+    );
+    await updateContent({
+      contentId: folder1Id,
+      loggedInUserId: ownerId,
+      name: "The first topic",
+    });
+
+    const { id: activity1aId } = await createContent(
+      ownerId,
+      "singleDoc",
       folder1Id,
     );
     await updateContent({
-      id: activity1aId,
-      ownerId,
+      contentId: activity1aId,
+      loggedInUserId: ownerId,
       name: "First activity",
     });
 
-    const { activityId: activity1bId } = await createActivity(
+    const { id: activity1bId } = await createContent(
       ownerId,
+      "singleDoc",
       folder1Id,
     );
     await updateContent({
-      id: activity1bId,
-      ownerId,
+      contentId: activity1bId,
+      loggedInUserId: ownerId,
       name: "Deleted activity",
     });
-    await deleteActivity(activity1bId, ownerId);
+    await deleteContent(activity1bId, ownerId);
 
-    const { folderId: folder1cId } = await createFolder(ownerId, folder1Id);
-    await updateContent({ id: folder1cId, ownerId, name: "Subtopic " });
-
-    const { activityId: activity1c1Id } = await createActivity(
+    const { id: folder1cId } = await createContent(
       ownerId,
-      folder1cId,
+      "folder",
+      folder1Id,
     );
-    await updateContent({ id: activity1c1Id, ownerId, name: "First piece" });
-    await deleteActivity(activity1c1Id, ownerId);
-
-    const { activityId: activity1c2Id } = await createActivity(
-      ownerId,
-      folder1cId,
-    );
-    await updateContent({ id: activity1c2Id, ownerId, name: "Second piece" });
-
-    const { activityId: activity2Id } = await createActivity(
-      ownerId,
-      baseFolderId,
-    );
-    await updateContent({ id: activity2Id, ownerId, name: "Activity 2" });
-    const { activityId: activity3Id } = await createActivity(
-      ownerId,
-      baseFolderId,
-    );
-    await updateContent({ id: activity3Id, ownerId, name: "Activity 3" });
-    await deleteActivity(activity3Id, ownerId);
-
-    const { activityId: activityGoneId } = await createActivity(ownerId, null);
-    await updateContent({ id: activityGoneId, ownerId, name: "Activity gone" });
-    await deleteActivity(activityGoneId, ownerId);
-    const { activityId: activityRootId } = await createActivity(ownerId, null);
     await updateContent({
-      id: activityRootId,
+      contentId: folder1cId,
+      loggedInUserId: ownerId,
+      name: "Subtopic ",
+    });
+
+    const { id: activity1c1Id } = await createContent(
       ownerId,
+      "singleDoc",
+      folder1cId,
+    );
+    await updateContent({
+      contentId: activity1c1Id,
+      loggedInUserId: ownerId,
+      name: "First piece",
+    });
+    await deleteContent(activity1c1Id, ownerId);
+
+    const { id: activity1c2Id } = await createContent(
+      ownerId,
+      "singleDoc",
+      folder1cId,
+    );
+    await updateContent({
+      contentId: activity1c2Id,
+      loggedInUserId: ownerId,
+      name: "Second piece",
+    });
+
+    const { id: activity2Id } = await createContent(
+      ownerId,
+      "singleDoc",
+      baseFolderId,
+    );
+    await updateContent({
+      contentId: activity2Id,
+      loggedInUserId: ownerId,
+      name: "Activity 2",
+    });
+    const { id: activity3Id } = await createContent(
+      ownerId,
+      "singleDoc",
+      baseFolderId,
+    );
+    await updateContent({
+      contentId: activity3Id,
+      loggedInUserId: ownerId,
+      name: "Activity 3",
+    });
+    await deleteContent(activity3Id, ownerId);
+
+    const { id: activityGoneId } = await createContent(
+      ownerId,
+      "singleDoc",
+      null,
+    );
+    await updateContent({
+      contentId: activityGoneId,
+      loggedInUserId: ownerId,
+      name: "Activity gone",
+    });
+    await deleteContent(activityGoneId, ownerId);
+    const { id: activityRootId } = await createContent(
+      ownerId,
+      "singleDoc",
+      null,
+    );
+    await updateContent({
+      contentId: activityRootId,
+      loggedInUserId: ownerId,
       name: "Activity root, first",
     });
 
-    let searchResults = await searchMyFolderContent({
-      folderId: null,
+    let searchResults = await searchMyContent({
+      parentId: null,
       loggedInUserId: ownerId,
       query: "first",
     });
@@ -2498,8 +2562,8 @@ test(
       { id: fromUUID(activityRootId), parentId: null },
     ]);
 
-    searchResults = await searchMyFolderContent({
-      folderId: baseFolderId,
+    searchResults = await searchMyContent({
+      parentId: baseFolderId,
       loggedInUserId: ownerId,
       query: "first",
     });
@@ -2518,8 +2582,8 @@ test(
       { id: fromUUID(activity1aId), parentId: fromUUID(folder1Id) },
     ]);
 
-    searchResults = await searchMyFolderContent({
-      folderId: folder1Id,
+    searchResults = await searchMyContent({
+      parentId: folder1Id,
       loggedInUserId: ownerId,
       query: "first",
     });
@@ -2535,8 +2599,8 @@ test(
         })),
     ).eqls([{ id: fromUUID(activity1aId), parentId: fromUUID(folder1Id) }]);
 
-    searchResults = await searchMyFolderContent({
-      folderId: folder1cId,
+    searchResults = await searchMyContent({
+      parentId: folder1cId,
       loggedInUserId: ownerId,
       query: "first",
     });
@@ -2544,8 +2608,8 @@ test(
     content = searchResults.content;
     expect(content.length).eq(0);
 
-    searchResults = await searchMyFolderContent({
-      folderId: null,
+    searchResults = await searchMyContent({
+      parentId: null,
       loggedInUserId: ownerId,
       query: "activity",
     });
@@ -2565,8 +2629,8 @@ test(
       { id: fromUUID(activityRootId), parentId: null },
     ]);
 
-    searchResults = await searchMyFolderContent({
-      folderId: baseFolderId,
+    searchResults = await searchMyContent({
+      parentId: baseFolderId,
       loggedInUserId: ownerId,
       query: "activity",
     });
@@ -2585,8 +2649,8 @@ test(
       { id: fromUUID(activity2Id), parentId: fromUUID(baseFolderId) },
     ]);
 
-    searchResults = await searchMyFolderContent({
-      folderId: folder1Id,
+    searchResults = await searchMyContent({
+      parentId: folder1Id,
       loggedInUserId: ownerId,
       query: "activity",
     });
@@ -2602,8 +2666,8 @@ test(
         })),
     ).eqls([{ id: fromUUID(activity1aId), parentId: fromUUID(folder1Id) }]);
 
-    searchResults = await searchMyFolderContent({
-      folderId: folder1cId,
+    searchResults = await searchMyContent({
+      parentId: folder1cId,
       loggedInUserId: ownerId,
       query: "activity",
     });
@@ -2613,20 +2677,24 @@ test(
   },
 );
 
-test("searchMyFolderContent, document source matches", async () => {
+test("searchMyContent, document source matches", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId, docId } = await createActivity(ownerId, null);
-  await updateDoc({ id: docId, source: "bananas", ownerId });
-  await makeActivityPublic({
-    id: activityId,
-    ownerId: ownerId,
-    licenseCode: "CCDUAL",
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  await updateContent({
+    contentId: activityId,
+    source: "bananas",
+    loggedInUserId: ownerId,
+  });
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
 
   // apple doesn't hit
-  let searchResults = await searchMyFolderContent({
-    folderId: null,
+  let searchResults = await searchMyContent({
+    parentId: null,
     loggedInUserId: ownerId,
     query: "apple",
   });
@@ -2634,8 +2702,8 @@ test("searchMyFolderContent, document source matches", async () => {
   expect(content.length).eq(0);
 
   // first part of a word hits
-  searchResults = await searchMyFolderContent({
-    folderId: null,
+  searchResults = await searchMyContent({
+    parentId: null,
     loggedInUserId: ownerId,
     query: "bana",
   });
@@ -2643,8 +2711,8 @@ test("searchMyFolderContent, document source matches", async () => {
   expect(content.length).eq(1);
 
   // full word hits
-  searchResults = await searchMyFolderContent({
-    folderId: null,
+  searchResults = await searchMyContent({
+    parentId: null,
     loggedInUserId: ownerId,
     query: "bananas",
   });
@@ -2652,13 +2720,13 @@ test("searchMyFolderContent, document source matches", async () => {
   expect(content.length).eq(1);
 });
 
-test("searchMyFolderContent, classification matches", async () => {
+test("searchMyContent, classification matches", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId } = await createActivity(ownerId, null);
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
 
-  let searchResults = await searchMyFolderContent({
-    folderId: null,
+  let searchResults = await searchMyContent({
+    parentId: null,
     loggedInUserId: ownerId,
     query: "K.CC.1 comMMon cOREe",
   });
@@ -2671,8 +2739,8 @@ test("searchMyFolderContent, classification matches", async () => {
 
   await addClassification(activityId, classifyId, ownerId);
   // With code
-  searchResults = await searchMyFolderContent({
-    folderId: null,
+  searchResults = await searchMyContent({
+    parentId: null,
     loggedInUserId: ownerId,
     query: "K.C",
   });
@@ -2680,8 +2748,8 @@ test("searchMyFolderContent, classification matches", async () => {
   expect(content.length).eq(1);
 
   // With both
-  searchResults = await searchMyFolderContent({
-    folderId: null,
+  searchResults = await searchMyContent({
+    parentId: null,
     loggedInUserId: ownerId,
     query: "common C.1",
   });
@@ -2689,8 +2757,8 @@ test("searchMyFolderContent, classification matches", async () => {
   expect(content.length).eq(1);
 
   // With category
-  searchResults = await searchMyFolderContent({
-    folderId: null,
+  searchResults = await searchMyContent({
+    parentId: null,
     loggedInUserId: ownerId,
     query: "kinder",
   });
@@ -2698,8 +2766,8 @@ test("searchMyFolderContent, classification matches", async () => {
   expect(content.length).eq(1);
 
   // With subcategory
-  searchResults = await searchMyFolderContent({
-    folderId: null,
+  searchResults = await searchMyContent({
+    parentId: null,
     loggedInUserId: ownerId,
     query: "cardinality",
   });
@@ -2707,8 +2775,8 @@ test("searchMyFolderContent, classification matches", async () => {
   expect(content.length).eq(1);
 
   // With description
-  searchResults = await searchMyFolderContent({
-    folderId: null,
+  searchResults = await searchMyContent({
+    parentId: null,
     loggedInUserId: ownerId,
     query: "tens",
   });
@@ -2716,15 +2784,19 @@ test("searchMyFolderContent, classification matches", async () => {
   expect(content.length).eq(1);
 });
 
-test("searchMyFolderContent in folder, classification matches", async () => {
+test("searchMyContent in folder, classification matches", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { folderId } = await createFolder(ownerId, null);
-  const { activityId } = await createActivity(ownerId, folderId);
-
-  let searchResults = await searchMyFolderContent({
+  const { id: folderId } = await createContent(ownerId, "folder", null);
+  const { id: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
     folderId,
+  );
+
+  let searchResults = await searchMyContent({
+    parentId: folderId,
     loggedInUserId: ownerId,
     query: "K.CC.1 comMMon cOREe",
   });
@@ -2737,8 +2809,8 @@ test("searchMyFolderContent in folder, classification matches", async () => {
 
   await addClassification(activityId, classifyId, ownerId);
   // With code
-  searchResults = await searchMyFolderContent({
-    folderId,
+  searchResults = await searchMyContent({
+    parentId: folderId,
     loggedInUserId: ownerId,
     query: "K.C",
   });
@@ -2746,8 +2818,8 @@ test("searchMyFolderContent in folder, classification matches", async () => {
   expect(content.length).eq(1);
 
   // With both
-  searchResults = await searchMyFolderContent({
-    folderId,
+  searchResults = await searchMyContent({
+    parentId: folderId,
     loggedInUserId: ownerId,
     query: "common C.1",
   });
@@ -2755,8 +2827,8 @@ test("searchMyFolderContent in folder, classification matches", async () => {
   expect(content.length).eq(1);
 
   // With category
-  searchResults = await searchMyFolderContent({
-    folderId,
+  searchResults = await searchMyContent({
+    parentId: folderId,
     loggedInUserId: ownerId,
     query: "kinder",
   });
@@ -2764,8 +2836,8 @@ test("searchMyFolderContent in folder, classification matches", async () => {
   expect(content.length).eq(1);
 
   // With subcategory
-  searchResults = await searchMyFolderContent({
-    folderId,
+  searchResults = await searchMyContent({
+    parentId: folderId,
     loggedInUserId: ownerId,
     query: "cardinality",
   });
@@ -2773,8 +2845,8 @@ test("searchMyFolderContent in folder, classification matches", async () => {
   expect(content.length).eq(1);
 
   // With description
-  searchResults = await searchMyFolderContent({
-    folderId,
+  searchResults = await searchMyContent({
+    parentId: folderId,
     loggedInUserId: ownerId,
     query: "tens",
   });
@@ -2782,15 +2854,19 @@ test("searchMyFolderContent in folder, classification matches", async () => {
   expect(content.length).eq(1);
 });
 
-test("searchMyFolderContent, handle tags in search", async () => {
+test("searchMyContent, handle tags in search", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { docId } = await createActivity(ownerId, null);
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
 
-  await updateDoc({ id: docId, source: "point", ownerId });
+  await updateContent({
+    contentId: activityId,
+    source: "point",
+    loggedInUserId: ownerId,
+  });
 
-  const searchResults = await searchMyFolderContent({
-    folderId: null,
+  const searchResults = await searchMyContent({
+    parentId: null,
     loggedInUserId: ownerId,
     query: "<point>",
   });

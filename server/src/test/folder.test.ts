@@ -436,12 +436,12 @@ test(
 
     // share activity 1
     await shareContentWithEmail({
-      id: sharedActivity1Id,
+      contentId: sharedActivity1Id,
       loggedInUserId: ownerId,
       email: user1.email,
     });
     await shareContentWithEmail({
-      id: sharedActivity1Id,
+      contentId: sharedActivity1Id,
       loggedInUserId: ownerId,
       email: user2.email,
     });
@@ -463,12 +463,12 @@ test(
       users: [user1Id, user2Id],
     });
     await shareContentWithEmail({
-      id: sharedFolder3Id,
+      contentId: sharedFolder3Id,
       loggedInUserId: ownerId,
       email: user2.email,
     });
     await shareContentWithEmail({
-      id: sharedFolder3Id,
+      contentId: sharedFolder3Id,
       loggedInUserId: ownerId,
       email: user1.email,
     });
