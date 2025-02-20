@@ -158,6 +158,7 @@ model contributorHistory {
   withLicenseCode         String?           @db.VarChar(10)
   timestampActivity       DateTime          @default(now())
   timestampPrevActivity   DateTime          @default(now())
+  directCopy              Boolean           @default(false)
   activity                content           @relation(fields: [activityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   prevActivity            activityRevisions @relation(fields: [prevActivityId, prevActivityRevisionNum], references: [activityId, revisionNum], onDelete: NoAction, onUpdate: NoAction)
   withLicense             licenses?         @relation(fields: [withLicenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)

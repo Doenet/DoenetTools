@@ -449,6 +449,7 @@ async function createContributorHistory(
       prevActivityId: originalId,
       prevActivityRevisionNum: originalActivityRevision.revisionNum,
       withLicenseCode: licenseCode,
+      directCopy: true,
     },
   });
 
@@ -485,6 +486,7 @@ async function createContributorHistory(
       withLicenseCode: hist.withLicenseCode,
       timestampPrevActivity: hist.timestampPrevActivity,
       timestampActivity: timestampActivity,
+      directCopy: false,
     })),
   });
 }

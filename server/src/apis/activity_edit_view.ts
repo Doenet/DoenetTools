@@ -70,6 +70,7 @@ export async function getActivityEditorData(
     includeAssignedRevision: isAssigned,
     countAssignmentScores: true,
     includeClassifications: true,
+    includeShareDetails: true,
     isAdmin,
   });
 

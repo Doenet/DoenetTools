@@ -327,7 +327,8 @@ type IdShareInfo = { userId: Uint8Array }[];
 function isIdShareInfo(obj: unknown): obj is IdShareInfo {
   const typedObj = obj as IdShareInfo;
   return (
-    Array.isArray(typedObj) && typedObj.every((v) => v instanceof Uint8Array)
+    Array.isArray(typedObj) &&
+    typedObj.every((v) => v.userId instanceof Uint8Array)
   );
 }
 

@@ -306,26 +306,23 @@ export type ActivityHistory = {
   }[];
 };
 
-export type DocRemixes = {
+export type ActivityRemixes = {
   id: Uint8Array;
-  documentVersions: {
-    versionNumber: number;
+  activityRevisions: {
+    revisionNum: number;
     remixes: {
-      activity: {
-        id: Uint8Array;
-        name: string;
-        owner: {
-          userId: Uint8Array;
-          email: string;
-          firstNames: string | null;
-          lastNames: string;
-        };
-      };
-
-      docId: Uint8Array;
       withLicenseCode: string | null;
-      timestampDoc: Date;
-      timestampPrevDoc: Date;
+      activityId: Uint8Array;
+      activityName: string;
+      activityOwner: {
+        userId: Uint8Array;
+        email: string;
+        firstNames: string | null;
+        lastNames: string;
+      };
+      timestampActivity: Date;
+      timestampPrevActivity: Date;
+      directCopy: boolean;
     }[];
   }[];
 };
