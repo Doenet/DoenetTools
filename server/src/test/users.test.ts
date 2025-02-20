@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 import { createTestAnonymousUser, createTestUser } from "./utils";
 import {
   findOrCreateUser,
-  getMyFolderContent,
+  getMyContent,
   getUserInfo,
   updateUser,
   upgradeAnonymousUser,
@@ -12,7 +12,7 @@ import { fromUUID } from "../utils/uuid";
 test("New user has no content", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const docs = await getMyFolderContent({
+  const docs = await getMyContent({
     loggedInUserId: userId,
     folderId: null,
   });

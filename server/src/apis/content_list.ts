@@ -180,23 +180,23 @@ export async function searchMyContent({
   };
 }
 
-export async function getSharedFolderContent({
+export async function getSharedContent({
   ownerId,
-  folderId,
+  parentId,
   loggedInUserId,
 }: {
   ownerId: Uint8Array;
-  folderId: Uint8Array | null;
+  parentId: Uint8Array | null;
   loggedInUserId: Uint8Array;
 }) {
   let folder: Content | null = null;
 
-  if (folderId !== null) {
+  if (parentId !== null) {
     // if ask for a folder, make sure it exists and is viewable by logged in user
     const preliminaryFolder = await prisma.content.findUniqueOrThrow({
       where: {
         ownerId,
-        id: folderId,
+        id: parentId,
         type: "folder",
         // Note: don't use viewable filter, as we require it to be public/shared even if owned by loggedInUserId
         isDeleted: false,
@@ -228,8 +228,9 @@ export async function getSharedFolderContent({
   const preliminarySharedContent = await prisma.content.findMany({
     where: {
       ownerId,
+      parentId: parentId,
+      // Note: don't use viewable filter, as we require it to be public/shared even if owned by loggedInUserId
       isDeleted: false,
-      parentId: folderId,
       OR: [
         { isPublic: true },
         { sharedWith: { some: { userId: loggedInUserId } } },
@@ -244,7 +245,7 @@ export async function getSharedFolderContent({
   // i.e., shared content that is inside a non-shared folder.
   // That way, users can navigate to all of the owner's shared content
   // when start at the base folder
-  if (folderId === null) {
+  if (parentId === null) {
     const orphanedSharedContent = await prisma.content.findMany({
       where: {
         ownerId,
