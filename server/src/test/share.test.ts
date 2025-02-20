@@ -1,50 +1,51 @@
 import { expect, test } from "vitest";
-import {
-  copyActivityToFolder,
-  createActivity,
-  createFolder,
-  getActivity,
-  getActivityEditorData,
-  getAllLicenses,
-  getDocumentContributorHistories,
-  getDocumentDirectRemixes,
-  getDocumentRemixes,
-  getLicense,
-  getMyContent,
-  makeActivityPrivate,
-  makeActivityPublic,
-  makeFolderPrivate,
-  makeFolderPublic,
-  moveContent,
-  shareActivity,
-  shareActivityWithEmail,
-  shareFolder,
-  shareFolderWithEmail,
-  unshareFolder,
-  updateUser,
-} from "../model";
-import { createTestUser, getContent } from "./utils";
 import { createContent } from "../apis/activity";
-import { setContentIsPublic, setContentLicense } from "../apis/share";
+import {
+  getAllLicenses,
+  getLicense,
+  modifyContentSharedWith,
+  setContentIsPublic,
+  setContentLicense,
+  shareContentWithEmail,
+} from "../apis/share";
+import { getContent, getActivityEditorData } from "../apis/activity_edit_view";
+import { getMyContent } from "../apis/content_list";
+import { moveContent } from "../apis/copy_move";
+import { getDocumentRemixes, getDocumentDirectRemixes } from "../apis/remix";
+import { updateUser } from "../apis/user";
+import { createTestUser } from "./utils";
 
-test("content in public folder is created as public", async () => {
+test.only("content in public folder is created as public", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { folderId: publicFolderId } = await createFolder(ownerId, null);
+  const { id: publicFolderId } = await createContent(ownerId, "folder", null);
 
-  await makeFolderPublic({
-    id: publicFolderId,
+  await setContentLicense({
+    contentId: publicFolderId,
+    loggedInUserId: ownerId,
     licenseCode: "CCBYSA",
-    ownerId,
+  });
+  await setContentIsPublic({
+    contentId: publicFolderId,
+    isPublic: true,
+    loggedInUserId: ownerId,
   });
 
   // create a folder and activity in public folder
-  const { activityId } = await createActivity(ownerId, publicFolderId);
-  const { folderId } = await createFolder(ownerId, publicFolderId);
+  const { id: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    publicFolderId,
+  );
+  const { id: folderId } = await createContent(
+    ownerId,
+    "folder",
+    publicFolderId,
+  );
 
   const { content } = await getMyContent({
-    folderId: publicFolderId,
+    parentId: publicFolderId,
     loggedInUserId: ownerId,
   });
   expect(content.length).eq(2);
@@ -58,30 +59,44 @@ test("content in public folder is created as public", async () => {
   expect(content[1].license?.code).eq("CCBYSA");
 });
 
-test("content in shared folder is created shared", async () => {
+test.only("content in shared folder is created shared", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const user = await createTestUser();
   const userId = user.userId;
   const { isAdmin, isAnonymous, cardView, ...userFields } = user;
 
-  const { folderId: publicFolderId } = await createFolder(ownerId, null);
+  const { id: publicFolderId } = await createContent(ownerId, "folder", null);
 
-  await shareFolder({
-    id: publicFolderId,
+  await setContentLicense({
+    contentId: publicFolderId,
+    loggedInUserId: ownerId,
     licenseCode: "CCBYSA",
-    ownerId,
+  });
+  await modifyContentSharedWith({
+    action: "share",
+    loggedInUserId: ownerId,
+    id: publicFolderId,
     users: [userId],
   });
 
   // create a folder and activity in public folder
-  const { activityId } = await createActivity(ownerId, publicFolderId);
-  const { folderId } = await createFolder(ownerId, publicFolderId);
+  const { id: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    publicFolderId,
+  );
+  const { id: folderId } = await createContent(
+    ownerId,
+    "folder",
+    publicFolderId,
+  );
 
   const { content } = await getMyContent({
-    folderId: publicFolderId,
+    parentId: publicFolderId,
     loggedInUserId: ownerId,
   });
+
   expect(content.length).eq(2);
 
   expect(content[0].id).eqls(activityId);
@@ -95,18 +110,17 @@ test("content in shared folder is created shared", async () => {
   expect(content[1].license?.code).eq("CCBYSA");
 });
 
-test("if content has a public parent, cannot make it private", async () => {
-  const owner = await createTestUser();
-  const ownerId = owner.userId;
+test.only("if content has a public parent, cannot make it private", async () => {
+  const { userId: ownerId } = await createTestUser();
 
   const { id: folderId } = await createContent(ownerId, "folder", null);
   await setContentLicense({
-    id: folderId,
+    contentId: folderId,
     loggedInUserId: ownerId,
     licenseCode: "CCBYNCSA",
   });
   await setContentIsPublic({
-    id: folderId,
+    contentId: folderId,
     loggedInUserId: ownerId,
     isPublic: true,
   });
@@ -117,24 +131,30 @@ test("if content has a public parent, cannot make it private", async () => {
     "singleDoc",
     folderId,
   );
-  let activity = await getContent(activityId);
+  let activity = await getContent({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+  });
   expect(activity.isPublic).eq(true);
-  expect(activity.licenseCode).eq("CCBYNCSA");
+  expect(activity.license!.code).eq("CCBYNCSA");
 
   // change license of content is OK
   await setContentLicense({
-    id: activityId,
+    contentId: activityId,
     loggedInUserId: ownerId,
     licenseCode: "CCDUAL",
   });
-  activity = await getContent(activityId);
+  activity = await getContent({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+  });
   expect(activity.isPublic).eq(true);
-  expect(activity.licenseCode).eq("CCDUAL");
+  expect(activity.license!.code).eq("CCDUAL");
 
   // since have public parent, cannot make child private
   await expect(
     setContentIsPublic({
-      id: activityId,
+      contentId: activityId,
       loggedInUserId: ownerId,
       isPublic: false,
     }),
@@ -143,52 +163,70 @@ test("if content has a public parent, cannot make it private", async () => {
   // make parent private, activity becomes private
 
   await setContentIsPublic({
-    id: folderId,
+    contentId: folderId,
     loggedInUserId: ownerId,
     isPublic: false,
   });
 
-  activity = await getContent(activityId);
+  activity = await getContent({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+  });
   expect(activity.isPublic).eq(false);
 
   // make the content public
   await setContentIsPublic({
-    id: activityId,
+    contentId: activityId,
     loggedInUserId: ownerId,
     isPublic: true,
   });
-  activity = await getContent(activityId);
+  activity = await getContent({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+  });
   expect(activity.isPublic).eq(true);
 
   // can make it private now
   await setContentIsPublic({
-    id: activityId,
+    contentId: activityId,
     loggedInUserId: ownerId,
     isPublic: false,
   });
-  activity = await getContent(activityId);
+  activity = await getContent({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+  });
   expect(activity.isPublic).eq(false);
 });
 
 // TODO: make test, if content has a parent that is shared with a user, cannot unshare with that user
 
-test("making folder public/private also makes its content public/private", async () => {
+test.only("making folder public/private also makes its content public/private", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { folderId: publicFolderId } = await createFolder(ownerId, null);
+  const { id: publicFolderId } = await createContent(ownerId, "folder", null);
 
   // create content in folder that will become public
-  const { activityId: activity1Id } = await createActivity(
+  const { id: activity1Id } = await createContent(
     ownerId,
+    "singleDoc",
     publicFolderId,
   );
-  const { folderId: folder1Id } = await createFolder(ownerId, publicFolderId);
-  const { folderId: folder2Id } = await createFolder(ownerId, folder1Id);
-  const { activityId: activity2Id } = await createActivity(ownerId, folder2Id);
+  const { id: folder1Id } = await createContent(
+    ownerId,
+    "folder",
+    publicFolderId,
+  );
+  const { id: folder2Id } = await createContent(ownerId, "folder", folder1Id);
+  const { id: activity2Id } = await createContent(
+    ownerId,
+    "singleDoc",
+    folder2Id,
+  );
 
   let results = await getMyContent({
-    folderId: publicFolderId,
+    parentId: publicFolderId,
     loggedInUserId: ownerId,
   });
   let content = results.content;
@@ -201,7 +239,7 @@ test("making folder public/private also makes its content public/private", async
   expect(content[1].license?.code).eqls("CCDUAL");
 
   results = await getMyContent({
-    folderId: folder1Id,
+    parentId: folder1Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -210,7 +248,7 @@ test("making folder public/private also makes its content public/private", async
   expect(content[0].license?.code).eq("CCDUAL");
 
   results = await getMyContent({
-    folderId: folder2Id,
+    parentId: folder2Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -218,14 +256,19 @@ test("making folder public/private also makes its content public/private", async
   expect(content[0].isPublic).eq(false);
   expect(content[0].license?.code).eq("CCDUAL");
 
-  await makeFolderPublic({
-    id: publicFolderId,
+  await setContentLicense({
+    contentId: publicFolderId,
+    loggedInUserId: ownerId,
     licenseCode: "CCBYSA",
-    ownerId,
+  });
+  await setContentIsPublic({
+    contentId: publicFolderId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
 
   results = await getMyContent({
-    folderId: publicFolderId,
+    parentId: publicFolderId,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -238,7 +281,7 @@ test("making folder public/private also makes its content public/private", async
   expect(content[1].license?.code).eq("CCBYSA");
 
   results = await getMyContent({
-    folderId: folder1Id,
+    parentId: folder1Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -247,7 +290,7 @@ test("making folder public/private also makes its content public/private", async
   expect(content[0].license?.code).eq("CCBYSA");
 
   results = await getMyContent({
-    folderId: folder2Id,
+    parentId: folder2Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -255,13 +298,14 @@ test("making folder public/private also makes its content public/private", async
   expect(content[0].isPublic).eq(true);
   expect(content[0].license?.code).eq("CCBYSA");
 
-  await makeFolderPrivate({
-    id: publicFolderId,
-    ownerId,
+  await setContentIsPublic({
+    contentId: publicFolderId,
+    loggedInUserId: ownerId,
+    isPublic: false,
   });
 
   results = await getMyContent({
-    folderId: publicFolderId,
+    parentId: publicFolderId,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -274,7 +318,7 @@ test("making folder public/private also makes its content public/private", async
   expect(content[1].license?.code).eq("CCBYSA");
 
   results = await getMyContent({
-    folderId: folder1Id,
+    parentId: folder1Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -283,7 +327,7 @@ test("making folder public/private also makes its content public/private", async
   expect(content[0].license?.code).eq("CCBYSA");
 
   results = await getMyContent({
-    folderId: folder2Id,
+    parentId: folder2Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -341,22 +385,28 @@ test(
     const sharedUserFields = [userFields2, userFields1];
     const sharedUserFields23 = [userFields2, userFields3];
 
-    const { folderId: sharedFolderId } = await createFolder(ownerId, null);
+    const { id: sharedFolderId } = await createContent(ownerId, "folder", null);
 
     // create content in folder that will become shared
-    const { activityId: activity1Id } = await createActivity(
+    const { id: activity1Id } = await createContent(
       ownerId,
+      "folder",
       sharedFolderId,
     );
-    const { folderId: folder1Id } = await createFolder(ownerId, sharedFolderId);
-    const { folderId: folder2Id } = await createFolder(ownerId, folder1Id);
-    const { activityId: activity2Id } = await createActivity(
+    const { id: folder1Id } = await createContent(
       ownerId,
+      "folder",
+      sharedFolderId,
+    );
+    const { id: folder2Id } = await createContent(ownerId, "folder", folder1Id);
+    const { id: activity2Id } = await createContent(
+      ownerId,
+      "singleDoc",
       folder2Id,
     );
 
     let results = await getMyContent({
-      folderId: sharedFolderId,
+      parentId: sharedFolderId,
       loggedInUserId: ownerId,
     });
     let content = results.content;
@@ -371,7 +421,7 @@ test(
     expect(content[1].license?.code).eq("CCDUAL");
 
     results = await getMyContent({
-      folderId: folder1Id,
+      parentId: folder1Id,
       loggedInUserId: ownerId,
     });
     content = results.content;
@@ -381,7 +431,7 @@ test(
     expect(content[0].license?.code).eq("CCDUAL");
 
     results = await getMyContent({
-      folderId: folder2Id,
+      parentId: folder2Id,
       loggedInUserId: ownerId,
     });
     content = results.content;
@@ -390,21 +440,19 @@ test(
     expect(content[0].sharedWith).eqls([]);
     expect(content[0].license?.code).eq("CCDUAL");
 
-    await shareFolderWithEmail({
+    await shareContentWithEmail({
       id: sharedFolderId,
-      licenseCode: "CCBYSA",
-      ownerId,
+      loggedInUserId: ownerId,
       email: user2.email,
     });
-    await shareFolderWithEmail({
+    await shareContentWithEmail({
       id: sharedFolderId,
-      licenseCode: "CCBYSA",
-      ownerId,
+      loggedInUserId: ownerId,
       email: user1.email,
     });
 
     results = await getMyContent({
-      folderId: sharedFolderId,
+      parentId: sharedFolderId,
       loggedInUserId: ownerId,
     });
     content = results.content;
@@ -419,7 +467,7 @@ test(
     expect(content[1].license?.code).eq("CCBYSA");
 
     results = await getMyContent({
-      folderId: folder1Id,
+      parentId: folder1Id,
       loggedInUserId: ownerId,
     });
     content = results.content;
@@ -429,7 +477,7 @@ test(
     expect(content[0].license?.code).eq("CCBYSA");
 
     results = await getMyContent({
-      folderId: folder2Id,
+      parentId: folder2Id,
       loggedInUserId: ownerId,
     });
     content = results.content;
@@ -439,14 +487,15 @@ test(
     expect(content[0].license?.code).eq("CCBYSA");
 
     // unshare with user 1
-    await unshareFolder({
+    await modifyContentSharedWith({
+      action: "unshare",
       id: sharedFolderId,
-      ownerId,
+      loggedInUserId: ownerId,
       users: [user1Id],
     });
 
     results = await getMyContent({
-      folderId: sharedFolderId,
+      parentId: sharedFolderId,
       loggedInUserId: ownerId,
     });
     content = results.content;
@@ -461,7 +510,7 @@ test(
     expect(content[1].license?.code).eq("CCBYSA");
 
     results = await getMyContent({
-      folderId: folder1Id,
+      parentId: folder1Id,
       loggedInUserId: ownerId,
     });
     content = results.content;
@@ -471,7 +520,7 @@ test(
     expect(content[0].license?.code).eq("CCBYSA");
 
     results = await getMyContent({
-      folderId: folder2Id,
+      parentId: folder2Id,
       loggedInUserId: ownerId,
     });
     content = results.content;
@@ -481,15 +530,15 @@ test(
     expect(content[0].license?.code).eq("CCBYSA");
 
     // share middle folder with user3
-    await shareFolder({
+    await modifyContentSharedWith({
+      action: "share",
       id: folder2Id,
-      ownerId,
-      licenseCode: "CCBYNCSA",
+      loggedInUserId: ownerId,
       users: [user3Id],
     });
 
     results = await getMyContent({
-      folderId: sharedFolderId,
+      parentId: sharedFolderId,
       loggedInUserId: ownerId,
     });
     content = results.content;
@@ -504,7 +553,7 @@ test(
     expect(content[1].license?.code).eq("CCBYSA");
 
     results = await getMyContent({
-      folderId: folder1Id,
+      parentId: folder1Id,
       loggedInUserId: ownerId,
     });
     content = results.content;
@@ -514,7 +563,7 @@ test(
     expect(content[0].license?.code).eq("CCBYNCSA");
 
     results = await getMyContent({
-      folderId: folder2Id,
+      parentId: folder2Id,
       loggedInUserId: ownerId,
     });
     content = results.content;
@@ -524,14 +573,15 @@ test(
     expect(content[0].license?.code).eq("CCBYNCSA");
 
     // unshare with user 2
-    await unshareFolder({
+    await modifyContentSharedWith({
+      action: "unshare",
       id: sharedFolderId,
-      ownerId,
+      loggedInUserId: ownerId,
       users: [user2Id],
     });
 
     results = await getMyContent({
-      folderId: sharedFolderId,
+      parentId: sharedFolderId,
       loggedInUserId: ownerId,
     });
     content = results.content;
@@ -546,7 +596,7 @@ test(
     expect(content[1].license?.code).eq("CCBYSA");
 
     results = await getMyContent({
-      folderId: folder1Id,
+      parentId: folder1Id,
       loggedInUserId: ownerId,
     });
     content = results.content;
@@ -556,7 +606,7 @@ test(
     expect(content[0].license?.code).eq("CCBYNCSA");
 
     results = await getMyContent({
-      folderId: folder2Id,
+      parentId: folder2Id,
       loggedInUserId: ownerId,
     });
     content = results.content;
@@ -571,21 +621,25 @@ test("moving content into public folder makes it public", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { folderId: publicFolderId } = await createFolder(ownerId, null);
-  await makeFolderPublic({
-    id: publicFolderId,
-    licenseCode: "CCBYSA",
-    ownerId,
+  const { id: publicFolderId } = await createContent(ownerId, "folder", null);
+  await setContentIsPublic({
+    contentId: publicFolderId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
 
   // create to move into that folder
-  const { activityId: activity1Id } = await createActivity(ownerId, null);
-  const { folderId: folder1Id } = await createFolder(ownerId, null);
-  const { folderId: folder2Id } = await createFolder(ownerId, folder1Id);
-  const { activityId: activity2Id } = await createActivity(ownerId, folder2Id);
+  const { id: activity1Id } = await createContent(ownerId, "singleDoc", null);
+  const { id: folder1Id } = await createContent(ownerId, "folder", null);
+  const { id: folder2Id } = await createContent(ownerId, "folder", folder1Id);
+  const { id: activity2Id } = await createContent(
+    ownerId,
+    "singleDoc",
+    folder2Id,
+  );
 
   let results = await getMyContent({
-    folderId: null,
+    parentId: null,
     loggedInUserId: ownerId,
   });
   let content = results.content;
@@ -598,7 +652,7 @@ test("moving content into public folder makes it public", async () => {
   expect(content[2].license?.code).eq("CCDUAL");
 
   results = await getMyContent({
-    folderId: folder1Id,
+    parentId: folder1Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -607,7 +661,7 @@ test("moving content into public folder makes it public", async () => {
   expect(content[0].license?.code).eq("CCDUAL");
 
   results = await getMyContent({
-    folderId: folder2Id,
+    parentId: folder2Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -619,18 +673,18 @@ test("moving content into public folder makes it public", async () => {
   await moveContent({
     id: activity1Id,
     desiredParentId: publicFolderId,
-    ownerId,
+    loggedInUserId: ownerId,
     desiredPosition: 0,
   });
   await moveContent({
     id: folder1Id,
     desiredParentId: publicFolderId,
-    ownerId,
+    loggedInUserId: ownerId,
     desiredPosition: 1,
   });
 
   results = await getMyContent({
-    folderId: publicFolderId,
+    parentId: publicFolderId,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -643,7 +697,7 @@ test("moving content into public folder makes it public", async () => {
   expect(content[1].license?.code).eq("CCDUAL");
 
   results = await getMyContent({
-    folderId: folder1Id,
+    parentId: folder1Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -652,7 +706,7 @@ test("moving content into public folder makes it public", async () => {
   expect(content[0].license?.code).eq("CCDUAL");
 
   results = await getMyContent({
-    folderId: folder2Id,
+    parentId: folder2Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -663,23 +717,23 @@ test("moving content into public folder makes it public", async () => {
   // Create a private folder and move content into that folder.
   // The content stays public.
 
-  const { folderId: privateFolderId } = await createFolder(ownerId, null);
+  const { id: privateFolderId } = await createContent(ownerId, "folder", null);
 
   await moveContent({
     id: activity1Id,
     desiredParentId: privateFolderId,
-    ownerId,
+    loggedInUserId: ownerId,
     desiredPosition: 0,
   });
   await moveContent({
     id: folder1Id,
     desiredParentId: privateFolderId,
-    ownerId,
+    loggedInUserId: ownerId,
     desiredPosition: 1,
   });
 
   results = await getMyContent({
-    folderId: privateFolderId,
+    parentId: privateFolderId,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -692,7 +746,7 @@ test("moving content into public folder makes it public", async () => {
   expect(content[1].license?.code).eq("CCDUAL");
 
   results = await getMyContent({
-    folderId: folder1Id,
+    parentId: folder1Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -701,7 +755,7 @@ test("moving content into public folder makes it public", async () => {
   expect(content[0].license?.code).eq("CCDUAL");
 
   results = await getMyContent({
-    folderId: folder2Id,
+    parentId: folder2Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -722,22 +776,26 @@ test("moving content into shared folder shares it", async () => {
     ...userFields
   } = user;
 
-  const { folderId: sharedFolderId } = await createFolder(ownerId, null);
-  await shareFolder({
+  const { id: sharedFolderId } = await createContent(ownerId, "folder", null);
+  await modifyContentSharedWith({
+    action: "share",
     id: sharedFolderId,
-    licenseCode: "CCBYSA",
-    ownerId,
+    loggedInUserId: ownerId,
     users: [userId],
   });
 
   // create to move into that folder
-  const { activityId: activity1Id } = await createActivity(ownerId, null);
-  const { folderId: folder1Id } = await createFolder(ownerId, null);
-  const { folderId: folder2Id } = await createFolder(ownerId, folder1Id);
-  const { activityId: activity2Id } = await createActivity(ownerId, folder2Id);
+  const { id: activity1Id } = await createContent(ownerId, "singleDoc", null);
+  const { id: folder1Id } = await createContent(ownerId, "folder", null);
+  const { id: folder2Id } = await createContent(ownerId, "folder", folder1Id);
+  const { id: activity2Id } = await createContent(
+    ownerId,
+    "singleDoc",
+    folder2Id,
+  );
 
   let results = await getMyContent({
-    folderId: null,
+    parentId: null,
     loggedInUserId: ownerId,
   });
   let content = results.content;
@@ -752,7 +810,7 @@ test("moving content into shared folder shares it", async () => {
   expect(content[2].license?.code).eq("CCDUAL");
 
   results = await getMyContent({
-    folderId: folder1Id,
+    parentId: folder1Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -762,7 +820,7 @@ test("moving content into shared folder shares it", async () => {
   expect(content[0].license?.code).eq("CCDUAL");
 
   results = await getMyContent({
-    folderId: folder2Id,
+    parentId: folder2Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -775,18 +833,18 @@ test("moving content into shared folder shares it", async () => {
   await moveContent({
     id: activity1Id,
     desiredParentId: sharedFolderId,
-    ownerId,
+    loggedInUserId: ownerId,
     desiredPosition: 0,
   });
   await moveContent({
     id: folder1Id,
     desiredParentId: sharedFolderId,
-    ownerId,
+    loggedInUserId: ownerId,
     desiredPosition: 1,
   });
 
   results = await getMyContent({
-    folderId: sharedFolderId,
+    parentId: sharedFolderId,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -801,7 +859,7 @@ test("moving content into shared folder shares it", async () => {
   expect(content[1].license?.code).eq("CCDUAL");
 
   results = await getMyContent({
-    folderId: folder1Id,
+    parentId: folder1Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -811,7 +869,7 @@ test("moving content into shared folder shares it", async () => {
   expect(content[0].license?.code).eq("CCDUAL");
 
   results = await getMyContent({
-    folderId: folder2Id,
+    parentId: folder2Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -823,23 +881,23 @@ test("moving content into shared folder shares it", async () => {
   // Create a private folder and move content into that folder.
   // The content stays shared.
 
-  const { folderId: privateFolderId } = await createFolder(ownerId, null);
+  const { id: privateFolderId } = await createContent(ownerId, "folder", null);
 
   await moveContent({
     id: activity1Id,
     desiredParentId: privateFolderId,
-    ownerId,
+    loggedInUserId: ownerId,
     desiredPosition: 0,
   });
   await moveContent({
     id: folder1Id,
     desiredParentId: privateFolderId,
-    ownerId,
+    loggedInUserId: ownerId,
     desiredPosition: 1,
   });
 
   results = await getMyContent({
-    folderId: privateFolderId,
+    parentId: privateFolderId,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -854,7 +912,7 @@ test("moving content into shared folder shares it", async () => {
   expect(content[1].license?.code).eq("CCDUAL");
 
   results = await getMyContent({
-    folderId: folder1Id,
+    parentId: folder1Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -864,7 +922,7 @@ test("moving content into shared folder shares it", async () => {
   expect(content[0].license?.code).eq("CCDUAL");
 
   results = await getMyContent({
-    folderId: folder2Id,
+    parentId: folder2Id,
     loggedInUserId: ownerId,
   });
   content = results.content;
@@ -882,47 +940,44 @@ test("share with email throws error when no match", async () => {
 
   const otherEmail = `unique-${Date.now()}@example.com`;
 
-  const { folderId } = await createFolder(ownerId, null);
-  const { activityId } = await createActivity(ownerId, null);
+  const { id: folderId } = await createContent(ownerId, "folder", null);
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
 
   await expect(
-    shareActivityWithEmail({
+    shareContentWithEmail({
       id: activityId,
-      ownerId,
-      licenseCode: "CCBYSA",
+      loggedInUserId: ownerId,
       email: otherEmail,
     }),
   ).rejects.toThrow("User with email not found");
 
-  await shareActivityWithEmail({
+  await shareContentWithEmail({
     id: activityId,
-    ownerId,
-    licenseCode: "CCBYSA",
+    loggedInUserId: ownerId,
     email: user.email,
   });
 
   const { activity } = await getActivityEditorData(activityId, ownerId);
-  expect(activity.sharedWith.map((obj) => obj.email)).eqls([user.email]);
+  expect(activity).toBeDefined();
+  expect(activity!.sharedWith.map((obj) => obj.email)).eqls([user.email]);
 
   await expect(
-    shareFolderWithEmail({
+    shareContentWithEmail({
       id: folderId,
-      ownerId,
-      licenseCode: "CCBYSA",
+      loggedInUserId: ownerId,
       email: otherEmail,
     }),
   ).rejects.toThrow("User with email not found");
 
-  await shareFolderWithEmail({
+  await shareContentWithEmail({
     id: folderId,
-    ownerId,
-    licenseCode: "CCBYSA",
+    loggedInUserId: ownerId,
     email: user.email,
   });
 
   expect(
     (
-      await getMyContent({ folderId, loggedInUserId: ownerId })
+      await getMyContent({ parentId: folderId, loggedInUserId: ownerId })
     ).folder!.sharedWith.map((obj) => obj.email),
   ).eqls([user.email]);
 });
@@ -933,46 +988,43 @@ test("share with email throws error when share with self", async () => {
 
   const user = await createTestUser();
 
-  const { folderId } = await createFolder(ownerId, null);
-  const { activityId } = await createActivity(ownerId, null);
+  const { id: folderId } = await createContent(ownerId, "folder", null);
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
 
   await expect(
-    shareActivityWithEmail({
+    shareContentWithEmail({
       id: activityId,
-      ownerId,
-      licenseCode: "CCBYSA",
+      loggedInUserId: ownerId,
       email: owner.email,
     }),
   ).rejects.toThrow("Cannot share with self");
 
-  await shareActivityWithEmail({
+  await shareContentWithEmail({
     id: activityId,
-    ownerId,
-    licenseCode: "CCBYSA",
+    loggedInUserId: ownerId,
     email: user.email,
   });
   const { activity } = await getActivityEditorData(activityId, ownerId);
-  expect(activity.sharedWith.map((obj) => obj.email)).eqls([user.email]);
+  expect(activity).toBeDefined();
+  expect(activity!.sharedWith.map((obj) => obj.email)).eqls([user.email]);
 
   await expect(
-    shareFolderWithEmail({
+    shareContentWithEmail({
       id: folderId,
-      ownerId,
-      licenseCode: "CCBYSA",
+      loggedInUserId: ownerId,
       email: owner.email,
     }),
   ).rejects.toThrow("Cannot share with self");
 
-  await shareFolderWithEmail({
+  await shareContentWithEmail({
     id: folderId,
-    ownerId,
-    licenseCode: "CCBYSA",
+    loggedInUserId: ownerId,
     email: user.email,
   });
 
   expect(
     (
-      await getMyContent({ folderId, loggedInUserId: ownerId })
+      await getMyContent({ parentId: folderId, loggedInUserId: ownerId })
     ).folder!.sharedWith.map((obj) => obj.email),
   ).eqls([user.email]);
 });
@@ -983,8 +1035,9 @@ test("contributor history shows only documents user can view", async () => {
   const ownerId3 = (await createTestUser()).userId;
 
   // create public activity 1 by owner 1
-  const { activityId: activityId1, docId: docId1 } = await createActivity(
+  const { activityId: activityId1, docId: docId1 } = await createContent(
     ownerId1,
+    "singleDoc",
     null,
   );
   await makeActivityPublic({
@@ -1208,95 +1261,104 @@ test("get licenses", async () => {
 test("set license to make public", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId } = await createActivity(ownerId, null);
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
 
   // make public with CCBYSA license
-  await makeActivityPublic({
-    id: activityId,
-    ownerId,
-    licenseCode: "CCBYSA",
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   let { activity: activityData } = await getActivityEditorData(
     activityId,
     ownerId,
   );
-  expect(activityData.isPublic).eq(true);
+  expect(activityData).toBeDefined();
+  expect(activityData!.isPublic).eq(true);
 
-  expect(activityData.license?.code).eq("CCBYSA");
-  expect(activityData.license?.name).eq(
+  expect(activityData!.license?.code).eq("CCBYSA");
+  expect(activityData!.license?.name).eq(
     "Creative Commons Attribution-ShareAlike 4.0",
   );
-  expect(activityData.license?.licenseURL).eq(
+  expect(activityData!.license?.licenseURL).eq(
     "https://creativecommons.org/licenses/by-sa/4.0/",
   );
-  expect(activityData.license?.imageURL).eq("/creative_commons_by_sa.png");
+  expect(activityData!.license?.imageURL).eq("/creative_commons_by_sa.png");
 
   // make private
-  await makeActivityPrivate({ id: activityId, ownerId });
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+    isPublic: false,
+  });
   ({ activity: activityData } = await getActivityEditorData(
     activityId,
     ownerId,
   ));
-  expect(activityData.isPublic).eq(false);
+  expect(activityData).toBeDefined();
+  expect(activityData!.isPublic).eq(false);
 
   // make public with CCBYNCSA license
-  await makeActivityPublic({
-    id: activityId,
-    ownerId,
-    licenseCode: "CCBYNCSA",
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+    isPublic: true,
+    // licenseCode: "CCBYNCSA",
   });
   ({ activity: activityData } = await getActivityEditorData(
     activityId,
     ownerId,
   ));
-  expect(activityData.isPublic).eq(true);
+  expect(activityData).toBeDefined();
+  expect(activityData!.isPublic).eq(true);
 
-  expect(activityData.license?.code).eq("CCBYNCSA");
-  expect(activityData.license?.name).eq(
+  expect(activityData!.license?.code).eq("CCBYNCSA");
+  expect(activityData!.license?.name).eq(
     "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
   );
-  expect(activityData.license?.licenseURL).eq(
+  expect(activityData!.license?.licenseURL).eq(
     "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   );
-  expect(activityData.license?.imageURL).eq("/creative_commons_by_nc_sa.png");
+  expect(activityData!.license?.imageURL).eq("/creative_commons_by_nc_sa.png");
 
   // switch license to dual
-  await makeActivityPublic({
-    id: activityId,
-    ownerId,
-    licenseCode: "CCDUAL",
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+    isPublic: false,
+    // licenseCode: "CCDUAL",
   });
 
   ({ activity: activityData } = await getActivityEditorData(
     activityId,
     ownerId,
   ));
-  expect(activityData.isPublic).eq(true);
+  expect(activityData!.isPublic).eq(true);
 
-  expect(activityData.license?.code).eq("CCDUAL");
-  expect(activityData.license?.name).eq(
+  expect(activityData!.license?.code).eq("CCDUAL");
+  expect(activityData!.license?.name).eq(
     "Dual license Creative Commons Attribution-ShareAlike 4.0 OR Attribution-NonCommercial-ShareAlike 4.0",
   );
 
-  expect(activityData.license?.composedOf[0].code).eq("CCBYSA");
-  expect(activityData.license?.composedOf[0].name).eq(
+  expect(activityData!.license?.composedOf[0].code).eq("CCBYSA");
+  expect(activityData!.license?.composedOf[0].name).eq(
     "Creative Commons Attribution-ShareAlike 4.0",
   );
-  expect(activityData.license?.composedOf[0].licenseURL).eq(
+  expect(activityData!.license?.composedOf[0].licenseURL).eq(
     "https://creativecommons.org/licenses/by-sa/4.0/",
   );
-  expect(activityData.license?.composedOf[0].imageURL).eq(
+  expect(activityData!.license?.composedOf[0].imageURL).eq(
     "/creative_commons_by_sa.png",
   );
 
-  expect(activityData.license?.composedOf[1].code).eq("CCBYNCSA");
-  expect(activityData.license?.composedOf[1].name).eq(
+  expect(activityData!.license?.composedOf[1].code).eq("CCBYNCSA");
+  expect(activityData!.license?.composedOf[1].name).eq(
     "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
   );
-  expect(activityData.license?.composedOf[1].licenseURL).eq(
+  expect(activityData!.license?.composedOf[1].licenseURL).eq(
     "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   );
-  expect(activityData.license?.composedOf[1].imageURL).eq(
+  expect(activityData!.license?.composedOf[1].imageURL).eq(
     "/creative_commons_by_nc_sa.png",
   );
 });

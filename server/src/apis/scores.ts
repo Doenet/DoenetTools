@@ -3,19 +3,20 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../model";
 import { isEqualUUID } from "../utils/uuid";
+import { filterEditableActivity } from "../utils/permissions";
 
 // If not, how do we communicate that fact
 export async function saveScoreAndState({
   activityId,
   activityRevisionNum,
-  userId,
+  loggedInUserId,
   score,
   onSubmission,
   state,
 }: {
   activityId: Uint8Array;
   activityRevisionNum: number;
-  userId: Uint8Array;
+  loggedInUserId: Uint8Array;
   score: number;
   onSubmission: boolean;
   state: string;
@@ -23,16 +24,16 @@ export async function saveScoreAndState({
   // make sure have an assignmentScores record
   // so that can satisfy foreign key constraints on activityState
   await prisma.assignmentScores.upsert({
-    where: { activityId_userId: { activityId, userId } },
+    where: { activityId_userId: { activityId, userId: loggedInUserId } },
     update: {},
-    create: { activityId, userId },
+    create: { activityId, userId: loggedInUserId },
   });
 
   const stateWithMaxScore = await prisma.activityState.findUnique({
     where: {
       activityId_userId_hasMaxScore: {
         activityId,
-        userId,
+        userId: loggedInUserId,
         hasMaxScore: true,
       },
     },
@@ -58,7 +59,7 @@ export async function saveScoreAndState({
         where: {
           activityId_userId_isLatest: {
             activityId,
-            userId,
+            userId: loggedInUserId,
             isLatest: false,
           },
         },
@@ -81,7 +82,7 @@ export async function saveScoreAndState({
         where: {
           activityId_userId_hasMaxScore: {
             activityId,
-            userId,
+            userId: loggedInUserId,
             hasMaxScore: true,
           },
         },
@@ -106,7 +107,7 @@ export async function saveScoreAndState({
     where: {
       activityId_userId_isLatest: {
         activityId,
-        userId,
+        userId: loggedInUserId,
         isLatest: true,
       },
     },
@@ -119,7 +120,7 @@ export async function saveScoreAndState({
     create: {
       activityId,
       activityRevisionNum,
-      userId,
+      userId: loggedInUserId,
       isLatest: true,
       hasMaxScore,
       score,
@@ -133,7 +134,7 @@ export async function saveScoreAndState({
 
   if (hasStrictMaxScore) {
     await prisma.assignmentScores.update({
-      where: { activityId_userId: { activityId, userId } },
+      where: { activityId_userId: { activityId, userId: loggedInUserId } },
       data: {
         score,
       },
@@ -143,29 +144,24 @@ export async function saveScoreAndState({
 
 export async function loadState({
   activityId,
-  docId,
-  docVersionNum,
   requestedUserId,
-  userId,
+  loggedInUserId,
   withMaxScore,
 }: {
   activityId: Uint8Array;
-  docId: Uint8Array;
-  docVersionNum: number;
   requestedUserId: Uint8Array;
-  userId: Uint8Array;
+  loggedInUserId: Uint8Array;
   withMaxScore: boolean;
 }) {
-  if (!isEqualUUID(requestedUserId, userId)) {
+  if (!isEqualUUID(requestedUserId, loggedInUserId)) {
     // If user isn't the requested user, then user is allowed to load requested users state
     // only if they are the owner of the assignment.
     // If not user is not owner, then it will throw an error.
     await prisma.content.findUniqueOrThrow({
       where: {
         id: activityId,
-        ownerId: userId,
         isAssigned: true,
-        isFolder: false,
+        ...filterEditableActivity(loggedInUserId),
       },
     });
   }
@@ -173,12 +169,10 @@ export async function loadState({
   let documentState;
 
   if (withMaxScore) {
-    documentState = await prisma.documentState.findUniqueOrThrow({
+    documentState = await prisma.activityState.findUniqueOrThrow({
       where: {
-        activityId_docId_docVersionNum_userId_hasMaxScore: {
+        activityId_userId_hasMaxScore: {
           activityId,
-          docId,
-          docVersionNum,
           userId: requestedUserId,
           hasMaxScore: true,
         },
@@ -186,12 +180,10 @@ export async function loadState({
       select: { state: true },
     });
   } else {
-    documentState = await prisma.documentState.findUniqueOrThrow({
+    documentState = await prisma.activityState.findUniqueOrThrow({
       where: {
-        activityId_docId_docVersionNum_userId_isLatest: {
+        activityId_userId_isLatest: {
           activityId,
-          docId,
-          docVersionNum,
           userId: requestedUserId,
           isLatest: true,
         },

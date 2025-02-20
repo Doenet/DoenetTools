@@ -38,17 +38,17 @@ export async function getAllLicenses() {
 }
 
 export async function setContentLicense({
-  id,
+  contentId,
   loggedInUserId,
   licenseCode,
 }: {
-  id: Uint8Array;
+  contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   licenseCode: LicenseCode;
 }) {
   const isAdmin = await getIsAdmin(loggedInUserId);
   await prisma.content.update({
-    where: { id, ...filterEditableContent(loggedInUserId, isAdmin) },
+    where: { id: contentId, ...filterEditableContent(loggedInUserId, isAdmin) },
     data: { licenseCode },
   });
 }
@@ -60,17 +60,17 @@ export async function setContentLicense({
  * If parent is public, however, it does not all the content to be set to private.
  */
 export async function setContentIsPublic({
-  id,
+  contentId,
   loggedInUserId,
   isPublic,
 }: {
-  id: Uint8Array;
+  contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   isPublic: boolean;
 }) {
   if (!isPublic) {
     const content = await prisma.content.findUniqueOrThrow({
-      where: { id, ...filterEditableContent(loggedInUserId) },
+      where: { id: contentId, ...filterEditableContent(loggedInUserId) },
       select: { parent: { select: { isPublic: true } } },
     });
 
@@ -84,7 +84,7 @@ export async function setContentIsPublic({
   return prisma.$queryRaw(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
-      WHERE id = ${id} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
+      WHERE id = ${contentId} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
       UNION ALL
       SELECT content.id FROM content
       INNER JOIN content_tree AS ct

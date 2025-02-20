@@ -203,12 +203,12 @@ model assignmentScores {
 
 model activityState {
   activityId          Bytes             @db.Binary(16)
-  activityRevisionNum Int
   userId              Bytes             @db.Binary(16)
   isLatest            Boolean           @default(true)
   hasMaxScore         Boolean           @default(false)
-  state               String?           @db.MediumText
   score               Float             @default(0)
+  activityRevisionNum Int
+  state               String?           @db.MediumText
   assignmentScore     assignmentScores  @relation(fields: [activityId, userId], references: [activityId, userId], onDelete: NoAction, onUpdate: NoAction)
   activityRevision    activityRevisions @relation(fields: [activityId, activityRevisionNum], references: [activityId, revisionNum], onDelete: NoAction, onUpdate: NoAction)
   user                users             @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)

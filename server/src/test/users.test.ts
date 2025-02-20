@@ -2,13 +2,14 @@ import { expect, test } from "vitest";
 import { createTestAnonymousUser, createTestUser } from "./utils";
 import { fromUUID } from "../utils/uuid";
 import { findOrCreateUser, getUserInfo, updateUser, upgradeAnonymousUser } from "../apis/user";
+import { getMyContent } from "../apis/content_list";
 
 test("New user has no content", async () => {
   const user = await createTestUser();
   const userId = user.userId;
   const docs = await getMyContent({
     loggedInUserId: userId,
-    folderId: null,
+    parentId: null,
   });
   const { availableFeatures, ...docs2 } = docs;
   expect(docs2).toStrictEqual({

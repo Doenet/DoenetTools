@@ -1,14 +1,10 @@
 import { ContentType } from "@prisma/client";
 import { prisma } from "../model";
-import { ContentStructure } from "../types";
-import {
-  processContent,
-  returnContentStructureFullOwnerSelect,
-} from "../utils/contentStructure";
 import { InvalidRequestError } from "../utils/error";
-import { getNextSortIndex, ShiftIndicesCallbackFunction } from "../utils/sort";
+import { calculateNewSortIndex, getNextSortIndex, ShiftIndicesCallbackFunction } from "../utils/sort";
 import { getIsAdmin, mustBeAdmin } from "./curate";
 import { filterViewableContent } from "../utils/permissions";
+import { Content } from "../types";
 
 export async function addPromotedContentGroup(
   groupName: string,
@@ -184,9 +180,9 @@ export async function loadPromotedContent(userId: Uint8Array) {
     promotedGroupId: number;
     currentlyFeatured: boolean;
     homepage: boolean;
-    promotedContent: ContentStructure[];
+    promotedContent: Content[];
   }[] = content.map((groupContent) => {
-    const reformattedActivities: ContentStructure[] =
+    const reformattedActivities: Content[] =
       groupContent.promotedContent.map((content) =>
         processContent(content.activity),
       );
