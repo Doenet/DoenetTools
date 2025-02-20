@@ -10,7 +10,7 @@ import {
   getDocumentDirectRemixes,
   getDocumentRemixes,
   getLicense,
-  getMyFolderContent,
+  getMyContent,
   makeActivityPrivate,
   makeActivityPublic,
   makeFolderPrivate,
@@ -43,7 +43,7 @@ test("content in public folder is created as public", async () => {
   const { activityId } = await createActivity(ownerId, publicFolderId);
   const { folderId } = await createFolder(ownerId, publicFolderId);
 
-  const { content } = await getMyFolderContent({
+  const { content } = await getMyContent({
     folderId: publicFolderId,
     loggedInUserId: ownerId,
   });
@@ -78,7 +78,7 @@ test("content in shared folder is created shared", async () => {
   const { activityId } = await createActivity(ownerId, publicFolderId);
   const { folderId } = await createFolder(ownerId, publicFolderId);
 
-  const { content } = await getMyFolderContent({
+  const { content } = await getMyContent({
     folderId: publicFolderId,
     loggedInUserId: ownerId,
   });
@@ -187,7 +187,7 @@ test("making folder public/private also makes its content public/private", async
   const { folderId: folder2Id } = await createFolder(ownerId, folder1Id);
   const { activityId: activity2Id } = await createActivity(ownerId, folder2Id);
 
-  let results = await getMyFolderContent({
+  let results = await getMyContent({
     folderId: publicFolderId,
     loggedInUserId: ownerId,
   });
@@ -200,7 +200,7 @@ test("making folder public/private also makes its content public/private", async
   expect(content[1].isPublic).eq(false);
   expect(content[1].license?.code).eqls("CCDUAL");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder1Id,
     loggedInUserId: ownerId,
   });
@@ -209,7 +209,7 @@ test("making folder public/private also makes its content public/private", async
   expect(content[0].isPublic).eq(false);
   expect(content[0].license?.code).eq("CCDUAL");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder2Id,
     loggedInUserId: ownerId,
   });
@@ -224,7 +224,7 @@ test("making folder public/private also makes its content public/private", async
     ownerId,
   });
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: publicFolderId,
     loggedInUserId: ownerId,
   });
@@ -237,7 +237,7 @@ test("making folder public/private also makes its content public/private", async
   expect(content[1].isPublic).eq(true);
   expect(content[1].license?.code).eq("CCBYSA");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder1Id,
     loggedInUserId: ownerId,
   });
@@ -246,7 +246,7 @@ test("making folder public/private also makes its content public/private", async
   expect(content[0].isPublic).eq(true);
   expect(content[0].license?.code).eq("CCBYSA");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder2Id,
     loggedInUserId: ownerId,
   });
@@ -260,7 +260,7 @@ test("making folder public/private also makes its content public/private", async
     ownerId,
   });
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: publicFolderId,
     loggedInUserId: ownerId,
   });
@@ -273,7 +273,7 @@ test("making folder public/private also makes its content public/private", async
   expect(content[1].isPublic).eq(false);
   expect(content[1].license?.code).eq("CCBYSA");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder1Id,
     loggedInUserId: ownerId,
   });
@@ -282,7 +282,7 @@ test("making folder public/private also makes its content public/private", async
   expect(content[0].isPublic).eq(false);
   expect(content[0].license?.code).eq("CCBYSA");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder2Id,
     loggedInUserId: ownerId,
   });
@@ -355,7 +355,7 @@ test(
       folder2Id,
     );
 
-    let results = await getMyFolderContent({
+    let results = await getMyContent({
       folderId: sharedFolderId,
       loggedInUserId: ownerId,
     });
@@ -370,7 +370,7 @@ test(
     expect(content[1].sharedWith).eqls([]);
     expect(content[1].license?.code).eq("CCDUAL");
 
-    results = await getMyFolderContent({
+    results = await getMyContent({
       folderId: folder1Id,
       loggedInUserId: ownerId,
     });
@@ -380,7 +380,7 @@ test(
     expect(content[0].sharedWith).eqls([]);
     expect(content[0].license?.code).eq("CCDUAL");
 
-    results = await getMyFolderContent({
+    results = await getMyContent({
       folderId: folder2Id,
       loggedInUserId: ownerId,
     });
@@ -403,7 +403,7 @@ test(
       email: user1.email,
     });
 
-    results = await getMyFolderContent({
+    results = await getMyContent({
       folderId: sharedFolderId,
       loggedInUserId: ownerId,
     });
@@ -418,7 +418,7 @@ test(
     expect(content[1].sharedWith).eqls(sharedUserFields);
     expect(content[1].license?.code).eq("CCBYSA");
 
-    results = await getMyFolderContent({
+    results = await getMyContent({
       folderId: folder1Id,
       loggedInUserId: ownerId,
     });
@@ -428,7 +428,7 @@ test(
     expect(content[0].sharedWith).eqls(sharedUserFields);
     expect(content[0].license?.code).eq("CCBYSA");
 
-    results = await getMyFolderContent({
+    results = await getMyContent({
       folderId: folder2Id,
       loggedInUserId: ownerId,
     });
@@ -445,7 +445,7 @@ test(
       users: [user1Id],
     });
 
-    results = await getMyFolderContent({
+    results = await getMyContent({
       folderId: sharedFolderId,
       loggedInUserId: ownerId,
     });
@@ -460,7 +460,7 @@ test(
     expect(content[1].sharedWith).eqls([userFields2]);
     expect(content[1].license?.code).eq("CCBYSA");
 
-    results = await getMyFolderContent({
+    results = await getMyContent({
       folderId: folder1Id,
       loggedInUserId: ownerId,
     });
@@ -470,7 +470,7 @@ test(
     expect(content[0].sharedWith).eqls([userFields2]);
     expect(content[0].license?.code).eq("CCBYSA");
 
-    results = await getMyFolderContent({
+    results = await getMyContent({
       folderId: folder2Id,
       loggedInUserId: ownerId,
     });
@@ -488,7 +488,7 @@ test(
       users: [user3Id],
     });
 
-    results = await getMyFolderContent({
+    results = await getMyContent({
       folderId: sharedFolderId,
       loggedInUserId: ownerId,
     });
@@ -503,7 +503,7 @@ test(
     expect(content[1].sharedWith).eqls([userFields2]);
     expect(content[1].license?.code).eq("CCBYSA");
 
-    results = await getMyFolderContent({
+    results = await getMyContent({
       folderId: folder1Id,
       loggedInUserId: ownerId,
     });
@@ -513,7 +513,7 @@ test(
     expect(content[0].sharedWith).eqls(sharedUserFields23);
     expect(content[0].license?.code).eq("CCBYNCSA");
 
-    results = await getMyFolderContent({
+    results = await getMyContent({
       folderId: folder2Id,
       loggedInUserId: ownerId,
     });
@@ -530,7 +530,7 @@ test(
       users: [user2Id],
     });
 
-    results = await getMyFolderContent({
+    results = await getMyContent({
       folderId: sharedFolderId,
       loggedInUserId: ownerId,
     });
@@ -545,7 +545,7 @@ test(
     expect(content[0].sharedWith).eqls([]);
     expect(content[1].license?.code).eq("CCBYSA");
 
-    results = await getMyFolderContent({
+    results = await getMyContent({
       folderId: folder1Id,
       loggedInUserId: ownerId,
     });
@@ -555,7 +555,7 @@ test(
     expect(content[0].sharedWith).eqls([userFields3]);
     expect(content[0].license?.code).eq("CCBYNCSA");
 
-    results = await getMyFolderContent({
+    results = await getMyContent({
       folderId: folder2Id,
       loggedInUserId: ownerId,
     });
@@ -584,7 +584,7 @@ test("moving content into public folder makes it public", async () => {
   const { folderId: folder2Id } = await createFolder(ownerId, folder1Id);
   const { activityId: activity2Id } = await createActivity(ownerId, folder2Id);
 
-  let results = await getMyFolderContent({
+  let results = await getMyContent({
     folderId: null,
     loggedInUserId: ownerId,
   });
@@ -597,7 +597,7 @@ test("moving content into public folder makes it public", async () => {
   expect(content[2].isPublic).eq(false);
   expect(content[2].license?.code).eq("CCDUAL");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder1Id,
     loggedInUserId: ownerId,
   });
@@ -606,7 +606,7 @@ test("moving content into public folder makes it public", async () => {
   expect(content[0].isPublic).eq(false);
   expect(content[0].license?.code).eq("CCDUAL");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder2Id,
     loggedInUserId: ownerId,
   });
@@ -629,7 +629,7 @@ test("moving content into public folder makes it public", async () => {
     desiredPosition: 1,
   });
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: publicFolderId,
     loggedInUserId: ownerId,
   });
@@ -642,7 +642,7 @@ test("moving content into public folder makes it public", async () => {
   expect(content[1].isPublic).eq(true);
   expect(content[1].license?.code).eq("CCDUAL");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder1Id,
     loggedInUserId: ownerId,
   });
@@ -651,7 +651,7 @@ test("moving content into public folder makes it public", async () => {
   expect(content[0].isPublic).eq(true);
   expect(content[0].license?.code).eq("CCDUAL");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder2Id,
     loggedInUserId: ownerId,
   });
@@ -678,7 +678,7 @@ test("moving content into public folder makes it public", async () => {
     desiredPosition: 1,
   });
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: privateFolderId,
     loggedInUserId: ownerId,
   });
@@ -691,7 +691,7 @@ test("moving content into public folder makes it public", async () => {
   expect(content[1].isPublic).eq(true);
   expect(content[1].license?.code).eq("CCDUAL");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder1Id,
     loggedInUserId: ownerId,
   });
@@ -700,7 +700,7 @@ test("moving content into public folder makes it public", async () => {
   expect(content[0].isPublic).eq(true);
   expect(content[0].license?.code).eq("CCDUAL");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder2Id,
     loggedInUserId: ownerId,
   });
@@ -736,7 +736,7 @@ test("moving content into shared folder shares it", async () => {
   const { folderId: folder2Id } = await createFolder(ownerId, folder1Id);
   const { activityId: activity2Id } = await createActivity(ownerId, folder2Id);
 
-  let results = await getMyFolderContent({
+  let results = await getMyContent({
     folderId: null,
     loggedInUserId: ownerId,
   });
@@ -751,7 +751,7 @@ test("moving content into shared folder shares it", async () => {
   expect(content[2].sharedWith).eqls([]);
   expect(content[2].license?.code).eq("CCDUAL");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder1Id,
     loggedInUserId: ownerId,
   });
@@ -761,7 +761,7 @@ test("moving content into shared folder shares it", async () => {
   expect(content[0].sharedWith).eqls([]);
   expect(content[0].license?.code).eq("CCDUAL");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder2Id,
     loggedInUserId: ownerId,
   });
@@ -785,7 +785,7 @@ test("moving content into shared folder shares it", async () => {
     desiredPosition: 1,
   });
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: sharedFolderId,
     loggedInUserId: ownerId,
   });
@@ -800,7 +800,7 @@ test("moving content into shared folder shares it", async () => {
   expect(content[1].sharedWith).eqls([userFields]);
   expect(content[1].license?.code).eq("CCDUAL");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder1Id,
     loggedInUserId: ownerId,
   });
@@ -810,7 +810,7 @@ test("moving content into shared folder shares it", async () => {
   expect(content[0].sharedWith).eqls([userFields]);
   expect(content[0].license?.code).eq("CCDUAL");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder2Id,
     loggedInUserId: ownerId,
   });
@@ -838,7 +838,7 @@ test("moving content into shared folder shares it", async () => {
     desiredPosition: 1,
   });
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: privateFolderId,
     loggedInUserId: ownerId,
   });
@@ -853,7 +853,7 @@ test("moving content into shared folder shares it", async () => {
   expect(content[1].sharedWith).eqls([userFields]);
   expect(content[1].license?.code).eq("CCDUAL");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder1Id,
     loggedInUserId: ownerId,
   });
@@ -863,7 +863,7 @@ test("moving content into shared folder shares it", async () => {
   expect(content[0].sharedWith).eqls([userFields]);
   expect(content[0].license?.code).eq("CCDUAL");
 
-  results = await getMyFolderContent({
+  results = await getMyContent({
     folderId: folder2Id,
     loggedInUserId: ownerId,
   });
@@ -922,7 +922,7 @@ test("share with email throws error when no match", async () => {
 
   expect(
     (
-      await getMyFolderContent({ folderId, loggedInUserId: ownerId })
+      await getMyContent({ folderId, loggedInUserId: ownerId })
     ).folder!.sharedWith.map((obj) => obj.email),
   ).eqls([user.email]);
 });
@@ -972,7 +972,7 @@ test("share with email throws error when share with self", async () => {
 
   expect(
     (
-      await getMyFolderContent({ folderId, loggedInUserId: ownerId })
+      await getMyContent({ folderId, loggedInUserId: ownerId })
     ).folder!.sharedWith.map((obj) => obj.email),
   ).eqls([user.email]);
 });

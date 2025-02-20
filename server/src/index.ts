@@ -49,7 +49,7 @@ import {
   movePromotedContentGroup,
   InvalidRequestError,
   moveContent,
-  getMyFolderContent,
+  getMyContent,
   getAssignedScores,
   addClassification,
   removeClassification,
@@ -2879,7 +2879,7 @@ app.get(
 );
 
 app.get(
-  "/api/getMyFolderContent/:ownerId/",
+  "/api/getMyContent/:ownerId/",
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = toUUID(req.params.ownerId);
     const loggedInUserId = req.user?.userId;
@@ -2890,7 +2890,7 @@ app.get(
     }
 
     try {
-      const contentData = await getMyFolderContent({
+      const contentData = await getMyContent({
         folderId: null,
         loggedInUserId,
       });
@@ -2917,7 +2917,7 @@ app.get(
 );
 
 app.get(
-  "/api/getMyFolderContent/:ownerId/:folderId",
+  "/api/getMyContent/:ownerId/:folderId",
   async (req: Request, res: Response, next: NextFunction) => {
     const ownerId = toUUID(req.params.ownerId);
     const folderId = toUUID(req.params.folderId);
@@ -2929,7 +2929,7 @@ app.get(
     }
 
     try {
-      const contentData = await getMyFolderContent({
+      const contentData = await getMyContent({
         folderId,
         loggedInUserId,
       });
@@ -3115,7 +3115,7 @@ app.get(
     }
 
     try {
-      const contentData = await getMyFolderContent({
+      const contentData = await getMyContent({
         isLibrary: true,
         folderId: null,
         loggedInUserId,
@@ -3154,7 +3154,7 @@ app.get(
     }
 
     try {
-      const contentData = await getMyFolderContent({
+      const contentData = await getMyContent({
         isLibrary: true,
         folderId,
         loggedInUserId,

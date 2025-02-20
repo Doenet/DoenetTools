@@ -2,10 +2,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "../model";
 import { LicenseCode } from "../types";
 import { processLicense } from "../utils/contentStructure";
-import {
-  filterEditableActivity,
-  filterEditableContent,
-} from "../utils/permissions";
+import { filterEditableContent } from "../utils/permissions";
 import { getIsAdmin } from "./curate";
 import { isEqualUUID } from "../utils/uuid";
 import { InvalidRequestError } from "../utils/error";
@@ -116,6 +113,26 @@ export async function modifyContentSharedWith({
   loggedInUserId: Uint8Array;
   users: Uint8Array[];
 }) {
+  if (action === "unshare") {
+    const content = await prisma.content.findUniqueOrThrow({
+      where: { id, ...filterEditableContent(loggedInUserId) },
+      select: {
+        parent: { select: { sharedWith: { select: { userId: true } } } },
+      },
+    });
+
+    if (content.parent !== null) {
+      const parentSharedWith = content.parent.sharedWith.map((s) => s.userId);
+      for (const userId of users) {
+        if (parentSharedWith.find((u) => isEqualUUID(u, userId))) {
+          throw new InvalidRequestError(
+            "Content has a parent shared with user -- cannot stop sharing with that user.",
+          );
+        }
+      }
+    }
+  }
+
   const contentIds = (
     await prisma.$queryRaw<{ id: Uint8Array }[]>(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (

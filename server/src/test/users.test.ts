@@ -6,7 +6,7 @@ import { findOrCreateUser, getUserInfo, updateUser, upgradeAnonymousUser } from 
 test("New user has no content", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const docs = await getMyFolderContent({
+  const docs = await getMyContent({
     loggedInUserId: userId,
     folderId: null,
   });

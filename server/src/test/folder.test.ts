@@ -1,40 +1,18 @@
 import { expect, test } from "vitest";
-import {
-  addClassification,
-  checkIfFolderContains,
-  copyActivityToFolder,
-  createActivity,
-  createFolder,
-  deleteFolder,
-  getActivity,
-  getActivityEditorData,
-  getActivityViewerData,
-  getDoc,
-  getMyFolderContent,
-  getPreferredFolderView,
-  getSharedFolderContent,
-  makeActivityPrivate,
-  makeActivityPublic,
-  makeFolderPrivate,
-  makeFolderPublic,
-  moveContent,
-  searchPossibleClassifications,
-  setPreferredFolderView,
-  shareActivity,
-  shareActivityWithEmail,
-  shareFolder,
-  shareFolderWithEmail,
-  unshareActivity,
-  unshareFolder,
-  updateContentFeatures,
-  updateDoc,
-  updateUser,
-} from "../model";
 import { createTestUser } from "./utils";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { ContentType } from "../types";
+import { getMyContent, getSharedContent } from "../apis/content_list";
+import { createContent, deleteContent } from "../apis/activity";
+import {
+  modifyContentSharedWith,
+  setContentIsPublic,
+  shareContentWithEmail,
+} from "../apis/share";
+import { updateUser } from "../apis/user";
+import { getContent } from "../apis/activity_edit_view";
+import { moveContent } from "../apis/copy_move";
 
-test("getMyFolderContent returns both public and private content, getSharedFolderContent returns only public", async () => {
+test("getMyContent returns both public and private content, getSharedFolderContent returns only public", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
@@ -42,95 +20,84 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
   const user = await createTestUser();
   const userId = user.userId;
 
-  const { activityId: publicActivity1Id } = await createActivity(ownerId, null);
-  const { activityId: privateActivity1Id } = await createActivity(
+  const { id: publicActivity1Id } = await createContent(
     ownerId,
+    "singleDoc",
+    null,
+  );
+  const { id: privateActivity1Id } = await createContent(
+    ownerId,
+    "singleDoc",
     null,
   );
 
-  const { folderId: publicFolder1Id } = await createFolder(ownerId, null);
-  const { folderId: privateFolder1Id } = await createFolder(ownerId, null);
+  const { id: publicFolder1Id } = await createContent(ownerId, "folder", null);
+  const { id: privateFolder1Id } = await createContent(ownerId, "folder", null);
 
-  const { activityId: publicActivity2Id } = await createActivity(
+  const { id: publicActivity2Id } = await createContent(
     ownerId,
+    "singleDoc",
     publicFolder1Id,
   );
-  const { activityId: privateActivity2Id } = await createActivity(
+  const { id: publicFolder2Id } = await createContent(
     ownerId,
-    publicFolder1Id,
-  );
-  const { folderId: publicFolder2Id } = await createFolder(
-    ownerId,
-    publicFolder1Id,
-  );
-  const { folderId: privateFolder2Id } = await createFolder(
-    ownerId,
+    "folder",
     publicFolder1Id,
   );
 
-  const { activityId: publicActivity3Id } = await createActivity(
+  const { id: publicActivity3Id } = await createContent(
     ownerId,
+    "singleDoc",
     privateFolder1Id,
   );
-  const { activityId: privateActivity3Id } = await createActivity(
+  const { id: privateActivity3Id } = await createContent(
     ownerId,
+    "singleDoc",
     privateFolder1Id,
   );
-  const { folderId: publicFolder3Id } = await createFolder(
+  const { id: publicFolder3Id } = await createContent(
     ownerId,
+    "folder",
     privateFolder1Id,
   );
-  const { folderId: privateFolder3Id } = await createFolder(
+  const { id: privateFolder3Id } = await createContent(
     ownerId,
+    "folder",
     privateFolder1Id,
   );
 
   // Make items public
 
   // make public activity 1 public
-  await makeActivityPublic({
+  await setContentIsPublic({
     id: publicActivity1Id,
-    licenseCode: "CCDUAL",
-    ownerId,
+    isPublic: true,
+    loggedInUserId: ownerId,
   });
 
   // make public folder 1 and all items in folder 1 public
-  await makeFolderPublic({
+  await setContentIsPublic({
     id: publicFolder1Id,
-    licenseCode: "CCDUAL",
-    ownerId,
-  });
-
-  // private activity 2 is in public folder 1,
-  // so we need to undo the fact that it was made public
-  await makeActivityPrivate({
-    id: privateActivity2Id,
-    ownerId,
-  });
-
-  // private folder 2 is in public folder 1,
-  // so we need to undo the fact that it was made public
-  await makeFolderPrivate({
-    id: privateFolder2Id,
-    ownerId,
+    isPublic: true,
+    loggedInUserId: ownerId,
   });
 
   // public content inside private folder 1
   // has to be made public explicitly
-  await makeActivityPublic({
+  await setContentIsPublic({
     id: publicActivity3Id,
-    licenseCode: "CCDUAL",
-    ownerId,
+    isPublic: true,
+    loggedInUserId: ownerId,
   });
-  await makeFolderPublic({
+  await setContentIsPublic({
     id: publicFolder3Id,
-    licenseCode: "CCDUAL",
-    ownerId,
+    isPublic: true,
+    loggedInUserId: ownerId,
   });
 
-  let ownerContent = await getMyFolderContent({
+  let ownerContent = await getMyContent({
     loggedInUserId: ownerId,
-    folderId: null,
+    parentId: null,
   });
   expect(ownerContent.folder).eq(null);
   expect(ownerContent.content.length).eq(4);
@@ -162,9 +129,9 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
   // public folder content of base directory
   // also includes orphaned public content,
   // i.e., public content inside a private folder
-  let publicContent = await getSharedFolderContent({
+  let publicContent = await getSharedContent({
     ownerId,
-    folderId: null,
+    parentId: null,
     loggedInUserId: userId,
   });
   expect(publicContent.folder).eq(null);
@@ -187,30 +154,18 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
     ]),
   });
 
-  ownerContent = await getMyFolderContent({
+  ownerContent = await getMyContent({
     loggedInUserId: ownerId,
-    folderId: publicFolder1Id,
+    parentId: publicFolder1Id,
   });
   expect(ownerContent.folder?.id).eqls(publicFolder1Id);
   expect(ownerContent.folder?.parent).eq(null);
-  expect(ownerContent.content.length).eq(4);
+  expect(ownerContent.content.length).eq(2);
   expect(ownerContent).toMatchObject({
     content: expect.arrayContaining([
       expect.objectContaining({
         id: publicActivity2Id,
         isPublic: true,
-        parent: {
-          id: publicFolder1Id,
-          isPublic: true,
-          isShared: false,
-          sharedWith: [],
-          name: ownerContent.folder?.name,
-          type: "folder",
-        },
-      }),
-      expect.objectContaining({
-        id: privateActivity2Id,
-        isPublic: false,
         parent: {
           id: publicFolder1Id,
           isPublic: true,
@@ -232,24 +187,12 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
           type: "folder",
         },
       }),
-      expect.objectContaining({
-        id: privateFolder2Id,
-        isPublic: false,
-        parent: {
-          id: publicFolder1Id,
-          isPublic: true,
-          isShared: false,
-          sharedWith: [],
-          name: ownerContent.folder?.name,
-          type: "folder",
-        },
-      }),
     ]),
   });
 
-  publicContent = await getSharedFolderContent({
+  publicContent = await getSharedContent({
     ownerId,
-    folderId: publicFolder1Id,
+    parentId: publicFolder1Id,
     loggedInUserId: userId,
   });
   expect(publicContent.content.length).eq(2);
@@ -268,15 +211,15 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
 
   // If other user tries to access folder, throws error
   await expect(
-    getMyFolderContent({
+    getMyContent({
       loggedInUserId: userId,
-      folderId: publicFolder1Id,
+      parentId: publicFolder1Id,
     }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
-  ownerContent = await getMyFolderContent({
+  ownerContent = await getMyContent({
     loggedInUserId: ownerId,
-    folderId: privateFolder1Id,
+    parentId: privateFolder1Id,
   });
   expect(ownerContent.folder?.id).eqls(privateFolder1Id);
   expect(ownerContent.folder?.parent).eq(null);
@@ -335,32 +278,32 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
   });
 
   await expect(
-    getSharedFolderContent({
+    getSharedContent({
       ownerId,
-      folderId: privateFolder1Id,
+      parentId: privateFolder1Id,
       loggedInUserId: userId,
     }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
   // If other user tries to access folder, throws error
   await expect(
-    getMyFolderContent({
+    getMyContent({
       loggedInUserId: userId,
-      folderId: privateFolder1Id,
+      parentId: privateFolder1Id,
     }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
-  ownerContent = await getMyFolderContent({
+  ownerContent = await getMyContent({
     loggedInUserId: ownerId,
-    folderId: publicFolder3Id,
+    parentId: publicFolder3Id,
   });
   expect(ownerContent.folder?.id).eqls(publicFolder3Id);
   expect(ownerContent.folder?.parent?.id).eqls(privateFolder1Id);
   expect(ownerContent.content.length).eq(0);
 
-  publicContent = await getSharedFolderContent({
+  publicContent = await getSharedContent({
     ownerId,
-    folderId: publicFolder3Id,
+    parentId: publicFolder3Id,
     loggedInUserId: userId,
   });
   expect(publicContent.folder?.id).eqls(publicFolder3Id);
@@ -369,15 +312,15 @@ test("getMyFolderContent returns both public and private content, getSharedFolde
 
   // If other user tries to access folder, throws error
   await expect(
-    getMyFolderContent({
+    getMyContent({
       loggedInUserId: userId,
-      folderId: publicFolder3Id,
+      parentId: publicFolder3Id,
     }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 });
 
 test(
-  "getMyFolderContent returns both public and private content, getSharedFolderContent returns only shared",
+  "getMyContent returns both public and private content, getSharedFolderContent returns only shared",
   { timeout: 30000 },
   async () => {
     const owner = await createTestUser();
@@ -412,116 +355,104 @@ test(
     const user3 = await createTestUser();
     const user3Id = user3.userId;
 
-    const { activityId: sharedActivity1Id } = await createActivity(
+    const { id: sharedActivity1Id } = await createContent(
       ownerId,
+      "singleDoc",
       null,
     );
-    const { activityId: privateActivity1Id } = await createActivity(
+    const { id: privateActivity1Id } = await createContent(
       ownerId,
+      "singleDoc",
       null,
     );
 
-    const { folderId: sharedFolder1Id } = await createFolder(ownerId, null);
-    const { folderId: privateFolder1Id } = await createFolder(ownerId, null);
-
-    const { activityId: sharedActivity2Id } = await createActivity(
+    const { id: sharedFolder1Id } = await createContent(
       ownerId,
-      sharedFolder1Id,
+      "folder",
+      null,
     );
-    const { activityId: privateActivity2Id } = await createActivity(
+    const { id: privateFolder1Id } = await createContent(
       ownerId,
-      sharedFolder1Id,
-    );
-    const { folderId: sharedFolder2Id } = await createFolder(
-      ownerId,
-      sharedFolder1Id,
-    );
-    const { folderId: privateFolder2Id } = await createFolder(
-      ownerId,
-      sharedFolder1Id,
+      "folder",
+      null,
     );
 
-    const { activityId: sharedActivity3Id } = await createActivity(
+    const { id: sharedActivity2Id } = await createContent(
       ownerId,
+      "singleDoc",
+      sharedFolder1Id,
+    );
+    const { id: sharedFolder2Id } = await createContent(
+      ownerId,
+      "folder",
+      sharedFolder1Id,
+    );
+
+    const { id: sharedActivity3Id } = await createContent(
+      ownerId,
+      "singleDoc",
       privateFolder1Id,
     );
-    const { activityId: privateActivity3Id } = await createActivity(
+    const { id: privateActivity3Id } = await createContent(
       ownerId,
+      "singleDoc",
       privateFolder1Id,
     );
-    const { folderId: sharedFolder3Id } = await createFolder(
+    const { id: sharedFolder3Id } = await createContent(
       ownerId,
+      "folder",
       privateFolder1Id,
     );
-    const { folderId: privateFolder3Id } = await createFolder(
+    const { id: privateFolder3Id } = await createContent(
       ownerId,
+      "folder",
       privateFolder1Id,
     );
 
     // Share
 
     // share activity 1
-    await shareActivityWithEmail({
+    await shareContentWithEmail({
       id: sharedActivity1Id,
-      licenseCode: "CCDUAL",
-      ownerId,
+      loggedInUserId: ownerId,
       email: user1.email,
     });
-    await shareActivityWithEmail({
+    await shareContentWithEmail({
       id: sharedActivity1Id,
-      licenseCode: "CCDUAL",
-      ownerId,
+      loggedInUserId: ownerId,
       email: user2.email,
     });
 
     // sure folder 1 and all items in folder 1
-    await shareFolder({
+    await modifyContentSharedWith({
+      action: "share",
       id: sharedFolder1Id,
-      licenseCode: "CCDUAL",
-      ownerId,
-      users: [user1Id, user2Id],
-    });
-
-    // private activity 2 is in shared folder 1,
-    // so we need to undo the fact that it was shared
-    await unshareActivity({
-      id: privateActivity2Id,
-      ownerId,
-      users: [user1Id, user2Id],
-    });
-
-    // private folder 2 is in shared folder 1,
-    // so we need to undo the fact that it was shared
-    await unshareFolder({
-      id: privateFolder2Id,
-      ownerId,
+      loggedInUserId: ownerId,
       users: [user1Id, user2Id],
     });
 
     // shared content inside private folder 1
     // has to be shared explicitly
-    await shareActivity({
+    await modifyContentSharedWith({
+      action: "share",
       id: sharedActivity3Id,
-      licenseCode: "CCDUAL",
-      ownerId,
+      loggedInUserId: ownerId,
       users: [user1Id, user2Id],
     });
-    await shareFolderWithEmail({
+    await shareContentWithEmail({
       id: sharedFolder3Id,
-      licenseCode: "CCDUAL",
-      ownerId,
+      loggedInUserId: ownerId,
       email: user2.email,
     });
-    await shareFolderWithEmail({
+    await shareContentWithEmail({
       id: sharedFolder3Id,
-      licenseCode: "CCDUAL",
-      ownerId,
+      loggedInUserId: ownerId,
       email: user1.email,
     });
 
-    let ownerContent = await getMyFolderContent({
+    let ownerContent = await getMyContent({
       loggedInUserId: ownerId,
-      folderId: null,
+      parentId: null,
     });
     expect(ownerContent.folder).eq(null);
     expect(ownerContent.content.length).eq(4);
@@ -553,9 +484,9 @@ test(
     // shared folder content of base directory
     // also includes orphaned shared content,
     // i.e., shared content inside a private folder
-    let sharedContent = await getSharedFolderContent({
+    let sharedContent = await getSharedContent({
       ownerId,
-      folderId: null,
+      parentId: null,
       loggedInUserId: user1Id,
     });
     expect(sharedContent.folder).eq(null);
@@ -579,9 +510,9 @@ test(
     });
 
     // also shared with user 2
-    sharedContent = await getSharedFolderContent({
+    sharedContent = await getSharedContent({
       ownerId,
-      folderId: null,
+      parentId: null,
       loggedInUserId: user2Id,
     });
     expect(sharedContent.folder).eq(null);
@@ -605,21 +536,21 @@ test(
     });
 
     // not shared with user 3
-    sharedContent = await getSharedFolderContent({
+    sharedContent = await getSharedContent({
       ownerId,
-      folderId: null,
+      parentId: null,
       loggedInUserId: user3Id,
     });
     expect(sharedContent.folder).eq(null);
     expect(sharedContent.content.length).eq(0);
 
-    ownerContent = await getMyFolderContent({
+    ownerContent = await getMyContent({
       loggedInUserId: ownerId,
-      folderId: sharedFolder1Id,
+      parentId: sharedFolder1Id,
     });
     expect(ownerContent.folder?.id).eqls(sharedFolder1Id);
     expect(ownerContent.folder?.parent).eq(null);
-    expect(ownerContent.content.length).eq(4);
+    expect(ownerContent.content.length).eq(2);
     expect(ownerContent).toMatchObject({
       content: expect.arrayContaining([
         expect.objectContaining({
@@ -636,19 +567,6 @@ test(
           },
         }),
         expect.objectContaining({
-          id: privateActivity2Id,
-          isShared: false,
-          sharedWith: [],
-          parent: {
-            id: sharedFolder1Id,
-            isPublic: false,
-            isShared: true,
-            sharedWith: [userFields2, userFields1],
-            name: ownerContent.folder?.name,
-            type: "folder",
-          },
-        }),
-        expect.objectContaining({
           id: sharedFolder2Id,
           isShared: true,
           sharedWith: [userFields2, userFields1],
@@ -661,25 +579,12 @@ test(
             type: "folder",
           },
         }),
-        expect.objectContaining({
-          id: privateFolder2Id,
-          isShared: false,
-          sharedWith: [],
-          parent: {
-            id: sharedFolder1Id,
-            isPublic: false,
-            isShared: true,
-            sharedWith: [userFields2, userFields1],
-            name: ownerContent.folder?.name,
-            type: "folder",
-          },
-        }),
       ]),
     });
 
-    sharedContent = await getSharedFolderContent({
+    sharedContent = await getSharedContent({
       ownerId,
-      folderId: sharedFolder1Id,
+      parentId: sharedFolder1Id,
       loggedInUserId: user1Id,
     });
     expect(sharedContent.content.length).eq(2);
@@ -696,9 +601,9 @@ test(
       ]),
     });
 
-    sharedContent = await getSharedFolderContent({
+    sharedContent = await getSharedContent({
       ownerId,
-      folderId: sharedFolder1Id,
+      parentId: sharedFolder1Id,
       loggedInUserId: user2Id,
     });
     expect(sharedContent.content.length).eq(2);
@@ -717,24 +622,24 @@ test(
 
     // not shared with user 3
     await expect(
-      getSharedFolderContent({
+      getSharedContent({
         ownerId,
-        folderId: sharedFolder1Id,
+        parentId: sharedFolder1Id,
         loggedInUserId: user3Id,
       }),
     ).rejects.toThrow(PrismaClientKnownRequestError);
 
     // If other user tries to access folder via my folder, throws error
     await expect(
-      getMyFolderContent({
+      getMyContent({
         loggedInUserId: user1Id,
-        folderId: sharedFolder1Id,
+        parentId: sharedFolder1Id,
       }),
     ).rejects.toThrow(PrismaClientKnownRequestError);
 
-    ownerContent = await getMyFolderContent({
+    ownerContent = await getMyContent({
       loggedInUserId: ownerId,
-      folderId: privateFolder1Id,
+      parentId: privateFolder1Id,
     });
     expect(ownerContent.folder?.id).eqls(privateFolder1Id);
     expect(ownerContent.folder?.parent).eq(null);
@@ -797,32 +702,32 @@ test(
     });
 
     await expect(
-      getSharedFolderContent({
+      getSharedContent({
         ownerId,
-        folderId: privateFolder1Id,
+        parentId: privateFolder1Id,
         loggedInUserId: user1Id,
       }),
     ).rejects.toThrow(PrismaClientKnownRequestError);
 
     // If other user tries to access folder, throws error
     await expect(
-      getMyFolderContent({
+      getMyContent({
         loggedInUserId: user1Id,
-        folderId: privateFolder1Id,
+        parentId: privateFolder1Id,
       }),
     ).rejects.toThrow(PrismaClientKnownRequestError);
 
-    ownerContent = await getMyFolderContent({
+    ownerContent = await getMyContent({
       loggedInUserId: ownerId,
-      folderId: sharedFolder3Id,
+      parentId: sharedFolder3Id,
     });
     expect(ownerContent.folder?.id).eqls(sharedFolder3Id);
     expect(ownerContent.folder?.parent?.id).eqls(privateFolder1Id);
     expect(ownerContent.content.length).eq(0);
 
-    sharedContent = await getSharedFolderContent({
+    sharedContent = await getSharedContent({
       ownerId,
-      folderId: sharedFolder3Id,
+      parentId: sharedFolder3Id,
       loggedInUserId: user1Id,
     });
     expect(sharedContent.folder?.id).eqls(sharedFolder3Id);
@@ -831,9 +736,9 @@ test(
 
     // If other user tries to access folder, throws error
     await expect(
-      getMyFolderContent({
+      getMyContent({
         loggedInUserId: user1Id,
-        folderId: sharedFolder3Id,
+        parentId: sharedFolder3Id,
       }),
     ).rejects.toThrow(PrismaClientKnownRequestError);
   },
@@ -846,186 +751,177 @@ test(
     const user = await createTestUser();
     const userId = user.userId;
 
-    const { folderId: folder1Id } = await createFolder(userId, null);
+    const { id: folder1Id } = await createContent(userId, "folder", null);
 
-    const { activityId: activity1Id, docId: doc1Id } = await createActivity(
+    const { id: activity1Id } = await createContent(
       userId,
+      "singleDoc",
       folder1Id,
     );
-    const { folderId: folder2Id } = await createFolder(userId, folder1Id);
-    const { activityId: activity2Id, docId: doc2Id } = await createActivity(
+    const { id: folder2Id } = await createContent(userId, "folder", folder1Id);
+    const { id: activity2Id } = await createContent(
       userId,
+      "singleDoc",
       folder2Id,
     );
-    const { folderId: folder3Id } = await createFolder(userId, folder2Id);
-    const { activityId: activity3Id, docId: doc3Id } = await createActivity(
+    const { id: folder3Id } = await createContent(userId, "folder", folder2Id);
+    const { id: activity3Id } = await createContent(
       userId,
+      "singleDoc",
       folder3Id,
     );
 
-    const { folderId: folder4Id } = await createFolder(userId, null);
-    const { activityId: activity4Id, docId: doc4Id } = await createActivity(
+    const { id: folder4Id } = await createContent(userId, "folder", null);
+    const { id: activity4Id } = await createContent(
       userId,
+      "singleDoc",
       folder4Id,
     );
-    const { folderId: folder5Id } = await createFolder(userId, folder4Id);
-    const { activityId: activity5Id, docId: doc5Id } = await createActivity(
+    const { id: folder5Id } = await createContent(userId, "folder", folder4Id);
+    const { id: activity5Id } = await createContent(
       userId,
+      "singleDoc",
       folder5Id,
     );
-    const { folderId: folder6Id } = await createFolder(userId, folder5Id);
-    const { activityId: activity6Id, docId: doc6Id } = await createActivity(
+    const { id: folder6Id } = await createContent(userId, "folder", folder5Id);
+    const { id: activity6Id } = await createContent(
       userId,
+      "singleDoc",
       folder6Id,
     );
 
     // items can be retrieved
-    let baseContent = await getMyFolderContent({
+    let baseContent = await getMyContent({
       loggedInUserId: userId,
-      folderId: null,
+      parentId: null,
     });
     expect(baseContent.content.length).eq(2);
-    const folder1Content = await getMyFolderContent({
+    const folder1Content = await getMyContent({
       loggedInUserId: userId,
-      folderId: folder1Id,
+      parentId: folder1Id,
     });
     expect(folder1Content.content.length).eq(2);
-    const folder2Content = await getMyFolderContent({
+    const folder2Content = await getMyContent({
       loggedInUserId: userId,
-      folderId: folder2Id,
+      parentId: folder2Id,
     });
     expect(folder2Content.content.length).eq(2);
-    const folder3Content = await getMyFolderContent({
+    const folder3Content = await getMyContent({
       loggedInUserId: userId,
-      folderId: folder3Id,
+      parentId: folder3Id,
     });
     expect(folder3Content.content.length).eq(1);
-    let folder4Content = await getMyFolderContent({
+    let folder4Content = await getMyContent({
       loggedInUserId: userId,
-      folderId: folder4Id,
+      parentId: folder4Id,
     });
     expect(folder4Content.content.length).eq(2);
-    let folder5Content = await getMyFolderContent({
+    let folder5Content = await getMyContent({
       loggedInUserId: userId,
-      folderId: folder5Id,
+      parentId: folder5Id,
     });
     expect(folder5Content.content.length).eq(2);
-    let folder6Content = await getMyFolderContent({
+    let folder6Content = await getMyContent({
       loggedInUserId: userId,
-      folderId: folder6Id,
+      parentId: folder6Id,
     });
     expect(folder6Content.content.length).eq(1);
 
-    await getActivity(activity1Id);
-    await getActivity(activity2Id);
-    await getActivity(activity3Id);
-    await getActivity(activity4Id);
-    await getActivity(activity5Id);
-    await getActivity(activity6Id);
-    await getDoc(doc1Id);
-    await getDoc(doc2Id);
-    await getDoc(doc3Id);
-    await getDoc(doc4Id);
-    await getDoc(doc5Id);
-    await getDoc(doc6Id);
+    await getContent({ contentId: activity1Id, loggedInUserId: userId });
+    await getContent({ contentId: activity2Id, loggedInUserId: userId });
+    await getContent({ contentId: activity3Id, loggedInUserId: userId });
+    await getContent({ contentId: activity4Id, loggedInUserId: userId });
+    await getContent({ contentId: activity5Id, loggedInUserId: userId });
+    await getContent({ contentId: activity6Id, loggedInUserId: userId });
 
     // delete the entire folder 1 and all its content
-    await deleteFolder(folder1Id, userId);
+    await deleteContent(folder1Id, userId);
 
-    baseContent = await getMyFolderContent({
+    baseContent = await getMyContent({
       loggedInUserId: userId,
-      folderId: null,
+      parentId: null,
     });
     expect(baseContent.content.length).eq(1);
     await expect(
-      getMyFolderContent({
+      getMyContent({
         loggedInUserId: userId,
-        folderId: folder1Id,
+        parentId: folder1Id,
       }),
     ).rejects.toThrow(PrismaClientKnownRequestError);
     await expect(
-      getMyFolderContent({
+      getMyContent({
         loggedInUserId: userId,
-        folderId: folder2Id,
+        parentId: folder2Id,
       }),
     ).rejects.toThrow(PrismaClientKnownRequestError);
     await expect(
-      getMyFolderContent({
+      getMyContent({
         loggedInUserId: userId,
-        folderId: folder3Id,
+        parentId: folder3Id,
       }),
     ).rejects.toThrow(PrismaClientKnownRequestError);
-    folder4Content = await getMyFolderContent({
+    folder4Content = await getMyContent({
       loggedInUserId: userId,
-      folderId: folder4Id,
+      parentId: folder4Id,
     });
     expect(folder4Content.content.length).eq(2);
-    folder5Content = await getMyFolderContent({
+    folder5Content = await getMyContent({
       loggedInUserId: userId,
-      folderId: folder5Id,
+      parentId: folder5Id,
     });
     expect(folder5Content.content.length).eq(2);
-    folder6Content = await getMyFolderContent({
+    folder6Content = await getMyContent({
       loggedInUserId: userId,
-      folderId: folder6Id,
+      parentId: folder6Id,
     });
     expect(folder6Content.content.length).eq(1);
 
-    await expect(getActivity(activity1Id)).rejects.toThrow(
-      PrismaClientKnownRequestError,
-    );
-    await expect(getActivity(activity2Id)).rejects.toThrow(
-      PrismaClientKnownRequestError,
-    );
-    await expect(getActivity(activity3Id)).rejects.toThrow(
-      PrismaClientKnownRequestError,
-    );
-    await getActivity(activity4Id);
-    await getActivity(activity5Id);
-    await getActivity(activity6Id);
-    await expect(getDoc(doc1Id)).rejects.toThrow(PrismaClientKnownRequestError);
-    await expect(getDoc(doc2Id)).rejects.toThrow(PrismaClientKnownRequestError);
-    await expect(getDoc(doc3Id)).rejects.toThrow(PrismaClientKnownRequestError);
-    await getDoc(doc4Id);
-    await getDoc(doc5Id);
-    await getDoc(doc6Id);
+    await expect(
+      getContent({ contentId: activity1Id, loggedInUserId: userId }),
+    ).rejects.toThrow(PrismaClientKnownRequestError);
+    await expect(
+      getContent({ contentId: activity2Id, loggedInUserId: userId }),
+    ).rejects.toThrow(PrismaClientKnownRequestError);
+    await expect(
+      getContent({ contentId: activity3Id, loggedInUserId: userId }),
+    ).rejects.toThrow(PrismaClientKnownRequestError);
+    await getContent({ contentId: activity4Id, loggedInUserId: userId });
+    await getContent({ contentId: activity5Id, loggedInUserId: userId });
+    await getContent({ contentId: activity6Id, loggedInUserId: userId });
 
     // delete folder 5 and its content
-    await deleteFolder(folder5Id, userId);
+    await deleteContent(folder5Id, userId);
 
-    baseContent = await getMyFolderContent({
+    baseContent = await getMyContent({
       loggedInUserId: userId,
-      folderId: null,
+      parentId: null,
     });
     expect(baseContent.content.length).eq(1);
-    folder4Content = await getMyFolderContent({
+    folder4Content = await getMyContent({
       loggedInUserId: userId,
-      folderId: folder4Id,
+      parentId: folder4Id,
     });
     expect(folder4Content.content.length).eq(1);
     await expect(
-      getMyFolderContent({
+      getMyContent({
         loggedInUserId: userId,
-        folderId: folder5Id,
+        parentId: folder5Id,
       }),
     ).rejects.toThrow(PrismaClientKnownRequestError);
     await expect(
-      getMyFolderContent({
+      getMyContent({
         loggedInUserId: userId,
-        folderId: folder6Id,
+        parentId: folder6Id,
       }),
     ).rejects.toThrow(PrismaClientKnownRequestError);
 
-    await getActivity(activity4Id);
-    await expect(getActivity(activity5Id)).rejects.toThrow(
-      PrismaClientKnownRequestError,
-    );
-    await expect(getActivity(activity6Id)).rejects.toThrow(
-      PrismaClientKnownRequestError,
-    );
-    await getDoc(doc4Id);
-    await expect(getDoc(doc5Id)).rejects.toThrow(PrismaClientKnownRequestError);
-    await expect(getDoc(doc6Id)).rejects.toThrow(PrismaClientKnownRequestError);
+    await getContent({ contentId: activity4Id, loggedInUserId: userId });
+    await expect(
+      getContent({ contentId: activity5Id, loggedInUserId: userId }),
+    ).rejects.toThrow(PrismaClientKnownRequestError);
+    await expect(
+      getContent({ contentId: activity6Id, loggedInUserId: userId }),
+    ).rejects.toThrow(PrismaClientKnownRequestError);
   },
 );
 
@@ -1035,43 +931,47 @@ test("non-owner cannot delete folder", async () => {
   const user = await createTestUser();
   const userId = user.userId;
 
-  const { folderId } = await createFolder(ownerId, null);
-  await expect(deleteFolder(folderId, userId)).rejects.toThrow(
+  const { id: folderId } = await createContent(ownerId, "folder", null);
+  await expect(deleteContent(folderId, userId)).rejects.toThrow(
     PrismaClientKnownRequestError,
   );
 
   // folder is still around
-  getMyFolderContent({
+  getMyContent({
     loggedInUserId: ownerId,
-    folderId,
+    parentId: folderId,
   });
 });
 
 test("move content to different locations", async () => {
   const ownerId = (await createTestUser()).userId;
 
-  const { activityId: activity1Id } = await createActivity(ownerId, null);
-  const { activityId: activity2Id } = await createActivity(ownerId, null);
-  const { folderId: folder1Id } = await createFolder(ownerId, null);
-  const { activityId: activity3Id } = await createActivity(ownerId, folder1Id);
-  const { folderId: folder2Id } = await createFolder(ownerId, folder1Id);
-  const { folderId: folder3Id } = await createFolder(ownerId, null);
+  const { id: activity1Id } = await createContent(ownerId, "singleDoc", null);
+  const { id: activity2Id } = await createContent(ownerId, "singleDoc", null);
+  const { id: folder1Id } = await createContent(ownerId, "folder", null);
+  const { id: activity3Id } = await createContent(
+    ownerId,
+    "singleDoc",
+    folder1Id,
+  );
+  const { id: folder2Id } = await createContent(ownerId, "folder", folder1Id);
+  const { id: folder3Id } = await createContent(ownerId, "folder", null);
 
-  let baseContent = await getMyFolderContent({
+  let baseContent = await getMyContent({
     loggedInUserId: ownerId,
-    folderId: null,
+    parentId: null,
   });
-  let folder1Content = await getMyFolderContent({
+  let folder1Content = await getMyContent({
     loggedInUserId: ownerId,
-    folderId: folder1Id,
+    parentId: folder1Id,
   });
-  let folder2Content = await getMyFolderContent({
+  let folder2Content = await getMyContent({
     loggedInUserId: ownerId,
-    folderId: folder2Id,
+    parentId: folder2Id,
   });
-  let folder3Content = await getMyFolderContent({
+  let folder3Content = await getMyContent({
     loggedInUserId: ownerId,
-    folderId: folder3Id,
+    parentId: folder3Id,
   });
 
   expect(baseContent.content.map((item) => item.id)).eqls([
@@ -1092,11 +992,11 @@ test("move content to different locations", async () => {
     id: activity1Id,
     desiredParentId: null,
     desiredPosition: 1,
-    ownerId,
-  });
-  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
-    folderId: null,
+  });
+  baseContent = await getMyContent({
+    loggedInUserId: ownerId,
+    parentId: null,
   });
   expect(baseContent.content.map((item) => item.id)).eqls([
     activity2Id,
@@ -1109,11 +1009,11 @@ test("move content to different locations", async () => {
     id: folder1Id,
     desiredParentId: null,
     desiredPosition: 0,
-    ownerId,
-  });
-  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
-    folderId: null,
+  });
+  baseContent = await getMyContent({
+    loggedInUserId: ownerId,
+    parentId: null,
   });
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder1Id,
@@ -1126,11 +1026,11 @@ test("move content to different locations", async () => {
     id: activity2Id,
     desiredParentId: null,
     desiredPosition: 10,
-    ownerId,
-  });
-  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
-    folderId: null,
+  });
+  baseContent = await getMyContent({
+    loggedInUserId: ownerId,
+    parentId: null,
   });
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder1Id,
@@ -1143,11 +1043,11 @@ test("move content to different locations", async () => {
     id: folder3Id,
     desiredParentId: null,
     desiredPosition: -10,
-    ownerId,
-  });
-  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
-    folderId: null,
+  });
+  baseContent = await getMyContent({
+    loggedInUserId: ownerId,
+    parentId: null,
   });
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder3Id,
@@ -1160,15 +1060,15 @@ test("move content to different locations", async () => {
     id: folder3Id,
     desiredParentId: folder1Id,
     desiredPosition: 0,
-    ownerId,
-  });
-  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
-    folderId: null,
   });
-  folder1Content = await getMyFolderContent({
+  baseContent = await getMyContent({
     loggedInUserId: ownerId,
-    folderId: folder1Id,
+    parentId: null,
+  });
+  folder1Content = await getMyContent({
+    loggedInUserId: ownerId,
+    parentId: folder1Id,
   });
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder1Id,
@@ -1185,15 +1085,15 @@ test("move content to different locations", async () => {
     id: activity3Id,
     desiredParentId: null,
     desiredPosition: 2,
-    ownerId,
-  });
-  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
-    folderId: null,
   });
-  folder1Content = await getMyFolderContent({
+  baseContent = await getMyContent({
     loggedInUserId: ownerId,
-    folderId: folder1Id,
+    parentId: null,
+  });
+  folder1Content = await getMyContent({
+    loggedInUserId: ownerId,
+    parentId: folder1Id,
   });
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder1Id,
@@ -1210,15 +1110,15 @@ test("move content to different locations", async () => {
     id: folder2Id,
     desiredParentId: folder3Id,
     desiredPosition: 2,
-    ownerId,
-  });
-  folder1Content = await getMyFolderContent({
     loggedInUserId: ownerId,
-    folderId: folder1Id,
   });
-  folder3Content = await getMyFolderContent({
+  folder1Content = await getMyContent({
     loggedInUserId: ownerId,
-    folderId: folder3Id,
+    parentId: folder1Id,
+  });
+  folder3Content = await getMyContent({
+    loggedInUserId: ownerId,
+    parentId: folder3Id,
   });
   expect(folder1Content.content.map((item) => item.id)).eqls([folder3Id]);
   expect(folder3Content.content.map((item) => item.id)).eqls([folder2Id]);
@@ -1227,25 +1127,25 @@ test("move content to different locations", async () => {
     id: activity3Id,
     desiredParentId: folder3Id,
     desiredPosition: 0,
-    ownerId,
+    loggedInUserId: ownerId,
   });
   await moveContent({
     id: activity1Id,
     desiredParentId: folder2Id,
     desiredPosition: 1,
-    ownerId,
-  });
-  baseContent = await getMyFolderContent({
     loggedInUserId: ownerId,
-    folderId: null,
   });
-  folder2Content = await getMyFolderContent({
+  baseContent = await getMyContent({
     loggedInUserId: ownerId,
-    folderId: folder2Id,
+    parentId: null,
   });
-  folder3Content = await getMyFolderContent({
+  folder2Content = await getMyContent({
     loggedInUserId: ownerId,
-    folderId: folder3Id,
+    parentId: folder2Id,
+  });
+  folder3Content = await getMyContent({
+    loggedInUserId: ownerId,
+    parentId: folder3Id,
   });
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder1Id,
@@ -1258,49 +1158,49 @@ test("move content to different locations", async () => {
   ]);
 });
 
-test("cannot move folder into itself or a subfolder of itself", async () => {
+test.only("cannot move content into itself or a descendant of itself", async () => {
   const ownerId = (await createTestUser()).userId;
 
-  const { folderId: folder1Id } = await createFolder(ownerId, null);
-  const { folderId: folder2Id } = await createFolder(ownerId, folder1Id);
-  const { folderId: folder3Id } = await createFolder(ownerId, folder2Id);
-  const { folderId: folder4Id } = await createFolder(ownerId, folder3Id);
+  const { id: folder1Id } = await createContent(ownerId, "folder", null);
+  const { id: folder2Id } = await createContent(ownerId, "folder", folder1Id);
+  const { id: folder3Id } = await createContent(ownerId, "folder", folder2Id);
+  const { id: folder4Id } = await createContent(ownerId, "folder", folder3Id);
 
   await expect(
     moveContent({
       id: folder1Id,
       desiredParentId: folder1Id,
       desiredPosition: 0,
-      ownerId,
+      loggedInUserId: ownerId,
     }),
-  ).rejects.toThrow("Cannot move folder into itself");
+  ).rejects.toThrow("Cannot move content into itself");
 
   await expect(
     moveContent({
       id: folder1Id,
       desiredParentId: folder2Id,
       desiredPosition: 0,
-      ownerId,
+      loggedInUserId: ownerId,
     }),
-  ).rejects.toThrow("Cannot move folder into a subfolder of itself");
+  ).rejects.toThrow("Cannot move content into a descendant of itself");
 
   await expect(
     moveContent({
       id: folder1Id,
       desiredParentId: folder3Id,
       desiredPosition: 0,
-      ownerId,
+      loggedInUserId: ownerId,
     }),
-  ).rejects.toThrow("Cannot move folder into a subfolder of itself");
+  ).rejects.toThrow("Cannot move content into a descendant of itself");
 
   await expect(
     moveContent({
       id: folder1Id,
       desiredParentId: folder4Id,
       desiredPosition: 0,
-      ownerId,
+      loggedInUserId: ownerId,
     }),
-  ).rejects.toThrow("Cannot move folder into a subfolder of itself");
+  ).rejects.toThrow("Cannot move content into a descendant of itself");
 });
 
 test("insert many items into sort order", { timeout: 30000 }, async () => {
@@ -1372,7 +1272,7 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
     });
   }
 
-  let contentList = await getMyFolderContent({
+  let contentList = await getMyContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
@@ -1402,7 +1302,7 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
     ownerId,
   });
 
-  contentList = await getMyFolderContent({
+  contentList = await getMyContent({
     loggedInUserId: ownerId,
     folderId: null,
   });
