@@ -21,8 +21,9 @@ export async function createFolderModalActions({
 }) {
   if (formObj?._action == "Add Folder") {
     try {
-      await axios.post(`/api/createFolder/${formObj.parentFolder}`, {
-        folderName: formObj.folderName,
+      await axios.post(`/api/updateContent/createContent`, {
+        name: formObj.folderName,
+        parentId: formObj.parentFolder,
       });
       return { folderCreated: true };
     } catch (e) {

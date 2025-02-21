@@ -77,7 +77,7 @@ export function ActivityDoenetMLEditor({
           numVariants: numVariants.current,
           baseComponentCounts: baseComponentCounts.current,
         };
-        await axios.post("/api/saveDoenetML", params);
+        await axios.post("/api/updateContent/saveDoenetML", params);
         savedDoenetML.current = newDoenetML;
         documentStructureChanged.current = false;
       } catch (error) {

@@ -50,7 +50,7 @@ export async function loader({ params }) {
 
 // loader for when a student gets their own data
 export async function assignedDataloader() {
-  const { data } = await axios.get(`/api/getAssignedScores`);
+  const { data } = await axios.get(`/api/assign/getAssignedScores`);
 
   const userData = data.userData;
   const scores = data.orderedActivityScores;

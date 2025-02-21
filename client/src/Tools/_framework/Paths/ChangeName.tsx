@@ -33,7 +33,7 @@ export async function action({
   const formObj = Object.fromEntries(formData);
 
   if (formObj._action === "change user name") {
-    await axios.post(`/api/updateUser`, {
+    await axios.post(`/api/user/updateUser`, {
       firstNames: formObj.firstNames,
       lastNames: formObj.lastNames,
     });

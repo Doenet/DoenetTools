@@ -43,18 +43,22 @@ function generateClassCode() {
   return array[0].toString().slice(-6);
 }
 
-export async function openAssignmentWithCode(
-  activityId: Uint8Array,
-  closeAt: DateTime,
-  loggedInUserId: Uint8Array,
-) {
+export async function openAssignmentWithCode({
+  contentId,
+  closeAt,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  closeAt: DateTime;
+  loggedInUserId: Uint8Array;
+}) {
   const initialActivity = await prisma.content.findUniqueOrThrow({
-    where: { id: activityId, ownerId: loggedInUserId, type: { not: "folder" } },
+    where: { id: contentId, ownerId: loggedInUserId, type: { not: "folder" } },
     select: { classCode: true, isAssigned: true },
   });
 
   if (!initialActivity.isAssigned) {
-    await assignActivity(activityId, loggedInUserId);
+    await assignActivity(contentId, loggedInUserId);
   }
 
   let classCode = initialActivity.classCode;
@@ -66,7 +70,7 @@ export async function openAssignmentWithCode(
   const codeValidUntil = closeAt.toJSDate();
 
   await prisma.content.update({
-    where: { id: activityId },
+    where: { id: contentId },
     data: {
       classCode,
       codeValidUntil,
@@ -75,16 +79,20 @@ export async function openAssignmentWithCode(
   return { classCode, codeValidUntil };
 }
 
-export async function updateAssignmentSettings(
-  activityId: Uint8Array,
-  closeAt: DateTime,
-  loggedInUserId: Uint8Array,
-) {
+export async function updateAssignmentSettings({
+  contentId,
+  closeAt,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  closeAt: DateTime;
+  loggedInUserId: Uint8Array;
+}) {
   const codeValidUntil = closeAt.toJSDate();
 
   await prisma.content.update({
     where: {
-      id: activityId,
+      id: contentId,
       isAssigned: true,
       ...filterEditableActivity(loggedInUserId),
     },

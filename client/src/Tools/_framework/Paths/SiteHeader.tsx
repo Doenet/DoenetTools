@@ -50,7 +50,7 @@ export type SiteContext = {
 export async function loader() {
   const {
     data: { user },
-  } = await axios.get("/api/getUser");
+  } = await axios.get("/api/user/getUser");
 
   return { user };
 }
@@ -280,7 +280,7 @@ export function SiteHeader() {
                         <MenuItem as={Link} href="/changeName">
                           Update name
                         </MenuItem>
-                        <MenuItem as="a" href="/api/logout">
+                        <MenuItem as="a" href="/api/login/logout">
                           Log Out
                         </MenuItem>
                       </MenuList>

@@ -72,8 +72,8 @@ export async function action({ params, request }) {
   }
 
   if (formObj._action == "update name") {
-    await axios.post(`/api/updateContentName`, {
-      id: params.activityId,
+    await axios.post(`/api/updateContent/updateContentSettings`, {
+      contentId: params.activityId,
       name,
     });
     return true;

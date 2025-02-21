@@ -20,17 +20,10 @@ export async function deleteModalActions({ formObj }: { [k: string]: any }) {
   if (formObj?._action == "Delete Content") {
     try {
       const contentId = formObj.contentId;
-      const contentType = formObj.contentType;
 
-      if (contentType === "singleDoc") {
-        await axios.post(`/api/deleteActivity`, {
-          activityId: contentId,
-        });
-      } else {
-        await axios.post(`/api/deleteFolder`, {
-          folderId: contentId === "null" ? null : contentId,
-        });
-      }
+      await axios.post(`/api/updateContent/deleteContent`, {
+        contentId,
+      });
 
       return { contentDeleted: true };
     } catch (e) {
@@ -85,7 +78,6 @@ export function DeleteModal({
       {
         _action: "Delete Content",
         contentId: content.id,
-        contentType: content.type,
       },
       { method: "post" },
     );

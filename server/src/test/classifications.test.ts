@@ -20,7 +20,11 @@ test("Content classifications can only be edited by activity owner", async () =>
     await searchPossibleClassifications({ query: "K.CC.1" })
   )[0].id;
 
-  const { id: activityId } = await createContent(userId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    userId,
+    "singleDoc",
+    null,
+  );
 
   // Add
   await expect(() =>
@@ -52,7 +56,11 @@ test("Get classifications of public activity", async () => {
     await searchPossibleClassifications({ query: "8.2.1.5" })
   )[0].id;
   const { userId: ownerId } = await createTestUser();
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
 
   await addClassification(activityId, classId1, ownerId);
   await addClassification(activityId, classId2, ownerId);
@@ -377,7 +385,11 @@ test("Search classifications has correct primary description", async () => {
 
 test("Classifications show as primary, sorted by primary", async () => {
   const { userId } = await createTestUser();
-  const { id: activityId } = await createContent(userId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    userId,
+    "singleDoc",
+    null,
+  );
 
   const multivarClassificationId = (
     await searchPossibleClassifications({ query: "CalcMV.CV.1" })

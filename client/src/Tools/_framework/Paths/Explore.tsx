@@ -103,7 +103,7 @@ export async function loader({ params, request }) {
   const listViewPref = !prefData.data.cardView;
 
   const { data: availableFeatures }: { data: ContentFeature[] } =
-    await axios.get(`/api/getAvailableContentFeatures`);
+    await axios.get(`/api/info/getAvailableContentFeatures`);
 
   const url = new URL(request.url);
 

@@ -103,9 +103,9 @@ export function CreateContentAndPromptName({
 
   function saveName(newName: string) {
     if (newActivityData) {
-      axios.post("/api/updateContentSettings", {
+      axios.post("/api/updateContent/updateContentSettings", {
         name: newName,
-        id: newActivityData?.newParentId,
+        contentId: newActivityData.newParentId,
       });
     }
   }

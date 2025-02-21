@@ -26,12 +26,14 @@
     "express": "^4.21.2",
     "express-session": "^1.18.1",
     "hi-base32": "^0.5.1",
+    "http-status-codes": "^2.3.0",
     "luxon": "^3.5.0",
     "passport": "^0.7.0",
     "passport-anonym-uuid": "^1.0.3",
     "passport-google-oauth20": "^2.0.0",
     "passport-magic-link": "^2.1.1",
-    "short-uuid": "^5.2.0"
+    "short-uuid": "^5.2.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",

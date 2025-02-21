@@ -50,7 +50,11 @@ const currentDoenetmlVersion = {
 test("New activity starts out private, then delete it", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const { id: activityId } = await createContent(userId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    userId,
+    "singleDoc",
+    null,
+  );
   const { activity: activityContent } = await getActivityEditorData(
     activityId,
     userId,
@@ -112,7 +116,11 @@ test("New activity starts out private, then delete it", async () => {
 test("Test updating various activity properties", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const { id: activityId } = await createContent(userId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    userId,
+    "singleDoc",
+    null,
+  );
   const activityName = "Test Name";
   const source = "Here comes some content, I made you some content";
   await updateContent({
@@ -142,7 +150,11 @@ test("Test updating various activity properties", async () => {
 test("deleteContent marks a activity and document as deleted and prevents its retrieval", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const { id: activityId } = await createContent(userId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    userId,
+    "singleDoc",
+    null,
+  );
 
   // activity can be retrieved
   await getActivityViewerData(activityId, userId);
@@ -168,7 +180,11 @@ test("only owner can delete an activity", async () => {
   const ownerId = owner.userId;
   const user2 = await createTestUser();
   const user2Id = user2.userId;
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
 
   await expect(deleteContent(activityId, user2Id)).rejects.toThrow("not found");
 
@@ -178,7 +194,11 @@ test("only owner can delete an activity", async () => {
 test("updateDoc updates document properties", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const { id: activityId } = await createContent(userId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    userId,
+    "singleDoc",
+    null,
+  );
   const newName = "Updated Name";
   const newContent = "Updated Content";
   await updateContent({
@@ -209,7 +229,11 @@ test("getAllDoenetmlVersions retrieves all non-removed versions", async () => {
 test("updateContent does not update properties when passed undefined values", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
 
   const originalActivity = await prisma.content.findUniqueOrThrow({
     where: { id: activityId },
@@ -228,7 +252,11 @@ test("get activity/document data only if owner or limited data for public/shared
   const user1Id = user1.userId;
   const user2 = await createTestUser();
   const user2Id = user2.userId;
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
 
   await getActivityEditorData(activityId, ownerId);
   await getActivityViewerData(activityId, ownerId);
@@ -317,7 +345,11 @@ test("get public activity editor data only if public or shared", async () => {
   const user2 = await createTestUser();
   const user2Id = user2.userId;
 
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
   const doenetML = "hi!";
   await updateContent({
     contentId: activityId,
@@ -379,7 +411,11 @@ test("get public activity editor data only if public or shared", async () => {
 test("activity editor data and my folder contents before and after assigned", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
 
   const { activity: preAssignedData } = await getActivityEditorData(
     activityId,
@@ -674,7 +710,11 @@ test("activity editor data shows its parent folder is public", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
 
   let { activity: data } = await getActivityEditorData(activityId, ownerId);
   if (data === undefined) {
@@ -701,7 +741,7 @@ test("activity editor data shows its parent folder is public", async () => {
   expect(data.license?.code).eq("CCBYSA");
   expect(data.parent).eq(null);
 
-  const { id: folderId } = await createContent(ownerId, "folder", null);
+  const { contentId: folderId } = await createContent(ownerId, "folder", null);
   await moveContent({
     id: activityId,
     desiredParentId: folderId,
@@ -773,7 +813,11 @@ test("activity editor data shows its parent folder is public", async () => {
 test("getActivitySource gets source", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
   await updateContent({
     contentId: activityId,
     source: "some content",
@@ -787,7 +831,11 @@ test("getActivitySource gets source", async () => {
 test("getContentDescription gets name and type", async () => {
   const { userId: ownerId } = await createTestUser();
 
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
   await updateContent({
     contentId: activityId,
     name: "Activity 1",
@@ -799,7 +847,7 @@ test("getContentDescription gets name and type", async () => {
     type: "singleDoc",
   });
 
-  const { id: folderId } = await createContent(ownerId, "folder", null);
+  const { contentId: folderId } = await createContent(ownerId, "folder", null);
   await updateContent({
     contentId: folderId,
     name: "Folder 2",
@@ -811,7 +859,11 @@ test("getContentDescription gets name and type", async () => {
     type: "folder",
   });
 
-  const { id: sequenceId } = await createContent(ownerId, "sequence", null);
+  const { contentId: sequenceId } = await createContent(
+    ownerId,
+    "sequence",
+    null,
+  );
   await updateContent({
     contentId: sequenceId,
     name: "Sequence 3",
@@ -823,7 +875,7 @@ test("getContentDescription gets name and type", async () => {
     type: "sequence",
   });
 
-  const { id: selectId } = await createContent(ownerId, "select", null);
+  const { contentId: selectId } = await createContent(ownerId, "select", null);
   await updateContent({
     contentId: selectId,
     name: "Select 4",
@@ -857,38 +909,46 @@ test("getContentDescription gets name and type", async () => {
 test("get compound activity", async () => {
   const { userId: ownerId } = await createTestUser();
 
-  const { id: sequenceId } = await createContent(ownerId, "sequence", null);
+  const { contentId: sequenceId } = await createContent(
+    ownerId,
+    "sequence",
+    null,
+  );
 
-  const { id: selectIdDelete } = await createContent(
+  const { contentId: selectIdDelete } = await createContent(
     ownerId,
     "select",
     sequenceId,
   );
 
-  const { id: _activityIdDelete1 } = await createContent(
+  const { contentId: _activityIdDelete1 } = await createContent(
     ownerId,
     "singleDoc",
     selectIdDelete,
   );
 
-  const { id: selectId } = await createContent(ownerId, "select", sequenceId);
+  const { contentId: selectId } = await createContent(
+    ownerId,
+    "select",
+    sequenceId,
+  );
 
-  const { id: activityId1 } = await createContent(
+  const { contentId: activityId1 } = await createContent(
     ownerId,
     "singleDoc",
     selectId,
   );
-  const { id: activityId2 } = await createContent(
+  const { contentId: activityId2 } = await createContent(
     ownerId,
     "singleDoc",
     selectId,
   );
-  const { id: activityIdDelete2 } = await createContent(
+  const { contentId: activityIdDelete2 } = await createContent(
     ownerId,
     "singleDoc",
     selectId,
   );
-  const { id: activityId3 } = await createContent(
+  const { contentId: activityId3 } = await createContent(
     ownerId,
     "singleDoc",
     sequenceId,

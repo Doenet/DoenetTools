@@ -22,7 +22,11 @@ test("content in public folder is created as public", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { id: publicFolderId } = await createContent(ownerId, "folder", null);
+  const { contentId: publicFolderId } = await createContent(
+    ownerId,
+    "folder",
+    null,
+  );
 
   await setContentLicense({
     contentId: publicFolderId,
@@ -36,12 +40,12 @@ test("content in public folder is created as public", async () => {
   });
 
   // create a folder and activity in public folder
-  const { id: activityId } = await createContent(
+  const { contentId: activityId } = await createContent(
     ownerId,
     "singleDoc",
     publicFolderId,
   );
-  const { id: folderId } = await createContent(
+  const { contentId: folderId } = await createContent(
     ownerId,
     "folder",
     publicFolderId,
@@ -69,7 +73,11 @@ test("content in shared folder is created shared", async () => {
   const userId = user.userId;
   const { isAdmin, isAnonymous, cardView, ...userFields } = user;
 
-  const { id: publicFolderId } = await createContent(ownerId, "folder", null);
+  const { contentId: publicFolderId } = await createContent(
+    ownerId,
+    "folder",
+    null,
+  );
 
   await setContentLicense({
     contentId: publicFolderId,
@@ -84,12 +92,12 @@ test("content in shared folder is created shared", async () => {
   });
 
   // create a folder and activity in public folder
-  const { id: activityId } = await createContent(
+  const { contentId: activityId } = await createContent(
     ownerId,
     "singleDoc",
     publicFolderId,
   );
-  const { id: folderId } = await createContent(
+  const { contentId: folderId } = await createContent(
     ownerId,
     "folder",
     publicFolderId,
@@ -116,7 +124,7 @@ test("content in shared folder is created shared", async () => {
 test("if content has a public parent, cannot make it private", async () => {
   const { userId: ownerId } = await createTestUser();
 
-  const { id: folderId } = await createContent(ownerId, "folder", null);
+  const { contentId: folderId } = await createContent(ownerId, "folder", null);
   await setContentLicense({
     contentId: folderId,
     loggedInUserId: ownerId,
@@ -129,7 +137,7 @@ test("if content has a public parent, cannot make it private", async () => {
   });
 
   // creating content inside a public folder make it public with same license
-  const { id: activityId } = await createContent(
+  const { contentId: activityId } = await createContent(
     ownerId,
     "singleDoc",
     folderId,
@@ -208,7 +216,7 @@ test("if content has a parent that is shared with a user, cannot unshare with th
   const { userId: userId1 } = await createTestUser();
   const { userId: userId2 } = await createTestUser();
 
-  const { id: folderId } = await createContent(ownerId, "folder", null);
+  const { contentId: folderId } = await createContent(ownerId, "folder", null);
   await setContentLicense({
     contentId: folderId,
     loggedInUserId: ownerId,
@@ -222,7 +230,7 @@ test("if content has a parent that is shared with a user, cannot unshare with th
   });
 
   // creating content inside a shared folder make it shared with same people and with same license
-  const { id: activityId } = await createContent(
+  const { contentId: activityId } = await createContent(
     ownerId,
     "singleDoc",
     folderId,
@@ -345,21 +353,29 @@ test("making folder public/private also makes its content public/private", async
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { id: publicFolderId } = await createContent(ownerId, "folder", null);
+  const { contentId: publicFolderId } = await createContent(
+    ownerId,
+    "folder",
+    null,
+  );
 
   // create content in folder that will become public
-  const { id: activity1Id } = await createContent(
+  const { contentId: activity1Id } = await createContent(
     ownerId,
     "singleDoc",
     publicFolderId,
   );
-  const { id: folder1Id } = await createContent(
+  const { contentId: folder1Id } = await createContent(
     ownerId,
     "folder",
     publicFolderId,
   );
-  const { id: folder2Id } = await createContent(ownerId, "folder", folder1Id);
-  const { id: activity2Id } = await createContent(
+  const { contentId: folder2Id } = await createContent(
+    ownerId,
+    "folder",
+    folder1Id,
+  );
+  const { contentId: activity2Id } = await createContent(
     ownerId,
     "singleDoc",
     folder2Id,
@@ -508,21 +524,29 @@ test(
     const sharedUserFields = [userFields2, userFields1];
     const sharedUserFields23 = [userFields2, userFields3];
 
-    const { id: sharedFolderId } = await createContent(ownerId, "folder", null);
+    const { contentId: sharedFolderId } = await createContent(
+      ownerId,
+      "folder",
+      null,
+    );
 
     // create content in folder that will become shared
-    const { id: activity1Id } = await createContent(
+    const { contentId: activity1Id } = await createContent(
       ownerId,
       "folder",
       sharedFolderId,
     );
-    const { id: folder1Id } = await createContent(
+    const { contentId: folder1Id } = await createContent(
       ownerId,
       "folder",
       sharedFolderId,
     );
-    const { id: folder2Id } = await createContent(ownerId, "folder", folder1Id);
-    const { id: activity2Id } = await createContent(
+    const { contentId: folder2Id } = await createContent(
+      ownerId,
+      "folder",
+      folder1Id,
+    );
+    const { contentId: activity2Id } = await createContent(
       ownerId,
       "singleDoc",
       folder2Id,
@@ -724,7 +748,11 @@ test("moving content into public folder makes it public", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { id: publicFolderId } = await createContent(ownerId, "folder", null);
+  const { contentId: publicFolderId } = await createContent(
+    ownerId,
+    "folder",
+    null,
+  );
   await setContentIsPublic({
     contentId: publicFolderId,
     loggedInUserId: ownerId,
@@ -732,10 +760,18 @@ test("moving content into public folder makes it public", async () => {
   });
 
   // create to move into that folder
-  const { id: activity1Id } = await createContent(ownerId, "singleDoc", null);
-  const { id: folder1Id } = await createContent(ownerId, "folder", null);
-  const { id: folder2Id } = await createContent(ownerId, "folder", folder1Id);
-  const { id: activity2Id } = await createContent(
+  const { contentId: activity1Id } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
+  const { contentId: folder1Id } = await createContent(ownerId, "folder", null);
+  const { contentId: folder2Id } = await createContent(
+    ownerId,
+    "folder",
+    folder1Id,
+  );
+  const { contentId: activity2Id } = await createContent(
     ownerId,
     "singleDoc",
     folder2Id,
@@ -820,7 +856,11 @@ test("moving content into public folder makes it public", async () => {
   // Create a private folder and move content into that folder.
   // The content stays public.
 
-  const { id: privateFolderId } = await createContent(ownerId, "folder", null);
+  const { contentId: privateFolderId } = await createContent(
+    ownerId,
+    "folder",
+    null,
+  );
 
   await moveContent({
     id: activity1Id,
@@ -879,7 +919,11 @@ test("moving content into shared folder shares it", async () => {
     ...userFields
   } = user;
 
-  const { id: sharedFolderId } = await createContent(ownerId, "folder", null);
+  const { contentId: sharedFolderId } = await createContent(
+    ownerId,
+    "folder",
+    null,
+  );
   await modifyContentSharedWith({
     action: "share",
     contentId: sharedFolderId,
@@ -888,10 +932,18 @@ test("moving content into shared folder shares it", async () => {
   });
 
   // create to move into that folder
-  const { id: activity1Id } = await createContent(ownerId, "singleDoc", null);
-  const { id: folder1Id } = await createContent(ownerId, "folder", null);
-  const { id: folder2Id } = await createContent(ownerId, "folder", folder1Id);
-  const { id: activity2Id } = await createContent(
+  const { contentId: activity1Id } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
+  const { contentId: folder1Id } = await createContent(ownerId, "folder", null);
+  const { contentId: folder2Id } = await createContent(
+    ownerId,
+    "folder",
+    folder1Id,
+  );
+  const { contentId: activity2Id } = await createContent(
     ownerId,
     "singleDoc",
     folder2Id,
@@ -984,7 +1036,11 @@ test("moving content into shared folder shares it", async () => {
   // Create a private folder and move content into that folder.
   // The content stays shared.
 
-  const { id: privateFolderId } = await createContent(ownerId, "folder", null);
+  const { contentId: privateFolderId } = await createContent(
+    ownerId,
+    "folder",
+    null,
+  );
 
   await moveContent({
     id: activity1Id,
@@ -1043,8 +1099,12 @@ test("share with email throws error when no match", async () => {
 
   const otherEmail = `unique-${Date.now()}@example.com`;
 
-  const { id: folderId } = await createContent(ownerId, "folder", null);
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: folderId } = await createContent(ownerId, "folder", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
 
   await expect(
     shareContentWithEmail({
@@ -1091,8 +1151,12 @@ test("share with email throws error when share with self", async () => {
 
   const user = await createTestUser();
 
-  const { id: folderId } = await createContent(ownerId, "folder", null);
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: folderId } = await createContent(ownerId, "folder", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
 
   await expect(
     shareContentWithEmail({
@@ -1138,7 +1202,11 @@ test("contributor history shows only documents user can view", async () => {
   const ownerId3 = (await createTestUser()).userId;
 
   // create public activity 1 by owner 1
-  const { id: activityId1 } = await createContent(ownerId1, "singleDoc", null);
+  const { contentId: activityId1 } = await createContent(
+    ownerId1,
+    "singleDoc",
+    null,
+  );
   await setContentIsPublic({
     contentId: activityId1,
     loggedInUserId: ownerId1,
@@ -1351,7 +1419,11 @@ test("get licenses", async () => {
 test("set license to make public", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
 
   // make public with CCBYSA license
   await setContentLicense({

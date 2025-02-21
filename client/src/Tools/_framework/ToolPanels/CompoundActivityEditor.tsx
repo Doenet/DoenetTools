@@ -74,10 +74,10 @@ export async function compoundActivityEditorActions(
 
   if (formObj?._action == "Add Activity") {
     //Create an activity and redirect to the editor for it
-    const { data } = await axios.post(
-      `/api/createActivity/${params.activityId}`,
-      { type: formObj.type },
-    );
+    const { data } = await axios.post(`/api/updateContent/createContent`, {
+      contentType: formObj.type,
+      parentId: params.activityId,
+    });
 
     const { activityId } = data;
 

@@ -123,17 +123,16 @@ Cypress.Commands.add(
   }) => {
     cy.request({
       method: "POST",
-      url: "/api/createActivity",
+      url: "/api/updateContent/createContent",
     }).then((resp) => {
-      const activityId: string = resp.body.activityId;
-      const docId: string = resp.body.docId;
+      const contentId: string = resp.body.contentId;
 
       if (classifications) {
         cy.request({
           method: "POST",
           url: "/api/test/addClassificationsByNames",
           body: {
-            id: activityId,
+            id: contentId,
             classifications,
           },
         });
@@ -144,7 +143,7 @@ Cypress.Commands.add(
           method: "POST",
           url: "/api/makeActivityPublic",
           body: {
-            id: activityId,
+            id: contentId,
             licenseCode: "CCDUAL",
           },
         });
@@ -155,7 +154,7 @@ Cypress.Commands.add(
           method: "POST",
           url: "/api/addDraftToLibrary",
           body: {
-            activityId,
+            activityId: contentId,
             type: "singleDoc",
           },
         }).then((resp) => {
@@ -172,20 +171,20 @@ Cypress.Commands.add(
 
       cy.request({
         method: "POST",
-        url: "/api/updateContentName",
+        url: "/api/updateContent/updateContentSettings",
         body: {
-          id: activityId,
+          contentId: contentId,
           name: activityName,
         },
       });
       cy.request({
         method: "POST",
-        url: "/api/saveDoenetML",
+        url: "/api/updateContent/saveDoenetML",
         body: {
-          docId,
+          contentId,
           doenetML,
         },
-      }).then(() => activityId);
+      }).then(() => contentId);
     });
   },
 );

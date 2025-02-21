@@ -17,7 +17,11 @@ test("add and check recent content", async () => {
 
   // add 5 activities
   for (let i = 0; i < 5; i++) {
-    const { id: activityId } = await createContent(userId, "singleDoc", null);
+    const { contentId: activityId } = await createContent(
+      userId,
+      "singleDoc",
+      null,
+    );
     await recordRecentContent(userId, "edit", activityId);
     activityIds.push(activityId);
   }
@@ -28,7 +32,11 @@ test("add and check recent content", async () => {
 
   // add a couple more activities
   for (let i = 0; i < 2; i++) {
-    const { id: activityId } = await createContent(userId, "singleDoc", null);
+    const { contentId: activityId } = await createContent(
+      userId,
+      "singleDoc",
+      null,
+    );
     await recordRecentContent(userId, "edit", activityId);
     activityIds.push(activityId);
   }
@@ -46,19 +54,27 @@ test("add and check recent content, different types", async () => {
 
   // add five items of each content type
   for (let i = 0; i < 5; i++) {
-    const { id: activityId } = await createContent(userId, "singleDoc", null);
+    const { contentId: activityId } = await createContent(
+      userId,
+      "singleDoc",
+      null,
+    );
     await recordRecentContent(userId, "edit", activityId);
     contents.push({ id: activityId, type: "singleDoc" });
 
-    const { id: folderId } = await createContent(userId, "folder", null);
+    const { contentId: folderId } = await createContent(userId, "folder", null);
     await recordRecentContent(userId, "edit", folderId);
     contents.push({ id: folderId, type: "folder" });
 
-    const { id: sequenceId } = await createContent(userId, "sequence", null);
+    const { contentId: sequenceId } = await createContent(
+      userId,
+      "sequence",
+      null,
+    );
     await recordRecentContent(userId, "edit", sequenceId);
     contents.push({ id: sequenceId, type: "sequence" });
 
-    const { id: selectId } = await createContent(userId, "select", null);
+    const { contentId: selectId } = await createContent(userId, "select", null);
     await recordRecentContent(userId, "edit", selectId);
     contents.push({ id: selectId, type: "select" });
   }
@@ -85,19 +101,27 @@ test("add and check recent content, different types", async () => {
 
   // add a couple more activities of each type
   for (let i = 0; i < 2; i++) {
-    const { id: activityId } = await createContent(userId, "singleDoc", null);
+    const { contentId: activityId } = await createContent(
+      userId,
+      "singleDoc",
+      null,
+    );
     await recordRecentContent(userId, "edit", activityId);
     contents.push({ id: activityId, type: "singleDoc" });
 
-    const { id: folderId } = await createContent(userId, "folder", null);
+    const { contentId: folderId } = await createContent(userId, "folder", null);
     await recordRecentContent(userId, "edit", folderId);
     contents.push({ id: folderId, type: "folder" });
 
-    const { id: sequenceId } = await createContent(userId, "sequence", null);
+    const { contentId: sequenceId } = await createContent(
+      userId,
+      "sequence",
+      null,
+    );
     await recordRecentContent(userId, "edit", sequenceId);
     contents.push({ id: sequenceId, type: "sequence" });
 
-    const { id: selectId } = await createContent(userId, "select", null);
+    const { contentId: selectId } = await createContent(userId, "select", null);
     await recordRecentContent(userId, "edit", selectId);
     contents.push({ id: selectId, type: "select" });
   }
@@ -130,9 +154,17 @@ test("purge recent content", async () => {
 
   // add 150 activities for each user
   for (let i = 0; i < 150; i++) {
-    const { id: activity1Id } = await createContent(user1Id, "singleDoc", null);
+    const { contentId: activity1Id } = await createContent(
+      user1Id,
+      "singleDoc",
+      null,
+    );
     await recordRecentContent(user1Id, "edit", activity1Id);
-    const { id: activity2Id } = await createContent(user2Id, "singleDoc", null);
+    const { contentId: activity2Id } = await createContent(
+      user2Id,
+      "singleDoc",
+      null,
+    );
     await recordRecentContent(user2Id, "edit", activity2Id);
   }
 

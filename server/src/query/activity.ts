@@ -17,12 +17,19 @@ import { compileActivityFromContent } from "../utils/contentStructure";
  *
  * Places the content at the end of the parent.
  */
-export async function createContent(
-  loggedInUserId: Uint8Array,
-  contentType: ContentType,
-  parentId: Uint8Array | null,
-  inLibrary: boolean = false,
-) {
+export async function createContent({
+  loggedInUserId,
+  contentType,
+  parentId,
+  inLibrary = false,
+  name,
+}: {
+  loggedInUserId: Uint8Array;
+  contentType: ContentType;
+  parentId: Uint8Array | null;
+  inLibrary?: boolean;
+  name?: string;
+}) {
   let ownerId = loggedInUserId;
   if (inLibrary) {
     await mustBeAdmin(loggedInUserId);
@@ -71,24 +78,24 @@ export async function createContent(
     }
   }
 
-  let name;
-
-  switch (contentType) {
-    case "singleDoc": {
-      name = "Untitled Document";
-      break;
-    }
-    case "select": {
-      name = "Untitled Question Bank";
-      break;
-    }
-    case "sequence": {
-      name = "Untitled Problem Set";
-      break;
-    }
-    case "folder": {
-      name = "Untitled Folder";
-      break;
+  if (!name) {
+    switch (contentType) {
+      case "singleDoc": {
+        name = "Untitled Document";
+        break;
+      }
+      case "select": {
+        name = "Untitled Question Bank";
+        break;
+      }
+      case "sequence": {
+        name = "Untitled Problem Set";
+        break;
+      }
+      case "folder": {
+        name = "Untitled Folder";
+        break;
+      }
     }
   }
 
@@ -115,7 +122,7 @@ export async function createContent(
     },
   });
 
-  return { id: content.id, name: content.name };
+  return { contentId: content.id, name: content.name };
 }
 
 /**
@@ -144,7 +151,7 @@ export async function deleteContent(
 /**
  * Delete the content `id` along with all the content inside it,
  * recursing to its children
- * 
+ *
  * WARNING: This function fails silently if content `id` does not exist. Use {@link deleteContent} instead if you would like the function to throw an error.
  */
 export function deleteContentNoCheck(

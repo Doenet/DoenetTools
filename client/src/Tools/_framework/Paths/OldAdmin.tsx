@@ -11,7 +11,7 @@ import { ContentStructure } from "../../../_utils/types";
 export async function loader() {
   const {
     data: { isAdmin },
-  } = await axios.get(`/api/checkForCommunityAdmin`);
+  } = await axios.get(`/api/oldAdmin/checkForCommunityAdmin`);
   if (!isAdmin) {
     throw Error("Page not available");
   }
@@ -19,7 +19,7 @@ export async function loader() {
   const { data: carouselData } = await axios.get(`/api/loadPromotedContent`);
 
   const { data: recentActivities } = await axios.get(
-    `/api/getAllRecentPublicActivities`,
+    `/api/oldAdmin/getAllRecentPublicActivities`,
   );
 
   return {

@@ -46,10 +46,10 @@ export async function generalContentActions({ formObj }: { [k: string]: any }) {
         activityLevelAttempts = false;
       }
     }
-    await axios.post("/api/updateContentSettings", {
+    await axios.post("/api/updateContent/updateContentSettings", {
       name: formObj.name,
       imagePath: formObj.imagePath,
-      id: formObj.id,
+      contentId: formObj.id,
       shuffle: formObj.shuffle ? formObj.shuffle === "true" : undefined,
       numToSelect: formObj.numToSelect
         ? Number(formObj.numToSelect)
@@ -79,8 +79,8 @@ export async function generalContentActions({ formObj }: { [k: string]: any }) {
       features[feature] = formFeatures[feature] === "true";
     }
 
-    await axios.post("/api/updateContentFeatures", {
-      id: formObj.id,
+    await axios.post("/api/updateContent/updateContentFeatures", {
+      contentId: formObj.id,
       features,
     });
     return true;

@@ -36,7 +36,11 @@ import { moveContent } from "../query/copy_move";
 test("assign an activity", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
   await updateContent({
     contentId: activityId,
     name: "Activity 1",
@@ -77,7 +81,11 @@ test("assign an activity", async () => {
 test("cannot assign other user's activity", async () => {
   const ownerId1 = (await createTestUser()).userId;
   const ownerId2 = (await createTestUser()).userId;
-  const { id: activityId } = await createContent(ownerId1, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId1,
+    "singleDoc",
+    null,
+  );
   await updateContent({
     contentId: activityId,
     name: "Activity 1",
@@ -118,7 +126,11 @@ test("open and close assignment with code", async () => {
   const ownerId = owner.userId;
   const fakeId = new Uint8Array(16);
 
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
   await updateContent({
     contentId: activityId,
     name: "Activity 1",
@@ -215,7 +227,11 @@ test("open and unassign assignment with code", async () => {
   const ownerId = owner.userId;
   const fakeId = new Uint8Array(16);
 
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
   await updateContent({
     contentId: activityId,
     name: "Activity 1",
@@ -261,7 +277,11 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
   const ownerId = owner.userId;
   const user2 = await createTestUser();
   const userId2 = user2.userId;
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
 
   await expect(
     updateContent({
@@ -344,7 +364,11 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
 test("get assignment data from anonymous users", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
   await updateContent({
     contentId: activityId,
     name: "Activity 1",
@@ -590,7 +614,11 @@ test("can't get assignment data if other user, but student can get their own dat
   const ownerId = owner.userId;
   const otherUser = await createTestUser();
   const otherUserId = otherUser.userId;
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
 
   const closeAt = DateTime.now().plus({ days: 1 });
   await openAssignmentWithCode(activityId, closeAt, ownerId);
@@ -662,7 +690,11 @@ test("can't get assignment data if other user, but student can get their own dat
 test("can't unassign if have data", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
 
   const closeAt = DateTime.now().plus({ days: 1 });
   await openAssignmentWithCode(activityId, closeAt, ownerId);
@@ -713,7 +745,11 @@ test("list assigned and get assigned scores get student assignments and scores",
   expect(studentData.orderedActivityScores).eqls([]);
   expect(studentData.userData.userId).eqls(user1Id);
 
-  const { id: activityId1 } = await createContent(user1Id, "singleDoc", null);
+  const { contentId: activityId1 } = await createContent(
+    user1Id,
+    "singleDoc",
+    null,
+  );
   await updateContent({
     contentId: activityId1,
     name: "Activity 1",
@@ -726,7 +762,11 @@ test("list assigned and get assigned scores get student assignments and scores",
   studentData = await getAssignedScores(user1Id);
   expect(studentData.orderedActivityScores).eqls([]);
 
-  const { id: activityId2 } = await createContent(user2Id, "singleDoc", null);
+  const { contentId: activityId2 } = await createContent(
+    user2Id,
+    "singleDoc",
+    null,
+  );
   await updateContent({
     contentId: activityId2,
     name: "Activity 2",
@@ -775,7 +815,11 @@ test("get all assignment data from anonymous user", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
   await updateContent({
     contentId: activityId,
     name: "Activity 1",
@@ -916,8 +960,12 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   // Activity gone (deleted)
   // Activity root
 
-  const { id: baseFolderId } = await createContent(ownerId, "folder", null);
-  const { id: folder3Id } = await createContent(
+  const { contentId: baseFolderId } = await createContent(
+    ownerId,
+    "folder",
+    null,
+  );
+  const { contentId: folder3Id } = await createContent(
     ownerId,
     "folder",
     baseFolderId,
@@ -925,7 +973,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
 
   // create folder 1 after folder 3 and move to make sure it is using sortIndex
   // and not the order content was created
-  const { id: folder1Id } = await createContent(
+  const { contentId: folder1Id } = await createContent(
     ownerId,
     "folder",
     baseFolderId,
@@ -937,10 +985,18 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     loggedInUserId: ownerId,
   });
 
-  const { id: folder1cId } = await createContent(ownerId, "folder", folder1Id);
-  const { id: folder1dId } = await createContent(ownerId, "folder", folder1Id);
+  const { contentId: folder1cId } = await createContent(
+    ownerId,
+    "folder",
+    folder1Id,
+  );
+  const { contentId: folder1dId } = await createContent(
+    ownerId,
+    "folder",
+    folder1Id,
+  );
 
-  const { id: activity2Id } = await createContent(
+  const { contentId: activity2Id } = await createContent(
     ownerId,
     "singleDoc",
     baseFolderId,
@@ -958,7 +1014,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
 
   // create activity 1a in wrong folder initially
-  const { id: activity1aId } = await createContent(
+  const { contentId: activity1aId } = await createContent(
     ownerId,
     "singleDoc",
     folder3Id,
@@ -968,7 +1024,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     name: "Activity 1a",
     loggedInUserId: ownerId,
   });
-  const { id: activity1eId } = await createContent(
+  const { contentId: activity1eId } = await createContent(
     ownerId,
     "singleDoc",
     folder1Id,
@@ -986,7 +1042,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     loggedInUserId: ownerId,
   });
 
-  const { id: activity1c1Id } = await createContent(
+  const { contentId: activity1c1Id } = await createContent(
     ownerId,
     "singleDoc",
     folder1cId,
@@ -999,12 +1055,12 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   await createContent(ownerId, "singleDoc", folder1cId);
 
   // create folder 1c2 in wrong folder initially
-  const { id: folder1c2Id } = await createContent(
+  const { contentId: folder1c2Id } = await createContent(
     ownerId,
     "folder",
     baseFolderId,
   );
-  const { id: activity1c2aId } = await createContent(
+  const { contentId: activity1c2aId } = await createContent(
     ownerId,
     "singleDoc",
     folder1c2Id,
@@ -1014,7 +1070,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     name: "Activity 1c2a",
     loggedInUserId: ownerId,
   });
-  const { id: activity1c2bId } = await createContent(
+  const { contentId: activity1c2bId } = await createContent(
     ownerId,
     "singleDoc",
     folder1c2Id,
@@ -1034,7 +1090,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
 
   // create activity 1b in wrong place then move it
-  const { id: activity1b } = await createContent(
+  const { contentId: activity1b } = await createContent(
     ownerId,
     "singleDoc",
     folder1c2Id,
@@ -1060,7 +1116,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
 
   await createContent(ownerId, "singleDoc", folder3Id);
-  const { id: activity3bId } = await createContent(
+  const { contentId: activity3bId } = await createContent(
     ownerId,
     "singleDoc",
     folder3Id,
@@ -1074,19 +1130,19 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   await createContent(ownerId, "singleDoc", null);
 
   // add some deleted activities
-  const { id: activityGoneId } = await createContent(
+  const { contentId: activityGoneId } = await createContent(
     ownerId,
     "singleDoc",
     null,
   );
   await deleteContent(activityGoneId, ownerId);
-  const { id: activity4Id } = await createContent(
+  const { contentId: activity4Id } = await createContent(
     ownerId,
     "singleDoc",
     baseFolderId,
   );
   await deleteContent(activity4Id, ownerId);
-  const { id: activity3cId } = await createContent(
+  const { contentId: activity3cId } = await createContent(
     ownerId,
     "singleDoc",
     folder3Id,
@@ -1094,7 +1150,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   await deleteContent(activity3cId, ownerId);
 
   // one activity at root level
-  const { id: activityRootId } = await createContent(
+  const { contentId: activityRootId } = await createContent(
     ownerId,
     "singleDoc",
     null,
@@ -1444,7 +1500,11 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
   await updateContent({
     contentId: activityId,
     name: "Activity 1",
@@ -1603,7 +1663,11 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     },
   ]);
 
-  const { id: activity2Id } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activity2Id } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
   await updateContent({
     contentId: activity2Id,
     name: "Activity 2",
@@ -1676,7 +1740,11 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 test("record submitted events and get responses", { retry: 5 }, async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
   await updateContent({
     contentId: activityId,
     name: "My Activity",
@@ -2233,7 +2301,11 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
 test("only owner can get submitted responses", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
 
   const user2 = await createTestUser();
   const userId2 = user2.userId;
@@ -2345,7 +2417,11 @@ test("only owner can get submitted responses", async () => {
 test("only user and assignment owner can load document state", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
@@ -2399,7 +2475,11 @@ test("only user and assignment owner can load document state", async () => {
 test("load document state based on withMaxScore", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  const { contentId: activityId } = await createContent(
+    ownerId,
+    "singleDoc",
+    null,
+  );
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
