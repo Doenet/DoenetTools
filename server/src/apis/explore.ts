@@ -2057,7 +2057,7 @@ export async function getRecentContent(
  * We could alternatively just purge records older than some given date.
  */
 export async function purgeOldRecentContent() {
-  await prisma.$queryRaw(Prisma.sql`
+  await prisma.$executeRaw(Prisma.sql`
     DELETE rc FROM recentContent as rc
     WHERE accessed < (
       SELECT ac FROM (

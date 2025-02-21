@@ -81,7 +81,7 @@ export async function setContentIsPublic({
     }
   }
 
-  return prisma.$queryRaw(Prisma.sql`
+  return prisma.$executeRaw(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
       WHERE id = ${contentId} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
