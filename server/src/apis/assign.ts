@@ -1,9 +1,16 @@
 import { DateTime } from "luxon";
 import { prisma } from "../model";
 import { createActivityRevision } from "./activity";
-import { filterEditableActivity } from "../utils/permissions";
+import {
+  filterEditableActivity,
+  filterEditableContent,
+} from "../utils/permissions";
 import { getRandomValues } from "crypto";
 import { Prisma } from "@prisma/client";
+import { UserInfo } from "../types";
+import { isEqualUUID } from "../utils/uuid";
+import { recordContentView } from "./explore";
+import { processContent, returnContentSelect } from "../utils/contentStructure";
 
 export async function assignActivity(
   activityId: Uint8Array,
@@ -78,9 +85,8 @@ export async function updateAssignmentSettings(
   await prisma.content.update({
     where: {
       id: activityId,
-      ownerId: loggedInUserId,
-      isFolder: false,
       isAssigned: true,
+      ...filterEditableActivity(loggedInUserId),
     },
     data: {
       codeValidUntil,
@@ -92,13 +98,13 @@ export async function updateAssignmentSettings(
 
 export async function closeAssignmentWithCode(
   activityId: Uint8Array,
-  userId: Uint8Array,
+  loggedInUserId: Uint8Array,
 ) {
   await prisma.content.update({
     where: {
       id: activityId,
       isAssigned: true,
-      ...filterEditableActivity(userId),
+      ...filterEditableActivity(loggedInUserId),
     },
     data: {
       codeValidUntil: null,
@@ -108,7 +114,7 @@ export async function closeAssignmentWithCode(
   // attempt to unassign activity, which will succeed
   // only if there is no student data
   try {
-    await unassignActivity(activityId, userId);
+    await unassignActivity(activityId, loggedInUserId);
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError &&
@@ -123,14 +129,14 @@ export async function closeAssignmentWithCode(
 
 export async function unassignActivity(
   activityId: Uint8Array,
-  userId: Uint8Array,
+  loggedInUserId: Uint8Array,
 ) {
   await prisma.content.update({
     where: {
       id: activityId,
       isAssigned: true,
       assignmentScores: { none: { activityId } },
-      ...filterEditableActivity(userId),
+      ...filterEditableActivity(loggedInUserId),
     },
     data: {
       isAssigned: false,
@@ -139,37 +145,27 @@ export async function unassignActivity(
   });
 }
 
-// Note: this function returns `sortIndex` (which is a bigint)
-// so the data shouldn't be sent unchanged to the response
 export async function getAssignment(
   activityId: Uint8Array,
-  ownerId: Uint8Array,
+  loggedInUserId: Uint8Array,
 ) {
   const assignment = await prisma.content.findUniqueOrThrow({
     where: {
       id: activityId,
-      ownerId,
-      isDeleted: false,
-      isFolder: false,
       isAssigned: true,
+      ...filterEditableActivity(loggedInUserId),
     },
-    include: {
-      documents: {
-        select: {
-          assignedVersion: true,
-        },
-      },
-    },
+    include: { assignedRevision: true },
   });
   return assignment;
 }
 
 export async function getAssignmentScoreData({
   activityId,
-  ownerId,
+  loggedInUserId,
 }: {
   activityId: Uint8Array;
-  ownerId: Uint8Array;
+  loggedInUserId: Uint8Array;
 }) {
   const assignment: {
     name: string;
@@ -180,10 +176,8 @@ export async function getAssignmentScoreData({
   } = await prisma.content.findUniqueOrThrow({
     where: {
       id: activityId,
-      ownerId,
-      isDeleted: false,
       isAssigned: true,
-      isFolder: false,
+      ...filterEditableActivity(loggedInUserId),
     },
     select: {
       name: true,
@@ -228,7 +222,7 @@ export async function getAssignmentStudentData({
           ? undefined
           : loggedInUserId,
         isDeleted: false,
-        isFolder: false,
+        type: { not: "folder" },
         isAssigned: true,
       },
     },
@@ -238,16 +232,11 @@ export async function getAssignmentStudentData({
         select: {
           id: true,
           name: true,
-          documents: {
+          assignedRevision: {
             select: {
-              assignedVersion: {
-                select: {
-                  docId: true,
-                  versionNum: true,
-                  source: true,
-                  doenetmlVersion: { select: { fullVersion: true } },
-                },
-              },
+              revisionNum: true,
+              source: true,
+              doenetmlVersion: { select: { fullVersion: true } },
             },
           },
         },
@@ -263,11 +252,10 @@ export async function getAssignmentStudentData({
     },
   });
 
-  const documentScores = await prisma.documentState.findMany({
+  const activityScores = await prisma.activityState.findMany({
     where: { activityId, userId: studentId },
     select: {
-      docId: true,
-      docVersionNum: true,
+      activityRevisionNum: true,
       hasMaxScore: true,
       score: true,
     },
@@ -276,7 +264,7 @@ export async function getAssignmentStudentData({
     },
   });
 
-  return { ...assignmentData, documentScores };
+  return { ...assignmentData, activityScores };
 }
 
 /**
@@ -291,10 +279,10 @@ export async function getAssignmentStudentData({
  * - assignmentScores: the scores that student achieved on those activities
  */
 export async function getAllAssignmentScores({
-  ownerId,
+  loggedInUserId,
   parentId,
 }: {
-  ownerId: Uint8Array;
+  loggedInUserId: Uint8Array;
   parentId: Uint8Array | null;
 }) {
   const orderedActivities = await prisma.$queryRaw<
@@ -303,23 +291,23 @@ export async function getAllAssignmentScores({
       name: string;
     }[]
   >(Prisma.sql`
-    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
-      SELECT id, parentId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
+    WITH RECURSIVE content_tree(id, parentId, type, path) AS (
+      SELECT id, parentId, type, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
       WHERE ${parentId === null ? Prisma.sql`parentId IS NULL` : Prisma.sql`parentId = ${parentId}`}
-      AND ownerId = ${ownerId}
-      AND (isAssigned = true or isFolder = true) AND isDeleted = false
+      AND ownerId = ${loggedInUserId}
+      AND (isAssigned = true or type = "folder") AND isDeleted = false
       UNION ALL
-      SELECT c.id, c.parentId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
+      SELECT c.id, c.parentId, c.type, CONCAT(ct.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
       FROM content AS c
-      INNER JOIN content_tree AS ft
-      ON c.parentId = ft.id
-      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
+      INNER JOIN content_tree AS ct
+      ON c.parentId = ct.id
+      WHERE (c.isAssigned = true or c.type = "folder") AND c.isDeleted = false
     )
     
     SELECT c.id, c.name FROM content AS c
     INNER JOIN content_tree AS ct
     ON ct.id = c.id
-    WHERE ct.isFolder = FALSE ORDER BY path
+    WHERE ct.type != "folder" ORDER BY path
   `);
 
   let folder: {
@@ -329,7 +317,11 @@ export async function getAllAssignmentScores({
 
   if (parentId !== null) {
     folder = await prisma.content.findUniqueOrThrow({
-      where: { id: parentId, ownerId, isDeleted: false, isFolder: true },
+      where: {
+        id: parentId,
+        type: "folder",
+        ...filterEditableContent(loggedInUserId),
+      },
       select: { id: true, name: true },
     });
   }
@@ -369,11 +361,11 @@ export async function getAllAssignmentScores({
  */
 export async function getStudentData({
   userId,
-  ownerId,
+  loggedInUserId,
   parentId,
 }: {
   userId: Uint8Array;
-  ownerId: Uint8Array;
+  loggedInUserId: Uint8Array;
   parentId: Uint8Array | null;
 }) {
   const userData = await prisma.users.findUniqueOrThrow({
@@ -395,17 +387,17 @@ export async function getStudentData({
       score: number | null;
     }[]
   >(Prisma.sql`
-    WITH RECURSIVE content_tree(id, parentId, isFolder, path) AS (
-      SELECT id, parentId, isFolder, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
+    WITH RECURSIVE content_tree(id, parentId, type, path) AS (
+      SELECT id, parentId, type, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
       WHERE ${parentId === null ? Prisma.sql`parentId IS NULL` : Prisma.sql`parentId = ${parentId}`}
-      AND ownerId = ${ownerId}
-      AND (isAssigned = true or isFolder = true) AND isDeleted = false
+      AND ownerId = ${loggedInUserId}
+      AND (isAssigned = true or type = "folder") AND isDeleted = false
       UNION ALL
-      SELECT c.id, c.parentId, c.isFolder, CONCAT(ft.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
+      SELECT c.id, c.parentId, c.type, CONCAT(ct.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
       FROM content AS c
-      INNER JOIN content_tree AS ft
-      ON c.parentId = ft.id
-      WHERE (c.isAssigned = true or c.isFolder = true) AND c.isDeleted = false
+      INNER JOIN content_tree AS ct
+      ON c.parentId = ct.id
+      WHERE (c.isAssigned = true or c.type = "folder") AND c.isDeleted = false
     )
     
     SELECT c.id AS activityId, c.name AS activityName, s.score FROM content AS c
@@ -415,7 +407,7 @@ export async function getStudentData({
         SELECT * FROM assignmentScores WHERE userId=${userId}
         ) as s
     ON s.activityId  = c.id 
-    WHERE ct.isFolder = FALSE ORDER BY path
+    WHERE ct.type != "folder" ORDER BY path
   `);
 
   let folder: {
@@ -425,7 +417,11 @@ export async function getStudentData({
 
   if (parentId !== null) {
     folder = await prisma.content.findUniqueOrThrow({
-      where: { id: parentId, ownerId, isDeleted: false, isFolder: true },
+      where: {
+        id: parentId,
+        type: "folder",
+        ...filterEditableContent(loggedInUserId),
+      },
       select: { id: true, name: true },
     });
   }
@@ -462,26 +458,21 @@ export async function getAssignedScores(loggedInUserId: Uint8Array) {
 
 export async function getAssignmentContent({
   activityId,
-  ownerId,
+  loggedInUserId,
 }: {
   activityId: Uint8Array;
-  ownerId: Uint8Array;
+  loggedInUserId: Uint8Array;
 }) {
-  const assignmentData = await prisma.documents.findMany({
+  const assignmentData = await prisma.content.findMany({
     where: {
-      activityId,
-      activity: {
-        ownerId,
-        isDeleted: false,
-        isAssigned: true,
-        isFolder: false,
-      },
+      id: activityId,
+      isAssigned: true,
+      ...filterEditableActivity(loggedInUserId),
     },
     select: {
-      assignedVersion: {
+      assignedRevision: {
         select: {
-          docId: true,
-          versionNum: true,
+          revisionNum: true,
           source: true,
           doenetmlVersion: { select: { fullVersion: true } },
         },
@@ -496,8 +487,7 @@ export async function getAssignmentContent({
 // If so, do we mark it special to indicate that assignment wasn't open at the time?
 export async function recordSubmittedEvent({
   activityId,
-  docId,
-  docVersionNum,
+  activityRevisionNum,
   userId,
   answerId,
   response,
@@ -505,11 +495,10 @@ export async function recordSubmittedEvent({
   itemNumber,
   creditAchieved,
   itemCreditAchieved,
-  documentCreditAchieved,
+  activityCreditAchieved,
 }: {
   activityId: Uint8Array;
-  docId: Uint8Array;
-  docVersionNum: number;
+  activityRevisionNum: number;
   userId: Uint8Array;
   answerId: string;
   response: string;
@@ -517,13 +506,12 @@ export async function recordSubmittedEvent({
   itemNumber: number;
   creditAchieved: number;
   itemCreditAchieved: number;
-  documentCreditAchieved: number;
+  activityCreditAchieved: number;
 }) {
-  await prisma.documentSubmittedResponses.create({
+  await prisma.submittedResponses.create({
     data: {
       activityId,
-      docVersionNum,
-      docId,
+      activityRevisionNum,
       userId,
       answerId,
       response,
@@ -531,7 +519,7 @@ export async function recordSubmittedEvent({
       itemNumber,
       creditAchieved,
       itemCreditAchieved,
-      documentCreditAchieved,
+      activityCreditAchieved,
     },
   });
 }
@@ -548,25 +536,24 @@ export async function getAnswersThatHaveSubmittedResponses({
 
   let submittedResponses = await prisma.$queryRaw<
     {
-      docId: Uint8Array;
-      docVersionNum: number;
+      activityRevisionNum: number;
       answerId: string;
       answerNumber: number | null;
       count: number;
       averageCredit: number;
     }[]
   >(Prisma.sql`
-    SELECT docId, docVersionNum, answerId, answerNumber, 
+    SELECT activityRevisionNum, answerId, answerNumber, 
     COUNT(userId) as count, AVG(maxCredit) as averageCredit
     FROM (
-      SELECT activityId, docId, docVersionNum, answerId, answerNumber, userId, MAX(creditAchieved) as maxCredit
-      FROM documentSubmittedResponses
+      SELECT activityId, activityRevisionNum, answerId, answerNumber, userId, MAX(creditAchieved) as maxCredit
+      FROM submittedResponses
       WHERE activityId = ${activityId}
-      GROUP BY activityId, docId, docVersionNum, answerId, answerNumber, userId 
-    ) as dsr
-    INNER JOIN content on dsr.activityId = content.id 
-    WHERE content.id=${activityId} and ownerId = ${ownerId} and isAssigned=true and isFolder=false
-    GROUP BY docId, docVersionNum, answerId, answerNumber
+      GROUP BY activityId, activityRevisionNum, answerId, answerNumber, userId 
+    ) as sr
+    INNER JOIN content on sr.activityId = content.id 
+    WHERE content.id=${activityId} and ownerId = ${ownerId} and isAssigned=true and type != "folder"
+    GROUP BY activityRevisionNum, answerId, answerNumber
     ORDER BY answerNumber
     `);
 
@@ -580,27 +567,23 @@ export async function getAnswersThatHaveSubmittedResponses({
   return submittedResponses;
 }
 
-export async function getDocumentSubmittedResponses({
+export async function getSubmittedResponses({
   activityId,
-  docId,
-  docVersionNum,
-  ownerId,
+  activityRevisionNum,
+  loggedInUserId,
   answerId,
 }: {
   activityId: Uint8Array;
-  docId: Uint8Array;
-  docVersionNum: number;
-  ownerId: Uint8Array;
+  activityRevisionNum: number;
+  loggedInUserId: Uint8Array;
   answerId: string;
 }) {
-  // get activity name and make sure that owner is the owner
+  // get activity name and make sure that loggedInUserId is the owner
   const activityName = (
     await prisma.content.findUniqueOrThrow({
       where: {
         id: activityId,
-        ownerId,
-        isDeleted: false,
-        isFolder: false,
+        ...filterEditableActivity(loggedInUserId),
       },
       select: { name: true },
     })
@@ -622,15 +605,15 @@ export async function getDocumentSubmittedResponses({
       numResponses: bigint;
     }[]
   >(Prisma.sql`
-select dsr.userId, users.firstNames, users.lastNames, users.email, response, creditAchieved, submittedAt,
-        MAX(creditAchieved) over (partition by dsr.userId) as maxCredit,
-        COUNT(creditAchieved) over (partition by dsr.userId) as numResponses
-        from documentSubmittedResponses as dsr
-      INNER JOIN content on dsr.activityId = content.id 
-      INNER JOIN users on dsr.userId = users.userId 
-      WHERE content.id=${activityId} and ownerId = ${ownerId} and isAssigned=true and isFolder=false
-        and docId = ${docId} and docVersionNum = ${docVersionNum} and answerId = ${answerId}
-        order by dsr.userId asc, submittedAt desc
+select sr.userId, users.firstNames, users.lastNames, users.email, response, creditAchieved, submittedAt,
+        MAX(creditAchieved) over (partition by sr.userId) as maxCredit,
+        COUNT(creditAchieved) over (partition by sr.userId) as numResponses
+        from submittedResponses as sr
+      INNER JOIN content on sr.activityId = content.id 
+      INNER JOIN users on sr.userId = users.userId 
+      WHERE content.id=${activityId} and ownerId = ${loggedInUserId} and isAssigned=true and type != "folder"
+        and activityId = ${activityId} and activityRevisionNum = ${activityRevisionNum} and answerId = ${answerId}
+        order by sr.userId asc, submittedAt desc
   `);
 
   const submittedResponses = [];
@@ -672,18 +655,16 @@ select dsr.userId, users.firstNames, users.lastNames, users.email, response, cre
   return { activityName, submittedResponses };
 }
 
-export async function getDocumentSubmittedResponseHistory({
+export async function getSubmittedResponseHistory({
   activityId,
-  docId,
-  docVersionNum,
-  ownerId,
+  activityRevisionNum,
+  loggedInUserId,
   answerId,
   userId,
 }: {
   activityId: Uint8Array;
-  docId: Uint8Array;
-  docVersionNum: number;
-  ownerId: Uint8Array;
+  activityRevisionNum: number;
+  loggedInUserId: Uint8Array;
   answerId: string;
   userId: Uint8Array;
 }) {
@@ -692,28 +673,23 @@ export async function getDocumentSubmittedResponseHistory({
     await prisma.content.findUniqueOrThrow({
       where: {
         id: activityId,
-        ownerId,
-        isDeleted: false,
-        isFolder: false,
+        ...filterEditableActivity(loggedInUserId),
       },
       select: { name: true },
     })
   ).name;
 
-  // for each combination of ["activityId", "docId", "docVersionNum", "answerId", "userId"],
+  // for each combination of ["activityId", "activityRevisionNum", "answerId", "userId"],
   // find the latest submitted response
-  const submittedResponses = await prisma.documentSubmittedResponses.findMany({
+  const submittedResponses = await prisma.submittedResponses.findMany({
     where: {
       activityId,
-      docVersionNum,
-      docId,
+      activityRevisionNum,
       answerId,
       userId,
-      documentVersion: {
-        document: {
-          activity: {
-            ownerId,
-          },
+      activityRevision: {
+        activity: {
+          ownerId: loggedInUserId,
         },
       },
     },
@@ -753,24 +729,16 @@ export async function getAssignmentDataFromCode(
         },
         isDeleted: false,
         isAssigned: true,
-        isFolder: false,
+        type: { not: "folder" },
       },
       select: {
         id: true,
         ownerId: true,
-        documents: {
+        assignedRevisionNum: true,
+        assignedRevision: {
           select: {
-            id: true,
-            assignedVersionNum: true,
-            assignedVersion: {
-              select: {
-                source: true,
-                doenetmlVersion: { select: { fullVersion: true } },
-              },
-            },
-          },
-          orderBy: {
-            id: "asc",
+            source: true,
+            doenetmlVersion: { select: { fullVersion: true } },
           },
         },
       },
@@ -803,15 +771,14 @@ export async function listUserAssigned(userId: Uint8Array) {
       isAssigned: true,
       assignmentScores: { some: { userId } },
     },
-    select: returnContentStructureNoClassDocsSelect({
+    select: returnContentSelect({
       includeAssignInfo: true,
     }),
     orderBy: { createdAt: "asc" },
   });
 
-  const assignments = preliminaryAssignments.map((obj) =>
-    processContentNoClassDocs(obj),
-  );
+  //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
+  const assignments = preliminaryAssignments.map((obj) => processContent(obj));
 
   const user: UserInfo = await prisma.users.findUniqueOrThrow({
     where: { userId },

@@ -116,6 +116,7 @@ CREATE TABLE `contributorHistory` (
     `withLicenseCode` VARCHAR(10) NULL,
     `timestampActivity` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `timestampPrevActivity` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `directCopy` BOOLEAN NOT NULL DEFAULT false,
 
     INDEX `contributorHistory_prevActivityId_prevActivityRevisionNum_idx`(`prevActivityId`, `prevActivityRevisionNum`),
     PRIMARY KEY (`activityId`, `prevActivityId`)
@@ -158,12 +159,12 @@ CREATE TABLE `assignmentScores` (
 -- CreateTable
 CREATE TABLE `activityState` (
     `activityId` BINARY(16) NOT NULL,
-    `activityRevisionNum` INTEGER NOT NULL,
     `userId` BINARY(16) NOT NULL,
     `isLatest` BOOLEAN NOT NULL DEFAULT true,
     `hasMaxScore` BOOLEAN NOT NULL DEFAULT false,
-    `state` MEDIUMTEXT NULL,
     `score` DOUBLE NOT NULL DEFAULT 0,
+    `activityRevisionNum` INTEGER NOT NULL,
+    `state` MEDIUMTEXT NULL,
 
     INDEX `activityState_userId_idx`(`userId`),
     UNIQUE INDEX `activityState_activityId_userId_hasMaxScore_key`(`activityId`, `userId`, `hasMaxScore`),
@@ -182,7 +183,7 @@ CREATE TABLE `submittedResponses` (
     `itemNumber` INTEGER NOT NULL,
     `creditAchieved` DOUBLE NOT NULL,
     `itemCreditAchieved` DOUBLE NOT NULL,
-    `contentCreditAchieved` DOUBLE NOT NULL,
+    `activityCreditAchieved` DOUBLE NOT NULL,
     `submittedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     INDEX `submittedResponses_activityId_activityRevisionNum_answerId_idx`(`activityId`, `activityRevisionNum`, `answerId`),

@@ -220,20 +220,20 @@ model activityState {
 }
 
 model submittedResponses {
-  id                    Int               @id @default(autoincrement())
-  activityId            Bytes             @db.Binary(16)
-  activityRevisionNum   Int
-  userId                Bytes             @db.Binary(16)
-  answerId              String
-  response              String            @db.Text
-  answerNumber          Int?
-  itemNumber            Int
-  creditAchieved        Float
-  itemCreditAchieved    Float
-  contentCreditAchieved Float
-  submittedAt           DateTime          @default(now())
-  activityRevision      activityRevisions @relation(fields: [activityId, activityRevisionNum], references: [activityId, revisionNum], onDelete: NoAction, onUpdate: NoAction)
-  user                  users             @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  id                     Int               @id @default(autoincrement())
+  activityId             Bytes             @db.Binary(16)
+  activityRevisionNum    Int
+  userId                 Bytes             @db.Binary(16)
+  answerId               String
+  response               String            @db.Text
+  answerNumber           Int?
+  itemNumber             Int
+  creditAchieved         Float
+  itemCreditAchieved     Float
+  activityCreditAchieved Float
+  submittedAt            DateTime          @default(now())
+  activityRevision       activityRevisions @relation(fields: [activityId, activityRevisionNum], references: [activityId, revisionNum], onDelete: NoAction, onUpdate: NoAction)
+  user                   users             @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([activityId, activityRevisionNum, answerId])
   @@index([userId])
