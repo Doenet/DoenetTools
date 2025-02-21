@@ -7,11 +7,11 @@ import {
   getClassifications,
   removeClassification,
   searchPossibleClassifications,
-} from "../apis/classification";
-import { createContent, updateContent } from "../apis/activity";
-import { setContentIsPublic } from "../apis/share";
+} from "../query/classification";
+import { createContent, updateContent } from "../query/activity";
+import { setContentIsPublic } from "../query/share";
 import { prisma } from "../model";
-import { getActivityEditorData } from "../apis/activity_edit_view";
+import { getActivityEditorData } from "../query/activity_edit_view";
 
 test("Content classifications can only be edited by activity owner", async () => {
   const { userId } = await createTestUser();

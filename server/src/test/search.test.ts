@@ -6,25 +6,25 @@ import {
   deleteContent,
   updateContent,
   updateContentFeatures,
-} from "../apis/activity";
+} from "../query/activity";
 import {
   modifyContentSharedWith,
   setContentIsPublic,
   shareContentWithEmail,
-} from "../apis/share";
+} from "../query/share";
 import {
   addClassification,
   searchPossibleClassifications,
-} from "../apis/classification";
+} from "../query/classification";
 import {
   searchClassificationCategoriesWithSharedContent,
   searchClassificationSubCategoriesWithSharedContent,
   searchClassificationsWithSharedContent,
   searchSharedContent,
   searchUsersWithSharedContent,
-} from "../apis/explore";
-import { searchMyContent } from "../apis/content_list";
-import { updateUser } from "../apis/user";
+} from "../query/explore";
+import { searchMyContent } from "../query/content_list";
+import { updateUser } from "../query/user";
 
 test("searchSharedContent returns public/shared activities and folders matching the query", async () => {
   const owner = await createTestUser();

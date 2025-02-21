@@ -1,12 +1,12 @@
 import { expect, test } from "vitest";
 import { createTestUser } from "./utils";
 import { ContentType } from "@prisma/client";
-import { createContent } from "../apis/activity";
+import { createContent } from "../query/activity";
 import {
   getRecentContent,
   purgeOldRecentContent,
   recordRecentContent,
-} from "../apis/explore";
+} from "../query/explore";
 import { prisma } from "../model";
 
 test("add and check recent content", async () => {

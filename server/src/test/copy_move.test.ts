@@ -1,9 +1,9 @@
 import { expect, test } from "vitest";
 import { createTestUser } from "./utils";
-import { createContent, updateContent } from "../apis/activity";
-import { copyContent } from "../apis/copy_move";
-import { setContentIsPublic } from "../apis/share";
-import { getMyContent } from "../apis/content_list";
+import { createContent, updateContent } from "../query/activity";
+import { copyContent } from "../query/copy_move";
+import { setContentIsPublic } from "../query/share";
+import { getMyContent } from "../query/content_list";
 
 test("copy folder", async () => {
   const { userId: ownerId } = await createTestUser();

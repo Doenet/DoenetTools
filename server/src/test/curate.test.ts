@@ -11,10 +11,10 @@ import {
   publishActivityToLibrary,
   unpublishActivityFromLibrary,
   deleteDraftFromLibrary,
-} from "../apis/curate";
-import { createContent, deleteContent } from "../apis/activity";
-import { setContentIsPublic, setContentLicense } from "../apis/share";
-import { getContent } from "../apis/activity_edit_view";
+} from "../query/curate";
+import { createContent, deleteContent } from "../query/activity";
+import { setContentIsPublic, setContentLicense } from "../query/share";
+import { getContent } from "../query/activity_edit_view";
 
 async function expectStatusIs(
   activityId: Uint8Array,

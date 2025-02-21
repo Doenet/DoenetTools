@@ -8,14 +8,14 @@ import { fromUUID, isEqualUUID } from "../utils/uuid";
 import {
   addClassification,
   searchPossibleClassifications,
-} from "../apis/classification";
+} from "../query/classification";
 import {
   createContent,
   deleteContent,
   updateContent,
   updateContentFeatures,
-} from "../apis/activity";
-import { modifyContentSharedWith, setContentIsPublic } from "../apis/share";
+} from "../query/activity";
+import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import {
   browseClassificationCategoriesWithSharedContent,
   browseClassificationCategorySharedContent,
@@ -25,8 +25,8 @@ import {
   browseClassificationsWithSharedContent,
   browseClassificationSystemsWithSharedContent,
   browseUsersWithSharedContent,
-} from "../apis/explore";
-import { updateUser } from "../apis/user";
+} from "../query/explore";
+import { updateUser } from "../query/user";
 
 test("browseUsersWithSharedContent, no filter, filter by unclassified", async () => {
   const { userId } = await createTestUser();

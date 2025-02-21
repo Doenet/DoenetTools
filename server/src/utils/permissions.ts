@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { getIsAdmin } from "../apis/curate";
+import { getIsAdmin } from "../query/curate";
 import { prisma } from "../model";
 import { isEqualUUID } from "./uuid";
 

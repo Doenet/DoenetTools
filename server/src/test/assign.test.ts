@@ -8,7 +8,7 @@ import {
   studentDataConvertUUID,
   userConvertUUID,
 } from "../utils/uuid";
-import { createContent, deleteContent, updateContent } from "../apis/activity";
+import { createContent, deleteContent, updateContent } from "../query/activity";
 import {
   assignActivity,
   closeAssignmentWithCode,
@@ -27,11 +27,11 @@ import {
   recordSubmittedEvent,
   unassignActivity,
   updateAssignmentSettings,
-} from "../apis/assign";
-import { modifyContentSharedWith, setContentIsPublic } from "../apis/share";
-import { loadState, saveScoreAndState } from "../apis/scores";
-import { updateUser } from "../apis/user";
-import { moveContent } from "../apis/copy_move";
+} from "../query/assign";
+import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
+import { loadState, saveScoreAndState } from "../query/scores";
+import { updateUser } from "../query/user";
+import { moveContent } from "../query/copy_move";
 
 test("assign an activity", async () => {
   const owner = await createTestUser();

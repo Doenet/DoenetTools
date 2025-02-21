@@ -12,26 +12,26 @@ import {
   getActivitySource,
   updateContent,
   getContentDescription,
-} from "../apis/activity";
+} from "../query/activity";
 import {
   getActivityEditorData,
   getActivityViewerData,
   getSharedEditorData,
-} from "../apis/activity_edit_view";
-import { getMyContent } from "../apis/content_list";
+} from "../query/activity_edit_view";
+import { getMyContent } from "../query/content_list";
 import { InvalidRequestError } from "../utils/error";
 import {
   modifyContentSharedWith,
   setContentIsPublic,
   setContentLicense,
-} from "../apis/share";
+} from "../query/share";
 import {
   closeAssignmentWithCode,
   openAssignmentWithCode,
   unassignActivity,
-} from "../apis/assign";
-import { saveScoreAndState } from "../apis/scores";
-import { moveContent } from "../apis/copy_move";
+} from "../query/assign";
+import { saveScoreAndState } from "../query/scores";
+import { moveContent } from "../query/copy_move";
 import { prisma } from "../model";
 
 // const EMPTY_DOC_CID =

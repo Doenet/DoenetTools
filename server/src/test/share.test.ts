@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { createContent } from "../apis/activity";
+import { createContent } from "../query/activity";
 import {
   getAllLicenses,
   getLicense,
@@ -7,16 +7,16 @@ import {
   setContentIsPublic,
   setContentLicense,
   shareContentWithEmail,
-} from "../apis/share";
-import { getContent, getActivityEditorData } from "../apis/activity_edit_view";
-import { getMyContent } from "../apis/content_list";
-import { copyContent, moveContent } from "../apis/copy_move";
-import { updateUser } from "../apis/user";
+} from "../query/share";
+import { getContent, getActivityEditorData } from "../query/activity_edit_view";
+import { getMyContent } from "../query/content_list";
+import { copyContent, moveContent } from "../query/copy_move";
+import { updateUser } from "../query/user";
 import { createTestUser } from "./utils";
 import {
   getActivityContributorHistory,
   getActivityRemixes,
-} from "../apis/remix";
+} from "../query/remix";
 
 test("content in public folder is created as public", async () => {
   const owner = await createTestUser();

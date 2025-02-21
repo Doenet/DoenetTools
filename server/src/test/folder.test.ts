@@ -6,33 +6,33 @@ import {
   getPreferredFolderView,
   getSharedContent,
   setPreferredFolderView,
-} from "../apis/content_list";
+} from "../query/content_list";
 import {
   createContent,
   deleteContent,
   updateContent,
   updateContentFeatures,
-} from "../apis/activity";
+} from "../query/activity";
 import {
   modifyContentSharedWith,
   setContentIsPublic,
   shareContentWithEmail,
-} from "../apis/share";
-import { updateUser } from "../apis/user";
+} from "../query/share";
+import { updateUser } from "../query/user";
 import {
   getActivityEditorData,
   getActivityViewerData,
   getContent,
-} from "../apis/activity_edit_view";
+} from "../query/activity_edit_view";
 import {
   checkIfContentContains,
   copyContent,
   moveContent,
-} from "../apis/copy_move";
+} from "../query/copy_move";
 import {
   addClassification,
   searchPossibleClassifications,
-} from "../apis/classification";
+} from "../query/classification";
 import { ContentType } from "@prisma/client";
 
 test("getMyContent returns both public and private content, getSharedFolderContent returns only public", async () => {

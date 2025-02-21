@@ -10,9 +10,9 @@ import {
   movePromotedContentGroup,
   removePromotedContent,
   updatePromotedContentGroup,
-} from "../apis/promoted";
-import { createContent } from "../apis/activity";
-import { setContentIsPublic } from "../apis/share";
+} from "../query/promoted";
+import { createContent } from "../query/activity";
+import { setContentIsPublic } from "../query/share";
 
 test("add and remove promoted content", async () => {
   const { userId } = await createTestAdminUser();
