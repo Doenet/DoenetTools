@@ -3,8 +3,9 @@ import { prisma } from "../model";
 import { blankLibraryInfo, LibraryInfo } from "../types";
 import { InvalidRequestError } from "../utils/error";
 import { fromUUID } from "../utils/uuid";
-import { deleteContent } from "./activity";
+import { deleteContentNoCheck } from "./activity";
 import { copyContent } from "./copy_move";
+import { filterEditableActivity } from "../utils/permissions";
 
 export async function mustBeAdmin(
   userId: Uint8Array,
@@ -232,14 +233,16 @@ export async function addDraftToLibrary({
 }) {
   await mustBeAdmin(loggedInUserId);
 
-  const sourceIsLibOrDraftExists = await prisma.libraryActivityInfos.findFirst({
+  const sourceIsInvalid = await prisma.libraryActivityInfos.findFirst({
     where: {
       OR: [
         {
+          // Source activity already has remixed version in library
           sourceId: id,
           NOT: { activityId: null },
         },
         {
+          // Source activity is library activity
           activityId: id,
           activity: {
             owner: {
@@ -247,18 +250,32 @@ export async function addDraftToLibrary({
             },
           },
         },
+        {
+          // Source id is folder
+          sourceId: id,
+          activity: {
+            type: "folder",
+          },
+        },
       ],
     },
     select: {
       activityId: true,
+      activity: {
+        select: {
+          type: true,
+        },
+      },
     },
   });
 
-  if (sourceIsLibOrDraftExists) {
-    if (sourceIsLibOrDraftExists.activityId !== null) {
+  if (sourceIsInvalid) {
+    if (sourceIsInvalid.activityId !== null) {
       throw new InvalidRequestError(
-        `Already included in library, see activity ${fromUUID(sourceIsLibOrDraftExists.activityId!)}`,
+        `Already included in library, see activity ${fromUUID(sourceIsInvalid.activityId!)}`,
       );
+    } else if (sourceIsInvalid.activity?.type === "folder") {
+      throw new InvalidRequestError(`Cannot add folder to library`);
     } else {
       throw new InvalidRequestError(`Cannot add draft of curated activity`);
     }
@@ -339,7 +356,18 @@ export async function deleteDraftFromLibrary({
     select: { id: true },
   });
 
-  const deleteDraft = deleteContent(draftId, libraryId);
+  const ensureDraftExists = prisma.content.findUniqueOrThrow({
+    where: {
+      id: draftId,
+      owner: {
+        isLibrary: true,
+      },
+      ...filterEditableActivity(loggedInUserId, true),
+    },
+    select: { id: true },
+  });
+
+  const deleteDraft = deleteContentNoCheck(draftId, libraryId);
 
   const removeLibraryIdRef = prisma.libraryActivityInfos.update({
     where: {
@@ -360,7 +388,7 @@ export async function deleteDraftFromLibrary({
     },
   });
 
-  await prisma.$transaction([deleteDraft, removeLibraryIdRef, logDeletion]);
+  await prisma.$transaction([ensureDraftExists, deleteDraft, removeLibraryIdRef, logDeletion]);
 }
 
 /**

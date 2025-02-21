@@ -120,7 +120,8 @@ export async function createContent(
 
 /**
  * Delete the content `id` along with all the content inside it,
- * recursing to its children
+ * recursing to its children.
+ * Throws error if content id does not exist
  */
 export async function deleteContent(
   id: Uint8Array,
@@ -137,7 +138,20 @@ export async function deleteContent(
     select: { id: true },
   });
 
-  return prisma.$queryRaw(Prisma.sql`
+  await deleteContentNoCheck(id, loggedInUserId);
+}
+
+/**
+ * Delete the content `id` along with all the content inside it,
+ * recursing to its children
+ * 
+ * WARNING: This function fails silently if content `id` does not exist. Use {@link deleteContent} instead if you would like the function to throw an error.
+ */
+export function deleteContentNoCheck(
+  id: Uint8Array,
+  loggedInUserId: Uint8Array,
+) {
+  return prisma.$executeRaw(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
       WHERE id = ${id} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE

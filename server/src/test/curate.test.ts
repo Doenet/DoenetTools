@@ -1,22 +1,20 @@
 import { expect, test } from "vitest";
+import { createTestAdminUser, createTestUser } from "./utils";
+import { LibraryInfo } from "../types";
 import {
+  getLibraryStatus,
+  submitLibraryRequest,
   addDraftToLibrary,
   cancelLibraryRequest,
-  createActivity,
-  deleteActivity,
-  deleteDraftFromLibrary,
-  getActivity,
-  getLibraryStatus,
-  makeActivityPrivate,
-  makeActivityPublic,
   markLibraryRequestNeedsRevision,
   modifyCommentsOfLibraryRequest,
   publishActivityToLibrary,
-  submitLibraryRequest,
   unpublishActivityFromLibrary,
-} from "../model";
-import { createTestAdminUser, createTestUser } from "./utils";
-import { LibraryInfo } from "../types";
+  deleteDraftFromLibrary,
+} from "../apis/curate";
+import { createContent, deleteContent } from "../apis/activity";
+import { setContentIsPublic, setContentLicense } from "../apis/share";
+import { getContent } from "../apis/activity_edit_view";
 
 async function expectStatusIs(
   activityId: Uint8Array,
@@ -35,7 +33,7 @@ test("user privileges for library", async () => {
   const { userId: adminId } = await createTestAdminUser();
   const { userId: randomUserId } = await createTestUser();
 
-  const { activityId } = await createActivity(ownerId, null);
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
 
   // No library status for private activity
   const statusNone: LibraryInfo = {
@@ -61,10 +59,12 @@ test("user privileges for library", async () => {
   await expectStatusIs(activityId, statusNone, adminId);
   await expectStatusIs(activityId, statusNone, randomUserId);
 
-  await makeActivityPublic({
-    id: activityId,
-    ownerId,
-    licenseCode: "CCDUAL",
+  // await setContentLicense({contentId: activityId, loggedInUserId: ownerId, licenseCode: "CCDUAL"});
+
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
 
   const statusPending: LibraryInfo = {
@@ -88,7 +88,6 @@ test("user privileges for library", async () => {
     await expect(() =>
       addDraftToLibrary({
         id: activityId,
-        contentType: "singleDoc",
         loggedInUserId: userId,
       }),
     ).rejects.toThrowError();
@@ -99,7 +98,6 @@ test("user privileges for library", async () => {
 
   const { draftId } = await addDraftToLibrary({
     id: activityId,
-    contentType: "singleDoc",
     loggedInUserId: adminId,
   });
   const statusPendingWithDraft = {
@@ -296,11 +294,12 @@ test("user privileges for library", async () => {
 test("activity must be draft to be published in library", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId } = await createActivity(ownerId, null);
-  await makeActivityPublic({
-    id: activityId,
-    ownerId,
-    licenseCode: "CCDUAL",
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+    isPublic: true,
+    // licenseCode: "CCDUAL",
   });
   await submitLibraryRequest({ ownerId, activityId });
 
@@ -320,11 +319,11 @@ test("owner requests library review, admin publishes", async () => {
   const { userId: ownerId } = await createTestUser();
   const { userId: adminId } = await createTestAdminUser();
 
-  const { activityId } = await createActivity(ownerId, null);
-  await makeActivityPublic({
-    id: activityId,
-    ownerId,
-    licenseCode: "CCDUAL",
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
 
   const status: LibraryInfo = {
@@ -338,7 +337,6 @@ test("owner requests library review, admin publishes", async () => {
 
   const { draftId } = await addDraftToLibrary({
     id: activityId,
-    contentType: "singleDoc",
     loggedInUserId: adminId,
   });
   await expectStatusIs(activityId, status, ownerId);
@@ -361,15 +359,14 @@ test("admin publishes to library without owner request", async () => {
   const { userId: ownerId } = await createTestUser();
   const { userId: adminId } = await createTestAdminUser();
 
-  const { activityId } = await createActivity(ownerId, null);
-  await makeActivityPublic({
-    id: activityId,
-    ownerId,
-    licenseCode: "CCDUAL",
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   const { draftId } = await addDraftToLibrary({
     id: activityId,
-    contentType: "singleDoc",
     loggedInUserId: adminId,
   });
 
@@ -405,17 +402,16 @@ test("published activity in library with unavailable source activity", async () 
   // Setup
   const { userId: ownerId } = await createTestUser();
   const { userId: adminId } = await createTestAdminUser();
-  const { activityId } = await createActivity(ownerId, null);
-  await makeActivityPublic({
-    id: activityId,
-    ownerId,
-    licenseCode: "CCDUAL",
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
 
   // Publish
   const { draftId } = await addDraftToLibrary({
     id: activityId,
-    contentType: "singleDoc",
     loggedInUserId: adminId,
   });
   await publishActivityToLibrary({
@@ -432,12 +428,16 @@ test("published activity in library with unavailable source activity", async () 
   };
 
   // Owner makes their activity private, library remix still published
-  await makeActivityPrivate({ id: activityId, ownerId });
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+    isPublic: false,
+  });
   await expectStatusIs(activityId, status, adminId);
   await expectStatusIs(activityId, status, ownerId);
 
   // Owner deletes activity, remix still published
-  await deleteActivity(activityId, ownerId);
+  await deleteContent(activityId, ownerId);
   await expectStatusIs(activityId, status, adminId);
   await expectStatusIs(activityId, status, ownerId);
 });
@@ -446,15 +446,14 @@ test("deleting draft does not delete owner's original", async () => {
   // Setup
   const { userId: ownerId } = await createTestUser();
   const { userId: adminId } = await createTestAdminUser();
-  const { activityId } = await createActivity(ownerId, null);
-  await makeActivityPublic({
-    id: activityId,
-    ownerId,
-    licenseCode: "CCDUAL",
+  const { id: activityId } = await createContent(ownerId, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+    isPublic: true,
   });
   const { draftId } = await addDraftToLibrary({
     id: activityId,
-    contentType: "singleDoc",
     loggedInUserId: adminId,
   });
 
@@ -463,23 +462,26 @@ test("deleting draft does not delete owner's original", async () => {
     contentType: "singleDoc",
     loggedInUserId: adminId,
   });
-  const original = await getActivity(activityId);
+
+  // Verify this query does not throw an error
+  const original = await getContent({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+  });
   expect(original.id).eqls(activityId);
-  expect(original.isDeleted).eqls(false);
 });
 
 test("Cannot add draft of curated activity", async () => {
   // Setup
   const { userId: adminId } = await createTestAdminUser();
-  const { activityId } = await createActivity(adminId, null);
-  await makeActivityPublic({
-    id: activityId,
-    ownerId: adminId,
-    licenseCode: "CCDUAL",
+  const { id: activityId } = await createContent(adminId, "singleDoc", null);
+  await setContentIsPublic({
+    contentId: activityId,
+    loggedInUserId: adminId,
+    isPublic: true,
   });
   const { draftId: curatedId } = await addDraftToLibrary({
     id: activityId,
-    contentType: "singleDoc",
     loggedInUserId: adminId,
   });
   await publishActivityToLibrary({
@@ -492,7 +494,6 @@ test("Cannot add draft of curated activity", async () => {
   await expect(() =>
     addDraftToLibrary({
       id: curatedId,
-      contentType: "singleDoc",
       loggedInUserId: adminId,
     }),
   ).rejects.toThrowError();
@@ -521,3 +522,5 @@ test.todo("Cannot add new non-remixed activity to library");
 test.todo("Can view remix history of library activity");
 
 test.todo("Library draft not visible to non-admin");
+
+test.todo("Cannot remix folder into library");
