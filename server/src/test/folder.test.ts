@@ -43,59 +43,59 @@ test("getMyContent returns both public and private content, getSharedFolderConte
   const user = await createTestUser();
   const userId = user.userId;
 
-  const { contentId: publicActivity1Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: privateActivity1Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: publicActivity1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: privateActivity1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
-  const { contentId: publicFolder1Id } = await createContent(
-    ownerId,
-    "folder",
-    null,
-  );
-  const { contentId: privateFolder1Id } = await createContent(
-    ownerId,
-    "folder",
-    null,
-  );
+  const { contentId: publicFolder1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: null,
+  });
+  const { contentId: privateFolder1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: null,
+  });
 
-  const { contentId: publicActivity2Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    publicFolder1Id,
-  );
-  const { contentId: publicFolder2Id } = await createContent(
-    ownerId,
-    "folder",
-    publicFolder1Id,
-  );
+  const { contentId: publicActivity2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: publicFolder1Id,
+  });
+  const { contentId: publicFolder2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: publicFolder1Id,
+  });
 
-  const { contentId: publicActivity3Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    privateFolder1Id,
-  );
-  const { contentId: privateActivity3Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    privateFolder1Id,
-  );
-  const { contentId: publicFolder3Id } = await createContent(
-    ownerId,
-    "folder",
-    privateFolder1Id,
-  );
-  const { contentId: privateFolder3Id } = await createContent(
-    ownerId,
-    "folder",
-    privateFolder1Id,
-  );
+  const { contentId: publicActivity3Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: privateFolder1Id,
+  });
+  const { contentId: privateActivity3Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: privateFolder1Id,
+  });
+  const { contentId: publicFolder3Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: privateFolder1Id,
+  });
+  const { contentId: privateFolder3Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: privateFolder1Id,
+  });
 
   // Make items public
 
@@ -386,59 +386,59 @@ test(
     const user3 = await createTestUser();
     const user3Id = user3.userId;
 
-    const { contentId: sharedActivity1Id } = await createContent(
-      ownerId,
-      "singleDoc",
-      null,
-    );
-    const { contentId: privateActivity1Id } = await createContent(
-      ownerId,
-      "singleDoc",
-      null,
-    );
+    const { contentId: sharedActivity1Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: null,
+    });
+    const { contentId: privateActivity1Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: null,
+    });
 
-    const { contentId: sharedFolder1Id } = await createContent(
-      ownerId,
-      "folder",
-      null,
-    );
-    const { contentId: privateFolder1Id } = await createContent(
-      ownerId,
-      "folder",
-      null,
-    );
+    const { contentId: sharedFolder1Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "folder",
+      parentId: null,
+    });
+    const { contentId: privateFolder1Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "folder",
+      parentId: null,
+    });
 
-    const { contentId: sharedActivity2Id } = await createContent(
-      ownerId,
-      "singleDoc",
-      sharedFolder1Id,
-    );
-    const { contentId: sharedFolder2Id } = await createContent(
-      ownerId,
-      "folder",
-      sharedFolder1Id,
-    );
+    const { contentId: sharedActivity2Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: sharedFolder1Id,
+    });
+    const { contentId: sharedFolder2Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "folder",
+      parentId: sharedFolder1Id,
+    });
 
-    const { contentId: sharedActivity3Id } = await createContent(
-      ownerId,
-      "singleDoc",
-      privateFolder1Id,
-    );
-    const { contentId: privateActivity3Id } = await createContent(
-      ownerId,
-      "singleDoc",
-      privateFolder1Id,
-    );
-    const { contentId: sharedFolder3Id } = await createContent(
-      ownerId,
-      "folder",
-      privateFolder1Id,
-    );
-    const { contentId: privateFolder3Id } = await createContent(
-      ownerId,
-      "folder",
-      privateFolder1Id,
-    );
+    const { contentId: sharedActivity3Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: privateFolder1Id,
+    });
+    const { contentId: privateActivity3Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: privateFolder1Id,
+    });
+    const { contentId: sharedFolder3Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "folder",
+      parentId: privateFolder1Id,
+    });
+    const { contentId: privateFolder3Id } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "folder",
+      parentId: privateFolder1Id,
+    });
 
     // Share
 
@@ -782,68 +782,68 @@ test(
     const user = await createTestUser();
     const userId = user.userId;
 
-    const { contentId: folder1Id } = await createContent(
-      userId,
-      "folder",
-      null,
-    );
+    const { contentId: folder1Id } = await createContent({
+      loggedInUserId: userId,
+      contentType: "folder",
+      parentId: null,
+    });
 
-    const { contentId: activity1Id } = await createContent(
-      userId,
-      "singleDoc",
-      folder1Id,
-    );
-    const { contentId: folder2Id } = await createContent(
-      userId,
-      "folder",
-      folder1Id,
-    );
-    const { contentId: activity2Id } = await createContent(
-      userId,
-      "singleDoc",
-      folder2Id,
-    );
-    const { contentId: folder3Id } = await createContent(
-      userId,
-      "folder",
-      folder2Id,
-    );
-    const { contentId: activity3Id } = await createContent(
-      userId,
-      "singleDoc",
-      folder3Id,
-    );
+    const { contentId: activity1Id } = await createContent({
+      loggedInUserId: userId,
+      contentType: "singleDoc",
+      parentId: folder1Id,
+    });
+    const { contentId: folder2Id } = await createContent({
+      loggedInUserId: userId,
+      contentType: "folder",
+      parentId: folder1Id,
+    });
+    const { contentId: activity2Id } = await createContent({
+      loggedInUserId: userId,
+      contentType: "singleDoc",
+      parentId: folder2Id,
+    });
+    const { contentId: folder3Id } = await createContent({
+      loggedInUserId: userId,
+      contentType: "folder",
+      parentId: folder2Id,
+    });
+    const { contentId: activity3Id } = await createContent({
+      loggedInUserId: userId,
+      contentType: "singleDoc",
+      parentId: folder3Id,
+    });
 
-    const { contentId: folder4Id } = await createContent(
-      userId,
-      "folder",
-      null,
-    );
-    const { contentId: activity4Id } = await createContent(
-      userId,
-      "singleDoc",
-      folder4Id,
-    );
-    const { contentId: folder5Id } = await createContent(
-      userId,
-      "folder",
-      folder4Id,
-    );
-    const { contentId: activity5Id } = await createContent(
-      userId,
-      "singleDoc",
-      folder5Id,
-    );
-    const { contentId: folder6Id } = await createContent(
-      userId,
-      "folder",
-      folder5Id,
-    );
-    const { contentId: activity6Id } = await createContent(
-      userId,
-      "singleDoc",
-      folder6Id,
-    );
+    const { contentId: folder4Id } = await createContent({
+      loggedInUserId: userId,
+      contentType: "folder",
+      parentId: null,
+    });
+    const { contentId: activity4Id } = await createContent({
+      loggedInUserId: userId,
+      contentType: "singleDoc",
+      parentId: folder4Id,
+    });
+    const { contentId: folder5Id } = await createContent({
+      loggedInUserId: userId,
+      contentType: "folder",
+      parentId: folder4Id,
+    });
+    const { contentId: activity5Id } = await createContent({
+      loggedInUserId: userId,
+      contentType: "singleDoc",
+      parentId: folder5Id,
+    });
+    const { contentId: folder6Id } = await createContent({
+      loggedInUserId: userId,
+      contentType: "folder",
+      parentId: folder5Id,
+    });
+    const { contentId: activity6Id } = await createContent({
+      loggedInUserId: userId,
+      contentType: "singleDoc",
+      parentId: folder6Id,
+    });
 
     // items can be retrieved
     let baseContent = await getMyContent({
@@ -986,7 +986,11 @@ test("non-owner cannot delete folder", async () => {
   const user = await createTestUser();
   const userId = user.userId;
 
-  const { contentId: folderId } = await createContent(ownerId, "folder", null);
+  const { contentId: folderId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: null,
+  });
   await expect(deleteContent(folderId, userId)).rejects.toThrow(
     PrismaClientKnownRequestError,
   );
@@ -1001,28 +1005,36 @@ test("non-owner cannot delete folder", async () => {
 test("move content to different locations", async () => {
   const ownerId = (await createTestUser()).userId;
 
-  const { contentId: activity1Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity2Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: folder1Id } = await createContent(ownerId, "folder", null);
-  const { contentId: activity3Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    folder1Id,
-  );
-  const { contentId: folder2Id } = await createContent(
-    ownerId,
-    "folder",
-    folder1Id,
-  );
-  const { contentId: folder3Id } = await createContent(ownerId, "folder", null);
+  const { contentId: activity1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: folder1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: null,
+  });
+  const { contentId: activity3Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder1Id,
+  });
+  const { contentId: folder2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: folder1Id,
+  });
+  const { contentId: folder3Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: null,
+  });
 
   let baseContent = await getMyContent({
     loggedInUserId: ownerId,
@@ -1228,22 +1240,26 @@ test("move content to different locations", async () => {
 test("cannot move content into itself or a descendant of itself", async () => {
   const ownerId = (await createTestUser()).userId;
 
-  const { contentId: folder1Id } = await createContent(ownerId, "folder", null);
-  const { contentId: folder2Id } = await createContent(
-    ownerId,
-    "folder",
-    folder1Id,
-  );
-  const { contentId: folder3Id } = await createContent(
-    ownerId,
-    "folder",
-    folder2Id,
-  );
-  const { contentId: folder4Id } = await createContent(
-    ownerId,
-    "folder",
-    folder3Id,
-  );
+  const { contentId: folder1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: null,
+  });
+  const { contentId: folder2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: folder1Id,
+  });
+  const { contentId: folder3Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: folder2Id,
+  });
+  const { contentId: folder4Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: folder3Id,
+  });
 
   await expect(
     moveContent({
@@ -1292,36 +1308,36 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
 
   const ownerId = (await createTestUser()).userId;
 
-  const { contentId: activity1Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity2Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity3Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity4Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity5Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity6Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity3Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity4Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity5Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity6Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   // With the current algorithm and parameters,
   // the sort indices will need to be shifted after 32 inserts in between a pair of items.
@@ -1422,11 +1438,11 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
 test("copyContent copies a public document to a new owner", async () => {
   const originalOwnerId = (await createTestUser()).userId;
   const newOwnerId = (await createTestUser()).userId;
-  const { contentId: activityId } = await createContent(
-    originalOwnerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId } = await createContent({
+    loggedInUserId: originalOwnerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   // cannot copy if not yet public
   await expect(copyContent(activityId, newOwnerId, null)).rejects.toThrow(
     PrismaClientKnownRequestError,
@@ -1458,11 +1474,11 @@ test("copyContent copies a public document to a new owner", async () => {
 test("copyContent copies a shared document to a new owner", async () => {
   const originalOwnerId = (await createTestUser()).userId;
   const newOwnerId = (await createTestUser()).userId;
-  const { contentId: activityId } = await createContent(
-    originalOwnerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId } = await createContent({
+    loggedInUserId: originalOwnerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   // cannot copy if not yet shared
   await expect(copyContent(activityId, newOwnerId, null)).rejects.toThrow(
     PrismaClientKnownRequestError,
@@ -1500,11 +1516,11 @@ test("copyContent remixes correct versions", async () => {
   const ownerId3 = (await createTestUser()).userId;
 
   // create activity 1 by owner 1
-  const { contentId: activityId1 } = await createContent(
-    ownerId1,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1 } = await createContent({
+    loggedInUserId: ownerId1,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   const activity1Content = "<p>Hello!</p>";
   await setContentIsPublic({
     contentId: activityId1,
@@ -1568,11 +1584,11 @@ test("copyContent remixes correct versions", async () => {
 test("copyContent copies content classifications", async () => {
   const originalOwnerId = (await createTestUser()).userId;
   const newOwnerId = (await createTestUser()).userId;
-  const { contentId: activityId } = await createContent(
-    originalOwnerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId } = await createContent({
+    loggedInUserId: originalOwnerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   const { id: classifyId } = (
     await searchPossibleClassifications({ query: "K.CC.1 common core" })
@@ -1596,16 +1612,16 @@ test("copyContent copies content classifications", async () => {
 test("copyContent copies content features", async () => {
   const originalOwnerId = (await createTestUser()).userId;
   const newOwnerId = (await createTestUser()).userId;
-  const { contentId: activityId1 } = await createContent(
-    originalOwnerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityId2 } = await createContent(
-    originalOwnerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1 } = await createContent({
+    loggedInUserId: originalOwnerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityId2 } = await createContent({
+    loggedInUserId: originalOwnerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   await updateContentFeatures({
     contentId: activityId1,
@@ -1667,7 +1683,11 @@ test("check if content contains content type", async () => {
   }
 
   // add a single document to base folder
-  await createContent(userId, "singleDoc", null);
+  await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(await checkIfContentContains(null, ct as ContentType, userId)).eq(
       ct === "singleDoc",
@@ -1675,7 +1695,11 @@ test("check if content contains content type", async () => {
   }
 
   // add a folder to base folder
-  const { contentId: folderId1 } = await createContent(userId, "folder", null);
+  const { contentId: folderId1 } = await createContent({
+    loggedInUserId: userId,
+    contentType: "folder",
+    parentId: null,
+  });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(await checkIfContentContains(null, ct as ContentType, userId)).eq(
       ct === "singleDoc" || ct === "folder",
@@ -1683,7 +1707,11 @@ test("check if content contains content type", async () => {
   }
 
   // add a question bank to base folder
-  await createContent(userId, "select", null);
+  await createContent({
+    loggedInUserId: userId,
+    contentType: "select",
+    parentId: null,
+  });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(await checkIfContentContains(null, ct as ContentType, userId)).eq(
       ct !== "sequence",
@@ -1691,7 +1719,11 @@ test("check if content contains content type", async () => {
   }
 
   // add problem set to base folder
-  await createContent(userId, "sequence", null);
+  await createContent({
+    loggedInUserId: userId,
+    contentType: "sequence",
+    parentId: null,
+  });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(await checkIfContentContains(null, ct as ContentType, userId)).eq(
       true,
@@ -1706,11 +1738,11 @@ test("check if content contains content type", async () => {
   }
 
   // add a folder to folder 1
-  const { contentId: folderId2 } = await createContent(
-    userId,
-    "folder",
-    folderId1,
-  );
+  const { contentId: folderId2 } = await createContent({
+    loggedInUserId: userId,
+    contentType: "folder",
+    parentId: folderId1,
+  });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
       await checkIfContentContains(folderId1, ct as ContentType, userId),
@@ -1718,11 +1750,11 @@ test("check if content contains content type", async () => {
   }
 
   // add a folder to folder 2, still checking folder 1
-  const { contentId: folderId3 } = await createContent(
-    userId,
-    "folder",
-    folderId2,
-  );
+  const { contentId: folderId3 } = await createContent({
+    loggedInUserId: userId,
+    contentType: "folder",
+    parentId: folderId2,
+  });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
       await checkIfContentContains(folderId1, ct as ContentType, userId),
@@ -1730,11 +1762,11 @@ test("check if content contains content type", async () => {
   }
 
   // add a problem set to folder 3, still checking folder 1
-  const { contentId: problemSetId4 } = await createContent(
-    userId,
-    "sequence",
-    folderId3,
-  );
+  const { contentId: problemSetId4 } = await createContent({
+    loggedInUserId: userId,
+    contentType: "sequence",
+    parentId: folderId3,
+  });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
       await checkIfContentContains(folderId1, ct as ContentType, userId),
@@ -1742,11 +1774,11 @@ test("check if content contains content type", async () => {
   }
 
   // add a question bank to problem set 4 still checking folder 1
-  const { contentId: questionBank5 } = await createContent(
-    userId,
-    "select",
-    problemSetId4,
-  );
+  const { contentId: questionBank5 } = await createContent({
+    loggedInUserId: userId,
+    contentType: "select",
+    parentId: problemSetId4,
+  });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
       await checkIfContentContains(folderId1, ct as ContentType, userId),
@@ -1754,7 +1786,11 @@ test("check if content contains content type", async () => {
   }
 
   // add a document to problem set 5 still checking folder 1
-  await createContent(userId, "singleDoc", questionBank5);
+  await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: questionBank5,
+  });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
       await checkIfContentContains(folderId1, ct as ContentType, userId),

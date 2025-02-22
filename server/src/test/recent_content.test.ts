@@ -17,11 +17,11 @@ test("add and check recent content", async () => {
 
   // add 5 activities
   for (let i = 0; i < 5; i++) {
-    const { contentId: activityId } = await createContent(
-      userId,
-      "singleDoc",
-      null,
-    );
+    const { contentId: activityId } = await createContent({
+      loggedInUserId: userId,
+      contentType: "singleDoc",
+      parentId: null,
+    });
     await recordRecentContent(userId, "edit", activityId);
     activityIds.push(activityId);
   }
@@ -32,11 +32,11 @@ test("add and check recent content", async () => {
 
   // add a couple more activities
   for (let i = 0; i < 2; i++) {
-    const { contentId: activityId } = await createContent(
-      userId,
-      "singleDoc",
-      null,
-    );
+    const { contentId: activityId } = await createContent({
+      loggedInUserId: userId,
+      contentType: "singleDoc",
+      parentId: null,
+    });
     await recordRecentContent(userId, "edit", activityId);
     activityIds.push(activityId);
   }
@@ -54,27 +54,35 @@ test("add and check recent content, different types", async () => {
 
   // add five items of each content type
   for (let i = 0; i < 5; i++) {
-    const { contentId: activityId } = await createContent(
-      userId,
-      "singleDoc",
-      null,
-    );
+    const { contentId: activityId } = await createContent({
+      loggedInUserId: userId,
+      contentType: "singleDoc",
+      parentId: null,
+    });
     await recordRecentContent(userId, "edit", activityId);
     contents.push({ id: activityId, type: "singleDoc" });
 
-    const { contentId: folderId } = await createContent(userId, "folder", null);
+    const { contentId: folderId } = await createContent({
+      loggedInUserId: userId,
+      contentType: "folder",
+      parentId: null,
+    });
     await recordRecentContent(userId, "edit", folderId);
     contents.push({ id: folderId, type: "folder" });
 
-    const { contentId: sequenceId } = await createContent(
-      userId,
-      "sequence",
-      null,
-    );
+    const { contentId: sequenceId } = await createContent({
+      loggedInUserId: userId,
+      contentType: "sequence",
+      parentId: null,
+    });
     await recordRecentContent(userId, "edit", sequenceId);
     contents.push({ id: sequenceId, type: "sequence" });
 
-    const { contentId: selectId } = await createContent(userId, "select", null);
+    const { contentId: selectId } = await createContent({
+      loggedInUserId: userId,
+      contentType: "select",
+      parentId: null,
+    });
     await recordRecentContent(userId, "edit", selectId);
     contents.push({ id: selectId, type: "select" });
   }
@@ -101,27 +109,35 @@ test("add and check recent content, different types", async () => {
 
   // add a couple more activities of each type
   for (let i = 0; i < 2; i++) {
-    const { contentId: activityId } = await createContent(
-      userId,
-      "singleDoc",
-      null,
-    );
+    const { contentId: activityId } = await createContent({
+      loggedInUserId: userId,
+      contentType: "singleDoc",
+      parentId: null,
+    });
     await recordRecentContent(userId, "edit", activityId);
     contents.push({ id: activityId, type: "singleDoc" });
 
-    const { contentId: folderId } = await createContent(userId, "folder", null);
+    const { contentId: folderId } = await createContent({
+      loggedInUserId: userId,
+      contentType: "folder",
+      parentId: null,
+    });
     await recordRecentContent(userId, "edit", folderId);
     contents.push({ id: folderId, type: "folder" });
 
-    const { contentId: sequenceId } = await createContent(
-      userId,
-      "sequence",
-      null,
-    );
+    const { contentId: sequenceId } = await createContent({
+      loggedInUserId: userId,
+      contentType: "sequence",
+      parentId: null,
+    });
     await recordRecentContent(userId, "edit", sequenceId);
     contents.push({ id: sequenceId, type: "sequence" });
 
-    const { contentId: selectId } = await createContent(userId, "select", null);
+    const { contentId: selectId } = await createContent({
+      loggedInUserId: userId,
+      contentType: "select",
+      parentId: null,
+    });
     await recordRecentContent(userId, "edit", selectId);
     contents.push({ id: selectId, type: "select" });
   }
@@ -154,17 +170,17 @@ test("purge recent content", async () => {
 
   // add 150 activities for each user
   for (let i = 0; i < 150; i++) {
-    const { contentId: activity1Id } = await createContent(
-      user1Id,
-      "singleDoc",
-      null,
-    );
+    const { contentId: activity1Id } = await createContent({
+      loggedInUserId: user1Id,
+      contentType: "singleDoc",
+      parentId: null,
+    });
     await recordRecentContent(user1Id, "edit", activity1Id);
-    const { contentId: activity2Id } = await createContent(
-      user2Id,
-      "singleDoc",
-      null,
-    );
+    const { contentId: activity2Id } = await createContent({
+      loggedInUserId: user2Id,
+      contentType: "singleDoc",
+      parentId: null,
+    });
     await recordRecentContent(user2Id, "edit", activity2Id);
   }
 

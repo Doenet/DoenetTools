@@ -33,11 +33,11 @@ test("user privileges for library", async () => {
   const { userId: adminId } = await createTestAdminUser();
   const { userId: randomUserId } = await createTestUser();
 
-  const { contentId: activityId } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   // No library status for private activity
   const statusNone: LibraryInfo = {
@@ -298,11 +298,11 @@ test("user privileges for library", async () => {
 test("activity must be draft to be published in library", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { contentId: activityId } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await setContentIsPublic({
     contentId: activityId,
     loggedInUserId: ownerId,
@@ -327,11 +327,11 @@ test("owner requests library review, admin publishes", async () => {
   const { userId: ownerId } = await createTestUser();
   const { userId: adminId } = await createTestAdminUser();
 
-  const { contentId: activityId } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await setContentIsPublic({
     contentId: activityId,
     loggedInUserId: ownerId,
@@ -371,11 +371,11 @@ test("admin publishes to library without owner request", async () => {
   const { userId: ownerId } = await createTestUser();
   const { userId: adminId } = await createTestAdminUser();
 
-  const { contentId: activityId } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await setContentIsPublic({
     contentId: activityId,
     loggedInUserId: ownerId,
@@ -418,11 +418,11 @@ test("published activity in library with unavailable source activity", async () 
   // Setup
   const { userId: ownerId } = await createTestUser();
   const { userId: adminId } = await createTestAdminUser();
-  const { contentId: activityId } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await setContentIsPublic({
     contentId: activityId,
     loggedInUserId: ownerId,
@@ -466,11 +466,11 @@ test("deleting draft does not delete owner's original", async () => {
   // Setup
   const { userId: ownerId } = await createTestUser();
   const { userId: adminId } = await createTestAdminUser();
-  const { contentId: activityId } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await setContentIsPublic({
     contentId: activityId,
     loggedInUserId: ownerId,
@@ -498,11 +498,11 @@ test("deleting draft does not delete owner's original", async () => {
 test("Cannot add draft of curated activity", async () => {
   // Setup
   const { userId: adminId } = await createTestAdminUser();
-  const { contentId: activityId } = await createContent(
-    adminId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId } = await createContent({
+    loggedInUserId: adminId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await setContentIsPublic({
     contentId: activityId,
     loggedInUserId: adminId,
