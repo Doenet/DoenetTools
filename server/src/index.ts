@@ -50,6 +50,7 @@ import { oldAdminRouter } from "./routes/oldAdminRoutes";
 import { assignRouter } from "./routes/assignRoutes";
 import { updateContentRouter } from "./routes/updateContentRoutes";
 import { shareRouter } from "./routes/shareRoutes";
+import { scoreRouter } from "./routes/scoreRoutes";
 
 const client = new SESClient({ region: "us-east-2" });
 
@@ -288,6 +289,7 @@ app.use("/api/oldAdmin", oldAdminRouter);
 app.use("/api/assign", assignRouter);
 app.use("/api/updateContent", updateContentRouter);
 app.use("/api/share", shareRouter);
+app.use("/api/scores", scoreRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server" + JSON.stringify(req?.user));
@@ -1059,86 +1061,6 @@ app.get(
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(403);
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.post(
-  "/api/saveScoreAndState",
-  async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user) {
-      res.sendStatus(403);
-      return;
-    }
-    const loggedInUserId = req.user.userId;
-    const body = req.body;
-    const activityId = toUUID(body.activityId);
-    const docId = toUUID(body.docId);
-    const docVersionNum = Number(body.docVersionNum);
-    const score = Number(body.score);
-    const onSubmission = body.onSubmission as boolean;
-    const state = body.state;
-
-    try {
-      await saveScoreAndState({
-        activityId,
-        docId,
-        docVersionNum,
-        userId: loggedInUserId,
-        score,
-        onSubmission,
-        state,
-      });
-      res.send({});
-    } catch (e) {
-      if (
-        e instanceof Prisma.PrismaClientValidationError ||
-        e instanceof Prisma.PrismaClientKnownRequestError
-      ) {
-        res.status(400).send({});
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
-  "/api/loadState",
-  async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user) {
-      res.sendStatus(403);
-      return;
-    }
-    const loggedInUserId = req.user.userId;
-    if (!req.query.activityId || !req.query.docId || !req.query.docVersionNum) {
-      res.status(204).send({});
-      return;
-    }
-    const activityId = toUUID(req.query.activityId.toString());
-    const docId = toUUID(req.query.docId.toString());
-    const docVersionNum = Number(req.query.docVersionNum);
-    const requestedUserId = req.query.userId
-      ? toUUID(req.query.userId.toString())
-      : loggedInUserId;
-    const withMaxScore = req.query.withMaxScore === "1";
-
-    try {
-      const state = await loadState({
-        activityId,
-        docId,
-        docVersionNum,
-        requestedUserId,
-        userId: loggedInUserId,
-        withMaxScore,
-      });
-      res.send({ state });
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.status(204).send({});
       } else {
         next(e);
       }
