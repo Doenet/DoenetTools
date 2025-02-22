@@ -9,3 +9,42 @@ export const assignmentSettingsSchema = z.object({
     .datetime()
     .transform((val) => DateTime.fromISO(val)),
 });
+
+export const assignmentStudentSchema = z.object({
+  contentId: uuidSchema,
+  studentId: uuidSchema,
+});
+
+export const assignmentParentSchema = z.object({
+  parentId: uuidSchema.nullable(),
+});
+
+export const getStudentDataSchema = z.object({
+  studentId: uuidSchema,
+  parentId: uuidSchema.nullable(),
+});
+
+export const getSubmittedResponsesSchema = z.object({
+  contentId: uuidSchema,
+  activityRevisionNum: z.number(),
+  answerId: z.string(),
+});
+
+export const getSubmittedResponseHistorySchema = z.object({
+  contentId: uuidSchema,
+  activityRevisionNum: z.number(),
+  answerId: z.string(),
+  userId: uuidSchema,
+});
+
+export const recordSubmittedEventSchema = z.object({
+  contentId: uuidSchema,
+  activityRevisionNum: z.number(),
+  answerId: z.string(),
+  response: z.string(),
+  answerNumber: z.number().optional(),
+  itemNumber: z.number(),
+  creditAchieved: z.number(),
+  itemCreditAchieved: z.number(),
+  activityCreditAchieved: z.number(),
+});

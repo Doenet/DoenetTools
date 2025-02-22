@@ -5,14 +5,30 @@ import { convertUUID, fromUUID } from "../utils/uuid";
 import {
   assignActivity,
   closeAssignmentWithCode,
+  getAllAssignmentScores,
   getAssignedScores,
+  getAssignmentData,
+  getAssignmentStudentData,
+  getStudentData,
+  getSubmittedResponseHistory,
+  getSubmittedResponses,
   listUserAssigned,
   openAssignmentWithCode,
+  recordSubmittedEvent,
   unassignActivity,
   updateAssignmentSettings,
 } from "../query/assign";
 import { contentIdSchema } from "../schemas/contentSchema";
-import { assignmentSettingsSchema } from "../schemas/assignSchema";
+import {
+  assignmentParentSchema,
+  assignmentSettingsSchema,
+  assignmentStudentSchema,
+  getStudentDataSchema,
+  getSubmittedResponseHistorySchema,
+  getSubmittedResponsesSchema,
+  recordSubmittedEventSchema,
+} from "../schemas/assignSchema";
+import { queryLoggedIn } from "../middleware/queryMiddleware";
 
 export const assignRouter = express.Router();
 
@@ -120,3 +136,33 @@ assignRouter.post("/unassignActivity", async (req: Request, res: Response) => {
     handleErrors(res, e);
   }
 });
+
+assignRouter.get(
+  "/getAssignmentStudentData",
+  queryLoggedIn(getAssignmentStudentData, assignmentStudentSchema),
+);
+
+assignRouter.get(
+  "/getAllAssignmentScores",
+  queryLoggedIn(getAllAssignmentScores, assignmentParentSchema),
+);
+
+assignRouter.get(
+  "/getStudentData",
+  queryLoggedIn(getStudentData, getStudentDataSchema),
+);
+
+assignRouter.get(
+  "/getSubmittedResponses",
+  queryLoggedIn(getSubmittedResponses, getSubmittedResponsesSchema),
+);
+
+assignRouter.get(
+  "/getSubmittedResponseHistory",
+  queryLoggedIn(getSubmittedResponseHistory, getSubmittedResponseHistorySchema),
+);
+
+assignRouter.post(
+  "/recordSubmittedEvent",
+  queryLoggedIn(recordSubmittedEvent, recordSubmittedEventSchema),
+);
