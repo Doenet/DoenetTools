@@ -37,21 +37,21 @@ test("browseUsersWithSharedContent, no filter, filter by unclassified", async ()
 
   // owner 2 has two activities, one with a classification
   const { userId: owner1Id } = await createTestUser();
-  const { contentId: activity1aId } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity1aId } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await setContentIsPublic({
     contentId: activity1aId,
     loggedInUserId: owner1Id,
     isPublic: true,
   });
-  const { contentId: activity1bId } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity1bId } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await setContentIsPublic({
     contentId: activity1bId,
     loggedInUserId: owner1Id,
@@ -61,31 +61,31 @@ test("browseUsersWithSharedContent, no filter, filter by unclassified", async ()
 
   // owner 2 has three activities that have a classification
   const { userId: owner2Id } = await createTestUser();
-  const { contentId: activity2aId } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity2aId } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await setContentIsPublic({
     contentId: activity2aId,
     loggedInUserId: owner2Id,
     isPublic: true,
   });
-  const { contentId: activity2bId } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity2bId } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await setContentIsPublic({
     contentId: activity2bId,
     loggedInUserId: owner2Id,
     isPublic: true,
   });
-  const { contentId: activity2cId } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity2cId } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await setContentIsPublic({
     contentId: activity2cId,
     loggedInUserId: owner2Id,
@@ -186,46 +186,46 @@ test("browseUsersWithSharedContent returns only users with public/shared/non-del
   const owner1 = await createTestUser();
   const owner1Id = owner1.userId;
 
-  const { contentId: activity1aId } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity1aId } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContentFeatures({
     contentId: activity1aId,
     loggedInUserId: owner1Id,
     features,
   });
-  const { contentId: activity1bId } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity1bId } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContentFeatures({
     contentId: activity1bId,
     loggedInUserId: owner1Id,
     features,
   });
-  const { contentId: folder1aId } = await createContent(
-    owner1Id,
-    "folder",
-    null,
-  );
-  const { contentId: activity1cId } = await createContent(
-    owner1Id,
-    "singleDoc",
-    folder1aId,
-  );
+  const { contentId: folder1aId } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "folder",
+    parentId: null,
+  });
+  const { contentId: activity1cId } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: folder1aId,
+  });
   await updateContentFeatures({
     contentId: activity1cId,
     loggedInUserId: owner1Id,
     features,
   });
-  const { contentId: activity1dId } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity1dId } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await setContentIsPublic({
     contentId: activity1dId,
     loggedInUserId: owner1Id,
@@ -242,16 +242,16 @@ test("browseUsersWithSharedContent returns only users with public/shared/non-del
   const owner2 = await createTestUser();
   const owner2Id = owner2.userId;
 
-  const { contentId: folder2aId } = await createContent(
-    owner2Id,
-    "folder",
-    null,
-  );
-  const { contentId: activity2aId } = await createContent(
-    owner2Id,
-    "singleDoc",
-    folder2aId,
-  );
+  const { contentId: folder2aId } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "folder",
+    parentId: null,
+  });
+  const { contentId: activity2aId } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: folder2aId,
+  });
   await setContentIsPublic({
     contentId: activity2aId,
     loggedInUserId: owner2Id,
@@ -262,11 +262,11 @@ test("browseUsersWithSharedContent returns only users with public/shared/non-del
     loggedInUserId: owner2Id,
     features,
   });
-  const { contentId: activity2bId } = await createContent(
-    owner2Id,
-    "singleDoc",
-    folder2aId,
-  );
+  const { contentId: activity2bId } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: folder2aId,
+  });
   await setContentIsPublic({
     contentId: activity2bId,
     loggedInUserId: owner2Id,
@@ -282,16 +282,16 @@ test("browseUsersWithSharedContent returns only users with public/shared/non-del
   const owner3 = await createTestUser();
   const owner3Id = owner3.userId;
 
-  const { contentId: folder3aId } = await createContent(
-    owner3Id,
-    "folder",
-    null,
-  );
-  const { contentId: activity3aId } = await createContent(
-    owner3Id,
-    "singleDoc",
-    folder3aId,
-  );
+  const { contentId: folder3aId } = await createContent({
+    loggedInUserId: owner3Id,
+    contentType: "folder",
+    parentId: null,
+  });
+  const { contentId: activity3aId } = await createContent({
+    loggedInUserId: owner3Id,
+    contentType: "singleDoc",
+    parentId: folder3aId,
+  });
   await modifyContentSharedWith({
     action: "share",
     contentId: activity3aId,
@@ -308,16 +308,16 @@ test("browseUsersWithSharedContent returns only users with public/shared/non-del
   const owner4 = await createTestUser();
   const owner4Id = owner4.userId;
 
-  const { contentId: folder4aId } = await createContent(
-    owner4Id,
-    "folder",
-    null,
-  );
-  const { contentId: activity4aId } = await createContent(
-    owner4Id,
-    "singleDoc",
-    folder4aId,
-  );
+  const { contentId: folder4aId } = await createContent({
+    loggedInUserId: owner4Id,
+    contentType: "folder",
+    parentId: null,
+  });
+  const { contentId: activity4aId } = await createContent({
+    loggedInUserId: owner4Id,
+    contentType: "singleDoc",
+    parentId: folder4aId,
+  });
   await modifyContentSharedWith({
     contentId: activity4aId,
     loggedInUserId: owner4Id,
@@ -330,11 +330,11 @@ test("browseUsersWithSharedContent returns only users with public/shared/non-del
     features,
   });
 
-  const { contentId: activity4bId } = await createContent(
-    owner4Id,
-    "singleDoc",
-    folder4aId,
-  );
+  const { contentId: activity4bId } = await createContent({
+    loggedInUserId: owner4Id,
+    contentType: "singleDoc",
+    parentId: folder4aId,
+  });
   await modifyContentSharedWith({
     contentId: activity4bId,
     loggedInUserId: owner4Id,
@@ -346,11 +346,11 @@ test("browseUsersWithSharedContent returns only users with public/shared/non-del
     loggedInUserId: owner4Id,
     features,
   });
-  const { contentId: activity4cId } = await createContent(
-    owner4Id,
-    "singleDoc",
-    folder4aId,
-  );
+  const { contentId: activity4cId } = await createContent({
+    loggedInUserId: owner4Id,
+    contentType: "singleDoc",
+    parentId: folder4aId,
+  });
   await modifyContentSharedWith({
     contentId: activity4cId,
     loggedInUserId: owner4Id,
@@ -398,47 +398,47 @@ test("browseUsersWithSharedContent, search, returns only users with public/share
   const owner1 = await createTestUser();
   const owner1Id = owner1.userId;
 
-  const { contentId: activity1aId } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity1aId } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activity1aId,
     name: `banana${code}`,
     loggedInUserId: owner1Id,
   });
-  const { contentId: activity1bId } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity1bId } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activity1bId,
     source: `banana${code}`,
     loggedInUserId: owner1Id,
   });
-  const { contentId: folder1aId } = await createContent(
-    owner1Id,
-    "folder",
-    null,
-  );
-  const { contentId: activity1cId } = await createContent(
-    owner1Id,
-    "singleDoc",
-    folder1aId,
-  );
+  const { contentId: folder1aId } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "folder",
+    parentId: null,
+  });
+  const { contentId: activity1cId } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: folder1aId,
+  });
   await updateContent({
     contentId: activity1cId,
     name: `banana${code}`,
     loggedInUserId: owner1Id,
   });
 
-  const { contentId: activity1dId } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity1dId } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activity1dId,
     source: `banana${code}`,
@@ -451,11 +451,11 @@ test("browseUsersWithSharedContent, search, returns only users with public/share
   });
   await deleteContent(activity1dId, owner1Id);
 
-  const { contentId: activity1eId } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity1eId } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activity1eId,
     source: `grape${code}`,
@@ -471,16 +471,16 @@ test("browseUsersWithSharedContent, search, returns only users with public/share
   const owner2 = await createTestUser();
   const owner2Id = owner2.userId;
 
-  const { contentId: folder2aId } = await createContent(
-    owner2Id,
-    "folder",
-    null,
-  );
-  const { contentId: activity2aId } = await createContent(
-    owner2Id,
-    "singleDoc",
-    folder2aId,
-  );
+  const { contentId: folder2aId } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "folder",
+    parentId: null,
+  });
+  const { contentId: activity2aId } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: folder2aId,
+  });
   await updateContent({
     contentId: activity2aId,
     name: `banana${code}`,
@@ -491,11 +491,11 @@ test("browseUsersWithSharedContent, search, returns only users with public/share
     loggedInUserId: owner2Id,
     isPublic: true,
   });
-  const { contentId: activity2bId } = await createContent(
-    owner2Id,
-    "singleDoc",
-    folder2aId,
-  );
+  const { contentId: activity2bId } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: folder2aId,
+  });
   await updateContent({
     contentId: activity2bId,
     source: `banana${code}`,
@@ -507,11 +507,11 @@ test("browseUsersWithSharedContent, search, returns only users with public/share
     isPublic: true,
   });
 
-  const { contentId: activity2cId } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity2cId } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activity2cId,
     source: `grape${code}`,
@@ -527,16 +527,16 @@ test("browseUsersWithSharedContent, search, returns only users with public/share
   const owner3 = await createTestUser();
   const owner3Id = owner3.userId;
 
-  const { contentId: folder3aId } = await createContent(
-    owner3Id,
-    "folder",
-    null,
-  );
-  const { contentId: activity3aId } = await createContent(
-    owner3Id,
-    "singleDoc",
-    folder3aId,
-  );
+  const { contentId: folder3aId } = await createContent({
+    loggedInUserId: owner3Id,
+    contentType: "folder",
+    parentId: null,
+  });
+  const { contentId: activity3aId } = await createContent({
+    loggedInUserId: owner3Id,
+    contentType: "singleDoc",
+    parentId: folder3aId,
+  });
   await updateContent({
     contentId: activity3aId,
     name: `banana${code}`,
@@ -549,11 +549,11 @@ test("browseUsersWithSharedContent, search, returns only users with public/share
     users: [user1Id],
   });
 
-  const { contentId: activity3bId } = await createContent(
-    owner3Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity3bId } = await createContent({
+    loggedInUserId: owner3Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activity3bId,
     name: `grape${code}`,
@@ -569,16 +569,16 @@ test("browseUsersWithSharedContent, search, returns only users with public/share
   const owner4 = await createTestUser();
   const owner4Id = owner4.userId;
 
-  const { contentId: folder4aId } = await createContent(
-    owner4Id,
-    "folder",
-    null,
-  );
-  const { contentId: activity4aId } = await createContent(
-    owner4Id,
-    "singleDoc",
-    folder4aId,
-  );
+  const { contentId: folder4aId } = await createContent({
+    loggedInUserId: owner4Id,
+    contentType: "folder",
+    parentId: null,
+  });
+  const { contentId: activity4aId } = await createContent({
+    loggedInUserId: owner4Id,
+    contentType: "singleDoc",
+    parentId: folder4aId,
+  });
   await updateContent({
     contentId: activity4aId,
     name: `banana${code}`,
@@ -591,11 +591,11 @@ test("browseUsersWithSharedContent, search, returns only users with public/share
     users: [user2Id],
   });
 
-  const { contentId: activity4bId } = await createContent(
-    owner4Id,
-    "singleDoc",
-    folder4aId,
-  );
+  const { contentId: activity4bId } = await createContent({
+    loggedInUserId: owner4Id,
+    contentType: "singleDoc",
+    parentId: folder4aId,
+  });
   await updateContent({
     contentId: activity4bId,
     source: `banana${code}`,
@@ -607,11 +607,11 @@ test("browseUsersWithSharedContent, search, returns only users with public/share
     action: "share",
     users: [user2Id],
   });
-  const { contentId: activity4cId } = await createContent(
-    owner4Id,
-    "singleDoc",
-    folder4aId,
-  );
+  const { contentId: activity4cId } = await createContent({
+    loggedInUserId: owner4Id,
+    contentType: "singleDoc",
+    parentId: folder4aId,
+  });
   await updateContent({
     contentId: activity4cId,
     name: `banana${code}`,
@@ -623,11 +623,11 @@ test("browseUsersWithSharedContent, search, returns only users with public/share
     action: "share",
     users: [user2Id],
   });
-  const { contentId: activity4dId } = await createContent(
-    owner4Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity4dId } = await createContent({
+    loggedInUserId: owner4Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activity4dId,
     name: `grape${code}`,
@@ -683,16 +683,16 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
 
   // owner 1 has only unclassified content
   const { userId: owner1Id } = await createTestUser();
-  const { contentId: activity1aId } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity1bId } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity1aId } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity1bId } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activity1aId,
     name: `banana${code}`,
@@ -716,16 +716,16 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
 
   // owner 2 has content in classification A1A
   const { userId: owner2Id } = await createTestUser();
-  const { contentId: activity2aId } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity2bId } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity2aId } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity2bId } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activity2aId,
     name: `grape${code}`,
@@ -751,16 +751,16 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
 
   // owner 3 has a content in classification B2B and unclassified content
   const { userId: owner3Id } = await createTestUser();
-  const { contentId: activity3aId } = await createContent(
-    owner3Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity3bId } = await createContent(
-    owner3Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity3aId } = await createContent({
+    loggedInUserId: owner3Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity3bId } = await createContent({
+    loggedInUserId: owner3Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activity3aId,
     name: `grape${code}`,
@@ -785,21 +785,21 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
 
   // owner 4 has content in classification A1A and A1B
   const { userId: owner4Id } = await createTestUser();
-  const { contentId: activity4aId } = await createContent(
-    owner4Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity4bId } = await createContent(
-    owner4Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity4cId } = await createContent(
-    owner4Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity4aId } = await createContent({
+    loggedInUserId: owner4Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity4bId } = await createContent({
+    loggedInUserId: owner4Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity4cId } = await createContent({
+    loggedInUserId: owner4Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activity4aId,
     name: `banana${code}`,
@@ -836,26 +836,26 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
 
   // owner 5 has content in classification A1B, B2B
   const { userId: owner5Id } = await createTestUser();
-  const { contentId: activity5aId } = await createContent(
-    owner5Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity5bId } = await createContent(
-    owner5Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity5cId } = await createContent(
-    owner5Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity5dId } = await createContent(
-    owner5Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity5aId } = await createContent({
+    loggedInUserId: owner5Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity5bId } = await createContent({
+    loggedInUserId: owner5Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity5cId } = await createContent({
+    loggedInUserId: owner5Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity5dId } = await createContent({
+    loggedInUserId: owner5Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activity5aId,
     name: `grape${code}`,
@@ -903,36 +903,36 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
 
   // owner 6 has content in classification A2A, A2B, and B2B
   const { userId: owner6Id } = await createTestUser();
-  const { contentId: activity6aId } = await createContent(
-    owner6Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity6bId } = await createContent(
-    owner6Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity6cId } = await createContent(
-    owner6Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity6dId } = await createContent(
-    owner6Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity6eId } = await createContent(
-    owner6Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity6fId } = await createContent(
-    owner6Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity6aId } = await createContent({
+    loggedInUserId: owner6Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity6bId } = await createContent({
+    loggedInUserId: owner6Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity6cId } = await createContent({
+    loggedInUserId: owner6Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity6dId } = await createContent({
+    loggedInUserId: owner6Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity6eId } = await createContent({
+    loggedInUserId: owner6Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity6fId } = await createContent({
+    loggedInUserId: owner6Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activity6aId,
     name: `banana${code}`,
@@ -1006,11 +1006,11 @@ test("browseUsersWithSharedContent, filter by system, category, sub category, cl
   )[0].id;
 
   const { userId: owner7Id } = await createTestUser();
-  const { contentId: activity7aId } = await createContent(
-    owner7Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity7aId } = await createContent({
+    loggedInUserId: owner7Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activity7aId,
     name: `banana${code}`,
@@ -1185,16 +1185,16 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
 
   // owner 1 has only content without features and feature1
   const { userId: owner1Id } = await createTestUser();
-  const { contentId: activity1aId } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity1bId } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity1aId } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity1bId } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activity1aId,
     name: `banana${code}`,
@@ -1223,21 +1223,21 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
 
   // owner 2 has content combinations of two features
   const { userId: owner2Id } = await createTestUser();
-  const { contentId: activity2aId } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity2bId } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity2cId } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity2aId } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity2bId } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity2cId } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activity2aId,
     name: `banana${code}`,
@@ -1287,26 +1287,26 @@ test("browseUsersWithSharedContent, filter by activity feature", async () => {
   // owner 3 has one content with feature 2 and and three with feature 3
   const { userId: owner3Id } = await createTestUser();
 
-  const { contentId: activity3aId } = await createContent(
-    owner3Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity3bId } = await createContent(
-    owner3Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity3cId } = await createContent(
-    owner3Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity3dId } = await createContent(
-    owner3Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity3aId } = await createContent({
+    loggedInUserId: owner3Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity3bId } = await createContent({
+    loggedInUserId: owner3Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity3cId } = await createContent({
+    loggedInUserId: owner3Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity3dId } = await createContent({
+    loggedInUserId: owner3Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activity3aId,
     name: `banana${code}`,
@@ -1524,31 +1524,31 @@ test("browseClassificationSharedContent, returns only public/shared/non-deleted 
   });
 
   // add public, shared, private activities to A1A
-  const { contentId: activityIdPublic1 } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdPublic2 } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdShared } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdPrivate } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdDeleted } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdPublic1 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdPublic2 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdShared } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdPrivate } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdDeleted } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   const activityIdPublic1String = fromUUID(activityIdPublic1);
   const activityIdPublic2String = fromUUID(activityIdPublic2);
@@ -1626,46 +1626,46 @@ test("browseClassificationSharedContent, filter by activity feature", async () =
   });
 
   // add activities to A1A with different combinations of features
-  const { contentId: activityIdN } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQ } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdI } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdV } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQI } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQV } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdIV } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQIV } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdN } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQ } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdI } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdV } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQI } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQV } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdIV } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQIV } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   const activityIdNString = fromUUID(activityIdN);
   const activityIdQString = fromUUID(activityIdQ);
@@ -1878,21 +1878,21 @@ test("browseClassificationSharedContent, filter by owner", async () => {
   });
 
   // add activities to A1A with both owners
-  const { contentId: activityId1a } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityId1b } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityId2 } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1a } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityId1b } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityId2 } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   const activityId1aString = fromUUID(activityId1a);
   const activityId1bString = fromUUID(activityId1b);
@@ -1969,46 +1969,46 @@ test("browseSubCategorySharedContent, returns only public/shared/non-deleted con
     });
 
   // add public, shared, private activities to A1A and A1B
-  const { contentId: activityIdPublicA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdSharedA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdPrivateA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdDeletedA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdPublicB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdSharedB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdPrivateB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdDeletedB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdPublicA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdSharedA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdPrivateA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdDeletedA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdPublicB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdSharedB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdPrivateB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdDeletedB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   const activityIdPublicAString = fromUUID(activityIdPublicA);
   const activityIdSharedAString = fromUUID(activityIdSharedA);
@@ -2145,86 +2145,86 @@ test("browseSubCategorySharedContent, filter by activity feature", async () => {
     });
 
   // add activities with different features to A1A and A1B
-  const { contentId: activityIdNA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdIA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdVA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQIA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQVA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdIVA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQIVA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdNB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdIB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdVB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQIB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQVB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdIVB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQIVB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdNA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdIA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdVA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQIA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQVA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdIVA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQIVA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdNB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdIB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdVB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQIB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQVB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdIVB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQIVB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   const activityIdNAString = fromUUID(activityIdNA);
   const activityIdQAString = fromUUID(activityIdQA);
@@ -2637,26 +2637,26 @@ test("browseSubCategorySharedContent, filter by owner", async () => {
     });
 
   // add activities with different owners to A1A and A1B
-  const { contentId: activityId1A } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityId2A } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityId1B } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityId2B } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1A } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityId2A } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityId1B } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityId2B } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   const activityId1AString = fromUUID(activityId1A);
   const activityId2AString = fromUUID(activityId2A);
@@ -2771,46 +2771,46 @@ test("browseCategorySharedContent, returns only public/shared/non-deleted conten
   });
 
   // add public, shared, private activities to A1A and A1B
-  const { contentId: activityIdPublicA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdSharedA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdPrivateA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdDeletedA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdPublicB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdSharedB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdPrivateB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdDeletedB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdPublicA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdSharedA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdPrivateA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdDeletedA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdPublicB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdSharedB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdPrivateB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdDeletedB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   const activityIdPublicAString = fromUUID(activityIdPublicA);
   const activityIdSharedAString = fromUUID(activityIdSharedA);
@@ -2961,86 +2961,86 @@ test("browseCategorySharedContent, filter by activity feature", async () => {
   });
 
   // add activities with different features to A1A and A2B
-  const { contentId: activityIdNA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdIA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdVA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQIA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQVA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdIVA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQIVA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdNB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdIB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdVB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQIB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQVB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdIVB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdQIVB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdNA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdIA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdVA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQIA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQVA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdIVA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQIVA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdNB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdIB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdVB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQIB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQVB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdIVB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdQIVB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   const activityIdNAString = fromUUID(activityIdNA);
   const activityIdQAString = fromUUID(activityIdQA);
@@ -3571,26 +3571,26 @@ test("browseCategorySharedContent, filter by owner", async () => {
   });
 
   // add activities with different owners to A1A and A2B
-  const { contentId: activityId1A } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityId2A } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityId1B } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityId2B } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1A } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityId2A } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityId1B } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityId2B } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   const activityId1AString = fromUUID(activityId1A);
   const activityId2AString = fromUUID(activityId2A);
@@ -3743,41 +3743,41 @@ test("browse classification and subcategories with shared content, returns only 
 
   // add shared, private activities to A1A (one shared in both A1A and A1B)
   // add public, shared, private activities to A1B
-  const { contentId: activityIdSharedA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdPrivateA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdDeletedA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdPublicB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdSharedB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdPrivateB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdDeletedB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdSharedA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdPrivateA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdDeletedA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdPublicB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdSharedB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdPrivateB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdDeletedB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   await setContentIsPublic({
     contentId: activityIdPublicB,
@@ -3920,95 +3920,95 @@ test("browse classification and subcategories with shared content, search, retur
 
   // add shared, private activities to A1A (one shared in both A1A and A1B)
   // add public, shared, private activities to A1B
-  const { contentId: activityIdSharedA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdSharedA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdSharedA,
     source: `banana${code}`,
     loggedInUserId: ownerId,
   });
-  const { contentId: activityIdPrivateA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdPrivateA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdPrivateA,
     source: `banana${code}`,
     loggedInUserId: ownerId,
   });
-  const { contentId: activityIdDeletedA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdDeletedA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdDeletedA,
     source: `banana${code}`,
     loggedInUserId: ownerId,
   });
-  const { contentId: activityIdPublicB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdPublicB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdPublicB,
     name: `banana${code}`,
     loggedInUserId: ownerId,
   });
 
-  const { contentId: activityIdSharedB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdSharedB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdSharedB,
     source: `banana${code}`,
     loggedInUserId: ownerId,
   });
-  const { contentId: activityIdPrivateB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdPrivateB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdPrivateB,
     name: `banana${code}`,
     loggedInUserId: ownerId,
   });
 
-  const { contentId: activityIdDeletedB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdDeletedB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdDeletedB,
     source: `banana${code}`,
     loggedInUserId: ownerId,
   });
 
-  const { contentId: activityIdPublicC } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdPublicC } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdPublicC,
     name: `grape${code}`,
     loggedInUserId: ownerId,
   });
 
-  const { contentId: activityIdPublicD } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdPublicD } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdPublicD,
     source: `grape${code}`,
@@ -4177,31 +4177,31 @@ test("browse classification and subcategories with shared content, filter by act
   // add isQuestion activity to A1A
   // add isInteractive activity to A1B
   // add video with different text to A1B
-  const { contentId: activityIdQ } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdQ } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdQ,
     name: `banana${code}`,
     loggedInUserId: ownerId,
   });
-  const { contentId: activityIdI } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdI } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdI,
     name: `banana${code}`,
     loggedInUserId: ownerId,
   });
-  const { contentId: activityIdV } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdV } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdV,
     name: `grape${code}`,
@@ -4244,31 +4244,31 @@ test("browse classification and subcategories with shared content, filter by act
   });
 
   // add activities with multiple features to A2A, A2B
-  const { contentId: activityIdQI } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdQI } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdQI,
     source: `banana${code}`,
     loggedInUserId: ownerId,
   });
-  const { contentId: activityIdQV } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdQV } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdQV,
     source: `banana${code}`,
     loggedInUserId: ownerId,
   });
-  const { contentId: activityIdIV } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdIV } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdIV,
     source: `grape${code}`,
@@ -4761,52 +4761,52 @@ test("browse classification and subcategories with shared content, filter by own
   // add owner2 activity with different text to A2A
   // add owner1 activity to A2B
 
-  const { contentId: activityId1A1A } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1A1A } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId1A1A,
     name: `banana${code}`,
     loggedInUserId: owner1Id,
   });
-  const { contentId: activityId1A1B } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1A1B } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId1A1B,
     name: `grape${code}`,
     loggedInUserId: owner1Id,
   });
-  const { contentId: activityId2A1B } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId2A1B } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId2A1B,
     name: `banana${code}`,
     loggedInUserId: owner2Id,
   });
 
-  const { contentId: activityId2A2A } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId2A2A } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId2A2A,
     name: `grape${code}`,
     loggedInUserId: owner2Id,
   });
-  const { contentId: activityId1A2B } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1A2B } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId1A2B,
     name: `banana${code}`,
@@ -5018,52 +5018,52 @@ test("browse classification and subcategories with shared content, search includ
   // add owner2 activity with different text to A2A
   // add owner1 activity to A2B
 
-  const { contentId: activityId1A1A } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1A1A } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId1A1A,
     name: `banana${code}`,
     loggedInUserId: owner1Id,
   });
-  const { contentId: activityId1A1B } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1A1B } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId1A1B,
     name: `grape${code}`,
     loggedInUserId: owner1Id,
   });
-  const { contentId: activityId2A1B } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId2A1B } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId2A1B,
     name: `banana${code}`,
     loggedInUserId: owner2Id,
   });
 
-  const { contentId: activityId2A2A } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId2A2A } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId2A2A,
     name: `grape${code}`,
     loggedInUserId: owner2Id,
   });
-  const { contentId: activityId1A2B } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1A2B } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId1A2B,
     name: `banana${code}`,
@@ -5210,21 +5210,21 @@ test("browse classification and subcategories with shared content, search hits c
     code,
   });
 
-  const { contentId: activityId1 } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityId2 } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityId3 } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityId2 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityId3 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   await setContentIsPublic({
     contentId: activityId1,
@@ -5310,41 +5310,41 @@ test("browse categories and systems with shared content, returns only classifica
 
   // add shared, private activities to 1A1A, 1A1B, 1A2A, and/or 1A2B
   // add public, shared, private activities to 1B1A, 1B1B, 1B2A, and/or 1B2B
-  const { contentId: activityIdSharedA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdPrivateA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdDeletedA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdPublicB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdSharedB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdPrivateB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityIdDeletedB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdSharedA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdPrivateA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdDeletedA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdPublicB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdSharedB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdPrivateB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityIdDeletedB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   await setContentIsPublic({
     contentId: activityIdPublicB,
@@ -5508,95 +5508,95 @@ test("browse categories and systems with shared content, search, returns only cl
 
   // add shared, private activities to 1A1A, 1A1B, 1A2A, and/or 1A2B
   // add public, shared, private activities to 1B1A, 1B1B, 1B2A, and/or 1B2B
-  const { contentId: activityIdSharedA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdSharedA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdSharedA,
     source: `banana${code}`,
     loggedInUserId: ownerId,
   });
-  const { contentId: activityIdPrivateA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdPrivateA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdPrivateA,
     source: `banana${code}`,
     loggedInUserId: ownerId,
   });
-  const { contentId: activityIdDeletedA } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdDeletedA } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdDeletedA,
     source: `banana${code}`,
     loggedInUserId: ownerId,
   });
-  const { contentId: activityIdPublicB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdPublicB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdPublicB,
     name: `banana${code}`,
     loggedInUserId: ownerId,
   });
 
-  const { contentId: activityIdSharedB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdSharedB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdSharedB,
     source: `banana${code}`,
     loggedInUserId: ownerId,
   });
-  const { contentId: activityIdPrivateB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdPrivateB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdPrivateB,
     name: `banana${code}`,
     loggedInUserId: ownerId,
   });
 
-  const { contentId: activityIdDeletedB } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdDeletedB } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdDeletedB,
     source: `banana${code}`,
     loggedInUserId: ownerId,
   });
 
-  const { contentId: activityIdPublicC } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdPublicC } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdPublicC,
     name: `grape${code}`,
     loggedInUserId: ownerId,
   });
 
-  const { contentId: activityIdPublicD } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdPublicD } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdPublicD,
     source: `grape${code}`,
@@ -5784,31 +5784,31 @@ test("browse categories and systems with shared content, filter by activity feat
   // add isQuestion activity to 1A1A
   // add isInteractive activity to 2B2B
   // add video with different text to 1B2B
-  const { contentId: activityIdQ } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdQ } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdQ,
     name: `banana${code}`,
     loggedInUserId: ownerId,
   });
-  const { contentId: activityIdI } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdI } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdI,
     name: `banana${code}`,
     loggedInUserId: ownerId,
   });
-  const { contentId: activityIdV } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdV } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdV,
     name: `grape${code}`,
@@ -5851,31 +5851,31 @@ test("browse categories and systems with shared content, filter by activity feat
   });
 
   // add activities with multiple features to 2A1A, 2B2B
-  const { contentId: activityIdQI } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdQI } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdQI,
     source: `banana${code}`,
     loggedInUserId: ownerId,
   });
-  const { contentId: activityIdQV } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdQV } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdQV,
     source: `banana${code}`,
     loggedInUserId: ownerId,
   });
-  const { contentId: activityIdIV } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityIdIV } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityIdIV,
     source: `grape${code}`,
@@ -6420,52 +6420,52 @@ test("browse categories and systems with shared content, filter by owner", async
   // add owner2 activity with different text to 2A1A
   // add owner1 activity to 2B2B
 
-  const { contentId: activityId1A1A } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1A1A } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId1A1A,
     name: `banana${code}`,
     loggedInUserId: owner1Id,
   });
-  const { contentId: activityId1A1B } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1A1B } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId1A1B,
     name: `grape${code}`,
     loggedInUserId: owner1Id,
   });
-  const { contentId: activityId2A1B } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId2A1B } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId2A1B,
     name: `banana${code}`,
     loggedInUserId: owner2Id,
   });
 
-  const { contentId: activityId2A2A } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId2A2A } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId2A2A,
     name: `grape${code}`,
     loggedInUserId: owner2Id,
   });
-  const { contentId: activityId1A2B } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1A2B } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId1A2B,
     name: `banana${code}`,
@@ -6702,52 +6702,52 @@ test("browse categories and systems with shared content, search includes owner n
   // add owner2 activity with different text to 2A1A
   // add owner1 activity to 2B2B
 
-  const { contentId: activityId1A1A } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1A1A } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId1A1A,
     name: `banana${code}`,
     loggedInUserId: owner1Id,
   });
-  const { contentId: activityId1A1B } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1A1B } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId1A1B,
     name: `grape${code}`,
     loggedInUserId: owner1Id,
   });
-  const { contentId: activityId2A1B } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId2A1B } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId2A1B,
     name: `banana${code}`,
     loggedInUserId: owner2Id,
   });
 
-  const { contentId: activityId2A2A } = await createContent(
-    owner2Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId2A2A } = await createContent({
+    loggedInUserId: owner2Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId2A2A,
     name: `grape${code}`,
     loggedInUserId: owner2Id,
   });
-  const { contentId: activityId1A2B } = await createContent(
-    owner1Id,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1A2B } = await createContent({
+    loggedInUserId: owner1Id,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await updateContent({
     contentId: activityId1A2B,
     name: `banana${code}`,
@@ -6917,41 +6917,41 @@ test("browse categories and systems with shared content, search hits classificat
     code: code + "B",
   });
 
-  const { contentId: activityId1 } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityId2 } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityId3 } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityId4 } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityId5 } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityId6 } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activityId7 } = await createContent(
-    ownerId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId1 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityId2 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityId3 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityId4 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityId5 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityId6 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activityId7 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   await setContentIsPublic({
     contentId: activityId1,

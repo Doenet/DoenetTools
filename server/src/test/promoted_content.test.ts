@@ -32,11 +32,11 @@ test("add and remove promoted content", async () => {
   );
 
   // Cannot promote private activity to that group
-  const { contentId: activityId } = await createContent(
-    userId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await expect(
     addPromotedContent(groupId, activityId, userId),
   ).rejects.toThrowError("not public");
@@ -125,16 +125,16 @@ test("add and remove promoted content", async () => {
 
 test("delete promoted content group", async () => {
   const { userId } = await createTestAdminUser();
-  const { contentId: activity1 } = await createContent(
-    userId,
-    "singleDoc",
-    null,
-  );
-  const { contentId: activity2 } = await createContent(
-    userId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity1 } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  const { contentId: activity2 } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await setContentIsPublic({
     contentId: activity1,
     isPublic: true,
@@ -244,11 +244,11 @@ test("move promoted content", async () => {
   const groupId = await addPromotedContentGroup(groupName, userId);
 
   // add first activity
-  const { contentId: activity1Id } = await createContent(
-    userId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity1Id } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await setContentIsPublic({
     contentId: activity1Id,
     isPublic: true,
@@ -262,11 +262,11 @@ test("move promoted content", async () => {
   expect(myContent!.promotedContent[0].id).toEqual(activity1Id);
 
   // add second activity
-  const { contentId: activity2Id } = await createContent(
-    userId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity2Id } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await setContentIsPublic({
     contentId: activity2Id,
     isPublic: true,
@@ -290,11 +290,11 @@ test("move promoted content", async () => {
   expect(myContent!.promotedContent[1].id).toEqual(activity1Id);
 
   // add third activity
-  const { contentId: activity3Id } = await createContent(
-    userId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activity3Id } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await setContentIsPublic({
     contentId: activity3Id,
     isPublic: true,
@@ -333,17 +333,17 @@ test("move promoted content", async () => {
 test("promoted content access control", async () => {
   // Setup
   const { userId } = await createTestUser();
-  const { contentId: activityId } = await createContent(
-    userId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: activityId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
-  const { contentId: promotedActivityId } = await createContent(
-    userId,
-    "singleDoc",
-    null,
-  );
+  const { contentId: promotedActivityId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
   await setContentIsPublic({
     contentId: promotedActivityId,
     isPublic: true,

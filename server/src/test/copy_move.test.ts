@@ -9,70 +9,74 @@ test("copy folder", async () => {
   const { userId: ownerId } = await createTestUser();
   const { userId: otherUserId } = await createTestUser();
 
-  const { contentId: folder0Id } = await createContent(ownerId, "folder", null);
+  const { contentId: folder0Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: null,
+  });
   await updateContent({
     contentId: folder0Id,
     loggedInUserId: ownerId,
     name: "Base folder",
   });
 
-  const { contentId: activity1Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    folder0Id,
-  );
+  const { contentId: activity1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder0Id,
+  });
   await updateContent({
     contentId: activity1Id,
     loggedInUserId: ownerId,
     name: "Activity 1",
   });
-  const { contentId: folder1Id } = await createContent(
-    ownerId,
-    "folder",
-    folder0Id,
-  );
+  const { contentId: folder1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: folder0Id,
+  });
   await updateContent({
     contentId: folder1Id,
     loggedInUserId: ownerId,
     name: "Folder 1",
   });
 
-  const { contentId: activity2Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    folder1Id,
-  );
+  const { contentId: activity2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder1Id,
+  });
   await updateContent({
     contentId: activity2Id,
     loggedInUserId: ownerId,
     name: "Activity 2",
   });
-  const { contentId: folder2Id } = await createContent(
-    ownerId,
-    "folder",
-    folder1Id,
-  );
+  const { contentId: folder2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: folder1Id,
+  });
   await updateContent({
     contentId: folder2Id,
     loggedInUserId: ownerId,
     name: "Folder 2",
   });
 
-  const { contentId: activity3Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    folder2Id,
-  );
+  const { contentId: activity3Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder2Id,
+  });
   await updateContent({
     contentId: activity3Id,
     loggedInUserId: ownerId,
     name: "Activity 3",
   });
-  const { contentId: folder3Id } = await createContent(
-    ownerId,
-    "folder",
-    folder2Id,
-  );
+  const { contentId: folder3Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: folder2Id,
+  });
   await updateContent({
     contentId: folder3Id,
     loggedInUserId: ownerId,
@@ -80,11 +84,11 @@ test("copy folder", async () => {
   });
 
   // other user cannot copy before it is shared
-  const { contentId: folderOther } = await createContent(
-    otherUserId,
-    "folder",
-    null,
-  );
+  const { contentId: folderOther } = await createContent({
+    loggedInUserId: otherUserId,
+    contentType: "folder",
+    parentId: null,
+  });
   await expect(
     copyContent(folder0Id, otherUserId, folderOther),
   ).rejects.toThrow("not found");
@@ -97,11 +101,11 @@ test("copy folder", async () => {
 
   // owner and other user can copy
   for (const userId of [ownerId, otherUserId]) {
-    const { contentId: folderNewId } = await createContent(
-      userId,
-      "folder",
-      null,
-    );
+    const { contentId: folderNewId } = await createContent({
+      loggedInUserId: userId,
+      contentType: "folder",
+      parentId: null,
+    });
 
     const result = await copyContent(folder0Id, userId, folderNewId);
 
@@ -150,86 +154,86 @@ test("copy folder", async () => {
 test("copy problem set", async () => {
   const { userId: ownerId } = await createTestUser();
 
-  const { contentId: folder0Id } = await createContent(
-    ownerId,
-    "sequence",
-    null,
-  );
+  const { contentId: folder0Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "sequence",
+    parentId: null,
+  });
   await updateContent({
     contentId: folder0Id,
     loggedInUserId: ownerId,
     name: "Problem set",
   });
 
-  const { contentId: activity1Id } = await createContent(
-    ownerId,
-    "singleDoc",
-    folder0Id,
-  );
+  const { contentId: activity1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder0Id,
+  });
   await updateContent({
     contentId: activity1Id,
     loggedInUserId: ownerId,
     name: "Question 1",
   });
 
-  const { contentId: folder1Id } = await createContent(
-    ownerId,
-    "select",
-    folder0Id,
-  );
+  const { contentId: folder1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "select",
+    parentId: folder0Id,
+  });
   await updateContent({
     contentId: folder1Id,
     loggedInUserId: ownerId,
     name: "Question bank 2",
   });
 
-  const { contentId: activity2AId } = await createContent(
-    ownerId,
-    "singleDoc",
-    folder1Id,
-  );
+  const { contentId: activity2AId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder1Id,
+  });
   await updateContent({
     contentId: activity2AId,
     loggedInUserId: ownerId,
     name: "Question 2A",
   });
-  const { contentId: activity2BId } = await createContent(
-    ownerId,
-    "singleDoc",
-    folder1Id,
-  );
+  const { contentId: activity2BId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder1Id,
+  });
   await updateContent({
     contentId: activity2BId,
     loggedInUserId: ownerId,
     name: "Question 2B",
   });
 
-  const { contentId: folder2Id } = await createContent(
-    ownerId,
-    "select",
-    folder0Id,
-  );
+  const { contentId: folder2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "select",
+    parentId: folder0Id,
+  });
   await updateContent({
     contentId: folder2Id,
     loggedInUserId: ownerId,
     name: "Question bank 3",
   });
 
-  const { contentId: activity3AId } = await createContent(
-    ownerId,
-    "singleDoc",
-    folder2Id,
-  );
+  const { contentId: activity3AId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder2Id,
+  });
   await updateContent({
     contentId: activity3AId,
     loggedInUserId: ownerId,
     name: "Question 3A",
   });
-  const { contentId: activity3BId } = await createContent(
-    ownerId,
-    "singleDoc",
-    folder2Id,
-  );
+  const { contentId: activity3BId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder2Id,
+  });
   await updateContent({
     contentId: activity3BId,
     loggedInUserId: ownerId,
@@ -237,11 +241,11 @@ test("copy problem set", async () => {
   });
 
   // copy problem set into a new folder
-  const { contentId: folderNewBaseId } = await createContent(
-    ownerId,
-    "folder",
-    null,
-  );
+  const { contentId: folderNewBaseId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: null,
+  });
 
   const result = await copyContent(folder0Id, ownerId, folderNewBaseId);
 
@@ -289,11 +293,11 @@ test("copy problem set", async () => {
 
   // Copy problem set into a new problem set
   // Don't get problem set copied, just its children Question 1 and the two Question banks
-  const { contentId: folderNewProblemSetId } = await createContent(
-    ownerId,
-    "sequence",
-    null,
-  );
+  const { contentId: folderNewProblemSetId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "sequence",
+    parentId: null,
+  });
 
   const result2 = await copyContent(folder0Id, ownerId, folderNewProblemSetId);
   expect(result2.length).eq(3);
@@ -330,11 +334,11 @@ test("copy problem set", async () => {
 
   // Copy problem set into a new question bank
   // Don't get problem set or question bank copied, just its descendants, the questions
-  const { contentId: folderNewQuestionBankId } = await createContent(
-    ownerId,
-    "select",
-    null,
-  );
+  const { contentId: folderNewQuestionBankId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "select",
+    parentId: null,
+  });
 
   const result3 = await copyContent(
     folder0Id,
