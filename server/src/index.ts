@@ -51,6 +51,8 @@ import { assignRouter } from "./routes/assignRoutes";
 import { updateContentRouter } from "./routes/updateContentRoutes";
 import { shareRouter } from "./routes/shareRoutes";
 import { scoreRouter } from "./routes/scoreRoutes";
+import { classificationRouter } from "./routes/classificationRoutes";
+import { activityEditViewRouter } from "./routes/activityEditViewRoutes";
 
 const client = new SESClient({ region: "us-east-2" });
 
@@ -290,6 +292,8 @@ app.use("/api/assign", assignRouter);
 app.use("/api/updateContent", updateContentRouter);
 app.use("/api/share", shareRouter);
 app.use("/api/scores", scoreRouter);
+app.use("/api/classifications", classificationRouter);
+app.use("/api/activityEditView", activityEditViewRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server" + JSON.stringify(req?.user));
@@ -733,59 +737,6 @@ app.post(
 );
 
 app.get(
-  "/api/getActivityEditorData/:activityId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
-    const activityId = toUUID(req.params.activityId);
-    try {
-      const editorData = await getActivityEditorData(
-        activityId,
-        loggedInUserId,
-      );
-      if (editorData.editableByMe) {
-        // record that this activity was accessed via editor
-        await recordRecentContent(loggedInUserId, "edit", activityId);
-      }
-      res.send({
-        editableByMe: editorData.editableByMe,
-        activity: contentStructureConvertUUID(editorData.activity),
-        availableFeatures: editorData.availableFeatures,
-      });
-    } catch (e) {
-      if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === "P2025"
-      ) {
-        res.sendStatus(404);
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
-  "/api/getSharedEditorData/:activityId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
-    const activityId = toUUID(req.params.activityId);
-    try {
-      const editorData = await getSharedEditorData(activityId, loggedInUserId);
-      res.send(contentStructureConvertUUID(editorData));
-    } catch (e) {
-      if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === "P2001"
-      ) {
-        res.sendStatus(404);
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
   "/api/getDocumentSource/:docId",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
@@ -821,31 +772,6 @@ app.get(
       res.send({
         ...contentDescription,
         id: fromUUID(contentDescription.id),
-      });
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.sendStatus(404);
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
-  "/api/getActivityViewerData/:activityId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
-      const activityId = toUUID(req.params.activityId);
-      const { activity, docHistories } = await getActivityViewerData(
-        activityId,
-        loggedInUserId,
-      );
-
-      res.send({
-        activity: contentStructureConvertUUID(activity),
-        docHistories: docHistories?.map(docHistoryConvertUUID),
       });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {

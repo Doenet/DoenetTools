@@ -11,11 +11,11 @@ import { getAvailableContentFeatures } from "./classification";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { getIsAdmin } from "./curate";
 import { isEqualUUID } from "../utils/uuid";
-import { recordContentView } from "./explore";
+import { recordContentView, recordRecentContent } from "./explore";
 import { getActivityContributorHistory } from "./remix";
 
 /**
- * Get the data needed to edit `activityId` of `ownerId`.
+ * Get the data needed to edit `contentId` of `ownerId`.
  *
  * The data returned depends on whether or not `isAssigned` is set.
  *
@@ -25,17 +25,20 @@ import { getActivityContributorHistory } from "./remix";
  * the is referenced by the `assignedVersionNum` in the documents table.
  * We also return information about whether or not the assignment is open in this case.
  *
- * @param activityId
+ * @param contentId
  * @param loggedInUserId
  */
-export async function getActivityEditorData(
-  activityId: Uint8Array,
-  loggedInUserId: Uint8Array,
-) {
+export async function getActivityEditorData({
+  contentId,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
   // TODO: add pagination or a hard limit i n the number of documents one can add to an activity
 
   const activityPermissions = await checkActivityPermissions(
-    activityId,
+    contentId,
     loggedInUserId,
   );
   if (activityPermissions.viewable === false || !activityPermissions.ownerId) {
@@ -45,12 +48,12 @@ export async function getActivityEditorData(
   }
 
   if (activityPermissions.editable === false) {
-    return { editableByMe: false, activityId };
+    return { editableByMe: false, contentId };
   }
 
   const { isAssigned } = await prisma.content.findUniqueOrThrow({
     where: {
-      id: activityId,
+      id: contentId,
       type: { not: "folder" },
     },
     select: {
@@ -64,7 +67,7 @@ export async function getActivityEditorData(
   const isAdmin = await getIsAdmin(loggedInUserId);
 
   const activity = await getContent({
-    contentId: activityId,
+    contentId,
     loggedInUserId,
     includeAssignInfo: true,
     includeAssignedRevision: isAssigned,
@@ -74,42 +77,48 @@ export async function getActivityEditorData(
     isAdmin,
   });
 
+  await recordRecentContent(loggedInUserId, "edit", contentId);
+
   return { editableByMe: true, activity, availableFeatures };
 }
 
 /**
- * Get the data needed to view the source of public activity `activityId`
+ * Get the data needed to view the source of public activity `contentId`
  */
-export async function getSharedEditorData(
-  activityId: Uint8Array,
-  loggedInUserId: Uint8Array,
-) {
+export async function getSharedEditorData({
+  contentId,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
-
-  const activity = getContent({ contentId: activityId, loggedInUserId });
-
+  const activity = getContent({ contentId, loggedInUserId });
   return activity;
 }
 
-export async function getActivityViewerData(
-  activityId: Uint8Array,
-  loggedInUserId: Uint8Array,
-) {
+export async function getActivityViewerData({
+  contentId,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
   const isAdmin = await getIsAdmin(loggedInUserId);
 
   const activity = await getContent({
-    contentId: activityId,
+    contentId,
     loggedInUserId,
     isAdmin,
     includeOwnerDetails: true,
   });
 
   if (!isEqualUUID(loggedInUserId, activity.ownerId)) {
-    await recordContentView(activityId, loggedInUserId);
+    await recordContentView(contentId, loggedInUserId);
   }
 
   const activityHistory = await getActivityContributorHistory({
-    activityId,
+    activityId: contentId,
     loggedInUserId,
     isAdmin,
   });
