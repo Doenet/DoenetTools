@@ -13,8 +13,8 @@ describe("Share panel tests", function () {
     cy.createActivity({
       activityName: "Share alike",
       doenetML: "Shared with ShareAlike",
-    }).then((activityId) => {
-      cy.visit(`/activityEditor/${activityId}`);
+    }).then((contentId) => {
+      cy.visit(`/activityEditor/${contentId}`);
 
       cy.get('[data-test="Sharing Button"]').click();
 
@@ -38,7 +38,7 @@ describe("Share panel tests", function () {
         lastNames: "Doo",
       });
 
-      cy.visit(`/activityViewer/${activityId}`);
+      cy.visit(`/activityViewer/${contentId}`);
       cy.get('[data-test="Copy to Activities Button"]').click();
       cy.get('[data-test="Go to Activities"]').click();
 
@@ -71,8 +71,8 @@ describe("Share panel tests", function () {
     cy.createActivity({
       activityName: "Non-commercial share alike",
       doenetML: "Shared with NonCommercial-ShareAlike",
-    }).then((activityId) => {
-      cy.visit(`/activityEditor/${activityId}`);
+    }).then((contentId) => {
+      cy.visit(`/activityEditor/${contentId}`);
 
       cy.get('[data-test="Sharing Button"]').click();
 
@@ -96,7 +96,7 @@ describe("Share panel tests", function () {
         lastNames: "Doo",
       });
 
-      cy.visit(`/activityViewer/${activityId}`);
+      cy.visit(`/activityViewer/${contentId}`);
       cy.get('[data-test="Copy to Activities Button"]').click();
       cy.get('[data-test="Go to Activities"]').click();
 
@@ -129,8 +129,8 @@ describe("Share panel tests", function () {
     cy.createActivity({
       activityName: "Dual license",
       doenetML: "Shared with Dual License",
-    }).then((activityId) => {
-      cy.visit(`/activityEditor/${activityId}`);
+    }).then((contentId) => {
+      cy.visit(`/activityEditor/${contentId}`);
 
       cy.get('[data-test="Sharing Button"]').click();
 
@@ -151,7 +151,7 @@ describe("Share panel tests", function () {
         lastNames: "Doo",
       });
 
-      cy.visit(`/activityViewer/${activityId}`);
+      cy.visit(`/activityViewer/${contentId}`);
       cy.get('[data-test="Copy to Activities Button"]').click();
       cy.get('[data-test="Go to Activities"]').click();
 
@@ -182,8 +182,8 @@ describe("Share panel tests", function () {
     cy.createActivity({
       activityName: "Original activity",
       doenetML: "The original activity",
-    }).then((activityId) => {
-      cy.visit(`/activityEditor/${activityId}`);
+    }).then((contentId) => {
+      cy.visit(`/activityEditor/${contentId}`);
 
       cy.get('[data-test="Sharing Button"]').click();
 
@@ -208,7 +208,7 @@ describe("Share panel tests", function () {
         lastNames: "Doo",
       });
 
-      cy.visit(`/activityViewer/${activityId}`);
+      cy.visit(`/activityViewer/${contentId}`);
       cy.get('[data-test="Copy to Activities Button"]').click();
       cy.get('[data-test="Go to Activities"]').click();
 
@@ -246,7 +246,7 @@ describe("Share panel tests", function () {
         email: scoobyEmail,
       });
 
-      cy.visit(`/activityEditor/${activityId}`);
+      cy.visit(`/activityEditor/${contentId}`);
 
       cy.get('[data-test="Sharing Button"]').click();
 

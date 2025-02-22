@@ -43,7 +43,7 @@ export function CurateSettings({
 }) {
   const license = contentData.license!;
   const sourceId = contentData.libraryActivityInfo!.sourceId;
-  const activityId = contentData.id;
+  const contentId = contentData.id;
   const existingComments = contentData.libraryActivityInfo?.comments ?? "";
   const status = contentData.libraryActivityInfo!.status;
   // const userRequested = contentData;
@@ -122,7 +122,7 @@ export function CurateSettings({
             fetcher.submit(
               {
                 _action: "unpublish",
-                id: activityId,
+                id: contentId,
               },
               { method: "post" },
             );
@@ -138,7 +138,7 @@ export function CurateSettings({
               fetcher.submit(
                 {
                   _action: "publish",
-                  id: activityId,
+                  id: contentId,
                   comments,
                 },
                 { method: "post" },

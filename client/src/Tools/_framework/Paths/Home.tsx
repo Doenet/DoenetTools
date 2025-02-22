@@ -527,7 +527,7 @@ export function Home() {
                   allowSaveSubmissions: false,
                   allowSaveEvents: false,
                 }}
-                // activityId={doenetId}
+                // contentId={doenetId}
                 attemptNumber={1}
                 // setIsInErrorState={setIsInErrorState}
                 addBottomPadding={false}

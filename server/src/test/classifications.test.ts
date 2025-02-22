@@ -20,7 +20,7 @@ test("Content classifications can only be edited by activity owner", async () =>
     await searchPossibleClassifications({ query: "K.CC.1" })
   )[0].id;
 
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: userId,
     contentType: "singleDoc",
     parentId: null,
@@ -29,19 +29,19 @@ test("Content classifications can only be edited by activity owner", async () =>
   // Add
   await expect(() =>
     addClassification({
-      contentId: activityId,
+      contentId,
       classificationId: classificationId,
       loggedInUserId: otherId,
     }),
   ).rejects.toThrowError();
   await addClassification({
-    contentId: activityId,
+    contentId,
     classificationId: classificationId,
     loggedInUserId: userId,
   });
   {
     const classifications = await getClassifications({
-      contentId: activityId,
+      contentId,
       loggedInUserId: userId,
     });
     expect(classifications.length).toBe(1);
@@ -52,19 +52,19 @@ test("Content classifications can only be edited by activity owner", async () =>
   // Remove
   await expect(() =>
     removeClassification({
-      contentId: activityId,
+      contentId,
       classificationId: classificationId,
       loggedInUserId: otherId,
     }),
   ).rejects.toThrowError();
   await removeClassification({
-    contentId: activityId,
+    contentId,
     classificationId: classificationId,
     loggedInUserId: userId,
   });
   {
     const classifications = await getClassifications({
-      contentId: activityId,
+      contentId,
       loggedInUserId: userId,
     });
     expect(classifications).toEqual([]);
@@ -78,39 +78,39 @@ test("Get classifications of public activity", async () => {
     await searchPossibleClassifications({ query: "8.2.1.5" })
   )[0].id;
   const { userId: ownerId } = await createTestUser();
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: null,
   });
 
   await addClassification({
-    contentId: activityId,
+    contentId,
     classificationId: classId1,
     loggedInUserId: ownerId,
   });
   await addClassification({
-    contentId: activityId,
+    contentId,
     classificationId: classId2,
     loggedInUserId: ownerId,
   });
 
   const { userId: viewerId } = await createTestUser();
   await expect(() =>
-    getClassifications({ contentId: activityId, loggedInUserId: viewerId }),
+    getClassifications({ contentId, loggedInUserId: viewerId }),
   ).rejects.toThrowError("cannot be accessed");
 
   await updateContent({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
   });
   await setContentIsPublic({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     isPublic: true,
   });
   const classifications = await getClassifications({
-    contentId: activityId,
+    contentId,
     loggedInUserId: viewerId,
   });
   expect(classifications.length).toBe(2);
@@ -418,7 +418,7 @@ test("Search classifications has correct primary description", async () => {
 
 test("Classifications show as primary, sorted by primary", async () => {
   const { userId } = await createTestUser();
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: userId,
     contentType: "singleDoc",
     parentId: null,
@@ -441,28 +441,28 @@ test("Classifications show as primary, sorted by primary", async () => {
   )[0].id;
 
   await addClassification({
-    contentId: activityId,
+    contentId,
     classificationId: diffEqClassificationId,
     loggedInUserId: userId,
   });
   await addClassification({
-    contentId: activityId,
+    contentId,
     classificationId: trigPolarClassificationId,
     loggedInUserId: userId,
   });
   await addClassification({
-    contentId: activityId,
+    contentId,
     classificationId: multivarClassificationId,
     loggedInUserId: userId,
   });
   await addClassification({
-    contentId: activityId,
+    contentId,
     classificationId: algebraClassificationId,
     loggedInUserId: userId,
   });
 
   const { activity } = await getActivityEditorData({
-    contentId: activityId,
+    contentId,
     loggedInUserId: userId,
   });
   expect(activity!.classifications[0].code).eq("CalcMV.CV.1");

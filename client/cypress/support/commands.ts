@@ -154,7 +154,7 @@ Cypress.Commands.add(
           method: "POST",
           url: "/api/addDraftToLibrary",
           body: {
-            activityId: contentId,
+            contentId: contentId,
             type: "singleDoc",
           },
         }).then((resp) => {
@@ -162,7 +162,7 @@ Cypress.Commands.add(
             method: "POST",
             url: "/api/publishActivityToLibrary",
             body: {
-              id: resp.body.newActivityId,
+              id: resp.body.newContentId,
               comment: "Publish it!",
             },
           });

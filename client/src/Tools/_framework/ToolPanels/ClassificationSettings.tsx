@@ -41,13 +41,13 @@ export async function classificationSettingsActions({
 }) {
   if (formObj._action == "add content classification") {
     await axios.post("/api/addClassification", {
-      activityId: formObj.activityId,
+      contentId: formObj.contentId,
       classificationId: Number(formObj.classificationId),
     });
     return true;
   } else if (formObj._action == "remove content classification") {
     await axios.post("/api/removeClassification", {
-      activityId: formObj.activityId,
+      contentId: formObj.contentId,
       classificationId: Number(formObj.classificationId),
     });
     return true;
@@ -262,7 +262,7 @@ export function ClassificationSettings({
                               fetcher.submit(
                                 {
                                   _action: "remove content classification",
-                                  activityId: contentData.id,
+                                  contentId: contentData.id,
                                   classificationId: classification.id,
                                 },
                                 { method: "post" },
@@ -554,7 +554,7 @@ export function ClassificationSettings({
                               fetcher.submit(
                                 {
                                   _action: action,
-                                  activityId: contentData.id,
+                                  contentId: contentData.id,
                                   classificationId: classification.id,
                                 },
                                 { method: "post" },

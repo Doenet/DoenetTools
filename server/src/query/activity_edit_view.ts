@@ -118,7 +118,7 @@ export async function getActivityViewerData({
   }
 
   const activityHistory = await getActivityContributorHistory({
-    activityId: contentId,
+    contentId,
     loggedInUserId,
     isAdmin,
   });

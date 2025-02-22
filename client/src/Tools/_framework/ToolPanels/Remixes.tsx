@@ -82,7 +82,7 @@ export function Remixes({ remixes }: { remixes: DocRemixItem[] | null }) {
                   <Td>
                     <ChakraLink
                       as={ReactRouterLink}
-                      to={`/activityViewer/${ch.activityId}`}
+                      to={`/activityViewer/${ch.contentId}`}
                     >
                       <Text wordBreak="break-word" whiteSpace="normal">
                         {ch.activityName}

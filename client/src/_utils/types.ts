@@ -34,7 +34,7 @@ export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
 export type LibraryInfo = {
   sourceId: string;
-  activityId: string | null;
+  contentId: string | null;
   onwerRequested?: boolean;
   status:
     | "none"
@@ -178,7 +178,7 @@ export type DocHistoryItem = {
   withLicenseCode: LicenseCode | null;
   timestampDoc: DateTime;
   timestampPrevDoc: DateTime;
-  prevActivityId: string;
+  prevContentId: string;
   prevActivityName: string;
   prevOwner: UserInfo;
   prevChanged: boolean;
@@ -193,7 +193,7 @@ export type DocRemixItem = {
   isDirect: boolean;
   timestampDoc: DateTime;
   timestampPrevDoc: DateTime;
-  activityId: string;
+  contentId: string;
   activityName: string;
   owner: UserInfo;
 };

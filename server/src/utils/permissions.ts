@@ -154,12 +154,12 @@ export function filterEditableContent(
  * 3. The activity is public
  * 4. The activity is shared with you
  *
- * @param activityId
+ * @param contentId
  * @param loggedInUserId
  * @returns
  */
 export async function checkActivityPermissions(
-  activityId: Uint8Array,
+  contentId: Uint8Array,
   loggedInUserId: Uint8Array,
 ): Promise<{
   editable: boolean;
@@ -170,7 +170,7 @@ export async function checkActivityPermissions(
 
   const viewable = await prisma.content.findUnique({
     where: {
-      id: activityId,
+      id: contentId,
       ...filterViewableActivity(loggedInUserId, isAdmin),
     },
     select: {

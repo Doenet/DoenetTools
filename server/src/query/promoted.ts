@@ -205,7 +205,7 @@ export async function loadPromotedContent(userId: Uint8Array) {
 
 export async function addPromotedContent(
   groupId: number,
-  activityId: Uint8Array,
+  contentId: Uint8Array,
   userId: Uint8Array,
 ) {
   await mustBeAdmin(
@@ -214,7 +214,7 @@ export async function addPromotedContent(
   );
   const activity = await prisma.content.findUnique({
     where: {
-      id: activityId,
+      id: contentId,
       NOT: {
         type: ContentType.folder,
       },
@@ -242,7 +242,7 @@ export async function addPromotedContent(
 
   await prisma.promotedContent.create({
     data: {
-      activityId,
+      contentId,
       promotedGroupId: groupId,
       sortIndex: newIndex,
     },
@@ -251,7 +251,7 @@ export async function addPromotedContent(
 
 export async function removePromotedContent(
   groupId: number,
-  activityId: Uint8Array,
+  contentId: Uint8Array,
   userId: Uint8Array,
 ) {
   await mustBeAdmin(
@@ -260,7 +260,7 @@ export async function removePromotedContent(
   );
   const activity = await prisma.content.findUnique({
     where: {
-      id: activityId,
+      id: contentId,
       isPublic: true,
       NOT: {
         type: ContentType.folder,
@@ -280,8 +280,8 @@ export async function removePromotedContent(
 
   await prisma.promotedContent.delete({
     where: {
-      activityId_promotedGroupId: {
-        activityId,
+      contentId_promotedGroupId: {
+        contentId,
         promotedGroupId: groupId,
       },
     },
@@ -289,14 +289,14 @@ export async function removePromotedContent(
 }
 
 /**
- * Move the promoted content with `activityId` to position `desiredPosition` in the group `groupId`
+ * Move the promoted content with `contentId` to position `desiredPosition` in the group `groupId`
  *
  * `desiredPosition` is the 0-based index in the array of promoted content with group `groupId`
  * sorted by `sortIndex`.
  */
 export async function movePromotedContent(
   groupId: number,
-  activityId: Uint8Array,
+  contentId: Uint8Array,
   userId: Uint8Array,
   desiredPosition: number,
 ) {
@@ -306,7 +306,7 @@ export async function movePromotedContent(
   );
   const activity = await prisma.content.findUnique({
     where: {
-      id: activityId,
+      id: contentId,
       isPublic: true,
       NOT: {
         type: ContentType.folder,
@@ -333,7 +333,7 @@ export async function movePromotedContent(
     await prisma.promotedContent.findMany({
       where: {
         promotedGroupId: groupId,
-        activityId: { not: activityId },
+        contentId: { not: contentId },
       },
       select: {
         sortIndex: true,
@@ -354,7 +354,7 @@ export async function movePromotedContent(
     await prisma.promotedContent.updateMany({
       where: {
         promotedGroupId: groupId,
-        activityId: { not: activityId },
+        contentId: { not: contentId },
         sortIndex: sortIndices,
       },
       data: {
@@ -372,7 +372,7 @@ export async function movePromotedContent(
   // Move the item!
   await prisma.promotedContent.update({
     where: {
-      activityId_promotedGroupId: { activityId, promotedGroupId: groupId },
+      contentId_promotedGroupId: { contentId, promotedGroupId: groupId },
     },
     data: {
       sortIndex: newSortIndex,

@@ -61,11 +61,11 @@ export function CopyContentAndReportFinish({
           const newContentIds: string[] = [];
           for (const s of sourceContent) {
             const { data } = await axios.post(`/api/addDraftToLibrary`, {
-              activityId: s.id,
+              contentId: s.id,
               type: s.type,
             });
             userId = data.userId;
-            newContentIds.push(data.newActivityId);
+            newContentIds.push(data.newContentId);
           }
           setNewActivityData({ newContentIds, userId });
         } else {

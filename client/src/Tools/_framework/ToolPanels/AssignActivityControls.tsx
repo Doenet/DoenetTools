@@ -30,33 +30,33 @@ export async function assignActivityActions({ formObj }: { [k: string]: any }) {
       ).plus(JSON.parse(formObj.duration));
     }
     await axios.post("/api/openAssignmentWithCode", {
-      activityId: formObj.activityId,
+      contentId: formObj.contentId,
       closeAt,
     });
     return true;
   } else if (formObj._action == "update assignment close time") {
     const closeAt = DateTime.fromISO(formObj.closeAt);
     await axios.post("/api/updateAssignmentSettings", {
-      activityId: formObj.activityId,
+      contentId: formObj.contentId,
       closeAt,
     });
     return true;
   } else if (formObj._action == "close assignment") {
     await axios.post("/api/closeAssignmentWithCode", {
-      activityId: formObj.activityId,
+      contentId: formObj.contentId,
     });
     return true;
   } else if (formObj._action == "unassign activity") {
     try {
       await axios.post("/api/unassignActivity", {
-        activityId: formObj.activityId,
+        contentId: formObj.contentId,
       });
     } catch (_e) {
       alert("Unable to unassign activity");
     }
     return true;
   } else if (formObj._action == "go to data") {
-    return redirect(`/assignmentData/${formObj.activityId}`);
+    return redirect(`/assignmentData/${formObj.contentId}`);
   }
 
   return null;
@@ -64,12 +64,12 @@ export async function assignActivityActions({ formObj }: { [k: string]: any }) {
 
 export function AssignActivityControls({
   fetcher,
-  activityId,
+  contentId,
   activityData,
   openTabIndex,
 }: {
   fetcher: FetcherWithComponents<any>;
-  activityId: string;
+  contentId: string;
   activityData: ContentStructure;
   openTabIndex: number;
 }) {
@@ -107,7 +107,7 @@ export function AssignActivityControls({
     fetcher.submit(
       {
         _action: "update assignment close time",
-        activityId,
+        contentId,
         closeAt,
       },
       { method: "post" },
@@ -176,7 +176,7 @@ export function AssignActivityControls({
                 size="xs"
                 onClick={() => {
                   fetcher.submit(
-                    { _action: "close assignment", activityId },
+                    { _action: "close assignment", contentId },
                     { method: "post" },
                   );
                 }}
@@ -278,7 +278,7 @@ export function AssignActivityControls({
                     {
                       _action: "open assignment",
                       duration,
-                      activityId,
+                      contentId,
                       customCloseAt,
                     },
                     { method: "post" },
@@ -356,7 +356,7 @@ export function AssignActivityControls({
                     {
                       _action: "open assignment",
                       duration,
-                      activityId,
+                      contentId,
                       customCloseAt,
                     },
                     { method: "post" },
@@ -383,7 +383,7 @@ export function AssignActivityControls({
                 size="xs"
                 onClick={() => {
                   fetcher.submit(
-                    { _action: "go to data", activityId },
+                    { _action: "go to data", contentId },
                     { method: "post" },
                   );
                 }}
@@ -420,7 +420,7 @@ export function AssignActivityControls({
               size="xs"
               onClick={() => {
                 fetcher.submit(
-                  { _action: "unassign activity", activityId },
+                  { _action: "unassign activity", contentId },
                   { method: "post" },
                 );
               }}

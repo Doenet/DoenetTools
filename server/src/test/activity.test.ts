@@ -994,7 +994,7 @@ test("get compound activity", async () => {
     parentId: sequenceId,
   });
 
-  const { contentId: _activityIdDelete1 } = await createContent({
+  const { contentId: _contentIdDelete1 } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: selectIdDelete,
@@ -1006,28 +1006,28 @@ test("get compound activity", async () => {
     parentId: sequenceId,
   });
 
-  const { contentId: activityId1 } = await createContent({
+  const { contentId: contentId1 } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: selectId,
   });
-  const { contentId: activityId2 } = await createContent({
+  const { contentId: contentId2 } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: selectId,
   });
-  const { contentId: activityIdDelete2 } = await createContent({
+  const { contentId: contentIdDelete2 } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: selectId,
   });
-  const { contentId: activityId3 } = await createContent({
+  const { contentId: contentId3 } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: sequenceId,
   });
 
-  await deleteContent(activityIdDelete2, ownerId);
+  await deleteContent(contentIdDelete2, ownerId);
   await deleteContent(selectIdDelete, ownerId);
 
   const { activity: sequence } = await getActivityViewerData({
@@ -1042,12 +1042,12 @@ test("get compound activity", async () => {
   expect(sequence.id).eqls(sequenceId);
   expect(sequence.type).eq("sequence");
 
-  expect(sequence.children.map((c) => c.id)).eqls([selectId, activityId3]);
+  expect(sequence.children.map((c) => c.id)).eqls([selectId, contentId3]);
 
   const select = sequence.children[0];
   if (select.type !== "select") {
     throw Error("shouldn't happen");
   }
   expect(select.type).eq("select");
-  expect(select.children.map((c) => c.id)).eqls([activityId1, activityId2]);
+  expect(select.children.map((c) => c.id)).eqls([contentId1, contentId2]);
 });

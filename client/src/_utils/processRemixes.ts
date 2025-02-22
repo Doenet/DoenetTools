@@ -17,7 +17,7 @@ export async function processContributorHistory(hist: {
       ...historyItem,
       timestampDoc: DateTime.fromISO(ch.timestampDoc),
       timestampPrevDoc: DateTime.fromISO(ch.timestampPrevDoc),
-      prevActivityId: prevActivity.id,
+      prevContentId: prevActivity.id,
       prevActivityName: prevActivity.name,
       prevOwner: prevActivity.owner,
       prevChanged: prevDocCurrentCid !== prevCid,
@@ -43,7 +43,7 @@ export function processRemixes(docRemixes: {
           isDirect: remix.timestampDoc === remix.timestampPrevDoc,
           timestampDoc: DateTime.fromISO(remix.timestampDoc),
           timestampPrevDoc: DateTime.fromISO(remix.timestampPrevDoc),
-          activityId: activity.id,
+          contentId: activity.id,
           activityName: activity.name,
           owner: activity.owner,
         };

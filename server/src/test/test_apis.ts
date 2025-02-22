@@ -16,7 +16,7 @@ export function add_test_apis(app: Express) {
       const body = req.body;
       const classificationsByNames =
         body.classifications as ClassificationByNames[];
-      const activityId = toUUID(body.id);
+      const contentId = toUUID(body.id);
 
       try {
         for (const classification of classificationsByNames) {
@@ -46,7 +46,7 @@ export function add_test_apis(app: Express) {
 
           await prisma.contentClassifications.create({
             data: {
-              contentId: activityId,
+              contentId: contentId,
               classificationId,
             },
           });

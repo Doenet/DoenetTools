@@ -24,16 +24,16 @@ export async function saveScoreAndState({
   // so that can satisfy foreign key constraints on activityState
   await prisma.assignmentScores.upsert({
     where: {
-      activityId_userId: { activityId: contentId, userId: loggedInUserId },
+      contentId_userId: { contentId, userId: loggedInUserId },
     },
     update: {},
-    create: { activityId: contentId, userId: loggedInUserId },
+    create: { contentId, userId: loggedInUserId },
   });
 
   const stateWithMaxScore = await prisma.activityState.findUnique({
     where: {
-      activityId_userId_hasMaxScore: {
-        activityId: contentId,
+      contentId_userId_hasMaxScore: {
+        contentId,
         userId: loggedInUserId,
         hasMaxScore: true,
       },
@@ -58,8 +58,8 @@ export async function saveScoreAndState({
     try {
       await prisma.activityState.delete({
         where: {
-          activityId_userId_isLatest: {
-            activityId: contentId,
+          contentId_userId_isLatest: {
+            contentId,
             userId: loggedInUserId,
             isLatest: false,
           },
@@ -81,8 +81,8 @@ export async function saveScoreAndState({
     try {
       await prisma.activityState.update({
         where: {
-          activityId_userId_hasMaxScore: {
-            activityId: contentId,
+          contentId_userId_hasMaxScore: {
+            contentId,
             userId: loggedInUserId,
             hasMaxScore: true,
           },
@@ -106,8 +106,8 @@ export async function saveScoreAndState({
   // add/update the latest activity state and maxScore
   await prisma.activityState.upsert({
     where: {
-      activityId_userId_isLatest: {
-        activityId: contentId,
+      contentId_userId_isLatest: {
+        contentId,
         userId: loggedInUserId,
         isLatest: true,
       },
@@ -119,7 +119,7 @@ export async function saveScoreAndState({
       activityRevisionNum,
     },
     create: {
-      activityId: contentId,
+      contentId,
       activityRevisionNum,
       userId: loggedInUserId,
       isLatest: true,
@@ -136,7 +136,7 @@ export async function saveScoreAndState({
   if (hasStrictMaxScore) {
     await prisma.assignmentScores.update({
       where: {
-        activityId_userId: { activityId: contentId, userId: loggedInUserId },
+        contentId_userId: { contentId, userId: loggedInUserId },
       },
       data: {
         score,
@@ -174,8 +174,8 @@ export async function loadState({
   if (withMaxScore) {
     documentState = await prisma.activityState.findUniqueOrThrow({
       where: {
-        activityId_userId_hasMaxScore: {
-          activityId: contentId,
+        contentId_userId_hasMaxScore: {
+          contentId,
           userId: requestedUserId,
           hasMaxScore: true,
         },
@@ -185,8 +185,8 @@ export async function loadState({
   } else {
     documentState = await prisma.activityState.findUniqueOrThrow({
       where: {
-        activityId_userId_isLatest: {
-          activityId: contentId,
+        contentId_userId_isLatest: {
+          contentId,
           userId: requestedUserId,
           isLatest: true,
         },

@@ -1,6 +1,5 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import { requireLoggedIn } from "../middleware/validationMiddleware";
-import { handleErrors } from "../errors/routeErrorHandler";
 import { queryLoggedIn } from "../middleware/queryMiddleware";
 import {
   getActivityEditorData,

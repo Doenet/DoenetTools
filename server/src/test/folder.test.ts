@@ -1438,7 +1438,7 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
 test("copyContent copies a public document to a new owner", async () => {
   const originalOwnerId = (await createTestUser()).userId;
   const newOwnerId = (await createTestUser()).userId;
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: originalOwnerId,
     contentType: "singleDoc",
     parentId: null,
@@ -1446,7 +1446,7 @@ test("copyContent copies a public document to a new owner", async () => {
   // cannot copy if not yet public
   await expect(
     copyContent({
-      contentIds: [activityId],
+      contentIds: [contentId],
       loggedInUserId: newOwnerId,
       desiredParentId: null,
     }),
@@ -1454,40 +1454,40 @@ test("copyContent copies a public document to a new owner", async () => {
 
   // Make the activity public before copying
   await setContentIsPublic({
-    contentId: activityId,
+    contentId: contentId,
     loggedInUserId: originalOwnerId,
     isPublic: true,
   });
   const {
-    newContentIds: [newActivityId],
+    newContentIds: [newContentId],
   } = await copyContent({
-    contentIds: [activityId],
+    contentIds: [contentId],
     loggedInUserId: newOwnerId,
     desiredParentId: null,
   });
   const newActivity = await getContent({
-    contentId: newActivityId,
+    contentId: newContentId,
     loggedInUserId: newOwnerId,
   });
   expect(newActivity.ownerId).eqls(newOwnerId);
   expect(newActivity.isPublic).toBe(false);
 
   const activityData = await getActivityViewerData({
-    contentId: newActivityId,
+    contentId: newContentId,
     loggedInUserId: newOwnerId,
   });
 
   const contribHist = activityData.activityHistory.contributorHistory;
   expect(contribHist.length).eq(1);
 
-  expect(contribHist[0].prevActivityId).eqls(activityId);
+  expect(contribHist[0].prevContentId).eqls(contentId);
   expect(contribHist[0].prevActivityRevisionNum).eq(1);
 });
 
 test("copyContent copies a shared document to a new owner", async () => {
   const originalOwnerId = (await createTestUser()).userId;
   const newOwnerId = (await createTestUser()).userId;
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: originalOwnerId,
     contentType: "singleDoc",
     parentId: null,
@@ -1495,7 +1495,7 @@ test("copyContent copies a shared document to a new owner", async () => {
   // cannot copy if not yet shared
   await expect(
     copyContent({
-      contentIds: [activityId],
+      contentIds: [contentId],
       loggedInUserId: newOwnerId,
       desiredParentId: null,
     }),
@@ -1504,26 +1504,26 @@ test("copyContent copies a shared document to a new owner", async () => {
   // Make the activity public before copying
   await modifyContentSharedWith({
     action: "share",
-    contentId: activityId,
+    contentId: contentId,
     loggedInUserId: originalOwnerId,
     users: [newOwnerId],
   });
   const {
-    newContentIds: [newActivityId],
+    newContentIds: [newContentId],
   } = await copyContent({
-    contentIds: [activityId],
+    contentIds: [contentId],
     loggedInUserId: newOwnerId,
     desiredParentId: null,
   });
   const newActivity = await getContent({
-    contentId: newActivityId,
+    contentId: newContentId,
     loggedInUserId: newOwnerId,
   });
   expect(newActivity.ownerId).eqls(newOwnerId);
   expect(newActivity.isPublic).toBe(false);
 
   const activityData = await getActivityViewerData({
-    contentId: newActivityId,
+    contentId: newContentId,
     loggedInUserId: newOwnerId,
   });
 
@@ -1532,7 +1532,7 @@ test("copyContent copies a shared document to a new owner", async () => {
   const contribHist = activityData.activityHistory.contributorHistory;
   expect(contribHist.length).eq(1);
 
-  expect(contribHist[0].prevActivityId).eqls(activityId);
+  expect(contribHist[0].prevContentId).eqls(contentId);
   expect(contribHist[0].prevActivityRevisionNum).eq(1);
 });
 
@@ -1542,33 +1542,33 @@ test("copyContent remixes correct versions", async () => {
   const ownerId3 = (await createTestUser()).userId;
 
   // create activity 1 by owner 1
-  const { contentId: activityId1 } = await createContent({
+  const { contentId: contentId1 } = await createContent({
     loggedInUserId: ownerId1,
     contentType: "singleDoc",
     parentId: null,
   });
   const activity1Content = "<p>Hello!</p>";
   await setContentIsPublic({
-    contentId: activityId1,
+    contentId: contentId1,
     loggedInUserId: ownerId1,
     isPublic: true,
   });
   await updateContent({
-    contentId: activityId1,
+    contentId: contentId1,
     source: activity1Content,
     loggedInUserId: ownerId1,
   });
 
   // copy activity 1 to owner 2's root folder
   const {
-    newContentIds: [activityId2],
+    newContentIds: [contentId2],
   } = await copyContent({
-    contentIds: [activityId1],
+    contentIds: [contentId1],
     loggedInUserId: ownerId2,
     desiredParentId: null,
   });
   const activity2 = await getContent({
-    contentId: activityId2,
+    contentId: contentId2,
     loggedInUserId: ownerId2,
   });
   if (activity2.type !== "singleDoc") {
@@ -1579,33 +1579,33 @@ test("copyContent remixes correct versions", async () => {
 
   // history should be version 1 of activity 1
   const activityData2 = await getActivityViewerData({
-    contentId: activityId2,
+    contentId: contentId2,
     loggedInUserId: ownerId2,
   });
   const contribHist2 = activityData2.activityHistory.contributorHistory;
   expect(contribHist2.length).eq(1);
-  expect(contribHist2[0].prevActivityId).eqls(activityId1);
+  expect(contribHist2[0].prevContentId).eqls(contentId1);
   expect(contribHist2[0].prevActivityRevisionNum).eq(1);
 
   // modify activity 1 so that will have a new version
   const activity1ContentModified = "<p>Bye</p>";
   await updateContent({
-    contentId: activityId1,
+    contentId: contentId1,
     source: activity1ContentModified,
     loggedInUserId: ownerId1,
   });
 
   // copy activity 1 to owner 3's Activities page
   const {
-    newContentIds: [activityId3],
+    newContentIds: [contentId3],
   } = await copyContent({
-    contentIds: [activityId1],
+    contentIds: [contentId1],
     loggedInUserId: ownerId3,
     desiredParentId: null,
   });
 
   const activity3 = await getContent({
-    contentId: activityId3,
+    contentId: contentId3,
     loggedInUserId: ownerId3,
   });
   if (activity3.type !== "singleDoc") {
@@ -1616,19 +1616,19 @@ test("copyContent remixes correct versions", async () => {
 
   // history should be version 2 of activity 1
   const activityData3 = await getActivityViewerData({
-    contentId: activityId3,
+    contentId: contentId3,
     loggedInUserId: ownerId3,
   });
   const contribHist3 = activityData3.activityHistory.contributorHistory;
   expect(contribHist3.length).eq(1);
-  expect(contribHist3[0].prevActivityId).eqls(activityId1);
+  expect(contribHist3[0].prevContentId).eqls(contentId1);
   expect(contribHist3[0].prevActivityRevisionNum).eq(2);
 });
 
 test("copyContent copies content classifications", async () => {
   const originalOwnerId = (await createTestUser()).userId;
   const newOwnerId = (await createTestUser()).userId;
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: originalOwnerId,
     contentType: "singleDoc",
     parentId: null,
@@ -1639,26 +1639,26 @@ test("copyContent copies content classifications", async () => {
   ).find((k) => k.code === "K.CC.1")!;
 
   await addClassification({
-    contentId: activityId,
+    contentId: contentId,
     classificationId: classifyId,
     loggedInUserId: originalOwnerId,
   });
 
   await setContentIsPublic({
-    contentId: activityId,
+    contentId: contentId,
     loggedInUserId: originalOwnerId,
     isPublic: true,
   });
   const {
-    newContentIds: [newActivityId],
+    newContentIds: [newContentId],
   } = await copyContent({
-    contentIds: [activityId],
+    contentIds: [contentId],
     loggedInUserId: newOwnerId,
     desiredParentId: null,
   });
 
   const activityData = await getActivityEditorData({
-    contentId: newActivityId,
+    contentId: newContentId,
     loggedInUserId: newOwnerId,
   });
 
@@ -1669,63 +1669,63 @@ test("copyContent copies content classifications", async () => {
 test("copyContent copies content features", async () => {
   const originalOwnerId = (await createTestUser()).userId;
   const newOwnerId = (await createTestUser()).userId;
-  const { contentId: activityId1 } = await createContent({
+  const { contentId: contentId1 } = await createContent({
     loggedInUserId: originalOwnerId,
     contentType: "singleDoc",
     parentId: null,
   });
-  const { contentId: activityId2 } = await createContent({
+  const { contentId: contentId2 } = await createContent({
     loggedInUserId: originalOwnerId,
     contentType: "singleDoc",
     parentId: null,
   });
 
   await updateContentFeatures({
-    contentId: activityId1,
+    contentId: contentId1,
     loggedInUserId: originalOwnerId,
     features: { isQuestion: true },
   });
   await updateContentFeatures({
-    contentId: activityId2,
+    contentId: contentId2,
     loggedInUserId: originalOwnerId,
     features: { containsVideo: true, isInteractive: true },
   });
 
   await setContentIsPublic({
-    contentId: activityId1,
+    contentId: contentId1,
     loggedInUserId: originalOwnerId,
     isPublic: true,
   });
   await setContentIsPublic({
-    contentId: activityId2,
+    contentId: contentId2,
     loggedInUserId: originalOwnerId,
     isPublic: true,
   });
 
   const {
-    newContentIds: [newActivityId1],
+    newContentIds: [newContentId1],
   } = await copyContent({
-    contentIds: [activityId1],
+    contentIds: [contentId1],
     loggedInUserId: newOwnerId,
     desiredParentId: null,
   });
   const {
-    newContentIds: [newActivityId2],
+    newContentIds: [newContentId2],
   } = await copyContent({
-    contentIds: [activityId2],
+    contentIds: [contentId2],
     loggedInUserId: newOwnerId,
     desiredParentId: null,
   });
 
   const activityData1 = await getActivityEditorData({
-    contentId: newActivityId1,
+    contentId: newContentId1,
     loggedInUserId: newOwnerId,
   });
   expect(activityData1.activity!.contentFeatures).toHaveLength(1);
   expect(activityData1.activity!.contentFeatures[0].code).eq("isQuestion");
 
   const activityData2 = await getActivityEditorData({
-    contentId: newActivityId2,
+    contentId: newContentId2,
     loggedInUserId: newOwnerId,
   });
   expect(activityData2.activity!.contentFeatures).toHaveLength(2);

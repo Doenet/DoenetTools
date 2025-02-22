@@ -13,37 +13,37 @@ test("add and check recent content", async () => {
   const user = await createTestUser();
   const userId = user.userId;
 
-  const activityIds: Uint8Array[] = [];
+  const contentIds: Uint8Array[] = [];
 
   // add 5 activities
   for (let i = 0; i < 5; i++) {
-    const { contentId: activityId } = await createContent({
+    const { contentId: contentId } = await createContent({
       loggedInUserId: userId,
       contentType: "singleDoc",
       parentId: null,
     });
-    await recordRecentContent(userId, "edit", activityId);
-    activityIds.push(activityId);
+    await recordRecentContent(userId, "edit", contentId);
+    contentIds.push(contentId);
   }
 
   // get recent should get all five
   let recent = await getRecentContent(userId, "edit", []);
-  expect(recent.map((r) => r.id)).eqls([...activityIds].reverse());
+  expect(recent.map((r) => r.id)).eqls([...contentIds].reverse());
 
   // add a couple more activities
   for (let i = 0; i < 2; i++) {
-    const { contentId: activityId } = await createContent({
+    const { contentId: contentId } = await createContent({
       loggedInUserId: userId,
       contentType: "singleDoc",
       parentId: null,
     });
-    await recordRecentContent(userId, "edit", activityId);
-    activityIds.push(activityId);
+    await recordRecentContent(userId, "edit", contentId);
+    contentIds.push(contentId);
   }
 
   // get the most recent 10
   recent = await getRecentContent(userId, "edit", []);
-  expect(recent.map((r) => r.id)).eqls([...activityIds].reverse().slice(0, 5));
+  expect(recent.map((r) => r.id)).eqls([...contentIds].reverse().slice(0, 5));
 });
 
 test("add and check recent content, different types", async () => {
@@ -54,13 +54,13 @@ test("add and check recent content, different types", async () => {
 
   // add five items of each content type
   for (let i = 0; i < 5; i++) {
-    const { contentId: activityId } = await createContent({
+    const { contentId: contentId } = await createContent({
       loggedInUserId: userId,
       contentType: "singleDoc",
       parentId: null,
     });
-    await recordRecentContent(userId, "edit", activityId);
-    contents.push({ id: activityId, type: "singleDoc" });
+    await recordRecentContent(userId, "edit", contentId);
+    contents.push({ id: contentId, type: "singleDoc" });
 
     const { contentId: folderId } = await createContent({
       loggedInUserId: userId,
@@ -109,13 +109,13 @@ test("add and check recent content, different types", async () => {
 
   // add a couple more activities of each type
   for (let i = 0; i < 2; i++) {
-    const { contentId: activityId } = await createContent({
+    const { contentId: contentId } = await createContent({
       loggedInUserId: userId,
       contentType: "singleDoc",
       parentId: null,
     });
-    await recordRecentContent(userId, "edit", activityId);
-    contents.push({ id: activityId, type: "singleDoc" });
+    await recordRecentContent(userId, "edit", contentId);
+    contents.push({ id: contentId, type: "singleDoc" });
 
     const { contentId: folderId } = await createContent({
       loggedInUserId: userId,

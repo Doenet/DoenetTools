@@ -25,7 +25,7 @@ type UserData = {
   lastNames: string;
 };
 type OrderedActivityScore = {
-  activityId: string;
+  contentId: string;
   activityName: string;
   score: number;
 };
@@ -116,20 +116,20 @@ export function StudentData() {
               return (
                 <LinkBox
                   as={Tr}
-                  key={`assignment${score.activityId}`}
+                  key={`assignment${score.contentId}`}
                   _hover={{ backgroundColor: "#eeeeee" }}
                 >
-                  <Td key={`assignment_title${score.activityId}`}>
+                  <Td key={`assignment_title${score.contentId}`}>
                     {score.activityName}
                   </Td>
-                  <Td key={`score${score.activityId}`}>
+                  <Td key={`score${score.contentId}`}>
                     {score.score !== null ? (
                       <LinkOverlay
                         as={ReactRouterLink}
                         to={
                           isAssignedData
-                            ? `/assignedData/${score.activityId}`
-                            : `/assignmentData/${score.activityId}/${userData.userId}`
+                            ? `/assignedData/${score.contentId}`
+                            : `/assignmentData/${score.contentId}/${userData.userId}`
                         }
                       >
                         {score.score}

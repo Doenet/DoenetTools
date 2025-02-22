@@ -32,13 +32,13 @@ test("add and remove promoted content", async () => {
   );
 
   // Cannot promote private activity to that group
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: userId,
     contentType: "singleDoc",
     parentId: null,
   });
   await expect(
-    addPromotedContent(groupId, activityId, userId),
+    addPromotedContent(groupId, contentId, userId),
   ).rejects.toThrowError("not public");
   {
     const promotedContent = await loadPromotedContent(userId);
@@ -51,23 +51,23 @@ test("add and remove promoted content", async () => {
 
   // Can promote public activity to that group
   await setContentIsPublic({
-    contentId: activityId,
+    contentId: contentId,
     loggedInUserId: userId,
     isPublic: true,
   });
-  await addPromotedContent(groupId, activityId, userId);
+  await addPromotedContent(groupId, contentId, userId);
   {
     const promotedContent = await loadPromotedContent(userId);
     const myContent = promotedContent.find(
       (content) => content.promotedGroupId === groupId,
     );
     expect(myContent).toBeDefined();
-    expect(myContent?.promotedContent[0].id).toEqual(activityId);
+    expect(myContent?.promotedContent[0].id).toEqual(contentId);
   }
 
   // Cannot add to same group twice
   await expect(
-    addPromotedContent(groupId, activityId, userId),
+    addPromotedContent(groupId, contentId, userId),
   ).rejects.toThrowError("Unique constraint failed");
   {
     const promotedContent = await loadPromotedContent(userId);
@@ -79,9 +79,9 @@ test("add and remove promoted content", async () => {
   }
 
   // Cannot promote non-existent activity
-  const fakeActivityId = newUUID();
+  const fakeContentId = newUUID();
   await expect(
-    addPromotedContent(groupId, fakeActivityId, userId),
+    addPromotedContent(groupId, fakeContentId, userId),
   ).rejects.toThrowError("does not exist");
   {
     const promotedContent = await loadPromotedContent(userId);
@@ -95,7 +95,7 @@ test("add and remove promoted content", async () => {
   // Cannot promote to non-existent group
   const fakeGroupId = Math.random() * 1e8;
   await expect(
-    addPromotedContent(fakeGroupId, activityId, userId),
+    addPromotedContent(fakeGroupId, contentId, userId),
   ).rejects.toThrowError("Foreign key constraint violated");
   {
     const promotedContent = await loadPromotedContent(userId);
@@ -107,7 +107,7 @@ test("add and remove promoted content", async () => {
   }
 
   // Remove content from group
-  await removePromotedContent(groupId, activityId, userId);
+  await removePromotedContent(groupId, contentId, userId);
   {
     const promotedContent = await loadPromotedContent(userId);
     const myContent = promotedContent.find(
@@ -119,7 +119,7 @@ test("add and remove promoted content", async () => {
 
   // Cannot remove non-existent activity
   await expect(
-    removePromotedContent(fakeGroupId, activityId, userId),
+    removePromotedContent(fakeGroupId, contentId, userId),
   ).rejects.toThrowError("does not exist");
 });
 
@@ -333,25 +333,25 @@ test("move promoted content", async () => {
 test("promoted content access control", async () => {
   // Setup
   const { userId } = await createTestUser();
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: userId,
     contentType: "singleDoc",
     parentId: null,
   });
   const groupName = "vitest-unique-promoted-group-" + new Date().toJSON();
-  const { contentId: promotedActivityId } = await createContent({
+  const { contentId: promotedContentId } = await createContent({
     loggedInUserId: userId,
     contentType: "singleDoc",
     parentId: null,
   });
   await setContentIsPublic({
-    contentId: promotedActivityId,
+    contentId: promotedContentId,
     isPublic: true,
     loggedInUserId: userId,
   });
   const { userId: adminId } = await createTestAdminUser();
   const groupId = await addPromotedContentGroup(groupName, adminId);
-  await addPromotedContent(groupId, promotedActivityId, adminId);
+  await addPromotedContent(groupId, promotedContentId, adminId);
 
   // add group fails
   await expect(
@@ -370,11 +370,11 @@ test("promoted content access control", async () => {
 
   // add content fails
   await expect(
-    addPromotedContent(groupId, activityId, userId),
+    addPromotedContent(groupId, contentId, userId),
   ).rejects.toThrowError("admin");
 
   // remove content fails
   await expect(
-    removePromotedContent(groupId, promotedActivityId, userId),
+    removePromotedContent(groupId, promotedContentId, userId),
   ).rejects.toThrowError("admin");
 });

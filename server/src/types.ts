@@ -15,7 +15,7 @@ export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
 export type LibraryInfo = {
   sourceId: Uint8Array;
-  activityId: Uint8Array | null;
+  contentId: Uint8Array | null;
   ownerRequested?: boolean;
   status:
     | "none"
@@ -29,7 +29,7 @@ export type LibraryInfo = {
 export function blankLibraryInfo(sourceId: Uint8Array): LibraryInfo {
   return {
     sourceId,
-    activityId: null,
+    contentId: null,
     status: "none",
   };
 }
@@ -287,8 +287,8 @@ export type License = {
 export type ActivityHistory = {
   id: Uint8Array;
   contributorHistory: {
-    activityId: Uint8Array;
-    prevActivityId: Uint8Array;
+    contentId: Uint8Array;
+    prevContentId: Uint8Array;
     prevActivityRevisionNum: number;
     withLicenseCode: string | null;
     timestampActivity: Date;
@@ -312,7 +312,7 @@ export type ActivityRemixes = {
     revisionNum: number;
     remixes: {
       withLicenseCode: string | null;
-      activityId: Uint8Array;
+      contentId: Uint8Array;
       activityName: string;
       activityOwner: {
         userId: Uint8Array;

@@ -32,10 +32,10 @@ import { UserInfo } from "../../../_utils/types";
 
 export async function loader({ params }) {
   const { data } = await axios.get(
-    `/api/getAssignmentData/${params.activityId}`,
+    `/api/getAssignmentData/${params.contentId}`,
   );
 
-  const activityId = params.activityId;
+  const contentId = params.contentId;
 
   // TODO: address case where don't have one document
   const doenetML = data.assignmentContent[0].source;
@@ -46,14 +46,14 @@ export async function loader({ params }) {
     answerList: data.answerList,
     doenetML,
     doenetmlVersion,
-    activityId,
+    contentId,
   };
 }
 
 export function AssignmentData() {
-  const { activityId, assignmentData, answerList, doenetML, doenetmlVersion } =
+  const { contentId, assignmentData, answerList, doenetML, doenetmlVersion } =
     useLoaderData() as {
-      activityId: string;
+      contentId: string;
       assignmentData: {
         name: string;
         assignmentScores: {
@@ -181,7 +181,7 @@ export function AssignmentData() {
                   {assignmentData.assignmentScores.map((assignmentScore) => {
                     const linkURL =
                       "/assignmentData/" +
-                      activityId +
+                      contentId +
                       "/" +
                       assignmentScore.user.userId;
                     return (
@@ -244,8 +244,8 @@ export function AssignmentData() {
                     </Thead>
                     <Tbody>
                       {answerList.map((answerObj) => {
-                        const key = `/assignmentAnswerResponses/${activityId}/${answerObj.docId}/${answerObj.docVersionNum}/${answerObj.answerId}`;
-                        const linkURL = `/assignmentAnswerResponses/${activityId}/${
+                        const key = `/assignmentAnswerResponses/${contentId}/${answerObj.docId}/${answerObj.docVersionNum}/${answerObj.answerId}`;
+                        const linkURL = `/assignmentAnswerResponses/${contentId}/${
                           answerObj.docId
                         }/${
                           answerObj.docVersionNum

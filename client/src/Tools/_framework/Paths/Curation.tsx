@@ -88,7 +88,7 @@ export async function action({ request }) {
 
   if (formObj?._action == "Delete Draft") {
     await axios.post(`/api/deleteDraftFromLibrary`, {
-      activityId: formObj.id,
+      contentId: formObj.id,
       contentType: formObj.contentType,
     });
     return true;

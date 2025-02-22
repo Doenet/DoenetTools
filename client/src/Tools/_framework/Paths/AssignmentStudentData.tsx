@@ -33,7 +33,7 @@ export async function loader({ params, request, isAssignedData = false }) {
   const withMaxScore = url.searchParams.get("withMaxScore") === "0" ? 0 : 1;
 
   const { data: assignmentData } = await axios.get(
-    `/api/getAssignmentStudentData/${params.activityId}/${params.userId ?? ""}`,
+    `/api/getAssignmentStudentData/${params.contentId}/${params.userId ?? ""}`,
   );
 
   const assignment = assignmentData.activity;
@@ -113,7 +113,7 @@ export function AssignmentStudentData() {
         try {
           const { data } = await axios.get("/api/loadState", {
             params: {
-              activityId: assignment.id,
+              contentId: assignment.id,
               docId: assignment.documents[0]!.docId,
               docVersionNum: assignment.documents[0]!.versionNum,
               userId: user.userId,
@@ -261,7 +261,7 @@ export function AssignmentStudentData() {
             forceShowSolution={true}
             forceUnsuppressCheckwork={true}
             attemptNumber={1}
-            idsIncludeActivityId={false}
+            idsIncludeContentId={false}
             paginate={true}
             linkSettings={{
               viewURL: "/activityViewer",
@@ -292,7 +292,7 @@ export function AssignmentStudentData() {
             forceShowSolution={true}
             forceUnsuppressCheckwork={true}
             attemptNumber={1}
-            idsIncludeActivityId={false}
+            idsIncludeContentId={false}
             paginate={true}
             linkSettings={{
               viewURL: "/activityViewer",

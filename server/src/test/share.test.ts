@@ -40,7 +40,7 @@ test("content in public folder is created as public", async () => {
   });
 
   // create a folder and activity in public folder
-  const { contentId: activityId } = await createContent({
+  const { contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: publicFolderId,
@@ -57,7 +57,7 @@ test("content in public folder is created as public", async () => {
   });
   expect(content.length).eq(2);
 
-  expect(content[0].id).eqls(activityId);
+  expect(content[0].id).eqls(contentId);
   expect(content[0].isPublic).eq(true);
   expect(content[0].license?.code).eq("CCBYSA");
 
@@ -92,7 +92,7 @@ test("content in shared folder is created shared", async () => {
   });
 
   // create a folder and activity in public folder
-  const { contentId: activityId } = await createContent({
+  const { contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: publicFolderId,
@@ -110,7 +110,7 @@ test("content in shared folder is created shared", async () => {
 
   expect(content.length).eq(2);
 
-  expect(content[0].id).eqls(activityId);
+  expect(content[0].id).eqls(contentId);
   expect(content[0].isShared).eq(true);
   expect(content[0].sharedWith).eqls([userFields]);
   expect(content[0].license?.code).eq("CCBYSA");
@@ -141,13 +141,13 @@ test("if content has a public parent, cannot make it private", async () => {
   });
 
   // creating content inside a public folder make it public with same license
-  const { contentId: activityId } = await createContent({
+  const { contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: folderId,
   });
   let activity = await getContent({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
   });
   expect(activity.isPublic).eq(true);
@@ -155,12 +155,12 @@ test("if content has a public parent, cannot make it private", async () => {
 
   // change license of content is OK
   await setContentLicense({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     licenseCode: "CCDUAL",
   });
   activity = await getContent({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
   });
   expect(activity.isPublic).eq(true);
@@ -169,7 +169,7 @@ test("if content has a public parent, cannot make it private", async () => {
   // since have public parent, cannot make child private
   await expect(
     setContentIsPublic({
-      contentId: activityId,
+      contentId,
       loggedInUserId: ownerId,
       isPublic: false,
     }),
@@ -184,31 +184,31 @@ test("if content has a public parent, cannot make it private", async () => {
   });
 
   activity = await getContent({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
   });
   expect(activity.isPublic).eq(false);
 
   // make the content public
   await setContentIsPublic({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     isPublic: true,
   });
   activity = await getContent({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
   });
   expect(activity.isPublic).eq(true);
 
   // can make it private now
   await setContentIsPublic({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     isPublic: false,
   });
   activity = await getContent({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
   });
   expect(activity.isPublic).eq(false);
@@ -238,13 +238,13 @@ test("if content has a parent that is shared with a user, cannot unshare with th
   });
 
   // creating content inside a shared folder make it shared with same people and with same license
-  const { contentId: activityId } = await createContent({
+  const { contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: folderId,
   });
   let activity = await getContent({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     includeShareDetails: true,
   });
@@ -254,12 +254,12 @@ test("if content has a parent that is shared with a user, cannot unshare with th
 
   // change license of content is OK
   await setContentLicense({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     licenseCode: "CCDUAL",
   });
   activity = await getContent({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     includeShareDetails: true,
   });
@@ -271,7 +271,7 @@ test("if content has a parent that is shared with a user, cannot unshare with th
   await expect(
     modifyContentSharedWith({
       action: "unshare",
-      contentId: activityId,
+      contentId,
       loggedInUserId: ownerId,
       users: [userId1],
     }),
@@ -280,12 +280,12 @@ test("if content has a parent that is shared with a user, cannot unshare with th
   // can share and unshare with userId2
   await modifyContentSharedWith({
     action: "share",
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     users: [userId2],
   });
   activity = await getContent({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     includeShareDetails: true,
   });
@@ -295,12 +295,12 @@ test("if content has a parent that is shared with a user, cannot unshare with th
 
   await modifyContentSharedWith({
     action: "unshare",
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     users: [userId2],
   });
   activity = await getContent({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     includeShareDetails: true,
   });
@@ -317,7 +317,7 @@ test("if content has a parent that is shared with a user, cannot unshare with th
   });
 
   activity = await getContent({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
   });
   expect(activity.isShared).eq(false);
@@ -327,12 +327,12 @@ test("if content has a parent that is shared with a user, cannot unshare with th
   // share the content with userId1
   await modifyContentSharedWith({
     action: "share",
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     users: [userId1],
   });
   activity = await getContent({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     includeShareDetails: true,
   });
@@ -343,12 +343,12 @@ test("if content has a parent that is shared with a user, cannot unshare with th
   // can now unshare it with userId1
   await modifyContentSharedWith({
     action: "unshare",
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     users: [userId1],
   });
   activity = await getContent({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     includeShareDetails: true,
   });
@@ -1120,7 +1120,7 @@ test("share with email throws error when no match", async () => {
     contentType: "folder",
     parentId: null,
   });
-  const { contentId: activityId } = await createContent({
+  const { contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: null,
@@ -1128,20 +1128,20 @@ test("share with email throws error when no match", async () => {
 
   await expect(
     shareContentWithEmail({
-      contentId: activityId,
+      contentId,
       loggedInUserId: ownerId,
       email: otherEmail,
     }),
   ).rejects.toThrow("User with email not found");
 
   await shareContentWithEmail({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     email: user.email,
   });
 
   const { activity } = await getActivityEditorData({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
   });
   expect(activity).toBeDefined();
@@ -1179,7 +1179,7 @@ test("share with email throws error when share with self", async () => {
     contentType: "folder",
     parentId: null,
   });
-  const { contentId: activityId } = await createContent({
+  const { contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: null,
@@ -1187,19 +1187,19 @@ test("share with email throws error when share with self", async () => {
 
   await expect(
     shareContentWithEmail({
-      contentId: activityId,
+      contentId,
       loggedInUserId: ownerId,
       email: owner.email,
     }),
   ).rejects.toThrow("Cannot share with self");
 
   await shareContentWithEmail({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     email: user.email,
   });
   const { activity } = await getActivityEditorData({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
   });
   expect(activity).toBeDefined();
@@ -1232,74 +1232,74 @@ test("contributor history shows only documents user can view", async () => {
   const ownerId3 = (await createTestUser()).userId;
 
   // create public activity 1 by owner 1
-  const { contentId: activityId1 } = await createContent({
+  const { contentId: contentId1 } = await createContent({
     loggedInUserId: ownerId1,
     contentType: "singleDoc",
     parentId: null,
   });
   await setContentIsPublic({
-    contentId: activityId1,
+    contentId: contentId1,
     loggedInUserId: ownerId1,
     isPublic: true,
   });
 
   // owner 2 copies activity 1 to activity 2 and shares it with owner 3
   const {
-    newContentIds: [activityId2],
+    newContentIds: [contentId2],
   } = await copyContent({
-    contentIds: [activityId1],
+    contentIds: [contentId1],
     loggedInUserId: ownerId2,
     desiredParentId: null,
   });
   await setContentLicense({
-    contentId: activityId2,
+    contentId: contentId2,
     loggedInUserId: ownerId2,
     licenseCode: "CCBYSA",
   });
   await modifyContentSharedWith({
     action: "share",
-    contentId: activityId2,
+    contentId: contentId2,
     loggedInUserId: ownerId2,
     users: [ownerId3],
   });
 
   // owner 3 copies activity 2 to activity 3, and then copies that to public activity 4
   const {
-    newContentIds: [activityId3],
+    newContentIds: [contentId3],
   } = await copyContent({
-    contentIds: [activityId2],
+    contentIds: [contentId2],
     loggedInUserId: ownerId3,
     desiredParentId: null,
   });
   const {
-    newContentIds: [activityId4],
+    newContentIds: [contentId4],
   } = await copyContent({
-    contentIds: [activityId3],
+    contentIds: [contentId3],
     loggedInUserId: ownerId3,
     desiredParentId: null,
   });
   await setContentIsPublic({
-    contentId: activityId4,
+    contentId: contentId4,
     loggedInUserId: ownerId3,
     isPublic: true,
   });
 
   // owner 3 copies activity 1 to activity 5 and shares it with owner 1
   const {
-    newContentIds: [activityId5],
+    newContentIds: [contentId5],
   } = await copyContent({
-    contentIds: [activityId1],
+    contentIds: [contentId1],
     loggedInUserId: ownerId3,
     desiredParentId: null,
   });
   await setContentLicense({
-    contentId: activityId5,
+    contentId: contentId5,
     loggedInUserId: ownerId3,
     licenseCode: "CCBYNCSA",
   });
   await modifyContentSharedWith({
     action: "share",
-    contentId: activityId5,
+    contentId: contentId5,
     loggedInUserId: ownerId3,
     users: [ownerId1],
   });
@@ -1307,121 +1307,121 @@ test("contributor history shows only documents user can view", async () => {
   // owner1 just sees activity 1 in history of activity 4
   let activityHistory = (
     await getActivityContributorHistory({
-      activityId: activityId4,
+      contentId: contentId4,
       loggedInUserId: ownerId1,
     })
   ).contributorHistory;
   expect(activityHistory.length).eq(1);
-  expect(activityHistory[0].prevActivityId).eqls(activityId1);
+  expect(activityHistory[0].prevContentId).eqls(contentId1);
   expect(activityHistory[0].withLicenseCode).eq("CCDUAL");
 
   // owner 1 just sees activity 4 and 5 in remixes of activity 1
   let activityRemixes = (
     await getActivityRemixes({
-      activityId: activityId1,
+      contentId: contentId1,
       loggedInUserId: ownerId1,
     })
   ).activityRevisions.flatMap((v) => v.remixes);
   expect(activityRemixes.length).eq(2);
-  expect(activityRemixes[0].activityId).eqls(activityId5);
+  expect(activityRemixes[0].contentId).eqls(contentId5);
   expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
-  expect(activityRemixes[1].activityId).eqls(activityId4);
+  expect(activityRemixes[1].contentId).eqls(contentId4);
   expect(activityRemixes[1].withLicenseCode).eq("CCDUAL");
 
   // owner 1 just sees direct remix from activity 1 into activity 5
   activityRemixes = (
     await getActivityRemixes({
-      activityId: activityId1,
+      contentId: contentId1,
       loggedInUserId: ownerId1,
       directRemixesOnly: true,
     })
   ).activityRevisions.flatMap((v) => v.remixes);
   expect(activityRemixes.length).eq(1);
-  expect(activityRemixes[0].activityId).eqls(activityId5);
+  expect(activityRemixes[0].contentId).eqls(contentId5);
   expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
 
   // owner2 just sees activity 1 and 2 in history of activity 4
   activityHistory = (
     await getActivityContributorHistory({
-      activityId: activityId4,
+      contentId: contentId4,
       loggedInUserId: ownerId2,
     })
   ).contributorHistory;
   expect(activityHistory.length).eq(2);
-  expect(activityHistory[0].prevActivityId).eqls(activityId2);
+  expect(activityHistory[0].prevContentId).eqls(contentId2);
   expect(activityHistory[0].withLicenseCode).eq("CCBYSA");
-  expect(activityHistory[1].prevActivityId).eqls(activityId1);
+  expect(activityHistory[1].prevContentId).eqls(contentId1);
   expect(activityHistory[1].withLicenseCode).eq("CCDUAL");
 
   // owner 2 just sees activity 4 and 2 in remixes of activity 1
   activityRemixes = (
     await getActivityRemixes({
-      activityId: activityId1,
+      contentId: contentId1,
       loggedInUserId: ownerId2,
     })
   ).activityRevisions.flatMap((v) => v.remixes);
   expect(activityRemixes.length).eq(2);
-  expect(activityRemixes[0].activityId).eqls(activityId4);
+  expect(activityRemixes[0].contentId).eqls(contentId4);
   expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
-  expect(activityRemixes[1].activityId).eqls(activityId2);
+  expect(activityRemixes[1].contentId).eqls(contentId2);
   expect(activityRemixes[1].withLicenseCode).eq("CCDUAL");
 
   // owner 2 sees direct remix of activity 1 into 2
   activityRemixes = (
     await getActivityRemixes({
-      activityId: activityId1,
+      contentId: contentId1,
       loggedInUserId: ownerId2,
       directRemixesOnly: true,
     })
   ).activityRevisions.flatMap((v) => v.remixes);
   expect(activityRemixes.length).eq(1);
-  expect(activityRemixes[0].activityId).eqls(activityId2);
+  expect(activityRemixes[0].contentId).eqls(contentId2);
   expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
 
   // owner3 sees activity 1, 2 and 3 in history of activity 4
   activityHistory = (
     await getActivityContributorHistory({
-      activityId: activityId4,
+      contentId: contentId4,
       loggedInUserId: ownerId3,
     })
   ).contributorHistory;
   expect(activityHistory.length).eq(3);
-  expect(activityHistory[0].prevActivityId).eqls(activityId3);
+  expect(activityHistory[0].prevContentId).eqls(contentId3);
   expect(activityHistory[0].withLicenseCode).eq("CCBYSA");
-  expect(activityHistory[1].prevActivityId).eqls(activityId2);
+  expect(activityHistory[1].prevContentId).eqls(contentId2);
   expect(activityHistory[1].withLicenseCode).eq("CCBYSA");
-  expect(activityHistory[2].prevActivityId).eqls(activityId1);
+  expect(activityHistory[2].prevContentId).eqls(contentId1);
   expect(activityHistory[2].withLicenseCode).eq("CCDUAL");
 
   // owner 3 sees activity 5, 4, 3 and 2 in remixes of activity 1
   activityRemixes = (
     await getActivityRemixes({
-      activityId: activityId1,
+      contentId: contentId1,
       loggedInUserId: ownerId3,
     })
   ).activityRevisions.flatMap((v) => v.remixes);
   expect(activityRemixes.length).eq(4);
-  expect(activityRemixes[0].activityId).eqls(activityId5);
+  expect(activityRemixes[0].contentId).eqls(contentId5);
   expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
-  expect(activityRemixes[1].activityId).eqls(activityId4);
+  expect(activityRemixes[1].contentId).eqls(contentId4);
   expect(activityRemixes[1].withLicenseCode).eq("CCDUAL");
-  expect(activityRemixes[2].activityId).eqls(activityId3);
+  expect(activityRemixes[2].contentId).eqls(contentId3);
   expect(activityRemixes[2].withLicenseCode).eq("CCDUAL");
-  expect(activityRemixes[3].activityId).eqls(activityId2);
+  expect(activityRemixes[3].contentId).eqls(contentId2);
   expect(activityRemixes[3].withLicenseCode).eq("CCDUAL");
 
   // owner 3 sees direct remixes of activity 1 into 2 and 5
   activityRemixes = (
     await getActivityRemixes({
-      activityId: activityId1,
+      contentId: contentId1,
       loggedInUserId: ownerId3,
       directRemixesOnly: true,
     })
   ).activityRevisions.flatMap((v) => v.remixes);
   expect(activityRemixes.length).eq(2);
-  expect(activityRemixes[0].activityId).eqls(activityId5);
+  expect(activityRemixes[0].contentId).eqls(contentId5);
   expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
-  expect(activityRemixes[1].activityId).eqls(activityId2);
+  expect(activityRemixes[1].contentId).eqls(contentId2);
   expect(activityRemixes[1].withLicenseCode).eq("CCDUAL");
 });
 
@@ -1473,7 +1473,7 @@ test("get licenses", async () => {
 test("set license to make public", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: null,
@@ -1481,17 +1481,17 @@ test("set license to make public", async () => {
 
   // make public with CCBYSA license
   await setContentLicense({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     licenseCode: "CCBYSA",
   });
   await setContentIsPublic({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     isPublic: true,
   });
   let { activity: activityData } = await getActivityEditorData({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
   });
   expect(activityData).toBeDefined();
@@ -1508,12 +1508,12 @@ test("set license to make public", async () => {
 
   // make private
   await setContentIsPublic({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     isPublic: false,
   });
   ({ activity: activityData } = await getActivityEditorData({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
   }));
   expect(activityData).toBeDefined();
@@ -1521,17 +1521,17 @@ test("set license to make public", async () => {
 
   // make public with CCBYNCSA license
   await setContentLicense({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     licenseCode: "CCBYNCSA",
   });
   await setContentIsPublic({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     isPublic: true,
   });
   ({ activity: activityData } = await getActivityEditorData({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
   }));
   expect(activityData).toBeDefined();
@@ -1548,13 +1548,13 @@ test("set license to make public", async () => {
 
   // switch license to dual
   await setContentLicense({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
     licenseCode: "CCDUAL",
   });
 
   ({ activity: activityData } = await getActivityEditorData({
-    contentId: activityId,
+    contentId,
     loggedInUserId: ownerId,
   }));
   expect(activityData!.isPublic).eq(true);

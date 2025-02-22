@@ -90,9 +90,9 @@ export async function action({ request }) {
 export async function loader({ params, request }) {
   const {
     data: { activity: activityData, docHistories },
-  } = await axios.get(`/api/getActivityViewerData/${params.activityId}`);
+  } = await axios.get(`/api/getActivityViewerData/${params.contentId}`);
 
-  const activityId = params.activityId;
+  const contentId = params.contentId;
 
   const url = new URL(request.url);
   const addToId = url.searchParams.get("addTo");
@@ -122,7 +122,7 @@ export async function loader({ params, request }) {
       docId,
       doenetML,
       doenetmlVersion,
-      activityId,
+      contentId,
       contributorHistory,
       addTo,
     };
@@ -133,7 +133,7 @@ export async function loader({ params, request }) {
       type: activityData.type,
       activityData,
       activityJson,
-      activityId,
+      contentId,
       contributorHistory: [],
       addTo,
     };
@@ -142,7 +142,7 @@ export async function loader({ params, request }) {
 
 export function ActivityViewer() {
   const data = useLoaderData() as {
-    activityId: string;
+    contentId: string;
     activityData: ContentStructure;
     contributorHistory: DocHistoryItem[];
     addTo?: ContentDescription;
@@ -160,7 +160,7 @@ export function ActivityViewer() {
   );
 
   const {
-    activityId,
+    contentId,
     type: contentType,
     activityData,
     contributorHistory,
@@ -182,7 +182,7 @@ export function ActivityViewer() {
     } else {
       setMode("View");
     }
-  }, [contentType, activityId]);
+  }, [contentType, contentId]);
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
@@ -376,7 +376,7 @@ export function ActivityViewer() {
         leftIcon={<MdOutlineAdd />}
         addCopyToLibraryOption={
           user?.isAdmin &&
-          !activityData.librarySourceInfo?.activityId &&
+          !activityData.librarySourceInfo?.contentId &&
           !activityData.libraryActivityInfo
         }
       />
@@ -491,7 +491,7 @@ export function ActivityViewer() {
                           A{" "}
                           <ChakraLink
                             as={ReactRouterLink}
-                            to={`/activityViewer/${activityData.librarySourceInfo.activityId}`}
+                            to={`/activityViewer/${activityData.librarySourceInfo.contentId}`}
                             style={{ color: "var(--mainBlue)" }}
                           >
                             peer-reviewed
@@ -504,7 +504,7 @@ export function ActivityViewer() {
                     <></>
                   )}
                   {user?.isAdmin &&
-                  activityData.librarySourceInfo?.activityId &&
+                  activityData.librarySourceInfo?.contentId &&
                   activityData.librarySourceInfo?.status !== "PUBLISHED" ? (
                     <Button
                       marginLeft="10px"
@@ -512,7 +512,7 @@ export function ActivityViewer() {
                       size="sm"
                       colorScheme="blue"
                       as={ReactRouterLink}
-                      to={`/activityViewer/${activityData.librarySourceInfo.activityId}`}
+                      to={`/activityViewer/${activityData.librarySourceInfo.contentId}`}
 
                       // style={{ color: "var(--mainBlue)" }}
                     >

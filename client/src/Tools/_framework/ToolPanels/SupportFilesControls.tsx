@@ -45,7 +45,7 @@ export async function supportFilesActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "update description") {
     await axios.get("/api/updateFileDescription", {
       params: {
-        activityId: formObj.activityId,
+        contentId: formObj.contentId,
         cid: formObj.cid,
         description: formObj.description,
       },
@@ -53,7 +53,7 @@ export async function supportFilesActions({ formObj }: { [k: string]: any }) {
     return true;
   } else if (formObj._action == "remove file") {
     const resp = await axios.get("/api/deleteFile", {
-      params: { activityId: formObj.activityId, cid: formObj.cid },
+      params: { contentId: formObj.contentId, cid: formObj.cid },
     });
 
     return {
@@ -70,11 +70,11 @@ export async function supportFilesActions({ formObj }: { [k: string]: any }) {
 
 export function SupportFilesControls({
   supportingFileData,
-  activityId,
+  contentId,
   fetcher,
 }: {
   supportingFileData: any;
-  activityId: string;
+  contentId: string;
   fetcher: FetcherWithComponents<any>;
 }) {
   const { supportingFiles, userQuotaBytesAvailable, quotaBytes } =
@@ -132,7 +132,7 @@ export function SupportFilesControls({
         }
         const uploadData = new FormData();
         uploadData.append("file", file);
-        uploadData.append("activityId", activityId.toString());
+        uploadData.append("contentId", contentId.toString());
         uploadData.append("columnTypes", columnTypes);
 
         const resp = await axios.post("/api/supportFileUpload", uploadData);
@@ -360,7 +360,7 @@ export function SupportFilesControls({
                                     {
                                       _action: "remove file",
                                       cid: file.cid,
-                                      activityId,
+                                      contentId,
                                     },
                                     { method: "post" },
                                   );
@@ -394,7 +394,7 @@ export function SupportFilesControls({
                                   _action: "update description",
                                   cid: file.cid,
                                   description: e.target.value,
-                                  activityId,
+                                  contentId,
                                 },
                                 { method: "post" },
                               );
@@ -407,7 +407,7 @@ export function SupportFilesControls({
                                     cid: file.cid,
                                     description: (e.target as HTMLInputElement)
                                       .value,
-                                    activityId,
+                                    contentId,
                                   },
                                   { method: "post" },
                                 );
@@ -477,7 +477,7 @@ export function SupportFilesControls({
                                 _action: "update description",
                                 description: value,
                                 cid: file.cid,
-                                activityId,
+                                contentId,
                               },
                               { method: "post" },
                             );
@@ -537,7 +537,7 @@ export function SupportFilesControls({
                                   {
                                     _action: "remove file",
                                     cid: file.cid,
-                                    activityId,
+                                    contentId,
                                   },
                                   { method: "post" },
                                 );

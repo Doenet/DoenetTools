@@ -43,12 +43,12 @@ export async function createTestAnonymousUser() {
 }
 
 export async function getTestAssignment(
-  activityId: Uint8Array,
+  contentId: Uint8Array,
   loggedInUserId: Uint8Array,
 ) {
   const assignment = await prisma.content.findUniqueOrThrow({
     where: {
-      id: activityId,
+      id: contentId,
       isAssigned: true,
       ...filterEditableActivity(loggedInUserId),
     },

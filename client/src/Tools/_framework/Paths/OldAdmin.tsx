@@ -101,7 +101,7 @@ export function OldAdmin() {
                         ownerName: createFullName(activity.owner!),
                         menuItems: (
                           <MoveToGroupMenuItem
-                            activityId={activity.id}
+                            contentId={activity.id}
                             carouselData={carouselData}
                           />
                         ),

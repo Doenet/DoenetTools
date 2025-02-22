@@ -171,7 +171,7 @@ export function ContentSettingsDrawer({
                   <TabPanel>
                     <SupportFilesControls
                       fetcher={fetcher}
-                      activityId={contentData.id}
+                      contentId={contentData.id}
                       supportingFileData={supportingFileData}
                     />
                   </TabPanel>

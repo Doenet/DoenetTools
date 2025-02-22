@@ -57,7 +57,7 @@ export default function ContributorsMenu({
         >
           <ChakraLink
             as={ReactRouterLink}
-            to={`/activityViewer/${contributorHistory[0].prevActivityId}`}
+            to={`/activityViewer/${contributorHistory[0].prevContentId}`}
             aria-label={`Go to ${contributorHistory[0].prevActivityName}`}
           >
             {contributorHistory[0].prevActivityName} by{" "}
@@ -132,7 +132,7 @@ export default function ContributorsMenu({
           </MenuItem>
           {contributorHistory.map((contrib_hist, i) => {
             const menuText = `${contrib_hist.prevActivityName} by ${createFullName(contrib_hist.prevOwner)}`;
-            const activityRef = `/activityViewer/${contrib_hist.prevActivityId}`;
+            const activityRef = `/activityViewer/${contrib_hist.prevContentId}`;
             const activityLabel = `Go to ${contrib_hist.prevActivityName}`;
             const userRef = `/sharedActivities/${contrib_hist.prevOwner.userId}`;
             const userLabel = `Go to ${createFullName(contrib_hist.prevOwner)}'s shared activities`;

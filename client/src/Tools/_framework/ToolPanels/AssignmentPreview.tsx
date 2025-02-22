@@ -47,7 +47,7 @@ export default function AssignmentPreview({
           attemptNumber={1}
           generatedVariantCallback={setVariants}
           requestedVariantIndex={variants.index}
-          idsIncludeActivityId={false}
+          idsIncludeContentId={false}
           paginate={true}
           location={location}
           navigate={navigate}

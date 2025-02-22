@@ -130,8 +130,8 @@ export async function action({ request, params }) {
       parentId: params.folderId,
     });
 
-    const { activityId } = data;
-    return redirect(`/activityEditor/${activityId}`);
+    const { contentId } = data;
+    return redirect(`/activityEditor/${contentId}`);
   } else if (formObj?._action == "Duplicate Content") {
     await axios.post(`/api/copyContent`, {
       sourceContent: [{ contentId: formObj.id, type: formObj.contentType }],

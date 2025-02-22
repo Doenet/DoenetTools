@@ -96,7 +96,7 @@ export function RemixedFrom({
                   <Td>
                     <ChakraLink
                       as={ReactRouterLink}
-                      to={`/activityViewer/${ch.prevActivityId}`}
+                      to={`/activityViewer/${ch.prevContentId}`}
                     >
                       <Text wordBreak="break-word" whiteSpace="normal">
                         {ch.prevActivityName}

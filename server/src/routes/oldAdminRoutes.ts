@@ -72,9 +72,9 @@ oldAdminRouter.post(
     try {
       const loggedInUserId = req.user.userId;
       const groupId = Number(req.body.groupId);
-      const activityId = toUUID(req.body.activityId);
+      const contentId = toUUID(req.body.contentId);
 
-      await removePromotedContent(groupId, activityId, loggedInUserId);
+      await removePromotedContent(groupId, contentId, loggedInUserId);
       res.send({});
     } catch (e) {
       handleErrors(res, e);
@@ -89,12 +89,12 @@ oldAdminRouter.post(
     try {
       const loggedInUserId = req.user.userId;
       const groupId = Number(req.body.groupId);
-      const activityId = toUUID(req.body.activityId);
+      const contentId = toUUID(req.body.contentId);
       const desiredPosition = Number(req.body.desiredPosition);
 
       await movePromotedContent(
         groupId,
-        activityId,
+        contentId,
         loggedInUserId,
         desiredPosition,
       );
@@ -181,8 +181,8 @@ oldAdminRouter.post(
     try {
       const loggedInUserId = req.user.userId;
       const groupId = req.body.groupId;
-      const activityId = toUUID(req.body.activityId);
-      await addPromotedContent(groupId, activityId, loggedInUserId);
+      const contentId = toUUID(req.body.contentId);
+      await addPromotedContent(groupId, contentId, loggedInUserId);
       res.send({});
     } catch (e) {
       handleErrors(res, e);

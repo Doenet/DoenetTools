@@ -38,10 +38,10 @@ export async function loader({ params }) {
 
   // TODO: need to select variant for each student (just once)
 
-  if (params.activityId) {
+  if (params.contentId) {
     // TODO: create this route
     const { data } = await axios.get(
-      `/api/getAssignmentData/${params.activityId}`,
+      `/api/getAssignmentData/${params.contentId}`,
     );
     assignment = data;
   } else if (params.classCode) {
@@ -117,7 +117,7 @@ export function AssignmentViewer() {
       if (event.data.subject == "SPLICE.reportScoreAndState") {
         // TODO: generalize to multiple documents. For now, assume just have one.
         await axios.post("/api/saveScoreAndState", {
-          activityId: assignment.id,
+          contentId: assignment.id,
           docId: assignment.documents[0].id,
           docVersionNum: assignment.documents[0].assignedVersionNum,
           score: event.data.score,
@@ -128,7 +128,7 @@ export function AssignmentViewer() {
         const data = event.data.data;
         if (data.verb === "submitted") {
           recordSubmittedEvent({
-            activityId: assignment.id,
+            contentId: assignment.id,
             docId,
             docVersionNum,
             data,
@@ -138,7 +138,7 @@ export function AssignmentViewer() {
         try {
           const { data } = await axios.get("/api/loadState", {
             params: {
-              activityId: assignment.id,
+              contentId: assignment.id,
               docId: assignment.documents[0].id,
               docVersionNum: assignment.documents[0].assignedVersionNum,
               userId: event.data.userId,
@@ -294,7 +294,7 @@ export function AssignmentViewer() {
                       allowSaveEvents: true,
                     }}
                     attemptNumber={1}
-                    idsIncludeActivityId={false}
+                    idsIncludeContentId={false}
                     paginate={true}
                     location={location}
                     navigate={navigate}
@@ -314,12 +314,7 @@ export function AssignmentViewer() {
   );
 }
 
-async function recordSubmittedEvent({
-  activityId,
-  docId,
-  docVersionNum,
-  data,
-}) {
+async function recordSubmittedEvent({ contentId, docId, docVersionNum, data }) {
   const object = JSON.parse(data.object);
   const answerId = object.componentName;
 
@@ -336,7 +331,7 @@ async function recordSubmittedEvent({
     const documentCreditAchieved = context.pageCreditAchieved;
 
     await axios.post(`/api/recordSubmittedEvent`, {
-      activityId,
+      contentId,
       docId,
       docVersionNum,
       answerId,

@@ -8,8 +8,8 @@ describe("Activity Editor Tests", function () {
     cy.createActivity({
       activityName: "Hello!",
       doenetML: "Initial content",
-    }).then((activityId) => {
-      cy.visit(`/activityEditor/${activityId}`);
+    }).then((contentId) => {
+      cy.visit(`/activityEditor/${contentId}`);
 
       cy.iframe()
         .find(".doenet-viewer")

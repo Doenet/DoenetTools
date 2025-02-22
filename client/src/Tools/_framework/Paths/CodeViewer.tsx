@@ -27,13 +27,13 @@ export async function loader({ params, request }) {
   const url = new URL(request.url);
   const queryParamDoenetML = url.searchParams.get("doenetml");
 
-  if (!params.activityId) {
+  if (!params.contentId) {
     return {
       doenetML: queryParamDoenetML,
     };
   }
   const { data: activityData } = await axios.get(
-    `/api/getSharedEditorData/${params.activityId}`,
+    `/api/getSharedEditorData/${params.contentId}`,
   );
 
   let docId = params.docId;

@@ -576,8 +576,8 @@ async function createContributorHistory(
   // `originalId`, with revision given by `originalActivityRevision`
   const contribHistoryInfo = await prisma.contributorHistory.create({
     data: {
-      activityId: copiedId,
-      prevActivityId: originalId,
+      contentId: copiedId,
+      prevContentId: originalId,
       prevActivityRevisionNum: originalActivityRevision.revisionNum,
       withLicenseCode: licenseCode,
       directCopy: true,
@@ -597,22 +597,22 @@ async function createContributorHistory(
   // (or its predecessors) are modified to change their history
   const previousHistory = await prisma.contributorHistory.findMany({
     where: {
-      activityId: originalId,
+      contentId: originalId,
     },
   });
 
   // Note: contributorHistory has two timestamps:
-  // - timestampPrevActivity: the time when prevActivityId was remixed into a new activity
-  // - timestampActivity: this time when activityId was created by remixing
-  // Each record we create below corresponds to an indirect path from prevActivityId to activityId
+  // - timestampPrevActivity: the time when prevContentId was remixed into a new activity
+  // - timestampActivity: this time when contentId was created by remixing
+  // Each record we create below corresponds to an indirect path from prevContentId to contentId
   // so the two timestamps will be different:
-  // - timestampPrevActivity is copied from the original source to get the original remix time from prevActivityId
+  // - timestampPrevActivity is copied from the original source to get the original remix time from prevContentId
   // - timestampActivity is copied from the above create query (so is essentially now)
 
   await prisma.contributorHistory.createMany({
     data: previousHistory.map((hist) => ({
-      activityId: copiedId,
-      prevActivityId: hist.prevActivityId,
+      contentId: copiedId,
+      prevContentId: hist.prevContentId,
       prevActivityRevisionNum: hist.prevActivityRevisionNum,
       withLicenseCode: hist.withLicenseCode,
       timestampPrevActivity: hist.timestampPrevActivity,

@@ -311,9 +311,9 @@ app.post(
 );
 
 app.get(
-  "/api/loadSupportingFileInfo/:activityId",
+  "/api/loadSupportingFileInfo/:contentId",
   (_req: Request, res: Response) => {
-    // const activityId = toUUID(req.params.activityId);
+    // const contentId = toUUID(req.params.contentId);
     res.send({
       success: true,
       supportingFiles: [],
@@ -784,14 +784,14 @@ app.get(
 );
 
 app.get(
-  "/api/getContributorHistory/:activityId",
+  "/api/getContributorHistory/:contentId",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
-    const activityId = toUUID(req.params.activityId);
+    const contentId = toUUID(req.params.contentId);
 
     try {
       const { docHistories } = await getActivityContributorHistory({
-        activityId,
+        contentId,
         loggedInUserId,
       });
       // TODO: process to convert UUIDs
@@ -810,14 +810,14 @@ app.get(
 );
 
 app.get(
-  "/api/getRemixes/:activityId",
+  "/api/getRemixes/:contentId",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
-    const activityId = toUUID(req.params.activityId);
+    const contentId = toUUID(req.params.contentId);
 
     try {
       const { docRemixes } = await getActivityRemixes({
-        activityId,
+        contentId,
         loggedInUserId,
       });
       res.send({ docRemixes: docRemixes.map(docRemixesConvertUUID) });
@@ -832,18 +832,18 @@ app.get(
 );
 
 app.get(
-  "/api/getAssignmentData/:activityId",
+  "/api/getAssignmentData/:contentId",
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       res.sendStatus(403);
       return;
     }
     const loggedInUserId = req.user.userId;
-    const activityId = toUUID(req.params.activityId);
+    const contentId = toUUID(req.params.contentId);
 
     try {
       const assignmentDataOrig = await getAssignmentScoreData({
-        activityId,
+        contentId,
         ownerId: loggedInUserId,
       });
       const assignmentData = {
@@ -857,7 +857,7 @@ app.get(
       };
       const answerList = (
         await getAnswersThatHaveSubmittedResponses({
-          activityId,
+          contentId,
           ownerId: loggedInUserId,
         })
       ).map((answerObj) => ({
@@ -866,7 +866,7 @@ app.get(
       }));
       const assignmentContent = (
         await getAssignmentContent({
-          activityId,
+          contentId,
           ownerId: loggedInUserId,
         })
       ).map((assignmentObj) =>
@@ -1282,24 +1282,24 @@ app.get(
 );
 
 app.get(
-  "/api/getLibraryStatus/:activityId",
+  "/api/getLibraryStatus/:contentId",
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       res.sendStatus(403);
       return;
     }
 
-    const activityId = toUUID(req.params.activityId);
+    const contentId = toUUID(req.params.contentId);
     const loggedInUserId = req.user?.userId;
 
     try {
       const status: LibraryInfo = await getLibraryStatus({
-        id: activityId,
+        id: contentId,
         userId: loggedInUserId,
       });
       const statusNew = {
         ...status,
-        activityId: status.activityId ? fromUUID(status.activityId) : null,
+        contentId: status.contentId ? fromUUID(status.contentId) : null,
       };
       res.send(statusNew);
     } catch (e) {
@@ -1322,7 +1322,7 @@ app.post(
 
     try {
       const loggedInUserId = req.user.userId;
-      const id = toUUID(req.body.activityId);
+      const id = toUUID(req.body.contentId);
       const contentType = req.body.type;
 
       const { draftId } = await addDraftToLibrary({
@@ -1331,7 +1331,7 @@ app.post(
         loggedInUserId,
       });
       res.send({
-        newActivityId: fromUUID(draftId),
+        newContentId: fromUUID(draftId),
         userId: fromUUID(loggedInUserId),
       });
     } catch (e) {
@@ -1349,7 +1349,7 @@ app.post(
     }
     try {
       const loggedInUserId = req.user.userId;
-      const id = toUUID(req.body.activityId);
+      const id = toUUID(req.body.contentId);
       const contentType = req.body.contentType;
 
       await deleteDraftFromLibrary({
@@ -1477,7 +1477,7 @@ app.post(
     const id = toUUID(req.body.id);
 
     try {
-      await unpublishActivityFromLibrary({ activityId: id, loggedInUserId });
+      await unpublishActivityFromLibrary({ contentId: id, loggedInUserId });
       res.send({});
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {

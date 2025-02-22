@@ -19,8 +19,8 @@ describe("Code Viewer Tests", function () {
           code: "A.SSE.3 a.",
         },
       ],
-    }).then((activityId) => {
-      cy.visit(`/codeViewer/${activityId}`);
+    }).then((contentId) => {
+      cy.visit(`/codeViewer/${contentId}`);
 
       cy.get('[data-test="Activity Information"]').click();
 

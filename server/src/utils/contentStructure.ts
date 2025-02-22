@@ -172,7 +172,7 @@ export function returnContentSelect({
         select: {
           status: true,
           sourceId: true,
-          activityId: true,
+          contentId: true,
           comments: isAdmin,
           ownerRequested: isAdmin,
         },
@@ -184,7 +184,7 @@ export function returnContentSelect({
         select: {
           status: true,
           sourceId: true,
-          activityId: true,
+          contentId: true,
           comments: isAdmin,
           ownerRequested: isAdmin,
         },

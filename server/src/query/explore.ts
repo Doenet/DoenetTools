@@ -251,7 +251,7 @@ export async function browseTrendingContent({
   ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   LEFT JOIN
-    contentViews ON contentViews.activityId = content.id
+    contentViews ON contentViews.contentId = content.id
   WHERE
     content.isDeleted = FALSE
     AND content.ownerId <> ${libraryId}
@@ -1157,11 +1157,11 @@ export async function browseClassificationsWithSharedContent({
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent,
-    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
+    COUNT(distinct libraryActivityInfos.contentId) AS numCurated
   FROM
     content
   LEFT JOIN
-    libraryActivityInfos ON content.id = libraryActivityInfos.activityId
+    libraryActivityInfos ON content.id = libraryActivityInfos.contentId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
@@ -1223,11 +1223,11 @@ export async function browseClassificationsWithSharedContent({
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent,
-    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
+    COUNT(distinct libraryActivityInfos.contentId) AS numCurated
   FROM
     content
   LEFT JOIN
-    libraryActivityInfos ON content.id = libraryActivityInfos.activityId
+    libraryActivityInfos ON content.id = libraryActivityInfos.contentId
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
@@ -1323,11 +1323,11 @@ export async function browseClassificationSubCategoriesWithSharedContent({
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent,
-    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
+    COUNT(distinct libraryActivityInfos.contentId) AS numCurated
   FROM
     content
   LEFT JOIN
-    libraryActivityInfos ON content.id = libraryActivityInfos.activityId        
+    libraryActivityInfos ON content.id = libraryActivityInfos.contentId        
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
@@ -1382,12 +1382,12 @@ export async function browseClassificationSubCategoriesWithSharedContent({
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent,
-    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
+    COUNT(distinct libraryActivityInfos.contentId) AS numCurated
 
   FROM
     content
   LEFT JOIN
-    libraryActivityInfos ON content.id = libraryActivityInfos.activityId    
+    libraryActivityInfos ON content.id = libraryActivityInfos.contentId    
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
@@ -1473,11 +1473,11 @@ export async function browseClassificationCategoriesWithSharedContent({
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent,
-    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
+    COUNT(distinct libraryActivityInfos.contentId) AS numCurated
   FROM
     content
   LEFT JOIN
-      libraryActivityInfos ON content.id = libraryActivityInfos.activityId
+      libraryActivityInfos ON content.id = libraryActivityInfos.contentId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
@@ -1528,11 +1528,11 @@ export async function browseClassificationCategoriesWithSharedContent({
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent,
-    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
+    COUNT(distinct libraryActivityInfos.contentId) AS numCurated
   FROM
     content
   LEFT JOIN
-    libraryActivityInfos ON content.id = libraryActivityInfos.activityId
+    libraryActivityInfos ON content.id = libraryActivityInfos.contentId
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
@@ -1610,11 +1610,11 @@ export async function browseClassificationSystemsWithSharedContent({
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent,
-    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
+    COUNT(distinct libraryActivityInfos.contentId) AS numCurated
   FROM
     content
   LEFT JOIN
-      libraryActivityInfos ON content.id = libraryActivityInfos.activityId
+      libraryActivityInfos ON content.id = libraryActivityInfos.contentId
   ${ownerId === undefined ? Prisma.sql`LEFT JOIN users ON content.ownerId = users.userId` : Prisma.empty}
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
@@ -1662,11 +1662,11 @@ export async function browseClassificationSystemsWithSharedContent({
     classificationSystems.descriptionLabel,
     classificationSystems.categoriesInDescription,
     COUNT(distinct content.id) AS numContent,
-    COUNT(distinct libraryActivityInfos.activityId) AS numCurated
+    COUNT(distinct libraryActivityInfos.contentId) AS numCurated
   FROM
     content
   LEFT JOIN
-    libraryActivityInfos ON content.id = libraryActivityInfos.activityId    
+    libraryActivityInfos ON content.id = libraryActivityInfos.contentId    
   ${returnClassificationJoins({ includeSystem: true, joinFromContent: true })}
   ${returnFeatureJoins(features)}
   WHERE
@@ -1753,13 +1753,13 @@ export async function getSharedContentMatchCount({
     >(Prisma.sql`
       SELECT
         COUNT(distinct content.id) as numContent,
-        COUNT(distinct libraryActivityInfos.activityId) as curatedContent
+        COUNT(distinct libraryActivityInfos.contentId) as curatedContent
       FROM
         content
       LEFT JOIN
         users ON content.ownerId = users.userId
       LEFT JOIN
-        libraryActivityInfos ON content.id = libraryActivityInfos.activityId
+        libraryActivityInfos ON content.id = libraryActivityInfos.contentId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
       ${returnFeatureJoins(features)}
       WHERE
@@ -1796,13 +1796,13 @@ export async function getSharedContentMatchCount({
     >(Prisma.sql`
       SELECT
         COUNT(distinct content.id) as numContent,
-        COUNT(distinct libraryActivityInfos.activityId) as curatedContent
+        COUNT(distinct libraryActivityInfos.contentId) as curatedContent
       FROM
         content
       LEFT JOIN
         users ON content.ownerId = users.userId
       LEFT JOIN
-        libraryActivityInfos ON content.id = libraryActivityInfos.activityId
+        libraryActivityInfos ON content.id = libraryActivityInfos.contentId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
       ${returnFeatureJoins(features)}
       WHERE
@@ -1879,13 +1879,13 @@ export async function getSharedContentMatchCountPerAvailableFeature({
       >(Prisma.sql`
       SELECT
         COUNT(distinct content.id) as numContent,
-        COUNT(distinct libraryActivityInfos.activityId) as numCurated
+        COUNT(distinct libraryActivityInfos.contentId) as numCurated
       FROM
         content
       LEFT JOIN
         users ON content.ownerId = users.userId
       LEFT JOIN
-        libraryActivityInfos ON content.id = libraryActivityInfos.activityId
+        libraryActivityInfos ON content.id = libraryActivityInfos.contentId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
       ${returnFeatureJoins(newFeatures)}
       WHERE
@@ -1936,13 +1936,13 @@ export async function getSharedContentMatchCountPerAvailableFeature({
       >(Prisma.sql`
       SELECT
         COUNT(distinct content.id) as numContent,
-        COUNT(distinct libraryActivityInfos.activityId) as numCurated
+        COUNT(distinct libraryActivityInfos.contentId) as numCurated
       FROM
         content
       LEFT JOIN
         users ON content.ownerId = users.userId
       LEFT JOIN
-        libraryActivityInfos ON content.id = libraryActivityInfos.activityId
+        libraryActivityInfos ON content.id = libraryActivityInfos.contentId
       ${returnClassificationJoins({ includeClassification, includeSubCategory, includeCategory, joinFromContent: true })}
       ${returnFeatureJoins(newFeatures)}
       WHERE

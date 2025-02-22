@@ -231,7 +231,7 @@ export async function addClassification({
 /**
  * Remove a classification to an activity. The activity must be owned by the logged in user.
  * Activity id must be an activity, not a folder.
- * @param activityId
+ * @param contentId
  * @param classificationId
  * @param loggedInUserId
  */

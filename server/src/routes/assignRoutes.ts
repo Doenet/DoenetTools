@@ -7,7 +7,6 @@ import {
   closeAssignmentWithCode,
   getAllAssignmentScores,
   getAssignedScores,
-  getAssignmentData,
   getAssignmentStudentData,
   getStudentData,
   getSubmittedResponseHistory,
@@ -55,7 +54,7 @@ assignRouter.get("/getAssignedScores", async (req: Request, res: Response) => {
       userData: convertUUID(scoreData.userData),
       orderedActivityScores: scoreData.orderedActivityScores.map((scores) => ({
         ...scores,
-        activityId: fromUUID(scores.activityId),
+        contentId: fromUUID(scores.contentId),
       })),
       folder: null,
     });

@@ -13,23 +13,23 @@ import { recordContentView } from "./explore";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 
 export async function assignActivity(
-  activityId: Uint8Array,
+  contentId: Uint8Array,
   loggedInUserId: Uint8Array,
 ) {
   // verify
   await prisma.content.findUniqueOrThrow({
     where: {
-      id: activityId,
+      id: contentId,
       isAssigned: false,
       ...filterEditableActivity(loggedInUserId),
     },
     select: { id: true },
   });
 
-  const newRevision = await createActivityRevision(activityId, loggedInUserId);
+  const newRevision = await createActivityRevision(contentId, loggedInUserId);
 
   await prisma.content.update({
-    where: { id: activityId },
+    where: { id: contentId },
     data: {
       isAssigned: true,
       assignedRevisionNum: newRevision.revisionNum,
@@ -105,12 +105,12 @@ export async function updateAssignmentSettings({
 }
 
 export async function closeAssignmentWithCode(
-  activityId: Uint8Array,
+  contentId: Uint8Array,
   loggedInUserId: Uint8Array,
 ) {
   await prisma.content.update({
     where: {
-      id: activityId,
+      id: contentId,
       isAssigned: true,
       ...filterEditableActivity(loggedInUserId),
     },
@@ -122,7 +122,7 @@ export async function closeAssignmentWithCode(
   // attempt to unassign activity, which will succeed
   // only if there is no student data
   try {
-    await unassignActivity(activityId, loggedInUserId);
+    await unassignActivity(contentId, loggedInUserId);
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError &&
@@ -136,14 +136,14 @@ export async function closeAssignmentWithCode(
 }
 
 export async function unassignActivity(
-  activityId: Uint8Array,
+  contentId: Uint8Array,
   loggedInUserId: Uint8Array,
 ) {
   await prisma.content.update({
     where: {
-      id: activityId,
+      id: contentId,
       isAssigned: true,
-      assignmentScores: { none: { activityId } },
+      assignmentScores: { none: { contentId } },
       ...filterEditableActivity(loggedInUserId),
     },
     data: {
@@ -210,7 +210,7 @@ export async function getAssignmentStudentData({
 
   const assignmentData = await prisma.assignmentScores.findUniqueOrThrow({
     where: {
-      activityId_userId: { activityId: contentId, userId },
+      contentId_userId: { contentId, userId },
       activity: {
         // if studentId specified, you must be the owner
         ownerId: studentId ? loggedInUserId : undefined,
@@ -246,7 +246,7 @@ export async function getAssignmentStudentData({
   });
 
   const activityScores = await prisma.activityState.findMany({
-    where: { activityId: contentId, userId },
+    where: { contentId, userId },
     select: {
       activityRevisionNum: true,
       hasMaxScore: true,
@@ -321,10 +321,10 @@ export async function getAllAssignmentScores({
 
   const assignmentScores = await prisma.assignmentScores.findMany({
     where: {
-      activityId: { in: orderedActivities.map((a) => a.id) },
+      contentId: { in: orderedActivities.map((a) => a.id) },
     },
     select: {
-      activityId: true,
+      contentId: true,
       score: true,
       user: {
         select: {
@@ -375,7 +375,7 @@ export async function getStudentData({
 
   const orderedActivityScores = await prisma.$queryRaw<
     {
-      activityId: Uint8Array;
+      contentId: Uint8Array;
       activityName: string;
       score: number | null;
     }[]
@@ -393,13 +393,13 @@ export async function getStudentData({
       WHERE (c.isAssigned = true or c.type = "folder") AND c.isDeleted = false
     )
     
-    SELECT c.id AS activityId, c.name AS activityName, s.score FROM content AS c
+    SELECT c.id AS contentId, c.name AS activityName, s.score FROM content AS c
     INNER JOIN content_tree AS ct
     ON ct.id = c.id
     LEFT JOIN (
         SELECT * FROM assignmentScores WHERE userId=${studentId}
         ) as s
-    ON s.activityId  = c.id 
+    ON s.contentId  = c.id 
     WHERE ct.type != "folder" ORDER BY path
   `);
 
@@ -436,7 +436,7 @@ export async function getAssignedScores(loggedInUserId: Uint8Array) {
   });
 
   const orderedActivityScores = scores.map((obj) => ({
-    activityId: obj.activity.id,
+    contentId: obj.activity.id,
     activityName: obj.activity.name,
     score: obj.score,
   }));
@@ -450,15 +450,15 @@ export async function getAssignedScores(loggedInUserId: Uint8Array) {
 }
 
 export async function getAssignmentContent({
-  activityId,
+  contentId,
   loggedInUserId,
 }: {
-  activityId: Uint8Array;
+  contentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
   const assignmentData = await prisma.content.findMany({
     where: {
-      id: activityId,
+      id: contentId,
       isAssigned: true,
       ...filterEditableActivity(loggedInUserId),
     },
@@ -503,7 +503,7 @@ export async function recordSubmittedEvent({
 }) {
   await prisma.submittedResponses.create({
     data: {
-      activityId: contentId,
+      contentId,
       activityRevisionNum,
       userId: loggedInUserId,
       answerId,
@@ -518,10 +518,10 @@ export async function recordSubmittedEvent({
 }
 
 export async function getAnswersThatHaveSubmittedResponses({
-  activityId,
+  contentId,
   ownerId,
 }: {
-  activityId: Uint8Array;
+  contentId: Uint8Array;
   ownerId: Uint8Array;
 }) {
   // Using raw query as it seems prisma does not support distinct in count.
@@ -539,13 +539,13 @@ export async function getAnswersThatHaveSubmittedResponses({
     SELECT activityRevisionNum, answerId, answerNumber, 
     COUNT(userId) as count, AVG(maxCredit) as averageCredit
     FROM (
-      SELECT activityId, activityRevisionNum, answerId, answerNumber, userId, MAX(creditAchieved) as maxCredit
+      SELECT contentId, activityRevisionNum, answerId, answerNumber, userId, MAX(creditAchieved) as maxCredit
       FROM submittedResponses
-      WHERE activityId = ${activityId}
-      GROUP BY activityId, activityRevisionNum, answerId, answerNumber, userId 
+      WHERE contentId = ${contentId}
+      GROUP BY contentId, activityRevisionNum, answerId, answerNumber, userId 
     ) as sr
-    INNER JOIN content on sr.activityId = content.id 
-    WHERE content.id=${activityId} and ownerId = ${ownerId} and isAssigned=true and type != "folder"
+    INNER JOIN content on sr.contentId = content.id 
+    WHERE content.id=${contentId} and ownerId = ${ownerId} and isAssigned=true and type != "folder"
     GROUP BY activityRevisionNum, answerId, answerNumber
     ORDER BY answerNumber
     `);
@@ -602,10 +602,10 @@ select sr.userId, users.firstNames, users.lastNames, users.email, response, cred
         MAX(creditAchieved) over (partition by sr.userId) as maxCredit,
         COUNT(creditAchieved) over (partition by sr.userId) as numResponses
         from submittedResponses as sr
-      INNER JOIN content on sr.activityId = content.id 
+      INNER JOIN content on sr.contentId = content.id 
       INNER JOIN users on sr.userId = users.userId 
       WHERE content.id=${contentId} and ownerId = ${loggedInUserId} and isAssigned=true and type != "folder"
-        and activityId = ${contentId} and activityRevisionNum = ${activityRevisionNum} and answerId = ${answerId}
+        and contentId = ${contentId} and activityRevisionNum = ${activityRevisionNum} and answerId = ${answerId}
         order by sr.userId asc, submittedAt desc
   `);
 
@@ -672,11 +672,11 @@ export async function getSubmittedResponseHistory({
     })
   ).name;
 
-  // for each combination of ["activityId", "activityRevisionNum", "answerId", "userId"],
+  // for each combination of ["contentId", "activityRevisionNum", "answerId", "userId"],
   // find the latest submitted response
   const submittedResponses = await prisma.submittedResponses.findMany({
     where: {
-      activityId: contentId,
+      contentId,
       activityRevisionNum,
       answerId,
       userId,

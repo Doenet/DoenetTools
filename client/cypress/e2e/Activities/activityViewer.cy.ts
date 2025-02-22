@@ -19,8 +19,8 @@ describe("Activity Viewer Tests", function () {
           code: "A.SSE.3 a.",
         },
       ],
-    }).then((activityId) => {
-      cy.visit(`/activityViewer/${activityId}`);
+    }).then((contentId) => {
+      cy.visit(`/activityViewer/${contentId}`);
 
       cy.get('[data-test="Classifications Footer"]').should(
         "contain.text",

@@ -4,11 +4,11 @@ import { filterViewableActivity } from "../utils/permissions";
 import { getIsAdmin } from "./curate";
 
 export async function getActivityContributorHistory({
-  activityId,
+  contentId,
   loggedInUserId,
   isAdmin,
 }: {
-  activityId: Uint8Array;
+  contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   isAdmin?: boolean;
 }) {
@@ -19,7 +19,7 @@ export async function getActivityContributorHistory({
   const activityHistory: ActivityHistory =
     await prisma.content.findUniqueOrThrow({
       where: {
-        id: activityId,
+        id: contentId,
         ...filterViewableActivity(loggedInUserId, isAdmin),
       },
       select: {
@@ -63,12 +63,12 @@ export async function getActivityContributorHistory({
 }
 
 export async function getActivityRemixes({
-  activityId,
+  contentId,
   loggedInUserId,
   isAdmin = false,
   directRemixesOnly = false,
 }: {
-  activityId: Uint8Array;
+  contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   isAdmin?: boolean;
   directRemixesOnly?: boolean;
@@ -81,7 +81,7 @@ export async function getActivityRemixes({
 
   const activityRemixes = await prisma.content.findUniqueOrThrow({
     where: {
-      id: activityId,
+      id: contentId,
       ...filterViewableActivity(loggedInUserId, isAdmin),
     },
     select: {
@@ -98,7 +98,7 @@ export async function getActivityRemixes({
             },
             orderBy: { timestampActivity: "desc" },
             select: {
-              activityId: true,
+              contentId: true,
               withLicenseCode: true,
               timestampActivity: true,
               timestampPrevActivity: true,
@@ -130,7 +130,7 @@ export async function getActivityRemixes({
         revisionNum: activityRevision.revisionNum,
         remixes: activityRevision.contributorHistory.map((contribHist) => ({
           withLicenseCode: contribHist.withLicenseCode,
-          activityId: contribHist.activityId,
+          contentId: contribHist.contentId,
           activityName: contribHist.activity.name,
           activityOwner: contribHist.activity.owner,
           timestampActivity: contribHist.timestampActivity,

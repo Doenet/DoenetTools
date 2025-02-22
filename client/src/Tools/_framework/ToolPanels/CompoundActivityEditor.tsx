@@ -76,13 +76,13 @@ export async function compoundActivityEditorActions(
     //Create an activity and redirect to the editor for it
     const { data } = await axios.post(`/api/updateContent/createContent`, {
       contentType: formObj.type,
-      parentId: params.activityId,
+      parentId: params.contentId,
     });
 
-    const { activityId } = data;
+    const { contentId } = data;
 
     if (formObj.type === "singleDoc") {
-      return redirect(`/activityEditor/${activityId}`);
+      return redirect(`/activityEditor/${contentId}`);
     } else {
       return true;
     }

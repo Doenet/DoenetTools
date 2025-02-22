@@ -326,18 +326,18 @@ export async function getContentDescription(
 }
 
 /**
- * Get the source from the activity with `activityId`.
+ * Get the source from the activity with `contentId`.
  *
  * Throws an error if not viewable by `loggedInUserId`.
  */
 export async function getActivitySource(
-  activityId: Uint8Array,
+  contentId: Uint8Array,
   loggedInUserId: Uint8Array,
 ) {
   const isAdmin = await getIsAdmin(loggedInUserId);
   const document = await prisma.content.findUniqueOrThrow({
     where: {
-      id: activityId,
+      id: contentId,
       type: "singleDoc",
       ...filterViewableContent(loggedInUserId, isAdmin),
     },
@@ -364,17 +364,17 @@ export async function getAllDoenetmlVersions() {
 
 /**
  * Create a new record in `activityRevisions` corresponding to the current state of
- * `activityId`.
+ * `contentId`.
  *
  * For documents, it stores the source and resulting cid.
  * For other activities, it compiles the activity json
  * and uses the stringified json for the source and resulting cid.
  */
 export async function createActivityRevision(
-  activityId: Uint8Array,
+  contentId: Uint8Array,
   loggedInUserId: Uint8Array,
 ): Promise<{
-  activityId: Uint8Array;
+  contentId: Uint8Array;
   revisionNum: number;
   cid: string;
   source: string | null;
@@ -383,7 +383,7 @@ export async function createActivityRevision(
   baseComponentCounts: string | null;
   createdAt: Date;
 }> {
-  const content = await getContent({ contentId: activityId, loggedInUserId });
+  const content = await getContent({ contentId, loggedInUserId });
 
   let source: string | null = null;
   let numVariants = 1;
@@ -403,7 +403,7 @@ export async function createActivityRevision(
   }
 
   let activityVersion = await prisma.activityRevisions.findUnique({
-    where: { activityId_cid: { activityId, cid } },
+    where: { contentId_cid: { contentId: contentId, cid } },
   });
 
   if (!activityVersion) {
@@ -412,7 +412,7 @@ export async function createActivityRevision(
 
     const aggregations = await prisma.activityRevisions.aggregate({
       _max: { revisionNum: true },
-      where: { activityId },
+      where: { contentId },
     });
     const lastVersionNum = aggregations._max.revisionNum;
     const newVersionNum = lastVersionNum ? lastVersionNum + 1 : 1;
@@ -420,7 +420,7 @@ export async function createActivityRevision(
     activityVersion = await prisma.activityRevisions.create({
       data: {
         revisionNum: newVersionNum,
-        activityId,
+        contentId,
         cid,
         doenetmlVersionId,
         source,

@@ -250,7 +250,7 @@ export function GeneralContentControls({
         const uploadData = new FormData();
         // uploadData.append('file',file);
         uploadData.append("file", image);
-        uploadData.append("activityId", contentData.id.toString());
+        uploadData.append("contentId", contentData.id.toString());
 
         axios.post("/api/activityThumbnailUpload", uploadData).then((resp) => {
           const { data } = resp;

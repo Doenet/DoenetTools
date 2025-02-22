@@ -106,7 +106,7 @@ export function AssignmentSettingsDrawer({
                   <TabPanel>
                     <AssignActivityControls
                       fetcher={fetcher}
-                      activityId={id}
+                      contentId={id}
                       activityData={contentData}
                       openTabIndex={tabIndex}
                     />

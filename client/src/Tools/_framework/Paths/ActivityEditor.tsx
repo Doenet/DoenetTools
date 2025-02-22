@@ -73,7 +73,7 @@ export async function action({ params, request }) {
 
   if (formObj._action == "update name") {
     await axios.post(`/api/updateContent/updateContentSettings`, {
-      contentId: params.activityId,
+      contentId: params.contentId,
       name,
     });
     return true;
@@ -108,7 +108,7 @@ export async function action({ params, request }) {
   }
 
   if (formObj._action == "go to data") {
-    return redirect(`/assignmentData/${params.activityId}`);
+    return redirect(`/assignmentData/${params.contentId}`);
   }
 
   return null;
@@ -117,16 +117,16 @@ export async function action({ params, request }) {
 export async function loader({ params }) {
   const {
     data: { editableByMe, activity: activityData, availableFeatures },
-  } = await axios.get(`/api/getActivityEditorData/${params.activityId}`);
+  } = await axios.get(`/api/getActivityEditorData/${params.contentId}`);
 
   if (!editableByMe) {
-    return redirect(`/codeViewer/${params.activityId}`);
+    return redirect(`/codeViewer/${params.contentId}`);
   }
 
-  const activityId = params.activityId;
+  const contentId = params.contentId;
 
   // const supportingFileResp = await axios.get(
-  //   `/api/loadSupportingFileInfo/${activityId}`,
+  //   `/api/loadSupportingFileInfo/${contentId}`,
   // );
 
   // const supportingFileData = supportingFileResp.data;
@@ -159,7 +159,7 @@ export async function loader({ params }) {
       docId,
       doenetML,
       doenetmlVersion,
-      activityId,
+      contentId,
       // supportingFileData,
       allDoenetmlVersions,
       allLicenses,
@@ -173,7 +173,7 @@ export async function loader({ params }) {
       // platform,
       activityData,
       activityJson,
-      activityId,
+      contentId,
       // supportingFileData,
       allDoenetmlVersions,
       allLicenses,
@@ -233,7 +233,7 @@ function EditableName({ dataTest }) {
 
 export function ActivityEditor() {
   const data = useLoaderData() as {
-    activityId: string;
+    contentId: string;
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
     availableFeatures: ContentFeature[];
@@ -252,7 +252,7 @@ export function ActivityEditor() {
   );
 
   const {
-    activityId,
+    contentId,
     activityData,
     allDoenetmlVersions,
     allLicenses,
@@ -305,7 +305,7 @@ export function ActivityEditor() {
     } else {
       setMode("Edit");
     }
-  }, [readOnly, activityId]);
+  }, [readOnly, contentId]);
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
@@ -427,7 +427,7 @@ export function ActivityEditor() {
         onClose={assignmentSettingsOnClose}
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
-        id={activityId}
+        id={contentId}
         contentData={activityData}
       />
       <AssignmentInvitation
@@ -681,7 +681,7 @@ export function ActivityEditor() {
                       pr={{ base: "0px", md: "10px" }}
                       onClick={() => {
                         fetcher.submit(
-                          { _action: "go to data", activityId },
+                          { _action: "go to data", contentId },
                           { method: "post" },
                         );
                       }}
