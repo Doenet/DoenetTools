@@ -198,11 +198,15 @@ export async function searchPossibleClassifications({
  * @param classificationId
  * @param loggedInUserId
  */
-export async function addClassification(
-  activityId: Uint8Array,
-  classificationId: number,
-  loggedInUserId: Uint8Array,
-) {
+export async function addClassification({
+  activityId,
+  classificationId,
+  loggedInUserId,
+}: {
+  activityId: Uint8Array;
+  classificationId: number;
+  loggedInUserId: Uint8Array;
+}) {
   const isAdmin = await getIsAdmin(loggedInUserId);
   const activity = await prisma.content.findUnique({
     where: {
@@ -234,11 +238,15 @@ export async function addClassification(
  * @param classificationId
  * @param loggedInUserId
  */
-export async function removeClassification(
-  activityId: Uint8Array,
-  classificationId: number,
-  loggedInUserId: Uint8Array,
-) {
+export async function removeClassification({
+  activityId,
+  classificationId,
+  loggedInUserId,
+}: {
+  activityId: Uint8Array;
+  classificationId: number;
+  loggedInUserId: Uint8Array;
+}) {
   const isAdmin = await getIsAdmin(loggedInUserId);
   const activity = await prisma.content.findUnique({
     where: {
@@ -267,17 +275,20 @@ export async function removeClassification(
 /**
  * Get all classifications for an activity. The activity must be either public or owned by
  * loggedInUser.
- * @param activityId
+ * @param contentId
  * @param loggedInUserId
  */
-export async function getClassifications(
-  activityId: Uint8Array,
-  loggedInUserId: Uint8Array,
-) {
+export async function getClassifications({
+  contentId,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
   const isAdmin = await getIsAdmin(loggedInUserId);
   const activity = await prisma.content.findUnique({
     where: {
-      id: activityId,
+      id: contentId,
       ...filterViewableActivity(loggedInUserId, isAdmin),
     },
     select: {
@@ -293,7 +304,7 @@ export async function getClassifications(
 
   const classifications = await prisma.contentClassifications.findMany({
     where: {
-      contentId: activityId,
+      contentId: contentId,
     },
     select: {
       classification: {
