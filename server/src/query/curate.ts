@@ -283,7 +283,13 @@ export async function addDraftToLibrary({
 
   const libraryId = await getLibraryAccountId();
 
-  const [draftId] = await copyContent(id, libraryId, null);
+  const {
+    newContentIds: [draftId],
+  } = await copyContent({
+    contentIds: [id],
+    loggedInUserId: libraryId,
+    desiredParentId: null,
+  });
 
   await prisma.libraryActivityInfos.upsert({
     where: {
@@ -388,7 +394,12 @@ export async function deleteDraftFromLibrary({
     },
   });
 
-  await prisma.$transaction([ensureDraftExists, deleteDraft, removeLibraryIdRef, logDeletion]);
+  await prisma.$transaction([
+    ensureDraftExists,
+    deleteDraft,
+    removeLibraryIdRef,
+    logDeletion,
+  ]);
 }
 
 /**

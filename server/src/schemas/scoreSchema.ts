@@ -2,7 +2,7 @@ import { z } from "zod";
 import { uuidSchema } from "./uuid";
 
 export const scoreAndStateSchema = z.object({
-  activityId: uuidSchema,
+  contentId: uuidSchema,
   activityRevisionNum: z.number(),
   score: z.number(),
   onSubmission: z.boolean(),
@@ -10,7 +10,7 @@ export const scoreAndStateSchema = z.object({
 });
 
 export const loadStateSchema = z.object({
-  activityId: uuidSchema,
+  contentId: uuidSchema,
   requestedUserId: uuidSchema,
   withMaxScore: z.boolean(),
 });

@@ -1,20 +1,19 @@
-// TODO: do we still save score and state if assignment isn't open?
-
 import { Prisma } from "@prisma/client";
 import { prisma } from "../model";
 import { isEqualUUID } from "../utils/uuid";
 import { filterEditableActivity } from "../utils/permissions";
 
+// TODO: do we still save score and state if assignment isn't open?
 // If not, how do we communicate that fact
 export async function saveScoreAndState({
-  activityId,
+  contentId,
   activityRevisionNum,
   loggedInUserId,
   score,
   onSubmission,
   state,
 }: {
-  activityId: Uint8Array;
+  contentId: Uint8Array;
   activityRevisionNum: number;
   loggedInUserId: Uint8Array;
   score: number;
@@ -24,15 +23,17 @@ export async function saveScoreAndState({
   // make sure have an assignmentScores record
   // so that can satisfy foreign key constraints on activityState
   await prisma.assignmentScores.upsert({
-    where: { activityId_userId: { activityId, userId: loggedInUserId } },
+    where: {
+      activityId_userId: { activityId: contentId, userId: loggedInUserId },
+    },
     update: {},
-    create: { activityId, userId: loggedInUserId },
+    create: { activityId: contentId, userId: loggedInUserId },
   });
 
   const stateWithMaxScore = await prisma.activityState.findUnique({
     where: {
       activityId_userId_hasMaxScore: {
-        activityId,
+        activityId: contentId,
         userId: loggedInUserId,
         hasMaxScore: true,
       },
@@ -58,7 +59,7 @@ export async function saveScoreAndState({
       await prisma.activityState.delete({
         where: {
           activityId_userId_isLatest: {
-            activityId,
+            activityId: contentId,
             userId: loggedInUserId,
             isLatest: false,
           },
@@ -81,7 +82,7 @@ export async function saveScoreAndState({
       await prisma.activityState.update({
         where: {
           activityId_userId_hasMaxScore: {
-            activityId,
+            activityId: contentId,
             userId: loggedInUserId,
             hasMaxScore: true,
           },
@@ -106,7 +107,7 @@ export async function saveScoreAndState({
   await prisma.activityState.upsert({
     where: {
       activityId_userId_isLatest: {
-        activityId,
+        activityId: contentId,
         userId: loggedInUserId,
         isLatest: true,
       },
@@ -118,7 +119,7 @@ export async function saveScoreAndState({
       activityRevisionNum,
     },
     create: {
-      activityId,
+      activityId: contentId,
       activityRevisionNum,
       userId: loggedInUserId,
       isLatest: true,
@@ -134,7 +135,9 @@ export async function saveScoreAndState({
 
   if (hasStrictMaxScore) {
     await prisma.assignmentScores.update({
-      where: { activityId_userId: { activityId, userId: loggedInUserId } },
+      where: {
+        activityId_userId: { activityId: contentId, userId: loggedInUserId },
+      },
       data: {
         score,
       },
@@ -143,12 +146,12 @@ export async function saveScoreAndState({
 }
 
 export async function loadState({
-  activityId,
+  contentId,
   requestedUserId,
   loggedInUserId,
   withMaxScore,
 }: {
-  activityId: Uint8Array;
+  contentId: Uint8Array;
   requestedUserId: Uint8Array;
   loggedInUserId: Uint8Array;
   withMaxScore: boolean;
@@ -159,7 +162,7 @@ export async function loadState({
     // If not user is not owner, then it will throw an error.
     await prisma.content.findUniqueOrThrow({
       where: {
-        id: activityId,
+        id: contentId,
         isAssigned: true,
         ...filterEditableActivity(loggedInUserId),
       },
@@ -172,7 +175,7 @@ export async function loadState({
     documentState = await prisma.activityState.findUniqueOrThrow({
       where: {
         activityId_userId_hasMaxScore: {
-          activityId,
+          activityId: contentId,
           userId: requestedUserId,
           hasMaxScore: true,
         },
@@ -183,7 +186,7 @@ export async function loadState({
     documentState = await prisma.activityState.findUniqueOrThrow({
       where: {
         activityId_userId_isLatest: {
-          activityId,
+          activityId: contentId,
           userId: requestedUserId,
           isLatest: true,
         },

@@ -194,23 +194,20 @@ export async function searchPossibleClassifications({
 /**
  * Add a classification to an activity. The activity must be owned by the logged in user.
  * Activity id must be an activity, not a folder.
- * @param activityId
- * @param classificationId
- * @param loggedInUserId
  */
 export async function addClassification({
-  activityId,
+  contentId,
   classificationId,
   loggedInUserId,
 }: {
-  activityId: Uint8Array;
+  contentId: Uint8Array;
   classificationId: number;
   loggedInUserId: Uint8Array;
 }) {
   const isAdmin = await getIsAdmin(loggedInUserId);
   const activity = await prisma.content.findUnique({
     where: {
-      id: activityId,
+      id: contentId,
       ...filterEditableActivity(loggedInUserId, isAdmin),
     },
     select: {
@@ -225,7 +222,7 @@ export async function addClassification({
   }
   await prisma.contentClassifications.create({
     data: {
-      contentId: activityId,
+      contentId: contentId,
       classificationId,
     },
   });
@@ -239,18 +236,18 @@ export async function addClassification({
  * @param loggedInUserId
  */
 export async function removeClassification({
-  activityId,
+  contentId,
   classificationId,
   loggedInUserId,
 }: {
-  activityId: Uint8Array;
+  contentId: Uint8Array;
   classificationId: number;
   loggedInUserId: Uint8Array;
 }) {
   const isAdmin = await getIsAdmin(loggedInUserId);
   const activity = await prisma.content.findUnique({
     where: {
-      id: activityId,
+      id: contentId,
       ...filterEditableActivity(loggedInUserId, isAdmin),
     },
     select: {
@@ -265,7 +262,7 @@ export async function removeClassification({
   }
   await prisma.contentClassifications.delete({
     where: {
-      contentId_classificationId: { contentId: activityId, classificationId },
+      contentId_classificationId: { contentId: contentId, classificationId },
     },
   });
 }

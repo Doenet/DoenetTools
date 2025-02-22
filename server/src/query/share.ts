@@ -19,7 +19,7 @@ export async function getLicense(code: string) {
   });
 
   const license = processLicense(preliminary_license);
-  return license;
+  return { license };
 }
 
 export async function getAllLicenses() {
@@ -33,8 +33,8 @@ export async function getAllLicenses() {
     orderBy: { sortIndex: "asc" },
   });
 
-  const licenses = preliminary_licenses.map(processLicense);
-  return licenses;
+  const allLicenses = preliminary_licenses.map(processLicense);
+  return { allLicenses };
 }
 
 export async function setContentLicense({

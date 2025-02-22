@@ -1068,7 +1068,7 @@ test("move content to different locations", async () => {
   expect(folder3Content.content.map((item) => item.id)).eqls([]);
 
   await moveContent({
-    id: activity1Id,
+    contentId: activity1Id,
     desiredParentId: null,
     desiredPosition: 1,
     loggedInUserId: ownerId,
@@ -1085,7 +1085,7 @@ test("move content to different locations", async () => {
   ]);
 
   await moveContent({
-    id: folder1Id,
+    contentId: folder1Id,
     desiredParentId: null,
     desiredPosition: 0,
     loggedInUserId: ownerId,
@@ -1102,7 +1102,7 @@ test("move content to different locations", async () => {
   ]);
 
   await moveContent({
-    id: activity2Id,
+    contentId: activity2Id,
     desiredParentId: null,
     desiredPosition: 10,
     loggedInUserId: ownerId,
@@ -1119,7 +1119,7 @@ test("move content to different locations", async () => {
   ]);
 
   await moveContent({
-    id: folder3Id,
+    contentId: folder3Id,
     desiredParentId: null,
     desiredPosition: -10,
     loggedInUserId: ownerId,
@@ -1136,7 +1136,7 @@ test("move content to different locations", async () => {
   ]);
 
   await moveContent({
-    id: folder3Id,
+    contentId: folder3Id,
     desiredParentId: folder1Id,
     desiredPosition: 0,
     loggedInUserId: ownerId,
@@ -1161,7 +1161,7 @@ test("move content to different locations", async () => {
   ]);
 
   await moveContent({
-    id: activity3Id,
+    contentId: activity3Id,
     desiredParentId: null,
     desiredPosition: 2,
     loggedInUserId: ownerId,
@@ -1186,7 +1186,7 @@ test("move content to different locations", async () => {
   ]);
 
   await moveContent({
-    id: folder2Id,
+    contentId: folder2Id,
     desiredParentId: folder3Id,
     desiredPosition: 2,
     loggedInUserId: ownerId,
@@ -1203,13 +1203,13 @@ test("move content to different locations", async () => {
   expect(folder3Content.content.map((item) => item.id)).eqls([folder2Id]);
 
   await moveContent({
-    id: activity3Id,
+    contentId: activity3Id,
     desiredParentId: folder3Id,
     desiredPosition: 0,
     loggedInUserId: ownerId,
   });
   await moveContent({
-    id: activity1Id,
+    contentId: activity1Id,
     desiredParentId: folder2Id,
     desiredPosition: 1,
     loggedInUserId: ownerId,
@@ -1263,7 +1263,7 @@ test("cannot move content into itself or a descendant of itself", async () => {
 
   await expect(
     moveContent({
-      id: folder1Id,
+      contentId: folder1Id,
       desiredParentId: folder1Id,
       desiredPosition: 0,
       loggedInUserId: ownerId,
@@ -1272,7 +1272,7 @@ test("cannot move content into itself or a descendant of itself", async () => {
 
   await expect(
     moveContent({
-      id: folder1Id,
+      contentId: folder1Id,
       desiredParentId: folder2Id,
       desiredPosition: 0,
       loggedInUserId: ownerId,
@@ -1281,7 +1281,7 @@ test("cannot move content into itself or a descendant of itself", async () => {
 
   await expect(
     moveContent({
-      id: folder1Id,
+      contentId: folder1Id,
       desiredParentId: folder3Id,
       desiredPosition: 0,
       loggedInUserId: ownerId,
@@ -1290,7 +1290,7 @@ test("cannot move content into itself or a descendant of itself", async () => {
 
   await expect(
     moveContent({
-      id: folder1Id,
+      contentId: folder1Id,
       desiredParentId: folder4Id,
       desiredPosition: 0,
       loggedInUserId: ownerId,
@@ -1344,31 +1344,31 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
   // Repeatedly moving items to position 3 will eventually cause a shift to the right.
   for (let i = 0; i < 5; i++) {
     await moveContent({
-      id: activity1Id,
+      contentId: activity1Id,
       desiredParentId: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
     await moveContent({
-      id: activity2Id,
+      contentId: activity2Id,
       desiredParentId: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
     await moveContent({
-      id: activity3Id,
+      contentId: activity3Id,
       desiredParentId: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
     await moveContent({
-      id: activity4Id,
+      contentId: activity4Id,
       desiredParentId: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
     await moveContent({
-      id: activity6Id,
+      contentId: activity6Id,
       desiredParentId: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
@@ -1378,13 +1378,13 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
       break;
     }
     await moveContent({
-      id: activity5Id,
+      contentId: activity5Id,
       desiredParentId: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
     await moveContent({
-      id: activity4Id,
+      contentId: activity4Id,
       desiredParentId: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
@@ -1409,13 +1409,13 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
   // Moving activities 5 and 4 into position 2 will place them into that gap will trigger a shift,
   // this time to the left since fewer items are to the left.
   await moveContent({
-    id: activity5Id,
+    contentId: activity5Id,
     desiredParentId: null,
     desiredPosition: 2,
     loggedInUserId: ownerId,
   });
   await moveContent({
-    id: activity4Id,
+    contentId: activity4Id,
     desiredParentId: null,
     desiredPosition: 2,
     loggedInUserId: ownerId,
@@ -1444,9 +1444,13 @@ test("copyContent copies a public document to a new owner", async () => {
     parentId: null,
   });
   // cannot copy if not yet public
-  await expect(copyContent(activityId, newOwnerId, null)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  await expect(
+    copyContent({
+      contentIds: [activityId],
+      loggedInUserId: newOwnerId,
+      desiredParentId: null,
+    }),
+  ).rejects.toThrow("Content not found or not visible");
 
   // Make the activity public before copying
   await setContentIsPublic({
@@ -1454,7 +1458,13 @@ test("copyContent copies a public document to a new owner", async () => {
     loggedInUserId: originalOwnerId,
     isPublic: true,
   });
-  const [newActivityId] = await copyContent(activityId, newOwnerId, null);
+  const {
+    newContentIds: [newActivityId],
+  } = await copyContent({
+    contentIds: [activityId],
+    loggedInUserId: newOwnerId,
+    desiredParentId: null,
+  });
   const newActivity = await getContent({
     contentId: newActivityId,
     loggedInUserId: newOwnerId,
@@ -1462,7 +1472,10 @@ test("copyContent copies a public document to a new owner", async () => {
   expect(newActivity.ownerId).eqls(newOwnerId);
   expect(newActivity.isPublic).toBe(false);
 
-  const activityData = await getActivityViewerData(newActivityId, newOwnerId);
+  const activityData = await getActivityViewerData({
+    contentId: newActivityId,
+    loggedInUserId: newOwnerId,
+  });
 
   const contribHist = activityData.activityHistory.contributorHistory;
   expect(contribHist.length).eq(1);
@@ -1480,9 +1493,13 @@ test("copyContent copies a shared document to a new owner", async () => {
     parentId: null,
   });
   // cannot copy if not yet shared
-  await expect(copyContent(activityId, newOwnerId, null)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  await expect(
+    copyContent({
+      contentIds: [activityId],
+      loggedInUserId: newOwnerId,
+      desiredParentId: null,
+    }),
+  ).rejects.toThrow("Content not found or not visible");
 
   // Make the activity public before copying
   await modifyContentSharedWith({
@@ -1491,7 +1508,13 @@ test("copyContent copies a shared document to a new owner", async () => {
     loggedInUserId: originalOwnerId,
     users: [newOwnerId],
   });
-  const [newActivityId] = await copyContent(activityId, newOwnerId, null);
+  const {
+    newContentIds: [newActivityId],
+  } = await copyContent({
+    contentIds: [activityId],
+    loggedInUserId: newOwnerId,
+    desiredParentId: null,
+  });
   const newActivity = await getContent({
     contentId: newActivityId,
     loggedInUserId: newOwnerId,
@@ -1499,7 +1522,10 @@ test("copyContent copies a shared document to a new owner", async () => {
   expect(newActivity.ownerId).eqls(newOwnerId);
   expect(newActivity.isPublic).toBe(false);
 
-  const activityData = await getActivityViewerData(newActivityId, newOwnerId);
+  const activityData = await getActivityViewerData({
+    contentId: newActivityId,
+    loggedInUserId: newOwnerId,
+  });
 
   expect(activityData.activity.isShared).eq(false);
 
@@ -1534,7 +1560,13 @@ test("copyContent remixes correct versions", async () => {
   });
 
   // copy activity 1 to owner 2's root folder
-  const [activityId2] = await copyContent(activityId1, ownerId2, null);
+  const {
+    newContentIds: [activityId2],
+  } = await copyContent({
+    contentIds: [activityId1],
+    loggedInUserId: ownerId2,
+    desiredParentId: null,
+  });
   const activity2 = await getContent({
     contentId: activityId2,
     loggedInUserId: ownerId2,
@@ -1546,7 +1578,10 @@ test("copyContent remixes correct versions", async () => {
   expect(activity2.source).eq(activity1Content);
 
   // history should be version 1 of activity 1
-  const activityData2 = await getActivityViewerData(activityId2, ownerId2);
+  const activityData2 = await getActivityViewerData({
+    contentId: activityId2,
+    loggedInUserId: ownerId2,
+  });
   const contribHist2 = activityData2.activityHistory.contributorHistory;
   expect(contribHist2.length).eq(1);
   expect(contribHist2[0].prevActivityId).eqls(activityId1);
@@ -1561,7 +1596,13 @@ test("copyContent remixes correct versions", async () => {
   });
 
   // copy activity 1 to owner 3's Activities page
-  const [activityId3] = await copyContent(activityId1, ownerId3, null);
+  const {
+    newContentIds: [activityId3],
+  } = await copyContent({
+    contentIds: [activityId1],
+    loggedInUserId: ownerId3,
+    desiredParentId: null,
+  });
 
   const activity3 = await getContent({
     contentId: activityId3,
@@ -1574,7 +1615,10 @@ test("copyContent remixes correct versions", async () => {
   expect(activity3.source).eq(activity1ContentModified);
 
   // history should be version 2 of activity 1
-  const activityData3 = await getActivityViewerData(activityId3, ownerId3);
+  const activityData3 = await getActivityViewerData({
+    contentId: activityId3,
+    loggedInUserId: ownerId3,
+  });
   const contribHist3 = activityData3.activityHistory.contributorHistory;
   expect(contribHist3.length).eq(1);
   expect(contribHist3[0].prevActivityId).eqls(activityId1);
@@ -1594,16 +1638,29 @@ test("copyContent copies content classifications", async () => {
     await searchPossibleClassifications({ query: "K.CC.1 common core" })
   ).find((k) => k.code === "K.CC.1")!;
 
-  await addClassification(activityId, classifyId, originalOwnerId);
+  await addClassification({
+    contentId: activityId,
+    classificationId: classifyId,
+    loggedInUserId: originalOwnerId,
+  });
 
   await setContentIsPublic({
     contentId: activityId,
     loggedInUserId: originalOwnerId,
     isPublic: true,
   });
-  const [newActivityId] = await copyContent(activityId, newOwnerId, null);
+  const {
+    newContentIds: [newActivityId],
+  } = await copyContent({
+    contentIds: [activityId],
+    loggedInUserId: newOwnerId,
+    desiredParentId: null,
+  });
 
-  const activityData = await getActivityEditorData(newActivityId, newOwnerId);
+  const activityData = await getActivityEditorData({
+    contentId: newActivityId,
+    loggedInUserId: newOwnerId,
+  });
 
   expect(activityData.activity!.classifications).toHaveLength(1);
   expect(activityData.activity!.classifications[0].id).eq(classifyId);
@@ -1645,14 +1702,32 @@ test("copyContent copies content features", async () => {
     isPublic: true,
   });
 
-  const [newActivityId1] = await copyContent(activityId1, newOwnerId, null);
-  const [newActivityId2] = await copyContent(activityId2, newOwnerId, null);
+  const {
+    newContentIds: [newActivityId1],
+  } = await copyContent({
+    contentIds: [activityId1],
+    loggedInUserId: newOwnerId,
+    desiredParentId: null,
+  });
+  const {
+    newContentIds: [newActivityId2],
+  } = await copyContent({
+    contentIds: [activityId2],
+    loggedInUserId: newOwnerId,
+    desiredParentId: null,
+  });
 
-  const activityData1 = await getActivityEditorData(newActivityId1, newOwnerId);
+  const activityData1 = await getActivityEditorData({
+    contentId: newActivityId1,
+    loggedInUserId: newOwnerId,
+  });
   expect(activityData1.activity!.contentFeatures).toHaveLength(1);
   expect(activityData1.activity!.contentFeatures[0].code).eq("isQuestion");
 
-  const activityData2 = await getActivityEditorData(newActivityId2, newOwnerId);
+  const activityData2 = await getActivityEditorData({
+    contentId: newActivityId2,
+    loggedInUserId: newOwnerId,
+  });
   expect(activityData2.activity!.contentFeatures).toHaveLength(2);
   expect(activityData2.activity!.contentFeatures[0].code).eq("isInteractive");
   expect(activityData2.activity!.contentFeatures[1].code).eq("containsVideo");
@@ -1677,9 +1752,13 @@ test("check if content contains content type", async () => {
 
   // initially shouldn't have any content types
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
-    expect(await checkIfContentContains(null, ct as ContentType, userId)).eq(
-      false,
-    );
+    expect(
+      await checkIfContentContains({
+        contentId: null,
+        contentType: ct as ContentType,
+        loggedInUserId: userId,
+      }),
+    ).eqls({ containsType: false });
   }
 
   // add a single document to base folder
@@ -1689,9 +1768,13 @@ test("check if content contains content type", async () => {
     parentId: null,
   });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
-    expect(await checkIfContentContains(null, ct as ContentType, userId)).eq(
-      ct === "singleDoc",
-    );
+    expect(
+      await checkIfContentContains({
+        contentId: null,
+        contentType: ct as ContentType,
+        loggedInUserId: userId,
+      }),
+    ).eqls({ containsType: ct === "singleDoc" });
   }
 
   // add a folder to base folder
@@ -1701,9 +1784,13 @@ test("check if content contains content type", async () => {
     parentId: null,
   });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
-    expect(await checkIfContentContains(null, ct as ContentType, userId)).eq(
-      ct === "singleDoc" || ct === "folder",
-    );
+    expect(
+      await checkIfContentContains({
+        contentId: null,
+        contentType: ct as ContentType,
+        loggedInUserId: userId,
+      }),
+    ).eqls({ containsType: ct === "singleDoc" || ct === "folder" });
   }
 
   // add a question bank to base folder
@@ -1713,9 +1800,13 @@ test("check if content contains content type", async () => {
     parentId: null,
   });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
-    expect(await checkIfContentContains(null, ct as ContentType, userId)).eq(
-      ct !== "sequence",
-    );
+    expect(
+      await checkIfContentContains({
+        contentId: null,
+        contentType: ct as ContentType,
+        loggedInUserId: userId,
+      }),
+    ).eqls({ containsType: ct !== "sequence" });
   }
 
   // add problem set to base folder
@@ -1725,16 +1816,24 @@ test("check if content contains content type", async () => {
     parentId: null,
   });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
-    expect(await checkIfContentContains(null, ct as ContentType, userId)).eq(
-      true,
-    );
+    expect(
+      await checkIfContentContains({
+        contentId: null,
+        contentType: ct as ContentType,
+        loggedInUserId: userId,
+      }),
+    ).eqls({ containsType: true });
   }
 
   // folder1 starts out with nothing
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfContentContains(folderId1, ct as ContentType, userId),
-    ).eq(false);
+      await checkIfContentContains({
+        contentId: folderId1,
+        contentType: ct as ContentType,
+        loggedInUserId: userId,
+      }),
+    ).eqls({ containsType: false });
   }
 
   // add a folder to folder 1
@@ -1745,8 +1844,12 @@ test("check if content contains content type", async () => {
   });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfContentContains(folderId1, ct as ContentType, userId),
-    ).eq(ct === "folder");
+      await checkIfContentContains({
+        contentId: folderId1,
+        contentType: ct as ContentType,
+        loggedInUserId: userId,
+      }),
+    ).eqls({ containsType: ct === "folder" });
   }
 
   // add a folder to folder 2, still checking folder 1
@@ -1757,8 +1860,12 @@ test("check if content contains content type", async () => {
   });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfContentContains(folderId1, ct as ContentType, userId),
-    ).eq(ct === "folder");
+      await checkIfContentContains({
+        contentId: folderId1,
+        contentType: ct as ContentType,
+        loggedInUserId: userId,
+      }),
+    ).eqls({ containsType: ct === "folder" });
   }
 
   // add a problem set to folder 3, still checking folder 1
@@ -1769,8 +1876,12 @@ test("check if content contains content type", async () => {
   });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfContentContains(folderId1, ct as ContentType, userId),
-    ).eq(ct === "folder" || ct === "sequence");
+      await checkIfContentContains({
+        contentId: folderId1,
+        contentType: ct as ContentType,
+        loggedInUserId: userId,
+      }),
+    ).eqls({ containsType: ct === "folder" || ct === "sequence" });
   }
 
   // add a question bank to problem set 4 still checking folder 1
@@ -1781,8 +1892,12 @@ test("check if content contains content type", async () => {
   });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfContentContains(folderId1, ct as ContentType, userId),
-    ).eq(ct !== "singleDoc");
+      await checkIfContentContains({
+        contentId: folderId1,
+        contentType: ct as ContentType,
+        loggedInUserId: userId,
+      }),
+    ).eqls({ containsType: ct !== "singleDoc" });
   }
 
   // add a document to problem set 5 still checking folder 1
@@ -1793,32 +1908,51 @@ test("check if content contains content type", async () => {
   });
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfContentContains(folderId1, ct as ContentType, userId),
-    ).eq(true);
+      await checkIfContentContains({
+        contentId: folderId1,
+        contentType: ct as ContentType,
+        loggedInUserId: userId,
+      }),
+    ).eqls({ containsType: true });
   }
 
   // check chain from folder 1 up
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfContentContains(folderId2, ct as ContentType, userId),
-    ).eq(true);
+      await checkIfContentContains({
+        contentId: folderId2,
+        contentType: ct as ContentType,
+        loggedInUserId: userId,
+      }),
+    ).eqls({ containsType: true });
   }
 
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfContentContains(folderId3, ct as ContentType, userId),
-    ).eq(ct !== "folder");
+      await checkIfContentContains({
+        contentId: folderId3,
+        contentType: ct as ContentType,
+        loggedInUserId: userId,
+      }),
+    ).eqls({ containsType: ct !== "folder" });
   }
 
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfContentContains(problemSetId4, ct as ContentType, userId),
-    ).eq(ct === "select" || ct === "singleDoc");
+      await checkIfContentContains({
+        contentId: problemSetId4,
+        contentType: ct as ContentType,
+        loggedInUserId: userId,
+      }),
+    ).eqls({ containsType: ct === "select" || ct === "singleDoc" });
   }
-
   for (const ct of ["singleDoc", "sequence", "select", "folder"]) {
     expect(
-      await checkIfContentContains(questionBank5, ct as ContentType, userId),
-    ).eq(ct === "singleDoc");
+      await checkIfContentContains({
+        contentId: questionBank5,
+        contentType: ct as ContentType,
+        loggedInUserId: userId,
+      }),
+    ).eqls({ containsType: ct === "singleDoc" });
   }
 });

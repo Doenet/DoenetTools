@@ -50,22 +50,22 @@ const currentDoenetmlVersion = {
 test("New activity starts out private, then delete it", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: userId,
     contentType: "singleDoc",
     parentId: null,
   });
-  const { activity: activityContent } = await getActivityEditorData(
-    activityId,
-    userId,
-  );
+  const { activity: activityContent } = await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: userId,
+  });
 
   if (!activityContent) {
     throw Error("Shouldn't happen");
   }
 
   const expectedContent: Doc = {
-    id: activityId,
+    id: contentId,
     name: "Untitled Document",
     ownerId: userId,
     imagePath: "/activity_default.jpg",
@@ -99,11 +99,11 @@ test("New activity starts out private, then delete it", async () => {
   expect(data.content[0].isPublic).eq(false);
   expect(data.content[0].assignmentInfo).eq(undefined);
 
-  await deleteContent(activityId, userId);
+  await deleteContent(contentId, userId);
 
-  await expect(getActivityEditorData(activityId, userId)).rejects.toThrow(
-    InvalidRequestError,
-  );
+  await expect(
+    getActivityEditorData({ contentId: contentId, loggedInUserId: userId }),
+  ).rejects.toThrow(InvalidRequestError);
 
   const dataAfterDelete = await getMyContent({
     loggedInUserId: userId,
@@ -116,7 +116,7 @@ test("New activity starts out private, then delete it", async () => {
 test("Test updating various activity properties", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: userId,
     contentType: "singleDoc",
     parentId: null,
@@ -124,22 +124,25 @@ test("Test updating various activity properties", async () => {
   const activityName = "Test Name";
   const source = "Here comes some content, I made you some content";
   await updateContent({
-    contentId: activityId,
+    contentId: contentId,
     name: activityName,
     loggedInUserId: userId,
     source,
   });
-  const { activity: activityContent } = await getActivityEditorData(
-    activityId,
-    userId,
-  );
+  const { activity: activityContent } = await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: userId,
+  });
   if (activityContent === undefined || activityContent.type !== "singleDoc") {
     throw Error("shouldn't happen");
   }
   expect(activityContent.name).toBe(activityName);
   expect(activityContent.source).toBe(source);
 
-  const activityViewerContent = await getActivityViewerData(activityId, userId);
+  const activityViewerContent = await getActivityViewerData({
+    contentId: contentId,
+    loggedInUserId: userId,
+  });
   if (activityViewerContent.activity.type !== "singleDoc") {
     throw Error("shouldn't happen");
   }
@@ -150,27 +153,33 @@ test("Test updating various activity properties", async () => {
 test("deleteContent marks a activity and document as deleted and prevents its retrieval", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: userId,
     contentType: "singleDoc",
     parentId: null,
   });
 
   // activity can be retrieved
-  await getActivityViewerData(activityId, userId);
-  await getActivityEditorData(activityId, userId);
-  await getActivitySource(activityId, userId);
+  await getActivityViewerData({
+    contentId: contentId,
+    loggedInUserId: userId,
+  });
+  await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: userId,
+  });
+  await getActivitySource(contentId, userId);
 
-  await deleteContent(activityId, userId);
+  await deleteContent(contentId, userId);
 
   // cannot retrieve activity
-  await expect(getActivityViewerData(activityId, userId)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
-  await expect(getActivityEditorData(activityId, userId)).rejects.toThrow(
-    InvalidRequestError,
-  );
-  await expect(getActivitySource(activityId, userId)).rejects.toThrow(
+  await expect(
+    getActivityViewerData({ contentId: contentId, loggedInUserId: userId }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
+  await expect(
+    getActivityEditorData({ contentId: contentId, loggedInUserId: userId }),
+  ).rejects.toThrow(InvalidRequestError);
+  await expect(getActivitySource(contentId, userId)).rejects.toThrow(
     PrismaClientKnownRequestError,
   );
 });
@@ -180,21 +189,21 @@ test("only owner can delete an activity", async () => {
   const ownerId = owner.userId;
   const user2 = await createTestUser();
   const user2Id = user2.userId;
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: null,
   });
 
-  await expect(deleteContent(activityId, user2Id)).rejects.toThrow("not found");
+  await expect(deleteContent(contentId, user2Id)).rejects.toThrow("not found");
 
-  await deleteContent(activityId, ownerId);
+  await deleteContent(contentId, ownerId);
 });
 
 test("updateDoc updates document properties", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: userId,
     contentType: "singleDoc",
     parentId: null,
@@ -202,12 +211,15 @@ test("updateDoc updates document properties", async () => {
   const newName = "Updated Name";
   const newContent = "Updated Content";
   await updateContent({
-    contentId: activityId,
+    contentId: contentId,
     name: newName,
     source: newContent,
     loggedInUserId: userId,
   });
-  const { activity } = await getActivityViewerData(activityId, userId);
+  const { activity } = await getActivityViewerData({
+    contentId: contentId,
+    loggedInUserId: userId,
+  });
   if (activity.type !== "singleDoc") {
     throw Error("shouldn't happen");
   }
@@ -216,7 +228,7 @@ test("updateDoc updates document properties", async () => {
 });
 
 test("getAllDoenetmlVersions retrieves all non-removed versions", async () => {
-  const allVersions = await getAllDoenetmlVersions();
+  const { allDoenetmlVersions: allVersions } = await getAllDoenetmlVersions();
   expect(allVersions).toBeInstanceOf(Array);
   // there should be at least one version
   expect(allVersions.length).toBeGreaterThan(0);
@@ -229,18 +241,18 @@ test("getAllDoenetmlVersions retrieves all non-removed versions", async () => {
 test("updateContent does not update properties when passed undefined values", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: null,
   });
 
   const originalActivity = await prisma.content.findUniqueOrThrow({
-    where: { id: activityId },
+    where: { id: contentId },
   });
-  await updateContent({ contentId: activityId, loggedInUserId: ownerId });
+  await updateContent({ contentId: contentId, loggedInUserId: ownerId });
   const updatedActivity = await prisma.content.findUniqueOrThrow({
-    where: { id: activityId },
+    where: { id: contentId },
   });
   expect(updatedActivity).toEqual(originalActivity);
 });
@@ -252,90 +264,111 @@ test("get activity/document data only if owner or limited data for public/shared
   const user1Id = user1.userId;
   const user2 = await createTestUser();
   const user2Id = user2.userId;
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: null,
   });
 
-  await getActivityEditorData(activityId, ownerId);
-  await getActivityViewerData(activityId, ownerId);
-  await getActivitySource(activityId, ownerId);
+  await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
+  await getActivityViewerData({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
+  await getActivitySource(contentId, ownerId);
 
-  await expect(getActivityEditorData(activityId, user1Id)).rejects.toThrow(
-    InvalidRequestError,
-  );
-  await expect(getActivityViewerData(activityId, user1Id)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
-  await expect(getActivitySource(activityId, user1Id)).rejects.toThrow(
+  await expect(
+    getActivityEditorData({ contentId: contentId, loggedInUserId: user1Id }),
+  ).rejects.toThrow(InvalidRequestError);
+  await expect(
+    getActivityViewerData({ contentId: contentId, loggedInUserId: user1Id }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
+  await expect(getActivitySource(contentId, user1Id)).rejects.toThrow(
     PrismaClientKnownRequestError,
   );
 
   await setContentIsPublic({
-    contentId: activityId,
+    contentId: contentId,
     loggedInUserId: ownerId,
     isPublic: true,
   });
 
   const closeAt = DateTime.now().plus({ days: 1 });
   await openAssignmentWithCode({
-    contentId: activityId,
+    contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
   });
 
-  let data = await getActivityEditorData(activityId, ownerId);
+  let data = await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
   expect(data.editableByMe).eq(true);
   if (data.activity === undefined) {
     throw Error("Shouldn't happen");
   }
   expect(data.activity.assignmentInfo?.assignmentStatus).eq("Open");
 
-  data = await getActivityEditorData(activityId, user1Id);
+  data = await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: user1Id,
+  });
   expect(data.editableByMe).eq(false);
   expect(data.activity).eq(undefined);
-  expect(data.activityId).eq(activityId);
+  expect(data.contentId).eq(contentId);
 
-  await getActivityViewerData(activityId, user1Id);
-  await getActivitySource(activityId, user1Id);
+  await getActivityViewerData({
+    contentId: contentId,
+    loggedInUserId: user1Id,
+  });
+  await getActivitySource(contentId, user1Id);
 
   await setContentIsPublic({
-    contentId: activityId,
+    contentId: contentId,
     loggedInUserId: ownerId,
     isPublic: false,
   });
-  await expect(getActivityEditorData(activityId, user1Id)).rejects.toThrow(
-    InvalidRequestError,
-  );
-  await expect(getActivityViewerData(activityId, user1Id)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
-  await expect(getActivitySource(activityId, user1Id)).rejects.toThrow(
+  await expect(
+    getActivityEditorData({ contentId: contentId, loggedInUserId: user1Id }),
+  ).rejects.toThrow(InvalidRequestError);
+  await expect(
+    getActivityViewerData({ contentId: contentId, loggedInUserId: user1Id }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
+  await expect(getActivitySource(contentId, user1Id)).rejects.toThrow(
     PrismaClientKnownRequestError,
   );
 
   await modifyContentSharedWith({
     action: "share",
-    contentId: activityId,
+    contentId: contentId,
     loggedInUserId: ownerId,
     users: [user1Id],
   });
-  data = await getActivityEditorData(activityId, user1Id);
+  data = await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: user1Id,
+  });
   expect(data.editableByMe).eq(false);
   expect(data.activity).eq(undefined);
-  expect(data.activityId).eq(activityId);
+  expect(data.contentId).eq(contentId);
 
-  await getActivityViewerData(activityId, user1Id);
-  await getActivitySource(activityId, user1Id);
+  await getActivityViewerData({
+    contentId: contentId,
+    loggedInUserId: user1Id,
+  });
+  await getActivitySource(contentId, user1Id);
 
-  await expect(getActivityEditorData(activityId, user2Id)).rejects.toThrow(
-    InvalidRequestError,
-  );
-  await expect(getActivityViewerData(activityId, user2Id)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
-  await expect(getActivitySource(activityId, user2Id)).rejects.toThrow(
+  await expect(
+    getActivityEditorData({ contentId: contentId, loggedInUserId: user2Id }),
+  ).rejects.toThrow(InvalidRequestError);
+  await expect(
+    getActivityViewerData({ contentId: contentId, loggedInUserId: user2Id }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
+  await expect(getActivitySource(contentId, user2Id)).rejects.toThrow(
     PrismaClientKnownRequestError,
   );
 });
@@ -349,34 +382,37 @@ test("get public activity editor data only if public or shared", async () => {
   const user2 = await createTestUser();
   const user2Id = user2.userId;
 
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: null,
   });
   const doenetML = "hi!";
   await updateContent({
-    contentId: activityId,
+    contentId: contentId,
     source: doenetML,
     loggedInUserId: ownerId,
   });
 
-  await expect(getSharedEditorData(activityId, user1Id)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  await expect(
+    getSharedEditorData({ contentId: contentId, loggedInUserId: user1Id }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   await updateContent({
-    contentId: activityId,
+    contentId: contentId,
     loggedInUserId: ownerId,
     name: "Some content",
   });
   await setContentIsPublic({
-    contentId: activityId,
+    contentId: contentId,
     loggedInUserId: ownerId,
     isPublic: true,
   });
 
-  let sharedData = await getSharedEditorData(activityId, user1Id);
+  let sharedData = await getSharedEditorData({
+    contentId: contentId,
+    loggedInUserId: user1Id,
+  });
   if (sharedData.type !== "singleDoc") {
     throw Error("shouldn't happen");
   }
@@ -384,49 +420,52 @@ test("get public activity editor data only if public or shared", async () => {
   expect(sharedData.source).eq(doenetML);
 
   await setContentIsPublic({
-    contentId: activityId,
+    contentId: contentId,
     loggedInUserId: ownerId,
     isPublic: false,
   });
 
-  await expect(getSharedEditorData(activityId, user1Id)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  await expect(
+    getSharedEditorData({ contentId: contentId, loggedInUserId: user1Id }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   await modifyContentSharedWith({
     action: "share",
-    contentId: activityId,
+    contentId: contentId,
     loggedInUserId: ownerId,
     users: [user1Id],
   });
 
-  sharedData = await getSharedEditorData(activityId, user1Id);
+  sharedData = await getSharedEditorData({
+    contentId: contentId,
+    loggedInUserId: user1Id,
+  });
   if (sharedData.type !== "singleDoc") {
     throw Error("shouldn't happen");
   }
   expect(sharedData.name).eq("Some content");
   expect(sharedData.source).eq(doenetML);
 
-  await expect(getSharedEditorData(activityId, user2Id)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  await expect(
+    getSharedEditorData({ contentId: contentId, loggedInUserId: user2Id }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 });
 
 test("activity editor data and my folder contents before and after assigned", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: null,
   });
 
-  const { activity: preAssignedData } = await getActivityEditorData(
-    activityId,
-    ownerId,
-  );
+  const { activity: preAssignedData } = await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
   let expectedData: Content = {
-    id: activityId,
+    id: contentId,
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
@@ -460,17 +499,17 @@ test("activity editor data and my folder contents before and after assigned", as
   // Opening assignment also assigns the activity
   let closeAt = DateTime.now().plus({ days: 1 });
   const { classCode } = await openAssignmentWithCode({
-    contentId: activityId,
+    contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
   });
 
-  const { activity: openedData } = await getActivityEditorData(
-    activityId,
-    ownerId,
-  );
+  const { activity: openedData } = await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
   expectedData = {
-    id: activityId,
+    id: contentId,
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
@@ -511,13 +550,13 @@ test("activity editor data and my folder contents before and after assigned", as
   expect(folderData.content).eqls([expectedData]);
 
   // closing the assignment without data also unassigns it
-  await closeAssignmentWithCode(activityId, ownerId);
-  const { activity: closedData } = await getActivityEditorData(
-    activityId,
-    ownerId,
-  );
+  await closeAssignmentWithCode(contentId, ownerId);
+  const { activity: closedData } = await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
   expectedData = {
-    id: activityId,
+    id: contentId,
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
@@ -551,19 +590,19 @@ test("activity editor data and my folder contents before and after assigned", as
   // re-opening, re-assigns with same code
   closeAt = DateTime.now().plus({ days: 1 });
   const { classCode: newClassCode } = await openAssignmentWithCode({
-    contentId: activityId,
+    contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
   });
 
   expect(newClassCode).eq(classCode);
 
-  const { activity: openedData2 } = await getActivityEditorData(
-    activityId,
-    ownerId,
-  );
+  const { activity: openedData2 } = await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
   expectedData = {
-    id: activityId,
+    id: contentId,
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
@@ -605,7 +644,7 @@ test("activity editor data and my folder contents before and after assigned", as
 
   // just add some data (doesn't matter that it is owner themselves)
   await saveScoreAndState({
-    activityId,
+    contentId,
     activityRevisionNum: 1,
     loggedInUserId: ownerId,
     score: 0.5,
@@ -613,12 +652,12 @@ test("activity editor data and my folder contents before and after assigned", as
     state: "document state 1",
   });
 
-  const { activity: openedData3 } = await getActivityEditorData(
-    activityId,
-    ownerId,
-  );
+  const { activity: openedData3 } = await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
   expectedData = {
-    id: activityId,
+    id: contentId,
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
@@ -658,13 +697,13 @@ test("activity editor data and my folder contents before and after assigned", as
   expect(folderData.content).eqls([expectedData]);
 
   // now closing does not unassign
-  await closeAssignmentWithCode(activityId, ownerId);
-  const { activity: closedData2 } = await getActivityEditorData(
-    activityId,
-    ownerId,
-  );
+  await closeAssignmentWithCode(contentId, ownerId);
+  const { activity: closedData2 } = await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
   expectedData = {
-    id: activityId,
+    id: contentId,
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
@@ -705,7 +744,7 @@ test("activity editor data and my folder contents before and after assigned", as
   expect(folderData.content).eqls([expectedData]);
 
   // explicitly unassigning fails due to the presence of data
-  await expect(unassignActivity(activityId, ownerId)).rejects.toThrow(
+  await expect(unassignActivity(contentId, ownerId)).rejects.toThrow(
     "Record to update not found",
   );
 });
@@ -714,13 +753,16 @@ test("activity editor data shows its parent folder is public", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: null,
   });
 
-  let { activity: data } = await getActivityEditorData(activityId, ownerId);
+  let { activity: data } = await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
   if (data === undefined) {
     throw Error("shouldn't happen");
   }
@@ -728,16 +770,19 @@ test("activity editor data shows its parent folder is public", async () => {
   expect(data.parent).eq(null);
 
   await setContentLicense({
-    contentId: activityId,
+    contentId: contentId,
     loggedInUserId: ownerId,
     licenseCode: "CCBYSA",
   });
   await setContentIsPublic({
-    contentId: activityId,
+    contentId: contentId,
     loggedInUserId: ownerId,
     isPublic: true,
   });
-  ({ activity: data } = await getActivityEditorData(activityId, ownerId));
+  ({ activity: data } = await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  }));
   if (data === undefined) {
     throw Error("shouldn't happen");
   }
@@ -751,13 +796,16 @@ test("activity editor data shows its parent folder is public", async () => {
     parentId: null,
   });
   await moveContent({
-    id: activityId,
+    contentId: contentId,
     desiredParentId: folderId,
     desiredPosition: 0,
     loggedInUserId: ownerId,
   });
 
-  ({ activity: data } = await getActivityEditorData(activityId, ownerId));
+  ({ activity: data } = await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  }));
   if (data === undefined) {
     throw Error("shouldn't happen");
   }
@@ -775,7 +823,10 @@ test("activity editor data shows its parent folder is public", async () => {
     loggedInUserId: ownerId,
     isPublic: true,
   });
-  ({ activity: data } = await getActivityEditorData(activityId, ownerId));
+  ({ activity: data } = await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  }));
   if (data === undefined) {
     throw Error("shouldn't happen");
   }
@@ -790,7 +841,10 @@ test("activity editor data shows its parent folder is public", async () => {
     loggedInUserId: ownerId,
     isPublic: false,
   });
-  ({ activity: data } = await getActivityEditorData(activityId, ownerId));
+  ({ activity: data } = await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  }));
   if (data === undefined) {
     throw Error("shouldn't happen");
   }
@@ -808,7 +862,10 @@ test("activity editor data shows its parent folder is public", async () => {
     loggedInUserId: ownerId,
     isPublic: true,
   });
-  ({ activity: data } = await getActivityEditorData(activityId, ownerId));
+  ({ activity: data } = await getActivityEditorData({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  }));
   if (data === undefined) {
     throw Error("shouldn't happen");
   }
@@ -821,36 +878,36 @@ test("activity editor data shows its parent folder is public", async () => {
 test("getActivitySource gets source", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: null,
   });
   await updateContent({
-    contentId: activityId,
+    contentId: contentId,
     source: "some content",
     loggedInUserId: ownerId,
   });
 
-  const activitySource = await getActivitySource(activityId, ownerId);
+  const activitySource = await getActivitySource(contentId, ownerId);
   expect(activitySource.source).eq("some content");
 });
 
 test("getContentDescription gets name and type", async () => {
   const { userId: ownerId } = await createTestUser();
 
-  const { contentId: activityId } = await createContent({
+  const { contentId: contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: null,
   });
   await updateContent({
-    contentId: activityId,
+    contentId: contentId,
     name: "Activity 1",
     loggedInUserId: ownerId,
   });
-  expect(await getContentDescription(activityId, ownerId)).eqls({
-    id: activityId,
+  expect(await getContentDescription(contentId, ownerId)).eqls({
+    id: contentId,
     name: "Activity 1",
     type: "singleDoc",
   });
@@ -973,10 +1030,10 @@ test("get compound activity", async () => {
   await deleteContent(activityIdDelete2, ownerId);
   await deleteContent(selectIdDelete, ownerId);
 
-  const { activity: sequence } = await getActivityViewerData(
-    sequenceId,
-    ownerId,
-  );
+  const { activity: sequence } = await getActivityViewerData({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+  });
 
   if (sequence.type !== "sequence") {
     throw Error("shouldn't happen");

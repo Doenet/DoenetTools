@@ -822,13 +822,13 @@ test("moving content into public folder makes it public", async () => {
 
   // move content into public folder
   await moveContent({
-    id: activity1Id,
+    contentId: activity1Id,
     desiredParentId: publicFolderId,
     loggedInUserId: ownerId,
     desiredPosition: 0,
   });
   await moveContent({
-    id: folder1Id,
+    contentId: folder1Id,
     desiredParentId: publicFolderId,
     loggedInUserId: ownerId,
     desiredPosition: 1,
@@ -875,13 +875,13 @@ test("moving content into public folder makes it public", async () => {
   });
 
   await moveContent({
-    id: activity1Id,
+    contentId: activity1Id,
     desiredParentId: privateFolderId,
     loggedInUserId: ownerId,
     desiredPosition: 0,
   });
   await moveContent({
-    id: folder1Id,
+    contentId: folder1Id,
     desiredParentId: privateFolderId,
     loggedInUserId: ownerId,
     desiredPosition: 1,
@@ -1002,13 +1002,13 @@ test("moving content into shared folder shares it", async () => {
 
   // move content into shared folder
   await moveContent({
-    id: activity1Id,
+    contentId: activity1Id,
     desiredParentId: sharedFolderId,
     loggedInUserId: ownerId,
     desiredPosition: 0,
   });
   await moveContent({
-    id: folder1Id,
+    contentId: folder1Id,
     desiredParentId: sharedFolderId,
     loggedInUserId: ownerId,
     desiredPosition: 1,
@@ -1059,13 +1059,13 @@ test("moving content into shared folder shares it", async () => {
   });
 
   await moveContent({
-    id: activity1Id,
+    contentId: activity1Id,
     desiredParentId: privateFolderId,
     loggedInUserId: ownerId,
     desiredPosition: 0,
   });
   await moveContent({
-    id: folder1Id,
+    contentId: folder1Id,
     desiredParentId: privateFolderId,
     loggedInUserId: ownerId,
     desiredPosition: 1,
@@ -1140,7 +1140,10 @@ test("share with email throws error when no match", async () => {
     email: user.email,
   });
 
-  const { activity } = await getActivityEditorData(activityId, ownerId);
+  const { activity } = await getActivityEditorData({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+  });
   expect(activity).toBeDefined();
   expect(activity!.sharedWith.map((obj) => obj.email)).eqls([user.email]);
 
@@ -1195,7 +1198,10 @@ test("share with email throws error when share with self", async () => {
     loggedInUserId: ownerId,
     email: user.email,
   });
-  const { activity } = await getActivityEditorData(activityId, ownerId);
+  const { activity } = await getActivityEditorData({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+  });
   expect(activity).toBeDefined();
   expect(activity!.sharedWith.map((obj) => obj.email)).eqls([user.email]);
 
@@ -1238,7 +1244,13 @@ test("contributor history shows only documents user can view", async () => {
   });
 
   // owner 2 copies activity 1 to activity 2 and shares it with owner 3
-  const [activityId2] = await copyContent(activityId1, ownerId2, null);
+  const {
+    newContentIds: [activityId2],
+  } = await copyContent({
+    contentIds: [activityId1],
+    loggedInUserId: ownerId2,
+    desiredParentId: null,
+  });
   await setContentLicense({
     contentId: activityId2,
     loggedInUserId: ownerId2,
@@ -1252,8 +1264,20 @@ test("contributor history shows only documents user can view", async () => {
   });
 
   // owner 3 copies activity 2 to activity 3, and then copies that to public activity 4
-  const [activityId3] = await copyContent(activityId2, ownerId3, null);
-  const [activityId4] = await copyContent(activityId3, ownerId3, null);
+  const {
+    newContentIds: [activityId3],
+  } = await copyContent({
+    contentIds: [activityId2],
+    loggedInUserId: ownerId3,
+    desiredParentId: null,
+  });
+  const {
+    newContentIds: [activityId4],
+  } = await copyContent({
+    contentIds: [activityId3],
+    loggedInUserId: ownerId3,
+    desiredParentId: null,
+  });
   await setContentIsPublic({
     contentId: activityId4,
     loggedInUserId: ownerId3,
@@ -1261,7 +1285,13 @@ test("contributor history shows only documents user can view", async () => {
   });
 
   // owner 3 copies activity 1 to activity 5 and shares it with owner 1
-  const [activityId5] = await copyContent(activityId1, ownerId3, null);
+  const {
+    newContentIds: [activityId5],
+  } = await copyContent({
+    contentIds: [activityId1],
+    loggedInUserId: ownerId3,
+    desiredParentId: null,
+  });
   await setContentLicense({
     contentId: activityId5,
     loggedInUserId: ownerId3,
@@ -1396,7 +1426,7 @@ test("contributor history shows only documents user can view", async () => {
 });
 
 test("get licenses", async () => {
-  const cc_by_sa = await getLicense("CCBYSA");
+  const { license: cc_by_sa } = await getLicense("CCBYSA");
   expect(cc_by_sa.name).eq("Creative Commons Attribution-ShareAlike 4.0");
   expect(cc_by_sa.imageURL).eq("/creative_commons_by_sa.png");
   expect(cc_by_sa.smallImageURL).eq("/by-sa-sm.png");
@@ -1404,7 +1434,7 @@ test("get licenses", async () => {
     "https://creativecommons.org/licenses/by-sa/4.0/",
   );
 
-  const cc_by_nc_sa = await getLicense("CCBYNCSA");
+  const { license: cc_by_nc_sa } = await getLicense("CCBYNCSA");
   expect(cc_by_nc_sa.name).eq(
     "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
   );
@@ -1414,7 +1444,7 @@ test("get licenses", async () => {
     "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   );
 
-  const cc_dual = await getLicense("CCDUAL");
+  const { license: cc_dual } = await getLicense("CCDUAL");
   expect(cc_dual.name).eq(
     "Dual license Creative Commons Attribution-ShareAlike 4.0 OR Attribution-NonCommercial-ShareAlike 4.0",
   );
@@ -1436,7 +1466,7 @@ test("get licenses", async () => {
     "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   );
 
-  const all = await getAllLicenses();
+  const { allLicenses: all } = await getAllLicenses();
   expect(all.map((x) => x.code)).eqls(["CCDUAL", "CCBYSA", "CCBYNCSA"]);
 });
 
@@ -1460,10 +1490,10 @@ test("set license to make public", async () => {
     loggedInUserId: ownerId,
     isPublic: true,
   });
-  let { activity: activityData } = await getActivityEditorData(
-    activityId,
-    ownerId,
-  );
+  let { activity: activityData } = await getActivityEditorData({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+  });
   expect(activityData).toBeDefined();
   expect(activityData!.isPublic).eq(true);
 
@@ -1482,10 +1512,10 @@ test("set license to make public", async () => {
     loggedInUserId: ownerId,
     isPublic: false,
   });
-  ({ activity: activityData } = await getActivityEditorData(
-    activityId,
-    ownerId,
-  ));
+  ({ activity: activityData } = await getActivityEditorData({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+  }));
   expect(activityData).toBeDefined();
   expect(activityData!.isPublic).eq(false);
 
@@ -1500,10 +1530,10 @@ test("set license to make public", async () => {
     loggedInUserId: ownerId,
     isPublic: true,
   });
-  ({ activity: activityData } = await getActivityEditorData(
-    activityId,
-    ownerId,
-  ));
+  ({ activity: activityData } = await getActivityEditorData({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+  }));
   expect(activityData).toBeDefined();
   expect(activityData!.isPublic).eq(true);
 
@@ -1523,10 +1553,10 @@ test("set license to make public", async () => {
     licenseCode: "CCDUAL",
   });
 
-  ({ activity: activityData } = await getActivityEditorData(
-    activityId,
-    ownerId,
-  ));
+  ({ activity: activityData } = await getActivityEditorData({
+    contentId: activityId,
+    loggedInUserId: ownerId,
+  }));
   expect(activityData!.isPublic).eq(true);
 
   expect(activityData!.license?.code).eq("CCDUAL");

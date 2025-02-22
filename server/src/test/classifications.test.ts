@@ -28,11 +28,22 @@ test("Content classifications can only be edited by activity owner", async () =>
 
   // Add
   await expect(() =>
-    addClassification(activityId, classificationId, otherId),
+    addClassification({
+      contentId: activityId,
+      classificationId: classificationId,
+      loggedInUserId: otherId,
+    }),
   ).rejects.toThrowError();
-  await addClassification(activityId, classificationId, userId);
+  await addClassification({
+    contentId: activityId,
+    classificationId: classificationId,
+    loggedInUserId: userId,
+  });
   {
-    const classifications = await getClassifications(activityId, userId);
+    const classifications = await getClassifications({
+      contentId: activityId,
+      loggedInUserId: userId,
+    });
     expect(classifications.length).toBe(1);
     expect(classifications[0]).toHaveProperty("code", "K.CC.1");
     expect(classifications[0]).toHaveProperty("id", classificationId);
@@ -40,11 +51,22 @@ test("Content classifications can only be edited by activity owner", async () =>
 
   // Remove
   await expect(() =>
-    removeClassification(activityId, classificationId, otherId),
+    removeClassification({
+      contentId: activityId,
+      classificationId: classificationId,
+      loggedInUserId: otherId,
+    }),
   ).rejects.toThrowError();
-  await removeClassification(activityId, classificationId, userId);
+  await removeClassification({
+    contentId: activityId,
+    classificationId: classificationId,
+    loggedInUserId: userId,
+  });
   {
-    const classifications = await getClassifications(activityId, userId);
+    const classifications = await getClassifications({
+      contentId: activityId,
+      loggedInUserId: userId,
+    });
     expect(classifications).toEqual([]);
   }
 });
@@ -62,12 +84,20 @@ test("Get classifications of public activity", async () => {
     parentId: null,
   });
 
-  await addClassification(activityId, classId1, ownerId);
-  await addClassification(activityId, classId2, ownerId);
+  await addClassification({
+    contentId: activityId,
+    classificationId: classId1,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activityId,
+    classificationId: classId2,
+    loggedInUserId: ownerId,
+  });
 
   const { userId: viewerId } = await createTestUser();
   await expect(() =>
-    getClassifications(activityId, viewerId),
+    getClassifications({ contentId: activityId, loggedInUserId: viewerId }),
   ).rejects.toThrowError("cannot be accessed");
 
   await updateContent({
@@ -79,7 +109,10 @@ test("Get classifications of public activity", async () => {
     loggedInUserId: ownerId,
     isPublic: true,
   });
-  const classifications = await getClassifications(activityId, viewerId);
+  const classifications = await getClassifications({
+    contentId: activityId,
+    loggedInUserId: viewerId,
+  });
   expect(classifications.length).toBe(2);
 });
 
@@ -407,12 +440,31 @@ test("Classifications show as primary, sorted by primary", async () => {
     await searchPossibleClassifications({ query: "DiffEq.IC.1" })
   )[0].id;
 
-  await addClassification(activityId, diffEqClassificationId, userId);
-  await addClassification(activityId, trigPolarClassificationId, userId);
-  await addClassification(activityId, multivarClassificationId, userId);
-  await addClassification(activityId, algebraClassificationId, userId);
+  await addClassification({
+    contentId: activityId,
+    classificationId: diffEqClassificationId,
+    loggedInUserId: userId,
+  });
+  await addClassification({
+    contentId: activityId,
+    classificationId: trigPolarClassificationId,
+    loggedInUserId: userId,
+  });
+  await addClassification({
+    contentId: activityId,
+    classificationId: multivarClassificationId,
+    loggedInUserId: userId,
+  });
+  await addClassification({
+    contentId: activityId,
+    classificationId: algebraClassificationId,
+    loggedInUserId: userId,
+  });
 
-  const { activity } = await getActivityEditorData(activityId, userId);
+  const { activity } = await getActivityEditorData({
+    contentId: activityId,
+    loggedInUserId: userId,
+  });
   expect(activity!.classifications[0].code).eq("CalcMV.CV.1");
   expect(activity!.classifications[1].code).eq("Alg.FN.1");
   expect(activity!.classifications[2].code).eq("Trig.PC.1");

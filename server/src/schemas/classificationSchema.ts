@@ -9,6 +9,6 @@ export const searchPossibleClassificationsSchema = z.object({
 });
 
 export const classificationSchema = z.object({
-  activityId: uuidSchema,
+  contentId: uuidSchema,
   classificationId: z.number(),
 });

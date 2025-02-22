@@ -90,7 +90,11 @@ test("copy folder", async () => {
     parentId: null,
   });
   await expect(
-    copyContent(folder0Id, otherUserId, folderOther),
+    copyContent({
+      contentIds: [folder0Id],
+      loggedInUserId: otherUserId,
+      desiredParentId: folderOther,
+    }),
   ).rejects.toThrow("not found");
 
   await setContentIsPublic({
@@ -107,9 +111,13 @@ test("copy folder", async () => {
       parentId: null,
     });
 
-    const result = await copyContent(folder0Id, userId, folderNewId);
+    const result = await copyContent({
+      contentIds: [folder0Id],
+      loggedInUserId: userId,
+      desiredParentId: folderNewId,
+    });
 
-    expect(result.length).eq(1);
+    expect(result.newContentIds.length).eq(1);
 
     let folderResults = await getMyContent({
       parentId: folderNewId,
@@ -247,9 +255,13 @@ test("copy problem set", async () => {
     parentId: null,
   });
 
-  const result = await copyContent(folder0Id, ownerId, folderNewBaseId);
+  const result = await copyContent({
+    contentIds: [folder0Id],
+    loggedInUserId: ownerId,
+    desiredParentId: folderNewBaseId,
+  });
 
-  expect(result.length).eq(1);
+  expect(result.newContentIds.length).eq(1);
 
   let folderResults = await getMyContent({
     parentId: folderNewBaseId,
@@ -299,8 +311,12 @@ test("copy problem set", async () => {
     parentId: null,
   });
 
-  const result2 = await copyContent(folder0Id, ownerId, folderNewProblemSetId);
-  expect(result2.length).eq(3);
+  const result2 = await copyContent({
+    contentIds: [folder0Id],
+    loggedInUserId: ownerId,
+    desiredParentId: folderNewProblemSetId,
+  });
+  expect(result2.newContentIds.length).eq(3);
 
   folderResults = await getMyContent({
     parentId: folderNewProblemSetId,
@@ -340,12 +356,12 @@ test("copy problem set", async () => {
     parentId: null,
   });
 
-  const result3 = await copyContent(
-    folder0Id,
-    ownerId,
-    folderNewQuestionBankId,
-  );
-  expect(result3.length).eq(5);
+  const result3 = await copyContent({
+    contentIds: [folder0Id],
+    loggedInUserId: ownerId,
+    desiredParentId: folderNewQuestionBankId,
+  });
+  expect(result3.newContentIds.length).eq(5);
 
   folderResults = await getMyContent({
     parentId: folderNewQuestionBankId,

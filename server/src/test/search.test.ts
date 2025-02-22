@@ -445,14 +445,46 @@ test("searchSharedContent, document source is more relevant than classification"
     code,
   });
 
-  await addClassification(activity2Id, classificationIdA1A, ownerId);
-  await addClassification(activity2Id, classificationIdA1B, ownerId);
-  await addClassification(activity2Id, classificationIdA2A, ownerId);
-  await addClassification(activity2Id, classificationIdA2B, ownerId);
-  await addClassification(activity2Id, classificationIdB1A, ownerId);
-  await addClassification(activity2Id, classificationIdB1B, ownerId);
-  await addClassification(activity2Id, classificationIdB2A, ownerId);
-  await addClassification(activity2Id, classificationIdB2B, ownerId);
+  await addClassification({
+    contentId: activity2Id,
+    classificationId: classificationIdA1A,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activity2Id,
+    classificationId: classificationIdA1B,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activity2Id,
+    classificationId: classificationIdA2A,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activity2Id,
+    classificationId: classificationIdA2B,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activity2Id,
+    classificationId: classificationIdB1A,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activity2Id,
+    classificationId: classificationIdB1B,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activity2Id,
+    classificationId: classificationIdB2A,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activity2Id,
+    classificationId: classificationIdB2B,
+    loggedInUserId: ownerId,
+  });
 
   let results = await searchSharedContent({
     query: `banana${code} muffin${code}`,
@@ -531,7 +563,11 @@ test("searchSharedContent, classification increases relevance", async () => {
     loggedInUserId: ownerId,
     isPublic: true,
   });
-  await addClassification(activity2Id, classificationIdA1A, ownerId);
+  await addClassification({
+    contentId: activity2Id,
+    classificationId: classificationIdA1A,
+    loggedInUserId: ownerId,
+  });
 
   let results = await searchSharedContent({
     query: `grapeA1A${code} banana${code}`,
@@ -647,7 +683,11 @@ test("searchSharedContent, filter by classification", async () => {
     loggedInUserId: ownerId,
     isPublic: true,
   });
-  await addClassification(activity1Id, classifyId1, ownerId);
+  await addClassification({
+    contentId: activity1Id,
+    classificationId: classifyId1,
+    loggedInUserId: ownerId,
+  });
 
   // classifyId2
   const { contentId: activity2Id } = await createContent({
@@ -665,7 +705,11 @@ test("searchSharedContent, filter by classification", async () => {
     loggedInUserId: ownerId,
     isPublic: true,
   });
-  await addClassification(activity2Id, classifyId2, ownerId);
+  await addClassification({
+    contentId: activity2Id,
+    classificationId: classifyId2,
+    loggedInUserId: ownerId,
+  });
 
   // classifyId3
   const { contentId: activity3Id } = await createContent({
@@ -683,7 +727,11 @@ test("searchSharedContent, filter by classification", async () => {
     loggedInUserId: ownerId,
     isPublic: true,
   });
-  await addClassification(activity3Id, classifyId3, ownerId);
+  await addClassification({
+    contentId: activity3Id,
+    classificationId: classifyId3,
+    loggedInUserId: ownerId,
+  });
 
   // classifyId4
   const { contentId: activity4Id } = await createContent({
@@ -701,7 +749,11 @@ test("searchSharedContent, filter by classification", async () => {
     loggedInUserId: ownerId,
     isPublic: true,
   });
-  await addClassification(activity4Id, classifyId4, ownerId);
+  await addClassification({
+    contentId: activity4Id,
+    classificationId: classifyId4,
+    loggedInUserId: ownerId,
+  });
 
   // classifyId5
   const { contentId: activity5Id } = await createContent({
@@ -719,7 +771,11 @@ test("searchSharedContent, filter by classification", async () => {
     loggedInUserId: ownerId,
     isPublic: true,
   });
-  await addClassification(activity5Id, classifyId5, ownerId);
+  await addClassification({
+    contentId: activity5Id,
+    classificationId: classifyId5,
+    loggedInUserId: ownerId,
+  });
 
   // unclassified
   const { contentId: activity6Id } = await createContent({
@@ -754,7 +810,11 @@ test("searchSharedContent, filter by classification", async () => {
     loggedInUserId: ownerId,
     isPublic: true,
   });
-  await addClassification(activity7Id, classifyId1, ownerId);
+  await addClassification({
+    contentId: activity7Id,
+    classificationId: classifyId1,
+    loggedInUserId: ownerId,
+  });
 
   // get all six activities with no filtering
   let results = await searchSharedContent({
@@ -1497,8 +1557,16 @@ test("searchUsersWithSharedContent, filter by system, category, sub category, cl
     loggedInUserId: owner2Id,
     isPublic: true,
   });
-  await addClassification(activity2aId, classificationIdFA1, owner2Id);
-  await addClassification(activity2bId, classificationIdFA1, owner2Id);
+  await addClassification({
+    contentId: activity2aId,
+    classificationId: classificationIdFA1,
+    loggedInUserId: owner2Id,
+  });
+  await addClassification({
+    contentId: activity2bId,
+    classificationId: classificationIdFA1,
+    loggedInUserId: owner2Id,
+  });
 
   // owner 3 has a content in classification SD2 and unclassified content
   const { userId: owner3Id } = await createTestUser();
@@ -1528,7 +1596,11 @@ test("searchUsersWithSharedContent, filter by system, category, sub category, cl
     loggedInUserId: owner3Id,
     isPublic: true,
   });
-  await addClassification(activity3aId, classificationIdSD2, owner3Id);
+  await addClassification({
+    contentId: activity3aId,
+    classificationId: classificationIdSD2,
+    loggedInUserId: owner3Id,
+  });
 
   // all three owners found with no filters
   let searchResults = await searchUsersWithSharedContent({
@@ -1885,15 +1957,43 @@ test("searchClassificationsWithSharedContent, returns only classifications with 
   });
 
   // add private, shared, deleted content to classificationIdA1A
-  await addClassification(activityIdPrivate, classificationIdA1A, ownerId);
-  await addClassification(activityIdShared, classificationIdA1A, ownerId);
-  await addClassification(activityIdDeleted, classificationIdA1A, ownerId);
+  await addClassification({
+    contentId: activityIdPrivate,
+    classificationId: classificationIdA1A,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activityIdShared,
+    classificationId: classificationIdA1A,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activityIdDeleted,
+    classificationId: classificationIdA1A,
+    loggedInUserId: ownerId,
+  });
 
   // add public, private, shared, deleted content to classificationIdB2B
-  await addClassification(activityIdPublic, classificationIdB2B, ownerId);
-  await addClassification(activityIdPrivate, classificationIdB2B, ownerId);
-  await addClassification(activityIdShared, classificationIdB2B, ownerId);
-  await addClassification(activityIdDeleted, classificationIdB2B, ownerId);
+  await addClassification({
+    contentId: activityIdPublic,
+    classificationId: classificationIdB2B,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activityIdPrivate,
+    classificationId: classificationIdB2B,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activityIdShared,
+    classificationId: classificationIdB2B,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activityIdDeleted,
+    classificationId: classificationIdB2B,
+    loggedInUserId: ownerId,
+  });
 
   // actually delete the deleted activity
   await deleteContent(activityIdDeleted, ownerId);
@@ -1988,8 +2088,16 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
     isPublic: true,
     loggedInUserId: ownerId,
   });
-  await addClassification(activityId1A, classificationIdA1A, ownerId);
-  await addClassification(activityId1A, classificationIdB1A, ownerId);
+  await addClassification({
+    contentId: activityId1A,
+    classificationId: classificationIdA1A,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activityId1A,
+    classificationId: classificationIdB1A,
+    loggedInUserId: ownerId,
+  });
 
   // add activity 2A to classificationIdA2A, classificationIdB2A
   const { contentId: activityId2A } = await createContent({
@@ -2002,8 +2110,16 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
     isPublic: true,
     loggedInUserId: ownerId,
   });
-  await addClassification(activityId2A, classificationIdA2A, ownerId);
-  await addClassification(activityId2A, classificationIdB2A, ownerId);
+  await addClassification({
+    contentId: activityId2A,
+    classificationId: classificationIdA2A,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activityId2A,
+    classificationId: classificationIdB2A,
+    loggedInUserId: ownerId,
+  });
 
   // add activity 1B to classificationIdA1B, classificationIdB1B
   const { contentId: activityId1B } = await createContent({
@@ -2016,8 +2132,16 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
     isPublic: true,
     loggedInUserId: ownerId,
   });
-  await addClassification(activityId1B, classificationIdA1B, ownerId);
-  await addClassification(activityId1B, classificationIdB1B, ownerId);
+  await addClassification({
+    contentId: activityId1B,
+    classificationId: classificationIdA1B,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activityId1B,
+    classificationId: classificationIdB1B,
+    loggedInUserId: ownerId,
+  });
 
   // add activity 2B to classificationIdA2B, classificationIdB2B
   const { contentId: activityId2B } = await createContent({
@@ -2030,8 +2154,16 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
     isPublic: true,
     loggedInUserId: ownerId,
   });
-  await addClassification(activityId2B, classificationIdA2B, ownerId);
-  await addClassification(activityId2B, classificationIdB2B, ownerId);
+  await addClassification({
+    contentId: activityId2B,
+    classificationId: classificationIdA2B,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activityId2B,
+    classificationId: classificationIdB2B,
+    loggedInUserId: ownerId,
+  });
 
   // add activity A1 to classificationIdA1A, classificationIdA1A
   const { contentId: activityId1 } = await createContent({
@@ -2044,8 +2176,16 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
     isPublic: true,
     loggedInUserId: ownerId,
   });
-  await addClassification(activityId1, classificationIdA1A, ownerId);
-  await addClassification(activityId1, classificationIdA1B, ownerId);
+  await addClassification({
+    contentId: activityId1,
+    classificationId: classificationIdA1A,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activityId1,
+    classificationId: classificationIdA1B,
+    loggedInUserId: ownerId,
+  });
 
   // add activity A2 to classificationIdA2A, classificationIdA2A
   const { contentId: activityIdA2 } = await createContent({
@@ -2058,8 +2198,16 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
     isPublic: true,
     loggedInUserId: ownerId,
   });
-  await addClassification(activityIdA2, classificationIdA2A, ownerId);
-  await addClassification(activityIdA2, classificationIdA2B, ownerId);
+  await addClassification({
+    contentId: activityIdA2,
+    classificationId: classificationIdA2A,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activityIdA2,
+    classificationId: classificationIdA2B,
+    loggedInUserId: ownerId,
+  });
 
   // add activity B1 to classificationIdB1A, classificationIdB1A
   const { contentId: activityIdB1 } = await createContent({
@@ -2072,8 +2220,16 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
     isPublic: true,
     loggedInUserId: ownerId,
   });
-  await addClassification(activityIdB1, classificationIdB1A, ownerId);
-  await addClassification(activityIdB1, classificationIdB1B, ownerId);
+  await addClassification({
+    contentId: activityIdB1,
+    classificationId: classificationIdB1A,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activityIdB1,
+    classificationId: classificationIdB1B,
+    loggedInUserId: ownerId,
+  });
 
   // add activity B2 to classificationIdB2A, classificationIdB2A
   const { contentId: activityIdB2 } = await createContent({
@@ -2086,8 +2242,16 @@ test("searchClassificationsWithSharedContent, filter by system, category, sub ca
     isPublic: true,
     loggedInUserId: ownerId,
   });
-  await addClassification(activityIdB2, classificationIdB2A, ownerId);
-  await addClassification(activityIdB2, classificationIdB2B, ownerId);
+  await addClassification({
+    contentId: activityIdB2,
+    classificationId: classificationIdB2A,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activityIdB2,
+    classificationId: classificationIdB2B,
+    loggedInUserId: ownerId,
+  });
 
   // without filter get all eight classifications, with first determined by second query word
   let resultsClass = await searchClassificationsWithSharedContent({
@@ -2273,10 +2437,26 @@ test("searchClassificationsWithSharedContent, filter by activity feature", async
     isPublic: true,
     loggedInUserId: ownerId,
   });
-  await addClassification(activityIdA1, classificationIdA1A, ownerId);
-  await addClassification(activityIdA2, classificationIdA1A, ownerId);
-  await addClassification(activityIdB1, classificationIdB2B, ownerId);
-  await addClassification(activityIdB2, classificationIdB2B, ownerId);
+  await addClassification({
+    contentId: activityIdA1,
+    classificationId: classificationIdA1A,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activityIdA2,
+    classificationId: classificationIdA1A,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activityIdB1,
+    classificationId: classificationIdB2B,
+    loggedInUserId: ownerId,
+  });
+  await addClassification({
+    contentId: activityIdB2,
+    classificationId: classificationIdB2B,
+    loggedInUserId: ownerId,
+  });
 
   // add single activity feature to three of the activities
   await updateContentFeatures({
@@ -2606,10 +2786,26 @@ test("searchClassificationsWithSharedContent, filter by owner", async () => {
     isPublic: true,
     loggedInUserId: owner3Id,
   });
-  await addClassification(activityIdA1, classificationIdA1A, owner1Id);
-  await addClassification(activityIdA2, classificationIdA1A, owner2Id);
-  await addClassification(activityIdB1, classificationIdB2B, owner2Id);
-  await addClassification(activityIdB2, classificationIdB2B, owner3Id);
+  await addClassification({
+    contentId: activityIdA1,
+    classificationId: classificationIdA1A,
+    loggedInUserId: owner1Id,
+  });
+  await addClassification({
+    contentId: activityIdA2,
+    classificationId: classificationIdA1A,
+    loggedInUserId: owner2Id,
+  });
+  await addClassification({
+    contentId: activityIdB1,
+    classificationId: classificationIdB2B,
+    loggedInUserId: owner2Id,
+  });
+  await addClassification({
+    contentId: activityIdB2,
+    classificationId: classificationIdB2B,
+    loggedInUserId: owner3Id,
+  });
 
   // without filter, get two classifications, sub categories, and categories
   let resultsClass = await searchClassificationsWithSharedContent({
@@ -3041,7 +3237,11 @@ test("searchMyContent, classification matches", async () => {
     await searchPossibleClassifications({ query: "K.CC.1 common core" })
   )[0].id;
 
-  await addClassification(activityId, classifyId, ownerId);
+  await addClassification({
+    contentId: activityId,
+    classificationId: classifyId,
+    loggedInUserId: ownerId,
+  });
   // With code
   searchResults = await searchMyContent({
     parentId: null,
@@ -3115,7 +3315,11 @@ test("searchMyContent in folder, classification matches", async () => {
     await searchPossibleClassifications({ query: "K.CC.1 common core" })
   )[0].id;
 
-  await addClassification(activityId, classifyId, ownerId);
+  await addClassification({
+    contentId: activityId,
+    classificationId: classifyId,
+    loggedInUserId: ownerId,
+  });
   // With code
   searchResults = await searchMyContent({
     parentId: folderId,

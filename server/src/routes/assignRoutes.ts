@@ -19,8 +19,8 @@ export const assignRouter = express.Router();
 assignRouter.use(requireLoggedIn);
 
 assignRouter.get("/getAssigned", async (req: Request, res: Response) => {
-  const loggedInUserId = req.user.userId;
   try {
+    const loggedInUserId = req.user.userId;
     const assignedData = await listUserAssigned(loggedInUserId);
     res.send({
       user: convertUUID(assignedData.user),
@@ -32,8 +32,8 @@ assignRouter.get("/getAssigned", async (req: Request, res: Response) => {
 });
 
 assignRouter.get("/getAssignedScores", async (req: Request, res: Response) => {
-  const loggedInUserId = req.user.userId;
   try {
+    const loggedInUserId = req.user.userId;
     const scoreData = await getAssignedScores(loggedInUserId);
     res.send({
       userData: convertUUID(scoreData.userData),

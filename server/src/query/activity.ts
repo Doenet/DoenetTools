@@ -10,6 +10,7 @@ import { DateTime } from "luxon";
 import { cidFromText } from "../utils/cid";
 import { getContent } from "./activity_edit_view";
 import { compileActivityFromContent } from "../utils/contentStructure";
+import { InvalidRequestError } from "../utils/error";
 
 /**
  * Creates a new content of type `contentType` in `parentId` of `ownerId`,
@@ -231,7 +232,7 @@ export async function updateContent({
     ].every((x) => x === undefined)
   ) {
     // if not information passed in, don't update anything, including `lastEdited`.
-    return false;
+    return;
   }
 
   const isAdmin = await getIsAdmin(loggedInUserId);
@@ -247,7 +248,7 @@ export async function updateContent({
   ).isAssigned;
 
   if (isAssigned && (source !== undefined || doenetmlVersionId !== undefined)) {
-    throw Error("Cannot change assigned content");
+    throw new InvalidRequestError("Cannot change assigned content");
   }
 
   await prisma.content.update({
@@ -268,8 +269,6 @@ export async function updateContent({
       lastEdited: DateTime.now().toJSDate(),
     },
   });
-
-  return true;
 }
 
 /**
@@ -289,7 +288,7 @@ export async function updateContentFeatures({
   features: Record<string, boolean>;
 }) {
   const isAdmin = await getIsAdmin(loggedInUserId);
-  const updated = await prisma.content.update({
+  await prisma.content.update({
     where: { id: contentId, ...filterEditableContent(loggedInUserId, isAdmin) },
     data: {
       contentFeatures: {
@@ -303,10 +302,6 @@ export async function updateContentFeatures({
     },
     select: { id: true },
   });
-
-  return {
-    id: updated.id,
-  };
 }
 
 /**
@@ -364,7 +359,7 @@ export async function getAllDoenetmlVersions() {
       displayedVersion: "asc",
     },
   });
-  return allDoenetmlVersions;
+  return { allDoenetmlVersions };
 }
 
 /**

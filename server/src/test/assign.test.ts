@@ -210,7 +210,7 @@ test("open and close assignment with code", async () => {
 
   // add some data
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: ownerId,
     score: 0.3,
@@ -413,7 +413,7 @@ test("get assignment data from anonymous users", async () => {
   };
 
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.5,
@@ -460,7 +460,7 @@ test("get assignment data from anonymous users", async () => {
 
   // new lower score ignored
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.2,
@@ -510,7 +510,7 @@ test("get assignment data from anonymous users", async () => {
 
   // new higher score used
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.7,
@@ -579,7 +579,7 @@ test("get assignment data from anonymous users", async () => {
 
   // save state for second user
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser2.userId,
     score: 0.3,
@@ -654,7 +654,7 @@ test("can't get assignment data if other user, but student can get their own dat
   });
 
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.5,
@@ -734,7 +734,7 @@ test("can't unassign if have data", async () => {
   });
 
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.5,
@@ -816,7 +816,7 @@ test("list assigned and get assigned scores get student assignments and scores",
 
   // recording score for user1 on assignment2 adds it to user1's assignment list
   await saveScoreAndState({
-    activityId: activityId2,
+    contentId: activityId2,
     activityRevisionNum: 1,
     loggedInUserId: user1Id,
     score: 0.5,
@@ -880,7 +880,7 @@ test("get all assignment data from anonymous user", async () => {
   });
 
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.5,
@@ -910,7 +910,7 @@ test("get all assignment data from anonymous user", async () => {
 
   // new lower score ignored
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.2,
@@ -939,7 +939,7 @@ test("get all assignment data from anonymous user", async () => {
   });
 
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.7,
@@ -1014,7 +1014,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     parentId: baseFolderId,
   });
   await moveContent({
-    id: folder1Id,
+    contentId: folder1Id,
     desiredParentId: baseFolderId,
     desiredPosition: 0,
     loggedInUserId: ownerId,
@@ -1042,7 +1042,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     loggedInUserId: ownerId,
   });
   await moveContent({
-    id: activity2Id,
+    contentId: activity2Id,
     desiredParentId: baseFolderId,
     desiredPosition: 1,
     loggedInUserId: ownerId,
@@ -1071,7 +1071,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   // move activity 1a to right places
   await moveContent({
-    id: activity1aId,
+    contentId: activity1aId,
     desiredParentId: folder1Id,
     desiredPosition: 0,
     loggedInUserId: ownerId,
@@ -1122,7 +1122,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
 
   // after creating its content move folder 1c2 into the right place
   await moveContent({
-    id: folder1c2Id,
+    contentId: folder1c2Id,
     desiredParentId: folder1cId,
     desiredPosition: 1,
     loggedInUserId: ownerId,
@@ -1140,7 +1140,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     loggedInUserId: ownerId,
   });
   await moveContent({
-    id: activity1b,
+    contentId: activity1b,
     desiredParentId: folder1Id,
     desiredPosition: 1,
     loggedInUserId: ownerId,
@@ -1148,7 +1148,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
 
   // move activity 1e to end of folder 1
   await moveContent({
-    id: activity1eId,
+    contentId: activity1eId,
     desiredParentId: folder1Id,
     desiredPosition: 100,
     loggedInUserId: ownerId,
@@ -1265,7 +1265,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
 
   await saveScoreAndState({
-    activityId: activity1aId,
+    contentId: activity1aId,
     activityRevisionNum: 1,
     loggedInUserId: newUserId,
     score: 0.11,
@@ -1273,7 +1273,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     state: "document state 1a",
   });
   await saveScoreAndState({
-    activityId: activity1c1Id,
+    contentId: activity1c1Id,
     activityRevisionNum: 1,
     loggedInUserId: newUserId,
     score: 0.131,
@@ -1281,7 +1281,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     state: "document state 1c1",
   });
   await saveScoreAndState({
-    activityId: activity1c2aId,
+    contentId: activity1c2aId,
     activityRevisionNum: 1,
     loggedInUserId: newUserId,
     score: 0.1321,
@@ -1289,7 +1289,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     state: "document state 1c2a",
   });
   await saveScoreAndState({
-    activityId: activity1c2bId,
+    contentId: activity1c2bId,
     activityRevisionNum: 1,
     loggedInUserId: newUserId,
     score: 0.1322,
@@ -1297,7 +1297,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     state: "document state 1c2b",
   });
   await saveScoreAndState({
-    activityId: activity1eId,
+    contentId: activity1eId,
     activityRevisionNum: 1,
     loggedInUserId: newUserId,
     score: 0.15,
@@ -1305,7 +1305,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     state: "document state 1e",
   });
   await saveScoreAndState({
-    activityId: activity2Id,
+    contentId: activity2Id,
     activityRevisionNum: 1,
     loggedInUserId: newUserId,
     score: 0.2,
@@ -1313,7 +1313,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     state: "document state 2",
   });
   await saveScoreAndState({
-    activityId: activity3bId,
+    contentId: activity3bId,
     activityRevisionNum: 1,
     loggedInUserId: newUserId,
     score: 0.32,
@@ -1321,7 +1321,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     state: "document state 3b",
   });
   await saveScoreAndState({
-    activityId: activityRootId,
+    contentId: activityRootId,
     activityRevisionNum: 1,
     loggedInUserId: newUserId,
     score: 1.0,
@@ -1613,7 +1613,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   });
 
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.5,
@@ -1642,7 +1642,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 
   // new lower score ignored
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.2,
@@ -1683,7 +1683,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   });
 
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser2.userId,
     score: 0.3,
@@ -1692,7 +1692,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   });
 
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.7,
@@ -1758,7 +1758,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   });
 
   await saveScoreAndState({
-    activityId: activity2Id,
+    contentId: activity2Id,
     activityRevisionNum: 1,
     loggedInUserId: newUser3.userId,
     score: 0.9,
@@ -2506,7 +2506,7 @@ test("only user and assignment owner can load document state", async () => {
   const newUser = await createTestAnonymousUser();
 
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser!.userId,
     score: 0.5,
@@ -2516,7 +2516,7 @@ test("only user and assignment owner can load document state", async () => {
 
   // anonymous user can load state
   const retrievedState = await loadState({
-    activityId,
+    contentId: activityId,
     requestedUserId: newUser!.userId,
     loggedInUserId: newUser!.userId,
     withMaxScore: false,
@@ -2526,7 +2526,7 @@ test("only user and assignment owner can load document state", async () => {
 
   // assignment owner can load state
   const retrievedState2 = await loadState({
-    activityId,
+    contentId: activityId,
     requestedUserId: newUser!.userId,
     loggedInUserId: ownerId,
     withMaxScore: false,
@@ -2539,7 +2539,7 @@ test("only user and assignment owner can load document state", async () => {
 
   await expect(
     loadState({
-      activityId,
+      contentId: activityId,
       requestedUserId: newUser!.userId,
       loggedInUserId: user2.userId,
       withMaxScore: false,
@@ -2568,7 +2568,7 @@ test("load document state based on withMaxScore", async () => {
   const newUser = await createTestAnonymousUser();
 
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser!.userId,
     score: 0.5,
@@ -2578,7 +2578,7 @@ test("load document state based on withMaxScore", async () => {
 
   // since last state is maximum score, withMaxScore doesn't have effect
   let retrievedState = await loadState({
-    activityId,
+    contentId: activityId,
     requestedUserId: newUser!.userId,
     loggedInUserId: ownerId,
     withMaxScore: false,
@@ -2586,7 +2586,7 @@ test("load document state based on withMaxScore", async () => {
   expect(retrievedState).eq("document state 1");
 
   retrievedState = await loadState({
-    activityId,
+    contentId: activityId,
     requestedUserId: newUser!.userId,
     loggedInUserId: ownerId,
     withMaxScore: true,
@@ -2595,7 +2595,7 @@ test("load document state based on withMaxScore", async () => {
 
   // last state is no longer maximum score
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser!.userId,
     score: 0.2,
@@ -2605,7 +2605,7 @@ test("load document state based on withMaxScore", async () => {
 
   // get last state if withMaxScore is false
   retrievedState = await loadState({
-    activityId,
+    contentId: activityId,
     requestedUserId: newUser!.userId,
     loggedInUserId: ownerId,
     withMaxScore: false,
@@ -2614,7 +2614,7 @@ test("load document state based on withMaxScore", async () => {
 
   // get state with max score
   retrievedState = await loadState({
-    activityId,
+    contentId: activityId,
     requestedUserId: newUser!.userId,
     loggedInUserId: ownerId,
     withMaxScore: true,
@@ -2623,7 +2623,7 @@ test("load document state based on withMaxScore", async () => {
 
   // matching maximum score with onSubmission uses latest for maximum
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser!.userId,
     score: 0.5,
@@ -2632,7 +2632,7 @@ test("load document state based on withMaxScore", async () => {
   });
 
   retrievedState = await loadState({
-    activityId,
+    contentId: activityId,
     requestedUserId: newUser!.userId,
     loggedInUserId: ownerId,
     withMaxScore: false,
@@ -2640,7 +2640,7 @@ test("load document state based on withMaxScore", async () => {
   expect(retrievedState).eq("document state 3");
 
   retrievedState = await loadState({
-    activityId,
+    contentId: activityId,
     requestedUserId: newUser!.userId,
     loggedInUserId: ownerId,
     withMaxScore: true,
@@ -2649,7 +2649,7 @@ test("load document state based on withMaxScore", async () => {
 
   // matching maximum score without onSubmission does not use latest for maximum
   await saveScoreAndState({
-    activityId,
+    contentId: activityId,
     activityRevisionNum: 1,
     loggedInUserId: newUser!.userId,
     score: 0.5,
@@ -2658,7 +2658,7 @@ test("load document state based on withMaxScore", async () => {
   });
 
   retrievedState = await loadState({
-    activityId,
+    contentId: activityId,
     requestedUserId: newUser!.userId,
     loggedInUserId: ownerId,
     withMaxScore: false,
@@ -2666,7 +2666,7 @@ test("load document state based on withMaxScore", async () => {
   expect(retrievedState).eq("document state 4");
 
   retrievedState = await loadState({
-    activityId,
+    contentId: activityId,
     requestedUserId: newUser!.userId,
     loggedInUserId: ownerId,
     withMaxScore: true,

@@ -1,8 +1,5 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import { requireLoggedIn } from "../middleware/validationMiddleware";
-import { loadStateSchema, scoreAndStateSchema } from "../schemas/scoreSchema";
-import { loadState, saveScoreAndState } from "../query/scores";
-import { handleErrors } from "../errors/routeErrorHandler";
 import {
   addClassification,
   getClassificationCategories,
