@@ -12,8 +12,12 @@ import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { fromUUID } from "../utils/uuid";
 import { getLibraryAccountId } from "./curate";
 import { PartialContentClassification, UserInfo } from "../types";
-import { getAvailableContentFeatures } from "./classification";
+import {
+  getAvailableContentFeatures,
+  getClassificationInfo,
+} from "./classification";
 import { DateTime } from "luxon";
+import { getAuthorInfo } from "./user";
 
 export async function searchSharedContent({
   query,
@@ -2067,4 +2071,383 @@ export async function purgeOldRecentContent() {
         LIMIT 1 OFFSET 99
       ) as sub
     )`);
+}
+
+export async function searchExplore({
+  loggedInUserId = new Uint8Array(16),
+  query,
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+  isUnclassified,
+  features,
+  ownerId,
+}: {
+  loggedInUserId?: Uint8Array;
+  query: string;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+  isUnclassified?: boolean;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+}) {
+  isUnclassified =
+    isUnclassified &&
+    classificationId === undefined &&
+    subCategoryId === undefined &&
+    categoryId === undefined &&
+    systemId === undefined;
+
+  const topAuthors = ownerId
+    ? null
+    : await browseUsersWithSharedContent({
+        query,
+        loggedInUserId,
+        systemId,
+        categoryId,
+        subCategoryId,
+        classificationId,
+        isUnclassified,
+        features,
+        take: 10,
+      });
+
+  const matchedAuthors = ownerId
+    ? null
+    : await searchUsersWithSharedContent({
+        query,
+        loggedInUserId,
+        systemId,
+        categoryId,
+        subCategoryId,
+        classificationId,
+        isUnclassified,
+        features,
+      });
+
+  const authorInfo = ownerId ? await getAuthorInfo(ownerId) : null;
+
+  const content = await searchSharedContent({
+    query,
+    isCurated: false,
+    loggedInUserId,
+    systemId,
+    categoryId,
+    subCategoryId,
+    classificationId,
+    isUnclassified,
+    features,
+    ownerId,
+  });
+
+  const curatedContent = await searchSharedContent({
+    query,
+    isCurated: true,
+    loggedInUserId,
+    systemId,
+    categoryId,
+    subCategoryId,
+    classificationId,
+    isUnclassified,
+    features,
+    ownerId,
+  });
+
+  let matchedClassifications: PartialContentClassification[] | null = null;
+  let matchedSubCategories: PartialContentClassification[] | null = null;
+  let matchedCategories: PartialContentClassification[] | null = null;
+
+  let classificationBrowse: PartialContentClassification[] | null = null;
+  let subCategoryBrowse: PartialContentClassification[] | null = null;
+  let categoryBrowse: PartialContentClassification[] | null = null;
+  let systemBrowse: PartialContentClassification[] | null = null;
+
+  if (!isUnclassified && classificationId === undefined) {
+    matchedClassifications = await searchClassificationsWithSharedContent({
+      query,
+      loggedInUserId,
+      systemId,
+      categoryId,
+      subCategoryId,
+      features,
+      ownerId,
+    });
+
+    if (subCategoryId !== undefined) {
+      classificationBrowse = await browseClassificationsWithSharedContent({
+        query,
+        loggedInUserId,
+        subCategoryId,
+        features,
+        ownerId,
+      });
+    } else {
+      matchedSubCategories =
+        await searchClassificationSubCategoriesWithSharedContent({
+          query,
+          loggedInUserId,
+          systemId,
+          categoryId,
+          features,
+          ownerId,
+        });
+      if (categoryId !== undefined) {
+        subCategoryBrowse =
+          await browseClassificationSubCategoriesWithSharedContent({
+            query,
+            loggedInUserId,
+            categoryId,
+            features,
+            ownerId,
+          });
+      } else {
+        matchedCategories =
+          await searchClassificationCategoriesWithSharedContent({
+            query,
+            loggedInUserId,
+            systemId,
+            features,
+            ownerId,
+          });
+
+        if (systemId !== undefined) {
+          categoryBrowse =
+            await browseClassificationCategoriesWithSharedContent({
+              query,
+              loggedInUserId,
+              systemId,
+              features,
+              ownerId,
+            });
+        } else {
+          systemBrowse = await browseClassificationSystemsWithSharedContent({
+            query,
+            loggedInUserId,
+            features,
+            ownerId,
+          });
+        }
+      }
+    }
+  }
+
+  const classificationInfo: PartialContentClassification | null = isUnclassified
+    ? {}
+    : await getClassificationInfo({
+        systemId,
+        categoryId,
+        subCategoryId,
+        classificationId,
+      });
+
+  const totalCount = await getSharedContentMatchCount({
+    query,
+    loggedInUserId,
+    systemId,
+    categoryId,
+    subCategoryId,
+    classificationId,
+    isUnclassified,
+    features,
+    ownerId,
+  });
+
+  const countByFeature = await getSharedContentMatchCountPerAvailableFeature({
+    query,
+    loggedInUserId,
+    systemId,
+    categoryId,
+    subCategoryId,
+    classificationId,
+    isUnclassified,
+    features,
+    ownerId,
+  });
+
+  return {
+    topAuthors,
+    matchedAuthors,
+    authorInfo,
+    content,
+    curatedContent,
+    matchedClassifications,
+    matchedSubCategories,
+    matchedCategories,
+    classificationBrowse,
+    subCategoryBrowse,
+    categoryBrowse,
+    systemBrowse,
+    classificationInfo,
+    totalCount,
+    countByFeature,
+  };
+}
+
+export async function browseExplore({
+  loggedInUserId = new Uint8Array(16),
+  systemId,
+  categoryId,
+  subCategoryId,
+  classificationId,
+  isUnclassified,
+  features,
+  ownerId,
+}: {
+  loggedInUserId?: Uint8Array;
+  systemId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  classificationId?: number;
+  isUnclassified?: boolean;
+  features?: Set<string>;
+  ownerId?: Uint8Array;
+}) {
+  isUnclassified =
+    isUnclassified &&
+    classificationId === undefined &&
+    subCategoryId === undefined &&
+    categoryId === undefined &&
+    systemId === undefined;
+
+  const topAuthors = ownerId
+    ? null
+    : await browseUsersWithSharedContent({
+        loggedInUserId,
+        systemId,
+        categoryId,
+        subCategoryId,
+        classificationId,
+        isUnclassified,
+        features,
+        take: 10,
+      });
+
+  const authorInfo = ownerId ? await getAuthorInfo(ownerId) : null;
+
+  const recentContent = await browseSharedContent({
+    loggedInUserId,
+    isCurated: false,
+    systemId,
+    categoryId,
+    subCategoryId,
+    classificationId,
+    isUnclassified,
+    features,
+    ownerId,
+  });
+
+  const curatedContent = await browseSharedContent({
+    isCurated: true,
+    loggedInUserId,
+    systemId,
+    categoryId,
+    subCategoryId,
+    classificationId,
+    isUnclassified,
+    features,
+    ownerId,
+  });
+
+  const trendingContent = await browseTrendingContent({
+    loggedInUserId,
+    systemId,
+    categoryId,
+    subCategoryId,
+    classificationId,
+    isUnclassified,
+    features,
+    ownerId,
+    pageSize: 10,
+  });
+
+  let classificationBrowse: PartialContentClassification[] | null = null;
+  let subCategoryBrowse: PartialContentClassification[] | null = null;
+  let categoryBrowse: PartialContentClassification[] | null = null;
+  let systemBrowse: PartialContentClassification[] | null = null;
+
+  if (!isUnclassified && classificationId === undefined) {
+    if (subCategoryId !== undefined) {
+      classificationBrowse = await browseClassificationsWithSharedContent({
+        loggedInUserId,
+        subCategoryId,
+        features,
+        ownerId,
+      });
+    } else {
+      if (categoryId !== undefined) {
+        subCategoryBrowse =
+          await browseClassificationSubCategoriesWithSharedContent({
+            loggedInUserId,
+            categoryId,
+            features,
+            ownerId,
+          });
+      } else {
+        if (systemId !== undefined) {
+          categoryBrowse =
+            await browseClassificationCategoriesWithSharedContent({
+              loggedInUserId,
+              systemId,
+              features,
+              ownerId,
+            });
+        } else {
+          systemBrowse = await browseClassificationSystemsWithSharedContent({
+            loggedInUserId,
+            features,
+            ownerId,
+          });
+        }
+      }
+    }
+  }
+
+  const classificationInfo: PartialContentClassification | null = isUnclassified
+    ? {}
+    : await getClassificationInfo({
+        systemId,
+        categoryId,
+        subCategoryId,
+        classificationId,
+      });
+
+  const totalCount = await getSharedContentMatchCount({
+    loggedInUserId,
+    systemId,
+    categoryId,
+    subCategoryId,
+    classificationId,
+    isUnclassified,
+    features,
+    ownerId,
+  });
+
+  const countByFeature = await getSharedContentMatchCountPerAvailableFeature({
+    loggedInUserId,
+    systemId,
+    categoryId,
+    subCategoryId,
+    classificationId,
+    isUnclassified,
+    features,
+    ownerId,
+  });
+
+  return {
+    topAuthors,
+    authorInfo,
+    recentContent,
+    trendingContent,
+    curatedContent,
+    classificationBrowse,
+    subCategoryBrowse,
+    categoryBrowse,
+    systemBrowse,
+    classificationInfo,
+    totalCount,
+    countByFeature,
+  };
 }
