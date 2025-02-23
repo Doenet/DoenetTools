@@ -121,8 +121,12 @@ test("copy folder", async () => {
 
     let folderResults = await getMyContent({
       parentId: folderNewId,
+      ownerId: userId,
       loggedInUserId: userId,
     });
+    if (folderResults.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(folderResults.content.length).eq(1);
     expect(folderResults.content[0].name).eq("Base folder");
 
@@ -130,9 +134,12 @@ test("copy folder", async () => {
 
     folderResults = await getMyContent({
       parentId: folderNew0Id,
+      ownerId: userId,
       loggedInUserId: userId,
     });
-
+    if (folderResults.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(folderResults.content.length).eq(2);
     expect(folderResults.content[0].name).eq("Activity 1");
     expect(folderResults.content[1].name).eq("Folder 1");
@@ -140,9 +147,12 @@ test("copy folder", async () => {
     const folderNew1Id = folderResults.content[1].id;
     folderResults = await getMyContent({
       parentId: folderNew1Id,
+      ownerId: userId,
       loggedInUserId: userId,
     });
-
+    if (folderResults.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(folderResults.content.length).eq(2);
     expect(folderResults.content[0].name).eq("Activity 2");
     expect(folderResults.content[1].name).eq("Folder 2");
@@ -150,9 +160,12 @@ test("copy folder", async () => {
     const folderNew2Id = folderResults.content[1].id;
     folderResults = await getMyContent({
       parentId: folderNew2Id,
+      ownerId: userId,
       loggedInUserId: userId,
     });
-
+    if (folderResults.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(folderResults.content.length).eq(2);
     expect(folderResults.content[0].name).eq("Activity 3");
     expect(folderResults.content[1].name).eq("Folder 3");
@@ -264,19 +277,26 @@ test("copy problem set", async () => {
   expect(result.newContentIds.length).eq(1);
 
   let folderResults = await getMyContent({
+    ownerId,
     parentId: folderNewBaseId,
     loggedInUserId: ownerId,
   });
+  if (folderResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(folderResults.content.length).eq(1);
   expect(folderResults.content[0].name).eq("Problem set");
 
   const folderNew0Id = folderResults.content[0].id;
 
   folderResults = await getMyContent({
+    ownerId,
     parentId: folderNew0Id,
     loggedInUserId: ownerId,
   });
-
+  if (folderResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(folderResults.content.length).eq(3);
   expect(folderResults.content[0].name).eq("Question 1");
   expect(folderResults.content[1].name).eq("Question bank 2");
@@ -286,19 +306,25 @@ test("copy problem set", async () => {
   let folderNewQB3Id = folderResults.content[2].id;
 
   folderResults = await getMyContent({
+    ownerId,
     parentId: folderNewQB2Id,
     loggedInUserId: ownerId,
   });
-
+  if (folderResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(folderResults.content.length).eq(2);
   expect(folderResults.content[0].name).eq("Question 2A");
   expect(folderResults.content[1].name).eq("Question 2B");
 
   folderResults = await getMyContent({
+    ownerId,
     parentId: folderNewQB3Id,
     loggedInUserId: ownerId,
   });
-
+  if (folderResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(folderResults.content.length).eq(2);
   expect(folderResults.content[0].name).eq("Question 3A");
   expect(folderResults.content[1].name).eq("Question 3B");
@@ -319,9 +345,13 @@ test("copy problem set", async () => {
   expect(result2.newContentIds.length).eq(3);
 
   folderResults = await getMyContent({
+    ownerId,
     parentId: folderNewProblemSetId,
     loggedInUserId: ownerId,
   });
+  if (folderResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(folderResults.content.length).eq(3);
   expect(folderResults.content[0].name).eq("Question 1");
   expect(folderResults.content[1].name).eq("Question bank 2");
@@ -331,19 +361,25 @@ test("copy problem set", async () => {
   folderNewQB3Id = folderResults.content[2].id;
 
   folderResults = await getMyContent({
+    ownerId,
     parentId: folderNewQB2Id,
     loggedInUserId: ownerId,
   });
-
+  if (folderResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(folderResults.content.length).eq(2);
   expect(folderResults.content[0].name).eq("Question 2A");
   expect(folderResults.content[1].name).eq("Question 2B");
 
   folderResults = await getMyContent({
+    ownerId,
     parentId: folderNewQB3Id,
     loggedInUserId: ownerId,
   });
-
+  if (folderResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(folderResults.content.length).eq(2);
   expect(folderResults.content[0].name).eq("Question 3A");
   expect(folderResults.content[1].name).eq("Question 3B");
@@ -364,9 +400,13 @@ test("copy problem set", async () => {
   expect(result3.newContentIds.length).eq(5);
 
   folderResults = await getMyContent({
+    ownerId,
     parentId: folderNewQuestionBankId,
     loggedInUserId: ownerId,
   });
+  if (folderResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(folderResults.content.length).eq(5);
   expect(folderResults.content[0].name).eq("Question 1");
   expect(folderResults.content[1].name).eq("Question 2A");

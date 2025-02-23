@@ -91,10 +91,15 @@ test("New activity starts out private, then delete it", async () => {
   expect(activityContent).toStrictEqual(expectedContent);
 
   const data = await getMyContent({
+    ownerId: userId,
     loggedInUserId: userId,
     parentId: null,
   });
 
+  if (data.notMe) {
+    throw Error("shouldn't happen");
+  }
+  expect(data.content).toBeDefined();
   expect(data.content.length).toBe(1);
   expect(data.content[0].isPublic).eq(false);
   expect(data.content[0].assignmentInfo).eq(undefined);
@@ -106,10 +111,14 @@ test("New activity starts out private, then delete it", async () => {
   ).rejects.toThrow(InvalidRequestError);
 
   const dataAfterDelete = await getMyContent({
+    ownerId: userId,
     loggedInUserId: userId,
     parentId: null,
   });
 
+  if (dataAfterDelete.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(dataAfterDelete.content.length).toBe(0);
 });
 
@@ -492,7 +501,11 @@ test("activity editor data and my folder contents before and after assigned", as
   let folderData = await getMyContent({
     parentId: null,
     loggedInUserId: ownerId,
+    ownerId,
   });
+  if (folderData.notMe) {
+    throw Error("shouldn't happen");
+  }
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
@@ -542,10 +555,14 @@ test("activity editor data and my folder contents before and after assigned", as
 
   // get my folder content returns same data, with differences in some optional fields
   folderData = await getMyContent({
+    ownerId,
     parentId: null,
     loggedInUserId: ownerId,
   });
   delete expectedData.revisionNum;
+  if (folderData.notMe) {
+    throw Error("shouldn't happen");
+  }
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
@@ -581,9 +598,13 @@ test("activity editor data and my folder contents before and after assigned", as
 
   // get my folder content returns same data
   folderData = await getMyContent({
+    ownerId,
     parentId: null,
     loggedInUserId: ownerId,
   });
+  if (folderData.notMe) {
+    throw Error("shouldn't happen");
+  }
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
@@ -635,10 +656,14 @@ test("activity editor data and my folder contents before and after assigned", as
 
   // get my folder content returns same data, with differences in some optional fields
   folderData = await getMyContent({
+    ownerId,
     parentId: null,
     loggedInUserId: ownerId,
   });
   delete expectedData.revisionNum;
+  if (folderData.notMe) {
+    throw Error("shouldn't happen");
+  }
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
@@ -689,10 +714,14 @@ test("activity editor data and my folder contents before and after assigned", as
 
   // get my folder content returns same data, with differences in some optional fields
   folderData = await getMyContent({
+    ownerId,
     parentId: null,
     loggedInUserId: ownerId,
   });
   delete expectedData.revisionNum;
+  if (folderData.notMe) {
+    throw Error("shouldn't happen");
+  }
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
@@ -736,10 +765,14 @@ test("activity editor data and my folder contents before and after assigned", as
 
   // get my folder content returns same data, with differences in some optional fields
   folderData = await getMyContent({
+    ownerId,
     parentId: null,
     loggedInUserId: ownerId,
   });
   delete expectedData.revisionNum;
+  if (folderData.notMe) {
+    throw Error("shouldn't happen");
+  }
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 

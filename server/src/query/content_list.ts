@@ -12,15 +12,39 @@ import {
 } from "../utils/classificationsFeatures";
 import { fromUUID, isEqualUUID } from "../utils/uuid";
 import { recordContentView } from "./explore";
+import { getAllDoenetmlVersions } from "./activity";
+import { getAllLicenses } from "./share";
 
 export async function getMyContent({
+  ownerId,
   parentId,
   loggedInUserId,
-  isLibrary = false,
+}: {
+  ownerId: Uint8Array;
+  parentId: Uint8Array | null;
+  loggedInUserId?: Uint8Array;
+}) {
+  if (!loggedInUserId || !isEqualUUID(ownerId, loggedInUserId)) {
+    return { notMe: true as const };
+  }
+  return await getMyContentOrLibraryContent({
+    parentId,
+    loggedInUserId,
+    isLibrary: false,
+  });
+}
+
+/**
+ * NOTE: This function does not nicely handle invalid permissions. Use {@link getMyContent} or {@link getCurationFolderContent} instead for API calls - they both call this function.
+ */
+async function getMyContentOrLibraryContent({
+  parentId,
+  loggedInUserId,
+  isLibrary,
 }: {
   parentId: Uint8Array | null;
   loggedInUserId: Uint8Array;
-  isLibrary?: boolean;
+  isLibrary: boolean;
 }) {
   const ownerId = isLibrary ? await getLibraryAccountId() : loggedInUserId;
 
@@ -57,25 +81,56 @@ export async function getMyContent({
   //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
   const content: Content[] = preliminaryContent.map(processContent);
 
+  //TODO: Does this API need to provide this extra data?
   const availableFeatures = await getAvailableContentFeatures();
+  const allDoenetmlVersions = await getAllDoenetmlVersions();
+  const allLicenses = await getAllLicenses();
 
   return {
     content,
     folder,
     availableFeatures,
+    allDoenetmlVersions,
+    allLicenses,
+    notMe: false as const,
   };
 }
 
 export async function searchMyContent({
+  ownerId,
   parentId,
   loggedInUserId,
   query,
-  inLibrary = false, // Not to be exposed in API call
+}: {
+  ownerId: Uint8Array;
+  parentId: Uint8Array | null;
+  loggedInUserId?: Uint8Array;
+  query: string;
+}) {
+  if (!loggedInUserId || !isEqualUUID(ownerId, loggedInUserId)) {
+    return { notMe: true as const };
+  }
+  return await searchMyContentOrLibraryContent({
+    parentId,
+    loggedInUserId,
+    query,
+    inLibrary: false,
+  });
+}
+
+/**
+ * NOTE: This function does not nicely handle invalid permissions. Use {@link searchMyContent} or {@link searchCurationContent} instead for API calls - they both call this function.
+ */
+async function searchMyContentOrLibraryContent({
+  parentId,
+  loggedInUserId,
+  query,
+  inLibrary,
 }: {
   parentId: Uint8Array | null;
   loggedInUserId: Uint8Array;
   query: string;
-  inLibrary?: boolean;
+  inLibrary: boolean;
 }) {
   let ownerId = loggedInUserId;
   if (inLibrary) {
@@ -173,23 +228,29 @@ export async function searchMyContent({
     //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
     .map(processContent);
 
+  //TODO: Do we need this extra data in this API?
   const availableFeatures = await getAvailableContentFeatures();
+  const allDoenetmlVersions = await getAllDoenetmlVersions();
+  const allLicenses = await getAllLicenses();
 
   return {
     content,
     folder,
     availableFeatures,
+    allDoenetmlVersions,
+    allLicenses,
+    notMe: false as const,
   };
 }
 
 export async function getSharedContent({
   ownerId,
   parentId,
-  loggedInUserId,
+  loggedInUserId = new Uint8Array(16),
 }: {
   ownerId: Uint8Array;
   parentId: Uint8Array | null;
-  loggedInUserId: Uint8Array;
+  loggedInUserId?: Uint8Array;
 }) {
   let folder: Content | null = null;
 
@@ -292,10 +353,17 @@ export async function getSharedContent({
   };
 }
 
-export async function setPreferredFolderView(
-  loggedInUserId: Uint8Array,
-  cardView: boolean,
-) {
+export async function setPreferredFolderView({
+  loggedInUserId,
+  cardView,
+}: {
+  loggedInUserId?: Uint8Array;
+  cardView: boolean;
+}) {
+  if (!loggedInUserId) {
+    // if not signed in, then don't set anything and report back their choice
+    return { cardView };
+  }
   return await prisma.users.update({
     where: { userId: loggedInUserId },
     data: { cardView },
@@ -303,7 +371,16 @@ export async function setPreferredFolderView(
   });
 }
 
-export async function getPreferredFolderView(loggedInUserId: Uint8Array) {
+export async function getPreferredFolderView({
+  loggedInUserId,
+}: {
+  loggedInUserId?: Uint8Array;
+}) {
+  if (!loggedInUserId) {
+    // if not signed in, just have the default behavior
+    return { cardView: false };
+  }
+
   return await prisma.users.findUniqueOrThrow({
     where: { userId: loggedInUserId },
     select: { cardView: true },

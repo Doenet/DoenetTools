@@ -127,9 +127,13 @@ test("getMyContent returns both public and private content, getSharedFolderConte
   });
 
   let ownerContent = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: null,
   });
+  if (ownerContent.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(ownerContent.folder).eq(null);
   expect(ownerContent.content.length).eq(4);
   expect(ownerContent).toMatchObject({
@@ -186,9 +190,13 @@ test("getMyContent returns both public and private content, getSharedFolderConte
   });
 
   ownerContent = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: publicFolder1Id,
   });
+  if (ownerContent.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(ownerContent.folder?.id).eqls(publicFolder1Id);
   expect(ownerContent.folder?.parent).eq(null);
   expect(ownerContent.content.length).eq(2);
@@ -240,18 +248,23 @@ test("getMyContent returns both public and private content, getSharedFolderConte
     ]),
   });
 
-  // If other user tries to access folder, throws error
-  await expect(
-    getMyContent({
+  // If other user tries to access folder, sets notMe
+  expect(
+    await getMyContent({
+      ownerId,
       loggedInUserId: userId,
       parentId: publicFolder1Id,
     }),
-  ).rejects.toThrow(PrismaClientKnownRequestError);
+  ).eqls({ notMe: true });
 
   ownerContent = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: privateFolder1Id,
   });
+  if (ownerContent.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(ownerContent.folder?.id).eqls(privateFolder1Id);
   expect(ownerContent.folder?.parent).eq(null);
   expect(ownerContent.content.length).eq(4);
@@ -316,18 +329,22 @@ test("getMyContent returns both public and private content, getSharedFolderConte
     }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
-  // If other user tries to access folder, throws error
-  await expect(
-    getMyContent({
-      loggedInUserId: userId,
-      parentId: privateFolder1Id,
-    }),
-  ).rejects.toThrow(PrismaClientKnownRequestError);
+  // If other user tries to access folder, set notMe
+  const noContent = await getMyContent({
+    ownerId,
+    loggedInUserId: userId,
+    parentId: privateFolder1Id,
+  });
+  expect(noContent).eqls({ notMe: true });
 
   ownerContent = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: publicFolder3Id,
   });
+  if (ownerContent.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(ownerContent.folder?.id).eqls(publicFolder3Id);
   expect(ownerContent.folder?.parent?.id).eqls(privateFolder1Id);
   expect(ownerContent.content.length).eq(0);
@@ -341,13 +358,13 @@ test("getMyContent returns both public and private content, getSharedFolderConte
   expect(publicContent.folder?.parent).eq(null);
   expect(publicContent.content.length).eq(0);
 
-  // If other user tries to access folder, throws error
-  await expect(
-    getMyContent({
-      loggedInUserId: userId,
-      parentId: publicFolder3Id,
-    }),
-  ).rejects.toThrow(PrismaClientKnownRequestError);
+  // If other user tries to access folder, sets notMe
+  const noContent2 = await getMyContent({
+    ownerId,
+    loggedInUserId: userId,
+    parentId: publicFolder3Id,
+  });
+  expect(noContent2).eqls({ notMe: true });
 });
 
 test(
@@ -482,9 +499,13 @@ test(
     });
 
     let ownerContent = await getMyContent({
+      ownerId,
       loggedInUserId: ownerId,
       parentId: null,
     });
+    if (ownerContent.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(ownerContent.folder).eq(null);
     expect(ownerContent.content.length).eq(4);
     expect(ownerContent).toMatchObject({
@@ -576,9 +597,13 @@ test(
     expect(sharedContent.content.length).eq(0);
 
     ownerContent = await getMyContent({
+      ownerId,
       loggedInUserId: ownerId,
       parentId: sharedFolder1Id,
     });
+    if (ownerContent.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(ownerContent.folder?.id).eqls(sharedFolder1Id);
     expect(ownerContent.folder?.parent).eq(null);
     expect(ownerContent.content.length).eq(2);
@@ -661,17 +686,22 @@ test(
     ).rejects.toThrow(PrismaClientKnownRequestError);
 
     // If other user tries to access folder via my folder, throws error
-    await expect(
-      getMyContent({
-        loggedInUserId: user1Id,
-        parentId: sharedFolder1Id,
-      }),
-    ).rejects.toThrow(PrismaClientKnownRequestError);
+    const noContent = await getMyContent({
+      ownerId,
+      loggedInUserId: user1Id,
+      parentId: sharedFolder1Id,
+    });
+
+    expect(noContent).eqls({ notMe: true });
 
     ownerContent = await getMyContent({
+      ownerId,
       loggedInUserId: ownerId,
       parentId: privateFolder1Id,
     });
+    if (ownerContent.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(ownerContent.folder?.id).eqls(privateFolder1Id);
     expect(ownerContent.folder?.parent).eq(null);
     expect(ownerContent.content.length).eq(4);
@@ -740,18 +770,23 @@ test(
       }),
     ).rejects.toThrow(PrismaClientKnownRequestError);
 
-    // If other user tries to access folder, throws error
-    await expect(
-      getMyContent({
-        loggedInUserId: user1Id,
-        parentId: privateFolder1Id,
-      }),
-    ).rejects.toThrow(PrismaClientKnownRequestError);
+    // If other user tries to access folder, sets notMe
+
+    const noContent2 = await getMyContent({
+      ownerId,
+      loggedInUserId: user1Id,
+      parentId: privateFolder1Id,
+    });
+    expect(noContent2).eqls({ notMe: true });
 
     ownerContent = await getMyContent({
+      ownerId,
       loggedInUserId: ownerId,
       parentId: sharedFolder3Id,
     });
+    if (ownerContent.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(ownerContent.folder?.id).eqls(sharedFolder3Id);
     expect(ownerContent.folder?.parent?.id).eqls(privateFolder1Id);
     expect(ownerContent.content.length).eq(0);
@@ -766,12 +801,12 @@ test(
     expect(sharedContent.content.length).eq(0);
 
     // If other user tries to access folder, throws error
-    await expect(
-      getMyContent({
-        loggedInUserId: user1Id,
-        parentId: sharedFolder3Id,
-      }),
-    ).rejects.toThrow(PrismaClientKnownRequestError);
+    const noContent3 = await getMyContent({
+      ownerId,
+      loggedInUserId: user1Id,
+      parentId: sharedFolder3Id,
+    });
+    expect(noContent3).eqls({ notMe: true });
   },
 );
 
@@ -847,39 +882,67 @@ test(
 
     // items can be retrieved
     let baseContent = await getMyContent({
+      ownerId: userId,
       loggedInUserId: userId,
       parentId: null,
     });
+    if (baseContent.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(baseContent.content.length).eq(2);
     const folder1Content = await getMyContent({
+      ownerId: userId,
       loggedInUserId: userId,
       parentId: folder1Id,
     });
+    if (folder1Content.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(folder1Content.content.length).eq(2);
     const folder2Content = await getMyContent({
+      ownerId: userId,
       loggedInUserId: userId,
       parentId: folder2Id,
     });
+    if (folder2Content.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(folder2Content.content.length).eq(2);
     const folder3Content = await getMyContent({
+      ownerId: userId,
       loggedInUserId: userId,
       parentId: folder3Id,
     });
+    if (folder3Content.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(folder3Content.content.length).eq(1);
     let folder4Content = await getMyContent({
+      ownerId: userId,
       loggedInUserId: userId,
       parentId: folder4Id,
     });
+    if (folder4Content.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(folder4Content.content.length).eq(2);
     let folder5Content = await getMyContent({
+      ownerId: userId,
       loggedInUserId: userId,
       parentId: folder5Id,
     });
+    if (folder5Content.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(folder5Content.content.length).eq(2);
     let folder6Content = await getMyContent({
+      ownerId: userId,
       loggedInUserId: userId,
       parentId: folder6Id,
     });
+    if (folder6Content.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(folder6Content.content.length).eq(1);
 
     await getContent({ contentId: activity1Id, loggedInUserId: userId });
@@ -893,42 +956,61 @@ test(
     await deleteContent(folder1Id, userId);
 
     baseContent = await getMyContent({
+      ownerId: userId,
       loggedInUserId: userId,
       parentId: null,
     });
+    if (baseContent.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(baseContent.content.length).eq(1);
     await expect(
       getMyContent({
+        ownerId: userId,
         loggedInUserId: userId,
         parentId: folder1Id,
       }),
     ).rejects.toThrow(PrismaClientKnownRequestError);
     await expect(
       getMyContent({
+        ownerId: userId,
         loggedInUserId: userId,
         parentId: folder2Id,
       }),
     ).rejects.toThrow(PrismaClientKnownRequestError);
     await expect(
       getMyContent({
+        ownerId: userId,
         loggedInUserId: userId,
         parentId: folder3Id,
       }),
     ).rejects.toThrow(PrismaClientKnownRequestError);
     folder4Content = await getMyContent({
+      ownerId: userId,
       loggedInUserId: userId,
       parentId: folder4Id,
     });
+    if (folder4Content.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(folder4Content.content.length).eq(2);
     folder5Content = await getMyContent({
+      ownerId: userId,
       loggedInUserId: userId,
       parentId: folder5Id,
     });
+    if (folder5Content.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(folder5Content.content.length).eq(2);
     folder6Content = await getMyContent({
+      ownerId: userId,
       loggedInUserId: userId,
       parentId: folder6Id,
     });
+    if (folder6Content.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(folder6Content.content.length).eq(1);
 
     await expect(
@@ -948,23 +1030,33 @@ test(
     await deleteContent(folder5Id, userId);
 
     baseContent = await getMyContent({
+      ownerId: userId,
       loggedInUserId: userId,
       parentId: null,
     });
+    if (baseContent.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(baseContent.content.length).eq(1);
     folder4Content = await getMyContent({
+      ownerId: userId,
       loggedInUserId: userId,
       parentId: folder4Id,
     });
+    if (folder4Content.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(folder4Content.content.length).eq(1);
     await expect(
       getMyContent({
+        ownerId: userId,
         loggedInUserId: userId,
         parentId: folder5Id,
       }),
     ).rejects.toThrow(PrismaClientKnownRequestError);
     await expect(
       getMyContent({
+        ownerId: userId,
         loggedInUserId: userId,
         parentId: folder6Id,
       }),
@@ -997,6 +1089,7 @@ test("non-owner cannot delete folder", async () => {
 
   // folder is still around
   getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: folderId,
   });
@@ -1037,22 +1130,29 @@ test("move content to different locations", async () => {
   });
 
   let baseContent = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: null,
   });
   let folder1Content = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: folder1Id,
   });
   let folder2Content = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: folder2Id,
   });
   let folder3Content = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: folder3Id,
   });
 
+  if (baseContent.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(baseContent.content.map((item) => item.id)).eqls([
     activity1Id,
     activity2Id,
@@ -1060,11 +1160,20 @@ test("move content to different locations", async () => {
     folder3Id,
   ]);
 
+  if (folder1Content.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(folder1Content.content.map((item) => item.id)).eqls([
     activity3Id,
     folder2Id,
   ]);
+  if (folder2Content.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(folder2Content.content.map((item) => item.id)).eqls([]);
+  if (folder3Content.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(folder3Content.content.map((item) => item.id)).eqls([]);
 
   await moveContent({
@@ -1074,9 +1183,13 @@ test("move content to different locations", async () => {
     loggedInUserId: ownerId,
   });
   baseContent = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: null,
   });
+  if (baseContent.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(baseContent.content.map((item) => item.id)).eqls([
     activity2Id,
     activity1Id,
@@ -1091,9 +1204,13 @@ test("move content to different locations", async () => {
     loggedInUserId: ownerId,
   });
   baseContent = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: null,
   });
+  if (baseContent.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder1Id,
     activity2Id,
@@ -1108,9 +1225,13 @@ test("move content to different locations", async () => {
     loggedInUserId: ownerId,
   });
   baseContent = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: null,
   });
+  if (baseContent.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder1Id,
     activity1Id,
@@ -1125,9 +1246,13 @@ test("move content to different locations", async () => {
     loggedInUserId: ownerId,
   });
   baseContent = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: null,
   });
+  if (baseContent.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder3Id,
     folder1Id,
@@ -1142,18 +1267,26 @@ test("move content to different locations", async () => {
     loggedInUserId: ownerId,
   });
   baseContent = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: null,
   });
   folder1Content = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: folder1Id,
   });
+  if (baseContent.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder1Id,
     activity1Id,
     activity2Id,
   ]);
+  if (folder1Content.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(folder1Content.content.map((item) => item.id)).eqls([
     folder3Id,
     activity3Id,
@@ -1167,19 +1300,27 @@ test("move content to different locations", async () => {
     loggedInUserId: ownerId,
   });
   baseContent = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: null,
   });
   folder1Content = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: folder1Id,
   });
+  if (baseContent.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder1Id,
     activity1Id,
     activity3Id,
     activity2Id,
   ]);
+  if (folder1Content.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(folder1Content.content.map((item) => item.id)).eqls([
     folder3Id,
     folder2Id,
@@ -1192,14 +1333,22 @@ test("move content to different locations", async () => {
     loggedInUserId: ownerId,
   });
   folder1Content = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: folder1Id,
   });
   folder3Content = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: folder3Id,
   });
+  if (folder1Content.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(folder1Content.content.map((item) => item.id)).eqls([folder3Id]);
+  if (folder3Content.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(folder3Content.content.map((item) => item.id)).eqls([folder2Id]);
 
   await moveContent({
@@ -1215,22 +1364,34 @@ test("move content to different locations", async () => {
     loggedInUserId: ownerId,
   });
   baseContent = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: null,
   });
   folder2Content = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: folder2Id,
   });
   folder3Content = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: folder3Id,
   });
+  if (baseContent.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(baseContent.content.map((item) => item.id)).eqls([
     folder1Id,
     activity2Id,
   ]);
+  if (folder2Content.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(folder2Content.content.map((item) => item.id)).eqls([activity1Id]);
+  if (folder3Content.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(folder3Content.content.map((item) => item.id)).eqls([
     activity3Id,
     folder2Id,
@@ -1392,9 +1553,13 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
   }
 
   let contentList = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: null,
   });
+  if (contentList.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(contentList.content.map((item) => item.id)).eqls([
     activity1Id,
     activity2Id,
@@ -1422,9 +1587,13 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
   });
 
   contentList = await getMyContent({
+    ownerId,
     loggedInUserId: ownerId,
     parentId: null,
   });
+  if (contentList.notMe) {
+    throw Error("shouldn't happen");
+  }
   expect(contentList.content.map((item) => item.id)).eqls([
     activity1Id,
     activity2Id,
@@ -1737,13 +1906,16 @@ test("set and get preferred folder view", async () => {
   const user = await createTestUser();
   const userId = user.userId;
 
-  let result = await getPreferredFolderView(userId);
+  let result = await getPreferredFolderView({ loggedInUserId: userId });
   expect(result).eqls({ cardView: false });
 
-  result = await setPreferredFolderView(userId, true);
+  result = await setPreferredFolderView({
+    loggedInUserId: userId,
+    cardView: true,
+  });
   expect(result).eqls({ cardView: true });
 
-  result = await getPreferredFolderView(userId);
+  result = await getPreferredFolderView({ loggedInUserId: userId });
   expect(result).eqls({ cardView: true });
 });
 

@@ -3034,10 +3034,14 @@ test(
     });
 
     let searchResults = await searchMyContent({
+      ownerId,
       parentId: null,
       loggedInUserId: ownerId,
       query: "first",
     });
+    if (searchResults.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(searchResults.folder).eq(null);
     let content = searchResults.content;
     expect(content.length).eq(3);
@@ -3055,10 +3059,14 @@ test(
     ]);
 
     searchResults = await searchMyContent({
+      ownerId,
       parentId: baseFolderId,
       loggedInUserId: ownerId,
       query: "first",
     });
+    if (searchResults.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(baseFolderId));
     content = searchResults.content;
     expect(content.length).eq(2);
@@ -3075,10 +3083,14 @@ test(
     ]);
 
     searchResults = await searchMyContent({
+      ownerId,
       parentId: folder1Id,
       loggedInUserId: ownerId,
       query: "first",
     });
+    if (searchResults.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(folder1Id));
     content = searchResults.content;
     expect(content.length).eq(1);
@@ -3092,19 +3104,27 @@ test(
     ).eqls([{ id: fromUUID(activity1aId), parentId: fromUUID(folder1Id) }]);
 
     searchResults = await searchMyContent({
+      ownerId,
       parentId: folder1cId,
       loggedInUserId: ownerId,
       query: "first",
     });
+    if (searchResults.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(folder1cId));
     content = searchResults.content;
     expect(content.length).eq(0);
 
     searchResults = await searchMyContent({
+      ownerId,
       parentId: null,
       loggedInUserId: ownerId,
       query: "activity",
     });
+    if (searchResults.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(searchResults.folder).eq(null);
     content = searchResults.content;
     expect(content.length).eq(3);
@@ -3122,10 +3142,14 @@ test(
     ]);
 
     searchResults = await searchMyContent({
+      ownerId,
       parentId: baseFolderId,
       loggedInUserId: ownerId,
       query: "activity",
     });
+    if (searchResults.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(baseFolderId));
     content = searchResults.content;
     expect(content.length).eq(2);
@@ -3142,10 +3166,14 @@ test(
     ]);
 
     searchResults = await searchMyContent({
+      ownerId,
       parentId: folder1Id,
       loggedInUserId: ownerId,
       query: "activity",
     });
+    if (searchResults.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(folder1Id));
     content = searchResults.content;
     expect(content.length).eq(1);
@@ -3159,10 +3187,14 @@ test(
     ).eqls([{ id: fromUUID(activity1aId), parentId: fromUUID(folder1Id) }]);
 
     searchResults = await searchMyContent({
+      ownerId,
       parentId: folder1cId,
       loggedInUserId: ownerId,
       query: "activity",
     });
+    if (searchResults.notMe) {
+      throw Error("shouldn't happen");
+    }
     expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(folder1cId));
     content = searchResults.content;
     expect(content.length).eq(0);
@@ -3190,28 +3222,40 @@ test("searchMyContent, document source matches", async () => {
 
   // apple doesn't hit
   let searchResults = await searchMyContent({
+    ownerId,
     parentId: null,
     loggedInUserId: ownerId,
     query: "apple",
   });
+  if (searchResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   let content = searchResults.content;
   expect(content.length).eq(0);
 
   // first part of a word hits
   searchResults = await searchMyContent({
+    ownerId,
     parentId: null,
     loggedInUserId: ownerId,
     query: "bana",
   });
+  if (searchResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   content = searchResults.content;
   expect(content.length).eq(1);
 
   // full word hits
   searchResults = await searchMyContent({
+    ownerId,
     parentId: null,
     loggedInUserId: ownerId,
     query: "bananas",
   });
+  if (searchResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   content = searchResults.content;
   expect(content.length).eq(1);
 });
@@ -3226,10 +3270,14 @@ test("searchMyContent, classification matches", async () => {
   });
 
   let searchResults = await searchMyContent({
+    ownerId,
     parentId: null,
     loggedInUserId: ownerId,
     query: "K.CC.1 comMMon cOREe",
   });
+  if (searchResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   let content = searchResults.content;
   expect(content.length).eq(0);
 
@@ -3244,46 +3292,66 @@ test("searchMyContent, classification matches", async () => {
   });
   // With code
   searchResults = await searchMyContent({
+    ownerId,
     parentId: null,
     loggedInUserId: ownerId,
     query: "K.C",
   });
+  if (searchResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   content = searchResults.content;
   expect(content.length).eq(1);
 
   // With both
   searchResults = await searchMyContent({
+    ownerId,
     parentId: null,
     loggedInUserId: ownerId,
     query: "common C.1",
   });
+  if (searchResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   content = searchResults.content;
   expect(content.length).eq(1);
 
   // With category
   searchResults = await searchMyContent({
+    ownerId,
     parentId: null,
     loggedInUserId: ownerId,
     query: "kinder",
   });
+  if (searchResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   content = searchResults.content;
   expect(content.length).eq(1);
 
   // With subcategory
   searchResults = await searchMyContent({
+    ownerId,
     parentId: null,
     loggedInUserId: ownerId,
     query: "cardinality",
   });
+  if (searchResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   content = searchResults.content;
   expect(content.length).eq(1);
 
   // With description
   searchResults = await searchMyContent({
+    ownerId,
     parentId: null,
     loggedInUserId: ownerId,
     query: "tens",
   });
+  if (searchResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   content = searchResults.content;
   expect(content.length).eq(1);
 });
@@ -3304,10 +3372,14 @@ test("searchMyContent in folder, classification matches", async () => {
   });
 
   let searchResults = await searchMyContent({
+    ownerId,
     parentId: folderId,
     loggedInUserId: ownerId,
     query: "K.CC.1 comMMon cOREe",
   });
+  if (searchResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   let content = searchResults.content;
   expect(content.length).eq(0);
 
@@ -3322,46 +3394,66 @@ test("searchMyContent in folder, classification matches", async () => {
   });
   // With code
   searchResults = await searchMyContent({
+    ownerId,
     parentId: folderId,
     loggedInUserId: ownerId,
     query: "K.C",
   });
+  if (searchResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   content = searchResults.content;
   expect(content.length).eq(1);
 
   // With both
   searchResults = await searchMyContent({
+    ownerId,
     parentId: folderId,
     loggedInUserId: ownerId,
     query: "common C.1",
   });
+  if (searchResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   content = searchResults.content;
   expect(content.length).eq(1);
 
   // With category
   searchResults = await searchMyContent({
+    ownerId,
     parentId: folderId,
     loggedInUserId: ownerId,
     query: "kinder",
   });
+  if (searchResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   content = searchResults.content;
   expect(content.length).eq(1);
 
   // With subcategory
   searchResults = await searchMyContent({
+    ownerId,
     parentId: folderId,
     loggedInUserId: ownerId,
     query: "cardinality",
   });
+  if (searchResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   content = searchResults.content;
   expect(content.length).eq(1);
 
   // With description
   searchResults = await searchMyContent({
+    ownerId,
     parentId: folderId,
     loggedInUserId: ownerId,
     query: "tens",
   });
+  if (searchResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   content = searchResults.content;
   expect(content.length).eq(1);
 });
@@ -3382,10 +3474,14 @@ test("searchMyContent, handle tags in search", async () => {
   });
 
   const searchResults = await searchMyContent({
+    ownerId,
     parentId: null,
     loggedInUserId: ownerId,
     query: "<point>",
   });
+  if (searchResults.notMe) {
+    throw Error("shouldn't happen");
+  }
   const content = searchResults.content;
   expect(content.length).eq(1);
 });

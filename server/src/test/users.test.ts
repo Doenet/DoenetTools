@@ -13,10 +13,20 @@ test("New user has no content", async () => {
   const user = await createTestUser();
   const userId = user.userId;
   const docs = await getMyContent({
+    ownerId: userId,
     loggedInUserId: userId,
     parentId: null,
   });
-  const { availableFeatures, ...docs2 } = docs;
+  if (docs.notMe) {
+    throw Error("shouldn't happen");
+  }
+  const {
+    availableFeatures,
+    allDoenetmlVersions,
+    allLicenses,
+    notMe,
+    ...docs2
+  } = docs;
   expect(docs2).toStrictEqual({
     content: [],
     folder: null,
