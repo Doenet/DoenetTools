@@ -14,7 +14,7 @@ import {
 import {
   queryLoggedIn,
   queryNoArguments,
-  queryNoLoggedIn,
+  queryOptionalLoggedIn,
 } from "../middleware/queryMiddleware";
 import { contentIdSchema } from "../schemas/contentSchema";
 
@@ -27,7 +27,7 @@ classificationRouter.get(
 
 classificationRouter.get(
   "/searchPossibleClassifications",
-  queryNoLoggedIn(
+  queryOptionalLoggedIn(
     searchPossibleClassifications,
     searchPossibleClassificationsSchema,
   ),
