@@ -13,10 +13,7 @@ import { getMyContent } from "../query/content_list";
 import { copyContent, moveContent } from "../query/copy_move";
 import { updateUser } from "../query/user";
 import { createTestUser } from "./utils";
-import {
-  getActivityContributorHistory,
-  getActivityRemixes,
-} from "../query/remix";
+import { getContributorHistory, getRemixes } from "../query/remix";
 
 test("content in public folder is created as public", async () => {
   const owner = await createTestUser();
@@ -1306,7 +1303,7 @@ test("contributor history shows only documents user can view", async () => {
 
   // owner1 just sees activity 1 in history of activity 4
   let activityHistory = (
-    await getActivityContributorHistory({
+    await getContributorHistory({
       contentId: contentId4,
       loggedInUserId: ownerId1,
     })
@@ -1317,7 +1314,7 @@ test("contributor history shows only documents user can view", async () => {
 
   // owner 1 just sees activity 4 and 5 in remixes of activity 1
   let activityRemixes = (
-    await getActivityRemixes({
+    await getRemixes({
       contentId: contentId1,
       loggedInUserId: ownerId1,
     })
@@ -1330,7 +1327,7 @@ test("contributor history shows only documents user can view", async () => {
 
   // owner 1 just sees direct remix from activity 1 into activity 5
   activityRemixes = (
-    await getActivityRemixes({
+    await getRemixes({
       contentId: contentId1,
       loggedInUserId: ownerId1,
       directRemixesOnly: true,
@@ -1342,7 +1339,7 @@ test("contributor history shows only documents user can view", async () => {
 
   // owner2 just sees activity 1 and 2 in history of activity 4
   activityHistory = (
-    await getActivityContributorHistory({
+    await getContributorHistory({
       contentId: contentId4,
       loggedInUserId: ownerId2,
     })
@@ -1355,7 +1352,7 @@ test("contributor history shows only documents user can view", async () => {
 
   // owner 2 just sees activity 4 and 2 in remixes of activity 1
   activityRemixes = (
-    await getActivityRemixes({
+    await getRemixes({
       contentId: contentId1,
       loggedInUserId: ownerId2,
     })
@@ -1368,7 +1365,7 @@ test("contributor history shows only documents user can view", async () => {
 
   // owner 2 sees direct remix of activity 1 into 2
   activityRemixes = (
-    await getActivityRemixes({
+    await getRemixes({
       contentId: contentId1,
       loggedInUserId: ownerId2,
       directRemixesOnly: true,
@@ -1380,7 +1377,7 @@ test("contributor history shows only documents user can view", async () => {
 
   // owner3 sees activity 1, 2 and 3 in history of activity 4
   activityHistory = (
-    await getActivityContributorHistory({
+    await getContributorHistory({
       contentId: contentId4,
       loggedInUserId: ownerId3,
     })
@@ -1395,7 +1392,7 @@ test("contributor history shows only documents user can view", async () => {
 
   // owner 3 sees activity 5, 4, 3 and 2 in remixes of activity 1
   activityRemixes = (
-    await getActivityRemixes({
+    await getRemixes({
       contentId: contentId1,
       loggedInUserId: ownerId3,
     })
@@ -1412,7 +1409,7 @@ test("contributor history shows only documents user can view", async () => {
 
   // owner 3 sees direct remixes of activity 1 into 2 and 5
   activityRemixes = (
-    await getActivityRemixes({
+    await getRemixes({
       contentId: contentId1,
       loggedInUserId: ownerId3,
       directRemixesOnly: true,

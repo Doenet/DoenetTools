@@ -3,13 +3,13 @@ import { ActivityHistory, ActivityRemixes } from "../types";
 import { filterViewableActivity } from "../utils/permissions";
 import { getIsAdmin } from "./curate";
 
-export async function getActivityContributorHistory({
+export async function getContributorHistory({
   contentId,
-  loggedInUserId,
+  loggedInUserId = new Uint8Array(16),
   isAdmin,
 }: {
   contentId: Uint8Array;
-  loggedInUserId: Uint8Array;
+  loggedInUserId?: Uint8Array;
   isAdmin?: boolean;
 }) {
   if (isAdmin === undefined) {
@@ -62,14 +62,14 @@ export async function getActivityContributorHistory({
   return activityHistory;
 }
 
-export async function getActivityRemixes({
+export async function getRemixes({
   contentId,
-  loggedInUserId,
+  loggedInUserId = new Uint8Array(16),
   isAdmin = false,
   directRemixesOnly = false,
 }: {
   contentId: Uint8Array;
-  loggedInUserId: Uint8Array;
+  loggedInUserId?: Uint8Array;
   isAdmin?: boolean;
   directRemixesOnly?: boolean;
 }) {

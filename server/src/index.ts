@@ -54,6 +54,7 @@ import { scoreRouter } from "./routes/scoreRoutes";
 import { classificationRouter } from "./routes/classificationRoutes";
 import { activityEditViewRouter } from "./routes/activityEditViewRoutes";
 import { exploreRouter } from "./routes/exploreRoutes";
+import { remixRouter } from "./routes/remixRoutes";
 
 const client = new SESClient({ region: "us-east-2" });
 
@@ -296,6 +297,7 @@ app.use("/api/scores", scoreRouter);
 app.use("/api/classifications", classificationRouter);
 app.use("/api/activityEditView", activityEditViewRouter);
 app.use("/api/explore", exploreRouter);
+app.use("/api/remix", remixRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server" + JSON.stringify(req?.user));
@@ -363,54 +365,6 @@ app.get(
         ...contentDescription,
         id: fromUUID(contentDescription.id),
       });
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.sendStatus(404);
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
-  "/api/getContributorHistory/:contentId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
-    const contentId = toUUID(req.params.contentId);
-
-    try {
-      const { docHistories } = await getActivityContributorHistory({
-        contentId,
-        loggedInUserId,
-      });
-      // TODO: process to convert UUIDs
-      res.send({ docHistories: docHistories.map(docHistoryConvertUUID) });
-    } catch (e) {
-      if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === "P2025"
-      ) {
-        res.sendStatus(404);
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
-  "/api/getRemixes/:contentId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
-    const contentId = toUUID(req.params.contentId);
-
-    try {
-      const { docRemixes } = await getActivityRemixes({
-        contentId,
-        loggedInUserId,
-      });
-      res.send({ docRemixes: docRemixes.map(docRemixesConvertUUID) });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         res.sendStatus(404);

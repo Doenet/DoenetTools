@@ -12,7 +12,7 @@ import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { getIsAdmin } from "./curate";
 import { isEqualUUID } from "../utils/uuid";
 import { recordContentView, recordRecentContent } from "./explore";
-import { getActivityContributorHistory } from "./remix";
+import { getContributorHistory } from "./remix";
 
 /**
  * Get the data needed to edit `contentId` of `ownerId`.
@@ -117,7 +117,7 @@ export async function getActivityViewerData({
     await recordContentView(contentId, loggedInUserId);
   }
 
-  const activityHistory = await getActivityContributorHistory({
+  const activityHistory = await getContributorHistory({
     contentId,
     loggedInUserId,
     isAdmin,
