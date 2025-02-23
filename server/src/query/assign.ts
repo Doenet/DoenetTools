@@ -153,7 +153,20 @@ export async function unassignActivity(
   });
 }
 
-export async function getAssignmentData({
+/**
+ * Given the `contentId` is owned by `loggedInUserId`,
+ * return all the scores that students have achieved on `contentId`.
+ *
+ * @returns a Promise that resolves to an object with fields
+ * - name: the name of the assignment
+ * - assignmentScores: an array with one entry per student that has taken `contentId`.
+ *
+ * Each element of the array `assignmentScores` is an object with fields
+ *
+ * - user: a `UserInfo` object for the student
+ * - score: the student's score on `contentId` (between 0 and 1)
+ */
+export async function getAssignmentScoreData({
   contentId,
   loggedInUserId,
 }: {
@@ -200,20 +213,20 @@ export async function getAssignmentData({
 export async function getAssignmentStudentData({
   contentId,
   loggedInUserId,
-  studentId,
+  studentUserId,
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
-  studentId?: Uint8Array;
+  studentUserId?: Uint8Array;
 }) {
-  const userId = studentId ?? loggedInUserId;
+  const userId = studentUserId ?? loggedInUserId;
 
   const assignmentData = await prisma.assignmentScores.findUniqueOrThrow({
     where: {
       contentId_userId: { contentId, userId },
       activity: {
-        // if studentId specified, you must be the owner
-        ownerId: studentId ? loggedInUserId : undefined,
+        // if studentUserId specified, you must be the owner
+        ownerId: studentUserId ? loggedInUserId : undefined,
         isDeleted: false,
         type: { not: "folder" },
         isAssigned: true,
@@ -353,17 +366,17 @@ export async function getAllAssignmentScores({
  *   along with the student's score, if it exists
  */
 export async function getStudentData({
-  studentId,
+  studentUserId,
   loggedInUserId,
   parentId,
 }: {
-  studentId: Uint8Array;
+  studentUserId: Uint8Array;
   loggedInUserId: Uint8Array;
   parentId: Uint8Array | null;
 }) {
   const studentData = await prisma.users.findUniqueOrThrow({
     where: {
-      userId: studentId,
+      userId: studentUserId,
     },
     select: {
       userId: true,
@@ -397,7 +410,7 @@ export async function getStudentData({
     INNER JOIN content_tree AS ct
     ON ct.id = c.id
     LEFT JOIN (
-        SELECT * FROM assignmentScores WHERE userId=${studentId}
+        SELECT * FROM assignmentScores WHERE userId=${studentUserId}
         ) as s
     ON s.contentId  = c.id 
     WHERE ct.type != "folder" ORDER BY path
@@ -782,4 +795,29 @@ export async function listUserAssigned(userId: Uint8Array) {
     assignments,
     user,
   };
+}
+
+export async function getAssignmentData({
+  contentId,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
+  const assignmentData = await getAssignmentScoreData({
+    contentId,
+    loggedInUserId,
+  });
+
+  const answerList = await getAnswersThatHaveSubmittedResponses({
+    contentId,
+    ownerId: loggedInUserId,
+  });
+
+  const assignmentContent = await getAssignmentContent({
+    contentId,
+    loggedInUserId,
+  });
+
+  return { assignmentData, answerList, assignmentContent };
 }

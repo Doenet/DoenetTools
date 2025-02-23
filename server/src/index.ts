@@ -376,63 +376,6 @@ app.get(
 );
 
 app.get(
-  "/api/getAssignmentData/:contentId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user) {
-      res.sendStatus(403);
-      return;
-    }
-    const loggedInUserId = req.user.userId;
-    const contentId = toUUID(req.params.contentId);
-
-    try {
-      const assignmentDataOrig = await getAssignmentScoreData({
-        contentId,
-        ownerId: loggedInUserId,
-      });
-      const assignmentData = {
-        name: assignmentDataOrig.name,
-        assignmentScores: assignmentDataOrig.assignmentScores.map(
-          (scoreObj) => ({
-            score: scoreObj.score,
-            user: userConvertUUID(scoreObj.user),
-          }),
-        ),
-      };
-      const answerList = (
-        await getAnswersThatHaveSubmittedResponses({
-          contentId,
-          ownerId: loggedInUserId,
-        })
-      ).map((answerObj) => ({
-        ...answerObj,
-        docId: fromUUID(answerObj.docId),
-      }));
-      const assignmentContent = (
-        await getAssignmentContent({
-          contentId,
-          ownerId: loggedInUserId,
-        })
-      ).map((assignmentObj) =>
-        assignmentObj.assignedVersion
-          ? {
-              ...assignmentObj.assignedVersion,
-              docId: fromUUID(assignmentObj.assignedVersion.docId),
-            }
-          : null,
-      );
-      res.send({ assignmentData, answerList, assignmentContent });
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.sendStatus(404);
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
   "/api/getCurationFolderContent",
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = req.user?.userId;

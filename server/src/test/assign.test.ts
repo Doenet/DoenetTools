@@ -15,7 +15,7 @@ import {
   getAnswersThatHaveSubmittedResponses,
   getAssignedScores,
   getAssignmentDataFromCode,
-  getAssignmentData,
+  getAssignmentScoreData,
   getAssignmentStudentData,
   getStudentData,
   getSubmittedResponseHistory,
@@ -424,7 +424,7 @@ test("get assignment data from anonymous users", async () => {
     state: "document state 1",
   });
 
-  let assignmentWithScores = await getAssignmentData({
+  let assignmentWithScores = await getAssignmentScoreData({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
@@ -437,7 +437,7 @@ test("get assignment data from anonymous users", async () => {
   let assignmentStudentData = await getAssignmentStudentData({
     contentId: contentId,
     loggedInUserId: ownerId,
-    studentId: newUser1.userId,
+    studentUserId: newUser1.userId,
   });
 
   expect(assignmentStudentData).eqls({
@@ -470,7 +470,7 @@ test("get assignment data from anonymous users", async () => {
     onSubmission: true,
     state: "document state 2",
   });
-  assignmentWithScores = await getAssignmentData({
+  assignmentWithScores = await getAssignmentScoreData({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
@@ -482,7 +482,7 @@ test("get assignment data from anonymous users", async () => {
   assignmentStudentData = await getAssignmentStudentData({
     contentId: contentId,
     loggedInUserId: ownerId,
-    studentId: newUser1.userId,
+    studentUserId: newUser1.userId,
   });
 
   expect(assignmentStudentData).eqls({
@@ -520,7 +520,7 @@ test("get assignment data from anonymous users", async () => {
     onSubmission: true,
     state: "document state 3",
   });
-  assignmentWithScores = await getAssignmentData({
+  assignmentWithScores = await getAssignmentScoreData({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
@@ -532,7 +532,7 @@ test("get assignment data from anonymous users", async () => {
   assignmentStudentData = await getAssignmentStudentData({
     contentId: contentId,
     loggedInUserId: ownerId,
-    studentId: newUser1.userId,
+    studentUserId: newUser1.userId,
   });
 
   expect(assignmentStudentData).eqls({
@@ -571,7 +571,7 @@ test("get assignment data from anonymous users", async () => {
   };
 
   // assignment scores still unchanged
-  assignmentWithScores = await getAssignmentData({
+  assignmentWithScores = await getAssignmentScoreData({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
@@ -591,7 +591,7 @@ test("get assignment data from anonymous users", async () => {
   });
 
   // second user's score shows up first due to alphabetical sorting
-  assignmentWithScores = await getAssignmentData({
+  assignmentWithScores = await getAssignmentScoreData({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
@@ -606,7 +606,7 @@ test("get assignment data from anonymous users", async () => {
   assignmentStudentData = await getAssignmentStudentData({
     contentId: contentId,
     loggedInUserId: ownerId,
-    studentId: newUser2.userId,
+    studentUserId: newUser2.userId,
   });
 
   expect(assignmentStudentData).eqls({
@@ -666,14 +666,14 @@ test("can't get assignment data if other user, but student can get their own dat
   });
 
   // assignment owner can get score data
-  await getAssignmentData({
+  await getAssignmentScoreData({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
 
   // other user cannot get score data
   await expect(
-    getAssignmentData({
+    getAssignmentScoreData({
       contentId: contentId,
       loggedInUserId: otherUserId,
     }),
@@ -681,7 +681,7 @@ test("can't get assignment data if other user, but student can get their own dat
 
   // student cannot get score data on all of assignment
   await expect(
-    getAssignmentData({
+    getAssignmentScoreData({
       contentId: contentId,
       loggedInUserId: newUser1.userId,
     }),
@@ -691,7 +691,7 @@ test("can't get assignment data if other user, but student can get their own dat
   const studentData = await getAssignmentStudentData({
     contentId: contentId,
     loggedInUserId: ownerId,
-    studentId: newUser1.userId,
+    studentUserId: newUser1.userId,
   });
 
   // another user cannot get data on student
@@ -699,7 +699,7 @@ test("can't get assignment data if other user, but student can get their own dat
     getAssignmentStudentData({
       contentId: contentId,
       loggedInUserId: otherUserId,
-      studentId: newUser1.userId,
+      studentUserId: newUser1.userId,
     }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
@@ -744,7 +744,7 @@ test("can't unassign if have data", async () => {
     state: "document state 1",
   });
 
-  await getAssignmentData({
+  await getAssignmentScoreData({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
@@ -752,7 +752,7 @@ test("can't unassign if have data", async () => {
   await getAssignmentStudentData({
     contentId: contentId,
     loggedInUserId: ownerId,
-    studentId: newUser1.userId,
+    studentUserId: newUser1.userId,
   });
 
   await expect(unassignActivity(contentId, ownerId)).rejects.toThrow(
@@ -892,7 +892,7 @@ test("get all assignment data from anonymous user", async () => {
 
   let userWithScores = convertUUID(
     await getStudentData({
-      studentId: newUser1.userId,
+      studentUserId: newUser1.userId,
       loggedInUserId: ownerId,
       parentId: null,
     }),
@@ -922,7 +922,7 @@ test("get all assignment data from anonymous user", async () => {
 
   userWithScores = convertUUID(
     await getStudentData({
-      studentId: newUser1.userId,
+      studentUserId: newUser1.userId,
       loggedInUserId: ownerId,
       parentId: null,
     }),
@@ -951,7 +951,7 @@ test("get all assignment data from anonymous user", async () => {
 
   userWithScores = convertUUID(
     await getStudentData({
-      studentId: newUser1.userId,
+      studentUserId: newUser1.userId,
       loggedInUserId: ownerId,
       parentId: null,
     }),
@@ -1427,7 +1427,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   expect(scoreData.folder).eqls(null);
 
   let studentData = await getStudentData({
-    studentId: newUserId,
+    studentUserId: newUserId,
     loggedInUserId: ownerId,
     parentId: null,
   });
@@ -1453,7 +1453,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   expect(convertUUID(scoreData.folder?.id)).eqls(fromUUID(baseFolderId));
 
   studentData = await getStudentData({
-    studentId: newUserId,
+    studentUserId: newUserId,
     loggedInUserId: ownerId,
     parentId: baseFolderId,
   });
@@ -1479,7 +1479,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   expect(convertUUID(scoreData.folder?.id)).eqls(fromUUID(folder1Id));
 
   studentData = await getStudentData({
-    studentId: newUserId,
+    studentUserId: newUserId,
     loggedInUserId: ownerId,
     parentId: folder1Id,
   });
@@ -1505,7 +1505,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   expect(convertUUID(scoreData.folder?.id)).eqls(fromUUID(folder3Id));
 
   studentData = await getStudentData({
-    studentId: newUserId,
+    studentUserId: newUserId,
     loggedInUserId: ownerId,
     parentId: folder3Id,
   });
@@ -1531,7 +1531,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   expect(convertUUID(scoreData.folder?.id)).eqls(fromUUID(folder1cId));
 
   studentData = await getStudentData({
-    studentId: newUserId,
+    studentUserId: newUserId,
     loggedInUserId: ownerId,
     parentId: folder1cId,
   });
@@ -1555,7 +1555,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   expect(convertUUID(scoreData.folder?.id)).eqls(fromUUID(folder1dId));
 
   studentData = await getStudentData({
-    studentId: newUserId,
+    studentUserId: newUserId,
     loggedInUserId: ownerId,
     parentId: folder1dId,
   });

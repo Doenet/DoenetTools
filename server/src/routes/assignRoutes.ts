@@ -7,6 +7,7 @@ import {
   closeAssignmentWithCode,
   getAllAssignmentScores,
   getAssignedScores,
+  getAssignmentData,
   getAssignmentStudentData,
   getStudentData,
   getSubmittedResponseHistory,
@@ -164,4 +165,9 @@ assignRouter.get(
 assignRouter.post(
   "/recordSubmittedEvent",
   queryLoggedIn(recordSubmittedEvent, recordSubmittedEventSchema),
+);
+
+assignRouter.get(
+  "/getAssignmentData",
+  queryLoggedIn(getAssignmentData, contentIdSchema),
 );

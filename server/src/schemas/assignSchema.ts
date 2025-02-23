@@ -12,7 +12,7 @@ export const assignmentSettingsSchema = z.object({
 
 export const assignmentStudentSchema = z.object({
   contentId: uuidSchema,
-  studentId: uuidSchema,
+  studentUserId: uuidSchema,
 });
 
 export const assignmentParentSchema = z.object({
@@ -20,7 +20,7 @@ export const assignmentParentSchema = z.object({
 });
 
 export const getStudentDataSchema = z.object({
-  studentId: uuidSchema,
+  studentUserId: uuidSchema,
   parentId: uuidSchema.nullable(),
 });
 
