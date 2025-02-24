@@ -104,7 +104,7 @@ export function ClassificationSettings({
       if (searchParameters) {
         searchParameters += "&";
       }
-      searchParameters += `q=${query}`;
+      searchParameters += `query=${query}`;
     }
 
     const results = await axios.get(

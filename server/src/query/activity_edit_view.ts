@@ -111,6 +111,7 @@ export async function getActivityViewerData({
     loggedInUserId,
     isAdmin,
     includeOwnerDetails: true,
+    includeClassifications: true,
   });
 
   if (!isEqualUUID(loggedInUserId, activity.ownerId)) {

@@ -1,14 +1,12 @@
-import express, { Express, NextFunction, Request, Response } from "express";
+import express, { Express, Request, Response } from "express";
 import * as path from "path";
 import bodyParser from "body-parser";
 
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import { DateTime } from "luxon";
 import { prisma } from "./model";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
-import { Prisma } from "@prisma/client";
 
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
@@ -21,7 +19,6 @@ import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import * as fs from "fs/promises";
 import { fromUUID, toUUID } from "./utils/uuid";
 import { UserInfo } from "./types";
-import { add_test_apis } from "./test/test_apis";
 import {
   findOrCreateUser,
   getUserInfo,
@@ -41,6 +38,7 @@ import { remixRouter } from "./routes/remixRoutes";
 import { contentListRouter } from "./routes/contentListRoutes";
 import { infoRouter } from "./routes/infoRoutes";
 import { copyMoveRouter } from "./routes/copyMoveRoutes";
+import { testRouter } from "./test/testRoutes";
 
 const client = new SESClient({ region: "us-east-2" });
 
@@ -288,6 +286,12 @@ app.use("/api/contentList", contentListRouter);
 app.use("/api/info", infoRouter);
 app.use("/api/copyMove", copyMoveRouter);
 
+if (
+  process.env.ADD_TEST_APIS &&
+  process.env.ADD_TEST_APIS.toLocaleLowerCase() !== "false"
+) {
+  app.use("/api/test", testRouter);
+}
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server" + JSON.stringify(req?.user));
 });
@@ -621,15 +625,13 @@ app.post(
     }
     const ownerId = req.user.userId;
     const id = toUUID(req.body.id);
-    const desiredParentId = req.body.desiredParentId
-      ? toUUID(req.body.desiredParentId)
-      : null;
+    const parentId = req.body.parentId ? toUUID(req.body.parentId) : null;
     const desiredPosition = Number(req.body.desiredPosition);
 
     try {
       await moveContent({
         id,
-        desiredParentId,
+        parentId,
         desiredPosition,
         ownerId,
         inLibrary: true,
@@ -748,18 +750,11 @@ app.post(
   },
 );
 
-if (
-  process.env.ADD_TEST_APIS &&
-  process.env.ADD_TEST_APIS.toLocaleLowerCase() !== "false"
-) {
-  add_test_apis(app);
-}
-
-// handle every other route with index.html, which will contain
-// a script tag to your application's JavaScript file(s).
-app.get("*", function (_request, response) {
-  response.sendFile(path.resolve(__dirname, "../public/index.html"));
-});
+// // handle every other route with index.html, which will contain
+// // a script tag to your application's JavaScript file(s).
+// app.get("*", function (_request, response) {
+//   response.sendFile(path.resolve(__dirname, "../public/index.html"));
+// });
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
