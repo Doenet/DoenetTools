@@ -11,8 +11,8 @@ import { getAvailableContentFeatures } from "./classification";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { getIsAdmin } from "./curate";
 import { isEqualUUID } from "../utils/uuid";
-import { recordContentView, recordRecentContent } from "./explore";
 import { getContributorHistory } from "./remix";
+import { recordContentView, recordRecentContent } from "./stats";
 
 /**
  * Get the data needed to edit `contentId` of `ownerId`.

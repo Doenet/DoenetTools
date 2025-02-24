@@ -14,8 +14,8 @@ import {
 } from "../utils/sort";
 import { modifyContentSharedWith, setContentIsPublic } from "./share";
 import { createActivityRevision, createContent } from "./activity";
-import { recordRecentContent } from "./explore";
 import { InvalidRequestError } from "../utils/error";
+import { recordRecentContent } from "./stats";
 
 /**
  * Move the content with `id` to position `desiredPosition` in the folder `desiredParentId`

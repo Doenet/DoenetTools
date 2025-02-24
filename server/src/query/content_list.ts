@@ -11,9 +11,9 @@ import {
   returnClassificationMatchClauses,
 } from "../utils/classificationsFeatures";
 import { fromUUID, isEqualUUID } from "../utils/uuid";
-import { recordContentView } from "./explore";
 import { getAllDoenetmlVersions } from "./activity";
 import { getAllLicenses } from "./share";
+import { recordContentView } from "./stats";
 
 export async function getMyContent({
   ownerId,

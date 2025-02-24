@@ -11,21 +11,21 @@ import { getContentSource } from "../query/activity";
 export const activityEditViewRouter = express.Router();
 
 activityEditViewRouter.get(
-  "/getActivityEditorData",
+  "/getActivityEditorData/:contentId",
   queryOptionalLoggedIn(getActivityEditorData, contentIdSchema),
 );
 
 activityEditViewRouter.get(
-  "/getSharedEditorData",
+  "/getSharedEditorData/:contentId",
   queryOptionalLoggedIn(getSharedEditorData, contentIdSchema),
 );
 
 activityEditViewRouter.get(
-  "/getActivityViewerData",
+  "/getActivityViewerData/:contentId",
   queryOptionalLoggedIn(getActivityViewerData, contentIdSchema),
 );
 
 activityEditViewRouter.get(
-  "/getContentSource",
+  "/getContentSource/:contentId",
   queryOptionalLoggedIn(getContentSource, contentIdSchema),
 );

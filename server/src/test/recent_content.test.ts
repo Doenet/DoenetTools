@@ -2,12 +2,12 @@ import { expect, test } from "vitest";
 import { createTestUser } from "./utils";
 import { ContentType } from "@prisma/client";
 import { createContent } from "../query/activity";
+import { prisma } from "../model";
 import {
   getRecentContent,
   purgeOldRecentContent,
   recordRecentContent,
-} from "../query/explore";
-import { prisma } from "../model";
+} from "../query/stats";
 
 test("add and check recent content", async () => {
   const user = await createTestUser();
@@ -27,7 +27,7 @@ test("add and check recent content", async () => {
   }
 
   // get recent should get all five
-  let recent = await getRecentContent(userId, "edit", []);
+  let recent = await getRecentContent({ loggedInUserId: userId, mode: "edit" });
   expect(recent.map((r) => r.id)).eqls([...contentIds].reverse());
 
   // add a couple more activities
@@ -42,7 +42,7 @@ test("add and check recent content", async () => {
   }
 
   // get the most recent 10
-  recent = await getRecentContent(userId, "edit", []);
+  recent = await getRecentContent({ loggedInUserId: userId, mode: "edit" });
   expect(recent.map((r) => r.id)).eqls([...contentIds].reverse().slice(0, 5));
 });
 
@@ -88,7 +88,7 @@ test("add and check recent content, different types", async () => {
   }
 
   // get recent with no arguments should get the most recent 5
-  let recent = await getRecentContent(userId, "edit", []);
+  let recent = await getRecentContent({ loggedInUserId: userId, mode: "edit" });
   expect(recent.map((r) => r.id)).eqls(
     contents
       .map((c) => c.id)
@@ -98,7 +98,11 @@ test("add and check recent content, different types", async () => {
 
   // get just the 5 from each type
   for (const type of ["singleDoc", "folder", "sequence", "select"]) {
-    recent = await getRecentContent(userId, "edit", [type as ContentType]);
+    recent = await getRecentContent({
+      loggedInUserId: userId,
+      mode: "edit",
+      restrictToTypes: [type as ContentType],
+    });
     expect(recent.map((r) => r.id)).eqls(
       contents
         .filter((c) => c.type === type)
@@ -143,7 +147,7 @@ test("add and check recent content, different types", async () => {
   }
 
   // get recent with no arguments should get the most recent 10
-  recent = await getRecentContent(userId, "edit", []);
+  recent = await getRecentContent({ loggedInUserId: userId, mode: "edit" });
   expect(recent.map((r) => r.id)).eqls(
     contents
       .map((c) => c.id)
@@ -153,7 +157,11 @@ test("add and check recent content, different types", async () => {
 
   // get just the most recent 5 from each type
   for (const type of ["singleDoc", "folder", "sequence", "select"]) {
-    recent = await getRecentContent(userId, "edit", [type as ContentType]);
+    recent = await getRecentContent({
+      loggedInUserId: userId,
+      mode: "edit",
+      restrictToTypes: [type as ContentType],
+    });
     expect(recent.map((r) => r.id)).eqls(
       contents
         .filter((c) => c.type === type)

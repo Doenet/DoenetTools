@@ -303,66 +303,19 @@ app.post(
   (_req, res) => res.redirect("/"),
 );
 
-app.get(
-  "/api/loadSupportingFileInfo/:contentId",
-  (_req: Request, res: Response) => {
-    // const contentId = toUUID(req.params.contentId);
-    res.send({
-      success: true,
-      supportingFiles: [],
-      canUpload: true,
-      userQuotaBytesAvailable: 1000000,
-      quotaBytes: 9000000,
-    });
-  },
-);
-
-app.get(
-  "/api/getDocumentSource/:docId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
-    const docId = toUUID(req.params.docId);
-    try {
-      const sourceData = await getDocumentSource(docId, loggedInUserId);
-      res.send(sourceData);
-    } catch (e) {
-      if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === "P2001"
-      ) {
-        res.sendStatus(404);
-      } else {
-        next(e);
-      }
-    }
-  },
-);
-
-app.get(
-  "/api/getContentDescription/:contentId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loggedInUserId = req.user?.userId ?? new Uint8Array(16);
-    const contentId = toUUID(req.params.contentId);
-
-    try {
-      const contentDescription = await getContentDescription(
-        contentId,
-        loggedInUserId,
-      );
-
-      res.send({
-        ...contentDescription,
-        id: fromUUID(contentDescription.id),
-      });
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        res.sendStatus(404);
-      } else {
-        next(e);
-      }
-    }
-  },
-);
+// app.get(
+//   "/api/loadSupportingFileInfo/:contentId",
+//   (_req: Request, res: Response) => {
+//     // const contentId = toUUID(req.params.contentId);
+//     res.send({
+//       success: true,
+//       supportingFiles: [],
+//       canUpload: true,
+//       userQuotaBytesAvailable: 1000000,
+//       quotaBytes: 9000000,
+//     });
+//   },
+// );
 
 app.get(
   "/api/getCurationFolderContent",
@@ -791,42 +744,6 @@ app.post(
       } else {
         next(e);
       }
-    }
-  },
-);
-
-app.get(
-  "/api/getRecentContent",
-  async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user) {
-      // if not signed in, don't have any recent content
-      res.send([]);
-      return;
-    }
-
-    try {
-      const mode = req.query.mode === "edit" ? "edit" : "view";
-      const restrictToTypes: ContentType[] = [];
-      if (Array.isArray(req.query.restrictToTypes)) {
-        for (const t of req.query.restrictToTypes) {
-          if (
-            typeof t === "string" &&
-            ["sequence", "select", "folder", "singleDoc"].includes(t)
-          ) {
-            restrictToTypes.push(t as ContentType);
-          }
-        }
-      }
-      const loggedInUserId = req.user.userId;
-
-      const results = await getRecentContent(
-        loggedInUserId,
-        mode,
-        restrictToTypes,
-      );
-      res.send(results.map((r) => ({ ...r, id: fromUUID(r.id) })));
-    } catch (e) {
-      next(e);
     }
   },
 );

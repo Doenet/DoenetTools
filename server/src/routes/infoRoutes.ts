@@ -1,13 +1,21 @@
 import express, { NextFunction, Request, Response } from "express";
 import { getAvailableContentFeatures } from "../query/classification";
-import { getAllDoenetmlVersions } from "../query/activity";
+import {
+  getAllDoenetmlVersions,
+  getContentDescription,
+} from "../query/activity";
 import { getAllLicenses } from "../query/share";
 import { getAssignmentDataFromCode } from "../query/assign";
 import {
   queryLoggedIn,
+  queryOptionalLoggedIn,
   queryOptionalLoggedInNoArguments,
 } from "../middleware/queryMiddleware";
 import { codeSchema } from "../schemas/assignSchema";
+import { contentIdSchema } from "../schemas/contentSchema";
+import { getRecentContent } from "../query/stats";
+import { requireLoggedIn } from "../middleware/validationMiddleware";
+import { getRecentContentSchema } from "../schemas/infoSchemas";
 
 export const infoRouter = express.Router();
 
@@ -40,4 +48,15 @@ infoRouter.get(
     next();
   },
   queryLoggedIn(getAssignmentDataFromCode, codeSchema),
+);
+
+infoRouter.get(
+  "/getContentDescription",
+  queryOptionalLoggedIn(getContentDescription, contentIdSchema),
+);
+
+infoRouter.get(
+  "/getRecentContent",
+  requireLoggedIn,
+  queryLoggedIn(getRecentContent, getRecentContentSchema),
 );

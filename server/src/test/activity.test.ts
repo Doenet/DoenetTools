@@ -950,8 +950,13 @@ test("getContentDescription gets name and type", async () => {
     name: "Activity 1",
     loggedInUserId: ownerId,
   });
-  expect(await getContentDescription(contentId, ownerId)).eqls({
-    id: contentId,
+  expect(
+    await getContentDescription({
+      contentId: contentId,
+      loggedInUserId: ownerId,
+    }),
+  ).eqls({
+    contentId: contentId,
     name: "Activity 1",
     type: "singleDoc",
   });
@@ -966,8 +971,13 @@ test("getContentDescription gets name and type", async () => {
     name: "Folder 2",
     loggedInUserId: ownerId,
   });
-  expect(await getContentDescription(folderId, ownerId)).eqls({
-    id: folderId,
+  expect(
+    await getContentDescription({
+      contentId: folderId,
+      loggedInUserId: ownerId,
+    }),
+  ).eqls({
+    contentId: folderId,
     name: "Folder 2",
     type: "folder",
   });
@@ -982,8 +992,13 @@ test("getContentDescription gets name and type", async () => {
     name: "Sequence 3",
     loggedInUserId: ownerId,
   });
-  expect(await getContentDescription(sequenceId, ownerId)).eqls({
-    id: sequenceId,
+  expect(
+    await getContentDescription({
+      contentId: sequenceId,
+      loggedInUserId: ownerId,
+    }),
+  ).eqls({
+    contentId: sequenceId,
     name: "Sequence 3",
     type: "sequence",
   });
@@ -998,16 +1013,21 @@ test("getContentDescription gets name and type", async () => {
     name: "Select 4",
     loggedInUserId: ownerId,
   });
-  expect(await getContentDescription(selectId, ownerId)).eqls({
-    id: selectId,
+  expect(
+    await getContentDescription({
+      contentId: selectId,
+      loggedInUserId: ownerId,
+    }),
+  ).eqls({
+    contentId: selectId,
     name: "Select 4",
     type: "select",
   });
 
   const { userId: userId } = await createTestUser();
-  await expect(getContentDescription(selectId, userId)).rejects.toThrow(
-    "not found",
-  );
+  await expect(
+    getContentDescription({ contentId: selectId, loggedInUserId: userId }),
+  ).rejects.toThrow("not found");
 
   await modifyContentSharedWith({
     action: "share",
@@ -1016,8 +1036,13 @@ test("getContentDescription gets name and type", async () => {
     users: [userId],
   });
 
-  expect(await getContentDescription(selectId, userId)).eqls({
-    id: selectId,
+  expect(
+    await getContentDescription({
+      contentId: selectId,
+      loggedInUserId: userId,
+    }),
+  ).eqls({
+    contentId: selectId,
     name: "Select 4",
     type: "select",
   });

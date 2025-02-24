@@ -1,0 +1,108 @@
+import { ContentType, Prisma } from "@prisma/client";
+import { prisma } from "../model";
+import { DateTime } from "luxon";
+
+export async function recordContentView(
+  contentId: Uint8Array,
+  loggedInUserId: Uint8Array,
+) {
+  try {
+    await prisma.contentViews.create({
+      data: { contentId, userId: loggedInUserId },
+    });
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        // if error was due to unique constraint failure,
+        // then it was presumably due to a user viewing an activity
+        // twice in one day, so we ignore the error
+        return;
+      }
+    }
+    throw e;
+  }
+}
+
+/**
+ * Record the fact that `contentId` was edited/viewed by `loggedInUserId`.
+ *
+ * Used for creating a list of recent content with {@link getRecentContent}.
+ */
+export async function recordRecentContent(
+  loggedInUserId: Uint8Array,
+  mode: "edit" | "view",
+  contentId: Uint8Array,
+) {
+  await prisma.recentContent.upsert({
+    where: {
+      userId_mode_contentId: { userId: loggedInUserId, mode, contentId },
+    },
+    update: { accessed: DateTime.now().toJSDate() },
+    create: { userId: loggedInUserId, mode, contentId },
+  });
+}
+
+/**
+ * Get a list of the 5 most recent items recorded by {@link recordRecentContent}
+ * that were edited/viewed by `loggedInUserId`,
+ * optionally filtered to just the content types of `restrictToTypes`.
+ */
+export async function getRecentContent({
+  loggedInUserId,
+  mode,
+  restrictToTypes = [],
+}: {
+  loggedInUserId: Uint8Array;
+  mode: "edit" | "view";
+  restrictToTypes?: ContentType[];
+}) {
+  const results = await prisma.recentContent.findMany({
+    where:
+      restrictToTypes.length > 0
+        ? {
+            userId: loggedInUserId,
+            mode,
+            OR: restrictToTypes.map((t) => ({ content: { type: t } })),
+          }
+        : {
+            userId: loggedInUserId,
+            mode,
+          },
+    select: {
+      content: {
+        select: {
+          id: true,
+          name: true,
+          type: true,
+        },
+      },
+    },
+    take: 5,
+    orderBy: { accessed: "desc" },
+  });
+  return results.map((r) => r.content);
+}
+
+/**
+ * Delete all but the most recent 100 recentContent records for each user.
+ *
+ * Get `getRecentContent` retrieves the most recent 10,
+ * possibly filtered by content type,
+ * so this query could remove items that would have been retrieved in `getRecentContent`
+ * if the viewed types were unbalanced.
+ *
+ * Note: this query seem pretty slow even on a test database, so not sure if it is workable in production.
+ * We could alternatively just purge records older than some given date.
+ */
+export async function purgeOldRecentContent() {
+  await prisma.$executeRaw(Prisma.sql`
+      DELETE rc FROM recentContent as rc
+      WHERE accessed < (
+        SELECT ac FROM (
+          SELECT accessed ac from recentContent as rc2
+          WHERE rc2.userid = rc.userId
+          ORDER BY accessed DESC
+          LIMIT 1 OFFSET 99
+        ) as sub
+      )`);
+}

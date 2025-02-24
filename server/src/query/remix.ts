@@ -66,14 +66,20 @@ export async function getContributorHistory({
 
     const prevCidAtRemix = prevActivity.cid;
 
-    const prevCurrentSource = (
-      await getContentSource({
-        contentId: prevActivity.activity.id,
-        loggedInUserId,
-      })
-    ).source;
+    const prevCurrent = await getContentSource({
+      contentId: prevActivity.activity.id,
+      loggedInUserId,
+    });
 
-    const currentCid = await cidFromText(prevCurrentSource);
+    let currentCid;
+    if (prevCurrent.doenetMLVersion) {
+      currentCid = await cidFromText(
+        prevCurrent.doenetMLVersion + "|" + prevCurrent.source,
+      );
+    } else {
+      currentCid = await cidFromText(prevCurrent.source);
+    }
+
     const prevChanged = currentCid !== prevCidAtRemix;
 
     history.push({

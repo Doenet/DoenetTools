@@ -38,7 +38,7 @@ export function convertUUID(obj: unknown): unknown {
   if (Array.isArray(obj)) {
     return obj.map(convertUUID);
   }
-  if (!obj || typeof obj !== "object") {
+  if (!obj || typeof obj !== "object" || obj instanceof Date) {
     return obj;
   }
   return Object.fromEntries(

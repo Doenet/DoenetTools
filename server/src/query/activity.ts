@@ -308,24 +308,29 @@ export async function updateContentFeatures({
 }
 
 /**
- * Return the id, name, and content type of the content with `id`,
+ * Return the contentId, name, and content type of the content with `contentId`,
  * assuming it is viewable by `loggedInUserId`.
  *
  * Throws an error if not viewable by `loggedInUserId`.
  */
-export async function getContentDescription(
-  id: Uint8Array,
-  loggedInUserId: Uint8Array,
-) {
+export async function getContentDescription({
+  contentId,
+  loggedInUserId = new Uint8Array(16),
+}: {
+  contentId: Uint8Array;
+  loggedInUserId?: Uint8Array;
+}) {
   const isAdmin = await getIsAdmin(loggedInUserId);
 
-  return await prisma.content.findUniqueOrThrow({
+  const description = await prisma.content.findUniqueOrThrow({
     where: {
-      id,
+      id: contentId,
       ...filterViewableContent(loggedInUserId, isAdmin),
     },
-    select: { id: true, name: true, type: true },
+    select: { name: true, type: true },
   });
+
+  return { contentId, ...description };
 }
 
 /**
@@ -431,12 +436,14 @@ export async function getContentSource({
   const content = await getContent({ contentId, loggedInUserId, isAdmin });
 
   let source: string;
+  let doenetMLVersion: string | null = null;
 
   if (content.type === "singleDoc") {
     source = content.source;
+    doenetMLVersion = content.doenetmlVersion.fullVersion;
   } else {
     source = JSON.stringify(compileActivityFromContent(content));
   }
 
-  return { source };
+  return { source, doenetMLVersion };
 }

@@ -9,8 +9,8 @@ import { getRandomValues } from "crypto";
 import { Prisma } from "@prisma/client";
 import { UserInfo } from "../types";
 import { isEqualUUID } from "../utils/uuid";
-import { recordContentView } from "./explore";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
+import { recordContentView } from "./stats";
 
 export async function assignActivity({
   contentId,
