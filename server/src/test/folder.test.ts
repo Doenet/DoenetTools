@@ -35,7 +35,7 @@ import {
 } from "../query/classification";
 import { ContentType } from "@prisma/client";
 
-test("getMyContent returns both public and private content, getSharedFolderContent returns only public", async () => {
+test("getMyContent returns both public and private content, getSharedContent returns only public", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
@@ -368,7 +368,7 @@ test("getMyContent returns both public and private content, getSharedFolderConte
 });
 
 test(
-  "getMyContent returns both public and private content, getSharedFolderContent returns only shared",
+  "getMyContent returns both public and private content, getSharedContent returns only shared",
   { timeout: 30000 },
   async () => {
     const owner = await createTestUser();
@@ -1178,7 +1178,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     contentId: activity1Id,
-    desiredParentId: null,
+    parentId: null,
     desiredPosition: 1,
     loggedInUserId: ownerId,
   });
@@ -1199,7 +1199,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     contentId: folder1Id,
-    desiredParentId: null,
+    parentId: null,
     desiredPosition: 0,
     loggedInUserId: ownerId,
   });
@@ -1220,7 +1220,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     contentId: activity2Id,
-    desiredParentId: null,
+    parentId: null,
     desiredPosition: 10,
     loggedInUserId: ownerId,
   });
@@ -1241,7 +1241,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     contentId: folder3Id,
-    desiredParentId: null,
+    parentId: null,
     desiredPosition: -10,
     loggedInUserId: ownerId,
   });
@@ -1262,7 +1262,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     contentId: folder3Id,
-    desiredParentId: folder1Id,
+    parentId: folder1Id,
     desiredPosition: 0,
     loggedInUserId: ownerId,
   });
@@ -1295,7 +1295,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     contentId: activity3Id,
-    desiredParentId: null,
+    parentId: null,
     desiredPosition: 2,
     loggedInUserId: ownerId,
   });
@@ -1328,7 +1328,7 @@ test("move content to different locations", async () => {
 
   await moveContent({
     contentId: folder2Id,
-    desiredParentId: folder3Id,
+    parentId: folder3Id,
     desiredPosition: 2,
     loggedInUserId: ownerId,
   });
@@ -1357,13 +1357,13 @@ test("move content to different locations", async () => {
 
   await moveContent({
     contentId: activity3Id,
-    desiredParentId: folder3Id,
+    parentId: folder3Id,
     desiredPosition: 0,
     loggedInUserId: ownerId,
   });
   await moveContent({
     contentId: activity1Id,
-    desiredParentId: folder2Id,
+    parentId: folder2Id,
     desiredPosition: 1,
     loggedInUserId: ownerId,
   });
@@ -1431,7 +1431,7 @@ test("cannot move content into itself or a descendant of itself", async () => {
   await expect(
     moveContent({
       contentId: folder1Id,
-      desiredParentId: folder1Id,
+      parentId: folder1Id,
       desiredPosition: 0,
       loggedInUserId: ownerId,
     }),
@@ -1440,7 +1440,7 @@ test("cannot move content into itself or a descendant of itself", async () => {
   await expect(
     moveContent({
       contentId: folder1Id,
-      desiredParentId: folder2Id,
+      parentId: folder2Id,
       desiredPosition: 0,
       loggedInUserId: ownerId,
     }),
@@ -1449,7 +1449,7 @@ test("cannot move content into itself or a descendant of itself", async () => {
   await expect(
     moveContent({
       contentId: folder1Id,
-      desiredParentId: folder3Id,
+      parentId: folder3Id,
       desiredPosition: 0,
       loggedInUserId: ownerId,
     }),
@@ -1458,7 +1458,7 @@ test("cannot move content into itself or a descendant of itself", async () => {
   await expect(
     moveContent({
       contentId: folder1Id,
-      desiredParentId: folder4Id,
+      parentId: folder4Id,
       desiredPosition: 0,
       loggedInUserId: ownerId,
     }),
@@ -1512,31 +1512,31 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
   for (let i = 0; i < 5; i++) {
     await moveContent({
       contentId: activity1Id,
-      desiredParentId: null,
+      parentId: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
     await moveContent({
       contentId: activity2Id,
-      desiredParentId: null,
+      parentId: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
     await moveContent({
       contentId: activity3Id,
-      desiredParentId: null,
+      parentId: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
     await moveContent({
       contentId: activity4Id,
-      desiredParentId: null,
+      parentId: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
     await moveContent({
       contentId: activity6Id,
-      desiredParentId: null,
+      parentId: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
@@ -1546,13 +1546,13 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
     }
     await moveContent({
       contentId: activity5Id,
-      desiredParentId: null,
+      parentId: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
     await moveContent({
       contentId: activity4Id,
-      desiredParentId: null,
+      parentId: null,
       desiredPosition: 3,
       loggedInUserId: ownerId,
     });
@@ -1581,13 +1581,13 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
   // this time to the left since fewer items are to the left.
   await moveContent({
     contentId: activity5Id,
-    desiredParentId: null,
+    parentId: null,
     desiredPosition: 2,
     loggedInUserId: ownerId,
   });
   await moveContent({
     contentId: activity4Id,
-    desiredParentId: null,
+    parentId: null,
     desiredPosition: 2,
     loggedInUserId: ownerId,
   });
@@ -1623,7 +1623,7 @@ test("copyContent copies a public document to a new owner", async () => {
     copyContent({
       contentIds: [contentId],
       loggedInUserId: newOwnerId,
-      desiredParentId: null,
+      parentId: null,
     }),
   ).rejects.toThrow("Content not found or not visible");
 
@@ -1638,7 +1638,7 @@ test("copyContent copies a public document to a new owner", async () => {
   } = await copyContent({
     contentIds: [contentId],
     loggedInUserId: newOwnerId,
-    desiredParentId: null,
+    parentId: null,
   });
   const newActivity = await getContent({
     contentId: newContentId,
@@ -1672,7 +1672,7 @@ test("copyContent copies a shared document to a new owner", async () => {
     copyContent({
       contentIds: [contentId],
       loggedInUserId: newOwnerId,
-      desiredParentId: null,
+      parentId: null,
     }),
   ).rejects.toThrow("Content not found or not visible");
 
@@ -1688,7 +1688,7 @@ test("copyContent copies a shared document to a new owner", async () => {
   } = await copyContent({
     contentIds: [contentId],
     loggedInUserId: newOwnerId,
-    desiredParentId: null,
+    parentId: null,
   });
   const newActivity = await getContent({
     contentId: newContentId,
@@ -1740,7 +1740,7 @@ test("copyContent remixes correct versions", async () => {
   } = await copyContent({
     contentIds: [contentId1],
     loggedInUserId: ownerId2,
-    desiredParentId: null,
+    parentId: null,
   });
   const activity2 = await getContent({
     contentId: contentId2,
@@ -1776,7 +1776,7 @@ test("copyContent remixes correct versions", async () => {
   } = await copyContent({
     contentIds: [contentId1],
     loggedInUserId: ownerId3,
-    desiredParentId: null,
+    parentId: null,
   });
 
   const activity3 = await getContent({
@@ -1829,7 +1829,7 @@ test("copyContent copies content classifications", async () => {
   } = await copyContent({
     contentIds: [contentId],
     loggedInUserId: newOwnerId,
-    desiredParentId: null,
+    parentId: null,
   });
 
   const activityData = await getActivityEditorData({
@@ -1882,14 +1882,14 @@ test("copyContent copies content features", async () => {
   } = await copyContent({
     contentIds: [contentId1],
     loggedInUserId: newOwnerId,
-    desiredParentId: null,
+    parentId: null,
   });
   const {
     newContentIds: [newContentId2],
   } = await copyContent({
     contentIds: [contentId2],
     loggedInUserId: newOwnerId,
-    desiredParentId: null,
+    parentId: null,
   });
 
   const activityData1 = await getActivityEditorData({

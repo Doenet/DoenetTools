@@ -256,7 +256,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "curation/:folderId",
+        path: "curation/:parentId",
         loader: curationLoader,
         action: curationAction,
         element: <Curation />,
@@ -270,7 +270,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "activities/:userId/:folderId",
+        path: "activities/:userId/:parentId",
         loader: activitiesLoader,
         action: activitiesAction,
         element: <Activities />,
@@ -284,7 +284,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "sharedActivities/:ownerId/:folderId",
+        path: "sharedActivities/:ownerId/:parentId",
         loader: sharedActivitiesLoader,
         action: sharedActivitiesAction,
         element: <SharedActivities />,
@@ -370,7 +370,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "allAssignmentScores/:folderId",
+        path: "allAssignmentScores/:parentId",
         loader: allAssignmentScoresLoader,
         element: <AllAssignmentScores />,
         errorElement: <ErrorPage />,
@@ -382,7 +382,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "studentData/:userId/:folderId",
+        path: "studentData/:userId/:parentId",
         loader: studentDataLoader,
         element: <StudentData />,
         errorElement: <ErrorPage />,

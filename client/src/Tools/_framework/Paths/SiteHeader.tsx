@@ -42,7 +42,7 @@ export type User =
   | undefined;
 
 export type SiteContext = {
-  user: User;
+  user?: User;
   exploreTab: number | null;
   setExploreTab: (arg: number | null) => void;
 };
@@ -128,7 +128,7 @@ function NavLinkDropdownTab({ to, children, dataTest }) {
 }
 
 export function SiteHeader() {
-  const { user } = useLoaderData() as { user: User };
+  const { user } = useLoaderData() as { user?: User };
 
   const [exploreTab, setExploreTab] = useState<number | null>(null);
 

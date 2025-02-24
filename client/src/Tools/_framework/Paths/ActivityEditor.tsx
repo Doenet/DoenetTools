@@ -117,7 +117,9 @@ export async function action({ params, request }) {
 export async function loader({ params }) {
   const {
     data: { editableByMe, activity: activityData, availableFeatures },
-  } = await axios.get(`/api/getActivityEditorData/${params.contentId}`);
+  } = await axios.get(
+    `/api/activityEditView/getActivityEditorData/${params.contentId}`,
+  );
 
   if (!editableByMe) {
     return redirect(`/codeViewer/${params.contentId}`);
@@ -139,24 +141,22 @@ export async function loader({ params }) {
   //   platform = "Mac";
   // }
 
-  const { data: allLicenses } = await axios.get("/api/getAllLicenses");
+  const {
+    data: { allLicenses },
+  } = await axios.get("/api/info/getAllLicenses");
 
-  const { data: allDoenetmlVersions } = await axios.get(
-    "/api/getAllDoenetmlVersions",
-  );
+  const {
+    data: { allDoenetmlVersions },
+  } = await axios.get("/api/info/getAllDoenetmlVersions");
 
   if (activityData.type === "singleDoc") {
-    const docId = activityData.documents[0].id;
-
-    const doenetML = activityData.documents[0].source;
-    const doenetmlVersion: DoenetmlVersion =
-      activityData.documents[0].doenetmlVersion;
+    const doenetML = activityData.source;
+    const doenetmlVersion: DoenetmlVersion = activityData.doenetmlVersion;
 
     return {
       type: activityData.type,
       // platform,
       activityData,
-      docId,
       doenetML,
       doenetmlVersion,
       contentId,
@@ -243,7 +243,6 @@ export function ActivityEditor() {
         type: "singleDoc";
         doenetML: string;
         doenetmlVersion: DoenetmlVersion;
-        docId: string;
       }
     | {
         type: "select" | "sequence";
@@ -289,7 +288,8 @@ export function ActivityEditor() {
     onClose: invitationOnClose,
   } = useDisclosure();
 
-  const assignmentStatus = activityData.assignmentStatus;
+  const assignmentInfo = activityData.assignmentInfo;
+  const assignmentStatus = assignmentInfo?.assignmentStatus ?? "Unassigned";
 
   const readOnly = assignmentStatus !== "Unassigned";
   const readOnlyRef = useRef(readOnly);
@@ -322,26 +322,26 @@ export function ActivityEditor() {
       ? ["Edit", "Edit activity", <MdModeEditOutline />]
       : ["See Inside", "See read-only view of source", <MdOutlineEditOff />];
 
-  const textEditorDoenetML = useRef("Need to get DoenetML in some cases");
-
   const [settingsContentId, setSettingsContentId] = useState<string | null>(
     null,
   );
 
   let contentData: Content | undefined;
   if (settingsContentId) {
-    if (settingsContentId === activityData.id) {
+    if (settingsContentId === contentId) {
       contentData = activityData;
     } else {
       if (data.type !== "singleDoc") {
         function matchSettingsContentId(content: Content): Content | undefined {
-          if (content.id === settingsContentId) {
+          if (content.contentId === settingsContentId) {
             return content;
           }
-          for (const child of content.children) {
-            const res = matchSettingsContentId(child);
-            if (res) {
-              return res;
+          if (content.type !== "singleDoc") {
+            for (const child of content.children) {
+              const res = matchSettingsContentId(child);
+              if (res) {
+                return res;
+              }
             }
           }
         }
@@ -359,7 +359,7 @@ export function ActivityEditor() {
         doenetmlVersion={data.doenetmlVersion}
         assignmentStatus={assignmentStatus}
         mode={mode}
-        docId={data.docId}
+        contentId={contentId}
         headerHeight={`${readOnly ? 120 : 80}px`}
       />
     );
@@ -405,7 +405,6 @@ export function ActivityEditor() {
         fetcher={fetcher}
         contentData={contentData}
         allLicenses={allLicenses}
-        currentDoenetML={textEditorDoenetML}
       />
     ) : null;
 
@@ -425,7 +424,7 @@ export function ActivityEditor() {
         onClose={assignmentSettingsOnClose}
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
-        id={contentId}
+        contentId={contentId}
         contentData={activityData}
       />
       <AssignmentInvitation
@@ -598,7 +597,7 @@ export function ActivityEditor() {
                           leftIcon={<MdOutlineGroup />}
                           onClick={() => {
                             finalFocusRef.current = sharingBtnRef.current;
-                            setSettingsContentId(activityData.id);
+                            setSettingsContentId(activityData.contentId);
                             sharingOnOpen();
                           }}
                           ref={sharingBtnRef}
@@ -621,7 +620,7 @@ export function ActivityEditor() {
                       onClick={() => {
                         finalFocusRef.current = settingsBtnRef.current;
                         setSettingsDisplayTab("general");
-                        setSettingsContentId(activityData.id);
+                        setSettingsContentId(activityData.contentId);
                         settingsOnOpen();
                       }}
                       ref={settingsBtnRef}
@@ -647,10 +646,10 @@ export function ActivityEditor() {
               >
                 <InfoIcon color="orange.500" mr="6px" />
 
-                {assignmentStatus === "Open" ? (
+                {assignmentInfo?.assignmentStatus === "Open" ? (
                   <>
                     <Text size="xs">
-                      {` Assignment is open with code ${activityData.classCode}. ${mode == "Edit" ? "It cannot be edited." : ""}`}
+                      {` Assignment is open with code ${assignmentInfo.classCode}. ${mode == "Edit" ? "It cannot be edited." : ""}`}
                     </Text>
                     <Button
                       onClick={invitationOnOpen}
@@ -667,7 +666,7 @@ export function ActivityEditor() {
                     {`Activity is a closed assignment${mode == "Edit" ? " and cannot be edited." : "."}`}
                   </Text>
                 )}
-                {activityData.hasScoreData ? (
+                {assignmentInfo?.hasScoreData ? (
                   <Tooltip label="View data">
                     <Button
                       data-test="Assignment Setting Button"

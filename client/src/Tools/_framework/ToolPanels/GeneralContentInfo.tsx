@@ -86,14 +86,15 @@ export function GeneralContentInfo({ contentData }: { contentData: Content }) {
         )}
       </Box>
 
-      {(contentData.numVariants ?? 1) > 1 ? (
+      {contentData.type === "singleDoc" &&
+      (contentData.numVariants ?? 1) > 1 ? (
         <Box marginBottom="20px">
           This document has {contentData.numVariants} variants.
         </Box>
       ) : null}
 
       {contentData.type === "singleDoc"
-        ? `DoenetML version: ${contentData.documents[0].doenetmlVersion.fullVersion}`
+        ? `DoenetML version: ${contentData.doenetmlVersion.fullVersion}`
         : null}
     </Box>
   );

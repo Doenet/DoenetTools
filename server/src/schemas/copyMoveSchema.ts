@@ -4,23 +4,23 @@ import { contentTypeSchema } from "./contentSchema";
 
 export const moveContentSchema = z.object({
   contentId: uuidSchema,
-  desiredParentId: uuidSchema.nullable(),
+  parentId: uuidSchema.nullish().transform((val) => val ?? null),
   desiredPosition: z.number().int(),
 });
 
 export const copyContentSchema = z.object({
   contentIds: z.array(uuidSchema),
-  desiredParentId: uuidSchema.nullable(),
+  parentId: uuidSchema.nullish().transform((val) => val ?? null),
   prependCopy: z.boolean().default(false),
 });
 
 export const createContentCopyInChildrenSchema = z.object({
-  contentIds: z.array(uuidSchema),
-  desiredParentId: uuidSchema.nullable(),
   contentType: contentTypeSchema,
+  childSourceContentIds: z.array(uuidSchema),
+  parentId: uuidSchema.nullish().transform((val) => val ?? null),
 });
 
 export const checkIfContentContainsSchema = z.object({
-  contentId: uuidSchema.nullable(),
+  contentId: uuidSchema.nullish().transform((val) => val ?? null),
   contentType: contentTypeSchema,
 });

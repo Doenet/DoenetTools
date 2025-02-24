@@ -87,17 +87,17 @@ export async function compoundActivityEditorActions(
       return true;
     }
   } else if (formObj?._action == "Duplicate Content") {
-    await axios.post(`/api/copyContent`, {
-      sourceContent: [{ contentId: formObj.id, type: formObj.contentType }],
-      desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
+    await axios.post(`/api/copyMove/copyContent`, {
+      contentIds: [formObj.contentId],
+      parentId: formObj.parentId === "null" ? null : formObj.parentId,
       prependCopy: true,
     });
     return true;
   } else if (formObj?._action == "Move") {
-    await axios.post(`/api/moveContent`, {
-      id: formObj.id,
-      desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
-      desiredPosition: formObj.desiredPosition,
+    await axios.post(`/api/copyMove/moveContent`, {
+      contentId: formObj.contentId,
+      parentId: formObj.parentId === "null" ? null : formObj.parentId,
+      desiredPosition: Number(formObj.desiredPosition),
     });
     return true;
   }
@@ -160,7 +160,7 @@ export function CompoundActivityEditor({
   }, [activity]);
 
   const [moveToFolderData, setMoveToFolderData] = useState<{
-    id: string;
+    contentId: string;
     name: string;
     type: ContentType;
     isPublic: boolean;
@@ -168,7 +168,7 @@ export function CompoundActivityEditor({
     sharedWith: UserInfo[];
     licenseCode: LicenseCode | null;
   }>({
-    id: "",
+    contentId: "",
     name: "",
     type: "singleDoc",
     isPublic: false,
@@ -189,7 +189,7 @@ export function CompoundActivityEditor({
       onClose={moveToFolderOnClose}
       sourceContent={[moveToFolderData]}
       userId={user.userId}
-      currentParentId={activity.id}
+      currentParentId={activity.contentId}
       finalFocusRef={finalFocusRef}
       allowedParentTypes={getAllowedParentTypes([moveToFolderData.type])}
       action="Move"
@@ -207,7 +207,7 @@ export function CompoundActivityEditor({
       <CopyContentAndReportFinish
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        sourceContent={selectedCards}
+        contentIds={selectedCards.map((sc) => sc.contentId)}
         desiredParent={addTo}
         action="Add"
       />
@@ -230,24 +230,24 @@ export function CompoundActivityEditor({
   ) : null;
 
   function selectCardCallback({
-    id,
+    contentId,
     name,
     checked,
     type,
   }: {
-    id: string;
+    contentId: string;
     name: string;
     checked: boolean;
     type: ContentType;
   }) {
     setSelectedCards((was) => {
       const arr = [...was];
-      const idx = was.findIndex((c) => c.id === id);
+      const idx = was.findIndex((c) => c.contentId === contentId);
       if (checked) {
         if (idx === -1) {
-          arr.push({ id, name, type });
+          arr.push({ contentId, name, type });
         } else {
-          arr[idx] = { id, name, type };
+          arr[idx] = { contentId, name, type };
         }
       } else if (idx !== -1) {
         arr.splice(idx, 1);
@@ -257,10 +257,10 @@ export function CompoundActivityEditor({
   }
 
   function countCards(content: Content, init = true): number {
-    const childCounts = content.children.reduce(
-      (a, c) => a + countCards(c, false),
-      0,
-    );
+    const childCounts =
+      content.type === "singleDoc"
+        ? 1
+        : content.children.reduce((a, c) => a + countCards(c, false), 0);
 
     if (init) {
       // don't count the initial activity
@@ -283,7 +283,7 @@ export function CompoundActivityEditor({
     indentLevel = -1,
     positionInParent = 0,
     parentInfo?: {
-      id: string;
+      contentId: string;
       parent?: string;
       positionInParent: number;
       children: Content[];
@@ -315,12 +315,12 @@ export function CompoundActivityEditor({
         const previousSibling = parentInfo.children[positionInParent - 1];
         if (previousSibling.type === "singleDoc") {
           nextPositionUp = {
-            parent: parentInfo.id,
+            parent: parentInfo.contentId,
             position: positionInParent - 1,
           };
         } else {
           nextPositionUp = {
-            parent: previousSibling.id,
+            parent: previousSibling.contentId,
             position: previousSibling.children.length,
           };
         }
@@ -342,12 +342,12 @@ export function CompoundActivityEditor({
         const nextSibling = parentInfo.children[positionInParent + 1];
         if (nextSibling.type === "singleDoc") {
           nextPositionDown = {
-            parent: parentInfo.id,
+            parent: parentInfo.contentId,
             position: positionInParent + 1,
           };
         } else {
           nextPositionDown = {
-            parent: nextSibling.id,
+            parent: nextSibling.contentId,
             position: 0,
           };
         }
@@ -366,7 +366,7 @@ export function CompoundActivityEditor({
         menuRef: getCardMenuRef,
         content: content,
         menuItems: getCardMenuList({
-          id: content.id,
+          contentId: content.contentId,
           content: content,
           nextPositionUp,
           nextPositionDown,
@@ -374,8 +374,8 @@ export function CompoundActivityEditor({
         cardLink:
           content.type === "singleDoc"
             ? asViewer
-              ? `/activityViewer/${content.id}`
-              : `/activityEditor/${content.id}`
+              ? `/activityViewer/${content.contentId}`
+              : `/activityEditor/${content.contentId}`
             : undefined,
         indentLevel,
       });
@@ -383,16 +383,18 @@ export function CompoundActivityEditor({
       idx++;
     }
 
-    cards.push(
-      ...content.children.flatMap((c, i) =>
-        createCardContent(c, indentLevel + 1, i, {
-          id: content.id,
-          parent: content.parent?.id,
-          positionInParent,
-          children: content.children,
-        }),
-      ),
-    );
+    if (content.type !== "singleDoc") {
+      cards.push(
+        ...content.children.flatMap((c, i) =>
+          createCardContent(c, indentLevel + 1, i, {
+            contentId: content.contentId,
+            parent: content.parent?.contentId,
+            positionInParent,
+            children: content.children,
+          }),
+        ),
+      );
+    }
 
     if (
       parentInfo &&
@@ -401,7 +403,7 @@ export function CompoundActivityEditor({
       idx++;
       cards.push({
         cardType: "afterParent",
-        parentId: content.id,
+        parentId: content.contentId,
         indentLevel: indentLevel + 1,
         empty: content.children.length === 0,
       });
@@ -413,12 +415,12 @@ export function CompoundActivityEditor({
   const cardContent = createCardContent(activity);
 
   function getCardMenuList({
-    id,
+    contentId,
     content,
     nextPositionUp,
     nextPositionDown,
   }: {
-    id: string;
+    contentId: string;
     content: Content;
     nextPositionUp: { parent: string; position: number } | null;
     nextPositionDown: { parent: string; position: number } | null;
@@ -429,7 +431,7 @@ export function CompoundActivityEditor({
           hidden={readOnly}
           data-test="Rename Menu Item"
           onClick={() => {
-            setSettingsContentId?.(id);
+            setSettingsContentId?.(contentId);
             setSettingsDisplayTab?.("general");
             setHighlightRename?.(true);
             settingsOnOpen?.();
@@ -444,9 +446,8 @@ export function CompoundActivityEditor({
             fetcher.submit(
               {
                 _action: "Duplicate Content",
-                id,
-                folderId: activity.id,
-                contentType: content.type,
+                contentId,
+                parentId: activity.contentId,
               },
               { method: "post" },
             );
@@ -462,9 +463,9 @@ export function CompoundActivityEditor({
               fetcher.submit(
                 {
                   _action: "Move",
-                  id,
+                  contentId,
                   desiredPosition: nextPositionUp.position,
-                  folderId: nextPositionUp.parent,
+                  parentId: nextPositionUp.parent,
                 },
                 { method: "post" },
               );
@@ -481,9 +482,9 @@ export function CompoundActivityEditor({
               fetcher.submit(
                 {
                   _action: "Move",
-                  id,
+                  contentId,
                   desiredPosition: nextPositionDown.position,
-                  folderId: nextPositionDown.parent,
+                  parentId: nextPositionDown.parent,
                 },
                 { method: "post" },
               );
@@ -497,7 +498,7 @@ export function CompoundActivityEditor({
           data-test="Move to Folder"
           onClick={() => {
             setMoveToFolderData({
-              id,
+              contentId,
               name: content.name,
               type: content.type,
               isPublic: content.isPublic,
@@ -524,7 +525,7 @@ export function CompoundActivityEditor({
           hidden={readOnly}
           data-test="Share Menu Item"
           onClick={() => {
-            setSettingsContentId?.(content.id);
+            setSettingsContentId?.(content.contentId);
             sharingOnOpen?.();
           }}
         >
@@ -534,7 +535,7 @@ export function CompoundActivityEditor({
           data-test="Settings Menu Item"
           onClick={() => {
             setSettingsDisplayTab?.("general");
-            setSettingsContentId?.(content.id);
+            setSettingsContentId?.(content.contentId);
             setHighlightRename?.(false);
             settingsOnOpen?.();
           }}
@@ -556,9 +557,9 @@ export function CompoundActivityEditor({
       emptyMessage={`${contentTypeName} is empty. Add or move documents ${activity.type === "sequence" ? "or question banks " : ""}here to begin.`}
       listView={true}
       content={cardContent}
-      selectedCards={user ? selectedCards.map((c) => c.id) : undefined}
+      selectedCards={user ? selectedCards.map((c) => c.contentId) : undefined}
       selectCallback={selectCardCallback}
-      disableSelectFor={addTo ? [addTo.id] : undefined}
+      disableSelectFor={addTo ? [addTo.contentId] : undefined}
     />
   );
 
@@ -568,9 +569,13 @@ export function CompoundActivityEditor({
       requestedVariantIndex={1}
       userId={"hi"}
       linkSettings={{ viewUrl: "", editURL: "" }}
-      paginate={activity.paginate}
-      activityLevelAttempts={activity.activityLevelAttempts}
-      itemLevelAttempts={activity.itemLevelAttempts}
+      paginate={activity.type === "sequence" ? activity.paginate : false}
+      activityLevelAttempts={
+        activity.type === "sequence" ? activity.activityLevelAttempts : false
+      }
+      itemLevelAttempts={
+        activity.type === "sequence" ? activity.itemLevelAttempts : false
+      }
       showTitle={false}
     />
   );
@@ -579,9 +584,9 @@ export function CompoundActivityEditor({
 
   if (activity.parent) {
     if (activity.parent.type === "folder") {
-      parentLink = `/activities/${user?.userId}/${activity.parent.id}`;
+      parentLink = `/activities/${user?.userId}/${activity.parent.contentId}`;
     } else {
-      parentLink = `/activityEditor/${activity.parent.id}`;
+      parentLink = `/activityEditor/${activity.parent.contentId}`;
     }
   } else {
     parentLink = `/activities/${user?.userId}`;
@@ -714,7 +719,7 @@ export function CompoundActivityEditor({
           <MenuItem
             data-test="Add Explore Items"
             onClick={async () => {
-              navigate(`/explore?addTo=${activity.id}`);
+              navigate(`/explore?addTo=${activity.contentId}`);
             }}
           >
             Items from Explore
@@ -722,7 +727,9 @@ export function CompoundActivityEditor({
           <MenuItem
             data-test="Add My Activities Items"
             onClick={async () => {
-              navigate(`/activities/${user!.userId}?addTo=${activity.id}`);
+              navigate(
+                `/activities/${user!.userId}?addTo=${activity.contentId}`,
+              );
             }}
           >
             Items from My Activities

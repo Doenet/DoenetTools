@@ -80,7 +80,11 @@ export async function getRecentContent({
     take: 5,
     orderBy: { accessed: "desc" },
   });
-  return results.map((r) => r.content);
+  return results.map((r) => ({
+    contentId: r.content.id,
+    name: r.content.name,
+    type: r.content.type,
+  }));
 }
 
 /**

@@ -29,19 +29,19 @@ export function CreateContentAndPromptName({
   isOpen,
   onClose,
   finalFocusRef,
-  sourceContent,
-  desiredParentType,
+  contentIds,
+  desiredType,
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  sourceContent: { id: string; type: ContentType }[];
-  desiredParentType: ContentType;
+  contentIds: string[];
+  desiredType: ContentType;
 }) {
   const [newActivityData, setNewActivityData] = useState<{
-    newContentIds: string[];
-    newParentId: string;
-    newParentName: string;
+    newChildContentIds: string[];
+    newContentId: string;
+    newContentName: string;
     userId: string;
   } | null>(null);
 
@@ -56,13 +56,13 @@ export function CreateContentAndPromptName({
       document.body.style.cursor = "wait";
 
       try {
-        const { data } = await axios.post(`/api/createContentCopyInChildren`, {
-          sourceContent: sourceContent.map((s) => ({
-            contentId: s.id,
-            type: s.type,
-          })),
-          desiredParentType,
-        });
+        const { data } = await axios.post(
+          `/api/copyMove/createContentCopyInChildren`,
+          {
+            childSourceContentIds: contentIds,
+            contentType: desiredType,
+          },
+        );
 
         setNewActivityData(data);
       } catch (e) {
@@ -89,23 +89,23 @@ export function CreateContentAndPromptName({
   let destinationAction: string;
   let destinationUrl: string;
 
-  const typeName = contentTypeToName[desiredParentType].toLowerCase();
+  const typeName = contentTypeToName[desiredType].toLowerCase();
   const typeNameInitialCapital =
     typeName[0].toUpperCase() + typeName.substring(1);
 
-  if (desiredParentType === "folder") {
+  if (desiredType === "folder") {
     destinationAction = "Go to folder";
-    destinationUrl = `/activities/${newActivityData?.userId}/${newActivityData?.newParentId}`;
+    destinationUrl = `/activities/${newActivityData?.userId}/${newActivityData?.newContentId}`;
   } else {
     destinationAction = `Open ${typeName}`;
-    destinationUrl = `/activityEditor/${newActivityData?.newParentId}`;
+    destinationUrl = `/activityEditor/${newActivityData?.newContentId}`;
   }
 
   function saveName(newName: string) {
     if (newActivityData) {
       axios.post("/api/updateContent/updateContentSettings", {
         name: newName,
-        contentId: newActivityData.newParentId,
+        contentId: newActivityData.newContentId,
       });
     }
   }
@@ -136,8 +136,8 @@ export function CreateContentAndPromptName({
                 <Flex flexDirection="column">
                   <Box>
                     {typeNameInitialCapital} created with{" "}
-                    {newActivityData.newContentIds.length} item
-                    {newActivityData.newContentIds.length > 1 ? "s " : " "}
+                    {newActivityData.newChildContentIds.length} item
+                    {newActivityData.newChildContentIds.length > 1 ? "s " : " "}
                   </Box>
                   <Flex marginTop="10px">
                     Name:
@@ -148,7 +148,7 @@ export function CreateContentAndPromptName({
                       name="name"
                       size="sm"
                       width="100%"
-                      defaultValue={newActivityData.newParentName}
+                      defaultValue={newActivityData.newContentName}
                       data-test="Content Name"
                       onBlur={(e) => {
                         saveName(e.target.value);

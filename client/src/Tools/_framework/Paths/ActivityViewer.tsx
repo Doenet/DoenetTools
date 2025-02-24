@@ -46,8 +46,8 @@ import {} from "../ToolPanels/ContentSettingsDrawer";
 import {
   ContentDescription,
   Content,
-  DocHistoryItem,
   DoenetmlVersion,
+  ActivityHistoryItem,
 } from "../../../_utils/types";
 import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
 import { CompoundActivityEditor } from "../ToolPanels/CompoundActivityEditor";
@@ -89,8 +89,10 @@ export async function action({ request }) {
 
 export async function loader({ params, request }) {
   const {
-    data: { activity: activityData, docHistories },
-  } = await axios.get(`/api/getActivityViewerData/${params.contentId}`);
+    data: { activity: activityData, activityHistory },
+  } = await axios.get(
+    `/api/activityEditView/getActivityViewerData/${params.contentId}`,
+  );
 
   const contentId = params.contentId;
 
@@ -108,18 +110,14 @@ export async function loader({ params, request }) {
   }
 
   if (activityData.type === "singleDoc") {
-    const docId = activityData.documents[0].id;
+    const doenetML = activityData.source;
+    const doenetmlVersion: DoenetmlVersion = activityData.doenetmlVersion;
 
-    const doenetML = activityData.documents[0].source;
-    const doenetmlVersion: DoenetmlVersion =
-      activityData.documents[0].doenetmlVersion;
-
-    const contributorHistory = await processContributorHistory(docHistories[0]);
+    const contributorHistory = await processContributorHistory(activityHistory);
 
     return {
       type: activityData.type,
       activityData,
-      docId,
       doenetML,
       doenetmlVersion,
       contentId,
@@ -144,14 +142,13 @@ export function ActivityViewer() {
   const data = useLoaderData() as {
     contentId: string;
     activityData: Content;
-    contributorHistory: DocHistoryItem[];
+    contributorHistory: ActivityHistoryItem[];
     addTo?: ContentDescription;
   } & (
     | {
         type: "singleDoc";
         doenetML: string;
         doenetmlVersion: DoenetmlVersion;
-        docId: string;
       }
     | {
         type: "select" | "sequence";
@@ -198,18 +195,20 @@ export function ActivityViewer() {
 
   let contentData: Content | undefined;
   if (settingsContentId) {
-    if (settingsContentId === activityData.id) {
+    if (settingsContentId === activityData.contentId) {
       contentData = activityData;
     } else {
       if (data.type !== "singleDoc") {
         function matchSettingsContentId(content: Content): Content | undefined {
-          if (content.id === settingsContentId) {
+          if (content.contentId === settingsContentId) {
             return content;
           }
-          for (const child of content.children) {
-            const res = matchSettingsContentId(child);
-            if (res) {
-              return res;
+          if (content.type !== "singleDoc") {
+            for (const child of content.children) {
+              const res = matchSettingsContentId(child);
+              if (res) {
+                return res;
+              }
             }
           }
         }
@@ -244,7 +243,7 @@ export function ActivityViewer() {
       <CopyContentAndReportFinish
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        sourceContent={[activityData]}
+        contentIds={[activityData.contentId]}
         desiredParent={addTo ?? null}
         action="Add"
       />
@@ -269,7 +268,7 @@ export function ActivityViewer() {
         doenetmlVersion={data.doenetmlVersion}
         asViewer={true}
         mode={mode}
-        docId={data.docId}
+        contentId={contentId}
         headerHeight="140px"
       />
     );
@@ -556,7 +555,7 @@ export function ActivityViewer() {
                         leftIcon={<MdOutlineInfo />}
                         onClick={() => {
                           setDisplayInfoTab("general");
-                          setSettingsContentId(activityData.id);
+                          setSettingsContentId(activityData.contentId);
                           infoOnOpen();
                         }}
                         ref={infoBtnRef}
@@ -653,7 +652,7 @@ export function ActivityViewer() {
                   cursor="pointer"
                   onClick={() => {
                     setDisplayInfoTab("classifications");
-                    setSettingsContentId(activityData.id);
+                    setSettingsContentId(activityData.contentId);
                     infoOnOpen();
                   }}
                   marginLeft="40px"

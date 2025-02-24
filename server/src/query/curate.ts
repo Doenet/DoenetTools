@@ -288,7 +288,7 @@ export async function addDraftToLibrary({
   } = await copyContent({
     contentIds: [contentId],
     loggedInUserId: libraryId,
-    desiredParentId: null,
+    parentId: null,
   });
 
   await prisma.libraryActivityInfos.upsert({

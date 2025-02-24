@@ -938,13 +938,13 @@ test("moving content into public folder makes it public", async () => {
   // move content into public folder
   await moveContent({
     contentId: activity1Id,
-    desiredParentId: publicFolderId,
+    parentId: publicFolderId,
     loggedInUserId: ownerId,
     desiredPosition: 0,
   });
   await moveContent({
     contentId: folder1Id,
-    desiredParentId: publicFolderId,
+    parentId: publicFolderId,
     loggedInUserId: ownerId,
     desiredPosition: 1,
   });
@@ -1003,13 +1003,13 @@ test("moving content into public folder makes it public", async () => {
 
   await moveContent({
     contentId: activity1Id,
-    desiredParentId: privateFolderId,
+    parentId: privateFolderId,
     loggedInUserId: ownerId,
     desiredPosition: 0,
   });
   await moveContent({
     contentId: folder1Id,
-    desiredParentId: privateFolderId,
+    parentId: privateFolderId,
     loggedInUserId: ownerId,
     desiredPosition: 1,
   });
@@ -1154,13 +1154,13 @@ test("moving content into shared folder shares it", async () => {
   // move content into shared folder
   await moveContent({
     contentId: activity1Id,
-    desiredParentId: sharedFolderId,
+    parentId: sharedFolderId,
     loggedInUserId: ownerId,
     desiredPosition: 0,
   });
   await moveContent({
     contentId: folder1Id,
-    desiredParentId: sharedFolderId,
+    parentId: sharedFolderId,
     loggedInUserId: ownerId,
     desiredPosition: 1,
   });
@@ -1223,13 +1223,13 @@ test("moving content into shared folder shares it", async () => {
 
   await moveContent({
     contentId: activity1Id,
-    desiredParentId: privateFolderId,
+    parentId: privateFolderId,
     loggedInUserId: ownerId,
     desiredPosition: 0,
   });
   await moveContent({
     contentId: folder1Id,
-    desiredParentId: privateFolderId,
+    parentId: privateFolderId,
     loggedInUserId: ownerId,
     desiredPosition: 1,
   });
@@ -1433,7 +1433,7 @@ test("contributor history shows only documents user can view", async () => {
   } = await copyContent({
     contentIds: [contentId1],
     loggedInUserId: ownerId2,
-    desiredParentId: null,
+    parentId: null,
   });
   await setContentLicense({
     contentId: contentId2,
@@ -1453,14 +1453,14 @@ test("contributor history shows only documents user can view", async () => {
   } = await copyContent({
     contentIds: [contentId2],
     loggedInUserId: ownerId3,
-    desiredParentId: null,
+    parentId: null,
   });
   const {
     newContentIds: [contentId4],
   } = await copyContent({
     contentIds: [contentId3],
     loggedInUserId: ownerId3,
-    desiredParentId: null,
+    parentId: null,
   });
   await setContentIsPublic({
     contentId: contentId4,
@@ -1474,7 +1474,7 @@ test("contributor history shows only documents user can view", async () => {
   } = await copyContent({
     contentIds: [contentId1],
     loggedInUserId: ownerId3,
-    desiredParentId: null,
+    parentId: null,
   });
   await setContentLicense({
     contentId: contentId5,

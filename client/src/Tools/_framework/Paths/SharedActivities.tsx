@@ -64,10 +64,10 @@ export async function action({ request }) {
 
 export async function loader({ params, request }) {
   const { data } = await axios.get(
-    `/api/getSharedFolderContent/${params.ownerId}/${params.folderId ?? ""}`,
+    `/api/contentList/getSharedContent/${params.ownerId}/${params.parentId ?? ""}`,
   );
 
-  const prefData = await axios.get(`/api/getPreferredFolderView`);
+  const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
   const listViewPref = !prefData.data.cardView;
 
   const url = new URL(request.url);
@@ -76,7 +76,9 @@ export async function loader({ params, request }) {
 
   if (addToId) {
     try {
-      const { data } = await axios.get(`/api/getContentDescription/${addToId}`);
+      const { data } = await axios.get(
+        `/api/info/getContentDescription/${addToId}`,
+      );
       addTo = data;
     } catch (_e) {
       console.error(`Could not get description of ${addToId}`);
@@ -134,7 +136,7 @@ export function SharedActivities() {
 
   let contentData: Content | undefined;
   if (infoContentId) {
-    const index = content.findIndex((obj) => obj.id == infoContentId);
+    const index = content.findIndex((obj) => obj.contentId == infoContentId);
     if (index != -1) {
       contentData = content[index];
     } else {
@@ -162,31 +164,31 @@ export function SharedActivities() {
       <CopyContentAndReportFinish
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        sourceContent={selectedCards}
+        contentIds={selectedCards.map((sc) => sc.contentId)}
         desiredParent={addTo}
         action="Add"
       />
     ) : null;
 
   function selectCardCallback({
-    id,
+    contentId,
     name,
     checked,
     type,
   }: {
-    id: string;
+    contentId: string;
     name: string;
     checked: boolean;
     type: ContentType;
   }) {
     setSelectedCards((was) => {
       const arr = [...was];
-      const idx = was.findIndex((c) => c.id === id);
+      const idx = was.findIndex((c) => c.contentId === contentId);
       if (checked) {
         if (idx === -1) {
-          arr.push({ id, name, type });
+          arr.push({ contentId, name, type });
         } else {
-          arr[idx] = { id, name, type };
+          arr[idx] = { contentId, name, type };
         }
       } else if (idx !== -1) {
         arr.splice(idx, 1);
@@ -289,7 +291,7 @@ export function SharedActivities() {
       <Flex marginRight=".5em" alignItems="center" paddingLeft="15px">
         {folder ? (
           <Link
-            to={`/sharedActivities/${ownerId}${folder.parent ? "/" + folder.parent.id : ""}`}
+            to={`/sharedActivities/${ownerId}${folder.parent ? "/" + folder.parent.contentId : ""}`}
             style={{
               color: "var(--mainBlue)",
             }}
@@ -311,15 +313,15 @@ export function SharedActivities() {
     </Box>
   );
 
-  const addToParams = addTo ? `?addTo=${addTo.id}` : "";
+  const addToParams = addTo ? `?addTo=${addTo.contentId}` : "";
   const cardContent: CardContent[] = content.map((activity) => {
-    const contentType = activity.isFolder ? "Folder" : "Activity";
+    const contentType = activity.type === "folder" ? "Folder" : "Activity";
 
     const menuItems = (
       <MenuItem
         data-test={`${contentType} Information`}
         onClick={() => {
-          setInfoContentId(activity.id);
+          setInfoContentId(activity.contentId);
           infoOnOpen();
         }}
       >
@@ -331,8 +333,8 @@ export function SharedActivities() {
       content: activity,
       cardLink:
         activity.type == "folder"
-          ? `/sharedActivities/${activity.ownerId}/${activity.id}${addToParams}`
-          : `/activityViewer/${activity.id}${addToParams}`,
+          ? `/sharedActivities/${activity.ownerId}/${activity.contentId}${addToParams}`
+          : `/activityViewer/${activity.contentId}${addToParams}`,
       menuItems,
     };
   });
@@ -346,9 +348,9 @@ export function SharedActivities() {
       emptyMessage={"No Activities Yet"}
       listView={listView}
       content={cardContent}
-      selectedCards={user ? selectedCards.map((c) => c.id) : undefined}
+      selectedCards={user ? selectedCards.map((c) => c.contentId) : undefined}
       selectCallback={selectCardCallback}
-      disableSelectFor={addTo ? [addTo.id] : undefined}
+      disableSelectFor={addTo ? [addTo.contentId] : undefined}
     />
   );
 

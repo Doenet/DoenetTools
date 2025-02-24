@@ -99,7 +99,7 @@ export function AddContentToMenu({
     <CopyContentAndReportFinish
       isOpen={copyDialogIsOpen}
       onClose={copyDialogOnClose}
-      sourceContent={sourceContent}
+      contentIds={sourceContent.map((sc) => sc.contentId)}
       desiredParent={copyDestination}
       action="Add"
       copyToLibrary={copyToLibrary}
@@ -151,7 +151,7 @@ export function AddContentToMenu({
       <Menu
         onOpen={async () => {
           const { data: recentContentData } = await axios.get(
-            `/api/getRecentContent`,
+            `/api/info/getRecentContent`,
             {
               params: {
                 mode: "edit",
@@ -173,7 +173,7 @@ export function AddContentToMenu({
 
           for (const ct of ["folder", "sequence", "select"]) {
             const { data: containsFolderData } = await axios.get(
-              `/api/checkIfFolderContains`,
+              `/api/copyMove/checkIfContentContains`,
               { params: { contentType: ct } },
             );
 
@@ -272,7 +272,7 @@ export function AddContentToMenu({
             <MenuGroup title="Recent">
               {recentContent.map((rc) => (
                 <Tooltip
-                  key={rc.id}
+                  key={rc.contentId}
                   openDelay={500}
                   label={
                     followAllowedParents && !allowedParents.includes(rc.type)

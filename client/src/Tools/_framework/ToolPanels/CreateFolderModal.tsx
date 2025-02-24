@@ -23,7 +23,8 @@ export async function createFolderModalActions({
     try {
       await axios.post(`/api/updateContent/createContent`, {
         name: formObj.folderName,
-        parentId: formObj.parentFolder,
+        parentId: formObj.parentFolder === "null" ? null : formObj.parentFolder,
+        contentType: "folder",
       });
       return { folderCreated: true };
     } catch (e) {
@@ -88,7 +89,7 @@ export function CreateFolderModal({
 
   function createFolder() {
     fetcher.submit(
-      { _action: "Add Folder", folderName, parentFolder: parentFolder ?? "" },
+      { _action: "Add Folder", folderName, parentFolder },
       { method: "post" },
     );
     document.body.style.cursor = "wait";

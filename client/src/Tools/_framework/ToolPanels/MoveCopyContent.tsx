@@ -54,24 +54,19 @@ export async function moveCopyContentActions({
 }) {
   if (formObj?._action == "Move or copy") {
     try {
-      const sourceContent = JSON.parse(formObj.sourceContent);
-      let numItems = sourceContent.length;
+      const contentIds = JSON.parse(formObj.contentIds);
+      let numItems = contentIds.length;
       if (formObj.action === "Add") {
-        const { data } = await axios.post(`/api/copyContent`, {
-          sourceContent: sourceContent.map((c) => ({
-            contentId: c.contentId,
-            type: c.type,
-          })),
-          desiredParentId:
-            formObj.folderId === "null" ? null : formObj.folderId,
+        const { data } = await axios.post(`/api/copyMove/copyContent`, {
+          contentIds,
+          parentId: formObj.folderId === "null" ? null : formObj.folderId,
         });
         numItems = data.newContentIds?.length;
       } else {
-        if (sourceContent.length === 1) {
-          await axios.post(`/api/moveContent`, {
-            contentId: sourceContent[0].contentId,
-            desiredParentId:
-              formObj.folderId === "null" ? null : formObj.folderId,
+        if (contentIds.length === 1) {
+          await axios.post(`/api/copyMove/moveContent`, {
+            contentId: contentIds[0],
+            parentId: formObj.folderId === "null" ? null : formObj.folderId,
             desiredPosition: formObj.desiredPosition,
           });
         } else {
@@ -163,7 +158,7 @@ export function MoveCopyContent({
           `/api/getCurationFolderContent/${newActiveFolderId ?? ""}`,
         )
       : await axios.get(
-          `/api/getMyFolderContent/${userId}/${newActiveFolderId ?? ""}`,
+          `/api/contentList/getMyContent/${userId}/${newActiveFolderId ?? ""}`,
         );
 
     const folder: Content | null = data.folder;
@@ -196,8 +191,8 @@ export function MoveCopyContent({
         // Check for that possibility
         for (const ct of allowedParentTypes) {
           const { data: containsFolderData } = await axios.get(
-            `/api/checkIfFolderContains`,
-            { params: { folderId: item.contentId, contentType: ct } },
+            `/api/copyMove/checkIfContentContains`,
+            { params: { contentId: item.contentId, contentType: ct } },
           );
 
           if (containsFolderData.containsType) {
@@ -468,7 +463,7 @@ export function MoveCopyContent({
     fetcher.submit(
       {
         _action: "Move or copy",
-        sourceContent: JSON.stringify(sourceContent),
+        contentIds: JSON.stringify(sourceContent.map((sc) => sc.contentId)),
         folderId: activeView.folderId,
         desiredPosition: activeView.contents.length, // place it as the last item
         action,

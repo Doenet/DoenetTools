@@ -29,7 +29,7 @@ export async function action({ request }) {
 export async function loader() {
   const { data: assignmentData } = await axios.get(`/api/assign/getAssigned`);
 
-  const prefData = await axios.get(`/api/getPreferredFolderView`);
+  const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
   const listViewPref = !prefData.data.cardView;
 
   return {

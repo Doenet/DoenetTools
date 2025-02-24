@@ -10,7 +10,7 @@ export function ActivityDoenetMLEditor({
   doenetmlVersion,
   assignmentStatus = "Unassigned",
   asViewer,
-  docId,
+  contentId,
   mode,
   headerHeight,
 }: {
@@ -18,7 +18,7 @@ export function ActivityDoenetMLEditor({
   doenetmlVersion: DoenetmlVersion;
   assignmentStatus?: AssignmentStatus;
   asViewer?: boolean;
-  docId: string;
+  contentId: string;
   mode: "Edit" | "View";
   headerHeight: string;
 }) {
@@ -73,7 +73,7 @@ export function ActivityDoenetMLEditor({
       try {
         const params = {
           doenetML: newDoenetML,
-          docId,
+          contentId,
           numVariants: numVariants.current,
           baseComponentCounts: baseComponentCounts.current,
         };
@@ -94,7 +94,7 @@ export function ActivityDoenetMLEditor({
         handleSaveDoc();
       }
     }
-  }, [docId]);
+  }, [contentId]);
 
   // save draft when leave page
   useEffect(() => {

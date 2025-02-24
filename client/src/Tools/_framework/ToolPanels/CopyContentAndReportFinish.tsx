@@ -13,9 +13,10 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useNavigate } from "react-router";
+import { useNavigate, useOutletContext } from "react-router";
 import { ContentType } from "../../../_utils/types";
 import { contentTypeToName } from "../../../_utils/activity";
+import { SiteContext } from "../Paths/SiteHeader";
 
 /**
  * A modal that immediately upon opening copies source content into a parent or Activities
@@ -27,7 +28,7 @@ export function CopyContentAndReportFinish({
   isOpen,
   onClose,
   finalFocusRef,
-  sourceContent,
+  contentIds,
   desiredParent,
   action,
   copyToLibrary,
@@ -35,15 +36,12 @@ export function CopyContentAndReportFinish({
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  sourceContent: { contentId: string; type: ContentType }[];
+  contentIds: string[];
   desiredParent: { contentId: string; name: string; type: ContentType } | null;
   action: "Copy" | "Add";
   copyToLibrary?: boolean;
 }) {
-  const [newActivityData, setNewActivityData] = useState<{
-    newContentIds: string[];
-    userId: string;
-  } | null>(null);
+  const [newContentIds, setNewContentIds] = useState<string[] | null>(null);
 
   const navigate = useNavigate();
 
@@ -51,33 +49,29 @@ export function CopyContentAndReportFinish({
   const actionPastWord = action === "Add" ? "added" : "copied";
   const actionProgressiveWord = action === "Add" ? "Adding" : "Copying";
 
+  const { user } = useOutletContext<SiteContext>();
+
   useEffect(() => {
     async function copyContent() {
       document.body.style.cursor = "wait";
 
       try {
         if (copyToLibrary) {
-          let userId: string = "";
           const newContentIds: string[] = [];
-          for (const s of sourceContent) {
+          for (const c of contentIds) {
             const { data } = await axios.post(`/api/addDraftToLibrary`, {
-              contentId: s.contentId,
-              type: s.type,
+              contentId: c,
             });
-            userId = data.userId;
             newContentIds.push(data.newContentId);
           }
-          setNewActivityData({ newContentIds, userId });
+          setNewContentIds(newContentIds);
         } else {
-          const { data } = await axios.post(`/api/copyContent`, {
-            sourceContent: sourceContent.map((s) => ({
-              contentId: s.contentId,
-              type: s.type,
-            })),
-            desiredParentId: desiredParent ? desiredParent.contentId : null,
+          const { data } = await axios.post(`/api/copyMove/copyContent`, {
+            contentIds,
+            parentId: desiredParent ? desiredParent.contentId : null,
           });
 
-          setNewActivityData(data);
+          setNewContentIds(data.newContentIds);
         }
       } catch (e) {
         console.error(e);
@@ -89,11 +83,11 @@ export function CopyContentAndReportFinish({
     }
 
     if (isOpen) {
-      if (newActivityData === null) {
+      if (newContentIds === null) {
         copyContent();
       }
     } else {
-      setNewActivityData(null);
+      setNewContentIds(null);
       setErrMsg("");
     }
   }, [isOpen, actionProgressiveWord]);
@@ -111,7 +105,7 @@ export function CopyContentAndReportFinish({
     );
     if (desiredParent.type === "folder") {
       destinationAction = "Go to folder";
-      destinationUrl = `/activities/${newActivityData?.userId}/${desiredParent.contentId}`;
+      destinationUrl = `/activities/${user?.userId}/${desiredParent.contentId}`;
     } else {
       destinationAction = `Open ${typeName}`;
       destinationUrl = `/activityEditor/${desiredParent.contentId}`;
@@ -127,7 +121,7 @@ export function CopyContentAndReportFinish({
       : "Go to Activities";
     destinationUrl = copyToLibrary
       ? "/curation"
-      : `/activities/${newActivityData?.userId}`;
+      : `/activities/${user?.userId}`;
   }
 
   return (
@@ -136,27 +130,27 @@ export function CopyContentAndReportFinish({
       onClose={onClose}
       finalFocusRef={finalFocusRef}
       size="md"
-      closeOnOverlayClick={newActivityData !== null}
+      closeOnOverlayClick={newContentIds !== null}
     >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader textAlign="center">
-          {newActivityData === null
+          {newContentIds === null
             ? actionProgressiveWord
             : `${action} finished`}
         </ModalHeader>
-        {newActivityData !== null ? <ModalCloseButton /> : null}
+        {newContentIds !== null ? <ModalCloseButton /> : null}
         <ModalBody>
           {errMsg === "" ? (
-            newActivityData === null ? (
+            newContentIds === null ? (
               <HStack>
                 <Text>{actionProgressiveWord}...</Text>
                 <Spinner />
               </HStack>
             ) : (
               <>
-                {newActivityData.newContentIds.length} item
-                {newActivityData.newContentIds.length > 1 ? "s " : " "}
+                {newContentIds.length} item
+                {newContentIds.length > 1 ? "s " : " "}
                 {actionPastWord} to: {destinationDescription}
               </>
             )
@@ -172,7 +166,7 @@ export function CopyContentAndReportFinish({
             onClick={() => {
               navigate(destinationUrl);
             }}
-            isDisabled={newActivityData === null && errMsg === ""}
+            isDisabled={newContentIds === null && errMsg === ""}
           >
             {destinationAction}
           </Button>
@@ -180,7 +174,7 @@ export function CopyContentAndReportFinish({
             onClick={() => {
               onClose();
             }}
-            isDisabled={newActivityData === null && errMsg === ""}
+            isDisabled={newContentIds === null && errMsg === ""}
           >
             Close
           </Button>

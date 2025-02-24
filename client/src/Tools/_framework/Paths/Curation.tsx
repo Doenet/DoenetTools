@@ -104,7 +104,7 @@ export async function action({ request }) {
   } else if (formObj?._action == "Move") {
     await axios.post(`/api/moveCurationContent`, {
       id: formObj.id,
-      desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
+      parentId: formObj.folderId === "null" ? null : formObj.folderId,
       desiredPosition: formObj.desiredPosition,
     });
     return true;
@@ -130,7 +130,7 @@ export async function loader({ params, request }) {
     data = results.data;
   }
 
-  const prefData = await axios.get(`/api/getPreferredFolderView`);
+  const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
   const listViewPref = !prefData.data.cardView;
 
   return {

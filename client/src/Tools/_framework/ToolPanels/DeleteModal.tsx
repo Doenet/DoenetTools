@@ -77,7 +77,7 @@ export function DeleteModal({
     fetcher.submit(
       {
         _action: "Delete Content",
-        contentId: content.id,
+        contentId: content.contentId,
       },
       { method: "post" },
     );
@@ -95,17 +95,23 @@ export function DeleteModal({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader textAlign="center">
-          Confirm delete {isDeleting && errMsg === "" ? <Spinner /> : null}
+          {errMsg ? (
+            <>Error deleting</>
+          ) : (
+            <>Confirm delete {isDeleting ? <Spinner /> : null}</>
+          )}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Box>
-            Are you sure want to delete the{" "}
-            {contentTypeToName[content.type].toLowerCase()}:{" "}
-            <em>{content.name}</em>
-          </Box>
-
-          {errMsg ? <>{errMsg}</> : null}
+          {errMsg ? (
+            <>{errMsg}</>
+          ) : (
+            <Box>
+              Are you sure want to delete the{" "}
+              {contentTypeToName[content.type].toLowerCase()}:{" "}
+              <em>{content.name}</em>
+            </Box>
+          )}
         </ModalBody>
 
         <ModalFooter>

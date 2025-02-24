@@ -60,8 +60,8 @@ export function CreateContentMenu({
     <CreateContentAndPromptName
       isOpen={createDialogIsOpen}
       onClose={createDialogOnClose}
-      sourceContent={sourceContent}
-      desiredParentType={createNewType}
+      contentIds={sourceContent.map((sc) => sc.contentId)}
+      desiredType={createNewType}
     />
   );
 

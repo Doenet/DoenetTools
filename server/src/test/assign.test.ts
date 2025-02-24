@@ -1044,7 +1044,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await moveContent({
     contentId: folder1Id,
-    desiredParentId: baseFolderId,
+    parentId: baseFolderId,
     desiredPosition: 0,
     loggedInUserId: ownerId,
   });
@@ -1072,7 +1072,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await moveContent({
     contentId: activity2Id,
-    desiredParentId: baseFolderId,
+    parentId: baseFolderId,
     desiredPosition: 1,
     loggedInUserId: ownerId,
   });
@@ -1101,7 +1101,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   // move activity 1a to right places
   await moveContent({
     contentId: activity1aId,
-    desiredParentId: folder1Id,
+    parentId: folder1Id,
     desiredPosition: 0,
     loggedInUserId: ownerId,
   });
@@ -1152,7 +1152,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   // after creating its content move folder 1c2 into the right place
   await moveContent({
     contentId: folder1c2Id,
-    desiredParentId: folder1cId,
+    parentId: folder1cId,
     desiredPosition: 1,
     loggedInUserId: ownerId,
   });
@@ -1170,7 +1170,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await moveContent({
     contentId: activity1b,
-    desiredParentId: folder1Id,
+    parentId: folder1Id,
     desiredPosition: 1,
     loggedInUserId: ownerId,
   });
@@ -1178,7 +1178,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   // move activity 1e to end of folder 1
   await moveContent({
     contentId: activity1eId,
-    desiredParentId: folder1Id,
+    parentId: folder1Id,
     desiredPosition: 100,
     loggedInUserId: ownerId,
   });

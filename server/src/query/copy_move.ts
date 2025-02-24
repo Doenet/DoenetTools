@@ -18,23 +18,23 @@ import { InvalidRequestError } from "../utils/error";
 import { recordRecentContent } from "./stats";
 
 /**
- * Move the content with `id` to position `desiredPosition` in the folder `desiredParentId`
- * (where an undefined `desiredParentId` indicates the root folder of `ownerId`).
+ * Move the content with `id` to position `desiredPosition` in the folder `parentId`
+ * (where an undefined `parentId` indicates the root folder of `ownerId`).
  *
- * `desiredPosition` is the 0-based index in the array of content with parent folder `desiredParentId`
+ * `desiredPosition` is the 0-based index in the array of content with parent folder `parentId`
  * and owner `ownerId` sorted by `sortIndex`.
  *
  * If the content is in the library account, set `inLibrary` to `true`. This will allows admins to make changes.
  */
 export async function moveContent({
   contentId,
-  desiredParentId,
+  parentId,
   desiredPosition,
   loggedInUserId,
   inLibrary = false,
 }: {
   contentId: Uint8Array;
-  desiredParentId: Uint8Array | null;
+  parentId: Uint8Array | null;
   desiredPosition: number;
   loggedInUserId: Uint8Array;
   inLibrary?: boolean;
@@ -62,11 +62,11 @@ export async function moveContent({
   let desiredParentLicenseCode: LicenseCode = "CCDUAL";
   let desiredParentShares: Uint8Array[] = [];
 
-  if (desiredParentId !== null) {
+  if (parentId !== null) {
     // if desired parent is specified, make sure it exists and is owned by `ownerId`
     const parent = await prisma.content.findUniqueOrThrow({
       where: {
-        id: desiredParentId,
+        id: parentId,
         type: { not: "singleDoc" },
         ...filterEditableContent(ownerId),
       },
@@ -95,7 +95,7 @@ export async function moveContent({
       // if content has children and we're moving it to another parent,
       // make sure that parent is not the content or a descendant of the content
 
-      if (isEqualUUID(desiredParentId, content.id)) {
+      if (isEqualUUID(parentId, content.id)) {
         throw Error("Cannot move content into itself");
       }
 
@@ -117,10 +117,7 @@ export async function moveContent({
         SELECT * FROM content_tree
         `);
 
-      if (
-        descendants.findIndex((sf) => isEqualUUID(sf.id, desiredParentId)) !==
-        -1
-      ) {
+      if (descendants.findIndex((sf) => isEqualUUID(sf.id, parentId)) !== -1) {
         throw Error("Cannot move content into a descendant of itself");
       }
     }
@@ -131,7 +128,7 @@ export async function moveContent({
     await prisma.content.findMany({
       where: {
         ownerId,
-        parentId: desiredParentId,
+        parentId: parentId,
         id: { not: contentId },
         isDeleted: false,
       },
@@ -154,7 +151,7 @@ export async function moveContent({
     await prisma.content.updateMany({
       where: {
         ownerId,
-        parentId: desiredParentId,
+        parentId: parentId,
         id: { not: contentId },
         sortIndex: sortIndices,
         isDeleted: false,
@@ -175,14 +172,14 @@ export async function moveContent({
     content.licenseCode === undefined
       ? {
           sortIndex: newSortIndex,
-          parentId: desiredParentId,
+          parentId: parentId,
           // content did not have a license code before,
           // use license from parent
           licenseCode: desiredParentLicenseCode,
         }
       : {
           sortIndex: newSortIndex,
-          parentId: desiredParentId,
+          parentId: parentId,
         };
 
   // Move the item!
@@ -210,8 +207,8 @@ export async function moveContent({
 }
 
 /**
- * Copy the content from the `contentIds` array to `desiredParentId`
- * (or the base folder of `loggedInUserId` if `desiredParentId` is `null`).
+ * Copy the content from the `contentIds` array to `parentId`
+ * (or the base folder of `loggedInUserId` if `parentId` is `null`).
  * If `prependCopy` is `true`, prepend the phrase "Copy of" to the name
  * of content when copying (though do not prepend "Copy of" to it descendants).
  *
@@ -222,28 +219,28 @@ export async function moveContent({
  * If a content from `contentIds` is an activity,
  * add it and its contributor history to the contributor history of the new activity.
  *
- * The parameter `desiredParentId`, if not `null`, must be existing content which is owned by `userId` or,
+ * The parameter `parentId`, if not `null`, must be existing content which is owned by `userId` or,
  * if the user is an admin, an existing _library_ folder.
  *
- * If `desiredParentId` is a content type (`select` or `sequence`) that cannot be a parent of `origId`,
- * then instead copy the children of `origId` into `desiredParentId`.
+ * If `parentId` is a content type (`select` or `sequence`) that cannot be a parent of `origId`,
+ * then instead copy the children of `origId` into `parentId`.
  *
- * Returns a list of the ids of new children of `desiredParentId`.
+ * Returns a list of the ids of new children of `parentId`.
  * Typically, this list would contain one id for each id in `contentId` (the id of its copy).
  * However, if a content's children were copied instead of itself, the list could be longer.
  *
  * Throws an error if `loggedInUserId` doesn't have read access to `contentIds`
- * or write access to `desiredParentId`.
+ * or write access to `parentId`.
  */
 export async function copyContent({
   contentIds,
   loggedInUserId,
-  desiredParentId,
+  parentId,
   prependCopy = false,
 }: {
   contentIds: Uint8Array[];
   loggedInUserId: Uint8Array;
-  desiredParentId: Uint8Array | null;
+  parentId: Uint8Array | null;
   prependCopy?: boolean;
 }) {
   const isAdmin = await getIsAdmin(loggedInUserId);
@@ -267,11 +264,11 @@ export async function copyContent({
   let desiredParentShares: Uint8Array[] = [];
   let desiredParentType: ContentType = "folder";
 
-  if (desiredParentId !== null) {
+  if (parentId !== null) {
     // if desired parent is specified, make sure it exists and is editable by `loggedInUserId`
     const parent = await prisma.content.findUniqueOrThrow({
       where: {
-        id: desiredParentId,
+        id: parentId,
         type: { not: "singleDoc" },
         ...filterEditableContent(loggedInUserId, isAdmin),
       },
@@ -303,7 +300,7 @@ export async function copyContent({
       // if content has children and we're copying it to another parent,
       // make sure that parent is not the content or a descendant of the content
 
-      if (isEqualUUID(desiredParentId, contentId)) {
+      if (isEqualUUID(parentId, contentId)) {
         throw new InvalidRequestError("Cannot copy content into itself");
       }
 
@@ -325,9 +322,7 @@ export async function copyContent({
         SELECT * FROM folder_tree
         `);
 
-      if (
-        subfolders.findIndex((sf) => isEqualUUID(sf.id, desiredParentId)) !== -1
-      ) {
+      if (subfolders.findIndex((sf) => isEqualUUID(sf.id, parentId)) !== -1) {
         throw new InvalidRequestError(
           "Cannot copy content into a descendant of itself",
         );
@@ -342,7 +337,7 @@ export async function copyContent({
       ...(await copySingleContent({
         loggedInUserId,
         contentId,
-        desiredParentId,
+        parentId,
         prependCopy,
         isAdmin,
         desiredParentIsPublic,
@@ -353,8 +348,8 @@ export async function copyContent({
     );
   }
 
-  if (desiredParentId) {
-    await recordRecentContent(loggedInUserId, "edit", desiredParentId);
+  if (parentId) {
+    await recordRecentContent(loggedInUserId, "edit", parentId);
   }
 
   return { newContentIds };
@@ -363,7 +358,7 @@ export async function copyContent({
 async function copySingleContent({
   contentId,
   loggedInUserId,
-  desiredParentId,
+  parentId,
   prependCopy,
   isAdmin,
   desiredParentIsPublic,
@@ -373,7 +368,7 @@ async function copySingleContent({
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
-  desiredParentId: Uint8Array | null;
+  parentId: Uint8Array | null;
   prependCopy: boolean;
   isAdmin: boolean;
   desiredParentIsPublic: boolean;
@@ -411,12 +406,9 @@ async function copySingleContent({
     },
   });
 
-  const sortIndex = await getNextSortIndexForParent(
-    loggedInUserId,
-    desiredParentId,
-  );
+  const sortIndex = await getNextSortIndexForParent(loggedInUserId, parentId);
 
-  // if `originalContent` is not allowed to be a child of `desiredParentId`,
+  // if `originalContent` is not allowed to be a child of `parentId`,
   // then copy the children of `originalContent` rather than the content itself
 
   const copyJustChildren =
@@ -433,7 +425,7 @@ async function copySingleContent({
       const contentIds = await copySingleContent({
         contentId: child.id,
         loggedInUserId,
-        desiredParentId,
+        parentId,
         prependCopy: false,
         isAdmin,
         desiredParentIsPublic,
@@ -445,7 +437,7 @@ async function copySingleContent({
     }
     return newIds;
   } else {
-    // Duplicate the content itself and make it a child of `desiredParentId`.
+    // Duplicate the content itself and make it a child of `parentId`.
 
     const {
       children,
@@ -462,7 +454,7 @@ async function copySingleContent({
     const newContent = await prisma.content.create({
       data: {
         ownerId: loggedInUserId,
-        parentId: desiredParentId,
+        parentId: parentId,
         sortIndex,
         isPublic: desiredParentIsPublic,
         licenseCode,
@@ -494,7 +486,7 @@ async function copySingleContent({
       await copySingleContent({
         contentId: child.id,
         loggedInUserId,
-        desiredParentId: newContent.id,
+        parentId: newContent.id,
         prependCopy: false,
         isAdmin,
         desiredParentIsPublic,
@@ -509,26 +501,26 @@ async function copySingleContent({
 }
 
 /**
- * Create a new content item of type `contentType` inside parent `desiredParentId`
- * (or the base folder of `loggedInUserId` if `desiredParentId` is `null`).
- * Then copy the content from `contentIds` into the new content.
+ * Create a new content item of type `contentType` inside parent `parentId`
+ * (or the base folder of `loggedInUserId` if `parentId` is `null`).
+ * Then copy the content from `childSourceContentIds` into the new content.
  *
  * Record that the new content has been recently viewed by `loggedInUserId`.
  *
  * Returns (a promise that resolves to):
- * - newContentIds: the ids of the content copied from `contentIds`
- * - newParentId: the id of the new content created that is now the parent of `newContentId`
- * - newParentName: the name of the content with id `newParentId`
+ * - newChildContentIds: the ids of the content copied from `childSourceContentIds`
+ * - newContentId: the id of the new content created that is now the parent of `newContentId`
+ * - newContentName: the name of the content with id `newParentId`
  */
 export async function createContentCopyInChildren({
   loggedInUserId,
-  contentIds,
-  desiredParentId,
+  childSourceContentIds,
+  parentId,
   contentType,
 }: {
   loggedInUserId: Uint8Array;
-  contentIds: Uint8Array[];
-  desiredParentId: Uint8Array | null;
+  childSourceContentIds: Uint8Array[];
+  parentId: Uint8Array | null;
   contentType: ContentType;
 }) {
   if (contentType === "singleDoc") {
@@ -538,18 +530,18 @@ export async function createContentCopyInChildren({
   const { contentId, name } = await createContent({
     loggedInUserId,
     contentType,
-    parentId: desiredParentId,
+    parentId: parentId,
   });
 
-  const newContentIds = await copyContent({
-    contentIds,
+  const { newContentIds: newChildContentIds } = await copyContent({
+    contentIds: childSourceContentIds,
     loggedInUserId,
-    desiredParentId: contentId,
+    parentId: contentId,
   });
 
   await recordRecentContent(loggedInUserId, "edit", contentId);
 
-  return { newContentIds, newParentId: contentId, newParentName: name };
+  return { newChildContentIds, newContentId: contentId, newContentName: name };
 }
 
 /**

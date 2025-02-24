@@ -102,8 +102,11 @@ export async function loader({ params, request }) {
   const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
   const listViewPref = !prefData.data.cardView;
 
-  const { data: availableFeatures }: { data: ContentFeature[] } =
-    await axios.get(`/api/info/getAvailableContentFeatures`);
+  const {
+    data: { availableFeatures },
+  }: { data: { availableFeatures: ContentFeature[] } } = await axios.get(
+    `/api/info/getAvailableContentFeatures`,
+  );
 
   const url = new URL(request.url);
 
@@ -310,7 +313,7 @@ export function Explore() {
       <CopyContentAndReportFinish
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        sourceContent={selectedCards}
+        contentIds={selectedCards.map((sc) => sc.contentId)}
         desiredParent={addTo}
         action="Add"
       />
@@ -319,12 +322,12 @@ export function Explore() {
   useEffect(() => {
     setSelectedCards((was) => {
       let foundMissing = false;
-      const newList = content.map((c) => c.id);
+      const newList = content.map((c) => c.contentId);
       if (trendingContent) {
-        newList.push(...trendingContent.map((c) => c.id));
+        newList.push(...trendingContent.map((c) => c.contentId));
       }
       for (const c of was) {
-        if (!newList.includes(c.id)) {
+        if (!newList.includes(c.contentId)) {
           foundMissing = true;
           break;
         }
@@ -338,24 +341,24 @@ export function Explore() {
   }, [content, trendingContent]);
 
   function selectCardCallback({
-    id,
+    contentId,
     name,
     checked,
     type,
   }: {
-    id: string;
+    contentId: string;
     name: string;
     checked: boolean;
     type: ContentType;
   }) {
     setSelectedCards((was) => {
       const arr = [...was];
-      const idx = was.findIndex((c) => c.id === id);
+      const idx = was.findIndex((c) => c.contentId === contentId);
       if (checked) {
         if (idx === -1) {
-          arr.push({ id, name, type });
+          arr.push({ contentId, name, type });
         } else {
-          arr[idx] = { id, name, type };
+          arr[idx] = { contentId, name, type };
         }
       } else if (idx !== -1) {
         arr.splice(idx, 1);
@@ -368,13 +371,13 @@ export function Explore() {
     matches: Content[],
     minHeight?: string | { base: string; lg: string },
   ) {
-    const addToParams = addTo ? `?addTo=${addTo.id}` : "";
+    const addToParams = addTo ? `?addTo=${addTo.contentId}` : "";
     const cardContent: CardContent[] = matches.map((itemObj) => {
-      const { id, owner, type: contentType } = itemObj;
+      const { contentId, owner, type: contentType } = itemObj;
       const cardLink =
         contentType === "folder" && owner != undefined
-          ? `/sharedActivities/${owner.userId}/${id}${addToParams}`
-          : `/activityViewer/${id}${addToParams}`;
+          ? `/sharedActivities/${owner.userId}/${contentId}${addToParams}`
+          : `/activityViewer/${contentId}${addToParams}`;
 
       const menuItems = (
         <MenuItem
@@ -389,7 +392,7 @@ export function Explore() {
       );
 
       return {
-        id,
+        contentId,
         content: itemObj,
         ownerName: owner !== undefined ? createFullName(owner) : "",
         cardLink,
@@ -414,9 +417,11 @@ export function Explore() {
           content={cardContent}
           emptyMessage={"No Matches Found!"}
           listView={listView}
-          selectedCards={user ? selectedCards.map((c) => c.id) : undefined}
+          selectedCards={
+            user ? selectedCards.map((c) => c.contentId) : undefined
+          }
           selectCallback={selectCardCallback}
-          disableSelectFor={addTo ? [addTo.id] : undefined}
+          disableSelectFor={addTo ? [addTo.contentId] : undefined}
         />
       </Box>
     );
@@ -689,7 +694,7 @@ export function Explore() {
   }
   if (addTo) {
     extraFormInputs.push(
-      <Input type="hidden" name="addTo" key="addTo" value={addTo.id} />,
+      <Input type="hidden" name="addTo" key="addTo" value={addTo.contentId} />,
     );
   }
 

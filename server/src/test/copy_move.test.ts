@@ -1,9 +1,10 @@
 import { expect, test } from "vitest";
 import { createTestUser } from "./utils";
 import { createContent, updateContent } from "../query/activity";
-import { copyContent } from "../query/copy_move";
+import { copyContent, createContentCopyInChildren } from "../query/copy_move";
 import { setContentIsPublic } from "../query/share";
 import { getMyContent } from "../query/content_list";
+import { getContent } from "../query/activity_edit_view";
 
 test("copy folder", async () => {
   const { userId: ownerId } = await createTestUser();
@@ -93,7 +94,7 @@ test("copy folder", async () => {
     copyContent({
       contentIds: [folder0Id],
       loggedInUserId: otherUserId,
-      desiredParentId: folderOther,
+      parentId: folderOther,
     }),
   ).rejects.toThrow("not found");
 
@@ -114,7 +115,7 @@ test("copy folder", async () => {
     const result = await copyContent({
       contentIds: [folder0Id],
       loggedInUserId: userId,
-      desiredParentId: folderNewId,
+      parentId: folderNewId,
     });
 
     expect(result.newContentIds.length).eq(1);
@@ -271,7 +272,7 @@ test("copy problem set", async () => {
   const result = await copyContent({
     contentIds: [folder0Id],
     loggedInUserId: ownerId,
-    desiredParentId: folderNewBaseId,
+    parentId: folderNewBaseId,
   });
 
   expect(result.newContentIds.length).eq(1);
@@ -340,7 +341,7 @@ test("copy problem set", async () => {
   const result2 = await copyContent({
     contentIds: [folder0Id],
     loggedInUserId: ownerId,
-    desiredParentId: folderNewProblemSetId,
+    parentId: folderNewProblemSetId,
   });
   expect(result2.newContentIds.length).eq(3);
 
@@ -395,7 +396,7 @@ test("copy problem set", async () => {
   const result3 = await copyContent({
     contentIds: [folder0Id],
     loggedInUserId: ownerId,
-    desiredParentId: folderNewQuestionBankId,
+    parentId: folderNewQuestionBankId,
   });
   expect(result3.newContentIds.length).eq(5);
 
@@ -413,4 +414,147 @@ test("copy problem set", async () => {
   expect(folderResults.content[2].name).eq("Question 2B");
   expect(folderResults.content[3].name).eq("Question 3A");
   expect(folderResults.content[4].name).eq("Question 3B");
+});
+
+test.only("create content copy in children", async () => {
+  const { userId: ownerId } = await createTestUser();
+
+  const { contentId: folder0Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "sequence",
+    parentId: null,
+  });
+  await updateContent({
+    contentId: folder0Id,
+    loggedInUserId: ownerId,
+    name: "Problem set",
+  });
+
+  const { contentId: activity1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder0Id,
+  });
+  await updateContent({
+    contentId: activity1Id,
+    loggedInUserId: ownerId,
+    name: "Question 1",
+  });
+
+  const { contentId: folder1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "select",
+    parentId: folder0Id,
+  });
+  await updateContent({
+    contentId: folder1Id,
+    loggedInUserId: ownerId,
+    name: "Question bank 2",
+  });
+
+  const { contentId: activity2AId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder1Id,
+  });
+  await updateContent({
+    contentId: activity2AId,
+    loggedInUserId: ownerId,
+    name: "Question 2A",
+  });
+  const { contentId: activity2BId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder1Id,
+  });
+  await updateContent({
+    contentId: activity2BId,
+    loggedInUserId: ownerId,
+    name: "Question 2B",
+  });
+
+  const { contentId: folder2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "select",
+    parentId: folder0Id,
+  });
+  await updateContent({
+    contentId: folder2Id,
+    loggedInUserId: ownerId,
+    name: "Question bank 3",
+  });
+
+  const { contentId: activity3AId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder2Id,
+  });
+  await updateContent({
+    contentId: activity3AId,
+    loggedInUserId: ownerId,
+    name: "Question 3A",
+  });
+  const { contentId: activity3BId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder2Id,
+  });
+  await updateContent({
+    contentId: activity3BId,
+    loggedInUserId: ownerId,
+    name: "Question 3B",
+  });
+
+  // copy children of problem set into a new problem set
+  let results = await createContentCopyInChildren({
+    loggedInUserId: ownerId,
+    childSourceContentIds: [activity1Id, folder1Id, folder2Id],
+    contentType: "sequence",
+    parentId: null,
+  });
+
+  let newActivity = await getContent({
+    contentId: results.newContentId,
+    loggedInUserId: ownerId,
+  });
+  expect(newActivity.parent).eqls(null);
+  expect(results.newContentName).eq("Untitled Problem Set");
+  expect(results.newChildContentIds.length).eq(3);
+
+  if (newActivity.type !== "sequence") {
+    throw Error("shouldn't happen");
+  }
+
+  expect(newActivity.children.length).eq(3);
+  expect(newActivity.children[0].name).eq("Question 1");
+  expect(newActivity.children[1].name).eq("Question bank 2");
+  expect(newActivity.children[2].name).eq("Question bank 3");
+
+  // copy children of problem set into a new question bank
+  // only the documents are copied
+  results = await createContentCopyInChildren({
+    loggedInUserId: ownerId,
+    childSourceContentIds: [activity1Id, folder1Id, folder2Id],
+    contentType: "select",
+    parentId: null,
+  });
+
+  newActivity = await getContent({
+    contentId: results.newContentId,
+    loggedInUserId: ownerId,
+  });
+  expect(newActivity.parent).eqls(null);
+  expect(results.newContentName).eq("Untitled Question Bank");
+  expect(results.newChildContentIds.length).eq(5);
+
+  if (newActivity.type !== "select") {
+    throw Error("shouldn't happen");
+  }
+
+  expect(newActivity.children.length).eq(5);
+  expect(newActivity.children[0].name).eq("Question 1");
+  expect(newActivity.children[1].name).eq("Question 2A");
+  expect(newActivity.children[2].name).eq("Question 2B");
+  expect(newActivity.children[3].name).eq("Question 3A");
+  expect(newActivity.children[4].name).eq("Question 3B");
 });

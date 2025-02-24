@@ -24,12 +24,27 @@ contentListRouter.get(
 );
 
 contentListRouter.get(
-  "/searchMyContent",
+  "/getMyContent/:ownerId/:parentId",
+  queryOptionalLoggedIn(getMyContent, getContentSchema),
+);
+
+contentListRouter.get(
+  "/searchMyContent/:ownerId",
   queryOptionalLoggedIn(searchMyContent, searchMyContentSchema),
 );
 
 contentListRouter.get(
-  "/getSharedContent",
+  "/searchMyContent/:ownerId/:parentId",
+  queryOptionalLoggedIn(searchMyContent, searchMyContentSchema),
+);
+
+contentListRouter.get(
+  "/getSharedContent/:ownerId",
+  queryOptionalLoggedIn(getSharedContent, getContentSchema),
+);
+
+contentListRouter.get(
+  "/getSharedContent/:ownerId/:parentId",
   queryOptionalLoggedIn(getSharedContent, getContentSchema),
 );
 

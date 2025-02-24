@@ -135,14 +135,14 @@ export async function action({ request, params }) {
   } else if (formObj?._action == "Duplicate Content") {
     await axios.post(`/api/copyMove/copyContent`, {
       contentIds: [formObj.contentId],
-      desiredParentId: formObj.parentId === "null" ? null : formObj.parentId,
+      parentId: formObj.parentId === "null" ? null : formObj.parentId,
       prependCopy: true,
     });
     return true;
   } else if (formObj?._action == "Move") {
     await axios.post(`/api/copyMove/moveContent`, {
       contentId: formObj.contentId,
-      desiredParentId: formObj.parentId === "null" ? null : formObj.parentId,
+      parentId: formObj.parentId === "null" ? null : formObj.parentId,
       desiredPosition: formObj.desiredPosition,
     });
     return true;
@@ -158,7 +158,7 @@ export async function loader({ params, request }) {
   let data;
   if (q) {
     const results = await axios.get(
-      `/api/contentList/searchMyContent/${params.userId}/${params.parentId ?? ""}?q=${q}`,
+      `/api/contentList/searchMyContent/${params.userId}/${params.parentId ?? ""}?query=${q}`,
     );
     data = results.data;
   } else {
@@ -190,19 +190,6 @@ export async function loader({ params, request }) {
       console.error(`Could not get description of ${addToId}`);
     }
   }
-
-  console.log({
-    parentId: params.parentId ? params.parentId : null,
-    content: data.content,
-    allDoenetmlVersions: data.allDoenetmlVersions,
-    allLicenses: data.allLicenses,
-    availableFeatures: data.availableFeatures,
-    userId: params.userId,
-    folder: data.folder,
-    listViewPref,
-    query: q,
-    addTo,
-  });
 
   return {
     parentId: params.parentId ? params.parentId : null,
@@ -672,7 +659,7 @@ export function Activities() {
       <CopyContentAndReportFinish
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        sourceContent={selectedCards}
+        contentIds={selectedCards.map((sc) => sc.contentId)}
         desiredParent={addTo}
         action="Add"
       />
@@ -974,7 +961,7 @@ export function Activities() {
     return {
       menuRef: getCardMenuRef,
       content: activity,
-      closeTime: formatTime(activity.assignmentInfo?.codeValidUntil),
+      closeTime: formatTime(activity.assignmentInfo?.codeValidUntil ?? null),
       menuItems: getCardMenuList({
         contentId: activity.contentId,
         name: activity.name,
