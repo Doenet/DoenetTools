@@ -65,10 +65,13 @@ export function queryLoggedInNoArguments(
   };
 }
 
-export function queryNoLoggedInNoArguments(query: () => unknown) {
-  return async (_req: Request, res: Response) => {
+export function queryOptionalLoggedInNoArguments(
+  query: (params: OptionalLoggedInUser) => unknown,
+) {
+  return async (req: Request, res: Response) => {
     try {
-      const results = convertUUID(await query());
+      const loggedInUserId = req.user?.userId;
+      const results = convertUUID(await query({ loggedInUserId }));
       res.send(results);
     } catch (e) {
       handleErrors(res, e);

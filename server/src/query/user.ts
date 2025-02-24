@@ -31,9 +31,25 @@ export async function findOrCreateUser({
   return userNoLibrary;
 }
 
-export async function getUserInfo({ userId }: { userId: Uint8Array }) {
+export function getUserInfoIfLoggedIn({
+  loggedInUserId,
+}: {
+  loggedInUserId?: Uint8Array;
+}) {
+  if (!loggedInUserId) {
+    return;
+  }
+
+  return getUserInfo({ loggedInUserId });
+}
+
+export async function getUserInfo({
+  loggedInUserId,
+}: {
+  loggedInUserId: Uint8Array;
+}) {
   const user = await prisma.users.findUniqueOrThrow({
-    where: { userId },
+    where: { userId: loggedInUserId },
     select: {
       userId: true,
       email: true,

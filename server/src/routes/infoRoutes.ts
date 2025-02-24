@@ -5,7 +5,7 @@ import { getAllLicenses } from "../query/share";
 import { getAssignmentDataFromCode } from "../query/assign";
 import {
   queryLoggedIn,
-  queryNoLoggedInNoArguments,
+  queryOptionalLoggedInNoArguments,
 } from "../middleware/queryMiddleware";
 import { codeSchema } from "../schemas/assignSchema";
 
@@ -13,15 +13,18 @@ export const infoRouter = express.Router();
 
 infoRouter.get(
   "/getAvailableContentFeatures",
-  queryNoLoggedInNoArguments(getAvailableContentFeatures),
+  queryOptionalLoggedInNoArguments(getAvailableContentFeatures),
 );
 
 infoRouter.get(
   "/getAllDoenetmlVersions",
-  queryNoLoggedInNoArguments(getAllDoenetmlVersions),
+  queryOptionalLoggedInNoArguments(getAllDoenetmlVersions),
 );
 
-infoRouter.get("/getAllLicenses", queryNoLoggedInNoArguments(getAllLicenses));
+infoRouter.get(
+  "/getAllLicenses",
+  queryOptionalLoggedInNoArguments(getAllLicenses),
+);
 
 // Putting this in `info` for now, as it doesn't require log in.
 // TODO: how to organize this?

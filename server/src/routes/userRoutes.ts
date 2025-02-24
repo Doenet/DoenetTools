@@ -1,10 +1,10 @@
 import express from "express";
 import { requireLoggedIn } from "../middleware/validationMiddleware";
-import { getUserInfo, updateUser } from "../query/user";
-import { userIdSchema, userNamesSchema } from "../schemas/userSchemas";
+import { getUserInfoIfLoggedIn, updateUser } from "../query/user";
+import { userNamesSchema } from "../schemas/userSchemas";
 import {
   queryLoggedIn,
-  queryOptionalLoggedIn,
+  queryOptionalLoggedInNoArguments,
 } from "../middleware/queryMiddleware";
 
 export const userRouter = express.Router();
@@ -15,4 +15,7 @@ userRouter.post(
   queryLoggedIn(updateUser, userNamesSchema),
 );
 
-userRouter.get("/getUser", queryOptionalLoggedIn(getUserInfo, userIdSchema));
+userRouter.get(
+  "/getUser",
+  queryOptionalLoggedInNoArguments(getUserInfoIfLoggedIn),
+);

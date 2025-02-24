@@ -47,7 +47,7 @@ test("Update user name", async () => {
   expect(user.firstNames).eq("New");
   expect(user.lastNames).eq("Name");
 
-  const { user: userInfo } = await getUserInfo({ userId: user.userId });
+  const { user: userInfo } = await getUserInfo({ loggedInUserId: user.userId });
   expect(userInfo.firstNames).eq("New");
   expect(userInfo.lastNames).eq("Name");
 });
