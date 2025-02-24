@@ -60,11 +60,11 @@ test("content in public folder is created as public", async () => {
   const content = result.content;
   expect(content.length).eq(2);
 
-  expect(content[0].id).eqls(contentId);
+  expect(content[0].contentId).eqls(contentId);
   expect(content[0].isPublic).eq(true);
   expect(content[0].license?.code).eq("CCBYSA");
 
-  expect(content[1].id).eqls(folderId);
+  expect(content[1].contentId).eqls(folderId);
   expect(content[1].isPublic).eq(true);
   expect(content[1].license?.code).eq("CCBYSA");
 });
@@ -117,12 +117,12 @@ test("content in shared folder is created shared", async () => {
   const content = result.content;
   expect(content.length).eq(2);
 
-  expect(content[0].id).eqls(contentId);
+  expect(content[0].contentId).eqls(contentId);
   expect(content[0].isShared).eq(true);
   expect(content[0].sharedWith).eqls([userFields]);
   expect(content[0].license?.code).eq("CCBYSA");
 
-  expect(content[1].id).eqls(folderId);
+  expect(content[1].contentId).eqls(folderId);
   expect(content[1].isShared).eq(true);
   expect(content[1].sharedWith).eqls([userFields]);
   expect(content[1].license?.code).eq("CCBYSA");
@@ -406,9 +406,9 @@ test("making folder public/private also makes its content public/private", async
   }
   let content = results.content;
 
-  expect(content[0].id).eqls(activity1Id);
+  expect(content[0].contentId).eqls(activity1Id);
   expect(content[0].isPublic).eqls(false);
-  expect(content[1].id).eqls(folder1Id);
+  expect(content[1].contentId).eqls(folder1Id);
   expect(content[1].isPublic).eq(false);
 
   results = await getMyContent({
@@ -420,7 +420,7 @@ test("making folder public/private also makes its content public/private", async
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(folder2Id);
+  expect(content[0].contentId).eqls(folder2Id);
   expect(content[0].isPublic).eq(false);
 
   results = await getMyContent({
@@ -432,7 +432,7 @@ test("making folder public/private also makes its content public/private", async
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(activity2Id);
+  expect(content[0].contentId).eqls(activity2Id);
   expect(content[0].isPublic).eq(false);
 
   await setContentIsPublic({
@@ -451,9 +451,9 @@ test("making folder public/private also makes its content public/private", async
   }
   content = results.content;
 
-  expect(content[0].id).eqls(activity1Id);
+  expect(content[0].contentId).eqls(activity1Id);
   expect(content[0].isPublic).eq(true);
-  expect(content[1].id).eqls(folder1Id);
+  expect(content[1].contentId).eqls(folder1Id);
   expect(content[1].isPublic).eq(true);
 
   results = await getMyContent({
@@ -465,7 +465,7 @@ test("making folder public/private also makes its content public/private", async
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(folder2Id);
+  expect(content[0].contentId).eqls(folder2Id);
   expect(content[0].isPublic).eq(true);
 
   results = await getMyContent({
@@ -477,7 +477,7 @@ test("making folder public/private also makes its content public/private", async
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(activity2Id);
+  expect(content[0].contentId).eqls(activity2Id);
   expect(content[0].isPublic).eq(true);
 
   await setContentIsPublic({
@@ -496,9 +496,9 @@ test("making folder public/private also makes its content public/private", async
   }
   content = results.content;
 
-  expect(content[0].id).eqls(activity1Id);
+  expect(content[0].contentId).eqls(activity1Id);
   expect(content[0].isPublic).eq(false);
-  expect(content[1].id).eqls(folder1Id);
+  expect(content[1].contentId).eqls(folder1Id);
   expect(content[1].isPublic).eq(false);
 
   results = await getMyContent({
@@ -510,7 +510,7 @@ test("making folder public/private also makes its content public/private", async
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(folder2Id);
+  expect(content[0].contentId).eqls(folder2Id);
   expect(content[0].isPublic).eq(false);
 
   results = await getMyContent({
@@ -522,7 +522,7 @@ test("making folder public/private also makes its content public/private", async
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(activity2Id);
+  expect(content[0].contentId).eqls(activity2Id);
   expect(content[0].isPublic).eq(false);
 });
 
@@ -535,7 +535,7 @@ test(
     let user1 = await createTestUser();
     const user1Id = user1.userId;
     user1 = await updateUser({
-      userId: user1Id,
+      loggedInUserId: user1Id,
       firstNames: "Zoe",
       lastNames: "Zaborowski",
     });
@@ -548,7 +548,7 @@ test(
     let user2 = await createTestUser();
     const user2Id = user2.userId;
     user2 = await updateUser({
-      userId: user2Id,
+      loggedInUserId: user2Id,
       firstNames: "Arya",
       lastNames: "Abbas",
     });
@@ -561,7 +561,7 @@ test(
     let user3 = await createTestUser();
     const user3Id = user3.userId;
     user3 = await updateUser({
-      userId: user3Id,
+      loggedInUserId: user3Id,
       firstNames: "Nyla",
       lastNames: "Nyquist",
     });
@@ -613,10 +613,10 @@ test(
     }
     let content = results.content;
 
-    expect(content[0].id).eqls(activity1Id);
+    expect(content[0].contentId).eqls(activity1Id);
     expect(content[0].isShared).eq(false);
     expect(content[0].sharedWith).eqls([]);
-    expect(content[1].id).eqls(folder1Id);
+    expect(content[1].contentId).eqls(folder1Id);
     expect(content[1].isShared).eq(false);
     expect(content[1].sharedWith).eqls([]);
 
@@ -629,7 +629,7 @@ test(
       throw Error("shouldn't happen");
     }
     content = results.content;
-    expect(content[0].id).eqls(folder2Id);
+    expect(content[0].contentId).eqls(folder2Id);
     expect(content[0].isShared).eq(false);
     expect(content[0].sharedWith).eqls([]);
 
@@ -642,7 +642,7 @@ test(
       throw Error("shouldn't happen");
     }
     content = results.content;
-    expect(content[0].id).eqls(activity2Id);
+    expect(content[0].contentId).eqls(activity2Id);
     expect(content[0].isShared).eq(false);
     expect(content[0].sharedWith).eqls([]);
 
@@ -667,10 +667,10 @@ test(
     }
     content = results.content;
 
-    expect(content[0].id).eqls(activity1Id);
+    expect(content[0].contentId).eqls(activity1Id);
     expect(content[0].isShared).eq(true);
     expect(content[0].sharedWith).eqls(sharedUserFields);
-    expect(content[1].id).eqls(folder1Id);
+    expect(content[1].contentId).eqls(folder1Id);
     expect(content[1].isShared).eq(true);
     expect(content[1].sharedWith).eqls(sharedUserFields);
 
@@ -683,7 +683,7 @@ test(
       throw Error("shouldn't happen");
     }
     content = results.content;
-    expect(content[0].id).eqls(folder2Id);
+    expect(content[0].contentId).eqls(folder2Id);
     expect(content[0].isShared).eq(true);
     expect(content[0].sharedWith).eqls(sharedUserFields);
 
@@ -696,7 +696,7 @@ test(
       throw Error("shouldn't happen");
     }
     content = results.content;
-    expect(content[0].id).eqls(activity2Id);
+    expect(content[0].contentId).eqls(activity2Id);
     expect(content[0].isShared).eq(true);
     expect(content[0].sharedWith).eqls(sharedUserFields);
 
@@ -718,10 +718,10 @@ test(
     }
     content = results.content;
 
-    expect(content[0].id).eqls(activity1Id);
+    expect(content[0].contentId).eqls(activity1Id);
     expect(content[0].isShared).eq(true);
     expect(content[0].sharedWith).eqls([userFields2]);
-    expect(content[1].id).eqls(folder1Id);
+    expect(content[1].contentId).eqls(folder1Id);
     expect(content[1].isShared).eq(true);
     expect(content[1].sharedWith).eqls([userFields2]);
 
@@ -734,7 +734,7 @@ test(
       throw Error("shouldn't happen");
     }
     content = results.content;
-    expect(content[0].id).eqls(folder2Id);
+    expect(content[0].contentId).eqls(folder2Id);
     expect(content[0].isShared).eq(true);
     expect(content[0].sharedWith).eqls([userFields2]);
 
@@ -747,7 +747,7 @@ test(
       throw Error("shouldn't happen");
     }
     content = results.content;
-    expect(content[0].id).eqls(activity2Id);
+    expect(content[0].contentId).eqls(activity2Id);
     expect(content[0].isShared).eq(true);
     expect(content[0].sharedWith).eqls([userFields2]);
 
@@ -769,10 +769,10 @@ test(
     }
     content = results.content;
 
-    expect(content[0].id).eqls(activity1Id);
+    expect(content[0].contentId).eqls(activity1Id);
     expect(content[0].isShared).eq(true);
     expect(content[0].sharedWith).eqls([userFields2]);
-    expect(content[1].id).eqls(folder1Id);
+    expect(content[1].contentId).eqls(folder1Id);
     expect(content[1].isShared).eq(true);
     expect(content[1].sharedWith).eqls([userFields2]);
 
@@ -785,7 +785,7 @@ test(
       throw Error("shouldn't happen");
     }
     content = results.content;
-    expect(content[0].id).eqls(folder2Id);
+    expect(content[0].contentId).eqls(folder2Id);
     expect(content[0].isShared).eq(true);
     expect(content[0].sharedWith).eqls(sharedUserFields23);
 
@@ -798,7 +798,7 @@ test(
       throw Error("shouldn't happen");
     }
     content = results.content;
-    expect(content[0].id).eqls(activity2Id);
+    expect(content[0].contentId).eqls(activity2Id);
     expect(content[0].isShared).eq(true);
     expect(content[0].sharedWith).eqls(sharedUserFields23);
 
@@ -820,10 +820,10 @@ test(
     }
     content = results.content;
 
-    expect(content[0].id).eqls(activity1Id);
+    expect(content[0].contentId).eqls(activity1Id);
     expect(content[0].isShared).eq(false);
     expect(content[0].sharedWith).eqls([]);
-    expect(content[1].id).eqls(folder1Id);
+    expect(content[1].contentId).eqls(folder1Id);
     expect(content[1].isShared).eq(false);
     expect(content[0].sharedWith).eqls([]);
 
@@ -836,7 +836,7 @@ test(
       throw Error("shouldn't happen");
     }
     content = results.content;
-    expect(content[0].id).eqls(folder2Id);
+    expect(content[0].contentId).eqls(folder2Id);
     expect(content[0].isShared).eq(true);
     expect(content[0].sharedWith).eqls([userFields3]);
 
@@ -849,7 +849,7 @@ test(
       throw Error("shouldn't happen");
     }
     content = results.content;
-    expect(content[0].id).eqls(activity2Id);
+    expect(content[0].contentId).eqls(activity2Id);
     expect(content[0].isShared).eq(true);
     expect(content[0].sharedWith).eqls([userFields3]);
   },
@@ -902,10 +902,10 @@ test("moving content into public folder makes it public", async () => {
   }
   let content = results.content;
 
-  expect(content[1].id).eqls(activity1Id);
+  expect(content[1].contentId).eqls(activity1Id);
   expect(content[1].isPublic).eq(false);
   expect(content[1].license?.code).eq("CCDUAL");
-  expect(content[2].id).eqls(folder1Id);
+  expect(content[2].contentId).eqls(folder1Id);
   expect(content[2].isPublic).eq(false);
   expect(content[2].license?.code).eq("CCDUAL");
 
@@ -918,7 +918,7 @@ test("moving content into public folder makes it public", async () => {
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(folder2Id);
+  expect(content[0].contentId).eqls(folder2Id);
   expect(content[0].isPublic).eq(false);
   expect(content[0].license?.code).eq("CCDUAL");
 
@@ -931,7 +931,7 @@ test("moving content into public folder makes it public", async () => {
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(activity2Id);
+  expect(content[0].contentId).eqls(activity2Id);
   expect(content[0].isPublic).eq(false);
   expect(content[0].license?.code).eq("CCDUAL");
 
@@ -959,10 +959,10 @@ test("moving content into public folder makes it public", async () => {
   }
   content = results.content;
 
-  expect(content[0].id).eqls(activity1Id);
+  expect(content[0].contentId).eqls(activity1Id);
   expect(content[0].isPublic).eq(true);
   expect(content[0].license?.code).eq("CCDUAL");
-  expect(content[1].id).eqls(folder1Id);
+  expect(content[1].contentId).eqls(folder1Id);
   expect(content[1].isPublic).eq(true);
   expect(content[1].license?.code).eq("CCDUAL");
 
@@ -975,7 +975,7 @@ test("moving content into public folder makes it public", async () => {
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(folder2Id);
+  expect(content[0].contentId).eqls(folder2Id);
   expect(content[0].isPublic).eq(true);
   expect(content[0].license?.code).eq("CCDUAL");
 
@@ -988,7 +988,7 @@ test("moving content into public folder makes it public", async () => {
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(activity2Id);
+  expect(content[0].contentId).eqls(activity2Id);
   expect(content[0].isPublic).eq(true);
   expect(content[0].license?.code).eq("CCDUAL");
 
@@ -1024,10 +1024,10 @@ test("moving content into public folder makes it public", async () => {
   }
   content = results.content;
 
-  expect(content[0].id).eqls(activity1Id);
+  expect(content[0].contentId).eqls(activity1Id);
   expect(content[0].isPublic).eq(true);
   expect(content[0].license?.code).eq("CCDUAL");
-  expect(content[1].id).eqls(folder1Id);
+  expect(content[1].contentId).eqls(folder1Id);
   expect(content[1].isPublic).eq(true);
   expect(content[1].license?.code).eq("CCDUAL");
 
@@ -1040,7 +1040,7 @@ test("moving content into public folder makes it public", async () => {
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(folder2Id);
+  expect(content[0].contentId).eqls(folder2Id);
   expect(content[0].isPublic).eq(true);
   expect(content[0].license?.code).eq("CCDUAL");
 
@@ -1053,7 +1053,7 @@ test("moving content into public folder makes it public", async () => {
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(activity2Id);
+  expect(content[0].contentId).eqls(activity2Id);
   expect(content[0].isPublic).eq(true);
   expect(content[0].license?.code).eq("CCDUAL");
 });
@@ -1114,11 +1114,11 @@ test("moving content into shared folder shares it", async () => {
   }
   let content = results.content;
 
-  expect(content[1].id).eqls(activity1Id);
+  expect(content[1].contentId).eqls(activity1Id);
   expect(content[1].isShared).eq(false);
   expect(content[1].sharedWith).eqls([]);
   expect(content[1].license?.code).eq("CCDUAL");
-  expect(content[2].id).eqls(folder1Id);
+  expect(content[2].contentId).eqls(folder1Id);
   expect(content[2].isShared).eq(false);
   expect(content[2].sharedWith).eqls([]);
   expect(content[2].license?.code).eq("CCDUAL");
@@ -1132,7 +1132,7 @@ test("moving content into shared folder shares it", async () => {
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(folder2Id);
+  expect(content[0].contentId).eqls(folder2Id);
   expect(content[0].isShared).eq(false);
   expect(content[0].sharedWith).eqls([]);
   expect(content[0].license?.code).eq("CCDUAL");
@@ -1146,7 +1146,7 @@ test("moving content into shared folder shares it", async () => {
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(activity2Id);
+  expect(content[0].contentId).eqls(activity2Id);
   expect(content[0].isShared).eq(false);
   expect(content[0].sharedWith).eqls([]);
   expect(content[0].license?.code).eq("CCDUAL");
@@ -1175,11 +1175,11 @@ test("moving content into shared folder shares it", async () => {
   }
   content = results.content;
 
-  expect(content[0].id).eqls(activity1Id);
+  expect(content[0].contentId).eqls(activity1Id);
   expect(content[0].isShared).eq(true);
   expect(content[0].sharedWith).eqls([userFields]);
   expect(content[0].license?.code).eq("CCDUAL");
-  expect(content[1].id).eqls(folder1Id);
+  expect(content[1].contentId).eqls(folder1Id);
   expect(content[1].isShared).eq(true);
   expect(content[1].sharedWith).eqls([userFields]);
   expect(content[1].license?.code).eq("CCDUAL");
@@ -1193,7 +1193,7 @@ test("moving content into shared folder shares it", async () => {
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(folder2Id);
+  expect(content[0].contentId).eqls(folder2Id);
   expect(content[0].isShared).eq(true);
   expect(content[0].sharedWith).eqls([userFields]);
   expect(content[0].license?.code).eq("CCDUAL");
@@ -1207,7 +1207,7 @@ test("moving content into shared folder shares it", async () => {
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(activity2Id);
+  expect(content[0].contentId).eqls(activity2Id);
   expect(content[0].isShared).eq(true);
   expect(content[0].sharedWith).eqls([userFields]);
   expect(content[0].license?.code).eq("CCDUAL");
@@ -1244,11 +1244,11 @@ test("moving content into shared folder shares it", async () => {
   }
   content = results.content;
 
-  expect(content[0].id).eqls(activity1Id);
+  expect(content[0].contentId).eqls(activity1Id);
   expect(content[0].isShared).eq(true);
   expect(content[0].sharedWith).eqls([userFields]);
   expect(content[0].license?.code).eq("CCDUAL");
-  expect(content[1].id).eqls(folder1Id);
+  expect(content[1].contentId).eqls(folder1Id);
   expect(content[1].isShared).eq(true);
   expect(content[1].sharedWith).eqls([userFields]);
   expect(content[1].license?.code).eq("CCDUAL");
@@ -1262,7 +1262,7 @@ test("moving content into shared folder shares it", async () => {
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(folder2Id);
+  expect(content[0].contentId).eqls(folder2Id);
   expect(content[0].isShared).eq(true);
   expect(content[0].sharedWith).eqls([userFields]);
   expect(content[0].license?.code).eq("CCDUAL");
@@ -1276,7 +1276,7 @@ test("moving content into shared folder shares it", async () => {
     throw Error("shouldn't happen");
   }
   content = results.content;
-  expect(content[0].id).eqls(activity2Id);
+  expect(content[0].contentId).eqls(activity2Id);
   expect(content[0].isShared).eq(true);
   expect(content[0].sharedWith).eqls([userFields]);
   expect(content[0].license?.code).eq("CCDUAL");

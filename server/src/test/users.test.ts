@@ -39,11 +39,15 @@ test("Update user name", async () => {
   expect(user.firstNames).eq("vitest");
   expect(user.lastNames.startsWith("user")).eq(true);
 
-  user = await updateUser({ userId, firstNames: "New", lastNames: "Name" });
+  user = await updateUser({
+    loggedInUserId: userId,
+    firstNames: "New",
+    lastNames: "Name",
+  });
   expect(user.firstNames).eq("New");
   expect(user.lastNames).eq("Name");
 
-  const userInfo = await getUserInfo(user.userId);
+  const { user: userInfo } = await getUserInfo({ userId: user.userId });
   expect(userInfo.firstNames).eq("New");
   expect(userInfo.lastNames).eq("Name");
 });
@@ -63,7 +67,7 @@ test("findOrCreateUser finds an existing user or creates a new one", async () =>
 test("upgrade anonymous user", async () => {
   let anonUser = await createTestAnonymousUser();
   anonUser = await updateUser({
-    userId: anonUser.userId,
+    loggedInUserId: anonUser.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });

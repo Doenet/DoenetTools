@@ -1,88 +1,45 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import { requireLoggedIn } from "../middleware/validationMiddleware";
-import { handleErrors } from "../errors/routeErrorHandler";
 import {
   contentIdEmailSchema,
   setLicenseCodeSchema,
   contentIdUserIdSchema,
 } from "../schemas/shareSchema";
 import {
-  modifyContentSharedWith,
-  setContentIsPublic,
+  makeContentPrivate,
+  makeContentPublic,
   setContentLicense,
   shareContentWithEmail,
+  unshareContent,
 } from "../query/share";
 import { contentIdSchema } from "../schemas/contentSchema";
+import { queryLoggedIn } from "../middleware/queryMiddleware";
 
 export const shareRouter = express.Router();
 
 shareRouter.use(requireLoggedIn);
 
-shareRouter.post("/setContentLicense", async (req: Request, res: Response) => {
-  try {
-    const loggedInUserId = req.user.userId;
-    const licenseCodeArgs = setLicenseCodeSchema.parse(req.body);
+shareRouter.post(
+  "/setContentLicense",
+  queryLoggedIn(setContentLicense, setLicenseCodeSchema),
+);
 
-    await setContentLicense({ loggedInUserId, ...licenseCodeArgs });
-    res.send({});
-  } catch (e) {
-    handleErrors(res, e);
-  }
-});
+shareRouter.post(
+  "/makeContentPublic",
+  queryLoggedIn(makeContentPublic, contentIdSchema),
+);
 
-shareRouter.post("/makeContentPublic", async (req: Request, res: Response) => {
-  try {
-    const loggedInUserId = req.user.userId;
-    const contentId = contentIdSchema.parse(req.body).contentId;
-    await setContentIsPublic({
-      loggedInUserId,
-      contentId,
-      isPublic: true,
-    });
-    res.send({});
-  } catch (e) {
-    handleErrors(res, e);
-  }
-});
+shareRouter.post(
+  "/makeContentPrivate",
+  queryLoggedIn(makeContentPrivate, contentIdSchema),
+);
 
-shareRouter.post("/makeContentPrivate", async (req: Request, res: Response) => {
-  try {
-    const loggedInUserId = req.user.userId;
-    const contentId = contentIdSchema.parse(req.body).contentId;
-    await setContentIsPublic({
-      loggedInUserId,
-      contentId,
-      isPublic: false,
-    });
-    res.send({});
-  } catch (e) {
-    handleErrors(res, e);
-  }
-});
+shareRouter.post(
+  "/shareContent",
+  queryLoggedIn(shareContentWithEmail, contentIdEmailSchema),
+);
 
-shareRouter.post("/shareContent", async (req: Request, res: Response) => {
-  try {
-    const loggedInUserId = req.user.userId;
-    const shareArgs = contentIdEmailSchema.parse(req.body);
-    await shareContentWithEmail({ loggedInUserId, ...shareArgs });
-    res.send({});
-  } catch (e) {
-    handleErrors(res, e);
-  }
-});
-
-shareRouter.post("/unshareContent", async (req: Request, res: Response) => {
-  try {
-    const loggedInUserId = req.user.userId;
-    const shareArgs = contentIdUserIdSchema.parse(req.body);
-    await modifyContentSharedWith({
-      action: "unshare",
-      contentId: shareArgs.contentId,
-      loggedInUserId,
-      users: [shareArgs.userId],
-    });
-    res.send({});
-  } catch (e) {
-    handleErrors(res, e);
-  }
-});
+shareRouter.post(
+  "/unshareContent",
+  queryLoggedIn(unshareContent, contentIdUserIdSchema),
+);

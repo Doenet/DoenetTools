@@ -130,7 +130,7 @@ test("copy folder", async () => {
     expect(folderResults.content.length).eq(1);
     expect(folderResults.content[0].name).eq("Base folder");
 
-    const folderNew0Id = folderResults.content[0].id;
+    const folderNew0Id = folderResults.content[0].contentId;
 
     folderResults = await getMyContent({
       parentId: folderNew0Id,
@@ -144,7 +144,7 @@ test("copy folder", async () => {
     expect(folderResults.content[0].name).eq("Activity 1");
     expect(folderResults.content[1].name).eq("Folder 1");
 
-    const folderNew1Id = folderResults.content[1].id;
+    const folderNew1Id = folderResults.content[1].contentId;
     folderResults = await getMyContent({
       parentId: folderNew1Id,
       ownerId: userId,
@@ -157,7 +157,7 @@ test("copy folder", async () => {
     expect(folderResults.content[0].name).eq("Activity 2");
     expect(folderResults.content[1].name).eq("Folder 2");
 
-    const folderNew2Id = folderResults.content[1].id;
+    const folderNew2Id = folderResults.content[1].contentId;
     folderResults = await getMyContent({
       parentId: folderNew2Id,
       ownerId: userId,
@@ -287,7 +287,7 @@ test("copy problem set", async () => {
   expect(folderResults.content.length).eq(1);
   expect(folderResults.content[0].name).eq("Problem set");
 
-  const folderNew0Id = folderResults.content[0].id;
+  const folderNew0Id = folderResults.content[0].contentId;
 
   folderResults = await getMyContent({
     ownerId,
@@ -302,8 +302,8 @@ test("copy problem set", async () => {
   expect(folderResults.content[1].name).eq("Question bank 2");
   expect(folderResults.content[2].name).eq("Question bank 3");
 
-  let folderNewQB2Id = folderResults.content[1].id;
-  let folderNewQB3Id = folderResults.content[2].id;
+  let folderNewQB2Id = folderResults.content[1].contentId;
+  let folderNewQB3Id = folderResults.content[2].contentId;
 
   folderResults = await getMyContent({
     ownerId,
@@ -357,8 +357,8 @@ test("copy problem set", async () => {
   expect(folderResults.content[1].name).eq("Question bank 2");
   expect(folderResults.content[2].name).eq("Question bank 3");
 
-  folderNewQB2Id = folderResults.content[1].id;
-  folderNewQB3Id = folderResults.content[2].id;
+  folderNewQB2Id = folderResults.content[1].contentId;
+  folderNewQB3Id = folderResults.content[2].contentId;
 
   folderResults = await getMyContent({
     ownerId,

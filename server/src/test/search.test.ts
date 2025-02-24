@@ -138,7 +138,7 @@ test("searchSharedContent returns public/shared activities and folders matching 
   expect(searchResults.length).eq(4);
 
   const namesInOrder = searchResults
-    .sort((a, b) => compareUUID(a.id, b.id))
+    .sort((a, b) => compareUUID(a.contentId, b.contentId))
     .map((c) => c.name);
 
   expect(namesInOrder).eqls([
@@ -268,7 +268,7 @@ test("searchSharedContent returns public/shared activities and folders even in a
   expect(searchResults.length).eq(4);
 
   const namesInOrder = searchResults
-    .sort((a, b) => compareUUID(a.id, b.id))
+    .sort((a, b) => compareUUID(a.contentId, b.contentId))
     .map((c) => c.name);
 
   expect(namesInOrder).eqls([
@@ -308,7 +308,9 @@ test("searchSharedContent, document source matches", async () => {
     isCurated: false,
     loggedInUserId: userId,
   });
-  expect(results.filter((r) => isEqualUUID(r.id, contentId))).toHaveLength(0);
+  expect(
+    results.filter((r) => isEqualUUID(r.contentId, contentId)),
+  ).toHaveLength(0);
 
   // first part of a word hits
   results = await searchSharedContent({
@@ -316,7 +318,9 @@ test("searchSharedContent, document source matches", async () => {
     isCurated: false,
     loggedInUserId: userId,
   });
-  expect(results.filter((r) => isEqualUUID(r.id, contentId))).toHaveLength(1);
+  expect(
+    results.filter((r) => isEqualUUID(r.contentId, contentId)),
+  ).toHaveLength(1);
 
   // full word hits
   results = await searchSharedContent({
@@ -324,7 +328,9 @@ test("searchSharedContent, document source matches", async () => {
     isCurated: false,
     loggedInUserId: userId,
   });
-  expect(results.filter((r) => isEqualUUID(r.id, contentId))).toHaveLength(1);
+  expect(
+    results.filter((r) => isEqualUUID(r.contentId, contentId)),
+  ).toHaveLength(1);
 });
 
 test("searchSharedContent, owner name matches", async () => {
@@ -337,7 +343,7 @@ test("searchSharedContent, owner name matches", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   await updateUser({
-    userId: ownerId,
+    loggedInUserId: ownerId,
     firstNames: `Arya${code}`,
     lastNames: "Abbas",
   });
@@ -357,14 +363,18 @@ test("searchSharedContent, owner name matches", async () => {
     isCurated: false,
     loggedInUserId: userId,
   });
-  expect(results.filter((r) => isEqualUUID(r.id, contentId))).toHaveLength(1);
+  expect(
+    results.filter((r) => isEqualUUID(r.contentId, contentId)),
+  ).toHaveLength(1);
 
   results = await searchSharedContent({
     query: `Arya${code} Abbas`,
     isCurated: false,
     loggedInUserId: userId,
   });
-  expect(results.filter((r) => isEqualUUID(r.id, contentId))).toHaveLength(1);
+  expect(
+    results.filter((r) => isEqualUUID(r.contentId, contentId)),
+  ).toHaveLength(1);
 });
 
 test("searchSharedContent, document source is more relevant than classification", async () => {
@@ -492,8 +502,8 @@ test("searchSharedContent, document source is more relevant than classification"
     loggedInUserId: userId,
   });
 
-  expect(results[0].id).eqls(activity1Id);
-  expect(results[1].id).eqls(activity2Id);
+  expect(results[0].contentId).eqls(activity1Id);
+  expect(results[1].contentId).eqls(activity2Id);
 
   // Even adding in three matching classifications doesn't put the match in first
   results = await searchSharedContent({
@@ -502,8 +512,8 @@ test("searchSharedContent, document source is more relevant than classification"
     isCurated: false,
   });
 
-  expect(results[0].id).eqls(activity1Id);
-  expect(results[1].id).eqls(activity2Id);
+  expect(results[0].contentId).eqls(activity1Id);
+  expect(results[1].contentId).eqls(activity2Id);
 
   // the classifications do put second activity in first place if don't include
   // document content from the first document
@@ -513,8 +523,8 @@ test("searchSharedContent, document source is more relevant than classification"
     isCurated: false,
   });
 
-  expect(results[0].id).eqls(activity2Id);
-  expect(results[1].id).eqls(activity1Id);
+  expect(results[0].contentId).eqls(activity2Id);
+  expect(results[1].contentId).eqls(activity1Id);
 });
 
 test("searchSharedContent, classification increases relevance", async () => {
@@ -575,32 +585,32 @@ test("searchSharedContent, classification increases relevance", async () => {
     isCurated: false,
   });
 
-  expect(results[0].id).eqls(activity2Id);
-  expect(results[1].id).eqls(activity1Id);
+  expect(results[0].contentId).eqls(activity2Id);
+  expect(results[1].contentId).eqls(activity1Id);
 
   results = await searchSharedContent({
     query: `grape${code} banana${code}`,
     loggedInUserId: userId,
     isCurated: false,
   });
-  expect(results[0].id).eqls(activity2Id);
-  expect(results[1].id).eqls(activity1Id);
+  expect(results[0].contentId).eqls(activity2Id);
+  expect(results[1].contentId).eqls(activity1Id);
 
   results = await searchSharedContent({
     query: `GrapeA1${code} banana${code}`,
     loggedInUserId: userId,
     isCurated: false,
   });
-  expect(results[0].id).eqls(activity2Id);
-  expect(results[1].id).eqls(activity1Id);
+  expect(results[0].contentId).eqls(activity2Id);
+  expect(results[1].contentId).eqls(activity1Id);
 
   results = await searchSharedContent({
     query: `GrapeA${code} banana${code}`,
     loggedInUserId: userId,
     isCurated: false,
   });
-  expect(results[0].id).eqls(activity2Id);
-  expect(results[1].id).eqls(activity1Id);
+  expect(results[0].contentId).eqls(activity2Id);
+  expect(results[1].contentId).eqls(activity1Id);
 });
 
 test("searchSharedContent, handle tags in search", async () => {
@@ -1080,7 +1090,7 @@ test("searchSharedContent, filter by activity feature", async () => {
     isCurated: false,
     loggedInUserId: userId,
   });
-  expect(results.map((c) => c.id)).eqls([
+  expect(results.map((c) => c.contentId)).eqls([
     activityNId,
     activityQId,
     activityIId,
@@ -1098,7 +1108,7 @@ test("searchSharedContent, filter by activity feature", async () => {
     loggedInUserId: userId,
     features: new Set(["isQuestion"]),
   });
-  expect(results.map((c) => c.id)).eqls([
+  expect(results.map((c) => c.contentId)).eqls([
     activityQId,
     activityQIId,
     activityQVId,
@@ -1112,7 +1122,7 @@ test("searchSharedContent, filter by activity feature", async () => {
     loggedInUserId: userId,
     features: new Set(["isInteractive"]),
   });
-  expect(results.map((c) => c.id)).eqls([
+  expect(results.map((c) => c.contentId)).eqls([
     activityIId,
     activityQIId,
     activityIVId,
@@ -1126,7 +1136,7 @@ test("searchSharedContent, filter by activity feature", async () => {
     loggedInUserId: userId,
     features: new Set(["containsVideo"]),
   });
-  expect(results.map((c) => c.id)).eqls([
+  expect(results.map((c) => c.contentId)).eqls([
     activityVId,
     activityQVId,
     activityIVId,
@@ -1140,7 +1150,7 @@ test("searchSharedContent, filter by activity feature", async () => {
     loggedInUserId: userId,
     features: new Set(["isQuestion", "isInteractive"]),
   });
-  expect(results.map((c) => c.id)).eqls([activityQIId, activityQIVId]);
+  expect(results.map((c) => c.contentId)).eqls([activityQIId, activityQIVId]);
 
   // filter to the two have are a question and contain a video
   results = await searchSharedContent({
@@ -1149,7 +1159,7 @@ test("searchSharedContent, filter by activity feature", async () => {
     loggedInUserId: userId,
     features: new Set(["isQuestion", "containsVideo"]),
   });
-  expect(results.map((c) => c.id)).eqls([activityQVId, activityQIVId]);
+  expect(results.map((c) => c.contentId)).eqls([activityQVId, activityQIVId]);
 
   // filter to the two have are interactive and contain a video
   results = await searchSharedContent({
@@ -1158,7 +1168,7 @@ test("searchSharedContent, filter by activity feature", async () => {
     loggedInUserId: userId,
     features: new Set(["isInteractive", "containsVideo"]),
   });
-  expect(results.map((c) => c.id)).eqls([activityIVId, activityQIVId]);
+  expect(results.map((c) => c.contentId)).eqls([activityIVId, activityQIVId]);
 
   // filter to the one that has all three features
   results = await searchSharedContent({
@@ -1167,7 +1177,7 @@ test("searchSharedContent, filter by activity feature", async () => {
     loggedInUserId: userId,
     features: new Set(["isQuestion", "isInteractive", "containsVideo"]),
   });
-  expect(results.map((c) => c.id)).eqls([activityQIVId]);
+  expect(results.map((c) => c.contentId)).eqls([activityQIVId]);
 });
 
 test("searchSharedContent, filter by owner", async () => {
@@ -1218,7 +1228,7 @@ test("searchSharedContent, filter by owner", async () => {
     isCurated: false,
     loggedInUserId: userId,
   });
-  expect(results.map((c) => c.id)).eqls([activity1Id, activity2Id]);
+  expect(results.map((c) => c.contentId)).eqls([activity1Id, activity2Id]);
 
   // filter for owner 1
   results = await searchSharedContent({
@@ -1227,7 +1237,7 @@ test("searchSharedContent, filter by owner", async () => {
     loggedInUserId: userId,
     ownerId: owner1Id,
   });
-  expect(results.map((c) => c.id)).eqls([activity1Id]);
+  expect(results.map((c) => c.contentId)).eqls([activity1Id]);
 
   // filter for owner 2
   results = await searchSharedContent({
@@ -1236,7 +1246,7 @@ test("searchSharedContent, filter by owner", async () => {
     loggedInUserId: userId,
     ownerId: owner2Id,
   });
-  expect(results.map((c) => c.id)).eqls([activity2Id]);
+  expect(results.map((c) => c.contentId)).eqls([activity2Id]);
 });
 
 test("searchUsersWithSharedContent returns only users with public/shared/non-deleted content", async () => {
@@ -1279,7 +1289,7 @@ test("searchUsersWithSharedContent returns only users with public/shared/non-del
     loggedInUserId: owner1Id,
     isPublic: true,
   });
-  await deleteContent(activity1dId, owner1Id);
+  await deleteContent({ contentId: activity1dId, loggedInUserId: owner1Id });
 
   // owner 2 has a public activity
   const owner2 = await createTestUser();
@@ -1505,7 +1515,7 @@ test("searchUsersWithSharedContent, filter by system, category, sub category, cl
   // owner 1 has only unclassified content
   const { userId: owner1Id } = await createTestUser();
   await updateUser({
-    userId: owner1Id,
+    loggedInUserId: owner1Id,
     firstNames: "Fred",
     lastNames: ownerLastNames,
   });
@@ -1533,7 +1543,7 @@ test("searchUsersWithSharedContent, filter by system, category, sub category, cl
   // owner 2 has content in classification FA1
   const { userId: owner2Id } = await createTestUser();
   await updateUser({
-    userId: owner2Id,
+    loggedInUserId: owner2Id,
     firstNames: "Wilma",
     lastNames: ownerLastNames,
   });
@@ -1571,7 +1581,7 @@ test("searchUsersWithSharedContent, filter by system, category, sub category, cl
   // owner 3 has a content in classification SD2 and unclassified content
   const { userId: owner3Id } = await createTestUser();
   await updateUser({
-    userId: owner3Id,
+    loggedInUserId: owner3Id,
     firstNames: "Pebbles",
     lastNames: ownerLastNames,
   });
@@ -1694,7 +1704,7 @@ test("searchUsersWithSharedContent, filter by activity feature", async () => {
   // owner 1 has only content without features and isQuestion
   const { userId: owner1Id } = await createTestUser();
   await updateUser({
-    userId: owner1Id,
+    loggedInUserId: owner1Id,
     firstNames: "Fred",
     lastNames: ownerLastNames,
   });
@@ -1727,7 +1737,7 @@ test("searchUsersWithSharedContent, filter by activity feature", async () => {
   // owner 2 has content combinations of two features
   const { userId: owner2Id } = await createTestUser();
   await updateUser({
-    userId: owner2Id,
+    loggedInUserId: owner2Id,
     firstNames: "Wilma",
     lastNames: ownerLastNames,
   });
@@ -1780,7 +1790,7 @@ test("searchUsersWithSharedContent, filter by activity feature", async () => {
   // owner 3 has a content with isInteractive and containsVideo
   const { userId: owner3Id } = await createTestUser();
   await updateUser({
-    userId: owner3Id,
+    loggedInUserId: owner3Id,
     firstNames: "Pebbles",
     lastNames: ownerLastNames,
   });
@@ -1996,7 +2006,7 @@ test("searchClassificationsWithSharedContent, returns only classifications with 
   });
 
   // actually delete the deleted activity
-  await deleteContent(contentIdDeleted, ownerId);
+  await deleteContent({ contentId: contentIdDeleted, loggedInUserId: ownerId });
 
   // user1 gets classifications with shared and public content
   let resultsClass = await searchClassificationsWithSharedContent({
@@ -2953,7 +2963,7 @@ test(
       loggedInUserId: ownerId,
       name: "Deleted activity",
     });
-    await deleteContent(activity1bId, ownerId);
+    await deleteContent({ contentId: activity1bId, loggedInUserId: ownerId });
 
     const { contentId: folder1cId } = await createContent({
       loggedInUserId: ownerId,
@@ -2976,7 +2986,7 @@ test(
       loggedInUserId: ownerId,
       name: "First piece",
     });
-    await deleteContent(activity1c1Id, ownerId);
+    await deleteContent({ contentId: activity1c1Id, loggedInUserId: ownerId });
 
     const { contentId: activity1c2Id } = await createContent({
       loggedInUserId: ownerId,
@@ -3009,7 +3019,7 @@ test(
       loggedInUserId: ownerId,
       name: "Activity 3",
     });
-    await deleteContent(activity3Id, ownerId);
+    await deleteContent({ contentId: activity3Id, loggedInUserId: ownerId });
 
     const { contentId: activityGoneId } = await createContent({
       loggedInUserId: ownerId,
@@ -3021,7 +3031,7 @@ test(
       loggedInUserId: ownerId,
       name: "Activity gone",
     });
-    await deleteContent(activityGoneId, ownerId);
+    await deleteContent({ contentId: activityGoneId, loggedInUserId: ownerId });
     const { contentId: activityRootId } = await createContent({
       loggedInUserId: ownerId,
       contentType: "singleDoc",
@@ -3047,10 +3057,10 @@ test(
     expect(content.length).eq(3);
     expect(
       content
-        .sort((a, b) => compareUUID(a.id, b.id))
+        .sort((a, b) => compareUUID(a.contentId, b.contentId))
         .map((c) => ({
-          id: fromUUID(c.id),
-          parentId: c.parent ? fromUUID(c.parent.id) : null,
+          id: fromUUID(c.contentId),
+          parentId: c.parent ? fromUUID(c.parent.contentId) : null,
         })),
     ).eqls([
       { id: fromUUID(folder1Id), parentId: fromUUID(baseFolderId) },
@@ -3067,15 +3077,17 @@ test(
     if (searchResults.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(baseFolderId));
+    expect(fromUUID(searchResults.folder!.contentId)).eq(
+      fromUUID(baseFolderId),
+    );
     content = searchResults.content;
     expect(content.length).eq(2);
     expect(
       content
-        .sort((a, b) => compareUUID(a.id, b.id))
+        .sort((a, b) => compareUUID(a.contentId, b.contentId))
         .map((c) => ({
-          id: fromUUID(c.id),
-          parentId: c.parent ? fromUUID(c.parent.id) : null,
+          id: fromUUID(c.contentId),
+          parentId: c.parent ? fromUUID(c.parent.contentId) : null,
         })),
     ).eqls([
       { id: fromUUID(folder1Id), parentId: fromUUID(baseFolderId) },
@@ -3091,15 +3103,15 @@ test(
     if (searchResults.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(folder1Id));
+    expect(fromUUID(searchResults.folder!.contentId)).eq(fromUUID(folder1Id));
     content = searchResults.content;
     expect(content.length).eq(1);
     expect(
       content
-        .sort((a, b) => compareUUID(a.id, b.id))
+        .sort((a, b) => compareUUID(a.contentId, b.contentId))
         .map((c) => ({
-          id: fromUUID(c.id),
-          parentId: c.parent ? fromUUID(c.parent.id) : null,
+          id: fromUUID(c.contentId),
+          parentId: c.parent ? fromUUID(c.parent.contentId) : null,
         })),
     ).eqls([{ id: fromUUID(activity1aId), parentId: fromUUID(folder1Id) }]);
 
@@ -3112,7 +3124,7 @@ test(
     if (searchResults.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(folder1cId));
+    expect(fromUUID(searchResults.folder!.contentId)).eq(fromUUID(folder1cId));
     content = searchResults.content;
     expect(content.length).eq(0);
 
@@ -3130,10 +3142,10 @@ test(
     expect(content.length).eq(3);
     expect(
       content
-        .sort((a, b) => compareUUID(a.id, b.id))
+        .sort((a, b) => compareUUID(a.contentId, b.contentId))
         .map((c) => ({
-          id: fromUUID(c.id),
-          parentId: c.parent ? fromUUID(c.parent.id) : null,
+          id: fromUUID(c.contentId),
+          parentId: c.parent ? fromUUID(c.parent.contentId) : null,
         })),
     ).eqls([
       { id: fromUUID(activity1aId), parentId: fromUUID(folder1Id) },
@@ -3150,15 +3162,17 @@ test(
     if (searchResults.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(baseFolderId));
+    expect(fromUUID(searchResults.folder!.contentId)).eq(
+      fromUUID(baseFolderId),
+    );
     content = searchResults.content;
     expect(content.length).eq(2);
     expect(
       content
-        .sort((a, b) => compareUUID(a.id, b.id))
+        .sort((a, b) => compareUUID(a.contentId, b.contentId))
         .map((c) => ({
-          id: fromUUID(c.id),
-          parentId: c.parent ? fromUUID(c.parent.id) : null,
+          id: fromUUID(c.contentId),
+          parentId: c.parent ? fromUUID(c.parent.contentId) : null,
         })),
     ).eqls([
       { id: fromUUID(activity1aId), parentId: fromUUID(folder1Id) },
@@ -3174,15 +3188,15 @@ test(
     if (searchResults.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(folder1Id));
+    expect(fromUUID(searchResults.folder!.contentId)).eq(fromUUID(folder1Id));
     content = searchResults.content;
     expect(content.length).eq(1);
     expect(
       content
-        .sort((a, b) => compareUUID(a.id, b.id))
+        .sort((a, b) => compareUUID(a.contentId, b.contentId))
         .map((c) => ({
-          id: fromUUID(c.id),
-          parentId: c.parent ? fromUUID(c.parent.id) : null,
+          id: fromUUID(c.contentId),
+          parentId: c.parent ? fromUUID(c.parent.contentId) : null,
         })),
     ).eqls([{ id: fromUUID(activity1aId), parentId: fromUUID(folder1Id) }]);
 
@@ -3195,7 +3209,7 @@ test(
     if (searchResults.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(fromUUID(searchResults.folder!.id)).eq(fromUUID(folder1cId));
+    expect(fromUUID(searchResults.folder!.contentId)).eq(fromUUID(folder1cId));
     content = searchResults.content;
     expect(content.length).eq(0);
   },

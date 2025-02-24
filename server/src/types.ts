@@ -123,7 +123,7 @@ export function isContentType(type: unknown): type is ContentType {
 }
 
 export type ContentBase = {
-  id: Uint8Array;
+  contentId: Uint8Array;
   ownerId: Uint8Array;
   owner?: UserInfo;
   name: string;
@@ -145,7 +145,7 @@ export type ContentBase = {
   librarySourceInfo?: LibraryInfo;
   libraryActivityInfo?: LibraryInfo;
   parent: {
-    id: Uint8Array;
+    contentId: Uint8Array;
     name: string;
     type: ContentType;
     isPublic: boolean;
@@ -206,7 +206,7 @@ export async function createContentInfo({
   contentType: ContentType;
 }): Promise<Content> {
   const contentBase: ContentBase = {
-    id: contentId,
+    contentId: contentId,
     name: "",
     ownerId: ownerId,
     imagePath: null,
@@ -285,7 +285,7 @@ export type License = {
 };
 
 export type ActivityHistory = {
-  id: Uint8Array;
+  contentId: Uint8Array;
   contributorHistory: {
     contentId: Uint8Array;
     prevContentId: Uint8Array;
@@ -299,7 +299,7 @@ export type ActivityHistory = {
       source: string | null;
       activity: {
         name: string;
-        id: Uint8Array;
+        contentId: Uint8Array;
         owner: UserInfo;
       };
     };
@@ -307,7 +307,7 @@ export type ActivityHistory = {
 };
 
 export type ActivityRemixes = {
-  id: Uint8Array;
+  contentId: Uint8Array;
   activityRevisions: {
     revisionNum: number;
     remixes: {

@@ -1,7 +1,5 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import { requireLoggedIn } from "../middleware/validationMiddleware";
-import { handleErrors } from "../errors/routeErrorHandler";
-import { convertUUID } from "../utils/uuid";
 import {
   checkIfContentContains,
   copyContent,
@@ -14,66 +12,28 @@ import {
   createContentCopyInChildrenSchema,
   moveContentSchema,
 } from "../schemas/copyMoveSchema";
+import { queryLoggedIn } from "../middleware/queryMiddleware";
 
 export const copyMoveRouter = express.Router();
 
 copyMoveRouter.use(requireLoggedIn);
 
-copyMoveRouter.post("/api/moveContent", async (req: Request, res: Response) => {
-  try {
-    const loggedInUserId = req.user.userId;
-    const moveArgs = moveContentSchema.parse(req.body);
-    await moveContent({ loggedInUserId, ...moveArgs });
-    res.send();
-  } catch (e) {
-    handleErrors(res, e);
-  }
-});
-
-copyMoveRouter.post("/api/copyContent", async (req: Request, res: Response) => {
-  try {
-    const loggedInUserId = req.user.userId;
-    const copyArgs = copyContentSchema.parse(req.body);
-
-    const result = await copyContent({ loggedInUserId, ...copyArgs });
-
-    res.send(convertUUID(result));
-  } catch (e) {
-    handleErrors(res, e);
-  }
-});
+copyMoveRouter.post(
+  "/moveContent",
+  queryLoggedIn(moveContent, moveContentSchema),
+);
 
 copyMoveRouter.post(
-  "/api/createContentCopyInChildren",
-  async (req: Request, res: Response) => {
-    try {
-      const loggedInUserId = req.user.userId;
-      const createArgs = createContentCopyInChildrenSchema.parse(req.body);
-      const result = await createContentCopyInChildren({
-        loggedInUserId,
-        ...createArgs,
-      });
-      res.send(convertUUID(result));
-    } catch (e) {
-      handleErrors(res, e);
-    }
-  },
+  "/copyContent",
+  queryLoggedIn(copyContent, copyContentSchema),
+);
+
+copyMoveRouter.post(
+  "/createContentCopyInChildren",
+  queryLoggedIn(createContentCopyInChildren, createContentCopyInChildrenSchema),
 );
 
 copyMoveRouter.get(
-  "/api/checkIfContentContains",
-  async (req: Request, res: Response) => {
-    try {
-      const loggedInUserId = req.user.userId;
-
-      const checkArgs = checkIfContentContainsSchema.parse(req.body);
-      const result = await checkIfContentContains({
-        loggedInUserId,
-        ...checkArgs,
-      });
-      res.send(convertUUID(result));
-    } catch (e) {
-      handleErrors(res, e);
-    }
-  },
+  "/checkIfContentContains",
+  queryLoggedIn(checkIfContentContains, checkIfContentContainsSchema),
 );

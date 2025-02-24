@@ -13,7 +13,7 @@ import {
 } from "../schemas/classificationSchema";
 import {
   queryLoggedIn,
-  queryNoArguments,
+  queryNoLoggedInNoArguments,
   queryOptionalLoggedIn,
 } from "../middleware/queryMiddleware";
 import { contentIdSchema } from "../schemas/contentSchema";
@@ -22,7 +22,7 @@ export const classificationRouter = express.Router();
 
 classificationRouter.get(
   "/getClassificationCategories",
-  queryNoArguments(getClassificationCategories),
+  queryNoLoggedInNoArguments(getClassificationCategories),
 );
 
 classificationRouter.get(

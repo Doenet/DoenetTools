@@ -62,7 +62,7 @@ test("add and remove promoted content", async () => {
       (content) => content.promotedGroupId === groupId,
     );
     expect(myContent).toBeDefined();
-    expect(myContent?.promotedContent[0].id).toEqual(contentId);
+    expect(myContent?.promotedContent[0].contentId).toEqual(contentId);
   }
 
   // Cannot add to same group twice
@@ -259,7 +259,7 @@ test("move promoted content", async () => {
   let myContent = promotedContent.find(
     (content) => content.promotedGroupId === groupId,
   );
-  expect(myContent!.promotedContent[0].id).toEqual(activity1Id);
+  expect(myContent!.promotedContent[0].contentId).toEqual(activity1Id);
 
   // add second activity
   const { contentId: activity2Id } = await createContent({
@@ -277,8 +277,8 @@ test("move promoted content", async () => {
   myContent = promotedContent.find(
     (content) => content.promotedGroupId === groupId,
   );
-  expect(myContent!.promotedContent[0].id).toEqual(activity1Id);
-  expect(myContent!.promotedContent[1].id).toEqual(activity2Id);
+  expect(myContent!.promotedContent[0].contentId).toEqual(activity1Id);
+  expect(myContent!.promotedContent[1].contentId).toEqual(activity2Id);
 
   // move second activity to first spot
   await movePromotedContent(groupId, activity2Id, userId, 0);
@@ -286,8 +286,8 @@ test("move promoted content", async () => {
   myContent = promotedContent.find(
     (content) => content.promotedGroupId === groupId,
   );
-  expect(myContent!.promotedContent[0].id).toEqual(activity2Id);
-  expect(myContent!.promotedContent[1].id).toEqual(activity1Id);
+  expect(myContent!.promotedContent[0].contentId).toEqual(activity2Id);
+  expect(myContent!.promotedContent[1].contentId).toEqual(activity1Id);
 
   // add third activity
   const { contentId: activity3Id } = await createContent({
@@ -305,9 +305,9 @@ test("move promoted content", async () => {
   myContent = promotedContent.find(
     (content) => content.promotedGroupId === groupId,
   );
-  expect(myContent!.promotedContent[0].id).toEqual(activity2Id);
-  expect(myContent!.promotedContent[1].id).toEqual(activity1Id);
-  expect(myContent!.promotedContent[2].id).toEqual(activity3Id);
+  expect(myContent!.promotedContent[0].contentId).toEqual(activity2Id);
+  expect(myContent!.promotedContent[1].contentId).toEqual(activity1Id);
+  expect(myContent!.promotedContent[2].contentId).toEqual(activity3Id);
 
   // move first activity to last spot
   await movePromotedContent(groupId, activity1Id, userId, 10);
@@ -315,9 +315,9 @@ test("move promoted content", async () => {
   myContent = promotedContent.find(
     (content) => content.promotedGroupId === groupId,
   );
-  expect(myContent!.promotedContent[0].id).toEqual(activity2Id);
-  expect(myContent!.promotedContent[1].id).toEqual(activity3Id);
-  expect(myContent!.promotedContent[2].id).toEqual(activity1Id);
+  expect(myContent!.promotedContent[0].contentId).toEqual(activity2Id);
+  expect(myContent!.promotedContent[1].contentId).toEqual(activity3Id);
+  expect(myContent!.promotedContent[2].contentId).toEqual(activity1Id);
 
   // move second activity to middle spot
   await movePromotedContent(groupId, activity2Id, userId, 1);
@@ -325,9 +325,9 @@ test("move promoted content", async () => {
   myContent = promotedContent.find(
     (content) => content.promotedGroupId === groupId,
   );
-  expect(myContent!.promotedContent[0].id).toEqual(activity3Id);
-  expect(myContent!.promotedContent[1].id).toEqual(activity2Id);
-  expect(myContent!.promotedContent[2].id).toEqual(activity1Id);
+  expect(myContent!.promotedContent[0].contentId).toEqual(activity3Id);
+  expect(myContent!.promotedContent[1].contentId).toEqual(activity2Id);
+  expect(myContent!.promotedContent[2].contentId).toEqual(activity1Id);
 });
 
 test("promoted content access control", async () => {

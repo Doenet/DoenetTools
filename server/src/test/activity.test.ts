@@ -65,7 +65,7 @@ test("New activity starts out private, then delete it", async () => {
   }
 
   const expectedContent: Doc = {
-    id: contentId,
+    contentId: contentId,
     name: "Untitled Document",
     ownerId: userId,
     imagePath: "/activity_default.jpg",
@@ -104,7 +104,7 @@ test("New activity starts out private, then delete it", async () => {
   expect(data.content[0].isPublic).eq(false);
   expect(data.content[0].assignmentInfo).eq(undefined);
 
-  await deleteContent(contentId, userId);
+  await deleteContent({ contentId: contentId, loggedInUserId: userId });
 
   await expect(
     getActivityEditorData({ contentId: contentId, loggedInUserId: userId }),
@@ -179,7 +179,7 @@ test("deleteContent marks a activity and document as deleted and prevents its re
   });
   await getActivitySource(contentId, userId);
 
-  await deleteContent(contentId, userId);
+  await deleteContent({ contentId: contentId, loggedInUserId: userId });
 
   // cannot retrieve activity
   await expect(
@@ -204,9 +204,11 @@ test("only owner can delete an activity", async () => {
     parentId: null,
   });
 
-  await expect(deleteContent(contentId, user2Id)).rejects.toThrow("not found");
+  await expect(
+    deleteContent({ contentId: contentId, loggedInUserId: user2Id }),
+  ).rejects.toThrow("not found");
 
-  await deleteContent(contentId, ownerId);
+  await deleteContent({ contentId: contentId, loggedInUserId: ownerId });
 });
 
 test("updateDoc updates document properties", async () => {
@@ -474,7 +476,7 @@ test("activity editor data and my folder contents before and after assigned", as
     loggedInUserId: ownerId,
   });
   let expectedData: Content = {
-    id: contentId,
+    contentId: contentId,
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
@@ -522,7 +524,7 @@ test("activity editor data and my folder contents before and after assigned", as
     loggedInUserId: ownerId,
   });
   expectedData = {
-    id: contentId,
+    contentId: contentId,
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
@@ -567,13 +569,16 @@ test("activity editor data and my folder contents before and after assigned", as
   expect(folderData.content).eqls([expectedData]);
 
   // closing the assignment without data also unassigns it
-  await closeAssignmentWithCode(contentId, ownerId);
+  await closeAssignmentWithCode({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
   const { activity: closedData } = await getActivityEditorData({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
   expectedData = {
-    id: contentId,
+    contentId: contentId,
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
@@ -623,7 +628,7 @@ test("activity editor data and my folder contents before and after assigned", as
     loggedInUserId: ownerId,
   });
   expectedData = {
-    id: contentId,
+    contentId: contentId,
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
@@ -682,7 +687,7 @@ test("activity editor data and my folder contents before and after assigned", as
     loggedInUserId: ownerId,
   });
   expectedData = {
-    id: contentId,
+    contentId: contentId,
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
@@ -726,13 +731,16 @@ test("activity editor data and my folder contents before and after assigned", as
   expect(folderData.content).eqls([expectedData]);
 
   // now closing does not unassign
-  await closeAssignmentWithCode(contentId, ownerId);
+  await closeAssignmentWithCode({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
   const { activity: closedData2 } = await getActivityEditorData({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
   expectedData = {
-    id: contentId,
+    contentId: contentId,
     name: "Untitled Document",
     ownerId,
     imagePath: "/activity_default.jpg",
@@ -777,9 +785,9 @@ test("activity editor data and my folder contents before and after assigned", as
   expect(folderData.content).eqls([expectedData]);
 
   // explicitly unassigning fails due to the presence of data
-  await expect(unassignActivity(contentId, ownerId)).rejects.toThrow(
-    "Record to update not found",
-  );
+  await expect(
+    unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
+  ).rejects.toThrow("Record to update not found");
 });
 
 test("activity editor data shows its parent folder is public", async () => {
@@ -1060,8 +1068,8 @@ test("get compound activity", async () => {
     parentId: sequenceId,
   });
 
-  await deleteContent(contentIdDelete2, ownerId);
-  await deleteContent(selectIdDelete, ownerId);
+  await deleteContent({ contentId: contentIdDelete2, loggedInUserId: ownerId });
+  await deleteContent({ contentId: selectIdDelete, loggedInUserId: ownerId });
 
   const { activity: sequence } = await getActivityViewerData({
     contentId: sequenceId,
@@ -1072,15 +1080,21 @@ test("get compound activity", async () => {
     throw Error("shouldn't happen");
   }
 
-  expect(sequence.id).eqls(sequenceId);
+  expect(sequence.contentId).eqls(sequenceId);
   expect(sequence.type).eq("sequence");
 
-  expect(sequence.children.map((c) => c.id)).eqls([selectId, contentId3]);
+  expect(sequence.children.map((c) => c.contentId)).eqls([
+    selectId,
+    contentId3,
+  ]);
 
   const select = sequence.children[0];
   if (select.type !== "select") {
     throw Error("shouldn't happen");
   }
   expect(select.type).eq("select");
-  expect(select.children.map((c) => c.id)).eqls([contentId1, contentId2]);
+  expect(select.children.map((c) => c.contentId)).eqls([
+    contentId1,
+    contentId2,
+  ]);
 });

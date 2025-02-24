@@ -53,6 +53,26 @@ export async function setContentLicense({
   });
 }
 
+export function makeContentPublic({
+  contentId,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
+  return setContentIsPublic({ contentId, loggedInUserId, isPublic: true });
+}
+
+export function makeContentPrivate({
+  contentId,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
+  return setContentIsPublic({ contentId, loggedInUserId, isPublic: false });
+}
+
 /**
  * Set the `isPublic` flag on a content `id` along with all of its children.
  * Recurses to grandchildren/subfolders.
@@ -96,6 +116,23 @@ export async function setContentIsPublic({
       SET content.isPublic = ${isPublic}
       WHERE content.id IN (SELECT id from content_tree);
     `);
+}
+
+export function unshareContent({
+  contentId,
+  loggedInUserId,
+  userId,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+  userId: Uint8Array;
+}) {
+  return modifyContentSharedWith({
+    action: "unshare",
+    contentId,
+    loggedInUserId,
+    users: [userId],
+  });
 }
 
 /**

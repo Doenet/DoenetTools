@@ -131,22 +131,25 @@ export async function createContent({
  * recursing to its children.
  * Throws error if content id does not exist
  */
-export async function deleteContent(
-  id: Uint8Array,
-  loggedInUserId: Uint8Array,
-) {
+export async function deleteContent({
+  contentId,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
   // TODO: Figure out how to delete folder in library (some contents may be published)
 
   // throw error if content does not exist or isn't visible
   await prisma.content.findUniqueOrThrow({
     where: {
-      id,
+      id: contentId,
       ...filterEditableContent(loggedInUserId),
     },
     select: { id: true },
   });
 
-  await deleteContentNoCheck(id, loggedInUserId);
+  await deleteContentNoCheck(contentId, loggedInUserId);
 }
 
 /**

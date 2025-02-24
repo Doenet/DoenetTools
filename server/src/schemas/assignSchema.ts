@@ -48,3 +48,5 @@ export const recordSubmittedEventSchema = z.object({
   itemCreditAchieved: z.number(),
   activityCreditAchieved: z.number(),
 });
+
+export const codeSchema = z.object({ code: z.string() });

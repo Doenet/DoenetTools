@@ -46,7 +46,7 @@ test("assign an activity", async () => {
     loggedInUserId: ownerId,
   });
 
-  await assignActivity(contentId, ownerId);
+  await assignActivity({ contentId: contentId, loggedInUserId: ownerId });
   const assignment = await getTestAssignment(contentId, ownerId);
 
   expect(assignment.id).eqls(contentId);
@@ -91,9 +91,9 @@ test("cannot assign other user's activity", async () => {
     loggedInUserId: ownerId1,
   });
 
-  await expect(assignActivity(contentId, ownerId2)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  await expect(
+    assignActivity({ contentId: contentId, loggedInUserId: ownerId2 }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   // still cannot create assignment even if activity is made public
   await setContentIsPublic({
@@ -102,9 +102,9 @@ test("cannot assign other user's activity", async () => {
     loggedInUserId: ownerId1,
   });
 
-  await expect(assignActivity(contentId, ownerId2)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  await expect(
+    assignActivity({ contentId: contentId, loggedInUserId: ownerId2 }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   // still cannot create assignment even if activity is shared
   await modifyContentSharedWith({
@@ -114,9 +114,9 @@ test("cannot assign other user's activity", async () => {
     users: [ownerId2],
   });
 
-  await expect(assignActivity(contentId, ownerId2)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  await expect(
+    assignActivity({ contentId: contentId, loggedInUserId: ownerId2 }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 });
 
 test("open and close assignment with code", async () => {
@@ -147,7 +147,10 @@ test("open and close assignment with code", async () => {
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
 
-  let assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
+  let assignmentData = await getAssignmentDataFromCode({
+    code: classCode,
+    loggedInUserId: fakeId,
+  });
   expect(assignmentData.assignmentFound).eq(true);
   expect(assignmentData.assignment!.id).eqls(contentId);
   expect(assignmentData.assignment!.assignedRevision!.source).eq(
@@ -155,12 +158,18 @@ test("open and close assignment with code", async () => {
   );
 
   // close assignment completely unassigns since there is no data
-  await closeAssignmentWithCode(contentId, ownerId);
+  await closeAssignmentWithCode({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
   await expect(getTestAssignment(contentId, ownerId)).rejects.toThrow(
     PrismaClientKnownRequestError,
   );
 
-  assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
+  assignmentData = await getAssignmentDataFromCode({
+    code: classCode,
+    loggedInUserId: fakeId,
+  });
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
 
@@ -176,7 +185,10 @@ test("open and close assignment with code", async () => {
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
 
-  assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
+  assignmentData = await getAssignmentDataFromCode({
+    code: classCode,
+    loggedInUserId: fakeId,
+  });
   expect(assignmentData.assignmentFound).eq(true);
   expect(assignmentData.assignment!.id).eqls(contentId);
 
@@ -190,7 +202,10 @@ test("open and close assignment with code", async () => {
     closeAt: closeAt,
     loggedInUserId: ownerId,
   });
-  assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
+  assignmentData = await getAssignmentDataFromCode({
+    code: classCode,
+    loggedInUserId: fakeId,
+  });
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
 
@@ -222,7 +237,10 @@ test("open and close assignment with code", async () => {
   });
 
   // closing assignment doesn't close completely due to the data
-  await closeAssignmentWithCode(contentId, ownerId);
+  await closeAssignmentWithCode({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
   assignment = await getTestAssignment(contentId, ownerId);
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(null);
@@ -245,7 +263,7 @@ test("open and unassign assignment with code", async () => {
     loggedInUserId: ownerId,
   });
 
-  await assignActivity(contentId, ownerId);
+  await assignActivity({ contentId: contentId, loggedInUserId: ownerId });
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
@@ -258,24 +276,30 @@ test("open and unassign assignment with code", async () => {
   expect(assignment.classCode).eq(classCode);
   expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
 
-  let assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
+  let assignmentData = await getAssignmentDataFromCode({
+    code: classCode,
+    loggedInUserId: fakeId,
+  });
   expect(assignmentData.assignment!.id).eqls(contentId);
 
   // unassign activity
-  await unassignActivity(contentId, ownerId);
+  await unassignActivity({ contentId: contentId, loggedInUserId: ownerId });
   await expect(getTestAssignment(contentId, ownerId)).rejects.toThrow(
     PrismaClientKnownRequestError,
   );
 
   // Getting deleted assignment by code fails
-  assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
+  assignmentData = await getAssignmentDataFromCode({
+    code: classCode,
+    loggedInUserId: fakeId,
+  });
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
 
   // cannot unassign again
-  await expect(unassignActivity(contentId, ownerId)).rejects.toThrow(
-    "Record to update not found",
-  );
+  await expect(
+    unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
+  ).rejects.toThrow("Record to update not found");
 });
 
 test("only owner can open, close, modify, or unassign assignment", async () => {
@@ -305,11 +329,11 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
     loggedInUserId: ownerId,
   });
 
-  await expect(assignActivity(contentId, userId2)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  await expect(
+    assignActivity({ contentId: contentId, loggedInUserId: userId2 }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
-  await assignActivity(contentId, ownerId);
+  await assignActivity({ contentId: contentId, loggedInUserId: ownerId });
 
   await expect(getTestAssignment(contentId, userId2)).rejects.toThrow(
     PrismaClientKnownRequestError,
@@ -372,11 +396,14 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
   assignment = await getTestAssignment(contentId, ownerId);
   expect(assignment.codeValidUntil).eqls(newCloseAt.toJSDate());
 
-  await expect(closeAssignmentWithCode(contentId, userId2)).rejects.toThrow(
-    "Record to update not found",
-  );
+  await expect(
+    closeAssignmentWithCode({ contentId: contentId, loggedInUserId: userId2 }),
+  ).rejects.toThrow("Record to update not found");
 
-  await closeAssignmentWithCode(contentId, ownerId);
+  await closeAssignmentWithCode({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
 });
 
 test("get assignment data from anonymous users", async () => {
@@ -404,7 +431,7 @@ test("get assignment data from anonymous users", async () => {
 
   let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
-    userId: newUser1.userId,
+    loggedInUserId: newUser1.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
@@ -559,7 +586,7 @@ test("get assignment data from anonymous users", async () => {
   // second user opens assignment
   let newUser2 = await createTestAnonymousUser();
   newUser2 = await updateUser({
-    userId: newUser2.userId,
+    loggedInUserId: newUser2.userId,
     firstNames: "Arya",
     lastNames: "Abbas",
   });
@@ -651,7 +678,7 @@ test("can't get assignment data if other user, but student can get their own dat
 
   let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
-    userId: newUser1.userId,
+    loggedInUserId: newUser1.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
@@ -730,7 +757,7 @@ test("can't unassign if have data", async () => {
 
   let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
-    userId: newUser1.userId,
+    loggedInUserId: newUser1.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
@@ -755,9 +782,9 @@ test("can't unassign if have data", async () => {
     studentUserId: newUser1.userId,
   });
 
-  await expect(unassignActivity(contentId, ownerId)).rejects.toThrow(
-    "Record to update not found",
-  );
+  await expect(
+    unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
+  ).rejects.toThrow("Record to update not found");
 });
 
 test("list assigned and get assigned scores get student assignments and scores", async () => {
@@ -766,11 +793,11 @@ test("list assigned and get assigned scores get student assignments and scores",
   const user2 = await createTestUser();
   const user2Id = user2.userId;
 
-  let assignmentList = await listUserAssigned(user1Id);
+  let assignmentList = await listUserAssigned({ loggedInUserId: user1Id });
   expect(assignmentList.assignments).eqls([]);
   expect(assignmentList.user.userId).eqls(user1Id);
 
-  let studentData = await getAssignedScores(user1Id);
+  let studentData = await getAssignedScores({ loggedInUserId: user1Id });
   expect(studentData.orderedActivityScores).eqls([]);
   expect(studentData.userData.userId).eqls(user1Id);
 
@@ -784,11 +811,11 @@ test("list assigned and get assigned scores get student assignments and scores",
     name: "Activity 1",
     loggedInUserId: user1Id,
   });
-  await assignActivity(contentId1, user1Id);
+  await assignActivity({ contentId: contentId1, loggedInUserId: user1Id });
 
-  assignmentList = await listUserAssigned(user1Id);
+  assignmentList = await listUserAssigned({ loggedInUserId: user1Id });
   expect(assignmentList.assignments).eqls([]);
-  studentData = await getAssignedScores(user1Id);
+  studentData = await getAssignedScores({ loggedInUserId: user1Id });
   expect(studentData.orderedActivityScores).eqls([]);
 
   const { contentId: contentId2 } = await createContent({
@@ -801,11 +828,11 @@ test("list assigned and get assigned scores get student assignments and scores",
     name: "Activity 2",
     loggedInUserId: user2Id,
   });
-  await assignActivity(contentId2, user2Id);
+  await assignActivity({ contentId: contentId2, loggedInUserId: user2Id });
 
-  assignmentList = await listUserAssigned(user1Id);
+  assignmentList = await listUserAssigned({ loggedInUserId: user1Id });
   expect(assignmentList.assignments).eqls([]);
-  studentData = await getAssignedScores(user1Id);
+  studentData = await getAssignedScores({ loggedInUserId: user1Id });
   expect(studentData.orderedActivityScores).eqls([]);
 
   // open assignment generates code
@@ -826,22 +853,22 @@ test("list assigned and get assigned scores get student assignments and scores",
     state: "document state 1",
   });
 
-  assignmentList = await listUserAssigned(user1Id);
+  assignmentList = await listUserAssigned({ loggedInUserId: user1Id });
   expect(assignmentList.assignments).toMatchObject([
     {
-      id: contentId2,
+      contentId: contentId2,
       ownerId: user2Id,
     },
   ]);
-  studentData = await getAssignedScores(user1Id);
+  studentData = await getAssignedScores({ loggedInUserId: user1Id });
   expect(studentData.orderedActivityScores).eqls([
     { contentId: contentId2, activityName: "Activity 2", score: 0.5 },
   ]);
 
   // cannot unassign
-  await expect(unassignActivity(contentId2, user2Id)).rejects.toThrow(
-    "Record to update not found",
-  );
+  await expect(
+    unassignActivity({ contentId: contentId2, loggedInUserId: user2Id }),
+  ).rejects.toThrow("Record to update not found");
 });
 
 test("get all assignment data from anonymous user", async () => {
@@ -870,7 +897,7 @@ test("get all assignment data from anonymous user", async () => {
 
   let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
-    userId: newUser1.userId,
+    loggedInUserId: newUser1.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
@@ -1184,19 +1211,19 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
     contentType: "singleDoc",
     parentId: null,
   });
-  await deleteContent(activityGoneId, ownerId);
+  await deleteContent({ contentId: activityGoneId, loggedInUserId: ownerId });
   const { contentId: activity4Id } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: baseFolderId,
   });
-  await deleteContent(activity4Id, ownerId);
+  await deleteContent({ contentId: activity4Id, loggedInUserId: ownerId });
   const { contentId: activity3cId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "singleDoc",
     parentId: folder3Id,
   });
-  await deleteContent(activity3cId, ownerId);
+  await deleteContent({ contentId: activity3cId, loggedInUserId: ownerId });
 
   // one activity at root level
   const { contentId: activityRootId } = await createContent({
@@ -1254,7 +1281,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
 
   let newUser = await createTestAnonymousUser();
   newUser = await updateUser({
-    userId: newUser.userId,
+    loggedInUserId: newUser.userId,
     firstNames: "Arya",
     lastNames: "Abbas",
   });
@@ -1603,7 +1630,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 
   let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
-    userId: newUser1.userId,
+    loggedInUserId: newUser1.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
@@ -1673,7 +1700,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 
   let newUser2 = await createTestAnonymousUser();
   newUser2 = await updateUser({
-    userId: newUser2.userId,
+    loggedInUserId: newUser2.userId,
     firstNames: "Arya",
     lastNames: "Abbas",
   });
@@ -1748,7 +1775,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 
   let newUser3 = await createTestAnonymousUser();
   newUser3 = await updateUser({
-    userId: newUser3.userId,
+    loggedInUserId: newUser3.userId,
     firstNames: "Nyla",
     lastNames: "Nyquist",
   });

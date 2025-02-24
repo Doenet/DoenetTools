@@ -343,7 +343,7 @@ export async function getSharedContent({
   });
 
   if (folder && !isEqualUUID(loggedInUserId, folder.ownerId)) {
-    await recordContentView(folder.id, loggedInUserId);
+    await recordContentView(folder.contentId, loggedInUserId);
   }
 
   return {

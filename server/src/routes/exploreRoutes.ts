@@ -8,12 +8,12 @@ import {
 
 export const exploreRouter = express.Router();
 
-exploreRouter.get(
+exploreRouter.post(
   "/searchExplore",
   queryOptionalLoggedIn(searchExplore, searchExploreSchema),
 );
 
-exploreRouter.get(
+exploreRouter.post(
   "/browseExplore",
   queryOptionalLoggedIn(browseExplore, browseExploreSchema),
 );

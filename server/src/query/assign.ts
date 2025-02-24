@@ -12,10 +12,13 @@ import { isEqualUUID } from "../utils/uuid";
 import { recordContentView } from "./explore";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 
-export async function assignActivity(
-  contentId: Uint8Array,
-  loggedInUserId: Uint8Array,
-) {
+export async function assignActivity({
+  contentId,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
   // verify
   await prisma.content.findUniqueOrThrow({
     where: {
@@ -58,7 +61,7 @@ export async function openAssignmentWithCode({
   });
 
   if (!initialActivity.isAssigned) {
-    await assignActivity(contentId, loggedInUserId);
+    await assignActivity({ contentId, loggedInUserId });
   }
 
   let classCode = initialActivity.classCode;
@@ -104,10 +107,13 @@ export async function updateAssignmentSettings({
   return {};
 }
 
-export async function closeAssignmentWithCode(
-  contentId: Uint8Array,
-  loggedInUserId: Uint8Array,
-) {
+export async function closeAssignmentWithCode({
+  contentId,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
   await prisma.content.update({
     where: {
       id: contentId,
@@ -122,7 +128,7 @@ export async function closeAssignmentWithCode(
   // attempt to unassign activity, which will succeed
   // only if there is no student data
   try {
-    await unassignActivity(contentId, loggedInUserId);
+    await unassignActivity({ contentId, loggedInUserId });
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError &&
@@ -135,10 +141,13 @@ export async function closeAssignmentWithCode(
   }
 }
 
-export async function unassignActivity(
-  contentId: Uint8Array,
-  loggedInUserId: Uint8Array,
-) {
+export async function unassignActivity({
+  contentId,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
   await prisma.content.update({
     where: {
       id: contentId,
@@ -435,7 +444,11 @@ export async function getStudentData({
   return { studentData, orderedActivityScores, folder };
 }
 
-export async function getAssignedScores(loggedInUserId: Uint8Array) {
+export async function getAssignedScores({
+  loggedInUserId,
+}: {
+  loggedInUserId: Uint8Array;
+}) {
   const scores = await prisma.assignmentScores.findMany({
     where: {
       userId: loggedInUserId,
@@ -720,10 +733,13 @@ export async function getSubmittedResponseHistory({
   return { activityName, submittedResponses };
 }
 
-export async function getAssignmentDataFromCode(
-  code: string,
-  loggedInUserId: Uint8Array,
-) {
+export async function getAssignmentDataFromCode({
+  code,
+  loggedInUserId,
+}: {
+  code: string;
+  loggedInUserId: Uint8Array;
+}) {
   let assignment;
 
   try {
@@ -770,12 +786,16 @@ export async function getAssignmentDataFromCode(
   return { assignmentFound: true, assignment };
 }
 
-export async function listUserAssigned(userId: Uint8Array) {
+export async function listUserAssigned({
+  loggedInUserId,
+}: {
+  loggedInUserId: Uint8Array;
+}) {
   const preliminaryAssignments = await prisma.content.findMany({
     where: {
       isDeleted: false,
       isAssigned: true,
-      assignmentScores: { some: { userId } },
+      assignmentScores: { some: { userId: loggedInUserId } },
     },
     select: returnContentSelect({
       includeAssignInfo: true,
@@ -787,7 +807,7 @@ export async function listUserAssigned(userId: Uint8Array) {
   const assignments = preliminaryAssignments.map((obj) => processContent(obj));
 
   const user: UserInfo = await prisma.users.findUniqueOrThrow({
-    where: { userId },
+    where: { userId: loggedInUserId },
     select: { userId: true, firstNames: true, lastNames: true, email: true },
   });
 

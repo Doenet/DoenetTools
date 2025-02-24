@@ -18,7 +18,11 @@ export function queryLoggedIn<T extends z.ZodTypeAny>(
   return async (req: Request, res: Response) => {
     try {
       const loggedInUserId = req.user.userId;
-      const params = schema.parse(req.body);
+      const params = schema.parse({
+        ...req.body,
+        ...req.query,
+        ...req.params,
+      });
       const results = convertUUID(await query({ loggedInUserId, ...params }));
       res.send(results);
     } catch (e) {
@@ -34,7 +38,11 @@ export function queryOptionalLoggedIn<T extends z.ZodTypeAny>(
   return async (req: Request, res: Response) => {
     try {
       const loggedInUserId = req.user?.userId;
-      const params = schema.parse(req.body);
+      const params = schema.parse({
+        ...req.body,
+        ...req.query,
+        ...req.params,
+      });
       const results = convertUUID(await query({ loggedInUserId, ...params }));
       res.send(results);
     } catch (e) {
@@ -43,7 +51,21 @@ export function queryOptionalLoggedIn<T extends z.ZodTypeAny>(
   };
 }
 
-export function queryNoArguments(query: () => unknown) {
+export function queryLoggedInNoArguments(
+  query: (params: LoggedInUser) => unknown,
+) {
+  return async (req: Request, res: Response) => {
+    try {
+      const loggedInUserId = req.user.userId;
+      const results = convertUUID(await query({ loggedInUserId }));
+      res.send(results);
+    } catch (e) {
+      handleErrors(res, e);
+    }
+  };
+}
+
+export function queryNoLoggedInNoArguments(query: () => unknown) {
   return async (_req: Request, res: Response) => {
     try {
       const results = convertUUID(await query());

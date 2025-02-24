@@ -1,9 +1,5 @@
-import express, { Request, Response } from "express";
-import { requireLoggedIn } from "../middleware/validationMiddleware";
-import {
-  queryLoggedIn,
-  queryOptionalLoggedIn,
-} from "../middleware/queryMiddleware";
+import express from "express";
+import { queryOptionalLoggedIn } from "../middleware/queryMiddleware";
 import {
   getMyContent,
   getPreferredFolderView,
@@ -23,7 +19,7 @@ export const contentListRouter = express.Router();
 // contentListRouter.use(requireLoggedIn);
 
 contentListRouter.get(
-  "/getMyContent",
+  "/getMyContent/:ownerId",
   queryOptionalLoggedIn(getMyContent, getContentSchema),
 );
 

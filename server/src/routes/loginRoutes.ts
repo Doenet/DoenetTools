@@ -24,7 +24,7 @@ if (
     "/createOrLoginAsTest",
     passport.authenticate("anonymId"),
     (_req: Request, res: Response) => {
-      res.send({});
+      res.send();
     },
   );
 }

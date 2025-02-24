@@ -3,12 +3,12 @@ import { uuidSchema } from "./uuid";
 
 export const getContentSchema = z.object({
   ownerId: uuidSchema,
-  parentId: uuidSchema.nullable(),
+  parentId: uuidSchema.nullish().transform((val) => val ?? null),
 });
 
 export const searchMyContentSchema = z.object({
   ownerId: uuidSchema,
-  parentId: uuidSchema.nullable(),
+  parentId: uuidSchema.nullish().transform((val) => val ?? null),
   isLibrary: z.boolean().optional(),
   query: z.string(),
 });

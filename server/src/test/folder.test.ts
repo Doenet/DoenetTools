@@ -139,22 +139,22 @@ test("getMyContent returns both public and private content, getSharedFolderConte
   expect(ownerContent).toMatchObject({
     content: expect.arrayContaining([
       expect.objectContaining({
-        id: publicActivity1Id,
+        contentId: publicActivity1Id,
         isPublic: true,
         parent: null,
       }),
       expect.objectContaining({
-        id: privateActivity1Id,
+        contentId: privateActivity1Id,
         isPublic: false,
         parent: null,
       }),
       expect.objectContaining({
-        id: publicFolder1Id,
+        contentId: publicFolder1Id,
         isPublic: true,
         parent: null,
       }),
       expect.objectContaining({
-        id: privateFolder1Id,
+        contentId: privateFolder1Id,
         isPublic: false,
         parent: null,
       }),
@@ -175,16 +175,16 @@ test("getMyContent returns both public and private content, getSharedFolderConte
   expect(publicContent).toMatchObject({
     content: expect.arrayContaining([
       expect.objectContaining({
-        id: publicActivity1Id,
+        contentId: publicActivity1Id,
       }),
       expect.objectContaining({
-        id: publicFolder1Id,
+        contentId: publicFolder1Id,
       }),
       expect.objectContaining({
-        id: publicActivity3Id,
+        contentId: publicActivity3Id,
       }),
       expect.objectContaining({
-        id: publicFolder3Id,
+        contentId: publicFolder3Id,
       }),
     ]),
   });
@@ -197,16 +197,16 @@ test("getMyContent returns both public and private content, getSharedFolderConte
   if (ownerContent.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(ownerContent.folder?.id).eqls(publicFolder1Id);
+  expect(ownerContent.folder?.contentId).eqls(publicFolder1Id);
   expect(ownerContent.folder?.parent).eq(null);
   expect(ownerContent.content.length).eq(2);
   expect(ownerContent).toMatchObject({
     content: expect.arrayContaining([
       expect.objectContaining({
-        id: publicActivity2Id,
+        contentId: publicActivity2Id,
         isPublic: true,
         parent: {
-          id: publicFolder1Id,
+          contentId: publicFolder1Id,
           isPublic: true,
           isShared: false,
           sharedWith: [],
@@ -215,10 +215,10 @@ test("getMyContent returns both public and private content, getSharedFolderConte
         },
       }),
       expect.objectContaining({
-        id: publicFolder2Id,
+        contentId: publicFolder2Id,
         isPublic: true,
         parent: {
-          id: publicFolder1Id,
+          contentId: publicFolder1Id,
           isPublic: true,
           isShared: false,
           sharedWith: [],
@@ -235,15 +235,15 @@ test("getMyContent returns both public and private content, getSharedFolderConte
     loggedInUserId: userId,
   });
   expect(publicContent.content.length).eq(2);
-  expect(publicContent.folder?.id).eqls(publicFolder1Id);
+  expect(publicContent.folder?.contentId).eqls(publicFolder1Id);
   expect(publicContent.folder?.parent).eq(null);
   expect(publicContent).toMatchObject({
     content: expect.arrayContaining([
       expect.objectContaining({
-        id: publicActivity2Id,
+        contentId: publicActivity2Id,
       }),
       expect.objectContaining({
-        id: publicFolder2Id,
+        contentId: publicFolder2Id,
       }),
     ]),
   });
@@ -265,16 +265,16 @@ test("getMyContent returns both public and private content, getSharedFolderConte
   if (ownerContent.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(ownerContent.folder?.id).eqls(privateFolder1Id);
+  expect(ownerContent.folder?.contentId).eqls(privateFolder1Id);
   expect(ownerContent.folder?.parent).eq(null);
   expect(ownerContent.content.length).eq(4);
   expect(ownerContent).toMatchObject({
     content: expect.arrayContaining([
       expect.objectContaining({
-        id: publicActivity3Id,
+        contentId: publicActivity3Id,
         isPublic: true,
         parent: {
-          id: privateFolder1Id,
+          contentId: privateFolder1Id,
           isPublic: false,
           isShared: false,
           sharedWith: [],
@@ -283,10 +283,10 @@ test("getMyContent returns both public and private content, getSharedFolderConte
         },
       }),
       expect.objectContaining({
-        id: privateActivity3Id,
+        contentId: privateActivity3Id,
         isPublic: false,
         parent: {
-          id: privateFolder1Id,
+          contentId: privateFolder1Id,
           isPublic: false,
           isShared: false,
           sharedWith: [],
@@ -295,10 +295,10 @@ test("getMyContent returns both public and private content, getSharedFolderConte
         },
       }),
       expect.objectContaining({
-        id: publicFolder3Id,
+        contentId: publicFolder3Id,
         isPublic: true,
         parent: {
-          id: privateFolder1Id,
+          contentId: privateFolder1Id,
           isPublic: false,
           isShared: false,
           sharedWith: [],
@@ -307,10 +307,10 @@ test("getMyContent returns both public and private content, getSharedFolderConte
         },
       }),
       expect.objectContaining({
-        id: privateFolder3Id,
+        contentId: privateFolder3Id,
         isPublic: false,
         parent: {
-          id: privateFolder1Id,
+          contentId: privateFolder1Id,
           isPublic: false,
           isShared: false,
           sharedWith: [],
@@ -345,8 +345,8 @@ test("getMyContent returns both public and private content, getSharedFolderConte
   if (ownerContent.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(ownerContent.folder?.id).eqls(publicFolder3Id);
-  expect(ownerContent.folder?.parent?.id).eqls(privateFolder1Id);
+  expect(ownerContent.folder?.contentId).eqls(publicFolder3Id);
+  expect(ownerContent.folder?.parent?.contentId).eqls(privateFolder1Id);
   expect(ownerContent.content.length).eq(0);
 
   publicContent = await getSharedContent({
@@ -354,7 +354,7 @@ test("getMyContent returns both public and private content, getSharedFolderConte
     parentId: publicFolder3Id,
     loggedInUserId: userId,
   });
-  expect(publicContent.folder?.id).eqls(publicFolder3Id);
+  expect(publicContent.folder?.contentId).eqls(publicFolder3Id);
   expect(publicContent.folder?.parent).eq(null);
   expect(publicContent.content.length).eq(0);
 
@@ -377,7 +377,7 @@ test(
     let user1 = await createTestUser();
     const user1Id = user1.userId;
     user1 = await updateUser({
-      userId: user1Id,
+      loggedInUserId: user1Id,
       firstNames: "Zoe",
       lastNames: "Zaborowski",
     });
@@ -390,7 +390,7 @@ test(
     let user2 = await createTestUser();
     const user2Id = user2.userId;
     user2 = await updateUser({
-      userId: user2Id,
+      loggedInUserId: user2Id,
       firstNames: "Arya",
       lastNames: "Abbas",
     });
@@ -511,22 +511,22 @@ test(
     expect(ownerContent).toMatchObject({
       content: expect.arrayContaining([
         expect.objectContaining({
-          id: sharedActivity1Id,
+          contentId: sharedActivity1Id,
           isShared: true,
           parent: null,
         }),
         expect.objectContaining({
-          id: privateActivity1Id,
+          contentId: privateActivity1Id,
           isShared: false,
           parent: null,
         }),
         expect.objectContaining({
-          id: sharedFolder1Id,
+          contentId: sharedFolder1Id,
           isShared: true,
           parent: null,
         }),
         expect.objectContaining({
-          id: privateFolder1Id,
+          contentId: privateFolder1Id,
           isShared: false,
           parent: null,
         }),
@@ -547,16 +547,16 @@ test(
     expect(sharedContent).toMatchObject({
       content: expect.arrayContaining([
         expect.objectContaining({
-          id: sharedActivity1Id,
+          contentId: sharedActivity1Id,
         }),
         expect.objectContaining({
-          id: sharedFolder1Id,
+          contentId: sharedFolder1Id,
         }),
         expect.objectContaining({
-          id: sharedActivity3Id,
+          contentId: sharedActivity3Id,
         }),
         expect.objectContaining({
-          id: sharedFolder3Id,
+          contentId: sharedFolder3Id,
         }),
       ]),
     });
@@ -573,16 +573,16 @@ test(
     expect(sharedContent).toMatchObject({
       content: expect.arrayContaining([
         expect.objectContaining({
-          id: sharedActivity1Id,
+          contentId: sharedActivity1Id,
         }),
         expect.objectContaining({
-          id: sharedFolder1Id,
+          contentId: sharedFolder1Id,
         }),
         expect.objectContaining({
-          id: sharedActivity3Id,
+          contentId: sharedActivity3Id,
         }),
         expect.objectContaining({
-          id: sharedFolder3Id,
+          contentId: sharedFolder3Id,
         }),
       ]),
     });
@@ -604,17 +604,17 @@ test(
     if (ownerContent.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(ownerContent.folder?.id).eqls(sharedFolder1Id);
+    expect(ownerContent.folder?.contentId).eqls(sharedFolder1Id);
     expect(ownerContent.folder?.parent).eq(null);
     expect(ownerContent.content.length).eq(2);
     expect(ownerContent).toMatchObject({
       content: expect.arrayContaining([
         expect.objectContaining({
-          id: sharedActivity2Id,
+          contentId: sharedActivity2Id,
           isShared: true,
           sharedWith: [userFields2, userFields1],
           parent: {
-            id: sharedFolder1Id,
+            contentId: sharedFolder1Id,
             isPublic: false,
             isShared: true,
             sharedWith: [userFields2, userFields1],
@@ -623,11 +623,11 @@ test(
           },
         }),
         expect.objectContaining({
-          id: sharedFolder2Id,
+          contentId: sharedFolder2Id,
           isShared: true,
           sharedWith: [userFields2, userFields1],
           parent: {
-            id: sharedFolder1Id,
+            contentId: sharedFolder1Id,
             isPublic: false,
             isShared: true,
             sharedWith: [userFields2, userFields1],
@@ -644,15 +644,15 @@ test(
       loggedInUserId: user1Id,
     });
     expect(sharedContent.content.length).eq(2);
-    expect(sharedContent.folder?.id).eqls(sharedFolder1Id);
+    expect(sharedContent.folder?.contentId).eqls(sharedFolder1Id);
     expect(sharedContent.folder?.parent).eq(null);
     expect(sharedContent).toMatchObject({
       content: expect.arrayContaining([
         expect.objectContaining({
-          id: sharedActivity2Id,
+          contentId: sharedActivity2Id,
         }),
         expect.objectContaining({
-          id: sharedFolder2Id,
+          contentId: sharedFolder2Id,
         }),
       ]),
     });
@@ -663,15 +663,15 @@ test(
       loggedInUserId: user2Id,
     });
     expect(sharedContent.content.length).eq(2);
-    expect(sharedContent.folder?.id).eqls(sharedFolder1Id);
+    expect(sharedContent.folder?.contentId).eqls(sharedFolder1Id);
     expect(sharedContent.folder?.parent).eq(null);
     expect(sharedContent).toMatchObject({
       content: expect.arrayContaining([
         expect.objectContaining({
-          id: sharedActivity2Id,
+          contentId: sharedActivity2Id,
         }),
         expect.objectContaining({
-          id: sharedFolder2Id,
+          contentId: sharedFolder2Id,
         }),
       ]),
     });
@@ -702,17 +702,17 @@ test(
     if (ownerContent.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(ownerContent.folder?.id).eqls(privateFolder1Id);
+    expect(ownerContent.folder?.contentId).eqls(privateFolder1Id);
     expect(ownerContent.folder?.parent).eq(null);
     expect(ownerContent.content.length).eq(4);
     expect(ownerContent).toMatchObject({
       content: expect.arrayContaining([
         expect.objectContaining({
-          id: sharedActivity3Id,
+          contentId: sharedActivity3Id,
           isShared: true,
           sharedWith: [userFields2, userFields1],
           parent: {
-            id: privateFolder1Id,
+            contentId: privateFolder1Id,
             isPublic: false,
             isShared: false,
             sharedWith: [],
@@ -721,11 +721,11 @@ test(
           },
         }),
         expect.objectContaining({
-          id: privateActivity3Id,
+          contentId: privateActivity3Id,
           isShared: false,
           sharedWith: [],
           parent: {
-            id: privateFolder1Id,
+            contentId: privateFolder1Id,
             isPublic: false,
             isShared: false,
             sharedWith: [],
@@ -734,11 +734,11 @@ test(
           },
         }),
         expect.objectContaining({
-          id: sharedFolder3Id,
+          contentId: sharedFolder3Id,
           isShared: true,
           sharedWith: [userFields2, userFields1],
           parent: {
-            id: privateFolder1Id,
+            contentId: privateFolder1Id,
             isPublic: false,
             isShared: false,
             sharedWith: [],
@@ -747,11 +747,11 @@ test(
           },
         }),
         expect.objectContaining({
-          id: privateFolder3Id,
+          contentId: privateFolder3Id,
           isShared: false,
           sharedWith: [],
           parent: {
-            id: privateFolder1Id,
+            contentId: privateFolder1Id,
             isPublic: false,
             isShared: false,
             sharedWith: [],
@@ -787,8 +787,8 @@ test(
     if (ownerContent.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(ownerContent.folder?.id).eqls(sharedFolder3Id);
-    expect(ownerContent.folder?.parent?.id).eqls(privateFolder1Id);
+    expect(ownerContent.folder?.contentId).eqls(sharedFolder3Id);
+    expect(ownerContent.folder?.parent?.contentId).eqls(privateFolder1Id);
     expect(ownerContent.content.length).eq(0);
 
     sharedContent = await getSharedContent({
@@ -796,7 +796,7 @@ test(
       parentId: sharedFolder3Id,
       loggedInUserId: user1Id,
     });
-    expect(sharedContent.folder?.id).eqls(sharedFolder3Id);
+    expect(sharedContent.folder?.contentId).eqls(sharedFolder3Id);
     expect(sharedContent.folder?.parent).eq(null);
     expect(sharedContent.content.length).eq(0);
 
@@ -953,7 +953,7 @@ test(
     await getContent({ contentId: activity6Id, loggedInUserId: userId });
 
     // delete the entire folder 1 and all its content
-    await deleteContent(folder1Id, userId);
+    await deleteContent({ contentId: folder1Id, loggedInUserId: userId });
 
     baseContent = await getMyContent({
       ownerId: userId,
@@ -1027,7 +1027,7 @@ test(
     await getContent({ contentId: activity6Id, loggedInUserId: userId });
 
     // delete folder 5 and its content
-    await deleteContent(folder5Id, userId);
+    await deleteContent({ contentId: folder5Id, loggedInUserId: userId });
 
     baseContent = await getMyContent({
       ownerId: userId,
@@ -1083,9 +1083,9 @@ test("non-owner cannot delete folder", async () => {
     contentType: "folder",
     parentId: null,
   });
-  await expect(deleteContent(folderId, userId)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  await expect(
+    deleteContent({ contentId: folderId, loggedInUserId: userId }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   // folder is still around
   getMyContent({
@@ -1153,7 +1153,7 @@ test("move content to different locations", async () => {
   if (baseContent.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(baseContent.content.map((item) => item.id)).eqls([
+  expect(baseContent.content.map((item) => item.contentId)).eqls([
     activity1Id,
     activity2Id,
     folder1Id,
@@ -1163,18 +1163,18 @@ test("move content to different locations", async () => {
   if (folder1Content.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(folder1Content.content.map((item) => item.id)).eqls([
+  expect(folder1Content.content.map((item) => item.contentId)).eqls([
     activity3Id,
     folder2Id,
   ]);
   if (folder2Content.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(folder2Content.content.map((item) => item.id)).eqls([]);
+  expect(folder2Content.content.map((item) => item.contentId)).eqls([]);
   if (folder3Content.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(folder3Content.content.map((item) => item.id)).eqls([]);
+  expect(folder3Content.content.map((item) => item.contentId)).eqls([]);
 
   await moveContent({
     contentId: activity1Id,
@@ -1190,7 +1190,7 @@ test("move content to different locations", async () => {
   if (baseContent.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(baseContent.content.map((item) => item.id)).eqls([
+  expect(baseContent.content.map((item) => item.contentId)).eqls([
     activity2Id,
     activity1Id,
     folder1Id,
@@ -1211,7 +1211,7 @@ test("move content to different locations", async () => {
   if (baseContent.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(baseContent.content.map((item) => item.id)).eqls([
+  expect(baseContent.content.map((item) => item.contentId)).eqls([
     folder1Id,
     activity2Id,
     activity1Id,
@@ -1232,7 +1232,7 @@ test("move content to different locations", async () => {
   if (baseContent.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(baseContent.content.map((item) => item.id)).eqls([
+  expect(baseContent.content.map((item) => item.contentId)).eqls([
     folder1Id,
     activity1Id,
     folder3Id,
@@ -1253,7 +1253,7 @@ test("move content to different locations", async () => {
   if (baseContent.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(baseContent.content.map((item) => item.id)).eqls([
+  expect(baseContent.content.map((item) => item.contentId)).eqls([
     folder3Id,
     folder1Id,
     activity1Id,
@@ -1279,7 +1279,7 @@ test("move content to different locations", async () => {
   if (baseContent.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(baseContent.content.map((item) => item.id)).eqls([
+  expect(baseContent.content.map((item) => item.contentId)).eqls([
     folder1Id,
     activity1Id,
     activity2Id,
@@ -1287,7 +1287,7 @@ test("move content to different locations", async () => {
   if (folder1Content.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(folder1Content.content.map((item) => item.id)).eqls([
+  expect(folder1Content.content.map((item) => item.contentId)).eqls([
     folder3Id,
     activity3Id,
     folder2Id,
@@ -1312,7 +1312,7 @@ test("move content to different locations", async () => {
   if (baseContent.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(baseContent.content.map((item) => item.id)).eqls([
+  expect(baseContent.content.map((item) => item.contentId)).eqls([
     folder1Id,
     activity1Id,
     activity3Id,
@@ -1321,7 +1321,7 @@ test("move content to different locations", async () => {
   if (folder1Content.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(folder1Content.content.map((item) => item.id)).eqls([
+  expect(folder1Content.content.map((item) => item.contentId)).eqls([
     folder3Id,
     folder2Id,
   ]);
@@ -1345,11 +1345,15 @@ test("move content to different locations", async () => {
   if (folder1Content.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(folder1Content.content.map((item) => item.id)).eqls([folder3Id]);
+  expect(folder1Content.content.map((item) => item.contentId)).eqls([
+    folder3Id,
+  ]);
   if (folder3Content.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(folder3Content.content.map((item) => item.id)).eqls([folder2Id]);
+  expect(folder3Content.content.map((item) => item.contentId)).eqls([
+    folder2Id,
+  ]);
 
   await moveContent({
     contentId: activity3Id,
@@ -1381,18 +1385,20 @@ test("move content to different locations", async () => {
   if (baseContent.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(baseContent.content.map((item) => item.id)).eqls([
+  expect(baseContent.content.map((item) => item.contentId)).eqls([
     folder1Id,
     activity2Id,
   ]);
   if (folder2Content.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(folder2Content.content.map((item) => item.id)).eqls([activity1Id]);
+  expect(folder2Content.content.map((item) => item.contentId)).eqls([
+    activity1Id,
+  ]);
   if (folder3Content.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(folder3Content.content.map((item) => item.id)).eqls([
+  expect(folder3Content.content.map((item) => item.contentId)).eqls([
     activity3Id,
     folder2Id,
   ]);
@@ -1560,7 +1566,7 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
   if (contentList.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(contentList.content.map((item) => item.id)).eqls([
+  expect(contentList.content.map((item) => item.contentId)).eqls([
     activity1Id,
     activity2Id,
     activity3Id,
@@ -1594,7 +1600,7 @@ test("insert many items into sort order", { timeout: 30000 }, async () => {
   if (contentList.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(contentList.content.map((item) => item.id)).eqls([
+  expect(contentList.content.map((item) => item.contentId)).eqls([
     activity1Id,
     activity2Id,
     activity4Id,

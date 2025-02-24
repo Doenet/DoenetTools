@@ -457,7 +457,7 @@ test("published activity in library with unavailable source activity", async () 
   await expectStatusIs(contentId, status, ownerId);
 
   // Owner deletes activity, remix still published
-  await deleteContent(contentId, ownerId);
+  await deleteContent({ contentId: contentId, loggedInUserId: ownerId });
   await expectStatusIs(contentId, status, adminId);
   await expectStatusIs(contentId, status, ownerId);
 });
@@ -492,7 +492,7 @@ test("deleting draft does not delete owner's original", async () => {
     contentId,
     loggedInUserId: ownerId,
   });
-  expect(original.id).eqls(contentId);
+  expect(original.contentId).eqls(contentId);
 });
 
 test("Cannot add draft of curated activity", async () => {

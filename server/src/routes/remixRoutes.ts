@@ -6,11 +6,11 @@ import { contentIdSchema } from "../schemas/contentSchema";
 export const remixRouter = express.Router();
 
 remixRouter.get(
-  "/getContributorHistory",
+  "/getContributorHistory/:contentId",
   queryOptionalLoggedIn(getContributorHistory, contentIdSchema),
 );
 
 remixRouter.get(
-  "/getRemixes",
+  "/getRemixes/:contentId",
   queryOptionalLoggedIn(getRemixes, contentIdSchema),
 );

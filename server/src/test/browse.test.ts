@@ -252,7 +252,7 @@ test("browseUsersWithSharedContent returns only users with public/shared/non-del
     loggedInUserId: owner1Id,
     features,
   });
-  await deleteContent(activity1dId, owner1Id);
+  await deleteContent({ contentId: activity1dId, loggedInUserId: owner1Id });
 
   // owner 2 has two public activities
   const owner2 = await createTestUser();
@@ -465,7 +465,7 @@ test("browseUsersWithSharedContent, search, returns only users with public/share
     loggedInUserId: owner1Id,
     isPublic: true,
   });
-  await deleteContent(activity1dId, owner1Id);
+  await deleteContent({ contentId: activity1dId, loggedInUserId: owner1Id });
 
   const { contentId: activity1eId } = await createContent({
     loggedInUserId: owner1Id,
@@ -1684,7 +1684,7 @@ test("browseClassificationSharedContent, returns only public/shared/non-deleted 
     classificationId: classificationIdA1A,
     loggedInUserId: ownerId,
   });
-  await deleteContent(contentIdDeleted, ownerId);
+  await deleteContent({ contentId: contentIdDeleted, loggedInUserId: ownerId });
 
   // user1 gets public and shared content
   let results = await browseClassificationSharedContent({
@@ -1692,7 +1692,7 @@ test("browseClassificationSharedContent, returns only public/shared/non-deleted 
     classificationId: classificationIdA1A,
   });
   expect(results.content.length).eq(3);
-  expect(results.content.map((c) => fromUUID(c.id)).sort()).eqls(
+  expect(results.content.map((c) => fromUUID(c.contentId)).sort()).eqls(
     [
       contentIdPublic1String,
       contentIdPublic2String,
@@ -1706,7 +1706,7 @@ test("browseClassificationSharedContent, returns only public/shared/non-deleted 
     classificationId: classificationIdA1A,
   });
   expect(results.content.length).eq(2);
-  expect(results.content.map((c) => fromUUID(c.id)).sort()).eqls(
+  expect(results.content.map((c) => fromUUID(c.contentId)).sort()).eqls(
     [contentIdPublic1String, contentIdPublic2String].sort(),
   );
 });
@@ -1903,7 +1903,7 @@ test("browseClassificationSharedContent, filter by activity feature", async () =
     classificationId: classificationIdA1A,
   });
   expect(results.content.length).eq(8);
-  expect(results.content.map((c) => fromUUID(c.id)).sort()).eqls(
+  expect(results.content.map((c) => fromUUID(c.contentId)).sort()).eqls(
     [
       contentIdNString,
       contentIdQString,
@@ -1923,7 +1923,7 @@ test("browseClassificationSharedContent, filter by activity feature", async () =
     features: new Set(["isQuestion"]),
   });
   expect(results.content.length).eq(4);
-  expect(results.content.map((c) => fromUUID(c.id)).sort()).eqls(
+  expect(results.content.map((c) => fromUUID(c.contentId)).sort()).eqls(
     [
       contentIdQString,
       contentIdQIString,
@@ -1938,7 +1938,7 @@ test("browseClassificationSharedContent, filter by activity feature", async () =
     features: new Set(["isInteractive"]),
   });
   expect(results.content.length).eq(4);
-  expect(results.content.map((c) => fromUUID(c.id)).sort()).eqls(
+  expect(results.content.map((c) => fromUUID(c.contentId)).sort()).eqls(
     [
       contentIdIString,
       contentIdQIString,
@@ -1953,7 +1953,7 @@ test("browseClassificationSharedContent, filter by activity feature", async () =
     features: new Set(["containsVideo"]),
   });
   expect(results.content.length).eq(4);
-  expect(results.content.map((c) => fromUUID(c.id)).sort()).eqls(
+  expect(results.content.map((c) => fromUUID(c.contentId)).sort()).eqls(
     [
       contentIdVString,
       contentIdQVString,
@@ -1969,7 +1969,7 @@ test("browseClassificationSharedContent, filter by activity feature", async () =
     features: new Set(["isQuestion", "isInteractive"]),
   });
   expect(results.content.length).eq(2);
-  expect(results.content.map((c) => fromUUID(c.id)).sort()).eqls(
+  expect(results.content.map((c) => fromUUID(c.contentId)).sort()).eqls(
     [contentIdQIString, contentIdQIVString].sort(),
   );
 
@@ -1979,7 +1979,7 @@ test("browseClassificationSharedContent, filter by activity feature", async () =
     features: new Set(["isQuestion", "containsVideo"]),
   });
   expect(results.content.length).eq(2);
-  expect(results.content.map((c) => fromUUID(c.id)).sort()).eqls(
+  expect(results.content.map((c) => fromUUID(c.contentId)).sort()).eqls(
     [contentIdQVString, contentIdQIVString].sort(),
   );
 
@@ -1989,7 +1989,7 @@ test("browseClassificationSharedContent, filter by activity feature", async () =
     features: new Set(["isInteractive", "containsVideo"]),
   });
   expect(results.content.length).eq(2);
-  expect(results.content.map((c) => fromUUID(c.id)).sort()).eqls(
+  expect(results.content.map((c) => fromUUID(c.contentId)).sort()).eqls(
     [contentIdIVString, contentIdQIVString].sort(),
   );
 });
@@ -2071,7 +2071,7 @@ test("browseClassificationSharedContent, filter by owner", async () => {
     classificationId: classificationIdA1A,
   });
   expect(results.content.length).eq(3);
-  expect(results.content.map((c) => fromUUID(c.id)).sort()).eqls(
+  expect(results.content.map((c) => fromUUID(c.contentId)).sort()).eqls(
     [contentId1aString, contentId1bString, contentId2String].sort(),
   );
 
@@ -2082,7 +2082,7 @@ test("browseClassificationSharedContent, filter by owner", async () => {
     ownerId: owner1Id,
   });
   expect(results.content.length).eq(2);
-  expect(results.content.map((c) => fromUUID(c.id)).sort()).eqls(
+  expect(results.content.map((c) => fromUUID(c.contentId)).sort()).eqls(
     [contentId1aString, contentId1bString].sort(),
   );
 
@@ -2093,7 +2093,7 @@ test("browseClassificationSharedContent, filter by owner", async () => {
     ownerId: owner2Id,
   });
   expect(results.content.length).eq(1);
-  expect(isEqualUUID(results.content[0].id, contentId2)).eq(true);
+  expect(isEqualUUID(results.content[0].contentId, contentId2)).eq(true);
 });
 
 test("browseSubCategorySharedContent, returns only public/shared/non-deleted content and classifications", async () => {
@@ -2235,8 +2235,14 @@ test("browseSubCategorySharedContent, returns only public/shared/non-deleted con
     classificationId: classificationIdA1B,
     loggedInUserId: ownerId,
   });
-  await deleteContent(contentIdDeletedA, ownerId);
-  await deleteContent(contentIdDeletedB, ownerId);
+  await deleteContent({
+    contentId: contentIdDeletedA,
+    loggedInUserId: ownerId,
+  });
+  await deleteContent({
+    contentId: contentIdDeletedB,
+    loggedInUserId: ownerId,
+  });
 
   // user1 gets public and shared content
   let results = await browseClassificationSubCategorySharedContent({
@@ -2247,12 +2253,12 @@ test("browseSubCategorySharedContent, returns only public/shared/non-deleted con
   expect(results.classifications[0].classificationId).eq(classificationIdA1A);
   expect(results.classifications[0].content.length).eq(2);
   expect(
-    results.classifications[0].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[0].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls([contentIdPublicAString, contentIdSharedAString].sort());
   expect(results.classifications[1].classificationId).eq(classificationIdA1B);
   expect(results.classifications[1].content.length).eq(2);
   expect(
-    results.classifications[1].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[1].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls([contentIdPublicBString, contentIdSharedBString].sort());
 
   // user2 gets only public content
@@ -2264,16 +2270,22 @@ test("browseSubCategorySharedContent, returns only public/shared/non-deleted con
   expect(results.classifications[0].classificationId).eq(classificationIdA1A);
   expect(results.classifications[0].content.length).eq(1);
   expect(
-    isEqualUUID(results.classifications[0].content[0].id, contentIdPublicA),
+    isEqualUUID(
+      results.classifications[0].content[0].contentId,
+      contentIdPublicA,
+    ),
   ).eq(true);
   expect(results.classifications[1].classificationId).eq(classificationIdA1B);
   expect(results.classifications[1].content.length).eq(1);
   expect(
-    isEqualUUID(results.classifications[1].content[0].id, contentIdPublicB),
+    isEqualUUID(
+      results.classifications[1].content[0].contentId,
+      contentIdPublicB,
+    ),
   ).eq(true);
 
   // if delete activity public A, then user 2 no longer sees classification A1A
-  await deleteContent(contentIdPublicA, ownerId);
+  await deleteContent({ contentId: contentIdPublicA, loggedInUserId: ownerId });
 
   // user1 gets public and shared content
   results = await browseClassificationSubCategorySharedContent({
@@ -2284,12 +2296,15 @@ test("browseSubCategorySharedContent, returns only public/shared/non-deleted con
   expect(results.classifications[0].classificationId).eq(classificationIdA1A);
   expect(results.classifications[0].content.length).eq(1);
   expect(
-    isEqualUUID(results.classifications[0].content[0].id, contentIdSharedA),
+    isEqualUUID(
+      results.classifications[0].content[0].contentId,
+      contentIdSharedA,
+    ),
   );
   expect(results.classifications[1].classificationId).eq(classificationIdA1B);
   expect(results.classifications[1].content.length).eq(2);
   expect(
-    results.classifications[1].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[1].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls([contentIdPublicBString, contentIdSharedBString].sort());
 
   // user2 gets only public content
@@ -2301,7 +2316,10 @@ test("browseSubCategorySharedContent, returns only public/shared/non-deleted con
   expect(results.classifications[0].classificationId).eq(classificationIdA1B);
   expect(results.classifications[0].content.length).eq(1);
   expect(
-    isEqualUUID(results.classifications[0].content[0].id, contentIdPublicB),
+    isEqualUUID(
+      results.classifications[0].content[0].contentId,
+      contentIdPublicB,
+    ),
   ).eq(true);
 });
 
@@ -2666,7 +2684,7 @@ test("browseSubCategorySharedContent, filter by activity feature", async () => {
   expect(results.classifications[0].classificationId).eq(classificationIdA1A);
   expect(results.classifications[0].content.length).eq(8);
   expect(
-    results.classifications[0].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[0].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls(
     [
       contentIdNAString,
@@ -2682,7 +2700,7 @@ test("browseSubCategorySharedContent, filter by activity feature", async () => {
   expect(results.classifications[1].classificationId).eq(classificationIdA1B);
   expect(results.classifications[1].content.length).eq(8);
   expect(
-    results.classifications[1].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[1].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls(
     [
       contentIdNBString,
@@ -2706,7 +2724,7 @@ test("browseSubCategorySharedContent, filter by activity feature", async () => {
   expect(results.classifications[0].classificationId).eq(classificationIdA1A);
   expect(results.classifications[0].content.length).eq(4);
   expect(
-    results.classifications[0].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[0].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls(
     [
       contentIdQAString,
@@ -2718,7 +2736,7 @@ test("browseSubCategorySharedContent, filter by activity feature", async () => {
   expect(results.classifications[1].classificationId).eq(classificationIdA1B);
   expect(results.classifications[1].content.length).eq(4);
   expect(
-    results.classifications[1].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[1].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls(
     [
       contentIdQBString,
@@ -2738,7 +2756,7 @@ test("browseSubCategorySharedContent, filter by activity feature", async () => {
   expect(results.classifications[0].classificationId).eq(classificationIdA1A);
   expect(results.classifications[0].content.length).eq(4);
   expect(
-    results.classifications[0].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[0].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls(
     [
       contentIdIAString,
@@ -2750,7 +2768,7 @@ test("browseSubCategorySharedContent, filter by activity feature", async () => {
   expect(results.classifications[1].classificationId).eq(classificationIdA1B);
   expect(results.classifications[1].content.length).eq(4);
   expect(
-    results.classifications[1].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[1].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls(
     [
       contentIdIBString,
@@ -2770,7 +2788,7 @@ test("browseSubCategorySharedContent, filter by activity feature", async () => {
   expect(results.classifications[0].classificationId).eq(classificationIdA1A);
   expect(results.classifications[0].content.length).eq(4);
   expect(
-    results.classifications[0].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[0].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls(
     [
       contentIdVAString,
@@ -2782,7 +2800,7 @@ test("browseSubCategorySharedContent, filter by activity feature", async () => {
   expect(results.classifications[1].classificationId).eq(classificationIdA1B);
   expect(results.classifications[1].content.length).eq(4);
   expect(
-    results.classifications[1].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[1].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls(
     [
       contentIdVBString,
@@ -2802,12 +2820,12 @@ test("browseSubCategorySharedContent, filter by activity feature", async () => {
   expect(results.classifications[0].classificationId).eq(classificationIdA1A);
   expect(results.classifications[0].content.length).eq(2);
   expect(
-    results.classifications[0].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[0].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls([contentIdQIAString, contentIdQIVAString].sort());
   expect(results.classifications[1].classificationId).eq(classificationIdA1B);
   expect(results.classifications[1].content.length).eq(2);
   expect(
-    results.classifications[1].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[1].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls([contentIdQIBString, contentIdQIVBString].sort());
 
   // filter by isQuestion, containsVideo
@@ -2820,12 +2838,12 @@ test("browseSubCategorySharedContent, filter by activity feature", async () => {
   expect(results.classifications[0].classificationId).eq(classificationIdA1A);
   expect(results.classifications[0].content.length).eq(2);
   expect(
-    results.classifications[0].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[0].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls([contentIdQVAString, contentIdQIVAString].sort());
   expect(results.classifications[1].classificationId).eq(classificationIdA1B);
   expect(results.classifications[1].content.length).eq(2);
   expect(
-    results.classifications[1].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[1].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls([contentIdQVBString, contentIdQIVBString].sort());
 
   // filter by isInteractive, containsVideo
@@ -2838,12 +2856,12 @@ test("browseSubCategorySharedContent, filter by activity feature", async () => {
   expect(results.classifications[0].classificationId).eq(classificationIdA1A);
   expect(results.classifications[0].content.length).eq(2);
   expect(
-    results.classifications[0].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[0].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls([contentIdIVAString, contentIdQIVAString].sort());
   expect(results.classifications[1].classificationId).eq(classificationIdA1B);
   expect(results.classifications[1].content.length).eq(2);
   expect(
-    results.classifications[1].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[1].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls([contentIdIVBString, contentIdQIVBString].sort());
 
   // filter by isQuestion, isInteractive, containsVideo
@@ -2856,12 +2874,12 @@ test("browseSubCategorySharedContent, filter by activity feature", async () => {
   expect(results.classifications[0].classificationId).eq(classificationIdA1A);
   expect(results.classifications[0].content.length).eq(1);
   expect(
-    isEqualUUID(results.classifications[0].content[0].id, contentIdQIVA),
+    isEqualUUID(results.classifications[0].content[0].contentId, contentIdQIVA),
   ).eq(true);
   expect(results.classifications[1].classificationId).eq(classificationIdA1B);
   expect(results.classifications[1].content.length).eq(1);
   expect(
-    isEqualUUID(results.classifications[1].content[0].id, contentIdQIVB),
+    isEqualUUID(results.classifications[1].content[0].contentId, contentIdQIVB),
   ).eq(true);
 });
 
@@ -2958,12 +2976,12 @@ test("browseSubCategorySharedContent, filter by owner", async () => {
   expect(results.classifications[0].classificationId).eq(classificationIdA1A);
   expect(results.classifications[0].content.length).eq(2);
   expect(
-    results.classifications[0].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[0].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls([contentId1AString, contentId2AString].sort());
   expect(results.classifications[1].classificationId).eq(classificationIdA1B);
   expect(results.classifications[1].content.length).eq(2);
   expect(
-    results.classifications[1].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[1].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls([contentId1BString, contentId2BString].sort());
 
   // filter by owner 1
@@ -2976,12 +2994,12 @@ test("browseSubCategorySharedContent, filter by owner", async () => {
   expect(results.classifications[0].classificationId).eq(classificationIdA1A);
   expect(results.classifications[0].content.length).eq(1);
   expect(
-    results.classifications[0].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[0].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls([contentId1AString].sort());
   expect(results.classifications[1].classificationId).eq(classificationIdA1B);
   expect(results.classifications[1].content.length).eq(1);
   expect(
-    results.classifications[1].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[1].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls([contentId1BString].sort());
 
   // filter by owner 2
@@ -2994,12 +3012,12 @@ test("browseSubCategorySharedContent, filter by owner", async () => {
   expect(results.classifications[0].classificationId).eq(classificationIdA1A);
   expect(results.classifications[0].content.length).eq(1);
   expect(
-    results.classifications[0].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[0].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls([contentId2AString].sort());
   expect(results.classifications[1].classificationId).eq(classificationIdA1B);
   expect(results.classifications[1].content.length).eq(1);
   expect(
-    results.classifications[1].content.map((c) => fromUUID(c.id)).sort(),
+    results.classifications[1].content.map((c) => fromUUID(c.contentId)).sort(),
   ).eqls([contentId2BString].sort());
 });
 
@@ -3180,8 +3198,14 @@ test("browseCategorySharedContent, returns only public/shared/non-deleted conten
   });
 
   // actually delete the deleted activities
-  await deleteContent(contentIdDeletedA, ownerId);
-  await deleteContent(contentIdDeletedB, ownerId);
+  await deleteContent({
+    contentId: contentIdDeletedA,
+    loggedInUserId: ownerId,
+  });
+  await deleteContent({
+    contentId: contentIdDeletedB,
+    loggedInUserId: ownerId,
+  });
 
   // user1 gets public and shared content and their subCategories/classifications
   let results = await browseClassificationCategorySharedContent({
@@ -3197,7 +3221,7 @@ test("browseCategorySharedContent, returns only public/shared/non-deleted conten
   expect(results.subCategories[0].classifications[0].content.length).eq(2);
   expect(
     results.subCategories[0].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls([contentIdPublicAString, contentIdSharedAString].sort());
   expect(results.subCategories[0].classifications[1].classificationId).eq(
@@ -3206,7 +3230,7 @@ test("browseCategorySharedContent, returns only public/shared/non-deleted conten
   expect(results.subCategories[0].classifications[1].content.length).eq(2);
   expect(
     results.subCategories[0].classifications[1].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls([contentIdPublicBString, contentIdSharedBString].sort());
 
@@ -3218,7 +3242,7 @@ test("browseCategorySharedContent, returns only public/shared/non-deleted conten
   expect(results.subCategories[1].classifications[0].content.length).eq(1);
   expect(
     isEqualUUID(
-      results.subCategories[1].classifications[0].content[0].id,
+      results.subCategories[1].classifications[0].content[0].contentId,
       contentIdSharedB,
     ),
   );
@@ -3237,7 +3261,7 @@ test("browseCategorySharedContent, returns only public/shared/non-deleted conten
   expect(results.subCategories[0].classifications[0].content.length).eq(1);
   expect(
     isEqualUUID(
-      results.subCategories[0].classifications[0].content[0].id,
+      results.subCategories[0].classifications[0].content[0].contentId,
       contentIdPublicA,
     ),
   ).eq(true);
@@ -3247,7 +3271,7 @@ test("browseCategorySharedContent, returns only public/shared/non-deleted conten
   expect(results.subCategories[0].classifications[1].content.length).eq(1);
   expect(
     isEqualUUID(
-      results.subCategories[0].classifications[1].content[0].id,
+      results.subCategories[0].classifications[1].content[0].contentId,
       contentIdPublicB,
     ),
   ).eq(true);
@@ -3620,7 +3644,7 @@ test("browseCategorySharedContent, filter by activity feature", async () => {
   expect(results.subCategories[0].classifications[0].content.length).eq(8);
   expect(
     results.subCategories[0].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls(
     [
@@ -3643,7 +3667,7 @@ test("browseCategorySharedContent, filter by activity feature", async () => {
   expect(results.subCategories[1].classifications[0].content.length).eq(8);
   expect(
     results.subCategories[1].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls(
     [
@@ -3675,7 +3699,7 @@ test("browseCategorySharedContent, filter by activity feature", async () => {
   expect(results.subCategories[0].classifications[0].content.length).eq(4);
   expect(
     results.subCategories[0].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls(
     [
@@ -3694,7 +3718,7 @@ test("browseCategorySharedContent, filter by activity feature", async () => {
   expect(results.subCategories[1].classifications[0].content.length).eq(4);
   expect(
     results.subCategories[1].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls(
     [
@@ -3721,7 +3745,7 @@ test("browseCategorySharedContent, filter by activity feature", async () => {
   expect(results.subCategories[0].classifications[0].content.length).eq(4);
   expect(
     results.subCategories[0].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls(
     [
@@ -3740,7 +3764,7 @@ test("browseCategorySharedContent, filter by activity feature", async () => {
   expect(results.subCategories[1].classifications[0].content.length).eq(4);
   expect(
     results.subCategories[1].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls(
     [
@@ -3767,7 +3791,7 @@ test("browseCategorySharedContent, filter by activity feature", async () => {
   expect(results.subCategories[0].classifications[0].content.length).eq(4);
   expect(
     results.subCategories[0].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls(
     [
@@ -3786,7 +3810,7 @@ test("browseCategorySharedContent, filter by activity feature", async () => {
   expect(results.subCategories[1].classifications[0].content.length).eq(4);
   expect(
     results.subCategories[1].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls(
     [
@@ -3813,7 +3837,7 @@ test("browseCategorySharedContent, filter by activity feature", async () => {
   expect(results.subCategories[0].classifications[0].content.length).eq(2);
   expect(
     results.subCategories[0].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls([contentIdQIAString, contentIdQIVAString].sort());
 
@@ -3825,7 +3849,7 @@ test("browseCategorySharedContent, filter by activity feature", async () => {
   expect(results.subCategories[1].classifications[0].content.length).eq(2);
   expect(
     results.subCategories[1].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls([contentIdQIBString, contentIdQIVBString].sort());
 
@@ -3845,7 +3869,7 @@ test("browseCategorySharedContent, filter by activity feature", async () => {
   expect(results.subCategories[0].classifications[0].content.length).eq(2);
   expect(
     results.subCategories[0].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls([contentIdQVAString, contentIdQIVAString].sort());
 
@@ -3857,7 +3881,7 @@ test("browseCategorySharedContent, filter by activity feature", async () => {
   expect(results.subCategories[1].classifications[0].content.length).eq(2);
   expect(
     results.subCategories[1].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls([contentIdQVBString, contentIdQIVBString].sort());
 
@@ -3877,7 +3901,7 @@ test("browseCategorySharedContent, filter by activity feature", async () => {
   expect(results.subCategories[0].classifications[0].content.length).eq(2);
   expect(
     results.subCategories[0].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls([contentIdIVAString, contentIdQIVAString].sort());
 
@@ -3889,7 +3913,7 @@ test("browseCategorySharedContent, filter by activity feature", async () => {
   expect(results.subCategories[1].classifications[0].content.length).eq(2);
   expect(
     results.subCategories[1].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls([contentIdIVBString, contentIdQIVBString].sort());
 
@@ -3909,7 +3933,7 @@ test("browseCategorySharedContent, filter by activity feature", async () => {
   expect(results.subCategories[0].classifications[0].content.length).eq(1);
   expect(
     results.subCategories[0].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls([contentIdQIVAString].sort());
 
@@ -3921,7 +3945,7 @@ test("browseCategorySharedContent, filter by activity feature", async () => {
   expect(results.subCategories[1].classifications[0].content.length).eq(1);
   expect(
     results.subCategories[1].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls([contentIdQIVBString].sort());
 });
@@ -4030,7 +4054,7 @@ test("browseCategorySharedContent, filter by owner", async () => {
   expect(results.subCategories[0].classifications[0].content.length).eq(2);
   expect(
     results.subCategories[0].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls([contentId1AString, contentId2AString].sort());
 
@@ -4042,7 +4066,7 @@ test("browseCategorySharedContent, filter by owner", async () => {
   expect(results.subCategories[1].classifications[0].content.length).eq(2);
   expect(
     results.subCategories[1].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls([contentId1BString, contentId2BString].sort());
 
@@ -4062,7 +4086,7 @@ test("browseCategorySharedContent, filter by owner", async () => {
   expect(results.subCategories[0].classifications[0].content.length).eq(1);
   expect(
     results.subCategories[0].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls([contentId1AString].sort());
 
@@ -4074,7 +4098,7 @@ test("browseCategorySharedContent, filter by owner", async () => {
   expect(results.subCategories[1].classifications[0].content.length).eq(1);
   expect(
     results.subCategories[1].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls([contentId1BString].sort());
 
@@ -4094,7 +4118,7 @@ test("browseCategorySharedContent, filter by owner", async () => {
   expect(results.subCategories[0].classifications[0].content.length).eq(1);
   expect(
     results.subCategories[0].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls([contentId2AString].sort());
 
@@ -4106,7 +4130,7 @@ test("browseCategorySharedContent, filter by owner", async () => {
   expect(results.subCategories[1].classifications[0].content.length).eq(1);
   expect(
     results.subCategories[1].classifications[0].content
-      .map((c) => fromUUID(c.id))
+      .map((c) => fromUUID(c.contentId))
       .sort(),
   ).eqls([contentId2BString].sort());
 });
@@ -4269,8 +4293,14 @@ test("browse classification and subcategories with shared content, returns only 
   });
 
   // actually delete the deleted activities
-  await deleteContent(contentIdDeletedA, ownerId);
-  await deleteContent(contentIdDeletedB, ownerId);
+  await deleteContent({
+    contentId: contentIdDeletedA,
+    loggedInUserId: ownerId,
+  });
+  await deleteContent({
+    contentId: contentIdDeletedB,
+    loggedInUserId: ownerId,
+  });
 
   // user 1 gets the classifications with shared and public activities
   // Note: one activity is counted in both A1A and A1B
@@ -4588,8 +4618,14 @@ test("browse classification and subcategories with shared content, search, retur
   });
 
   // actually delete the deleted activities
-  await deleteContent(contentIdDeletedA, ownerId);
-  await deleteContent(contentIdDeletedB, ownerId);
+  await deleteContent({
+    contentId: contentIdDeletedA,
+    loggedInUserId: ownerId,
+  });
+  await deleteContent({
+    contentId: contentIdDeletedB,
+    loggedInUserId: ownerId,
+  });
 
   // user 1 gets the classifications with shared and public activities
   // Note: one activity is counted in both A1A and A1B
@@ -5541,13 +5577,13 @@ test("browse classification and subcategories with shared content, search includ
   const { userId } = await createTestUser();
   const { userId: owner1Id } = await createTestUser();
   await updateUser({
-    userId: owner1Id,
+    loggedInUserId: owner1Id,
     firstNames: `Fred${code}`,
     lastNames: `Flintstone${code}`,
   });
   const { userId: owner2Id } = await createTestUser();
   await updateUser({
-    userId: owner2Id,
+    loggedInUserId: owner2Id,
     firstNames: `Wilma${code}`,
     lastNames: `Flintstone${code}`,
   });
@@ -6062,8 +6098,14 @@ test("browse categories and systems with shared content, returns only classifica
   });
 
   // actually delete the deleted activities
-  await deleteContent(contentIdDeletedA, ownerId);
-  await deleteContent(contentIdDeletedB, ownerId);
+  await deleteContent({
+    contentId: contentIdDeletedA,
+    loggedInUserId: ownerId,
+  });
+  await deleteContent({
+    contentId: contentIdDeletedB,
+    loggedInUserId: ownerId,
+  });
 
   // user 1 gets the categories with shared and public activities
   let resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -6441,8 +6483,14 @@ test("browse categories and systems with shared content, search, returns only cl
   });
 
   // actually delete the deleted activities
-  await deleteContent(contentIdDeletedA, ownerId);
-  await deleteContent(contentIdDeletedB, ownerId);
+  await deleteContent({
+    contentId: contentIdDeletedA,
+    loggedInUserId: ownerId,
+  });
+  await deleteContent({
+    contentId: contentIdDeletedB,
+    loggedInUserId: ownerId,
+  });
 
   // user 1 gets the classifications with shared and public activities
   let resultsCat = await browseClassificationCategoriesWithSharedContent({
@@ -7474,13 +7522,13 @@ test("browse categories and systems with shared content, search includes owner n
   const { userId } = await createTestUser();
   const { userId: owner1Id } = await createTestUser();
   await updateUser({
-    userId: owner1Id,
+    loggedInUserId: owner1Id,
     firstNames: `Fred${code}`,
     lastNames: `Flintstone${code}`,
   });
   const { userId: owner2Id } = await createTestUser();
   await updateUser({
-    userId: owner2Id,
+    loggedInUserId: owner2Id,
     firstNames: `Wilma${code}`,
     lastNames: `Flintstone${code}`,
   });

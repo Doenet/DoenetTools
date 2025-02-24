@@ -69,7 +69,7 @@ function processSharedWith(
 }
 
 /**
- * Process a parent folder of content to standard form for the parent folder of ContentStructure
+ * Process a parent folder of content to standard form for the parent folder of `type`
  *
  * Return fields `id`, `name`, `type`, and `isPublic` unchanged from parent.
  *
@@ -92,7 +92,7 @@ function processParent(
   );
 
   return {
-    id: parent.id,
+    contentId: parent.id,
     name: parent.name,
     type: parent.type,
     isPublic: parent.isPublic,
@@ -413,6 +413,7 @@ export function processContent(
   forUserId?: Uint8Array,
 ): Content {
   const {
+    id,
     type,
     isAssigned,
     classCode,
@@ -475,6 +476,7 @@ export function processContent(
   }
 
   const baseContent: ContentBase = {
+    contentId: id,
     ...preliminaryContent2,
     ...libraryInfos,
     ...assignmentInfoObj,
@@ -608,7 +610,7 @@ export function compileActivityFromContent(activity: Content): ActivitySource {
   switch (activity.type) {
     case "singleDoc": {
       return {
-        id: fromUUID(activity.id),
+        id: fromUUID(activity.contentId),
         type: activity.type,
         isDescription: false,
         doenetML: activity.source!,
@@ -621,7 +623,7 @@ export function compileActivityFromContent(activity: Content): ActivitySource {
     }
     case "select": {
       return {
-        id: fromUUID(activity.id),
+        id: fromUUID(activity.contentId),
         type: activity.type,
         title: activity.name,
         numToSelect: activity.numToSelect,
@@ -631,7 +633,7 @@ export function compileActivityFromContent(activity: Content): ActivitySource {
     }
     case "sequence": {
       return {
-        id: fromUUID(activity.id),
+        id: fromUUID(activity.contentId),
         type: activity.type,
         title: activity.name,
         shuffle: activity.shuffle,

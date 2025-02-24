@@ -31,7 +31,7 @@ export async function findOrCreateUser({
   return userNoLibrary;
 }
 
-export async function getUserInfo(userId: Uint8Array) {
+export async function getUserInfo({ userId }: { userId: Uint8Array }) {
   const user = await prisma.users.findUniqueOrThrow({
     where: { userId },
     select: {
@@ -43,7 +43,7 @@ export async function getUserInfo(userId: Uint8Array) {
       isAdmin: true,
     },
   });
-  return user;
+  return { user };
 }
 
 export async function getAuthorInfo(userId: Uint8Array): Promise<UserInfo> {
@@ -89,16 +89,16 @@ export async function upgradeAnonymousUser({
 }
 
 export async function updateUser({
-  userId,
+  loggedInUserId,
   firstNames,
   lastNames,
 }: {
-  userId: Uint8Array;
+  loggedInUserId: Uint8Array;
   firstNames: string;
   lastNames: string;
 }) {
   const user = await prisma.users.update({
-    where: { userId },
+    where: { userId: loggedInUserId },
     data: { firstNames, lastNames },
   });
   const { isLibrary: _isLibrary, ...userNoLibrary } = user;

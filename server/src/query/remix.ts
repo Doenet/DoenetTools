@@ -11,45 +11,43 @@ export async function getContributorHistory({
   contentId: Uint8Array;
   loggedInUserId?: Uint8Array;
   isAdmin?: boolean;
-}) {
+}): Promise<ActivityHistory> {
   if (isAdmin === undefined) {
     isAdmin = await getIsAdmin(loggedInUserId);
   }
 
-  const activityHistory: ActivityHistory =
-    await prisma.content.findUniqueOrThrow({
-      where: {
-        id: contentId,
-        ...filterViewableActivity(loggedInUserId, isAdmin),
-      },
-      select: {
-        id: true,
-        contributorHistory: {
-          where: {
-            prevActivity: {
-              activity: {
-                ...filterViewableActivity(loggedInUserId, isAdmin),
-              },
+  const prelimActivityHistory = await prisma.content.findUniqueOrThrow({
+    where: {
+      id: contentId,
+      ...filterViewableActivity(loggedInUserId, isAdmin),
+    },
+    select: {
+      id: true,
+      contributorHistory: {
+        where: {
+          prevActivity: {
+            activity: {
+              ...filterViewableActivity(loggedInUserId, isAdmin),
             },
           },
-          orderBy: { timestampPrevActivity: "desc" },
-          include: {
-            prevActivity: {
-              select: {
-                cid: true,
-                revisionNum: true,
-                source: true,
-                activity: {
-                  select: {
-                    id: true,
-                    name: true,
-                    owner: {
-                      select: {
-                        userId: true,
-                        email: true,
-                        firstNames: true,
-                        lastNames: true,
-                      },
+        },
+        orderBy: { timestampPrevActivity: "desc" },
+        include: {
+          prevActivity: {
+            select: {
+              cid: true,
+              revisionNum: true,
+              source: true,
+              activity: {
+                select: {
+                  id: true,
+                  name: true,
+                  owner: {
+                    select: {
+                      userId: true,
+                      email: true,
+                      firstNames: true,
+                      lastNames: true,
                     },
                   },
                 },
@@ -58,8 +56,27 @@ export async function getContributorHistory({
           },
         },
       },
-    });
-  return activityHistory;
+    },
+  });
+
+  const { id, contributorHistory: prelimContributorHistory } =
+    prelimActivityHistory;
+
+  const contributorHistory = prelimContributorHistory.map((ch) => {
+    const {
+      prevActivity: {
+        activity: { id, ...activity },
+        ...pa2
+      },
+      ...ch2
+    } = ch;
+    return {
+      prevActivity: { activity: { contentId: id, ...activity }, ...pa2 },
+      ...ch2,
+    };
+  });
+
+  return { contentId: id, contributorHistory };
 }
 
 export async function getRemixes({
@@ -124,7 +141,7 @@ export async function getRemixes({
   });
 
   const activityRemixes2: ActivityRemixes = {
-    id: activityRemixes.id,
+    contentId: activityRemixes.id,
     activityRevisions: activityRemixes.activityRevisions.map(
       (activityRevision) => ({
         revisionNum: activityRevision.revisionNum,

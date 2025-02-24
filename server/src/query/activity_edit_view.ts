@@ -229,7 +229,7 @@ export async function getContent({
 
     for (const child of children) {
       if (child.type !== "singleDoc") {
-        child.children = findDescendants(child.id);
+        child.children = findDescendants(child.contentId);
       }
     }
 
@@ -237,7 +237,7 @@ export async function getContent({
   }
 
   if (activity.type !== "singleDoc") {
-    activity.children = findDescendants(activity.id);
+    activity.children = findDescendants(activity.contentId);
   }
 
   return activity;
