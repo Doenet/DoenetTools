@@ -1857,7 +1857,7 @@ export async function getSharedContentMatchCountPerAvailableFeature({
     { numCommunity?: number; numCurated?: number }
   > = {};
 
-  const availableFeatures = await getAvailableContentFeatures();
+  const { availableFeatures } = await getAvailableContentFeatures();
 
   if (query) {
     const query_as_prefixes = sanitizeQuery(query);

@@ -101,7 +101,7 @@ export async function setContentIsPublic({
     }
   }
 
-  return prisma.$executeRaw(Prisma.sql`
+  await prisma.$executeRaw(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
       WHERE id = ${contentId} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
@@ -233,14 +233,14 @@ export async function shareContentWithEmail({
       e instanceof Prisma.PrismaClientKnownRequestError &&
       e.code === "P2025"
     ) {
-      throw Error("User with email not found");
+      throw new InvalidRequestError("User with email not found");
     } else {
       throw e;
     }
   }
 
   if (isEqualUUID(userId, loggedInUserId)) {
-    throw Error("Cannot share with self");
+    throw new InvalidRequestError("Cannot share with self");
   }
 
   await modifyContentSharedWith({

@@ -215,16 +215,14 @@ export async function addClassification({
       id: true,
     },
   });
+
   if (!activity) {
     throw new InvalidRequestError(
       "This activity does not exist or is not owned by this user.",
     );
   }
   await prisma.contentClassifications.create({
-    data: {
-      contentId: contentId,
-      classificationId,
-    },
+    data: { contentId, classificationId },
   });
 }
 
@@ -432,7 +430,9 @@ export async function getClassificationInfo({
 }
 
 export async function getAvailableContentFeatures() {
-  return await prisma.contentFeatures.findMany({
+  const availableFeatures = await prisma.contentFeatures.findMany({
     orderBy: { sortIndex: "asc" },
   });
+
+  return { availableFeatures };
 }

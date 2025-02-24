@@ -19,25 +19,8 @@ import { Strategy as AnonymIdStrategy } from "passport-anonym-uuid";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
 import * as fs from "fs/promises";
-import {
-  fromUUID,
-  contentStructureConvertUUID,
-  toUUID,
-  userConvertUUID,
-  docHistoryConvertUUID,
-  assignmentConvertUUID,
-  assignmentStudentDataConvertUUID,
-  allAssignmentScoresConvertUUID,
-  studentDataConvertUUID,
-  isEqualUUID,
-  docRemixesConvertUUID,
-} from "./utils/uuid";
-import {
-  isContentType,
-  LibraryInfo,
-  PartialContentClassification,
-  UserInfo,
-} from "./types";
+import { fromUUID, toUUID } from "./utils/uuid";
+import { UserInfo } from "./types";
 import { add_test_apis } from "./test/test_apis";
 import {
   findOrCreateUser,
@@ -55,6 +38,9 @@ import { classificationRouter } from "./routes/classificationRoutes";
 import { activityEditViewRouter } from "./routes/activityEditViewRoutes";
 import { exploreRouter } from "./routes/exploreRoutes";
 import { remixRouter } from "./routes/remixRoutes";
+import { contentListRouter } from "./routes/contentListRoutes";
+import { infoRouter } from "./routes/infoRoutes";
+import { copyMoveRouter } from "./routes/copyMoveRoutes";
 
 const client = new SESClient({ region: "us-east-2" });
 
@@ -252,8 +238,8 @@ passport.serializeUser<any, any>(async (req, user: any, done) => {
 });
 
 passport.deserializeUser(async (userId: string, done) => {
-  const u = await getUserInfo(toUUID(userId));
-  done(null, u);
+  const { user } = await getUserInfo({ loggedInUserId: toUUID(userId) });
+  done(null, user);
 });
 
 app.use(
@@ -298,6 +284,9 @@ app.use("/api/classifications", classificationRouter);
 app.use("/api/activityEditView", activityEditViewRouter);
 app.use("/api/explore", exploreRouter);
 app.use("/api/remix", remixRouter);
+app.use("/api/contentList", contentListRouter);
+app.use("/api/info", infoRouter);
+app.use("/api/copyMove", copyMoveRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server" + JSON.stringify(req?.user));

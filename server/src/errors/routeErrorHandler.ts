@@ -7,7 +7,8 @@ import { Prisma } from "@prisma/client";
 export function handleErrors(res: Response, e: unknown) {
   if (e instanceof ZodError) {
     const errorMessages = e.errors.map((issue: ZodIssue) => ({
-      message: `${issue.path.join(".")} is ${issue.message}`,
+      path: issue.path.join("."),
+      message: issue.message,
     }));
     res
       .status(StatusCodes.BAD_REQUEST)

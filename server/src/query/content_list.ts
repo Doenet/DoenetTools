@@ -74,6 +74,7 @@ async function getMyContentOrLibraryContent({
       includeAssignInfo: true,
       countAssignmentScores: true,
       includeShareDetails: true,
+      includeClassifications: true,
     }),
     orderBy: { sortIndex: "asc" },
   });
@@ -82,9 +83,9 @@ async function getMyContentOrLibraryContent({
   const content: Content[] = preliminaryContent.map(processContent);
 
   //TODO: Does this API need to provide this extra data?
-  const availableFeatures = await getAvailableContentFeatures();
-  const allDoenetmlVersions = await getAllDoenetmlVersions();
-  const allLicenses = await getAllLicenses();
+  const { availableFeatures } = await getAvailableContentFeatures();
+  const { allDoenetmlVersions } = await getAllDoenetmlVersions();
+  const { allLicenses } = await getAllLicenses();
 
   return {
     content,
@@ -229,9 +230,9 @@ async function searchMyContentOrLibraryContent({
     .map(processContent);
 
   //TODO: Do we need this extra data in this API?
-  const availableFeatures = await getAvailableContentFeatures();
-  const allDoenetmlVersions = await getAllDoenetmlVersions();
-  const allLicenses = await getAllLicenses();
+  const { availableFeatures } = await getAvailableContentFeatures();
+  const { allDoenetmlVersions } = await getAllDoenetmlVersions();
+  const { allLicenses } = await getAllLicenses();
 
   return {
     content,

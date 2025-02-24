@@ -62,7 +62,7 @@ export async function getActivityEditorData({
     },
   });
 
-  const availableFeatures = await getAvailableContentFeatures();
+  const { availableFeatures } = await getAvailableContentFeatures();
 
   const isAdmin = await getIsAdmin(loggedInUserId);
 
