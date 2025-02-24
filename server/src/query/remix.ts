@@ -1,6 +1,8 @@
 import { prisma } from "../model";
-import { ActivityHistory, ActivityRemixes } from "../types";
+import { ActivityHistoryItem, ActivityRemixItem, LicenseCode } from "../types";
+import { cidFromText } from "../utils/cid";
 import { filterViewableActivity } from "../utils/permissions";
+import { getContentSource } from "./activity";
 import { getIsAdmin } from "./curate";
 
 export async function getContributorHistory({
@@ -11,7 +13,7 @@ export async function getContributorHistory({
   contentId: Uint8Array;
   loggedInUserId?: Uint8Array;
   isAdmin?: boolean;
-}): Promise<ActivityHistory> {
+}): Promise<{ history: ActivityHistoryItem[] }> {
   if (isAdmin === undefined) {
     isAdmin = await getIsAdmin(loggedInUserId);
   }
@@ -36,8 +38,6 @@ export async function getContributorHistory({
           prevActivity: {
             select: {
               cid: true,
-              revisionNum: true,
-              source: true,
               activity: {
                 select: {
                   id: true,
@@ -59,24 +59,40 @@ export async function getContributorHistory({
     },
   });
 
-  const { id, contributorHistory: prelimContributorHistory } =
-    prelimActivityHistory;
+  const history: ActivityHistoryItem[] = [];
 
-  const contributorHistory = prelimContributorHistory.map((ch) => {
-    const {
-      prevActivity: {
-        activity: { id, ...activity },
-        ...pa2
-      },
-      ...ch2
-    } = ch;
-    return {
-      prevActivity: { activity: { contentId: id, ...activity }, ...pa2 },
-      ...ch2,
-    };
-  });
+  for (const historyItem of prelimActivityHistory.contributorHistory) {
+    const prevActivity = historyItem.prevActivity;
 
-  return { contentId: id, contributorHistory };
+    const prevCidAtRemix = prevActivity.cid;
+
+    const prevCurrentSource = (
+      await getContentSource({
+        contentId: prevActivity.activity.id,
+        loggedInUserId,
+      })
+    ).source;
+
+    const currentCid = await cidFromText(prevCurrentSource);
+    const prevChanged = currentCid !== prevCidAtRemix;
+
+    history.push({
+      contentId,
+      prevContentId: prevActivity.activity.id,
+      prevRevisionNum: historyItem.prevActivityRevisionNum,
+      withLicenseCode: historyItem.withLicenseCode
+        ? (historyItem.withLicenseCode as LicenseCode)
+        : null,
+      timestampActivity: historyItem.timestampActivity,
+      timestampPrevActivity: historyItem.timestampPrevActivity,
+      prevName: prevActivity.activity.name,
+      prevOwner: prevActivity.activity.owner,
+      prevCidAtRemix,
+      prevChanged,
+    });
+  }
+
+  return { history };
 }
 
 export async function getRemixes({
@@ -89,7 +105,7 @@ export async function getRemixes({
   loggedInUserId?: Uint8Array;
   isAdmin?: boolean;
   directRemixesOnly?: boolean;
-}) {
+}): Promise<{ remixes: ActivityRemixItem[] }> {
   const directFilter = directRemixesOnly
     ? {
         directCopy: true,
@@ -140,23 +156,25 @@ export async function getRemixes({
     },
   });
 
-  const activityRemixes2: ActivityRemixes = {
-    contentId: activityRemixes.id,
-    activityRevisions: activityRemixes.activityRevisions.map(
-      (activityRevision) => ({
-        revisionNum: activityRevision.revisionNum,
-        remixes: activityRevision.contributorHistory.map((contribHist) => ({
-          withLicenseCode: contribHist.withLicenseCode,
-          contentId: contribHist.contentId,
-          activityName: contribHist.activity.name,
-          activityOwner: contribHist.activity.owner,
-          timestampActivity: contribHist.timestampActivity,
-          timestampPrevActivity: contribHist.timestampPrevActivity,
-          directCopy: contribHist.directCopy,
-        })),
-      }),
-    ),
-  };
+  const remixes: ActivityRemixItem[] = [];
 
-  return activityRemixes2;
+  for (const revision of activityRemixes.activityRevisions) {
+    for (const historyItem of revision.contributorHistory) {
+      remixes.push({
+        prevContentId: contentId,
+        prevRevisionNum: revision.revisionNum,
+        withLicenseCode: historyItem.withLicenseCode
+          ? (historyItem.withLicenseCode as LicenseCode)
+          : null,
+        contentId: historyItem.contentId,
+        name: historyItem.activity.name,
+        owner: historyItem.activity.owner,
+        timestampActivity: historyItem.timestampActivity,
+        timestampPrevActivity: historyItem.timestampPrevActivity,
+        directCopy: historyItem.directCopy,
+      });
+    }
+  }
+
+  return { remixes };
 }

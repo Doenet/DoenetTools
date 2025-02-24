@@ -103,7 +103,7 @@ model activityRevisions {
   contentId           Bytes                @db.Binary(16)
   revisionNum         Int
   cid                 String
-  source              String?              @db.MediumText
+  source              String               @db.MediumText
   createdAt           DateTime             @default(now())
   numVariants         Int                  @default(1)
   baseComponentCounts String?              @db.Text

@@ -1494,7 +1494,7 @@ test("contributor history shows only documents user can view", async () => {
       contentId: contentId4,
       loggedInUserId: ownerId1,
     })
-  ).contributorHistory;
+  ).history;
   expect(activityHistory.length).eq(1);
   expect(activityHistory[0].prevContentId).eqls(contentId1);
   expect(activityHistory[0].withLicenseCode).eq("CCDUAL");
@@ -1505,7 +1505,7 @@ test("contributor history shows only documents user can view", async () => {
       contentId: contentId1,
       loggedInUserId: ownerId1,
     })
-  ).activityRevisions.flatMap((v) => v.remixes);
+  ).remixes;
   expect(activityRemixes.length).eq(2);
   expect(activityRemixes[0].contentId).eqls(contentId5);
   expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
@@ -1519,7 +1519,7 @@ test("contributor history shows only documents user can view", async () => {
       loggedInUserId: ownerId1,
       directRemixesOnly: true,
     })
-  ).activityRevisions.flatMap((v) => v.remixes);
+  ).remixes;
   expect(activityRemixes.length).eq(1);
   expect(activityRemixes[0].contentId).eqls(contentId5);
   expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
@@ -1530,7 +1530,7 @@ test("contributor history shows only documents user can view", async () => {
       contentId: contentId4,
       loggedInUserId: ownerId2,
     })
-  ).contributorHistory;
+  ).history;
   expect(activityHistory.length).eq(2);
   expect(activityHistory[0].prevContentId).eqls(contentId2);
   expect(activityHistory[0].withLicenseCode).eq("CCBYSA");
@@ -1543,7 +1543,7 @@ test("contributor history shows only documents user can view", async () => {
       contentId: contentId1,
       loggedInUserId: ownerId2,
     })
-  ).activityRevisions.flatMap((v) => v.remixes);
+  ).remixes;
   expect(activityRemixes.length).eq(2);
   expect(activityRemixes[0].contentId).eqls(contentId4);
   expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
@@ -1557,7 +1557,7 @@ test("contributor history shows only documents user can view", async () => {
       loggedInUserId: ownerId2,
       directRemixesOnly: true,
     })
-  ).activityRevisions.flatMap((v) => v.remixes);
+  ).remixes;
   expect(activityRemixes.length).eq(1);
   expect(activityRemixes[0].contentId).eqls(contentId2);
   expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
@@ -1568,7 +1568,7 @@ test("contributor history shows only documents user can view", async () => {
       contentId: contentId4,
       loggedInUserId: ownerId3,
     })
-  ).contributorHistory;
+  ).history;
   expect(activityHistory.length).eq(3);
   expect(activityHistory[0].prevContentId).eqls(contentId3);
   expect(activityHistory[0].withLicenseCode).eq("CCBYSA");
@@ -1583,7 +1583,7 @@ test("contributor history shows only documents user can view", async () => {
       contentId: contentId1,
       loggedInUserId: ownerId3,
     })
-  ).activityRevisions.flatMap((v) => v.remixes);
+  ).remixes;
   expect(activityRemixes.length).eq(4);
   expect(activityRemixes[0].contentId).eqls(contentId5);
   expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
@@ -1601,7 +1601,7 @@ test("contributor history shows only documents user can view", async () => {
       loggedInUserId: ownerId3,
       directRemixesOnly: true,
     })
-  ).activityRevisions.flatMap((v) => v.remixes);
+  ).remixes;
   expect(activityRemixes.length).eq(2);
   expect(activityRemixes[0].contentId).eqls(contentId5);
   expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");

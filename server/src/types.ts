@@ -284,47 +284,29 @@ export type License = {
   }[];
 };
 
-export type ActivityHistory = {
+export type ActivityHistoryItem = {
   contentId: Uint8Array;
-  contributorHistory: {
-    contentId: Uint8Array;
-    prevContentId: Uint8Array;
-    prevActivityRevisionNum: number;
-    withLicenseCode: string | null;
-    timestampActivity: Date;
-    timestampPrevActivity: Date;
-    prevActivity: {
-      revisionNum: number;
-      cid: string;
-      source: string | null;
-      activity: {
-        name: string;
-        contentId: Uint8Array;
-        owner: UserInfo;
-      };
-    };
-  }[];
+  prevContentId: Uint8Array;
+  prevRevisionNum: number;
+  withLicenseCode: LicenseCode | null;
+  timestampActivity: Date;
+  timestampPrevActivity: Date;
+  prevName: string;
+  prevOwner: UserInfo;
+  prevCidAtRemix: string;
+  prevChanged: boolean;
 };
 
-export type ActivityRemixes = {
+export type ActivityRemixItem = {
+  prevContentId: Uint8Array;
+  prevRevisionNum: number;
+  withLicenseCode: LicenseCode | null;
   contentId: Uint8Array;
-  activityRevisions: {
-    revisionNum: number;
-    remixes: {
-      withLicenseCode: string | null;
-      contentId: Uint8Array;
-      activityName: string;
-      activityOwner: {
-        userId: Uint8Array;
-        email: string;
-        firstNames: string | null;
-        lastNames: string;
-      };
-      timestampActivity: Date;
-      timestampPrevActivity: Date;
-      directCopy: boolean;
-    }[];
-  }[];
+  name: string;
+  owner: UserInfo;
+  timestampActivity: Date;
+  timestampPrevActivity: Date;
+  directCopy: boolean;
 };
 
 export type ClassificationCategoryTree = {

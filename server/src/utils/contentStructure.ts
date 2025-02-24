@@ -500,13 +500,10 @@ export function processContent(
       };
 
       if (
-        sourceOrig !== undefined &&
-        sourceOrig !== null &&
+        sourceOrig != null &&
         numVariantsOrig !== undefined &&
-        baseComponentCountsOrig !== undefined &&
-        baseComponentCountsOrig !== null &&
-        doenetmlVersionOrig !== undefined &&
-        doenetmlVersionOrig !== null
+        baseComponentCountsOrig != null &&
+        doenetmlVersionOrig != null
       ) {
         docInfo = {
           source: sourceOrig,

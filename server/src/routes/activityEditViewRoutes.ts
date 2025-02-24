@@ -1,27 +1,31 @@
 import express from "express";
-import { requireLoggedIn } from "../middleware/validationMiddleware";
-import { queryLoggedIn } from "../middleware/queryMiddleware";
+import { queryOptionalLoggedIn } from "../middleware/queryMiddleware";
 import {
   getActivityEditorData,
+  getActivityViewerData,
   getSharedEditorData,
 } from "../query/activity_edit_view";
 import { contentIdSchema } from "../schemas/contentSchema";
+import { getContentSource } from "../query/activity";
 
 export const activityEditViewRouter = express.Router();
 
-activityEditViewRouter.use(requireLoggedIn);
-
 activityEditViewRouter.get(
   "/getActivityEditorData",
-  queryLoggedIn(getActivityEditorData, contentIdSchema),
+  queryOptionalLoggedIn(getActivityEditorData, contentIdSchema),
 );
 
 activityEditViewRouter.get(
   "/getSharedEditorData",
-  queryLoggedIn(getSharedEditorData, contentIdSchema),
+  queryOptionalLoggedIn(getSharedEditorData, contentIdSchema),
 );
 
 activityEditViewRouter.get(
   "/getActivityViewerData",
-  queryLoggedIn(getSharedEditorData, contentIdSchema),
+  queryOptionalLoggedIn(getActivityViewerData, contentIdSchema),
+);
+
+activityEditViewRouter.get(
+  "/getContentSource",
+  queryOptionalLoggedIn(getContentSource, contentIdSchema),
 );

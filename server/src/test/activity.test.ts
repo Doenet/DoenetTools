@@ -9,7 +9,7 @@ import {
   createContent,
   deleteContent,
   getAllDoenetmlVersions,
-  getActivitySource,
+  getContentSource,
   updateContent,
   getContentDescription,
 } from "../query/activity";
@@ -177,7 +177,7 @@ test("deleteContent marks a activity and document as deleted and prevents its re
     contentId: contentId,
     loggedInUserId: userId,
   });
-  await getActivitySource(contentId, userId);
+  await getContentSource({ contentId: contentId, loggedInUserId: userId });
 
   await deleteContent({ contentId: contentId, loggedInUserId: userId });
 
@@ -188,9 +188,9 @@ test("deleteContent marks a activity and document as deleted and prevents its re
   await expect(
     getActivityEditorData({ contentId: contentId, loggedInUserId: userId }),
   ).rejects.toThrow(InvalidRequestError);
-  await expect(getActivitySource(contentId, userId)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  await expect(
+    getContentSource({ contentId: contentId, loggedInUserId: userId }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 });
 
 test("only owner can delete an activity", async () => {
@@ -289,7 +289,7 @@ test("get activity/document data only if owner or limited data for public/shared
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  await getActivitySource(contentId, ownerId);
+  await getContentSource({ contentId: contentId, loggedInUserId: ownerId });
 
   await expect(
     getActivityEditorData({ contentId: contentId, loggedInUserId: user1Id }),
@@ -297,9 +297,9 @@ test("get activity/document data only if owner or limited data for public/shared
   await expect(
     getActivityViewerData({ contentId: contentId, loggedInUserId: user1Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
-  await expect(getActivitySource(contentId, user1Id)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  await expect(
+    getContentSource({ contentId: contentId, loggedInUserId: user1Id }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   await setContentIsPublic({
     contentId: contentId,
@@ -336,7 +336,7 @@ test("get activity/document data only if owner or limited data for public/shared
     contentId: contentId,
     loggedInUserId: user1Id,
   });
-  await getActivitySource(contentId, user1Id);
+  await getContentSource({ contentId: contentId, loggedInUserId: user1Id });
 
   await setContentIsPublic({
     contentId: contentId,
@@ -349,9 +349,9 @@ test("get activity/document data only if owner or limited data for public/shared
   await expect(
     getActivityViewerData({ contentId: contentId, loggedInUserId: user1Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
-  await expect(getActivitySource(contentId, user1Id)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  await expect(
+    getContentSource({ contentId: contentId, loggedInUserId: user1Id }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   await modifyContentSharedWith({
     action: "share",
@@ -371,7 +371,7 @@ test("get activity/document data only if owner or limited data for public/shared
     contentId: contentId,
     loggedInUserId: user1Id,
   });
-  await getActivitySource(contentId, user1Id);
+  await getContentSource({ contentId: contentId, loggedInUserId: user1Id });
 
   await expect(
     getActivityEditorData({ contentId: contentId, loggedInUserId: user2Id }),
@@ -379,9 +379,9 @@ test("get activity/document data only if owner or limited data for public/shared
   await expect(
     getActivityViewerData({ contentId: contentId, loggedInUserId: user2Id }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
-  await expect(getActivitySource(contentId, user2Id)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  await expect(
+    getContentSource({ contentId: contentId, loggedInUserId: user2Id }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 });
 
 test("get public activity editor data only if public or shared", async () => {
@@ -930,7 +930,10 @@ test("getActivitySource gets source", async () => {
     loggedInUserId: ownerId,
   });
 
-  const activitySource = await getActivitySource(contentId, ownerId);
+  const activitySource = await getContentSource({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
   expect(activitySource.source).eq("some content");
 });
 

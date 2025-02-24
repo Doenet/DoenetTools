@@ -64,7 +64,7 @@ CREATE TABLE `activityRevisions` (
     `contentId` BINARY(16) NOT NULL,
     `revisionNum` INTEGER NOT NULL,
     `cid` VARCHAR(191) NOT NULL,
-    `source` MEDIUMTEXT NULL,
+    `source` MEDIUMTEXT NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `numVariants` INTEGER NOT NULL DEFAULT 1,
     `baseComponentCounts` TEXT NULL,

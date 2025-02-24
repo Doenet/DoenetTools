@@ -329,28 +329,6 @@ export async function getContentDescription(
 }
 
 /**
- * Get the source from the activity with `contentId`.
- *
- * Throws an error if not viewable by `loggedInUserId`.
- */
-export async function getActivitySource(
-  contentId: Uint8Array,
-  loggedInUserId: Uint8Array,
-) {
-  const isAdmin = await getIsAdmin(loggedInUserId);
-  const document = await prisma.content.findUniqueOrThrow({
-    where: {
-      id: contentId,
-      type: "singleDoc",
-      ...filterViewableContent(loggedInUserId, isAdmin),
-    },
-    select: { source: true },
-  });
-
-  return { source: document.source };
-}
-
-/**
  * Get a list of all currently available DoenetML versions.
  */
 export async function getAllDoenetmlVersions() {
@@ -434,4 +412,31 @@ export async function createActivityRevision(
   }
 
   return activityVersion;
+}
+
+/**
+ * Get the source from the content with `contentId`. For Docs, return the `source` database field.
+ * Otherwise compile the activity json and stringify that for the source
+ *
+ * Throws an error if not viewable by `loggedInUserId`.
+ */
+export async function getContentSource({
+  contentId,
+  loggedInUserId = new Uint8Array(16),
+}: {
+  contentId: Uint8Array;
+  loggedInUserId?: Uint8Array;
+}) {
+  const isAdmin = await getIsAdmin(loggedInUserId);
+  const content = await getContent({ contentId, loggedInUserId, isAdmin });
+
+  let source: string;
+
+  if (content.type === "singleDoc") {
+    source = content.source;
+  } else {
+    source = JSON.stringify(compileActivityFromContent(content));
+  }
+
+  return { source };
 }

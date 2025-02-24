@@ -1652,11 +1652,11 @@ test("copyContent copies a public document to a new owner", async () => {
     loggedInUserId: newOwnerId,
   });
 
-  const contribHist = activityData.activityHistory.contributorHistory;
+  const contribHist = activityData.activityHistory.history;
   expect(contribHist.length).eq(1);
 
   expect(contribHist[0].prevContentId).eqls(contentId);
-  expect(contribHist[0].prevActivityRevisionNum).eq(1);
+  expect(contribHist[0].prevRevisionNum).eq(1);
 });
 
 test("copyContent copies a shared document to a new owner", async () => {
@@ -1704,11 +1704,11 @@ test("copyContent copies a shared document to a new owner", async () => {
 
   expect(activityData.activity.isShared).eq(false);
 
-  const contribHist = activityData.activityHistory.contributorHistory;
+  const contribHist = activityData.activityHistory.history;
   expect(contribHist.length).eq(1);
 
   expect(contribHist[0].prevContentId).eqls(contentId);
-  expect(contribHist[0].prevActivityRevisionNum).eq(1);
+  expect(contribHist[0].prevRevisionNum).eq(1);
 });
 
 test("copyContent remixes correct versions", async () => {
@@ -1757,10 +1757,10 @@ test("copyContent remixes correct versions", async () => {
     contentId: contentId2,
     loggedInUserId: ownerId2,
   });
-  const contribHist2 = activityData2.activityHistory.contributorHistory;
+  const contribHist2 = activityData2.activityHistory.history;
   expect(contribHist2.length).eq(1);
   expect(contribHist2[0].prevContentId).eqls(contentId1);
-  expect(contribHist2[0].prevActivityRevisionNum).eq(1);
+  expect(contribHist2[0].prevRevisionNum).eq(1);
 
   // modify activity 1 so that will have a new version
   const activity1ContentModified = "<p>Bye</p>";
@@ -1794,10 +1794,10 @@ test("copyContent remixes correct versions", async () => {
     contentId: contentId3,
     loggedInUserId: ownerId3,
   });
-  const contribHist3 = activityData3.activityHistory.contributorHistory;
+  const contribHist3 = activityData3.activityHistory.history;
   expect(contribHist3.length).eq(1);
   expect(contribHist3[0].prevContentId).eqls(contentId1);
-  expect(contribHist3[0].prevActivityRevisionNum).eq(2);
+  expect(contribHist3[0].prevRevisionNum).eq(2);
 });
 
 test("copyContent copies content classifications", async () => {

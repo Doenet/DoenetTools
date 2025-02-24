@@ -30,10 +30,10 @@ import { getContributorHistory } from "./remix";
  */
 export async function getActivityEditorData({
   contentId,
-  loggedInUserId,
+  loggedInUserId = new Uint8Array(16),
 }: {
   contentId: Uint8Array;
-  loggedInUserId: Uint8Array;
+  loggedInUserId?: Uint8Array;
 }) {
   // TODO: add pagination or a hard limit i n the number of documents one can add to an activity
 
@@ -87,10 +87,10 @@ export async function getActivityEditorData({
  */
 export async function getSharedEditorData({
   contentId,
-  loggedInUserId,
+  loggedInUserId = new Uint8Array(16),
 }: {
   contentId: Uint8Array;
-  loggedInUserId: Uint8Array;
+  loggedInUserId?: Uint8Array;
 }) {
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
   const activity = getContent({ contentId, loggedInUserId });
@@ -99,10 +99,10 @@ export async function getSharedEditorData({
 
 export async function getActivityViewerData({
   contentId,
-  loggedInUserId,
+  loggedInUserId = new Uint8Array(16),
 }: {
   contentId: Uint8Array;
-  loggedInUserId: Uint8Array;
+  loggedInUserId?: Uint8Array;
 }) {
   const isAdmin = await getIsAdmin(loggedInUserId);
 
