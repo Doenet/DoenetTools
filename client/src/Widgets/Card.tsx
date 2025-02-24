@@ -20,7 +20,7 @@ import {
   Checkbox,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
-import { ContentStructure, ContentType } from "../_utils/types";
+import { Content, ContentType } from "../_utils/types";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { BsPeople } from "react-icons/bs";
 import {
@@ -34,7 +34,7 @@ import { IoDiceOutline } from "react-icons/io5";
 export type CardContent = {
   menuRef?: (arg: HTMLButtonElement) => void;
   cardLink?: string;
-  content: ContentStructure;
+  content: Content;
   ownerName?: string;
   menuItems?: ReactElement;
   closeTime?: string;
@@ -62,7 +62,7 @@ export default function Card({
   indentLevel?: number;
   selectedCards?: string[];
   selectCallback?: (arg: {
-    id: string;
+    contentId: string;
     name: string;
     checked: boolean;
     type: ContentType;
@@ -70,7 +70,7 @@ export default function Card({
   disableSelect?: boolean;
 }) {
   const {
-    id,
+    contentId,
     name: title,
     assignmentStatus = "Unassigned",
     isPublic,
@@ -263,10 +263,10 @@ export default function Card({
       <Checkbox
         margin="5px"
         isDisabled={disableSelect}
-        isChecked={selectedCards.includes(id)}
+        isChecked={selectedCards.includes(contentId)}
         onChange={(e) => {
           selectCallback?.({
-            id,
+            contentId,
             checked: e.target.checked,
             type: contentType,
             name: title,

@@ -4,7 +4,7 @@ import {
   MdOutlineOndemandVideo,
   MdOutlineSwipeLeft,
 } from "react-icons/md";
-import { ContentClassification, ContentStructure, ContentType } from "./types";
+import { ContentClassification, Content, ContentType } from "./types";
 import { ActivitySource } from "./viewerTypes";
 import { IconType } from "react-icons/lib";
 import { FaFolder } from "react-icons/fa";
@@ -107,9 +107,7 @@ export function findClassificationDescriptionIndex({
   });
 }
 
-export function compileActivityFromContent(
-  activity: ContentStructure,
-): ActivitySource {
+export function compileActivityFromContent(activity: Content): ActivitySource {
   const children = activity.children.map(compileActivityFromContent);
 
   switch (activity.type) {

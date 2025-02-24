@@ -25,7 +25,7 @@ import {
 import {
   ClassificationCategoryTree,
   ContentClassification,
-  ContentStructure,
+  Content,
 } from "../../../_utils/types";
 import {
   findClassificationDescriptionIndex,
@@ -40,13 +40,13 @@ export async function classificationSettingsActions({
   [k: string]: any;
 }) {
   if (formObj._action == "add content classification") {
-    await axios.post("/api/addClassification", {
+    await axios.post("/api/classifications/addClassification", {
       contentId: formObj.contentId,
       classificationId: Number(formObj.classificationId),
     });
     return true;
   } else if (formObj._action == "remove content classification") {
-    await axios.post("/api/removeClassification", {
+    await axios.post("/api/classifications/removeClassification", {
       contentId: formObj.contentId,
       classificationId: Number(formObj.classificationId),
     });
@@ -63,7 +63,7 @@ export function ClassificationSettings({
   contentData,
 }: {
   fetcher: FetcherWithComponents<any>;
-  contentData: ContentStructure;
+  contentData: Content;
 }) {
   const [categoryFilter, setCategoryFilter] = useState<{
     systemId?: number;
@@ -93,11 +93,11 @@ export function ClassificationSettings({
   }) => {
     let searchParameters = "";
     if (subCategoryId !== undefined) {
-      searchParameters = `subCategory=${subCategoryId}`;
+      searchParameters = `subCategoryId=${subCategoryId}`;
     } else if (categoryId !== undefined) {
-      searchParameters = `category=${categoryId}`;
+      searchParameters = `categoryId=${categoryId}`;
     } else if (systemId !== undefined) {
-      searchParameters = `system=${systemId}`;
+      searchParameters = `systemId=${systemId}`;
     }
 
     if (query !== undefined) {
@@ -108,7 +108,7 @@ export function ClassificationSettings({
     }
 
     const results = await axios.get(
-      `/api/searchPossibleClassifications?${searchParameters}`,
+      `/api/classifications/searchPossibleClassifications?${searchParameters}`,
     );
 
     const classifications: ContentClassification[] = results.data;
@@ -135,7 +135,9 @@ export function ClassificationSettings({
   >([]);
   useEffect(() => {
     async function fetchClassificationCategories() {
-      const { data } = await axios.get(`/api/getClassificationCategories`);
+      const { data } = await axios.get(
+        `/api/classifications/getClassificationCategories`,
+      );
       setClassificationCategories(data);
     }
     fetchClassificationCategories();
@@ -262,7 +264,7 @@ export function ClassificationSettings({
                               fetcher.submit(
                                 {
                                   _action: "remove content classification",
-                                  contentId: contentData.id,
+                                  contentId: contentData.contentId,
                                   classificationId: classification.id,
                                 },
                                 { method: "post" },
@@ -554,7 +556,7 @@ export function ClassificationSettings({
                               fetcher.submit(
                                 {
                                   _action: action,
-                                  contentId: contentData.id,
+                                  contentId: contentData.contentId,
                                   classificationId: classification.id,
                                 },
                                 { method: "post" },

@@ -20,7 +20,7 @@ import {
   assignActivityActions,
   AssignActivityControls,
 } from "./AssignActivityControls";
-import { ContentStructure } from "../../../_utils/types";
+import { Content } from "../../../_utils/types";
 
 export async function assignmentSettingsActions({
   formObj,
@@ -39,7 +39,7 @@ export function AssignmentSettingsDrawer({
   isOpen,
   onClose,
   finalFocusRef,
-  id,
+  contentId,
   contentData,
   fetcher,
   displayTab = "assignment",
@@ -47,8 +47,8 @@ export function AssignmentSettingsDrawer({
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  id: string;
-  contentData: ContentStructure;
+  contentId: string;
+  contentData: Content;
   fetcher: FetcherWithComponents<any>;
   displayTab?: "assignment";
 }) {
@@ -106,7 +106,7 @@ export function AssignmentSettingsDrawer({
                   <TabPanel>
                     <AssignActivityControls
                       fetcher={fetcher}
-                      contentId={id}
+                      contentId={contentId}
                       activityData={contentData}
                       openTabIndex={tabIndex}
                     />

@@ -26,7 +26,7 @@ import { FaFileImage } from "react-icons/fa";
 import { readAndCompressImage } from "browser-image-resizer";
 import {
   ContentFeature,
-  ContentStructure,
+  Content,
   DoenetmlVersion,
 } from "../../../_utils/types";
 import { activityFeatureIcons } from "../../../_utils/activity";
@@ -49,7 +49,10 @@ export async function generalContentActions({ formObj }: { [k: string]: any }) {
     await axios.post("/api/updateContent/updateContentSettings", {
       name: formObj.name,
       imagePath: formObj.imagePath,
-      contentId: formObj.id,
+      contentId: formObj.contentId,
+      doenetmlVersionId: formObj.doenetmlVersionId
+        ? Number(formObj.doenetmlVersionId)
+        : undefined,
       shuffle: formObj.shuffle ? formObj.shuffle === "true" : undefined,
       numToSelect: formObj.numToSelect
         ? Number(formObj.numToSelect)
@@ -62,25 +65,22 @@ export async function generalContentActions({ formObj }: { [k: string]: any }) {
       itemLevelAttempts,
     });
 
-    if (formObj.doenetmlVersionId) {
-      // TODO: handle other updates to just a document
-      await axios.post("/api/updateDocumentSettings", {
-        docId: formObj.docId,
-        doenetmlVersionId: formObj.doenetmlVersionId,
-      });
-    }
     return true;
   } else if (formObj?._action === "update features") {
     const features: Record<string, boolean> = {};
 
-    const { id: _id, _action: __action, ...formFeatures } = formObj;
+    const {
+      contentId: _contentId,
+      _action: __action,
+      ...formFeatures
+    } = formObj;
 
     for (const feature in formFeatures) {
       features[feature] = formFeatures[feature] === "true";
     }
 
     await axios.post("/api/updateContent/updateContentFeatures", {
-      contentId: formObj.id,
+      contentId: formObj.contentId,
       features,
     });
     return true;
@@ -99,7 +99,7 @@ export function GeneralContentControls({
   highlightRename = false,
 }: {
   fetcher: FetcherWithComponents<any>;
-  contentData: ContentStructure;
+  contentData: Content;
   allDoenetmlVersions: DoenetmlVersion[];
   availableFeatures: ContentFeature[];
   highlightRename?: boolean;
@@ -116,9 +116,7 @@ export function GeneralContentControls({
   // It appears this file is using optimistic UI without a recourse
   // should the optimism be unmerited.
   const doenetmlVersionInit: DoenetmlVersion | null =
-    contentData.type === "singleDoc"
-      ? contentData.documents[0].doenetmlVersion
-      : null;
+    contentData.type === "singleDoc" ? contentData.doenetmlVersion : null;
 
   const [nameValue, setName] = useState(name);
   const lastAcceptedNameValue = useRef(name);
@@ -130,20 +128,26 @@ export function GeneralContentControls({
 
   const [doenetmlVersion, setDoenetmlVersion] = useState(doenetmlVersionInit);
 
-  const [shuffle, setShuffle] = useState(contentData.shuffle);
+  const [shuffle, setShuffle] = useState(
+    contentData.type === "sequence" ? contentData.shuffle : false,
+  );
   const [numToSelectText, setNumToSelectText] = useState(
-    contentData.numToSelect.toString(),
+    contentData.type === "select" ? contentData.numToSelect.toString() : "1",
   );
   const [selectByVariant, setSelectByVariant] = useState(
-    contentData.selectByVariant,
+    contentData.type === "select" ? contentData.selectByVariant : false,
   );
-  const [paginate, setPaginate] = useState(contentData.paginate);
+  const [paginate, setPaginate] = useState(
+    contentData.type === "sequence" ? contentData.paginate : false,
+  );
   const [attemptButtons, setAttemptButtons] = useState<string>(
-    contentData.activityLevelAttempts
-      ? "activity"
-      : contentData.itemLevelAttempts
-        ? "item"
-        : "none",
+    contentData.type === "sequence"
+      ? contentData.activityLevelAttempts
+        ? "activity"
+        : contentData.itemLevelAttempts
+          ? "item"
+          : "none"
+      : "none",
   );
 
   const nameInput = useRef<HTMLInputElement>(null);
@@ -200,8 +204,7 @@ export function GeneralContentControls({
     fetcher.submit(
       {
         _action: "update general",
-        id: contentData.id,
-        docId: contentData.documents?.[0]?.id,
+        contentId: contentData.contentId,
         ...data,
       },
       { method: "post" },
@@ -250,7 +253,7 @@ export function GeneralContentControls({
         const uploadData = new FormData();
         // uploadData.append('file',file);
         uploadData.append("file", image);
-        uploadData.append("contentId", contentData.id.toString());
+        uploadData.append("contentId", contentData.contentId.toString());
 
         axios.post("/api/activityThumbnailUpload", uploadData).then((resp) => {
           const { data } = resp;
@@ -283,7 +286,7 @@ export function GeneralContentControls({
         });
       };
     },
-    [contentData.id],
+    [contentData.contentId],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
@@ -297,7 +300,7 @@ export function GeneralContentControls({
     fetcher.submit(
       {
         _action: "update general",
-        id: contentData.id,
+        contentId: contentData.contentId,
         numToSelect: num,
       },
       { method: "post" },
@@ -383,7 +386,7 @@ export function GeneralContentControls({
 
         <input type="hidden" name="imagePath" value={imagePath ?? undefined} />
         <input type="hidden" name="_action" value="update general" />
-        <input type="hidden" name="id" value={contentData.id} />
+        <input type="hidden" name="contentId" value={contentData.contentId} />
       </Form>
 
       {contentData.type !== "folder" ? (
@@ -412,7 +415,7 @@ export function GeneralContentControls({
                     fetcher.submit(
                       {
                         _action: "update features",
-                        id: contentData.id,
+                        contentId: contentData.contentId,
                         [feature.code]: !isPresent,
                       },
                       { method: "post" },
@@ -441,7 +444,10 @@ export function GeneralContentControls({
           <FormLabel mt="16px">DoenetML version</FormLabel>
           <Select
             value={doenetmlVersion?.id}
-            disabled={contentData.assignmentStatus !== "Unassigned"}
+            disabled={
+              (contentData.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
+              "Unassigned"
+            }
             onChange={(e) => {
               // TODO: do we worry about this pattern?
               // If saveDataToServer is unsuccessful, the client doenetmlVersion
@@ -465,7 +471,8 @@ export function GeneralContentControls({
           </Select>
         </FormControl>
       ) : null}
-      {contentData.assignmentStatus !== "Unassigned" ? (
+      {(contentData.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
+      "Unassigned" ? (
         <p>
           <strong>Note</strong>: Cannot modify DoenetML version since activity
           is assigned.
@@ -479,7 +486,7 @@ export function GeneralContentControls({
         </p>
       )}
 
-      {(contentData.numVariants ?? 1) > 1 ? (
+      {contentData.type === "singleDoc" && contentData.numVariants > 1 ? (
         <Box marginTop="20px">
           This document has {contentData.numVariants} variants.
         </Box>
@@ -500,7 +507,7 @@ export function GeneralContentControls({
                 fetcher.submit(
                   {
                     _action: "update general",
-                    id: contentData.id,
+                    contentId: contentData.contentId,
                     shuffle: !shuffle,
                   },
                   { method: "post" },
@@ -520,7 +527,7 @@ export function GeneralContentControls({
                 fetcher.submit(
                   {
                     _action: "update general",
-                    id: contentData.id,
+                    contentId: contentData.contentId,
                     paginate: !paginate,
                   },
                   { method: "post" },
@@ -537,7 +544,7 @@ export function GeneralContentControls({
                 fetcher.submit(
                   {
                     _action: "update general",
-                    id: contentData.id,
+                    contentId: contentData.contentId,
                     attemptButtons: v,
                   },
                   { method: "post" },
@@ -592,7 +599,7 @@ export function GeneralContentControls({
                 fetcher.submit(
                   {
                     _action: "update general",
-                    id: contentData.id,
+                    contentId: contentData.contentId,
                     selectByVariant: !selectByVariant,
                   },
                   { method: "post" },

@@ -26,7 +26,7 @@ import axios from "axios";
 import { createFullName } from "../../../_utils/names";
 import {
   ContentDescription,
-  ContentStructure,
+  Content,
   ContentType,
 } from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
@@ -96,13 +96,13 @@ export async function loader({ params, request }) {
 export function SharedActivities() {
   const { content, ownerId, owner, folder, listViewPref, addTo } =
     useLoaderData() as {
-      content: ContentStructure[];
+      content: Content[];
       ownerId: string;
       owner: {
         firstNames: string | null;
         lastNames: string;
       };
-      folder: ContentStructure | null;
+      folder: Content | null;
       listViewPref: boolean;
       addTo?: ContentDescription;
     };
@@ -132,7 +132,7 @@ export function SharedActivities() {
     onClose: infoOnClose,
   } = useDisclosure();
 
-  let contentData: ContentStructure | undefined;
+  let contentData: Content | undefined;
   if (infoContentId) {
     const index = content.findIndex((obj) => obj.id == infoContentId);
     if (index != -1) {

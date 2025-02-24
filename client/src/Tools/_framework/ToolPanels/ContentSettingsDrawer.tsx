@@ -26,7 +26,7 @@ import {
 } from "./SupportFilesControls";
 import {
   ContentFeature,
-  ContentStructure,
+  Content,
   DoenetmlVersion,
 } from "../../../_utils/types";
 import {
@@ -73,7 +73,7 @@ export function ContentSettingsDrawer({
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  contentData: ContentStructure;
+  contentData: Content;
   allDoenetmlVersions: DoenetmlVersion[];
   availableFeatures: ContentFeature[];
   supportingFileData?: any;
@@ -171,7 +171,7 @@ export function ContentSettingsDrawer({
                   <TabPanel>
                     <SupportFilesControls
                       fetcher={fetcher}
-                      contentId={contentData.id}
+                      contentId={contentData.contentId}
                       supportingFileData={supportingFileData}
                     />
                   </TabPanel>

@@ -15,7 +15,7 @@ import {
 import { QRCode } from "react-qrcode-logo";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { MdOutlineContentCopy } from "react-icons/md";
-import { ContentStructure } from "../../../_utils/types";
+import { Content } from "../../../_utils/types";
 
 export function AssignmentInvitation({
   isOpen,
@@ -26,7 +26,7 @@ export function AssignmentInvitation({
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  activityData: ContentStructure;
+  activityData: Content;
 }) {
   const [urlCopied, setUrlCopied] = useState(false);
 

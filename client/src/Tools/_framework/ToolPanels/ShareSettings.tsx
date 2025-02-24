@@ -29,91 +29,68 @@ import {
 import { InfoIcon, WarningIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
-import { ContentStructure, License, LicenseCode } from "../../../_utils/types";
+import { Content, License, LicenseCode } from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { contentTypeToName } from "../../../_utils/activity";
 
 export async function sharingActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "make content public") {
-    if (formObj.isFolder === "true") {
-      await axios.post("/api/makeFolderPublic", {
-        id: formObj.id,
-        licenseCode: formObj.licenseCode,
-      });
-    } else {
-      await axios.post("/api/makeActivityPublic", {
-        id: formObj.id,
-        licenseCode: formObj.licenseCode,
-      });
-    }
+    await axios.post("/api/share/makeContentPublic", {
+      contentId: formObj.contentId,
+      licenseCode: formObj.licenseCode,
+    });
+
     return true;
   } else if (formObj._action == "make content private") {
-    if (formObj.isFolder === "true") {
-      await axios.post("/api/makeFolderPrivate", {
-        id: formObj.id,
-      });
-    } else {
-      await axios.post("/api/makeActivityPrivate", {
-        id: formObj.id,
-      });
-    }
+    await axios.post("/api/share/makeContentPrivate", {
+      contentId: formObj.contentId,
+    });
     return true;
   } else if (formObj._action === "share content") {
-    let noSelfShare = false;
     try {
-      if (formObj.isFolder === "true") {
-        const { data } = await axios.post("/api/shareFolder", {
-          id: formObj.id,
-          licenseCode: formObj.licenseCode,
-          email: formObj.email,
-        });
-        noSelfShare = Boolean(data.noSelfShare);
-      } else {
-        const { data } = await axios.post("/api/shareActivity", {
-          id: formObj.id,
-          licenseCode: formObj.licenseCode,
-          email: formObj.email,
-        });
-        noSelfShare = Boolean(data.noSelfShare);
-      }
+      await axios.post("/api/share/shareContent", {
+        contentId: formObj.contentId,
+        licenseCode: formObj.licenseCode,
+        email: formObj.email,
+      });
     } catch (e) {
-      if (e.response?.data === "User with email not found") {
-        return { email: formObj.email, status: "Not found" };
-      } else {
-        throw e;
+      console.log(e.response);
+      if (e.response?.data?.error) {
+        const error = e.response?.data?.error;
+        const details = e.response?.data?.details;
+        console.log({ error, details });
+        if (
+          error === "Invalid data" &&
+          details[0]?.message === "Invalid email"
+        ) {
+          return { email: formObj.email, status: "Invalid email" };
+        } else if (
+          error === "Invalid request" &&
+          details === "User with email not found"
+        ) {
+          return { email: formObj.email, status: "Not found" };
+        } else if (
+          error === "Invalid request" &&
+          details === "Cannot share with self"
+        ) {
+          return { status: "No self share" };
+        }
       }
     }
-    if (noSelfShare) {
-      return { status: "No self share" };
-    } else {
-      return { status: "Added", email: formObj.email };
-    }
+
+    return { status: "Added", email: formObj.email };
   } else if (formObj._action === "unshare content") {
-    if (formObj.isFolder === "true") {
-      await axios.post("/api/unshareFolder", {
-        id: formObj.id,
-        userId: formObj.userId,
-      });
-    } else {
-      await axios.post("/api/unshareActivity", {
-        id: formObj.id,
-        userId: formObj.userId,
-      });
-    }
+    await axios.post("/api/share/unshareContent", {
+      contentId: formObj.contentId,
+      userId: formObj.userId,
+    });
 
     return true;
   } else if (formObj._action == "set license") {
-    if (formObj.isFolder === "true") {
-      await axios.post("/api/setFolderLicense", {
-        id: formObj.id,
-        licenseCode: formObj.licenseCode,
-      });
-    } else {
-      await axios.post("/api/setActivityLicense", {
-        id: formObj.id,
-        licenseCode: formObj.licenseCode,
-      });
-    }
+    await axios.post("/api/share/setContentLicense", {
+      contentId: formObj.contentId,
+      licenseCode: formObj.licenseCode,
+    });
     return true;
   }
 
@@ -127,7 +104,7 @@ export function ShareSettings({
   remixedWithLicense,
 }: {
   fetcher: FetcherWithComponents<any>;
-  contentData: ContentStructure;
+  contentData: Content;
   allLicenses: License[];
   remixedWithLicense: LicenseCode | null;
 }) {
@@ -174,7 +151,8 @@ export function ShareSettings({
       setErrorMessage("");
     } else if (
       actionResult?.status === "Not found" ||
-      actionResult?.status === "No self share"
+      actionResult?.status === "No self share" ||
+      actionResult?.status === "Invalid email"
     ) {
       nextStatusText.current = "";
       setStatusText("");
@@ -185,6 +163,8 @@ export function ShareSettings({
         if (actionResult)
           if (actionResult.status === "No self share") {
             setErrorMessage("Cannot share with yourself");
+          } else if (actionResult.status === "Invalid email") {
+            setErrorMessage(`Invalid email: ${actionResult.email}`);
           } else {
             setErrorMessage(`User with email ${actionResult.email} not found`);
           }
@@ -266,9 +246,8 @@ export function ShareSettings({
               fetcher.submit(
                 {
                   _action: "set license",
-                  id: contentData.id,
+                  contentId: contentData.contentId,
                   licenseCode: newLicenseCode,
-                  isFolder: Boolean(contentData.isFolder),
                 },
                 { method: "post" },
               );
@@ -439,8 +418,7 @@ export function ShareSettings({
                                 fetcher.submit(
                                   {
                                     _action: "make content private",
-                                    id: contentData.id,
-                                    isFolder: Boolean(contentData.isFolder),
+                                    contentId: contentData.contentId,
                                   },
                                   { method: "post" },
                                 );
@@ -500,8 +478,8 @@ export function ShareSettings({
                               />
                               <Input
                                 type="hidden"
-                                name="id"
-                                value={contentData.id}
+                                name="contentId"
+                                value={contentData.contentId}
                               />
                               <Input
                                 type="hidden"
@@ -512,11 +490,6 @@ export function ShareSettings({
                                 type="hidden"
                                 name="email"
                                 value={user.email}
-                              />
-                              <Input
-                                type="hidden"
-                                name="isFolder"
-                                value={Boolean(contentData.isFolder).toString()}
                               />
                             </Form>
                           )}
@@ -565,11 +538,10 @@ export function ShareSettings({
               <Spinner hidden={showSpinner?.type !== "emailShare"} />
             </HStack>
             <Input type="hidden" name="_action" value="share content" />
-            <Input type="hidden" name="id" value={contentData.id} />
             <Input
               type="hidden"
-              name="isFolder"
-              value={Boolean(contentData.isFolder).toString()}
+              name="contentId"
+              value={contentData.contentId}
             />
             <Input
               type="hidden"
@@ -597,8 +569,7 @@ export function ShareSettings({
                     fetcher.submit(
                       {
                         _action: "make content private",
-                        id: contentData.id,
-                        isFolder: Boolean(contentData.isFolder),
+                        contentId: contentData.contentId,
                       },
                       { method: "post" },
                     );
@@ -608,9 +579,8 @@ export function ShareSettings({
                     fetcher.submit(
                       {
                         _action: "make content public",
-                        id: contentData.id,
+                        contentId: contentData.contentId,
                         licenseCode: selectedLicenseCode ?? "CCDUAL",
-                        isFolder: Boolean(contentData.isFolder),
                       },
                       { method: "post" },
                     );

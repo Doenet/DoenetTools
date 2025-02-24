@@ -141,7 +141,7 @@ Cypress.Commands.add(
       if (makePublic) {
         cy.request({
           method: "POST",
-          url: "/api/makeActivityPublic",
+          url: "/api/share/makeContentPublic",
           body: {
             id: contentId,
             licenseCode: "CCDUAL",

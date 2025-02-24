@@ -26,11 +26,13 @@ import {
 import { HiOutlineMail } from "react-icons/hi";
 import { BsGithub, BsDiscord } from "react-icons/bs";
 import axios from "axios";
-import { ContentStructure } from "../../../_utils/types";
+import { Content } from "../../../_utils/types";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 
 export async function loader() {
-  const { data: promotedContent } = await axios.get("/api/loadPromotedContent");
+  const { data: promotedContent } = await axios.get(
+    "/api/oldAdmin/loadPromotedContent",
+  );
   const favorites = promotedContent.find((content) => content.homepage);
   return { favorites };
 }
@@ -105,8 +107,7 @@ export function Home() {
   const blackColor = "black";
   const whiteColor = useColorModeValue("white", "gray.900");
 
-  const [infoContentData, setInfoContentData] =
-    useState<ContentStructure | null>(null);
+  const [infoContentData, setInfoContentData] = useState<Content | null>(null);
 
   const {
     isOpen: infoIsOpen,

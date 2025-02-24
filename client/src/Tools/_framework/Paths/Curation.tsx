@@ -38,7 +38,7 @@ import {
 } from "../ToolPanels/ContentSettingsDrawer";
 import {
   ContentFeature,
-  ContentStructure,
+  Content,
   DoenetmlVersion,
   LicenseCode,
   UserInfo,
@@ -108,12 +108,6 @@ export async function action({ request }) {
       desiredPosition: formObj.desiredPosition,
     });
     return true;
-
-    // } else if (formObj?._action == "Set List View Preferred") {
-    //   await axios.post(`/api/setPreferredFolderView`, {
-    //     cardView: formObj.listViewPref === "false",
-    //   });
-    //   return true;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
@@ -164,11 +158,11 @@ export function Curation() {
     query,
   } = useLoaderData() as {
     folderId: string | null;
-    content: ContentStructure[];
+    content: Content[];
     allDoenetmlVersions: DoenetmlVersion[];
     availableFeatures: ContentFeature[];
     userId: string;
-    folder: ContentStructure | null;
+    folder: Content | null;
     listViewPref: boolean;
     query: string | null;
   };
@@ -421,7 +415,7 @@ export function Curation() {
     `Curation`
   );
 
-  let contentData: ContentStructure | undefined;
+  let contentData: Content | undefined;
   if (settingsContentId) {
     if (folder && settingsContentId === folderId) {
       contentData = folder;

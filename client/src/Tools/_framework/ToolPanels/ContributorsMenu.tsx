@@ -15,14 +15,14 @@ import {
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
 import { createFullName } from "../../../_utils/names";
-import { ContentStructure, DocHistoryItem } from "../../../_utils/types";
+import { Content, DocHistoryItem } from "../../../_utils/types";
 
 export default function ContributorsMenu({
   contributorHistory,
   activity,
 }: {
   contributorHistory: DocHistoryItem[];
-  activity: ContentStructure;
+  activity: Content;
 }) {
   if (!activity.owner) {
     return null;

@@ -6,7 +6,7 @@ import styled from "styled-components";
 import Card from "../../../Widgets/Card";
 import { MoveToGroupMenuItem } from "./CommunityAdmin";
 import { createFullName } from "../../../_utils/names";
-import { ContentStructure } from "../../../_utils/types";
+import { Content } from "../../../_utils/types";
 
 export async function loader() {
   const {
@@ -56,9 +56,9 @@ export function OldAdmin() {
       promotedGroupId: number;
       currentlyFeatured: boolean;
       homepage: boolean;
-      promotedContent: ContentStructure[];
+      promotedContent: Content[];
     }[];
-    publicActivities: ContentStructure[];
+    publicActivities: Content[];
   };
 
   return (

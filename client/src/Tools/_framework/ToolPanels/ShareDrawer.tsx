@@ -20,14 +20,13 @@ import {
 } from "@chakra-ui/react";
 import { Remixes } from "./Remixes";
 import {
-  ContentStructure,
-  DocHistoryItem,
-  DocRemixItem,
+  ActivityHistoryItem,
+  ActivityRemixItem,
+  Content,
   License,
   LicenseCode,
 } from "../../../_utils/types";
 import axios from "axios";
-import { cidFromText } from "../../../_utils/cid";
 import {
   processContributorHistory,
   processRemixes,
@@ -54,32 +53,29 @@ export function ShareDrawer({
   fetcher,
   contentData,
   allLicenses,
-  currentDoenetML,
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
   fetcher: FetcherWithComponents<any>;
-  contentData: ContentStructure;
+  contentData: Content;
   allLicenses: License[];
-  currentDoenetML?: React.MutableRefObject<string>;
 }) {
   const [contributorHistory, setContributorHistory] = useState<
-    DocHistoryItem[] | null
-  >(null);
+    ActivityHistoryItem[]
+  >([]);
   const [haveChangedHistoryItem, setHaveChangedHistoryItem] = useState(false);
-  const [remixes, setRemixes] = useState<DocRemixItem[] | null>(null);
-  const [thisCid, setThisCid] = useState<string | null>(null);
+  const [remixes, setRemixes] = useState<ActivityRemixItem[]>([]);
   const [remixedWithLicense, setRemixedWithLicense] =
     useState<LicenseCode | null>(null);
 
   useEffect(() => {
     async function getHistoryAndRemixes() {
       const { data } = await axios.get(
-        `/api/getContributorHistory/${contentData.id}`,
+        `/api/remix/getContributorHistory/${contentData.contentId}`,
       );
 
-      const hist = await processContributorHistory(data.docHistories[0]);
+      const hist = await processContributorHistory(data);
       setContributorHistory(hist);
 
       const haveChanged = hist.some((dhi) => dhi.prevChanged);
@@ -89,40 +85,17 @@ export function ShareDrawer({
       setRemixedWithLicense(hist[0]?.withLicenseCode || null);
 
       const { data: data2 } = await axios.get(
-        `/api/getRemixes/${contentData.id}`,
+        `/api/remix/getRemixes/${contentData.contentId}`,
       );
 
-      const doc0Remixes = processRemixes(data2.docRemixes[0]);
-      setRemixes(doc0Remixes);
+      const remixes = processRemixes(data2);
+      setRemixes(remixes);
     }
 
-    if (!contentData.isFolder) {
+    if (contentData.type !== "folder") {
       getHistoryAndRemixes();
     }
   }, [contentData]);
-
-  useEffect(() => {
-    async function recalculateThisCid() {
-      let cid: string | null = null;
-      if (haveChangedHistoryItem) {
-        let thisSource =
-          currentDoenetML?.current || contentData.documents[0].source;
-
-        if (thisSource === undefined) {
-          const { data: sourceData } = await axios.get(
-            `/api/getDocumentSource/${contentData.documents[0].id}`,
-          );
-
-          thisSource = sourceData.source as string;
-        }
-        cid = await cidFromText(thisSource);
-      }
-
-      setThisCid(cid);
-    }
-
-    recalculateThisCid();
-  }, [haveChangedHistoryItem, currentDoenetML?.current]);
 
   return (
     <Drawer
@@ -148,7 +121,7 @@ export function ShareDrawer({
           <Tabs>
             <TabList>
               <Tab data-test="Share Tab">Share</Tab>
-              {!contentData.isFolder ? (
+              {contentData.type !== "folder" ? (
                 <>
                   <Tab data-test="Remixed From Tab">
                     Remixed From{" "}
@@ -173,15 +146,12 @@ export function ShareDrawer({
                     remixedWithLicense={remixedWithLicense}
                   />
                 </TabPanel>
-                {!contentData.isFolder ? (
+                {contentData.type !== "folder" ? (
                   <TabPanel>
-                    <RemixedFrom
-                      contributorHistory={contributorHistory}
-                      thisCid={thisCid}
-                    />
+                    <RemixedFrom contributorHistory={contributorHistory} />
                   </TabPanel>
                 ) : null}
-                {!contentData.isFolder ? (
+                {contentData.type !== "folder" ? (
                   <TabPanel>
                     <Remixes remixes={remixes} />
                   </TabPanel>

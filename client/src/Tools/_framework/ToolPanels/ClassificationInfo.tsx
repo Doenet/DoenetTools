@@ -8,14 +8,10 @@ import {
   AccordionIcon,
   HStack,
 } from "@chakra-ui/react";
-import { ContentStructure } from "../../../_utils/types";
+import { Content } from "../../../_utils/types";
 import { returnClassificationsAccordionPanel } from "../../../_utils/classification";
 
-export function ClassificationInfo({
-  contentData,
-}: {
-  contentData: ContentStructure;
-}) {
+export function ClassificationInfo({ contentData }: { contentData: Content }) {
   const numClassifications = contentData.classifications.length;
   const allIndices = [...Array(numClassifications).keys()];
 

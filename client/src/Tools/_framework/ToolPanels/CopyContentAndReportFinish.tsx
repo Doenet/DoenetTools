@@ -35,8 +35,8 @@ export function CopyContentAndReportFinish({
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  sourceContent: { id: string; type: ContentType }[];
-  desiredParent: { id: string; name: string; type: ContentType } | null;
+  sourceContent: { contentId: string; type: ContentType }[];
+  desiredParent: { contentId: string; name: string; type: ContentType } | null;
   action: "Copy" | "Add";
   copyToLibrary?: boolean;
 }) {
@@ -61,7 +61,7 @@ export function CopyContentAndReportFinish({
           const newContentIds: string[] = [];
           for (const s of sourceContent) {
             const { data } = await axios.post(`/api/addDraftToLibrary`, {
-              contentId: s.id,
+              contentId: s.contentId,
               type: s.type,
             });
             userId = data.userId;
@@ -71,10 +71,10 @@ export function CopyContentAndReportFinish({
         } else {
           const { data } = await axios.post(`/api/copyContent`, {
             sourceContent: sourceContent.map((s) => ({
-              contentId: s.id,
+              contentId: s.contentId,
               type: s.type,
             })),
-            desiredParentId: desiredParent ? desiredParent.id : null,
+            desiredParentId: desiredParent ? desiredParent.contentId : null,
           });
 
           setNewActivityData(data);
@@ -111,10 +111,10 @@ export function CopyContentAndReportFinish({
     );
     if (desiredParent.type === "folder") {
       destinationAction = "Go to folder";
-      destinationUrl = `/activities/${newActivityData?.userId}/${desiredParent.id}`;
+      destinationUrl = `/activities/${newActivityData?.userId}/${desiredParent.contentId}`;
     } else {
       destinationAction = `Open ${typeName}`;
-      destinationUrl = `/activityEditor/${desiredParent.id}`;
+      destinationUrl = `/activityEditor/${desiredParent.contentId}`;
     }
   } else {
     destinationDescription = copyToLibrary ? (

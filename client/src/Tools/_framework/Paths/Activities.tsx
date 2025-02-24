@@ -49,7 +49,7 @@ import {
   AssignmentStatus,
   ContentDescription,
   ContentFeature,
-  ContentStructure,
+  Content,
   ContentType,
   DoenetmlVersion,
   License,
@@ -127,28 +127,23 @@ export async function action({ request, params }) {
     //Create an activity and redirect to the editor for it
     const { data } = await axios.post(`/api/updateContent/createContent`, {
       contentType: formObj.type,
-      parentId: params.folderId,
+      parentId: params.parentId,
     });
 
     const { contentId } = data;
     return redirect(`/activityEditor/${contentId}`);
   } else if (formObj?._action == "Duplicate Content") {
-    await axios.post(`/api/copyContent`, {
-      sourceContent: [{ contentId: formObj.id, type: formObj.contentType }],
-      desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
+    await axios.post(`/api/copyMove/copyContent`, {
+      contentIds: [formObj.contentId],
+      desiredParentId: formObj.parentId === "null" ? null : formObj.parentId,
       prependCopy: true,
     });
     return true;
   } else if (formObj?._action == "Move") {
-    await axios.post(`/api/moveContent`, {
-      id: formObj.id,
-      desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
+    await axios.post(`/api/copyMove/moveContent`, {
+      contentId: formObj.contentId,
+      desiredParentId: formObj.parentId === "null" ? null : formObj.parentId,
       desiredPosition: formObj.desiredPosition,
-    });
-    return true;
-  } else if (formObj?._action == "Set List View Preferred") {
-    await axios.post(`/api/setPreferredFolderView`, {
-      cardView: formObj.listViewPref === "false",
     });
     return true;
   }
@@ -163,23 +158,25 @@ export async function loader({ params, request }) {
   let data;
   if (q) {
     const results = await axios.get(
-      `/api/searchMyFolderContent/${params.userId}/${params.folderId ?? ""}?q=${q}`,
+      `/api/contentList/searchMyContent/${params.userId}/${params.parentId ?? ""}?q=${q}`,
     );
     data = results.data;
   } else {
     const results = await axios.get(
-      `/api/getMyFolderContent/${params.userId}/${params.folderId ?? ""}`,
+      `/api/contentList/getMyContent/${params.userId}/${params.parentId ?? ""}`,
     );
     data = results.data;
   }
 
   if (data.notMe) {
     return redirect(
-      `/sharedActivities/${params.userId}${params.folderId ? "/" + params.folderId : ""}`,
+      `/sharedActivities/${params.userId}${params.parentId ? "/" + params.parentId : ""}`,
     );
   }
 
-  const prefData = await axios.get(`/api/getPreferredFolderView`);
+  console.log(data);
+
+  const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
   const listViewPref = !prefData.data.cardView;
 
   const addToId = url.searchParams.get("addTo");
@@ -194,8 +191,21 @@ export async function loader({ params, request }) {
     }
   }
 
+  console.log({
+    parentId: params.parentId ? params.parentId : null,
+    content: data.content,
+    allDoenetmlVersions: data.allDoenetmlVersions,
+    allLicenses: data.allLicenses,
+    availableFeatures: data.availableFeatures,
+    userId: params.userId,
+    folder: data.folder,
+    listViewPref,
+    query: q,
+    addTo,
+  });
+
   return {
-    folderId: params.folderId ? params.folderId : null,
+    parentId: params.parentId ? params.parentId : null,
     content: data.content,
     allDoenetmlVersions: data.allDoenetmlVersions,
     allLicenses: data.allLicenses,
@@ -210,7 +220,7 @@ export async function loader({ params, request }) {
 
 export function Activities() {
   const {
-    folderId,
+    parentId,
     content,
     allDoenetmlVersions,
     allLicenses,
@@ -221,13 +231,13 @@ export function Activities() {
     query,
     addTo,
   } = useLoaderData() as {
-    folderId: string | null;
-    content: ContentStructure[];
+    parentId: string | null;
+    content: Content[];
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
     availableFeatures: ContentFeature[];
     userId: string;
-    folder: ContentStructure | null;
+    folder: Content | null;
     listViewPref: boolean;
     query: string | null;
     addTo: ContentDescription | undefined;
@@ -301,9 +311,9 @@ export function Activities() {
   useEffect(() => {
     setSelectedCards((was) => {
       let foundMissing = false;
-      const newList = content.map((c) => c.id);
+      const newList = content.map((c) => c.contentId);
       for (const c of was) {
-        if (!newList.includes(c.id)) {
+        if (!newList.includes(c.contentId)) {
           foundMissing = true;
           break;
         }
@@ -317,24 +327,24 @@ export function Activities() {
   }, [content]);
 
   function selectCardCallback({
-    id,
+    contentId,
     name,
     checked,
     type,
   }: {
-    id: string;
+    contentId: string;
     name: string;
     checked: boolean;
     type: ContentType;
   }) {
     setSelectedCards((was) => {
       const arr = [...was];
-      const idx = was.findIndex((c) => c.id === id);
+      const idx = was.findIndex((c) => c.contentId === contentId);
       if (checked) {
         if (idx === -1) {
-          arr.push({ id, name, type });
+          arr.push({ contentId, name, type });
         } else {
-          arr[idx] = { id, name, type };
+          arr[idx] = { contentId, name, type };
         }
       } else if (idx !== -1) {
         arr.splice(idx, 1);
@@ -344,7 +354,7 @@ export function Activities() {
   }
 
   const [moveToFolderData, setMoveToFolderData] = useState<{
-    id: string;
+    contentId: string;
     name: string;
     type: ContentType;
     isPublic: boolean;
@@ -352,7 +362,7 @@ export function Activities() {
     sharedWith: UserInfo[];
     licenseCode: LicenseCode | null;
   }>({
-    id: "",
+    contentId: "",
     name: "",
     type: "singleDoc",
     isPublic: false,
@@ -378,26 +388,24 @@ export function Activities() {
   const fetcher = useFetcher();
 
   function getCardMenuList({
-    id,
+    contentId,
     name,
     position,
     numCards,
     assignmentStatus,
     contentType,
-    isFolder,
     isPublic,
     isShared,
     sharedWith,
     licenseCode,
     parentId,
   }: {
-    id: string;
+    contentId: string;
     name: string;
     position: number;
     numCards: number;
     assignmentStatus: AssignmentStatus;
     contentType: ContentType;
-    isFolder: boolean;
     isPublic: boolean;
     isShared: boolean;
     sharedWith: UserInfo[];
@@ -411,7 +419,7 @@ export function Activities() {
         <MenuItem
           data-test="Rename Menu Item"
           onClick={() => {
-            setSettingsContentId(id);
+            setSettingsContentId(contentId);
             setSettingsDisplayTab("general");
             setHighlightRename(true);
             settingsOnOpen();
@@ -425,9 +433,8 @@ export function Activities() {
             fetcher.submit(
               {
                 _action: "Duplicate Content",
-                id,
-                folderId,
-                contentType,
+                contentId,
+                parentId,
               },
               { method: "post" },
             );
@@ -442,9 +449,9 @@ export function Activities() {
               fetcher.submit(
                 {
                   _action: "Move",
-                  id,
+                  contentId,
                   desiredPosition: position - 1,
-                  folderId,
+                  parentId,
                 },
                 { method: "post" },
               );
@@ -460,9 +467,9 @@ export function Activities() {
               fetcher.submit(
                 {
                   _action: "Move",
-                  id,
+                  contentId,
                   desiredPosition: position + 1,
-                  folderId,
+                  parentId,
                 },
                 { method: "post" },
               );
@@ -476,7 +483,7 @@ export function Activities() {
             data-test="Move to Folder"
             onClick={() => {
               setMoveToFolderData({
-                id,
+                contentId,
                 name,
                 type: contentType,
                 isPublic,
@@ -493,17 +500,17 @@ export function Activities() {
         <MenuItem
           data-test="Delete Menu Item"
           onClick={() => {
-            setSettingsContentId(id);
+            setSettingsContentId(contentId);
             deleteContentOnOpen();
           }}
         >
           Delete
         </MenuItem>
-        {!isFolder ? (
+        {contentType !== "folder" ? (
           <MenuItem
             data-test="Assign Activity Menu Item"
             onClick={() => {
-              setSettingsContentId(id);
+              setSettingsContentId(contentId);
               assignmentSettingsOnOpen();
             }}
           >
@@ -515,7 +522,7 @@ export function Activities() {
         <MenuItem
           data-test="Share Menu Item"
           onClick={() => {
-            setSettingsContentId(id);
+            setSettingsContentId(contentId);
             sharingOnOpen();
           }}
         >
@@ -524,7 +531,7 @@ export function Activities() {
         <MenuItem
           data-test="Settings Menu Item"
           onClick={() => {
-            setSettingsContentId(id);
+            setSettingsContentId(contentId);
             setSettingsDisplayTab("general");
             setHighlightRename(false);
             settingsOnOpen();
@@ -564,13 +571,15 @@ export function Activities() {
     `My Activities`
   );
 
-  let contentData: ContentStructure | undefined;
+  let contentData: Content | undefined;
   if (settingsContentId) {
-    if (folder && settingsContentId === folderId) {
+    if (folder && settingsContentId === parentId) {
       contentData = folder;
       finalFocusRef.current = folderSettingsRef.current;
     } else {
-      const index = content.findIndex((obj) => obj.id == settingsContentId);
+      const index = content.findIndex(
+        (obj) => obj.contentId == settingsContentId,
+      );
       if (index != -1) {
         contentData = content[index];
         finalFocusRef.current = cardMenuRefs.current[index];
@@ -611,7 +620,7 @@ export function Activities() {
       <AssignmentSettingsDrawer
         isOpen={assignmentSettingsAreOpen}
         onClose={assignmentSettingsOnClose}
-        id={settingsContentId}
+        contentId={settingsContentId}
         contentData={contentData}
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
@@ -624,7 +633,7 @@ export function Activities() {
       onClose={moveCopyContentOnClose}
       sourceContent={[moveToFolderData]}
       userId={userId}
-      currentParentId={folderId}
+      currentParentId={parentId}
       finalFocusRef={finalFocusRef}
       allowedParentTypes={getAllowedParentTypes([moveToFolderData.type])}
       action="Move"
@@ -635,7 +644,7 @@ export function Activities() {
     <CreateFolderModal
       isOpen={createFolderIsOpen}
       onClose={createFolderOnClose}
-      parentFolder={folderId}
+      parentFolder={parentId}
       fetcher={fetcher}
       finalFocusRef={finalFocusRef}
     />
@@ -864,13 +873,13 @@ export function Activities() {
               </MenuList>
             </Menu>
 
-            {folderId !== null ? (
+            {parentId !== null ? (
               <Button
                 colorScheme="blue"
                 size="sm"
                 ref={folderSettingsRef}
                 onClick={() => {
-                  setSettingsContentId(folderId);
+                  setSettingsContentId(parentId);
                   sharingOnOpen();
                 }}
                 hidden={searchOpen}
@@ -883,7 +892,7 @@ export function Activities() {
               size="sm"
               onClick={() =>
                 navigate(
-                  `/allAssignmentScores${folderId ? "/" + folderId : ""}`,
+                  `/allAssignmentScores${parentId ? "/" + parentId : ""}`,
                 )
               }
               hidden={searchOpen}
@@ -902,7 +911,7 @@ export function Activities() {
           {folder && !haveQuery ? (
             <Box>
               <Link
-                to={`/activities/${userId}${folder.parent ? "/" + folder.parent.id : ""}`}
+                to={`/activities/${userId}${folder.parent ? "/" + folder.parent.contentId : ""}`}
                 style={{
                   color: "var(--mainBlue)",
                 }}
@@ -965,25 +974,25 @@ export function Activities() {
     return {
       menuRef: getCardMenuRef,
       content: activity,
-      closeTime: formatTime(activity.codeValidUntil),
+      closeTime: formatTime(activity.assignmentInfo?.codeValidUntil),
       menuItems: getCardMenuList({
-        id: activity.id,
+        contentId: activity.contentId,
         name: activity.name,
         position,
         numCards: content.length,
-        assignmentStatus: activity.assignmentStatus,
+        assignmentStatus:
+          activity.assignmentInfo?.assignmentStatus ?? "Unassigned",
         contentType: activity.type,
         isPublic: activity.isPublic,
-        isFolder: activity.isFolder!,
         isShared: activity.isShared,
         sharedWith: activity.sharedWith,
         licenseCode: activity.license?.code ?? null,
-        parentId: activity.parent?.id ?? null,
+        parentId: activity.parent?.contentId ?? null,
       }),
       cardLink:
         activity.type === "folder"
-          ? `/activities/${activity.ownerId}/${activity.id}`
-          : `/activityEditor/${activity.id}`,
+          ? `/activities/${activity.ownerId}/${activity.contentId}`
+          : `/activityEditor/${activity.contentId}`,
     };
   });
 
@@ -996,9 +1005,9 @@ export function Activities() {
       emptyMessage={emptyMessage}
       listView={listView}
       content={cardContent}
-      selectedCards={selectedCards.map((c) => c.id)}
+      selectedCards={selectedCards.map((c) => c.contentId)}
       selectCallback={selectCardCallback}
-      disableSelectFor={addTo ? [addTo.id] : undefined}
+      disableSelectFor={addTo ? [addTo.contentId] : undefined}
     />
   );
 

@@ -44,7 +44,7 @@ import {
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 import {
   ContentFeature,
-  ContentStructure,
+  Content,
   DoenetmlVersion,
   License,
 } from "../../../_utils/types";
@@ -185,7 +185,7 @@ export async function loader({ params }) {
 //This is separate as <Editable> wasn't updating when defaultValue was changed
 function EditableName({ dataTest }) {
   const { activityData } = useLoaderData() as {
-    activityData: ContentStructure;
+    activityData: Content;
   };
 
   const [name, setName] = useState(activityData.name);
@@ -237,7 +237,7 @@ export function ActivityEditor() {
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
     availableFeatures: ContentFeature[];
-    activityData: ContentStructure;
+    activityData: Content;
   } & (
     | {
         type: "singleDoc";
@@ -328,15 +328,13 @@ export function ActivityEditor() {
     null,
   );
 
-  let contentData: ContentStructure | undefined;
+  let contentData: Content | undefined;
   if (settingsContentId) {
     if (settingsContentId === activityData.id) {
       contentData = activityData;
     } else {
       if (data.type !== "singleDoc") {
-        function matchSettingsContentId(
-          content: ContentStructure,
-        ): ContentStructure | undefined {
+        function matchSettingsContentId(content: Content): Content | undefined {
           if (content.id === settingsContentId) {
             return content;
           }

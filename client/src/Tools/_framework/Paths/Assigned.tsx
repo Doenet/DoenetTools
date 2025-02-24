@@ -6,7 +6,7 @@ import { useLoaderData, useNavigate, useFetcher } from "react-router";
 import { CardContent } from "../../../Widgets/Card";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
-import { ContentStructure, UserInfo } from "../../../_utils/types";
+import { Content, UserInfo } from "../../../_utils/types";
 import CardList from "../../../Widgets/CardList";
 import { formatTime } from "../../../_utils/dateUtilityFunction";
 import {
@@ -42,7 +42,7 @@ export async function loader() {
 export function Assigned() {
   const { user, assignments, listViewPref } = useLoaderData() as {
     user: UserInfo;
-    assignments: ContentStructure[];
+    assignments: Content[];
     listViewPref: boolean;
   };
 

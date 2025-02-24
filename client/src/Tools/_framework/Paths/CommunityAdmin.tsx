@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ContentStructure } from "../../../_utils/types";
+import { Content } from "../../../_utils/types";
 import {
   Box,
   Button,
@@ -99,7 +99,7 @@ export function MoveToGroupMenuItem({
     promotedGroupId: number;
     currentlyFeatured: boolean;
     homepage: boolean;
-    promotedContent: ContentStructure[];
+    promotedContent: Content[];
   }[];
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();

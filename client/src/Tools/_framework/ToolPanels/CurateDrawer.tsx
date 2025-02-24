@@ -18,11 +18,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { Remixes } from "./Remixes";
-import {
-  ContentStructure,
-  DocHistoryItem,
-  DocRemixItem,
-} from "../../../_utils/types";
+import { Content, DocHistoryItem, DocRemixItem } from "../../../_utils/types";
 import axios from "axios";
 import { cidFromText } from "../../../_utils/cid";
 import {
@@ -57,7 +53,7 @@ export function CurateDrawer({
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
   fetcher: FetcherWithComponents<any>;
-  contentData: ContentStructure;
+  contentData: Content;
   currentDoenetML?: React.MutableRefObject<string>;
 }) {
   const [contributorHistory, setContributorHistory] = useState<

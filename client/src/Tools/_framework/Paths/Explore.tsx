@@ -41,7 +41,7 @@ import { createFullName } from "../../../_utils/names";
 import {
   ContentDescription,
   ContentFeature,
-  ContentStructure,
+  Content,
   ContentType,
   PartialContentClassification,
   UserInfo,
@@ -99,7 +99,7 @@ export async function loader({ params, request }) {
     isUnclassified = true;
   }
 
-  const prefData = await axios.get(`/api/getPreferredFolderView`);
+  const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
   const listViewPref = !prefData.data.cardView;
 
   const { data: availableFeatures }: { data: ContentFeature[] } =
@@ -114,7 +114,7 @@ export async function loader({ params, request }) {
     }
   }
 
-  const authorId = url.searchParams.get("author");
+  const authorId = url.searchParams.get("author") ?? undefined;
 
   const addToId = url.searchParams.get("addTo");
   let addTo: ContentDescription | undefined = undefined;
@@ -132,16 +132,19 @@ export async function loader({ params, request }) {
 
   if (q) {
     //Show search results
-    const { data: searchData } = await axios.post(`/api/searchSharedContent`, {
-      q,
-      features: [...features.keys()],
-      isUnclassified,
-      systemId,
-      categoryId,
-      subCategoryId,
-      classificationId,
-      ownerId: authorId,
-    });
+    const { data: searchData } = await axios.post(
+      `/api/explore/searchExplore`,
+      {
+        query: q,
+        features: [...features.keys()],
+        isUnclassified,
+        systemId,
+        categoryId,
+        subCategoryId,
+        classificationId,
+        ownerId: authorId,
+      },
+    );
 
     return {
       q,
@@ -152,15 +155,18 @@ export async function loader({ params, request }) {
       addTo,
     };
   } else {
-    const { data: browseData } = await axios.post("/api/browseSharedContent", {
-      features: [...features.keys()],
-      isUnclassified,
-      systemId,
-      categoryId,
-      subCategoryId,
-      classificationId,
-      ownerId: authorId,
-    });
+    const { data: browseData } = await axios.post(
+      "/api/explore/browseExplore",
+      {
+        features: [...features.keys()],
+        isUnclassified,
+        systemId,
+        categoryId,
+        subCategoryId,
+        classificationId,
+        ownerId: authorId,
+      },
+    );
 
     return {
       ...browseData,
@@ -201,9 +207,9 @@ export function Explore() {
     topAuthors: UserInfo[] | null;
     matchedAuthors: UserInfo[] | undefined;
     authorInfo: UserInfo | null;
-    content: ContentStructure[];
-    trendingContent: ContentStructure[];
-    curatedContent: ContentStructure[];
+    content: Content[];
+    trendingContent: Content[];
+    curatedContent: Content[];
     matchedClassifications: PartialContentClassification[] | null | undefined;
     matchedSubCategories: PartialContentClassification[] | null | undefined;
     matchedCategories: PartialContentClassification[] | null | undefined;
@@ -252,8 +258,7 @@ export function Explore() {
     }
   }, [q]);
 
-  const [infoContentData, setInfoContentData] =
-    useState<ContentStructure | null>(null);
+  const [infoContentData, setInfoContentData] = useState<Content | null>(null);
 
   const {
     isOpen: infoIsOpen,
@@ -360,7 +365,7 @@ export function Explore() {
   }
 
   function displayMatchingContent(
-    matches: ContentStructure[],
+    matches: Content[],
     minHeight?: string | { base: string; lg: string },
   ) {
     const addToParams = addTo ? `?addTo=${addTo.id}` : "";

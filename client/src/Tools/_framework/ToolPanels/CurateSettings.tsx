@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FetcherWithComponents } from "react-router";
 import { Box, List, Button, Text, Textarea, Heading } from "@chakra-ui/react";
 import axios from "axios";
-import { ContentStructure } from "../../../_utils/types";
+import { Content } from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 
 export async function curateActions({ formObj }: { [k: string]: any }) {
@@ -39,7 +39,7 @@ export function CurateSettings({
   contentData,
 }: {
   fetcher: FetcherWithComponents<any>;
-  contentData: ContentStructure;
+  contentData: Content;
 }) {
   const license = contentData.license!;
   const sourceId = contentData.libraryActivityInfo!.sourceId;

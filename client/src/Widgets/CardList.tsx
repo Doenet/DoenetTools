@@ -33,7 +33,7 @@ export default function CardList({
   listView: boolean;
   selectedCards?: string[];
   selectCallback?: (arg: {
-    id: string;
+    contentId: string;
     name: string;
     checked: boolean;
     type: ContentType;
@@ -104,7 +104,7 @@ export default function CardList({
     } else {
       return (
         <Card
-          key={`Card${cardContent.content.id}`}
+          key={`Card${cardContent.content.contentId}`}
           cardContent={cardContent}
           showOwnerName={showOwnerName}
           showAssignmentStatus={showAssignmentStatus}
@@ -114,7 +114,9 @@ export default function CardList({
           indentLevel={cardContent.indentLevel}
           selectedCards={selectedCards}
           selectCallback={selectCallback}
-          disableSelect={disableSelectFor?.includes(cardContent.content.id)}
+          disableSelect={disableSelectFor?.includes(
+            cardContent.content.contentId,
+          )}
         />
       );
     }

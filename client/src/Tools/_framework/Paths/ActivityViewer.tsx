@@ -45,7 +45,7 @@ import axios from "axios";
 import {} from "../ToolPanels/ContentSettingsDrawer";
 import {
   ContentDescription,
-  ContentStructure,
+  Content,
   DocHistoryItem,
   DoenetmlVersion,
 } from "../../../_utils/types";
@@ -143,7 +143,7 @@ export async function loader({ params, request }) {
 export function ActivityViewer() {
   const data = useLoaderData() as {
     contentId: string;
-    activityData: ContentStructure;
+    activityData: Content;
     contributorHistory: DocHistoryItem[];
     addTo?: ContentDescription;
   } & (
@@ -196,15 +196,13 @@ export function ActivityViewer() {
     null,
   );
 
-  let contentData: ContentStructure | undefined;
+  let contentData: Content | undefined;
   if (settingsContentId) {
     if (settingsContentId === activityData.id) {
       contentData = activityData;
     } else {
       if (data.type !== "singleDoc") {
-        function matchSettingsContentId(
-          content: ContentStructure,
-        ): ContentStructure | undefined {
+        function matchSettingsContentId(content: Content): Content | undefined {
           if (content.id === settingsContentId) {
             return content;
           }

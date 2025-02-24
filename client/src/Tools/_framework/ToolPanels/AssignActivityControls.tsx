@@ -17,7 +17,7 @@ import { DateTime } from "luxon";
 import { AssignmentInvitation } from "./AssignmentInvitation";
 import { MdOutlineContentCopy } from "react-icons/md";
 import axios from "axios";
-import { ContentStructure } from "../../../_utils/types";
+import { Content } from "../../../_utils/types";
 
 export async function assignActivityActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "open assignment") {
@@ -70,7 +70,7 @@ export function AssignActivityControls({
 }: {
   fetcher: FetcherWithComponents<any>;
   contentId: string;
-  activityData: ContentStructure;
+  activityData: Content;
   openTabIndex: number;
 }) {
   // duration for how long to open assignment

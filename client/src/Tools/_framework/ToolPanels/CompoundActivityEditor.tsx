@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   AssignmentStatus,
   ContentDescription,
-  ContentStructure,
+  Content,
   ContentType,
   LicenseCode,
   UserInfo,
@@ -121,7 +121,7 @@ export function CompoundActivityEditor({
   headerHeight,
   addTo,
 }: {
-  activity: ContentStructure;
+  activity: Content;
   activityJson: ActivitySource;
   assignmentStatus?: AssignmentStatus;
   asViewer?: boolean;
@@ -256,7 +256,7 @@ export function CompoundActivityEditor({
     });
   }
 
-  function countCards(content: ContentStructure, init = true): number {
+  function countCards(content: Content, init = true): number {
     const childCounts = content.children.reduce(
       (a, c) => a + countCards(c, false),
       0,
@@ -279,14 +279,14 @@ export function CompoundActivityEditor({
   let idx = 0;
 
   function createCardContent(
-    content: ContentStructure,
+    content: Content,
     indentLevel = -1,
     positionInParent = 0,
     parentInfo?: {
       id: string;
       parent?: string;
       positionInParent: number;
-      children: ContentStructure[];
+      children: Content[];
     },
   ) {
     const getCardMenuRef = (element: HTMLButtonElement) => {
@@ -419,7 +419,7 @@ export function CompoundActivityEditor({
     nextPositionDown,
   }: {
     id: string;
-    content: ContentStructure;
+    content: Content;
     nextPositionUp: { parent: string; position: number } | null;
     nextPositionDown: { parent: string; position: number } | null;
   }) {

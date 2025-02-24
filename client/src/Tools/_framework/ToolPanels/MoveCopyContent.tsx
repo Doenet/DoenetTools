@@ -21,7 +21,7 @@ import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useFetcher, useNavigate } from "react-router";
 import MoveToSharedAlert from "./MoveToSharedAlert";
 import {
-  ContentStructure,
+  Content,
   ContentType,
   LicenseCode,
   UserInfo,
@@ -29,7 +29,7 @@ import {
 import { contentTypeToName, getIconInfo } from "../../../_utils/activity";
 
 type ActiveView = {
-  // If folder name and id are null, the active view is the root
+  // If folder name and contentId are null, the active view is the root
   // If parentId is null, then the parent of active view is the root
   folderId: string | null;
   folderName: string | null;
@@ -43,7 +43,7 @@ type ActiveView = {
     type: ContentType;
     canOpen: boolean;
     name: string;
-    id: string;
+    contentId: string;
   }[];
 };
 
@@ -59,7 +59,7 @@ export async function moveCopyContentActions({
       if (formObj.action === "Add") {
         const { data } = await axios.post(`/api/copyContent`, {
           sourceContent: sourceContent.map((c) => ({
-            contentId: c.id,
+            contentId: c.contentId,
             type: c.type,
           })),
           desiredParentId:
@@ -69,7 +69,7 @@ export async function moveCopyContentActions({
       } else {
         if (sourceContent.length === 1) {
           await axios.post(`/api/moveContent`, {
-            id: sourceContent[0].id,
+            contentId: sourceContent[0].contentId,
             desiredParentId:
               formObj.folderId === "null" ? null : formObj.folderId,
             desiredPosition: formObj.desiredPosition,
@@ -104,7 +104,7 @@ export function MoveCopyContent({
   isOpen: boolean;
   onClose: () => void;
   sourceContent: {
-    id: string;
+    contentId: string;
     name: string;
     type: ContentType;
     isPublic?: boolean;
@@ -166,21 +166,21 @@ export function MoveCopyContent({
           `/api/getMyFolderContent/${userId}/${newActiveFolderId ?? ""}`,
         );
 
-    const folder: ContentStructure | null = data.folder;
+    const folder: Content | null = data.folder;
     const folderName: string | null = folder?.name ?? null;
     const folderType: ContentType = folder?.type ?? "folder";
     const folderIsPublic: boolean = folder?.isPublic ?? false;
     const folderIsShared: boolean = folder?.isShared ?? false;
     const folderSharedWith: UserInfo[] = folder?.sharedWith ?? [];
     const folderLicenseCode: LicenseCode | null = folder?.license?.code ?? null;
-    const parentId: string | null = folder?.parent?.id ?? null;
-    const contentFromApi: ContentStructure[] = data.content;
+    const parentId: string | null = folder?.parent?.contentId ?? null;
+    const contentFromApi: Content[] = data.content;
 
     const content: {
       type: ContentType;
       canOpen: boolean;
       name: string;
-      id: string;
+      contentId: string;
     }[] = [];
 
     for (const item of contentFromApi) {
@@ -197,7 +197,7 @@ export function MoveCopyContent({
         for (const ct of allowedParentTypes) {
           const { data: containsFolderData } = await axios.get(
             `/api/checkIfFolderContains`,
-            { params: { folderId: item.id, contentType: ct } },
+            { params: { folderId: item.contentId, contentType: ct } },
           );
 
           if (containsFolderData.containsType) {
@@ -210,7 +210,7 @@ export function MoveCopyContent({
         type: item.type,
         canOpen,
         name: item.name,
-        id: item.id,
+        contentId: item.contentId,
       });
     }
 
@@ -279,7 +279,7 @@ export function MoveCopyContent({
 
           return (
             <Button
-              key={`moveContentItem${content.id}`}
+              key={`moveContentItem${content.contentId}`}
               variant="outline"
               width="500px"
               height="2em"
@@ -287,12 +287,12 @@ export function MoveCopyContent({
               onClick={() => {
                 if (
                   content.type !== "singleDoc" &&
-                  sourceContent.every((c) => c.id !== content.id)
+                  sourceContent.every((c) => c.contentId !== content.contentId)
                 )
-                  updateActiveView(content.id);
+                  updateActiveView(content.contentId);
               }}
               isDisabled={
-                sourceContent.some((c) => c.id === content.id) ||
+                sourceContent.some((c) => c.contentId === content.contentId) ||
                 !content.canOpen
               }
             >
