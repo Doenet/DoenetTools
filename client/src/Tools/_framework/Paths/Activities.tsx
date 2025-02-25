@@ -174,8 +174,6 @@ export async function loader({ params, request }) {
     );
   }
 
-  console.log(data);
-
   const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
   const listViewPref = !prefData.data.cardView;
 
@@ -898,6 +896,7 @@ export function Activities() {
           {parent && !haveQuery ? (
             <Box>
               <Link
+                data-test="Back Link"
                 to={`/activities/${userId}${parent.parent ? "/" + parent.parent.contentId : ""}`}
                 style={{
                   color: "var(--mainBlue)",

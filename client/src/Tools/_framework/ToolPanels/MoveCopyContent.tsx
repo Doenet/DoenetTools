@@ -29,16 +29,17 @@ import {
 import { contentTypeToName, getIconInfo } from "../../../_utils/activity";
 
 type ActiveView = {
-  // If folder name and contentId are null, the active view is the root
-  // If parentId is null, then the parent of active view is the root
-  folderId: string | null;
-  folderName: string | null;
-  folderType: ContentType;
-  folderIsPublic: boolean;
-  folderIsShared: boolean;
-  folderSharedWith: UserInfo[];
-  folderLicenseCode: LicenseCode | null;
+  // If parentName and parentId are null, the active view is the root
+  // If grandparentId is null, then the parent of active view is the root
   parentId: string | null;
+  parentName: string | null;
+  parentType: ContentType;
+  parentIsPublic: boolean;
+  parentIsShared: boolean;
+  parentSharedWith: UserInfo[];
+  parentLicenseCode: LicenseCode | null;
+  grandparentId: string | null;
+  grandparentType: ContentType;
   contents: {
     type: ContentType;
     canOpen: boolean;
@@ -59,15 +60,15 @@ export async function moveCopyContentActions({
       if (formObj.action === "Add") {
         const { data } = await axios.post(`/api/copyMove/copyContent`, {
           contentIds,
-          parentId: formObj.folderId === "null" ? null : formObj.folderId,
+          parentId: formObj.parentId === "null" ? null : formObj.parentId,
         });
         numItems = data.newContentIds?.length;
       } else {
         if (contentIds.length === 1) {
           await axios.post(`/api/copyMove/moveContent`, {
             contentId: contentIds[0],
-            parentId: formObj.folderId === "null" ? null : formObj.folderId,
-            desiredPosition: formObj.desiredPosition,
+            parentId: formObj.parentId === "null" ? null : formObj.parentId,
+            desiredPosition: Number(formObj.desiredPosition),
           });
         } else {
           throw Error("Have not implemented moving more than one content");
@@ -136,39 +137,41 @@ export function MoveCopyContent({
     setErrMsg("");
   }, [isOpen]);
 
-  // Set whenever the user navigates to another folder
+  // Set whenever the user navigates to another parent
   const [activeView, setActiveView] = useState<ActiveView>({
-    folderName: null,
-    folderType: "folder",
-    folderIsPublic: false,
-    folderIsShared: false,
-    folderSharedWith: [],
-    folderLicenseCode: null,
-    folderId: null,
+    parentName: null,
+    parentType: "folder",
+    parentIsPublic: false,
+    parentIsShared: false,
+    parentSharedWith: [],
+    parentLicenseCode: null,
     parentId: null,
+    grandparentId: null,
+    grandparentType: "folder",
     contents: [],
   });
 
   async function updateActiveView(
-    newActiveFolderId: string | null,
+    newActiveParentId: string | null,
     modalJustOpened: boolean = false,
   ) {
     const { data } = inCurationLibrary
       ? await axios.get(
-          `/api/getCurationFolderContent/${newActiveFolderId ?? ""}`,
+          `/api/getCurationFolderContent/${newActiveParentId ?? ""}`,
         )
       : await axios.get(
-          `/api/contentList/getMyContent/${userId}/${newActiveFolderId ?? ""}`,
+          `/api/contentList/getMyContent/${userId}/${newActiveParentId ?? ""}`,
         );
 
-    const folder: Content | null = data.folder;
-    const folderName: string | null = folder?.name ?? null;
-    const folderType: ContentType = folder?.type ?? "folder";
-    const folderIsPublic: boolean = folder?.isPublic ?? false;
-    const folderIsShared: boolean = folder?.isShared ?? false;
-    const folderSharedWith: UserInfo[] = folder?.sharedWith ?? [];
-    const folderLicenseCode: LicenseCode | null = folder?.license?.code ?? null;
-    const parentId: string | null = folder?.parent?.contentId ?? null;
+    const parent: Content | null = data.parent;
+    const parentName: string | null = parent?.name ?? null;
+    const parentType: ContentType = parent?.type ?? "folder";
+    const parentIsPublic: boolean = parent?.isPublic ?? false;
+    const parentIsShared: boolean = parent?.isShared ?? false;
+    const parentSharedWith: UserInfo[] = parent?.sharedWith ?? [];
+    const parentLicenseCode: LicenseCode | null = parent?.license?.code ?? null;
+    const grandparentId: string | null = parent?.parent?.contentId ?? null;
+    const grandparentType: ContentType = parent?.parent?.type ?? "folder";
     const contentFromApi: Content[] = data.content;
 
     const content: {
@@ -190,12 +193,12 @@ export function MoveCopyContent({
         // then it is possible that a descendant is of allowed parent type.
         // Check for that possibility
         for (const ct of allowedParentTypes) {
-          const { data: containsFolderData } = await axios.get(
+          const { data: containsData } = await axios.get(
             `/api/copyMove/checkIfContentContains`,
             { params: { contentId: item.contentId, contentType: ct } },
           );
 
-          if (containsFolderData.containsType) {
+          if (containsData.containsType) {
             canOpen = true;
             break;
           }
@@ -220,14 +223,15 @@ export function MoveCopyContent({
     });
 
     setActiveView({
-      folderId: newActiveFolderId,
-      folderName,
-      folderType,
-      folderIsPublic,
-      folderIsShared,
-      folderSharedWith,
-      folderLicenseCode,
-      parentId,
+      parentId: newActiveParentId,
+      parentName,
+      parentType,
+      parentIsPublic,
+      parentIsShared,
+      parentSharedWith,
+      parentLicenseCode,
+      grandparentId,
+      grandparentType,
       contents: content,
     });
 
@@ -260,7 +264,9 @@ export function MoveCopyContent({
   const optionList = (
     <SimpleGrid columns={1} spacing={0}>
       {activeView.contents.length === 0 ? (
-        <Text as="i">This folder is empty.</Text>
+        <Text as="i" data-test="Empty Message">
+          This item is empty.
+        </Text>
       ) : (
         activeView.contents.map((content) => {
           const { iconImage, iconColor } = getIconInfo(content.type);
@@ -274,6 +280,7 @@ export function MoveCopyContent({
 
           return (
             <Button
+              data-test="Select Item Option"
               key={`moveContentItem${content.contentId}`}
               variant="outline"
               width="500px"
@@ -303,32 +310,38 @@ export function MoveCopyContent({
 
   const executeButtons = (
     <>
-      <Button ref={initialRef} mr={3} onClick={onClose}>
+      <Button
+        ref={initialRef}
+        mr={3}
+        onClick={onClose}
+        data-test="Cancel Button"
+      >
         Cancel
       </Button>
       <Button
+        data-test="Execute Move Button"
         width="10em"
-        // Is disabled if the content is already in this folder
+        // Is disabled if the content is already in this parent
         isDisabled={
-          (activeView.folderId === null && parentId === null) ||
-          (activeView.folderId !== null &&
+          (activeView.parentId === null && parentId === null) ||
+          (activeView.parentId !== null &&
             parentId !== null &&
-            activeView.folderId === parentId) ||
-          !allowedParentTypes.includes(activeView.folderType)
+            activeView.parentId === parentId) ||
+          !allowedParentTypes.includes(activeView.parentType)
         }
         onClick={() => {
           if (
             action === "Move" &&
-            ((activeView.folderIsPublic &&
+            ((activeView.parentIsPublic &&
               !sourceContent.every((c) => c.isPublic)) ||
-              (activeView.folderIsShared &&
+              (activeView.parentIsShared &&
                 (!sourceContent.every((c) => c.isShared) ||
-                  activeView.folderSharedWith.some((folderUser) =>
+                  activeView.parentSharedWith.some((parentUser) =>
                     sourceContent.some(
                       (c) =>
                         !c.sharedWith ||
                         c.sharedWith.findIndex(
-                          (u) => u.userId === folderUser.userId,
+                          (u) => u.userId === parentUser.userId,
                         ) === -1,
                     ),
                   ))))
@@ -342,7 +355,7 @@ export function MoveCopyContent({
         <Text noOfLines={1}>
           {action} to{" "}
           <em>
-            {activeView.folderName ??
+            {activeView.parentName ??
               (inCurationLibrary ? "Curation" : "My Activities")}
           </em>
         </Text>
@@ -354,22 +367,30 @@ export function MoveCopyContent({
   let destinationAction: string;
   let destinationUrl: string;
 
-  if (activeView.folderId) {
-    const typeName = contentTypeToName[activeView.folderType].toLowerCase();
+  if (activeView.parentId) {
+    const typeName = contentTypeToName[activeView.parentType].toLowerCase();
     destinationDescription = (
       <>
-        <strong>{activeView.folderName}</strong>
+        <strong>{activeView.parentName}</strong>
       </>
     );
-    if (activeView.folderType === "folder") {
+    if (activeView.parentType === "folder") {
       destinationAction = "Go to folder";
-      destinationUrl = `/activities/${userId}/${activeView.folderId}`;
+      destinationUrl = `/activities/${userId}/${activeView.parentId}`;
+    } else if (
+      activeView.parentType === "select" &&
+      activeView.grandparentType === "sequence"
+    ) {
+      // if we have a Question Bank whose parent is a Problem Set,
+      // then we don't display the Question Bank by itself, just embedded in the Problem Set
+      destinationAction = `Open containing problem set`;
+      destinationUrl = `/activityEditor/${activeView.grandparentId}`;
     } else {
       destinationAction = `Open ${typeName}`;
-      destinationUrl = `/activityEditor/${activeView.folderId}`;
+      destinationUrl = `/activityEditor/${activeView.parentId}`;
     }
   } else {
-    destinationDescription = <>your Activities</>;
+    destinationDescription = <>My Activities</>;
     destinationAction = "Go to Activities";
     destinationUrl = `/activities/${userId}`;
   }
@@ -380,7 +401,7 @@ export function MoveCopyContent({
         isOpen={sharedAlertIsOpen}
         onClose={sharedAlertOnClose}
         performMove={performAction}
-        folderName={activeView.folderName}
+        parentName={activeView.parentName}
       />
       <Modal
         isOpen={isOpen}
@@ -392,37 +413,42 @@ export function MoveCopyContent({
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            <Heading textAlign="center">
+            <Heading textAlign="center" data-test="Move Heading 1">
               {action}{" "}
               {allowedParentTypes.length === 1
                 ? `to ${contentTypeToName[allowedParentTypes[0]].toLowerCase()}`
                 : null}
             </Heading>
-            <Heading size="me" textAlign="center">
+            <Heading size="me" textAlign="center" data-test="Move Heading 2">
               <em>{contentName}</em>
             </Heading>
             <HStack hidden={actionFinished || errMsg !== ""}>
-              {activeView.folderId ? (
+              {activeView.parentId ? (
                 <>
                   <IconButton
+                    data-test="Back Arrow"
                     icon={<ArrowBackIcon />}
                     aria-label="Back"
-                    onClick={() => updateActiveView(activeView.parentId)}
+                    onClick={() => updateActiveView(activeView.grandparentId)}
                   />
-                  <Text noOfLines={1}>{activeView.folderName}</Text>
+                  <Text noOfLines={1} data-test="Current destination">
+                    {activeView.parentName}
+                  </Text>
                 </>
               ) : (
-                <Text>{inCurationLibrary ? "Curation" : "My Activities"}</Text>
+                <Text data-test="Current destination">
+                  {inCurationLibrary ? "Curation" : "My Activities"}
+                </Text>
               )}
             </HStack>
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
+          <ModalBody data-test="Move Content Body">
             {errMsg ? (
               errMsg
             ) : actionFinished ? (
               <>
-                {`${numItems} item${numItems > 0 ? "s" : ""}`} {actionPastWord}{" "}
+                {`${numItems} item${numItems > 1 ? "s" : ""}`} {actionPastWord}{" "}
                 to: {destinationDescription}
               </>
             ) : (
@@ -438,15 +464,21 @@ export function MoveCopyContent({
             ) : actionFinished ? (
               <>
                 <Button
-                  data-test="Go to Activities"
+                  data-test="Go to Destination"
                   marginRight="4px"
                   onClick={() => {
+                    onClose();
                     navigate(destinationUrl);
                   }}
                 >
                   {destinationAction}
                 </Button>
-                <Button ref={initialRef} mr={3} onClick={onClose}>
+                <Button
+                  ref={initialRef}
+                  mr={3}
+                  onClick={onClose}
+                  data-test="Close Button"
+                >
                   Close
                 </Button>
               </>
@@ -464,7 +496,7 @@ export function MoveCopyContent({
       {
         _action: "Move or copy",
         contentIds: JSON.stringify(sourceContent.map((sc) => sc.contentId)),
-        folderId: activeView.folderId,
+        parentId: activeView.parentId,
         desiredPosition: activeView.contents.length, // place it as the last item
         action,
       },

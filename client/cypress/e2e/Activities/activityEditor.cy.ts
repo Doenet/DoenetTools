@@ -5,8 +5,8 @@ describe("Activity Editor Tests", function () {
 
     cy.loginAsTestUser();
 
-    cy.createActivity({
-      activityName: "Hello!",
+    cy.createContent({
+      name: "Hello!",
       doenetML: "Initial content",
     }).then((activityId) => {
       cy.visit(`/activityEditor/${activityId}`);

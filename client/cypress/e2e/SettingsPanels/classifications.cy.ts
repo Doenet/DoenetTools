@@ -2,8 +2,8 @@ describe("Classification panel tests", function () {
   it("add classifications to activity", () => {
     cy.loginAsTestUser();
 
-    cy.createActivity({
-      activityName: "Hello!",
+    cy.createContent({
+      name: "Hello!",
       doenetML: "Initial content",
     }).then((contentId) => {
       cy.visit(`/activityEditor/${contentId}`);

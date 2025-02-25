@@ -105,7 +105,7 @@ export default function Card({
         height="120px"
         width="180px"
         src={cardContent.content.imagePath || "/activity_default.jpg"}
-        alt="Activity Card Image"
+        alt="Content Card Image"
         borderTopRadius="md"
         objectFit="cover"
         cursor="pointer"
@@ -389,7 +389,7 @@ export default function Card({
         p="0"
         m="0"
         marginLeft={leftMargin}
-        data-test="Activity Card"
+        data-test="Content Card"
         variant="unstyled"
         borderBottom="2px solid gray"
         borderRadius={0}
@@ -483,7 +483,7 @@ export default function Card({
         height={cardHeight}
         p="0"
         m="0"
-        data-test="Activity Card"
+        data-test="Content Card"
         _hover={{ backgroundColor: "#eeeeee" }}
       >
         {cardImage}

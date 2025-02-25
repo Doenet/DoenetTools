@@ -9,8 +9,8 @@ describe("Editor Tests", function () {
 
     cy.loginAsTestUser();
 
-    cy.createActivity({
-      activityName: label,
+    cy.createContent({
+      name: label,
       doenetML: "",
     }).then((contentId) => {
       cy.visit(`/activityEditor/${contentId}`);

@@ -329,7 +329,7 @@ export function Curation() {
         ) : null}
         {haveQuery ? null : (
           <MenuItem
-            data-test="Move to Folder"
+            data-test="Move to Parent"
             onClick={() => {
               setMoveToParentData({
                 id,
@@ -343,7 +343,7 @@ export function Curation() {
               moveCopyContentOnOpen();
             }}
           >
-            Move to Folder
+            Move&hellip;
           </MenuItem>
         )}
         {contentType !== "folder" && !isPublic ? (

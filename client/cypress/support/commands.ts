@@ -28,6 +28,8 @@ import "cypress-wait-until";
 import "cypress-file-upload";
 import "cypress-iframe";
 
+import type { ContentType } from "../../src/_utils/types";
+
 declare global {
   namespace Cypress {
     interface Chainable {
@@ -49,15 +51,18 @@ declare global {
       /**
        * Custom command to create an activity for the logged in user
        */
-      createActivity({
-        activityName,
+      createContent({
+        name,
+        contentType,
         doenetML,
         classifications,
         makePublic,
         publishInLibrary,
+        parentId,
       }: {
-        activityName: string;
-        doenetML: string;
+        name: string;
+        contentType?: ContentType;
+        doenetML?: string;
         classifications?: {
           systemShortName: string;
           category: string;
@@ -66,6 +71,7 @@ declare global {
         }[];
         makePublic?: boolean;
         publishInLibrary?: boolean;
+        parentId?: string;
       }): Chainable<string>;
     }
   }
@@ -102,16 +108,19 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add(
-  "createActivity",
+  "createContent",
   ({
-    activityName,
+    name,
     doenetML,
+    contentType = "singleDoc",
     classifications,
     makePublic = false,
     publishInLibrary = false,
+    parentId = null,
   }: {
-    activityName: string;
-    doenetML: string;
+    name: string;
+    doenetML?: string;
+    contentType?: ContentType;
     classifications?: {
       systemShortName: string;
       category: string;
@@ -120,10 +129,15 @@ Cypress.Commands.add(
     }[];
     makePublic?: boolean;
     publishInLibrary?: boolean;
+    parentId?: string;
   }) => {
     cy.request({
       method: "POST",
       url: "/api/updateContent/createContent",
+      body: {
+        contentType,
+        parentId,
+      },
     }).then((resp) => {
       const contentId: string = resp.body.contentId;
 
@@ -169,22 +183,24 @@ Cypress.Commands.add(
         });
       }
 
+      if (doenetML !== undefined) {
+        cy.request({
+          method: "POST",
+          url: "/api/updateContent/saveDoenetML",
+          body: {
+            contentId,
+            doenetML,
+            numVariants: 1,
+            baseComponentCounts: "{}",
+          },
+        });
+      }
       cy.request({
         method: "POST",
         url: "/api/updateContent/updateContentSettings",
         body: {
           contentId: contentId,
-          name: activityName,
-        },
-      });
-      cy.request({
-        method: "POST",
-        url: "/api/updateContent/saveDoenetML",
-        body: {
-          contentId,
-          doenetML,
-          numVariants: 1,
-          baseComponentCounts: "{}",
+          name: name,
         },
       }).then(() => contentId);
     });

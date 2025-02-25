@@ -55,7 +55,7 @@ describe("Share Activities Tests", function () {
     cy.get('[data-test="Community Tab"]').click();
 
     cy.get(
-      '[data-test="Community Results"] [data-test="Activity Card"]',
+      '[data-test="Community Results"] [data-test="Content Card"]',
     ).click();
 
     cy.get('[data-test="Add To"]').click();
@@ -63,7 +63,7 @@ describe("Share Activities Tests", function () {
 
     cy.get('[data-test="Go to Activities"]').click();
 
-    cy.get(`[data-test="Activity Card"]`).eq(0).click();
+    cy.get(`[data-test="Content Card"]`).eq(0).click();
     cy.iframe().find(".doenet-viewer").should("contain.text", `Hello there!`);
   });
 });

@@ -3,8 +3,8 @@ describe("Search results Tests", function () {
     cy.loginAsTestUser();
     const code = Date.now().toString();
 
-    cy.createActivity({
-      activityName: `Classifications${code}!`,
+    cy.createContent({
+      name: `Classifications${code}!`,
       doenetML: "Hi!",
       makePublic: true,
       classifications: [
@@ -33,11 +33,11 @@ describe("Search results Tests", function () {
       cy.get('[data-test="Community Tab"]').click();
 
       cy.get(
-        '[data-test="Community Results"] [data-test="Activity Card"] [data-test="Card Menu Button"]',
+        '[data-test="Community Results"] [data-test="Content Card"] [data-test="Card Menu Button"]',
       ).click();
 
       cy.get(
-        '[data-test="Community Results"] [data-test="Activity Card"] [data-test="Document Information"]',
+        '[data-test="Community Results"] [data-test="Content Card"] [data-test="Document Information"]',
       )
         .eq(0)
         .click();

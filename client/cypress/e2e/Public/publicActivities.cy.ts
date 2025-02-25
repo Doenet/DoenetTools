@@ -18,7 +18,7 @@ describe("Public activity tests", function () {
   //     const pageDoenetId = "_tpupage1id";
   //     cy.deleteCourseDBRows({ courseId });
   //     cy.createCourse({ userId, courseId, label: courseLabel });
-  //     cy.createActivity({
+  //     cy.createContent({
   //       courseId,
   //       doenetId,
   //       parentDoenetId: courseId,
@@ -88,7 +88,7 @@ describe("Public activity tests", function () {
   //     // cy.deleteActivity({ userId, label })
   //     cy.deleteCourseDBRows({ courseId });
   //     cy.createCourse({ userId, courseId, label: courseLabel });
-  //     cy.createActivity({
+  //     cy.createContent({
   //       courseId,
   //       doenetId,
   //       parentDoenetId: courseId,
@@ -193,7 +193,7 @@ describe("Public activity tests", function () {
   // <p name="bottom">bottom</p>
   // <lorem generateParagraphs="8" />
   // </section>`;
-  //     cy.createActivity({
+  //     cy.createContent({
   //       courseId,
   //       doenetId,
   //       parentDoenetId: courseId,

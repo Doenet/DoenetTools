@@ -54,7 +54,7 @@ export function DeleteModal({
   fetcher: FetcherWithComponents<any>;
 }) {
   const [errMsg, setErrMsg] = useState("");
-  const [isDeleting, setIsDeleting] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -64,12 +64,16 @@ export function DeleteModal({
   }, [isOpen]);
 
   useEffect(() => {
-    if (fetcher.data?.contentDeleted) {
-      document.body.style.cursor = "default";
-      onClose();
-    } else if (fetcher.data?.errorDeletingContent) {
-      document.body.style.cursor = "default";
-      setErrMsg(fetcher.data.errorDeletingContent);
+    if (isDeleting) {
+      if (fetcher.data?.contentDeleted) {
+        document.body.style.cursor = "default";
+        setIsDeleting(false);
+        onClose();
+      } else if (fetcher.data?.errorDeletingContent) {
+        document.body.style.cursor = "default";
+        setIsDeleting(false);
+        setErrMsg(fetcher.data.errorDeletingContent);
+      }
     }
   }, [fetcher.data]);
 
@@ -106,7 +110,7 @@ export function DeleteModal({
           {errMsg ? (
             <>{errMsg}</>
           ) : (
-            <Box>
+            <Box data-test="Confirm Delete Message">
               Are you sure want to delete the{" "}
               {contentTypeToName[content.type].toLowerCase()}:{" "}
               <em>{content.name}</em>
@@ -116,8 +120,8 @@ export function DeleteModal({
 
         <ModalFooter>
           <Button
-            data-test="Go to Activities"
             marginRight="4px"
+            data-test="Delete Button"
             onClick={() => {
               deleteContent();
             }}
@@ -126,6 +130,7 @@ export function DeleteModal({
             Delete
           </Button>
           <Button
+            data-test="Cancel Button"
             onClick={() => {
               onClose();
             }}

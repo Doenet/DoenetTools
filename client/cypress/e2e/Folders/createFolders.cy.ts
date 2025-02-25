@@ -29,7 +29,7 @@ describe("Create Folders Tests", function () {
     cy.get('[data-test="New Button"]').click();
     cy.get('[data-test="Add Folder Button"]').click();
     cy.get('[data-test="New Folder Input"]').type("My new folder{enter}");
-    cy.get('[data-test="Activity Card"]').click();
+    cy.get('[data-test="Content Card"]').click();
 
     cy.get('[data-test="Folder Heading"]').should(
       "contain.text",
@@ -54,7 +54,7 @@ describe("Create Folders Tests", function () {
     cy.get('[data-test="Status message"]').should("contain.text", scrappyEmail);
     cy.get('[data-test="Close Share Drawer Button"]').click();
 
-    cy.get('[data-test="Activity Card"]').eq(1).click();
+    cy.get('[data-test="Content Card"]').eq(1).click();
     cy.get('[data-test="Folder Heading"]').should(
       "contain.text",
       `Shared folder${code}`,
@@ -80,8 +80,9 @@ describe("Create Folders Tests", function () {
     });
     cy.visit(`/explore?q=folder${code}`);
 
-    cy.get(
-      '[data-test="Community Results"] [data-test="Activity Card"]',
-    ).should("contain.text", `Shared folder${code}`);
+    cy.get('[data-test="Community Results"] [data-test="Content Card"]').should(
+      "contain.text",
+      `Shared folder${code}`,
+    );
   });
 });

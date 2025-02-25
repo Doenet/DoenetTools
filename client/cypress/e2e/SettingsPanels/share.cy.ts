@@ -10,8 +10,8 @@ describe("Share panel tests", function () {
       lastNames: "Doo",
     });
 
-    cy.createActivity({
-      activityName: "Share alike",
+    cy.createContent({
+      name: "Share alike",
       doenetML: "Shared with ShareAlike",
     }).then((contentId) => {
       cy.visit(`/activityEditor/${contentId}`);
@@ -70,8 +70,8 @@ describe("Share panel tests", function () {
       lastNames: "Doo",
     });
 
-    cy.createActivity({
-      activityName: "Non-commercial share alike",
+    cy.createContent({
+      name: "Non-commercial share alike",
       doenetML: "Shared with NonCommercial-ShareAlike",
     }).then((contentId) => {
       cy.visit(`/activityEditor/${contentId}`);
@@ -130,8 +130,8 @@ describe("Share panel tests", function () {
       lastNames: "Doo",
     });
 
-    cy.createActivity({
-      activityName: "Dual license",
+    cy.createContent({
+      name: "Dual license",
       doenetML: "Shared with Dual License",
     }).then((contentId) => {
       cy.visit(`/activityEditor/${contentId}`);
@@ -185,8 +185,8 @@ describe("Share panel tests", function () {
       lastNames: "Doo",
     });
 
-    cy.createActivity({
-      activityName: "Original activity",
+    cy.createContent({
+      name: "Original activity",
       doenetML: "The original activity",
     }).then((contentId) => {
       cy.visit(`/activityEditor/${contentId}`);

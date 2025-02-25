@@ -346,7 +346,7 @@ export function GeneralContentControls({
                     height="120px"
                     maxWidth="180px"
                     src={imagePath ?? ""}
-                    alt="Activity Card Image"
+                    alt="Content Card Image"
                     borderTopRadius="md"
                     objectFit="cover"
                   />

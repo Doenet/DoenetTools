@@ -5,8 +5,8 @@ describe("Editor Errors and Warnings ", function () {
     cy.loginAsTestUser();
     const label = "Errors Warnings PE";
 
-    cy.createActivity({
-      activityName: label,
+    cy.createContent({
+      name: label,
       doenetML: "Initial content",
     }).then((contentId) => {
       cy.visit(`/activityEditor/${contentId}`);

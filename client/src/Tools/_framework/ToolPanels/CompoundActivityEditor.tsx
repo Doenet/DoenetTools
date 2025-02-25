@@ -495,7 +495,7 @@ export function CompoundActivityEditor({
         ) : null}
         <MenuItem
           hidden={readOnly}
-          data-test="Move to Folder"
+          data-test="Move to Parent"
           onClick={() => {
             setMoveToParentData({
               contentId,
@@ -604,6 +604,7 @@ export function CompoundActivityEditor({
     >
       <Box hidden={asViewer}>
         <Link
+          data-test="Back Link"
           to={parentLink}
           style={{
             color: "var(--mainBlue)",

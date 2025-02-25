@@ -116,7 +116,11 @@ export function ContentSettingsDrawer({
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton data-test="Close Settings Button" />
-        <DrawerHeader textAlign="center" height="70px">
+        <DrawerHeader
+          textAlign="center"
+          height="70px"
+          data-test="Setting Drawer Header"
+        >
           {contentTypeName} Controls
           <Tooltip label={contentData.name}>
             <Text fontSize="smaller" noOfLines={1}>

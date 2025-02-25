@@ -1,8 +1,8 @@
 describe("Code Viewer Tests", function () {
   it("classifications shown in code viewer", () => {
     cy.loginAsTestUser();
-    cy.createActivity({
-      activityName: "Classifications!",
+    cy.createContent({
+      name: "Classifications!",
       doenetML: "Hi!",
       classifications: [
         {
