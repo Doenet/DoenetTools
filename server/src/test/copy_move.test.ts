@@ -5,6 +5,7 @@ import { copyContent, createContentCopyInChildren } from "../query/copy_move";
 import { setContentIsPublic } from "../query/share";
 import { getMyContent } from "../query/content_list";
 import { getContent } from "../query/activity_edit_view";
+import { isEqualUUID } from "../utils/uuid";
 
 test("copy folder", async () => {
   const { userId: ownerId } = await createTestUser();
@@ -170,6 +171,213 @@ test("copy folder", async () => {
     expect(folderResults.content.length).eq(2);
     expect(folderResults.content[0].name).eq("Activity 3");
     expect(folderResults.content[1].name).eq("Folder 3");
+  }
+});
+
+test("copy folder 2", async () => {
+  const { userId: ownerId } = await createTestUser();
+  const { userId: otherUserId } = await createTestUser();
+
+  const { contentId: folder0Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: null,
+  });
+  await updateContent({
+    contentId: folder0Id,
+    loggedInUserId: ownerId,
+    name: "Base folder",
+  });
+
+  const { contentId: activity1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder0Id,
+  });
+  await updateContent({
+    contentId: activity1Id,
+    loggedInUserId: ownerId,
+    name: "Activity 1",
+  });
+  const { contentId: sequence1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "sequence",
+    parentId: folder0Id,
+  });
+  await updateContent({
+    contentId: sequence1Id,
+    loggedInUserId: ownerId,
+    name: "Problem Set 1",
+  });
+
+  const { contentId: activity2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: sequence1Id,
+  });
+  await updateContent({
+    contentId: activity2Id,
+    loggedInUserId: ownerId,
+    name: "Activity 2",
+  });
+  const { contentId: select1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "select",
+    parentId: sequence1Id,
+  });
+  await updateContent({
+    contentId: select1Id,
+    loggedInUserId: ownerId,
+    name: "Question Bank 1",
+  });
+
+  const { contentId: activity3Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: select1Id,
+  });
+  await updateContent({
+    contentId: activity3Id,
+    loggedInUserId: ownerId,
+    name: "Activity 3",
+  });
+  const { contentId: activity4Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder0Id,
+  });
+  await updateContent({
+    contentId: activity4Id,
+    loggedInUserId: ownerId,
+    name: "Activity 4",
+  });
+  const { contentId: select2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "select",
+    parentId: folder0Id,
+  });
+  await updateContent({
+    contentId: select2Id,
+    loggedInUserId: ownerId,
+    name: "Question Bank 2",
+  });
+  const { contentId: activity5Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: select2Id,
+  });
+  await updateContent({
+    contentId: activity5Id,
+    loggedInUserId: ownerId,
+    name: "Activity 5",
+  });
+
+  // other user cannot copy before it is shared
+  const { contentId: folderOther } = await createContent({
+    loggedInUserId: otherUserId,
+    contentType: "folder",
+    parentId: null,
+  });
+  await updateContent({
+    contentId: folderOther,
+    loggedInUserId: otherUserId,
+    name: "Placeholder folder",
+  });
+  await expect(
+    copyContent({
+      contentIds: [folder0Id],
+      loggedInUserId: otherUserId,
+      parentId: null,
+      prependCopy: true,
+    }),
+  ).rejects.toThrow("not found");
+
+  await setContentIsPublic({
+    contentId: folder0Id,
+    loggedInUserId: ownerId,
+    isPublic: true,
+  });
+
+  // owner and other user can copy
+  for (const userId of [ownerId, otherUserId]) {
+    const result = await copyContent({
+      contentIds: [folder0Id],
+      loggedInUserId: userId,
+      parentId: null,
+      prependCopy: true,
+    });
+
+    expect(result.newContentIds.length).eq(1);
+
+    let folderResults = await getMyContent({
+      parentId: null,
+      ownerId: userId,
+      loggedInUserId: userId,
+    });
+    if (folderResults.notMe) {
+      throw Error("shouldn't happen");
+    }
+    expect(folderResults.content.length).eq(2);
+
+    console.log(folderResults.content);
+    expect(folderResults.content[0].name).eq(
+      isEqualUUID(userId, ownerId) ? "Base folder" : "Placeholder folder",
+    );
+    expect(folderResults.content[1].name).eq("Copy of Base folder");
+
+    const folderNew0Id = folderResults.content[1].contentId;
+
+    folderResults = await getMyContent({
+      parentId: folderNew0Id,
+      ownerId: userId,
+      loggedInUserId: userId,
+    });
+    if (folderResults.notMe) {
+      throw Error("shouldn't happen");
+    }
+    expect(folderResults.content.length).eq(4);
+    expect(folderResults.content[0].name).eq("Activity 1");
+    expect(folderResults.content[1].name).eq("Problem Set 1");
+    expect(folderResults.content[2].name).eq("Activity 4");
+    expect(folderResults.content[3].name).eq("Question Bank 2");
+
+    const sequenceNewId = folderResults.content[1].contentId;
+    const selectNew2Id = folderResults.content[3].contentId;
+
+    folderResults = await getMyContent({
+      parentId: sequenceNewId,
+      ownerId: userId,
+      loggedInUserId: userId,
+    });
+    if (folderResults.notMe) {
+      throw Error("shouldn't happen");
+    }
+    expect(folderResults.content.length).eq(2);
+    expect(folderResults.content[0].name).eq("Activity 2");
+    expect(folderResults.content[1].name).eq("Question Bank 1");
+
+    const selectNew1Id = folderResults.content[1].contentId;
+    folderResults = await getMyContent({
+      parentId: selectNew1Id,
+      ownerId: userId,
+      loggedInUserId: userId,
+    });
+    if (folderResults.notMe) {
+      throw Error("shouldn't happen");
+    }
+    expect(folderResults.content.length).eq(1);
+    expect(folderResults.content[0].name).eq("Activity 3");
+
+    folderResults = await getMyContent({
+      parentId: selectNew2Id,
+      ownerId: userId,
+      loggedInUserId: userId,
+    });
+    if (folderResults.notMe) {
+      throw Error("shouldn't happen");
+    }
+    expect(folderResults.content.length).eq(1);
+    expect(folderResults.content[0].name).eq("Activity 5");
   }
 });
 
@@ -416,7 +624,7 @@ test("copy problem set", async () => {
   expect(folderResults.content[4].name).eq("Question 3B");
 });
 
-test.only("create content copy in children", async () => {
+test("create content copy in children", async () => {
   const { userId: ownerId } = await createTestUser();
 
   const { contentId: folder0Id } = await createContent({

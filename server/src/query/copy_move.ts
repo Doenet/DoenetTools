@@ -402,6 +402,7 @@ async function copySingleContent({
       children: {
         where: { isDeleted: false },
         select: { id: true, type: true },
+        orderBy: { sortIndex: "asc" },
       },
     },
   });
