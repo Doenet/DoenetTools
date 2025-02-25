@@ -131,6 +131,7 @@ export function AddContentToMenu({
       colorScheme={colorScheme}
       leftIcon={leftIcon}
       paddingRight={addRightPadding ? { base: "0px", md: "10px" } : undefined}
+      data-test="Add To"
     >
       {label}
     </MenuButton>
@@ -260,6 +261,7 @@ export function AddContentToMenu({
             </MenuItem>
           </Tooltip>
           <MenuItem
+            data-test="Add To My Activities"
             onClick={() => {
               setCopyDestination(null);
               setCopyToLibrary(false);

@@ -105,7 +105,10 @@ export async function searchSharedContent({
     where: {
       id: { in: matches.map((m) => m.id) },
     },
-    select: returnContentSelect({ includeOwnerDetails: true }),
+    select: returnContentSelect({
+      includeOwnerDetails: true,
+      includeClassifications: true,
+    }),
   });
 
   // TODO: better way to sort! (For free if combine queries)
@@ -189,7 +192,10 @@ export async function browseSharedContent({
       ownerId,
       classifications: classificationsFilter,
     },
-    select: returnContentSelect({ includeOwnerDetails: true }),
+    select: returnContentSelect({
+      includeOwnerDetails: true,
+      includeClassifications: true,
+    }),
     orderBy: { createdAt: "desc" },
     take: pageSize,
     skip: (page - 1) * pageSize,

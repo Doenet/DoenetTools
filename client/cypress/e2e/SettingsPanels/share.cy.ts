@@ -39,7 +39,9 @@ describe("Share panel tests", function () {
       });
 
       cy.visit(`/activityViewer/${contentId}`);
-      cy.get('[data-test="Copy to Activities Button"]').click();
+
+      cy.get('[data-test="Add To"]').click();
+      cy.get('[data-test="Add To My Activities"]').click();
       cy.get('[data-test="Go to Activities"]').click();
 
       cy.get('[data-test="Card Menu Button"]').eq(0).click();
@@ -97,7 +99,9 @@ describe("Share panel tests", function () {
       });
 
       cy.visit(`/activityViewer/${contentId}`);
-      cy.get('[data-test="Copy to Activities Button"]').click();
+
+      cy.get('[data-test="Add To"]').click();
+      cy.get('[data-test="Add To My Activities"]').click();
       cy.get('[data-test="Go to Activities"]').click();
 
       cy.get('[data-test="Card Menu Button"]').eq(0).click();
@@ -152,7 +156,9 @@ describe("Share panel tests", function () {
       });
 
       cy.visit(`/activityViewer/${contentId}`);
-      cy.get('[data-test="Copy to Activities Button"]').click();
+
+      cy.get('[data-test="Add To"]').click();
+      cy.get('[data-test="Add To My Activities"]').click();
       cy.get('[data-test="Go to Activities"]').click();
 
       cy.get('[data-test="Card Menu Button"]').eq(0).click();
@@ -209,7 +215,9 @@ describe("Share panel tests", function () {
       });
 
       cy.visit(`/activityViewer/${contentId}`);
-      cy.get('[data-test="Copy to Activities Button"]').click();
+
+      cy.get('[data-test="Add To"]').click();
+      cy.get('[data-test="Add To My Activities"]').click();
       cy.get('[data-test="Go to Activities"]').click();
 
       cy.get('[data-test="Card Menu Button"]').eq(0).click();
@@ -253,7 +261,7 @@ describe("Share panel tests", function () {
       cy.get('[data-test="Remixes Tab"]').click();
       cy.get('[data-test="Remix 1"]').should(
         "contain.text",
-        "Copy of Original activity",
+        "Original activity",
       );
     });
   });

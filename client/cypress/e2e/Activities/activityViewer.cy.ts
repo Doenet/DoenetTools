@@ -9,7 +9,7 @@ describe("Activity Viewer Tests", function () {
           systemShortName: "HS/C Math",
           category: "Algebra",
           subCategory: "Factoring",
-          code: "Alg.F.2",
+          code: "Alg.FA.2",
         },
         {
           systemShortName: "CC Math",
@@ -24,7 +24,7 @@ describe("Activity Viewer Tests", function () {
 
       cy.get('[data-test="Classifications Footer"]').should(
         "contain.text",
-        "Alg.F.2",
+        "Alg.FA.2",
       );
       cy.get('[data-test="Classifications Footer"]').should(
         "contain.text",
@@ -34,7 +34,7 @@ describe("Activity Viewer Tests", function () {
 
       cy.get('[data-test="Classification 1"]').should(
         "contain.text",
-        "Alg.F.2",
+        "Alg.FA.2",
       );
       cy.get('[data-test="Classification 2"]').should(
         "contain.text",
@@ -44,12 +44,12 @@ describe("Activity Viewer Tests", function () {
       cy.get('[data-test="Close Settings Button"]').click();
       cy.get('[data-test="Classification 1"]').should("not.exist");
 
-      cy.get('[data-test="Activity Information"]').click();
+      cy.get('[data-test="Info Button"]').click();
 
       cy.get('[data-test="Classifications"]').click();
       cy.get('[data-test="Classification 1"]').should(
         "contain.text",
-        "Alg.F.2",
+        "Alg.FA.2",
       );
       cy.get('[data-test="Classification 2"]').should(
         "contain.text",

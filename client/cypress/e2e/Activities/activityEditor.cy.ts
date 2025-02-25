@@ -8,14 +8,15 @@ describe("Activity Editor Tests", function () {
     cy.createActivity({
       activityName: "Hello!",
       doenetML: "Initial content",
-    }).then((contentId) => {
-      cy.visit(`/activityEditor/${contentId}`);
+    }).then((activityId) => {
+      cy.visit(`/activityEditor/${activityId}`);
 
       cy.iframe()
         .find(".doenet-viewer")
         .should("contain.text", `Initial content`);
 
-      cy.iframe().find(".cm-editor").type(`{end}{enter}More!`);
+      cy.iframe().find(".cm-activeLine").type("{enter}");
+      cy.iframe().find(".cm-activeLine").invoke("text", "More!");
 
       cy.get(`[data-test="View Mode Button"]`).click();
 

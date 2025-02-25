@@ -15,13 +15,13 @@ import {
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
 import { createFullName } from "../../../_utils/names";
-import { Content, DocHistoryItem } from "../../../_utils/types";
+import { Content, ActivityHistoryItem } from "../../../_utils/types";
 
 export default function ContributorsMenu({
   contributorHistory,
   activity,
 }: {
-  contributorHistory: DocHistoryItem[];
+  contributorHistory: ActivityHistoryItem[];
   activity: Content;
 }) {
   if (!activity.owner) {
@@ -52,15 +52,15 @@ export default function ContributorsMenu({
       <>
         remixed from{" "}
         <Tooltip
-          label={`Go to ${contributorHistory[0].prevActivityName}`}
+          label={`Go to ${contributorHistory[0].prevName}`}
           openDelay={1000}
         >
           <ChakraLink
             as={ReactRouterLink}
             to={`/activityViewer/${contributorHistory[0].prevContentId}`}
-            aria-label={`Go to ${contributorHistory[0].prevActivityName}`}
+            aria-label={`Go to ${contributorHistory[0].prevName}`}
           >
-            {contributorHistory[0].prevActivityName} by{" "}
+            {contributorHistory[0].prevName} by{" "}
             {createFullName(contributorHistory[0].prevOwner)}
           </ChakraLink>
         </Tooltip>
@@ -131,9 +131,9 @@ export default function ContributorsMenu({
             </HStack>
           </MenuItem>
           {contributorHistory.map((contrib_hist, i) => {
-            const menuText = `${contrib_hist.prevActivityName} by ${createFullName(contrib_hist.prevOwner)}`;
+            const menuText = `${contrib_hist.prevName} by ${createFullName(contrib_hist.prevOwner)}`;
             const activityRef = `/activityViewer/${contrib_hist.prevContentId}`;
-            const activityLabel = `Go to ${contrib_hist.prevActivityName}`;
+            const activityLabel = `Go to ${contrib_hist.prevName}`;
             const userRef = `/sharedActivities/${contrib_hist.prevOwner.userId}`;
             const userLabel = `Go to ${createFullName(contrib_hist.prevOwner)}'s shared activities`;
             return (

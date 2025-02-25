@@ -335,6 +335,7 @@ export function ActivityViewer() {
           colorScheme="blue"
           leftIcon={<MdOutlineAdd />}
           paddingRight={{ base: "0px", md: "10px" }}
+          data-test="Add To"
         >
           <Show above="md">Add to</Show>
         </MenuButton>

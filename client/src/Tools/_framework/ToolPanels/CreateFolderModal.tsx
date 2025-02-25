@@ -112,6 +112,7 @@ export function CreateFolderModal({
               value={folderName}
               ref={inputRef}
               maxLength={191}
+              data-test="New Folder Input"
               onChange={(e) => setFolderName(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key == "Enter") {

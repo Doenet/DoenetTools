@@ -132,7 +132,7 @@ Cypress.Commands.add(
           method: "POST",
           url: "/api/test/addClassificationsByNames",
           body: {
-            id: contentId,
+            contentId,
             classifications,
           },
         });
@@ -143,7 +143,7 @@ Cypress.Commands.add(
           method: "POST",
           url: "/api/share/makeContentPublic",
           body: {
-            id: contentId,
+            contentId,
             licenseCode: "CCDUAL",
           },
         });
@@ -183,6 +183,8 @@ Cypress.Commands.add(
         body: {
           contentId,
           doenetML,
+          numVariants: 1,
+          baseComponentCounts: "{}",
         },
       }).then(() => contentId);
     });

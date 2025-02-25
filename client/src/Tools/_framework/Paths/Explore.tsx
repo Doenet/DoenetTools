@@ -57,7 +57,7 @@ import { MdFilterAlt, MdFilterAltOff } from "react-icons/md";
 import { clearQueryParameter } from "../../../_utils/explore";
 import { FilterPanel } from "../ToolPanels/FilterPanel";
 import { ExploreFilterDrawer } from "../ToolPanels/ExploreFilterDrawer";
-import { menuIcons } from "../../../_utils/activity";
+import { contentTypeToName, menuIcons } from "../../../_utils/activity";
 import { SiteContext } from "./SiteHeader";
 import {
   AddContentToMenu,
@@ -381,13 +381,13 @@ export function Explore() {
 
       const menuItems = (
         <MenuItem
-          data-test={`${contentType} Information`}
+          data-test={`${contentTypeToName[contentType]} Information`}
           onClick={() => {
             setInfoContentData(itemObj);
             infoOnOpen();
           }}
         >
-          {contentType === "folder" ? "Folder" : "Activity"} information
+          {contentTypeToName[contentType]} information
         </MenuItem>
       );
 
@@ -913,13 +913,13 @@ export function Explore() {
       </TabList>
 
       <TabPanels data-test="Search Results">
-        <TabPanel padding={0}>
+        <TabPanel padding={0} data-test="Curated Results">
           {displayMatchingContent(curatedContent, {
             base: `calc(100vh - ${q ? "250" : "210"}px)`,
             lg: `calc(100vh - ${q ? "210" : "170"}px)`,
           })}
         </TabPanel>
-        <TabPanel padding={0}>
+        <TabPanel padding={0} data-test="Community Results">
           {trendingContent ? (
             <>
               <Heading

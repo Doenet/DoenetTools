@@ -12,7 +12,7 @@ describe("Search results Tests", function () {
           systemShortName: "HS/C Math",
           category: "Algebra",
           subCategory: "Factoring",
-          code: "Alg.F.2",
+          code: "Alg.FA.2",
         },
         {
           systemShortName: "CC Math",
@@ -23,14 +23,21 @@ describe("Search results Tests", function () {
         },
       ],
     }).then(() => {
-      cy.visit(`/community?q=Classifications${code}`);
+      cy.visit(`/explore?q=Classifications${code}`);
 
-      cy.get('[data-test="Results All Matches"] [data-test="Card Menu Button"]')
-        .eq(0)
-        .click();
+      cy.get('[data-test="Search Results For"]').should(
+        "contain.text",
+        `Classifications${code}`,
+      );
+
+      cy.get('[data-test="Community Tab"]').click();
 
       cy.get(
-        '[data-test="Results All Matches"] [data-test="Activity Information"]',
+        '[data-test="Community Results"] [data-test="Activity Card"] [data-test="Card Menu Button"]',
+      ).click();
+
+      cy.get(
+        '[data-test="Community Results"] [data-test="Activity Card"] [data-test="Document Information"]',
       )
         .eq(0)
         .click();
@@ -39,7 +46,7 @@ describe("Search results Tests", function () {
 
       cy.get('[data-test="Classification 1"]').should(
         "contain.text",
-        "Alg.F.2",
+        "Alg.FA.2",
       );
       cy.get('[data-test="Classification 2"]').should(
         "contain.text",
