@@ -134,7 +134,7 @@ test("getMyContent returns both public and private content, getSharedContent ret
   if (ownerContent.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(ownerContent.folder).eq(null);
+  expect(ownerContent.parent).eq(null);
   expect(ownerContent.content.length).eq(4);
   expect(ownerContent).toMatchObject({
     content: expect.arrayContaining([
@@ -169,7 +169,7 @@ test("getMyContent returns both public and private content, getSharedContent ret
     parentId: null,
     loggedInUserId: userId,
   });
-  expect(publicContent.folder).eq(null);
+  expect(publicContent.parent).eq(null);
   expect(publicContent.content.length).eq(4);
 
   expect(publicContent).toMatchObject({
@@ -197,8 +197,8 @@ test("getMyContent returns both public and private content, getSharedContent ret
   if (ownerContent.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(ownerContent.folder?.contentId).eqls(publicFolder1Id);
-  expect(ownerContent.folder?.parent).eq(null);
+  expect(ownerContent.parent?.contentId).eqls(publicFolder1Id);
+  expect(ownerContent.parent?.parent).eq(null);
   expect(ownerContent.content.length).eq(2);
   expect(ownerContent).toMatchObject({
     content: expect.arrayContaining([
@@ -210,7 +210,7 @@ test("getMyContent returns both public and private content, getSharedContent ret
           isPublic: true,
           isShared: false,
           sharedWith: [],
-          name: ownerContent.folder?.name,
+          name: ownerContent.parent?.name,
           type: "folder",
         },
       }),
@@ -222,7 +222,7 @@ test("getMyContent returns both public and private content, getSharedContent ret
           isPublic: true,
           isShared: false,
           sharedWith: [],
-          name: ownerContent.folder?.name,
+          name: ownerContent.parent?.name,
           type: "folder",
         },
       }),
@@ -235,8 +235,8 @@ test("getMyContent returns both public and private content, getSharedContent ret
     loggedInUserId: userId,
   });
   expect(publicContent.content.length).eq(2);
-  expect(publicContent.folder?.contentId).eqls(publicFolder1Id);
-  expect(publicContent.folder?.parent).eq(null);
+  expect(publicContent.parent?.contentId).eqls(publicFolder1Id);
+  expect(publicContent.parent?.parent).eq(null);
   expect(publicContent).toMatchObject({
     content: expect.arrayContaining([
       expect.objectContaining({
@@ -265,8 +265,8 @@ test("getMyContent returns both public and private content, getSharedContent ret
   if (ownerContent.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(ownerContent.folder?.contentId).eqls(privateFolder1Id);
-  expect(ownerContent.folder?.parent).eq(null);
+  expect(ownerContent.parent?.contentId).eqls(privateFolder1Id);
+  expect(ownerContent.parent?.parent).eq(null);
   expect(ownerContent.content.length).eq(4);
   expect(ownerContent).toMatchObject({
     content: expect.arrayContaining([
@@ -278,7 +278,7 @@ test("getMyContent returns both public and private content, getSharedContent ret
           isPublic: false,
           isShared: false,
           sharedWith: [],
-          name: ownerContent.folder?.name,
+          name: ownerContent.parent?.name,
           type: "folder",
         },
       }),
@@ -290,7 +290,7 @@ test("getMyContent returns both public and private content, getSharedContent ret
           isPublic: false,
           isShared: false,
           sharedWith: [],
-          name: ownerContent.folder?.name,
+          name: ownerContent.parent?.name,
           type: "folder",
         },
       }),
@@ -302,7 +302,7 @@ test("getMyContent returns both public and private content, getSharedContent ret
           isPublic: false,
           isShared: false,
           sharedWith: [],
-          name: ownerContent.folder?.name,
+          name: ownerContent.parent?.name,
           type: "folder",
         },
       }),
@@ -314,7 +314,7 @@ test("getMyContent returns both public and private content, getSharedContent ret
           isPublic: false,
           isShared: false,
           sharedWith: [],
-          name: ownerContent.folder?.name,
+          name: ownerContent.parent?.name,
           type: "folder",
         },
       }),
@@ -345,8 +345,8 @@ test("getMyContent returns both public and private content, getSharedContent ret
   if (ownerContent.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(ownerContent.folder?.contentId).eqls(publicFolder3Id);
-  expect(ownerContent.folder?.parent?.contentId).eqls(privateFolder1Id);
+  expect(ownerContent.parent?.contentId).eqls(publicFolder3Id);
+  expect(ownerContent.parent?.parent?.contentId).eqls(privateFolder1Id);
   expect(ownerContent.content.length).eq(0);
 
   publicContent = await getSharedContent({
@@ -354,8 +354,8 @@ test("getMyContent returns both public and private content, getSharedContent ret
     parentId: publicFolder3Id,
     loggedInUserId: userId,
   });
-  expect(publicContent.folder?.contentId).eqls(publicFolder3Id);
-  expect(publicContent.folder?.parent).eq(null);
+  expect(publicContent.parent?.contentId).eqls(publicFolder3Id);
+  expect(publicContent.parent?.parent).eq(null);
   expect(publicContent.content.length).eq(0);
 
   // If other user tries to access folder, sets notMe
@@ -506,7 +506,7 @@ test(
     if (ownerContent.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(ownerContent.folder).eq(null);
+    expect(ownerContent.parent).eq(null);
     expect(ownerContent.content.length).eq(4);
     expect(ownerContent).toMatchObject({
       content: expect.arrayContaining([
@@ -541,7 +541,7 @@ test(
       parentId: null,
       loggedInUserId: user1Id,
     });
-    expect(sharedContent.folder).eq(null);
+    expect(sharedContent.parent).eq(null);
     expect(sharedContent.content.length).eq(4);
 
     expect(sharedContent).toMatchObject({
@@ -567,7 +567,7 @@ test(
       parentId: null,
       loggedInUserId: user2Id,
     });
-    expect(sharedContent.folder).eq(null);
+    expect(sharedContent.parent).eq(null);
     expect(sharedContent.content.length).eq(4);
 
     expect(sharedContent).toMatchObject({
@@ -593,7 +593,7 @@ test(
       parentId: null,
       loggedInUserId: user3Id,
     });
-    expect(sharedContent.folder).eq(null);
+    expect(sharedContent.parent).eq(null);
     expect(sharedContent.content.length).eq(0);
 
     ownerContent = await getMyContent({
@@ -604,8 +604,8 @@ test(
     if (ownerContent.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(ownerContent.folder?.contentId).eqls(sharedFolder1Id);
-    expect(ownerContent.folder?.parent).eq(null);
+    expect(ownerContent.parent?.contentId).eqls(sharedFolder1Id);
+    expect(ownerContent.parent?.parent).eq(null);
     expect(ownerContent.content.length).eq(2);
     expect(ownerContent).toMatchObject({
       content: expect.arrayContaining([
@@ -618,7 +618,7 @@ test(
             isPublic: false,
             isShared: true,
             sharedWith: [userFields2, userFields1],
-            name: ownerContent.folder?.name,
+            name: ownerContent.parent?.name,
             type: "folder",
           },
         }),
@@ -631,7 +631,7 @@ test(
             isPublic: false,
             isShared: true,
             sharedWith: [userFields2, userFields1],
-            name: ownerContent.folder?.name,
+            name: ownerContent.parent?.name,
             type: "folder",
           },
         }),
@@ -644,8 +644,8 @@ test(
       loggedInUserId: user1Id,
     });
     expect(sharedContent.content.length).eq(2);
-    expect(sharedContent.folder?.contentId).eqls(sharedFolder1Id);
-    expect(sharedContent.folder?.parent).eq(null);
+    expect(sharedContent.parent?.contentId).eqls(sharedFolder1Id);
+    expect(sharedContent.parent?.parent).eq(null);
     expect(sharedContent).toMatchObject({
       content: expect.arrayContaining([
         expect.objectContaining({
@@ -663,8 +663,8 @@ test(
       loggedInUserId: user2Id,
     });
     expect(sharedContent.content.length).eq(2);
-    expect(sharedContent.folder?.contentId).eqls(sharedFolder1Id);
-    expect(sharedContent.folder?.parent).eq(null);
+    expect(sharedContent.parent?.contentId).eqls(sharedFolder1Id);
+    expect(sharedContent.parent?.parent).eq(null);
     expect(sharedContent).toMatchObject({
       content: expect.arrayContaining([
         expect.objectContaining({
@@ -702,8 +702,8 @@ test(
     if (ownerContent.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(ownerContent.folder?.contentId).eqls(privateFolder1Id);
-    expect(ownerContent.folder?.parent).eq(null);
+    expect(ownerContent.parent?.contentId).eqls(privateFolder1Id);
+    expect(ownerContent.parent?.parent).eq(null);
     expect(ownerContent.content.length).eq(4);
     expect(ownerContent).toMatchObject({
       content: expect.arrayContaining([
@@ -716,7 +716,7 @@ test(
             isPublic: false,
             isShared: false,
             sharedWith: [],
-            name: ownerContent.folder?.name,
+            name: ownerContent.parent?.name,
             type: "folder",
           },
         }),
@@ -729,7 +729,7 @@ test(
             isPublic: false,
             isShared: false,
             sharedWith: [],
-            name: ownerContent.folder?.name,
+            name: ownerContent.parent?.name,
             type: "folder",
           },
         }),
@@ -742,7 +742,7 @@ test(
             isPublic: false,
             isShared: false,
             sharedWith: [],
-            name: ownerContent.folder?.name,
+            name: ownerContent.parent?.name,
             type: "folder",
           },
         }),
@@ -755,7 +755,7 @@ test(
             isPublic: false,
             isShared: false,
             sharedWith: [],
-            name: ownerContent.folder?.name,
+            name: ownerContent.parent?.name,
             type: "folder",
           },
         }),
@@ -787,8 +787,8 @@ test(
     if (ownerContent.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(ownerContent.folder?.contentId).eqls(sharedFolder3Id);
-    expect(ownerContent.folder?.parent?.contentId).eqls(privateFolder1Id);
+    expect(ownerContent.parent?.contentId).eqls(sharedFolder3Id);
+    expect(ownerContent.parent?.parent?.contentId).eqls(privateFolder1Id);
     expect(ownerContent.content.length).eq(0);
 
     sharedContent = await getSharedContent({
@@ -796,8 +796,8 @@ test(
       parentId: sharedFolder3Id,
       loggedInUserId: user1Id,
     });
-    expect(sharedContent.folder?.contentId).eqls(sharedFolder3Id);
-    expect(sharedContent.folder?.parent).eq(null);
+    expect(sharedContent.parent?.contentId).eqls(sharedFolder3Id);
+    expect(sharedContent.parent?.parent).eq(null);
     expect(sharedContent.content.length).eq(0);
 
     // If other user tries to access folder, throws error

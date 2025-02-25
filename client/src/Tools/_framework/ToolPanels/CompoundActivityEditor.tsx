@@ -159,7 +159,7 @@ export function CompoundActivityEditor({
     setHaveContentSpinner(false);
   }, [activity]);
 
-  const [moveToFolderData, setMoveToFolderData] = useState<{
+  const [moveToParentData, setMoveToParentData] = useState<{
     contentId: string;
     name: string;
     type: ContentType;
@@ -178,20 +178,20 @@ export function CompoundActivityEditor({
   });
 
   const {
-    isOpen: moveToFolderIsOpen,
-    onOpen: moveToFolderOnOpen,
-    onClose: moveToFolderOnClose,
+    isOpen: moveToParentIsOpen,
+    onOpen: moveToParentOnOpen,
+    onClose: moveToParentOnClose,
   } = useDisclosure();
 
   const moveContentModal = user ? (
     <MoveCopyContent
-      isOpen={moveToFolderIsOpen}
-      onClose={moveToFolderOnClose}
-      sourceContent={[moveToFolderData]}
+      isOpen={moveToParentIsOpen}
+      onClose={moveToParentOnClose}
+      sourceContent={[moveToParentData]}
       userId={user.userId}
       currentParentId={activity.contentId}
       finalFocusRef={finalFocusRef}
-      allowedParentTypes={getAllowedParentTypes([moveToFolderData.type])}
+      allowedParentTypes={getAllowedParentTypes([moveToParentData.type])}
       action="Move"
     />
   ) : null;
@@ -497,7 +497,7 @@ export function CompoundActivityEditor({
           hidden={readOnly}
           data-test="Move to Folder"
           onClick={() => {
-            setMoveToFolderData({
+            setMoveToParentData({
               contentId,
               name: content.name,
               type: content.type,
@@ -506,7 +506,7 @@ export function CompoundActivityEditor({
               sharedWith: content.sharedWith,
               licenseCode: content.license?.code ?? null,
             });
-            moveToFolderOnOpen();
+            moveToParentOnOpen();
           }}
         >
           Move&hellip;

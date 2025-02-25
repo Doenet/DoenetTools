@@ -89,14 +89,14 @@ export async function loader({ params, request }) {
     content: data.content,
     ownerId: params.ownerId,
     owner: data.owner,
-    folder: data.folder,
+    parent: data.parent,
     listViewPref,
     addTo,
   };
 }
 
 export function SharedActivities() {
-  const { content, ownerId, owner, folder, listViewPref, addTo } =
+  const { content, ownerId, owner, parent, listViewPref, addTo } =
     useLoaderData() as {
       content: Content[];
       ownerId: string;
@@ -104,7 +104,7 @@ export function SharedActivities() {
         firstNames: string | null;
         lastNames: string;
       };
-      folder: Content | null;
+      parent: Content | null;
       listViewPref: boolean;
       addTo?: ContentDescription;
     };
@@ -119,10 +119,10 @@ export function SharedActivities() {
   const numSelected = selectedCards.length;
 
   useEffect(() => {
-    document.title = folder
-      ? `Folder ${folder.name}`
+    document.title = parent
+      ? `Folder ${parent.name}`
       : `Shared Activities of ${createFullName(owner)} - Doenet`;
-  }, [folder]);
+  }, [parent]);
 
   const fetcher = useFetcher();
 
@@ -197,8 +197,8 @@ export function SharedActivities() {
     });
   }
 
-  const headingText = folder ? (
-    <>Folder: {folder.name}</>
+  const headingText = parent ? (
+    <>Folder: {parent.name}</>
   ) : (
     `Shared Activities of ${createFullName(owner)}`
   );
@@ -289,17 +289,17 @@ export function SharedActivities() {
       </Flex>
 
       <Flex marginRight=".5em" alignItems="center" paddingLeft="15px">
-        {folder ? (
+        {parent ? (
           <Link
-            to={`/sharedActivities/${ownerId}${folder.parent ? "/" + folder.parent.contentId : ""}`}
+            to={`/sharedActivities/${ownerId}${parent.parent ? "/" + parent.parent.contentId : ""}`}
             style={{
               color: "var(--mainBlue)",
             }}
           >
             {" "}
             &lt; Back to{" "}
-            {folder.parent
-              ? folder.parent.name
+            {parent.parent
+              ? parent.parent.name
               : `Shared Activities of ${createFullName(owner)}`}
           </Link>
         ) : null}
@@ -379,16 +379,16 @@ export function SharedActivities() {
         padding="20px"
         minHeight="20vh"
       >
-        {folder ? (
-          folder.license ? (
-            folder.license.isComposition ? (
+        {parent ? (
+          parent.license ? (
+            parent.license.isComposition ? (
               <>
                 <p>
-                  <strong>{folder.name}</strong> by {owner.firstNames}{" "}
+                  <strong>{parent.name}</strong> by {owner.firstNames}{" "}
                   {owner.lastNames} is shared with these licenses:
                 </p>
                 <List spacing="20px" marginTop="10px">
-                  {folder.license.composedOf.map((comp) => (
+                  {parent.license.composedOf.map((comp) => (
                     <DisplayLicenseItem licenseItem={comp} key={comp.code} />
                   ))}
                 </List>
@@ -399,17 +399,17 @@ export function SharedActivities() {
             ) : (
               <>
                 <p>
-                  <strong>{folder.name}</strong> by {owner.firstNames}{" "}
+                  <strong>{parent.name}</strong> by {owner.firstNames}{" "}
                   {owner.lastNames} is shared using the license:
                 </p>
                 <List marginTop="10px">
-                  <DisplayLicenseItem licenseItem={folder.license} />
+                  <DisplayLicenseItem licenseItem={parent.license} />
                 </List>
               </>
             )
           ) : (
             <p>
-              <strong>{folder.name}</strong> by {owner.firstNames}{" "}
+              <strong>{parent.name}</strong> by {owner.firstNames}{" "}
               {owner.lastNames} is shared, but a license was not specified.
               Contact the author to determine in what ways you can reuse this
               activity.

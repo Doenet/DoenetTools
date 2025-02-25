@@ -48,11 +48,11 @@ async function getMyContentOrLibraryContent({
 }) {
   const ownerId = isLibrary ? await getLibraryAccountId() : loggedInUserId;
 
-  let folder: Content | null = null;
+  let parent: Content | null = null;
 
   if (parentId !== null) {
-    // if ask for a folder, make sure it exists and is owned by logged in user
-    const preliminaryFolder = await prisma.content.findUniqueOrThrow({
+    // if ask for a parent, make sure it exists and is owned by logged in user
+    const preliminaryParent = await prisma.content.findUniqueOrThrow({
       where: {
         id: parentId,
         ...filterEditableContent(ownerId, false),
@@ -61,7 +61,7 @@ async function getMyContentOrLibraryContent({
     });
 
     //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
-    folder = processContent(preliminaryFolder);
+    parent = processContent(preliminaryParent);
   }
 
   const preliminaryContent = await prisma.content.findMany({
@@ -89,7 +89,7 @@ async function getMyContentOrLibraryContent({
 
   return {
     content,
-    folder,
+    parent,
     availableFeatures,
     allDoenetmlVersions,
     allLicenses,
@@ -139,11 +139,11 @@ async function searchMyContentOrLibraryContent({
     ownerId = await getLibraryAccountId();
   }
 
-  let folder: Content | null = null;
+  let parent: Content | null = null;
 
   if (parentId !== null) {
-    // if ask for a folder, make sure it exists and is owned by logged in user
-    const preliminaryFolder = await prisma.content.findUniqueOrThrow({
+    // if ask for a parent, make sure it exists and is owned by logged in user
+    const preliminaryParent = await prisma.content.findUniqueOrThrow({
       where: {
         id: parentId,
         ...filterEditableContent(ownerId),
@@ -152,7 +152,7 @@ async function searchMyContentOrLibraryContent({
     });
 
     //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
-    folder = processContent(preliminaryFolder);
+    parent = processContent(preliminaryParent);
   }
 
   const query_as_prefixes = sanitizeQuery(query);
@@ -236,7 +236,7 @@ async function searchMyContentOrLibraryContent({
 
   return {
     content,
-    folder,
+    parent,
     availableFeatures,
     allDoenetmlVersions,
     allLicenses,
@@ -253,11 +253,11 @@ export async function getSharedContent({
   parentId: Uint8Array | null;
   loggedInUserId?: Uint8Array;
 }) {
-  let folder: Content | null = null;
+  let parent: Content | null = null;
 
   if (parentId !== null) {
-    // if ask for a folder, make sure it exists and is viewable by logged in user
-    const preliminaryFolder = await prisma.content.findUniqueOrThrow({
+    // if ask for a parent, make sure it exists and is viewable by logged in user
+    const preliminaryParent = await prisma.content.findUniqueOrThrow({
       where: {
         ownerId,
         id: parentId,
@@ -272,22 +272,22 @@ export async function getSharedContent({
       select: returnContentSelect({}),
     });
 
-    // If parent folder is not public or not shared with me,
-    // make it look like it doesn't have a parent folder.
+    // If parent is not public or not shared with me,
+    // make it look like it doesn't have a parent.
     if (
       !(
-        preliminaryFolder.parent &&
-        (preliminaryFolder.parent.isPublic ||
-          preliminaryFolder.parent.sharedWith.findIndex((cs) =>
+        preliminaryParent.parent &&
+        (preliminaryParent.parent.isPublic ||
+          preliminaryParent.parent.sharedWith.findIndex((cs) =>
             isEqualUUID(cs.userId, loggedInUserId),
           ) !== -1)
       )
     ) {
-      preliminaryFolder.parent = null;
+      preliminaryParent.parent = null;
     }
 
     //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
-    folder = processContent(preliminaryFolder, loggedInUserId);
+    parent = processContent(preliminaryParent, loggedInUserId);
   }
 
   const preliminarySharedContent = await prisma.content.findMany({
@@ -307,7 +307,7 @@ export async function getSharedContent({
 
   // If looking in the base folder,
   // also include orphaned shared content,
-  // i.e., shared content that is inside a non-shared folder.
+  // i.e., shared content that is inside a non-shared parent.
   // That way, users can navigate to all of the owner's shared content
   // when start at the base folder
   if (parentId === null) {
@@ -343,14 +343,14 @@ export async function getSharedContent({
     select: { firstNames: true, lastNames: true },
   });
 
-  if (folder && !isEqualUUID(loggedInUserId, folder.ownerId)) {
-    await recordContentView(folder.contentId, loggedInUserId);
+  if (parent && !isEqualUUID(loggedInUserId, parent.ownerId)) {
+    await recordContentView(parent.contentId, loggedInUserId);
   }
 
   return {
     content: publicContent,
     owner,
-    folder,
+    parent,
   };
 }
 

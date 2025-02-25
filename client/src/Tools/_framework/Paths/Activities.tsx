@@ -143,7 +143,7 @@ export async function action({ request, params }) {
     await axios.post(`/api/copyMove/moveContent`, {
       contentId: formObj.contentId,
       parentId: formObj.parentId === "null" ? null : formObj.parentId,
-      desiredPosition: formObj.desiredPosition,
+      desiredPosition: Number(formObj.desiredPosition),
     });
     return true;
   }
@@ -198,7 +198,7 @@ export async function loader({ params, request }) {
     allLicenses: data.allLicenses,
     availableFeatures: data.availableFeatures,
     userId: params.userId,
-    folder: data.folder,
+    parent: data.parent,
     listViewPref,
     query: q,
     addTo,
@@ -213,7 +213,7 @@ export function Activities() {
     allLicenses,
     availableFeatures,
     userId,
-    folder,
+    parent,
     listViewPref,
     query,
     addTo,
@@ -224,7 +224,7 @@ export function Activities() {
     allLicenses: License[];
     availableFeatures: ContentFeature[];
     userId: string;
-    folder: Content | null;
+    parent: Content | null;
     listViewPref: boolean;
     query: string | null;
     addTo: ContentDescription | undefined;
@@ -340,7 +340,7 @@ export function Activities() {
     });
   }
 
-  const [moveToFolderData, setMoveToFolderData] = useState<{
+  const [moveToParentData, setMoveToParentData] = useState<{
     contentId: string;
     name: string;
     type: ContentType;
@@ -431,7 +431,7 @@ export function Activities() {
         </MenuItem>
         {position > 0 && !haveQuery ? (
           <MenuItem
-            data-test="Move Left Menu Item"
+            data-test="Move Up Menu Item"
             onClick={() => {
               fetcher.submit(
                 {
@@ -449,7 +449,7 @@ export function Activities() {
         ) : null}
         {position < numCards - 1 && !haveQuery ? (
           <MenuItem
-            data-test="Move Right Menu Item"
+            data-test="Move Down Menu Item"
             onClick={() => {
               fetcher.submit(
                 {
@@ -467,9 +467,9 @@ export function Activities() {
         ) : null}
         {haveQuery ? null : (
           <MenuItem
-            data-test="Move to Folder"
+            data-test="Move to Parent"
             onClick={() => {
-              setMoveToFolderData({
+              setMoveToParentData({
                 contentId,
                 name,
                 type: contentType,
@@ -543,16 +543,16 @@ export function Activities() {
   }
 
   const folderType =
-    folder?.type === "select"
+    parent?.type === "select"
       ? "Select Activity"
-      : folder?.type === "sequence"
+      : parent?.type === "sequence"
         ? "Sequence Activity"
         : "Folder";
 
-  const headingText = folder ? (
+  const headingText = parent ? (
     <>
-      {folder.isPublic ? "Public " : ""}
-      {folderType}: {folder.name}
+      {parent.isPublic ? "Public " : ""}
+      {folderType}: {parent.name}
     </>
   ) : (
     `My Activities`
@@ -560,8 +560,8 @@ export function Activities() {
 
   let contentData: Content | undefined;
   if (settingsContentId) {
-    if (folder && settingsContentId === parentId) {
-      contentData = folder;
+    if (parent && settingsContentId === parentId) {
+      contentData = parent;
       finalFocusRef.current = folderSettingsRef.current;
     } else {
       const index = content.findIndex(
@@ -618,11 +618,11 @@ export function Activities() {
     <MoveCopyContent
       isOpen={moveCopyContentIsOpen}
       onClose={moveCopyContentOnClose}
-      sourceContent={[moveToFolderData]}
+      sourceContent={[moveToParentData]}
       userId={userId}
       currentParentId={parentId}
       finalFocusRef={finalFocusRef}
-      allowedParentTypes={getAllowedParentTypes([moveToFolderData.type])}
+      allowedParentTypes={getAllowedParentTypes([moveToParentData.type])}
       action="Move"
     />
   );
@@ -762,7 +762,7 @@ export function Activities() {
                   width="250px"
                   ref={searchRef}
                   placeholder={
-                    folder ? `Search in folder` : `Search my activities`
+                    parent ? `Search in folder` : `Search my activities`
                   }
                   value={searchString}
                   name="q"
@@ -776,7 +776,7 @@ export function Activities() {
                   }}
                 />
                 <Tooltip
-                  label={folder ? `Search in folder` : `Search my activities`}
+                  label={parent ? `Search in folder` : `Search my activities`}
                   placement="bottom-end"
                 >
                   <IconButton
@@ -784,7 +784,7 @@ export function Activities() {
                     colorScheme="blue"
                     icon={<MdOutlineSearch />}
                     aria-label={
-                      folder ? `Search in folder` : `Search my activities`
+                      parent ? `Search in folder` : `Search my activities`
                     }
                     type="submit"
                     onClick={(e) => {
@@ -895,10 +895,10 @@ export function Activities() {
           paddingLeft="1em"
           alignItems="middle"
         >
-          {folder && !haveQuery ? (
+          {parent && !haveQuery ? (
             <Box>
               <Link
-                to={`/activities/${userId}${folder.parent ? "/" + folder.parent.contentId : ""}`}
+                to={`/activities/${userId}${parent.parent ? "/" + parent.parent.contentId : ""}`}
                 style={{
                   color: "var(--mainBlue)",
                 }}
@@ -906,7 +906,7 @@ export function Activities() {
                 <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
                   <Show above="sm">
                     &lt; Back to{" "}
-                    {folder.parent ? folder.parent.name : `My Activities`}
+                    {parent.parent ? parent.parent.name : `My Activities`}
                   </Show>
                   <Hide above="sm">&lt; Back</Hide>
                 </Text>

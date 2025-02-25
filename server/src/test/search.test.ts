@@ -3052,7 +3052,7 @@ test(
     if (searchResults.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(searchResults.folder).eq(null);
+    expect(searchResults.parent).eq(null);
     let content = searchResults.content;
     expect(content.length).eq(3);
     expect(
@@ -3077,7 +3077,7 @@ test(
     if (searchResults.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(fromUUID(searchResults.folder!.contentId)).eq(
+    expect(fromUUID(searchResults.parent!.contentId)).eq(
       fromUUID(baseFolderId),
     );
     content = searchResults.content;
@@ -3103,7 +3103,7 @@ test(
     if (searchResults.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(fromUUID(searchResults.folder!.contentId)).eq(fromUUID(folder1Id));
+    expect(fromUUID(searchResults.parent!.contentId)).eq(fromUUID(folder1Id));
     content = searchResults.content;
     expect(content.length).eq(1);
     expect(
@@ -3124,7 +3124,7 @@ test(
     if (searchResults.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(fromUUID(searchResults.folder!.contentId)).eq(fromUUID(folder1cId));
+    expect(fromUUID(searchResults.parent!.contentId)).eq(fromUUID(folder1cId));
     content = searchResults.content;
     expect(content.length).eq(0);
 
@@ -3137,7 +3137,7 @@ test(
     if (searchResults.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(searchResults.folder).eq(null);
+    expect(searchResults.parent).eq(null);
     content = searchResults.content;
     expect(content.length).eq(3);
     expect(
@@ -3162,7 +3162,7 @@ test(
     if (searchResults.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(fromUUID(searchResults.folder!.contentId)).eq(
+    expect(fromUUID(searchResults.parent!.contentId)).eq(
       fromUUID(baseFolderId),
     );
     content = searchResults.content;
@@ -3188,7 +3188,7 @@ test(
     if (searchResults.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(fromUUID(searchResults.folder!.contentId)).eq(fromUUID(folder1Id));
+    expect(fromUUID(searchResults.parent!.contentId)).eq(fromUUID(folder1Id));
     content = searchResults.content;
     expect(content.length).eq(1);
     expect(
@@ -3209,7 +3209,7 @@ test(
     if (searchResults.notMe) {
       throw Error("shouldn't happen");
     }
-    expect(fromUUID(searchResults.folder!.contentId)).eq(fromUUID(folder1cId));
+    expect(fromUUID(searchResults.parent!.contentId)).eq(fromUUID(folder1cId));
     content = searchResults.content;
     expect(content.length).eq(0);
   },

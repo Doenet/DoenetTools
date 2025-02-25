@@ -29,7 +29,7 @@ test("New user has no content", async () => {
   } = docs;
   expect(docs2).toStrictEqual({
     content: [],
-    folder: null,
+    parent: null,
   });
 });
 

@@ -1344,7 +1344,7 @@ test("share with email throws error when no match", async () => {
   if (results.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(results.folder!.sharedWith.map((obj) => obj.email)).eqls([user.email]);
+  expect(results.parent!.sharedWith.map((obj) => obj.email)).eqls([user.email]);
 });
 
 test("share with email throws error when share with self", async () => {
@@ -1407,7 +1407,7 @@ test("share with email throws error when share with self", async () => {
   if (results.notMe) {
     throw Error("shouldn't happen");
   }
-  expect(results.folder!.sharedWith.map((obj) => obj.email)).eqls([user.email]);
+  expect(results.parent!.sharedWith.map((obj) => obj.email)).eqls([user.email]);
 });
 
 test("contributor history shows only documents user can view", async () => {
