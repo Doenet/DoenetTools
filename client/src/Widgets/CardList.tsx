@@ -2,7 +2,7 @@ import React, { ReactElement } from "react";
 import { Text, Icon, Box, Flex, Wrap } from "@chakra-ui/react";
 import Card, { CardContent } from "./Card";
 import { MdInfoOutline } from "react-icons/md";
-import { ContentType } from "../_utils/types";
+import { ContentDescription, ContentType } from "../_utils/types";
 
 export default function CardList({
   content,
@@ -13,7 +13,7 @@ export default function CardList({
   emptyMessage,
   listView,
   selectedCards,
-  selectCallback,
+  setSelectedCards,
   disableSelectFor,
 }: {
   content: (
@@ -31,15 +31,12 @@ export default function CardList({
   showActivityFeatures?: boolean;
   emptyMessage: string;
   listView: boolean;
-  selectedCards?: string[];
-  selectCallback?: (arg: {
-    contentId: string;
-    name: string;
-    checked: boolean;
-    type: ContentType;
-  }) => void;
+  selectedCards?: ContentDescription[];
+  setSelectedCards?: React.Dispatch<React.SetStateAction<ContentDescription[]>>;
   disableSelectFor?: string[];
 }) {
+  const selectedCardsFiltered = selectedCards?.filter((s) => s);
+
   if (content.length === 0) {
     return (
       <Flex
@@ -81,7 +78,33 @@ export default function CardList({
   //   );
   // }
 
-  let cards: ReactElement | ReactElement[] = content.map((cardContent) => {
+  const selectCallback = setSelectedCards
+    ? function ({
+        contentId,
+        name,
+        checked,
+        type,
+        idx,
+      }: {
+        contentId: string;
+        name: string;
+        checked: boolean;
+        type: ContentType;
+        idx: number;
+      }) {
+        setSelectedCards((was) => {
+          const arr = [...was];
+          if (checked) {
+            arr[idx] = { contentId, name, type };
+          } else {
+            delete arr[idx];
+          }
+          return arr;
+        });
+      }
+    : undefined;
+
+  let cards: ReactElement | ReactElement[] = content.map((cardContent, idx) => {
     if ("cardType" in cardContent) {
       const indentLevel = cardContent.indentLevel;
       return (
@@ -112,11 +135,16 @@ export default function CardList({
           showActivityFeatures={showActivityFeatures}
           listView={listView}
           indentLevel={cardContent.indentLevel}
-          selectedCards={selectedCards}
+          selectedCards={
+            selectedCardsFiltered
+              ? selectedCardsFiltered.map((sc) => sc.contentId)
+              : undefined
+          }
           selectCallback={selectCallback}
           disableSelect={disableSelectFor?.includes(
             cardContent.content.contentId,
           )}
+          idx={idx}
         />
       );
     }

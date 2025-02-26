@@ -13,7 +13,7 @@ import {
 import { fromUUID, isEqualUUID } from "../utils/uuid";
 import { getAllDoenetmlVersions } from "./activity";
 import { getAllLicenses } from "./share";
-import { recordContentView } from "./stats";
+import { recordContentView, recordRecentContent } from "./stats";
 
 export async function getMyContent({
   ownerId,
@@ -86,6 +86,10 @@ async function getMyContentOrLibraryContent({
   const { availableFeatures } = await getAvailableContentFeatures();
   const { allDoenetmlVersions } = await getAllDoenetmlVersions();
   const { allLicenses } = await getAllLicenses();
+
+  if (parentId !== null && !isLibrary) {
+    await recordRecentContent(loggedInUserId, "edit", parentId);
+  }
 
   return {
     content,

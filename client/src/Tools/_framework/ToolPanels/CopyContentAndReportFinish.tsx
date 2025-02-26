@@ -13,11 +13,54 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useNavigate, useOutletContext } from "react-router";
+import {
+  FetcherWithComponents,
+  useNavigate,
+  useOutletContext,
+} from "react-router";
 import { ContentType } from "../../../_utils/types";
 import { contentTypeToName } from "../../../_utils/activity";
 import { SiteContext } from "../Paths/SiteHeader";
 
+export async function copyContentAndReportFinishActions({
+  formObj,
+}: {
+  [k: string]: any;
+}) {
+  if (formObj._action === "copy content") {
+    const newContentIds: string[] = [];
+
+    try {
+      const contentIds = JSON.parse(formObj.contentIds);
+      if (formObj.copyToLibrary === "true") {
+        for (const c of contentIds) {
+          const { data } = await axios.post(`/api/addDraftToLibrary`, {
+            contentId: c,
+          });
+          newContentIds.push(data.newContentId);
+        }
+      } else {
+        const { data } = await axios.post(`/api/copyMove/copyContent`, {
+          contentIds,
+          parentId: formObj.parentId === "null" ? null : formObj.parentId,
+        });
+
+        newContentIds.push(...data.newContentIds);
+      }
+      return { action: "copiedContent", success: true, newContentIds };
+    } catch (e) {
+      console.error(e);
+      const message =
+        typeof e.response?.data?.details === "string"
+          ? e.response.data.details
+          : null;
+
+      return { action: "copiedContent", success: false, message };
+    }
+  }
+
+  return null;
+}
 /**
  * A modal that immediately upon opening copies source content into a parent or Activities
  * Alternatively, if the `copyToLibrary` flag is set and the user is an admin, it copies the activity into the library as a draft.
@@ -25,6 +68,7 @@ import { SiteContext } from "../Paths/SiteHeader";
  * When the copy is finished, the modal allows the user to close it or navigate to the parent.
  */
 export function CopyContentAndReportFinish({
+  fetcher,
   isOpen,
   onClose,
   finalFocusRef,
@@ -33,6 +77,7 @@ export function CopyContentAndReportFinish({
   action,
   copyToLibrary,
 }: {
+  fetcher: FetcherWithComponents<any>;
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
@@ -52,39 +97,32 @@ export function CopyContentAndReportFinish({
   const { user } = useOutletContext<SiteContext>();
 
   useEffect(() => {
-    async function copyContent() {
-      document.body.style.cursor = "wait";
-
-      try {
-        if (copyToLibrary) {
-          const newContentIds: string[] = [];
-          for (const c of contentIds) {
-            const { data } = await axios.post(`/api/addDraftToLibrary`, {
-              contentId: c,
-            });
-            newContentIds.push(data.newContentId);
-          }
-          setNewContentIds(newContentIds);
-        } else {
-          const { data } = await axios.post(`/api/copyMove/copyContent`, {
-            contentIds,
-            parentId: desiredParent ? desiredParent.contentId : null,
-          });
-
-          setNewContentIds(data.newContentIds);
-        }
-      } catch (e) {
-        console.error(e);
+    if (fetcher.data?.action === "copiedContent") {
+      if (fetcher.data.success) {
+        setNewContentIds(fetcher.data.newContentIds);
+      } else {
+        const message = fetcher.data.message;
         setErrMsg(
-          `An error occurred while ${actionProgressiveWord.toLowerCase()}.`,
+          `An error occurred while ${actionProgressiveWord.toLowerCase()}${message ? ": " + message : ""}.`,
         );
       }
+
       document.body.style.cursor = "default";
     }
+  }, [fetcher.data, actionProgressiveWord]);
 
+  useEffect(() => {
     if (isOpen) {
       if (newContentIds === null) {
-        copyContent();
+        document.body.style.cursor = "wait";
+        fetcher.submit(
+          {
+            _action: "copy content",
+            contentIds: JSON.stringify(contentIds),
+            parentId: desiredParent ? desiredParent.contentId : null,
+          },
+          { method: "post" },
+        );
       }
     } else {
       setNewContentIds(null);
@@ -118,7 +156,7 @@ export function CopyContentAndReportFinish({
     );
     destinationAction = copyToLibrary
       ? "Go to the library"
-      : "Go to Activities";
+      : "Go to My Activities";
     destinationUrl = copyToLibrary
       ? "/curation"
       : `/activities/${user?.userId}`;
@@ -134,13 +172,15 @@ export function CopyContentAndReportFinish({
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader textAlign="center">
+        <ModalHeader textAlign="center" data-test="Copy Header">
           {newContentIds === null
-            ? actionProgressiveWord
+            ? errMsg === ""
+              ? actionProgressiveWord
+              : "An error occurred"
             : `${action} finished`}
         </ModalHeader>
         {newContentIds !== null ? <ModalCloseButton /> : null}
-        <ModalBody>
+        <ModalBody data-test="Copy Body">
           {errMsg === "" ? (
             newContentIds === null ? (
               <HStack>
@@ -161,9 +201,10 @@ export function CopyContentAndReportFinish({
 
         <ModalFooter>
           <Button
-            data-test="Go to Activities"
+            data-test="Go to Destination"
             marginRight="4px"
             onClick={() => {
+              onClose();
               navigate(destinationUrl);
             }}
             isDisabled={newContentIds === null && errMsg === ""}
@@ -171,6 +212,7 @@ export function CopyContentAndReportFinish({
             {destinationAction}
           </Button>
           <Button
+            data-test="Close Button"
             onClick={() => {
               onClose();
             }}

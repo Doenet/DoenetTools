@@ -61,7 +61,7 @@ describe("Share Activities Tests", function () {
     cy.get('[data-test="Add To"]').click();
     cy.get('[data-test="Add To My Activities"]').click();
 
-    cy.get('[data-test="Go to Activities"]').click();
+    cy.get('[data-test="Go to Destination"]').click();
 
     cy.get(`[data-test="Content Card"]`).eq(0).click();
     cy.iframe().find(".doenet-viewer").should("contain.text", `Hello there!`);

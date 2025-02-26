@@ -11,7 +11,22 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { getAllowedParentTypes, menuIcons } from "../../../_utils/activity";
-import { CreateContentAndPromptName } from "./CreateContentAndPromptName";
+import {
+  CreateContentAndPromptName,
+  createContentAndPromptNameActions,
+} from "./CreateContentAndPromptName";
+import { FetcherWithComponents } from "react-router";
+
+export async function createContentMenuActions({
+  formObj,
+}: {
+  [k: string]: any;
+}) {
+  const resultCC = createContentAndPromptNameActions({ formObj });
+  if (resultCC) {
+    return resultCC;
+  }
+}
 
 export function CreateContentMenu({
   sourceContent,
@@ -19,6 +34,7 @@ export function CreateContentMenu({
   label,
   colorScheme,
   followAllowedParents = false,
+  fetcher,
 }: {
   sourceContent: ContentDescription[];
   size?: ResponsiveValue<(string & {}) | "xs" | "sm" | "md" | "lg">;
@@ -38,6 +54,7 @@ export function CreateContentMenu({
     | "whiteAlpha"
     | "blackAlpha";
   followAllowedParents?: boolean;
+  fetcher: FetcherWithComponents<any>;
 }) {
   const [createNewType, setCreateNewType] = useState<ContentType>("folder");
   const [allowedParents, setAllowedParents] = useState<ContentType[]>([]);
@@ -58,6 +75,7 @@ export function CreateContentMenu({
 
   const createContentModal = (
     <CreateContentAndPromptName
+      fetcher={fetcher}
       isOpen={createDialogIsOpen}
       onClose={createDialogOnClose}
       contentIds={sourceContent.map((sc) => sc.contentId)}
@@ -87,6 +105,7 @@ export function CreateContentMenu({
             }
           >
             <MenuItem
+              data-test="Create Problem Set"
               isDisabled={
                 followAllowedParents && !allowedParents.includes("sequence")
               }
@@ -99,6 +118,7 @@ export function CreateContentMenu({
             </MenuItem>
           </Tooltip>
           <MenuItem
+            data-test="Create Folder"
             onClick={() => {
               setCreateNewType("folder");
               createDialogOnOpen();
@@ -115,6 +135,7 @@ export function CreateContentMenu({
             }
           >
             <MenuItem
+              data-test="Create Question Bank"
               isDisabled={
                 followAllowedParents && !allowedParents.includes("select")
               }

@@ -24,11 +24,7 @@ import {
 import { CardContent } from "../../../Widgets/Card";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
-import {
-  ContentDescription,
-  Content,
-  ContentType,
-} from "../../../_utils/types";
+import { ContentDescription, Content } from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import CardList from "../../../Widgets/CardList";
@@ -42,8 +38,14 @@ import {
   AddContentToMenu,
   addContentToMenuActions,
 } from "../ToolPanels/AddContentToMenu";
-import { CreateContentMenu } from "../ToolPanels/CreateContentMenu";
-import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
+import {
+  CreateContentMenu,
+  createContentMenuActions,
+} from "../ToolPanels/CreateContentMenu";
+import {
+  CopyContentAndReportFinish,
+  copyContentAndReportFinishActions,
+} from "../ToolPanels/CopyContentAndReportFinish";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -57,6 +59,16 @@ export async function action({ request }) {
   const resultACM = await addContentToMenuActions({ formObj });
   if (resultACM) {
     return resultACM;
+  }
+
+  const resultCC = copyContentAndReportFinishActions({ formObj });
+  if (resultCC) {
+    return resultCC;
+  }
+
+  const resultCCM = await createContentMenuActions({ formObj });
+  if (resultCCM) {
+    return resultCCM;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
@@ -116,7 +128,8 @@ export function SharedActivities() {
   const [listView, setListView] = useState(listViewPref);
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
-  const numSelected = selectedCards.length;
+  const selectedCardsFiltered = selectedCards.filter((c) => c);
+  const numSelected = selectedCardsFiltered.length;
 
   useEffect(() => {
     document.title = parent
@@ -162,40 +175,14 @@ export function SharedActivities() {
   const copyContentModal =
     addTo !== undefined ? (
       <CopyContentAndReportFinish
+        fetcher={fetcher}
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        contentIds={selectedCards.map((sc) => sc.contentId)}
+        contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
         desiredParent={addTo}
         action="Add"
       />
     ) : null;
-
-  function selectCardCallback({
-    contentId,
-    name,
-    checked,
-    type,
-  }: {
-    contentId: string;
-    name: string;
-    checked: boolean;
-    type: ContentType;
-  }) {
-    setSelectedCards((was) => {
-      const arr = [...was];
-      const idx = was.findIndex((c) => c.contentId === contentId);
-      if (checked) {
-        if (idx === -1) {
-          arr.push({ contentId, name, type });
-        } else {
-          arr[idx] = { contentId, name, type };
-        }
-      } else if (idx !== -1) {
-        arr.splice(idx, 1);
-      }
-      return arr;
-    });
-  }
 
   const headingText = parent ? (
     <>Folder: {parent.name}</>
@@ -256,13 +243,15 @@ export function SharedActivities() {
             <Text>{numSelected} selected</Text>
             <HStack hidden={addTo !== undefined}>
               <AddContentToMenu
-                sourceContent={selectedCards}
+                fetcher={fetcher}
+                sourceContent={selectedCardsFiltered}
                 size="xs"
                 colorScheme="blue"
                 label="Add selected to"
               />
               <CreateContentMenu
-                sourceContent={selectedCards}
+                fetcher={fetcher}
+                sourceContent={selectedCardsFiltered}
                 size="xs"
                 colorScheme="blue"
                 label="Create from selected"
@@ -348,8 +337,8 @@ export function SharedActivities() {
       emptyMessage={"No Activities Yet"}
       listView={listView}
       content={cardContent}
-      selectedCards={user ? selectedCards.map((c) => c.contentId) : undefined}
-      selectCallback={selectCardCallback}
+      selectedCards={user ? selectedCards : undefined}
+      setSelectedCards={setSelectedCards}
       disableSelectFor={addTo ? [addTo.contentId] : undefined}
     />
   );

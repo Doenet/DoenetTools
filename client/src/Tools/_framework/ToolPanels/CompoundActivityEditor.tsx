@@ -45,8 +45,14 @@ import {
   getAllowedParentTypes,
   menuIcons,
 } from "../../../_utils/activity";
-import { CopyContentAndReportFinish } from "./CopyContentAndReportFinish";
-import { CreateContentMenu } from "./CreateContentMenu";
+import {
+  CopyContentAndReportFinish,
+  copyContentAndReportFinishActions,
+} from "./CopyContentAndReportFinish";
+import {
+  CreateContentMenu,
+  createContentMenuActions,
+} from "./CreateContentMenu";
 import { AddContentToMenu } from "./AddContentToMenu";
 import { DeleteModal, deleteModalActions } from "./DeleteModal";
 
@@ -70,6 +76,16 @@ export async function compoundActivityEditorActions(
   const resultDM = await deleteModalActions({ formObj });
   if (resultDM) {
     return resultDM;
+  }
+
+  const resultCC = copyContentAndReportFinishActions({ formObj });
+  if (resultCC) {
+    return resultCC;
+  }
+
+  const resultCCM = await createContentMenuActions({ formObj });
+  if (resultCCM) {
+    return resultCCM;
   }
 
   if (formObj?._action == "Add Activity") {
@@ -148,7 +164,8 @@ export function CompoundActivityEditor({
   const navigate = useNavigate();
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
-  const numSelected = selectedCards.length;
+  const selectedCardsFiltered = selectedCards.filter((c) => c);
+  const numSelected = selectedCardsFiltered.length;
 
   const [haveContentSpinner, setHaveContentSpinner] = useState(false);
 
@@ -205,9 +222,10 @@ export function CompoundActivityEditor({
   const copyContentModal =
     addTo !== undefined ? (
       <CopyContentAndReportFinish
+        fetcher={fetcher}
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        contentIds={selectedCards.map((sc) => sc.contentId)}
+        contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
         desiredParent={addTo}
         action="Add"
       />
@@ -228,33 +246,6 @@ export function CompoundActivityEditor({
       finalFocusRef={finalFocusRef}
     />
   ) : null;
-
-  function selectCardCallback({
-    contentId,
-    name,
-    checked,
-    type,
-  }: {
-    contentId: string;
-    name: string;
-    checked: boolean;
-    type: ContentType;
-  }) {
-    setSelectedCards((was) => {
-      const arr = [...was];
-      const idx = was.findIndex((c) => c.contentId === contentId);
-      if (checked) {
-        if (idx === -1) {
-          arr.push({ contentId, name, type });
-        } else {
-          arr[idx] = { contentId, name, type };
-        }
-      } else if (idx !== -1) {
-        arr.splice(idx, 1);
-      }
-      return arr;
-    });
-  }
 
   function countCards(content: Content, init = true): number {
     const childCounts =
@@ -557,8 +548,8 @@ export function CompoundActivityEditor({
       emptyMessage={`${contentTypeName} is empty. Add or move documents ${activity.type === "sequence" ? "or question banks " : ""}here to begin.`}
       listView={true}
       content={cardContent}
-      selectedCards={user ? selectedCards.map((c) => c.contentId) : undefined}
-      selectCallback={selectCardCallback}
+      selectedCards={user ? selectedCards : undefined}
+      setSelectedCards={setSelectedCards}
       disableSelectFor={addTo ? [addTo.contentId] : undefined}
     />
   );
@@ -648,13 +639,15 @@ export function CompoundActivityEditor({
           <Text>{numSelected} selected</Text>
           <HStack hidden={addTo !== undefined}>
             <AddContentToMenu
-              sourceContent={selectedCards}
+              fetcher={fetcher}
+              sourceContent={selectedCardsFiltered}
               size="xs"
               colorScheme="blue"
               label="Add selected to"
             />
             <CreateContentMenu
-              sourceContent={selectedCards}
+              fetcher={fetcher}
+              sourceContent={selectedCardsFiltered}
               size="xs"
               colorScheme="blue"
               label="Create from selected"

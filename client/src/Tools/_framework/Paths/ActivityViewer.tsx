@@ -70,7 +70,10 @@ import {
   AddContentToMenu,
   addContentToMenuActions,
 } from "../ToolPanels/AddContentToMenu";
-import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
+import {
+  CopyContentAndReportFinish,
+  copyContentAndReportFinishActions,
+} from "../ToolPanels/CopyContentAndReportFinish";
 import { CloseIcon } from "@chakra-ui/icons";
 import { BsBookmarkCheck } from "react-icons/bs";
 import { ImCheckmark } from "react-icons/im";
@@ -82,6 +85,11 @@ export async function action({ request }) {
   const resultACM = await addContentToMenuActions({ formObj });
   if (resultACM) {
     return resultACM;
+  }
+
+  const resultCC = copyContentAndReportFinishActions({ formObj });
+  if (resultCC) {
+    return resultCC;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
@@ -173,6 +181,8 @@ export function ActivityViewer() {
     contentType === "select" ? "Edit" : "View",
   );
 
+  const fetcher = useFetcher();
+
   useEffect(() => {
     if (contentType === "select") {
       setMode("Edit");
@@ -241,6 +251,7 @@ export function ActivityViewer() {
   const copyContentModal =
     addTo !== undefined ? (
       <CopyContentAndReportFinish
+        fetcher={fetcher}
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
         contentIds={[activityData.contentId]}
@@ -248,8 +259,6 @@ export function ActivityViewer() {
         action="Add"
       />
     ) : null;
-
-  const fetcher = useFetcher();
 
   const [editLabel, editTooltip, editIcon] = [
     "See Inside",
@@ -365,6 +374,7 @@ export function ActivityViewer() {
   } else {
     addToMenu = (
       <AddContentToMenu
+        fetcher={fetcher}
         sourceContent={[activityData]}
         size="sm"
         label={<Show above="md">Add to</Show>}

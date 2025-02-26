@@ -319,7 +319,7 @@ export function MoveCopyContent({
         Cancel
       </Button>
       <Button
-        data-test="Execute Move Button"
+        data-test="Execute MoveCopy Button"
         width="10em"
         // Is disabled if the content is already in this parent
         isDisabled={
@@ -391,7 +391,7 @@ export function MoveCopyContent({
     }
   } else {
     destinationDescription = <>My Activities</>;
-    destinationAction = "Go to Activities";
+    destinationAction = "Go to My Activities";
     destinationUrl = `/activities/${userId}`;
   }
 
@@ -413,13 +413,17 @@ export function MoveCopyContent({
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            <Heading textAlign="center" data-test="Move Heading 1">
+            <Heading textAlign="center" data-test="MoveCopy Heading 1">
               {action}{" "}
               {allowedParentTypes.length === 1
                 ? `to ${contentTypeToName[allowedParentTypes[0]].toLowerCase()}`
                 : null}
             </Heading>
-            <Heading size="me" textAlign="center" data-test="Move Heading 2">
+            <Heading
+              size="me"
+              textAlign="center"
+              data-test="MoveCopy Heading 2"
+            >
               <em>{contentName}</em>
             </Heading>
             <HStack hidden={actionFinished || errMsg !== ""}>
@@ -443,7 +447,7 @@ export function MoveCopyContent({
             </HStack>
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody data-test="Move Content Body">
+          <ModalBody data-test="MoveCopy Body">
             {errMsg ? (
               errMsg
             ) : actionFinished ? (

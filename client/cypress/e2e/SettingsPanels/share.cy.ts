@@ -42,7 +42,7 @@ describe("Share panel tests", function () {
 
       cy.get('[data-test="Add To"]').click();
       cy.get('[data-test="Add To My Activities"]').click();
-      cy.get('[data-test="Go to Activities"]').click();
+      cy.get('[data-test="Go to Destination"]').click();
 
       cy.get('[data-test="Card Menu Button"]').eq(0).click();
       cy.get('[data-test="Share Menu Item"]').click();
@@ -102,7 +102,7 @@ describe("Share panel tests", function () {
 
       cy.get('[data-test="Add To"]').click();
       cy.get('[data-test="Add To My Activities"]').click();
-      cy.get('[data-test="Go to Activities"]').click();
+      cy.get('[data-test="Go to Destination"]').click();
 
       cy.get('[data-test="Card Menu Button"]').eq(0).click();
       cy.get('[data-test="Share Menu Item"]').click();
@@ -159,7 +159,7 @@ describe("Share panel tests", function () {
 
       cy.get('[data-test="Add To"]').click();
       cy.get('[data-test="Add To My Activities"]').click();
-      cy.get('[data-test="Go to Activities"]').click();
+      cy.get('[data-test="Go to Destination"]').click();
 
       cy.get('[data-test="Card Menu Button"]').eq(0).click();
       cy.get('[data-test="Share Menu Item"]').click();
@@ -218,7 +218,7 @@ describe("Share panel tests", function () {
 
       cy.get('[data-test="Add To"]').click();
       cy.get('[data-test="Add To My Activities"]').click();
-      cy.get('[data-test="Go to Activities"]').click();
+      cy.get('[data-test="Go to Destination"]').click();
 
       cy.get('[data-test="Card Menu Button"]').eq(0).click();
       cy.get('[data-test="Share Menu Item"]').click();

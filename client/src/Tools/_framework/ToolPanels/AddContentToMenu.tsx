@@ -17,8 +17,11 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { MoveCopyContent, moveCopyContentActions } from "./MoveCopyContent";
-import { CopyContentAndReportFinish } from "./CopyContentAndReportFinish";
-import { useOutletContext } from "react-router";
+import {
+  CopyContentAndReportFinish,
+  copyContentAndReportFinishActions,
+} from "./CopyContentAndReportFinish";
+import { FetcherWithComponents, useOutletContext } from "react-router";
 import { SiteContext } from "../Paths/SiteHeader";
 import { getAllowedParentTypes, menuIcons } from "../../../_utils/activity";
 
@@ -32,6 +35,11 @@ export async function addContentToMenuActions({
     return resultMC;
   }
 
+  const resultCC = copyContentAndReportFinishActions({ formObj });
+  if (resultCC) {
+    return resultCC;
+  }
+
   return null;
 }
 
@@ -43,8 +51,9 @@ export function AddContentToMenu({
   leftIcon,
   addRightPadding = false,
   toolTip,
-  followAllowedParents = false,
+  restrictToAllowedParents = false,
   addCopyToLibraryOption = false,
+  fetcher,
 }: {
   sourceContent: ContentDescription[];
   size?: ResponsiveValue<(string & {}) | "xs" | "sm" | "md" | "lg">;
@@ -66,8 +75,9 @@ export function AddContentToMenu({
   leftIcon?: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
   addRightPadding?: boolean;
   toolTip?: string;
-  followAllowedParents?: boolean;
+  restrictToAllowedParents?: boolean;
   addCopyToLibraryOption?: boolean;
+  fetcher: FetcherWithComponents<any>;
 }) {
   const { user } = useOutletContext<SiteContext>();
 
@@ -97,6 +107,7 @@ export function AddContentToMenu({
 
   const copyContentModal = (
     <CopyContentAndReportFinish
+      fetcher={fetcher}
       isOpen={copyDialogIsOpen}
       onClose={copyDialogOnClose}
       contentIds={sourceContent.map((sc) => sc.contentId)}
@@ -156,7 +167,9 @@ export function AddContentToMenu({
             {
               params: {
                 mode: "edit",
-                restrictToTypes: followAllowedParents ? allowedParents : null,
+                restrictToTypes: restrictToAllowedParents
+                  ? allowedParents
+                  : null,
               },
             },
           );
@@ -190,6 +203,7 @@ export function AddContentToMenu({
         <MenuList>
           {addCopyToLibraryOption ? (
             <MenuItem
+              data-test="Add Draft To Library"
               onClick={() => {
                 setCopyToLibrary(true);
                 copyDialogOnOpen();
@@ -203,15 +217,18 @@ export function AddContentToMenu({
             label={
               !baseContains.includes("sequence")
                 ? "No existing problem sets"
-                : followAllowedParents && !allowedParents.includes("sequence")
+                : restrictToAllowedParents &&
+                    !allowedParents.includes("sequence")
                   ? "Some selected items cannot be added to a problem set"
                   : null
             }
           >
             <MenuItem
+              data-test="Add To Problem Set"
               isDisabled={
                 !baseContains.includes("sequence") ||
-                (followAllowedParents && !allowedParents.includes("sequence"))
+                (restrictToAllowedParents &&
+                  !allowedParents.includes("sequence"))
               }
               onClick={() => {
                 setAddToType("sequence");
@@ -228,6 +245,7 @@ export function AddContentToMenu({
             }
           >
             <MenuItem
+              data-test="Add To Folder"
               isDisabled={!baseContains.includes("folder")}
               onClick={() => {
                 setAddToType("folder");
@@ -242,15 +260,16 @@ export function AddContentToMenu({
             label={
               !baseContains.includes("select")
                 ? "No existing question banks"
-                : followAllowedParents && !allowedParents.includes("select")
+                : restrictToAllowedParents && !allowedParents.includes("select")
                   ? "Some selected items cannot be added to a question bank"
                   : null
             }
           >
             <MenuItem
+              data-test="Add To Question Bank"
               isDisabled={
                 !baseContains.includes("select") ||
-                (followAllowedParents && !allowedParents.includes("select"))
+                (restrictToAllowedParents && !allowedParents.includes("select"))
               }
               onClick={() => {
                 setAddToType("select");
@@ -272,32 +291,43 @@ export function AddContentToMenu({
           </MenuItem>
           {recentContent.length > 0 ? (
             <MenuGroup title="Recent">
-              {recentContent.map((rc) => (
-                <Tooltip
-                  key={rc.contentId}
-                  openDelay={500}
-                  label={
-                    followAllowedParents && !allowedParents.includes(rc.type)
-                      ? `Some selected items cannot be added to a ${rc.type === "select" ? "question bank" : "problem set"}`
-                      : null
-                  }
-                >
-                  <MenuItem
-                    isDisabled={
-                      followAllowedParents && !allowedParents.includes(rc.type)
+              {recentContent.map((rc) => {
+                const sourceContentIncludesRC = sourceContent.some(
+                  (sc) => sc.contentId === rc.contentId,
+                );
+                return (
+                  <Tooltip
+                    key={rc.contentId}
+                    openDelay={500}
+                    label={
+                      restrictToAllowedParents &&
+                      !allowedParents.includes(rc.type)
+                        ? `Some selected items cannot be added to a ${rc.type === "select" ? "question bank" : "problem set"}`
+                        : sourceContentIncludesRC
+                          ? "Cannot add content into itself"
+                          : null
                     }
-                    onClick={() => {
-                      setCopyDestination(rc);
-                      setCopyToLibrary(false);
-                      copyDialogOnOpen();
-                    }}
                   >
-                    {menuIcons[rc.type]}{" "}
-                    {rc.name.substring(0, 20) +
-                      (rc.name.length > 20 ? "..." : "")}
-                  </MenuItem>
-                </Tooltip>
-              ))}
+                    <MenuItem
+                      data-test="Recent Item"
+                      isDisabled={
+                        (restrictToAllowedParents &&
+                          !allowedParents.includes(rc.type)) ||
+                        sourceContentIncludesRC
+                      }
+                      onClick={() => {
+                        setCopyDestination(rc);
+                        setCopyToLibrary(false);
+                        copyDialogOnOpen();
+                      }}
+                    >
+                      {menuIcons[rc.type]}{" "}
+                      {rc.name.substring(0, 20) +
+                        (rc.name.length > 20 ? "..." : "")}
+                    </MenuItem>
+                  </Tooltip>
+                );
+              })}
             </MenuGroup>
           ) : null}
         </MenuList>

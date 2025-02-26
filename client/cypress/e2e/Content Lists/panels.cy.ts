@@ -118,7 +118,10 @@ describe("Activity panel tests", () => {
     cy.get('[data-test="Card Menu Button"]').eq(0).click();
     cy.get('[data-test="Move to Parent"]').eq(0).click();
 
-    cy.get('[data-test="Move Heading 2"]').should("have.text", "Document 1");
+    cy.get('[data-test="MoveCopy Heading 2"]').should(
+      "have.text",
+      "Document 1",
+    );
 
     cy.get('[data-test="Select Item Option"]').should("have.length", 8);
     cy.get('[data-test="Select Item Option"]')
@@ -199,8 +202,8 @@ describe("Activity panel tests", () => {
       .should("have.text", "Document P2")
       .should("be.disabled");
 
-    cy.get('[data-test="Execute Move Button"]').click();
-    cy.get('[data-test="Move Content Body"]').should(
+    cy.get('[data-test="Execute MoveCopy Button"]').click();
+    cy.get('[data-test="MoveCopy Body"]').should(
       "have.text",
       "1 item moved to: Problem Set",
     );
@@ -249,7 +252,10 @@ describe("Activity panel tests", () => {
     cy.get('[data-test="Card Menu Button"]').eq(0).click();
     cy.get('[data-test="Move to Parent"]').eq(0).click();
 
-    cy.get('[data-test="Move Heading 2"]').should("have.text", "Problem Set");
+    cy.get('[data-test="MoveCopy Heading 2"]').should(
+      "have.text",
+      "Problem Set",
+    );
 
     cy.get('[data-test="Select Item Option"]').should("have.length", 7);
     cy.get('[data-test="Select Item Option"]')
@@ -313,8 +319,8 @@ describe("Activity panel tests", () => {
       .should("have.text", "Document F4")
       .should("be.disabled");
 
-    cy.get('[data-test="Execute Move Button"]').click();
-    cy.get('[data-test="Move Content Body"]').should(
+    cy.get('[data-test="Execute MoveCopy Button"]').click();
+    cy.get('[data-test="MoveCopy Body"]').should(
       "have.text",
       "1 item moved to: Folder 1",
     );
@@ -387,7 +393,7 @@ describe("Activity panel tests", () => {
     cy.get('[data-test="Card Menu Button"]').eq(1).click();
     cy.get('[data-test="Move to Parent"]').eq(1).click();
 
-    cy.get('[data-test="Move Heading 2"]').should(
+    cy.get('[data-test="MoveCopy Heading 2"]').should(
       "have.text",
       "Question Bank P",
     );
@@ -423,8 +429,8 @@ describe("Activity panel tests", () => {
       "My Activities",
     );
 
-    cy.get('[data-test="Execute Move Button"]').click();
-    cy.get('[data-test="Move Content Body"]').should(
+    cy.get('[data-test="Execute MoveCopy Button"]').click();
+    cy.get('[data-test="MoveCopy Body"]').should(
       "have.text",
       "1 item moved to: My Activities",
     );
@@ -458,8 +464,8 @@ describe("Activity panel tests", () => {
     cy.get('[data-test="Card Menu Button"]').eq(2).click();
     cy.get('[data-test="Move to Parent"]').eq(2).click();
     cy.get('[data-test="Select Item Option"]').eq(2).click();
-    cy.get('[data-test="Execute Move Button"]').click();
-    cy.get('[data-test="Move Content Body"]').should(
+    cy.get('[data-test="Execute MoveCopy Button"]').click();
+    cy.get('[data-test="MoveCopy Body"]').should(
       "have.text",
       "1 item moved to: Folder 2",
     );
@@ -468,8 +474,8 @@ describe("Activity panel tests", () => {
     cy.get('[data-test="Card Menu Button"]').eq(1).click();
     cy.get('[data-test="Move to Parent"]').eq(1).click();
     cy.get('[data-test="Select Item Option"]').eq(2).click();
-    cy.get('[data-test="Execute Move Button"]').click();
-    cy.get('[data-test="Move Content Body"]').should(
+    cy.get('[data-test="Execute MoveCopy Button"]').click();
+    cy.get('[data-test="MoveCopy Body"]').should(
       "have.text",
       "1 item moved to: Folder 2",
     );
@@ -555,8 +561,8 @@ describe("Activity panel tests", () => {
       .should("have.text", "Document 3")
       .should("be.disabled");
 
-    cy.get('[data-test="Execute Move Button"]').click();
-    cy.get('[data-test="Move Content Body"]').should(
+    cy.get('[data-test="Execute MoveCopy Button"]').click();
+    cy.get('[data-test="MoveCopy Body"]').should(
       "have.text",
       "1 item moved to: Folder 2",
     );
@@ -623,7 +629,7 @@ describe("Activity panel tests", () => {
       "have.text",
       "This item is empty.",
     );
-    cy.get('[data-test="Execute Move Button"]').click();
+    cy.get('[data-test="Execute MoveCopy Button"]').click();
     cy.get('[data-test="Confirm Header"]').should(
       "contain.text",
       "Confirm move to shared parent",
@@ -639,14 +645,14 @@ describe("Activity panel tests", () => {
 
     cy.get('[data-test="Back Button"]').click();
     cy.get('[data-test="Confirm Header"]').should("not.exist");
-    cy.get('[data-test="Execute Move Button"]').click();
+    cy.get('[data-test="Execute MoveCopy Button"]').click();
     cy.get('[data-test="Confirm Header"]').should(
       "contain.text",
       "Confirm move to shared parent",
     );
     cy.get('[data-test="Confirm Button"]').click();
 
-    cy.get('[data-test="Move Content Body"]').should(
+    cy.get('[data-test="MoveCopy Body"]').should(
       "have.text",
       "1 item moved to: Problem Set",
     );

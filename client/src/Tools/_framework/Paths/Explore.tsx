@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import {
   Box,
@@ -42,7 +42,6 @@ import {
   ContentDescription,
   ContentFeature,
   Content,
-  ContentType,
   PartialContentClassification,
   UserInfo,
 } from "../../../_utils/types";
@@ -63,8 +62,14 @@ import {
   AddContentToMenu,
   addContentToMenuActions,
 } from "../ToolPanels/AddContentToMenu";
-import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
-import { CreateContentMenu } from "../ToolPanels/CreateContentMenu";
+import {
+  CopyContentAndReportFinish,
+  copyContentAndReportFinishActions,
+} from "../ToolPanels/CopyContentAndReportFinish";
+import {
+  CreateContentMenu,
+  createContentMenuActions,
+} from "../ToolPanels/CreateContentMenu";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -78,6 +83,16 @@ export async function action({ request }) {
   const resultACM = await addContentToMenuActions({ formObj });
   if (resultACM) {
     return resultACM;
+  }
+
+  const resultCC = copyContentAndReportFinishActions({ formObj });
+  if (resultCC) {
+    return resultCC;
+  }
+
+  const resultCCM = await createContentMenuActions({ formObj });
+  if (resultCCM) {
+    return resultCCM;
   }
 
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
@@ -245,7 +260,8 @@ export function Explore() {
   const [listView, setListView] = useState(listViewPref);
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
-  const numSelected = selectedCards.length;
+  const selectedCardsFiltered = selectedCards.filter((c) => c);
+  const numSelected = selectedCardsFiltered.length;
 
   const { search } = useLocation();
   const navigate = useNavigate();
@@ -311,9 +327,10 @@ export function Explore() {
   const copyContentModal =
     addTo !== undefined ? (
       <CopyContentAndReportFinish
+        fetcher={fetcher}
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        contentIds={selectedCards.map((sc) => sc.contentId)}
+        contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
         desiredParent={addTo}
         action="Add"
       />
@@ -326,7 +343,7 @@ export function Explore() {
       if (trendingContent) {
         newList.push(...trendingContent.map((c) => c.contentId));
       }
-      for (const c of was) {
+      for (const c of was.filter((x) => x)) {
         if (!newList.includes(c.contentId)) {
           foundMissing = true;
           break;
@@ -340,32 +357,28 @@ export function Explore() {
     });
   }, [content, trendingContent]);
 
-  function selectCardCallback({
-    contentId,
-    name,
-    checked,
-    type,
-  }: {
-    contentId: string;
-    name: string;
-    checked: boolean;
-    type: ContentType;
-  }) {
-    setSelectedCards((was) => {
-      const arr = [...was];
-      const idx = was.findIndex((c) => c.contentId === contentId);
-      if (checked) {
-        if (idx === -1) {
-          arr.push({ contentId, name, type });
-        } else {
-          arr[idx] = { contentId, name, type };
-        }
-      } else if (idx !== -1) {
-        arr.splice(idx, 1);
-      }
-      return arr;
-    });
-  }
+  const curatedContentDisplay = useMemo(
+    () =>
+      displayMatchingContent(curatedContent, {
+        base: `calc(100vh - ${q ? "250" : "210"}px)`,
+        lg: `calc(100vh - ${q ? "210" : "170"}px)`,
+      }),
+    [curatedContent, selectedCards, addTo, listView],
+  );
+
+  const trendingContentDisplay = useMemo(
+    () => (trendingContent ? displayMatchingContent(trendingContent) : null),
+    [trendingContent, selectedCards, addTo, listView],
+  );
+
+  const contentDisplay = useMemo(
+    () =>
+      displayMatchingContent(content, {
+        base: `calc(100vh - ${q ? "250" : "210"}px)`,
+        lg: `calc(100vh - ${q ? "210" : "170"}px)`,
+      }),
+    [content, selectedCards, addTo, listView],
+  );
 
   function displayMatchingContent(
     matches: Content[],
@@ -417,10 +430,8 @@ export function Explore() {
           content={cardContent}
           emptyMessage={"No Matches Found!"}
           listView={listView}
-          selectedCards={
-            user ? selectedCards.map((c) => c.contentId) : undefined
-          }
-          selectCallback={selectCardCallback}
+          selectedCards={user ? selectedCards : undefined}
+          setSelectedCards={setSelectedCards}
           disableSelectFor={addTo ? [addTo.contentId] : undefined}
         />
       </Box>
@@ -507,159 +518,163 @@ export function Explore() {
     );
   }
 
-  const classificationMatchPieces: ReactElement[] = [];
-  if (matchedClassifications && matchedClassifications.length > 0) {
-    for (const partialClass of matchedClassifications) {
-      const classification = partialClass.classification!;
-      const subCategory = partialClass.subCategory!;
-      const category = partialClass.category!;
-      const system = partialClass.system!;
-      const expandedDescription = system.categoriesInDescription
-        ? `${category.category} | ${subCategory.subCategory} | ${classification.description}`
-        : classification.description;
+  const classificationMatchPieces = useMemo<ReactElement[]>(() => {
+    const cMatchPieces: ReactElement[] = [];
+    if (matchedClassifications && matchedClassifications.length > 0) {
+      for (const partialClass of matchedClassifications) {
+        const classification = partialClass.classification!;
+        const subCategory = partialClass.subCategory!;
+        const category = partialClass.category!;
+        const system = partialClass.system!;
+        const expandedDescription = system.categoriesInDescription
+          ? `${category.category} | ${subCategory.subCategory} | ${classification.description}`
+          : classification.description;
 
-      const newURL = `/explore/${system.id}/${category.id}/${subCategory.id}/${classification.id}`;
+        const newURL = `/explore/${system.id}/${category.id}/${subCategory.id}/${classification.id}`;
 
-      let shortenedDescription = classification.description;
-      if (shortenedDescription.length > 40) {
-        shortenedDescription = shortenedDescription.substring(0, 40) + "...";
+        let shortenedDescription = classification.description;
+        if (shortenedDescription.length > 40) {
+          shortenedDescription = shortenedDescription.substring(0, 40) + "...";
+        }
+
+        cMatchPieces.push(
+          <ListItem
+            key={`classification${classification.id}|${classification.descriptionId}`}
+            marginTop="15px"
+          >
+            <VStack alignItems="left" gap={0}>
+              <Box>
+                {classification.code}: {expandedDescription}
+              </Box>
+              <Box>
+                ({system.descriptionLabel} from {system.name})
+              </Box>
+              <Box>
+                <Tooltip
+                  label={`Filter by ${expandedDescription}`}
+                  openDelay={500}
+                  placement="bottom-end"
+                >
+                  <Button
+                    rightIcon={<MdFilterAlt />}
+                    size="xs"
+                    onClick={() => {
+                      let newSearch = search;
+                      // clear the search string
+                      newSearch = clearQueryParameter("q", newSearch);
+                      navigate(`${newURL}${newSearch}`);
+                      setCurrentTab(1);
+                      setSearchString("");
+                    }}
+                    aria-label={`Filter by ${expandedDescription}`}
+                  >
+                    Filter by {shortenedDescription}
+                  </Button>
+                </Tooltip>
+              </Box>
+            </VStack>
+          </ListItem>,
+        );
       }
-
-      classificationMatchPieces.push(
-        <ListItem
-          key={`classification${classification.id}|${classification.descriptionId}`}
-          marginTop="15px"
-        >
-          <VStack alignItems="left" gap={0}>
-            <Box>
-              {classification.code}: {expandedDescription}
-            </Box>
-            <Box>
-              ({system.descriptionLabel} from {system.name})
-            </Box>
-            <Box>
-              <Tooltip
-                label={`Filter by ${expandedDescription}`}
-                openDelay={500}
-                placement="bottom-end"
-              >
-                <Button
-                  rightIcon={<MdFilterAlt />}
-                  size="xs"
-                  onClick={() => {
-                    let newSearch = search;
-                    // clear the search string
-                    newSearch = clearQueryParameter("q", newSearch);
-                    navigate(`${newURL}${newSearch}`);
-                    setCurrentTab(1);
-                    setSearchString("");
-                  }}
-                  aria-label={`Filter by ${expandedDescription}`}
-                >
-                  Filter by {shortenedDescription}
-                </Button>
-              </Tooltip>
-            </Box>
-          </VStack>
-        </ListItem>,
-      );
     }
-  }
 
-  if (matchedSubCategories && matchedSubCategories.length > 0) {
-    for (const partialClass of matchedSubCategories) {
-      const subCategory = partialClass.subCategory!;
-      const category = partialClass.category!;
-      const system = partialClass.system!;
-      const expandedDescription = system.categoriesInDescription
-        ? `${category.category} | ${subCategory.subCategory}`
-        : subCategory.subCategory;
+    if (matchedSubCategories && matchedSubCategories.length > 0) {
+      for (const partialClass of matchedSubCategories) {
+        const subCategory = partialClass.subCategory!;
+        const category = partialClass.category!;
+        const system = partialClass.system!;
+        const expandedDescription = system.categoriesInDescription
+          ? `${category.category} | ${subCategory.subCategory}`
+          : subCategory.subCategory;
 
-      let shortenedDescription = subCategory.subCategory;
-      if (shortenedDescription.length > 40) {
-        shortenedDescription = shortenedDescription.substring(0, 40) + "...";
+        let shortenedDescription = subCategory.subCategory;
+        if (shortenedDescription.length > 40) {
+          shortenedDescription = shortenedDescription.substring(0, 40) + "...";
+        }
+
+        const newURL = `/explore/${system.id}/${category.id}/${subCategory.id}`;
+
+        cMatchPieces.push(
+          <ListItem key={`subcategory${subCategory.id}`} marginTop="15px">
+            <VStack alignItems="left" gap={0}>
+              <Box>{expandedDescription}</Box>
+              <Box>
+                ({system.subCategoryLabel} from {system.name})
+              </Box>
+              <Box>
+                <Tooltip
+                  label={`Filter by ${expandedDescription}`}
+                  openDelay={500}
+                  placement="bottom-end"
+                >
+                  <Button
+                    rightIcon={<MdFilterAlt />}
+                    size="xs"
+                    onClick={() => {
+                      let newSearch = search;
+                      // clear the search string
+                      newSearch = clearQueryParameter("q", newSearch);
+                      navigate(`${newURL}${newSearch}`);
+                      setCurrentTab(1);
+                      setSearchString("");
+                    }}
+                    aria-label={`Filter by ${expandedDescription}`}
+                  >
+                    Filter by {shortenedDescription}
+                  </Button>
+                </Tooltip>
+              </Box>
+            </VStack>
+          </ListItem>,
+        );
       }
-
-      const newURL = `/explore/${system.id}/${category.id}/${subCategory.id}`;
-
-      classificationMatchPieces.push(
-        <ListItem key={`subcategory${subCategory.id}`} marginTop="15px">
-          <VStack alignItems="left" gap={0}>
-            <Box>{expandedDescription}</Box>
-            <Box>
-              ({system.subCategoryLabel} from {system.name})
-            </Box>
-            <Box>
-              <Tooltip
-                label={`Filter by ${expandedDescription}`}
-                openDelay={500}
-                placement="bottom-end"
-              >
-                <Button
-                  rightIcon={<MdFilterAlt />}
-                  size="xs"
-                  onClick={() => {
-                    let newSearch = search;
-                    // clear the search string
-                    newSearch = clearQueryParameter("q", newSearch);
-                    navigate(`${newURL}${newSearch}`);
-                    setCurrentTab(1);
-                    setSearchString("");
-                  }}
-                  aria-label={`Filter by ${expandedDescription}`}
-                >
-                  Filter by {shortenedDescription}
-                </Button>
-              </Tooltip>
-            </Box>
-          </VStack>
-        </ListItem>,
-      );
     }
-  }
 
-  if (matchedCategories && matchedCategories.length > 0) {
-    for (const partialClass of matchedCategories) {
-      const category = partialClass.category!;
-      const system = partialClass.system!;
+    if (matchedCategories && matchedCategories.length > 0) {
+      for (const partialClass of matchedCategories) {
+        const category = partialClass.category!;
+        const system = partialClass.system!;
 
-      const newURL = `/explore/${system.id}/${category.id}`;
+        const newURL = `/explore/${system.id}/${category.id}`;
 
-      classificationMatchPieces.push(
-        <ListItem key={`category${category.id}`} marginTop="15px">
-          <VStack alignItems="left" gap={0}>
-            <Text>{category.category}</Text>
-            <Text>
-              ({system.categoryLabel} from {system.name})
-            </Text>
-            <Box>
-              <Tooltip
-                label={`Filter by ${category.category}`}
-                openDelay={500}
-                placement="bottom-end"
-              >
-                <Button
-                  rightIcon={<MdFilterAlt />}
-                  size="xs"
-                  onClick={() => {
-                    let newSearch = search;
-                    // clear the search string
-                    newSearch = clearQueryParameter("q", newSearch);
-                    navigate(`${newURL}${newSearch}`);
-                    setCurrentTab(1);
-                    setSearchString("");
-                  }}
-                  aria-label={`Filter by ${category.category}`}
+        cMatchPieces.push(
+          <ListItem key={`category${category.id}`} marginTop="15px">
+            <VStack alignItems="left" gap={0}>
+              <Text>{category.category}</Text>
+              <Text>
+                ({system.categoryLabel} from {system.name})
+              </Text>
+              <Box>
+                <Tooltip
+                  label={`Filter by ${category.category}`}
+                  openDelay={500}
+                  placement="bottom-end"
                 >
-                  Filter by {category.category}
-                </Button>
-              </Tooltip>
-            </Box>
-          </VStack>
-        </ListItem>,
-      );
+                  <Button
+                    rightIcon={<MdFilterAlt />}
+                    size="xs"
+                    onClick={() => {
+                      let newSearch = search;
+                      // clear the search string
+                      newSearch = clearQueryParameter("q", newSearch);
+                      navigate(`${newURL}${newSearch}`);
+                      setCurrentTab(1);
+                      setSearchString("");
+                    }}
+                    aria-label={`Filter by ${category.category}`}
+                  >
+                    Filter by {category.category}
+                  </Button>
+                </Tooltip>
+              </Box>
+            </VStack>
+          </ListItem>,
+        );
+      }
     }
-  }
+
+    return cMatchPieces;
+  }, [matchedClassifications]);
 
   let classificationMatches: ReactElement | null = null;
 
@@ -826,13 +841,15 @@ export function Explore() {
               <Text>{numSelected} selected</Text>
               <HStack hidden={addTo !== undefined}>
                 <AddContentToMenu
-                  sourceContent={selectedCards}
+                  fetcher={fetcher}
+                  sourceContent={selectedCardsFiltered}
                   size="xs"
                   colorScheme="blue"
                   label="Add selected to"
                 />
                 <CreateContentMenu
-                  sourceContent={selectedCards}
+                  fetcher={fetcher}
+                  sourceContent={selectedCardsFiltered}
                   size="xs"
                   colorScheme="blue"
                   label="Create from selected"
@@ -914,10 +931,7 @@ export function Explore() {
 
       <TabPanels data-test="Search Results">
         <TabPanel padding={0} data-test="Curated Results">
-          {displayMatchingContent(curatedContent, {
-            base: `calc(100vh - ${q ? "250" : "210"}px)`,
-            lg: `calc(100vh - ${q ? "210" : "170"}px)`,
-          })}
+          {curatedContentDisplay}
         </TabPanel>
         <TabPanel padding={0} data-test="Community Results">
           {trendingContent ? (
@@ -931,7 +945,7 @@ export function Explore() {
               >
                 Trending
               </Heading>
-              {displayMatchingContent(trendingContent)}
+              {trendingContentDisplay}
 
               <Heading
                 size="md"
@@ -944,10 +958,7 @@ export function Explore() {
               </Heading>
             </>
           ) : null}
-          {displayMatchingContent(content, {
-            base: `calc(100vh - ${q ? "250" : "210"}px)`,
-            lg: `calc(100vh - ${q ? "210" : "170"}px)`,
-          })}
+          {contentDisplay}
         </TabPanel>
         <TabPanel>{authorMatches}</TabPanel>
         <TabPanel>{classificationMatches}</TabPanel>

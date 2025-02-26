@@ -52,6 +52,7 @@ export default function Card({
   selectedCards,
   selectCallback,
   disableSelect = false,
+  idx = 1,
 }: {
   cardContent: CardContent;
   showOwnerName?: boolean;
@@ -66,18 +67,18 @@ export default function Card({
     name: string;
     checked: boolean;
     type: ContentType;
+    idx: number;
   }) => void;
   disableSelect?: boolean;
+  idx?: number;
 }) {
   const {
     contentId,
     name: title,
-    assignmentStatus = "Unassigned",
     isPublic,
     isShared,
     license,
     contentFeatures,
-    numVariants,
     type: contentType,
   } = cardContent.content;
 
@@ -85,14 +86,23 @@ export default function Card({
 
   const contentTypeName = contentTypeToName[contentType];
 
+  let numVariants = 1;
+  if (cardContent.content.type === "singleDoc") {
+    numVariants = cardContent.content.numVariants;
+  }
+
   if (contentType === "folder") {
     showAssignmentStatus = false;
   }
   let assignmentStatusString = "";
-  if (showAssignmentStatus && assignmentStatus !== "Unassigned") {
-    assignmentStatusString = assignmentStatus;
-    if (assignmentStatus === "Open" && closeTime !== undefined) {
-      assignmentStatusString = assignmentStatusString + " until " + closeTime;
+  if (showAssignmentStatus) {
+    const assignmentStatus =
+      cardContent.content.assignmentInfo?.assignmentStatus ?? "Unassigned";
+    if (assignmentStatus !== "Unassigned") {
+      assignmentStatusString = assignmentStatus;
+      if (assignmentStatus === "Open" && closeTime !== undefined) {
+        assignmentStatusString = assignmentStatusString + " until " + closeTime;
+      }
     }
   }
 
@@ -261,6 +271,7 @@ export default function Card({
   if (selectedCards) {
     selectCheckbox = (
       <Checkbox
+        data-test="Card Select"
         margin="5px"
         isDisabled={disableSelect}
         isChecked={selectedCards.includes(contentId)}
@@ -270,6 +281,7 @@ export default function Card({
             checked: e.target.checked,
             type: contentType,
             name: title,
+            idx,
           });
         }}
       ></Checkbox>
