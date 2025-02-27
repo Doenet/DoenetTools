@@ -61,7 +61,7 @@ export async function action({ request }) {
     return resultACM;
   }
 
-  const resultCC = copyContentAndReportFinishActions({ formObj });
+  const resultCC = await copyContentAndReportFinishActions({ formObj });
   if (resultCC) {
     return resultCC;
   }
@@ -130,6 +130,24 @@ export function SharedActivities() {
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
   const selectedCardsFiltered = selectedCards.filter((c) => c);
   const numSelected = selectedCardsFiltered.length;
+
+  useEffect(() => {
+    setSelectedCards((was) => {
+      let foundMissing = false;
+      const newList = content.map((c) => c.contentId);
+      for (const c of was.filter((x) => x)) {
+        if (!newList.includes(c.contentId)) {
+          foundMissing = true;
+          break;
+        }
+      }
+      if (foundMissing) {
+        return [];
+      } else {
+        return was;
+      }
+    });
+  }, [content]);
 
   useEffect(() => {
     document.title = parent
@@ -205,6 +223,7 @@ export function SharedActivities() {
           paddingTop="10px"
           noOfLines={1}
           height="46px"
+          data-test="Folder Heading"
         >
           {headingText}
         </Heading>

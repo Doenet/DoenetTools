@@ -74,6 +74,7 @@ export async function getRecentContent({
           id: true,
           name: true,
           type: true,
+          parent: { select: { id: true, type: true } },
         },
       },
     },
@@ -84,6 +85,9 @@ export async function getRecentContent({
     contentId: r.content.id,
     name: r.content.name,
     type: r.content.type,
+    parent: r.content.parent
+      ? { contentId: r.content.parent.id, type: r.content.parent.type }
+      : null,
   }));
 }
 

@@ -1,4 +1,4 @@
-describe("Activity panel tests", () => {
+describe("Move to parent tests", () => {
   it("Move items to parents", () => {
     cy.loginAsTestUser();
 

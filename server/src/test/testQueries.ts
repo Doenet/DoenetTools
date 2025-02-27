@@ -14,9 +14,7 @@ export async function addClassificationsByNames({
   contentId: Uint8Array;
   classifications: ClassificationByNames[];
 }) {
-  console.log("add classifications by names", { contentId, classifications });
   for (const classification of classifications) {
-    console.log("trying code", classification.code);
     const classificationId = (
       await prisma.classifications.findFirstOrThrow({
         select: {
@@ -41,14 +39,11 @@ export async function addClassificationsByNames({
       })
     ).id;
 
-    console.log({ classificationId });
-    const hmm = await prisma.contentClassifications.create({
+    await prisma.contentClassifications.create({
       data: {
         contentId: contentId,
         classificationId,
       },
     });
-
-    console.log(hmm);
   }
 }

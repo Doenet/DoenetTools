@@ -2,7 +2,7 @@ import React, { ReactElement } from "react";
 import { Text, Icon, Box, Flex, Wrap } from "@chakra-ui/react";
 import Card, { CardContent } from "./Card";
 import { MdInfoOutline } from "react-icons/md";
-import { ContentDescription, ContentType } from "../_utils/types";
+import { ContentDescription } from "../_utils/types";
 
 export default function CardList({
   content,
@@ -15,6 +15,7 @@ export default function CardList({
   selectedCards,
   setSelectedCards,
   disableSelectFor,
+  disableAsSelectedFor,
 }: {
   content: (
     | CardContent
@@ -34,6 +35,7 @@ export default function CardList({
   selectedCards?: ContentDescription[];
   setSelectedCards?: React.Dispatch<React.SetStateAction<ContentDescription[]>>;
   disableSelectFor?: string[];
+  disableAsSelectedFor?: string[];
 }) {
   const selectedCardsFiltered = selectedCards?.filter((s) => s);
 
@@ -84,18 +86,16 @@ export default function CardList({
         name,
         checked,
         type,
+        parent,
         idx,
-      }: {
-        contentId: string;
-        name: string;
+      }: ContentDescription & {
         checked: boolean;
-        type: ContentType;
         idx: number;
       }) {
         setSelectedCards((was) => {
           const arr = [...was];
           if (checked) {
-            arr[idx] = { contentId, name, type };
+            arr[idx] = { contentId, name, type, parent };
           } else {
             delete arr[idx];
           }
@@ -142,6 +142,9 @@ export default function CardList({
           }
           selectCallback={selectCallback}
           disableSelect={disableSelectFor?.includes(
+            cardContent.content.contentId,
+          )}
+          disableAsSelected={disableAsSelectedFor?.includes(
             cardContent.content.contentId,
           )}
           idx={idx}

@@ -18,7 +18,7 @@ import {
   useNavigate,
   useOutletContext,
 } from "react-router";
-import { ContentType } from "../../../_utils/types";
+import { ContentDescription } from "../../../_utils/types";
 import { contentTypeToName } from "../../../_utils/activity";
 import { SiteContext } from "../Paths/SiteHeader";
 
@@ -82,7 +82,7 @@ export function CopyContentAndReportFinish({
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
   contentIds: string[];
-  desiredParent: { contentId: string; name: string; type: ContentType } | null;
+  desiredParent: ContentDescription | null;
   action: "Copy" | "Add";
   copyToLibrary?: boolean;
 }) {
@@ -144,6 +144,14 @@ export function CopyContentAndReportFinish({
     if (desiredParent.type === "folder") {
       destinationAction = "Go to folder";
       destinationUrl = `/activities/${user?.userId}/${desiredParent.contentId}`;
+    } else if (
+      desiredParent.type === "select" &&
+      desiredParent.parent?.type === "sequence"
+    ) {
+      // if we have a Question Bank whose parent is a Problem Set,
+      // then we don't display the Question Bank by itself, just embedded in the Problem Set
+      destinationAction = `Open containing problem set`;
+      destinationUrl = `/activityEditor/${desiredParent.parent.contentId}`;
     } else {
       destinationAction = `Open ${typeName}`;
       destinationUrl = `/activityEditor/${desiredParent.contentId}`;

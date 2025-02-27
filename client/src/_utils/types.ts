@@ -243,6 +243,7 @@ export type ContentDescription = {
   contentId: string;
   name: string;
   type: ContentType;
+  parent: { contentId: string; type: ContentType } | null;
 };
 
 export function isContentDescription(obj: unknown): obj is ContentDescription {
@@ -252,6 +253,12 @@ export function isContentDescription(obj: unknown): obj is ContentDescription {
     typeof typedObj === "object" &&
     typeof typedObj.contentId === "string" &&
     typeof typedObj.name === "string" &&
-    ["singleDoc", "folder", "sequence", "select"].includes(typedObj.type)
+    ["singleDoc", "folder", "sequence", "select"].includes(typedObj.type) &&
+    (typedObj.parent === null ||
+      (typeof typedObj.parent === "object" &&
+        typeof typedObj.parent.contentId === "string" &&
+        ["singleDoc", "folder", "sequence", "select"].includes(
+          typedObj.parent.type,
+        )))
   );
 }

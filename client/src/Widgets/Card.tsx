@@ -20,7 +20,7 @@ import {
   Checkbox,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
-import { Content, ContentType } from "../_utils/types";
+import { Content, ContentDescription } from "../_utils/types";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { BsPeople } from "react-icons/bs";
 import {
@@ -52,6 +52,7 @@ export default function Card({
   selectedCards,
   selectCallback,
   disableSelect = false,
+  disableAsSelected = false,
   idx = 1,
 }: {
   cardContent: CardContent;
@@ -62,14 +63,14 @@ export default function Card({
   listView?: boolean;
   indentLevel?: number;
   selectedCards?: string[];
-  selectCallback?: (arg: {
-    contentId: string;
-    name: string;
-    checked: boolean;
-    type: ContentType;
-    idx: number;
-  }) => void;
+  selectCallback?: (
+    arg: ContentDescription & {
+      checked: boolean;
+      idx: number;
+    },
+  ) => void;
   disableSelect?: boolean;
+  disableAsSelected?: boolean;
   idx?: number;
 }) {
   const {
@@ -80,6 +81,7 @@ export default function Card({
     license,
     contentFeatures,
     type: contentType,
+    parent,
   } = cardContent.content;
 
   const { menuItems, closeTime, cardLink, ownerName } = cardContent;
@@ -124,7 +126,7 @@ export default function Card({
   }
 
   const titleDisplay = (
-    <Tooltip label={title}>
+    <Tooltip label={title} placement="bottom-start">
       <Text noOfLines={1}>{title}</Text>
     </Tooltip>
   );
@@ -273,14 +275,15 @@ export default function Card({
       <Checkbox
         data-test="Card Select"
         margin="5px"
-        isDisabled={disableSelect}
-        isChecked={selectedCards.includes(contentId)}
+        isDisabled={disableSelect || disableAsSelected}
+        isChecked={selectedCards.includes(contentId) || disableAsSelected}
         onChange={(e) => {
           selectCallback?.({
             contentId,
             checked: e.target.checked,
             type: contentType,
             name: title,
+            parent,
             idx,
           });
         }}

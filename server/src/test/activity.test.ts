@@ -937,7 +937,7 @@ test("getActivitySource gets source", async () => {
   expect(activitySource.source).eq("some content");
 });
 
-test("getContentDescription gets name and type", async () => {
+test("getContentDescription gets name, type, and parent type", async () => {
   const { userId: ownerId } = await createTestUser();
 
   const { contentId: contentId } = await createContent({
@@ -959,6 +959,7 @@ test("getContentDescription gets name and type", async () => {
     contentId: contentId,
     name: "Activity 1",
     type: "singleDoc",
+    parent: null,
   });
 
   const { contentId: folderId } = await createContent({
@@ -980,12 +981,13 @@ test("getContentDescription gets name and type", async () => {
     contentId: folderId,
     name: "Folder 2",
     type: "folder",
+    parent: null,
   });
 
   const { contentId: sequenceId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "sequence",
-    parentId: null,
+    parentId: folderId,
   });
   await updateContent({
     contentId: sequenceId,
@@ -1001,12 +1003,13 @@ test("getContentDescription gets name and type", async () => {
     contentId: sequenceId,
     name: "Sequence 3",
     type: "sequence",
+    parent: { type: "folder", contentId: folderId },
   });
 
   const { contentId: selectId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "select",
-    parentId: null,
+    parentId: sequenceId,
   });
   await updateContent({
     contentId: selectId,
@@ -1022,6 +1025,7 @@ test("getContentDescription gets name and type", async () => {
     contentId: selectId,
     name: "Select 4",
     type: "select",
+    parent: { type: "sequence", contentId: sequenceId },
   });
 
   const { userId: userId } = await createTestUser();
@@ -1045,6 +1049,7 @@ test("getContentDescription gets name and type", async () => {
     contentId: selectId,
     name: "Select 4",
     type: "select",
+    parent: { type: "sequence", contentId: sequenceId },
   });
 });
 

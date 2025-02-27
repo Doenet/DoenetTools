@@ -35,7 +35,7 @@ export async function addContentToMenuActions({
     return resultMC;
   }
 
-  const resultCC = copyContentAndReportFinishActions({ formObj });
+  const resultCC = await copyContentAndReportFinishActions({ formObj });
   if (resultCC) {
     return resultCC;
   }

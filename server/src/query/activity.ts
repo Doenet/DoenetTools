@@ -327,10 +327,18 @@ export async function getContentDescription({
       id: contentId,
       ...filterViewableContent(loggedInUserId, isAdmin),
     },
-    select: { name: true, type: true },
+    select: {
+      name: true,
+      type: true,
+      parent: { select: { type: true, id: true } },
+    },
   });
 
-  return { contentId, ...description };
+  const parent = description.parent
+    ? { type: description.parent.type, contentId: description.parent.id }
+    : null;
+
+  return { contentId, ...description, parent };
 }
 
 /**

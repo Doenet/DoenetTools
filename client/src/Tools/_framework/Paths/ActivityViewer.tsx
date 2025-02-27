@@ -87,7 +87,7 @@ export async function action({ request }) {
     return resultACM;
   }
 
-  const resultCC = copyContentAndReportFinishActions({ formObj });
+  const resultCC = await copyContentAndReportFinishActions({ formObj });
   if (resultCC) {
     return resultCC;
   }

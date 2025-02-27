@@ -28,7 +28,7 @@ import "cypress-wait-until";
 import "cypress-file-upload";
 import "cypress-iframe";
 
-import type { ContentType } from "../../src/_utils/types";
+import type { ContentType, UserInfo } from "../../src/_utils/types";
 
 declare global {
   namespace Cypress {
@@ -73,6 +73,11 @@ declare global {
         publishInLibrary?: boolean;
         parentId?: string;
       }): Chainable<string>;
+
+      /**
+       * Custom command to get info on logged in user
+       */
+      getUserInfo(): Chainable<UserInfo>;
     }
   }
 }
@@ -206,3 +211,13 @@ Cypress.Commands.add(
     });
   },
 );
+
+Cypress.Commands.add("getUserInfo", () => {
+  cy.request({
+    method: "GET",
+    url: "/api/user/getUser",
+  }).then((resp) => {
+    const user = resp.body.user;
+    return user;
+  });
+});

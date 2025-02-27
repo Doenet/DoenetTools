@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   AssignmentStatus,
   ContentDescription,
@@ -78,7 +78,7 @@ export async function compoundActivityEditorActions(
     return resultDM;
   }
 
-  const resultCC = copyContentAndReportFinishActions({ formObj });
+  const resultCC = await copyContentAndReportFinishActions({ formObj });
   if (resultCC) {
     return resultCC;
   }
@@ -166,6 +166,8 @@ export function CompoundActivityEditor({
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
   const selectedCardsFiltered = selectedCards.filter((c) => c);
   const numSelected = selectedCardsFiltered.length;
+
+  const [disableAsSelected, setDisableAsSelected] = useState<string[]>([]);
 
   const [haveContentSpinner, setHaveContentSpinner] = useState(false);
 
@@ -265,7 +267,7 @@ export function CompoundActivityEditor({
     }
   }
 
-  const numCards = countCards(activity);
+  const numCards = useMemo(() => countCards(activity), [activity]);
 
   let idx = 0;
 
@@ -296,6 +298,7 @@ export function CompoundActivityEditor({
 
     // skip the first activity, which doesn't have parent info
     if (parentInfo) {
+      // Calculate the destination for the "Move Up" and "Move Down" actions
       let nextPositionUp: { parent: string; position: number } | null;
       let nextPositionDown: { parent: string; position: number } | null;
 
@@ -349,7 +352,7 @@ export function CompoundActivityEditor({
           position: parentInfo.positionInParent + 1,
         };
       } else {
-        // last in parent of initial
+        // last in initial parent
         nextPositionDown = null;
       }
 
@@ -403,7 +406,94 @@ export function CompoundActivityEditor({
     return cards;
   }
 
-  const cardContent = createCardContent(activity);
+  const cardContent = useMemo(() => createCardContent(activity), [activity]);
+
+  type ContentRelationships = { descendants: string[]; parent: string | null };
+
+  function extractContentById(
+    content: Content,
+    skipParent: string,
+  ): Record<string, ContentRelationships> {
+    const byId: Record<string, ContentRelationships> = {};
+
+    let children: string[] = [];
+
+    if (content.type !== "singleDoc") {
+      children = content.children.map((c) => c.contentId);
+
+      for (const child of content.children) {
+        Object.assign(byId, extractContentById(child, skipParent));
+      }
+    }
+
+    if (content.contentId !== skipParent) {
+      byId[content.contentId] = {
+        descendants: [
+          ...children,
+          ...children.flatMap((id) => byId[id].descendants),
+        ],
+        parent:
+          content.parent!.contentId === skipParent
+            ? null
+            : content.parent!.contentId,
+      };
+    }
+    return byId;
+  }
+
+  const contentById = useMemo(
+    () => extractContentById(activity, activity.contentId),
+    [activity],
+  );
+
+  useEffect(() => {
+    // normalize selected cards
+    const toDisable: string[] = [];
+    const toDeselect: number[] = [];
+    for (const [idx, card] of selectedCards.entries()) {
+      if (card) {
+        const descendants = contentById[card.contentId].descendants;
+        toDisable.push(...descendants);
+        if (toDisable.includes(card.contentId)) {
+          toDeselect.push(idx);
+        }
+      }
+    }
+
+    if (
+      toDisable.length !== disableAsSelected.length ||
+      toDisable.some((v, i) => v !== disableAsSelected[i])
+    ) {
+      setDisableAsSelected(toDisable);
+    }
+    if (toDeselect.length > 0) {
+      setSelectedCards((was) => {
+        const arr = [...was];
+        for (const idx of toDeselect) {
+          delete arr[idx];
+        }
+        return arr;
+      });
+    }
+  }, [selectedCards]);
+
+  useEffect(() => {
+    setSelectedCards((was) => {
+      let foundMissing = false;
+      const newList = Object.keys(contentById);
+      for (const c of was.filter((x) => x)) {
+        if (!newList.includes(c.contentId)) {
+          foundMissing = true;
+          break;
+        }
+      }
+      if (foundMissing) {
+        return [];
+      } else {
+        return was;
+      }
+    });
+  }, [contentById]);
 
   function getCardMenuList({
     contentId,
@@ -551,6 +641,7 @@ export function CompoundActivityEditor({
       selectedCards={user ? selectedCards : undefined}
       setSelectedCards={setSelectedCards}
       disableSelectFor={addTo ? [addTo.contentId] : undefined}
+      disableAsSelectedFor={disableAsSelected}
     />
   );
 

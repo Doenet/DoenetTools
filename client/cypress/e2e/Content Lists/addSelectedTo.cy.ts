@@ -334,7 +334,7 @@ describe("Add selected to tests", () => {
     cy.get(`[data-test="Content Card"]`).should("have.length", 5);
   });
 
-  it.only("Copy multiple selected from My Activities", () => {
+  it("Copy multiple selected from My Activities", () => {
     createInitialSetup();
 
     cy.visit("/");
@@ -538,7 +538,7 @@ describe("Add selected to tests", () => {
     cy.get('[data-test="Back Link"]').click();
     cy.get(`[data-test="Content Card"]`).should("have.length", 5);
 
-    cy.log("Cannot move Folder 2 into self or a descendant");
+    cy.log("Cannot move Folder 1 into self or a descendant");
 
     cy.get(`[data-test="Content Card"]`)
       .eq(3)

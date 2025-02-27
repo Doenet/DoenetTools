@@ -319,7 +319,6 @@ test("copy folder 2", async () => {
     }
     expect(folderResults.content.length).eq(2);
 
-    console.log(folderResults.content);
     expect(folderResults.content[0].name).eq(
       isEqualUUID(userId, ownerId) ? "Base folder" : "Placeholder folder",
     );

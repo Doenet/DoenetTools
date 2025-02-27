@@ -85,7 +85,7 @@ export async function action({ request }) {
     return resultACM;
   }
 
-  const resultCC = copyContentAndReportFinishActions({ formObj });
+  const resultCC = await copyContentAndReportFinishActions({ formObj });
   if (resultCC) {
     return resultCC;
   }
@@ -339,7 +339,7 @@ export function Explore() {
   useEffect(() => {
     setSelectedCards((was) => {
       let foundMissing = false;
-      const newList = content.map((c) => c.contentId);
+      const newList = [...content, ...curatedContent].map((c) => c.contentId);
       if (trendingContent) {
         newList.push(...trendingContent.map((c) => c.contentId));
       }
@@ -355,7 +355,7 @@ export function Explore() {
         return was;
       }
     });
-  }, [content, trendingContent]);
+  }, [content, trendingContent, curatedContent]);
 
   const curatedContentDisplay = useMemo(
     () =>
@@ -935,7 +935,7 @@ export function Explore() {
         </TabPanel>
         <TabPanel padding={0} data-test="Community Results">
           {trendingContent ? (
-            <>
+            <Box data-test="Trending List">
               <Heading
                 size="md"
                 paddingLeft="10px"
@@ -946,7 +946,10 @@ export function Explore() {
                 Trending
               </Heading>
               {trendingContentDisplay}
-
+            </Box>
+          ) : null}
+          <Box data-test="Content List">
+            {trendingContent ? (
               <Heading
                 size="md"
                 paddingLeft="10px"
@@ -956,9 +959,9 @@ export function Explore() {
               >
                 Recent
               </Heading>
-            </>
-          ) : null}
-          {contentDisplay}
+            ) : null}
+            {contentDisplay}
+          </Box>
         </TabPanel>
         <TabPanel>{authorMatches}</TabPanel>
         <TabPanel>{classificationMatches}</TabPanel>
