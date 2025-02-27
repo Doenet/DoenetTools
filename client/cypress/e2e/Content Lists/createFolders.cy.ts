@@ -28,7 +28,7 @@ describe("Create Folders Tests", function () {
     cy.get('[data-test="Activities"]').click();
     cy.get('[data-test="New Button"]').click();
     cy.get('[data-test="Add Folder Button"]').click();
-    cy.get('[data-test="New Folder Input"]').type("My new folder{enter}");
+    cy.get('[data-test="New Content Input"]').type("My new folder{enter}");
     cy.get('[data-test="Content Card"]').click();
 
     cy.get('[data-test="Folder Heading"]').should(
@@ -38,13 +38,13 @@ describe("Create Folders Tests", function () {
 
     cy.get('[data-test="New Button"]').click();
     cy.get('[data-test="Add Folder Button"]').click();
-    cy.get('[data-test="New Folder Input"]').type(
+    cy.get('[data-test="New Content Input"]').type(
       `Private folder${code}{enter}`,
     );
 
     cy.get('[data-test="New Button"]').click();
     cy.get('[data-test="Add Folder Button"]').click();
-    cy.get('[data-test="New Folder Input"]').type(
+    cy.get('[data-test="New Content Input"]').type(
       `Shared folder${code}{enter}`,
     );
 

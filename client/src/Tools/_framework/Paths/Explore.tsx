@@ -139,7 +139,9 @@ export async function loader({ params, request }) {
 
   if (addToId) {
     try {
-      const { data } = await axios.get(`/api/getContentDescription/${addToId}`);
+      const { data } = await axios.get(
+        `/api/info/getContentDescription/${addToId}`,
+      );
       addTo = data;
     } catch (_e) {
       console.error(`Could not get description of ${addToId}`);
@@ -384,13 +386,13 @@ export function Explore() {
     matches: Content[],
     minHeight?: string | { base: string; lg: string },
   ) {
-    const addToParams = addTo ? `?addTo=${addTo.contentId}` : "";
+    const addToURLParams = addTo ? `?addTo=${addTo.contentId}` : "";
     const cardContent: CardContent[] = matches.map((itemObj) => {
       const { contentId, owner, type: contentType } = itemObj;
       const cardLink =
         contentType === "folder" && owner != undefined
-          ? `/sharedActivities/${owner.userId}/${contentId}${addToParams}`
-          : `/activityViewer/${contentId}${addToParams}`;
+          ? `/sharedActivities/${owner.userId}/${contentId}${addToURLParams}`
+          : `/activityViewer/${contentId}${addToURLParams}`;
 
       const menuItems = (
         <MenuItem
@@ -486,6 +488,7 @@ export function Explore() {
                   </Tooltip>
                   <Tooltip label={`Filter by ${authorName}`} openDelay={500}>
                     <Button
+                      data-test="Filter By Matched Author"
                       rightIcon={<MdFilterAlt />}
                       size="xs"
                       marginLeft="10px"
@@ -857,6 +860,7 @@ export function Explore() {
               </HStack>
               {addTo !== undefined ? (
                 <Button
+                  data-test="Add Selected To Button"
                   hidden={addTo === undefined}
                   size="xs"
                   colorScheme="blue"
@@ -864,7 +868,7 @@ export function Explore() {
                     copyDialogOnOpen();
                   }}
                 >
-                  Add selected to {menuIcons[addTo.type]}
+                  Add selected to: {menuIcons[addTo.type]}
                   <strong>
                     {addTo.name.substring(0, 10)}
                     {addTo.name.length > 10 ? "..." : ""}

@@ -52,9 +52,9 @@ import {
 } from "../ToolPanels/ToggleViewButtonGroup";
 import { getAllowedParentTypes } from "../../../_utils/activity";
 import {
-  CreateFolderModal,
-  createFolderModalActions,
-} from "../ToolPanels/CreateFolderModal";
+  CreateLocalContentModal,
+  createLocalContentModalActions,
+} from "../ToolPanels/CreateLocalContentModal";
 import { CurateDrawer, curateDrawerActions } from "../ToolPanels/CurateDrawer";
 
 export async function action({ request }) {
@@ -81,7 +81,7 @@ export async function action({ request }) {
     return resultTLV;
   }
 
-  const resultCF = await createFolderModalActions({ formObj });
+  const resultCF = await createLocalContentModalActions({ formObj });
   if (resultCF) {
     return resultCF;
   }
@@ -470,11 +470,12 @@ export function Curation() {
     />
   );
 
-  const createFolderModal = (
-    <CreateFolderModal
+  const createLocalContentModal = (
+    <CreateLocalContentModal
       isOpen={createFolderIsOpen}
       onClose={createFolderOnClose}
-      parentFolder={folderId}
+      contentType="folder"
+      parentId={folderId}
       fetcher={fetcher}
       finalFocusRef={finalFocusRef}
     />
@@ -673,7 +674,7 @@ export function Curation() {
       {settingsDrawer}
       {curateDrawer}
       {moveCopyContentModal}
-      {createFolderModal}
+      {createLocalContentModal}
 
       {heading}
 

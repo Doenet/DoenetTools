@@ -110,7 +110,9 @@ export async function loader({ params, request }) {
 
   if (addToId) {
     try {
-      const { data } = await axios.get(`/api/getContentDescription/${addToId}`);
+      const { data } = await axios.get(
+        `/api/info/getContentDescription/${addToId}`,
+      );
       addTo = data;
     } catch (_e) {
       console.error(`Could not get description of ${addToId}`);
@@ -350,6 +352,7 @@ export function ActivityViewer() {
         </MenuButton>
         <MenuList>
           <MenuItem
+            data-test="Add To Selected"
             onClick={() => {
               copyDialogOnOpen();
             }}
@@ -461,7 +464,12 @@ export function ActivityViewer() {
               <GridItem area="label">
                 <Flex justifyContent="center" alignItems="center">
                   {typeIcon}
-                  <Text fontSize="1.4em" fontWeight="bold" noOfLines={1}>
+                  <Text
+                    fontSize="1.4em"
+                    fontWeight="bold"
+                    noOfLines={1}
+                    data-test="Activity Name"
+                  >
                     {activityData.name}
                   </Text>
 

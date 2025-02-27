@@ -47,6 +47,7 @@ import {
   Content,
   DoenetmlVersion,
   License,
+  ContentDescription,
 } from "../../../_utils/types";
 import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
 import {
@@ -114,7 +115,7 @@ export async function action({ params, request }) {
   return null;
 }
 
-export async function loader({ params }) {
+export async function loader({ params, request }) {
   const {
     data: { editableByMe, activity: activityData, availableFeatures },
   } = await axios.get(
@@ -126,6 +127,21 @@ export async function loader({ params }) {
   }
 
   const contentId = params.contentId;
+
+  const url = new URL(request.url);
+  const addToId = url.searchParams.get("addTo");
+  let addTo: ContentDescription | undefined = undefined;
+
+  if (addToId) {
+    try {
+      const { data } = await axios.get(
+        `/api/info/getContentDescription/${addToId}`,
+      );
+      addTo = data;
+    } catch (_e) {
+      console.error(`Could not get description of ${addToId}`);
+    }
+  }
 
   // const supportingFileResp = await axios.get(
   //   `/api/loadSupportingFileInfo/${contentId}`,
@@ -164,6 +180,7 @@ export async function loader({ params }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
+      addTo,
     };
   } else {
     const activityJson = compileActivityFromContent(activityData);
@@ -178,6 +195,7 @@ export async function loader({ params }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
+      addTo,
     };
   }
 }
@@ -238,6 +256,7 @@ export function ActivityEditor() {
     allLicenses: License[];
     availableFeatures: ContentFeature[];
     activityData: Content;
+    addTo: ContentDescription | undefined;
   } & (
     | {
         type: "singleDoc";
@@ -256,6 +275,7 @@ export function ActivityEditor() {
     allDoenetmlVersions,
     allLicenses,
     availableFeatures,
+    addTo,
   } = data;
 
   const finalFocusRef = useRef<HTMLElement | null>(null);
@@ -378,6 +398,7 @@ export function ActivityEditor() {
         setSettingsDisplayTab={setSettingsDisplayTab}
         setHighlightRename={setHighlightRename}
         headerHeight={`${readOnly ? 120 : 80}px`}
+        addTo={addTo}
       />
     );
   }

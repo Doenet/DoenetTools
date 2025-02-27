@@ -63,11 +63,11 @@ describe("My Activities Tests", function () {
     cy.log("create folder");
     cy.get('[data-test="New Button"]').click();
     cy.get('[data-test="Add Folder Button"]').click();
-    cy.get('[data-test="New Folder Input"]').should(
+    cy.get('[data-test="New Content Input"]').should(
       "have.value",
       "Untitled Folder",
     );
-    cy.get('[data-test="New Folder Input"]').type("Folder 1{enter}");
+    cy.get('[data-test="New Content Input"]').type("Folder 1{enter}");
     cy.get(`[data-test="Content Card"]`).should("have.length", 4);
     cy.get(`[data-test="Content Card"]`)
       .eq(0)

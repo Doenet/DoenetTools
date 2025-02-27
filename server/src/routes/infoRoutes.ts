@@ -51,7 +51,7 @@ infoRouter.get(
 );
 
 infoRouter.get(
-  "/getContentDescription",
+  "/getContentDescription/:contentId",
   queryOptionalLoggedIn(getContentDescription, contentIdSchema),
 );
 

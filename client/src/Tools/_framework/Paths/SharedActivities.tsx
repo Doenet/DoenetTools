@@ -157,6 +157,8 @@ export function SharedActivities() {
 
   const fetcher = useFetcher();
 
+  const addToURLParams = addTo ? `?addTo=${addTo.contentId}` : "";
+
   const [infoContentId, setInfoContentId] = useState<string | null>(null);
 
   const {
@@ -278,6 +280,7 @@ export function SharedActivities() {
             </HStack>
             {addTo !== undefined ? (
               <Button
+                data-test="Add Selected To Button"
                 hidden={addTo === undefined}
                 size="xs"
                 colorScheme="blue"
@@ -285,7 +288,7 @@ export function SharedActivities() {
                   copyDialogOnOpen();
                 }}
               >
-                Add selected to {menuIcons[addTo.type]}
+                Add selected to: {menuIcons[addTo.type]}
                 <strong>
                   {addTo.name.substring(0, 10)}
                   {addTo.name.length > 10 ? "..." : ""}
@@ -299,7 +302,7 @@ export function SharedActivities() {
       <Flex marginRight=".5em" alignItems="center" paddingLeft="15px">
         {parent ? (
           <Link
-            to={`/sharedActivities/${ownerId}${parent.parent ? "/" + parent.parent.contentId : ""}`}
+            to={`/sharedActivities/${ownerId}${parent.parent ? "/" + parent.parent.contentId : ""}${addToURLParams}`}
             style={{
               color: "var(--mainBlue)",
             }}
@@ -321,7 +324,6 @@ export function SharedActivities() {
     </Box>
   );
 
-  const addToParams = addTo ? `?addTo=${addTo.contentId}` : "";
   const cardContent: CardContent[] = content.map((activity) => {
     const contentType = activity.type === "folder" ? "Folder" : "Activity";
 
@@ -341,8 +343,8 @@ export function SharedActivities() {
       content: activity,
       cardLink:
         activity.type == "folder"
-          ? `/sharedActivities/${activity.ownerId}/${activity.contentId}${addToParams}`
-          : `/activityViewer/${activity.contentId}${addToParams}`,
+          ? `/sharedActivities/${activity.ownerId}/${activity.contentId}${addToURLParams}`
+          : `/activityViewer/${activity.contentId}${addToURLParams}`,
       menuItems,
     };
   });

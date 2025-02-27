@@ -1009,7 +1009,7 @@ describe("Add selected to tests", () => {
       .should("contain.text", "Document FQ21");
   });
 
-  it.only("Copy selected from Activity Viewer", () => {
+  it("Copy selected from Activity Viewer", () => {
     createInitialSetup();
 
     cy.getUserInfo().then((user) => {

@@ -55,6 +55,10 @@ import {
 } from "./CreateContentMenu";
 import { AddContentToMenu } from "./AddContentToMenu";
 import { DeleteModal, deleteModalActions } from "./DeleteModal";
+import {
+  CreateLocalContentModal,
+  createLocalContentModalActions,
+} from "./CreateLocalContentModal";
 
 export async function compoundActivityEditorActions(
   {
@@ -86,6 +90,11 @@ export async function compoundActivityEditorActions(
   const resultCCM = await createContentMenuActions({ formObj });
   if (resultCCM) {
     return resultCCM;
+  }
+
+  const resultCF = await createLocalContentModalActions({ formObj });
+  if (resultCF) {
+    return resultCF;
   }
 
   if (formObj?._action == "Add Activity") {
@@ -248,6 +257,23 @@ export function CompoundActivityEditor({
       finalFocusRef={finalFocusRef}
     />
   ) : null;
+
+  const {
+    isOpen: createQuestionBankIsOpen,
+    onOpen: createQuestionBankOnOpen,
+    onClose: createQuestionBankOnClose,
+  } = useDisclosure();
+
+  const createQuestionBankModal = (
+    <CreateLocalContentModal
+      isOpen={createQuestionBankIsOpen}
+      onClose={createQuestionBankOnClose}
+      contentType="select"
+      parentId={activity.contentId}
+      fetcher={fetcher}
+      finalFocusRef={finalFocusRef}
+    />
+  );
 
   function countCards(content: Content, init = true): number {
     const childCounts =
@@ -674,6 +700,9 @@ export function CompoundActivityEditor({
     parentLink = `/activities/${user?.userId}`;
   }
 
+  const addToURLParams = addTo ? `?addTo=${addTo.contentId}` : "";
+  parentLink += addToURLParams;
+
   const heading = (
     <Flex
       backgroundColor="#fff"
@@ -746,6 +775,7 @@ export function CompoundActivityEditor({
           </HStack>
           {addTo !== undefined ? (
             <Button
+              data-test="Add Selected To Button"
               hidden={addTo === undefined}
               size="xs"
               colorScheme="blue"
@@ -753,7 +783,7 @@ export function CompoundActivityEditor({
                 copyDialogOnOpen();
               }}
             >
-              Add selected to {menuIcons[addTo.type]}
+              Add selected to: {menuIcons[addTo.type]}
               <strong>
                 {addTo.name.substring(0, 10)}
                 {addTo.name.length > 10 ? "..." : ""}
@@ -791,11 +821,7 @@ export function CompoundActivityEditor({
             <MenuItem
               data-test="Add Question Bank Button"
               onClick={async () => {
-                setHaveContentSpinner(true);
-                fetcher.submit(
-                  { _action: "Add Activity", type: "select" },
-                  { method: "post" },
-                );
+                createQuestionBankOnOpen();
               }}
             >
               Empty Question Bank
@@ -829,6 +855,7 @@ export function CompoundActivityEditor({
       {moveContentModal}
       {copyContentModal}
       {deleteModal}
+      {createQuestionBankModal}
       {mode === "Edit" ? (
         <>
           {heading}

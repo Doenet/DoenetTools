@@ -69,9 +69,9 @@ import {
   menuIcons,
 } from "../../../_utils/activity";
 import {
-  CreateFolderModal,
-  createFolderModalActions,
-} from "../ToolPanels/CreateFolderModal";
+  CreateLocalContentModal,
+  createLocalContentModalActions,
+} from "../ToolPanels/CreateLocalContentModal";
 import { DeleteModal, deleteModalActions } from "../ToolPanels/DeleteModal";
 import {
   AddContentToMenu,
@@ -111,7 +111,7 @@ export async function action({ request, params }) {
     return resultTLV;
   }
 
-  const resultCF = await createFolderModalActions({ formObj });
+  const resultCF = await createLocalContentModalActions({ formObj });
   if (resultCF) {
     return resultCF;
   }
@@ -190,7 +190,9 @@ export async function loader({ params, request }) {
 
   if (addToId) {
     try {
-      const { data } = await axios.get(`/api/getContentDescription/${addToId}`);
+      const { data } = await axios.get(
+        `/api/info/getContentDescription/${addToId}`,
+      );
       addTo = data;
     } catch (_e) {
       console.error(`Could not get description of ${addToId}`);
@@ -353,6 +355,8 @@ export function Activities() {
   }, []);
 
   const fetcher = useFetcher();
+
+  const addToURLParams = addTo ? `?addTo=${addTo.contentId}` : "";
 
   function getCardMenuList({
     contentId,
@@ -608,10 +612,11 @@ export function Activities() {
   );
 
   const createFolderModal = (
-    <CreateFolderModal
+    <CreateLocalContentModal
       isOpen={createFolderIsOpen}
       onClose={createFolderOnClose}
-      parentFolder={parentId}
+      contentType="folder"
+      parentId={parentId}
       fetcher={fetcher}
       finalFocusRef={finalFocusRef}
     />
@@ -683,19 +688,24 @@ export function Activities() {
             {addTo !== undefined ? (
               <HStack hidden={numSelected > 0}>
                 <CloseButton
+                  data-test="Stop Adding Items"
                   size="sm"
                   onClick={() => {
                     navigate(`.`);
                   }}
                 />{" "}
-                <Text noOfLines={1}>
+                <Text noOfLines={1} data-test="Adding Items Message">
                   Adding items to: {menuIcons[addTo.type]}
                   <strong>{addTo.name}</strong>
                 </Text>
               </HStack>
             ) : null}
             <HStack hidden={numSelected === 0}>
-              <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
+              <CloseButton
+                data-test="Clear Selection"
+                size="sm"
+                onClick={() => setSelectedCards([])}
+              />{" "}
               <Text>{numSelected} selected</Text>
               <HStack hidden={addTo !== undefined}>
                 <AddContentToMenu
@@ -715,6 +725,7 @@ export function Activities() {
               </HStack>
               {addTo !== undefined ? (
                 <Button
+                  data-test="Add Selected To Button"
                   hidden={addTo === undefined}
                   size="xs"
                   colorScheme="blue"
@@ -722,7 +733,7 @@ export function Activities() {
                     copyDialogOnOpen();
                   }}
                 >
-                  Add selected to {menuIcons[addTo.type]}
+                  Add selected to: {menuIcons[addTo.type]}
                   <strong>
                     {addTo.name.substring(0, 10)}
                     {addTo.name.length > 10 ? "..." : ""}
@@ -882,7 +893,7 @@ export function Activities() {
             <Box>
               <Link
                 data-test="Back Link"
-                to={`/activities/${userId}${parent.parent ? "/" + parent.parent.contentId : ""}`}
+                to={`/activities/${userId}${parent.parent ? "/" + parent.parent.contentId : ""}${addToURLParams}`}
                 style={{
                   color: "var(--mainBlue)",
                 }}
@@ -962,8 +973,8 @@ export function Activities() {
       }),
       cardLink:
         activity.type === "folder"
-          ? `/activities/${activity.ownerId}/${activity.contentId}`
-          : `/activityEditor/${activity.contentId}`,
+          ? `/activities/${activity.ownerId}/${activity.contentId}${addToURLParams}`
+          : `/activityEditor/${activity.contentId}${addToURLParams}`,
     };
   });
 
