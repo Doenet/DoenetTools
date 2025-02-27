@@ -302,10 +302,10 @@ describe("My Activities Tests", function () {
           parentId: folderId,
         }).then((selectId) => {
           cy.createContent({
-            name: "Document FPQ21",
+            name: "Document FQ21",
             contentType: "singleDoc",
             parentId: selectId,
-            doenetML: "Hi FPQ21",
+            doenetML: "Hi FQ21",
           });
         });
       },
@@ -404,7 +404,7 @@ describe("My Activities Tests", function () {
     cy.get(`[data-test="Content Card"]`).should("have.length", 1);
     cy.get(`[data-test="Content Card"]`)
       .eq(0)
-      .should("contain.text", "Document FPQ21");
+      .should("contain.text", "Document FQ21");
 
     cy.get('[data-test="Back Link"]').click();
     cy.get(`[data-test="Content Card"]`).should("have.length", 4);

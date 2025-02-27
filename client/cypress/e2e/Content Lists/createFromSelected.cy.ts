@@ -96,10 +96,10 @@ describe("Create from selected tests", () => {
         parentId: folderId,
       }).then((selectId) => {
         cy.createContent({
-          name: "Document FPQ21",
+          name: "Document FQ21",
           contentType: "singleDoc",
           parentId: selectId,
-          doenetML: "Hi FPQ21",
+          doenetML: "Hi FQ21",
         });
       });
     });
@@ -298,7 +298,7 @@ describe("Create from selected tests", () => {
     cy.get(`[data-test="Content Card"]`).should("have.length", 1);
     cy.get(`[data-test="Content Card"]`)
       .eq(0)
-      .should("contain.text", "Document FPQ21");
+      .should("contain.text", "Document FQ21");
   });
 
   it("Create from Compound Activity Editor", () => {
@@ -359,7 +359,7 @@ describe("Create from selected tests", () => {
       cy.visit(`/explore?author=${user.userId}`);
 
       cy.log(
-        "Copy Document FPQ21, Question Bank F2 and Problem Set 1 into new Problem Set",
+        "Copy Document FQ21, Question Bank F2 and Problem Set 1 into new Problem Set",
       );
       cy.get('[data-test="Content List"] [data-test="Card Select"]')
         .eq(1)
@@ -388,13 +388,13 @@ describe("Create from selected tests", () => {
       cy.get(`[data-test="Content Card"]`).should("have.length", 7);
       cy.get(`[data-test="Content Card"]`)
         .eq(0)
-        .should("contain.text", "Document FPQ21");
+        .should("contain.text", "Document FQ21");
       cy.get(`[data-test="Content Card"]`)
         .eq(1)
         .should("contain.text", "Question Bank F2");
       cy.get(`[data-test="Content Card"]`)
         .eq(2)
-        .should("contain.text", "Document FPQ21");
+        .should("contain.text", "Document FQ21");
       cy.get(`[data-test="Content Card"]`)
         .eq(3)
         .should("contain.text", "Document P1");
@@ -423,51 +423,48 @@ describe("Create from selected tests", () => {
     cy.getUserInfo().then((user) => {
       cy.loginAsTestUser();
 
-      cy.log("Go to explore page filtered by owner of initial content created");
-      cy.visit(`/explore?author=${user.userId}`);
-
-      cy.log(
-        "Copy Document F1 and Document F2 from Folder 1 into new Question Bank",
-      );
-
-      cy.get(`[data-test="Content List"] [data-test="Content Card"]`)
-        .eq(9)
-        .should("contain.text", "Folder 1")
-        .click();
-
-      cy.get('[data-test="Folder Heading"]').should(
-        "have.text",
-        "Folder: Folder 1",
-      );
-
-      cy.get('[data-test="Card Select"]').eq(0).click();
-      cy.get('[data-test="Card Select"]').eq(2).click();
-
-      cy.get('[data-test="Create From Selected Button"]').click();
-      cy.get('[data-test="Create Question Bank"]').click();
-      cy.get('[data-test="Created Statement"]').should(
-        "have.text",
-        "Question bank created with 2 items",
-      );
-      cy.focused().type("Bank of two{enter}");
-      cy.get('[data-test="Go to Created"]').click();
-
-      cy.get('[data-test="Editable Title"]').should("have.text", "Bank of two");
-
-      cy.get(`[data-test="Content Card"]`).should("have.length", 2);
-      cy.get(`[data-test="Content Card"]`)
-        .eq(0)
-        .should("contain.text", "Document F1");
-      cy.get(`[data-test="Content Card"]`)
-        .eq(1)
-        .should("contain.text", "Document F2");
-
-      cy.get('[data-test="Back Link"]').click();
-
-      cy.get('[data-test="Folder Heading"]').should(
-        "have.text",
-        "My Activities",
-      );
+      cy.log("Go to shared activities of owner of initial content created");
+      cy.visit(`/sharedActivities/${user.userId}`);
     });
+
+    cy.log(
+      "Copy Document F1 and Document F2 from Folder 1 into new Question Bank",
+    );
+
+    cy.get(`[data-test="Content Card"]`)
+      .eq(3)
+      .should("contain.text", "Folder 1")
+      .click();
+
+    cy.get('[data-test="Folder Heading"]').should(
+      "have.text",
+      "Folder: Folder 1",
+    );
+
+    cy.get('[data-test="Card Select"]').eq(0).click();
+    cy.get('[data-test="Card Select"]').eq(2).click();
+
+    cy.get('[data-test="Create From Selected Button"]').click();
+    cy.get('[data-test="Create Question Bank"]').click();
+    cy.get('[data-test="Created Statement"]').should(
+      "have.text",
+      "Question bank created with 2 items",
+    );
+    cy.focused().type("Bank of two{enter}");
+    cy.get('[data-test="Go to Created"]').click();
+
+    cy.get('[data-test="Editable Title"]').should("have.text", "Bank of two");
+
+    cy.get(`[data-test="Content Card"]`).should("have.length", 2);
+    cy.get(`[data-test="Content Card"]`)
+      .eq(0)
+      .should("contain.text", "Document F1");
+    cy.get(`[data-test="Content Card"]`)
+      .eq(1)
+      .should("contain.text", "Document F2");
+
+    cy.get('[data-test="Back Link"]').click();
+
+    cy.get('[data-test="Folder Heading"]').should("have.text", "My Activities");
   });
 });
