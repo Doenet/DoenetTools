@@ -6,7 +6,7 @@ import {
   filterViewableContent,
 } from "../utils/permissions";
 import { isEqualUUID } from "../utils/uuid";
-import { getIsAdmin, getLibraryAccountId, mustBeAdmin } from "./curate";
+import { getIsAdmin } from "./curate";
 import {
   calculateNewSortIndex,
   getNextSortIndexForParent,
@@ -24,38 +24,43 @@ import { recordRecentContent } from "./stats";
  * `desiredPosition` is the 0-based index in the array of content with parent folder `parentId`
  * and owner `ownerId` sorted by `sortIndex`.
  *
- * If the content is in the library account, set `inLibrary` to `true`. This will allows admins to make changes.
+ * For the library, content must be public before it is moved inside a public parent. We don't allow implicit publishing of curated content.
  */
 export async function moveContent({
   contentId,
   parentId,
   desiredPosition,
   loggedInUserId,
-  inLibrary = false,
 }: {
   contentId: Uint8Array;
   parentId: Uint8Array | null;
   desiredPosition: number;
   loggedInUserId: Uint8Array;
-  inLibrary?: boolean;
 }) {
   if (!Number.isInteger(desiredPosition)) {
     throw Error("desiredPosition must be an integer");
   }
 
-  let ownerId = loggedInUserId;
-  if (inLibrary) {
-    await mustBeAdmin(loggedInUserId);
-    ownerId = await getLibraryAccountId();
-  }
+  const isAdmin = await getIsAdmin(loggedInUserId);
 
-  // make sure content exists and is owned by `ownerId`
+  // make sure content exists and is editable by `ownerId`
   const content = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      ...filterEditableContent(ownerId),
+      ...filterEditableContent(loggedInUserId, isAdmin),
     },
-    select: { id: true, type: true, licenseCode: true },
+    select: {
+      id: true,
+      type: true,
+      licenseCode: true,
+      owner: {
+        select: {
+          userId: true,
+          isLibrary: true,
+        },
+      },
+      isPublic: true,
+    },
   });
 
   let desiredParentIsPublic = false;
@@ -63,12 +68,15 @@ export async function moveContent({
   let desiredParentShares: Uint8Array[] = [];
 
   if (parentId !== null) {
-    // if desired parent is specified, make sure it exists and is owned by `ownerId`
+    // if desired parent is specified, make sure it exists and is owned by the same owner as the content
     const parent = await prisma.content.findUniqueOrThrow({
       where: {
         id: parentId,
         type: { not: "singleDoc" },
-        ...filterEditableContent(ownerId),
+
+        // NOTE: We don't use `filterEditableContent` because the owner must match exactly. We cannot move between admin's folders and library
+        ownerId: content.owner.userId,
+        isDeleted: false,
       },
       select: {
         isPublic: true,
@@ -79,6 +87,11 @@ export async function moveContent({
 
     // If the parent is shared, then we'll need to share the resulting content, as well.
     if (parent.isPublic) {
+      if (content.owner.isLibrary && !content.isPublic) {
+        throw new InvalidRequestError(
+          "Cannot move draft from library to published folder/activity",
+        );
+      }
       desiredParentIsPublic = true;
       if (parent.licenseCode) {
         desiredParentLicenseCode = parent.licenseCode as LicenseCode;
@@ -127,7 +140,7 @@ export async function moveContent({
   const currentSortIndices = (
     await prisma.content.findMany({
       where: {
-        ownerId,
+        ownerId: content.owner.userId,
         parentId: parentId,
         id: { not: contentId },
         isDeleted: false,
@@ -150,7 +163,7 @@ export async function moveContent({
   }) {
     await prisma.content.updateMany({
       where: {
-        ownerId,
+        ownerId: content.owner.userId,
         parentId: parentId,
         id: { not: contentId },
         sortIndex: sortIndices,
@@ -191,7 +204,7 @@ export async function moveContent({
   if (desiredParentIsPublic) {
     await setContentIsPublic({
       contentId: content.id,
-      loggedInUserId: ownerId,
+      loggedInUserId,
       isPublic: true,
     });
   }
@@ -200,7 +213,7 @@ export async function moveContent({
     await modifyContentSharedWith({
       action: "share",
       contentId: content.id,
-      loggedInUserId: ownerId,
+      loggedInUserId,
       users: desiredParentShares,
     });
   }

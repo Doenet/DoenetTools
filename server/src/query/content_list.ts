@@ -37,7 +37,7 @@ export async function getMyContent({
 /**
  * NOTE: This function does not nicely handle invalid permissions. Use {@link getMyContent} or {@link getCurationFolderContent} instead for API calls - they both call this function.
  */
-async function getMyContentOrLibraryContent({
+export async function getMyContentOrLibraryContent({
   parentId,
   loggedInUserId,
   isLibrary,
@@ -126,7 +126,7 @@ export async function searchMyContent({
 /**
  * NOTE: This function does not nicely handle invalid permissions. Use {@link searchMyContent} or {@link searchCurationContent} instead for API calls - they both call this function.
  */
-async function searchMyContentOrLibraryContent({
+export async function searchMyContentOrLibraryContent({
   parentId,
   loggedInUserId,
   query,

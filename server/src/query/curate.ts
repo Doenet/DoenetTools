@@ -3,9 +3,13 @@ import { prisma } from "../model";
 import { blankLibraryInfo, LibraryInfo } from "../types";
 import { InvalidRequestError } from "../utils/error";
 import { fromUUID } from "../utils/uuid";
-import { deleteContentNoCheck } from "./activity";
+import { createContent, deleteContentNoCheck } from "./activity";
 import { copyContent } from "./copy_move";
 import { filterEditableActivity } from "../utils/permissions";
+import {
+  getMyContentOrLibraryContent,
+  searchMyContentOrLibraryContent,
+} from "./content_list";
 
 export async function mustBeAdmin(
   userId: Uint8Array,
@@ -35,15 +39,15 @@ export async function getIsAdmin(userId: Uint8Array) {
  * @param id - must be existing public activity
  */
 export async function getLibraryStatus({
-  id,
-  userId,
+  sourceId,
+  loggedInUserId,
 }: {
-  id: Uint8Array;
-  userId: Uint8Array;
+  sourceId: Uint8Array;
+  loggedInUserId: Uint8Array;
 }): Promise<LibraryInfo> {
   const info = await prisma.libraryActivityInfos.findUnique({
     where: {
-      sourceId: id,
+      sourceId: sourceId,
     },
     select: {
       status: true,
@@ -55,21 +59,21 @@ export async function getLibraryStatus({
 
   // No info in database
   if (!info) {
-    return blankLibraryInfo(id);
+    return blankLibraryInfo(sourceId);
   }
 
   const { contentId, comments, ...basicInfo } = info;
   const isPublished = info.status === LibraryStatus.PUBLISHED;
 
   // Admin
-  const isAdmin = await getIsAdmin(userId);
+  const isAdmin = await getIsAdmin(loggedInUserId);
   if (isAdmin) {
     return info;
   }
 
   //Owner
   const isOwner = await prisma.content.findUnique({
-    where: { id, ownerId: userId },
+    where: { id: sourceId, ownerId: loggedInUserId },
     select: { ownerId: true },
   });
   if (isOwner) {
@@ -88,7 +92,7 @@ export async function getLibraryStatus({
     };
   }
 
-  return blankLibraryInfo(id);
+  return blankLibraryInfo(sourceId);
 }
 
 /**
@@ -325,46 +329,27 @@ export async function addDraftToLibrary({
  * @param loggedInUserId - must be admin
  */
 export async function deleteDraftFromLibrary({
-  draftId,
+  contentId,
   loggedInUserId,
-  contentType,
 }: {
-  draftId: Uint8Array;
+  contentId: Uint8Array;
   loggedInUserId: Uint8Array;
-  contentType: ContentType;
 }) {
   await mustBeAdmin(loggedInUserId);
   const libraryId = await getLibraryAccountId();
   const { sourceId } = await prisma.libraryActivityInfos.findUniqueOrThrow({
     where: {
-      contentId: draftId,
+      contentId,
     },
     select: {
       sourceId: true,
     },
   });
 
-  if (contentType === "folder") {
-    throw new InvalidRequestError(
-      "Cannot delete a folder as a draft library content",
-    );
-  }
-
-  // Verify the folder exists
-  await prisma.content.findUniqueOrThrow({
-    where: {
-      id: draftId,
-      isPublic: false, // This is key! We're only deleting unpublished drafts here
-      ownerId: libraryId,
-      type: contentType,
-      isDeleted: false,
-    },
-    select: { id: true },
-  });
-
   const ensureDraftExists = prisma.content.findUniqueOrThrow({
     where: {
-      id: draftId,
+      id: contentId,
+      isPublic: false,
       owner: {
         isLibrary: true,
       },
@@ -373,11 +358,11 @@ export async function deleteDraftFromLibrary({
     select: { id: true },
   });
 
-  const deleteDraft = deleteContentNoCheck(draftId, libraryId);
+  const deleteDraft = deleteContentNoCheck(contentId, libraryId);
 
   const removeLibraryIdRef = prisma.libraryActivityInfos.update({
     where: {
-      contentId: draftId,
+      contentId,
     },
     data: {
       contentId: null,
@@ -387,7 +372,7 @@ export async function deleteDraftFromLibrary({
   const logDeletion = prisma.libraryEvents.create({
     data: {
       sourceId,
-      contentId: draftId,
+      contentId,
       eventType: LibraryEventType.DELETE_DRAFT,
       dateTime: new Date(),
       userId: loggedInUserId,
@@ -531,13 +516,13 @@ export async function unpublishActivityFromLibrary({
 export async function markLibraryRequestNeedsRevision({
   sourceId,
   comments,
-  userId,
+  loggedInUserId,
 }: {
   sourceId: Uint8Array;
   comments: string;
-  userId: Uint8Array;
+  loggedInUserId: Uint8Array;
 }) {
-  await mustBeAdmin(userId);
+  await mustBeAdmin(loggedInUserId);
 
   await prisma.content.update({
     where: {
@@ -563,7 +548,7 @@ export async function markLibraryRequestNeedsRevision({
         create: {
           eventType: LibraryEventType.MARK_NEEDS_REVISION,
           dateTime: new Date(),
-          userId,
+          userId: loggedInUserId,
           comments,
         },
       },
@@ -581,13 +566,13 @@ export async function markLibraryRequestNeedsRevision({
 export async function modifyCommentsOfLibraryRequest({
   sourceId,
   comments,
-  userId,
+  loggedInUserId,
 }: {
   sourceId: Uint8Array;
   comments: string;
-  userId: Uint8Array;
+  loggedInUserId: Uint8Array;
 }) {
-  await mustBeAdmin(userId);
+  await mustBeAdmin(loggedInUserId);
 
   const { contentId } = await prisma.libraryActivityInfos.findUniqueOrThrow({
     where: {
@@ -620,9 +605,55 @@ export async function modifyCommentsOfLibraryRequest({
           eventType: LibraryEventType.MODIFY_COMMENTS,
           dateTime: new Date(),
           comments,
-          userId,
+          userId: loggedInUserId,
         },
       },
     },
+  });
+}
+
+export async function getCurationFolderContent({
+  parentId,
+  loggedInUserId,
+}: {
+  parentId: Uint8Array | null;
+  loggedInUserId: Uint8Array;
+}) {
+  return await getMyContentOrLibraryContent({
+    parentId,
+    loggedInUserId,
+    isLibrary: true,
+  });
+}
+
+export async function searchCurationFolderContent({
+  parentId,
+  loggedInUserId,
+  query,
+}: {
+  parentId: Uint8Array | null;
+  loggedInUserId: Uint8Array;
+  query: string;
+}) {
+  return await searchMyContentOrLibraryContent({
+    parentId,
+    loggedInUserId,
+    query,
+    inLibrary: true,
+  });
+}
+
+export async function createCurationFolder({
+  loggedInUserId,
+  parentId,
+}: {
+  loggedInUserId: Uint8Array;
+  parentId: Uint8Array | null;
+}) {
+  await createContent({
+    loggedInUserId,
+    contentType: "folder",
+    parentId,
+    inLibrary: true,
   });
 }
