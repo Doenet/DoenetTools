@@ -15,6 +15,7 @@ import { sortClassifications } from "./classificationsFeatures";
 import { fromUUID, isEqualUUID } from "./uuid";
 import { DateTime } from "luxon";
 import { ActivitySource } from "./viewerTypes";
+import { InvalidRequestError } from "./error";
 
 /**
  * Process a list of user info from the SharedWith table
@@ -368,6 +369,27 @@ type PreliminaryContent = {
     assignmentScores: number;
   };
 
+  // if `includeAssignedRevision` specified
+  assignedRevision?: {
+    revisionNum: number;
+
+    // either the DoenetML or serialized activityJson
+    source: string;
+
+    // document specific
+    doenetmlVersion: {
+      id: number;
+      default: boolean;
+      displayedVersion: string;
+      fullVersion: string;
+      deprecated: boolean;
+      removed: boolean;
+      deprecationMessage: string;
+    };
+    numVariants: number;
+    baseComponentCounts: string;
+  } | null;
+
   // from document select
   source?: string | null;
   doenetmlVersion?: {
@@ -381,21 +403,6 @@ type PreliminaryContent = {
   } | null;
   numVariants?: number;
   baseComponentCounts?: string | null;
-  assignedRevision?: {
-    source: string;
-    doenetmlVersion: {
-      id: number;
-      default: boolean;
-      displayedVersion: string;
-      fullVersion: string;
-      deprecated: boolean;
-      removed: boolean;
-      deprecationMessage: string;
-    };
-    revisionNum: number;
-    numVariants: number;
-    baseComponentCounts: string;
-  } | null;
 
   // from question bank select
   numToSelect: number;
@@ -425,13 +432,13 @@ export function processContent(
     classifications,
     libraryActivityInfo,
     librarySourceInfo,
+    assignedRevision,
 
     // from doc select
     source: sourceOrig,
     numVariants: numVariantsOrig,
     baseComponentCounts: baseComponentCountsOrig,
     doenetmlVersion: doenetmlVersionOrig,
-    assignedRevision,
 
     // from question bank select
     numToSelect,
@@ -492,7 +499,7 @@ export function processContent(
   switch (type) {
     case "singleDoc": {
       let docInfo: {
-        source: string;
+        doenetML: string;
         numVariants: number;
         baseComponentCounts: string;
         doenetmlVersion: DoenetmlVersion;
@@ -506,21 +513,21 @@ export function processContent(
         doenetmlVersionOrig != null
       ) {
         docInfo = {
-          source: sourceOrig,
+          doenetML: sourceOrig,
           numVariants: numVariantsOrig,
           baseComponentCounts: baseComponentCountsOrig,
           doenetmlVersion: doenetmlVersionOrig,
         };
       } else if (assignedRevision) {
         docInfo = {
-          source: assignedRevision.source,
+          doenetML: assignedRevision.source,
           numVariants: assignedRevision.numVariants,
           baseComponentCounts: assignedRevision.baseComponentCounts,
           doenetmlVersion: assignedRevision.doenetmlVersion,
           revisionNum: assignedRevision.revisionNum,
         };
       } else {
-        throw Error("Invalid document");
+        throw new InvalidRequestError("Invalid document");
       }
 
       return {
@@ -532,6 +539,8 @@ export function processContent(
     case "select": {
       return {
         type: "select",
+        activityJson: assignedRevision?.source ?? undefined,
+        revisionNum: assignedRevision?.revisionNum,
         numToSelect,
         selectByVariant,
         children: [],
@@ -541,6 +550,8 @@ export function processContent(
     case "sequence": {
       return {
         type: "sequence",
+        activityJson: assignedRevision?.source ?? undefined,
+        revisionNum: assignedRevision?.revisionNum,
         shuffle,
         paginate,
         activityLevelAttempts,
@@ -610,7 +621,7 @@ export function compileActivityFromContent(activity: Content): ActivitySource {
         id: fromUUID(activity.contentId),
         type: activity.type,
         isDescription: false,
-        doenetML: activity.source!,
+        doenetML: activity.doenetML!,
         version: activity.doenetmlVersion.fullVersion,
         numVariants: activity.numVariants,
         baseComponentCounts: activity.baseComponentCounts

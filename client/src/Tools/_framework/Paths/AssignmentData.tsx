@@ -32,7 +32,7 @@ import { UserInfo } from "../../../_utils/types";
 
 export async function loader({ params }) {
   const { data } = await axios.get(
-    `/api/getAssignmentData/${params.contentId}`,
+    `/api/assign/getAssignmentData/${params.contentId}`,
   );
 
   const contentId = params.contentId;

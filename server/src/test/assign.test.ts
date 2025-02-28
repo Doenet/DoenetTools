@@ -30,6 +30,7 @@ import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import { loadState, saveScoreAndState } from "../query/scores";
 import { updateUser } from "../query/user";
 import { moveContent } from "../query/copy_move";
+import { isActivitySource } from "../utils/viewerTypes";
 
 test("assign an activity", async () => {
   const owner = await createTestUser();
@@ -152,10 +153,11 @@ test("open and close assignment with code", async () => {
     loggedInUserId: fakeId,
   });
   expect(assignmentData.assignmentFound).eq(true);
-  expect(assignmentData.assignment!.id).eqls(contentId);
-  expect(assignmentData.assignment!.assignedRevision!.source).eq(
-    "Some content",
-  );
+  if (assignmentData.assignment?.type !== "singleDoc") {
+    throw Error("Shouldn't happen");
+  }
+  expect(assignmentData.assignment.contentId).eqls(contentId);
+  expect(assignmentData.assignment.doenetML).eq("Some content");
 
   // close assignment completely unassigns since there is no data
   await closeAssignmentWithCode({
@@ -190,7 +192,7 @@ test("open and close assignment with code", async () => {
     loggedInUserId: fakeId,
   });
   expect(assignmentData.assignmentFound).eq(true);
-  expect(assignmentData.assignment!.id).eqls(contentId);
+  expect(assignmentData.assignment!.contentId).eqls(contentId);
 
   // Open with past date.
   // Currently, says assignment is not found
@@ -280,7 +282,7 @@ test("open and unassign assignment with code", async () => {
     code: classCode,
     loggedInUserId: fakeId,
   });
-  expect(assignmentData.assignment!.id).eqls(contentId);
+  expect(assignmentData.assignment!.contentId).eqls(contentId);
 
   // unassign activity
   await unassignActivity({ contentId: contentId, loggedInUserId: ownerId });
@@ -300,6 +302,123 @@ test("open and unassign assignment with code", async () => {
   await expect(
     unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
   ).rejects.toThrow("Record to update not found");
+});
+
+test("open compound assignment with code", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const fakeId = new Uint8Array(16);
+
+  const { contentId: sequenceId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "sequence",
+    parentId: null,
+  });
+  await updateContent({
+    contentId: sequenceId,
+    name: "A problem set",
+    loggedInUserId: ownerId,
+  });
+
+  const { contentId: doc1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: sequenceId,
+  });
+  await updateContent({
+    contentId: doc1Id,
+    name: "Question 1",
+    source: "Some content 1",
+    loggedInUserId: ownerId,
+  });
+
+  const { contentId: selectId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "select",
+    parentId: sequenceId,
+  });
+  await updateContent({
+    contentId: selectId,
+    name: "Question Bank",
+    loggedInUserId: ownerId,
+  });
+
+  const { contentId: doc2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: selectId,
+  });
+  await updateContent({
+    contentId: doc2Id,
+    name: "Question 2",
+    source: "Some content 2",
+    loggedInUserId: ownerId,
+  });
+
+  const { contentId: doc3Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: selectId,
+  });
+  await updateContent({
+    contentId: doc3Id,
+    name: "Question 3",
+    source: "Some content 3",
+    loggedInUserId: ownerId,
+  });
+
+  // open assignment assigns activity and generates code
+  const closeAt = DateTime.now().plus({ days: 1 });
+  const { classCode } = await openAssignmentWithCode({
+    contentId: sequenceId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+  const assignment = await getTestAssignment(sequenceId, ownerId);
+  expect(assignment.classCode).eq(classCode);
+  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+
+  const assignmentData = await getAssignmentDataFromCode({
+    code: classCode,
+    loggedInUserId: fakeId,
+  });
+  expect(assignmentData.assignmentFound).eq(true);
+  if (assignmentData.assignment?.type !== "sequence") {
+    throw Error("Shouldn't happen");
+  }
+
+  expect(assignmentData.assignment.contentId).eqls(sequenceId);
+
+  const activityJson = JSON.parse(assignmentData.assignment.activityJson!);
+
+  if (!isActivitySource(activityJson)) {
+    throw Error("Shouldn't happen");
+  }
+
+  if (activityJson.type !== "sequence") {
+    throw Error("Shouldn't happen");
+  }
+
+  expect(activityJson.title).eq("A problem set");
+  expect(activityJson.items.length).eq(2);
+  const question1 = activityJson.items[0];
+  if (question1.type !== "singleDoc") {
+    throw Error("Shouldn't happen");
+  }
+  expect(question1.doenetML).eq("Some content 1");
+
+  const questionBank = activityJson.items[1];
+  if (questionBank.type !== "select") {
+    throw Error("Shouldn't happen");
+  }
+  expect(questionBank.items.length).eq(2);
+  for (let i = 0; i < 2; i++) {
+    const question = questionBank.items[i];
+    if (question.type !== "singleDoc") {
+      throw Error("Shouldn't happen");
+    }
+    expect(question.doenetML).eq(`Some content ${i + 2}`);
+  }
 });
 
 test("only owner can open, close, modify, or unassign assignment", async () => {

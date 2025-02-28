@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import { ActivitySource } from "./viewerTypes";
 
 export type DoenetmlVersion = {
   id: number;
@@ -157,12 +158,14 @@ export type Doc = ContentBase & {
   numVariants: number;
   baseComponentCounts: string;
   revisionNum?: number;
-  source: string;
+  doenetML: string;
   doenetmlVersion: DoenetmlVersion;
 };
 
 export type QuestionBank = ContentBase & {
   type: "select";
+  activityJson?: ActivitySource;
+  revisionNum?: number;
   numToSelect: number;
   selectByVariant: boolean;
   children: Content[];
@@ -170,6 +173,8 @@ export type QuestionBank = ContentBase & {
 
 export type ProblemSet = ContentBase & {
   type: "sequence";
+  activityJson?: ActivitySource;
+  revisionNum?: number;
   shuffle: boolean;
   paginate: boolean;
   activityLevelAttempts: boolean;
@@ -179,6 +184,7 @@ export type ProblemSet = ContentBase & {
 
 export type Folder = ContentBase & {
   type: "folder";
+  revisionNum?: number;
   children: Content[];
 };
 

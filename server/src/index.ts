@@ -323,12 +323,6 @@ app.post(
 //   },
 // );
 
-// // handle every other route with index.html, which will contain
-// // a script tag to your application's JavaScript file(s).
-// app.get("*", function (_request, response) {
-//   response.sendFile(path.resolve(__dirname, "../public/index.html"));
-// });
-
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
 });

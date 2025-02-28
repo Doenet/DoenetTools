@@ -29,26 +29,26 @@ export async function assignActivityActions({ formObj }: { [k: string]: any }) {
         Math.round(DateTime.now().toSeconds() / 60) * 60,
       ).plus(JSON.parse(formObj.duration));
     }
-    await axios.post("/api/openAssignmentWithCode", {
+    await axios.post("/api/assign/openAssignmentWithCode", {
       contentId: formObj.contentId,
       closeAt,
     });
     return true;
   } else if (formObj._action == "update assignment close time") {
     const closeAt = DateTime.fromISO(formObj.closeAt);
-    await axios.post("/api/updateAssignmentSettings", {
+    await axios.post("/api/assign/updateAssignmentSettings", {
       contentId: formObj.contentId,
       closeAt,
     });
     return true;
   } else if (formObj._action == "close assignment") {
-    await axios.post("/api/closeAssignmentWithCode", {
+    await axios.post("/api/assign/closeAssignmentWithCode", {
       contentId: formObj.contentId,
     });
     return true;
   } else if (formObj._action == "unassign activity") {
     try {
-      await axios.post("/api/unassignActivity", {
+      await axios.post("/api/assign/unassignActivity", {
         contentId: formObj.contentId,
       });
     } catch (_e) {
@@ -75,7 +75,9 @@ export function AssignActivityControls({
 }) {
   // duration for how long to open assignment
   const [duration, setDuration] = useState(JSON.stringify({ hours: 48 }));
-  const [closeAt, setCloseAt] = useState(activityData.codeValidUntil);
+  const [closeAt, setCloseAt] = useState(
+    activityData.assignmentInfo?.codeValidUntil ?? "",
+  );
   const [customCloseAt, setCustomCloseAt] = useState(
     DateTime.fromSeconds(Math.round(DateTime.now().toSeconds() / 60) * 60)
       .plus({ weeks: 2 })
@@ -88,7 +90,7 @@ export function AssignActivityControls({
   const [urlCopied, setUrlCopied] = useState(false);
 
   useEffect(() => {
-    setCloseAt(activityData.codeValidUntil);
+    setCloseAt(activityData.assignmentInfo?.codeValidUntil ?? "");
   }, [activityData]);
 
   useEffect(() => {
@@ -101,7 +103,8 @@ export function AssignActivityControls({
     onClose: invitationOnClose,
   } = useDisclosure();
 
-  const assignmentStatus = activityData.assignmentStatus;
+  const assignmentStatus =
+    activityData.assignmentInfo?.assignmentStatus ?? "Unassigned";
 
   function saveCloseTimeToServer() {
     fetcher.submit(
@@ -125,7 +128,8 @@ export function AssignActivityControls({
         {assignmentStatus === "Open" ? (
           <Box>
             <Heading size="md" marginTop="10px">
-              Activity is an open assignment (code {activityData.classCode})
+              Activity is an open assignment (code{" "}
+              {activityData.assignmentInfo?.classCode})
             </Heading>
 
             <Heading size="sm" marginTop="20px">
@@ -134,9 +138,9 @@ export function AssignActivityControls({
 
             <p>
               Activity is open until{" "}
-              {DateTime.fromISO(activityData.codeValidUntil!).toLocaleString(
-                DateTime.DATETIME_MED,
-              )}
+              {DateTime.fromISO(
+                activityData.assignmentInfo!.codeValidUntil!,
+              ).toLocaleString(DateTime.DATETIME_MED)}
               .
             </p>
 
@@ -205,7 +209,7 @@ export function AssignActivityControls({
               onCopy={() => {
                 setUrlCopied(true);
               }}
-              text={`https://doenet.org/code/${activityData.classCode}`}
+              text={`https://doenet.org/code/${activityData.assignmentInfo?.classCode}`}
             >
               <Button
                 colorScheme="blue"
@@ -229,7 +233,7 @@ export function AssignActivityControls({
               </Heading>
               <p>
                 You can re-open assignment to allow students to again access it
-                with code {activityData.classCode}.
+                with code {activityData.assignmentInfo?.classCode}.
               </p>
               How long would you like this activity to remain open?
               <RadioGroup onChange={setDuration} value={duration}>
@@ -369,7 +373,7 @@ export function AssignActivityControls({
           </Box>
         )}
 
-        {activityData.hasScoreData ? (
+        {activityData.assignmentInfo?.hasScoreData ? (
           <>
             <Heading size="sm" marginTop="20px">
               Student data available
@@ -403,7 +407,8 @@ export function AssignActivityControls({
           </>
         ) : null}
 
-        {assignmentStatus === "Closed" && !activityData.hasScoreData ? (
+        {assignmentStatus === "Closed" &&
+        !activityData.assignmentInfo?.hasScoreData ? (
           <Box marginTop="20px">
             <Heading size="sm" marginTop="20px">
               Reset activity

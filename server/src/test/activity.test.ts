@@ -78,7 +78,7 @@ test("New activity starts out private, then delete it", async () => {
     license: null,
     type: "singleDoc",
     classifications: [],
-    source: "",
+    doenetML: "",
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
   };
@@ -146,7 +146,7 @@ test("Test updating various activity properties", async () => {
     throw Error("shouldn't happen");
   }
   expect(activityContent.name).toBe(activityName);
-  expect(activityContent.source).toBe(source);
+  expect(activityContent.doenetML).toBe(source);
 
   const activityViewerContent = await getActivityViewerData({
     contentId: contentId,
@@ -156,7 +156,7 @@ test("Test updating various activity properties", async () => {
     throw Error("shouldn't happen");
   }
   expect(activityViewerContent.activity.name).toBe(activityName);
-  expect(activityViewerContent.activity.source).toBe(source);
+  expect(activityViewerContent.activity.doenetML).toBe(source);
 });
 
 test("deleteContent marks a activity and document as deleted and prevents its retrieval", async () => {
@@ -235,7 +235,7 @@ test("updateDoc updates document properties", async () => {
     throw Error("shouldn't happen");
   }
   expect(activity.name).toBe(newName);
-  expect(activity.source).toBe(newContent);
+  expect(activity.doenetML).toBe(newContent);
 });
 
 test("getAllDoenetmlVersions retrieves all non-removed versions", async () => {
@@ -428,7 +428,7 @@ test("get public activity editor data only if public or shared", async () => {
     throw Error("shouldn't happen");
   }
   expect(sharedData.name).eq("Some content");
-  expect(sharedData.source).eq(doenetML);
+  expect(sharedData.doenetML).eq(doenetML);
 
   await setContentIsPublic({
     contentId: contentId,
@@ -455,7 +455,7 @@ test("get public activity editor data only if public or shared", async () => {
     throw Error("shouldn't happen");
   }
   expect(sharedData.name).eq("Some content");
-  expect(sharedData.source).eq(doenetML);
+  expect(sharedData.doenetML).eq(doenetML);
 
   await expect(
     getSharedEditorData({ contentId: contentId, loggedInUserId: user2Id }),
@@ -489,7 +489,7 @@ test("activity editor data and my folder contents before and after assigned", as
     license: null,
     type: "singleDoc",
     classifications: [],
-    source: "",
+    doenetML: "",
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
   };
@@ -538,7 +538,7 @@ test("activity editor data and my folder contents before and after assigned", as
     type: "singleDoc",
     classifications: [],
     revisionNum: 1,
-    source: "",
+    doenetML: "",
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
     assignmentInfo: {
@@ -591,7 +591,7 @@ test("activity editor data and my folder contents before and after assigned", as
     license: null,
     type: "singleDoc",
     classifications: [],
-    source: "",
+    doenetML: "",
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
   };
@@ -642,7 +642,7 @@ test("activity editor data and my folder contents before and after assigned", as
     type: "singleDoc",
     classifications: [],
     revisionNum: 1,
-    source: "",
+    doenetML: "",
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
     assignmentInfo: {
@@ -701,7 +701,7 @@ test("activity editor data and my folder contents before and after assigned", as
     type: "singleDoc",
     classifications: [],
     revisionNum: 1,
-    source: "",
+    doenetML: "",
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
     assignmentInfo: {
@@ -754,7 +754,7 @@ test("activity editor data and my folder contents before and after assigned", as
     type: "singleDoc",
     classifications: [],
     revisionNum: 1,
-    source: "",
+    doenetML: "",
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
     assignmentInfo: {

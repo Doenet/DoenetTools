@@ -32,7 +32,7 @@ export async function loader({ params, request }) {
   }
 
   const { data } = await axios.get(
-    `/api/getSubmittedResponseHistory/${params.contentId}/${params.docId}/${
+    `/api/assign/getSubmittedResponseHistory/${params.contentId}/${params.docId}/${
       params.docVersionNum
     }/${params.userId}?answerId=${encodeURIComponent(answerId)}`,
   );

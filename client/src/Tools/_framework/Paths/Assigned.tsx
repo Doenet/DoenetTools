@@ -100,10 +100,10 @@ export function Assigned() {
     return {
       content: assignment,
       cardLink:
-        assignment.assignmentStatus === "Open"
-          ? `/code/${assignment.classCode}`
-          : `/assignedData/${assignment.id}`,
-      closeTime: formatTime(assignment.codeValidUntil),
+        assignment.assignmentInfo?.assignmentStatus === "Open"
+          ? `/code/${assignment.assignmentInfo?.classCode}`
+          : `/assignedData/${assignment.contentId}`,
+      closeTime: formatTime(assignment.assignmentInfo!.codeValidUntil),
     };
   });
 

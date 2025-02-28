@@ -12,7 +12,7 @@ loginRouter.get(
   passport.authenticate("anonymId"),
   (req: Request, res: Response) => {
     const code = req.params.code;
-    res.redirect(`/api/getAssignmentDataFromCode/${code}`);
+    res.redirect(`/api/assign/getAssignmentDataFromCode/${code}`);
   },
 );
 

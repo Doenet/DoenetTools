@@ -38,7 +38,7 @@ type Folder = {
 // loader for when an instructor gets data about a student
 export async function loader({ params }) {
   const { data } = await axios.get(
-    `/api/getStudentData/${params.userId}/${params.folderId ?? ""}`,
+    `/api/assign/getStudentData/${params.userId}/${params.folderId ?? ""}`,
   );
 
   const userData = data.userData;

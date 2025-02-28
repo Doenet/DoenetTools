@@ -367,16 +367,7 @@ export async function getAllDoenetmlVersions() {
 export async function createActivityRevision(
   contentId: Uint8Array,
   loggedInUserId: Uint8Array,
-): Promise<{
-  contentId: Uint8Array;
-  revisionNum: number;
-  cid: string;
-  source: string | null;
-  doenetmlVersionId: number | null;
-  numVariants: number;
-  baseComponentCounts: string | null;
-  createdAt: Date;
-}> {
+): Promise<{ revisionNum: number }> {
   const content = await getContent({ contentId, loggedInUserId });
 
   let source: string | null = null;
@@ -386,7 +377,7 @@ export async function createActivityRevision(
   let cid: string;
 
   if (content.type === "singleDoc") {
-    source = content.source;
+    source = content.doenetML;
     numVariants = content.numVariants;
     doenetmlVersionId = content.doenetmlVersion.id;
     baseComponentCounts = content.baseComponentCounts;
@@ -396,11 +387,12 @@ export async function createActivityRevision(
     cid = await cidFromText(source);
   }
 
-  let activityVersion = await prisma.activityRevisions.findUnique({
+  let activityRevision = await prisma.activityRevisions.findUnique({
     where: { contentId_cid: { contentId: contentId, cid } },
+    select: { revisionNum: true },
   });
 
-  if (!activityVersion) {
+  if (!activityRevision) {
     // TODO: not sure how to make an atomic operation of this with the ORM.
     // Should we write a raw SQL query to accomplish this in one query?
 
@@ -408,12 +400,12 @@ export async function createActivityRevision(
       _max: { revisionNum: true },
       where: { contentId },
     });
-    const lastVersionNum = aggregations._max.revisionNum;
-    const newVersionNum = lastVersionNum ? lastVersionNum + 1 : 1;
+    const lastRevisionNum = aggregations._max.revisionNum;
+    const newRevisionNum = lastRevisionNum ? lastRevisionNum + 1 : 1;
 
-    activityVersion = await prisma.activityRevisions.create({
+    activityRevision = await prisma.activityRevisions.create({
       data: {
-        revisionNum: newVersionNum,
+        revisionNum: newRevisionNum,
         contentId,
         cid,
         doenetmlVersionId,
@@ -424,7 +416,7 @@ export async function createActivityRevision(
     });
   }
 
-  return activityVersion;
+  return { revisionNum: activityRevision.revisionNum };
 }
 
 /**
@@ -447,7 +439,7 @@ export async function getContentSource({
   let doenetMLVersion: string | null = null;
 
   if (content.type === "singleDoc") {
-    source = content.source;
+    source = content.doenetML;
     doenetMLVersion = content.doenetmlVersion.fullVersion;
   } else {
     source = JSON.stringify(compileActivityFromContent(content));

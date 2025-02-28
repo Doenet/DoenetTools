@@ -12,5 +12,5 @@ export const scoreAndStateSchema = z.object({
 export const loadStateSchema = z.object({
   contentId: uuidSchema,
   requestedUserId: uuidSchema,
-  withMaxScore: z.boolean(),
+  withMaxScore: z.boolean().default(false),
 });

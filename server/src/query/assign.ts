@@ -19,14 +19,17 @@ export async function assignActivity({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
-  // verify
-  await prisma.content.findUniqueOrThrow({
+  // verify, get type and children
+  const content = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
       isAssigned: false,
       ...filterEditableActivity(loggedInUserId),
     },
-    select: { id: true },
+    select: {
+      type: true,
+      children: { select: { id: true }, where: { isDeleted: false } },
+    },
   });
 
   const newRevision = await createActivityRevision(contentId, loggedInUserId);
@@ -38,6 +41,12 @@ export async function assignActivity({
       assignedRevisionNum: newRevision.revisionNum,
     },
   });
+
+  if (content.type !== "singleDoc") {
+    for (const child of content.children) {
+      await assignActivity({ contentId: child.id, loggedInUserId });
+    }
+  }
 }
 
 function generateClassCode() {
@@ -148,7 +157,7 @@ export async function unassignActivity({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
-  await prisma.content.update({
+  const content = await prisma.content.update({
     where: {
       id: contentId,
       isAssigned: true,
@@ -159,7 +168,14 @@ export async function unassignActivity({
       isAssigned: false,
       assignedRevisionNum: null,
     },
+    select: { type: true, children: { select: { id: true } } },
   });
+
+  if (content.type !== "singleDoc") {
+    for (const child of content.children) {
+      await unassignActivity({ contentId: child.id, loggedInUserId });
+    }
+  }
 }
 
 /**
@@ -740,10 +756,10 @@ export async function getAssignmentDataFromCode({
   code: string;
   loggedInUserId: Uint8Array;
 }) {
-  let assignment;
+  let preliminaryAssignment;
 
   try {
-    assignment = await prisma.content.findFirstOrThrow({
+    preliminaryAssignment = await prisma.content.findFirstOrThrow({
       where: {
         classCode: code,
         codeValidUntil: {
@@ -753,17 +769,10 @@ export async function getAssignmentDataFromCode({
         isAssigned: true,
         type: { not: "folder" },
       },
-      select: {
-        id: true,
-        ownerId: true,
-        assignedRevisionNum: true,
-        assignedRevision: {
-          select: {
-            source: true,
-            doenetmlVersion: { select: { fullVersion: true } },
-          },
-        },
-      },
+      select: returnContentSelect({
+        includeAssignInfo: true,
+        includeAssignedRevision: true,
+      }),
     });
   } catch (e) {
     if (
@@ -779,11 +788,17 @@ export async function getAssignmentDataFromCode({
     }
   }
 
-  if (!isEqualUUID(loggedInUserId, assignment.ownerId)) {
-    await recordContentView(assignment.id, loggedInUserId);
+  //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
+  const assignment = processContent(preliminaryAssignment);
+
+  if (!isEqualUUID(loggedInUserId, preliminaryAssignment.ownerId)) {
+    await recordContentView(assignment.contentId, loggedInUserId);
   }
 
-  return { assignmentFound: true, assignment };
+  return {
+    assignmentFound: true,
+    assignment,
+  };
 }
 
 export async function listUserAssigned({

@@ -94,7 +94,8 @@ export function AssignmentSettingsDrawer({
             <TabList>
               {contentData.type !== "folder" ? (
                 <Tab data-test="Assignment Tab">
-                  {contentData.assignmentStatus === "Unassigned"
+                  {(contentData.assignmentInfo?.assignmentStatus ??
+                  "Unassigned" === "Unassigned")
                     ? "Assign Activity"
                     : "Manage Assignment"}
                 </Tab>

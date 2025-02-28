@@ -39,7 +39,7 @@ import { SiteContext } from "../Paths/SiteHeader";
 import CardList from "../../../Widgets/CardList";
 import axios from "axios";
 import { ActivitySource } from "../../../_utils/viewerTypes";
-import { ActivityViewer } from "@doenet/assignment-viewer";
+import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 import {
   contentTypeToName,
   getAllowedParentTypes,
@@ -133,7 +133,6 @@ export async function compoundActivityEditorActions(
 export function CompoundActivityEditor({
   activity,
   activityJson,
-  assignmentStatus = "Unassigned",
   asViewer,
   mode,
   fetcher,
@@ -148,7 +147,6 @@ export function CompoundActivityEditor({
 }: {
   activity: Content;
   activityJson: ActivitySource;
-  assignmentStatus?: AssignmentStatus;
   asViewer?: boolean;
   mode: "Edit" | "View";
   fetcher: FetcherWithComponents<any>;
@@ -167,7 +165,10 @@ export function CompoundActivityEditor({
   // which should be given focus when drawers are closed
   const cardMenuRefs = useRef<HTMLButtonElement[]>([]);
 
-  const readOnly = asViewer || assignmentStatus !== "Unassigned";
+  const readOnly =
+    asViewer ||
+    (activity.assignmentInfo?.assignmentStatus ??
+      "Unassigned" !== "Unassigned");
 
   const { user } = useOutletContext<SiteContext>();
   const navigate = useNavigate();
@@ -658,7 +659,7 @@ export function CompoundActivityEditor({
   const cardList = (
     <CardList
       showOwnerName={false}
-      showAssignmentStatus={true}
+      showAssignmentStatus={false}
       showPublicStatus={true}
       showActivityFeatures={true}
       emptyMessage={`${contentTypeName} is empty. Add or move documents ${activity.type === "sequence" ? "or question banks " : ""}here to begin.`}
@@ -672,7 +673,7 @@ export function CompoundActivityEditor({
   );
 
   const viewer = (
-    <ActivityViewer
+    <DoenetActivityViewer
       source={activityJson}
       requestedVariantIndex={1}
       userId={"hi"}

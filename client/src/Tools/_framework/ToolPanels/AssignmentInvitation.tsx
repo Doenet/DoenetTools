@@ -48,7 +48,7 @@ export function AssignmentInvitation({
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody fontSize={30}>
-          {activityData.assignmentStatus === "Open" ? (
+          {activityData.assignmentInfo?.assignmentStatus === "Open" ? (
             <Flex justifyContent="center">
               <Box width="500px">
                 <p>To view this activity, go to </p>
@@ -57,12 +57,12 @@ export function AssignmentInvitation({
                 </Center>
                 <p>and enter the code</p>
                 <Center marginTop="10px" fontSize={40}>
-                  <code>{activityData.classCode}</code>
+                  <code>{activityData.assignmentInfo?.classCode}</code>
                 </Center>
                 <p>or scan the QR code.</p>
                 <Center>
                   <QRCode
-                    value={`https://doenet.org/code/${activityData.classCode}`}
+                    value={`https://doenet.org/code/${activityData.assignmentInfo?.classCode}`}
                     logoImage={"/Doenet_Logo_Frontpage.png"}
                     removeQrCodeBehindLogo
                     logoPaddingStyle="circle"
@@ -84,7 +84,7 @@ export function AssignmentInvitation({
             onCopy={() => {
               setUrlCopied(true);
             }}
-            text={`https://doenet.org/code/${activityData.classCode}`}
+            text={`https://doenet.org/code/${activityData.assignmentInfo?.classCode}`}
           >
             <Button leftIcon={<MdOutlineContentCopy />} marginRight="10px">
               {urlCopied ? "URL copied" : "Copy URL"}

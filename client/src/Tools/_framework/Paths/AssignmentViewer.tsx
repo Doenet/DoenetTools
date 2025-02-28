@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { ReactElement, useEffect } from "react";
 import { useLoaderData, useOutletContext } from "react-router";
 
 import { DoenetViewer } from "@doenet/doenetml-iframe";
@@ -12,6 +12,10 @@ import {
 } from "./EnterClassCode";
 import { ChangeName, action as changeNameAction } from "./ChangeName";
 import { SiteContext } from "./SiteHeader";
+import { Content, DoenetmlVersion } from "../../../_utils/types";
+import { ActivitySource, isActivitySource } from "../../../_utils/viewerTypes";
+import { compileActivityFromContent } from "../../../_utils/activity";
+import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -41,12 +45,12 @@ export async function loader({ params }) {
   if (params.contentId) {
     // TODO: create this route
     const { data } = await axios.get(
-      `/api/getAssignmentData/${params.contentId}`,
+      `/api/assign/getAssignmentData/${params.contentId}`,
     );
     assignment = data;
   } else if (params.classCode) {
     const { data } = await axios.get(
-      `/api/getAssignmentDataFromCode/${params.classCode}`,
+      `/api/info/getAssignmentDataFromCode/${params.classCode}`,
     );
 
     if (!data.assignmentFound) {
@@ -60,40 +64,60 @@ export async function loader({ params }) {
     assignment = data.assignment;
   }
 
-  // TODO: what happens if assignment has no documents?
-  const docId = assignment.documents[0].id;
-  const docVersionNum = assignment.documents[0].assignedVersionNum;
+  if (assignment.type === "singleDoc") {
+    const doenetML = assignment.doenetML;
+    const doenetmlVersion: DoenetmlVersion = assignment.doenetmlVersion;
 
-  const doenetML = assignment.documents[0].assignedVersion.source;
-  const doenetmlVersion =
-    assignment.documents[0].assignedVersion.doenetmlVersion.fullVersion;
+    return {
+      assignmentFound: true,
+      type: assignment.type,
+      assignment,
+      doenetML,
+      doenetmlVersion,
+    };
+  } else {
+    const activityJsonFromRevision = assignment.activityJson
+      ? JSON.parse(assignment.activityJson)
+      : null;
 
-  return {
-    assignmentFound: true,
-    assignment,
-    docId,
-    docVersionNum,
-    doenetML,
-    doenetmlVersion,
-  };
+    const activityJson = isActivitySource(activityJsonFromRevision)
+      ? activityJsonFromRevision
+      : compileActivityFromContent(assignment);
+
+    return {
+      assignmentFound: true,
+      type: assignment.type,
+      assignment,
+      activityJson,
+    };
+  }
 }
 
 export function AssignmentViewer() {
-  const {
-    doenetML,
-    assignment,
-    assignmentFound,
-    docId,
-    docVersionNum,
-    doenetmlVersion,
-  } = useLoaderData() as {
-    doenetML: string;
-    assignment: any;
-    assignmentFound: boolean;
-    docId: string;
-    docVersionNum: number;
-    doenetmlVersion: string;
-  };
+  const data = useLoaderData() as
+    | {
+        assignmentFound: false;
+        invalidClassCode: string;
+        assignment: null;
+      }
+    | ({
+        assignmentFound: true;
+        assignment: Content;
+      } & (
+        | {
+            type: "singleDoc";
+            doenetML: string;
+            doenetmlVersion: DoenetmlVersion;
+          }
+        | {
+            type: "select" | "sequence";
+            activityJson: ActivitySource;
+          }
+      ));
+
+  const { assignmentFound, assignment } = data;
+
+  const assignmentName = data.assignmentFound ? data.assignment.name : "";
 
   const { user } = useOutletContext<SiteContext>();
 
@@ -102,11 +126,11 @@ export function AssignmentViewer() {
 
   useEffect(() => {
     if (assignmentFound) {
-      document.title = `${assignment.name} - Doenet`;
+      document.title = `${assignmentName} - Doenet`;
     } else {
       document.title = `Enter class code - Doenet`;
     }
-  }, [assignmentFound, assignment?.name]);
+  }, [assignmentFound, assignmentName]);
 
   useEffect(() => {
     if (!assignment) {
@@ -116,10 +140,9 @@ export function AssignmentViewer() {
     const messageListener = async function (event) {
       if (event.data.subject == "SPLICE.reportScoreAndState") {
         // TODO: generalize to multiple documents. For now, assume just have one.
-        await axios.post("/api/saveScoreAndState", {
-          contentId: assignment.id,
-          docId: assignment.documents[0].id,
-          docVersionNum: assignment.documents[0].assignedVersionNum,
+        await axios.post("/api/score/saveScoreAndState", {
+          contentId: assignment.contentId,
+          assignedRevisionNum: assignment.revisionNum,
           score: event.data.score,
           state: JSON.stringify(event.data.state),
           onSubmission: event.data.state.onSubmission,
@@ -128,20 +151,17 @@ export function AssignmentViewer() {
         const data = event.data.data;
         if (data.verb === "submitted") {
           recordSubmittedEvent({
-            contentId: assignment.id,
-            docId,
-            docVersionNum,
+            contentId: assignment.contentId,
+            activityRevisionNum: assignment.revisionNum ?? 1,
             data,
           });
         }
       } else if (event.data.subject == "SPLICE.getState") {
         try {
-          const { data } = await axios.get("/api/loadState", {
+          const { data } = await axios.get("/api/score/loadState", {
             params: {
-              contentId: assignment.id,
-              docId: assignment.documents[0].id,
-              docVersionNum: assignment.documents[0].assignedVersionNum,
-              userId: event.data.userId,
+              contentId: assignment.contentId,
+              requestedUserId: event.data.userId,
             },
           });
 
@@ -180,12 +200,63 @@ export function AssignmentViewer() {
     };
   }, [assignment]);
 
-  if (!assignmentFound) {
+  if (!data.assignmentFound || !assignment) {
     return <EnterClassCode />;
   }
 
   if (!user?.lastNames) {
     return <ChangeName hideHomeButton />;
+  }
+
+  let viewer: ReactElement;
+  if (data.type === "singleDoc") {
+    viewer = (
+      <DoenetViewer
+        doenetML={data.doenetML}
+        doenetmlVersion={data.doenetmlVersion.fullVersion}
+        flags={{
+          showCorrectness: true,
+          solutionDisplayMode: "button",
+          showFeedback: true,
+          showHints: true,
+          autoSubmit: false,
+          allowLoadState: true,
+          allowSaveState: true,
+          allowLocalState: false,
+          allowSaveSubmissions: true,
+          allowSaveEvents: true,
+        }}
+        attemptNumber={1}
+        idsIncludeContentId={false}
+        paginate={true}
+        location={location}
+        navigate={navigate}
+        linkSettings={{
+          viewURL: "/activityViewer",
+          editURL: "/codeViewer",
+        }}
+        apiURLs={{ postMessages: true }}
+      />
+    );
+  } else {
+    viewer = (
+      <DoenetActivityViewer
+        source={data.activityJson}
+        requestedVariantIndex={1}
+        userId={"hi"}
+        linkSettings={{ viewUrl: "", editURL: "" }}
+        paginate={assignment.type === "sequence" ? assignment.paginate : false}
+        activityLevelAttempts={
+          assignment.type === "sequence"
+            ? assignment.activityLevelAttempts
+            : false
+        }
+        itemLevelAttempts={
+          assignment.type === "sequence" ? assignment.itemLevelAttempts : false
+        }
+        showTitle={false}
+      />
+    );
   }
 
   return (
@@ -222,7 +293,7 @@ export function AssignmentViewer() {
               display="flex"
               fontSize={20}
             >
-              {assignment.name}
+              {data.assignment.name}
             </GridItem>
             <GridItem
               area="rightControls"
@@ -278,32 +349,7 @@ export function AssignmentViewer() {
                   w="100%"
                   id="viewer-container"
                 >
-                  <DoenetViewer
-                    doenetML={doenetML}
-                    doenetmlVersion={doenetmlVersion}
-                    flags={{
-                      showCorrectness: true,
-                      solutionDisplayMode: "button",
-                      showFeedback: true,
-                      showHints: true,
-                      autoSubmit: false,
-                      allowLoadState: true,
-                      allowSaveState: true,
-                      allowLocalState: false,
-                      allowSaveSubmissions: true,
-                      allowSaveEvents: true,
-                    }}
-                    attemptNumber={1}
-                    idsIncludeContentId={false}
-                    paginate={true}
-                    location={location}
-                    navigate={navigate}
-                    linkSettings={{
-                      viewURL: "/activityViewer",
-                      editURL: "/codeViewer",
-                    }}
-                    apiURLs={{ postMessages: true }}
-                  />
+                  {viewer}
                 </Box>
               </VStack>
             </GridItem>
@@ -314,7 +360,19 @@ export function AssignmentViewer() {
   );
 }
 
-async function recordSubmittedEvent({ contentId, docId, docVersionNum, data }) {
+async function recordSubmittedEvent({
+  contentId,
+  activityRevisionNum,
+  data,
+}: {
+  contentId: string;
+  activityRevisionNum: number;
+  data: {
+    object: string;
+    result: string;
+    context: string;
+  };
+}) {
   const object = JSON.parse(data.object);
   const answerId = object.componentName;
 
@@ -328,21 +386,18 @@ async function recordSubmittedEvent({ contentId, docId, docVersionNum, data }) {
     const context = JSON.parse(data.context);
     const itemNumber = context.item;
     const itemCreditAchieved = context.itemCreditAchieved;
-    const documentCreditAchieved = context.pageCreditAchieved;
+    const activityCreditAchieved = context.pageCreditAchieved;
 
-    await axios.post(`/api/recordSubmittedEvent`, {
+    await axios.post(`/api/assign/recordSubmittedEvent`, {
       contentId,
-      docId,
-      docVersionNum,
+      activityRevisionNum,
       answerId,
       answerNumber: object.answerNumber,
-      result: {
-        response,
-        itemNumber,
-        creditAchieved,
-        itemCreditAchieved,
-        documentCreditAchieved,
-      },
+      response,
+      itemNumber,
+      creditAchieved,
+      itemCreditAchieved,
+      activityCreditAchieved,
     });
   }
 }

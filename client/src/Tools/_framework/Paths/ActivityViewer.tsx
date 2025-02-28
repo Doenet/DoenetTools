@@ -59,7 +59,7 @@ import {
   getIconInfo,
   menuIcons,
 } from "../../../_utils/activity";
-import { ActivitySource } from "../../../_utils/viewerTypes";
+import { ActivitySource, isActivitySource } from "../../../_utils/viewerTypes";
 import { processContributorHistory } from "../../../_utils/processRemixes";
 import ContributorsMenu from "../ToolPanels/ContributorsMenu";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
@@ -120,7 +120,7 @@ export async function loader({ params, request }) {
   }
 
   if (activityData.type === "singleDoc") {
-    const doenetML = activityData.source;
+    const doenetML = activityData.doenetML;
     const doenetmlVersion: DoenetmlVersion = activityData.doenetmlVersion;
 
     const contributorHistory = await processContributorHistory(activityHistory);
@@ -135,7 +135,13 @@ export async function loader({ params, request }) {
       addTo,
     };
   } else {
-    const activityJson = compileActivityFromContent(activityData);
+    const activityJsonFromRevision = activityData.activityJson
+      ? JSON.parse(activityData.activityJson)
+      : null;
+
+    const activityJson = isActivitySource(activityJsonFromRevision)
+      ? activityJsonFromRevision
+      : compileActivityFromContent(activityData);
 
     return {
       type: activityData.type,

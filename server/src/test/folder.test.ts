@@ -1750,7 +1750,7 @@ test("copyContent remixes correct versions", async () => {
     throw Error("shouldn't happen");
   }
   expect(activity2.ownerId).eqls(ownerId2);
-  expect(activity2.source).eq(activity1Content);
+  expect(activity2.doenetML).eq(activity1Content);
 
   // history should be version 1 of activity 1
   const activityData2 = await getActivityViewerData({
@@ -1787,7 +1787,7 @@ test("copyContent remixes correct versions", async () => {
     throw Error("shouldn't happen");
   }
   expect(activity3.ownerId).eqls(ownerId3);
-  expect(activity3.source).eq(activity1ContentModified);
+  expect(activity3.doenetML).eq(activity1ContentModified);
 
   // history should be version 2 of activity 1
   const activityData3 = await getActivityViewerData({

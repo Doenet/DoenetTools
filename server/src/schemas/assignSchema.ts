@@ -6,7 +6,7 @@ export const assignmentSettingsSchema = z.object({
   contentId: uuidSchema,
   closeAt: z
     .string()
-    .datetime()
+    .datetime({ offset: true })
     .transform((val) => DateTime.fromISO(val)),
 });
 

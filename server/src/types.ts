@@ -160,12 +160,14 @@ export type Doc = ContentBase & {
   numVariants: number;
   baseComponentCounts: string;
   revisionNum?: number;
-  source: string;
+  doenetML: string;
   doenetmlVersion: DoenetmlVersion;
 };
 
 export type QuestionBank = ContentBase & {
   type: "select";
+  activityJson?: string;
+  revisionNum?: number;
   numToSelect: number;
   selectByVariant: boolean;
   children: Content[];
@@ -173,6 +175,8 @@ export type QuestionBank = ContentBase & {
 
 export type ProblemSet = ContentBase & {
   type: "sequence";
+  activityJson?: string;
+  revisionNum?: number;
   shuffle: boolean;
   paginate: boolean;
   activityLevelAttempts: boolean;
@@ -182,6 +186,7 @@ export type ProblemSet = ContentBase & {
 
 export type Folder = ContentBase & {
   type: "folder";
+  revisionNum?: number;
   children: Content[];
 };
 
@@ -229,7 +234,7 @@ export async function createContentInfo({
         type: "singleDoc",
         numVariants: 1,
         baseComponentCounts: "{}",
-        source: "",
+        doenetML: "",
         doenetmlVersion: defaultDoenetmlVersion,
         ...contentBase,
       };

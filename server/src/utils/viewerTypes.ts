@@ -54,3 +54,52 @@ export type SequenceSource = {
    */
   creditWeights?: number[];
 };
+
+// type guards
+
+export function isActivitySource(obj: unknown): obj is ActivitySource {
+  return isSingleDocSource(obj) || isSelectSource(obj) || isSequenceSource(obj);
+}
+
+export function isSingleDocSource(obj: unknown): obj is SingleDocSource {
+  const typedObj = obj as SingleDocSource;
+  return (
+    typedObj !== null &&
+    typeof typedObj === "object" &&
+    typedObj.type === "singleDoc" &&
+    typeof typedObj.id === "string" &&
+    typeof typedObj.isDescription === "boolean" &&
+    typeof typedObj.doenetML === "string" &&
+    typeof typedObj.version === "string"
+  );
+}
+
+export function isSelectSource(obj: unknown): obj is SelectSource {
+  const typedObj = obj as SelectSource;
+  return (
+    typedObj !== null &&
+    typeof typedObj === "object" &&
+    typedObj.type === "select" &&
+    typeof typedObj.id === "string" &&
+    typeof typedObj.numToSelect === "number" &&
+    typeof typedObj.selectByVariant === "boolean" &&
+    Array.isArray(typedObj.items) &&
+    typedObj.items.every(isActivitySource)
+  );
+}
+
+export function isSequenceSource(obj: unknown): obj is SequenceSource {
+  const typedObj = obj as SequenceSource;
+  return (
+    typedObj !== null &&
+    typeof typedObj === "object" &&
+    typedObj.type === "sequence" &&
+    typeof typedObj.id === "string" &&
+    Array.isArray(typedObj.items) &&
+    typedObj.items.every(isActivitySource) &&
+    typeof typedObj.shuffle === "boolean" &&
+    (typedObj.creditWeights === undefined ||
+      (Array.isArray(typedObj.creditWeights) &&
+        typedObj.creditWeights.every((weight) => typeof weight === "number")))
+  );
+}

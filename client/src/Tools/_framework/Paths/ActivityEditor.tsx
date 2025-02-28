@@ -166,7 +166,7 @@ export async function loader({ params, request }) {
   } = await axios.get("/api/info/getAllDoenetmlVersions");
 
   if (activityData.type === "singleDoc") {
-    const doenetML = activityData.source;
+    const doenetML = activityData.doenetML;
     const doenetmlVersion: DoenetmlVersion = activityData.doenetmlVersion;
 
     return {
@@ -388,7 +388,6 @@ export function ActivityEditor() {
       <CompoundActivityEditor
         activity={data.activityData}
         activityJson={data.activityJson}
-        assignmentStatus={assignmentStatus}
         mode={mode}
         fetcher={fetcher}
         setSettingsContentId={setSettingsContentId}

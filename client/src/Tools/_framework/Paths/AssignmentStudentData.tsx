@@ -33,7 +33,7 @@ export async function loader({ params, request, isAssignedData = false }) {
   const withMaxScore = url.searchParams.get("withMaxScore") === "0" ? 0 : 1;
 
   const { data: assignmentData } = await axios.get(
-    `/api/getAssignmentStudentData/${params.contentId}/${params.userId ?? ""}`,
+    `/api/assign/getAssignmentStudentData/${params.contentId}/${params.userId ?? ""}`,
   );
 
   const assignment = assignmentData.activity;

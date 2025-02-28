@@ -49,7 +49,7 @@ type Folder = {
 
 export async function loader({ params }) {
   const { data } = await axios.get(
-    `/api/getAllAssignmentScores/${params.folderId ?? ""}`,
+    `/api/assign/getAllAssignmentScores/${params.folderId ?? ""}`,
   );
 
   const assignmentScores: AssignmentScore[] = data.assignmentScores;
