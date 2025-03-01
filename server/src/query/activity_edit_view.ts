@@ -17,16 +17,7 @@ import { recordContentView, recordRecentContent } from "./stats";
 /**
  * Get the data needed to edit `contentId` of `ownerId`.
  *
- * The data returned depends on whether or not `isAssigned` is set.
- *
- * If `isAssigned` is not set, then we return current source from the documents table
- *
- * If `isAssigned` is `true`, then we return the fixed source from documentVersions table
- * the is referenced by the `assignedVersionNum` in the documents table.
- * We also return information about whether or not the assignment is open in this case.
- *
- * @param contentId
- * @param loggedInUserId
+ * Include assignment info if `contentId` is assigned.
  */
 export async function getActivityEditorData({
   contentId,
@@ -51,17 +42,6 @@ export async function getActivityEditorData({
     return { editableByMe: false, contentId };
   }
 
-  const { isAssigned } = await prisma.content.findUniqueOrThrow({
-    where: {
-      id: contentId,
-      type: { not: "folder" },
-    },
-    select: {
-      isAssigned: true,
-      type: true,
-    },
-  });
-
   const { availableFeatures } = await getAvailableContentFeatures();
 
   const isAdmin = await getIsAdmin(loggedInUserId);
@@ -70,7 +50,6 @@ export async function getActivityEditorData({
     contentId,
     loggedInUserId,
     includeAssignInfo: true,
-    includeAssignedRevision: isAssigned,
     countAssignmentScores: true,
     includeClassifications: true,
     includeShareDetails: true,
@@ -134,35 +113,39 @@ export async function getActivityViewerData({
  * Get the content structure for `contentId`, recursing to all descendants
  * to populate the `children` field of it and its descendants.
  *
+ *  If `skipPermissionCheck` is `true`, then we assume the calling function
+ *  already determined that `loggedInUserId` has access and we skip the check that is viewable.
  */
 export async function getContent({
   contentId,
   loggedInUserId,
   includeAssignInfo = false,
-  includeAssignedRevision = false,
   countAssignmentScores = false,
   includeLibraryInfo = false,
   includeClassifications = false,
   includeShareDetails = false,
   includeOwnerDetails = false,
   isAdmin = false,
+  skipPermissionCheck = false,
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   includeAssignInfo?: boolean;
-  includeAssignedRevision?: boolean;
   countAssignmentScores?: boolean;
   includeLibraryInfo?: boolean;
   includeClassifications?: boolean;
   includeShareDetails?: boolean;
   includeOwnerDetails?: boolean;
   isAdmin?: boolean;
+  skipPermissionCheck?: boolean;
 }) {
   // 1. verify that `loggedInUserId` can view content
   await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      ...filterViewableActivity(loggedInUserId, isAdmin),
+      ...(skipPermissionCheck
+        ? { isDeleted: false }
+        : filterViewableActivity(loggedInUserId, isAdmin)),
     },
     select: { id: true },
   });
@@ -177,12 +160,13 @@ export async function getContent({
     WITH RECURSIVE content_tree(id, parentId, sortIndex) AS (
     SELECT id, parentId, sortIndex FROM content
     WHERE parentId = ${contentId}
-      AND ${viewableContentWhere(loggedInUserId, isAdmin)}
+      ${skipPermissionCheck ? Prisma.sql`AND content.isDeleted = FALSE` : Prisma.sql`AND ${viewableContentWhere(loggedInUserId, isAdmin)}`}
     UNION ALL
     SELECT content.id, content.parentId, content.sortIndex FROM content
     INNER JOIN content_tree AS ct
     ON content.parentId = ct.id
-    WHERE ${viewableContentWhere(loggedInUserId, isAdmin)}
+    WHERE 
+      ${skipPermissionCheck ? Prisma.sql`content.isDeleted = FALSE` : Prisma.sql`${viewableContentWhere(loggedInUserId, isAdmin)}`}
   )
   SELECT id, parentId from content_tree
     ORDER BY
@@ -193,7 +177,6 @@ export async function getContent({
 
   const contentSelect = returnContentSelect({
     includeAssignInfo,
-    includeAssignedRevision,
     countAssignmentScores,
     includeLibraryInfo,
     includeClassifications,

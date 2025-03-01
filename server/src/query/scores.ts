@@ -7,14 +7,12 @@ import { filterEditableActivity } from "../utils/permissions";
 // If not, how do we communicate that fact
 export async function saveScoreAndState({
   contentId,
-  activityRevisionNum,
   loggedInUserId,
   score,
   onSubmission,
   state,
 }: {
   contentId: Uint8Array;
-  activityRevisionNum: number;
   loggedInUserId: Uint8Array;
   score: number;
   onSubmission: boolean;
@@ -116,11 +114,9 @@ export async function saveScoreAndState({
       score,
       state,
       hasMaxScore,
-      activityRevisionNum,
     },
     create: {
       contentId,
-      activityRevisionNum,
       userId: loggedInUserId,
       isLatest: true,
       hasMaxScore,
@@ -163,7 +159,7 @@ export async function loadState({
     await prisma.content.findUniqueOrThrow({
       where: {
         id: contentId,
-        isAssigned: true,
+        assignmentId: { not: null },
         ...filterEditableActivity(loggedInUserId),
       },
     });

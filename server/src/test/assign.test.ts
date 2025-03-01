@@ -30,7 +30,6 @@ import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import { loadState, saveScoreAndState } from "../query/scores";
 import { updateUser } from "../query/user";
 import { moveContent } from "../query/copy_move";
-import { isActivitySource } from "../utils/viewerTypes";
 
 test("assign an activity", async () => {
   const owner = await createTestUser();
@@ -47,12 +46,12 @@ test("assign an activity", async () => {
     loggedInUserId: ownerId,
   });
 
-  await assignActivity({ contentId: contentId, loggedInUserId: ownerId });
+  await assignActivity({ contentId, loggedInUserId: ownerId });
   const assignment = await getTestAssignment(contentId, ownerId);
 
   expect(assignment.id).eqls(contentId);
   expect(assignment.name).eq("Activity 1");
-  expect(assignment.assignedRevision!.source).eq("Some content");
+  expect(assignment.source).eq("Some content");
 
   // changing name of activity does change assignment name
   await updateContent({
@@ -74,7 +73,7 @@ test("assign an activity", async () => {
   ).rejects.toThrow("Cannot change assigned content");
 
   updatedAssignment = await getTestAssignment(contentId, ownerId);
-  expect(updatedAssignment.assignedRevision!.source).eq("Some content");
+  expect(updatedAssignment.source).eq("Some content");
 });
 
 test("cannot assign other user's activity", async () => {
@@ -145,8 +144,8 @@ test("open and close assignment with code", async () => {
     loggedInUserId: ownerId,
   });
   let assignment = await getTestAssignment(contentId, ownerId);
-  expect(assignment.classCode).eq(classCode);
-  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(assignment.assignment!.classCode).eq(classCode);
+  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   let assignmentData = await getAssignmentDataFromCode({
     code: classCode,
@@ -175,20 +174,20 @@ test("open and close assignment with code", async () => {
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
 
-  // get same code back if reopen
+  // get different code back if reopen
   closeAt = DateTime.now().plus({ weeks: 3 });
   const { classCode: classCode2 } = await openAssignmentWithCode({
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
   });
-  expect(classCode2).eq(classCode);
+  expect(classCode2).not.eq(classCode);
   assignment = await getTestAssignment(contentId, ownerId);
-  expect(assignment.classCode).eq(classCode);
-  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(assignment.assignment!.classCode).eq(classCode2);
+  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   assignmentData = await getAssignmentDataFromCode({
-    code: classCode,
+    code: classCode2,
     loggedInUserId: fakeId,
   });
   expect(assignmentData.assignmentFound).eq(true);
@@ -205,7 +204,7 @@ test("open and close assignment with code", async () => {
     loggedInUserId: ownerId,
   });
   assignmentData = await getAssignmentDataFromCode({
-    code: classCode,
+    code: classCode2,
     loggedInUserId: fakeId,
   });
   expect(assignmentData.assignmentFound).eq(false);
@@ -223,15 +222,14 @@ test("open and close assignment with code", async () => {
     closeAt: closeAt,
     loggedInUserId: ownerId,
   });
-  expect(classCode3).eq(classCode);
+  expect(classCode3).eq(classCode2);
   assignment = await getTestAssignment(contentId, ownerId);
-  expect(assignment.classCode).eq(classCode);
-  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(assignment.assignment!.classCode).eq(classCode2);
+  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   // add some data
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: ownerId,
     score: 0.3,
     onSubmission: true,
@@ -244,8 +242,8 @@ test("open and close assignment with code", async () => {
     loggedInUserId: ownerId,
   });
   assignment = await getTestAssignment(contentId, ownerId);
-  expect(assignment.classCode).eq(classCode);
-  expect(assignment.codeValidUntil).eqls(null);
+  expect(assignment.assignment!.classCode).eq(classCode2);
+  expect(assignment.assignment!.codeValidUntil).eqls(null);
 });
 
 test("open and unassign assignment with code", async () => {
@@ -275,8 +273,8 @@ test("open and unassign assignment with code", async () => {
     loggedInUserId: ownerId,
   });
   const assignment = await getTestAssignment(contentId, ownerId);
-  expect(assignment.classCode).eq(classCode);
-  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(assignment.assignment!.classCode).eq(classCode);
+  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   let assignmentData = await getAssignmentDataFromCode({
     code: classCode,
@@ -301,7 +299,7 @@ test("open and unassign assignment with code", async () => {
   // cannot unassign again
   await expect(
     unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
-  ).rejects.toThrow("Record to update not found");
+  ).rejects.toThrow("not found");
 });
 
 test("open compound assignment with code", async () => {
@@ -375,8 +373,8 @@ test("open compound assignment with code", async () => {
     loggedInUserId: ownerId,
   });
   const assignment = await getTestAssignment(sequenceId, ownerId);
-  expect(assignment.classCode).eq(classCode);
-  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(assignment.assignment!.classCode).eq(classCode);
+  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   const assignmentData = await getAssignmentDataFromCode({
     code: classCode,
@@ -389,31 +387,21 @@ test("open compound assignment with code", async () => {
 
   expect(assignmentData.assignment.contentId).eqls(sequenceId);
 
-  const activityJson = JSON.parse(assignmentData.assignment.activityJson!);
-
-  if (!isActivitySource(activityJson)) {
-    throw Error("Shouldn't happen");
-  }
-
-  if (activityJson.type !== "sequence") {
-    throw Error("Shouldn't happen");
-  }
-
-  expect(activityJson.title).eq("A problem set");
-  expect(activityJson.items.length).eq(2);
-  const question1 = activityJson.items[0];
+  expect(assignmentData.assignment.name).eq("A problem set");
+  expect(assignmentData.assignment.children.length).eq(2);
+  const question1 = assignmentData.assignment.children[0];
   if (question1.type !== "singleDoc") {
     throw Error("Shouldn't happen");
   }
   expect(question1.doenetML).eq("Some content 1");
 
-  const questionBank = activityJson.items[1];
+  const questionBank = assignmentData.assignment.children[1];
   if (questionBank.type !== "select") {
     throw Error("Shouldn't happen");
   }
-  expect(questionBank.items.length).eq(2);
+  expect(questionBank.children.length).eq(2);
   for (let i = 0; i < 2; i++) {
-    const question = questionBank.items[i];
+    const question = questionBank.children[i];
     if (question.type !== "singleDoc") {
       throw Error("Shouldn't happen");
     }
@@ -505,7 +493,7 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
     }),
   ).rejects.toThrow("Record to update not found");
   assignment = await getTestAssignment(contentId, ownerId);
-  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   await updateAssignmentSettings({
     contentId: contentId,
@@ -513,7 +501,7 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
     loggedInUserId: ownerId,
   });
   assignment = await getTestAssignment(contentId, ownerId);
-  expect(assignment.codeValidUntil).eqls(newCloseAt.toJSDate());
+  expect(assignment.assignment!.codeValidUntil).eqls(newCloseAt.toJSDate());
 
   await expect(
     closeAssignmentWithCode({ contentId: contentId, loggedInUserId: userId2 }),
@@ -563,7 +551,6 @@ test("get assignment data from anonymous users", async () => {
 
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.5,
     onSubmission: true,
@@ -591,16 +578,12 @@ test("get assignment data from anonymous users", async () => {
     activity: {
       id: contentId,
       name: "Activity 1",
-      assignedRevision: {
-        revisionNum: 1,
-        source: "Some content",
-        doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
-      },
+      source: "Some content",
+      doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
     },
     user: userData1,
     activityScores: [
       {
-        activityRevisionNum: 1,
         hasMaxScore: true,
         score: 0.5,
       },
@@ -610,7 +593,6 @@ test("get assignment data from anonymous users", async () => {
   // new lower score ignored
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.2,
     onSubmission: true,
@@ -636,21 +618,16 @@ test("get assignment data from anonymous users", async () => {
     activity: {
       id: contentId,
       name: "Activity 1",
-      assignedRevision: {
-        revisionNum: 1,
-        source: "Some content",
-        doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
-      },
+      source: "Some content",
+      doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
     },
     user: userData1,
     activityScores: [
       {
-        activityRevisionNum: 1,
         hasMaxScore: false,
         score: 0.2,
       },
       {
-        activityRevisionNum: 1,
         hasMaxScore: true,
         score: 0.5,
       },
@@ -660,7 +637,6 @@ test("get assignment data from anonymous users", async () => {
   // new higher score used
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.7,
     onSubmission: true,
@@ -686,16 +662,12 @@ test("get assignment data from anonymous users", async () => {
     activity: {
       id: contentId,
       name: "Activity 1",
-      assignedRevision: {
-        revisionNum: 1,
-        source: "Some content",
-        doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
-      },
+      source: "Some content",
+      doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
     },
     user: userData1,
     activityScores: [
       {
-        activityRevisionNum: 1,
         hasMaxScore: true,
         score: 0.7,
       },
@@ -729,7 +701,6 @@ test("get assignment data from anonymous users", async () => {
   // save state for second user
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser2.userId,
     score: 0.3,
     onSubmission: true,
@@ -760,16 +731,12 @@ test("get assignment data from anonymous users", async () => {
     activity: {
       id: contentId,
       name: "Activity 1",
-      assignedRevision: {
-        revisionNum: 1,
-        source: "Some content",
-        doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
-      },
+      source: "Some content",
+      doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
     },
     user: userData2,
     activityScores: [
       {
-        activityRevisionNum: 1,
         hasMaxScore: true,
         score: 0.3,
       },
@@ -804,7 +771,6 @@ test("can't get assignment data if other user, but student can get their own dat
 
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.5,
     onSubmission: true,
@@ -883,7 +849,6 @@ test("can't unassign if have data", async () => {
 
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.5,
     onSubmission: true,
@@ -903,7 +868,7 @@ test("can't unassign if have data", async () => {
 
   await expect(
     unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
-  ).rejects.toThrow("Record to update not found");
+  ).rejects.toThrow("not found");
 });
 
 test("list assigned and get assigned scores get student assignments and scores", async () => {
@@ -965,7 +930,6 @@ test("list assigned and get assigned scores get student assignments and scores",
   // recording score for user1 on assignment2 adds it to user1's assignment list
   await saveScoreAndState({
     contentId: contentId2,
-    activityRevisionNum: 1,
     loggedInUserId: user1Id,
     score: 0.5,
     onSubmission: true,
@@ -987,7 +951,7 @@ test("list assigned and get assigned scores get student assignments and scores",
   // cannot unassign
   await expect(
     unassignActivity({ contentId: contentId2, loggedInUserId: user2Id }),
-  ).rejects.toThrow("Record to update not found");
+  ).rejects.toThrow("not found");
 });
 
 test("get all assignment data from anonymous user", async () => {
@@ -1029,7 +993,6 @@ test("get all assignment data from anonymous user", async () => {
 
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.5,
     onSubmission: true,
@@ -1059,7 +1022,6 @@ test("get all assignment data from anonymous user", async () => {
   // new lower score ignored
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.2,
     onSubmission: true,
@@ -1088,7 +1050,6 @@ test("get all assignment data from anonymous user", async () => {
 
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.7,
     onSubmission: true,
@@ -1414,7 +1375,6 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
 
   await saveScoreAndState({
     contentId: activity1aId,
-    activityRevisionNum: 1,
     loggedInUserId: newUserId,
     score: 0.11,
     onSubmission: true,
@@ -1422,7 +1382,6 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await saveScoreAndState({
     contentId: activity1c1Id,
-    activityRevisionNum: 1,
     loggedInUserId: newUserId,
     score: 0.131,
     onSubmission: true,
@@ -1430,7 +1389,6 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await saveScoreAndState({
     contentId: activity1c2aId,
-    activityRevisionNum: 1,
     loggedInUserId: newUserId,
     score: 0.1321,
     onSubmission: true,
@@ -1438,7 +1396,6 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await saveScoreAndState({
     contentId: activity1c2bId,
-    activityRevisionNum: 1,
     loggedInUserId: newUserId,
     score: 0.1322,
     onSubmission: true,
@@ -1446,7 +1403,6 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await saveScoreAndState({
     contentId: activity1eId,
-    activityRevisionNum: 1,
     loggedInUserId: newUserId,
     score: 0.15,
     onSubmission: true,
@@ -1454,7 +1410,6 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await saveScoreAndState({
     contentId: activity2Id,
-    activityRevisionNum: 1,
     loggedInUserId: newUserId,
     score: 0.2,
     onSubmission: true,
@@ -1462,7 +1417,6 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await saveScoreAndState({
     contentId: activity3bId,
-    activityRevisionNum: 1,
     loggedInUserId: newUserId,
     score: 0.32,
     onSubmission: true,
@@ -1470,7 +1424,6 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await saveScoreAndState({
     contentId: activityRootId,
-    activityRevisionNum: 1,
     loggedInUserId: newUserId,
     score: 1.0,
     onSubmission: true,
@@ -1762,7 +1715,6 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.5,
     onSubmission: true,
@@ -1791,7 +1743,6 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   // new lower score ignored
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.2,
     onSubmission: true,
@@ -1832,7 +1783,6 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser2.userId,
     score: 0.3,
     onSubmission: true,
@@ -1841,7 +1791,6 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser1.userId,
     score: 0.7,
     onSubmission: true,
@@ -1907,7 +1856,6 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 
   await saveScoreAndState({
     contentId: activity2Id,
-    activityRevisionNum: 1,
     loggedInUserId: newUser3.userId,
     score: 0.9,
     onSubmission: true,
@@ -1991,7 +1939,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   // eslint-disable-next-line prefer-const
   let { submittedResponses, activityName } = await getSubmittedResponses({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: ownerId,
     answerId: answerId1,
   });
@@ -2004,7 +1951,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     activityName: activityName2,
   } = await getSubmittedResponseHistory({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: ownerId,
     answerId: answerId1,
     userId: newUser!.userId,
@@ -2015,7 +1961,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   // record event and retrieve it
   await recordSubmittedEvent({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser!.userId,
     answerId: answerId1,
     response: "Answer result 1",
@@ -2031,7 +1976,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   });
   expect(answerWithResponses).eqls([
     {
-      activityRevisionNum: 1,
       answerId: answerId1,
       answerNumber: 1,
       count: 1,
@@ -2040,7 +1984,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   ]);
   ({ submittedResponses } = await getSubmittedResponses({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: ownerId,
     answerId: answerId1,
   }));
@@ -2062,7 +2005,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   ({ submittedResponses: submittedResponseHistory } =
     await getSubmittedResponseHistory({
       contentId: contentId,
-      activityRevisionNum: 1,
       loggedInUserId: ownerId,
       answerId: answerId1,
       userId: newUser!.userId,
@@ -2078,7 +2020,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   // record new event overwrites result
   await recordSubmittedEvent({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser!.userId,
     answerId: answerId1,
     response: "Answer result 2",
@@ -2094,7 +2035,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   });
   expect(answerWithResponses).eqls([
     {
-      activityRevisionNum: 1,
       answerId: answerId1,
       answerNumber: 1,
       count: 1,
@@ -2103,7 +2043,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   ]);
   ({ submittedResponses } = await getSubmittedResponses({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: ownerId,
     answerId: answerId1,
   }));
@@ -2125,7 +2064,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   ({ submittedResponses: submittedResponseHistory } =
     await getSubmittedResponseHistory({
       contentId: contentId,
-      activityRevisionNum: 1,
       loggedInUserId: ownerId,
       answerId: answerId1,
       userId: newUser!.userId,
@@ -2146,7 +2084,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   // record event for different answer
   await recordSubmittedEvent({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser!.userId,
     answerId: answerId2,
     response: "Answer result 3",
@@ -2164,14 +2101,12 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   expect(answerWithResponses).toMatchObject(
     expect.arrayContaining([
       {
-        activityRevisionNum: 1,
         answerId: answerId1,
         answerNumber: 1,
         count: 1,
         averageCredit: 0.8,
       },
       {
-        activityRevisionNum: 1,
         answerId: answerId2,
         answerNumber: 2,
         count: 1,
@@ -2181,7 +2116,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   );
   ({ submittedResponses } = await getSubmittedResponses({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: ownerId,
     answerId: answerId1,
   }));
@@ -2203,7 +2137,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   ({ submittedResponses: submittedResponseHistory } =
     await getSubmittedResponseHistory({
       contentId: contentId,
-      activityRevisionNum: 1,
       loggedInUserId: ownerId,
       answerId: answerId1,
       userId: newUser!.userId,
@@ -2223,7 +2156,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
 
   ({ submittedResponses } = await getSubmittedResponses({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: ownerId,
     answerId: answerId2,
   }));
@@ -2245,7 +2177,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   ({ submittedResponses: submittedResponseHistory } =
     await getSubmittedResponseHistory({
       contentId: contentId,
-      activityRevisionNum: 1,
       loggedInUserId: ownerId,
       answerId: answerId2,
       userId: newUser!.userId,
@@ -2267,7 +2198,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   };
   await recordSubmittedEvent({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser2.userId,
     answerId: answerId1,
     response: "Answer result 4",
@@ -2284,14 +2214,12 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   expect(answerWithResponses).toMatchObject(
     expect.arrayContaining([
       {
-        activityRevisionNum: 1,
         answerId: answerId1,
         answerNumber: 1,
         count: 2,
         averageCredit: 0.9,
       },
       {
-        activityRevisionNum: 1,
         answerId: answerId2,
         answerNumber: 2,
         count: 1,
@@ -2301,7 +2229,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   );
   ({ submittedResponses } = await getSubmittedResponses({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: ownerId,
     answerId: answerId1,
   }));
@@ -2341,7 +2268,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   ({ submittedResponses: submittedResponseHistory } =
     await getSubmittedResponseHistory({
       contentId: contentId,
-      activityRevisionNum: 1,
       loggedInUserId: ownerId,
       answerId: answerId1,
       userId: newUser!.userId,
@@ -2361,7 +2287,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   ({ submittedResponses: submittedResponseHistory } =
     await getSubmittedResponseHistory({
       contentId: contentId,
-      activityRevisionNum: 1,
       loggedInUserId: ownerId,
       answerId: answerId1,
       userId: newUser2.userId,
@@ -2376,7 +2301,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
 
   ({ submittedResponses } = await getSubmittedResponses({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: ownerId,
     answerId: answerId2,
   }));
@@ -2398,7 +2322,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   ({ submittedResponses: submittedResponseHistory } =
     await getSubmittedResponseHistory({
       contentId: contentId,
-      activityRevisionNum: 1,
       loggedInUserId: ownerId,
       answerId: answerId2,
       userId: newUser!.userId,
@@ -2413,7 +2336,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   ({ submittedResponses: submittedResponseHistory } =
     await getSubmittedResponseHistory({
       contentId: contentId,
-      activityRevisionNum: 1,
       loggedInUserId: ownerId,
       answerId: answerId2,
       userId: newUser2.userId,
@@ -2423,7 +2345,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   // verify submitted responses changes but average max credit doesn't change if submit a lower credit answer
   await recordSubmittedEvent({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser2.userId,
     answerId: answerId1,
     response: "Answer result 5",
@@ -2437,7 +2358,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   ({ submittedResponses: submittedResponseHistory } =
     await getSubmittedResponseHistory({
       contentId: contentId,
-      activityRevisionNum: 1,
       loggedInUserId: ownerId,
       answerId: answerId1,
       userId: newUser2.userId,
@@ -2457,7 +2377,6 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
 
   ({ submittedResponses } = await getSubmittedResponses({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: ownerId,
     answerId: answerId1,
   }));
@@ -2496,14 +2415,12 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   expect(answerWithResponses).toMatchObject(
     expect.arrayContaining([
       {
-        activityRevisionNum: 1,
         answerId: answerId1,
         answerNumber: 1,
         count: 2,
         averageCredit: 0.9,
       },
       {
-        activityRevisionNum: 1,
         answerId: answerId2,
         answerNumber: 2,
         count: 1,
@@ -2546,7 +2463,6 @@ test("only owner can get submitted responses", async () => {
   // record event and retrieve it
   await recordSubmittedEvent({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser!.userId,
     answerId: answerId1,
     response: "Answer result 1",
@@ -2562,7 +2478,6 @@ test("only owner can get submitted responses", async () => {
   });
   expect(answerWithResponses).eqls([
     {
-      activityRevisionNum: 1,
       answerId: answerId1,
       answerNumber: 1,
       count: 1,
@@ -2571,7 +2486,6 @@ test("only owner can get submitted responses", async () => {
   ]);
   const { submittedResponses } = await getSubmittedResponses({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: ownerId,
     answerId: answerId1,
   });
@@ -2593,7 +2507,6 @@ test("only owner can get submitted responses", async () => {
   const { submittedResponses: submittedResponseHistory } =
     await getSubmittedResponseHistory({
       contentId: contentId,
-      activityRevisionNum: 1,
       loggedInUserId: ownerId,
       answerId: answerId1,
       userId: newUser!.userId,
@@ -2616,7 +2529,6 @@ test("only owner can get submitted responses", async () => {
   await expect(
     getSubmittedResponses({
       contentId: contentId,
-      activityRevisionNum: 1,
       loggedInUserId: userId2,
       answerId: answerId1,
     }),
@@ -2625,7 +2537,6 @@ test("only owner can get submitted responses", async () => {
   await expect(
     getSubmittedResponseHistory({
       contentId: contentId,
-      activityRevisionNum: 1,
       loggedInUserId: userId2,
       answerId: answerId1,
       userId: newUser!.userId,
@@ -2655,7 +2566,6 @@ test("only user and assignment owner can load document state", async () => {
 
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser!.userId,
     score: 0.5,
     onSubmission: true,
@@ -2717,7 +2627,6 @@ test("load document state based on withMaxScore", async () => {
 
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser!.userId,
     score: 0.5,
     onSubmission: true,
@@ -2744,7 +2653,6 @@ test("load document state based on withMaxScore", async () => {
   // last state is no longer maximum score
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser!.userId,
     score: 0.2,
     onSubmission: true,
@@ -2772,7 +2680,6 @@ test("load document state based on withMaxScore", async () => {
   // matching maximum score with onSubmission uses latest for maximum
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser!.userId,
     score: 0.5,
     onSubmission: true,
@@ -2798,7 +2705,6 @@ test("load document state based on withMaxScore", async () => {
   // matching maximum score without onSubmission does not use latest for maximum
   await saveScoreAndState({
     contentId: contentId,
-    activityRevisionNum: 1,
     loggedInUserId: newUser!.userId,
     score: 0.5,
     onSubmission: false,

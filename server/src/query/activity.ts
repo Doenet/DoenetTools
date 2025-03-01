@@ -241,16 +241,19 @@ export async function updateContent({
   const isAdmin = await getIsAdmin(loggedInUserId);
 
   // check if content is assigned
-  const isAssigned = (
+  const assignmentId = (
     await prisma.content.findFirstOrThrow({
       where: {
         id: contentId,
         ...filterEditableContent(loggedInUserId, isAdmin),
       },
     })
-  ).isAssigned;
+  ).assignmentId;
 
-  if (isAssigned && (source !== undefined || doenetmlVersionId !== undefined)) {
+  if (
+    assignmentId !== null &&
+    (source !== undefined || doenetmlVersionId !== undefined)
+  ) {
     throw new InvalidRequestError("Cannot change assigned content");
   }
 

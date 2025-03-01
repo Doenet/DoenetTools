@@ -143,7 +143,6 @@ export function processLicense(
 
 export function returnContentSelect({
   includeAssignInfo = false,
-  includeAssignedRevision = false,
   countAssignmentScores = false,
   includeLibraryInfo = false,
   includeClassifications = false,
@@ -227,9 +226,6 @@ export function returnContentSelect({
     owner,
     imagePath: true,
     isPublic: true,
-    isAssigned: includeAssignInfo,
-    classCode: includeAssignInfo,
-    codeValidUntil: includeAssignInfo,
     contentFeatures: true,
     sharedWith,
     license: {
@@ -255,24 +251,20 @@ export function returnContentSelect({
     _count,
   };
 
-  const assignedRevision = includeAssignedRevision
+  const assignment = includeAssignInfo
     ? {
         select: {
-          revisionNum: true,
-          source: true,
-          doenetmlVersion: true,
-          numVariants: true,
-          baseComponentCounts: true,
+          classCode: true,
+          codeValidUntil: true,
         },
       }
     : false;
 
   const docSelect = {
-    numVariants: !includeAssignedRevision,
-    baseComponentCounts: !includeAssignedRevision,
-    source: !includeAssignedRevision,
-    doenetmlVersion: !includeAssignedRevision,
-    assignedRevision,
+    numVariants: true,
+    baseComponentCounts: true,
+    source: true,
+    doenetmlVersion: true,
   };
 
   const questionBankSelect = {
@@ -288,6 +280,7 @@ export function returnContentSelect({
   };
 
   return {
+    assignment,
     ...baseSelect,
     ...docSelect,
     ...questionBankSelect,
@@ -341,9 +334,6 @@ type PreliminaryContent = {
   owner?: UserInfo;
   imagePath: string | null;
   isPublic: boolean;
-  isAssigned?: boolean;
-  classCode?: string | null;
-  codeValidUntil?: Date | null;
   contentFeatures: {
     id: number;
     code: string;
@@ -370,24 +360,9 @@ type PreliminaryContent = {
   };
 
   // if `includeAssignedRevision` specified
-  assignedRevision?: {
-    revisionNum: number;
-
-    // either the DoenetML or serialized activityJson
-    source: string;
-
-    // document specific
-    doenetmlVersion: {
-      id: number;
-      default: boolean;
-      displayedVersion: string;
-      fullVersion: string;
-      deprecated: boolean;
-      removed: boolean;
-      deprecationMessage: string;
-    };
-    numVariants: number;
-    baseComponentCounts: string;
+  assignment?: {
+    classCode: string;
+    codeValidUntil: Date | null;
   } | null;
 
   // from document select
@@ -422,9 +397,6 @@ export function processContent(
   const {
     id,
     type,
-    isAssigned,
-    classCode,
-    codeValidUntil,
     _count,
     sharedWith: sharedWithOrig,
     license,
@@ -432,7 +404,7 @@ export function processContent(
     classifications,
     libraryActivityInfo,
     librarySourceInfo,
-    assignedRevision,
+    assignment,
 
     // from doc select
     source: sourceOrig,
@@ -455,15 +427,16 @@ export function processContent(
 
   const assignmentInfoObj: { assignmentInfo?: AssignmentInfo } = {};
 
-  if (isAssigned) {
+  if (assignment) {
+    const { codeValidUntil, classCode } = assignment;
     const isOpen = codeValidUntil
       ? DateTime.now() <= DateTime.fromJSDate(codeValidUntil)
       : false;
     const assignmentStatus: AssignmentStatus = isOpen ? "Open" : "Closed";
     assignmentInfoObj.assignmentInfo = {
       assignmentStatus,
-      classCode: classCode ?? null,
-      codeValidUntil: codeValidUntil ?? null,
+      classCode,
+      codeValidUntil,
       hasScoreData: _count ? _count.assignmentScores > 0 : false,
     };
   }
@@ -518,14 +491,6 @@ export function processContent(
           baseComponentCounts: baseComponentCountsOrig,
           doenetmlVersion: doenetmlVersionOrig,
         };
-      } else if (assignedRevision) {
-        docInfo = {
-          doenetML: assignedRevision.source,
-          numVariants: assignedRevision.numVariants,
-          baseComponentCounts: assignedRevision.baseComponentCounts,
-          doenetmlVersion: assignedRevision.doenetmlVersion,
-          revisionNum: assignedRevision.revisionNum,
-        };
       } else {
         throw new InvalidRequestError("Invalid document");
       }
@@ -539,8 +504,6 @@ export function processContent(
     case "select": {
       return {
         type: "select",
-        activityJson: assignedRevision?.source ?? undefined,
-        revisionNum: assignedRevision?.revisionNum,
         numToSelect,
         selectByVariant,
         children: [],
@@ -550,8 +513,6 @@ export function processContent(
     case "sequence": {
       return {
         type: "sequence",
-        activityJson: assignedRevision?.source ?? undefined,
-        revisionNum: assignedRevision?.revisionNum,
         shuffle,
         paginate,
         activityLevelAttempts,

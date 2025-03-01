@@ -196,7 +196,7 @@ export type Content = Doc | QuestionBank | ProblemSet | Folder;
 
 export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
-  classCode: string | null;
+  classCode: string;
   codeValidUntil: Date | null;
   hasScoreData: boolean;
 };

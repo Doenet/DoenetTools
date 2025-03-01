@@ -49,10 +49,10 @@ export async function getTestAssignment(
   const assignment = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      isAssigned: true,
+      assignmentId: { not: null },
       ...filterEditableActivity(loggedInUserId),
     },
-    include: { assignedRevision: true },
+    include: { assignment: true },
   });
   return assignment;
 }

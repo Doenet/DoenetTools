@@ -43,16 +43,13 @@ model content {
   numToSelect           Int                      @default(1) @db.UnsignedSmallInt
   selectByVariant       Boolean                  @default(false)
   // Assignments
-  isAssigned            Boolean                  @default(false)
-  assignedRevisionNum   Int?
-  classCode             String?                  @db.VarChar(45)
-  codeValidUntil        DateTime?
+  assignmentId          Bytes?                   @db.Binary(16)
   owner                 users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   parent                content?                 @relation("childParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   children              content[]                @relation("childParent")
   license               licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
-  assignedRevision      activityRevisions?       @relation("assignedRevision", fields: [id, assignedRevisionNum], references: [contentId, revisionNum], onDelete: NoAction, onUpdate: NoAction)
   doenetmlVersion       doenetmlVersions?        @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  assignment            assignment?              @relation(fields: [assignmentId], references: [rootContentId], onDelete: SetNull, onUpdate: NoAction)
   contentFeatures       contentFeatures[]
   assignmentScores      assignmentScores[]
   promotedContent       promotedContent[]
@@ -66,10 +63,11 @@ model content {
   libraryActivityEvents libraryEvents[]          @relation("activity")
   activityRevisions     activityRevisions[]
   contributorHistory    contributorHistory[]
+  assignmentAsRoot      assignment?              @relation("rootContent")
+  submittedResponses    submittedResponses[]
+  activityState         activityState[]
 
-  @@unique([id, assignedRevisionNum]) // needed for the 1-1 relation "assignedRevision" with activityRevisions
   @@index([ownerId, parentId, sortIndex])
-  @@index([classCode])
   @@index([parentId, type])
   @@fulltext([name])
   @@fulltext([source])
@@ -111,9 +109,6 @@ model activityRevisions {
   activity            content              @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   doenetmlVersion     doenetmlVersions?    @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   contributorHistory  contributorHistory[]
-  activityState       activityState[]
-  submittedResponses  submittedResponses[]
-  assignedContent     content?             @relation("assignedRevision")
 
   @@id([contentId, revisionNum])
   @@unique([contentId, cid])
@@ -189,6 +184,16 @@ model doenetmlVersions {
   activityRevisions  activityRevisions[]
 }
 
+model assignment {
+  rootContentId  Bytes     @id @db.Binary(16)
+  classCode      String    @db.VarChar(45)
+  codeValidUntil DateTime?
+  rootContent    content   @relation("rootContent", fields: [rootContentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  allContent     content[]
+
+  @@index([classCode])
+}
+
 model assignmentScores {
   contentId     Bytes           @db.Binary(16)
   userId        Bytes           @db.Binary(16)
@@ -198,21 +203,19 @@ model assignmentScores {
   activityState activityState[]
 
   @@id([contentId, userId])
-  @@index([contentId])
   @@index([userId])
 }
 
 model activityState {
-  contentId           Bytes             @db.Binary(16)
-  userId              Bytes             @db.Binary(16)
-  isLatest            Boolean           @default(true)
-  hasMaxScore         Boolean           @default(false)
-  score               Float             @default(0)
-  activityRevisionNum Int
-  state               String?           @db.MediumText
-  assignmentScore     assignmentScores  @relation(fields: [contentId, userId], references: [contentId, userId], onDelete: NoAction, onUpdate: NoAction)
-  activityRevision    activityRevisions @relation(fields: [contentId, activityRevisionNum], references: [contentId, revisionNum], onDelete: NoAction, onUpdate: NoAction)
-  user                users             @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  contentId       Bytes            @db.Binary(16)
+  userId          Bytes            @db.Binary(16)
+  isLatest        Boolean          @default(true)
+  hasMaxScore     Boolean          @default(false)
+  score           Float            @default(0)
+  state           String?          @db.MediumText
+  assignmentScore assignmentScores @relation(fields: [contentId, userId], references: [contentId, userId], onDelete: NoAction, onUpdate: NoAction)
+  content         content          @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user            users            @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([contentId, userId, isLatest])
   @@unique([contentId, userId, hasMaxScore])
@@ -220,22 +223,21 @@ model activityState {
 }
 
 model submittedResponses {
-  id                     Int               @id @default(autoincrement())
-  contentId              Bytes             @db.Binary(16)
-  activityRevisionNum    Int
-  userId                 Bytes             @db.Binary(16)
+  id                     Int      @id @default(autoincrement())
+  contentId              Bytes    @db.Binary(16)
+  userId                 Bytes    @db.Binary(16)
   answerId               String
-  response               String            @db.Text
+  response               String   @db.Text
   answerNumber           Int?
   itemNumber             Int
   creditAchieved         Float
   itemCreditAchieved     Float
   activityCreditAchieved Float
-  submittedAt            DateTime          @default(now())
-  activityRevision       activityRevisions @relation(fields: [contentId, activityRevisionNum], references: [contentId, revisionNum], onDelete: NoAction, onUpdate: NoAction)
-  user                   users             @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  submittedAt            DateTime @default(now())
+  content                content  @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user                   users    @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
-  @@index([contentId, activityRevisionNum, answerId])
+  @@index([contentId, answerId])
   @@index([userId])
 }
 

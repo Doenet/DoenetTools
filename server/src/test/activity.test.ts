@@ -537,7 +537,6 @@ test("activity editor data and my folder contents before and after assigned", as
     license: null,
     type: "singleDoc",
     classifications: [],
-    revisionNum: 1,
     doenetML: "",
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
@@ -613,7 +612,7 @@ test("activity editor data and my folder contents before and after assigned", as
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
-  // re-opening, re-assigns with same code
+  // re-opening, re-assigns with different code
   closeAt = DateTime.now().plus({ days: 1 });
   const { classCode: newClassCode } = await openAssignmentWithCode({
     contentId: contentId,
@@ -621,7 +620,7 @@ test("activity editor data and my folder contents before and after assigned", as
     loggedInUserId: ownerId,
   });
 
-  expect(newClassCode).eq(classCode);
+  expect(newClassCode).not.eq(classCode);
 
   const { activity: openedData2 } = await getActivityEditorData({
     contentId: contentId,
@@ -641,13 +640,12 @@ test("activity editor data and my folder contents before and after assigned", as
     license: null,
     type: "singleDoc",
     classifications: [],
-    revisionNum: 1,
     doenetML: "",
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
     assignmentInfo: {
       assignmentStatus: "Open",
-      classCode,
+      classCode: newClassCode,
       codeValidUntil: closeAt.toJSDate(),
       hasScoreData: false,
     },
@@ -675,7 +673,6 @@ test("activity editor data and my folder contents before and after assigned", as
   // just add some data (doesn't matter that it is owner themselves)
   await saveScoreAndState({
     contentId,
-    activityRevisionNum: 1,
     loggedInUserId: ownerId,
     score: 0.5,
     onSubmission: true,
@@ -700,13 +697,12 @@ test("activity editor data and my folder contents before and after assigned", as
     license: null,
     type: "singleDoc",
     classifications: [],
-    revisionNum: 1,
     doenetML: "",
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
     assignmentInfo: {
       assignmentStatus: "Open",
-      classCode,
+      classCode: newClassCode,
       codeValidUntil: closeAt.toJSDate(),
       hasScoreData: true,
     },
@@ -753,13 +749,12 @@ test("activity editor data and my folder contents before and after assigned", as
     license: null,
     type: "singleDoc",
     classifications: [],
-    revisionNum: 1,
     doenetML: "",
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
     assignmentInfo: {
       assignmentStatus: "Closed",
-      classCode,
+      classCode: newClassCode,
       codeValidUntil: null,
       hasScoreData: true,
     },
@@ -787,7 +782,7 @@ test("activity editor data and my folder contents before and after assigned", as
   // explicitly unassigning fails due to the presence of data
   await expect(
     unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
-  ).rejects.toThrow("Record to update not found");
+  ).rejects.toThrow("not found");
 });
 
 test("activity editor data shows its parent folder is public", async () => {

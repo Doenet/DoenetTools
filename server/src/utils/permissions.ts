@@ -87,7 +87,7 @@ export function viewableContentWhere(
   }
 
   const whereStatement = Prisma.sql`
-    isDeleted = FALSE
+    content.isDeleted = FALSE
     AND (
       ${visibilityOptions}
     )
