@@ -393,6 +393,7 @@ type PreliminaryContent = {
 export function processContent(
   preliminaryContent: PreliminaryContent,
   forUserId?: Uint8Array,
+  isAdmin?: boolean,
 ): Content {
   const {
     id,
@@ -452,6 +453,10 @@ export function processContent(
     libraryInfos.libraryActivityInfo = libraryActivityInfo;
   }
   if (librarySourceInfo) {
+    if (librarySourceInfo.status !== "PUBLISHED" && !isAdmin) {
+      // Owner cannot see library draft for their activity
+      librarySourceInfo.contentId = null;
+    }
     libraryInfos.librarySourceInfo = librarySourceInfo;
   }
 

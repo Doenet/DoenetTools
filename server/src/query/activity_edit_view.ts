@@ -26,25 +26,25 @@ export async function getActivityEditorData({
   contentId: Uint8Array;
   loggedInUserId?: Uint8Array;
 }) {
-  // TODO: add pagination or a hard limit i n the number of documents one can add to an activity
+  // TODO: add pagination or a hard limit in the number of documents one can add to an activity
+
+  const isAdmin = await getIsAdmin(loggedInUserId);
 
   const activityPermissions = await checkActivityPermissions(
     contentId,
     loggedInUserId,
+    isAdmin,
   );
-  if (activityPermissions.viewable === false || !activityPermissions.ownerId) {
+  if (!activityPermissions.viewable || !activityPermissions.ownerId) {
     throw new InvalidRequestError(
       "This activity does not exist or is not visible.",
     );
   }
-
   if (activityPermissions.editable === false) {
     return { editableByMe: false, contentId };
   }
 
   const { availableFeatures } = await getAvailableContentFeatures();
-
-  const isAdmin = await getIsAdmin(loggedInUserId);
 
   const activity = await getContent({
     contentId,
@@ -53,6 +53,7 @@ export async function getActivityEditorData({
     countAssignmentScores: true,
     includeClassifications: true,
     includeShareDetails: true,
+    includeLibraryInfo: true,
     isAdmin,
   });
 
@@ -72,7 +73,11 @@ export async function getSharedEditorData({
   loggedInUserId?: Uint8Array;
 }) {
   // TODO: add pagination or a hard limit in the number of documents one can add to an activity
-  const activity = getContent({ contentId, loggedInUserId });
+  const activity = getContent({
+    contentId,
+    loggedInUserId,
+    includeLibraryInfo: true,
+  });
   return activity;
 }
 
@@ -91,6 +96,7 @@ export async function getActivityViewerData({
     isAdmin,
     includeOwnerDetails: true,
     includeClassifications: true,
+    includeLibraryInfo: true,
   });
 
   if (!isEqualUUID(loggedInUserId, activity.ownerId)) {
@@ -195,8 +201,12 @@ export async function getContent({
 
   // 4. piece together all those details into a tree of the form given by `Content`
   const idx = preliminaryList.findIndex((c) => isEqualUUID(c.id, contentId));
-  //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
-  const activity = processContent(preliminaryList[idx], loggedInUserId);
+  const activity = processContent(
+    //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
+    preliminaryList[idx],
+    loggedInUserId,
+    isAdmin,
+  );
 
   preliminaryList.splice(idx, 1);
 

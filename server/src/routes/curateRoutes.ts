@@ -14,11 +14,12 @@ import {
   unpublishActivityFromLibrary,
 } from "../query/curate";
 import {
-  curationParentIdSchema,
   updateLibraryInfoSchema,
   publishSchema,
   searchCurationFolderContentSchema,
   sourceIdSchema,
+  createCurationFolderSchema,
+  curationParentIdSchema,
 } from "../schemas/curateSchema";
 import { contentIdSchema } from "../schemas/contentSchema";
 
@@ -32,7 +33,17 @@ curateRouter.get(
 );
 
 curateRouter.get(
+  "/getCurationFolderContent/:parentId",
+  queryLoggedIn(getCurationFolderContent, curationParentIdSchema),
+);
+
+curateRouter.get(
   "/searchCurationFolderContent",
+  queryLoggedIn(searchCurationFolderContent, searchCurationFolderContentSchema),
+);
+
+curateRouter.get(
+  "/searchCurationFolderContent/:parentId",
   queryLoggedIn(searchCurationFolderContent, searchCurationFolderContentSchema),
 );
 
@@ -53,7 +64,7 @@ curateRouter.post(
 
 curateRouter.post(
   "/createCurationFolder",
-  queryLoggedIn(createCurationFolder, curationParentIdSchema),
+  queryLoggedIn(createCurationFolder, createCurationFolderSchema),
 );
 
 curateRouter.post(

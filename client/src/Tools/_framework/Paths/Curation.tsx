@@ -43,9 +43,9 @@ import {
   LicenseCode,
   UserInfo,
   ContentType,
+  License,
 } from "./../../../_utils/types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
-import { formatTime } from "../../../_utils/dateUtilityFunction";
 import {
   ToggleViewButtonGroup,
   toggleViewButtonGroupActions,
@@ -55,13 +55,13 @@ import {
   CreateLocalContentModal,
   createLocalContentModalActions,
 } from "../ToolPanels/CreateLocalContentModal";
-import { CurateDrawer, curateDrawerActions } from "../ToolPanels/CurateDrawer";
+import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 
 export async function action({ request }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
-  const resultsCurate = await curateDrawerActions({ formObj });
+  const resultsCurate = await shareDrawerActions({ formObj });
   if (resultsCurate) {
     return resultsCurate;
   }
@@ -87,8 +87,8 @@ export async function action({ request }) {
   }
 
   if (formObj?._action == "Delete Draft") {
-    await axios.post(`/api/deleteDraftFromLibrary`, {
-      contentId: formObj.id,
+    await axios.post(`/api/curate/deleteDraftFromLibrary`, {
+      contentId: formObj.contentId,
       contentType: formObj.contentType,
     });
     return true;
@@ -98,14 +98,14 @@ export async function action({ request }) {
 
     // } else if (formObj?._action == "Delete Folder") {
     //   await axios.post(`/api/deleteCurationFolder`, {
-    //     folderId: formObj.id === "null" ? null : formObj.id,
+    //     folderId: formObj.contentId === "null" ? null : formObj.contentId,
     //   });
     //   return true;
   } else if (formObj?._action == "Move") {
-    await axios.post(`/api/moveCurationContent`, {
-      id: formObj.id,
+    await axios.post(`/api/copyMove/moveContent`, {
+      contentId: formObj.contentId,
       parentId: formObj.folderId === "null" ? null : formObj.folderId,
-      desiredPosition: formObj.desiredPosition,
+      desiredPosition: Number(formObj.desiredPosition),
     });
     return true;
   }
@@ -120,12 +120,12 @@ export async function loader({ params, request }) {
   let data;
   if (q) {
     const results = await axios.get(
-      `/api/searchCurationFolderContent/${params.folderId ?? ""}?q=${q}`,
+      `/api/curate/searchCurationFolderContent/${params.parentId ?? ""}?query=${q}`,
     );
     data = results.data;
   } else {
     const results = await axios.get(
-      `/api/getCurationFolderContent/${params.folderId ?? ""}`,
+      `/api/curate/getCurationFolderContent/${params.parentId ?? ""}`,
     );
     data = results.data;
   }
@@ -134,7 +134,7 @@ export async function loader({ params, request }) {
   const listViewPref = !prefData.data.cardView;
 
   return {
-    folderId: params.folderId ? params.folderId : null,
+    folderId: params.parentId ?? null,
     content: data.content,
     allDoenetmlVersions: data.allDoenetmlVersions,
     allLicenses: data.allLicenses,
@@ -151,6 +151,7 @@ export function Curation() {
     folderId,
     content,
     allDoenetmlVersions,
+    allLicenses,
     availableFeatures,
     userId,
     parent,
@@ -160,6 +161,7 @@ export function Curation() {
     folderId: string | null;
     content: Content[];
     allDoenetmlVersions: DoenetmlVersion[];
+    allLicenses: License[];
     availableFeatures: ContentFeature[];
     userId: string;
     parent: Content | null;
@@ -219,7 +221,7 @@ export function Curation() {
   const [listView, setListView] = useState(listViewPref);
 
   const [moveToParentData, setMoveToParentData] = useState<{
-    id: string;
+    contentId: string;
     name: string;
     type: ContentType;
     isPublic: boolean;
@@ -227,7 +229,7 @@ export function Curation() {
     sharedWith: UserInfo[];
     licenseCode: LicenseCode | null;
   }>({
-    id: "",
+    contentId: "",
     name: "",
     type: "singleDoc",
     isPublic: false,
@@ -253,7 +255,7 @@ export function Curation() {
   const fetcher = useFetcher();
 
   function getCardMenuList({
-    id,
+    contentId,
     name,
     position,
     numCards,
@@ -265,7 +267,7 @@ export function Curation() {
     licenseCode,
     parentId,
   }: {
-    id: string;
+    contentId: string;
     name: string;
     position: number;
     numCards: number;
@@ -283,7 +285,7 @@ export function Curation() {
         <MenuItem
           data-test="Rename Menu Item"
           onClick={() => {
-            setSettingsContentId(id);
+            setSettingsContentId(contentId);
             setSettingsDisplayTab("general");
             setHighlightRename(true);
             settingsOnOpen();
@@ -298,7 +300,7 @@ export function Curation() {
               fetcher.submit(
                 {
                   _action: "Move",
-                  id,
+                  contentId,
                   desiredPosition: position - 1,
                   folderId,
                 },
@@ -316,7 +318,7 @@ export function Curation() {
               fetcher.submit(
                 {
                   _action: "Move",
-                  id,
+                  contentId,
                   desiredPosition: position + 1,
                   folderId,
                 },
@@ -332,7 +334,7 @@ export function Curation() {
             data-test="Move to Parent"
             onClick={() => {
               setMoveToParentData({
-                id,
+                contentId,
                 name,
                 type: contentType,
                 isPublic,
@@ -353,7 +355,7 @@ export function Curation() {
               fetcher.submit(
                 {
                   _action: "Delete Draft",
-                  id,
+                  contentId,
                   contentType,
                 },
                 { method: "post" },
@@ -367,7 +369,7 @@ export function Curation() {
           <MenuItem
             data-test="Curate Menu Item"
             onClick={() => {
-              setSettingsContentId(id);
+              setSettingsContentId(contentId);
               curateOnOpen();
             }}
           >
@@ -377,7 +379,7 @@ export function Curation() {
         <MenuItem
           data-test="Settings Menu Item"
           onClick={() => {
-            setSettingsContentId(id);
+            setSettingsContentId(contentId);
             setSettingsDisplayTab("general");
             setHighlightRename(false);
             settingsOnOpen();
@@ -421,7 +423,9 @@ export function Curation() {
       contentData = parent;
       finalFocusRef.current = folderSettingsRef.current;
     } else {
-      const index = content.findIndex((obj) => obj.id == settingsContentId);
+      const index = content.findIndex(
+        (obj) => obj.contentId == settingsContentId,
+      );
       if (index != -1) {
         contentData = content[index];
         finalFocusRef.current = cardMenuRefs.current[index];
@@ -448,17 +452,20 @@ export function Curation() {
 
   const curateDrawer =
     contentData && settingsContentId ? (
-      <CurateDrawer
+      <ShareDrawer
+        inCurationLibrary={true}
         isOpen={curateIsOpen}
         onClose={curateOnClose}
         contentData={contentData}
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
+        allLicenses={allLicenses}
       />
     ) : null;
 
   const moveCopyContentModal = (
     <MoveCopyContent
+      inCurationLibrary={true}
       isOpen={moveCopyContentIsOpen}
       onClose={moveCopyContentOnClose}
       sourceContent={[moveToParentData]}
@@ -472,6 +479,7 @@ export function Curation() {
 
   const createLocalContentModal = (
     <CreateLocalContentModal
+      inCurationLibrary={true}
       isOpen={createFolderIsOpen}
       onClose={createFolderOnClose}
       contentType="folder"
@@ -574,7 +582,7 @@ export function Curation() {
           {parent && !haveQuery ? (
             <Box>
               <Link
-                to={`/curation${parent.parent ? "/" + parent.parent.id : ""}`}
+                to={`/curation${parent.parent ? "/" + parent.parent.contentId : ""}`}
                 style={{
                   color: "var(--mainBlue)",
                 }}
@@ -637,9 +645,8 @@ export function Curation() {
     return {
       menuRef: getCardMenuRef,
       content: activity,
-      closeTime: formatTime(activity.codeValidUntil),
       menuItems: getCardMenuList({
-        id: activity.id,
+        contentId: activity.contentId,
         name: activity.name,
         position,
         numCards: content.length,
@@ -648,12 +655,13 @@ export function Curation() {
         isShared: activity.isShared,
         sharedWith: activity.sharedWith,
         licenseCode: activity.license?.code ?? null,
-        parentId: activity.parent?.id ?? null,
-        isFolder: activity.isFolder!,
+        parentId: activity.parent?.contentId ?? null,
+        isFolder: activity.type === "folder",
       }),
-      cardLink: activity.isFolder
-        ? `/curation/${activity.id}`
-        : `/activityEditor/${activity.id}`,
+      cardLink:
+        activity.type === "folder"
+          ? `/curation/${activity.contentId}`
+          : `/activityEditor/${activity.contentId}`,
     };
   });
 

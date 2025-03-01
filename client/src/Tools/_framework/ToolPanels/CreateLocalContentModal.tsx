@@ -35,6 +35,19 @@ export async function createLocalContentModalActions({
         errorCreatingContent: `Error creating ${contentTypeToName[formObj.contentType].toLowerCase()}`,
       };
     }
+  } else if (formObj?._action == "Add Curation Folder") {
+    try {
+      await axios.post(`/api/curate/createCurationFolder`, {
+        name: formObj.contentName,
+        parentId: formObj.parentId === "null" ? null : formObj.parentId,
+      });
+      return { contentCreated: true };
+    } catch (e) {
+      console.error(e);
+      return {
+        errorCreatingContent: `Error creating ${contentTypeToName[formObj.contentType].toLowerCase()}`,
+      };
+    }
   }
 
   return null;
@@ -51,6 +64,7 @@ export function CreateLocalContentModal({
   contentType,
   parentId,
   fetcher,
+  inCurationLibrary = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -58,6 +72,7 @@ export function CreateLocalContentModal({
   contentType: ContentType;
   parentId: string | null;
   fetcher: FetcherWithComponents<any>;
+  inCurationLibrary?: boolean;
 }) {
   const [submitted, setSubmitted] = useState(true);
   const [errMsg, setErrMsg] = useState("");
@@ -95,15 +110,29 @@ export function CreateLocalContentModal({
   }, [fetcher.data]);
 
   function createContent() {
-    fetcher.submit(
-      {
-        _action: "Add Content",
-        contentName,
-        contentType,
-        parentId,
-      },
-      { method: "post" },
-    );
+    if (inCurationLibrary) {
+      // Content type should only ever be `folder`
+      // We can't create other types in the library, just remix them
+      fetcher.submit(
+        {
+          _action: "Add Curation Folder",
+          contentName,
+          contentType,
+          parentId,
+        },
+        { method: "post" },
+      );
+    } else {
+      fetcher.submit(
+        {
+          _action: "Add Content",
+          contentName,
+          contentType,
+          parentId,
+        },
+        { method: "post" },
+      );
+    }
     document.body.style.cursor = "wait";
     setSubmitted(true);
   }

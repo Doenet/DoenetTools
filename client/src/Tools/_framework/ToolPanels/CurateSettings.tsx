@@ -7,24 +7,24 @@ import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 
 export async function curateActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "modify comments") {
-    await axios.post("/api/modifyCommentsOfLibraryRequest", {
+    await axios.post("/api/curate/modifyCommentsOfLibraryRequest", {
       sourceId: formObj.sourceId,
       comments: formObj.comments,
     });
     return true;
   } else if (formObj._action == "publish") {
-    await axios.post("/api/publishActivityToLibrary", {
-      id: formObj.id,
+    await axios.post("/api/curate/publishActivityToLibrary", {
+      draftId: formObj.id,
       comments: formObj.comments,
     });
     return true;
   } else if (formObj._action == "unpublish") {
-    await axios.post("/api/unpublishActivityFromLibrary", {
-      id: formObj.id,
+    await axios.post("/api/curate/unpublishActivityFromLibrary", {
+      contentId: formObj.id,
     });
     return true;
   } else if (formObj._action == "return for revision") {
-    await axios.post("/api/markLibraryRequestNeedsRevision", {
+    await axios.post("/api/curate/markLibraryRequestNeedsRevision", {
       sourceId: formObj.sourceId,
       comments: formObj.comments,
     });
@@ -43,7 +43,7 @@ export function CurateSettings({
 }) {
   const license = contentData.license!;
   const sourceId = contentData.libraryActivityInfo!.sourceId;
-  const contentId = contentData.id;
+  const contentId = contentData.contentId;
   const existingComments = contentData.libraryActivityInfo?.comments ?? "";
   const status = contentData.libraryActivityInfo!.status;
   // const userRequested = contentData;

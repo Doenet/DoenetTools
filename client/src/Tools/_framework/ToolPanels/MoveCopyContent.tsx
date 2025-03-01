@@ -157,7 +157,7 @@ export function MoveCopyContent({
   ) {
     const { data } = inCurationLibrary
       ? await axios.get(
-          `/api/getCurationFolderContent/${newActiveParentId ?? ""}`,
+          `/api/curate/getCurationFolderContent/${newActiveParentId ?? ""}`,
         )
       : await axios.get(
           `/api/contentList/getMyContent/${userId}/${newActiveParentId ?? ""}`,
@@ -376,7 +376,12 @@ export function MoveCopyContent({
     );
     if (activeView.parentType === "folder") {
       destinationAction = "Go to folder";
-      destinationUrl = `/activities/${userId}/${activeView.parentId}`;
+
+      if (inCurationLibrary) {
+        destinationUrl = `/curation/${activeView.parentId}`;
+      } else {
+        destinationUrl = `/activities/${userId}/${activeView.parentId}`;
+      }
     } else if (
       activeView.parentType === "select" &&
       activeView.grandparentType === "sequence"
@@ -389,6 +394,10 @@ export function MoveCopyContent({
       destinationAction = `Open ${typeName}`;
       destinationUrl = `/activityEditor/${activeView.parentId}`;
     }
+  } else if (inCurationLibrary) {
+    destinationDescription = <>Curation</>;
+    destinationAction = "Go to Curation";
+    destinationUrl = `/curation`;
   } else {
     destinationDescription = <>My Activities</>;
     destinationAction = "Go to My Activities";

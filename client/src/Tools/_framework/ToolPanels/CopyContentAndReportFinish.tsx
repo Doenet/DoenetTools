@@ -34,7 +34,7 @@ export async function copyContentAndReportFinishActions({
       const contentIds = JSON.parse(formObj.contentIds);
       if (formObj.copyToLibrary === "true") {
         for (const c of contentIds) {
-          const { data } = await axios.post(`/api/addDraftToLibrary`, {
+          const { data } = await axios.post(`/api/curate/addDraftToLibrary`, {
             contentId: c,
           });
           newContentIds.push(data.newContentId);
@@ -75,7 +75,7 @@ export function CopyContentAndReportFinish({
   contentIds,
   desiredParent,
   action,
-  copyToLibrary,
+  copyToLibrary = false,
 }: {
   fetcher: FetcherWithComponents<any>;
   isOpen: boolean;
@@ -120,6 +120,7 @@ export function CopyContentAndReportFinish({
             _action: "copy content",
             contentIds: JSON.stringify(contentIds),
             parentId: desiredParent ? desiredParent.contentId : null,
+            copyToLibrary,
           },
           { method: "post" },
         );

@@ -23,11 +23,13 @@ export function handleErrors(res: Response, e: unknown) {
     } else if (e.code === "P2002") {
       res.status(StatusCodes.BAD_REQUEST).json({ error: "Invalid request" });
     } else {
+      console.error(e);
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ error: "Internal Server Error" });
     }
   } else {
+    console.error(e);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: "Internal Server Error" });

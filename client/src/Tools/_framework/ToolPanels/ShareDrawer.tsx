@@ -31,21 +31,36 @@ import {
   processContributorHistory,
   processRemixes,
 } from "../../../_utils/processRemixes";
+import { curateActions, CurateSettings } from "./CurateSettings";
 
 export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
-  const result1 = await sharingActions({ formObj });
-  if (result1) {
-    return result1;
+  const sharingResult = await sharingActions({ formObj });
+  if (sharingResult) {
+    return sharingResult;
   }
 
-  const result4 = await remixedFromActions({ formObj });
-  if (result4) {
-    return result4;
+  const curateDrawerActionsResult = await curateActions({ formObj });
+  if (curateDrawerActionsResult) {
+    return curateDrawerActionsResult;
+  }
+
+  const remixedFromResult = await remixedFromActions({ formObj });
+  if (remixedFromResult) {
+    return remixedFromResult;
   }
 
   return null;
 }
 
+/**
+ * A side menu drawer that controls sharing settings for a content item.
+ * Includes up to three tabs: `Share`, `Remixed From`, and `Remixes`.
+ * The `Remixed From` and `Remixes` tabs are only shown for non-folder content.
+ *
+ * Additionally, you can set the `inCurationLibrary` prop to `true` to show controls for library content. This will replace the `Share` tab with a `Curate` tab.
+ *
+ * Make sure to include {@link shareDrawerActions} in the page's actions.
+ */
 export function ShareDrawer({
   isOpen,
   onClose,
@@ -53,6 +68,7 @@ export function ShareDrawer({
   fetcher,
   contentData,
   allLicenses,
+  inCurationLibrary = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -60,6 +76,7 @@ export function ShareDrawer({
   fetcher: FetcherWithComponents<any>;
   contentData: Content;
   allLicenses: License[];
+  inCurationLibrary?: boolean;
 }) {
   const [contributorHistory, setContributorHistory] = useState<
     ActivityHistoryItem[]
@@ -97,6 +114,33 @@ export function ShareDrawer({
     }
   }, [contentData]);
 
+  const drawerTitle = inCurationLibrary
+    ? "Curation Controls"
+    : "Sharing Controls";
+
+  // Share Tab (becomes Curate Tab in Library)
+  const shareOrCurateTabTitle = inCurationLibrary ? "Curate" : "Share";
+  const shareOrCurateTabPanel = inCurationLibrary ? (
+    <CurateSettings fetcher={fetcher} contentData={contentData} />
+  ) : (
+    <ShareSettings
+      fetcher={fetcher}
+      contentData={contentData}
+      allLicenses={allLicenses}
+      remixedWithLicense={remixedWithLicense}
+    />
+  );
+
+  // Remixed From Tab
+  const contributorHistoryAddon = contributorHistory
+    ? `(${contributorHistory.length})`
+    : "";
+  const changedHistoryAddon = haveChangedHistoryItem ? "*" : "";
+  const remixedFromTabTitle = `Remixed From ${contributorHistoryAddon}${changedHistoryAddon}`;
+
+  // Remixed Tab
+  const remixesTabTitle = remixes ? `Remixes (${remixes.length})` : "Remixes";
+
   return (
     <Drawer
       isOpen={isOpen}
@@ -109,7 +153,7 @@ export function ShareDrawer({
       <DrawerContent>
         <DrawerCloseButton data-test="Close Share Drawer Button" />
         <DrawerHeader textAlign="center" height="70px">
-          Sharing Controls
+          {drawerTitle}
           <Tooltip label={contentData.name} openDelay={1000}>
             <Text fontSize="smaller" noOfLines={1}>
               {contentData.name}
@@ -120,42 +164,27 @@ export function ShareDrawer({
         <DrawerBody>
           <Tabs>
             <TabList>
-              <Tab data-test="Share Tab">Share</Tab>
-              {contentData.type !== "folder" ? (
-                <>
-                  <Tab data-test="Remixed From Tab">
-                    Remixed From{" "}
-                    {contributorHistory !== null
-                      ? `(${contributorHistory.length})`
-                      : null}
-                    {haveChangedHistoryItem ? "*" : null}
-                  </Tab>
-                  <Tab data-test="Remixes Tab">
-                    Remixes {remixes !== null ? `(${remixes.length})` : null}
-                  </Tab>
-                </>
-              ) : null}
+              <Tab data-test="Share Tab">{shareOrCurateTabTitle}</Tab>
+              {contentData.type === "folder" ? null : (
+                <Tab data-test="Remixed From Tab">{remixedFromTabTitle}</Tab>
+              )}
+              {contentData.type === "folder" ? null : (
+                <Tab data-test="Remixes Tab">{remixesTabTitle}</Tab>
+              )}
             </TabList>
             <Box overflowY="auto" height="calc(100vh - 130px)">
               <TabPanels>
-                <TabPanel>
-                  <ShareSettings
-                    fetcher={fetcher}
-                    contentData={contentData}
-                    allLicenses={allLicenses}
-                    remixedWithLicense={remixedWithLicense}
-                  />
-                </TabPanel>
-                {contentData.type !== "folder" ? (
+                <TabPanel>{shareOrCurateTabPanel}</TabPanel>
+                {contentData.type === "folder" ? null : (
                   <TabPanel>
                     <RemixedFrom contributorHistory={contributorHistory} />
                   </TabPanel>
-                ) : null}
-                {contentData.type !== "folder" ? (
+                )}
+                {contentData.type === "folder" ? null : (
                   <TabPanel>
                     <Remixes remixes={remixes} />
                   </TabPanel>
-                ) : null}
+                )}
               </TabPanels>
             </Box>
           </Tabs>

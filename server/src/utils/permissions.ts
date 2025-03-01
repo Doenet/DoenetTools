@@ -1,5 +1,4 @@
 import { Prisma } from "@prisma/client";
-import { getIsAdmin } from "../query/curate";
 import { prisma } from "../model";
 import { isEqualUUID } from "./uuid";
 
@@ -82,7 +81,7 @@ export function viewableContentWhere(
   if (isAdmin) {
     visibilityOptions = Prisma.sql`
         ${visibilityOptions}
-        OR (SELECT isLibrary FROM user WHERE userId = content.ownerId) = TRUE
+        OR (SELECT isLibrary FROM users WHERE userId = content.ownerId) = TRUE
         `;
   }
 
@@ -161,13 +160,12 @@ export function filterEditableContent(
 export async function checkActivityPermissions(
   contentId: Uint8Array,
   loggedInUserId: Uint8Array,
+  isAdmin: boolean,
 ): Promise<{
   editable: boolean;
   viewable: boolean;
   ownerId: Uint8Array | null;
 }> {
-  const isAdmin = await getIsAdmin(loggedInUserId);
-
   const viewable = await prisma.content.findUnique({
     where: {
       id: contentId,

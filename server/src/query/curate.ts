@@ -645,13 +645,16 @@ export async function searchCurationFolderContent({
 
 export async function createCurationFolder({
   loggedInUserId,
+  name,
   parentId,
 }: {
+  name: string;
   loggedInUserId: Uint8Array;
   parentId: Uint8Array | null;
 }) {
   await createContent({
     loggedInUserId,
+    name,
     contentType: "folder",
     parentId,
     inLibrary: true,

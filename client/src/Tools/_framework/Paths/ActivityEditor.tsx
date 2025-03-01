@@ -60,7 +60,6 @@ import {
   getIconInfo,
 } from "../../../_utils/activity";
 import { ActivitySource } from "../../../_utils/viewerTypes";
-import { CurateDrawer, curateDrawerActions } from "../ToolPanels/CurateDrawer";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -83,11 +82,6 @@ export async function action({ params, request }) {
   const resultCS = await contentSettingsActions({ formObj });
   if (resultCS) {
     return resultCS;
-  }
-
-  const resultCurate = await curateDrawerActions({ formObj });
-  if (resultCurate) {
-    return resultCurate;
   }
 
   const resultSD = await shareDrawerActions({ formObj });
@@ -416,24 +410,15 @@ export function ActivityEditor() {
     />
   ) : null;
 
-  const shareDrawer =
-    contentData && !isLibraryActivity ? (
-      <ShareDrawer
-        isOpen={sharingIsOpen}
-        onClose={sharingOnClose}
-        finalFocusRef={finalFocusRef}
-        fetcher={fetcher}
-        contentData={contentData}
-        allLicenses={allLicenses}
-      />
-    ) : null;
-
-  const curateDrawer = isLibraryActivity ? (
-    <CurateDrawer
+  const shareDrawer = contentData ? (
+    <ShareDrawer
+      inCurationLibrary={isLibraryActivity}
       isOpen={sharingIsOpen}
       onClose={sharingOnClose}
-      contentData={activityData}
+      finalFocusRef={finalFocusRef}
       fetcher={fetcher}
+      contentData={contentData}
+      allLicenses={allLicenses}
     />
   ) : null;
 
@@ -480,7 +465,6 @@ export function ActivityEditor() {
     <>
       {settingsDrawer}
       {shareDrawer}
-      {curateDrawer}
       {assignmentDrawers}
 
       <Grid

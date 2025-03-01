@@ -104,14 +104,14 @@ export async function getContributorHistory({
 export async function getRemixes({
   contentId,
   loggedInUserId = new Uint8Array(16),
-  isAdmin = false,
   directRemixesOnly = false,
 }: {
   contentId: Uint8Array;
   loggedInUserId?: Uint8Array;
-  isAdmin?: boolean;
   directRemixesOnly?: boolean;
 }): Promise<{ remixes: ActivityRemixItem[] }> {
+  const isAdmin = await getIsAdmin(loggedInUserId);
+
   const directFilter = directRemixesOnly
     ? {
         directCopy: true,

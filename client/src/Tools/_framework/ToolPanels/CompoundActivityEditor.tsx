@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
-  AssignmentStatus,
   ContentDescription,
   Content,
   ContentType,
