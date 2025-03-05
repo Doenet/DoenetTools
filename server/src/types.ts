@@ -179,8 +179,6 @@ export type ProblemSet = ContentBase & {
   revisionNum?: number;
   shuffle: boolean;
   paginate: boolean;
-  activityLevelAttempts: boolean;
-  itemLevelAttempts: boolean;
   children: Content[];
 };
 
@@ -202,6 +200,8 @@ export type AssignmentInfo = {
   rootName: string;
   rootType: ContentType;
   hasScoreData: boolean;
+  activityLevelAttempts: boolean;
+  itemLevelAttempts: boolean;
 };
 
 export async function createContentInfo({
@@ -256,8 +256,6 @@ export async function createContentInfo({
         type: "sequence",
         shuffle: false,
         paginate: false,
-        activityLevelAttempts: false,
-        itemLevelAttempts: false,
         children: [],
         ...contentBase,
       };

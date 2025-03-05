@@ -37,13 +37,13 @@ model content {
   // Specific to sequence type
   shuffle               Boolean                  @default(false)
   paginate              Boolean                  @default(false)
-  activityLevelAttempts Boolean                  @default(false)
-  itemLevelAttempts     Boolean                  @default(false)
   // Specific to select type
   numToSelect           Int                      @default(1) @db.UnsignedSmallInt
   selectByVariant       Boolean                  @default(false)
   // Assignments
   assignmentId          Bytes?                   @db.Binary(16)
+  activityLevelAttempts Boolean                  @default(false)
+  itemLevelAttempts     Boolean                  @default(false)
   owner                 users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   parent                content?                 @relation("childParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   children              content[]                @relation("childParent")

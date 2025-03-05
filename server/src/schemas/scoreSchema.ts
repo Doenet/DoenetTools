@@ -8,16 +8,15 @@ export const scoreAndStateSchema = z.object({
     .int()
     .refine((v) => v > 0),
   score: z.number(),
-  scoreByItem: z.array(z.number()),
+  scoreByItem: z
+    .array(z.number())
+    .nullish()
+    .transform((val) => val ?? undefined),
   state: z.string(),
 });
 
 export const createNewAttemptSchema = z.object({
   contentId: uuidSchema,
-  attemptNumber: z
-    .number()
-    .int()
-    .refine((v) => v > 0),
   itemNumber: z
     .number()
     .int()
@@ -28,6 +27,12 @@ export const createNewAttemptSchema = z.object({
     .int()
     .refine((v) => v > 0)
     .optional(),
+  score: z.number(),
+  scoreByItem: z
+    .array(z.number())
+    .nullish()
+    .transform((val) => val ?? undefined),
+  state: z.string().nullable(),
 });
 
 export const loadStateSchema = z.object({

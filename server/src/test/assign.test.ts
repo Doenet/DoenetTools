@@ -14,7 +14,7 @@ import {
   getAllAssignmentScores,
   getAnswersThatHaveSubmittedResponses,
   getAssignedScores,
-  getAssignmentDataFromCode,
+  getAssignmentViewerDataFromCode,
   getAssignmentScoreData,
   getAssignmentStudentData,
   getStudentData,
@@ -147,7 +147,7 @@ test("open and close assignment with code", async () => {
   expect(assignment.assignment!.classCode).eq(classCode);
   expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
-  let assignmentData = await getAssignmentDataFromCode({
+  let assignmentData = await getAssignmentViewerDataFromCode({
     code: classCode,
     loggedInUserId: fakeId,
   });
@@ -167,7 +167,7 @@ test("open and close assignment with code", async () => {
     PrismaClientKnownRequestError,
   );
 
-  assignmentData = await getAssignmentDataFromCode({
+  assignmentData = await getAssignmentViewerDataFromCode({
     code: classCode,
     loggedInUserId: fakeId,
   });
@@ -186,7 +186,7 @@ test("open and close assignment with code", async () => {
   expect(assignment.assignment!.classCode).eq(classCode2);
   expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
-  assignmentData = await getAssignmentDataFromCode({
+  assignmentData = await getAssignmentViewerDataFromCode({
     code: classCode2,
     loggedInUserId: fakeId,
   });
@@ -203,7 +203,7 @@ test("open and close assignment with code", async () => {
     closeAt: closeAt,
     loggedInUserId: ownerId,
   });
-  assignmentData = await getAssignmentDataFromCode({
+  assignmentData = await getAssignmentViewerDataFromCode({
     code: classCode2,
     loggedInUserId: fakeId,
   });
@@ -276,7 +276,7 @@ test("open and unassign assignment with code", async () => {
   expect(assignment.assignment!.classCode).eq(classCode);
   expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
-  let assignmentData = await getAssignmentDataFromCode({
+  let assignmentData = await getAssignmentViewerDataFromCode({
     code: classCode,
     loggedInUserId: fakeId,
   });
@@ -289,7 +289,7 @@ test("open and unassign assignment with code", async () => {
   );
 
   // Getting deleted assignment by code fails
-  assignmentData = await getAssignmentDataFromCode({
+  assignmentData = await getAssignmentViewerDataFromCode({
     code: classCode,
     loggedInUserId: fakeId,
   });
@@ -384,7 +384,7 @@ test("open compound assignment with code", async () => {
   expect(assignment.assignment!.classCode).eq(classCode);
   expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
-  const assignmentData = await getAssignmentDataFromCode({
+  const assignmentData = await getAssignmentViewerDataFromCode({
     code: classCode,
     loggedInUserId: fakeId,
   });
@@ -538,7 +538,7 @@ test("get assignment data from anonymous users", async () => {
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode({
+  const { classCode } = await openAssignmentWithCode({
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
@@ -575,6 +575,17 @@ test("get assignment data from anonymous users", async () => {
     assignmentScores: [{ score: 0.5, user: userData1 }],
   });
 
+  let dataFromCode = await getAssignmentViewerDataFromCode({
+    code: classCode,
+    loggedInUserId: newUser1.userId,
+  });
+  expect(dataFromCode.assignmentFound).eq(true);
+  expect(dataFromCode.scoreData).eqls({
+    loadedScore: true,
+    score: 0.5,
+    scoreByItem: null,
+  });
+
   let assignmentStudentData = await getAssignmentStudentData({
     contentId: contentId,
     loggedInUserId: ownerId,
@@ -583,6 +594,7 @@ test("get assignment data from anonymous users", async () => {
 
   expect(assignmentStudentData).eqls({
     score: 0.5,
+    scoreByItem: null,
     content: {
       id: contentId,
       name: "Activity 1",
@@ -593,6 +605,7 @@ test("get assignment data from anonymous users", async () => {
     activityScores: [
       {
         score: 0.5,
+        scoreByItem: null,
       },
     ],
   });
@@ -614,6 +627,17 @@ test("get assignment data from anonymous users", async () => {
     assignmentScores: [{ score: 0.5, user: userData1 }],
   });
 
+  dataFromCode = await getAssignmentViewerDataFromCode({
+    code: classCode,
+    loggedInUserId: newUser1.userId,
+  });
+  expect(dataFromCode.assignmentFound).eq(true);
+  expect(dataFromCode.scoreData).eqls({
+    loadedScore: true,
+    score: 0.5,
+    scoreByItem: null,
+  });
+
   assignmentStudentData = await getAssignmentStudentData({
     contentId: contentId,
     loggedInUserId: ownerId,
@@ -622,6 +646,7 @@ test("get assignment data from anonymous users", async () => {
 
   expect(assignmentStudentData).eqls({
     score: 0.5,
+    scoreByItem: null,
     content: {
       id: contentId,
       name: "Activity 1",
@@ -632,6 +657,7 @@ test("get assignment data from anonymous users", async () => {
     activityScores: [
       {
         score: 0.2,
+        scoreByItem: null,
       },
     ],
   });
@@ -653,6 +679,17 @@ test("get assignment data from anonymous users", async () => {
     assignmentScores: [{ score: 0.7, user: userData1 }],
   });
 
+  dataFromCode = await getAssignmentViewerDataFromCode({
+    code: classCode,
+    loggedInUserId: newUser1.userId,
+  });
+  expect(dataFromCode.assignmentFound).eq(true);
+  expect(dataFromCode.scoreData).eqls({
+    loadedScore: true,
+    score: 0.7,
+    scoreByItem: null,
+  });
+
   assignmentStudentData = await getAssignmentStudentData({
     contentId: contentId,
     loggedInUserId: ownerId,
@@ -661,6 +698,7 @@ test("get assignment data from anonymous users", async () => {
 
   expect(assignmentStudentData).eqls({
     score: 0.7,
+    scoreByItem: null,
     content: {
       id: contentId,
       name: "Activity 1",
@@ -671,6 +709,7 @@ test("get assignment data from anonymous users", async () => {
     activityScores: [
       {
         score: 0.7,
+        scoreByItem: null,
       },
     ],
   });
@@ -698,6 +737,16 @@ test("get assignment data from anonymous users", async () => {
     name: "Activity 1",
     assignmentScores: [{ score: 0.7, user: userData1 }],
   });
+  dataFromCode = await getAssignmentViewerDataFromCode({
+    code: classCode,
+    loggedInUserId: newUser1.userId,
+  });
+  expect(dataFromCode.assignmentFound).eq(true);
+  expect(dataFromCode.scoreData).eqls({
+    loadedScore: true,
+    score: 0.7,
+    scoreByItem: null,
+  });
 
   // save state for second user
   await saveScoreAndState({
@@ -720,6 +769,16 @@ test("get assignment data from anonymous users", async () => {
       { score: 0.7, user: userData1 },
     ],
   });
+  dataFromCode = await getAssignmentViewerDataFromCode({
+    code: classCode,
+    loggedInUserId: newUser2.userId,
+  });
+  expect(dataFromCode.assignmentFound).eq(true);
+  expect(dataFromCode.scoreData).eqls({
+    loadedScore: true,
+    score: 0.3,
+    scoreByItem: null,
+  });
 
   assignmentStudentData = await getAssignmentStudentData({
     contentId: contentId,
@@ -729,6 +788,7 @@ test("get assignment data from anonymous users", async () => {
 
   expect(assignmentStudentData).eqls({
     score: 0.3,
+    scoreByItem: null,
     content: {
       id: contentId,
       name: "Activity 1",
@@ -739,6 +799,7 @@ test("get assignment data from anonymous users", async () => {
     activityScores: [
       {
         score: 0.3,
+        scoreByItem: null,
       },
     ],
   });

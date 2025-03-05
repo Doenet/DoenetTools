@@ -82,24 +82,44 @@ export async function saveScoreAndState({
     },
   });
 
+  return await updateScores({
+    contentId,
+    loggedInUserId,
+    score,
+    scoreByItem,
+    prevScore: prevScores.score,
+    prevScoreByItemString: prevScores.scoreByItem,
+  });
+}
+
+async function updateScores({
+  contentId,
+  loggedInUserId,
+  score,
+  scoreByItem,
+  prevScore,
+  prevScoreByItemString,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+  score: number;
+  scoreByItem?: number[];
+  prevScore: number;
+  prevScoreByItemString: string | null;
+}) {
   // We don't update the actual score tables
   // unless the score increased
 
-  const prevScoreByItemParsed = prevScores?.scoreByItem
-    ? JSON.parse(prevScores.scoreByItem)
-    : null;
-  const prevScoreByItem = Array.isArray(prevScoreByItemParsed)
-    ? prevScoreByItemParsed.map(Number)
-    : null;
+  const prevScoreByItem = parseNumberArrayString(prevScoreByItemString);
 
   const updateScores =
-    score > prevScores.score ||
+    score > prevScore ||
     (scoreByItem &&
       (prevScoreByItem === null ||
         scoreByItem.some((s, i) => s > prevScoreByItem[i])));
 
   if (updateScores) {
-    let newScore = Math.max(score, prevScores.score);
+    let newScore = Math.max(score, prevScore);
     const newScoreByItem =
       scoreByItem === undefined
         ? null
@@ -123,7 +143,11 @@ export async function saveScoreAndState({
         scoreByItem: newScoreByItem ? JSON.stringify(newScoreByItem) : null,
       },
     });
+
+    return { score: newScore, scoreByItem: newScoreByItem };
   }
+
+  return { score: prevScore, scoreByItem: prevScoreByItem };
 }
 
 export async function createNewAttempt({
@@ -131,20 +155,26 @@ export async function createNewAttempt({
   loggedInUserId,
   itemNumber,
   numItems,
+  score,
+  scoreByItem,
+  state,
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   itemNumber?: number;
   numItems?: number;
+  score: number;
+  scoreByItem?: number[];
+  state: string | null;
 }) {
-  // make sure have an assignmentScores record
-  // so that can satisfy foreign key constraints on contentState
-  await prisma.assignmentScores.upsert({
+  // get previous scores, creating record if needed
+  const prevScores = await prisma.assignmentScores.upsert({
     where: {
       contentId_userId: { contentId, userId: loggedInUserId },
     },
     update: {},
     create: { contentId, userId: loggedInUserId },
+    select: { score: true, scoreByItem: true },
   });
 
   const maxRes = await prisma.contentState.aggregate({
@@ -213,13 +243,9 @@ export async function createNewAttempt({
       );
     }
 
-    const prevItemAttemptNumbersParsed = prevState?.itemAttemptNumbers
-      ? JSON.parse(prevState.itemAttemptNumbers)
-      : null;
-
-    const prevItemAttemptNumbers = Array.isArray(prevItemAttemptNumbersParsed)
-      ? prevItemAttemptNumbersParsed.map(Number)
-      : null;
+    const prevItemAttemptNumbers = parseNumberArrayString(
+      prevState?.itemAttemptNumbers,
+    );
 
     // create newItemAttemptNumbers with length `numItems`,
     // filling in any missing items with 1
@@ -252,13 +278,26 @@ export async function createNewAttempt({
       attemptNumber: newAttemptNumber,
       contentAttemptNumber: newContentAttemptNumber,
       itemAttemptNumbers: newItemAttemptNumbersString,
+      score,
+      scoreByItem: scoreByItem ? JSON.stringify(scoreByItem) : null,
+      state,
     },
+  });
+
+  const newScores = await updateScores({
+    contentId,
+    loggedInUserId,
+    score,
+    scoreByItem,
+    prevScore: prevScores.score,
+    prevScoreByItemString: prevScores.scoreByItem,
   });
 
   return {
     attemptNumber: newAttemptNumber,
     contentAttemptNumber: newContentAttemptNumber,
     itemAttemptNumbers: newItemAttemptNumbers,
+    ...newScores,
   };
 }
 
@@ -364,12 +403,10 @@ export async function loadState({
     });
   }
 
-  const scoreByItem = documentState.scoreByItem
-    ? JSON.parse(documentState.scoreByItem)
-    : null;
-  const itemAttemptNumbers = documentState.itemAttemptNumbers
-    ? JSON.parse(documentState.itemAttemptNumbers)
-    : null;
+  const scoreByItem = parseNumberArrayString(documentState.scoreByItem);
+  const itemAttemptNumbers = parseNumberArrayString(
+    documentState.itemAttemptNumbers,
+  );
 
   return {
     loadedState: true as const,
@@ -449,6 +486,17 @@ export async function getScore({
   return {
     loadedScore: true as const,
     score: scores.score,
-    scoreByItem: scores.scoreByItem ? JSON.parse(scores.scoreByItem) : null,
+    scoreByItem: parseNumberArrayString(scores.scoreByItem),
   };
+}
+
+export function parseNumberArrayString(numberArrayString?: string | null) {
+  const numberArrayParsed = numberArrayString
+    ? JSON.parse(numberArrayString)
+    : null;
+  const numberArray = Array.isArray(numberArrayParsed)
+    ? numberArrayParsed.map(Number)
+    : null;
+
+  return numberArray;
 }

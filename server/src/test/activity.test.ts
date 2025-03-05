@@ -548,6 +548,8 @@ test("activity editor data and my folder contents before and after assigned", as
       rootContentId: contentId,
       rootName: "Untitled Document",
       rootType: "singleDoc",
+      activityLevelAttempts: false,
+      itemLevelAttempts: false,
     },
   };
 
@@ -654,6 +656,8 @@ test("activity editor data and my folder contents before and after assigned", as
       rootContentId: contentId,
       rootName: "Untitled Document",
       rootType: "singleDoc",
+      activityLevelAttempts: false,
+      itemLevelAttempts: false,
     },
   };
 
@@ -714,6 +718,8 @@ test("activity editor data and my folder contents before and after assigned", as
       rootContentId: contentId,
       rootName: "Untitled Document",
       rootType: "singleDoc",
+      activityLevelAttempts: false,
+      itemLevelAttempts: false,
     },
   };
   if (openedData3 === undefined) {
@@ -769,6 +775,8 @@ test("activity editor data and my folder contents before and after assigned", as
       rootContentId: contentId,
       rootName: "Untitled Document",
       rootType: "singleDoc",
+      activityLevelAttempts: false,
+      itemLevelAttempts: false,
     },
   };
 

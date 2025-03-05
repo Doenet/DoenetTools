@@ -12,6 +12,7 @@ import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { recordContentView } from "./stats";
 import { InvalidRequestError } from "../utils/error";
 import { getContent } from "./activity_edit_view";
+import { getScore, parseNumberArrayString } from "./scores";
 
 export async function assignActivity({
   contentId,
@@ -297,7 +298,7 @@ export async function getAssignmentStudentData({
 }) {
   const userId = studentUserId ?? loggedInUserId;
 
-  const assignmentData = await prisma.assignmentScores.findUniqueOrThrow({
+  const assignmentDataPrelim = await prisma.assignmentScores.findUniqueOrThrow({
     where: {
       contentId_userId: { contentId, userId },
       content: {
@@ -310,6 +311,7 @@ export async function getAssignmentStudentData({
     },
     select: {
       score: true,
+      scoreByItem: true,
       content: {
         select: {
           id: true,
@@ -329,15 +331,26 @@ export async function getAssignmentStudentData({
     },
   });
 
-  const activityScores = await prisma.contentState.findMany({
+  const assignmentData = {
+    ...assignmentDataPrelim,
+    scoreByItem: parseNumberArrayString(assignmentDataPrelim.scoreByItem),
+  };
+
+  const activityScoresPrelim = await prisma.contentState.findMany({
     where: { contentId, userId },
     select: {
       score: true,
+      scoreByItem: true,
     },
     orderBy: {
       score: "asc",
     },
   });
+
+  const activityScores = activityScoresPrelim.map((scores) => ({
+    ...scores,
+    scoreByItem: parseNumberArrayString(scores.scoreByItem),
+  }));
 
   return { ...assignmentData, activityScores };
 }
@@ -783,7 +796,7 @@ export async function getSubmittedResponseHistory({
   return { activityName, submittedResponses };
 }
 
-export async function getAssignmentDataFromCode({
+export async function getAssignmentViewerDataFromCode({
   code,
   loggedInUserId,
 }: {
@@ -832,9 +845,15 @@ export async function getAssignmentDataFromCode({
     await recordContentView(assignment.contentId, loggedInUserId);
   }
 
+  const scoreData = await getScore({
+    contentId: assignment.contentId,
+    loggedInUserId,
+  });
+
   return {
     assignmentFound: true,
     assignment,
+    scoreData,
   };
 }
 

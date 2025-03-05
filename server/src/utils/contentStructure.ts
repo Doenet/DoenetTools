@@ -249,6 +249,8 @@ export function returnContentSelect({
     libraryActivityInfo,
     ...classificationsObj,
     _count,
+    activityLevelAttempts: true,
+    itemLevelAttempts: true,
   };
 
   const assignment = includeAssignInfo
@@ -282,8 +284,6 @@ export function returnContentSelect({
   const problemSetSelect = {
     shuffle: true,
     paginate: true,
-    activityLevelAttempts: true,
-    itemLevelAttempts: true,
   };
 
   return {
@@ -365,8 +365,10 @@ type PreliminaryContent = {
   _count?: {
     assignmentScores: number;
   };
+  activityLevelAttempts: boolean;
+  itemLevelAttempts: boolean;
 
-  // if `includeAssignedRevision` specified
+  // if `includeAssignInfo` is specified
   assignment?: {
     classCode: string;
     codeValidUntil: Date | null;
@@ -398,8 +400,6 @@ type PreliminaryContent = {
   // from problem bank select
   shuffle: boolean;
   paginate: boolean;
-  activityLevelAttempts: boolean;
-  itemLevelAttempts: boolean;
 };
 
 export function processContent(
@@ -411,6 +411,8 @@ export function processContent(
     id,
     type,
     _count,
+    activityLevelAttempts,
+    itemLevelAttempts,
     sharedWith: sharedWithOrig,
     license,
     parent,
@@ -432,8 +434,6 @@ export function processContent(
     // from problem set select
     shuffle,
     paginate,
-    activityLevelAttempts,
-    itemLevelAttempts,
 
     ...preliminaryContent2
   } = preliminaryContent;
@@ -454,6 +454,8 @@ export function processContent(
       rootContentId: rootContent.id,
       rootType: rootContent.type,
       hasScoreData: _count ? _count.assignmentScores > 0 : false,
+      activityLevelAttempts,
+      itemLevelAttempts,
     };
   }
 
@@ -535,8 +537,6 @@ export function processContent(
         type: "sequence",
         shuffle,
         paginate,
-        activityLevelAttempts,
-        itemLevelAttempts,
         children: [],
         ...baseContent,
       };
