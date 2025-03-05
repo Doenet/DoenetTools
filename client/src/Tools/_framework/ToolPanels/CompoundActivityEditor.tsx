@@ -166,8 +166,8 @@ export function CompoundActivityEditor({
 
   const readOnly =
     asViewer ||
-    (activity.assignmentInfo?.assignmentStatus ??
-      "Unassigned" !== "Unassigned");
+    (activity.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
+      "Unassigned";
 
   const { user } = useOutletContext<SiteContext>();
   const navigate = useNavigate();

@@ -177,8 +177,6 @@ export type ProblemSet = ContentBase & {
   revisionNum?: number;
   shuffle: boolean;
   paginate: boolean;
-  activityLevelAttempts: boolean;
-  itemLevelAttempts: boolean;
   children: Content[];
 };
 
@@ -197,6 +195,8 @@ export type AssignmentInfo = {
   classCode: string | null;
   codeValidUntil: string | null;
   hasScoreData: boolean;
+  activityLevelAttempts: boolean;
+  itemLevelAttempts: boolean;
 };
 
 export type ActivityHistoryItem = {
@@ -204,8 +204,8 @@ export type ActivityHistoryItem = {
   prevContentId: Uint8Array;
   prevRevisionNum: number;
   withLicenseCode: LicenseCode | null;
-  timestampActivity: DateTime;
-  timestampPrevActivity: DateTime;
+  timestampContent: DateTime;
+  timestampPrevContent: DateTime;
   prevName: string;
   prevOwner: UserInfo;
   prevCidAtRemix: string;
@@ -219,8 +219,8 @@ export type ActivityRemixItem = {
   contentId: Uint8Array;
   name: string;
   owner: UserInfo;
-  timestampActivity: DateTime;
-  timestampPrevActivity: DateTime;
+  timestampContent: DateTime;
+  timestampPrevContent: DateTime;
   directCopy: boolean;
 };
 

@@ -1,9 +1,9 @@
-import React, { ReactElement, useEffect } from "react";
+import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { useLoaderData, useOutletContext } from "react-router";
 
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
-import { Box, Grid, GridItem, VStack } from "@chakra-ui/react";
+import { Box, Button, Grid, GridItem } from "@chakra-ui/react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router";
 import {
@@ -16,6 +16,49 @@ import { Content, DoenetmlVersion } from "../../../_utils/types";
 import { ActivitySource, isActivitySource } from "../../../_utils/viewerTypes";
 import { compileActivityFromContent } from "../../../_utils/activity";
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
+
+type ItemScore = { id: string; score: number; docId?: string };
+
+function isItemScore(obj: unknown): obj is ItemScore {
+  const typedObj = obj as ItemScore;
+  return (
+    typedObj !== null &&
+    typeof typedObj === "object" &&
+    typeof typedObj.id === "string" &&
+    typeof typedObj.score === "number" &&
+    (typedObj.docId === undefined || typeof typedObj.docId === "string")
+  );
+}
+
+function createScoreByItem(obj: unknown) {
+  if (Array.isArray(obj)) {
+    const newScoreByItem: ItemScore[] = [];
+    for (const item of obj) {
+      if (isItemScore(item)) {
+        newScoreByItem.push(item);
+      }
+    }
+
+    return newScoreByItem;
+  }
+
+  return null;
+}
+
+function createScoreNumberByItem(obj: unknown) {
+  if (Array.isArray(obj)) {
+    const newScoreNumberByItem: number[] = [];
+    for (const item of obj) {
+      if (typeof item === "number") {
+        newScoreNumberByItem.push(item);
+      }
+    }
+
+    return newScoreNumberByItem;
+  }
+
+  return null;
+}
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -38,31 +81,28 @@ export async function action({ params, request }) {
 }
 
 export async function loader({ params }) {
-  let assignment;
-
   // TODO: need to select variant for each student (just once)
 
-  if (params.contentId) {
-    // TODO: create this route
-    const { data } = await axios.get(
-      `/api/assign/getAssignmentData/${params.contentId}`,
-    );
-    assignment = data;
-  } else if (params.classCode) {
-    const { data } = await axios.get(
-      `/api/info/getAssignmentDataFromCode/${params.classCode}`,
-    );
+  const { data } = await axios.get(
+    `/api/info/getAssignmentViewerDataFromCode/${params.classCode}`,
+  );
 
-    if (!data.assignmentFound) {
-      return {
-        assignmentFound: false,
-        assignment: null,
-        invalidClassCode: params.classCode,
-      };
-    }
-
-    assignment = data.assignment;
+  if (!data.assignmentFound) {
+    return {
+      assignmentFound: false,
+      assignment: null,
+      code: params.classCode,
+    };
   }
+
+  const initialScore = data.scoreData.loadedScore
+    ? Number(data.scoreData.score)
+    : 0;
+  const initialScoreNumberByItem = data.scoreData.loadedScore
+    ? createScoreNumberByItem(data.scoreData.scoreByItem)
+    : null;
+
+  const assignment = data.assignment;
 
   if (assignment.type === "singleDoc") {
     const doenetML = assignment.doenetML;
@@ -74,6 +114,9 @@ export async function loader({ params }) {
       assignment,
       doenetML,
       doenetmlVersion,
+      code: params.classCode,
+      initialScore,
+      initialScoreNumberByItem,
     };
   } else {
     const activityJsonFromRevision = assignment.activityJson
@@ -89,6 +132,9 @@ export async function loader({ params }) {
       type: assignment.type,
       assignment,
       activityJson,
+      code: params.classCode,
+      initialScore,
+      initialScoreNumberByItem,
     };
   }
 }
@@ -97,12 +143,15 @@ export function AssignmentViewer() {
   const data = useLoaderData() as
     | {
         assignmentFound: false;
-        invalidClassCode: string;
+        code: string;
         assignment: null;
       }
     | ({
         assignmentFound: true;
         assignment: Content;
+        code: string;
+        initialScore: number;
+        initialScoreNumberByItem: number[] | null;
       } & (
         | {
             type: "singleDoc";
@@ -115,7 +164,7 @@ export function AssignmentViewer() {
           }
       ));
 
-  const { assignmentFound, assignment } = data;
+  const { assignmentFound, assignment, code } = data;
 
   const assignmentName = data.assignmentFound ? data.assignment.name : "";
 
@@ -123,6 +172,36 @@ export function AssignmentViewer() {
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [attemptNumber, setAttemptNumber] = useState<number | null>(null);
+
+  // create ref so that is updated inside callbacks
+  const attemptNumberRef = useRef<number | null>(attemptNumber);
+  attemptNumberRef.current = attemptNumber;
+
+  const [scoresCurrentAttempt, setScoresCurrentAttempt] = useState<{
+    scoreByItem: ItemScore[] | null;
+    score: number;
+  }>({ scoreByItem: null, score: 0 });
+
+  // create ref so that is updated inside callbacks
+  const scoresCurrentAttemptRef = useRef<{
+    scoreByItem: ItemScore[] | null;
+    score: number;
+  }>(scoresCurrentAttempt);
+  scoresCurrentAttemptRef.current = scoresCurrentAttempt;
+
+  const [scores, setScores] = useState<{
+    scoreNumberByItem: number[] | null;
+    score: number;
+  }>(
+    data.assignmentFound
+      ? {
+          scoreNumberByItem: data.initialScoreNumberByItem,
+          score: data.initialScore,
+        }
+      : { scoreNumberByItem: null, score: 0 },
+  );
 
   useEffect(() => {
     if (assignmentFound) {
@@ -139,21 +218,66 @@ export function AssignmentViewer() {
 
     const messageListener = async function (event) {
       if (event.data.subject == "SPLICE.reportScoreAndState") {
-        // TODO: generalize to multiple documents. For now, assume just have one.
-        await axios.post("/api/score/saveScoreAndState", {
-          contentId: assignment.contentId,
-          assignedRevisionNum: assignment.revisionNum,
-          score: event.data.score,
-          state: JSON.stringify(event.data.state),
-          onSubmission: event.data.state.onSubmission,
-        });
+        const scoreByItem = createScoreByItem(event.data.scoreByItem);
+        const score: number =
+          typeof event.data.score === "number" ? event.data.score : 0;
+        setScoresCurrentAttempt({ scoreByItem, score });
+
+        if (event.data.newAttempt === true) {
+          await createNewAttempt({
+            newAttemptForItem: event.data.newAttemptForItem,
+            scoreByItem,
+            score,
+            state: event.data.state,
+          });
+        } else {
+          try {
+            const { data } = await axios.post("/api/score/saveScoreAndState", {
+              contentId: assignment.contentId,
+              attemptNumber: attemptNumberRef.current,
+              score,
+              scoreByItem: scoreByItem?.map((s) => s.score) ?? null,
+              state: JSON.stringify(event.data.state),
+            });
+            setScores({
+              scoreNumberByItem: createScoreNumberByItem(data.scoreByItem),
+              score: Number(data.score),
+            });
+          } catch (e) {
+            if (
+              e.status === 400 &&
+              e.response?.data?.error === "Invalid request" &&
+              e.response.data.details.includes("non-maximal")
+            ) {
+              alert(
+                "Unable to save data due to attempt number changing. Reload page to update to the current attempt.",
+              );
+            } else {
+              alert("Unable to save data");
+            }
+          }
+        }
       } else if (event.data.subject == "SPLICE.sendEvent") {
         const data = event.data.data;
         if (data.verb === "submitted") {
           recordSubmittedEvent({
-            contentId: assignment.contentId,
-            activityRevisionNum: assignment.revisionNum ?? 1,
+            assignment: assignment,
+            docId: event.data.docId ?? null,
+            attemptNumber: attemptNumberRef.current,
+            scores: scoresCurrentAttemptRef.current,
             data,
+          });
+        }
+      } else if (event.data.subject == "SPLICE.reportScoreByItem") {
+        const scoreByItem = createScoreByItem(event.data.scoreByItem);
+        const score: number =
+          typeof event.data.score === "number" ? event.data.score : 0;
+        setScoresCurrentAttempt({ scoreByItem, score });
+        if (scoreByItem && !scores.scoreNumberByItem) {
+          setScores((was) => {
+            const obj = { ...was };
+            obj.scoreNumberByItem = scoreByItem.map((s) => s.score);
+            return obj;
           });
         }
       } else if (event.data.subject == "SPLICE.getState") {
@@ -161,11 +285,10 @@ export function AssignmentViewer() {
           const { data } = await axios.get("/api/score/loadState", {
             params: {
               contentId: assignment.contentId,
-              requestedUserId: event.data.userId,
             },
           });
 
-          if (data.state) {
+          if (data.loadedState && data.state !== null) {
             window.postMessage({
               subject: "SPLICE.getState.response",
               messageId: event.data.messageId,
@@ -173,6 +296,7 @@ export function AssignmentViewer() {
               loadedState: true,
               state: JSON.parse(data.state),
             });
+            setAttemptNumber(data.attemptNumber);
           } else {
             window.postMessage({
               subject: "SPLICE.getState.response",
@@ -180,6 +304,7 @@ export function AssignmentViewer() {
               success: true,
               loadedState: false,
             });
+            setAttemptNumber(data.attemptNumber ?? 1);
           }
         } catch (e) {
           console.error("error loading state", e);
@@ -211,9 +336,62 @@ export function AssignmentViewer() {
   let viewer: ReactElement;
   if (data.type === "singleDoc") {
     viewer = (
-      <DoenetViewer
-        doenetML={data.doenetML}
-        doenetmlVersion={data.doenetmlVersion.fullVersion}
+      <Box>
+        {assignment.assignmentInfo?.activityLevelAttempts ? (
+          <Box>
+            <Button
+              marginLeft="20px"
+              onClick={() => createNewAttempt({ score: 0, state: null })}
+            >
+              New attempt
+            </Button>
+          </Box>
+        ) : null}
+        <DoenetViewer
+          doenetML={data.doenetML}
+          doenetmlVersion={data.doenetmlVersion.fullVersion}
+          docId={assignment.contentId}
+          userId={user.userId}
+          flags={{
+            showCorrectness: true,
+            solutionDisplayMode: "button",
+            showFeedback: true,
+            showHints: true,
+            autoSubmit: false,
+            allowLoadState: true,
+            allowSaveState: true,
+            allowLocalState: false,
+            allowSaveEvents: true,
+          }}
+          attemptNumber={attemptNumber ?? undefined}
+          location={location}
+          navigate={navigate}
+          linkSettings={{
+            viewURL: "/activityViewer",
+            editURL: "/codeViewer",
+          }}
+        />
+      </Box>
+    );
+  } else {
+    viewer = (
+      <DoenetActivityViewer
+        source={data.activityJson}
+        requestedVariantIndex={1}
+        userId={user.userId}
+        linkSettings={{ viewUrl: "", editURL: "" }}
+        paginate={assignment.type === "sequence" ? assignment.paginate : false}
+        activityLevelAttempts={
+          assignment.type === "sequence"
+            ? assignment.assignmentInfo?.activityLevelAttempts
+            : false
+        }
+        itemLevelAttempts={
+          assignment.type === "sequence"
+            ? assignment.assignmentInfo?.itemLevelAttempts
+            : false
+        }
+        showTitle={false}
         flags={{
           showCorrectness: true,
           solutionDisplayMode: "button",
@@ -226,35 +404,6 @@ export function AssignmentViewer() {
           allowSaveSubmissions: true,
           allowSaveEvents: true,
         }}
-        attemptNumber={1}
-        idsIncludeContentId={false}
-        paginate={true}
-        location={location}
-        navigate={navigate}
-        linkSettings={{
-          viewURL: "/activityViewer",
-          editURL: "/codeViewer",
-        }}
-        apiURLs={{ postMessages: true }}
-      />
-    );
-  } else {
-    viewer = (
-      <DoenetActivityViewer
-        source={data.activityJson}
-        requestedVariantIndex={1}
-        userId={"hi"}
-        linkSettings={{ viewUrl: "", editURL: "" }}
-        paginate={assignment.type === "sequence" ? assignment.paginate : false}
-        activityLevelAttempts={
-          assignment.type === "sequence"
-            ? assignment.activityLevelAttempts
-            : false
-        }
-        itemLevelAttempts={
-          assignment.type === "sequence" ? assignment.itemLevelAttempts : false
-        }
-        showTitle={false}
       />
     );
   }
@@ -264,15 +413,12 @@ export function AssignmentViewer() {
       <Grid
         background="doenet.lightBlue"
         minHeight="calc(100vh - 40px)" //40px header height
-        templateAreas={`"header header header"
-      "leftGutter centerContent rightGutter"
+        templateAreas={`"header"
+      "centerContent"
       `}
         templateRows="40px auto"
-        templateColumns=".06fr 1fr .06fr"
         position="relative"
       >
-        <GridItem area="leftGutter" background="doenet.lightBlue"></GridItem>
-        <GridItem area="rightGutter" background="doenet.lightBlue"></GridItem>
         <GridItem
           area="header"
           position="fixed"
@@ -280,6 +426,7 @@ export function AssignmentViewer() {
           background="doenet.canvas"
           width="100%"
           zIndex="500"
+          alignContent="center"
         >
           <Grid
             templateAreas={`"leftControls label rightControls"`}
@@ -293,7 +440,7 @@ export function AssignmentViewer() {
               display="flex"
               fontSize={20}
             >
-              {data.assignment.name}
+              {data.assignment.name} ({code})
             </GridItem>
             <GridItem
               area="rightControls"
@@ -308,7 +455,7 @@ export function AssignmentViewer() {
             width="100%"
             height="calc(100vh - 80px)"
             templateAreas={`"leftGutter viewer rightGutter"`}
-            templateColumns={`1fr minmax(400px,850px) 1fr`}
+            templateColumns={`1fr minmax(340px,850px) 1fr`}
             overflow="hidden"
           >
             <GridItem
@@ -317,7 +464,7 @@ export function AssignmentViewer() {
               width="100%"
               paddingTop="10px"
               alignSelf="start"
-            ></GridItem>
+            />
             <GridItem
               area="rightGutter"
               background="doenet.lightBlue"
@@ -333,40 +480,75 @@ export function AssignmentViewer() {
               maxWidth="850px"
               overflow="hidden"
             >
-              <VStack
-                spacing={0}
-                margin="10px 0px 10px 0px" //Only need when there is an outline
+              <Box
+                h="calc(100vh - 80px)"
+                background="var(--canvas)"
+                borderWidth="1px"
+                borderStyle="solid"
+                borderColor="doenet.mediumGray"
+                padding="20px 5px 20px 5px"
+                flexGrow={1}
+                overflow="scroll"
+                w="100%"
+                id="viewer-container"
               >
-                <Box
-                  h="calc(100vh - 100px)"
-                  background="var(--canvas)"
-                  borderWidth="1px"
-                  borderStyle="solid"
-                  borderColor="doenet.mediumGray"
-                  padding="20px 5px 20px 5px"
-                  flexGrow={1}
-                  overflow="scroll"
-                  w="100%"
-                  id="viewer-container"
-                >
-                  {viewer}
-                </Box>
-              </VStack>
+                {viewer}
+              </Box>
             </GridItem>
           </Grid>
         </GridItem>
       </Grid>
     </>
   );
+
+  async function createNewAttempt({
+    newAttemptForItem,
+    scoreByItem,
+    score,
+    state,
+  }: {
+    newAttemptForItem?: number;
+    scoreByItem?: ItemScore[] | null;
+    score: number;
+    state: unknown;
+  }) {
+    if (!assignment) {
+      return;
+    }
+
+    const { data } = await axios.post("/api/score/createNewAttempt", {
+      contentId: assignment.contentId,
+      itemNumber: newAttemptForItem,
+      numItems: scoreByItem?.length,
+      score,
+      scoreByItem: scoreByItem?.map((s) => s.score) ?? null,
+      state: state ? JSON.stringify(state) : null,
+    });
+
+    if (Number.isInteger(data.attemptNumber)) {
+      setAttemptNumber(data.attemptNumber);
+    }
+    setScores({
+      scoreNumberByItem: createScoreNumberByItem(data.scoreByItem),
+      score: Number(data.score),
+    });
+  }
 }
 
 async function recordSubmittedEvent({
-  contentId,
-  activityRevisionNum,
+  assignment,
+  attemptNumber,
+  docId,
+  scores,
   data,
 }: {
-  contentId: string;
-  activityRevisionNum: number;
+  assignment: Content;
+  attemptNumber: number | null;
+  docId: string | null;
+  scores: {
+    scoreByItem: ItemScore[] | null;
+    score: number;
+  };
   data: {
     object: string;
     result: string;
@@ -386,18 +568,22 @@ async function recordSubmittedEvent({
     const context = JSON.parse(data.context);
     const itemNumber = context.item;
     const itemCreditAchieved = context.itemCreditAchieved;
-    const activityCreditAchieved = context.pageCreditAchieved;
+    const docCreditAchieved = context.pageCreditAchieved;
+
+    const questionNumber =
+      (scores.scoreByItem?.findIndex((item) => item.docId === docId) ?? 0) + 1;
 
     await axios.post(`/api/assign/recordSubmittedEvent`, {
-      contentId,
-      activityRevisionNum,
+      contentId: assignment.contentId,
+      attemptNumber,
       answerId,
       answerNumber: object.answerNumber,
       response,
+      questionNumber,
       itemNumber,
       creditAchieved,
       itemCreditAchieved,
-      activityCreditAchieved,
+      docCreditAchieved,
     });
   }
 }

@@ -118,9 +118,9 @@ export function Remixes({ remixes }: { remixes: ActivityRemixItem[] }) {
                 </Hide>
                 <Td>{ch.withLicenseCode}</Td>
                 <Show above="sm">
-                  {/* Note: use timestampPrevActivity as what the timestamp from when the previous was mixed, not when this doc was created */}
+                  {/* Note: use timestampPrevContent as what the timestamp from when the previous was mixed, not when this doc was created */}
                   <Td>
-                    {ch.timestampPrevActivity.toLocaleString(DateTime.DATE_MED)}
+                    {ch.timestampPrevContent.toLocaleString(DateTime.DATE_MED)}
                   </Td>
                   <Td>{ch.directCopy ? "direct copy" : ""}</Td>
                 </Show>

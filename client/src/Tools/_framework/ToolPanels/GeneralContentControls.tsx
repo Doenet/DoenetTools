@@ -18,9 +18,6 @@ import {
   Checkbox,
   Heading,
   Tooltip,
-  RadioGroup,
-  HStack,
-  Radio,
 } from "@chakra-ui/react";
 import { FaFileImage } from "react-icons/fa";
 import { readAndCompressImage } from "browser-image-resizer";
@@ -139,15 +136,6 @@ export function GeneralContentControls({
   );
   const [paginate, setPaginate] = useState(
     contentData.type === "sequence" ? contentData.paginate : false,
-  );
-  const [attemptButtons, setAttemptButtons] = useState<string>(
-    contentData.type === "sequence"
-      ? contentData.activityLevelAttempts
-        ? "activity"
-        : contentData.itemLevelAttempts
-          ? "item"
-          : "none"
-      : "none",
   );
 
   const nameInput = useRef<HTMLInputElement>(null);
@@ -536,29 +524,6 @@ export function GeneralContentControls({
             >
               Paginate
             </Checkbox>
-
-            <RadioGroup
-              marginTop="10px"
-              onChange={(v) => {
-                setAttemptButtons(v);
-                fetcher.submit(
-                  {
-                    _action: "update general",
-                    contentId: contentData.contentId,
-                    attemptButtons: v,
-                  },
-                  { method: "post" },
-                );
-              }}
-              value={attemptButtons}
-            >
-              <HStack>
-                <Text>Show new attempt buttons:</Text>
-                <Radio value="none">None</Radio>
-                <Radio value="activity">Activity</Radio>
-                <Radio value="item">Item</Radio>
-              </HStack>
-            </RadioGroup>
           </VStack>
         </Box>
       ) : null}

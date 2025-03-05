@@ -1,7 +1,7 @@
 /** The source for creating an activity */
 export type ActivitySource = SingleDocSource | SelectSource | SequenceSource;
 
-/** The current state of an activity, including all descendants and attempts. */
+/** The current state of an activity, including all descendants */
 export type ActivityState = SingleDocState | SelectState | SequenceState;
 
 /**
@@ -33,7 +33,7 @@ export type SingleDocSource = {
   baseComponentCounts?: Record<string, number | undefined>;
 };
 
-/** The current state of a single doc activity, including all attempts. */
+/** The current state of a single doc activity */
 export type SingleDocState = {
   type: "singleDoc";
   id: string;
@@ -43,21 +43,20 @@ export type SingleDocState = {
   initialVariant: number;
   /** Credit achieved (between 0 and 1) over all attempts of this activity */
   creditAchieved: number;
-  attempts: SingleDocAttemptState[];
-  /** See {@link RestrictToVariantSlice} */
-  restrictToVariantSlice?: RestrictToVariantSlice;
-};
-
-/** The state of an attempt of a single doc activity. */
-export type SingleDocAttemptState = {
-  /** The variant selected for this attempt */
-  variant: number;
-  /** A json object containing the state need to reconstitute the activity */
+  /** Credit achieved from the latest submission */
+  latestCreditAchieved: number;
+  /** The number of the current attempt */
+  attemptNumber: number;
+  /** The variant selected for the current attempt */
+  currentVariant: number;
+  /** A list of the the variants selected in all attempts, ordered by attempt number */
+  previousVariants: number[];
+  /** A json object containing the state needed to reconstitute the activity of the current attempt */
   doenetState: unknown;
-  /** Credit achieved (between 0 and 1) on this attempt */
-  creditAchieved: number;
   /** The value of the question counter set for the beginning of this activity */
   initialQuestionCounter: number;
+  /** See {@link RestrictToVariantSlice} */
+  restrictToVariantSlice?: RestrictToVariantSlice;
 };
 
 /**
@@ -85,7 +84,7 @@ export type SelectSource = {
   selectByVariant: boolean;
 };
 
-/** The current state of a select activity, including all attempts. */
+/** The current state of a select activity */
 export type SelectState = {
   type: "select";
   id: string;
@@ -95,27 +94,20 @@ export type SelectState = {
   initialVariant: number;
   /** Credit achieved (between 0 and 1) over all attempts of this activity */
   creditAchieved: number;
-  /** The latest state of all possible activities that could be selected from. */
-  latestChildStates: ActivityState[];
-  attempts: SelectAttemptState[];
-  /** See {@link RestrictToVariantSlice} */
-  restrictToVariantSlice?: RestrictToVariantSlice;
-};
-
-/** The state of an attempt of a select activity. */
-export type SelectAttemptState = {
-  /** The activities that were selected for this attempt */
-  activities: ActivityState[];
-  /** Credit achieved (between 0 and 1) on this attempt */
-  creditAchieved: number;
+  /** Credit achieved from the latest submission */
+  latestCreditAchieved: number;
+  /** The state of all possible activities that could be selected from. */
+  allChildren: ActivityState[];
+  /** The number of the current attempt */
+  attemptNumber: number;
+  /** The children selected for the current attempt  */
+  selectedChildren: ActivityState[];
+  /** A list of the the ids of the children selected in all attempts, ordered by attempt number */
+  previousSelections: string[];
   /** The value of the question counter set for the beginning of this activity */
   initialQuestionCounter: number;
-  /**
-   * If `numToSelect` > 1 and a new attempt was created (via `generateNewSingleDocAttemptForMultiSelect`)
-   * that replaced just one item and left the others unchanged,
-   * then `singleItemReplacementIdx` gives the index of that one item that was replaced.
-   */
-  singleItemReplacementIdx?: number;
+  /** See {@link RestrictToVariantSlice} */
+  restrictToVariantSlice?: RestrictToVariantSlice;
 };
 
 /**
@@ -125,15 +117,10 @@ export type SelectAttemptState = {
  */
 export type SelectStateNoSource = Omit<
   SelectState,
-  "source" | "latestChildStates" | "attempts"
+  "source" | "allChildren" | "selectedChildren"
 > & {
-  latestChildStates: ActivityStateNoSource[];
-  attempts: {
-    activities: ActivityStateNoSource[];
-    creditAchieved: number;
-    initialQuestionCounter: number;
-    singleItemReplacementIdx?: number;
-  }[];
+  allChildren: ActivityStateNoSource[];
+  selectedChildren: ActivityStateNoSource[];
 };
 
 /** The source for creating a sequence activity */
@@ -163,19 +150,16 @@ export type SequenceState = {
   initialVariant: number;
   /** Credit achieved (between 0 and 1) over all attempts of this activity */
   creditAchieved: number;
-  /** The latest state of child activities, in their original order */
-  latestChildStates: ActivityState[];
-  attempts: SequenceAttemptState[];
+  /** Credit achieved from the latest submission */
+  latestCreditAchieved: number;
+  /** The state of child activities, in their original order */
+  allChildren: ActivityState[];
+  /** The number of the current attempt */
+  attemptNumber: number;
+  /** The activities as ordered for the current attempt */
+  orderedChildren: ActivityState[];
   /** See {@link RestrictToVariantSlice} */
   restrictToVariantSlice?: RestrictToVariantSlice;
-};
-
-/** The state of an attempt of a sequence activity. */
-export type SequenceAttemptState = {
-  /** The activities as ordered for this attempt */
-  activities: ActivityState[];
-  /** Credit achieved (between 0 and 1) on this attempt */
-  creditAchieved: number;
 };
 
 /**
@@ -185,10 +169,10 @@ export type SequenceAttemptState = {
  */
 export type SequenceStateNoSource = Omit<
   SequenceState,
-  "source" | "latestChildStates" | "attempts"
+  "source" | "allChildren" | "orderedChildren"
 > & {
-  latestChildStates: ActivityStateNoSource[];
-  attempts: { activities: ActivityStateNoSource[]; creditAchieved: number }[];
+  allChildren: ActivityStateNoSource[];
+  orderedChildren: ActivityStateNoSource[];
 };
 
 /**
