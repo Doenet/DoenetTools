@@ -3,14 +3,40 @@ import { uuidSchema } from "./uuid";
 
 export const scoreAndStateSchema = z.object({
   contentId: uuidSchema,
-  activityRevisionNum: z.number(),
+  attemptNumber: z
+    .number()
+    .int()
+    .refine((v) => v > 0),
   score: z.number(),
-  onSubmission: z.boolean(),
+  scoreByItem: z.array(z.number()),
   state: z.string(),
+});
+
+export const createNewAttemptSchema = z.object({
+  contentId: uuidSchema,
+  attemptNumber: z
+    .number()
+    .int()
+    .refine((v) => v > 0),
+  itemNumber: z
+    .number()
+    .int()
+    .refine((v) => v > 0)
+    .optional(),
+  numItems: z
+    .number()
+    .int()
+    .refine((v) => v > 0)
+    .optional(),
 });
 
 export const loadStateSchema = z.object({
   contentId: uuidSchema,
-  requestedUserId: uuidSchema,
-  withMaxScore: z.boolean().default(false),
+  requestedUserId: uuidSchema.optional(),
+  attemptNumber: z.number().int().optional(),
+});
+
+export const getScoreSchema = z.object({
+  contentId: uuidSchema,
+  requestedUserId: uuidSchema.optional(),
 });

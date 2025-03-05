@@ -27,18 +27,18 @@ export async function getContributorHistory({
       id: true,
       contributorHistory: {
         where: {
-          prevActivity: {
-            activity: {
+          prevContent: {
+            content: {
               ...filterViewableActivity(loggedInUserId, isAdmin),
             },
           },
         },
-        orderBy: { timestampPrevActivity: "desc" },
+        orderBy: { timestampPrevContent: "desc" },
         include: {
-          prevActivity: {
+          prevContent: {
             select: {
               cid: true,
-              activity: {
+              content: {
                 select: {
                   id: true,
                   name: true,
@@ -62,12 +62,12 @@ export async function getContributorHistory({
   const history: ActivityHistoryItem[] = [];
 
   for (const historyItem of prelimActivityHistory.contributorHistory) {
-    const prevActivity = historyItem.prevActivity;
+    const prevContent = historyItem.prevContent;
 
-    const prevCidAtRemix = prevActivity.cid;
+    const prevCidAtRemix = prevContent.cid;
 
     const prevCurrent = await getContentSource({
-      contentId: prevActivity.activity.id,
+      contentId: prevContent.content.id,
       loggedInUserId,
     });
 
@@ -84,15 +84,15 @@ export async function getContributorHistory({
 
     history.push({
       contentId,
-      prevContentId: prevActivity.activity.id,
-      prevRevisionNum: historyItem.prevActivityRevisionNum,
+      prevContentId: prevContent.content.id,
+      prevRevisionNum: historyItem.prevContentRevisionNum,
       withLicenseCode: historyItem.withLicenseCode
         ? (historyItem.withLicenseCode as LicenseCode)
         : null,
-      timestampActivity: historyItem.timestampActivity,
-      timestampPrevActivity: historyItem.timestampPrevActivity,
-      prevName: prevActivity.activity.name,
-      prevOwner: prevActivity.activity.owner,
+      timestampContent: historyItem.timestampContent,
+      timestampPrevContent: historyItem.timestampPrevContent,
+      prevName: prevContent.content.name,
+      prevOwner: prevContent.content.owner,
       prevCidAtRemix,
       prevChanged,
     });
@@ -125,24 +125,24 @@ export async function getRemixes({
     },
     select: {
       id: true,
-      activityRevisions: {
+      contentRevisions: {
         select: {
           revisionNum: true,
           contributorHistory: {
             where: {
-              activity: {
+              content: {
                 ...filterViewableActivity(loggedInUserId, isAdmin),
               },
               ...directFilter,
             },
-            orderBy: { timestampActivity: "desc" },
+            orderBy: { timestampContent: "desc" },
             select: {
               contentId: true,
               withLicenseCode: true,
-              timestampActivity: true,
-              timestampPrevActivity: true,
+              timestampContent: true,
+              timestampPrevContent: true,
               directCopy: true,
-              activity: {
+              content: {
                 select: {
                   name: true,
                   owner: {
@@ -164,7 +164,7 @@ export async function getRemixes({
 
   const remixes: ActivityRemixItem[] = [];
 
-  for (const revision of activityRemixes.activityRevisions) {
+  for (const revision of activityRemixes.contentRevisions) {
     for (const historyItem of revision.contributorHistory) {
       remixes.push({
         prevContentId: contentId,
@@ -173,10 +173,10 @@ export async function getRemixes({
           ? (historyItem.withLicenseCode as LicenseCode)
           : null,
         contentId: historyItem.contentId,
-        name: historyItem.activity.name,
-        owner: historyItem.activity.owner,
-        timestampActivity: historyItem.timestampActivity,
-        timestampPrevActivity: historyItem.timestampPrevActivity,
+        name: historyItem.content.name,
+        owner: historyItem.content.owner,
+        timestampContent: historyItem.timestampContent,
+        timestampPrevContent: historyItem.timestampPrevContent,
         directCopy: historyItem.directCopy,
       });
     }

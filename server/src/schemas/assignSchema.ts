@@ -12,7 +12,7 @@ export const assignmentSettingsSchema = z.object({
 
 export const assignmentStudentSchema = z.object({
   contentId: uuidSchema,
-  studentUserId: uuidSchema,
+  studentUserId: uuidSchema.optional(),
 });
 
 export const assignmentParentSchema = z.object({
@@ -21,32 +21,31 @@ export const assignmentParentSchema = z.object({
 
 export const getStudentDataSchema = z.object({
   studentUserId: uuidSchema,
-  parentId: uuidSchema.nullable(),
+  parentId: uuidSchema.nullish().transform((val) => val ?? null),
 });
 
 export const getSubmittedResponsesSchema = z.object({
   contentId: uuidSchema,
-  activityRevisionNum: z.number(),
   answerId: z.string(),
 });
 
 export const getSubmittedResponseHistorySchema = z.object({
   contentId: uuidSchema,
-  activityRevisionNum: z.number(),
   answerId: z.string(),
   userId: uuidSchema,
 });
 
 export const recordSubmittedEventSchema = z.object({
   contentId: uuidSchema,
-  activityRevisionNum: z.number(),
+  attemptNumber: z.number().int(),
   answerId: z.string(),
   response: z.string(),
-  answerNumber: z.number().optional(),
-  itemNumber: z.number(),
+  answerNumber: z.number().int().optional(),
+  itemNumber: z.number().int(),
+  questionNumber: z.number().int(),
   creditAchieved: z.number(),
   itemCreditAchieved: z.number(),
-  activityCreditAchieved: z.number(),
+  docCreditAchieved: z.number(),
 });
 
 export const codeSchema = z.object({ code: z.string() });

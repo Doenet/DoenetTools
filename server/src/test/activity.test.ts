@@ -545,6 +545,9 @@ test("activity editor data and my folder contents before and after assigned", as
       classCode,
       codeValidUntil: closeAt.toJSDate(),
       hasScoreData: false,
+      rootContentId: contentId,
+      rootName: "Untitled Document",
+      rootType: "singleDoc",
     },
   };
 
@@ -648,6 +651,9 @@ test("activity editor data and my folder contents before and after assigned", as
       classCode: newClassCode,
       codeValidUntil: closeAt.toJSDate(),
       hasScoreData: false,
+      rootContentId: contentId,
+      rootName: "Untitled Document",
+      rootType: "singleDoc",
     },
   };
 
@@ -674,8 +680,8 @@ test("activity editor data and my folder contents before and after assigned", as
   await saveScoreAndState({
     contentId,
     loggedInUserId: ownerId,
+    attemptNumber: 1,
     score: 0.5,
-    onSubmission: true,
     state: "document state 1",
   });
 
@@ -705,6 +711,9 @@ test("activity editor data and my folder contents before and after assigned", as
       classCode: newClassCode,
       codeValidUntil: closeAt.toJSDate(),
       hasScoreData: true,
+      rootContentId: contentId,
+      rootName: "Untitled Document",
+      rootType: "singleDoc",
     },
   };
   if (openedData3 === undefined) {
@@ -757,6 +766,9 @@ test("activity editor data and my folder contents before and after assigned", as
       classCode: newClassCode,
       codeValidUntil: null,
       hasScoreData: true,
+      rootContentId: contentId,
+      rootName: "Untitled Document",
+      rootType: "singleDoc",
     },
   };
 

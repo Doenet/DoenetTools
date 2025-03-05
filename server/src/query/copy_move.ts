@@ -581,7 +581,7 @@ async function createContributorHistory(
     data: {
       contentId: copiedId,
       prevContentId: originalId,
-      prevActivityRevisionNum: originalActivityRevision.revisionNum,
+      prevContentRevisionNum: originalActivityRevision.revisionNum,
       withLicenseCode: licenseCode,
       directCopy: true,
     },
@@ -589,7 +589,7 @@ async function createContributorHistory(
 
   // we'll need the timestamp from this new record
   // to copy to additional records created
-  const timestampActivity = contribHistoryInfo.timestampActivity;
+  const timestampContent = contribHistoryInfo.timestampContent;
 
   // Next, we grab all records from the history of `originalId`.
   // We will create records showing that these activities
@@ -605,21 +605,21 @@ async function createContributorHistory(
   });
 
   // Note: contributorHistory has two timestamps:
-  // - timestampPrevActivity: the time when prevContentId was remixed into a new activity
-  // - timestampActivity: this time when contentId was created by remixing
+  // - timestampPrevContent: the time when prevContentId was remixed into a new activity
+  // - timestampContent: this time when contentId was created by remixing
   // Each record we create below corresponds to an indirect path from prevContentId to contentId
   // so the two timestamps will be different:
-  // - timestampPrevActivity is copied from the original source to get the original remix time from prevContentId
-  // - timestampActivity is copied from the above create query (so is essentially now)
+  // - timestampPrevContent is copied from the original source to get the original remix time from prevContentId
+  // - timestampContent is copied from the above create query (so is essentially now)
 
   await prisma.contributorHistory.createMany({
     data: previousHistory.map((hist) => ({
       contentId: copiedId,
       prevContentId: hist.prevContentId,
-      prevActivityRevisionNum: hist.prevActivityRevisionNum,
+      prevContentRevisionNum: hist.prevContentRevisionNum,
       withLicenseCode: hist.withLicenseCode,
-      timestampPrevActivity: hist.timestampPrevActivity,
-      timestampActivity: timestampActivity,
+      timestampPrevContent: hist.timestampPrevContent,
+      timestampContent: timestampContent,
       directCopy: false,
     })),
   });

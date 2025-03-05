@@ -256,6 +256,13 @@ export function returnContentSelect({
         select: {
           classCode: true,
           codeValidUntil: true,
+          rootContent: {
+            select: {
+              name: true,
+              id: true,
+              type: true,
+            },
+          },
         },
       }
     : false;
@@ -363,6 +370,11 @@ type PreliminaryContent = {
   assignment?: {
     classCode: string;
     codeValidUntil: Date | null;
+    rootContent: {
+      name: string;
+      id: Uint8Array;
+      type: ContentType;
+    };
   } | null;
 
   // from document select
@@ -429,7 +441,7 @@ export function processContent(
   const assignmentInfoObj: { assignmentInfo?: AssignmentInfo } = {};
 
   if (assignment) {
-    const { codeValidUntil, classCode } = assignment;
+    const { codeValidUntil, classCode, rootContent } = assignment;
     const isOpen = codeValidUntil
       ? DateTime.now() <= DateTime.fromJSDate(codeValidUntil)
       : false;
@@ -438,6 +450,9 @@ export function processContent(
       assignmentStatus,
       classCode,
       codeValidUntil,
+      rootName: rootContent.name,
+      rootContentId: rootContent.id,
+      rootType: rootContent.type,
       hasScoreData: _count ? _count.assignmentScores > 0 : false,
     };
   }

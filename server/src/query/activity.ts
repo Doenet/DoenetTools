@@ -360,7 +360,7 @@ export async function getAllDoenetmlVersions() {
 }
 
 /**
- * Create a new record in `activityRevisions` corresponding to the current state of
+ * Create a new record in `contentRevisions` corresponding to the current state of
  * `contentId`.
  *
  * For documents, it stores the source and resulting cid.
@@ -390,7 +390,7 @@ export async function createActivityRevision(
     cid = await cidFromText(source);
   }
 
-  let activityRevision = await prisma.activityRevisions.findUnique({
+  let activityRevision = await prisma.contentRevisions.findUnique({
     where: { contentId_cid: { contentId: contentId, cid } },
     select: { revisionNum: true },
   });
@@ -399,14 +399,14 @@ export async function createActivityRevision(
     // TODO: not sure how to make an atomic operation of this with the ORM.
     // Should we write a raw SQL query to accomplish this in one query?
 
-    const aggregations = await prisma.activityRevisions.aggregate({
+    const aggregations = await prisma.contentRevisions.aggregate({
       _max: { revisionNum: true },
       where: { contentId },
     });
     const lastRevisionNum = aggregations._max.revisionNum;
     const newRevisionNum = lastRevisionNum ? lastRevisionNum + 1 : 1;
 
-    activityRevision = await prisma.activityRevisions.create({
+    activityRevision = await prisma.contentRevisions.create({
       data: {
         revisionNum: newRevisionNum,
         contentId,

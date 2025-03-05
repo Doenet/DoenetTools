@@ -198,6 +198,9 @@ export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
   classCode: string;
   codeValidUntil: Date | null;
+  rootContentId: Uint8Array;
+  rootName: string;
+  rootType: ContentType;
   hasScoreData: boolean;
 };
 
@@ -294,8 +297,8 @@ export type ActivityHistoryItem = {
   prevContentId: Uint8Array;
   prevRevisionNum: number;
   withLicenseCode: LicenseCode | null;
-  timestampActivity: Date;
-  timestampPrevActivity: Date;
+  timestampContent: Date;
+  timestampPrevContent: Date;
   prevName: string;
   prevOwner: UserInfo;
   prevCidAtRemix: string;
@@ -309,8 +312,8 @@ export type ActivityRemixItem = {
   contentId: Uint8Array;
   name: string;
   owner: UserInfo;
-  timestampActivity: Date;
-  timestampPrevActivity: Date;
+  timestampContent: Date;
+  timestampPrevContent: Date;
   directCopy: boolean;
 };
 

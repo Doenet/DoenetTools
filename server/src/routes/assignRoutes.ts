@@ -68,7 +68,12 @@ assignRouter.post(
 );
 
 assignRouter.get(
-  "/getAssignmentStudentData",
+  "/getAssignmentStudentData/:contentId",
+  queryLoggedIn(getAssignmentStudentData, assignmentStudentSchema),
+);
+
+assignRouter.get(
+  "/getAssignmentStudentData/:contentId/:studentUserId",
   queryLoggedIn(getAssignmentStudentData, assignmentStudentSchema),
 );
 
@@ -78,17 +83,22 @@ assignRouter.get(
 );
 
 assignRouter.get(
-  "/getStudentData",
+  "/getStudentData/:studentUserId",
   queryLoggedIn(getStudentData, getStudentDataSchema),
 );
 
 assignRouter.get(
-  "/getSubmittedResponses",
+  "/getStudentData/:studentUserId/:parentId",
+  queryLoggedIn(getStudentData, getStudentDataSchema),
+);
+
+assignRouter.get(
+  "/getSubmittedResponses/:contentId",
   queryLoggedIn(getSubmittedResponses, getSubmittedResponsesSchema),
 );
 
 assignRouter.get(
-  "/getSubmittedResponseHistory",
+  "/getSubmittedResponseHistory/:contentId/:userId",
   queryLoggedIn(getSubmittedResponseHistory, getSubmittedResponseHistorySchema),
 );
 
@@ -98,6 +108,6 @@ assignRouter.post(
 );
 
 assignRouter.get(
-  "/getAssignmentData",
+  "/getAssignmentData/:contentId",
   queryLoggedIn(getAssignmentData, contentIdSchema),
 );

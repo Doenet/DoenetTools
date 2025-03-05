@@ -278,7 +278,7 @@ app.use("/api/oldAdmin", oldAdminRouter);
 app.use("/api/assign", assignRouter);
 app.use("/api/updateContent", updateContentRouter);
 app.use("/api/share", shareRouter);
-app.use("/api/scores", scoreRouter);
+app.use("/api/score", scoreRouter);
 app.use("/api/classifications", classificationRouter);
 app.use("/api/activityEditView", activityEditViewRouter);
 app.use("/api/explore", exploreRouter);

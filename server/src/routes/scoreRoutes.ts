@@ -1,7 +1,17 @@
 import express from "express";
 import { requireLoggedIn } from "../middleware/validationMiddleware";
-import { loadStateSchema, scoreAndStateSchema } from "../schemas/scoreSchema";
-import { loadState, saveScoreAndState } from "../query/scores";
+import {
+  createNewAttemptSchema,
+  getScoreSchema,
+  loadStateSchema,
+  scoreAndStateSchema,
+} from "../schemas/scoreSchema";
+import {
+  createNewAttempt,
+  getScore,
+  loadState,
+  saveScoreAndState,
+} from "../query/scores";
 import { queryLoggedIn } from "../middleware/queryMiddleware";
 
 export const scoreRouter = express.Router();
@@ -13,4 +23,11 @@ scoreRouter.post(
   queryLoggedIn(saveScoreAndState, scoreAndStateSchema),
 );
 
+scoreRouter.post(
+  "/createNewAttempt",
+  queryLoggedIn(createNewAttempt, createNewAttemptSchema),
+);
+
 scoreRouter.get("/loadState", queryLoggedIn(loadState, loadStateSchema));
+
+scoreRouter.get("/getScore", queryLoggedIn(getScore, getScoreSchema));

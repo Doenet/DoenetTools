@@ -231,8 +231,8 @@ test("open and close assignment with code", async () => {
   await saveScoreAndState({
     contentId: contentId,
     loggedInUserId: ownerId,
+    attemptNumber: 1,
     score: 0.3,
-    onSubmission: true,
     state: "document state",
   });
 
@@ -329,6 +329,14 @@ test("open compound assignment with code", async () => {
     source: "Some content 1",
     loggedInUserId: ownerId,
   });
+
+  const { contentId: deleteSelectId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "select",
+    parentId: sequenceId,
+  });
+
+  await deleteContent({ contentId: deleteSelectId, loggedInUserId: ownerId });
 
   const { contentId: selectId } = await createContent({
     loggedInUserId: ownerId,
@@ -552,8 +560,8 @@ test("get assignment data from anonymous users", async () => {
   await saveScoreAndState({
     contentId: contentId,
     loggedInUserId: newUser1.userId,
+    attemptNumber: 1,
     score: 0.5,
-    onSubmission: true,
     state: "document state 1",
   });
 
@@ -575,7 +583,7 @@ test("get assignment data from anonymous users", async () => {
 
   expect(assignmentStudentData).eqls({
     score: 0.5,
-    activity: {
+    content: {
       id: contentId,
       name: "Activity 1",
       source: "Some content",
@@ -584,7 +592,6 @@ test("get assignment data from anonymous users", async () => {
     user: userData1,
     activityScores: [
       {
-        hasMaxScore: true,
         score: 0.5,
       },
     ],
@@ -594,8 +601,8 @@ test("get assignment data from anonymous users", async () => {
   await saveScoreAndState({
     contentId: contentId,
     loggedInUserId: newUser1.userId,
+    attemptNumber: 1,
     score: 0.2,
-    onSubmission: true,
     state: "document state 2",
   });
   assignmentWithScores = await getAssignmentScoreData({
@@ -615,7 +622,7 @@ test("get assignment data from anonymous users", async () => {
 
   expect(assignmentStudentData).eqls({
     score: 0.5,
-    activity: {
+    content: {
       id: contentId,
       name: "Activity 1",
       source: "Some content",
@@ -624,12 +631,7 @@ test("get assignment data from anonymous users", async () => {
     user: userData1,
     activityScores: [
       {
-        hasMaxScore: false,
         score: 0.2,
-      },
-      {
-        hasMaxScore: true,
-        score: 0.5,
       },
     ],
   });
@@ -638,8 +640,8 @@ test("get assignment data from anonymous users", async () => {
   await saveScoreAndState({
     contentId: contentId,
     loggedInUserId: newUser1.userId,
+    attemptNumber: 1,
     score: 0.7,
-    onSubmission: true,
     state: "document state 3",
   });
   assignmentWithScores = await getAssignmentScoreData({
@@ -659,7 +661,7 @@ test("get assignment data from anonymous users", async () => {
 
   expect(assignmentStudentData).eqls({
     score: 0.7,
-    activity: {
+    content: {
       id: contentId,
       name: "Activity 1",
       source: "Some content",
@@ -668,7 +670,6 @@ test("get assignment data from anonymous users", async () => {
     user: userData1,
     activityScores: [
       {
-        hasMaxScore: true,
         score: 0.7,
       },
     ],
@@ -702,8 +703,8 @@ test("get assignment data from anonymous users", async () => {
   await saveScoreAndState({
     contentId: contentId,
     loggedInUserId: newUser2.userId,
+    attemptNumber: 1,
     score: 0.3,
-    onSubmission: true,
     state: "document state 4",
   });
 
@@ -728,7 +729,7 @@ test("get assignment data from anonymous users", async () => {
 
   expect(assignmentStudentData).eqls({
     score: 0.3,
-    activity: {
+    content: {
       id: contentId,
       name: "Activity 1",
       source: "Some content",
@@ -737,7 +738,6 @@ test("get assignment data from anonymous users", async () => {
     user: userData2,
     activityScores: [
       {
-        hasMaxScore: true,
         score: 0.3,
       },
     ],
@@ -772,8 +772,8 @@ test("can't get assignment data if other user, but student can get their own dat
   await saveScoreAndState({
     contentId: contentId,
     loggedInUserId: newUser1.userId,
+    attemptNumber: 1,
     score: 0.5,
-    onSubmission: true,
     state: "document state 1",
   });
 
@@ -850,8 +850,8 @@ test("can't unassign if have data", async () => {
   await saveScoreAndState({
     contentId: contentId,
     loggedInUserId: newUser1.userId,
+    attemptNumber: 1,
     score: 0.5,
-    onSubmission: true,
     state: "document state 1",
   });
 
@@ -931,8 +931,8 @@ test("list assigned and get assigned scores get student assignments and scores",
   await saveScoreAndState({
     contentId: contentId2,
     loggedInUserId: user1Id,
+    attemptNumber: 1,
     score: 0.5,
-    onSubmission: true,
     state: "document state 1",
   });
 
@@ -994,8 +994,8 @@ test("get all assignment data from anonymous user", async () => {
   await saveScoreAndState({
     contentId: contentId,
     loggedInUserId: newUser1.userId,
+    attemptNumber: 1,
     score: 0.5,
-    onSubmission: true,
     state: "document state 1",
   });
 
@@ -1023,8 +1023,8 @@ test("get all assignment data from anonymous user", async () => {
   await saveScoreAndState({
     contentId: contentId,
     loggedInUserId: newUser1.userId,
+    attemptNumber: 1,
     score: 0.2,
-    onSubmission: true,
     state: "document state 2",
   });
 
@@ -1051,8 +1051,8 @@ test("get all assignment data from anonymous user", async () => {
   await saveScoreAndState({
     contentId: contentId,
     loggedInUserId: newUser1.userId,
+    attemptNumber: 1,
     score: 0.7,
-    onSubmission: true,
     state: "document state 3",
   });
 
@@ -1376,57 +1376,57 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   await saveScoreAndState({
     contentId: activity1aId,
     loggedInUserId: newUserId,
+    attemptNumber: 1,
     score: 0.11,
-    onSubmission: true,
     state: "document state 1a",
   });
   await saveScoreAndState({
     contentId: activity1c1Id,
     loggedInUserId: newUserId,
+    attemptNumber: 1,
     score: 0.131,
-    onSubmission: true,
     state: "document state 1c1",
   });
   await saveScoreAndState({
     contentId: activity1c2aId,
     loggedInUserId: newUserId,
+    attemptNumber: 1,
     score: 0.1321,
-    onSubmission: true,
     state: "document state 1c2a",
   });
   await saveScoreAndState({
     contentId: activity1c2bId,
     loggedInUserId: newUserId,
+    attemptNumber: 1,
     score: 0.1322,
-    onSubmission: true,
     state: "document state 1c2b",
   });
   await saveScoreAndState({
     contentId: activity1eId,
     loggedInUserId: newUserId,
+    attemptNumber: 1,
     score: 0.15,
-    onSubmission: true,
     state: "document state 1e",
   });
   await saveScoreAndState({
     contentId: activity2Id,
     loggedInUserId: newUserId,
+    attemptNumber: 1,
     score: 0.2,
-    onSubmission: true,
     state: "document state 2",
   });
   await saveScoreAndState({
     contentId: activity3bId,
     loggedInUserId: newUserId,
+    attemptNumber: 1,
     score: 0.32,
-    onSubmission: true,
     state: "document state 3b",
   });
   await saveScoreAndState({
     contentId: activityRootId,
     loggedInUserId: newUserId,
+    attemptNumber: 1,
     score: 1.0,
-    onSubmission: true,
     state: "document state Root",
   });
 
@@ -1716,8 +1716,8 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   await saveScoreAndState({
     contentId: contentId,
     loggedInUserId: newUser1.userId,
+    attemptNumber: 1,
     score: 0.5,
-    onSubmission: true,
     state: "document state 1",
   });
 
@@ -1744,8 +1744,8 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   await saveScoreAndState({
     contentId: contentId,
     loggedInUserId: newUser1.userId,
+    attemptNumber: 1,
     score: 0.2,
-    onSubmission: true,
     state: "document state 2",
   });
 
@@ -1784,16 +1784,16 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   await saveScoreAndState({
     contentId: contentId,
     loggedInUserId: newUser2.userId,
+    attemptNumber: 1,
     score: 0.3,
-    onSubmission: true,
     state: "document state 3",
   });
 
   await saveScoreAndState({
     contentId: contentId,
     loggedInUserId: newUser1.userId,
+    attemptNumber: 1,
     score: 0.7,
-    onSubmission: true,
     state: "document state 4",
   });
 
@@ -1857,8 +1857,8 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   await saveScoreAndState({
     contentId: activity2Id,
     loggedInUserId: newUser3.userId,
+    attemptNumber: 1,
     score: 0.9,
-    onSubmission: true,
     state: "document state 1",
   });
 
@@ -1962,13 +1962,15 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   await recordSubmittedEvent({
     contentId: contentId,
     loggedInUserId: newUser!.userId,
+    attemptNumber: 1,
     answerId: answerId1,
     response: "Answer result 1",
     answerNumber: 1,
     itemNumber: 2,
+    questionNumber: 1,
     creditAchieved: 0.4,
     itemCreditAchieved: 0.2,
-    activityCreditAchieved: 0.1,
+    docCreditAchieved: 0.1,
   });
   answerWithResponses = await getAnswersThatHaveSubmittedResponses({
     contentId,
@@ -2021,13 +2023,15 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   await recordSubmittedEvent({
     contentId: contentId,
     loggedInUserId: newUser!.userId,
+    attemptNumber: 1,
     answerId: answerId1,
     response: "Answer result 2",
     answerNumber: 1,
     itemNumber: 2,
+    questionNumber: 1,
     creditAchieved: 0.8,
     itemCreditAchieved: 0.4,
-    activityCreditAchieved: 0.2,
+    docCreditAchieved: 0.2,
   });
   answerWithResponses = await getAnswersThatHaveSubmittedResponses({
     contentId,
@@ -2085,13 +2089,15 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   await recordSubmittedEvent({
     contentId: contentId,
     loggedInUserId: newUser!.userId,
+    attemptNumber: 1,
     answerId: answerId2,
     response: "Answer result 3",
     answerNumber: 2,
     itemNumber: 2,
+    questionNumber: 1,
     creditAchieved: 0.2,
     itemCreditAchieved: 0.1,
-    activityCreditAchieved: 0.05,
+    docCreditAchieved: 0.05,
   });
   answerWithResponses = await getAnswersThatHaveSubmittedResponses({
     contentId,
@@ -2199,13 +2205,15 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   await recordSubmittedEvent({
     contentId: contentId,
     loggedInUserId: newUser2.userId,
+    attemptNumber: 1,
     answerId: answerId1,
     response: "Answer result 4",
     answerNumber: 1,
     itemNumber: 2,
+    questionNumber: 1,
     creditAchieved: 1,
     itemCreditAchieved: 0.5,
-    activityCreditAchieved: 0.25,
+    docCreditAchieved: 0.25,
   });
   answerWithResponses = await getAnswersThatHaveSubmittedResponses({
     contentId,
@@ -2346,13 +2354,15 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   await recordSubmittedEvent({
     contentId: contentId,
     loggedInUserId: newUser2.userId,
+    attemptNumber: 1,
     answerId: answerId1,
     response: "Answer result 5",
     answerNumber: 1,
     itemNumber: 2,
+    questionNumber: 1,
     creditAchieved: 0.6,
     itemCreditAchieved: 0.3,
-    activityCreditAchieved: 0.15,
+    docCreditAchieved: 0.15,
   });
 
   ({ submittedResponses: submittedResponseHistory } =
@@ -2464,13 +2474,15 @@ test("only owner can get submitted responses", async () => {
   await recordSubmittedEvent({
     contentId: contentId,
     loggedInUserId: newUser!.userId,
+    attemptNumber: 1,
     answerId: answerId1,
     response: "Answer result 1",
     answerNumber: 1,
     itemNumber: 2,
+    questionNumber: 1,
     creditAchieved: 1,
     itemCreditAchieved: 0.5,
-    activityCreditAchieved: 0.25,
+    docCreditAchieved: 0.25,
   });
   let answerWithResponses = await getAnswersThatHaveSubmittedResponses({
     contentId,
@@ -2567,8 +2579,8 @@ test("only user and assignment owner can load document state", async () => {
   await saveScoreAndState({
     contentId: contentId,
     loggedInUserId: newUser!.userId,
+    attemptNumber: 1,
     score: 0.5,
-    onSubmission: true,
     state: "document state 1",
   });
 
@@ -2577,153 +2589,46 @@ test("only user and assignment owner can load document state", async () => {
     contentId: contentId,
     requestedUserId: newUser!.userId,
     loggedInUserId: newUser!.userId,
-    withMaxScore: false,
+    attemptNumber: 1,
   });
 
-  expect(retrievedState).eq("document state 1");
+  expect(retrievedState).eqls({
+    loadedState: true,
+    state: "document state 1",
+    score: 0.5,
+    scoreByItem: null,
+    attemptNumber: 1,
+    contentAttemptNumber: 1,
+    itemAttemptNumbers: null,
+  });
 
   // assignment owner can load state
   const retrievedState2 = await loadState({
     contentId: contentId,
     requestedUserId: newUser!.userId,
     loggedInUserId: ownerId,
-    withMaxScore: false,
+    attemptNumber: 1,
   });
 
-  expect(retrievedState2).eq("document state 1");
+  expect(retrievedState2).eqls({
+    loadedState: true,
+    state: "document state 1",
+    score: 0.5,
+    scoreByItem: null,
+    attemptNumber: 1,
+    contentAttemptNumber: 1,
+    itemAttemptNumbers: null,
+  });
 
   // another user cannot load state
   const user2 = await createTestUser();
 
-  await expect(
-    loadState({
-      contentId: contentId,
-      requestedUserId: newUser!.userId,
-      loggedInUserId: user2.userId,
-      withMaxScore: false,
-    }),
-  ).rejects.toThrow(PrismaClientKnownRequestError);
-});
-
-test("load document state based on withMaxScore", async () => {
-  const owner = await createTestUser();
-  const ownerId = owner.userId;
-  const { contentId: contentId } = await createContent({
-    loggedInUserId: ownerId,
-    contentType: "singleDoc",
-    parentId: null,
-  });
-
-  // open assignment generates code
-  const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode({
-    contentId: contentId,
-    closeAt: closeAt,
-    loggedInUserId: ownerId,
-  });
-
-  // create new anonymous user
-  const newUser = await createTestAnonymousUser();
-
-  await saveScoreAndState({
-    contentId: contentId,
-    loggedInUserId: newUser!.userId,
-    score: 0.5,
-    onSubmission: true,
-    state: "document state 1",
-  });
-
-  // since last state is maximum score, withMaxScore doesn't have effect
-  let retrievedState = await loadState({
+  const retrievedState3 = await loadState({
     contentId: contentId,
     requestedUserId: newUser!.userId,
-    loggedInUserId: ownerId,
-    withMaxScore: false,
-  });
-  expect(retrievedState).eq("document state 1");
-
-  retrievedState = await loadState({
-    contentId: contentId,
-    requestedUserId: newUser!.userId,
-    loggedInUserId: ownerId,
-    withMaxScore: true,
-  });
-  expect(retrievedState).eq("document state 1");
-
-  // last state is no longer maximum score
-  await saveScoreAndState({
-    contentId: contentId,
-    loggedInUserId: newUser!.userId,
-    score: 0.2,
-    onSubmission: true,
-    state: "document state 2",
+    loggedInUserId: user2.userId,
+    attemptNumber: 1,
   });
 
-  // get last state if withMaxScore is false
-  retrievedState = await loadState({
-    contentId: contentId,
-    requestedUserId: newUser!.userId,
-    loggedInUserId: ownerId,
-    withMaxScore: false,
-  });
-  expect(retrievedState).eq("document state 2");
-
-  // get state with max score
-  retrievedState = await loadState({
-    contentId: contentId,
-    requestedUserId: newUser!.userId,
-    loggedInUserId: ownerId,
-    withMaxScore: true,
-  });
-  expect(retrievedState).eq("document state 1");
-
-  // matching maximum score with onSubmission uses latest for maximum
-  await saveScoreAndState({
-    contentId: contentId,
-    loggedInUserId: newUser!.userId,
-    score: 0.5,
-    onSubmission: true,
-    state: "document state 3",
-  });
-
-  retrievedState = await loadState({
-    contentId: contentId,
-    requestedUserId: newUser!.userId,
-    loggedInUserId: ownerId,
-    withMaxScore: false,
-  });
-  expect(retrievedState).eq("document state 3");
-
-  retrievedState = await loadState({
-    contentId: contentId,
-    requestedUserId: newUser!.userId,
-    loggedInUserId: ownerId,
-    withMaxScore: true,
-  });
-  expect(retrievedState).eq("document state 3");
-
-  // matching maximum score without onSubmission does not use latest for maximum
-  await saveScoreAndState({
-    contentId: contentId,
-    loggedInUserId: newUser!.userId,
-    score: 0.5,
-    onSubmission: false,
-    state: "document state 4",
-  });
-
-  retrievedState = await loadState({
-    contentId: contentId,
-    requestedUserId: newUser!.userId,
-    loggedInUserId: ownerId,
-    withMaxScore: false,
-  });
-  expect(retrievedState).eq("document state 4");
-
-  retrievedState = await loadState({
-    contentId: contentId,
-    requestedUserId: newUser!.userId,
-    loggedInUserId: ownerId,
-    withMaxScore: true,
-  });
-  expect(retrievedState).eq("document state 3");
+  expect(retrievedState3).eqls({ loadedState: false });
 });

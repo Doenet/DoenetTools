@@ -49,11 +49,50 @@ export async function assignActivity({
 
   if (content.type !== "singleDoc") {
     for (const child of content.children) {
-      await assignActivity({ contentId: child.id, loggedInUserId });
+      await assignChildren({
+        contentId: child.id,
+        rootContentId: contentId,
+        loggedInUserId,
+      });
     }
   }
 
   return { classCode };
+}
+
+async function assignChildren({
+  contentId,
+  rootContentId,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  rootContentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
+  const content = await prisma.content.update({
+    where: { id: contentId },
+    data: {
+      assignment: {
+        connect: {
+          rootContentId,
+        },
+      },
+    },
+    select: {
+      type: true,
+      children: { select: { id: true }, where: { isDeleted: false } },
+    },
+  });
+
+  if (content.type !== "singleDoc") {
+    for (const child of content.children) {
+      await assignChildren({
+        contentId: child.id,
+        rootContentId,
+        loggedInUserId,
+      });
+    }
+  }
 }
 
 function generateClassCode() {
@@ -261,7 +300,7 @@ export async function getAssignmentStudentData({
   const assignmentData = await prisma.assignmentScores.findUniqueOrThrow({
     where: {
       contentId_userId: { contentId, userId },
-      activity: {
+      content: {
         // if studentUserId specified, you must be the owner
         ownerId: studentUserId ? loggedInUserId : undefined,
         isDeleted: false,
@@ -271,7 +310,7 @@ export async function getAssignmentStudentData({
     },
     select: {
       score: true,
-      activity: {
+      content: {
         select: {
           id: true,
           name: true,
@@ -290,10 +329,9 @@ export async function getAssignmentStudentData({
     },
   });
 
-  const activityScores = await prisma.activityState.findMany({
+  const activityScores = await prisma.contentState.findMany({
     where: { contentId, userId },
     select: {
-      hasMaxScore: true,
       score: true,
     },
     orderBy: {
@@ -474,18 +512,18 @@ export async function getAssignedScores({
   const scores = await prisma.assignmentScores.findMany({
     where: {
       userId: loggedInUserId,
-      activity: { assignmentId: { not: null }, isDeleted: false },
+      content: { assignmentId: { not: null }, isDeleted: false },
     },
     select: {
       score: true,
-      activity: { select: { id: true, name: true } },
+      content: { select: { id: true, name: true } },
     },
-    orderBy: { activity: { createdAt: "asc" } },
+    orderBy: { content: { createdAt: "asc" } },
   });
 
   const orderedActivityScores = scores.map((obj) => ({
-    contentId: obj.activity.id,
-    activityName: obj.activity.name,
+    contentId: obj.content.id,
+    activityName: obj.content.name,
     score: obj.score,
   }));
 
@@ -524,35 +562,41 @@ export async function getAssignmentContent({
 export async function recordSubmittedEvent({
   contentId,
   loggedInUserId,
+  attemptNumber,
   answerId,
   response,
   answerNumber,
+  questionNumber,
   itemNumber,
   creditAchieved,
   itemCreditAchieved,
-  activityCreditAchieved,
+  docCreditAchieved,
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
+  attemptNumber: number;
   answerId: string;
   response: string;
   answerNumber?: number;
   itemNumber: number;
+  questionNumber: number;
   creditAchieved: number;
   itemCreditAchieved: number;
-  activityCreditAchieved: number;
+  docCreditAchieved: number;
 }) {
   await prisma.submittedResponses.create({
     data: {
       contentId,
       userId: loggedInUserId,
+      attemptNumber,
       answerId,
       response,
       answerNumber,
       itemNumber,
+      questionNumber,
       creditAchieved,
       itemCreditAchieved,
-      activityCreditAchieved,
+      docCreditAchieved,
     },
   });
 }
