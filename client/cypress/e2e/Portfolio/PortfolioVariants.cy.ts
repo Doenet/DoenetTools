@@ -1,8 +1,8 @@
 import { cesc2 } from "../../../src/_utils/url";
 
 describe("Activities Variant Tests", function () {
-  const _userId = "cyuserId";
-  const userId2 = "cyuserId2";
+  // const userId = "cyuserId";
+  // const userId2 = "cyuserId2";
 
   // beforeEach(() => {
   // cy.signin({ userId });
