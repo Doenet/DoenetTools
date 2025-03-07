@@ -19,7 +19,7 @@ import { DoenetHeading as Heading } from "../../../Widgets/Heading";
 import { lastNameFirst } from "../../../_utils/names";
 
 type AssignmentScore = {
-  activityId: string;
+  contentId: string;
   score: number;
   user: {
     userId: string;
@@ -49,7 +49,7 @@ type Folder = {
 
 export async function loader({ params }) {
   const { data } = await axios.get(
-    `/api/getAllAssignmentScores/${params.folderId ?? ""}`,
+    `/api/assign/getAllAssignmentScores/${params.folderId ?? ""}`,
   );
 
   const assignmentScores: AssignmentScore[] = data.assignmentScores;
@@ -59,7 +59,7 @@ export async function loader({ params }) {
     if (!(score.user.userId in studentData)) {
       studentData[score.user.userId] = { ...score.user, scores: {} };
     }
-    studentData[score.user.userId].scores[score.activityId] = score.score;
+    studentData[score.user.userId].scores[score.contentId] = score.score;
   });
 
   // list of student ids (keys to studentData) ordered based on corresponding student name

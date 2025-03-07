@@ -3,8 +3,8 @@ describe("Navigate Explore Tests", function () {
     cy.loginAsTestUser({ isAdmin: true });
 
     // make sure library contains at least one item
-    cy.createActivity({
-      activityName: "Hello!",
+    cy.createContent({
+      name: "Hello!",
       doenetML: "Initial content",
       makePublic: true,
       publishInLibrary: true,

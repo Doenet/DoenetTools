@@ -13,10 +13,54 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useNavigate } from "react-router";
-import { ContentType } from "../../../_utils/types";
+import {
+  FetcherWithComponents,
+  useNavigate,
+  useOutletContext,
+} from "react-router";
+import { ContentDescription } from "../../../_utils/types";
 import { contentTypeToName } from "../../../_utils/activity";
+import { SiteContext } from "../Paths/SiteHeader";
 
+export async function copyContentAndReportFinishActions({
+  formObj,
+}: {
+  [k: string]: any;
+}) {
+  if (formObj._action === "copy content") {
+    const newContentIds: string[] = [];
+
+    try {
+      const contentIds = JSON.parse(formObj.contentIds);
+      if (formObj.copyToLibrary === "true") {
+        for (const c of contentIds) {
+          const { data } = await axios.post(`/api/curate/addDraftToLibrary`, {
+            contentId: c,
+          });
+          newContentIds.push(data.newContentId);
+        }
+      } else {
+        const { data } = await axios.post(`/api/copyMove/copyContent`, {
+          contentIds,
+          parentId: formObj.parentId === "null" ? null : formObj.parentId,
+        });
+
+        newContentIds.push(...data.newContentIds);
+      }
+      return { action: "copiedContent", success: true, newContentIds };
+    } catch (e) {
+      console.error(e);
+      const message =
+        typeof e.response?.data?.details === "string"
+          ? e.response.data.details
+          : null;
+
+      return { action: "copiedContent", success: false, message };
+    }
+  }
+
+  return null;
+}
 /**
  * A modal that immediately upon opening copies source content into a parent or Activities
  * Alternatively, if the `copyToLibrary` flag is set and the user is an admin, it copies the activity into the library as a draft.
@@ -24,26 +68,25 @@ import { contentTypeToName } from "../../../_utils/activity";
  * When the copy is finished, the modal allows the user to close it or navigate to the parent.
  */
 export function CopyContentAndReportFinish({
+  fetcher,
   isOpen,
   onClose,
   finalFocusRef,
-  sourceContent,
+  contentIds,
   desiredParent,
   action,
-  copyToLibrary,
+  copyToLibrary = false,
 }: {
+  fetcher: FetcherWithComponents<any>;
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  sourceContent: { id: string; type: ContentType }[];
-  desiredParent: { id: string; name: string; type: ContentType } | null;
+  contentIds: string[];
+  desiredParent: ContentDescription | null;
   action: "Copy" | "Add";
   copyToLibrary?: boolean;
 }) {
-  const [newActivityData, setNewActivityData] = useState<{
-    newContentIds: string[];
-    userId: string;
-  } | null>(null);
+  const [newContentIds, setNewContentIds] = useState<string[] | null>(null);
 
   const navigate = useNavigate();
 
@@ -51,49 +94,39 @@ export function CopyContentAndReportFinish({
   const actionPastWord = action === "Add" ? "added" : "copied";
   const actionProgressiveWord = action === "Add" ? "Adding" : "Copying";
 
+  const { user } = useOutletContext<SiteContext>();
+
   useEffect(() => {
-    async function copyContent() {
-      document.body.style.cursor = "wait";
-
-      try {
-        if (copyToLibrary) {
-          let userId: string = "";
-          const newContentIds: string[] = [];
-          for (const s of sourceContent) {
-            const { data } = await axios.post(`/api/addDraftToLibrary`, {
-              activityId: s.id,
-              type: s.type,
-            });
-            userId = data.userId;
-            newContentIds.push(data.newActivityId);
-          }
-          setNewActivityData({ newContentIds, userId });
-        } else {
-          const { data } = await axios.post(`/api/copyContent`, {
-            sourceContent: sourceContent.map((s) => ({
-              contentId: s.id,
-              type: s.type,
-            })),
-            desiredParentId: desiredParent ? desiredParent.id : null,
-          });
-
-          setNewActivityData(data);
-        }
-      } catch (e) {
-        console.error(e);
+    if (fetcher.data?.action === "copiedContent") {
+      if (fetcher.data.success) {
+        setNewContentIds(fetcher.data.newContentIds);
+      } else {
+        const message = fetcher.data.message;
         setErrMsg(
-          `An error occurred while ${actionProgressiveWord.toLowerCase()}.`,
+          `An error occurred while ${actionProgressiveWord.toLowerCase()}${message ? ": " + message : ""}.`,
         );
       }
+
       document.body.style.cursor = "default";
     }
+  }, [fetcher.data, actionProgressiveWord]);
 
+  useEffect(() => {
     if (isOpen) {
-      if (newActivityData === null) {
-        copyContent();
+      if (newContentIds === null) {
+        document.body.style.cursor = "wait";
+        fetcher.submit(
+          {
+            _action: "copy content",
+            contentIds: JSON.stringify(contentIds),
+            parentId: desiredParent ? desiredParent.contentId : null,
+            copyToLibrary,
+          },
+          { method: "post" },
+        );
       }
     } else {
-      setNewActivityData(null);
+      setNewContentIds(null);
       setErrMsg("");
     }
   }, [isOpen, actionProgressiveWord]);
@@ -111,10 +144,18 @@ export function CopyContentAndReportFinish({
     );
     if (desiredParent.type === "folder") {
       destinationAction = "Go to folder";
-      destinationUrl = `/activities/${newActivityData?.userId}/${desiredParent.id}`;
+      destinationUrl = `/activities/${user?.userId}/${desiredParent.contentId}`;
+    } else if (
+      desiredParent.type === "select" &&
+      desiredParent.parent?.type === "sequence"
+    ) {
+      // if we have a Question Bank whose parent is a Problem Set,
+      // then we don't display the Question Bank by itself, just embedded in the Problem Set
+      destinationAction = `Open containing problem set`;
+      destinationUrl = `/activityEditor/${desiredParent.parent.contentId}`;
     } else {
       destinationAction = `Open ${typeName}`;
-      destinationUrl = `/activityEditor/${desiredParent.id}`;
+      destinationUrl = `/activityEditor/${desiredParent.contentId}`;
     }
   } else {
     destinationDescription = copyToLibrary ? (
@@ -124,10 +165,10 @@ export function CopyContentAndReportFinish({
     );
     destinationAction = copyToLibrary
       ? "Go to the library"
-      : "Go to Activities";
+      : "Go to My Activities";
     destinationUrl = copyToLibrary
       ? "/curation"
-      : `/activities/${newActivityData?.userId}`;
+      : `/activities/${user?.userId}`;
   }
 
   return (
@@ -136,27 +177,29 @@ export function CopyContentAndReportFinish({
       onClose={onClose}
       finalFocusRef={finalFocusRef}
       size="md"
-      closeOnOverlayClick={newActivityData !== null}
+      closeOnOverlayClick={newContentIds !== null}
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader textAlign="center">
-          {newActivityData === null
-            ? actionProgressiveWord
+        <ModalHeader textAlign="center" data-test="Copy Header">
+          {newContentIds === null
+            ? errMsg === ""
+              ? actionProgressiveWord
+              : "An error occurred"
             : `${action} finished`}
         </ModalHeader>
-        {newActivityData !== null ? <ModalCloseButton /> : null}
-        <ModalBody>
+        {newContentIds !== null ? <ModalCloseButton /> : null}
+        <ModalBody data-test="Copy Body">
           {errMsg === "" ? (
-            newActivityData === null ? (
+            newContentIds === null ? (
               <HStack>
                 <Text>{actionProgressiveWord}...</Text>
                 <Spinner />
               </HStack>
             ) : (
               <>
-                {newActivityData.newContentIds.length} item
-                {newActivityData.newContentIds.length > 1 ? "s " : " "}
+                {newContentIds.length} item
+                {newContentIds.length > 1 ? "s " : " "}
                 {actionPastWord} to: {destinationDescription}
               </>
             )
@@ -167,20 +210,22 @@ export function CopyContentAndReportFinish({
 
         <ModalFooter>
           <Button
-            data-test="Go to Activities"
+            data-test="Go to Destination"
             marginRight="4px"
             onClick={() => {
+              onClose();
               navigate(destinationUrl);
             }}
-            isDisabled={newActivityData === null && errMsg === ""}
+            isDisabled={newContentIds === null && errMsg === ""}
           >
             {destinationAction}
           </Button>
           <Button
+            data-test="Close Button"
             onClick={() => {
               onClose();
             }}
-            isDisabled={newActivityData === null && errMsg === ""}
+            isDisabled={newContentIds === null && errMsg === ""}
           >
             Close
           </Button>

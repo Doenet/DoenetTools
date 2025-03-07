@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ContentStructure } from "../../../_utils/types";
+import { Content } from "../../../_utils/types";
 import {
   Box,
   Button,
@@ -24,7 +24,7 @@ import { Form, useFetcher } from "react-router";
 export async function action({ request }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
-  const { desiredPosition, activityId, groupName, newGroupName, groupId } =
+  const { desiredPosition, contentId, groupName, newGroupName, groupId } =
     formObj;
 
   let { currentlyFeatured, homepage } = formObj;
@@ -44,15 +44,15 @@ export async function action({ request }) {
 
   switch (formObj?._action) {
     case "Ban Content":
-      return postApiAlertOnError("/api/markContentAsBanned", { activityId });
+      return postApiAlertOnError("/api/markContentAsBanned", { contentId });
     case "Remove Promoted Content":
       return postApiAlertOnError("/api/removePromotedContent", {
-        activityId,
+        contentId,
         groupId,
       });
     case "Move Promoted Content":
       return postApiAlertOnError("/api/movePromotedContent", {
-        activityId,
+        contentId,
         groupId,
         desiredPosition,
       });
@@ -90,16 +90,16 @@ export async function action({ request }) {
 }
 
 export function MoveToGroupMenuItem({
-  activityId,
+  contentId,
   carouselData,
 }: {
-  activityId: string;
+  contentId: string;
   carouselData: {
     groupName: string;
     promotedGroupId: number;
     currentlyFeatured: boolean;
     homepage: boolean;
-    promotedContent: ContentStructure[];
+    promotedContent: Content[];
   }[];
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -112,10 +112,7 @@ export function MoveToGroupMenuItem({
 
   const banContent = () => {
     if (window.confirm("Are you sure you want to ban this content?")) {
-      fetcher.submit(
-        { _action: "Ban Content", activityId },
-        { method: "post" },
-      );
+      fetcher.submit({ _action: "Ban Content", contentId }, { method: "post" });
     }
   };
 
@@ -146,7 +143,7 @@ export function MoveToGroupMenuItem({
   const promoteContent = async (groupInfo) => {
     const uploadData = {
       groupId: groupInfo.promotedGroupId,
-      activityId,
+      contentId,
     };
     axios
       .post("/api/addPromotedContent", uploadData)

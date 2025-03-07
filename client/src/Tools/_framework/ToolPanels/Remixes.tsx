@@ -18,7 +18,7 @@ import {
 import { Link as ReactRouterLink } from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { DateTime } from "luxon";
-import { DocRemixItem } from "../../../_utils/types";
+import { ActivityRemixItem } from "../../../_utils/types";
 
 export async function remixesActions({
   formObj: _formObj,
@@ -28,7 +28,7 @@ export async function remixesActions({
   return null;
 }
 
-export function Remixes({ remixes }: { remixes: DocRemixItem[] | null }) {
+export function Remixes({ remixes }: { remixes: ActivityRemixItem[] }) {
   if (remixes === null) {
     return (
       <Flex>
@@ -82,10 +82,10 @@ export function Remixes({ remixes }: { remixes: DocRemixItem[] | null }) {
                   <Td>
                     <ChakraLink
                       as={ReactRouterLink}
-                      to={`/activityViewer/${ch.activityId}`}
+                      to={`/activityViewer/${ch.contentId}`}
                     >
                       <Text wordBreak="break-word" whiteSpace="normal">
-                        {ch.activityName}
+                        {ch.name}
                       </Text>
                     </ChakraLink>
                   </Td>
@@ -108,7 +108,7 @@ export function Remixes({ remixes }: { remixes: DocRemixItem[] | null }) {
                   <Td>
                     <VStack alignItems="left">
                       <Text wordBreak="break-word" whiteSpace="normal">
-                        {ch.activityName}
+                        {ch.name}
                       </Text>
                       <Text wordBreak="break-word" whiteSpace="normal">
                         {createFullName(ch.owner)}
@@ -118,11 +118,11 @@ export function Remixes({ remixes }: { remixes: DocRemixItem[] | null }) {
                 </Hide>
                 <Td>{ch.withLicenseCode}</Td>
                 <Show above="sm">
-                  {/* Note: use timestampPrevDoc as what the timestamp from when the previous was mixed, not when this doc was created */}
+                  {/* Note: use timestampPrevActivity as what the timestamp from when the previous was mixed, not when this doc was created */}
                   <Td>
-                    {ch.timestampPrevDoc.toLocaleString(DateTime.DATE_MED)}
+                    {ch.timestampPrevActivity.toLocaleString(DateTime.DATE_MED)}
                   </Td>
-                  <Td>{ch.isDirect ? "direct copy" : ""}</Td>
+                  <Td>{ch.directCopy ? "direct copy" : ""}</Td>
                 </Show>
               </Tr>
             );

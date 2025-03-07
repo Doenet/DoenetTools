@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import { ActivitySource } from "./viewerTypes";
 
 export type DoenetmlVersion = {
   id: number;
@@ -34,7 +35,7 @@ export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
 export type LibraryInfo = {
   sourceId: string;
-  activityId: string | null;
+  contentId: string | null;
   onwerRequested?: boolean;
   status:
     | "none"
@@ -119,18 +120,18 @@ export type PartialContentClassification = {
 
 export type ContentType = "singleDoc" | "select" | "sequence" | "folder";
 
-export type ContentStructure = {
-  id: string;
-  type: ContentType;
-  ownerId: number;
+export type ContentBase = {
+  contentId: string;
+  ownerId: string;
   owner?: UserInfo;
   name: string;
   imagePath: string | null;
-  assignmentStatus: AssignmentStatus;
-  isFolder?: boolean;
-  classCode: string | null;
-  codeValidUntil: string | null;
   isPublic: boolean;
+  isShared: boolean;
+  sharedWith: UserInfo[];
+  // Content should ~almost always~ have a license.
+  // The exception: content without license from old doenet website
+  license: License | null;
   contentFeatures: {
     id: number;
     code: string;
@@ -138,64 +139,89 @@ export type ContentStructure = {
     description: string;
     sortIndex: number;
   }[];
-  isShared: boolean;
-  sharedWith: UserInfo[];
-  license: License | null;
-  numVariants?: number;
-  baseComponentCounts?: string;
-  numToSelect: number;
-  selectByVariant: boolean;
-  shuffle: boolean;
-  paginate: boolean;
-  activityLevelAttempts: boolean;
-  itemLevelAttempts: boolean;
   classifications: ContentClassification[];
   librarySourceInfo?: LibraryInfo;
   libraryActivityInfo?: LibraryInfo;
-  documents: {
-    id: string;
-    versionNum?: number;
-    name?: string;
-    source?: string;
-    doenetmlVersion: DoenetmlVersion;
-  }[];
-  hasScoreData: boolean;
   parent: {
-    id: string;
+    contentId: string;
     name: string;
     type: ContentType;
     isPublic: boolean;
     isShared: boolean;
     sharedWith: UserInfo[];
   } | null;
-  children: ContentStructure[];
+  assignmentInfo?: AssignmentInfo;
 };
 
-export type DocHistoryItem = {
-  docId: string;
-  prevDocId: string;
-  prevDocVersionNum: number;
+export type Doc = ContentBase & {
+  type: "singleDoc";
+  numVariants: number;
+  baseComponentCounts: string;
+  revisionNum?: number;
+  doenetML: string;
+  doenetmlVersion: DoenetmlVersion;
+};
+
+export type QuestionBank = ContentBase & {
+  type: "select";
+  activityJson?: ActivitySource;
+  revisionNum?: number;
+  numToSelect: number;
+  selectByVariant: boolean;
+  children: Content[];
+};
+
+export type ProblemSet = ContentBase & {
+  type: "sequence";
+  activityJson?: ActivitySource;
+  revisionNum?: number;
+  shuffle: boolean;
+  paginate: boolean;
+  activityLevelAttempts: boolean;
+  itemLevelAttempts: boolean;
+  children: Content[];
+};
+
+export type Folder = ContentBase & {
+  type: "folder";
+  revisionNum?: number;
+  children: Content[];
+};
+
+export type Activity = Doc | QuestionBank | ProblemSet;
+
+export type Content = Doc | QuestionBank | ProblemSet | Folder;
+
+export type AssignmentInfo = {
+  assignmentStatus: AssignmentStatus;
+  classCode: string | null;
+  codeValidUntil: string | null;
+  hasScoreData: boolean;
+};
+
+export type ActivityHistoryItem = {
+  contentId: Uint8Array;
+  prevContentId: Uint8Array;
+  prevRevisionNum: number;
   withLicenseCode: LicenseCode | null;
-  timestampDoc: DateTime;
-  timestampPrevDoc: DateTime;
-  prevActivityId: string;
-  prevActivityName: string;
+  timestampActivity: DateTime;
+  timestampPrevActivity: DateTime;
+  prevName: string;
   prevOwner: UserInfo;
+  prevCidAtRemix: string;
   prevChanged: boolean;
-  prevCid: string;
 };
 
-export type DocRemixItem = {
-  docId: string;
-  prevDocId: string;
-  prevDocVersionNum: number;
+export type ActivityRemixItem = {
+  prevContentId: Uint8Array;
+  prevRevisionNum: number;
   withLicenseCode: LicenseCode | null;
-  isDirect: boolean;
-  timestampDoc: DateTime;
-  timestampPrevDoc: DateTime;
-  activityId: string;
-  activityName: string;
+  contentId: Uint8Array;
+  name: string;
   owner: UserInfo;
+  timestampActivity: DateTime;
+  timestampPrevActivity: DateTime;
+  directCopy: boolean;
 };
 
 export type ClassificationCategoryTree = {
@@ -220,9 +246,10 @@ export type ClassificationCategoryTree = {
 };
 
 export type ContentDescription = {
-  id: string;
+  contentId: string;
   name: string;
   type: ContentType;
+  parent: { contentId: string; type: ContentType } | null;
 };
 
 export function isContentDescription(obj: unknown): obj is ContentDescription {
@@ -230,8 +257,14 @@ export function isContentDescription(obj: unknown): obj is ContentDescription {
   return (
     typedObj !== null &&
     typeof typedObj === "object" &&
-    typeof typedObj.id === "string" &&
+    typeof typedObj.contentId === "string" &&
     typeof typedObj.name === "string" &&
-    ["singleDoc", "folder", "sequence", "select"].includes(typedObj.type)
+    ["singleDoc", "folder", "sequence", "select"].includes(typedObj.type) &&
+    (typedObj.parent === null ||
+      (typeof typedObj.parent === "object" &&
+        typeof typedObj.parent.contentId === "string" &&
+        ["singleDoc", "folder", "sequence", "select"].includes(
+          typedObj.parent.type,
+        )))
   );
 }

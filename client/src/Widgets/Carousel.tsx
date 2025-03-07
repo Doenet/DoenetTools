@@ -20,7 +20,7 @@ import { Box, Flex, IconButton, MenuItem, Text } from "@chakra-ui/react";
 import Card, { CardContent } from "./Card";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { createFullName } from "../_utils/names";
-import { ContentStructure } from "../_utils/types";
+import { Content } from "../_utils/types";
 
 SwiperCore.use([Keyboard, Mousewheel]);
 
@@ -31,8 +31,8 @@ export function Carousel({
   infoOnOpen,
 }: {
   title: string;
-  activities: ContentStructure[];
-  setInfoContentData: (arg: ContentStructure) => void;
+  activities: Content[];
+  setInfoContentData: (arg: Content) => void;
   infoOnOpen: () => void;
 }) {
   const swiperElRef = useRef<SwiperRef>(null);

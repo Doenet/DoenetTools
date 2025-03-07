@@ -32,12 +32,12 @@ export async function loader({ params, request }) {
   }
 
   const { data } = await axios.get(
-    `/api/getSubmittedResponseHistory/${params.activityId}/${params.docId}/${
+    `/api/assign/getSubmittedResponseHistory/${params.contentId}/${params.docId}/${
       params.docVersionNum
     }/${params.userId}?answerId=${encodeURIComponent(answerId)}`,
   );
 
-  const activityId = params.activityId;
+  const contentId = params.contentId;
   const docId = params.docId;
   const docVersionNum = Number(params.docVersionNum);
   const userId = params.userId;
@@ -55,7 +55,7 @@ export async function loader({ params, request }) {
     userId,
     activityName,
     responseData,
-    activityId,
+    contentId,
     maxCredit,
   };
 }

@@ -10,6 +10,7 @@ import {
   ModalCloseButton,
   Button,
   Heading,
+  Box,
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
 
@@ -17,47 +18,47 @@ export default function MoveToSharedAlert({
   isOpen,
   onClose,
   performMove,
-  folderName,
+  parentName,
 }: {
   isOpen: boolean;
   onClose: () => void;
   performMove: () => void;
-  folderName: string | null;
+  parentName: string | null;
 }) {
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>
+          <ModalHeader data-test="Confirm Header">
             <Heading noOfLines={1} size="lg">
-              <WarningIcon color="orange.500" /> Confirm move to shared folder
+              <WarningIcon color="orange.500" /> Confirm move to shared parent
             </Heading>
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
-            <p>
-              The target location{" "}
+          <ModalBody data-test="Confirm Body">
+            <Box>
+              The target location
               <Text
                 noOfLines={1}
                 textAlign="center"
                 fontWeight={800}
                 fontStyle="italic"
               >
-                {folderName}
+                {parentName}
               </Text>
-              is a shared folder.
-            </p>
-            <p style={{ marginTop: "10px" }}>
-              {" "}
-              Moving to this folder will share the content with the same people.
-            </p>
+              is shared.
+            </Box>
+            <Text style={{ marginTop: "10px" }}>
+              Moving here will share the content with the same people.
+            </Text>
           </ModalBody>
           <ModalFooter>
-            <Button mr={3} onClick={onClose}>
+            <Button data-test="Back Button" mr={3} onClick={onClose}>
               Back
             </Button>
             <Button
+              data-test="Confirm Button"
               onClick={() => {
                 performMove();
                 onClose();

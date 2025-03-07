@@ -49,7 +49,7 @@ import {
   AssignmentStatus,
   ContentDescription,
   ContentFeature,
-  ContentStructure,
+  Content,
   ContentType,
   DoenetmlVersion,
   License,
@@ -69,15 +69,18 @@ import {
   menuIcons,
 } from "../../../_utils/activity";
 import {
-  CreateFolderModal,
-  createFolderModalActions,
-} from "../ToolPanels/CreateFolderModal";
+  CreateLocalContentModal,
+  createLocalContentModalActions,
+} from "../ToolPanels/CreateLocalContentModal";
 import { DeleteModal, deleteModalActions } from "../ToolPanels/DeleteModal";
 import {
   AddContentToMenu,
   addContentToMenuActions,
 } from "../ToolPanels/AddContentToMenu";
-import { CreateContentMenu } from "../ToolPanels/CreateContentMenu";
+import {
+  CreateContentMenu,
+  createContentMenuActions,
+} from "../ToolPanels/CreateContentMenu";
 import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
 
 export async function action({ request, params }) {
@@ -108,7 +111,7 @@ export async function action({ request, params }) {
     return resultTLV;
   }
 
-  const resultCF = await createFolderModalActions({ formObj });
+  const resultCF = await createLocalContentModalActions({ formObj });
   if (resultCF) {
     return resultCF;
   }
@@ -123,32 +126,32 @@ export async function action({ request, params }) {
     return resultACM;
   }
 
+  const resultCCM = await createContentMenuActions({ formObj });
+  if (resultCCM) {
+    return resultCCM;
+  }
+
   if (formObj?._action == "Add Activity") {
     //Create an activity and redirect to the editor for it
-    const { data } = await axios.post(
-      `/api/createActivity/${params.folderId ?? ""}`,
-      { type: formObj.type },
-    );
+    const { data } = await axios.post(`/api/updateContent/createContent`, {
+      contentType: formObj.type,
+      parentId: params.parentId,
+    });
 
-    const { activityId } = data;
-    return redirect(`/activityEditor/${activityId}`);
+    const { contentId } = data;
+    return redirect(`/activityEditor/${contentId}`);
   } else if (formObj?._action == "Duplicate Content") {
-    await axios.post(`/api/copyContent`, {
-      sourceContent: [{ contentId: formObj.id, type: formObj.contentType }],
-      desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
+    await axios.post(`/api/copyMove/copyContent`, {
+      contentIds: [formObj.contentId],
+      parentId: formObj.parentId === "null" ? null : formObj.parentId,
       prependCopy: true,
     });
     return true;
   } else if (formObj?._action == "Move") {
-    await axios.post(`/api/moveContent`, {
-      id: formObj.id,
-      desiredParentId: formObj.folderId === "null" ? null : formObj.folderId,
-      desiredPosition: formObj.desiredPosition,
-    });
-    return true;
-  } else if (formObj?._action == "Set List View Preferred") {
-    await axios.post(`/api/setPreferredFolderView`, {
-      cardView: formObj.listViewPref === "false",
+    await axios.post(`/api/copyMove/moveContent`, {
+      contentId: formObj.contentId,
+      parentId: formObj.parentId === "null" ? null : formObj.parentId,
+      desiredPosition: Number(formObj.desiredPosition),
     });
     return true;
   }
@@ -163,23 +166,23 @@ export async function loader({ params, request }) {
   let data;
   if (q) {
     const results = await axios.get(
-      `/api/searchMyFolderContent/${params.userId}/${params.folderId ?? ""}?q=${q}`,
+      `/api/contentList/searchMyContent/${params.userId}/${params.parentId ?? ""}?query=${q}`,
     );
     data = results.data;
   } else {
     const results = await axios.get(
-      `/api/getMyFolderContent/${params.userId}/${params.folderId ?? ""}`,
+      `/api/contentList/getMyContent/${params.userId}/${params.parentId ?? ""}`,
     );
     data = results.data;
   }
 
   if (data.notMe) {
     return redirect(
-      `/sharedActivities/${params.userId}${params.folderId ? "/" + params.folderId : ""}`,
+      `/sharedActivities/${params.userId}${params.parentId ? "/" + params.parentId : ""}`,
     );
   }
 
-  const prefData = await axios.get(`/api/getPreferredFolderView`);
+  const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
   const listViewPref = !prefData.data.cardView;
 
   const addToId = url.searchParams.get("addTo");
@@ -187,7 +190,9 @@ export async function loader({ params, request }) {
 
   if (addToId) {
     try {
-      const { data } = await axios.get(`/api/getContentDescription/${addToId}`);
+      const { data } = await axios.get(
+        `/api/info/getContentDescription/${addToId}`,
+      );
       addTo = data;
     } catch (_e) {
       console.error(`Could not get description of ${addToId}`);
@@ -195,13 +200,13 @@ export async function loader({ params, request }) {
   }
 
   return {
-    folderId: params.folderId ? params.folderId : null,
+    parentId: params.parentId ? params.parentId : null,
     content: data.content,
     allDoenetmlVersions: data.allDoenetmlVersions,
     allLicenses: data.allLicenses,
     availableFeatures: data.availableFeatures,
     userId: params.userId,
-    folder: data.folder,
+    parent: data.parent,
     listViewPref,
     query: q,
     addTo,
@@ -210,24 +215,24 @@ export async function loader({ params, request }) {
 
 export function Activities() {
   const {
-    folderId,
+    parentId,
     content,
     allDoenetmlVersions,
     allLicenses,
     availableFeatures,
     userId,
-    folder,
+    parent,
     listViewPref,
     query,
     addTo,
   } = useLoaderData() as {
-    folderId: string | null;
-    content: ContentStructure[];
+    parentId: string | null;
+    content: Content[];
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
     availableFeatures: ContentFeature[];
     userId: string;
-    folder: ContentStructure | null;
+    parent: Content | null;
     listViewPref: boolean;
     query: string | null;
     addTo: ContentDescription | undefined;
@@ -296,14 +301,15 @@ export function Activities() {
   const [listView, setListView] = useState(listViewPref);
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
-  const numSelected = selectedCards.length;
+  const selectedCardsFiltered = selectedCards.filter((c) => c);
+  const numSelected = selectedCardsFiltered.length;
 
   useEffect(() => {
     setSelectedCards((was) => {
       let foundMissing = false;
-      const newList = content.map((c) => c.id);
-      for (const c of was) {
-        if (!newList.includes(c.id)) {
+      const newList = content.map((c) => c.contentId);
+      for (const c of was.filter((x) => x)) {
+        if (!newList.includes(c.contentId)) {
           foundMissing = true;
           break;
         }
@@ -316,35 +322,8 @@ export function Activities() {
     });
   }, [content]);
 
-  function selectCardCallback({
-    id,
-    name,
-    checked,
-    type,
-  }: {
-    id: string;
-    name: string;
-    checked: boolean;
-    type: ContentType;
-  }) {
-    setSelectedCards((was) => {
-      const arr = [...was];
-      const idx = was.findIndex((c) => c.id === id);
-      if (checked) {
-        if (idx === -1) {
-          arr.push({ id, name, type });
-        } else {
-          arr[idx] = { id, name, type };
-        }
-      } else if (idx !== -1) {
-        arr.splice(idx, 1);
-      }
-      return arr;
-    });
-  }
-
-  const [moveToFolderData, setMoveToFolderData] = useState<{
-    id: string;
+  const [moveToParentData, setMoveToParentData] = useState<{
+    contentId: string;
     name: string;
     type: ContentType;
     isPublic: boolean;
@@ -352,7 +331,7 @@ export function Activities() {
     sharedWith: UserInfo[];
     licenseCode: LicenseCode | null;
   }>({
-    id: "",
+    contentId: "",
     name: "",
     type: "singleDoc",
     isPublic: false,
@@ -377,27 +356,27 @@ export function Activities() {
 
   const fetcher = useFetcher();
 
+  const addToURLParams = addTo ? `?addTo=${addTo.contentId}` : "";
+
   function getCardMenuList({
-    id,
+    contentId,
     name,
     position,
     numCards,
     assignmentStatus,
     contentType,
-    isFolder,
     isPublic,
     isShared,
     sharedWith,
     licenseCode,
     parentId,
   }: {
-    id: string;
+    contentId: string;
     name: string;
     position: number;
     numCards: number;
     assignmentStatus: AssignmentStatus;
     contentType: ContentType;
-    isFolder: boolean;
     isPublic: boolean;
     isShared: boolean;
     sharedWith: UserInfo[];
@@ -411,7 +390,7 @@ export function Activities() {
         <MenuItem
           data-test="Rename Menu Item"
           onClick={() => {
-            setSettingsContentId(id);
+            setSettingsContentId(contentId);
             setSettingsDisplayTab("general");
             setHighlightRename(true);
             settingsOnOpen();
@@ -425,9 +404,8 @@ export function Activities() {
             fetcher.submit(
               {
                 _action: "Duplicate Content",
-                id,
-                folderId,
-                contentType,
+                contentId,
+                parentId,
               },
               { method: "post" },
             );
@@ -437,14 +415,14 @@ export function Activities() {
         </MenuItem>
         {position > 0 && !haveQuery ? (
           <MenuItem
-            data-test="Move Left Menu Item"
+            data-test="Move Up Menu Item"
             onClick={() => {
               fetcher.submit(
                 {
                   _action: "Move",
-                  id,
+                  contentId,
                   desiredPosition: position - 1,
-                  folderId,
+                  parentId,
                 },
                 { method: "post" },
               );
@@ -455,14 +433,14 @@ export function Activities() {
         ) : null}
         {position < numCards - 1 && !haveQuery ? (
           <MenuItem
-            data-test="Move Right Menu Item"
+            data-test="Move Down Menu Item"
             onClick={() => {
               fetcher.submit(
                 {
                   _action: "Move",
-                  id,
+                  contentId,
                   desiredPosition: position + 1,
-                  folderId,
+                  parentId,
                 },
                 { method: "post" },
               );
@@ -473,10 +451,10 @@ export function Activities() {
         ) : null}
         {haveQuery ? null : (
           <MenuItem
-            data-test="Move to Folder"
+            data-test="Move to Parent"
             onClick={() => {
-              setMoveToFolderData({
-                id,
+              setMoveToParentData({
+                contentId,
                 name,
                 type: contentType,
                 isPublic,
@@ -493,17 +471,17 @@ export function Activities() {
         <MenuItem
           data-test="Delete Menu Item"
           onClick={() => {
-            setSettingsContentId(id);
+            setSettingsContentId(contentId);
             deleteContentOnOpen();
           }}
         >
           Delete
         </MenuItem>
-        {!isFolder ? (
+        {contentType !== "folder" ? (
           <MenuItem
             data-test="Assign Activity Menu Item"
             onClick={() => {
-              setSettingsContentId(id);
+              setSettingsContentId(contentId);
               assignmentSettingsOnOpen();
             }}
           >
@@ -515,7 +493,7 @@ export function Activities() {
         <MenuItem
           data-test="Share Menu Item"
           onClick={() => {
-            setSettingsContentId(id);
+            setSettingsContentId(contentId);
             sharingOnOpen();
           }}
         >
@@ -524,7 +502,7 @@ export function Activities() {
         <MenuItem
           data-test="Settings Menu Item"
           onClick={() => {
-            setSettingsContentId(id);
+            setSettingsContentId(contentId);
             setSettingsDisplayTab("general");
             setHighlightRename(false);
             settingsOnOpen();
@@ -549,28 +527,30 @@ export function Activities() {
   }
 
   const folderType =
-    folder?.type === "select"
+    parent?.type === "select"
       ? "Select Activity"
-      : folder?.type === "sequence"
+      : parent?.type === "sequence"
         ? "Sequence Activity"
         : "Folder";
 
-  const headingText = folder ? (
+  const headingText = parent ? (
     <>
-      {folder.isPublic ? "Public " : ""}
-      {folderType}: {folder.name}
+      {parent.isPublic ? "Public " : ""}
+      {folderType}: {parent.name}
     </>
   ) : (
     `My Activities`
   );
 
-  let contentData: ContentStructure | undefined;
+  let contentData: Content | undefined;
   if (settingsContentId) {
-    if (folder && settingsContentId === folderId) {
-      contentData = folder;
+    if (parent && settingsContentId === parentId) {
+      contentData = parent;
       finalFocusRef.current = folderSettingsRef.current;
     } else {
-      const index = content.findIndex((obj) => obj.id == settingsContentId);
+      const index = content.findIndex(
+        (obj) => obj.contentId == settingsContentId,
+      );
       if (index != -1) {
         contentData = content[index];
         finalFocusRef.current = cardMenuRefs.current[index];
@@ -611,7 +591,7 @@ export function Activities() {
       <AssignmentSettingsDrawer
         isOpen={assignmentSettingsAreOpen}
         onClose={assignmentSettingsOnClose}
-        id={settingsContentId}
+        contentId={settingsContentId}
         contentData={contentData}
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
@@ -622,20 +602,21 @@ export function Activities() {
     <MoveCopyContent
       isOpen={moveCopyContentIsOpen}
       onClose={moveCopyContentOnClose}
-      sourceContent={[moveToFolderData]}
+      sourceContent={[moveToParentData]}
       userId={userId}
-      currentParentId={folderId}
+      currentParentId={parentId}
       finalFocusRef={finalFocusRef}
-      allowedParentTypes={getAllowedParentTypes([moveToFolderData.type])}
+      allowedParentTypes={getAllowedParentTypes([moveToParentData.type])}
       action="Move"
     />
   );
 
   const createFolderModal = (
-    <CreateFolderModal
+    <CreateLocalContentModal
       isOpen={createFolderIsOpen}
       onClose={createFolderOnClose}
-      parentFolder={folderId}
+      contentType="folder"
+      parentId={parentId}
       fetcher={fetcher}
       finalFocusRef={finalFocusRef}
     />
@@ -661,9 +642,10 @@ export function Activities() {
   const copyContentModal =
     addTo !== undefined ? (
       <CopyContentAndReportFinish
+        fetcher={fetcher}
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        sourceContent={selectedCards}
+        contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
         desiredParent={addTo}
         action="Add"
       />
@@ -706,29 +688,36 @@ export function Activities() {
             {addTo !== undefined ? (
               <HStack hidden={numSelected > 0}>
                 <CloseButton
+                  data-test="Stop Adding Items"
                   size="sm"
                   onClick={() => {
                     navigate(`.`);
                   }}
                 />{" "}
-                <Text noOfLines={1}>
+                <Text noOfLines={1} data-test="Adding Items Message">
                   Adding items to: {menuIcons[addTo.type]}
                   <strong>{addTo.name}</strong>
                 </Text>
               </HStack>
             ) : null}
             <HStack hidden={numSelected === 0}>
-              <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
+              <CloseButton
+                data-test="Clear Selection"
+                size="sm"
+                onClick={() => setSelectedCards([])}
+              />{" "}
               <Text>{numSelected} selected</Text>
               <HStack hidden={addTo !== undefined}>
                 <AddContentToMenu
-                  sourceContent={selectedCards}
+                  fetcher={fetcher}
+                  sourceContent={selectedCardsFiltered}
                   size="xs"
                   colorScheme="blue"
                   label="Copy selected to"
                 />
                 <CreateContentMenu
-                  sourceContent={selectedCards}
+                  fetcher={fetcher}
+                  sourceContent={selectedCardsFiltered}
                   size="xs"
                   colorScheme="blue"
                   label="Create from selected"
@@ -736,6 +725,7 @@ export function Activities() {
               </HStack>
               {addTo !== undefined ? (
                 <Button
+                  data-test="Add Selected To Button"
                   hidden={addTo === undefined}
                   size="xs"
                   colorScheme="blue"
@@ -743,7 +733,7 @@ export function Activities() {
                     copyDialogOnOpen();
                   }}
                 >
-                  Add selected to {menuIcons[addTo.type]}
+                  Add selected to: {menuIcons[addTo.type]}
                   <strong>
                     {addTo.name.substring(0, 10)}
                     {addTo.name.length > 10 ? "..." : ""}
@@ -766,7 +756,7 @@ export function Activities() {
                   width="250px"
                   ref={searchRef}
                   placeholder={
-                    folder ? `Search in folder` : `Search my activities`
+                    parent ? `Search in folder` : `Search my activities`
                   }
                   value={searchString}
                   name="q"
@@ -780,7 +770,7 @@ export function Activities() {
                   }}
                 />
                 <Tooltip
-                  label={folder ? `Search in folder` : `Search my activities`}
+                  label={parent ? `Search in folder` : `Search my activities`}
                   placement="bottom-end"
                 >
                   <IconButton
@@ -788,7 +778,7 @@ export function Activities() {
                     colorScheme="blue"
                     icon={<MdOutlineSearch />}
                     aria-label={
-                      folder ? `Search in folder` : `Search my activities`
+                      parent ? `Search in folder` : `Search my activities`
                     }
                     type="submit"
                     onClick={(e) => {
@@ -864,13 +854,13 @@ export function Activities() {
               </MenuList>
             </Menu>
 
-            {folderId !== null ? (
+            {parentId !== null ? (
               <Button
                 colorScheme="blue"
                 size="sm"
                 ref={folderSettingsRef}
                 onClick={() => {
-                  setSettingsContentId(folderId);
+                  setSettingsContentId(parentId);
                   sharingOnOpen();
                 }}
                 hidden={searchOpen}
@@ -883,7 +873,7 @@ export function Activities() {
               size="sm"
               onClick={() =>
                 navigate(
-                  `/allAssignmentScores${folderId ? "/" + folderId : ""}`,
+                  `/allAssignmentScores${parentId ? "/" + parentId : ""}`,
                 )
               }
               hidden={searchOpen}
@@ -899,10 +889,11 @@ export function Activities() {
           paddingLeft="1em"
           alignItems="middle"
         >
-          {folder && !haveQuery ? (
+          {parent && !haveQuery ? (
             <Box>
               <Link
-                to={`/activities/${userId}${folder.parent ? "/" + folder.parent.id : ""}`}
+                data-test="Back Link"
+                to={`/activities/${userId}${parent.parent ? "/" + parent.parent.contentId : ""}${addToURLParams}`}
                 style={{
                   color: "var(--mainBlue)",
                 }}
@@ -910,7 +901,7 @@ export function Activities() {
                 <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
                   <Show above="sm">
                     &lt; Back to{" "}
-                    {folder.parent ? folder.parent.name : `My Activities`}
+                    {parent.parent ? parent.parent.name : `My Activities`}
                   </Show>
                   <Hide above="sm">&lt; Back</Hide>
                 </Text>
@@ -965,25 +956,25 @@ export function Activities() {
     return {
       menuRef: getCardMenuRef,
       content: activity,
-      closeTime: formatTime(activity.codeValidUntil),
+      closeTime: formatTime(activity.assignmentInfo?.codeValidUntil ?? null),
       menuItems: getCardMenuList({
-        id: activity.id,
+        contentId: activity.contentId,
         name: activity.name,
         position,
         numCards: content.length,
-        assignmentStatus: activity.assignmentStatus,
+        assignmentStatus:
+          activity.assignmentInfo?.assignmentStatus ?? "Unassigned",
         contentType: activity.type,
         isPublic: activity.isPublic,
-        isFolder: activity.isFolder!,
         isShared: activity.isShared,
         sharedWith: activity.sharedWith,
         licenseCode: activity.license?.code ?? null,
-        parentId: activity.parent?.id ?? null,
+        parentId: activity.parent?.contentId ?? null,
       }),
       cardLink:
         activity.type === "folder"
-          ? `/activities/${activity.ownerId}/${activity.id}`
-          : `/activityEditor/${activity.id}`,
+          ? `/activities/${activity.ownerId}/${activity.contentId}${addToURLParams}`
+          : `/activityEditor/${activity.contentId}${addToURLParams}`,
     };
   });
 
@@ -996,9 +987,9 @@ export function Activities() {
       emptyMessage={emptyMessage}
       listView={listView}
       content={cardContent}
-      selectedCards={selectedCards.map((c) => c.id)}
-      selectCallback={selectCardCallback}
-      disableSelectFor={addTo ? [addTo.id] : undefined}
+      selectedCards={selectedCards}
+      setSelectedCards={setSelectedCards}
+      disableSelectFor={addTo ? [addTo.contentId] : undefined}
     />
   );
 

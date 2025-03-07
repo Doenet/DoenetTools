@@ -4,7 +4,7 @@ import {
   MdOutlineOndemandVideo,
   MdOutlineSwipeLeft,
 } from "react-icons/md";
-import { ContentClassification, ContentStructure, ContentType } from "./types";
+import { ContentClassification, Content, ContentType } from "./types";
 import { ActivitySource } from "./viewerTypes";
 import { IconType } from "react-icons/lib";
 import { FaFolder } from "react-icons/fa";
@@ -107,19 +107,15 @@ export function findClassificationDescriptionIndex({
   });
 }
 
-export function compileActivityFromContent(
-  activity: ContentStructure,
-): ActivitySource {
-  const children = activity.children.map(compileActivityFromContent);
-
+export function compileActivityFromContent(activity: Content): ActivitySource {
   switch (activity.type) {
     case "singleDoc": {
       return {
-        id: activity.id,
+        id: activity.contentId,
         type: activity.type,
         isDescription: false,
-        doenetML: activity.documents[0].source!,
-        version: activity.documents[0].doenetmlVersion.fullVersion,
+        doenetML: activity.doenetML!,
+        version: activity.doenetmlVersion.fullVersion,
         numVariants: activity.numVariants,
         baseComponentCounts: activity.baseComponentCounts
           ? JSON.parse(activity.baseComponentCounts)
@@ -128,21 +124,21 @@ export function compileActivityFromContent(
     }
     case "select": {
       return {
-        id: activity.id,
+        id: activity.contentId,
         type: activity.type,
         title: activity.name,
         numToSelect: activity.numToSelect,
         selectByVariant: activity.selectByVariant,
-        items: children,
+        items: activity.children.map(compileActivityFromContent),
       };
     }
     case "sequence": {
       return {
-        id: activity.id,
+        id: activity.contentId,
         type: activity.type,
         title: activity.name,
         shuffle: activity.shuffle,
-        items: children,
+        items: activity.children.map(compileActivityFromContent),
       };
     }
     case "folder": {

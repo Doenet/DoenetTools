@@ -6,12 +6,12 @@ import styled from "styled-components";
 import Card from "../../../Widgets/Card";
 import { MoveToGroupMenuItem } from "./CommunityAdmin";
 import { createFullName } from "../../../_utils/names";
-import { ContentStructure } from "../../../_utils/types";
+import { Content } from "../../../_utils/types";
 
 export async function loader() {
   const {
     data: { isAdmin },
-  } = await axios.get(`/api/checkForCommunityAdmin`);
+  } = await axios.get(`/api/oldAdmin/checkForCommunityAdmin`);
   if (!isAdmin) {
     throw Error("Page not available");
   }
@@ -19,7 +19,7 @@ export async function loader() {
   const { data: carouselData } = await axios.get(`/api/loadPromotedContent`);
 
   const { data: recentActivities } = await axios.get(
-    `/api/getAllRecentPublicActivities`,
+    `/api/oldAdmin/getAllRecentPublicActivities`,
   );
 
   return {
@@ -56,9 +56,9 @@ export function OldAdmin() {
       promotedGroupId: number;
       currentlyFeatured: boolean;
       homepage: boolean;
-      promotedContent: ContentStructure[];
+      promotedContent: Content[];
     }[];
-    publicActivities: ContentStructure[];
+    publicActivities: Content[];
   };
 
   return (
@@ -101,7 +101,7 @@ export function OldAdmin() {
                         ownerName: createFullName(activity.owner!),
                         menuItems: (
                           <MoveToGroupMenuItem
-                            activityId={activity.id}
+                            contentId={activity.id}
                             carouselData={carouselData}
                           />
                         ),

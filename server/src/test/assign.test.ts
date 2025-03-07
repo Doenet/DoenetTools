@@ -1,133 +1,122 @@
 import { expect, test } from "vitest";
 import {
+  createTestAnonymousUser,
+  createTestUser,
+  getTestAssignment,
+} from "./utils";
+import { DateTime } from "luxon";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { convertUUID, fromUUID } from "../utils/uuid";
+import { createContent, deleteContent, updateContent } from "../query/activity";
+import {
   assignActivity,
   closeAssignmentWithCode,
-  createActivity,
-  createFolder,
-  deleteActivity,
-  getActivity,
   getAllAssignmentScores,
   getAnswersThatHaveSubmittedResponses,
   getAssignedScores,
-  getAssignment,
   getAssignmentDataFromCode,
   getAssignmentScoreData,
   getAssignmentStudentData,
-  getDocumentSubmittedResponseHistory,
-  getDocumentSubmittedResponses,
   getStudentData,
+  getSubmittedResponseHistory,
+  getSubmittedResponses,
   listUserAssigned,
-  loadState,
-  makeActivityPublic,
-  moveContent,
   openAssignmentWithCode,
   recordSubmittedEvent,
-  saveScoreAndState,
-  shareActivity,
   unassignActivity,
   updateAssignmentSettings,
-  updateContent,
-  updateDoc,
-  updateUser,
-} from "../model";
-import { createTestAnonymousUser, createTestUser } from "./utils";
-import { DateTime } from "luxon";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import {
-  allAssignmentScoresConvertUUID,
-  fromUUID,
-  studentDataConvertUUID,
-  userConvertUUID,
-} from "../utils/uuid";
+} from "../query/assign";
+import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
+import { loadState, saveScoreAndState } from "../query/scores";
+import { updateUser } from "../query/user";
+import { moveContent } from "../query/copy_move";
 
 test("assign an activity", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId } = await createActivity(ownerId, null);
-  const activity = await getActivity(activityId);
-  await updateContent({ id: activityId, name: "Activity 1", ownerId });
-  await updateDoc({
-    id: activity.documents[0].id,
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  await updateContent({
+    contentId: contentId,
+    name: "Activity 1",
     source: "Some content",
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
-  await assignActivity(activityId, ownerId);
-  const assignment = await getAssignment(activityId, ownerId);
+  await assignActivity({ contentId, loggedInUserId: ownerId });
+  const assignment = await getTestAssignment(contentId, ownerId);
 
-  expect(assignment.id).eqls(activityId);
+  expect(assignment.id).eqls(contentId);
   expect(assignment.name).eq("Activity 1");
-  expect(assignment.documents.length).eq(1);
-  expect(assignment.documents[0].assignedVersion!.source).eq("Some content");
+  expect(assignment.source).eq("Some content");
 
   // changing name of activity does change assignment name
-  await updateContent({ id: activityId, name: "Activity 1a", ownerId });
-  let updatedActivity = await getActivity(activityId);
-  expect(updatedActivity.name).eq("Activity 1a");
+  await updateContent({
+    contentId: contentId,
+    name: "Activity 1a",
+    loggedInUserId: ownerId,
+  });
 
-  let updatedAssignment = await getAssignment(activityId, ownerId);
+  let updatedAssignment = await getTestAssignment(contentId, ownerId);
   expect(updatedAssignment.name).eq("Activity 1a");
 
   // cannot change content of activity
   await expect(
-    updateDoc({
-      id: activity.documents[0].id,
+    updateContent({
+      contentId: contentId,
       source: "Some amended content",
-      ownerId,
+      loggedInUserId: ownerId,
     }),
-  ).rejects.toThrow("Cannot change source of assigned document");
+  ).rejects.toThrow("Cannot change assigned content");
 
-  updatedActivity = await getActivity(activityId);
-  expect(updatedActivity.documents[0].source).eq("Some content");
-
-  updatedAssignment = await getAssignment(activityId, ownerId);
-  expect(updatedAssignment.documents[0].assignedVersion!.source).eq(
-    "Some content",
-  );
+  updatedAssignment = await getTestAssignment(contentId, ownerId);
+  expect(updatedAssignment.source).eq("Some content");
 });
 
 test("cannot assign other user's activity", async () => {
   const ownerId1 = (await createTestUser()).userId;
   const ownerId2 = (await createTestUser()).userId;
-  const { activityId } = await createActivity(ownerId1, null);
-  const activity = await getActivity(activityId);
-  await updateContent({
-    id: activityId,
-    name: "Activity 1",
-    ownerId: ownerId1,
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId1,
+    contentType: "singleDoc",
+    parentId: null,
   });
-  await updateDoc({
-    id: activity.documents[0].id,
+  await updateContent({
+    contentId: contentId,
+    name: "Activity 1",
     source: "Some content",
-    ownerId: ownerId1,
+    loggedInUserId: ownerId1,
   });
 
-  await expect(assignActivity(activityId, ownerId2)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  await expect(
+    assignActivity({ contentId: contentId, loggedInUserId: ownerId2 }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   // still cannot create assignment even if activity is made public
-  await makeActivityPublic({
-    id: activityId,
-    licenseCode: "CCDUAL",
-    ownerId: ownerId1,
+  await setContentIsPublic({
+    contentId: contentId,
+    isPublic: true,
+    loggedInUserId: ownerId1,
   });
 
-  await expect(assignActivity(activityId, ownerId2)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  await expect(
+    assignActivity({ contentId: contentId, loggedInUserId: ownerId2 }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 
   // still cannot create assignment even if activity is shared
-  await shareActivity({
-    id: activityId,
-    licenseCode: "CCDUAL",
-    ownerId: ownerId1,
+  await modifyContentSharedWith({
+    action: "share",
+    contentId: contentId,
+    loggedInUserId: ownerId1,
     users: [ownerId2],
   });
 
-  await expect(assignActivity(activityId, ownerId2)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  await expect(
+    assignActivity({ contentId: contentId, loggedInUserId: ownerId2 }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
 });
 
 test("open and close assignment with code", async () => {
@@ -135,98 +124,126 @@ test("open and close assignment with code", async () => {
   const ownerId = owner.userId;
   const fakeId = new Uint8Array(16);
 
-  const { activityId } = await createActivity(ownerId, null);
-  const activity = await getActivity(activityId);
-  await updateContent({ id: activityId, name: "Activity 1", ownerId });
-  await updateDoc({
-    id: activity.documents[0].id,
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  await updateContent({
+    contentId: contentId,
+    name: "Activity 1",
     source: "Some content",
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
   // open assignment assigns activity and generates code
   let closeAt = DateTime.now().plus({ days: 1 });
-  const { classCode } = await openAssignmentWithCode(
-    activityId,
-    closeAt,
-    ownerId,
-  );
-  let assignment = await getAssignment(activityId, ownerId);
-  expect(assignment.classCode).eq(classCode);
-  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+  const { classCode } = await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+  let assignment = await getTestAssignment(contentId, ownerId);
+  expect(assignment.assignment!.classCode).eq(classCode);
+  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
-  let assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
+  let assignmentData = await getAssignmentDataFromCode({
+    code: classCode,
+    loggedInUserId: fakeId,
+  });
   expect(assignmentData.assignmentFound).eq(true);
-  expect(assignmentData.assignment!.id).eqls(activityId);
-  expect(assignmentData.assignment!.documents[0].assignedVersion!.source).eq(
-    "Some content",
-  );
+  if (assignmentData.assignment?.type !== "singleDoc") {
+    throw Error("Shouldn't happen");
+  }
+  expect(assignmentData.assignment.contentId).eqls(contentId);
+  expect(assignmentData.assignment.doenetML).eq("Some content");
 
   // close assignment completely unassigns since there is no data
-  await closeAssignmentWithCode(activityId, ownerId);
-  await expect(getAssignment(activityId, ownerId)).rejects.toThrow(
+  await closeAssignmentWithCode({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
+  await expect(getTestAssignment(contentId, ownerId)).rejects.toThrow(
     PrismaClientKnownRequestError,
   );
 
-  assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
+  assignmentData = await getAssignmentDataFromCode({
+    code: classCode,
+    loggedInUserId: fakeId,
+  });
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
 
-  // get same code back if reopen
+  // get different code back if reopen
   closeAt = DateTime.now().plus({ weeks: 3 });
-  const { classCode: classCode2 } = await openAssignmentWithCode(
-    activityId,
-    closeAt,
-    ownerId,
-  );
-  expect(classCode2).eq(classCode);
-  assignment = await getAssignment(activityId, ownerId);
-  expect(assignment.classCode).eq(classCode);
-  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+  const { classCode: classCode2 } = await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+  expect(classCode2).not.eq(classCode);
+  assignment = await getTestAssignment(contentId, ownerId);
+  expect(assignment.assignment!.classCode).eq(classCode2);
+  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
-  assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
+  assignmentData = await getAssignmentDataFromCode({
+    code: classCode2,
+    loggedInUserId: fakeId,
+  });
   expect(assignmentData.assignmentFound).eq(true);
-  expect(assignmentData.assignment!.id).eqls(activityId);
+  expect(assignmentData.assignment!.contentId).eqls(contentId);
 
   // Open with past date.
   // Currently, says assignment is not found
   // TODO: if we want students who have previously joined the assignment to be able to reload the page,
   // then this should still retrieve data for those students.
   closeAt = DateTime.now().plus({ seconds: -7 });
-  await openAssignmentWithCode(activityId, closeAt, ownerId);
-  assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
+  await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+  assignmentData = await getAssignmentDataFromCode({
+    code: classCode2,
+    loggedInUserId: fakeId,
+  });
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
 
   // reopen with future date
   closeAt = DateTime.now().plus({ years: 1 });
-  await openAssignmentWithCode(activityId, closeAt, ownerId);
-  const { classCode: classCode3 } = await openAssignmentWithCode(
-    activityId,
-    closeAt,
-    ownerId,
-  );
-  expect(classCode3).eq(classCode);
-  assignment = await getAssignment(activityId, ownerId);
-  expect(assignment.classCode).eq(classCode);
-  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+  await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+  const { classCode: classCode3 } = await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+  expect(classCode3).eq(classCode2);
+  assignment = await getTestAssignment(contentId, ownerId);
+  expect(assignment.assignment!.classCode).eq(classCode2);
+  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   // add some data
   await saveScoreAndState({
-    activityId,
-    docId: activity.documents[0].id,
-    docVersionNum: 1,
-    userId: ownerId,
+    contentId: contentId,
+    loggedInUserId: ownerId,
     score: 0.3,
     onSubmission: true,
     state: "document state",
   });
 
   // closing assignment doesn't close completely due to the data
-  await closeAssignmentWithCode(activityId, ownerId);
-  assignment = await getAssignment(activityId, ownerId);
-  expect(assignment.classCode).eq(classCode);
-  expect(assignment.codeValidUntil).eqls(null);
+  await closeAssignmentWithCode({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
+  assignment = await getTestAssignment(contentId, ownerId);
+  expect(assignment.assignment!.classCode).eq(classCode2);
+  expect(assignment.assignment!.codeValidUntil).eqls(null);
 });
 
 test("open and unassign assignment with code", async () => {
@@ -234,46 +251,162 @@ test("open and unassign assignment with code", async () => {
   const ownerId = owner.userId;
   const fakeId = new Uint8Array(16);
 
-  const { activityId } = await createActivity(ownerId, null);
-  const activity = await getActivity(activityId);
-  await updateContent({ id: activityId, name: "Activity 1", ownerId });
-  await updateDoc({
-    id: activity.documents[0].id,
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  await updateContent({
+    contentId: contentId,
+    name: "Activity 1",
     source: "Some content",
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
-  await assignActivity(activityId, ownerId);
+  await assignActivity({ contentId: contentId, loggedInUserId: ownerId });
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  const { classCode } = await openAssignmentWithCode(
-    activityId,
-    closeAt,
-    ownerId,
-  );
-  const assignment = await getAssignment(activityId, ownerId);
-  expect(assignment.classCode).eq(classCode);
-  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+  const { classCode } = await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+  const assignment = await getTestAssignment(contentId, ownerId);
+  expect(assignment.assignment!.classCode).eq(classCode);
+  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
-  let assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
-  expect(assignmentData.assignment!.id).eqls(activityId);
+  let assignmentData = await getAssignmentDataFromCode({
+    code: classCode,
+    loggedInUserId: fakeId,
+  });
+  expect(assignmentData.assignment!.contentId).eqls(contentId);
 
   // unassign activity
-  await unassignActivity(activityId, ownerId);
-  await expect(getAssignment(activityId, ownerId)).rejects.toThrow(
+  await unassignActivity({ contentId: contentId, loggedInUserId: ownerId });
+  await expect(getTestAssignment(contentId, ownerId)).rejects.toThrow(
     PrismaClientKnownRequestError,
   );
 
   // Getting deleted assignment by code fails
-  assignmentData = await getAssignmentDataFromCode(classCode, fakeId);
+  assignmentData = await getAssignmentDataFromCode({
+    code: classCode,
+    loggedInUserId: fakeId,
+  });
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
 
   // cannot unassign again
-  await expect(unassignActivity(activityId, ownerId)).rejects.toThrow(
-    "Record to update not found",
-  );
+  await expect(
+    unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
+  ).rejects.toThrow("not found");
+});
+
+test("open compound assignment with code", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+  const fakeId = new Uint8Array(16);
+
+  const { contentId: sequenceId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "sequence",
+    parentId: null,
+  });
+  await updateContent({
+    contentId: sequenceId,
+    name: "A problem set",
+    loggedInUserId: ownerId,
+  });
+
+  const { contentId: doc1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: sequenceId,
+  });
+  await updateContent({
+    contentId: doc1Id,
+    name: "Question 1",
+    source: "Some content 1",
+    loggedInUserId: ownerId,
+  });
+
+  const { contentId: selectId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "select",
+    parentId: sequenceId,
+  });
+  await updateContent({
+    contentId: selectId,
+    name: "Question Bank",
+    loggedInUserId: ownerId,
+  });
+
+  const { contentId: doc2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: selectId,
+  });
+  await updateContent({
+    contentId: doc2Id,
+    name: "Question 2",
+    source: "Some content 2",
+    loggedInUserId: ownerId,
+  });
+
+  const { contentId: doc3Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: selectId,
+  });
+  await updateContent({
+    contentId: doc3Id,
+    name: "Question 3",
+    source: "Some content 3",
+    loggedInUserId: ownerId,
+  });
+
+  // open assignment assigns activity and generates code
+  const closeAt = DateTime.now().plus({ days: 1 });
+  const { classCode } = await openAssignmentWithCode({
+    contentId: sequenceId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+  const assignment = await getTestAssignment(sequenceId, ownerId);
+  expect(assignment.assignment!.classCode).eq(classCode);
+  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
+
+  const assignmentData = await getAssignmentDataFromCode({
+    code: classCode,
+    loggedInUserId: fakeId,
+  });
+  expect(assignmentData.assignmentFound).eq(true);
+  if (assignmentData.assignment?.type !== "sequence") {
+    throw Error("Shouldn't happen");
+  }
+
+  expect(assignmentData.assignment.contentId).eqls(sequenceId);
+
+  expect(assignmentData.assignment.name).eq("A problem set");
+  expect(assignmentData.assignment.children.length).eq(2);
+  const question1 = assignmentData.assignment.children[0];
+  if (question1.type !== "singleDoc") {
+    throw Error("Shouldn't happen");
+  }
+  expect(question1.doenetML).eq("Some content 1");
+
+  const questionBank = assignmentData.assignment.children[1];
+  if (questionBank.type !== "select") {
+    throw Error("Shouldn't happen");
+  }
+  expect(questionBank.children.length).eq(2);
+  for (let i = 0; i < 2; i++) {
+    const question = questionBank.children[i];
+    if (question.type !== "singleDoc") {
+      throw Error("Shouldn't happen");
+    }
+    expect(question.doenetML).eq(`Some content ${i + 2}`);
+  }
 });
 
 test("only owner can open, close, modify, or unassign assignment", async () => {
@@ -281,99 +414,131 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
   const ownerId = owner.userId;
   const user2 = await createTestUser();
   const userId2 = user2.userId;
-  const { activityId } = await createActivity(ownerId, null);
-  const activity = await getActivity(activityId);
-
-  await expect(
-    updateContent({ id: activityId, name: "Activity 1", ownerId: userId2 }),
-  ).rejects.toThrow("Record to update not found");
-  await expect(
-    updateDoc({
-      id: activity.documents[0].id,
-      source: "Some content",
-      ownerId: userId2,
-    }),
-  ).rejects.toThrow(PrismaClientKnownRequestError);
-
-  await updateContent({ id: activityId, name: "Activity 1", ownerId });
-  await updateDoc({
-    id: activity.documents[0].id,
-    source: "Some content",
-    ownerId,
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
   });
 
-  await expect(assignActivity(activityId, userId2)).rejects.toThrow(
+  await expect(
+    updateContent({
+      contentId: contentId,
+      name: "Activity 1",
+      source: "Some content",
+      loggedInUserId: userId2,
+    }),
+  ).rejects.toThrow("not found");
+
+  await updateContent({
+    contentId: contentId,
+    name: "Activity 1",
+    source: "Some content",
+    loggedInUserId: ownerId,
+  });
+
+  await expect(
+    assignActivity({ contentId: contentId, loggedInUserId: userId2 }),
+  ).rejects.toThrow(PrismaClientKnownRequestError);
+
+  await assignActivity({ contentId: contentId, loggedInUserId: ownerId });
+
+  await expect(getTestAssignment(contentId, userId2)).rejects.toThrow(
     PrismaClientKnownRequestError,
   );
 
-  await assignActivity(activityId, ownerId);
-
-  await expect(getAssignment(activityId, userId2)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
-
-  let assignment = await getAssignment(activityId, ownerId);
+  let assignment = await getTestAssignment(contentId, ownerId);
   expect(assignment.name).eq("Activity 1");
 
   await expect(
-    updateContent({ id: activityId, name: "New Activity", ownerId: userId2 }),
-  ).rejects.toThrow("Record to update not found");
+    updateContent({
+      contentId: contentId,
+      name: "New Activity",
+      loggedInUserId: userId2,
+    }),
+  ).rejects.toThrow("not found");
 
-  await updateContent({ id: activityId, name: "New Activity", ownerId });
-  assignment = await getAssignment(activityId, ownerId);
+  await updateContent({
+    contentId: contentId,
+    name: "New Activity",
+    loggedInUserId: ownerId,
+  });
+  assignment = await getTestAssignment(contentId, ownerId);
   expect(assignment.name).eq("New Activity");
 
   const closeAt = DateTime.now().plus({ days: 1 });
 
   await expect(
-    openAssignmentWithCode(activityId, closeAt, userId2),
+    openAssignmentWithCode({
+      contentId: contentId,
+      closeAt: closeAt,
+      loggedInUserId: userId2,
+    }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
-  const { codeValidUntil } = await openAssignmentWithCode(
-    activityId,
-    closeAt,
-    ownerId,
-  );
+  const { codeValidUntil } = await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
 
   expect(codeValidUntil).eqls(closeAt.toJSDate());
 
   const newCloseAt = DateTime.now().plus({ days: 2 });
 
   await expect(
-    updateAssignmentSettings(activityId, newCloseAt, userId2),
+    updateAssignmentSettings({
+      contentId: contentId,
+      closeAt: newCloseAt,
+      loggedInUserId: userId2,
+    }),
   ).rejects.toThrow("Record to update not found");
-  assignment = await getAssignment(activityId, ownerId);
-  expect(assignment.codeValidUntil).eqls(closeAt.toJSDate());
+  assignment = await getTestAssignment(contentId, ownerId);
+  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
-  await updateAssignmentSettings(activityId, newCloseAt, ownerId);
-  assignment = await getAssignment(activityId, ownerId);
-  expect(assignment.codeValidUntil).eqls(newCloseAt.toJSDate());
+  await updateAssignmentSettings({
+    contentId: contentId,
+    closeAt: newCloseAt,
+    loggedInUserId: ownerId,
+  });
+  assignment = await getTestAssignment(contentId, ownerId);
+  expect(assignment.assignment!.codeValidUntil).eqls(newCloseAt.toJSDate());
 
-  await expect(closeAssignmentWithCode(activityId, userId2)).rejects.toThrow(
-    "Record to update not found",
-  );
+  await expect(
+    closeAssignmentWithCode({ contentId: contentId, loggedInUserId: userId2 }),
+  ).rejects.toThrow("Record to update not found");
 
-  await closeAssignmentWithCode(activityId, ownerId);
+  await closeAssignmentWithCode({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
 });
 
 test("get assignment data from anonymous users", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId, docId } = await createActivity(ownerId, null);
-  await updateContent({ id: activityId, name: "Activity 1", ownerId });
-  await updateDoc({
-    id: docId,
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  await updateContent({
+    contentId: contentId,
+    name: "Activity 1",
     source: "Some content",
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode(activityId, closeAt, ownerId);
+  await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
 
   let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
-    userId: newUser1.userId,
+    loggedInUserId: newUser1.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
@@ -385,18 +550,16 @@ test("get assignment data from anonymous users", async () => {
   };
 
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser1.userId,
+    contentId: contentId,
+    loggedInUserId: newUser1.userId,
     score: 0.5,
     onSubmission: true,
     state: "document state 1",
   });
 
   let assignmentWithScores = await getAssignmentScoreData({
-    activityId,
-    ownerId,
+    contentId: contentId,
+    loggedInUserId: ownerId,
   });
 
   expect(assignmentWithScores).eqls({
@@ -405,32 +568,22 @@ test("get assignment data from anonymous users", async () => {
   });
 
   let assignmentStudentData = await getAssignmentStudentData({
-    activityId,
+    contentId: contentId,
     loggedInUserId: ownerId,
-    studentId: newUser1.userId,
+    studentUserId: newUser1.userId,
   });
 
   expect(assignmentStudentData).eqls({
     score: 0.5,
     activity: {
-      id: activityId,
+      id: contentId,
       name: "Activity 1",
-      documents: [
-        {
-          assignedVersion: {
-            docId,
-            versionNum: 1,
-            source: "Some content",
-            doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
-          },
-        },
-      ],
+      source: "Some content",
+      doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
     },
     user: userData1,
-    documentScores: [
+    activityScores: [
       {
-        docId,
-        docVersionNum: 1,
         hasMaxScore: true,
         score: 0.5,
       },
@@ -439,17 +592,15 @@ test("get assignment data from anonymous users", async () => {
 
   // new lower score ignored
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser1.userId,
+    contentId: contentId,
+    loggedInUserId: newUser1.userId,
     score: 0.2,
     onSubmission: true,
     state: "document state 2",
   });
   assignmentWithScores = await getAssignmentScoreData({
-    activityId,
-    ownerId,
+    contentId: contentId,
+    loggedInUserId: ownerId,
   });
   expect(assignmentWithScores).eqls({
     name: "Activity 1",
@@ -457,38 +608,26 @@ test("get assignment data from anonymous users", async () => {
   });
 
   assignmentStudentData = await getAssignmentStudentData({
-    activityId,
+    contentId: contentId,
     loggedInUserId: ownerId,
-    studentId: newUser1.userId,
+    studentUserId: newUser1.userId,
   });
 
   expect(assignmentStudentData).eqls({
     score: 0.5,
     activity: {
-      id: activityId,
+      id: contentId,
       name: "Activity 1",
-      documents: [
-        {
-          assignedVersion: {
-            docId,
-            versionNum: 1,
-            source: "Some content",
-            doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
-          },
-        },
-      ],
+      source: "Some content",
+      doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
     },
     user: userData1,
-    documentScores: [
+    activityScores: [
       {
-        docId,
-        docVersionNum: 1,
         hasMaxScore: false,
         score: 0.2,
       },
       {
-        docId,
-        docVersionNum: 1,
         hasMaxScore: true,
         score: 0.5,
       },
@@ -497,17 +636,15 @@ test("get assignment data from anonymous users", async () => {
 
   // new higher score used
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser1.userId,
+    contentId: contentId,
+    loggedInUserId: newUser1.userId,
     score: 0.7,
     onSubmission: true,
     state: "document state 3",
   });
   assignmentWithScores = await getAssignmentScoreData({
-    activityId,
-    ownerId,
+    contentId: contentId,
+    loggedInUserId: ownerId,
   });
   expect(assignmentWithScores).eqls({
     name: "Activity 1",
@@ -515,32 +652,22 @@ test("get assignment data from anonymous users", async () => {
   });
 
   assignmentStudentData = await getAssignmentStudentData({
-    activityId,
+    contentId: contentId,
     loggedInUserId: ownerId,
-    studentId: newUser1.userId,
+    studentUserId: newUser1.userId,
   });
 
   expect(assignmentStudentData).eqls({
     score: 0.7,
     activity: {
-      id: activityId,
+      id: contentId,
       name: "Activity 1",
-      documents: [
-        {
-          assignedVersion: {
-            docId,
-            versionNum: 1,
-            source: "Some content",
-            doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
-          },
-        },
-      ],
+      source: "Some content",
+      doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
     },
     user: userData1,
-    documentScores: [
+    activityScores: [
       {
-        docId,
-        docVersionNum: 1,
         hasMaxScore: true,
         score: 0.7,
       },
@@ -550,7 +677,7 @@ test("get assignment data from anonymous users", async () => {
   // second user opens assignment
   let newUser2 = await createTestAnonymousUser();
   newUser2 = await updateUser({
-    userId: newUser2.userId,
+    loggedInUserId: newUser2.userId,
     firstNames: "Arya",
     lastNames: "Abbas",
   });
@@ -563,8 +690,8 @@ test("get assignment data from anonymous users", async () => {
 
   // assignment scores still unchanged
   assignmentWithScores = await getAssignmentScoreData({
-    activityId,
-    ownerId,
+    contentId: contentId,
+    loggedInUserId: ownerId,
   });
   expect(assignmentWithScores).eqls({
     name: "Activity 1",
@@ -573,10 +700,8 @@ test("get assignment data from anonymous users", async () => {
 
   // save state for second user
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser2.userId,
+    contentId: contentId,
+    loggedInUserId: newUser2.userId,
     score: 0.3,
     onSubmission: true,
     state: "document state 4",
@@ -584,8 +709,8 @@ test("get assignment data from anonymous users", async () => {
 
   // second user's score shows up first due to alphabetical sorting
   assignmentWithScores = await getAssignmentScoreData({
-    activityId,
-    ownerId,
+    contentId: contentId,
+    loggedInUserId: ownerId,
   });
   expect(assignmentWithScores).eqls({
     name: "Activity 1",
@@ -596,32 +721,22 @@ test("get assignment data from anonymous users", async () => {
   });
 
   assignmentStudentData = await getAssignmentStudentData({
-    activityId,
+    contentId: contentId,
     loggedInUserId: ownerId,
-    studentId: newUser2.userId,
+    studentUserId: newUser2.userId,
   });
 
   expect(assignmentStudentData).eqls({
     score: 0.3,
     activity: {
-      id: activityId,
+      id: contentId,
       name: "Activity 1",
-      documents: [
-        {
-          assignedVersion: {
-            docId,
-            versionNum: 1,
-            source: "Some content",
-            doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
-          },
-        },
-      ],
+      source: "Some content",
+      doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
     },
     user: userData2,
-    documentScores: [
+    activityScores: [
       {
-        docId,
-        docVersionNum: 1,
         hasMaxScore: true,
         score: 0.3,
       },
@@ -634,23 +749,29 @@ test("can't get assignment data if other user, but student can get their own dat
   const ownerId = owner.userId;
   const otherUser = await createTestUser();
   const otherUserId = otherUser.userId;
-  const { activityId, docId } = await createActivity(ownerId, null);
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode(activityId, closeAt, ownerId);
+  await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
 
   let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
-    userId: newUser1.userId,
+    loggedInUserId: newUser1.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
 
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser1.userId,
+    contentId: contentId,
+    loggedInUserId: newUser1.userId,
     score: 0.5,
     onSubmission: true,
     state: "document state 1",
@@ -658,48 +779,47 @@ test("can't get assignment data if other user, but student can get their own dat
 
   // assignment owner can get score data
   await getAssignmentScoreData({
-    activityId,
-    ownerId,
+    contentId: contentId,
+    loggedInUserId: ownerId,
   });
 
   // other user cannot get score data
   await expect(
     getAssignmentScoreData({
-      activityId,
-      ownerId: otherUserId,
+      contentId: contentId,
+      loggedInUserId: otherUserId,
     }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
   // student cannot get score data on all of assignment
   await expect(
     getAssignmentScoreData({
-      activityId,
-      ownerId: newUser1.userId,
+      contentId: contentId,
+      loggedInUserId: newUser1.userId,
     }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
   // assignment owner can get data on student
   const studentData = await getAssignmentStudentData({
-    activityId,
+    contentId: contentId,
     loggedInUserId: ownerId,
-    studentId: newUser1.userId,
+    studentUserId: newUser1.userId,
   });
 
   // another user cannot get data on student
   await expect(
     getAssignmentStudentData({
-      activityId,
+      contentId: contentId,
       loggedInUserId: otherUserId,
-      studentId: newUser1.userId,
+      studentUserId: newUser1.userId,
     }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
   // student can get own data
   expect(
     await getAssignmentStudentData({
-      activityId,
+      contentId: contentId,
       loggedInUserId: newUser1.userId,
-      studentId: newUser1.userId,
     }),
   ).eqls(studentData);
 });
@@ -707,42 +827,48 @@ test("can't get assignment data if other user, but student can get their own dat
 test("can't unassign if have data", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId, docId } = await createActivity(ownerId, null);
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode(activityId, closeAt, ownerId);
+  await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
 
   let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
-    userId: newUser1.userId,
+    loggedInUserId: newUser1.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
 
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser1.userId,
+    contentId: contentId,
+    loggedInUserId: newUser1.userId,
     score: 0.5,
     onSubmission: true,
     state: "document state 1",
   });
 
   await getAssignmentScoreData({
-    activityId,
-    ownerId,
+    contentId: contentId,
+    loggedInUserId: ownerId,
   });
 
   await getAssignmentStudentData({
-    activityId,
+    contentId: contentId,
     loggedInUserId: ownerId,
-    studentId: newUser1.userId,
+    studentUserId: newUser1.userId,
   });
 
-  await expect(unassignActivity(activityId, ownerId)).rejects.toThrow(
-    "Record to update not found",
-  );
+  await expect(
+    unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
+  ).rejects.toThrow("not found");
 });
 
 test("list assigned and get assigned scores get student assignments and scores", async () => {
@@ -751,99 +877,114 @@ test("list assigned and get assigned scores get student assignments and scores",
   const user2 = await createTestUser();
   const user2Id = user2.userId;
 
-  let assignmentList = await listUserAssigned(user1Id);
+  let assignmentList = await listUserAssigned({ loggedInUserId: user1Id });
   expect(assignmentList.assignments).eqls([]);
   expect(assignmentList.user.userId).eqls(user1Id);
 
-  let studentData = await getAssignedScores(user1Id);
+  let studentData = await getAssignedScores({ loggedInUserId: user1Id });
   expect(studentData.orderedActivityScores).eqls([]);
   expect(studentData.userData.userId).eqls(user1Id);
 
-  const { activityId: activityId1 } = await createActivity(user1Id, null);
-  await updateContent({
-    id: activityId1,
-    name: "Activity 1",
-    ownerId: user1Id,
+  const { contentId: contentId1 } = await createContent({
+    loggedInUserId: user1Id,
+    contentType: "singleDoc",
+    parentId: null,
   });
-  await assignActivity(activityId1, user1Id);
+  await updateContent({
+    contentId: contentId1,
+    name: "Activity 1",
+    loggedInUserId: user1Id,
+  });
+  await assignActivity({ contentId: contentId1, loggedInUserId: user1Id });
 
-  assignmentList = await listUserAssigned(user1Id);
+  assignmentList = await listUserAssigned({ loggedInUserId: user1Id });
   expect(assignmentList.assignments).eqls([]);
-  studentData = await getAssignedScores(user1Id);
+  studentData = await getAssignedScores({ loggedInUserId: user1Id });
   expect(studentData.orderedActivityScores).eqls([]);
 
-  const { activityId: activityId2, docId: docId2 } = await createActivity(
-    user2Id,
-    null,
-  );
-  await updateContent({
-    id: activityId2,
-    name: "Activity 2",
-    ownerId: user2Id,
+  const { contentId: contentId2 } = await createContent({
+    loggedInUserId: user2Id,
+    contentType: "singleDoc",
+    parentId: null,
   });
-  await assignActivity(activityId2, user2Id);
+  await updateContent({
+    contentId: contentId2,
+    name: "Activity 2",
+    loggedInUserId: user2Id,
+  });
+  await assignActivity({ contentId: contentId2, loggedInUserId: user2Id });
 
-  assignmentList = await listUserAssigned(user1Id);
+  assignmentList = await listUserAssigned({ loggedInUserId: user1Id });
   expect(assignmentList.assignments).eqls([]);
-  studentData = await getAssignedScores(user1Id);
+  studentData = await getAssignedScores({ loggedInUserId: user1Id });
   expect(studentData.orderedActivityScores).eqls([]);
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode(activityId2, closeAt, user2Id);
+  await openAssignmentWithCode({
+    contentId: contentId2,
+    closeAt: closeAt,
+    loggedInUserId: user2Id,
+  });
 
   // recording score for user1 on assignment2 adds it to user1's assignment list
   await saveScoreAndState({
-    activityId: activityId2,
-    docId: docId2,
-    docVersionNum: 1,
-    userId: user1Id,
+    contentId: contentId2,
+    loggedInUserId: user1Id,
     score: 0.5,
     onSubmission: true,
     state: "document state 1",
   });
 
-  assignmentList = await listUserAssigned(user1Id);
+  assignmentList = await listUserAssigned({ loggedInUserId: user1Id });
   expect(assignmentList.assignments).toMatchObject([
     {
-      id: activityId2,
+      contentId: contentId2,
       ownerId: user2Id,
     },
   ]);
-  studentData = await getAssignedScores(user1Id);
+  studentData = await getAssignedScores({ loggedInUserId: user1Id });
   expect(studentData.orderedActivityScores).eqls([
-    { activityId: activityId2, activityName: "Activity 2", score: 0.5 },
+    { contentId: contentId2, activityName: "Activity 2", score: 0.5 },
   ]);
 
   // cannot unassign
-  await expect(unassignActivity(activityId2, user2Id)).rejects.toThrow(
-    "Record to update not found",
-  );
+  await expect(
+    unassignActivity({ contentId: contentId2, loggedInUserId: user2Id }),
+  ).rejects.toThrow("not found");
 });
 
 test("get all assignment data from anonymous user", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { activityId, docId } = await createActivity(ownerId, null);
-  await updateContent({ id: activityId, name: "Activity 1", ownerId });
-  await updateDoc({
-    id: docId,
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  await updateContent({
+    contentId: contentId,
+    name: "Activity 1",
     source: "Some content",
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode(activityId, closeAt, ownerId);
+  await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
 
   let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
-    userId: newUser1.userId,
+    loggedInUserId: newUser1.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
-  const newUser1Info = userConvertUUID({
+  const newUser1Info = convertUUID({
     userId: newUser1.userId,
     email: newUser1.email,
     firstNames: newUser1.firstNames,
@@ -851,28 +992,26 @@ test("get all assignment data from anonymous user", async () => {
   });
 
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser1.userId,
+    contentId: contentId,
+    loggedInUserId: newUser1.userId,
     score: 0.5,
     onSubmission: true,
     state: "document state 1",
   });
 
-  let userWithScores = studentDataConvertUUID(
+  let userWithScores = convertUUID(
     await getStudentData({
-      userId: newUser1.userId,
-      ownerId,
+      studentUserId: newUser1.userId,
+      loggedInUserId: ownerId,
       parentId: null,
     }),
   );
 
   expect(userWithScores).eqls({
-    userData: newUser1Info,
+    studentData: newUser1Info,
     orderedActivityScores: [
       {
-        activityId: fromUUID(activityId),
+        contentId: fromUUID(contentId),
         score: 0.5,
         activityName: "Activity 1",
       },
@@ -882,28 +1021,26 @@ test("get all assignment data from anonymous user", async () => {
 
   // new lower score ignored
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser1.userId,
+    contentId: contentId,
+    loggedInUserId: newUser1.userId,
     score: 0.2,
     onSubmission: true,
     state: "document state 2",
   });
 
-  userWithScores = studentDataConvertUUID(
+  userWithScores = convertUUID(
     await getStudentData({
-      userId: newUser1.userId,
-      ownerId,
+      studentUserId: newUser1.userId,
+      loggedInUserId: ownerId,
       parentId: null,
     }),
   );
 
   expect(userWithScores).eqls({
-    userData: newUser1Info,
+    studentData: newUser1Info,
     orderedActivityScores: [
       {
-        activityId: fromUUID(activityId),
+        contentId: fromUUID(contentId),
         score: 0.5,
         activityName: "Activity 1",
       },
@@ -912,28 +1049,26 @@ test("get all assignment data from anonymous user", async () => {
   });
 
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser1.userId,
+    contentId: contentId,
+    loggedInUserId: newUser1.userId,
     score: 0.7,
     onSubmission: true,
     state: "document state 3",
   });
 
-  userWithScores = studentDataConvertUUID(
+  userWithScores = convertUUID(
     await getStudentData({
-      userId: newUser1.userId,
-      ownerId,
+      studentUserId: newUser1.userId,
+      loggedInUserId: ownerId,
       parentId: null,
     }),
   );
 
   expect(userWithScores).eqls({
-    userData: newUser1Info,
+    studentData: newUser1Info,
     orderedActivityScores: [
       {
-        activityId: fromUUID(activityId),
+        contentId: fromUUID(contentId),
         score: 0.7,
         activityName: "Activity 1",
       },
@@ -969,150 +1104,269 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   // Activity gone (deleted)
   // Activity root
 
-  const { folderId: baseFolderId } = await createFolder(ownerId, null);
-  const { folderId: folder3Id } = await createFolder(ownerId, baseFolderId);
+  const { contentId: baseFolderId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: null,
+  });
+  const { contentId: folder3Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: baseFolderId,
+  });
 
   // create folder 1 after folder 3 and move to make sure it is using sortIndex
   // and not the order content was created
-  const { folderId: folder1Id } = await createFolder(ownerId, baseFolderId);
+  const { contentId: folder1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: baseFolderId,
+  });
   await moveContent({
-    id: folder1Id,
-    desiredParentId: baseFolderId,
+    contentId: folder1Id,
+    parentId: baseFolderId,
     desiredPosition: 0,
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
-  const { folderId: folder1cId } = await createFolder(ownerId, folder1Id);
-  const { folderId: folder1dId } = await createFolder(ownerId, folder1Id);
+  const { contentId: folder1cId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: folder1Id,
+  });
+  const { contentId: folder1dId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: folder1Id,
+  });
 
-  const { activityId: activity2Id, docId: doc2Id } = await createActivity(
-    ownerId,
-    baseFolderId,
-  );
-  await updateContent({ id: activity2Id, name: "Activity 2", ownerId });
+  const { contentId: activity2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: baseFolderId,
+  });
+  await updateContent({
+    contentId: activity2Id,
+    name: "Activity 2",
+    loggedInUserId: ownerId,
+  });
   await moveContent({
-    id: activity2Id,
-    desiredParentId: baseFolderId,
+    contentId: activity2Id,
+    parentId: baseFolderId,
     desiredPosition: 1,
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
   // create activity 1a in wrong folder initially
-  const { activityId: activity1aId, docId: doc1aId } = await createActivity(
-    ownerId,
-    folder3Id,
-  );
-  await updateContent({ id: activity1aId, name: "Activity 1a", ownerId });
-  const { activityId: activity1eId, docId: doc1eId } = await createActivity(
-    ownerId,
-    folder1Id,
-  );
-  await updateContent({ id: activity1eId, name: "Activity 1e", ownerId });
+  const { contentId: activity1aId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder3Id,
+  });
+  await updateContent({
+    contentId: activity1aId,
+    name: "Activity 1a",
+    loggedInUserId: ownerId,
+  });
+  const { contentId: activity1eId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder1Id,
+  });
+  await updateContent({
+    contentId: activity1eId,
+    name: "Activity 1e",
+    loggedInUserId: ownerId,
+  });
   // move activity 1a to right places
   await moveContent({
-    id: activity1aId,
-    desiredParentId: folder1Id,
+    contentId: activity1aId,
+    parentId: folder1Id,
     desiredPosition: 0,
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
-  const { activityId: activity1c1Id, docId: doc1c1Id } = await createActivity(
-    ownerId,
-    folder1cId,
-  );
-  await updateContent({ id: activity1c1Id, name: "Activity 1c1", ownerId });
-  const { activityId: _activity1c3Id } = await createActivity(
-    ownerId,
-    folder1cId,
-  );
+  const { contentId: activity1c1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder1cId,
+  });
+  await updateContent({
+    contentId: activity1c1Id,
+    name: "Activity 1c1",
+    loggedInUserId: ownerId,
+  });
+  await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder1cId,
+  });
 
   // create folder 1c2 in wrong folder initially
-  const { folderId: folder1c2Id } = await createFolder(ownerId, baseFolderId);
-  const { activityId: activity1c2aId, docId: doc1c2aId } = await createActivity(
-    ownerId,
-    folder1c2Id,
-  );
-  await updateContent({ id: activity1c2aId, name: "Activity 1c2a", ownerId });
-  const { activityId: activity1c2bId, docId: doc1c2bId } = await createActivity(
-    ownerId,
-    folder1c2Id,
-  );
-  await updateContent({ id: activity1c2bId, name: "Activity 1c2b", ownerId });
+  const { contentId: folder1c2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "folder",
+    parentId: baseFolderId,
+  });
+  const { contentId: activity1c2aId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder1c2Id,
+  });
+  await updateContent({
+    contentId: activity1c2aId,
+    name: "Activity 1c2a",
+    loggedInUserId: ownerId,
+  });
+  const { contentId: activity1c2bId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder1c2Id,
+  });
+  await updateContent({
+    contentId: activity1c2bId,
+    name: "Activity 1c2b",
+    loggedInUserId: ownerId,
+  });
 
   // after creating its content move folder 1c2 into the right place
   await moveContent({
-    id: folder1c2Id,
-    desiredParentId: folder1cId,
+    contentId: folder1c2Id,
+    parentId: folder1cId,
     desiredPosition: 1,
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
   // create activity 1b in wrong place then move it
-  const { activityId: activity1b } = await createActivity(ownerId, folder1c2Id);
-  await updateContent({ id: activity1b, name: "Activity 1b", ownerId });
+  const { contentId: activity1b } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder1c2Id,
+  });
+  await updateContent({
+    contentId: activity1b,
+    name: "Activity 1b",
+    loggedInUserId: ownerId,
+  });
   await moveContent({
-    id: activity1b,
-    desiredParentId: folder1Id,
+    contentId: activity1b,
+    parentId: folder1Id,
     desiredPosition: 1,
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
   // move activity 1e to end of folder 1
   await moveContent({
-    id: activity1eId,
-    desiredParentId: folder1Id,
+    contentId: activity1eId,
+    parentId: folder1Id,
     desiredPosition: 100,
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
-  const { activityId: _activity3aId } = await createActivity(
-    ownerId,
-    folder3Id,
-  );
-  const { activityId: activity3bId, docId: doc3bId } = await createActivity(
-    ownerId,
-    folder3Id,
-  );
-  await updateContent({ id: activity3bId, name: "Activity 3b", ownerId });
+  await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder3Id,
+  });
+  const { contentId: activity3bId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder3Id,
+  });
+  await updateContent({
+    contentId: activity3bId,
+    name: "Activity 3b",
+    loggedInUserId: ownerId,
+  });
 
-  const { activityId: _activityNullId } = await createActivity(ownerId, null);
+  await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   // add some deleted activities
-  const { activityId: activityGoneId } = await createActivity(ownerId, null);
-  await deleteActivity(activityGoneId, ownerId);
-  const { activityId: activity4Id } = await createActivity(
-    ownerId,
-    baseFolderId,
-  );
-  await deleteActivity(activity4Id, ownerId);
-  const { activityId: activity3cId } = await createActivity(ownerId, folder3Id);
-  await deleteActivity(activity3cId, ownerId);
+  const { contentId: activityGoneId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  await deleteContent({ contentId: activityGoneId, loggedInUserId: ownerId });
+  const { contentId: activity4Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: baseFolderId,
+  });
+  await deleteContent({ contentId: activity4Id, loggedInUserId: ownerId });
+  const { contentId: activity3cId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: folder3Id,
+  });
+  await deleteContent({ contentId: activity3cId, loggedInUserId: ownerId });
 
   // one activity at root level
-  const { activityId: activityRootId, docId: docRootId } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateContent({ id: activityRootId, name: "Activity root", ownerId });
+  const { contentId: activityRootId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  await updateContent({
+    contentId: activityRootId,
+    name: "Activity root",
+    loggedInUserId: ownerId,
+  });
 
   const closeAt = DateTime.now().plus({ day: 1 });
-  await openAssignmentWithCode(activity1aId, closeAt, ownerId);
-  await openAssignmentWithCode(activity1c1Id, closeAt, ownerId);
-  await openAssignmentWithCode(activity1c2aId, closeAt, ownerId);
-  await openAssignmentWithCode(activity1c2bId, closeAt, ownerId);
-  await openAssignmentWithCode(activity1eId, closeAt, ownerId);
-  await openAssignmentWithCode(activity2Id, closeAt, ownerId);
-  await openAssignmentWithCode(activity3bId, closeAt, ownerId);
-  await openAssignmentWithCode(activityRootId, closeAt, ownerId);
+  await openAssignmentWithCode({
+    contentId: activity1aId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+  await openAssignmentWithCode({
+    contentId: activity1c1Id,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+  await openAssignmentWithCode({
+    contentId: activity1c2aId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+  await openAssignmentWithCode({
+    contentId: activity1c2bId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+  await openAssignmentWithCode({
+    contentId: activity1eId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+  await openAssignmentWithCode({
+    contentId: activity2Id,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+  await openAssignmentWithCode({
+    contentId: activity3bId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+  await openAssignmentWithCode({
+    contentId: activityRootId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
 
   let newUser = await createTestAnonymousUser();
   newUser = await updateUser({
-    userId: newUser.userId,
+    loggedInUserId: newUser.userId,
     firstNames: "Arya",
     lastNames: "Abbas",
   });
   const newUserId = newUser.userId;
-  const userInfo = userConvertUUID({
+  const userInfo = convertUUID({
     userId: newUserId,
     email: newUser.email,
     firstNames: newUser.firstNames,
@@ -1120,73 +1374,57 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
 
   await saveScoreAndState({
-    activityId: activity1aId,
-    docId: doc1aId,
-    docVersionNum: 1,
-    userId: newUserId,
+    contentId: activity1aId,
+    loggedInUserId: newUserId,
     score: 0.11,
     onSubmission: true,
     state: "document state 1a",
   });
   await saveScoreAndState({
-    activityId: activity1c1Id,
-    docId: doc1c1Id,
-    docVersionNum: 1,
-    userId: newUserId,
+    contentId: activity1c1Id,
+    loggedInUserId: newUserId,
     score: 0.131,
     onSubmission: true,
     state: "document state 1c1",
   });
   await saveScoreAndState({
-    activityId: activity1c2aId,
-    docId: doc1c2aId,
-    docVersionNum: 1,
-    userId: newUserId,
+    contentId: activity1c2aId,
+    loggedInUserId: newUserId,
     score: 0.1321,
     onSubmission: true,
     state: "document state 1c2a",
   });
   await saveScoreAndState({
-    activityId: activity1c2bId,
-    docId: doc1c2bId,
-    docVersionNum: 1,
-    userId: newUserId,
+    contentId: activity1c2bId,
+    loggedInUserId: newUserId,
     score: 0.1322,
     onSubmission: true,
     state: "document state 1c2b",
   });
   await saveScoreAndState({
-    activityId: activity1eId,
-    docId: doc1eId,
-    docVersionNum: 1,
-    userId: newUserId,
+    contentId: activity1eId,
+    loggedInUserId: newUserId,
     score: 0.15,
     onSubmission: true,
     state: "document state 1e",
   });
   await saveScoreAndState({
-    activityId: activity2Id,
-    docId: doc2Id,
-    docVersionNum: 1,
-    userId: newUserId,
+    contentId: activity2Id,
+    loggedInUserId: newUserId,
     score: 0.2,
     onSubmission: true,
     state: "document state 2",
   });
   await saveScoreAndState({
-    activityId: activity3bId,
-    docId: doc3bId,
-    docVersionNum: 1,
-    userId: newUserId,
+    contentId: activity3bId,
+    loggedInUserId: newUserId,
     score: 0.32,
     onSubmission: true,
     state: "document state 3b",
   });
   await saveScoreAndState({
-    activityId: activityRootId,
-    docId: docRootId,
-    docVersionNum: 1,
-    userId: newUserId,
+    contentId: activityRootId,
+    loggedInUserId: newUserId,
     score: 1.0,
     onSubmission: true,
     state: "document state Root",
@@ -1195,7 +1433,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   const desiredFolder3 = [{ id: fromUUID(activity3bId), name: "Activity 3b" }];
   const desiredFolder3Scores = [
     {
-      activityId: fromUUID(activity3bId),
+      contentId: fromUUID(activity3bId),
       score: 0.32,
       user: userInfo,
     },
@@ -1206,12 +1444,12 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   ];
   const desiredFolder1c2Scores = [
     {
-      activityId: fromUUID(activity1c2aId),
+      contentId: fromUUID(activity1c2aId),
       score: 0.1321,
       user: userInfo,
     },
     {
-      activityId: fromUUID(activity1c2bId),
+      contentId: fromUUID(activity1c2bId),
       score: 0.1322,
       user: userInfo,
     },
@@ -1223,7 +1461,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   ];
   const desiredFolder1cScores = [
     {
-      activityId: fromUUID(activity1c1Id),
+      contentId: fromUUID(activity1c1Id),
       score: 0.131,
       user: userInfo,
     },
@@ -1237,13 +1475,13 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   ];
   const desiredFolder1Scores = [
     {
-      activityId: fromUUID(activity1aId),
+      contentId: fromUUID(activity1aId),
       score: 0.11,
       user: userInfo,
     },
     ...desiredFolder1cScores,
     {
-      activityId: fromUUID(activity1eId),
+      contentId: fromUUID(activity1eId),
       score: 0.15,
       user: userInfo,
     },
@@ -1257,7 +1495,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   const desiredBaseFolderScores = [
     ...desiredFolder1Scores,
     {
-      activityId: fromUUID(activity2Id),
+      contentId: fromUUID(activity2Id),
       score: 0.2,
       user: userInfo,
     },
@@ -1271,200 +1509,192 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   const desiredNullFolderScores = [
     ...desiredBaseFolderScores,
     {
-      activityId: fromUUID(activityRootId),
+      contentId: fromUUID(activityRootId),
       score: 1.0,
       user: userInfo,
     },
   ];
 
-  let scoreData = allAssignmentScoresConvertUUID(
-    await getAllAssignmentScores({
-      ownerId,
-      parentId: null,
-    }),
-  );
-  expect(scoreData.orderedActivities).eqls(desiredNullFolder);
-  expect(scoreData.assignmentScores.sort((a, b) => a.score - b.score)).eqls(
-    desiredNullFolderScores,
-  );
+  let scoreData = await getAllAssignmentScores({
+    loggedInUserId: ownerId,
+    parentId: null,
+  });
+  expect(convertUUID(scoreData.orderedActivities)).eqls(desiredNullFolder);
+  expect(
+    convertUUID(scoreData.assignmentScores.sort((a, b) => a.score - b.score)),
+  ).eqls(desiredNullFolderScores);
   expect(scoreData.folder).eqls(null);
 
-  let studentData = studentDataConvertUUID(
-    await getStudentData({
-      userId: newUserId,
-      ownerId,
-      parentId: null,
-    }),
-  );
+  let studentData = await getStudentData({
+    studentUserId: newUserId,
+    loggedInUserId: ownerId,
+    parentId: null,
+  });
   expect(
-    studentData.orderedActivityScores.map((a) => ({
-      activityId: a.activityId,
-      score: a.score,
-      user: userInfo,
-    })),
+    convertUUID(
+      studentData.orderedActivityScores.map((a) => ({
+        contentId: a.contentId,
+        score: a.score,
+        user: userInfo,
+      })),
+    ),
   ).eqls(desiredNullFolderScores);
   expect(studentData.folder).eqls(null);
 
-  scoreData = allAssignmentScoresConvertUUID(
-    await getAllAssignmentScores({
-      ownerId,
-      parentId: baseFolderId,
-    }),
-  );
-  expect(scoreData.orderedActivities).eqls(desiredBaseFolder);
-  expect(scoreData.assignmentScores.sort((a, b) => a.score - b.score)).eqls(
-    desiredBaseFolderScores,
-  );
-  expect(scoreData.folder?.id).eqls(fromUUID(baseFolderId));
-
-  studentData = studentDataConvertUUID(
-    await getStudentData({
-      userId: newUserId,
-      ownerId,
-      parentId: baseFolderId,
-    }),
-  );
+  scoreData = await getAllAssignmentScores({
+    loggedInUserId: ownerId,
+    parentId: baseFolderId,
+  });
+  expect(convertUUID(scoreData.orderedActivities)).eqls(desiredBaseFolder);
   expect(
-    studentData.orderedActivityScores.map((a) => ({
-      activityId: a.activityId,
-      score: a.score,
-      user: userInfo,
-    })),
+    convertUUID(scoreData.assignmentScores.sort((a, b) => a.score - b.score)),
   ).eqls(desiredBaseFolderScores);
-  expect(studentData.folder?.id).eqls(fromUUID(baseFolderId));
+  expect(convertUUID(scoreData.folder?.id)).eqls(fromUUID(baseFolderId));
 
-  scoreData = allAssignmentScoresConvertUUID(
-    await getAllAssignmentScores({
-      ownerId,
-      parentId: folder1Id,
-    }),
-  );
-  expect(scoreData.orderedActivities).eqls(desiredFolder1);
-  expect(scoreData.assignmentScores.sort((a, b) => a.score - b.score)).eqls(
-    desiredFolder1Scores,
-  );
-  expect(scoreData.folder?.id).eqls(fromUUID(folder1Id));
-
-  studentData = studentDataConvertUUID(
-    await getStudentData({
-      userId: newUserId,
-      ownerId,
-      parentId: folder1Id,
-    }),
-  );
+  studentData = await getStudentData({
+    studentUserId: newUserId,
+    loggedInUserId: ownerId,
+    parentId: baseFolderId,
+  });
   expect(
-    studentData.orderedActivityScores.map((a) => ({
-      activityId: a.activityId,
-      score: a.score,
-      user: userInfo,
-    })),
+    convertUUID(
+      studentData.orderedActivityScores.map((a) => ({
+        contentId: a.contentId,
+        score: a.score,
+        user: userInfo,
+      })),
+    ),
+  ).eqls(desiredBaseFolderScores);
+  expect(convertUUID(studentData.folder?.id)).eqls(fromUUID(baseFolderId));
+
+  scoreData = await getAllAssignmentScores({
+    loggedInUserId: ownerId,
+    parentId: folder1Id,
+  });
+  expect(convertUUID(scoreData.orderedActivities)).eqls(desiredFolder1);
+  expect(
+    convertUUID(scoreData.assignmentScores.sort((a, b) => a.score - b.score)),
   ).eqls(desiredFolder1Scores);
-  expect(studentData.folder?.id).eqls(fromUUID(folder1Id));
+  expect(convertUUID(scoreData.folder?.id)).eqls(fromUUID(folder1Id));
 
-  scoreData = allAssignmentScoresConvertUUID(
-    await getAllAssignmentScores({
-      ownerId,
-      parentId: folder3Id,
-    }),
-  );
-  expect(scoreData.orderedActivities).eqls(desiredFolder3);
-  expect(scoreData.assignmentScores.sort((a, b) => a.score - b.score)).eqls(
-    desiredFolder3Scores,
-  );
-  expect(scoreData.folder?.id).eqls(fromUUID(folder3Id));
-
-  studentData = studentDataConvertUUID(
-    await getStudentData({
-      userId: newUserId,
-      ownerId,
-      parentId: folder3Id,
-    }),
-  );
+  studentData = await getStudentData({
+    studentUserId: newUserId,
+    loggedInUserId: ownerId,
+    parentId: folder1Id,
+  });
   expect(
-    studentData.orderedActivityScores.map((a) => ({
-      activityId: a.activityId,
-      score: a.score,
-      user: userInfo,
-    })),
+    convertUUID(
+      studentData.orderedActivityScores.map((a) => ({
+        contentId: a.contentId,
+        score: a.score,
+        user: userInfo,
+      })),
+    ),
+  ).eqls(desiredFolder1Scores);
+  expect(convertUUID(studentData.folder?.id)).eqls(fromUUID(folder1Id));
+
+  scoreData = await getAllAssignmentScores({
+    loggedInUserId: ownerId,
+    parentId: folder3Id,
+  });
+  expect(convertUUID(scoreData.orderedActivities)).eqls(desiredFolder3);
+  expect(
+    convertUUID(scoreData.assignmentScores.sort((a, b) => a.score - b.score)),
   ).eqls(desiredFolder3Scores);
-  expect(studentData.folder?.id).eqls(fromUUID(folder3Id));
+  expect(convertUUID(scoreData.folder?.id)).eqls(fromUUID(folder3Id));
 
-  scoreData = allAssignmentScoresConvertUUID(
-    await getAllAssignmentScores({
-      ownerId,
-      parentId: folder1cId,
-    }),
-  );
-  expect(scoreData.orderedActivities).eqls(desiredFolder1c);
-  expect(scoreData.assignmentScores.sort((a, b) => a.score - b.score)).eqls(
-    desiredFolder1cScores,
-  );
-  expect(scoreData.folder?.id).eqls(fromUUID(folder1cId));
-
-  studentData = studentDataConvertUUID(
-    await getStudentData({
-      userId: newUserId,
-      ownerId,
-      parentId: folder1cId,
-    }),
-  );
+  studentData = await getStudentData({
+    studentUserId: newUserId,
+    loggedInUserId: ownerId,
+    parentId: folder3Id,
+  });
   expect(
-    studentData.orderedActivityScores.map((a) => ({
-      activityId: a.activityId,
-      score: a.score,
-      user: userInfo,
-    })),
-  ).eqls(desiredFolder1cScores);
-  expect(studentData.folder?.id).eqls(fromUUID(folder1cId));
+    convertUUID(
+      studentData.orderedActivityScores.map((a) => ({
+        contentId: a.contentId,
+        score: a.score,
+        user: userInfo,
+      })),
+    ),
+  ).eqls(desiredFolder3Scores);
+  expect(convertUUID(studentData.folder?.id)).eqls(fromUUID(folder3Id));
 
-  scoreData = allAssignmentScoresConvertUUID(
-    await getAllAssignmentScores({
-      ownerId,
-      parentId: folder1dId,
-    }),
-  );
+  scoreData = await getAllAssignmentScores({
+    loggedInUserId: ownerId,
+    parentId: folder1cId,
+  });
+  expect(convertUUID(scoreData.orderedActivities)).eqls(desiredFolder1c);
+  expect(
+    convertUUID(scoreData.assignmentScores.sort((a, b) => a.score - b.score)),
+  ).eqls(desiredFolder1cScores);
+  expect(convertUUID(scoreData.folder?.id)).eqls(fromUUID(folder1cId));
+
+  studentData = await getStudentData({
+    studentUserId: newUserId,
+    loggedInUserId: ownerId,
+    parentId: folder1cId,
+  });
+  expect(
+    convertUUID(
+      studentData.orderedActivityScores.map((a) => ({
+        contentId: a.contentId,
+        score: a.score,
+        user: userInfo,
+      })),
+    ),
+  ).eqls(desiredFolder1cScores);
+  expect(convertUUID(studentData.folder?.id)).eqls(fromUUID(folder1cId));
+
+  scoreData = await getAllAssignmentScores({
+    loggedInUserId: ownerId,
+    parentId: folder1dId,
+  });
   expect(scoreData.orderedActivities).eqls([]);
   expect(scoreData.assignmentScores).eqls([]);
-  expect(scoreData.folder?.id).eqls(fromUUID(folder1dId));
+  expect(convertUUID(scoreData.folder?.id)).eqls(fromUUID(folder1dId));
 
-  studentData = studentDataConvertUUID(
-    await getStudentData({
-      userId: newUserId,
-      ownerId,
-      parentId: folder1dId,
-    }),
-  );
+  studentData = await getStudentData({
+    studentUserId: newUserId,
+    loggedInUserId: ownerId,
+    parentId: folder1dId,
+  });
   expect(studentData.orderedActivityScores).eqls([]);
-  expect(studentData.folder?.id).eqls(fromUUID(folder1dId));
+  expect(convertUUID(studentData.folder?.id)).eqls(fromUUID(folder1dId));
 });
 
 test("get data for user's assignments", { timeout: 30000 }, async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
-  const { activityId, docId } = await createActivity(ownerId, null);
-  await updateContent({ id: activityId, name: "Activity 1", ownerId });
-  await updateDoc({
-    id: docId,
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  await updateContent({
+    contentId: contentId,
+    name: "Activity 1",
     source: "Some content",
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode(activityId, closeAt, ownerId);
+  await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
 
-  let scoreData = allAssignmentScoresConvertUUID(
-    await getAllAssignmentScores({
-      ownerId,
-      parentId: null,
-    }),
-  );
+  let scoreData = await getAllAssignmentScores({
+    loggedInUserId: ownerId,
+    parentId: null,
+  });
 
   // no one has done the assignment yet
-  expect(scoreData.orderedActivities).eqls([
+  expect(convertUUID(scoreData.orderedActivities)).eqls([
     {
-      id: fromUUID(activityId),
+      id: fromUUID(contentId),
       name: "Activity 1",
     },
   ]);
@@ -1472,11 +1702,11 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 
   let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
-    userId: newUser1.userId,
+    loggedInUserId: newUser1.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
-  const newUser1Info = userConvertUUID({
+  const newUser1Info = convertUUID({
     userId: newUser1.userId,
     email: newUser1.email,
     firstNames: newUser1.firstNames,
@@ -1484,31 +1714,27 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   });
 
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser1.userId,
+    contentId: contentId,
+    loggedInUserId: newUser1.userId,
     score: 0.5,
     onSubmission: true,
     state: "document state 1",
   });
 
-  scoreData = allAssignmentScoresConvertUUID(
-    await getAllAssignmentScores({
-      ownerId,
-      parentId: null,
-    }),
-  );
+  scoreData = await getAllAssignmentScores({
+    loggedInUserId: ownerId,
+    parentId: null,
+  });
 
-  expect(scoreData.orderedActivities).eqls([
+  expect(convertUUID(scoreData.orderedActivities)).eqls([
     {
-      id: fromUUID(activityId),
+      id: fromUUID(contentId),
       name: "Activity 1",
     },
   ]);
-  expect(scoreData.assignmentScores).eqls([
+  expect(convertUUID(scoreData.assignmentScores)).eqls([
     {
-      activityId: fromUUID(activityId),
+      contentId: fromUUID(contentId),
       score: 0.5,
       user: newUser1Info,
     },
@@ -1516,31 +1742,27 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 
   // new lower score ignored
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser1.userId,
+    contentId: contentId,
+    loggedInUserId: newUser1.userId,
     score: 0.2,
     onSubmission: true,
     state: "document state 2",
   });
 
-  scoreData = allAssignmentScoresConvertUUID(
-    await getAllAssignmentScores({
-      ownerId,
-      parentId: null,
-    }),
-  );
+  scoreData = await getAllAssignmentScores({
+    loggedInUserId: ownerId,
+    parentId: null,
+  });
 
-  expect(scoreData.orderedActivities).eqls([
+  expect(convertUUID(scoreData.orderedActivities)).eqls([
     {
-      id: fromUUID(activityId),
+      id: fromUUID(contentId),
       name: "Activity 1",
     },
   ]);
-  expect(scoreData.assignmentScores).eqls([
+  expect(convertUUID(scoreData.assignmentScores)).eqls([
     {
-      activityId: fromUUID(activityId),
+      contentId: fromUUID(contentId),
       score: 0.5,
       user: newUser1Info,
     },
@@ -1548,11 +1770,11 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 
   let newUser2 = await createTestAnonymousUser();
   newUser2 = await updateUser({
-    userId: newUser2.userId,
+    loggedInUserId: newUser2.userId,
     firstNames: "Arya",
     lastNames: "Abbas",
   });
-  const newUser2Info = userConvertUUID({
+  const newUser2Info = convertUUID({
     userId: newUser2.userId,
     email: newUser2.email,
     firstNames: newUser2.firstNames,
@@ -1560,77 +1782,72 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   });
 
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser2.userId,
+    contentId: contentId,
+    loggedInUserId: newUser2.userId,
     score: 0.3,
     onSubmission: true,
     state: "document state 3",
   });
 
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser1.userId,
+    contentId: contentId,
+    loggedInUserId: newUser1.userId,
     score: 0.7,
     onSubmission: true,
     state: "document state 4",
   });
 
-  scoreData = allAssignmentScoresConvertUUID(
-    await getAllAssignmentScores({
-      ownerId,
-      parentId: null,
-    }),
-  );
+  scoreData = await getAllAssignmentScores({
+    loggedInUserId: ownerId,
+    parentId: null,
+  });
 
-  expect(scoreData.orderedActivities).eqls([
+  expect(convertUUID(scoreData.orderedActivities)).eqls([
     {
-      id: fromUUID(activityId),
+      id: fromUUID(contentId),
       name: "Activity 1",
     },
   ]);
-  expect(scoreData.assignmentScores).eqls([
+  expect(convertUUID(scoreData.assignmentScores)).eqls([
     {
-      activityId: fromUUID(activityId),
+      contentId: fromUUID(contentId),
       score: 0.7,
       user: newUser1Info,
     },
     {
-      activityId: fromUUID(activityId),
+      contentId: fromUUID(contentId),
       score: 0.3,
       user: newUser2Info,
     },
   ]);
 
-  const { activityId: activity2Id, docId: doc2Id } = await createActivity(
-    ownerId,
-    null,
-  );
-  await updateContent({
-    id: activity2Id,
-    name: "Activity 2",
-    ownerId,
+  const { contentId: activity2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
   });
-  await updateDoc({
-    id: doc2Id,
+  await updateContent({
+    contentId: activity2Id,
+    name: "Activity 2",
     source: "Some content",
-    ownerId,
+    loggedInUserId: ownerId,
   });
 
-  await openAssignmentWithCode(activity2Id, closeAt, ownerId);
+  await openAssignmentWithCode({
+    contentId: activity2Id,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
 
   // identical name to user 2
 
   let newUser3 = await createTestAnonymousUser();
   newUser3 = await updateUser({
-    userId: newUser3.userId,
+    loggedInUserId: newUser3.userId,
     firstNames: "Nyla",
     lastNames: "Nyquist",
   });
-  const newUser3Info = userConvertUUID({
+  const newUser3Info = convertUUID({
     userId: newUser3.userId,
     email: newUser3.email,
     firstNames: newUser3.firstNames,
@@ -1638,25 +1855,21 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   });
 
   await saveScoreAndState({
-    activityId: activity2Id,
-    docId: doc2Id,
-    docVersionNum: 1,
-    userId: newUser3.userId,
+    contentId: activity2Id,
+    loggedInUserId: newUser3.userId,
     score: 0.9,
     onSubmission: true,
     state: "document state 1",
   });
 
-  scoreData = allAssignmentScoresConvertUUID(
-    await getAllAssignmentScores({
-      ownerId,
-      parentId: null,
-    }),
-  );
+  scoreData = await getAllAssignmentScores({
+    loggedInUserId: ownerId,
+    parentId: null,
+  });
 
-  expect(scoreData.orderedActivities).eqls([
+  expect(convertUUID(scoreData.orderedActivities)).eqls([
     {
-      id: fromUUID(activityId),
+      id: fromUUID(contentId),
       name: "Activity 1",
     },
     {
@@ -1664,19 +1877,19 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
       name: "Activity 2",
     },
   ]);
-  expect(scoreData.assignmentScores).eqls([
+  expect(convertUUID(scoreData.assignmentScores)).eqls([
     {
-      activityId: fromUUID(activityId),
+      contentId: fromUUID(contentId),
       score: 0.7,
       user: newUser1Info,
     },
     {
-      activityId: fromUUID(activityId),
+      contentId: fromUUID(contentId),
       score: 0.3,
       user: newUser2Info,
     },
     {
-      activityId: fromUUID(activity2Id),
+      contentId: fromUUID(activity2Id),
       score: 0.9,
       user: newUser3Info,
     },
@@ -1686,12 +1899,24 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 test("record submitted events and get responses", { retry: 5 }, async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId, docId } = await createActivity(ownerId, null);
-  await updateContent({ id: activityId, name: "My Activity", ownerId });
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  await updateContent({
+    contentId: contentId,
+    name: "My Activity",
+    loggedInUserId: ownerId,
+  });
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode(activityId, closeAt, ownerId);
+  await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
 
   // create new anonymous user
   const newUser = await createTestAnonymousUser();
@@ -1706,20 +1931,17 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
 
   // no submitted responses at first
   let answerWithResponses = await getAnswersThatHaveSubmittedResponses({
-    activityId,
+    contentId,
     ownerId,
   });
   expect(answerWithResponses).eqls([]);
 
   // eslint-disable-next-line prefer-const
-  let { submittedResponses, activityName } =
-    await getDocumentSubmittedResponses({
-      activityId,
-      docId,
-      docVersionNum: 1,
-      ownerId,
-      answerId: answerId1,
-    });
+  let { submittedResponses, activityName } = await getSubmittedResponses({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+    answerId: answerId1,
+  });
   expect(activityName).eq("My Activity");
   expect(submittedResponses).eqls([]);
 
@@ -1727,11 +1949,9 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     submittedResponses: submittedResponseHistory,
     // eslint-disable-next-line prefer-const
     activityName: activityName2,
-  } = await getDocumentSubmittedResponseHistory({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
+  } = await getSubmittedResponseHistory({
+    contentId: contentId,
+    loggedInUserId: ownerId,
     answerId: answerId1,
     userId: newUser!.userId,
   });
@@ -1740,37 +1960,31 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
 
   // record event and retrieve it
   await recordSubmittedEvent({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser!.userId,
+    contentId: contentId,
+    loggedInUserId: newUser!.userId,
     answerId: answerId1,
     response: "Answer result 1",
     answerNumber: 1,
     itemNumber: 2,
     creditAchieved: 0.4,
     itemCreditAchieved: 0.2,
-    documentCreditAchieved: 0.1,
+    activityCreditAchieved: 0.1,
   });
   answerWithResponses = await getAnswersThatHaveSubmittedResponses({
-    activityId,
+    contentId,
     ownerId,
   });
   expect(answerWithResponses).eqls([
     {
-      docId,
-      docVersionNum: 1,
       answerId: answerId1,
       answerNumber: 1,
       count: 1,
       averageCredit: 0.4,
     },
   ]);
-  ({ submittedResponses } = await getDocumentSubmittedResponses({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
+  ({ submittedResponses } = await getSubmittedResponses({
+    contentId: contentId,
+    loggedInUserId: ownerId,
     answerId: answerId1,
   }));
   expect(submittedResponses).toMatchObject([
@@ -1789,11 +2003,9 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     },
   ]);
   ({ submittedResponses: submittedResponseHistory } =
-    await getDocumentSubmittedResponseHistory({
-      activityId,
-      docId,
-      docVersionNum: 1,
-      ownerId,
+    await getSubmittedResponseHistory({
+      contentId: contentId,
+      loggedInUserId: ownerId,
       answerId: answerId1,
       userId: newUser!.userId,
     }));
@@ -1807,37 +2019,31 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
 
   // record new event overwrites result
   await recordSubmittedEvent({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser!.userId,
+    contentId: contentId,
+    loggedInUserId: newUser!.userId,
     answerId: answerId1,
     response: "Answer result 2",
     answerNumber: 1,
     itemNumber: 2,
     creditAchieved: 0.8,
     itemCreditAchieved: 0.4,
-    documentCreditAchieved: 0.2,
+    activityCreditAchieved: 0.2,
   });
   answerWithResponses = await getAnswersThatHaveSubmittedResponses({
-    activityId,
+    contentId,
     ownerId,
   });
   expect(answerWithResponses).eqls([
     {
-      docId,
-      docVersionNum: 1,
       answerId: answerId1,
       answerNumber: 1,
       count: 1,
       averageCredit: 0.8,
     },
   ]);
-  ({ submittedResponses } = await getDocumentSubmittedResponses({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
+  ({ submittedResponses } = await getSubmittedResponses({
+    contentId: contentId,
+    loggedInUserId: ownerId,
     answerId: answerId1,
   }));
   expect(submittedResponses).toMatchObject([
@@ -1856,11 +2062,9 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     },
   ]);
   ({ submittedResponses: submittedResponseHistory } =
-    await getDocumentSubmittedResponseHistory({
-      activityId,
-      docId,
-      docVersionNum: 1,
-      ownerId,
+    await getSubmittedResponseHistory({
+      contentId: contentId,
+      loggedInUserId: ownerId,
       answerId: answerId1,
       userId: newUser!.userId,
     }));
@@ -1879,36 +2083,30 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
 
   // record event for different answer
   await recordSubmittedEvent({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser!.userId,
+    contentId: contentId,
+    loggedInUserId: newUser!.userId,
     answerId: answerId2,
     response: "Answer result 3",
     answerNumber: 2,
     itemNumber: 2,
     creditAchieved: 0.2,
     itemCreditAchieved: 0.1,
-    documentCreditAchieved: 0.05,
+    activityCreditAchieved: 0.05,
   });
   answerWithResponses = await getAnswersThatHaveSubmittedResponses({
-    activityId,
+    contentId,
     ownerId,
   });
   // Note: use `arrayContaining` as the order of the entries isn't determined
   expect(answerWithResponses).toMatchObject(
     expect.arrayContaining([
       {
-        docId,
-        docVersionNum: 1,
         answerId: answerId1,
         answerNumber: 1,
         count: 1,
         averageCredit: 0.8,
       },
       {
-        docId,
-        docVersionNum: 1,
         answerId: answerId2,
         answerNumber: 2,
         count: 1,
@@ -1916,11 +2114,9 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
       },
     ]),
   );
-  ({ submittedResponses } = await getDocumentSubmittedResponses({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
+  ({ submittedResponses } = await getSubmittedResponses({
+    contentId: contentId,
+    loggedInUserId: ownerId,
     answerId: answerId1,
   }));
   expect(submittedResponses).toMatchObject([
@@ -1939,11 +2135,9 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     },
   ]);
   ({ submittedResponses: submittedResponseHistory } =
-    await getDocumentSubmittedResponseHistory({
-      activityId,
-      docId,
-      docVersionNum: 1,
-      ownerId,
+    await getSubmittedResponseHistory({
+      contentId: contentId,
+      loggedInUserId: ownerId,
       answerId: answerId1,
       userId: newUser!.userId,
     }));
@@ -1960,11 +2154,9 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     },
   ]);
 
-  ({ submittedResponses } = await getDocumentSubmittedResponses({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
+  ({ submittedResponses } = await getSubmittedResponses({
+    contentId: contentId,
+    loggedInUserId: ownerId,
     answerId: answerId2,
   }));
   expect(submittedResponses).toMatchObject([
@@ -1983,11 +2175,9 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     },
   ]);
   ({ submittedResponses: submittedResponseHistory } =
-    await getDocumentSubmittedResponseHistory({
-      activityId,
-      docId,
-      docVersionNum: 1,
-      ownerId,
+    await getSubmittedResponseHistory({
+      contentId: contentId,
+      loggedInUserId: ownerId,
       answerId: answerId2,
       userId: newUser!.userId,
     }));
@@ -2007,35 +2197,29 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     lastNames: newUser2.lastNames,
   };
   await recordSubmittedEvent({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser2.userId,
+    contentId: contentId,
+    loggedInUserId: newUser2.userId,
     answerId: answerId1,
     response: "Answer result 4",
     answerNumber: 1,
     itemNumber: 2,
     creditAchieved: 1,
     itemCreditAchieved: 0.5,
-    documentCreditAchieved: 0.25,
+    activityCreditAchieved: 0.25,
   });
   answerWithResponses = await getAnswersThatHaveSubmittedResponses({
-    activityId,
+    contentId,
     ownerId,
   });
   expect(answerWithResponses).toMatchObject(
     expect.arrayContaining([
       {
-        docId,
-        docVersionNum: 1,
         answerId: answerId1,
         answerNumber: 1,
         count: 2,
         averageCredit: 0.9,
       },
       {
-        docId,
-        docVersionNum: 1,
         answerId: answerId2,
         answerNumber: 2,
         count: 1,
@@ -2043,11 +2227,9 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
       },
     ]),
   );
-  ({ submittedResponses } = await getDocumentSubmittedResponses({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
+  ({ submittedResponses } = await getSubmittedResponses({
+    contentId: contentId,
+    loggedInUserId: ownerId,
     answerId: answerId1,
   }));
 
@@ -2084,11 +2266,9 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   ]);
 
   ({ submittedResponses: submittedResponseHistory } =
-    await getDocumentSubmittedResponseHistory({
-      activityId,
-      docId,
-      docVersionNum: 1,
-      ownerId,
+    await getSubmittedResponseHistory({
+      contentId: contentId,
+      loggedInUserId: ownerId,
       answerId: answerId1,
       userId: newUser!.userId,
     }));
@@ -2105,11 +2285,9 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     },
   ]);
   ({ submittedResponses: submittedResponseHistory } =
-    await getDocumentSubmittedResponseHistory({
-      activityId,
-      docId,
-      docVersionNum: 1,
-      ownerId,
+    await getSubmittedResponseHistory({
+      contentId: contentId,
+      loggedInUserId: ownerId,
       answerId: answerId1,
       userId: newUser2.userId,
     }));
@@ -2121,11 +2299,9 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     },
   ]);
 
-  ({ submittedResponses } = await getDocumentSubmittedResponses({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
+  ({ submittedResponses } = await getSubmittedResponses({
+    contentId: contentId,
+    loggedInUserId: ownerId,
     answerId: answerId2,
   }));
   expect(submittedResponses).toMatchObject([
@@ -2144,11 +2320,9 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     },
   ]);
   ({ submittedResponses: submittedResponseHistory } =
-    await getDocumentSubmittedResponseHistory({
-      activityId,
-      docId,
-      docVersionNum: 1,
-      ownerId,
+    await getSubmittedResponseHistory({
+      contentId: contentId,
+      loggedInUserId: ownerId,
       answerId: answerId2,
       userId: newUser!.userId,
     }));
@@ -2160,11 +2334,9 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     },
   ]);
   ({ submittedResponses: submittedResponseHistory } =
-    await getDocumentSubmittedResponseHistory({
-      activityId,
-      docId,
-      docVersionNum: 1,
-      ownerId,
+    await getSubmittedResponseHistory({
+      contentId: contentId,
+      loggedInUserId: ownerId,
       answerId: answerId2,
       userId: newUser2.userId,
     }));
@@ -2172,25 +2344,21 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
 
   // verify submitted responses changes but average max credit doesn't change if submit a lower credit answer
   await recordSubmittedEvent({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser2.userId,
+    contentId: contentId,
+    loggedInUserId: newUser2.userId,
     answerId: answerId1,
     response: "Answer result 5",
     answerNumber: 1,
     itemNumber: 2,
     creditAchieved: 0.6,
     itemCreditAchieved: 0.3,
-    documentCreditAchieved: 0.15,
+    activityCreditAchieved: 0.15,
   });
 
   ({ submittedResponses: submittedResponseHistory } =
-    await getDocumentSubmittedResponseHistory({
-      activityId,
-      docId,
-      docVersionNum: 1,
-      ownerId,
+    await getSubmittedResponseHistory({
+      contentId: contentId,
+      loggedInUserId: ownerId,
       answerId: answerId1,
       userId: newUser2.userId,
     }));
@@ -2207,11 +2375,9 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     },
   ]);
 
-  ({ submittedResponses } = await getDocumentSubmittedResponses({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
+  ({ submittedResponses } = await getSubmittedResponses({
+    contentId: contentId,
+    loggedInUserId: ownerId,
     answerId: answerId1,
   }));
   expect(submittedResponses).toMatchObject([
@@ -2243,22 +2409,18 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     },
   ]);
   answerWithResponses = await getAnswersThatHaveSubmittedResponses({
-    activityId,
+    contentId,
     ownerId,
   });
   expect(answerWithResponses).toMatchObject(
     expect.arrayContaining([
       {
-        docId,
-        docVersionNum: 1,
         answerId: answerId1,
         answerNumber: 1,
         count: 2,
         averageCredit: 0.9,
       },
       {
-        docId,
-        docVersionNum: 1,
         answerId: answerId2,
         answerNumber: 2,
         count: 1,
@@ -2271,14 +2433,22 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
 test("only owner can get submitted responses", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId, docId } = await createActivity(ownerId, null);
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   const user2 = await createTestUser();
   const userId2 = user2.userId;
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode(activityId, closeAt, ownerId);
+  await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
 
   // create new anonymous user
   const newUser = await createTestAnonymousUser();
@@ -2292,37 +2462,31 @@ test("only owner can get submitted responses", async () => {
 
   // record event and retrieve it
   await recordSubmittedEvent({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser!.userId,
+    contentId: contentId,
+    loggedInUserId: newUser!.userId,
     answerId: answerId1,
     response: "Answer result 1",
     answerNumber: 1,
     itemNumber: 2,
     creditAchieved: 1,
     itemCreditAchieved: 0.5,
-    documentCreditAchieved: 0.25,
+    activityCreditAchieved: 0.25,
   });
   let answerWithResponses = await getAnswersThatHaveSubmittedResponses({
-    activityId,
+    contentId,
     ownerId,
   });
   expect(answerWithResponses).eqls([
     {
-      docId,
-      docVersionNum: 1,
       answerId: answerId1,
       answerNumber: 1,
       count: 1,
       averageCredit: 1,
     },
   ]);
-  const { submittedResponses } = await getDocumentSubmittedResponses({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    ownerId,
+  const { submittedResponses } = await getSubmittedResponses({
+    contentId: contentId,
+    loggedInUserId: ownerId,
     answerId: answerId1,
   });
   expect(submittedResponses).toMatchObject([
@@ -2341,11 +2505,9 @@ test("only owner can get submitted responses", async () => {
     },
   ]);
   const { submittedResponses: submittedResponseHistory } =
-    await getDocumentSubmittedResponseHistory({
-      activityId,
-      docId,
-      docVersionNum: 1,
-      ownerId,
+    await getSubmittedResponseHistory({
+      contentId: contentId,
+      loggedInUserId: ownerId,
       answerId: answerId1,
       userId: newUser!.userId,
     });
@@ -2358,28 +2520,24 @@ test("only owner can get submitted responses", async () => {
   ]);
 
   answerWithResponses = await getAnswersThatHaveSubmittedResponses({
-    activityId,
+    contentId,
     ownerId: userId2,
   });
   expect(answerWithResponses).eqls([]);
 
   // cannot retrieve responses as other user
   await expect(
-    getDocumentSubmittedResponses({
-      activityId,
-      docId,
-      docVersionNum: 1,
-      ownerId: userId2,
+    getSubmittedResponses({
+      contentId: contentId,
+      loggedInUserId: userId2,
       answerId: answerId1,
     }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
   await expect(
-    getDocumentSubmittedResponseHistory({
-      activityId,
-      docId,
-      docVersionNum: 1,
-      ownerId: userId2,
+    getSubmittedResponseHistory({
+      contentId: contentId,
+      loggedInUserId: userId2,
       answerId: answerId1,
       userId: newUser!.userId,
     }),
@@ -2389,20 +2547,26 @@ test("only owner can get submitted responses", async () => {
 test("only user and assignment owner can load document state", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId, docId } = await createActivity(ownerId, null);
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode(activityId, closeAt, ownerId);
+  await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
 
   // create new anonymous user
   const newUser = await createTestAnonymousUser();
 
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser!.userId,
+    contentId: contentId,
+    loggedInUserId: newUser!.userId,
     score: 0.5,
     onSubmission: true,
     state: "document state 1",
@@ -2410,11 +2574,9 @@ test("only user and assignment owner can load document state", async () => {
 
   // anonymous user can load state
   const retrievedState = await loadState({
-    activityId,
-    docId,
-    docVersionNum: 1,
+    contentId: contentId,
     requestedUserId: newUser!.userId,
-    userId: newUser!.userId,
+    loggedInUserId: newUser!.userId,
     withMaxScore: false,
   });
 
@@ -2422,11 +2584,9 @@ test("only user and assignment owner can load document state", async () => {
 
   // assignment owner can load state
   const retrievedState2 = await loadState({
-    activityId,
-    docId,
-    docVersionNum: 1,
+    contentId: contentId,
     requestedUserId: newUser!.userId,
-    userId: ownerId,
+    loggedInUserId: ownerId,
     withMaxScore: false,
   });
 
@@ -2437,11 +2597,9 @@ test("only user and assignment owner can load document state", async () => {
 
   await expect(
     loadState({
-      activityId,
-      docId,
-      docVersionNum: 1,
+      contentId: contentId,
       requestedUserId: newUser!.userId,
-      userId: user2.userId,
+      loggedInUserId: user2.userId,
       withMaxScore: false,
     }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
@@ -2450,20 +2608,26 @@ test("only user and assignment owner can load document state", async () => {
 test("load document state based on withMaxScore", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
-  const { activityId, docId } = await createActivity(ownerId, null);
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode(activityId, closeAt, ownerId);
+  await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
 
   // create new anonymous user
   const newUser = await createTestAnonymousUser();
 
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser!.userId,
+    contentId: contentId,
+    loggedInUserId: newUser!.userId,
     score: 0.5,
     onSubmission: true,
     state: "document state 1",
@@ -2471,31 +2635,25 @@ test("load document state based on withMaxScore", async () => {
 
   // since last state is maximum score, withMaxScore doesn't have effect
   let retrievedState = await loadState({
-    activityId,
-    docId,
-    docVersionNum: 1,
+    contentId: contentId,
     requestedUserId: newUser!.userId,
-    userId: ownerId,
+    loggedInUserId: ownerId,
     withMaxScore: false,
   });
   expect(retrievedState).eq("document state 1");
 
   retrievedState = await loadState({
-    activityId,
-    docId,
-    docVersionNum: 1,
+    contentId: contentId,
     requestedUserId: newUser!.userId,
-    userId: ownerId,
+    loggedInUserId: ownerId,
     withMaxScore: true,
   });
   expect(retrievedState).eq("document state 1");
 
   // last state is no longer maximum score
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser!.userId,
+    contentId: contentId,
+    loggedInUserId: newUser!.userId,
     score: 0.2,
     onSubmission: true,
     state: "document state 2",
@@ -2503,84 +2661,68 @@ test("load document state based on withMaxScore", async () => {
 
   // get last state if withMaxScore is false
   retrievedState = await loadState({
-    activityId,
-    docId,
-    docVersionNum: 1,
+    contentId: contentId,
     requestedUserId: newUser!.userId,
-    userId: ownerId,
+    loggedInUserId: ownerId,
     withMaxScore: false,
   });
   expect(retrievedState).eq("document state 2");
 
   // get state with max score
   retrievedState = await loadState({
-    activityId,
-    docId,
-    docVersionNum: 1,
+    contentId: contentId,
     requestedUserId: newUser!.userId,
-    userId: ownerId,
+    loggedInUserId: ownerId,
     withMaxScore: true,
   });
   expect(retrievedState).eq("document state 1");
 
   // matching maximum score with onSubmission uses latest for maximum
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser!.userId,
+    contentId: contentId,
+    loggedInUserId: newUser!.userId,
     score: 0.5,
     onSubmission: true,
     state: "document state 3",
   });
 
   retrievedState = await loadState({
-    activityId,
-    docId,
-    docVersionNum: 1,
+    contentId: contentId,
     requestedUserId: newUser!.userId,
-    userId: ownerId,
+    loggedInUserId: ownerId,
     withMaxScore: false,
   });
   expect(retrievedState).eq("document state 3");
 
   retrievedState = await loadState({
-    activityId,
-    docId,
-    docVersionNum: 1,
+    contentId: contentId,
     requestedUserId: newUser!.userId,
-    userId: ownerId,
+    loggedInUserId: ownerId,
     withMaxScore: true,
   });
   expect(retrievedState).eq("document state 3");
 
   // matching maximum score without onSubmission does not use latest for maximum
   await saveScoreAndState({
-    activityId,
-    docId,
-    docVersionNum: 1,
-    userId: newUser!.userId,
+    contentId: contentId,
+    loggedInUserId: newUser!.userId,
     score: 0.5,
     onSubmission: false,
     state: "document state 4",
   });
 
   retrievedState = await loadState({
-    activityId,
-    docId,
-    docVersionNum: 1,
+    contentId: contentId,
     requestedUserId: newUser!.userId,
-    userId: ownerId,
+    loggedInUserId: ownerId,
     withMaxScore: false,
   });
   expect(retrievedState).eq("document state 4");
 
   retrievedState = await loadState({
-    activityId,
-    docId,
-    docVersionNum: 1,
+    contentId: contentId,
     requestedUserId: newUser!.userId,
-    userId: ownerId,
+    loggedInUserId: ownerId,
     withMaxScore: true,
   });
   expect(retrievedState).eq("document state 3");

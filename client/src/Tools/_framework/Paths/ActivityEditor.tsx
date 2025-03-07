@@ -44,9 +44,10 @@ import {
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 import {
   ContentFeature,
-  ContentStructure,
+  Content,
   DoenetmlVersion,
   License,
+  ContentDescription,
 } from "../../../_utils/types";
 import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
 import {
@@ -59,7 +60,6 @@ import {
   getIconInfo,
 } from "../../../_utils/activity";
 import { ActivitySource } from "../../../_utils/viewerTypes";
-import { CurateDrawer, curateDrawerActions } from "../ToolPanels/CurateDrawer";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -72,8 +72,8 @@ export async function action({ params, request }) {
   }
 
   if (formObj._action == "update name") {
-    await axios.post(`/api/updateContentName`, {
-      id: params.activityId,
+    await axios.post(`/api/updateContent/updateContentSettings`, {
+      contentId: params.contentId,
       name,
     });
     return true;
@@ -82,11 +82,6 @@ export async function action({ params, request }) {
   const resultCS = await contentSettingsActions({ formObj });
   if (resultCS) {
     return resultCS;
-  }
-
-  const resultCurate = await curateDrawerActions({ formObj });
-  if (resultCurate) {
-    return resultCurate;
   }
 
   const resultSD = await shareDrawerActions({ formObj });
@@ -108,25 +103,42 @@ export async function action({ params, request }) {
   }
 
   if (formObj._action == "go to data") {
-    return redirect(`/assignmentData/${params.activityId}`);
+    return redirect(`/assignmentData/${params.contentId}`);
   }
 
   return null;
 }
 
-export async function loader({ params }) {
+export async function loader({ params, request }) {
   const {
     data: { editableByMe, activity: activityData, availableFeatures },
-  } = await axios.get(`/api/getActivityEditorData/${params.activityId}`);
+  } = await axios.get(
+    `/api/activityEditView/getActivityEditorData/${params.contentId}`,
+  );
 
   if (!editableByMe) {
-    return redirect(`/codeViewer/${params.activityId}`);
+    return redirect(`/codeViewer/${params.contentId}`);
   }
 
-  const activityId = params.activityId;
+  const contentId = params.contentId;
+
+  const url = new URL(request.url);
+  const addToId = url.searchParams.get("addTo");
+  let addTo: ContentDescription | undefined = undefined;
+
+  if (addToId) {
+    try {
+      const { data } = await axios.get(
+        `/api/info/getContentDescription/${addToId}`,
+      );
+      addTo = data;
+    } catch (_e) {
+      console.error(`Could not get description of ${addToId}`);
+    }
+  }
 
   // const supportingFileResp = await axios.get(
-  //   `/api/loadSupportingFileInfo/${activityId}`,
+  //   `/api/loadSupportingFileInfo/${contentId}`,
   // );
 
   // const supportingFileData = supportingFileResp.data;
@@ -139,31 +151,30 @@ export async function loader({ params }) {
   //   platform = "Mac";
   // }
 
-  const { data: allLicenses } = await axios.get("/api/getAllLicenses");
+  const {
+    data: { allLicenses },
+  } = await axios.get("/api/info/getAllLicenses");
 
-  const { data: allDoenetmlVersions } = await axios.get(
-    "/api/getAllDoenetmlVersions",
-  );
+  const {
+    data: { allDoenetmlVersions },
+  } = await axios.get("/api/info/getAllDoenetmlVersions");
 
   if (activityData.type === "singleDoc") {
-    const docId = activityData.documents[0].id;
-
-    const doenetML = activityData.documents[0].source;
-    const doenetmlVersion: DoenetmlVersion =
-      activityData.documents[0].doenetmlVersion;
+    const doenetML = activityData.doenetML;
+    const doenetmlVersion: DoenetmlVersion = activityData.doenetmlVersion;
 
     return {
       type: activityData.type,
       // platform,
       activityData,
-      docId,
       doenetML,
       doenetmlVersion,
-      activityId,
+      contentId,
       // supportingFileData,
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
+      addTo,
     };
   } else {
     const activityJson = compileActivityFromContent(activityData);
@@ -173,11 +184,12 @@ export async function loader({ params }) {
       // platform,
       activityData,
       activityJson,
-      activityId,
+      contentId,
       // supportingFileData,
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
+      addTo,
     };
   }
 }
@@ -185,7 +197,7 @@ export async function loader({ params }) {
 //This is separate as <Editable> wasn't updating when defaultValue was changed
 function EditableName({ dataTest }) {
   const { activityData } = useLoaderData() as {
-    activityData: ContentStructure;
+    activityData: Content;
   };
 
   const [name, setName] = useState(activityData.name);
@@ -233,17 +245,17 @@ function EditableName({ dataTest }) {
 
 export function ActivityEditor() {
   const data = useLoaderData() as {
-    activityId: string;
+    contentId: string;
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
     availableFeatures: ContentFeature[];
-    activityData: ContentStructure;
+    activityData: Content;
+    addTo: ContentDescription | undefined;
   } & (
     | {
         type: "singleDoc";
         doenetML: string;
         doenetmlVersion: DoenetmlVersion;
-        docId: string;
       }
     | {
         type: "select" | "sequence";
@@ -252,11 +264,12 @@ export function ActivityEditor() {
   );
 
   const {
-    activityId,
+    contentId,
     activityData,
     allDoenetmlVersions,
     allLicenses,
     availableFeatures,
+    addTo,
   } = data;
 
   const finalFocusRef = useRef<HTMLElement | null>(null);
@@ -289,7 +302,8 @@ export function ActivityEditor() {
     onClose: invitationOnClose,
   } = useDisclosure();
 
-  const assignmentStatus = activityData.assignmentStatus;
+  const assignmentInfo = activityData.assignmentInfo;
+  const assignmentStatus = assignmentInfo?.assignmentStatus ?? "Unassigned";
 
   const readOnly = assignmentStatus !== "Unassigned";
   const readOnlyRef = useRef(readOnly);
@@ -305,7 +319,7 @@ export function ActivityEditor() {
     } else {
       setMode("Edit");
     }
-  }, [readOnly, activityId]);
+  }, [readOnly, contentId]);
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
@@ -322,28 +336,26 @@ export function ActivityEditor() {
       ? ["Edit", "Edit activity", <MdModeEditOutline />]
       : ["See Inside", "See read-only view of source", <MdOutlineEditOff />];
 
-  const textEditorDoenetML = useRef("Need to get DoenetML in some cases");
-
   const [settingsContentId, setSettingsContentId] = useState<string | null>(
     null,
   );
 
-  let contentData: ContentStructure | undefined;
+  let contentData: Content | undefined;
   if (settingsContentId) {
-    if (settingsContentId === activityData.id) {
+    if (settingsContentId === contentId) {
       contentData = activityData;
     } else {
       if (data.type !== "singleDoc") {
-        function matchSettingsContentId(
-          content: ContentStructure,
-        ): ContentStructure | undefined {
-          if (content.id === settingsContentId) {
+        function matchSettingsContentId(content: Content): Content | undefined {
+          if (content.contentId === settingsContentId) {
             return content;
           }
-          for (const child of content.children) {
-            const res = matchSettingsContentId(child);
-            if (res) {
-              return res;
+          if (content.type !== "singleDoc") {
+            for (const child of content.children) {
+              const res = matchSettingsContentId(child);
+              if (res) {
+                return res;
+              }
             }
           }
         }
@@ -361,7 +373,7 @@ export function ActivityEditor() {
         doenetmlVersion={data.doenetmlVersion}
         assignmentStatus={assignmentStatus}
         mode={mode}
-        docId={data.docId}
+        contentId={contentId}
         headerHeight={`${readOnly ? 120 : 80}px`}
       />
     );
@@ -370,7 +382,6 @@ export function ActivityEditor() {
       <CompoundActivityEditor
         activity={data.activityData}
         activityJson={data.activityJson}
-        assignmentStatus={assignmentStatus}
         mode={mode}
         fetcher={fetcher}
         setSettingsContentId={setSettingsContentId}
@@ -380,6 +391,7 @@ export function ActivityEditor() {
         setSettingsDisplayTab={setSettingsDisplayTab}
         setHighlightRename={setHighlightRename}
         headerHeight={`${readOnly ? 120 : 80}px`}
+        addTo={addTo}
       />
     );
   }
@@ -398,25 +410,15 @@ export function ActivityEditor() {
     />
   ) : null;
 
-  const shareDrawer =
-    contentData && !isLibraryActivity ? (
-      <ShareDrawer
-        isOpen={sharingIsOpen}
-        onClose={sharingOnClose}
-        finalFocusRef={finalFocusRef}
-        fetcher={fetcher}
-        contentData={contentData}
-        allLicenses={allLicenses}
-        currentDoenetML={textEditorDoenetML}
-      />
-    ) : null;
-
-  const curateDrawer = isLibraryActivity ? (
-    <CurateDrawer
+  const shareDrawer = contentData ? (
+    <ShareDrawer
+      inCurationLibrary={isLibraryActivity}
       isOpen={sharingIsOpen}
       onClose={sharingOnClose}
-      contentData={activityData}
+      finalFocusRef={finalFocusRef}
       fetcher={fetcher}
+      contentData={contentData}
+      allLicenses={allLicenses}
     />
   ) : null;
 
@@ -427,7 +429,7 @@ export function ActivityEditor() {
         onClose={assignmentSettingsOnClose}
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
-        id={activityId}
+        contentId={contentId}
         contentData={activityData}
       />
       <AssignmentInvitation
@@ -463,7 +465,6 @@ export function ActivityEditor() {
     <>
       {settingsDrawer}
       {shareDrawer}
-      {curateDrawer}
       {assignmentDrawers}
 
       <Grid
@@ -600,7 +601,7 @@ export function ActivityEditor() {
                           leftIcon={<MdOutlineGroup />}
                           onClick={() => {
                             finalFocusRef.current = sharingBtnRef.current;
-                            setSettingsContentId(activityData.id);
+                            setSettingsContentId(activityData.contentId);
                             sharingOnOpen();
                           }}
                           ref={sharingBtnRef}
@@ -623,7 +624,7 @@ export function ActivityEditor() {
                       onClick={() => {
                         finalFocusRef.current = settingsBtnRef.current;
                         setSettingsDisplayTab("general");
-                        setSettingsContentId(activityData.id);
+                        setSettingsContentId(activityData.contentId);
                         settingsOnOpen();
                       }}
                       ref={settingsBtnRef}
@@ -649,10 +650,10 @@ export function ActivityEditor() {
               >
                 <InfoIcon color="orange.500" mr="6px" />
 
-                {assignmentStatus === "Open" ? (
+                {assignmentInfo?.assignmentStatus === "Open" ? (
                   <>
                     <Text size="xs">
-                      {` Assignment is open with code ${activityData.classCode}. ${mode == "Edit" ? "It cannot be edited." : ""}`}
+                      {` Assignment is open with code ${assignmentInfo.classCode}. ${mode == "Edit" ? "It cannot be edited." : ""}`}
                     </Text>
                     <Button
                       onClick={invitationOnOpen}
@@ -669,7 +670,7 @@ export function ActivityEditor() {
                     {`Activity is a closed assignment${mode == "Edit" ? " and cannot be edited." : "."}`}
                   </Text>
                 )}
-                {activityData.hasScoreData ? (
+                {assignmentInfo?.hasScoreData ? (
                   <Tooltip label="View data">
                     <Button
                       data-test="Assignment Setting Button"
@@ -681,7 +682,7 @@ export function ActivityEditor() {
                       pr={{ base: "0px", md: "10px" }}
                       onClick={() => {
                         fetcher.submit(
-                          { _action: "go to data", activityId },
+                          { _action: "go to data", contentId },
                           { method: "post" },
                         );
                       }}

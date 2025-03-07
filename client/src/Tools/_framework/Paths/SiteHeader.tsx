@@ -42,7 +42,7 @@ export type User =
   | undefined;
 
 export type SiteContext = {
-  user: User;
+  user?: User;
   exploreTab: number | null;
   setExploreTab: (arg: number | null) => void;
 };
@@ -50,7 +50,7 @@ export type SiteContext = {
 export async function loader() {
   const {
     data: { user },
-  } = await axios.get("/api/getUser");
+  } = await axios.get("/api/user/getUser");
 
   return { user };
 }
@@ -128,7 +128,7 @@ function NavLinkDropdownTab({ to, children, dataTest }) {
 }
 
 export function SiteHeader() {
-  const { user } = useLoaderData() as { user: User };
+  const { user } = useLoaderData() as { user?: User };
 
   const [exploreTab, setExploreTab] = useState<number | null>(null);
 
@@ -280,7 +280,7 @@ export function SiteHeader() {
                         <MenuItem as={Link} href="/changeName">
                           Update name
                         </MenuItem>
-                        <MenuItem as="a" href="/api/logout">
+                        <MenuItem as="a" href="/api/login/logout">
                           Log Out
                         </MenuItem>
                       </MenuList>

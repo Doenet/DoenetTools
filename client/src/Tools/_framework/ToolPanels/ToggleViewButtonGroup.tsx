@@ -11,7 +11,7 @@ export async function toggleViewButtonGroupActions({
   [k: string]: any;
 }) {
   if (formObj?._action == "Set List View Preferred") {
-    await axios.post(`/api/setPreferredFolderView`, {
+    await axios.post(`/api/contentList/setPreferredFolderView`, {
       cardView: formObj.listViewPref === "false",
     });
     return true;

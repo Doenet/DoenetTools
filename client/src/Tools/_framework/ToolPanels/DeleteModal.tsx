@@ -20,17 +20,10 @@ export async function deleteModalActions({ formObj }: { [k: string]: any }) {
   if (formObj?._action == "Delete Content") {
     try {
       const contentId = formObj.contentId;
-      const contentType = formObj.contentType;
 
-      if (contentType === "singleDoc") {
-        await axios.post(`/api/deleteActivity`, {
-          activityId: contentId,
-        });
-      } else {
-        await axios.post(`/api/deleteFolder`, {
-          folderId: contentId === "null" ? null : contentId,
-        });
-      }
+      await axios.post(`/api/updateContent/deleteContent`, {
+        contentId,
+      });
 
       return { contentDeleted: true };
     } catch (e) {
@@ -61,7 +54,7 @@ export function DeleteModal({
   fetcher: FetcherWithComponents<any>;
 }) {
   const [errMsg, setErrMsg] = useState("");
-  const [isDeleting, setIsDeleting] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -71,12 +64,16 @@ export function DeleteModal({
   }, [isOpen]);
 
   useEffect(() => {
-    if (fetcher.data?.contentDeleted) {
-      document.body.style.cursor = "default";
-      onClose();
-    } else if (fetcher.data?.errorDeletingContent) {
-      document.body.style.cursor = "default";
-      setErrMsg(fetcher.data.errorDeletingContent);
+    if (isDeleting) {
+      if (fetcher.data?.contentDeleted) {
+        document.body.style.cursor = "default";
+        setIsDeleting(false);
+        onClose();
+      } else if (fetcher.data?.errorDeletingContent) {
+        document.body.style.cursor = "default";
+        setIsDeleting(false);
+        setErrMsg(fetcher.data.errorDeletingContent);
+      }
     }
   }, [fetcher.data]);
 
@@ -84,8 +81,7 @@ export function DeleteModal({
     fetcher.submit(
       {
         _action: "Delete Content",
-        contentId: content.id,
-        contentType: content.type,
+        contentId: content.contentId,
       },
       { method: "post" },
     );
@@ -103,23 +99,29 @@ export function DeleteModal({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader textAlign="center">
-          Confirm delete {isDeleting && errMsg === "" ? <Spinner /> : null}
+          {errMsg ? (
+            <>Error deleting</>
+          ) : (
+            <>Confirm delete {isDeleting ? <Spinner /> : null}</>
+          )}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Box>
-            Are you sure want to delete the{" "}
-            {contentTypeToName[content.type].toLowerCase()}:{" "}
-            <em>{content.name}</em>
-          </Box>
-
-          {errMsg ? <>{errMsg}</> : null}
+          {errMsg ? (
+            <>{errMsg}</>
+          ) : (
+            <Box data-test="Confirm Delete Message">
+              Are you sure want to delete the{" "}
+              {contentTypeToName[content.type].toLowerCase()}:{" "}
+              <em>{content.name}</em>
+            </Box>
+          )}
         </ModalBody>
 
         <ModalFooter>
           <Button
-            data-test="Go to Activities"
             marginRight="4px"
+            data-test="Delete Button"
             onClick={() => {
               deleteContent();
             }}
@@ -128,6 +130,7 @@ export function DeleteModal({
             Delete
           </Button>
           <Button
+            data-test="Cancel Button"
             onClick={() => {
               onClose();
             }}

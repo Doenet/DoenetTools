@@ -25,7 +25,7 @@ type UserData = {
   lastNames: string;
 };
 type OrderedActivityScore = {
-  activityId: string;
+  contentId: string;
   activityName: string;
   score: number;
 };
@@ -38,7 +38,7 @@ type Folder = {
 // loader for when an instructor gets data about a student
 export async function loader({ params }) {
   const { data } = await axios.get(
-    `/api/getStudentData/${params.userId}/${params.folderId ?? ""}`,
+    `/api/assign/getStudentData/${params.userId}/${params.folderId ?? ""}`,
   );
 
   const userData = data.userData;
@@ -50,7 +50,7 @@ export async function loader({ params }) {
 
 // loader for when a student gets their own data
 export async function assignedDataloader() {
-  const { data } = await axios.get(`/api/getAssignedScores`);
+  const { data } = await axios.get(`/api/assign/getAssignedScores`);
 
   const userData = data.userData;
   const scores = data.orderedActivityScores;
@@ -116,20 +116,20 @@ export function StudentData() {
               return (
                 <LinkBox
                   as={Tr}
-                  key={`assignment${score.activityId}`}
+                  key={`assignment${score.contentId}`}
                   _hover={{ backgroundColor: "#eeeeee" }}
                 >
-                  <Td key={`assignment_title${score.activityId}`}>
+                  <Td key={`assignment_title${score.contentId}`}>
                     {score.activityName}
                   </Td>
-                  <Td key={`score${score.activityId}`}>
+                  <Td key={`score${score.contentId}`}>
                     {score.score !== null ? (
                       <LinkOverlay
                         as={ReactRouterLink}
                         to={
                           isAssignedData
-                            ? `/assignedData/${score.activityId}`
-                            : `/assignmentData/${score.activityId}/${userData.userId}`
+                            ? `/assignedData/${score.contentId}`
+                            : `/assignmentData/${score.contentId}/${userData.userId}`
                         }
                       >
                         {score.score}

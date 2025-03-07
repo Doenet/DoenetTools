@@ -16,9 +16,51 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useNavigate } from "react-router";
+import {
+  FetcherWithComponents,
+  useNavigate,
+  useOutletContext,
+} from "react-router";
 import { ContentType } from "../../../_utils/types";
 import { contentTypeToName } from "../../../_utils/activity";
+import { SiteContext } from "../Paths/SiteHeader";
+
+export async function createContentAndPromptNameActions({
+  formObj,
+}: {
+  [k: string]: any;
+}) {
+  if (formObj._action === "create content") {
+    try {
+      const contentIds = JSON.parse(formObj.contentIds);
+      const { data } = await axios.post(
+        `/api/copyMove/createContentCopyInChildren`,
+        {
+          childSourceContentIds: contentIds,
+          contentType: formObj.desiredType,
+        },
+      );
+
+      return { action: "createdContent", success: true, activityData: data };
+    } catch (e) {
+      console.error(e);
+      return { action: "createdContent", success: false };
+    }
+  } else if (formObj._action === "save name") {
+    try {
+      await axios.post("/api/updateContent/updateContentSettings", {
+        name: formObj.name,
+        contentId: formObj.contentId,
+      });
+      return { action: "savedName", success: true };
+    } catch (e) {
+      console.error(e);
+      return { action: "savedName", success: false };
+    }
+  }
+
+  return null;
+}
 
 /**
  * A modal that immediately creates a new item in Activities and copies source content into that item
@@ -26,24 +68,27 @@ import { contentTypeToName } from "../../../_utils/activity";
  * When the copy is finished, the modal allows the user to close it or navigate to the new item.
  */
 export function CreateContentAndPromptName({
+  fetcher,
   isOpen,
   onClose,
   finalFocusRef,
-  sourceContent,
-  desiredParentType,
+  contentIds,
+  desiredType,
 }: {
+  fetcher: FetcherWithComponents<any>;
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  sourceContent: { id: string; type: ContentType }[];
-  desiredParentType: ContentType;
+  contentIds: string[];
+  desiredType: ContentType;
 }) {
   const [newActivityData, setNewActivityData] = useState<{
-    newContentIds: string[];
-    newParentId: string;
-    newParentName: string;
-    userId: string;
+    newChildContentIds: string[];
+    newContentId: string;
+    newContentName: string;
   } | null>(null);
+
+  const { user } = useOutletContext<SiteContext>();
 
   const navigate = useNavigate();
 
@@ -52,29 +97,32 @@ export function CreateContentAndPromptName({
   const nameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    async function copyContent() {
-      document.body.style.cursor = "wait";
-
-      try {
-        const { data } = await axios.post(`/api/createContentCopyInChildren`, {
-          sourceContent: sourceContent.map((s) => ({
-            contentId: s.id,
-            type: s.type,
-          })),
-          desiredParentType,
-        });
-
-        setNewActivityData(data);
-      } catch (e) {
-        console.error(e);
+    if (fetcher.data?.action === "createdContent") {
+      if (fetcher.data.success) {
+        setNewActivityData(fetcher.data.activityData);
+      } else {
         setErrMsg(`An error occurred while creating content.`);
       }
       document.body.style.cursor = "default";
+    } else if (fetcher.data?.action === "savedName") {
+      if (!fetcher.data.success) {
+        setErrMsg("An error occurred while saving the name.");
+      }
     }
+  }, [fetcher.data]);
 
+  useEffect(() => {
     if (isOpen) {
       if (newActivityData === null) {
-        copyContent();
+        document.body.style.cursor = "wait";
+        fetcher.submit(
+          {
+            _action: "create content",
+            contentIds: JSON.stringify(contentIds),
+            desiredType,
+          },
+          { method: "post" },
+        );
       }
     } else {
       setNewActivityData(null);
@@ -89,24 +137,28 @@ export function CreateContentAndPromptName({
   let destinationAction: string;
   let destinationUrl: string;
 
-  const typeName = contentTypeToName[desiredParentType].toLowerCase();
+  const typeName = contentTypeToName[desiredType].toLowerCase();
   const typeNameInitialCapital =
     typeName[0].toUpperCase() + typeName.substring(1);
 
-  if (desiredParentType === "folder") {
+  if (desiredType === "folder") {
     destinationAction = "Go to folder";
-    destinationUrl = `/activities/${newActivityData?.userId}/${newActivityData?.newParentId}`;
+    destinationUrl = `/activities/${user?.userId}/${newActivityData?.newContentId}`;
   } else {
     destinationAction = `Open ${typeName}`;
-    destinationUrl = `/activityEditor/${newActivityData?.newParentId}`;
+    destinationUrl = `/activityEditor/${newActivityData?.newContentId}`;
   }
 
   function saveName(newName: string) {
     if (newActivityData) {
-      axios.post("/api/updateContentSettings", {
-        name: newName,
-        id: newActivityData?.newParentId,
-      });
+      fetcher.submit(
+        {
+          _action: "save name",
+          name: newName,
+          contentId: newActivityData.newContentId,
+        },
+        { method: "post" },
+      );
     }
   }
 
@@ -134,10 +186,10 @@ export function CreateContentAndPromptName({
             ) : (
               <>
                 <Flex flexDirection="column">
-                  <Box>
+                  <Box data-test="Created Statement">
                     {typeNameInitialCapital} created with{" "}
-                    {newActivityData.newContentIds.length} item
-                    {newActivityData.newContentIds.length > 1 ? "s " : " "}
+                    {newActivityData.newChildContentIds.length} item
+                    {newActivityData.newChildContentIds.length > 1 ? "s" : ""}
                   </Box>
                   <Flex marginTop="10px">
                     Name:
@@ -148,8 +200,8 @@ export function CreateContentAndPromptName({
                       name="name"
                       size="sm"
                       width="100%"
-                      defaultValue={newActivityData.newParentName}
-                      data-test="Content Name"
+                      defaultValue={newActivityData.newContentName}
+                      data-test="Created Name"
                       onBlur={(e) => {
                         saveName(e.target.value);
                       }}
@@ -173,6 +225,7 @@ export function CreateContentAndPromptName({
             data-test="Go to Created"
             marginRight="4px"
             onClick={() => {
+              onClose();
               navigate(destinationUrl);
             }}
             isDisabled={newActivityData === null && errMsg === ""}
@@ -180,6 +233,7 @@ export function CreateContentAndPromptName({
             {destinationAction}
           </Button>
           <Button
+            data-test="Close Button"
             onClick={() => {
               onClose();
             }}

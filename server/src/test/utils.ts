@@ -1,5 +1,7 @@
 import { onTestFinished } from "vitest";
-import { findOrCreateUser, prisma } from "../model";
+import { prisma } from "../model";
+import { findOrCreateUser } from "../query/user";
+import { filterEditableActivity } from "../utils/permissions";
 
 // create an isolated user for each test, will allow tests to be run in parallel
 export async function createTestUser(isAdmin = false, isAnonymous = false) {
@@ -38,6 +40,21 @@ export async function createTestAdminUser() {
 
 export async function createTestAnonymousUser() {
   return await createTestUser(false, true);
+}
+
+export async function getTestAssignment(
+  contentId: Uint8Array,
+  loggedInUserId: Uint8Array,
+) {
+  const assignment = await prisma.content.findUniqueOrThrow({
+    where: {
+      id: contentId,
+      assignmentId: { not: null },
+      ...filterEditableActivity(loggedInUserId),
+    },
+    include: { assignment: true },
+  });
+  return assignment;
 }
 
 export async function createTestClassifications({

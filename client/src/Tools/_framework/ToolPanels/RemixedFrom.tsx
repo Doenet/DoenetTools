@@ -18,7 +18,7 @@ import {
 import { Link as ReactRouterLink } from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { DateTime } from "luxon";
-import { DocHistoryItem } from "../../../_utils/types";
+import { ActivityHistoryItem } from "../../../_utils/types";
 
 export async function remixedFromActions({
   formObj: _formObj,
@@ -31,8 +31,7 @@ export async function remixedFromActions({
 export function RemixedFrom({
   contributorHistory,
 }: {
-  contributorHistory: DocHistoryItem[] | null;
-  thisCid: string | null;
+  contributorHistory: ActivityHistoryItem[];
 }) {
   if (contributorHistory === null) {
     return (
@@ -96,10 +95,10 @@ export function RemixedFrom({
                   <Td>
                     <ChakraLink
                       as={ReactRouterLink}
-                      to={`/activityViewer/${ch.prevActivityId}`}
+                      to={`/activityViewer/${ch.prevContentId}`}
                     >
                       <Text wordBreak="break-word" whiteSpace="normal">
-                        {ch.prevActivityName}
+                        {ch.prevName}
                       </Text>
                     </ChakraLink>
                   </Td>
@@ -122,7 +121,7 @@ export function RemixedFrom({
                   <Td>
                     <VStack alignItems="left">
                       <Text wordBreak="break-word" whiteSpace="normal">
-                        {ch.prevActivityName}
+                        {ch.prevName}
                       </Text>
                       <Text wordBreak="break-word" whiteSpace="normal">
                         {createFullName(ch.prevOwner)}
@@ -132,9 +131,9 @@ export function RemixedFrom({
                 </Hide>
                 <Td>{ch.withLicenseCode}</Td>
                 <Show above="sm">
-                  {/* Note: use timestampPrevDoc as what the timestamp from when the previous was mixed, not when this doc was created */}
+                  {/* Note: use timestampPrevActivity as what the timestamp from when the previous was mixed, not when this doc was created */}
                   <Td>
-                    {ch.timestampPrevDoc.toLocaleString(DateTime.DATE_MED)}
+                    {ch.timestampPrevActivity.toLocaleString(DateTime.DATE_MED)}
                   </Td>
                 </Show>
                 <Td>

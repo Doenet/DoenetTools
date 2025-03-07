@@ -20,7 +20,7 @@ import {
   Checkbox,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
-import { ContentStructure, ContentType } from "../_utils/types";
+import { Content, ContentDescription } from "../_utils/types";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { BsPeople } from "react-icons/bs";
 import {
@@ -34,7 +34,7 @@ import { IoDiceOutline } from "react-icons/io5";
 export type CardContent = {
   menuRef?: (arg: HTMLButtonElement) => void;
   cardLink?: string;
-  content: ContentStructure;
+  content: Content;
   ownerName?: string;
   menuItems?: ReactElement;
   closeTime?: string;
@@ -52,6 +52,8 @@ export default function Card({
   selectedCards,
   selectCallback,
   disableSelect = false,
+  disableAsSelected = false,
+  idx = 1,
 }: {
   cardContent: CardContent;
   showOwnerName?: boolean;
@@ -61,38 +63,48 @@ export default function Card({
   listView?: boolean;
   indentLevel?: number;
   selectedCards?: string[];
-  selectCallback?: (arg: {
-    id: string;
-    name: string;
-    checked: boolean;
-    type: ContentType;
-  }) => void;
+  selectCallback?: (
+    arg: ContentDescription & {
+      checked: boolean;
+      idx: number;
+    },
+  ) => void;
   disableSelect?: boolean;
+  disableAsSelected?: boolean;
+  idx?: number;
 }) {
   const {
-    id,
+    contentId,
     name: title,
-    assignmentStatus = "Unassigned",
     isPublic,
     isShared,
     license,
     contentFeatures,
-    numVariants,
     type: contentType,
+    parent,
   } = cardContent.content;
 
   const { menuItems, closeTime, cardLink, ownerName } = cardContent;
 
   const contentTypeName = contentTypeToName[contentType];
 
+  let numVariants = 1;
+  if (cardContent.content.type === "singleDoc") {
+    numVariants = cardContent.content.numVariants;
+  }
+
   if (contentType === "folder") {
     showAssignmentStatus = false;
   }
   let assignmentStatusString = "";
-  if (showAssignmentStatus && assignmentStatus !== "Unassigned") {
-    assignmentStatusString = assignmentStatus;
-    if (assignmentStatus === "Open" && closeTime !== undefined) {
-      assignmentStatusString = assignmentStatusString + " until " + closeTime;
+  if (showAssignmentStatus) {
+    const assignmentStatus =
+      cardContent.content.assignmentInfo?.assignmentStatus ?? "Unassigned";
+    if (assignmentStatus !== "Unassigned") {
+      assignmentStatusString = assignmentStatus;
+      if (assignmentStatus === "Open" && closeTime !== undefined) {
+        assignmentStatusString = assignmentStatusString + " until " + closeTime;
+      }
     }
   }
 
@@ -105,7 +117,7 @@ export default function Card({
         height="120px"
         width="180px"
         src={cardContent.content.imagePath || "/activity_default.jpg"}
-        alt="Activity Card Image"
+        alt="Content Card Image"
         borderTopRadius="md"
         objectFit="cover"
         cursor="pointer"
@@ -114,7 +126,7 @@ export default function Card({
   }
 
   const titleDisplay = (
-    <Tooltip label={title}>
+    <Tooltip label={title} placement="bottom-start">
       <Text noOfLines={1}>{title}</Text>
     </Tooltip>
   );
@@ -261,15 +273,18 @@ export default function Card({
   if (selectedCards) {
     selectCheckbox = (
       <Checkbox
+        data-test="Card Select"
         margin="5px"
-        isDisabled={disableSelect}
-        isChecked={selectedCards.includes(id)}
+        isDisabled={disableSelect || disableAsSelected}
+        isChecked={selectedCards.includes(contentId) || disableAsSelected}
         onChange={(e) => {
           selectCallback?.({
-            id,
+            contentId,
             checked: e.target.checked,
             type: contentType,
             name: title,
+            parent,
+            idx,
           });
         }}
       ></Checkbox>
@@ -389,7 +404,7 @@ export default function Card({
         p="0"
         m="0"
         marginLeft={leftMargin}
-        data-test="Activity Card"
+        data-test="Content Card"
         variant="unstyled"
         borderBottom="2px solid gray"
         borderRadius={0}
@@ -483,7 +498,7 @@ export default function Card({
         height={cardHeight}
         p="0"
         m="0"
-        data-test="Activity Card"
+        data-test="Content Card"
         _hover={{ backgroundColor: "#eeeeee" }}
       >
         {cardImage}

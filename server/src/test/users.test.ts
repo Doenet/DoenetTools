@@ -1,25 +1,35 @@
 import { expect, test } from "vitest";
 import { createTestAnonymousUser, createTestUser } from "./utils";
+import { fromUUID } from "../utils/uuid";
 import {
   findOrCreateUser,
-  getMyFolderContent,
   getUserInfo,
   updateUser,
   upgradeAnonymousUser,
-} from "../model";
-import { fromUUID } from "../utils/uuid";
+} from "../query/user";
+import { getMyContent } from "../query/content_list";
 
 test("New user has no content", async () => {
   const user = await createTestUser();
   const userId = user.userId;
-  const docs = await getMyFolderContent({
+  const docs = await getMyContent({
+    ownerId: userId,
     loggedInUserId: userId,
-    folderId: null,
+    parentId: null,
   });
-  const { availableFeatures, ...docs2 } = docs;
+  if (docs.notMe) {
+    throw Error("shouldn't happen");
+  }
+  const {
+    availableFeatures,
+    allDoenetmlVersions,
+    allLicenses,
+    notMe,
+    ...docs2
+  } = docs;
   expect(docs2).toStrictEqual({
     content: [],
-    folder: null,
+    parent: null,
   });
 });
 
@@ -29,11 +39,15 @@ test("Update user name", async () => {
   expect(user.firstNames).eq("vitest");
   expect(user.lastNames.startsWith("user")).eq(true);
 
-  user = await updateUser({ userId, firstNames: "New", lastNames: "Name" });
+  user = await updateUser({
+    loggedInUserId: userId,
+    firstNames: "New",
+    lastNames: "Name",
+  });
   expect(user.firstNames).eq("New");
   expect(user.lastNames).eq("Name");
 
-  const userInfo = await getUserInfo(user.userId);
+  const { user: userInfo } = await getUserInfo({ loggedInUserId: user.userId });
   expect(userInfo.firstNames).eq("New");
   expect(userInfo.lastNames).eq("Name");
 });
@@ -53,7 +67,7 @@ test("findOrCreateUser finds an existing user or creates a new one", async () =>
 test("upgrade anonymous user", async () => {
   let anonUser = await createTestAnonymousUser();
   anonUser = await updateUser({
-    userId: anonUser.userId,
+    loggedInUserId: anonUser.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });

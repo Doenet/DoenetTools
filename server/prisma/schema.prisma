@@ -16,33 +16,40 @@ model Session {
 }
 
 model content {
+  // General metadata
   id                    Bytes                    @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
   type                  ContentType              @default(singleDoc)
   ownerId               Bytes                    @db.Binary(16)
-  isFolder              Boolean
-  parentId              Bytes?                   @db.Binary(16)
   name                  String
-  createdAt             DateTime                 @default(now())
-  lastEdited            DateTime                 @default(now())
-  imagePath             String?
-  isAssigned            Boolean                  @default(false)
-  classCode             String?                  @db.VarChar(45)
-  codeValidUntil        DateTime?
+  parentId              Bytes?                   @db.Binary(16)
   isPublic              Boolean                  @default(false)
   isDeleted             Boolean                  @default(false)
+  createdAt             DateTime                 @default(now())
   sortIndex             BigInt
   licenseCode           String?                  @default("CCDUAL") @db.VarChar(10)
-  numToSelect           Int                      @default(1) @db.UnsignedSmallInt
-  selectByVariant       Boolean                  @default(false)
+  imagePath             String?
+  lastEdited            DateTime                 @default(now())
+  // Specific to document type
+  source                String?                  @db.MediumText
+  doenetmlVersionId     Int?
+  numVariants           Int                      @default(1)
+  baseComponentCounts   String?                  @db.Text
+  // Specific to sequence type
   shuffle               Boolean                  @default(false)
   paginate              Boolean                  @default(false)
   activityLevelAttempts Boolean                  @default(false)
   itemLevelAttempts     Boolean                  @default(false)
+  // Specific to select type
+  numToSelect           Int                      @default(1) @db.UnsignedSmallInt
+  selectByVariant       Boolean                  @default(false)
+  // Assignments
+  assignmentId          Bytes?                   @db.Binary(16)
   owner                 users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   parent                content?                 @relation("childParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   children              content[]                @relation("childParent")
-  documents             documents[]
   license               licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  doenetmlVersion       doenetmlVersions?        @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  assignment            assignment?              @relation(fields: [assignmentId], references: [rootContentId], onDelete: SetNull, onUpdate: NoAction)
   contentFeatures       contentFeatures[]
   assignmentScores      assignmentScores[]
   promotedContent       promotedContent[]
@@ -54,11 +61,16 @@ model content {
   libraryActivityInfo   libraryActivityInfos?    @relation("activity")
   librarySourceEvents   libraryEvents[]          @relation("source")
   libraryActivityEvents libraryEvents[]          @relation("activity")
+  activityRevisions     activityRevisions[]
+  contributorHistory    contributorHistory[]
+  assignmentAsRoot      assignment?              @relation("rootContent")
+  submittedResponses    submittedResponses[]
+  activityState         activityState[]
 
   @@index([ownerId, parentId, sortIndex])
-  @@index([classCode])
-  @@index([parentId, isFolder])
+  @@index([parentId, type])
   @@fulltext([name])
+  @@fulltext([source])
 }
 
 enum ContentType {
@@ -85,47 +97,21 @@ enum RecentMode {
   view
 }
 
-model documents {
-  id                  Bytes                @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
-  activityId          Bytes                @db.Binary(16)
+model activityRevisions {
+  contentId           Bytes                @db.Binary(16)
+  revisionNum         Int
+  cid                 String
   source              String               @db.MediumText
   createdAt           DateTime             @default(now())
-  lastEdited          DateTime             @default(now())
-  name                String
   numVariants         Int                  @default(1)
-  baseComponentCounts String               @db.Text
-  isDeleted           Boolean              @default(false)
-  assignedVersionNum  Int?
-  doenetmlVersionId   Int
-  assignedVersion     documentVersions?    @relation("assignedVersion", fields: [id, assignedVersionNum], references: [docId, versionNum], onDelete: NoAction, onUpdate: NoAction)
-  documentVersions    documentVersions[]
-  activity            content              @relation(fields: [activityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  doenetmlVersion     doenetmlVersions     @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  baseComponentCounts String?              @db.Text
+  doenetmlVersionId   Int?
+  activity            content              @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  doenetmlVersion     doenetmlVersions?    @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   contributorHistory  contributorHistory[]
 
-  @@unique([id, assignedVersionNum]) // needed for the 1-1 relation "assignedVersion" with documentVersions
-  @@fulltext([source])
-}
-
-model documentVersions {
-  docId                      Bytes                        @db.Binary(16)
-  versionNum                 Int
-  cid                        String
-  source                     String                       @db.MediumText
-  createdAt                  DateTime                     @default(now())
-  numVariants                Int                          @default(1)
-  baseComponentCounts        String                       @db.Text
-  doenetmlVersionId          Int
-  document                   documents                    @relation(fields: [docId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  doenetmlVersion            doenetmlVersions             @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  contributorHistory         contributorHistory[]
-  documentState              documentState[]
-  documentSubmittedResponses documentSubmittedResponses[]
-  assignedDocument           documents?                   @relation("assignedVersion")
-
-  @@id([docId, versionNum])
-  @@unique([docId, cid])
-  @@index([docId])
+  @@id([contentId, revisionNum])
+  @@unique([contentId, cid])
 }
 
 model licenses {
@@ -161,18 +147,19 @@ model contentFeatures {
 }
 
 model contributorHistory {
-  docId             Bytes            @db.Binary(16)
-  prevDocId         Bytes            @db.Binary(16)
-  prevDocVersionNum Int
-  withLicenseCode   String?          @db.VarChar(10)
-  timestampDoc      DateTime         @default(now())
-  timestampPrevDoc  DateTime         @default(now())
-  document          documents        @relation(fields: [docId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  prevDoc           documentVersions @relation(fields: [prevDocId, prevDocVersionNum], references: [docId, versionNum], onDelete: NoAction, onUpdate: NoAction)
-  withLicense       licenses?        @relation(fields: [withLicenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  contentId               Bytes             @db.Binary(16)
+  prevContentId           Bytes             @db.Binary(16)
+  prevActivityRevisionNum Int
+  withLicenseCode         String?           @db.VarChar(10)
+  timestampActivity       DateTime          @default(now())
+  timestampPrevActivity   DateTime          @default(now())
+  directCopy              Boolean           @default(false)
+  activity                content           @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  prevActivity            activityRevisions @relation(fields: [prevContentId, prevActivityRevisionNum], references: [contentId, revisionNum], onDelete: NoAction, onUpdate: NoAction)
+  withLicense             licenses?         @relation(fields: [withLicenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
 
-  @@id([docId, prevDocId])
-  @@index([prevDocId, prevDocVersionNum])
+  @@id([contentId, prevContentId])
+  @@index([prevContentId, prevActivityRevisionNum])
 }
 
 model contentShares {
@@ -186,96 +173,100 @@ model contentShares {
 }
 
 model doenetmlVersions {
-  id                 Int                @id @default(autoincrement())
-  displayedVersion   String             @unique
+  id                 Int                 @id @default(autoincrement())
+  displayedVersion   String              @unique
   fullVersion        String
-  default            Boolean            @default(false)
-  deprecated         Boolean            @default(false)
-  removed            Boolean            @default(false)
-  deprecationMessage String             @default("")
-  documents          documents[]
-  documentVersions   documentVersions[]
+  default            Boolean             @default(false)
+  deprecated         Boolean             @default(false)
+  removed            Boolean             @default(false)
+  deprecationMessage String              @default("")
+  content            content[]
+  activityRevisions  activityRevisions[]
+}
+
+model assignment {
+  rootContentId  Bytes     @id @db.Binary(16)
+  classCode      String    @db.VarChar(45)
+  codeValidUntil DateTime?
+  rootContent    content   @relation("rootContent", fields: [rootContentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  allContent     content[]
+
+  @@index([classCode])
 }
 
 model assignmentScores {
-  activityId    Bytes           @db.Binary(16)
+  contentId     Bytes           @db.Binary(16)
   userId        Bytes           @db.Binary(16)
   score         Float           @default(0)
-  activity      content         @relation(fields: [activityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  activity      content         @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user          users           @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  documentState documentState[]
+  activityState activityState[]
 
-  @@id([activityId, userId])
-  @@index([activityId])
+  @@id([contentId, userId])
   @@index([userId])
 }
 
-model documentState {
-  activityId      Bytes            @db.Binary(16)
-  docId           Bytes            @db.Binary(16)
-  docVersionNum   Int
+model activityState {
+  contentId       Bytes            @db.Binary(16)
   userId          Bytes            @db.Binary(16)
   isLatest        Boolean          @default(true)
   hasMaxScore     Boolean          @default(false)
-  state           String?          @db.MediumText
   score           Float            @default(0)
-  assignmentScore assignmentScores @relation(fields: [activityId, userId], references: [activityId, userId], onDelete: NoAction, onUpdate: NoAction)
-  documentVersion documentVersions @relation(fields: [docId, docVersionNum], references: [docId, versionNum], onDelete: NoAction, onUpdate: NoAction)
+  state           String?          @db.MediumText
+  assignmentScore assignmentScores @relation(fields: [contentId, userId], references: [contentId, userId], onDelete: NoAction, onUpdate: NoAction)
+  content         content          @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user            users            @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
-  @@id([activityId, docId, docVersionNum, userId, isLatest])
-  @@unique([activityId, docId, docVersionNum, userId, hasMaxScore])
-  @@index([activityId, docId, docVersionNum])
+  @@id([contentId, userId, isLatest])
+  @@unique([contentId, userId, hasMaxScore])
   @@index([userId])
 }
 
-model documentSubmittedResponses {
-  id                     Int              @id @default(autoincrement())
-  activityId             Bytes            @db.Binary(16)
-  docId                  Bytes            @db.Binary(16)
-  docVersionNum          Int
-  userId                 Bytes            @db.Binary(16)
+model submittedResponses {
+  id                     Int      @id @default(autoincrement())
+  contentId              Bytes    @db.Binary(16)
+  userId                 Bytes    @db.Binary(16)
   answerId               String
-  response               String           @db.Text
+  response               String   @db.Text
   answerNumber           Int?
   itemNumber             Int
   creditAchieved         Float
   itemCreditAchieved     Float
-  documentCreditAchieved Float
-  submittedAt            DateTime         @default(now())
-  documentVersion        documentVersions @relation(fields: [docId, docVersionNum], references: [docId, versionNum], onDelete: NoAction, onUpdate: NoAction)
-  user                   users            @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  activityCreditAchieved Float
+  submittedAt            DateTime @default(now())
+  content                content  @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user                   users    @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
-  @@index([activityId, docId, docVersionNum, answerId])
+  @@index([contentId, answerId])
   @@index([userId])
 }
 
 model contentViews {
-  id         Int      @id @default(autoincrement())
-  activityId Bytes    @db.Binary(16)
-  date       DateTime @default(dbgenerated("(curdate())")) @db.Date
-  userId     Bytes    @db.Binary(16)
-  activity   content  @relation(fields: [activityId], references: [id])
+  id        Int      @id @default(autoincrement())
+  contentId Bytes    @db.Binary(16)
+  date      DateTime @default(dbgenerated("(curdate())")) @db.Date
+  userId    Bytes    @db.Binary(16)
+  activity  content  @relation(fields: [contentId], references: [id])
 
-  @@unique([date, activityId, userId])
+  @@unique([date, contentId, userId])
 }
 
 model users {
-  userId                     Bytes                        @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
-  email                      String                       @unique
-  firstNames                 String?
-  lastNames                  String
-  isAdmin                    Boolean                      @default(false)
-  isLibrary                  Boolean                      @default(false)
-  isAnonymous                Boolean                      @default(false)
-  cardView                   Boolean                      @default(false)
-  content                    content[]
-  assignmentScores           assignmentScores[]
-  documentState              documentState[]
-  documentSubmittedResponses documentSubmittedResponses[]
-  sharedWithMe               contentShares[]
-  recentContent              recentContent[]
-  libraryEvents              libraryEvents[]
+  userId             Bytes                @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
+  email              String               @unique
+  firstNames         String?
+  lastNames          String
+  isAdmin            Boolean              @default(false)
+  isLibrary          Boolean              @default(false)
+  isAnonymous        Boolean              @default(false)
+  cardView           Boolean              @default(false)
+  content            content[]
+  assignmentScores   assignmentScores[]
+  activityState      activityState[]
+  submittedResponses submittedResponses[]
+  sharedWithMe       contentShares[]
+  recentContent      recentContent[]
+  libraryEvents      libraryEvents[]
 
   @@fulltext([firstNames, lastNames])
 }
@@ -290,13 +281,13 @@ model promotedContentGroups {
 }
 
 model promotedContent {
-  activityId      Bytes                 @db.Binary(16)
+  contentId       Bytes                 @db.Binary(16)
   promotedGroupId Int
   sortIndex       BigInt
-  activity        content               @relation(fields: [activityId], references: [id])
+  activity        content               @relation(fields: [contentId], references: [id])
   promotedGroup   promotedContentGroups @relation(fields: [promotedGroupId], references: [id])
 
-  @@id([activityId, promotedGroupId])
+  @@id([contentId, promotedGroupId])
 }
 
 model contentClassifications {
@@ -373,12 +364,12 @@ model classifications {
 
 model libraryActivityInfos {
   sourceId       Bytes         @id @db.Binary(16)
-  activityId     Bytes?        @unique @db.Binary(16)
+  contentId      Bytes?        @unique @db.Binary(16)
   ownerRequested Boolean
   status         LibraryStatus
   comments       String        @default("")
   source         content       @relation(name: "source", fields: [sourceId], references: [id])
-  activity       content?      @relation(name: "activity", fields: [activityId], references: [id])
+  activity       content?      @relation(name: "activity", fields: [contentId], references: [id])
 }
 
 enum LibraryStatus {
@@ -389,16 +380,16 @@ enum LibraryStatus {
 }
 
 model libraryEvents {
-  id         Bytes            @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
-  sourceId   Bytes            @db.Binary(16)
-  activityId Bytes?           @db.Binary(16)
-  eventType  LibraryEventType
-  dateTime   DateTime
-  comments   String           @default("")
-  userId     Bytes            @db.Binary(16)
-  user       users            @relation(fields: [userId], references: [userId])
-  source     content          @relation(name: "source", fields: [sourceId], references: [id])
-  activity   content?         @relation(name: "activity", fields: [activityId], references: [id])
+  id        Bytes            @id @default(dbgenerated("(uuid_to_bin(uuid(),1))")) @db.Binary(16)
+  sourceId  Bytes            @db.Binary(16)
+  contentId Bytes?           @db.Binary(16)
+  eventType LibraryEventType
+  dateTime  DateTime
+  comments  String           @default("")
+  userId    Bytes            @db.Binary(16)
+  user      users            @relation(fields: [userId], references: [userId])
+  source    content          @relation(name: "source", fields: [sourceId], references: [id])
+  activity  content?         @relation(name: "activity", fields: [contentId], references: [id])
 }
 
 enum LibraryEventType {

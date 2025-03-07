@@ -19,7 +19,7 @@ import { BsPlayBtnFill } from "react-icons/bs";
 import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
 import axios from "axios";
 import { SiteContext } from "./SiteHeader";
-import { ContentStructure, DoenetmlVersion } from "../../../_utils/types";
+import { Content, DoenetmlVersion } from "../../../_utils/types";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import { MdOutlineInfo } from "react-icons/md";
 
@@ -27,13 +27,13 @@ export async function loader({ params, request }) {
   const url = new URL(request.url);
   const queryParamDoenetML = url.searchParams.get("doenetml");
 
-  if (!params.activityId) {
+  if (!params.contentId) {
     return {
       doenetML: queryParamDoenetML,
     };
   }
   const { data: activityData } = await axios.get(
-    `/api/getSharedEditorData/${params.activityId}`,
+    `/api/getSharedEditorData/${params.contentId}`,
   );
 
   let docId = params.docId;
@@ -66,7 +66,7 @@ export function CodeViewer() {
   const { doenetML, doenetmlVersion, activityData } = useLoaderData() as {
     doenetML: string;
     doenetmlVersion?: DoenetmlVersion;
-    activityData?: ContentStructure;
+    activityData?: Content;
   };
 
   const {

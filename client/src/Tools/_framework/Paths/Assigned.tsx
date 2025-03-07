@@ -6,7 +6,7 @@ import { useLoaderData, useNavigate, useFetcher } from "react-router";
 import { CardContent } from "../../../Widgets/Card";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
-import { ContentStructure, UserInfo } from "../../../_utils/types";
+import { Content, UserInfo } from "../../../_utils/types";
 import CardList from "../../../Widgets/CardList";
 import { formatTime } from "../../../_utils/dateUtilityFunction";
 import {
@@ -27,9 +27,9 @@ export async function action({ request }) {
 }
 
 export async function loader() {
-  const { data: assignmentData } = await axios.get(`/api/getAssigned`);
+  const { data: assignmentData } = await axios.get(`/api/assign/getAssigned`);
 
-  const prefData = await axios.get(`/api/getPreferredFolderView`);
+  const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
   const listViewPref = !prefData.data.cardView;
 
   return {
@@ -42,7 +42,7 @@ export async function loader() {
 export function Assigned() {
   const { user, assignments, listViewPref } = useLoaderData() as {
     user: UserInfo;
-    assignments: ContentStructure[];
+    assignments: Content[];
     listViewPref: boolean;
   };
 
@@ -100,10 +100,10 @@ export function Assigned() {
     return {
       content: assignment,
       cardLink:
-        assignment.assignmentStatus === "Open"
-          ? `/code/${assignment.classCode}`
-          : `/assignedData/${assignment.id}`,
-      closeTime: formatTime(assignment.codeValidUntil),
+        assignment.assignmentInfo?.assignmentStatus === "Open"
+          ? `/code/${assignment.assignmentInfo?.classCode}`
+          : `/assignedData/${assignment.contentId}`,
+      closeTime: formatTime(assignment.assignmentInfo!.codeValidUntil),
     };
   });
 

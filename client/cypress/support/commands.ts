@@ -28,6 +28,8 @@ import "cypress-wait-until";
 import "cypress-file-upload";
 import "cypress-iframe";
 
+import type { ContentType, UserInfo } from "../../src/_utils/types";
+
 declare global {
   namespace Cypress {
     interface Chainable {
@@ -49,15 +51,18 @@ declare global {
       /**
        * Custom command to create an activity for the logged in user
        */
-      createActivity({
-        activityName,
+      createContent({
+        name,
+        contentType,
         doenetML,
         classifications,
         makePublic,
         publishInLibrary,
+        parentId,
       }: {
-        activityName: string;
-        doenetML: string;
+        name: string;
+        contentType?: ContentType;
+        doenetML?: string;
         classifications?: {
           systemShortName: string;
           category: string;
@@ -66,7 +71,13 @@ declare global {
         }[];
         makePublic?: boolean;
         publishInLibrary?: boolean;
+        parentId?: string;
       }): Chainable<string>;
+
+      /**
+       * Custom command to get info on logged in user
+       */
+      getUserInfo(): Chainable<UserInfo>;
     }
   }
 }
@@ -102,16 +113,19 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add(
-  "createActivity",
+  "createContent",
   ({
-    activityName,
+    name,
     doenetML,
+    contentType = "singleDoc",
     classifications,
     makePublic = false,
     publishInLibrary = false,
+    parentId = null,
   }: {
-    activityName: string;
-    doenetML: string;
+    name: string;
+    doenetML?: string;
+    contentType?: ContentType;
     classifications?: {
       systemShortName: string;
       category: string;
@@ -120,20 +134,24 @@ Cypress.Commands.add(
     }[];
     makePublic?: boolean;
     publishInLibrary?: boolean;
+    parentId?: string;
   }) => {
     cy.request({
       method: "POST",
-      url: "/api/createActivity",
+      url: "/api/updateContent/createContent",
+      body: {
+        contentType,
+        parentId,
+      },
     }).then((resp) => {
-      const activityId: string = resp.body.activityId;
-      const docId: string = resp.body.docId;
+      const contentId: string = resp.body.contentId;
 
       if (classifications) {
         cy.request({
           method: "POST",
           url: "/api/test/addClassificationsByNames",
           body: {
-            id: activityId,
+            contentId,
             classifications,
           },
         });
@@ -142,9 +160,9 @@ Cypress.Commands.add(
       if (makePublic) {
         cy.request({
           method: "POST",
-          url: "/api/makeActivityPublic",
+          url: "/api/share/makeContentPublic",
           body: {
-            id: activityId,
+            contentId,
             licenseCode: "CCDUAL",
           },
         });
@@ -155,7 +173,7 @@ Cypress.Commands.add(
           method: "POST",
           url: "/api/addDraftToLibrary",
           body: {
-            activityId,
+            contentId: contentId,
             type: "singleDoc",
           },
         }).then((resp) => {
@@ -163,29 +181,43 @@ Cypress.Commands.add(
             method: "POST",
             url: "/api/publishActivityToLibrary",
             body: {
-              id: resp.body.newActivityId,
+              id: resp.body.newContentId,
               comment: "Publish it!",
             },
           });
         });
       }
 
+      if (doenetML !== undefined) {
+        cy.request({
+          method: "POST",
+          url: "/api/updateContent/saveDoenetML",
+          body: {
+            contentId,
+            doenetML,
+            numVariants: 1,
+            baseComponentCounts: "{}",
+          },
+        });
+      }
       cy.request({
         method: "POST",
-        url: "/api/updateContentName",
+        url: "/api/updateContent/updateContentSettings",
         body: {
-          id: activityId,
-          name: activityName,
+          contentId: contentId,
+          name: name,
         },
-      });
-      cy.request({
-        method: "POST",
-        url: "/api/saveDoenetML",
-        body: {
-          docId,
-          doenetML,
-        },
-      }).then(() => activityId);
+      }).then(() => contentId);
     });
   },
 );
+
+Cypress.Commands.add("getUserInfo", () => {
+  cy.request({
+    method: "GET",
+    url: "/api/user/getUser",
+  }).then((resp) => {
+    const user = resp.body.user;
+    return user;
+  });
+});

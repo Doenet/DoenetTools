@@ -16,9 +16,9 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import {
-  ContentStructure,
-  DocHistoryItem,
-  DocRemixItem,
+  ActivityHistoryItem,
+  ActivityRemixItem,
+  Content,
 } from "../../../_utils/types";
 import { GeneralContentInfo } from "./GeneralContentInfo";
 import { ClassificationInfo } from "./ClassificationInfo";
@@ -27,7 +27,6 @@ import {
   processContributorHistory,
   processRemixes,
 } from "../../../_utils/processRemixes";
-import { cidFromText } from "../../../_utils/cid";
 import { RemixedFrom } from "./RemixedFrom";
 import { Remixes } from "./Remixes";
 
@@ -41,7 +40,7 @@ export function ContentInfoDrawer({
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  contentData: ContentStructure;
+  contentData: Content;
   displayTab?: "general" | "classifications";
 }) {
   let initialTabIndex: number;
@@ -62,23 +61,22 @@ export function ContentInfoDrawer({
     setTabIndex(initialTabIndex);
   }, [displayTab, isOpen]);
 
-  // TODO: this next section (through recalculateThisCid()) is copied almost verbatim from ShareDrawer.tsx
+  // TODO: this next section (until return statement) is copied almost verbatim from ShareDrawer.tsx
   // Refactor to avoid code duplication
 
   const [contributorHistory, setContributorHistory] = useState<
-    DocHistoryItem[] | null
-  >(null);
+    ActivityHistoryItem[]
+  >([]);
   const [haveChangedHistoryItem, setHaveChangedHistoryItem] = useState(false);
-  const [remixes, setRemixes] = useState<DocRemixItem[] | null>(null);
-  const [thisCid, setThisCid] = useState<string | null>(null);
+  const [remixes, setRemixes] = useState<ActivityRemixItem[]>([]);
 
   useEffect(() => {
     async function getHistoryAndRemixes() {
       const { data } = await axios.get(
-        `/api/getContributorHistory/${contentData.id}`,
+        `/api/remix/getContributorHistory/${contentData.contentId}`,
       );
 
-      const hist = await processContributorHistory(data.docHistories[0]);
+      const hist = await processContributorHistory(data);
       setContributorHistory(hist);
 
       const haveChanged = hist.some((dhi) => dhi.prevChanged);
@@ -86,39 +84,17 @@ export function ContentInfoDrawer({
       setHaveChangedHistoryItem(haveChanged);
 
       const { data: data2 } = await axios.get(
-        `/api/getRemixes/${contentData.id}`,
+        `/api/remix/getRemixes/${contentData.contentId}`,
       );
 
-      const doc0Remixes = processRemixes(data2.docRemixes[0]);
-      setRemixes(doc0Remixes);
+      const remixes = processRemixes(data2);
+      setRemixes(remixes);
     }
 
-    if (contentData.type === "singleDoc") {
+    if (contentData.type !== "folder") {
       getHistoryAndRemixes();
     }
   }, [contentData]);
-
-  useEffect(() => {
-    async function recalculateThisCid() {
-      let cid: string | null = null;
-      if (haveChangedHistoryItem) {
-        let thisSource = contentData.documents[0].source;
-
-        if (thisSource === undefined) {
-          const { data: sourceData } = await axios.get(
-            `/api/getDocumentSource/${contentData.documents[0].id}`,
-          );
-
-          thisSource = sourceData.source as string;
-        }
-        cid = await cidFromText(thisSource);
-      }
-
-      setThisCid(cid);
-    }
-
-    recalculateThisCid();
-  }, [haveChangedHistoryItem]);
 
   return (
     <Drawer
@@ -150,7 +126,7 @@ export function ContentInfoDrawer({
                   Classifications ({contentData.classifications.length})
                 </Tab>
               ) : null}
-              {contentData.type === "singleDoc" ? (
+              {contentData.type !== "folder" ? (
                 <>
                   <Tab data-test="Remixed From Tab">
                     Remixed From{" "}
@@ -175,15 +151,12 @@ export function ContentInfoDrawer({
                     <ClassificationInfo contentData={contentData} />
                   </TabPanel>
                 ) : null}
-                {contentData.type === "singleDoc" ? (
+                {contentData.type !== "folder" ? (
                   <TabPanel>
-                    <RemixedFrom
-                      contributorHistory={contributorHistory}
-                      thisCid={thisCid}
-                    />
+                    <RemixedFrom contributorHistory={contributorHistory} />
                   </TabPanel>
                 ) : null}
-                {contentData.type === "singleDoc" ? (
+                {contentData.type !== "folder" ? (
                   <TabPanel>
                     <Remixes remixes={remixes} />
                   </TabPanel>

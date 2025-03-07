@@ -24,11 +24,7 @@ import {
 import { CardContent } from "../../../Widgets/Card";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
-import {
-  ContentDescription,
-  ContentStructure,
-  ContentType,
-} from "../../../_utils/types";
+import { ContentDescription, Content } from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import CardList from "../../../Widgets/CardList";
@@ -42,8 +38,14 @@ import {
   AddContentToMenu,
   addContentToMenuActions,
 } from "../ToolPanels/AddContentToMenu";
-import { CreateContentMenu } from "../ToolPanels/CreateContentMenu";
-import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
+import {
+  CreateContentMenu,
+  createContentMenuActions,
+} from "../ToolPanels/CreateContentMenu";
+import {
+  CopyContentAndReportFinish,
+  copyContentAndReportFinishActions,
+} from "../ToolPanels/CopyContentAndReportFinish";
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -59,15 +61,25 @@ export async function action({ request }) {
     return resultACM;
   }
 
+  const resultCC = await copyContentAndReportFinishActions({ formObj });
+  if (resultCC) {
+    return resultCC;
+  }
+
+  const resultCCM = await createContentMenuActions({ formObj });
+  if (resultCCM) {
+    return resultCCM;
+  }
+
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
 export async function loader({ params, request }) {
   const { data } = await axios.get(
-    `/api/getSharedFolderContent/${params.ownerId}/${params.folderId ?? ""}`,
+    `/api/contentList/getSharedContent/${params.ownerId}/${params.parentId ?? ""}`,
   );
 
-  const prefData = await axios.get(`/api/getPreferredFolderView`);
+  const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
   const listViewPref = !prefData.data.cardView;
 
   const url = new URL(request.url);
@@ -76,7 +88,9 @@ export async function loader({ params, request }) {
 
   if (addToId) {
     try {
-      const { data } = await axios.get(`/api/getContentDescription/${addToId}`);
+      const { data } = await axios.get(
+        `/api/info/getContentDescription/${addToId}`,
+      );
       addTo = data;
     } catch (_e) {
       console.error(`Could not get description of ${addToId}`);
@@ -87,22 +101,22 @@ export async function loader({ params, request }) {
     content: data.content,
     ownerId: params.ownerId,
     owner: data.owner,
-    folder: data.folder,
+    parent: data.parent,
     listViewPref,
     addTo,
   };
 }
 
 export function SharedActivities() {
-  const { content, ownerId, owner, folder, listViewPref, addTo } =
+  const { content, ownerId, owner, parent, listViewPref, addTo } =
     useLoaderData() as {
-      content: ContentStructure[];
+      content: Content[];
       ownerId: string;
       owner: {
         firstNames: string | null;
         lastNames: string;
       };
-      folder: ContentStructure | null;
+      parent: Content | null;
       listViewPref: boolean;
       addTo?: ContentDescription;
     };
@@ -114,15 +128,36 @@ export function SharedActivities() {
   const [listView, setListView] = useState(listViewPref);
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
-  const numSelected = selectedCards.length;
+  const selectedCardsFiltered = selectedCards.filter((c) => c);
+  const numSelected = selectedCardsFiltered.length;
 
   useEffect(() => {
-    document.title = folder
-      ? `Folder ${folder.name}`
+    setSelectedCards((was) => {
+      let foundMissing = false;
+      const newList = content.map((c) => c.contentId);
+      for (const c of was.filter((x) => x)) {
+        if (!newList.includes(c.contentId)) {
+          foundMissing = true;
+          break;
+        }
+      }
+      if (foundMissing) {
+        return [];
+      } else {
+        return was;
+      }
+    });
+  }, [content]);
+
+  useEffect(() => {
+    document.title = parent
+      ? `Folder ${parent.name}`
       : `Shared Activities of ${createFullName(owner)} - Doenet`;
-  }, [folder]);
+  }, [parent]);
 
   const fetcher = useFetcher();
+
+  const addToURLParams = addTo ? `?addTo=${addTo.contentId}` : "";
 
   const [infoContentId, setInfoContentId] = useState<string | null>(null);
 
@@ -132,9 +167,9 @@ export function SharedActivities() {
     onClose: infoOnClose,
   } = useDisclosure();
 
-  let contentData: ContentStructure | undefined;
+  let contentData: Content | undefined;
   if (infoContentId) {
-    const index = content.findIndex((obj) => obj.id == infoContentId);
+    const index = content.findIndex((obj) => obj.contentId == infoContentId);
     if (index != -1) {
       contentData = content[index];
     } else {
@@ -160,43 +195,17 @@ export function SharedActivities() {
   const copyContentModal =
     addTo !== undefined ? (
       <CopyContentAndReportFinish
+        fetcher={fetcher}
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        sourceContent={selectedCards}
+        contentIds={selectedCardsFiltered.map((sc) => sc.contentId)}
         desiredParent={addTo}
         action="Add"
       />
     ) : null;
 
-  function selectCardCallback({
-    id,
-    name,
-    checked,
-    type,
-  }: {
-    id: string;
-    name: string;
-    checked: boolean;
-    type: ContentType;
-  }) {
-    setSelectedCards((was) => {
-      const arr = [...was];
-      const idx = was.findIndex((c) => c.id === id);
-      if (checked) {
-        if (idx === -1) {
-          arr.push({ id, name, type });
-        } else {
-          arr[idx] = { id, name, type };
-        }
-      } else if (idx !== -1) {
-        arr.splice(idx, 1);
-      }
-      return arr;
-    });
-  }
-
-  const headingText = folder ? (
-    <>Folder: {folder.name}</>
+  const headingText = parent ? (
+    <>Folder: {parent.name}</>
   ) : (
     `Shared Activities of ${createFullName(owner)}`
   );
@@ -216,6 +225,7 @@ export function SharedActivities() {
           paddingTop="10px"
           noOfLines={1}
           height="46px"
+          data-test="Folder Heading"
         >
           {headingText}
         </Heading>
@@ -254,13 +264,15 @@ export function SharedActivities() {
             <Text>{numSelected} selected</Text>
             <HStack hidden={addTo !== undefined}>
               <AddContentToMenu
-                sourceContent={selectedCards}
+                fetcher={fetcher}
+                sourceContent={selectedCardsFiltered}
                 size="xs"
                 colorScheme="blue"
                 label="Add selected to"
               />
               <CreateContentMenu
-                sourceContent={selectedCards}
+                fetcher={fetcher}
+                sourceContent={selectedCardsFiltered}
                 size="xs"
                 colorScheme="blue"
                 label="Create from selected"
@@ -268,6 +280,7 @@ export function SharedActivities() {
             </HStack>
             {addTo !== undefined ? (
               <Button
+                data-test="Add Selected To Button"
                 hidden={addTo === undefined}
                 size="xs"
                 colorScheme="blue"
@@ -275,7 +288,7 @@ export function SharedActivities() {
                   copyDialogOnOpen();
                 }}
               >
-                Add selected to {menuIcons[addTo.type]}
+                Add selected to: {menuIcons[addTo.type]}
                 <strong>
                   {addTo.name.substring(0, 10)}
                   {addTo.name.length > 10 ? "..." : ""}
@@ -287,17 +300,17 @@ export function SharedActivities() {
       </Flex>
 
       <Flex marginRight=".5em" alignItems="center" paddingLeft="15px">
-        {folder ? (
+        {parent ? (
           <Link
-            to={`/sharedActivities/${ownerId}${folder.parent ? "/" + folder.parent.id : ""}`}
+            to={`/sharedActivities/${ownerId}${parent.parent ? "/" + parent.parent.contentId : ""}${addToURLParams}`}
             style={{
               color: "var(--mainBlue)",
             }}
           >
             {" "}
             &lt; Back to{" "}
-            {folder.parent
-              ? folder.parent.name
+            {parent.parent
+              ? parent.parent.name
               : `Shared Activities of ${createFullName(owner)}`}
           </Link>
         ) : null}
@@ -311,15 +324,14 @@ export function SharedActivities() {
     </Box>
   );
 
-  const addToParams = addTo ? `?addTo=${addTo.id}` : "";
   const cardContent: CardContent[] = content.map((activity) => {
-    const contentType = activity.isFolder ? "Folder" : "Activity";
+    const contentType = activity.type === "folder" ? "Folder" : "Activity";
 
     const menuItems = (
       <MenuItem
         data-test={`${contentType} Information`}
         onClick={() => {
-          setInfoContentId(activity.id);
+          setInfoContentId(activity.contentId);
           infoOnOpen();
         }}
       >
@@ -331,8 +343,8 @@ export function SharedActivities() {
       content: activity,
       cardLink:
         activity.type == "folder"
-          ? `/sharedActivities/${activity.ownerId}/${activity.id}${addToParams}`
-          : `/activityViewer/${activity.id}${addToParams}`,
+          ? `/sharedActivities/${activity.ownerId}/${activity.contentId}${addToURLParams}`
+          : `/activityViewer/${activity.contentId}${addToURLParams}`,
       menuItems,
     };
   });
@@ -346,9 +358,9 @@ export function SharedActivities() {
       emptyMessage={"No Activities Yet"}
       listView={listView}
       content={cardContent}
-      selectedCards={user ? selectedCards.map((c) => c.id) : undefined}
-      selectCallback={selectCardCallback}
-      disableSelectFor={addTo ? [addTo.id] : undefined}
+      selectedCards={user ? selectedCards : undefined}
+      setSelectedCards={setSelectedCards}
+      disableSelectFor={addTo ? [addTo.contentId] : undefined}
     />
   );
 
@@ -377,16 +389,16 @@ export function SharedActivities() {
         padding="20px"
         minHeight="20vh"
       >
-        {folder ? (
-          folder.license ? (
-            folder.license.isComposition ? (
+        {parent ? (
+          parent.license ? (
+            parent.license.isComposition ? (
               <>
                 <p>
-                  <strong>{folder.name}</strong> by {owner.firstNames}{" "}
+                  <strong>{parent.name}</strong> by {owner.firstNames}{" "}
                   {owner.lastNames} is shared with these licenses:
                 </p>
                 <List spacing="20px" marginTop="10px">
-                  {folder.license.composedOf.map((comp) => (
+                  {parent.license.composedOf.map((comp) => (
                     <DisplayLicenseItem licenseItem={comp} key={comp.code} />
                   ))}
                 </List>
@@ -397,17 +409,17 @@ export function SharedActivities() {
             ) : (
               <>
                 <p>
-                  <strong>{folder.name}</strong> by {owner.firstNames}{" "}
+                  <strong>{parent.name}</strong> by {owner.firstNames}{" "}
                   {owner.lastNames} is shared using the license:
                 </p>
                 <List marginTop="10px">
-                  <DisplayLicenseItem licenseItem={folder.license} />
+                  <DisplayLicenseItem licenseItem={parent.license} />
                 </List>
               </>
             )
           ) : (
             <p>
-              <strong>{folder.name}</strong> by {owner.firstNames}{" "}
+              <strong>{parent.name}</strong> by {owner.firstNames}{" "}
               {owner.lastNames} is shared, but a license was not specified.
               Contact the author to determine in what ways you can reuse this
               activity.

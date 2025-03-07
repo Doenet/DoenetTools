@@ -1,3 +1,6 @@
+import { ContentType } from "@prisma/client";
+import { prisma } from "./model";
+
 export type DoenetmlVersion = {
   id: number;
   displayedVersion: string;
@@ -12,7 +15,7 @@ export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
 export type LibraryInfo = {
   sourceId: Uint8Array;
-  activityId: Uint8Array | null;
+  contentId: Uint8Array | null;
   ownerRequested?: boolean;
   status:
     | "none"
@@ -26,7 +29,7 @@ export type LibraryInfo = {
 export function blankLibraryInfo(sourceId: Uint8Array): LibraryInfo {
   return {
     sourceId,
-    activityId: null,
+    contentId: null,
     status: "none",
   };
 }
@@ -39,6 +42,21 @@ export type UserInfo = {
   numLibrary?: number;
   numCommunity?: number;
 };
+
+export function isUserInfo(obj: unknown): obj is UserInfo {
+  const typedObj = obj as UserInfo;
+  return (
+    typedObj !== null &&
+    typeof typedObj === "object" &&
+    typedObj.userId instanceof Uint8Array &&
+    (typedObj.firstNames === null || typeof typedObj.firstNames === "string") &&
+    typeof typedObj.lastNames === "string" &&
+    (typedObj.numLibrary === undefined ||
+      typeof typedObj.numLibrary === "number") &&
+    (typedObj.numCommunity === undefined ||
+      typeof typedObj.numCommunity === "number")
+  );
+}
 
 export type ContentClassification = {
   id: number;
@@ -96,7 +114,6 @@ export type PartialContentClassification = {
   numCurated?: number;
   numCommunity?: number;
 };
-export type ContentType = "singleDoc" | "select" | "sequence" | "folder";
 
 export function isContentType(type: unknown): type is ContentType {
   return (
@@ -105,29 +122,18 @@ export function isContentType(type: unknown): type is ContentType {
   );
 }
 
-export type ContentStructure = {
-  id: Uint8Array;
-  type: ContentType;
+export type ContentBase = {
+  contentId: Uint8Array;
   ownerId: Uint8Array;
   owner?: UserInfo;
   name: string;
   imagePath: string | null;
-  assignmentStatus: AssignmentStatus;
-  isFolder?: boolean;
-  classCode: string | null;
-  codeValidUntil: Date | null;
   isPublic: boolean;
   isShared: boolean;
   sharedWith: UserInfo[];
+  // Content should ~almost always~ have a license.
+  // The exception: content without license from old doenet website
   license: License | null;
-  numVariants?: number;
-  baseComponentCounts?: string;
-  numToSelect: number;
-  selectByVariant: boolean;
-  shuffle: boolean;
-  paginate: boolean;
-  activityLevelAttempts: boolean;
-  itemLevelAttempts: boolean;
   contentFeatures: {
     id: number;
     code: string;
@@ -138,59 +144,129 @@ export type ContentStructure = {
   classifications: ContentClassification[];
   librarySourceInfo?: LibraryInfo;
   libraryActivityInfo?: LibraryInfo;
-  documents: {
-    id: Uint8Array;
-    versionNum?: number;
-    name?: string;
-    source?: string;
-    doenetmlVersion: DoenetmlVersion;
-  }[];
-  hasScoreData: boolean;
   parent: {
-    id: Uint8Array;
+    contentId: Uint8Array;
     name: string;
     type: ContentType;
     isPublic: boolean;
     isShared: boolean;
     sharedWith: UserInfo[];
   } | null;
-  children: ContentStructure[];
+  assignmentInfo?: AssignmentInfo;
 };
 
-export function createContentStructure({
-  activityId,
+export type Doc = ContentBase & {
+  type: "singleDoc";
+  numVariants: number;
+  baseComponentCounts: string;
+  revisionNum?: number;
+  doenetML: string;
+  doenetmlVersion: DoenetmlVersion;
+};
+
+export type QuestionBank = ContentBase & {
+  type: "select";
+  activityJson?: string;
+  revisionNum?: number;
+  numToSelect: number;
+  selectByVariant: boolean;
+  children: Content[];
+};
+
+export type ProblemSet = ContentBase & {
+  type: "sequence";
+  activityJson?: string;
+  revisionNum?: number;
+  shuffle: boolean;
+  paginate: boolean;
+  activityLevelAttempts: boolean;
+  itemLevelAttempts: boolean;
+  children: Content[];
+};
+
+export type Folder = ContentBase & {
+  type: "folder";
+  revisionNum?: number;
+  children: Content[];
+};
+
+export type Activity = Doc | QuestionBank | ProblemSet;
+
+export type Content = Doc | QuestionBank | ProblemSet | Folder;
+
+export type AssignmentInfo = {
+  assignmentStatus: AssignmentStatus;
+  classCode: string;
+  codeValidUntil: Date | null;
+  hasScoreData: boolean;
+};
+
+export async function createContentInfo({
+  contentId,
   ownerId,
+  contentType,
 }: {
-  activityId: Uint8Array;
+  contentId: Uint8Array;
   ownerId: Uint8Array;
-}) {
-  const defaultStructure: ContentStructure = {
-    id: activityId,
-    type: "singleDoc",
+  contentType: ContentType;
+}): Promise<Content> {
+  const contentBase: ContentBase = {
+    contentId: contentId,
     name: "",
     ownerId: ownerId,
     imagePath: null,
-    assignmentStatus: "Unassigned",
-    classCode: null,
-    codeValidUntil: null,
     isPublic: false,
     isShared: false,
     sharedWith: [],
     license: null,
-    numToSelect: 1,
-    selectByVariant: false,
-    shuffle: false,
-    paginate: false,
-    activityLevelAttempts: false,
-    itemLevelAttempts: false,
+    parent: null,
     contentFeatures: [],
     classifications: [],
-    documents: [],
-    hasScoreData: false,
-    parent: null,
-    children: [],
   };
-  return defaultStructure;
+
+  switch (contentType) {
+    case "singleDoc": {
+      const defaultDoenetmlVersion =
+        await prisma.doenetmlVersions.findFirstOrThrow({
+          where: { default: true },
+        });
+      return {
+        type: "singleDoc",
+        numVariants: 1,
+        baseComponentCounts: "{}",
+        doenetML: "",
+        doenetmlVersion: defaultDoenetmlVersion,
+        ...contentBase,
+      };
+    }
+    case "select": {
+      return {
+        type: "select",
+        numToSelect: 1,
+        selectByVariant: false,
+        children: [],
+        ...contentBase,
+      };
+    }
+    case "sequence": {
+      return {
+        type: "sequence",
+        shuffle: false,
+        paginate: false,
+        activityLevelAttempts: false,
+        itemLevelAttempts: false,
+        children: [],
+        ...contentBase,
+      };
+    }
+    case "folder": {
+      return {
+        type: "folder",
+        children: [],
+        ...contentBase,
+      };
+    }
+  }
 }
 
 export type LicenseCode = "CCDUAL" | "CCBYSA" | "CCBYNCSA";
@@ -213,52 +289,29 @@ export type License = {
   }[];
 };
 
-export type DocHistory = {
-  id: Uint8Array;
-  contributorHistory: {
-    docId: Uint8Array;
-    prevDocId: Uint8Array;
-    prevDocVersionNum: number;
-    withLicenseCode: string | null;
-    timestampDoc: Date;
-    timestampPrevDoc: Date;
-    prevDoc: {
-      document: {
-        source: string;
-        activity: {
-          name: string;
-          id: Uint8Array;
-          owner: UserInfo;
-        };
-      };
-      versionNum: number;
-      cid: string;
-    };
-  }[];
+export type ActivityHistoryItem = {
+  contentId: Uint8Array;
+  prevContentId: Uint8Array;
+  prevRevisionNum: number;
+  withLicenseCode: LicenseCode | null;
+  timestampActivity: Date;
+  timestampPrevActivity: Date;
+  prevName: string;
+  prevOwner: UserInfo;
+  prevCidAtRemix: string;
+  prevChanged: boolean;
 };
 
-export type DocRemixes = {
-  id: Uint8Array;
-  documentVersions: {
-    versionNumber: number;
-    remixes: {
-      activity: {
-        id: Uint8Array;
-        name: string;
-        owner: {
-          userId: Uint8Array;
-          email: string;
-          firstNames: string | null;
-          lastNames: string;
-        };
-      };
-
-      docId: Uint8Array;
-      withLicenseCode: string | null;
-      timestampDoc: Date;
-      timestampPrevDoc: Date;
-    }[];
-  }[];
+export type ActivityRemixItem = {
+  prevContentId: Uint8Array;
+  prevRevisionNum: number;
+  withLicenseCode: LicenseCode | null;
+  contentId: Uint8Array;
+  name: string;
+  owner: UserInfo;
+  timestampActivity: Date;
+  timestampPrevActivity: Date;
+  directCopy: boolean;
 };
 
 export type ClassificationCategoryTree = {

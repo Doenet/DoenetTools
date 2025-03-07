@@ -45,9 +45,9 @@ import axios from "axios";
 import {} from "../ToolPanels/ContentSettingsDrawer";
 import {
   ContentDescription,
-  ContentStructure,
-  DocHistoryItem,
+  Content,
   DoenetmlVersion,
+  ActivityHistoryItem,
 } from "../../../_utils/types";
 import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
 import { CompoundActivityEditor } from "../ToolPanels/CompoundActivityEditor";
@@ -59,7 +59,7 @@ import {
   getIconInfo,
   menuIcons,
 } from "../../../_utils/activity";
-import { ActivitySource } from "../../../_utils/viewerTypes";
+import { ActivitySource, isActivitySource } from "../../../_utils/viewerTypes";
 import { processContributorHistory } from "../../../_utils/processRemixes";
 import ContributorsMenu from "../ToolPanels/ContributorsMenu";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
@@ -70,7 +70,10 @@ import {
   AddContentToMenu,
   addContentToMenuActions,
 } from "../ToolPanels/AddContentToMenu";
-import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
+import {
+  CopyContentAndReportFinish,
+  copyContentAndReportFinishActions,
+} from "../ToolPanels/CopyContentAndReportFinish";
 import { CloseIcon } from "@chakra-ui/icons";
 import { BsBookmarkCheck } from "react-icons/bs";
 import { ImCheckmark } from "react-icons/im";
@@ -84,15 +87,22 @@ export async function action({ request }) {
     return resultACM;
   }
 
+  const resultCC = await copyContentAndReportFinishActions({ formObj });
+  if (resultCC) {
+    return resultCC;
+  }
+
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
 export async function loader({ params, request }) {
   const {
-    data: { activity: activityData, docHistories },
-  } = await axios.get(`/api/getActivityViewerData/${params.activityId}`);
+    data: { activity: activityData, activityHistory },
+  } = await axios.get(
+    `/api/activityEditView/getActivityViewerData/${params.contentId}`,
+  );
 
-  const activityId = params.activityId;
+  const contentId = params.contentId;
 
   const url = new URL(request.url);
   const addToId = url.searchParams.get("addTo");
@@ -100,7 +110,9 @@ export async function loader({ params, request }) {
 
   if (addToId) {
     try {
-      const { data } = await axios.get(`/api/getContentDescription/${addToId}`);
+      const { data } = await axios.get(
+        `/api/info/getContentDescription/${addToId}`,
+      );
       addTo = data;
     } catch (_e) {
       console.error(`Could not get description of ${addToId}`);
@@ -108,32 +120,34 @@ export async function loader({ params, request }) {
   }
 
   if (activityData.type === "singleDoc") {
-    const docId = activityData.documents[0].id;
+    const doenetML = activityData.doenetML;
+    const doenetmlVersion: DoenetmlVersion = activityData.doenetmlVersion;
 
-    const doenetML = activityData.documents[0].source;
-    const doenetmlVersion: DoenetmlVersion =
-      activityData.documents[0].doenetmlVersion;
-
-    const contributorHistory = await processContributorHistory(docHistories[0]);
+    const contributorHistory = await processContributorHistory(activityHistory);
 
     return {
       type: activityData.type,
       activityData,
-      docId,
       doenetML,
       doenetmlVersion,
-      activityId,
+      contentId,
       contributorHistory,
       addTo,
     };
   } else {
-    const activityJson = compileActivityFromContent(activityData);
+    const activityJsonFromRevision = activityData.activityJson
+      ? JSON.parse(activityData.activityJson)
+      : null;
+
+    const activityJson = isActivitySource(activityJsonFromRevision)
+      ? activityJsonFromRevision
+      : compileActivityFromContent(activityData);
 
     return {
       type: activityData.type,
       activityData,
       activityJson,
-      activityId,
+      contentId,
       contributorHistory: [],
       addTo,
     };
@@ -142,16 +156,15 @@ export async function loader({ params, request }) {
 
 export function ActivityViewer() {
   const data = useLoaderData() as {
-    activityId: string;
-    activityData: ContentStructure;
-    contributorHistory: DocHistoryItem[];
+    contentId: string;
+    activityData: Content;
+    contributorHistory: ActivityHistoryItem[];
     addTo?: ContentDescription;
   } & (
     | {
         type: "singleDoc";
         doenetML: string;
         doenetmlVersion: DoenetmlVersion;
-        docId: string;
       }
     | {
         type: "select" | "sequence";
@@ -160,7 +173,7 @@ export function ActivityViewer() {
   );
 
   const {
-    activityId,
+    contentId,
     type: contentType,
     activityData,
     contributorHistory,
@@ -176,13 +189,15 @@ export function ActivityViewer() {
     contentType === "select" ? "Edit" : "View",
   );
 
+  const fetcher = useFetcher();
+
   useEffect(() => {
     if (contentType === "select") {
       setMode("Edit");
     } else {
       setMode("View");
     }
-  }, [contentType, activityId]);
+  }, [contentType, contentId]);
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
@@ -196,22 +211,22 @@ export function ActivityViewer() {
     null,
   );
 
-  let contentData: ContentStructure | undefined;
+  let contentData: Content | undefined;
   if (settingsContentId) {
-    if (settingsContentId === activityData.id) {
+    if (settingsContentId === activityData.contentId) {
       contentData = activityData;
     } else {
       if (data.type !== "singleDoc") {
-        function matchSettingsContentId(
-          content: ContentStructure,
-        ): ContentStructure | undefined {
-          if (content.id === settingsContentId) {
+        function matchSettingsContentId(content: Content): Content | undefined {
+          if (content.contentId === settingsContentId) {
             return content;
           }
-          for (const child of content.children) {
-            const res = matchSettingsContentId(child);
-            if (res) {
-              return res;
+          if (content.type !== "singleDoc") {
+            for (const child of content.children) {
+              const res = matchSettingsContentId(child);
+              if (res) {
+                return res;
+              }
             }
           }
         }
@@ -244,15 +259,14 @@ export function ActivityViewer() {
   const copyContentModal =
     addTo !== undefined ? (
       <CopyContentAndReportFinish
+        fetcher={fetcher}
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
-        sourceContent={[activityData]}
+        contentIds={[activityData.contentId]}
         desiredParent={addTo ?? null}
         action="Add"
       />
     ) : null;
-
-  const fetcher = useFetcher();
 
   const [editLabel, editTooltip, editIcon] = [
     "See Inside",
@@ -271,7 +285,7 @@ export function ActivityViewer() {
         doenetmlVersion={data.doenetmlVersion}
         asViewer={true}
         mode={mode}
-        docId={data.docId}
+        contentId={contentId}
         headerHeight="140px"
       />
     );
@@ -338,11 +352,13 @@ export function ActivityViewer() {
           colorScheme="blue"
           leftIcon={<MdOutlineAdd />}
           paddingRight={{ base: "0px", md: "10px" }}
+          data-test="Add To"
         >
           <Show above="md">Add to</Show>
         </MenuButton>
         <MenuList>
           <MenuItem
+            data-test="Add To Selected"
             onClick={() => {
               copyDialogOnOpen();
             }}
@@ -367,6 +383,7 @@ export function ActivityViewer() {
   } else {
     addToMenu = (
       <AddContentToMenu
+        fetcher={fetcher}
         sourceContent={[activityData]}
         size="sm"
         label={<Show above="md">Add to</Show>}
@@ -376,7 +393,7 @@ export function ActivityViewer() {
         leftIcon={<MdOutlineAdd />}
         addCopyToLibraryOption={
           user?.isAdmin &&
-          !activityData.librarySourceInfo?.activityId &&
+          !activityData.librarySourceInfo?.contentId &&
           !activityData.libraryActivityInfo
         }
       />
@@ -453,7 +470,12 @@ export function ActivityViewer() {
               <GridItem area="label">
                 <Flex justifyContent="center" alignItems="center">
                   {typeIcon}
-                  <Text fontSize="1.4em" fontWeight="bold" noOfLines={1}>
+                  <Text
+                    fontSize="1.4em"
+                    fontWeight="bold"
+                    noOfLines={1}
+                    data-test="Activity Name"
+                  >
                     {activityData.name}
                   </Text>
 
@@ -491,7 +513,7 @@ export function ActivityViewer() {
                           A{" "}
                           <ChakraLink
                             as={ReactRouterLink}
-                            to={`/activityViewer/${activityData.librarySourceInfo.activityId}`}
+                            to={`/activityViewer/${activityData.librarySourceInfo.contentId}`}
                             style={{ color: "var(--mainBlue)" }}
                           >
                             peer-reviewed
@@ -504,7 +526,7 @@ export function ActivityViewer() {
                     <></>
                   )}
                   {user?.isAdmin &&
-                  activityData.librarySourceInfo?.activityId &&
+                  activityData.librarySourceInfo?.contentId &&
                   activityData.librarySourceInfo?.status !== "PUBLISHED" ? (
                     <Button
                       marginLeft="10px"
@@ -512,7 +534,7 @@ export function ActivityViewer() {
                       size="sm"
                       colorScheme="blue"
                       as={ReactRouterLink}
-                      to={`/activityViewer/${activityData.librarySourceInfo.activityId}`}
+                      to={`/activityViewer/${activityData.librarySourceInfo.contentId}`}
 
                       // style={{ color: "var(--mainBlue)" }}
                     >
@@ -558,7 +580,7 @@ export function ActivityViewer() {
                         leftIcon={<MdOutlineInfo />}
                         onClick={() => {
                           setDisplayInfoTab("general");
-                          setSettingsContentId(activityData.id);
+                          setSettingsContentId(activityData.contentId);
                           infoOnOpen();
                         }}
                         ref={infoBtnRef}
@@ -655,7 +677,7 @@ export function ActivityViewer() {
                   cursor="pointer"
                   onClick={() => {
                     setDisplayInfoTab("classifications");
-                    setSettingsContentId(activityData.id);
+                    setSettingsContentId(activityData.contentId);
                     infoOnOpen();
                   }}
                   marginLeft="40px"

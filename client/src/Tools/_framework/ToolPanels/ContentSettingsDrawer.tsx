@@ -26,7 +26,7 @@ import {
 } from "./SupportFilesControls";
 import {
   ContentFeature,
-  ContentStructure,
+  Content,
   DoenetmlVersion,
 } from "../../../_utils/types";
 import {
@@ -73,7 +73,7 @@ export function ContentSettingsDrawer({
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  contentData: ContentStructure;
+  contentData: Content;
   allDoenetmlVersions: DoenetmlVersion[];
   availableFeatures: ContentFeature[];
   supportingFileData?: any;
@@ -116,7 +116,11 @@ export function ContentSettingsDrawer({
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton data-test="Close Settings Button" />
-        <DrawerHeader textAlign="center" height="70px">
+        <DrawerHeader
+          textAlign="center"
+          height="70px"
+          data-test="Setting Drawer Header"
+        >
           {contentTypeName} Controls
           <Tooltip label={contentData.name}>
             <Text fontSize="smaller" noOfLines={1}>
@@ -171,7 +175,7 @@ export function ContentSettingsDrawer({
                   <TabPanel>
                     <SupportFilesControls
                       fetcher={fetcher}
-                      activityId={contentData.id}
+                      contentId={contentData.contentId}
                       supportingFileData={supportingFileData}
                     />
                   </TabPanel>

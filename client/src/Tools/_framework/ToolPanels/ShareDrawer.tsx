@@ -20,33 +20,47 @@ import {
 } from "@chakra-ui/react";
 import { Remixes } from "./Remixes";
 import {
-  ContentStructure,
-  DocHistoryItem,
-  DocRemixItem,
+  ActivityHistoryItem,
+  ActivityRemixItem,
+  Content,
   License,
   LicenseCode,
 } from "../../../_utils/types";
 import axios from "axios";
-import { cidFromText } from "../../../_utils/cid";
 import {
   processContributorHistory,
   processRemixes,
 } from "../../../_utils/processRemixes";
+import { curateActions, CurateSettings } from "./CurateSettings";
 
 export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
-  const result1 = await sharingActions({ formObj });
-  if (result1) {
-    return result1;
+  const sharingResult = await sharingActions({ formObj });
+  if (sharingResult) {
+    return sharingResult;
   }
 
-  const result4 = await remixedFromActions({ formObj });
-  if (result4) {
-    return result4;
+  const curateDrawerActionsResult = await curateActions({ formObj });
+  if (curateDrawerActionsResult) {
+    return curateDrawerActionsResult;
+  }
+
+  const remixedFromResult = await remixedFromActions({ formObj });
+  if (remixedFromResult) {
+    return remixedFromResult;
   }
 
   return null;
 }
 
+/**
+ * A side menu drawer that controls sharing settings for a content item.
+ * Includes up to three tabs: `Share`, `Remixed From`, and `Remixes`.
+ * The `Remixed From` and `Remixes` tabs are only shown for non-folder content.
+ *
+ * Additionally, you can set the `inCurationLibrary` prop to `true` to show controls for library content. This will replace the `Share` tab with a `Curate` tab.
+ *
+ * Make sure to include {@link shareDrawerActions} in the page's actions.
+ */
 export function ShareDrawer({
   isOpen,
   onClose,
@@ -54,32 +68,31 @@ export function ShareDrawer({
   fetcher,
   contentData,
   allLicenses,
-  currentDoenetML,
+  inCurationLibrary = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
   fetcher: FetcherWithComponents<any>;
-  contentData: ContentStructure;
+  contentData: Content;
   allLicenses: License[];
-  currentDoenetML?: React.MutableRefObject<string>;
+  inCurationLibrary?: boolean;
 }) {
   const [contributorHistory, setContributorHistory] = useState<
-    DocHistoryItem[] | null
-  >(null);
+    ActivityHistoryItem[]
+  >([]);
   const [haveChangedHistoryItem, setHaveChangedHistoryItem] = useState(false);
-  const [remixes, setRemixes] = useState<DocRemixItem[] | null>(null);
-  const [thisCid, setThisCid] = useState<string | null>(null);
+  const [remixes, setRemixes] = useState<ActivityRemixItem[]>([]);
   const [remixedWithLicense, setRemixedWithLicense] =
     useState<LicenseCode | null>(null);
 
   useEffect(() => {
     async function getHistoryAndRemixes() {
       const { data } = await axios.get(
-        `/api/getContributorHistory/${contentData.id}`,
+        `/api/remix/getContributorHistory/${contentData.contentId}`,
       );
 
-      const hist = await processContributorHistory(data.docHistories[0]);
+      const hist = await processContributorHistory(data);
       setContributorHistory(hist);
 
       const haveChanged = hist.some((dhi) => dhi.prevChanged);
@@ -89,40 +102,44 @@ export function ShareDrawer({
       setRemixedWithLicense(hist[0]?.withLicenseCode || null);
 
       const { data: data2 } = await axios.get(
-        `/api/getRemixes/${contentData.id}`,
+        `/api/remix/getRemixes/${contentData.contentId}`,
       );
 
-      const doc0Remixes = processRemixes(data2.docRemixes[0]);
-      setRemixes(doc0Remixes);
+      const remixes = processRemixes(data2);
+      setRemixes(remixes);
     }
 
-    if (!contentData.isFolder) {
+    if (contentData.type !== "folder") {
       getHistoryAndRemixes();
     }
   }, [contentData]);
 
-  useEffect(() => {
-    async function recalculateThisCid() {
-      let cid: string | null = null;
-      if (haveChangedHistoryItem) {
-        let thisSource =
-          currentDoenetML?.current || contentData.documents[0].source;
+  const drawerTitle = inCurationLibrary
+    ? "Curation Controls"
+    : "Sharing Controls";
 
-        if (thisSource === undefined) {
-          const { data: sourceData } = await axios.get(
-            `/api/getDocumentSource/${contentData.documents[0].id}`,
-          );
+  // Share Tab (becomes Curate Tab in Library)
+  const shareOrCurateTabTitle = inCurationLibrary ? "Curate" : "Share";
+  const shareOrCurateTabPanel = inCurationLibrary ? (
+    <CurateSettings fetcher={fetcher} contentData={contentData} />
+  ) : (
+    <ShareSettings
+      fetcher={fetcher}
+      contentData={contentData}
+      allLicenses={allLicenses}
+      remixedWithLicense={remixedWithLicense}
+    />
+  );
 
-          thisSource = sourceData.source as string;
-        }
-        cid = await cidFromText(thisSource);
-      }
+  // Remixed From Tab
+  const contributorHistoryAddon = contributorHistory
+    ? `(${contributorHistory.length})`
+    : "";
+  const changedHistoryAddon = haveChangedHistoryItem ? "*" : "";
+  const remixedFromTabTitle = `Remixed From ${contributorHistoryAddon}${changedHistoryAddon}`;
 
-      setThisCid(cid);
-    }
-
-    recalculateThisCid();
-  }, [haveChangedHistoryItem, currentDoenetML?.current]);
+  // Remixed Tab
+  const remixesTabTitle = remixes ? `Remixes (${remixes.length})` : "Remixes";
 
   return (
     <Drawer
@@ -136,7 +153,7 @@ export function ShareDrawer({
       <DrawerContent>
         <DrawerCloseButton data-test="Close Share Drawer Button" />
         <DrawerHeader textAlign="center" height="70px">
-          Sharing Controls
+          {drawerTitle}
           <Tooltip label={contentData.name} openDelay={1000}>
             <Text fontSize="smaller" noOfLines={1}>
               {contentData.name}
@@ -147,45 +164,27 @@ export function ShareDrawer({
         <DrawerBody>
           <Tabs>
             <TabList>
-              <Tab data-test="Share Tab">Share</Tab>
-              {!contentData.isFolder ? (
-                <>
-                  <Tab data-test="Remixed From Tab">
-                    Remixed From{" "}
-                    {contributorHistory !== null
-                      ? `(${contributorHistory.length})`
-                      : null}
-                    {haveChangedHistoryItem ? "*" : null}
-                  </Tab>
-                  <Tab data-test="Remixes Tab">
-                    Remixes {remixes !== null ? `(${remixes.length})` : null}
-                  </Tab>
-                </>
-              ) : null}
+              <Tab data-test="Share Tab">{shareOrCurateTabTitle}</Tab>
+              {contentData.type === "folder" ? null : (
+                <Tab data-test="Remixed From Tab">{remixedFromTabTitle}</Tab>
+              )}
+              {contentData.type === "folder" ? null : (
+                <Tab data-test="Remixes Tab">{remixesTabTitle}</Tab>
+              )}
             </TabList>
             <Box overflowY="auto" height="calc(100vh - 130px)">
               <TabPanels>
-                <TabPanel>
-                  <ShareSettings
-                    fetcher={fetcher}
-                    contentData={contentData}
-                    allLicenses={allLicenses}
-                    remixedWithLicense={remixedWithLicense}
-                  />
-                </TabPanel>
-                {!contentData.isFolder ? (
+                <TabPanel>{shareOrCurateTabPanel}</TabPanel>
+                {contentData.type === "folder" ? null : (
                   <TabPanel>
-                    <RemixedFrom
-                      contributorHistory={contributorHistory}
-                      thisCid={thisCid}
-                    />
+                    <RemixedFrom contributorHistory={contributorHistory} />
                   </TabPanel>
-                ) : null}
-                {!contentData.isFolder ? (
+                )}
+                {contentData.type === "folder" ? null : (
                   <TabPanel>
                     <Remixes remixes={remixes} />
                   </TabPanel>
-                ) : null}
+                )}
               </TabPanels>
             </Box>
           </Tabs>

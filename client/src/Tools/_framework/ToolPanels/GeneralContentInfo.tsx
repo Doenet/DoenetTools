@@ -8,17 +8,13 @@ import {
   Tooltip,
   UnorderedList,
 } from "@chakra-ui/react";
-import { ContentStructure } from "../../../_utils/types";
+import { Content } from "../../../_utils/types";
 import { InfoIcon } from "@chakra-ui/icons";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { createFullName } from "../../../_utils/names";
 import { activityFeatureIcons } from "../../../_utils/activity";
 
-export function GeneralContentInfo({
-  contentData,
-}: {
-  contentData: ContentStructure;
-}) {
+export function GeneralContentInfo({ contentData }: { contentData: Content }) {
   const license = contentData.license;
   const contentType = contentData.type === "folder" ? "Folder" : "Activity";
 
@@ -90,14 +86,15 @@ export function GeneralContentInfo({
         )}
       </Box>
 
-      {(contentData.numVariants ?? 1) > 1 ? (
+      {contentData.type === "singleDoc" &&
+      (contentData.numVariants ?? 1) > 1 ? (
         <Box marginBottom="20px">
           This document has {contentData.numVariants} variants.
         </Box>
       ) : null}
 
       {contentData.type === "singleDoc"
-        ? `DoenetML version: ${contentData.documents[0].doenetmlVersion.fullVersion}`
+        ? `DoenetML version: ${contentData.doenetmlVersion.fullVersion}`
         : null}
     </Box>
   );

@@ -5,8 +5,8 @@ describe("Activity Editor Tests", function () {
 
     cy.loginAsTestUser();
 
-    cy.createActivity({
-      activityName: "Hello!",
+    cy.createContent({
+      name: "Hello!",
       doenetML: "Initial content",
     }).then((activityId) => {
       cy.visit(`/activityEditor/${activityId}`);
@@ -15,7 +15,8 @@ describe("Activity Editor Tests", function () {
         .find(".doenet-viewer")
         .should("contain.text", `Initial content`);
 
-      cy.iframe().find(".cm-editor").type(`{end}{enter}More!`);
+      cy.iframe().find(".cm-activeLine").type("{enter}");
+      cy.iframe().find(".cm-activeLine").invoke("text", "More!");
 
       cy.get(`[data-test="View Mode Button"]`).click();
 
