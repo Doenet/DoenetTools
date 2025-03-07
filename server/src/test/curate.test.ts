@@ -53,7 +53,7 @@ test("user privileges for library", async () => {
   // owner
   async function expectSubmitRequestFails(userId: Uint8Array) {
     await expect(() =>
-      submitLibraryRequest({ contentId: sourceId, ownerId: userId }),
+      submitLibraryRequest({ contentId: sourceId, loggedInUserId: userId }),
     ).rejects.toThrowError();
   }
   await expectSubmitRequestFails(ownerId);
@@ -84,7 +84,7 @@ test("user privileges for library", async () => {
   await expectSubmitRequestFails(randomUserId);
   await expectStatusIs(sourceId, statusNone, randomUserId);
 
-  await submitLibraryRequest({ ownerId, contentId: sourceId });
+  await submitLibraryRequest({ loggedInUserId: ownerId, contentId: sourceId });
   await expectStatusIs(sourceId, statusPending, ownerId);
 
   // Only admin can add draft
@@ -115,7 +115,7 @@ test("user privileges for library", async () => {
   // Only owner can cancel review request
   async function expectCancelRequestFails(userId: Uint8Array) {
     await expect(() =>
-      cancelLibraryRequest({ contentId: sourceId, ownerId: userId }),
+      cancelLibraryRequest({ contentId: sourceId, loggedInUserId: userId }),
     ).rejects.toThrowError();
   }
 
@@ -132,13 +132,13 @@ test("user privileges for library", async () => {
     ...statusCancelled,
     contentId: draftId,
   };
-  await cancelLibraryRequest({ contentId: sourceId, ownerId });
+  await cancelLibraryRequest({ contentId: sourceId, loggedInUserId: ownerId });
   await expectStatusIs(sourceId, statusNone, randomUserId);
   await expectStatusIs(sourceId, statusCancelled, ownerId);
   await expectStatusIs(sourceId, statusCancelledWithDraft, adminId);
 
   // Add request back
-  await submitLibraryRequest({ ownerId, contentId: sourceId });
+  await submitLibraryRequest({ loggedInUserId: ownerId, contentId: sourceId });
 
   // Only admin can return for revision
   async function expectSendBackFails(userId: Uint8Array) {
@@ -307,7 +307,7 @@ test("activity must be draft to be published in library", async () => {
     isPublic: true,
     // licenseCode: "CCDUAL",
   });
-  await submitLibraryRequest({ ownerId, contentId });
+  await submitLibraryRequest({ loggedInUserId: ownerId, contentId });
 
   const admin = await createTestAdminUser();
   const adminId = admin.userId;
@@ -342,7 +342,7 @@ test("owner requests library review, admin publishes", async () => {
     comments: "",
     contentId: null,
   };
-  await submitLibraryRequest({ ownerId, contentId });
+  await submitLibraryRequest({ loggedInUserId: ownerId, contentId });
   await expectStatusIs(contentId, status, ownerId);
 
   const { draftId } = await addDraftToLibrary({

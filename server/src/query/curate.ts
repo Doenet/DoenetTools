@@ -98,20 +98,20 @@ export async function getLibraryStatus({
 /**
  * Set library status to `PENDING_REVIEW`. Also logs event in library history.
  * @param contentId - must be existing public activity
- * @param ownerId - must be owner of contentId
+ * @param loggedInUserId - must be owner of contentId
  */
 export async function submitLibraryRequest({
   contentId,
-  ownerId,
+  loggedInUserId,
 }: {
   contentId: Uint8Array;
-  ownerId: Uint8Array;
+  loggedInUserId: Uint8Array;
 }) {
   const isOwner = await prisma.content.findUnique({
     where: {
       id: contentId,
       isPublic: true,
-      ownerId,
+      ownerId: loggedInUserId,
     },
     select: { id: true },
   });
@@ -130,7 +130,7 @@ export async function submitLibraryRequest({
           type: ContentType.folder,
         },
         isDeleted: false,
-        ownerId,
+        ownerId: loggedInUserId,
       },
       OR: [
         {
@@ -159,7 +159,7 @@ export async function submitLibraryRequest({
       eventType: LibraryEventType.SUBMIT_REQUEST,
       dateTime: new Date(),
       comments: "",
-      userId: ownerId,
+      userId: loggedInUserId,
     },
   });
 
@@ -168,15 +168,15 @@ export async function submitLibraryRequest({
 /**
  * Set library status to `REQUEST_REMOVED`. Also logs event in library history.
  * @param contentId - must be existing public activity
- * @param ownerId - must be owner of contentId
+ * @param loggedInUserId - must be owner of contentId
  *
  */
 export async function cancelLibraryRequest({
   contentId,
-  ownerId,
+  loggedInUserId,
 }: {
   contentId: Uint8Array;
-  ownerId: Uint8Array;
+  loggedInUserId: Uint8Array;
 }) {
   const updateLibInfo = prisma.libraryActivityInfos.update({
     where: {
@@ -187,7 +187,7 @@ export async function cancelLibraryRequest({
           type: ContentType.folder,
         },
         isDeleted: false,
-        ownerId,
+        ownerId: loggedInUserId,
       },
       status: LibraryStatus.PENDING_REVIEW,
     },
@@ -202,7 +202,7 @@ export async function cancelLibraryRequest({
       eventType: LibraryEventType.CANCEL_REQUEST,
       dateTime: new Date(),
       comments: "",
-      userId: ownerId,
+      userId: loggedInUserId,
     },
   });
 

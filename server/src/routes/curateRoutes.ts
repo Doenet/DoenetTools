@@ -3,6 +3,7 @@ import { requireLoggedIn } from "../middleware/validationMiddleware";
 import { queryLoggedIn } from "../middleware/queryMiddleware";
 import {
   addDraftToLibrary,
+  cancelLibraryRequest,
   createCurationFolder,
   deleteDraftFromLibrary,
   getCurationFolderContent,
@@ -11,6 +12,7 @@ import {
   modifyCommentsOfLibraryRequest,
   publishActivityToLibrary,
   searchCurationFolderContent,
+  submitLibraryRequest,
   unpublishActivityFromLibrary,
 } from "../query/curate";
 import {
@@ -50,6 +52,16 @@ curateRouter.get(
 curateRouter.get(
   "/getLibraryStatus",
   queryLoggedIn(getLibraryStatus, sourceIdSchema),
+);
+
+curateRouter.post(
+  "/submitLibraryRequest",
+  queryLoggedIn(submitLibraryRequest, contentIdSchema),
+);
+
+curateRouter.post(
+  "/cancelLibraryRequest",
+  queryLoggedIn(cancelLibraryRequest, contentIdSchema),
 );
 
 curateRouter.post(

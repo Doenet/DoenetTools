@@ -32,6 +32,7 @@ import {
   processRemixes,
 } from "../../../_utils/processRemixes";
 import { curateActions, CurateSettings } from "./CurateSettings";
+import { LibraryRequest, libraryRequestActions } from "./LibraryRequest";
 
 export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
   const sharingResult = await sharingActions({ formObj });
@@ -47,6 +48,11 @@ export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
   const remixedFromResult = await remixedFromActions({ formObj });
   if (remixedFromResult) {
     return remixedFromResult;
+  }
+
+  const libraryRequestResult = await libraryRequestActions({ formObj });
+  if (libraryRequestResult) {
+    return libraryRequestResult;
   }
 
   return null;
@@ -171,6 +177,9 @@ export function ShareDrawer({
               {contentData.type === "folder" ? null : (
                 <Tab data-test="Remixes Tab">{remixesTabTitle}</Tab>
               )}
+              {!contentData.isPublic || inCurationLibrary ? null : (
+                <Tab data-test="Library Tab">Library</Tab>
+              )}
             </TabList>
             <Box overflowY="auto" height="calc(100vh - 130px)">
               <TabPanels>
@@ -183,6 +192,14 @@ export function ShareDrawer({
                 {contentData.type === "folder" ? null : (
                   <TabPanel>
                     <Remixes remixes={remixes} />
+                  </TabPanel>
+                )}
+                {!contentData.isPublic || inCurationLibrary ? null : (
+                  <TabPanel data-test="Library Tab">
+                    <LibraryRequest
+                      contentData={contentData}
+                      fetcher={fetcher}
+                    ></LibraryRequest>
                   </TabPanel>
                 )}
               </TabPanels>
