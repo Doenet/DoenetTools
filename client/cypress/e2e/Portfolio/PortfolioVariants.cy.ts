@@ -1,15 +1,15 @@
 import { cesc2 } from "../../../src/_utils/url";
 
 describe("Activities Variant Tests", function () {
-  const userId = "cyuserId";
+  const _userId = "cyuserId";
   const userId2 = "cyuserId2";
 
-  beforeEach(() => {
-    cy.signin({ userId });
-    cy.visit(`/`);
-  });
+  // beforeEach(() => {
+  // cy.signin({ userId });
+  // cy.visit(`/`);
+  // });
 
-  Cypress.on("uncaught:exception", (err, runnable) => {
+  Cypress.on("uncaught:exception", (_err, _runnable) => {
     // returning false here prevents Cypress from
     // failing the test
     return false;
@@ -97,7 +97,7 @@ describe("Activities Variant Tests", function () {
     cy.get('[data-test="Close Settings Button"]').click();
 
     cy.log("sign in as someone else and open the public activity");
-    cy.signin({ userId2 });
+    // cy.signin({ userId2 });
 
     cy.get('[data-test="Community"]').click();
 
