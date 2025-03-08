@@ -660,3 +660,50 @@ export async function createCurationFolder({
     inLibrary: true,
   });
 }
+
+export async function getPendingCurationRequests({
+  loggedInUserId,
+}: {
+  loggedInUserId: Uint8Array;
+}) {
+  await mustBeAdmin(loggedInUserId);
+  const requests = await prisma.libraryActivityInfos.findMany({
+    where: {
+      ownerRequested: true,
+      status: LibraryStatus.PENDING_REVIEW,
+    },
+    select: {
+      sourceId: true,
+      contentId: true,
+      source: {
+        select: {
+          librarySourceEvents: {
+            take: 1,
+            where: {
+              eventType: LibraryEventType.SUBMIT_REQUEST,
+            },
+            select: {
+              dateTime: true,
+            },
+            orderBy: {
+              dateTime: "desc",
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const requestsWithDate = requests
+    .map((request) => {
+      return {
+        sourceId: request.sourceId,
+        contentId: request.contentId,
+        submitDate: request.source.librarySourceEvents[0].dateTime,
+      };
+    })
+    // Sort in ascending order by submit date
+    .sort((a, b) => a.submitDate.getTime() - b.submitDate.getTime());
+
+  return requestsWithDate;
+}

@@ -11,10 +11,12 @@ import {
   publishActivityToLibrary,
   unpublishActivityFromLibrary,
   deleteDraftFromLibrary,
+  getPendingCurationRequests,
 } from "../query/curate";
 import { createContent, deleteContent } from "../query/activity";
 import { setContentIsPublic } from "../query/share";
 import { getContent } from "../query/activity_edit_view";
+import { isEqualUUID } from "../utils/uuid";
 
 async function expectStatusIs(
   sourceId: Uint8Array,
@@ -522,6 +524,211 @@ test("Cannot add draft of curated activity", async () => {
       loggedInUserId: adminId,
     }),
   ).rejects.toThrowError();
+});
+test("List of pending requests updates", async () => {
+  // We will test that the submit date is within 5 minutes after test start
+  // aka a ~generally~ reasonable time
+  const startTestTimestamp = Date.now();
+  const generousUpperBoundTime = startTestTimestamp + 1000 * 60 * 5;
+
+  // Setup
+  const { userId: adminId } = await createTestAdminUser();
+  const { userId: ownerId } = await createTestUser();
+
+  let sourceIds: Uint8Array[] = [];
+  for (let i = 0; i < 3; i++) {
+    const { contentId } = await createContent({
+      loggedInUserId: ownerId,
+      contentType: "singleDoc",
+      parentId: null,
+    });
+    await setContentIsPublic({
+      contentId,
+      loggedInUserId: ownerId,
+      isPublic: true,
+    });
+    sourceIds.push(contentId);
+  }
+
+  // Non-admin cannot access all pending requests
+  await expect(() =>
+    getPendingCurationRequests({ loggedInUserId: ownerId }),
+  ).rejects.toThrowError();
+
+  // No pending requests
+  let requests = await getPendingCurationRequests({ loggedInUserId: adminId });
+
+  function onlyRelevant(
+    requests: {
+      sourceId: Uint8Array;
+      contentId: Uint8Array | null;
+      submitDate: Date;
+    }[],
+  ) {
+    return requests.filter(
+      ({ sourceId: source }) =>
+        isEqualUUID(source, sourceIds[0]) ||
+        isEqualUUID(source, sourceIds[1]) ||
+        isEqualUUID(source, sourceIds[2]),
+    );
+  }
+
+  requests = requests.filter((r) => sourceIds.includes(r.sourceId));
+  requests = onlyRelevant(requests);
+  expect(requests).eqls([]);
+
+  // Owner requests review for activity #1
+  await submitLibraryRequest({
+    loggedInUserId: ownerId,
+    contentId: sourceIds[0],
+  });
+  requests = await getPendingCurationRequests({ loggedInUserId: adminId });
+
+  requests = onlyRelevant(requests);
+
+  expect(requests.length).eqls(1);
+  expect(requests[0].sourceId).eqls(sourceIds[0]);
+  expect(requests[0].contentId).eqls(null);
+  expect(requests[0].submitDate.getTime()).toBeGreaterThanOrEqual(
+    startTestTimestamp,
+  );
+  expect(requests[0].submitDate.getTime()).toBeLessThan(generousUpperBoundTime);
+
+  // Owner requests review for 3rd activity and then 2nd
+  await submitLibraryRequest({
+    loggedInUserId: ownerId,
+    contentId: sourceIds[2],
+  });
+  await submitLibraryRequest({
+    loggedInUserId: ownerId,
+    contentId: sourceIds[1],
+  });
+
+  requests = await getPendingCurationRequests({ loggedInUserId: adminId });
+  requests = onlyRelevant(requests);
+
+  console.log(requests.map((r) => r.submitDate.getTime() % 10000000));
+
+  // The order should be the one in which they were requested, not the order they were made
+  expect(requests.length).eqls(3);
+  expect(requests[0].sourceId).eqls(sourceIds[0]);
+  expect(requests[0].contentId).eqls(null);
+  expect(requests[0].submitDate.getTime()).toBeGreaterThanOrEqual(
+    startTestTimestamp,
+  );
+  expect(requests[0].submitDate.getTime()).toBeLessThan(generousUpperBoundTime);
+
+  expect(requests[1].sourceId).eqls(sourceIds[2]);
+  expect(requests[1].contentId).eqls(null);
+  expect(requests[1].submitDate.getTime()).toBeGreaterThanOrEqual(
+    startTestTimestamp,
+  );
+  expect(requests[1].submitDate.getTime()).toBeLessThan(generousUpperBoundTime);
+
+  expect(requests[2].sourceId).eqls(sourceIds[1]);
+  expect(requests[2].contentId).eqls(null);
+  expect(requests[2].submitDate.getTime()).toBeGreaterThanOrEqual(
+    startTestTimestamp,
+  );
+  expect(requests[2].submitDate.getTime()).toBeLessThan(generousUpperBoundTime);
+
+  // Add draft of activity #3 and return #1 for revision
+  const { draftId: draft3Id } = await addDraftToLibrary({
+    contentId: sourceIds[2],
+    loggedInUserId: adminId,
+  });
+  await markLibraryRequestNeedsRevision({
+    sourceId: sourceIds[0],
+    loggedInUserId: adminId,
+    comments: "No, 1+1 does not equal 3.",
+  });
+
+  requests = await getPendingCurationRequests({ loggedInUserId: adminId });
+  requests = onlyRelevant(requests);
+
+  expect(requests.length).eqls(2);
+  expect(requests[0].sourceId).eqls(sourceIds[2]);
+  expect(requests[0].contentId).eqls(draft3Id);
+  expect(requests[0].submitDate.getTime()).toBeGreaterThanOrEqual(
+    startTestTimestamp,
+  );
+  expect(requests[0].submitDate.getTime()).toBeLessThan(generousUpperBoundTime);
+
+  expect(requests[1].sourceId).eqls(sourceIds[1]);
+  expect(requests[1].contentId).eqls(null);
+  expect(requests[1].submitDate.getTime()).toBeGreaterThanOrEqual(
+    startTestTimestamp,
+  );
+  expect(requests[1].submitDate.getTime()).toBeLessThan(generousUpperBoundTime);
+
+  // Publish activity #3, user removes request for #2
+  await publishActivityToLibrary({
+    draftId: draft3Id,
+    loggedInUserId: adminId,
+    comments: "Looks good.",
+  });
+  await cancelLibraryRequest({
+    contentId: sourceIds[1],
+    loggedInUserId: ownerId,
+  });
+
+  requests = await getPendingCurationRequests({ loggedInUserId: adminId });
+  requests = onlyRelevant(requests);
+
+  expect(requests).eqls([]);
+
+  // Unpublish activity #3, it reappears in the pending list
+  await unpublishActivityFromLibrary({
+    contentId: draft3Id,
+    loggedInUserId: adminId,
+  });
+
+  requests = await getPendingCurationRequests({ loggedInUserId: adminId });
+  requests = onlyRelevant(requests);
+
+  expect(requests.length).eqls(1);
+  expect(requests[0].sourceId).eqls(sourceIds[2]);
+  expect(requests[0].contentId).eqls(draft3Id);
+  expect(requests[0].submitDate.getTime()).toBeGreaterThanOrEqual(
+    startTestTimestamp,
+  );
+  expect(requests[0].submitDate.getTime()).toBeLessThan(generousUpperBoundTime);
+
+  // Owner re-requests review for #2 (cancelled) and #1 (needs revision)
+  await submitLibraryRequest({
+    loggedInUserId: ownerId,
+    contentId: sourceIds[1],
+  });
+  await submitLibraryRequest({
+    loggedInUserId: ownerId,
+    contentId: sourceIds[0],
+  });
+
+  requests = await getPendingCurationRequests({ loggedInUserId: adminId });
+  requests = onlyRelevant(requests);
+
+  // New order: #3, #2, #1
+  expect(requests.length).eqls(3);
+  expect(requests[0].sourceId).eqls(sourceIds[2]);
+  expect(requests[0].contentId).eqls(draft3Id);
+  expect(requests[0].submitDate.getTime()).toBeGreaterThanOrEqual(
+    startTestTimestamp,
+  );
+  expect(requests[0].submitDate.getTime()).toBeLessThan(generousUpperBoundTime);
+
+  expect(requests[1].sourceId).eqls(sourceIds[1]);
+  expect(requests[1].contentId).eqls(null);
+  expect(requests[1].submitDate.getTime()).toBeGreaterThanOrEqual(
+    startTestTimestamp,
+  );
+  expect(requests[1].submitDate.getTime()).toBeLessThan(generousUpperBoundTime);
+
+  expect(requests[2].sourceId).eqls(sourceIds[0]);
+  expect(requests[2].contentId).eqls(null);
+  expect(requests[2].submitDate.getTime()).toBeGreaterThanOrEqual(
+    startTestTimestamp,
+  );
+  expect(requests[2].submitDate.getTime()).toBeLessThan(generousUpperBoundTime);
 });
 
 test.todo("getCurationContent and all its variations (and search!)");
