@@ -41,17 +41,15 @@ model content {
   numToSelect           Int                      @default(1) @db.UnsignedSmallInt
   selectByVariant       Boolean                  @default(false)
   // Assignments
-  assignmentId          Bytes?                   @db.Binary(16)
-  activityLevelAttempts Boolean                  @default(false)
-  itemLevelAttempts     Boolean                  @default(false)
+  nonRootAssignmentId   Bytes?                   @db.Binary(16)
+  nonRootAssignment     assignments?             @relation("nonRootAssignment", fields: [nonRootAssignmentId], references: [rootContentId], onDelete: SetNull, onUpdate: NoAction)
+  rootAssignment        assignments?             @relation("rootAssignment")
   owner                 users                    @relation(fields: [ownerId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
   parent                content?                 @relation("childParent", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   children              content[]                @relation("childParent")
   license               licenses?                @relation(fields: [licenseCode], references: [code], onDelete: NoAction, onUpdate: NoAction)
   doenetmlVersion       doenetmlVersions?        @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  assignment            assignment?              @relation(fields: [assignmentId], references: [rootContentId], onDelete: SetNull, onUpdate: NoAction)
   contentFeatures       contentFeatures[]
-  assignmentScores      assignmentScores[]
   promotedContent       promotedContent[]
   sharedWith            contentShares[]
   classifications       contentClassifications[]
@@ -63,9 +61,7 @@ model content {
   libraryActivityEvents libraryEvents[]          @relation("activity")
   contentRevisions      contentRevisions[]
   contributorHistory    contributorHistory[]
-  assignmentAsRoot      assignment?              @relation("rootContent")
   submittedResponses    submittedResponses[]
-  contentState          contentState[]
 
   @@index([ownerId, parentId, sortIndex])
   @@index([parentId, type])
@@ -184,63 +180,71 @@ model doenetmlVersions {
   contentRevisions   contentRevisions[]
 }
 
-model assignment {
-  rootContentId  Bytes     @id @db.Binary(16)
-  classCode      String    @db.VarChar(45)
+model assignments {
+  rootContentId  Bytes          @id @db.Binary(16)
+  assigned       Boolean        @default(false)
+  mode           AssignmentMode @default(formative)
+  classCode      String         @db.VarChar(45)
   codeValidUntil DateTime?
-  maxAttempts    Int       @default(1) @db.UnsignedSmallInt
-  rootContent    content   @relation("rootContent", fields: [rootContentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  allContent     content[]
+  maxAttempts    Int            @default(1) @db.UnsignedSmallInt
+  rootContent    content        @relation("rootAssignment", fields: [rootContentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nonRootContent content[]      @relation("nonRootAssignment")
+  contentState   contentState[]
 
   @@index([classCode])
 }
 
-model assignmentScores {
-  contentId    Bytes          @db.Binary(16)
-  userId       Bytes          @db.Binary(16)
-  score        Float          @default(0)
-  scoreByItem  String?        @db.Text
-  content      content        @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user         users          @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
-  contentState contentState[]
-
-  @@id([contentId, userId])
-  @@index([userId])
+enum AssignmentMode {
+  formative
+  summative
 }
 
 model contentState {
-  contentId            Bytes            @db.Binary(16)
-  userId               Bytes            @db.Binary(16)
-  attemptNumber        Int              @db.UnsignedSmallInt
-  contentAttemptNumber Int              @db.UnsignedSmallInt
-  itemAttemptNumbers   String?
-  score                Float            @default(0)
-  scoreByItem          String?          @db.Text
-  state                String?          @db.MediumText
-  assignmentScore      assignmentScores @relation(fields: [contentId, userId], references: [contentId, userId], onDelete: NoAction, onUpdate: NoAction)
-  content              content          @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user                 users            @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  contentId         Bytes              @db.Binary(16)
+  userId            Bytes              @db.Binary(16)
+  attemptNumber     Int                @db.UnsignedSmallInt
+  score             Float              @default(0)
+  state             String?            @db.MediumText
+  assignment        assignments        @relation(fields: [contentId], references: [rootContentId], onDelete: NoAction, onUpdate: NoAction)
+  user              users              @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  contentItemStates contentItemState[]
 
   @@id([contentId, userId, attemptNumber])
   @@index([userId])
 }
 
+model contentItemState {
+  contentId            Bytes        @db.Binary(16)
+  userId               Bytes        @db.Binary(16)
+  contentAttemptNumber Int          @db.UnsignedSmallInt
+  itemNumber           Int
+  shuffledItemNumber   Int
+  itemAttemptNumber    Int
+  score                Float        @default(0)
+  state                String?      @db.MediumText
+  contentState         contentState @relation(fields: [contentId, userId, contentAttemptNumber], references: [contentId, userId, attemptNumber], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([contentId, userId, contentAttemptNumber, itemNumber, itemAttemptNumber])
+  @@unique([contentId, userId, contentAttemptNumber, shuffledItemNumber, itemAttemptNumber])
+}
+
 model submittedResponses {
-  id                 Int      @id @default(autoincrement())
-  contentId          Bytes    @db.Binary(16)
-  userId             Bytes    @db.Binary(16)
-  attemptNumber      Int      @db.UnsignedSmallInt
-  answerId           String
-  response           String   @db.Text
-  answerNumber       Int?
-  itemNumber         Int
-  questionNumber     Int
-  creditAchieved     Float
-  itemCreditAchieved Float
-  docCreditAchieved  Float
-  submittedAt        DateTime @default(now())
-  content            content  @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user               users    @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  id                      Int      @id @default(autoincrement())
+  contentId               Bytes    @db.Binary(16)
+  userId                  Bytes    @db.Binary(16)
+  attemptNumber           Int      @db.UnsignedSmallInt
+  answerId                String
+  response                String   @db.Text
+  answerNumber            Int?
+  componentNumber         Int
+  itemNumber              Int
+  shuffledItemNumber      Int
+  answerCreditAchieved    Float
+  componentCreditAchieved Float
+  itemCreditAchieved      Float
+  submittedAt             DateTime @default(now())
+  content                 content  @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user                    users    @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([contentId, answerId])
   @@index([userId])
@@ -266,7 +270,6 @@ model users {
   isAnonymous        Boolean              @default(false)
   cardView           Boolean              @default(false)
   content            content[]
-  assignmentScores   assignmentScores[]
   contentState       contentState[]
   submittedResponses submittedResponses[]
   sharedWithMe       contentShares[]

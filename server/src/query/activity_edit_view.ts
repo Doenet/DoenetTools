@@ -50,7 +50,6 @@ export async function getActivityEditorData({
     contentId,
     loggedInUserId,
     includeAssignInfo: true,
-    countAssignmentScores: true,
     includeClassifications: true,
     includeShareDetails: true,
     includeLibraryInfo: true,
@@ -126,7 +125,6 @@ export async function getContent({
   contentId,
   loggedInUserId,
   includeAssignInfo = false,
-  countAssignmentScores = false,
   includeLibraryInfo = false,
   includeClassifications = false,
   includeShareDetails = false,
@@ -137,7 +135,6 @@ export async function getContent({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   includeAssignInfo?: boolean;
-  countAssignmentScores?: boolean;
   includeLibraryInfo?: boolean;
   includeClassifications?: boolean;
   includeShareDetails?: boolean;
@@ -183,7 +180,6 @@ export async function getContent({
 
   const contentSelect = returnContentSelect({
     includeAssignInfo,
-    countAssignmentScores,
     includeLibraryInfo,
     includeClassifications,
     includeShareDetails,

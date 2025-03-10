@@ -545,11 +545,8 @@ test("activity editor data and my folder contents before and after assigned", as
       classCode,
       codeValidUntil: closeAt.toJSDate(),
       hasScoreData: false,
-      rootContentId: contentId,
-      rootName: "Untitled Document",
-      rootType: "singleDoc",
-      activityLevelAttempts: false,
-      itemLevelAttempts: false,
+      maxAttempts: 1,
+      mode: "formative",
     },
   };
 
@@ -598,6 +595,14 @@ test("activity editor data and my folder contents before and after assigned", as
     doenetML: "",
     doenetmlVersion: currentDoenetmlVersion,
     parent: null,
+    assignmentInfo: {
+      assignmentStatus: "Unassigned",
+      classCode,
+      codeValidUntil: null,
+      hasScoreData: false,
+      maxAttempts: 1,
+      mode: "formative",
+    },
   };
   if (closedData === undefined) {
     throw Error("shouldn't happen");
@@ -617,7 +622,7 @@ test("activity editor data and my folder contents before and after assigned", as
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
-  // re-opening, re-assigns with different code
+  // re-opening, re-assigns with same code
   closeAt = DateTime.now().plus({ days: 1 });
   const { classCode: newClassCode } = await openAssignmentWithCode({
     contentId: contentId,
@@ -625,7 +630,7 @@ test("activity editor data and my folder contents before and after assigned", as
     loggedInUserId: ownerId,
   });
 
-  expect(newClassCode).not.eq(classCode);
+  expect(newClassCode).eq(classCode);
 
   const { activity: openedData2 } = await getActivityEditorData({
     contentId: contentId,
@@ -650,14 +655,11 @@ test("activity editor data and my folder contents before and after assigned", as
     parent: null,
     assignmentInfo: {
       assignmentStatus: "Open",
-      classCode: newClassCode,
+      classCode,
       codeValidUntil: closeAt.toJSDate(),
       hasScoreData: false,
-      rootContentId: contentId,
-      rootName: "Untitled Document",
-      rootType: "singleDoc",
-      activityLevelAttempts: false,
-      itemLevelAttempts: false,
+      maxAttempts: 1,
+      mode: "formative",
     },
   };
 
@@ -712,14 +714,11 @@ test("activity editor data and my folder contents before and after assigned", as
     parent: null,
     assignmentInfo: {
       assignmentStatus: "Open",
-      classCode: newClassCode,
+      classCode,
       codeValidUntil: closeAt.toJSDate(),
       hasScoreData: true,
-      rootContentId: contentId,
-      rootName: "Untitled Document",
-      rootType: "singleDoc",
-      activityLevelAttempts: false,
-      itemLevelAttempts: false,
+      maxAttempts: 1,
+      mode: "formative",
     },
   };
   if (openedData3 === undefined) {
@@ -769,14 +768,11 @@ test("activity editor data and my folder contents before and after assigned", as
     parent: null,
     assignmentInfo: {
       assignmentStatus: "Closed",
-      classCode: newClassCode,
+      classCode,
       codeValidUntil: null,
       hasScoreData: true,
-      rootContentId: contentId,
-      rootName: "Untitled Document",
-      rootType: "singleDoc",
-      activityLevelAttempts: false,
-      itemLevelAttempts: false,
+      maxAttempts: 1,
+      mode: "formative",
     },
   };
 
@@ -800,9 +796,9 @@ test("activity editor data and my folder contents before and after assigned", as
   expect(folderData.content).eqls([expectedData]);
 
   // explicitly unassigning fails due to the presence of data
-  await expect(
-    unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
-  ).rejects.toThrow("not found");
+  expect(
+    await unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
+  ).eqls({ success: false });
 });
 
 test("activity editor data shows its parent folder is public", async () => {

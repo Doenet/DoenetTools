@@ -3,6 +3,7 @@ import { requireLoggedIn } from "../middleware/validationMiddleware";
 import {
   createNewAttemptSchema,
   getScoreSchema,
+  loadItemStateSchema,
   loadStateSchema,
   scoreAndStateSchema,
 } from "../schemas/scoreSchema";
@@ -29,5 +30,9 @@ scoreRouter.post(
 );
 
 scoreRouter.get("/loadState", queryLoggedIn(loadState, loadStateSchema));
+scoreRouter.get(
+  "/loadItemState",
+  queryLoggedIn(loadState, loadItemStateSchema),
+);
 
 scoreRouter.get("/getScore", queryLoggedIn(getScore, getScoreSchema));

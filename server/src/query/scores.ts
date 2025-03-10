@@ -1,62 +1,84 @@
 import { prisma } from "../model";
 import { isEqualUUID } from "../utils/uuid";
-import { filterEditableActivity } from "../utils/permissions";
 import { Prisma } from "@prisma/client";
 import { InvalidRequestError } from "../utils/error";
+import { filterEditableActivity } from "../utils/permissions";
 
 // TODO: do we still save score and state if assignment isn't open?
 // If not, how do we communicate that fact
+
+/**
+ * Save the `score` and `state` of assignment `contentId` for `loggedInUserId`.
+ * The specified `attemptNumber` must be the latest attempt of `loggedInUserId`
+ * (otherwise an `InvalidRequestError` is thrown).
+ *
+ * If `item` is specified, then also save the `score` and `state` of `itemNumber`,
+ * or, if not specified, then `shuffledItemNumber`, throwing an `itemAttemptNumber` if neither specified.
+ * The specified `itemAttemptNumber` must be the latest attempt of `loggedInUserId`
+ * (otherwise an `InvalidRequestError` is thrown).
+ * The `shuffledItemNumber` is the possibly reordered number for `itemNumber`.
+ */
 export async function saveScoreAndState({
   contentId,
+  code,
   loggedInUserId,
   attemptNumber,
   score,
-  scoreByItem,
   state,
+  item,
 }: {
   contentId: Uint8Array;
+  code: string;
   loggedInUserId: Uint8Array;
   attemptNumber: number;
   score: number;
-  scoreByItem?: number[];
   state: string;
+  item?: {
+    itemNumber?: number;
+    shuffledItemNumber?: number;
+    itemAttemptNumber: number;
+    shuffledItemOrder: number[];
+    score: number;
+    state: string;
+  };
 }) {
-  // get previous scores, creating record if needed
-  const prevScores = await prisma.assignmentScores.upsert({
+  const assignment = await prisma.assignments.findUniqueOrThrow({
     where: {
-      contentId_userId: { contentId, userId: loggedInUserId },
+      rootContentId: contentId,
+      assigned: true,
+      classCode: code,
     },
-    update: {},
-    create: { contentId, userId: loggedInUserId },
-    select: { score: true, scoreByItem: true },
+    select: {
+      mode: true,
+      contentState: {
+        distinct: ["contentId", "userId"],
+        where: { userId: loggedInUserId },
+        orderBy: { attemptNumber: "desc" },
+        select: { attemptNumber: true },
+      },
+    },
   });
 
-  const maxRes = await prisma.contentState.aggregate({
-    where: { contentId, userId: loggedInUserId },
-    _max: {
-      attemptNumber: true,
-    },
-  });
-  const maxAttemptNumber = maxRes._max.attemptNumber;
+  const maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
 
   if (
     attemptNumber !== maxAttemptNumber &&
-    !(attemptNumber === 1 && maxAttemptNumber === null)
+    !(attemptNumber === 1 && maxAttemptNumber === 0)
   ) {
     throw new InvalidRequestError(
       "Cannot save score and state to non-maximal attempt number",
     );
   }
 
-  const scoreByItemString = scoreByItem ? JSON.stringify(scoreByItem) : null;
+  if (assignment.mode === "formative" && item !== undefined) {
+    // for formative assessments with items,
+    // the attempt level score of the overall assignment is not used.
+    // (Instead the score is calculated from the maximal scores of each item.)
+    // So, we ignore the score data sent in and leave the score field of `contentState` at 0.
+    score = 0;
+  }
 
-  // if this is the first attempt and we have items, initialize item attempt numbers
-  const newItemAttemptNumbersString =
-    scoreByItem && maxAttemptNumber === null
-      ? JSON.stringify(Array(scoreByItem.length).fill(1))
-      : null;
-
-  // add/update the activity state for this attempt
+  // add/update the content state for this attempt
   await prisma.contentState.upsert({
     where: {
       contentId_userId_attemptNumber: {
@@ -67,240 +89,268 @@ export async function saveScoreAndState({
     },
     update: {
       score,
-      scoreByItem: scoreByItemString,
       state,
     },
     create: {
       contentId,
       userId: loggedInUserId,
-      attemptNumber: 1,
-      contentAttemptNumber: 1,
-      itemAttemptNumbers: newItemAttemptNumbersString,
+      attemptNumber,
       score,
-      scoreByItem: scoreByItemString,
       state,
     },
   });
 
-  return await updateScores({
-    contentId,
-    loggedInUserId,
-    score,
-    scoreByItem,
-    prevScore: prevScores.score,
-    prevScoreByItemString: prevScores.scoreByItem,
-  });
-}
+  if (item) {
+    if (maxAttemptNumber === 0) {
+      // if this is the first time that state was saved,
+      // create a record in contentItemState for each item
+      await prisma.contentItemState.createMany({
+        data: item.shuffledItemOrder.map((shuffledNum, idx) => ({
+          contentId,
+          userId: loggedInUserId,
+          contentAttemptNumber: 1,
+          itemNumber: idx + 1,
+          itemAttemptNumber: 1,
+          shuffledItemNumber: shuffledNum,
+        })),
+      });
+    }
 
-async function updateScores({
-  contentId,
-  loggedInUserId,
-  score,
-  scoreByItem,
-  prevScore,
-  prevScoreByItemString,
-}: {
-  contentId: Uint8Array;
-  loggedInUserId: Uint8Array;
-  score: number;
-  scoreByItem?: number[];
-  prevScore: number;
-  prevScoreByItemString: string | null;
-}) {
-  // We don't update the actual score tables
-  // unless the score increased
+    const itemNumber =
+      item.itemNumber ??
+      item.shuffledItemOrder.indexOf(item.shuffledItemNumber ?? 0) + 1;
 
-  const prevScoreByItem = parseNumberArrayString(prevScoreByItemString);
-
-  const updateScores =
-    score > prevScore ||
-    (scoreByItem &&
-      (prevScoreByItem === null ||
-        scoreByItem.some((s, i) => s > prevScoreByItem[i])));
-
-  if (updateScores) {
-    let newScore = Math.max(score, prevScore);
-    const newScoreByItem =
-      scoreByItem === undefined
-        ? null
-        : prevScoreByItem === null
-          ? scoreByItem
-          : scoreByItem.map((s, i) => Math.max(s, prevScoreByItem[i]));
-    if (newScoreByItem) {
-      // for now, since we haven't added weights of the items,
-      // we can calculate the score from newScoreByItem by taking the unweighted average
-      newScore = Math.max(
-        newScore,
-        newScoreByItem.reduce((a, c) => a + c, 0) / newScoreByItem.length,
+    if (itemNumber === 0) {
+      throw new InvalidRequestError(
+        "A valid itemNumber or shuffledItemNumber must be supplied",
       );
     }
-    await prisma.assignmentScores.update({
+
+    const maxItemResult = await prisma.contentItemState.aggregate({
       where: {
-        contentId_userId: { contentId, userId: loggedInUserId },
+        contentId,
+        userId: loggedInUserId,
+        contentAttemptNumber: attemptNumber,
+        itemNumber,
       },
-      data: {
-        score: newScore,
-        scoreByItem: newScoreByItem ? JSON.stringify(newScoreByItem) : null,
+      _max: {
+        itemAttemptNumber: true,
       },
     });
 
-    return { score: newScore, scoreByItem: newScoreByItem };
-  }
+    const maxItemAttemptNumber = maxItemResult._max.itemAttemptNumber ?? 0;
+    if (
+      item.itemAttemptNumber !== maxItemAttemptNumber &&
+      !(item.itemAttemptNumber === 1 && maxItemAttemptNumber === 0)
+    ) {
+      throw new InvalidRequestError(
+        "Cannot save score and state to non-maximal item attempt number",
+      );
+    }
 
-  return { score: prevScore, scoreByItem: prevScoreByItem };
+    const shuffledItemNumber = item.shuffledItemOrder[itemNumber - 1];
+
+    // add/update the content item state for this attempt
+    await prisma.contentItemState.upsert({
+      where: {
+        contentId_userId_contentAttemptNumber_itemNumber_itemAttemptNumber: {
+          contentId,
+          userId: loggedInUserId,
+          contentAttemptNumber: attemptNumber,
+          itemNumber,
+          itemAttemptNumber: item.itemAttemptNumber,
+        },
+      },
+      update: {
+        score: item.score,
+        state: item.state,
+        shuffledItemNumber,
+      },
+      create: {
+        contentId,
+        userId: loggedInUserId,
+        contentAttemptNumber: attemptNumber,
+        itemNumber,
+        itemAttemptNumber: item.itemAttemptNumber,
+        score: item.score,
+        state: item.state,
+        shuffledItemNumber,
+      },
+    });
+  }
 }
 
+/**
+ * Create a new attempt of assignment `contentId` for `loggedInUserId`, assuming `code` matches.
+ *
+ * The behavior depends on whether or not `itemNumber` is specified and it must correspond to the assignment mode as follows:
+ * - If the assignment mode is "formative", then `itemNumber` must be supplied to create a new attempt of just that item.
+ * - If the assignment mode is "summative", then `itemNumber` must not be supplied to create an new attempt of the entire activity.
+ *
+ * If the presence of `itemNumber` does not match the assignment mode, then an `InvalidRequestError` is thrown,
+ * with the exception that singleDoc assignments don't require `itemNumber` even if the assignment mode is "formative".
+ *
+ * If `shuffledItemOrder` is specified, then:
+ * - if `itemNumber` is not specified, create new item attempts for all items with `shuffledItemNumber`
+ *   as given by `shuffledItemOrder`.
+ * - if `itemNumber` is specified, then use its `shuffledItemNumber` determined by `shuffledItemOrder`
+ *
+ * If `itemNumber` is specified but not `shuffledItemOrder`, then an `InvalidRequestError` is thrown.
+ */
 export async function createNewAttempt({
   contentId,
+  code,
   loggedInUserId,
   itemNumber,
-  numItems,
-  score,
-  scoreByItem,
-  state,
+  shuffledItemNumber,
+  shuffledItemOrder,
 }: {
   contentId: Uint8Array;
+  code: string;
   loggedInUserId: Uint8Array;
   itemNumber?: number;
-  numItems?: number;
-  score: number;
-  scoreByItem?: number[];
-  state: string | null;
+  shuffledItemNumber?: number;
+  shuffledItemOrder?: number[];
 }) {
-  // get previous scores, creating record if needed
-  const prevScores = await prisma.assignmentScores.upsert({
+  const assignment = await prisma.assignments.findUniqueOrThrow({
     where: {
-      contentId_userId: { contentId, userId: loggedInUserId },
+      rootContentId: contentId,
+      assigned: true,
+      classCode: code,
     },
-    update: {},
-    create: { contentId, userId: loggedInUserId },
-    select: { score: true, scoreByItem: true },
+    select: {
+      mode: true,
+      rootContent: { select: { type: true } },
+      contentState: {
+        distinct: ["contentId", "userId"],
+        where: { userId: loggedInUserId },
+        orderBy: { attemptNumber: "desc" },
+        select: { attemptNumber: true },
+      },
+    },
   });
 
-  const maxRes = await prisma.contentState.aggregate({
-    where: { contentId, userId: loggedInUserId },
-    _max: {
-      attemptNumber: true,
-    },
-  });
-  const maxAttemptNumber = maxRes._max.attemptNumber;
+  if (assignment.mode === "formative") {
+    if (
+      itemNumber === undefined &&
+      shuffledItemNumber === undefined &&
+      assignment.rootContent.type !== "singleDoc"
+    ) {
+      throw new InvalidRequestError(
+        "Formative assessments do not support creating new attempts of entire activity",
+      );
+    }
+  } else if (itemNumber !== undefined || shuffledItemNumber !== undefined) {
+    throw new InvalidRequestError(
+      "Summative assessments do not support creating new attempts of single items",
+    );
+  }
 
-  const prevState =
-    maxAttemptNumber === null
-      ? null
-      : await prisma.contentState.findUnique({
-          where: {
-            contentId_userId_attemptNumber: {
-              contentId,
-              userId: loggedInUserId,
-              attemptNumber: maxAttemptNumber,
-            },
-          },
-          select: {
-            score: true,
-            scoreByItem: true,
-            contentAttemptNumber: true,
-            itemAttemptNumbers: true,
-          },
-        });
+  let maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
 
-  if (!prevState) {
-    // A new attempt is being created before any state was saved.
-    // Save a record to contentState for attemptNumber 1, contentAttemptNumber 1
-    const itemAttemptNumbers = numItems
-      ? JSON.stringify(Array(numItems).fill(1))
-      : null;
-    const scoreByItem = numItems
-      ? JSON.stringify(Array(numItems).fill(0))
-      : null;
+  if (maxAttemptNumber === 0) {
+    // If not attempt made yet, create attempt 1
+    // optionally with related records for items (if shuffledItemOrder if given)
+
+    maxAttemptNumber++;
     await prisma.contentState.create({
       data: {
         contentId,
         userId: loggedInUserId,
-        attemptNumber: 1,
-        contentAttemptNumber: 1,
-        score: 0,
-        scoreByItem,
-        itemAttemptNumbers,
+        attemptNumber: maxAttemptNumber,
+        contentItemStates: {
+          create: shuffledItemOrder?.map((shuffledNum, idx) => ({
+            itemNumber: idx + 1,
+            itemAttemptNumber: 1,
+            shuffledItemNumber: shuffledNum,
+          })),
+        },
       },
     });
   }
 
-  let newItemAttemptNumbers: number[] | null = null;
-  let newContentAttemptNumber = prevState?.contentAttemptNumber ?? 1;
-
-  if (itemNumber === undefined) {
-    // we are creating a new attempt for the entire activity
-    newContentAttemptNumber++;
-
-    // if we have items, then set all item attempt numbers to 1
-    newItemAttemptNumbers =
-      numItems === undefined ? null : Array(numItems).fill(1);
+  if (itemNumber === undefined && shuffledItemNumber === undefined) {
+    // create a new attempt of the entire activity,
+    // optionally with related records for items (if shuffledItemOrder if given)
+    await prisma.contentState.create({
+      data: {
+        contentId,
+        userId: loggedInUserId,
+        attemptNumber: maxAttemptNumber + 1,
+        contentItemStates: {
+          create: shuffledItemOrder?.map((shuffledNum, idx) => ({
+            itemNumber: idx + 1,
+            itemAttemptNumber: 1,
+            shuffledItemNumber: shuffledNum,
+          })),
+        },
+      },
+    });
   } else {
-    if (numItems === undefined || itemNumber > numItems) {
+    // create a new attempt of just item `itemNumber` or `shuffleItemNumber`
+
+    if (shuffledItemOrder === undefined) {
       throw new InvalidRequestError(
-        "Item number must be no larger than numItems",
+        "Cannot create a new item attempt without specifying shuffledItemOrder",
       );
     }
 
-    const prevItemAttemptNumbers = parseNumberArrayString(
-      prevState?.itemAttemptNumbers,
-    );
+    if (itemNumber === undefined) {
+      itemNumber = shuffledItemOrder.indexOf(shuffledItemNumber!) + 1;
 
-    // create newItemAttemptNumbers with length `numItems`,
-    // filling in any missing items with 1
-    newItemAttemptNumbers = [];
-    if (prevItemAttemptNumbers) {
-      newItemAttemptNumbers = prevItemAttemptNumbers
-        .map((v) => (Number.isFinite(v) ? v : 1))
-        .slice(0, numItems);
-    }
-    if (newItemAttemptNumbers.length < numItems) {
-      newItemAttemptNumbers.push(
-        ...Array(numItems - newItemAttemptNumbers.length).fill(1),
-      );
+      if (itemNumber === 0) {
+        throw new InvalidRequestError(
+          "An invalid shuffledItemNumber was supplied",
+        );
+      }
     }
 
-    newItemAttemptNumbers[itemNumber - 1]++;
+    const maxResItem = await prisma.contentItemState.aggregate({
+      where: {
+        contentId,
+        userId: loggedInUserId,
+        contentAttemptNumber: maxAttemptNumber,
+        itemNumber,
+      },
+      _max: {
+        itemAttemptNumber: true,
+      },
+    });
+    const maxItemAttemptNumber = maxResItem._max.itemAttemptNumber ?? 0;
+
+    await prisma.contentItemState.create({
+      data: {
+        contentId,
+        userId: loggedInUserId,
+        contentAttemptNumber: maxAttemptNumber,
+        itemNumber,
+        itemAttemptNumber: maxItemAttemptNumber + 1,
+        shuffledItemNumber: shuffledItemOrder[itemNumber - 1],
+      },
+    });
   }
-
-  const newItemAttemptNumbersString = newItemAttemptNumbers
-    ? JSON.stringify(newItemAttemptNumbers)
-    : null;
-
-  const newAttemptNumber = (maxAttemptNumber ?? 1) + 1;
-
-  // Add new record to 'contentState` for new attempt
-  await prisma.contentState.create({
-    data: {
-      contentId,
-      userId: loggedInUserId,
-      attemptNumber: newAttemptNumber,
-      contentAttemptNumber: newContentAttemptNumber,
-      itemAttemptNumbers: newItemAttemptNumbersString,
-      score,
-      scoreByItem: scoreByItem ? JSON.stringify(scoreByItem) : null,
-      state,
-    },
-  });
-
-  const newScores = await updateScores({
-    contentId,
-    loggedInUserId,
-    score,
-    scoreByItem,
-    prevScore: prevScores.score,
-    prevScoreByItemString: prevScores.scoreByItem,
-  });
-
-  return {
-    attemptNumber: newAttemptNumber,
-    contentAttemptNumber: newContentAttemptNumber,
-    itemAttemptNumbers: newItemAttemptNumbers,
-    ...newScores,
-  };
 }
 
+/**
+ * Load the state and score for `attemptNumber` of assignment `contentId` by `requestedUserId`,
+ * defaulting to `loggedInUserId` if `requestedUserId` is not specified.
+ * If `attemptNumber` is not specified, load state from the latest attempt.
+ *
+ * If `requestedUserId` is specified to be different from `loggedInUserId`,
+ * the state will be loaded only if `loggedInUserId` is the owner of `contentId`.
+ *
+ * Also loads any item state and score from the latest `itemAttemptNumber` associated with `attemptNumber`,
+ * ordered by their `shuffledItemNumber`.
+ *
+ * Returns:
+ * - loadedState: `true` if succeeded in loading state
+ * If `loadedState` is `true`, then also returns:
+ * - attemptNumber: the attempt number for which the state was loaded
+ * - score: the user's score on this attempt
+ * - state: the user's state for this attempt, or `null` if no state
+ * - items: an array of `itemNumber`, `shuffledItemNumber`, `itemAttemptNumber`, `score`, and `state`
+ *   where `shuffledItemNumber` is consecutive and entries of `null` are substituted for any missing `shuffledItemNumber`
+ */
 export async function loadState({
   contentId,
   requestedUserId,
@@ -314,34 +364,37 @@ export async function loadState({
 }) {
   const stateUserId = requestedUserId ?? loggedInUserId;
 
-  if (!isEqualUUID(stateUserId, loggedInUserId)) {
-    // If loggedInUserId isn't the requested user, then loggedInUserId is allowed to load requested users state
-    // only if they are the owner of the assignment.
-    // If not user is not owner, then do not load state
-    try {
-      await prisma.content.findUniqueOrThrow({
-        where: {
-          id: contentId,
-          assignmentId: { not: null },
-          ...filterEditableActivity(loggedInUserId),
+  let assignment;
+
+  try {
+    assignment = await prisma.assignments.findUniqueOrThrow({
+      where: {
+        rootContentId: contentId,
+        rootContent: {
+          // if getting data for other person, you must be the owner
+          ownerId: isEqualUUID(stateUserId, loggedInUserId)
+            ? undefined
+            : loggedInUserId,
+          isDeleted: false,
         },
-      });
-    } catch (e) {
-      if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === "P2025"
-      ) {
-        return { loadedState: false as const };
-      } else {
-        throw e;
-      }
+      },
+      select: { mode: true },
+    });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2025"
+    ) {
+      return { loadedState: false as const };
+    } else {
+      throw e;
     }
   }
 
-  let documentState;
+  let contentState;
   if (attemptNumber) {
     try {
-      documentState = await prisma.contentState.findUniqueOrThrow({
+      contentState = await prisma.contentState.findUniqueOrThrow({
         where: {
           contentId_userId_attemptNumber: {
             contentId,
@@ -350,12 +403,9 @@ export async function loadState({
           },
         },
         select: {
+          attemptNumber: true,
           state: true,
           score: true,
-          scoreByItem: true,
-          attemptNumber: true,
-          contentAttemptNumber: true,
-          itemAttemptNumbers: true,
         },
       });
     } catch (e) {
@@ -369,59 +419,253 @@ export async function loadState({
       }
     }
   } else {
-    // TODO: combine these two queries into a single query.
-    // Could do it with raw SQL. Is there a way to do it with prisma?
-    const maxRes = await prisma.contentState.aggregate({
+    // If `attemptNumber` is not specified, attempt to load the latest attempt.
+
+    const lastAttemptState = await prisma.contentState.findMany({
       where: { contentId, userId: stateUserId },
+      orderBy: { attemptNumber: "desc" },
+      distinct: ["contentId", "userId"],
+      select: {
+        attemptNumber: true,
+        state: true,
+        score: true,
+      },
+    });
+
+    if (lastAttemptState.length !== 1) {
+      return { loadedState: false as const };
+    }
+
+    contentState = lastAttemptState[0];
+  }
+
+  const itemState = await prisma.contentItemState.findMany({
+    where: {
+      contentId,
+      userId: stateUserId,
+      contentAttemptNumber: contentState.attemptNumber,
+    },
+    distinct: ["contentId", "userId", "contentAttemptNumber", "itemNumber"],
+    orderBy: [{ shuffledItemNumber: "asc" }, { itemAttemptNumber: "desc" }],
+    select: {
+      itemNumber: true,
+      itemAttemptNumber: true,
+      shuffledItemNumber: true,
+      state: true,
+      score: true,
+    },
+  });
+
+  const items: ({
+    score: number;
+    state: string | null;
+    itemNumber: number;
+    shuffledItemNumber: number;
+    itemAttemptNumber: number;
+  } | null)[] = [];
+  let nextShuffledNum = 1;
+  for (const item of itemState) {
+    while (item.shuffledItemNumber > nextShuffledNum) {
+      items.push(null);
+      nextShuffledNum++;
+    }
+    items.push(item);
+    nextShuffledNum++;
+  }
+
+  if (assignment.mode === "formative" && items.length > 0) {
+    // For formative assessments with items, the `score` field on `contentState` is ignored.
+    // Instead, we calculate the score as the average of the items.
+
+    const score = items.reduce((a, c) => a + (c?.score ?? 0), 0) / items.length;
+
+    contentState.score = score;
+  }
+
+  return {
+    loadedState: true as const,
+    ...contentState,
+    items,
+  };
+}
+
+/**
+ * Load the state and score for one item of `contentAttemptNumber` of assignment `contentId` by `requestedUserId`,
+ * defaulting to `loggedInUserId` if `requestedUserId` is not specified.
+ * If `contentAttemptNumber` is not specified, load state from the last attempt.
+ *
+ * The item returned is determined by `itemNumber`, if defined, else `shuffledItemNumber`,
+ * loading for item number 1 if neither was supplied.
+ * Item state from `itemAttemptNumber` is loading, loading state from the last item attempt if not specified.
+ *
+ * If `requestedUserId` is specified to be different from `loggedInUserId`,
+ * the state will be loaded only if `loggedInUserId` is the owner of `contentId`.
+ *
+ * Returns:
+ * - loadedState: `true` if succeeded in loading state
+ * If `loadedState` is `true`, then also returns:
+ * - contentAttemptNumber: the attempt number of the activity for which the state was loaded
+ * - itemAttemptNumber: the attempt number of the item for which state was loaded
+ * - itemNumber: the (original, unshuffled) item number of the item for which state was loaded
+ * - shuffledItemNumber: the potentially shuffled item number of the order the student viewed
+ * - score: the user's score on this attempt of the item
+ * - state: the user's state for this attempt of the item, or `null` if no state
+ */
+export async function loadItemState({
+  contentId,
+  requestedUserId,
+  loggedInUserId,
+  contentAttemptNumber,
+  itemNumber,
+  shuffledItemNumber,
+  itemAttemptNumber,
+}: {
+  contentId: Uint8Array;
+  requestedUserId?: Uint8Array;
+  loggedInUserId: Uint8Array;
+  contentAttemptNumber?: number;
+  itemNumber?: number;
+  shuffledItemNumber?: number;
+  itemAttemptNumber?: number;
+}) {
+  const stateUserId = requestedUserId ?? loggedInUserId;
+
+  if (itemNumber === undefined) {
+    if (shuffledItemNumber === undefined) {
+      // if both item numbers are undefined, get itemNumber 1
+      itemNumber = 1;
+    }
+  } else if (shuffledItemNumber !== undefined) {
+    // if both item numbers are defined, just use itemNumber
+    shuffledItemNumber = undefined;
+  }
+
+  // it attemptNumber was not supplied, find the maximum attempt number, defaulting to 1 if not attempts taken
+  if (contentAttemptNumber === undefined) {
+    const maxResult = await prisma.contentState.aggregate({
+      where: {
+        contentId,
+        userId: loggedInUserId,
+      },
       _max: {
         attemptNumber: true,
       },
     });
 
-    const aNum = maxRes._max.attemptNumber;
+    contentAttemptNumber = maxResult._max.attemptNumber ?? 1;
+  }
 
-    if (aNum === null) {
+  const contentStateWhere = {
+    assignment: {
+      rootContent: {
+        // if getting data for other person, you must be the owner
+        ownerId: isEqualUUID(stateUserId, loggedInUserId)
+          ? undefined
+          : loggedInUserId,
+        isDeleted: false,
+      },
+    },
+  };
+
+  const select = {
+    contentAttemptNumber: true,
+    itemAttemptNumber: true,
+    itemNumber: true,
+    shuffledItemNumber: true,
+    state: true,
+    score: true,
+  };
+
+  let itemState;
+
+  if (itemAttemptNumber) {
+    try {
+      if (itemNumber === undefined) {
+        itemState = await prisma.contentItemState.findUniqueOrThrow({
+          where: {
+            contentId_userId_contentAttemptNumber_shuffledItemNumber_itemAttemptNumber:
+              {
+                contentId,
+                userId: stateUserId,
+                contentAttemptNumber: contentAttemptNumber,
+                shuffledItemNumber: shuffledItemNumber!,
+                itemAttemptNumber,
+              },
+            contentState: contentStateWhere,
+          },
+          select,
+        });
+      } else {
+        itemState = await prisma.contentItemState.findUniqueOrThrow({
+          where: {
+            contentId_userId_contentAttemptNumber_itemNumber_itemAttemptNumber:
+              {
+                contentId,
+                userId: stateUserId,
+                contentAttemptNumber: contentAttemptNumber,
+                itemNumber,
+                itemAttemptNumber,
+              },
+            contentState: contentStateWhere,
+          },
+          select,
+        });
+      }
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2025"
+      ) {
+        return { loadedState: false as const };
+      } else {
+        throw e;
+      }
+    }
+  } else {
+    // If `itemAttemptNumber` is not specified, attempt to load the latest attempt.
+
+    const lastAttemptState = await prisma.contentItemState.findMany({
+      where: {
+        contentId,
+        userId: stateUserId,
+        contentAttemptNumber: contentAttemptNumber,
+        itemNumber,
+        shuffledItemNumber,
+        contentState: contentStateWhere,
+      },
+      orderBy: { itemAttemptNumber: "desc" },
+      distinct: ["contentId", "userId"],
+      select,
+    });
+
+    if (lastAttemptState.length !== 1) {
       return { loadedState: false as const };
     }
 
-    documentState = await prisma.contentState.findUniqueOrThrow({
-      where: {
-        contentId_userId_attemptNumber: {
-          contentId,
-          userId: stateUserId,
-          attemptNumber: aNum,
-        },
-      },
-      select: {
-        state: true,
-        score: true,
-        scoreByItem: true,
-        attemptNumber: true,
-        contentAttemptNumber: true,
-        itemAttemptNumbers: true,
-      },
-    });
+    itemState = lastAttemptState[0];
   }
-
-  const scoreByItem = parseNumberArrayString(documentState.scoreByItem);
-  const itemAttemptNumbers = parseNumberArrayString(
-    documentState.itemAttemptNumbers,
-  );
 
   return {
     loadedState: true as const,
-    ...documentState,
-    scoreByItem,
-    itemAttemptNumbers,
+    ...itemState,
   };
 }
 
 /**
- * Get the overall score, and scores by items if they exist, for one student's assignment `contentId`.
+ * Get the overall score, and item scores, if they exist on a formative assessment,
+ * for assignment `contentId` by `requestedUserId`,
+ * defaulting to `loggedInUserId` if `requestedUserId` is not specified.
  *
- * If `requestedUserId` is not specified, then retrieve the score for `loggedInUserId`.
+ * If `requestedUserId` is specified to be different from `loggedInUserId`,
+ * the score will be loaded only if `loggedInUserId` is the owner of `contentId`.
  *
- * If `requestedUserId` is specified, retrieve their score only if `loggedInUserId` is the assignment's owner
+ * Returns:
+ * - loadedScore: `true` if the score was loaded.
+ * If `loadedScore` is `true`, then also return:
+ * - score: the score on the assignment, the maximum score over all attempts
+ * If the assignment mode is `formative`, then also return with the score:
+ * - itemScores: an array of {itemNumber, shuffledItemNumber, score} objects giving the maximum score over all attempts
+ *   for each consecutive shuffledItemNumber
  */
 export async function getScore({
   contentId,
@@ -432,45 +676,23 @@ export async function getScore({
   requestedUserId?: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
-  const stateUserId = requestedUserId ?? loggedInUserId;
+  const scoreUserId = requestedUserId ?? loggedInUserId;
 
-  if (!isEqualUUID(stateUserId, loggedInUserId)) {
-    // If loggedInUserId isn't the requested user, then loggedInUserId is allowed to load requested users state
-    // only if they are the owner of the assignment.
-    // If not user is not owner, then do not load state
-    try {
-      await prisma.content.findUniqueOrThrow({
-        where: {
-          id: contentId,
-          assignmentId: { not: null },
-          ...filterEditableActivity(loggedInUserId),
-        },
-      });
-    } catch (e) {
-      if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === "P2025"
-      ) {
-        return { loadedScore: false as const };
-      } else {
-        throw e;
-      }
-    }
-  }
+  let assignment;
 
-  let scores;
   try {
-    scores = await prisma.assignmentScores.findUniqueOrThrow({
+    assignment = await prisma.assignments.findUniqueOrThrow({
       where: {
-        contentId_userId: {
-          contentId,
-          userId: stateUserId,
+        rootContentId: contentId,
+        rootContent: {
+          // if getting data for other person, you must be the owner
+          ownerId: isEqualUUID(scoreUserId, loggedInUserId)
+            ? undefined
+            : loggedInUserId,
+          isDeleted: false,
         },
       },
-      select: {
-        score: true,
-        scoreByItem: true,
-      },
+      select: { mode: true },
     });
   } catch (e) {
     if (
@@ -483,20 +705,149 @@ export async function getScore({
     }
   }
 
-  return {
-    loadedScore: true as const,
-    score: scores.score,
-    scoreByItem: parseNumberArrayString(scores.scoreByItem),
-  };
+  const scoreArray = await prisma.contentState.findMany({
+    where: { contentId, userId: scoreUserId },
+    distinct: ["contentId", "userId"],
+    orderBy: { score: "desc" },
+    select: {
+      score: true,
+      contentItemStates:
+        assignment.mode === "formative"
+          ? {
+              // Note this query works because with formative mode,
+              // there will be only one content attempt.
+              // Due to the join with the above distinct and order,
+              // this is actually calculating just the maximum items score
+              // over all item attempts from the content attempt with maximal score.
+              distinct: ["itemNumber"],
+              orderBy: [{ shuffledItemNumber: "asc" }, { score: "desc" }],
+              select: {
+                itemNumber: true,
+                shuffledItemNumber: true,
+                score: true,
+              },
+            }
+          : false,
+    },
+  });
+
+  if (scoreArray.length !== 1) {
+    return { loadedScore: false as const };
+  }
+
+  const scoreObj = scoreArray[0];
+  let score = scoreObj.score;
+
+  if (assignment.mode === "summative") {
+    return {
+      loadedScore: true as const,
+      score,
+    };
+  } else {
+    const itemScores: {
+      itemNumber?: number;
+      shuffledItemNumber?: number;
+      score: number;
+    }[] = [];
+    let nextShuffledItemNum = 1;
+    for (const item of scoreObj.contentItemStates) {
+      while (item.shuffledItemNumber > nextShuffledItemNum) {
+        itemScores.push({ score: 0 });
+        nextShuffledItemNum++;
+      }
+      itemScores.push(item);
+      nextShuffledItemNum++;
+    }
+
+    if (itemScores.length > 0) {
+      // For formative assessments with items, we calculate `score` as the average of the item scores
+      score = itemScores.reduce((a, c) => a + c.score, 0) / itemScores.length;
+    }
+
+    return {
+      loadedScore: true as const,
+      score,
+      itemScores,
+    };
+  }
 }
 
-export function parseNumberArrayString(numberArrayString?: string | null) {
-  const numberArrayParsed = numberArrayString
-    ? JSON.parse(numberArrayString)
-    : null;
-  const numberArray = Array.isArray(numberArrayParsed)
-    ? numberArrayParsed.map(Number)
-    : null;
+/**
+ * Given that `contentId` is owned by `loggedInUserId`,
+ * return all the scores that students have achieved on `contentId`.
+ *
+ * @returns a Promise that resolves to an object with fields
+ * - mode: the assignment mode (formative or summative)
+ * - scores: an array with one entry per student that has taken `contentId`.
+ *
+ * Each element of the scores array is an object with fields
+ * - user: a `UserInfo` object for the student
+ * - score: the student's score on `contentId` (between 0 and 1), which is the maximum over all attempts
+ *
+ * If the assignment is in formative mode, then each element of the scores array also has the field
+ * - itemScores: the `score` of the student on item `itemNumber`,
+ *   where `itemNumber` is from the original (unshuffled) order and
+ *   `score` is the maximum over all attempts on that item.
+ */
+export async function getScoresOfAllStudents({
+  contentId,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
+  const { mode } = await prisma.assignments.findUniqueOrThrow({
+    where: {
+      rootContentId: contentId,
+      rootContent: filterEditableActivity(loggedInUserId),
+    },
+    select: { mode: true },
+  });
 
-  return numberArray;
+  const assignmentScores = await prisma.contentState.findMany({
+    // don't need to check user permissions since first query did that
+    where: { contentId },
+    distinct: ["contentId", "userId"],
+    orderBy: [
+      { user: { lastNames: "asc" } },
+      { user: { firstNames: "asc" } },
+      { score: "desc" },
+    ],
+    select: {
+      user: {
+        select: {
+          firstNames: true,
+          lastNames: true,
+          userId: true,
+          email: true,
+        },
+      },
+      score: true,
+      contentItemStates:
+        mode === "formative"
+          ? {
+              // Note this query works because with formative mode,
+              // there will be only one content attempt.
+              // Due to the join with the above distinct and order,
+              // this is actually calculating just the maximum items score
+              // over all item attempts from the content attempt with maximal score.
+              distinct: ["itemNumber"],
+              orderBy: [{ itemNumber: "asc" }, { score: "desc" }],
+              select: { itemNumber: true, score: true },
+            }
+          : false,
+    },
+  });
+
+  return {
+    mode,
+    scores: assignmentScores.map((s) => {
+      const itemScoresObj =
+        mode === "formative" ? { itemScores: s.contentItemStates } : {};
+      return {
+        ...s,
+        ...itemScoresObj,
+      };
+    }),
+  };
 }

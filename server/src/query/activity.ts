@@ -200,8 +200,6 @@ export async function updateContent({
   numToSelect,
   selectByVariant,
   paginate,
-  activityLevelAttempts,
-  itemLevelAttempts,
   loggedInUserId,
 }: {
   contentId: Uint8Array;
@@ -215,8 +213,6 @@ export async function updateContent({
   numToSelect?: number;
   selectByVariant?: boolean;
   paginate?: boolean;
-  activityLevelAttempts?: boolean;
-  itemLevelAttempts?: boolean;
   loggedInUserId: Uint8Array;
 }) {
   if (
@@ -230,8 +226,6 @@ export async function updateContent({
       shuffle,
       selectByVariant,
       paginate,
-      activityLevelAttempts,
-      itemLevelAttempts,
     ].every((x) => x === undefined)
   ) {
     // if not information passed in, don't update anything, including `lastEdited`.
@@ -241,20 +235,39 @@ export async function updateContent({
   const isAdmin = await getIsAdmin(loggedInUserId);
 
   // check if content is assigned
-  const assignmentId = (
-    await prisma.content.findFirstOrThrow({
-      where: {
-        id: contentId,
-        ...filterEditableContent(loggedInUserId, isAdmin),
-      },
-    })
-  ).assignmentId;
+  const content = await prisma.content.findFirstOrThrow({
+    where: {
+      id: contentId,
+      ...filterEditableContent(loggedInUserId, isAdmin),
+    },
+    select: {
+      rootAssignment: { select: { assigned: true } },
+      nonRootAssignment: { select: { assigned: true } },
+    },
+  });
 
-  if (
-    assignmentId !== null &&
-    (source !== undefined || doenetmlVersionId !== undefined)
-  ) {
-    throw new InvalidRequestError("Cannot change assigned content");
+  const isAssigned = Boolean(
+    content.rootAssignment?.assigned || content.nonRootAssignment?.assigned,
+  );
+
+  if (isAssigned) {
+    // If assigned, the only items you can change are name, paginate, or imagePath.
+    // If attempting to change any of the others, throw an error
+    if (
+      [
+        // name,
+        source,
+        doenetmlVersionId,
+        numVariants,
+        baseComponentCounts,
+        // imagePath,
+        shuffle,
+        selectByVariant,
+        paginate,
+      ].some((x) => x !== undefined)
+    ) {
+      throw new InvalidRequestError("Cannot change assigned content");
+    }
   }
 
   await prisma.content.update({
@@ -270,8 +283,6 @@ export async function updateContent({
       numToSelect,
       selectByVariant,
       paginate,
-      activityLevelAttempts,
-      itemLevelAttempts,
       lastEdited: DateTime.now().toJSDate(),
     },
   });

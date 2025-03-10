@@ -1,4 +1,4 @@
-import { ContentType } from "@prisma/client";
+import { AssignmentMode, ContentType } from "@prisma/client";
 import { prisma } from "./model";
 
 export type DoenetmlVersion = {
@@ -196,12 +196,14 @@ export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
   classCode: string;
   codeValidUntil: Date | null;
-  rootContentId: Uint8Array;
-  rootName: string;
-  rootType: ContentType;
+  otherRoot?: {
+    rootContentId: Uint8Array;
+    rootName: string;
+    rootType: ContentType;
+  };
   hasScoreData: boolean;
-  activityLevelAttempts: boolean;
-  itemLevelAttempts: boolean;
+  mode: AssignmentMode;
+  maxAttempts: number;
 };
 
 export async function createContentInfo({

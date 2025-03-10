@@ -5,7 +5,7 @@ import {
   closeAssignmentWithCode,
   getAllAssignmentScores,
   getAssignedScores,
-  getAssignmentData,
+  getAssignmentResponseOverview,
   getAssignmentStudentData,
   getStudentData,
   getSubmittedResponseHistory,
@@ -14,17 +14,21 @@ import {
   openAssignmentWithCode,
   recordSubmittedEvent,
   unassignActivity,
-  updateAssignmentSettings,
+  updateAssignmentCloseAt,
+  updateAssignmentMaxAttempts,
+  updateAssignmentMode,
 } from "../query/assign";
 import { contentIdSchema } from "../schemas/contentSchema";
 import {
   assignmentParentSchema,
-  assignmentSettingsSchema,
+  assignmentCloseAtSchema,
   assignmentStudentSchema,
   getStudentDataSchema,
   getSubmittedResponseHistorySchema,
   getSubmittedResponsesSchema,
   recordSubmittedEventSchema,
+  assignmentMaxAttemptsSchema,
+  assignmentModeSchema,
 } from "../schemas/assignSchema";
 import {
   queryLoggedIn,
@@ -35,13 +39,6 @@ export const assignRouter = express.Router();
 
 assignRouter.use(requireLoggedIn);
 
-assignRouter.get("/getAssigned", queryLoggedInNoArguments(listUserAssigned));
-
-assignRouter.get(
-  "/getAssignedScores",
-  queryLoggedInNoArguments(getAssignedScores),
-);
-
 assignRouter.post(
   "/assignActivity",
   queryLoggedIn(assignActivity, contentIdSchema),
@@ -49,12 +46,22 @@ assignRouter.post(
 
 assignRouter.post(
   "/openAssignmentWithCode",
-  queryLoggedIn(openAssignmentWithCode, assignmentSettingsSchema),
+  queryLoggedIn(openAssignmentWithCode, assignmentCloseAtSchema),
 );
 
 assignRouter.post(
-  "/updateAssignmentSettings",
-  queryLoggedIn(updateAssignmentSettings, assignmentSettingsSchema),
+  "/updateAssignmentCloseAt",
+  queryLoggedIn(updateAssignmentCloseAt, assignmentCloseAtSchema),
+);
+
+assignRouter.post(
+  "/updateAssignmentMaxAttempts",
+  queryLoggedIn(updateAssignmentMaxAttempts, assignmentMaxAttemptsSchema),
+);
+
+assignRouter.post(
+  "/updateAssignmentMode",
+  queryLoggedIn(updateAssignmentMode, assignmentModeSchema),
 );
 
 assignRouter.post(
@@ -65,6 +72,13 @@ assignRouter.post(
 assignRouter.post(
   "/unassignActivity",
   queryLoggedIn(unassignActivity, contentIdSchema),
+);
+
+assignRouter.get("/getAssigned", queryLoggedInNoArguments(listUserAssigned));
+
+assignRouter.get(
+  "/getAssignedScores",
+  queryLoggedInNoArguments(getAssignedScores),
 );
 
 assignRouter.get(
@@ -108,6 +122,6 @@ assignRouter.post(
 );
 
 assignRouter.get(
-  "/getAssignmentData/:contentId",
-  queryLoggedIn(getAssignmentData, contentIdSchema),
+  "/getAssignmentResponseOverview/:contentId",
+  queryLoggedIn(getAssignmentResponseOverview, contentIdSchema),
 );

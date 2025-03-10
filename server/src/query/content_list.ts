@@ -72,7 +72,6 @@ export async function getMyContentOrLibraryContent({
     },
     select: returnContentSelect({
       includeAssignInfo: true,
-      countAssignmentScores: true,
       includeShareDetails: true,
       includeClassifications: true,
       includeLibraryInfo: isLibrary,
@@ -219,7 +218,6 @@ export async function searchMyContentOrLibraryContent({
     },
     select: returnContentSelect({
       includeAssignInfo: true,
-      countAssignmentScores: true,
       includeShareDetails: true,
     }),
   });

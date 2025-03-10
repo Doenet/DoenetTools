@@ -29,11 +29,9 @@ CREATE TABLE `content` (
     `baseComponentCounts` TEXT NULL,
     `shuffle` BOOLEAN NOT NULL DEFAULT false,
     `paginate` BOOLEAN NOT NULL DEFAULT false,
-    `activityLevelAttempts` BOOLEAN NOT NULL DEFAULT false,
-    `itemLevelAttempts` BOOLEAN NOT NULL DEFAULT false,
     `numToSelect` SMALLINT UNSIGNED NOT NULL DEFAULT 1,
     `selectByVariant` BOOLEAN NOT NULL DEFAULT false,
-    `assignmentId` BINARY(16) NULL,
+    `nonRootAssignmentId` BINARY(16) NULL,
 
     INDEX `content_ownerId_parentId_sortIndex_idx`(`ownerId`, `parentId`, `sortIndex`),
     INDEX `content_parentId_type_idx`(`parentId`, `type`),
@@ -141,25 +139,16 @@ CREATE TABLE `doenetmlVersions` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `assignment` (
+CREATE TABLE `assignments` (
     `rootContentId` BINARY(16) NOT NULL,
+    `assigned` BOOLEAN NOT NULL DEFAULT false,
+    `mode` ENUM('formative', 'summative') NOT NULL DEFAULT 'formative',
     `classCode` VARCHAR(45) NOT NULL,
     `codeValidUntil` DATETIME(3) NULL,
     `maxAttempts` SMALLINT UNSIGNED NOT NULL DEFAULT 1,
 
-    INDEX `assignment_classCode_idx`(`classCode`),
+    INDEX `assignments_classCode_idx`(`classCode`),
     PRIMARY KEY (`rootContentId`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `assignmentScores` (
-    `contentId` BINARY(16) NOT NULL,
-    `userId` BINARY(16) NOT NULL,
-    `score` DOUBLE NOT NULL DEFAULT 0,
-    `scoreByItem` TEXT NULL,
-
-    INDEX `assignmentScores_userId_idx`(`userId`),
-    PRIMARY KEY (`contentId`, `userId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -167,14 +156,26 @@ CREATE TABLE `contentState` (
     `contentId` BINARY(16) NOT NULL,
     `userId` BINARY(16) NOT NULL,
     `attemptNumber` SMALLINT UNSIGNED NOT NULL,
-    `contentAttemptNumber` SMALLINT UNSIGNED NOT NULL,
-    `itemAttemptNumbers` VARCHAR(191) NULL,
     `score` DOUBLE NOT NULL DEFAULT 0,
-    `scoreByItem` TEXT NULL,
     `state` MEDIUMTEXT NULL,
 
     INDEX `contentState_userId_idx`(`userId`),
     PRIMARY KEY (`contentId`, `userId`, `attemptNumber`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `contentItemState` (
+    `contentId` BINARY(16) NOT NULL,
+    `userId` BINARY(16) NOT NULL,
+    `contentAttemptNumber` SMALLINT UNSIGNED NOT NULL,
+    `itemNumber` INTEGER NOT NULL,
+    `shuffledItemNumber` INTEGER NOT NULL,
+    `itemAttemptNumber` INTEGER NOT NULL,
+    `score` DOUBLE NOT NULL DEFAULT 0,
+    `state` MEDIUMTEXT NULL,
+
+    UNIQUE INDEX `contentItemState_contentId_userId_contentAttemptNumber_shuff_key`(`contentId`, `userId`, `contentAttemptNumber`, `shuffledItemNumber`, `itemAttemptNumber`),
+    PRIMARY KEY (`contentId`, `userId`, `contentAttemptNumber`, `itemNumber`, `itemAttemptNumber`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -186,11 +187,12 @@ CREATE TABLE `submittedResponses` (
     `answerId` VARCHAR(191) NOT NULL,
     `response` TEXT NOT NULL,
     `answerNumber` INTEGER NULL,
+    `componentNumber` INTEGER NOT NULL,
     `itemNumber` INTEGER NOT NULL,
-    `questionNumber` INTEGER NOT NULL,
-    `creditAchieved` DOUBLE NOT NULL,
+    `shuffledItemNumber` INTEGER NOT NULL,
+    `answerCreditAchieved` DOUBLE NOT NULL,
+    `componentCreditAchieved` DOUBLE NOT NULL,
     `itemCreditAchieved` DOUBLE NOT NULL,
-    `docCreditAchieved` DOUBLE NOT NULL,
     `submittedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     INDEX `submittedResponses_contentId_answerId_idx`(`contentId`, `answerId`),
@@ -355,6 +357,9 @@ CREATE TABLE `_contentTocontentFeatures` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
+ALTER TABLE `content` ADD CONSTRAINT `content_nonRootAssignmentId_fkey` FOREIGN KEY (`nonRootAssignmentId`) REFERENCES `assignments`(`rootContentId`) ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- AddForeignKey
 ALTER TABLE `content` ADD CONSTRAINT `content_ownerId_fkey` FOREIGN KEY (`ownerId`) REFERENCES `users`(`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
@@ -365,9 +370,6 @@ ALTER TABLE `content` ADD CONSTRAINT `content_licenseCode_fkey` FOREIGN KEY (`li
 
 -- AddForeignKey
 ALTER TABLE `content` ADD CONSTRAINT `content_doenetmlVersionId_fkey` FOREIGN KEY (`doenetmlVersionId`) REFERENCES `doenetmlVersions`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE `content` ADD CONSTRAINT `content_assignmentId_fkey` FOREIGN KEY (`assignmentId`) REFERENCES `assignment`(`rootContentId`) ON DELETE SET NULL ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE `recentContent` ADD CONSTRAINT `recentContent_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -403,22 +405,16 @@ ALTER TABLE `contentShares` ADD CONSTRAINT `contentShares_contentId_fkey` FOREIG
 ALTER TABLE `contentShares` ADD CONSTRAINT `contentShares_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE `assignment` ADD CONSTRAINT `assignment_rootContentId_fkey` FOREIGN KEY (`rootContentId`) REFERENCES `content`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `assignments` ADD CONSTRAINT `assignments_rootContentId_fkey` FOREIGN KEY (`rootContentId`) REFERENCES `content`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE `assignmentScores` ADD CONSTRAINT `assignmentScores_contentId_fkey` FOREIGN KEY (`contentId`) REFERENCES `content`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE `assignmentScores` ADD CONSTRAINT `assignmentScores_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE `contentState` ADD CONSTRAINT `contentState_contentId_userId_fkey` FOREIGN KEY (`contentId`, `userId`) REFERENCES `assignmentScores`(`contentId`, `userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE `contentState` ADD CONSTRAINT `contentState_contentId_fkey` FOREIGN KEY (`contentId`) REFERENCES `content`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `contentState` ADD CONSTRAINT `contentState_contentId_fkey` FOREIGN KEY (`contentId`) REFERENCES `assignments`(`rootContentId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE `contentState` ADD CONSTRAINT `contentState_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE `contentItemState` ADD CONSTRAINT `contentItemState_contentId_userId_contentAttemptNumber_fkey` FOREIGN KEY (`contentId`, `userId`, `contentAttemptNumber`) REFERENCES `contentState`(`contentId`, `userId`, `attemptNumber`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE `submittedResponses` ADD CONSTRAINT `submittedResponses_contentId_fkey` FOREIGN KEY (`contentId`) REFERENCES `content`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;

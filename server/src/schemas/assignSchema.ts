@@ -2,12 +2,25 @@ import { z } from "zod";
 import { uuidSchema } from "./uuid";
 import { DateTime } from "luxon";
 
-export const assignmentSettingsSchema = z.object({
+export const assignmentCloseAtSchema = z.object({
   contentId: uuidSchema,
   closeAt: z
     .string()
     .datetime({ offset: true })
     .transform((val) => DateTime.fromISO(val)),
+});
+
+export const assignmentMaxAttemptsSchema = z.object({
+  contentId: uuidSchema,
+  maxAttempts: z
+    .number()
+    .int()
+    .refine((v) => v > 0),
+});
+
+export const assignmentModeSchema = z.object({
+  contentId: uuidSchema,
+  mode: z.enum(["formative", "summative"]),
 });
 
 export const assignmentStudentSchema = z.object({
@@ -27,11 +40,13 @@ export const getStudentDataSchema = z.object({
 export const getSubmittedResponsesSchema = z.object({
   contentId: uuidSchema,
   answerId: z.string(),
+  itemNumber: z.number().int(),
 });
 
 export const getSubmittedResponseHistorySchema = z.object({
   contentId: uuidSchema,
   answerId: z.string(),
+  itemNumber: z.number().int(),
   userId: uuidSchema,
 });
 
@@ -41,11 +56,12 @@ export const recordSubmittedEventSchema = z.object({
   answerId: z.string(),
   response: z.string(),
   answerNumber: z.number().int().optional(),
+  componentNumber: z.number().int(),
   itemNumber: z.number().int(),
-  questionNumber: z.number().int(),
-  creditAchieved: z.number(),
+  shuffledItemNumber: z.number().int(),
+  answerCreditAchieved: z.number(),
+  componentCreditAchieved: z.number(),
   itemCreditAchieved: z.number(),
-  docCreditAchieved: z.number(),
 });
 
 export const codeSchema = z.object({ code: z.string() });

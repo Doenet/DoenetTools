@@ -404,7 +404,7 @@ async function copySingleContent({
       createdAt: true,
       sortIndex: true,
       lastEdited: true,
-      assignmentId: true,
+      nonRootAssignmentId: true,
     },
     include: {
       classifications: true,

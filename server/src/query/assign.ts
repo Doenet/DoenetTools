@@ -1,19 +1,32 @@
 import { DateTime } from "luxon";
 import { prisma } from "../model";
 import {
+  editableContentWhere,
   filterEditableActivity,
   filterEditableContent,
 } from "../utils/permissions";
 import { getRandomValues } from "crypto";
-import { Prisma } from "@prisma/client";
+import { AssignmentMode, Prisma } from "@prisma/client";
 import { UserInfo } from "../types";
 import { isEqualUUID } from "../utils/uuid";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { recordContentView } from "./stats";
 import { InvalidRequestError } from "../utils/error";
 import { getContent } from "./activity_edit_view";
-import { getScore, parseNumberArrayString } from "./scores";
+import { getScore, getScoresOfAllStudents } from "./scores";
+import { getUserInfo } from "./user";
 
+/**
+ * Assigned the content `contentId` owned by `loggedInUserId`
+ *
+ * Verify that `contentId` is not already assigned as part of another root assignment,
+ * in which case an `InvalidRequestError` is thrown.
+ *
+ * If `contentId` is already assigned as a root assignment, just return the `classCode`.
+ *
+ * If `contentId` is not assigned, then assign it and its children, creating a new `classCode`
+ * if it doesn't already exist, and return the `classCode`.
+ */
 export async function assignActivity({
   contentId,
   loggedInUserId,
@@ -21,87 +34,153 @@ export async function assignActivity({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
-  // verify, get type and children
+  // verify content exists and is not assigned as part of another root assignment
+  await verifyNotAssignedAsNonRoot({ contentId, loggedInUserId });
+
   const content = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
-      assignmentId: null,
       ...filterEditableActivity(loggedInUserId),
     },
     select: {
-      type: true,
-      children: { select: { id: true }, where: { isDeleted: false } },
+      rootAssignment: { select: { assigned: true, classCode: true } },
     },
   });
 
-  const classCode = generateClassCode();
-
-  await prisma.content.update({
-    where: { id: contentId },
-    data: {
-      assignment: {
-        create: {
-          classCode,
-          rootContentId: contentId,
-        },
-      },
-    },
-  });
-
-  if (content.type !== "singleDoc") {
-    for (const child of content.children) {
-      await assignChildren({
-        contentId: child.id,
-        rootContentId: contentId,
-        loggedInUserId,
-      });
-    }
+  //  If content was already assigned as the root, then there's nothing to do. Just report the code.
+  if (content.rootAssignment?.assigned) {
+    return { classCode: content.rootAssignment.classCode };
   }
 
-  return { classCode };
-}
+  // Verify that no descendants of `contentId` are already assigned as a root.
+  // Note: we don't have to check for non-root assignment, as either the root is a descendant of `contentId`
+  // or `contentId` itself would have been assigned
+  const descendantAssigned = await prisma.$queryRaw<
+    {
+      id: Uint8Array;
+      assigned: boolean;
+    }[]
+  >(Prisma.sql`
+    WITH RECURSIVE content_tree(id, assigned) AS (
+      SELECT content.id, assignments.assigned
+      FROM content
+        LEFT JOIN assignments ON assignments.rootContentId = content.id
+      WHERE parentId = ${contentId}
+        AND content.isDeleted = FALSE
+      UNION ALL
+      SELECT content.id, assignments.assigned
+      FROM content
+        INNER JOIN content_tree AS ct ON content.parentId = ct.id
+        LEFT JOIN assignments ON assignments.rootContentId = content.id
+      WHERE 
+        content.isDeleted = FALSE
+    )
+    SELECT id, assigned from content_tree
+    WHERE assigned IS NOT NULL
+  `);
 
-async function assignChildren({
-  contentId,
-  rootContentId,
-  loggedInUserId,
-}: {
-  contentId: Uint8Array;
-  rootContentId: Uint8Array;
-  loggedInUserId: Uint8Array;
-}) {
-  const content = await prisma.content.update({
+  if (descendantAssigned.some((d) => d.assigned)) {
+    throw new InvalidRequestError(
+      "Cannot assign content with a descendant that is already assigned",
+    );
+  }
+
+  // delete any assignment records from descendants that were previously assigned as their own root
+  await prisma.assignments.deleteMany({
+    where: { rootContentId: { in: descendantAssigned.map((d) => d.id) } },
+  });
+
+  const updatedContent = await prisma.content.update({
     where: { id: contentId },
     data: {
-      assignment: {
-        connect: {
-          rootContentId,
+      rootAssignment: {
+        upsert: {
+          update: { assigned: true },
+          create: {
+            assigned: true,
+            classCode: generateClassCode(),
+          },
         },
       },
     },
     select: {
+      rootAssignment: { select: { classCode: true } },
       type: true,
       children: { select: { id: true }, where: { isDeleted: false } },
     },
   });
 
-  if (content.type !== "singleDoc") {
-    for (const child of content.children) {
-      await assignChildren({
-        contentId: child.id,
-        rootContentId,
-        loggedInUserId,
+  if (updatedContent.type !== "singleDoc") {
+    await prisma.$executeRaw(Prisma.sql`
+        WITH RECURSIVE content_tree(id) AS (
+          SELECT id FROM content
+          WHERE parentId = ${contentId}
+          UNION ALL
+          SELECT content.id FROM content
+          INNER JOIN content_tree AS ct
+          ON content.parentId = ct.id
+          WHERE content.isDeleted = FALSE
+        )
+    
+        UPDATE content
+          SET content.nonRootAssignmentId = ${contentId}
+          WHERE content.id IN (SELECT id from content_tree);
+        `);
+  }
+
+  return { classCode: updatedContent.rootAssignment!.classCode };
+}
+
+/**
+ * Verify that activity `contentId` owned by `loggedInUserId` is not assigned as part of another activity,
+ * throwing an `InvalidRequestError` if it is.
+ *
+ * Also deletes connection to a non-root assignment if that assignment is no longer assigned
+ */
+async function verifyNotAssignedAsNonRoot({
+  contentId,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
+  const content = await prisma.content.findUniqueOrThrow({
+    where: {
+      id: contentId,
+      ...filterEditableActivity(loggedInUserId),
+    },
+    select: { nonRootAssignment: { select: { assigned: true } } },
+  });
+
+  if (content.nonRootAssignment) {
+    if (content.nonRootAssignment.assigned) {
+      throw new InvalidRequestError(
+        "Activity is already assigned as a part of another activity",
+      );
+    } else {
+      // if content has been unassigned as part of a non-root assignment,
+      // we can delete that connection
+      await prisma.content.update({
+        where: { id: contentId },
+        data: { nonRootAssignmentId: null },
       });
     }
   }
 }
 
+/**
+ * Randomly generate a 6 digit number. Return as a string.
+ */
 function generateClassCode() {
   const array = new Uint32Array(1);
   getRandomValues(array);
   return array[0].toString().slice(-6);
 }
 
+/**
+ * Assign activity `contentId` owned by `loggedInUserId`,
+ * set its `closeAt`, and return the `classCode`.
+ */
 export async function openAssignmentWithCode({
   contentId,
   closeAt,
@@ -111,35 +190,23 @@ export async function openAssignmentWithCode({
   closeAt: DateTime;
   loggedInUserId: Uint8Array;
 }) {
-  const initialActivity = await prisma.content.findUniqueOrThrow({
-    where: { id: contentId, ownerId: loggedInUserId, type: { not: "folder" } },
-    select: { assignment: true },
-  });
-
-  let classCode;
-  if (initialActivity.assignment) {
-    if (!isEqualUUID(initialActivity.assignment.rootContentId, contentId)) {
-      throw new InvalidRequestError(
-        "Cannot assign content whose parent is already assigned",
-      );
-    }
-    classCode = initialActivity.assignment.classCode;
-  } else {
-    ({ classCode } = await assignActivity({ contentId, loggedInUserId }));
-  }
+  const { classCode } = await assignActivity({ contentId, loggedInUserId });
 
   const codeValidUntil = closeAt.toJSDate();
 
-  await prisma.assignment.update({
+  await prisma.assignments.update({
     where: { rootContentId: contentId },
-    data: {
-      codeValidUntil,
-    },
+    data: { codeValidUntil },
   });
   return { classCode, codeValidUntil };
 }
 
-export async function updateAssignmentSettings({
+/**
+ * Update `closeAt` of the assignment `contentId` owned by `loggedInUserId`.
+ *
+ * Throws an error if `contentId` is not the root of an assignment.
+ */
+export async function updateAssignmentCloseAt({
   contentId,
   closeAt,
   loggedInUserId,
@@ -150,15 +217,120 @@ export async function updateAssignmentSettings({
 }) {
   const codeValidUntil = closeAt.toJSDate();
 
-  await prisma.assignment.update({
+  await prisma.assignments.update({
     where: {
       rootContentId: contentId,
       rootContent: {
         ...filterEditableActivity(loggedInUserId),
       },
     },
+    data: { codeValidUntil },
+  });
+}
+
+/**
+ * Update `maxAttempts` of the assignment `contentId` owned by `loggedInUserId`.
+ *
+ * The meaning of `maxAttempts` depends on the the assignment mode:
+ * - For `formative` mode, students can create new attempts of individual assignments,
+ *   and `maxAttempts` is the maximum number of attempts available for each item.
+ * - For `summative` mode, students can create new attempts of the entire assignment,
+ *   and `maxAttempts` is the maximum number of attempts available for the entire assignment.
+ *
+ * Verifies that `contentId` is not assigned as a part of another root assignment,
+ * throwing an `InvalidRequestError` in that case.
+ *
+ * Creates a root assignment record for `contentId` if it doesn't exist.
+ *
+ * Note: updating `maxAttempts` is possible even if an `contentId` is assigned.
+ */
+export async function updateAssignmentMaxAttempts({
+  contentId,
+  maxAttempts,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  maxAttempts: number;
+  loggedInUserId: Uint8Array;
+}) {
+  // verify content exists and is not assigned as part of another root assignment
+  await verifyNotAssignedAsNonRoot({ contentId, loggedInUserId });
+
+  await prisma.content.update({
+    where: {
+      id: contentId,
+      ...filterEditableActivity(loggedInUserId),
+    },
     data: {
-      codeValidUntil,
+      rootAssignment: {
+        upsert: {
+          where: { rootContentId: contentId },
+          create: {
+            maxAttempts,
+            classCode: generateClassCode(),
+          },
+          update: { maxAttempts },
+        },
+      },
+    },
+  });
+}
+
+/**
+ * Updates the `mode` field of the assignment `contentId` that is owned by `loggedInUserId`.
+ *
+ * Verifies that `contentId` is not assigned as a part of another root assignment,
+ * throwing an `InvalidRequestError` in that case.
+ *
+ * Creates a root assignment record for `contentId` if it doesn't exist.
+ *
+ * The mode can be updated only if the content is not assigned.
+ */
+export async function updateAssignmentMode({
+  contentId,
+  mode,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  mode: AssignmentMode;
+  loggedInUserId: Uint8Array;
+}) {
+  // verify content exists and is not assigned as part of another root assignment
+  await verifyNotAssignedAsNonRoot({ contentId, loggedInUserId });
+
+  // verify that content is not currently assigned
+  const assignment = await prisma.assignments.findUnique({
+    where: {
+      rootContentId: contentId,
+      rootContent: {
+        ...filterEditableActivity(loggedInUserId),
+      },
+    },
+    select: { assigned: true },
+  });
+
+  if (assignment?.assigned) {
+    throw new InvalidRequestError(
+      "Cannot update assignment mode of assigned content",
+    );
+  }
+
+  await prisma.content.update({
+    where: {
+      id: contentId,
+      ...filterEditableActivity(loggedInUserId),
+    },
+    data: {
+      rootAssignment: {
+        upsert: {
+          where: { rootContentId: contentId },
+          create: {
+            mode,
+            classCode: generateClassCode(),
+          },
+          update: { mode },
+        },
+      },
     },
   });
 }
@@ -170,34 +342,31 @@ export async function closeAssignmentWithCode({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
-  await prisma.assignment.update({
+  await prisma.assignments.update({
     where: {
       rootContentId: contentId,
       rootContent: {
         ...filterEditableActivity(loggedInUserId),
       },
     },
-    data: {
-      codeValidUntil: null,
-    },
+    data: { codeValidUntil: null },
   });
 
   // attempt to unassign activity, which will succeed
   // only if there is no student data
-  try {
-    await unassignActivity({ contentId, loggedInUserId });
-  } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError &&
-      e.code === "P2025"
-    ) {
-      // ignore inability to unassign due to presence of student data
-    } else {
-      throw e;
-    }
-  }
+  await unassignActivity({ contentId, loggedInUserId });
 }
 
+/**
+ * Attempt to completely unassign assignment `contentId` owned by `loggedInUserId`.
+ *
+ * An assignment can be unassigned only if no students have begun the assignment,
+ * which is defined by the presence of data in the `contentState` table corresponding
+ * to `contentId`.
+ *
+ * Return a promise that resolves to an object with field
+ * - success: whether or not the assignment was successfully unassigned.
+ */
 export async function unassignActivity({
   contentId,
   loggedInUserId,
@@ -205,88 +374,52 @@ export async function unassignActivity({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
-  const content = await prisma.content.update({
-    where: {
-      id: contentId,
-      assignmentId: { not: null },
-      assignmentScores: { none: { contentId } },
-      ...filterEditableActivity(loggedInUserId),
-    },
-    data: {
-      assignment: {
-        delete: true,
+  try {
+    await prisma.content.update({
+      where: {
+        id: contentId,
+        rootAssignment: { contentState: { none: { contentId } } },
+        ...filterEditableActivity(loggedInUserId),
       },
-    },
-    select: {
-      type: true,
-      children: { select: { id: true }, where: { isDeleted: false } },
-    },
-  });
+      data: {
+        rootAssignment: { update: { assigned: false, codeValidUntil: null } },
+      },
+    });
 
-  if (content.type !== "singleDoc") {
-    for (const child of content.children) {
-      await unassignActivity({ contentId: child.id, loggedInUserId });
+    return { success: true };
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2025"
+    ) {
+      // Check to see if the reason for failure was simply due to the presence of student data
+      // or the fact that assignment had not yet been assigned
+      // (rather than the assignment just not existing)
+
+      // If the content simply doesn't exist, then still throw an error
+      const checkResult = await prisma.content.findUniqueOrThrow({
+        where: {
+          id: contentId,
+          ...filterEditableActivity(loggedInUserId),
+        },
+        select: {
+          rootAssignment: { select: { assigned: true } },
+        },
+      });
+
+      // otherwise, if the original error was just thrown due to the presence of student data
+      // or the fact that an assignment record had not yet been created,
+      // then simply report success as whether or not the assignment is still assigned
+      return { success: checkResult.rootAssignment?.assigned !== true };
+    } else {
+      throw e;
     }
   }
 }
 
 /**
- * Given the `contentId` is owned by `loggedInUserId`,
- * return all the scores that students have achieved on `contentId`.
- *
- * @returns a Promise that resolves to an object with fields
- * - name: the name of the assignment
- * - assignmentScores: an array with one entry per student that has taken `contentId`.
- *
- * Each element of the array `assignmentScores` is an object with fields
- *
- * - user: a `UserInfo` object for the student
- * - score: the student's score on `contentId` (between 0 and 1)
+ * TODO: when figure out what data this should actually return, write docstring
  */
-export async function getAssignmentScoreData({
-  contentId,
-  loggedInUserId,
-}: {
-  contentId: Uint8Array;
-  loggedInUserId: Uint8Array;
-}) {
-  const assignment: {
-    name: string;
-    assignmentScores: {
-      score: number;
-      user: UserInfo;
-    }[];
-  } = await prisma.content.findUniqueOrThrow({
-    where: {
-      id: contentId,
-      assignmentId: { not: null },
-      ...filterEditableActivity(loggedInUserId),
-    },
-    select: {
-      name: true,
-      assignmentScores: {
-        select: {
-          user: {
-            select: {
-              firstNames: true,
-              lastNames: true,
-              userId: true,
-              email: true,
-            },
-          },
-          score: true,
-        },
-        orderBy: [
-          { user: { lastNames: "asc" } },
-          { user: { firstNames: "asc" } },
-        ],
-      },
-    },
-  });
-
-  return assignment;
-}
-
 export async function getAssignmentStudentData({
   contentId,
   loggedInUserId,
@@ -298,21 +431,21 @@ export async function getAssignmentStudentData({
 }) {
   const userId = studentUserId ?? loggedInUserId;
 
-  const assignmentDataPrelim = await prisma.assignmentScores.findUniqueOrThrow({
+  const assignmentInfo = await prisma.assignments.findUniqueOrThrow({
     where: {
-      contentId_userId: { contentId, userId },
-      content: {
-        // if studentUserId specified, you must be the owner
-        ownerId: studentUserId ? loggedInUserId : undefined,
+      rootContentId: contentId,
+      rootContent: {
+        // if getting data for other person, you must be the owner
+        ownerId: isEqualUUID(userId, loggedInUserId)
+          ? undefined
+          : loggedInUserId,
         isDeleted: false,
         type: { not: "folder" },
-        assignmentId: { not: null },
       },
     },
     select: {
-      score: true,
-      scoreByItem: true,
-      content: {
+      mode: true,
+      rootContent: {
         select: {
           id: true,
           name: true,
@@ -320,39 +453,64 @@ export async function getAssignmentStudentData({
           doenetmlVersion: { select: { fullVersion: true } },
         },
       },
-      user: {
-        select: {
-          firstNames: true,
-          lastNames: true,
-          userId: true,
-          email: true,
-        },
-      },
     },
   });
 
-  const assignmentData = {
-    ...assignmentDataPrelim,
-    scoreByItem: parseNumberArrayString(assignmentDataPrelim.scoreByItem),
-  };
+  const userInfo = await getUserInfo({ loggedInUserId: userId });
 
-  const activityScoresPrelim = await prisma.contentState.findMany({
+  const assignmentDataPrelim = await prisma.contentState.findMany({
+    // don't need to check user permissions since first query did that
     where: { contentId, userId },
+    distinct: ["contentId", "userId"],
+    orderBy: { score: "desc" },
     select: {
       score: true,
-      scoreByItem: true,
-    },
-    orderBy: {
-      score: "asc",
+      contentItemStates:
+        assignmentInfo.mode === "formative"
+          ? {
+              // Note this query works because with formative mode,
+              // there will be only one content attempt.
+              // Due to the join with the above distinct and order,
+              // this is actually calculating just the maximum items score
+              // over all item attempts from the content attempt with maximal score.
+              distinct: ["itemNumber"],
+              orderBy: [{ shuffledItemNumber: "asc" }, { score: "desc" }],
+              select: { itemNumber: true, score: true },
+            }
+          : false,
     },
   });
 
-  const activityScores = activityScoresPrelim.map((scores) => ({
-    ...scores,
-    scoreByItem: parseNumberArrayString(scores.scoreByItem),
-  }));
+  const assignmentData =
+    assignmentDataPrelim.length === 1
+      ? {
+          score: assignmentDataPrelim[0].score,
+          itemScores: assignmentDataPrelim[0].contentItemStates,
+        }
+      : { score: 0, itemScores: [] };
 
-  return { ...assignmentData, activityScores };
+  // const activityScoresPrelim = await prisma.contentState.findMany({
+  //   where: { contentId, userId },
+  //   select: {
+  //     score: true,
+  //     scoreByItem: true,
+  //   },
+  //   orderBy: {
+  //     score: "asc",
+  //   },
+  // });
+
+  // const activityScores = activityScoresPrelim.map((scores) => ({
+  //   ...scores,
+  //   scoreByItem: parseNumberArrayString(scores.scoreByItem),
+  // }));
+
+  return {
+    ...assignmentData,
+    mode: assignmentInfo.mode,
+    content: assignmentInfo.rootContent,
+    userInfo,
+  };
 }
 
 /**
@@ -383,13 +541,13 @@ export async function getAllAssignmentScores({
       SELECT id, parentId, type, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
       WHERE ${parentId === null ? Prisma.sql`parentId IS NULL` : Prisma.sql`parentId = ${parentId}`}
       AND ownerId = ${loggedInUserId}
-      AND (assignmentId IS NOT NULL or type = "folder") AND isDeleted = false
+      AND (EXISTS(SELECT * FROM assignments WHERE rootContentId=content.id) or type = "folder") AND isDeleted = false
       UNION ALL
       SELECT c.id, c.parentId, c.type, CONCAT(ct.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
       FROM content AS c
       INNER JOIN content_tree AS ct
       ON c.parentId = ct.id
-      WHERE (c.assignmentId IS NOT NULL or c.type = "folder") AND c.isDeleted = false
+      WHERE (EXISTS(SELECT * FROM assignments WHERE rootContentId=c.id) or c.type = "folder") AND c.isDeleted = false
     )
     
     SELECT c.id, c.name FROM content AS c
@@ -414,23 +572,38 @@ export async function getAllAssignmentScores({
     });
   }
 
-  const assignmentScores = await prisma.assignmentScores.findMany({
+  const assignmentScoresPrelim = await prisma.assignments.findMany({
     where: {
-      contentId: { in: orderedActivities.map((a) => a.id) },
+      rootContentId: { in: orderedActivities.map((a) => a.id) },
     },
     select: {
-      contentId: true,
-      score: true,
-      user: {
+      rootContentId: true,
+      contentState: {
+        distinct: ["contentId", "userId"],
+        orderBy: [
+          { user: { lastNames: "asc" } },
+          { user: { firstNames: "asc" } },
+          { score: "desc" },
+        ],
         select: {
-          firstNames: true,
-          lastNames: true,
-          userId: true,
-          email: true,
+          score: true,
+          user: {
+            select: {
+              firstNames: true,
+              lastNames: true,
+              userId: true,
+              email: true,
+            },
+          },
         },
       },
     },
   });
+
+  const assignmentScores = assignmentScoresPrelim.map((assignment) => ({
+    contentId: assignment.rootContentId,
+    userScores: assignment.contentState,
+  }));
 
   return { orderedActivities, assignmentScores, folder };
 }
@@ -479,13 +652,13 @@ export async function getStudentData({
       SELECT id, parentId, type, CAST(LPAD(sortIndex+100000000000000000, 18, 0) AS CHAR(1000)) FROM content
       WHERE ${parentId === null ? Prisma.sql`parentId IS NULL` : Prisma.sql`parentId = ${parentId}`}
       AND ownerId = ${loggedInUserId}
-      AND (assignmentId IS NOT NULL or type = "folder") AND isDeleted = false
+      AND (EXISTS(SELECT * FROM assignments WHERE rootContentId=content.id) or type = "folder") AND isDeleted = false
       UNION ALL
       SELECT c.id, c.parentId, c.type, CONCAT(ct.path, ',', LPAD(c.sortIndex+100000000000000000, 18, 0))
       FROM content AS c
       INNER JOIN content_tree AS ct
       ON c.parentId = ct.id
-      WHERE (c.assignmentId IS NOT NULL or c.type = "folder") AND c.isDeleted = false
+      WHERE (EXISTS(SELECT * FROM assignments WHERE rootContentId=c.id) or c.type = "folder") AND c.isDeleted = false
     )
     
     SELECT c.id AS contentId, c.name AS activityName, s.score FROM content AS c
@@ -522,21 +695,27 @@ export async function getAssignedScores({
 }: {
   loggedInUserId: Uint8Array;
 }) {
-  const scores = await prisma.assignmentScores.findMany({
+  const scores = await prisma.contentState.findMany({
     where: {
       userId: loggedInUserId,
-      content: { assignmentId: { not: null }, isDeleted: false },
+      assignment: { rootContent: { isDeleted: false } },
     },
     select: {
       score: true,
-      content: { select: { id: true, name: true } },
+      assignment: {
+        select: {
+          rootContent: {
+            select: { id: true, name: true },
+          },
+        },
+      },
     },
-    orderBy: { content: { createdAt: "asc" } },
+    orderBy: { assignment: { rootContent: { createdAt: "asc" } } },
   });
 
   const orderedActivityScores = scores.map((obj) => ({
-    contentId: obj.content.id,
-    activityName: obj.content.name,
+    contentId: obj.assignment.rootContent.id,
+    activityName: obj.assignment.rootContent.name,
     score: obj.score,
   }));
 
@@ -548,28 +727,6 @@ export async function getAssignedScores({
   return { userData, orderedActivityScores };
 }
 
-export async function getAssignmentContent({
-  contentId,
-  loggedInUserId,
-}: {
-  contentId: Uint8Array;
-  loggedInUserId: Uint8Array;
-}) {
-  const assignmentData = await prisma.content.findMany({
-    where: {
-      id: contentId,
-      assignmentId: { not: null },
-      ...filterEditableActivity(loggedInUserId),
-    },
-    select: {
-      source: true,
-      doenetmlVersion: { select: { fullVersion: true } },
-    },
-  });
-
-  return assignmentData;
-}
-
 // TODO: do we still record submitted event if an assignment isn't open?
 // If so, do we mark it special to indicate that assignment wasn't open at the time?
 export async function recordSubmittedEvent({
@@ -579,11 +736,12 @@ export async function recordSubmittedEvent({
   answerId,
   response,
   answerNumber,
-  questionNumber,
+  componentNumber,
   itemNumber,
-  creditAchieved,
+  shuffledItemNumber,
+  answerCreditAchieved,
+  componentCreditAchieved,
   itemCreditAchieved,
-  docCreditAchieved,
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
@@ -591,11 +749,12 @@ export async function recordSubmittedEvent({
   answerId: string;
   response: string;
   answerNumber?: number;
+  componentNumber: number;
   itemNumber: number;
-  questionNumber: number;
-  creditAchieved: number;
+  shuffledItemNumber: number;
+  answerCreditAchieved: number;
+  componentCreditAchieved: number;
   itemCreditAchieved: number;
-  docCreditAchieved: number;
 }) {
   await prisma.submittedResponses.create({
     data: {
@@ -605,65 +764,83 @@ export async function recordSubmittedEvent({
       answerId,
       response,
       answerNumber,
+      componentNumber,
       itemNumber,
-      questionNumber,
-      creditAchieved,
+      shuffledItemNumber,
+      answerCreditAchieved,
+      componentCreditAchieved,
       itemCreditAchieved,
-      docCreditAchieved,
     },
   });
 }
 
-export async function getAnswersThatHaveSubmittedResponses({
+/**
+ * Return an array of the answers from `contentId` for which at least one student has submitted a response.
+ * `contentId` must be owned by `loggedInUserId`.
+ *
+ * Returns an array of the answers. Each element has the fields:
+ * - `answerId`: the DoenetML name of the answer submitted
+ * - `answerNumber`: the (1-based) index of the answer in the document, if available
+ * - `itemNumber`: in problem sets/question banks, the item number of the document
+ * - `count`: the number of students who submitted a response to the answer
+ * - `averageCredit`: the average (maximum) credit that students were awarded on the answer
+ */
+export async function getAnswersWithSubmittedResponses({
   contentId,
-  ownerId,
+  loggedInUserId,
 }: {
   contentId: Uint8Array;
-  ownerId: Uint8Array;
+  loggedInUserId: Uint8Array;
 }) {
   // Using raw query as it seems prisma does not support distinct in count.
   // https://github.com/prisma/prisma/issues/4228
 
-  let submittedResponses = await prisma.$queryRaw<
+  let answerList = await prisma.$queryRaw<
     {
       answerId: string;
       answerNumber: number | null;
+      itemNumber: number;
       count: number;
       averageCredit: number;
     }[]
   >(Prisma.sql`
-    SELECT answerId, answerNumber, 
+    SELECT answerId, answerNumber, itemNumber,
     COUNT(userId) as count, AVG(maxCredit) as averageCredit
     FROM (
-      SELECT contentId, answerId, answerNumber, userId, MAX(creditAchieved) as maxCredit
+      SELECT contentId, answerId, answerNumber, itemNumber, userId, MAX(answerCreditAchieved) as maxCredit
       FROM submittedResponses
       WHERE contentId = ${contentId}
-      GROUP BY contentId, answerId, answerNumber, userId 
+      GROUP BY contentId, answerId, answerNumber, itemNumber, userId 
     ) as sr
     INNER JOIN content on sr.contentId = content.id 
-    WHERE content.id=${contentId} and ownerId = ${ownerId} and assignmentId IS NOT NULL and type != "folder"
-    GROUP BY answerId, answerNumber
-    ORDER BY answerNumber
+    WHERE content.id=${contentId}
+      AND ${editableContentWhere(loggedInUserId)}
+      AND EXISTS(SELECT * FROM assignments WHERE rootContentId=content.id)
+      AND type != "folder"
+    GROUP BY answerId, answerNumber, itemNumber
+    ORDER BY itemNumber, answerNumber
     `);
 
   // The query returns a BigInt for count, which TypeScript doesn't know how to serialize,
   // so we convert into a Number.
-  submittedResponses = submittedResponses.map((row) => {
+  answerList = answerList.map((row) => {
     row.count = Number(row.count);
     return row;
   });
 
-  return submittedResponses;
+  return answerList;
 }
 
 export async function getSubmittedResponses({
   contentId,
   loggedInUserId,
   answerId,
+  itemNumber,
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   answerId: string;
+  itemNumber: number;
 }) {
   // get activity name and make sure that loggedInUserId is the owner
   const activityName = (
@@ -686,20 +863,21 @@ export async function getSubmittedResponses({
       lastNames: string;
       email: string;
       response: string;
-      creditAchieved: number;
+      answerCreditAchieved: number;
       submittedAt: DateTime;
       maxCredit: number;
       numResponses: bigint;
     }[]
   >(Prisma.sql`
-select sr.userId, users.firstNames, users.lastNames, users.email, response, creditAchieved, submittedAt,
-        MAX(creditAchieved) over (partition by sr.userId) as maxCredit,
-        COUNT(creditAchieved) over (partition by sr.userId) as numResponses
+select sr.userId, users.firstNames, users.lastNames, users.email, response, answerCreditAchieved, submittedAt,
+        MAX(answerCreditAchieved) over (partition by sr.userId) as maxCredit,
+        COUNT(answerCreditAchieved) over (partition by sr.userId) as numResponses
         from submittedResponses as sr
       INNER JOIN content on sr.contentId = content.id 
       INNER JOIN users on sr.userId = users.userId 
-      WHERE content.id=${contentId} and ownerId = ${loggedInUserId} and assignmentId IS NOT NULL and type != "folder"
-        and contentId = ${contentId} and answerId = ${answerId}
+      WHERE content.id=${contentId} and ownerId = ${loggedInUserId} 
+        and EXISTS(SELECT * FROM assignments WHERE rootContentId=content.id) and type != "folder"
+        and contentId = ${contentId} and answerId = ${answerId} and itemNumber = ${itemNumber}
         order by sr.userId asc, submittedAt desc
   `);
 
@@ -721,7 +899,7 @@ select sr.userId, users.firstNames, users.lastNames, users.email, response, cred
           email: respObj.email,
         },
         latestResponse: respObj.response,
-        latestCreditAchieved: respObj.creditAchieved,
+        latestCreditAchieved: respObj.answerCreditAchieved,
         bestCreditAchieved: respObj.maxCredit,
         numResponses: Number(respObj.numResponses),
         bestResponse: "",
@@ -729,7 +907,7 @@ select sr.userId, users.firstNames, users.lastNames, users.email, response, cred
     }
     if (
       newResponse?.bestResponse === "" &&
-      respObj.creditAchieved === newResponse.bestCreditAchieved
+      respObj.answerCreditAchieved === newResponse.bestCreditAchieved
     ) {
       newResponse.bestResponse = respObj.response;
     }
@@ -746,11 +924,13 @@ export async function getSubmittedResponseHistory({
   contentId,
   loggedInUserId,
   answerId,
+  itemNumber,
   userId,
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   answerId: string;
+  itemNumber: number;
   userId: Uint8Array;
 }) {
   // get activity name and make sure that owner is the owner
@@ -764,12 +944,13 @@ export async function getSubmittedResponseHistory({
     })
   ).name;
 
-  // for each combination of ["contentId", "answerId", "userId"],
-  // find the latest submitted response
+  // for this combination of ["contentId", "answerId", "itemNumber", "userId"],
+  // find all submitted responses
   const submittedResponses = await prisma.submittedResponses.findMany({
     where: {
       contentId,
       answerId,
+      itemNumber,
       userId,
       content: {
         ownerId: loggedInUserId,
@@ -785,7 +966,7 @@ export async function getSubmittedResponseHistory({
         },
       },
       response: true,
-      creditAchieved: true,
+      answerCreditAchieved: true,
       submittedAt: true,
     },
     orderBy: {
@@ -809,7 +990,7 @@ export async function getAssignmentViewerDataFromCode({
   try {
     preliminaryAssignment = await prisma.content.findFirstOrThrow({
       where: {
-        assignment: {
+        rootAssignment: {
           classCode: code,
           codeValidUntil: {
             gte: DateTime.now().toISO(), // TODO - confirm this works with timezone stuff
@@ -865,7 +1046,11 @@ export async function listUserAssigned({
   const preliminaryAssignments = await prisma.content.findMany({
     where: {
       isDeleted: false,
-      assignmentScores: { some: { userId: loggedInUserId } },
+      rootAssignment: {
+        contentState: {
+          some: { userId: loggedInUserId },
+        },
+      },
     },
     select: returnContentSelect({
       includeAssignInfo: true,
@@ -887,27 +1072,36 @@ export async function listUserAssigned({
   };
 }
 
-export async function getAssignmentData({
+/**
+ * Get the data for the overview of student responses for the assignment `contentId`.
+ * It must be owned by `loggedInUserId` for the data to be returned.
+ *
+ * Return a Promise that results to an object with these fields:
+ * - scores: an array of the scores achieved by all students
+ * - answerList: an array of the answers from `contentId` that have responses
+ * - content: information about `contentId`
+ */
+export async function getAssignmentResponseOverview({
   contentId,
   loggedInUserId,
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
-  const assignmentData = await getAssignmentScoreData({
+  const scores = await getScoresOfAllStudents({
     contentId,
     loggedInUserId,
   });
 
-  const answerList = await getAnswersThatHaveSubmittedResponses({
+  const answerList = await getAnswersWithSubmittedResponses({
     contentId,
-    ownerId: loggedInUserId,
+    loggedInUserId: loggedInUserId,
   });
 
-  const assignmentContent = await getAssignmentContent({
+  const content = await getContent({
     contentId,
     loggedInUserId,
   });
 
-  return { assignmentData, answerList, assignmentContent };
+  return { scores, answerList, content };
 }

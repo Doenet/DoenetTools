@@ -1,4 +1,4 @@
-import { ContentType } from "@prisma/client";
+import { AssignmentMode, ContentType } from "@prisma/client";
 import {
   AssignmentStatus,
   ContentClassification,
@@ -143,7 +143,6 @@ export function processLicense(
 
 export function returnContentSelect({
   includeAssignInfo = false,
-  countAssignmentScores = false,
   includeLibraryInfo = false,
   includeClassifications = false,
   includeShareDetails = false,
@@ -214,10 +213,6 @@ export function returnContentSelect({
       }
     : false;
 
-  const _count = countAssignmentScores
-    ? { select: { assignmentScores: true } }
-    : false;
-
   const baseSelect = {
     id: true,
     name: true,
@@ -248,16 +243,29 @@ export function returnContentSelect({
     librarySourceInfo,
     libraryActivityInfo,
     ...classificationsObj,
-    _count,
-    activityLevelAttempts: true,
-    itemLevelAttempts: true,
   };
 
-  const assignment = includeAssignInfo
+  const rootAssignment = includeAssignInfo
     ? {
         select: {
+          assigned: true,
           classCode: true,
           codeValidUntil: true,
+          mode: true,
+          maxAttempts: true,
+          _count: { select: { contentState: true } },
+        },
+      }
+    : false;
+
+  const nonRootAssignment = includeAssignInfo
+    ? {
+        select: {
+          assigned: true,
+          classCode: true,
+          codeValidUntil: true,
+          mode: true,
+          maxAttempts: true,
           rootContent: {
             select: {
               name: true,
@@ -287,7 +295,8 @@ export function returnContentSelect({
   };
 
   return {
-    assignment,
+    rootAssignment,
+    nonRootAssignment,
     ...baseSelect,
     ...docSelect,
     ...questionBankSelect,
@@ -362,16 +371,26 @@ type PreliminaryContent = {
   classifications?: {
     classification: ContentClassification;
   }[];
-  _count?: {
-    assignmentScores: number;
-  };
   activityLevelAttempts: boolean;
   itemLevelAttempts: boolean;
 
   // if `includeAssignInfo` is specified
-  assignment?: {
+  rootAssignment?: {
+    assigned: boolean;
     classCode: string;
     codeValidUntil: Date | null;
+    mode: AssignmentMode;
+    maxAttempts: number;
+    _count?: {
+      contentState: number;
+    };
+  } | null;
+  nonRootAssignment?: {
+    assigned: boolean;
+    classCode: string;
+    codeValidUntil: Date | null;
+    mode: AssignmentMode;
+    maxAttempts: number;
     rootContent: {
       name: string;
       id: Uint8Array;
@@ -410,7 +429,6 @@ export function processContent(
   const {
     id,
     type,
-    _count,
     activityLevelAttempts,
     itemLevelAttempts,
     sharedWith: sharedWithOrig,
@@ -419,7 +437,8 @@ export function processContent(
     classifications,
     libraryActivityInfo,
     librarySourceInfo,
-    assignment,
+    rootAssignment,
+    nonRootAssignment,
 
     // from doc select
     source: sourceOrig,
@@ -440,22 +459,54 @@ export function processContent(
 
   const assignmentInfoObj: { assignmentInfo?: AssignmentInfo } = {};
 
-  if (assignment) {
-    const { codeValidUntil, classCode, rootContent } = assignment;
+  if (rootAssignment) {
+    const { codeValidUntil, classCode, assigned, maxAttempts, mode, _count } =
+      rootAssignment;
     const isOpen = codeValidUntil
       ? DateTime.now() <= DateTime.fromJSDate(codeValidUntil)
       : false;
-    const assignmentStatus: AssignmentStatus = isOpen ? "Open" : "Closed";
+    const assignmentStatus: AssignmentStatus = assigned
+      ? isOpen
+        ? "Open"
+        : "Closed"
+      : "Unassigned";
     assignmentInfoObj.assignmentInfo = {
       assignmentStatus,
       classCode,
       codeValidUntil,
-      rootName: rootContent.name,
-      rootContentId: rootContent.id,
-      rootType: rootContent.type,
-      hasScoreData: _count ? _count.assignmentScores > 0 : false,
-      activityLevelAttempts,
-      itemLevelAttempts,
+      mode,
+      maxAttempts,
+      hasScoreData: _count ? _count.contentState > 0 : false,
+    };
+  } else if (nonRootAssignment) {
+    const {
+      codeValidUntil,
+      classCode,
+      assigned,
+      maxAttempts,
+      mode,
+      rootContent,
+    } = nonRootAssignment;
+    const isOpen = codeValidUntil
+      ? DateTime.now() <= DateTime.fromJSDate(codeValidUntil)
+      : false;
+    const assignmentStatus: AssignmentStatus = assigned
+      ? isOpen
+        ? "Open"
+        : "Closed"
+      : "Unassigned";
+    assignmentInfoObj.assignmentInfo = {
+      assignmentStatus,
+      classCode,
+      codeValidUntil,
+      mode,
+      maxAttempts,
+      otherRoot: {
+        rootContentId: rootContent.id,
+        rootName: rootContent.name,
+        rootType: rootContent.type,
+      },
+      hasScoreData: false,
     };
   }
 

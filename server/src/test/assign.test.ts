@@ -12,10 +12,9 @@ import {
   assignActivity,
   closeAssignmentWithCode,
   getAllAssignmentScores,
-  getAnswersThatHaveSubmittedResponses,
+  getAnswersWithSubmittedResponses,
   getAssignedScores,
   getAssignmentViewerDataFromCode,
-  getAssignmentScoreData,
   getAssignmentStudentData,
   getStudentData,
   getSubmittedResponseHistory,
@@ -24,12 +23,20 @@ import {
   openAssignmentWithCode,
   recordSubmittedEvent,
   unassignActivity,
-  updateAssignmentSettings,
+  updateAssignmentCloseAt,
+  updateAssignmentMaxAttempts,
+  updateAssignmentMode,
 } from "../query/assign";
 import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
-import { loadState, saveScoreAndState } from "../query/scores";
+import {
+  getScoresOfAllStudents,
+  loadState,
+  saveScoreAndState,
+} from "../query/scores";
 import { updateUser } from "../query/user";
 import { moveContent } from "../query/copy_move";
+import { getContent } from "../query/activity_edit_view";
+import { AssignmentMode } from "@prisma/client";
 
 test("assign an activity", async () => {
   const owner = await createTestUser();
@@ -144,8 +151,8 @@ test("open and close assignment with code", async () => {
     loggedInUserId: ownerId,
   });
   let assignment = await getTestAssignment(contentId, ownerId);
-  expect(assignment.assignment!.classCode).eq(classCode);
-  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(assignment.rootAssignment!.classCode).eq(classCode);
+  expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   let assignmentData = await getAssignmentViewerDataFromCode({
     code: classCode,
@@ -163,9 +170,8 @@ test("open and close assignment with code", async () => {
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  await expect(getTestAssignment(contentId, ownerId)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  assignment = await getTestAssignment(contentId, ownerId);
+  expect(assignment.rootAssignment?.assigned).eq(false);
 
   assignmentData = await getAssignmentViewerDataFromCode({
     code: classCode,
@@ -174,20 +180,20 @@ test("open and close assignment with code", async () => {
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
 
-  // get different code back if reopen
+  // get same code back if reopen
   closeAt = DateTime.now().plus({ weeks: 3 });
   const { classCode: classCode2 } = await openAssignmentWithCode({
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
   });
-  expect(classCode2).not.eq(classCode);
+  expect(classCode2).eq(classCode);
   assignment = await getTestAssignment(contentId, ownerId);
-  expect(assignment.assignment!.classCode).eq(classCode2);
-  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(assignment.rootAssignment!.classCode).eq(classCode);
+  expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   assignmentData = await getAssignmentViewerDataFromCode({
-    code: classCode2,
+    code: classCode,
     loggedInUserId: fakeId,
   });
   expect(assignmentData.assignmentFound).eq(true);
@@ -204,7 +210,7 @@ test("open and close assignment with code", async () => {
     loggedInUserId: ownerId,
   });
   assignmentData = await getAssignmentViewerDataFromCode({
-    code: classCode2,
+    code: classCode,
     loggedInUserId: fakeId,
   });
   expect(assignmentData.assignmentFound).eq(false);
@@ -224,12 +230,13 @@ test("open and close assignment with code", async () => {
   });
   expect(classCode3).eq(classCode2);
   assignment = await getTestAssignment(contentId, ownerId);
-  expect(assignment.assignment!.classCode).eq(classCode2);
-  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(assignment.rootAssignment!.classCode).eq(classCode);
+  expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   // add some data
   await saveScoreAndState({
     contentId: contentId,
+    code: classCode,
     loggedInUserId: ownerId,
     attemptNumber: 1,
     score: 0.3,
@@ -242,8 +249,8 @@ test("open and close assignment with code", async () => {
     loggedInUserId: ownerId,
   });
   assignment = await getTestAssignment(contentId, ownerId);
-  expect(assignment.assignment!.classCode).eq(classCode2);
-  expect(assignment.assignment!.codeValidUntil).eqls(null);
+  expect(assignment.rootAssignment!.classCode).eq(classCode);
+  expect(assignment.rootAssignment!.codeValidUntil).eqls(null);
 });
 
 test("open and unassign assignment with code", async () => {
@@ -272,9 +279,9 @@ test("open and unassign assignment with code", async () => {
     closeAt: closeAt,
     loggedInUserId: ownerId,
   });
-  const assignment = await getTestAssignment(contentId, ownerId);
-  expect(assignment.assignment!.classCode).eq(classCode);
-  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
+  let assignment = await getTestAssignment(contentId, ownerId);
+  expect(assignment.rootAssignment!.classCode).eq(classCode);
+  expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   let assignmentData = await getAssignmentViewerDataFromCode({
     code: classCode,
@@ -284,9 +291,8 @@ test("open and unassign assignment with code", async () => {
 
   // unassign activity
   await unassignActivity({ contentId: contentId, loggedInUserId: ownerId });
-  await expect(getTestAssignment(contentId, ownerId)).rejects.toThrow(
-    PrismaClientKnownRequestError,
-  );
+  assignment = await getTestAssignment(contentId, ownerId);
+  expect(assignment.rootAssignment?.assigned).eq(false);
 
   // Getting deleted assignment by code fails
   assignmentData = await getAssignmentViewerDataFromCode({
@@ -296,10 +302,10 @@ test("open and unassign assignment with code", async () => {
   expect(assignmentData.assignmentFound).eq(false);
   expect(assignmentData.assignment).eq(null);
 
-  // cannot unassign again
-  await expect(
-    unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
-  ).rejects.toThrow("not found");
+  // unassign again does nothing
+  expect(
+    await unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
+  ).eqls({ success: true });
 });
 
 test("open compound assignment with code", async () => {
@@ -373,6 +379,14 @@ test("open compound assignment with code", async () => {
     loggedInUserId: ownerId,
   });
 
+  // check content structure beforehand
+  let content = await getContent({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo).eq(undefined);
+
   // open assignment assigns activity and generates code
   const closeAt = DateTime.now().plus({ days: 1 });
   const { classCode } = await openAssignmentWithCode({
@@ -381,8 +395,8 @@ test("open compound assignment with code", async () => {
     loggedInUserId: ownerId,
   });
   const assignment = await getTestAssignment(sequenceId, ownerId);
-  expect(assignment.assignment!.classCode).eq(classCode);
-  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(assignment.rootAssignment!.classCode).eq(classCode);
+  expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
   const assignmentData = await getAssignmentViewerDataFromCode({
     code: classCode,
@@ -415,6 +429,35 @@ test("open compound assignment with code", async () => {
     }
     expect(question.doenetML).eq(`Some content ${i + 2}`);
   }
+
+  // check content info from root and a descendant
+  content = await getContent({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Open");
+  expect(content.assignmentInfo?.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(content.assignmentInfo?.classCode).eq(classCode);
+  expect(content.assignmentInfo?.maxAttempts).eq(1);
+  expect(content.assignmentInfo?.mode).eq("formative");
+  expect(content.assignmentInfo?.otherRoot).eq(undefined);
+
+  content = await getContent({
+    contentId: doc3Id,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Open");
+  expect(content.assignmentInfo?.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(content.assignmentInfo?.classCode).eq(classCode);
+  expect(content.assignmentInfo?.maxAttempts).eq(1);
+  expect(content.assignmentInfo?.mode).eq("formative");
+  expect(content.assignmentInfo?.otherRoot).eqls({
+    rootName: "A problem set",
+    rootType: "sequence",
+    rootContentId: sequenceId,
+  });
 });
 
 test("only owner can open, close, modify, or unassign assignment", async () => {
@@ -446,7 +489,7 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
 
   await expect(
     assignActivity({ contentId: contentId, loggedInUserId: userId2 }),
-  ).rejects.toThrow(PrismaClientKnownRequestError);
+  ).rejects.toThrow("not found");
 
   await assignActivity({ contentId: contentId, loggedInUserId: ownerId });
 
@@ -481,7 +524,7 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
       closeAt: closeAt,
       loggedInUserId: userId2,
     }),
-  ).rejects.toThrow(PrismaClientKnownRequestError);
+  ).rejects.toThrow("not found");
 
   const { codeValidUntil } = await openAssignmentWithCode({
     contentId: contentId,
@@ -494,22 +537,22 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
   const newCloseAt = DateTime.now().plus({ days: 2 });
 
   await expect(
-    updateAssignmentSettings({
+    updateAssignmentCloseAt({
       contentId: contentId,
       closeAt: newCloseAt,
       loggedInUserId: userId2,
     }),
   ).rejects.toThrow("Record to update not found");
   assignment = await getTestAssignment(contentId, ownerId);
-  expect(assignment.assignment!.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
-  await updateAssignmentSettings({
+  await updateAssignmentCloseAt({
     contentId: contentId,
     closeAt: newCloseAt,
     loggedInUserId: ownerId,
   });
   assignment = await getTestAssignment(contentId, ownerId);
-  expect(assignment.assignment!.codeValidUntil).eqls(newCloseAt.toJSDate());
+  expect(assignment.rootAssignment!.codeValidUntil).eqls(newCloseAt.toJSDate());
 
   await expect(
     closeAssignmentWithCode({ contentId: contentId, loggedInUserId: userId2 }),
@@ -519,6 +562,620 @@ test("only owner can open, close, modify, or unassign assignment", async () => {
     contentId: contentId,
     loggedInUserId: ownerId,
   });
+});
+
+test("cannot assign a descendant of an assignment", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  const { contentId: sequenceId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "sequence",
+    parentId: null,
+  });
+  await updateContent({
+    contentId: sequenceId,
+    name: "A problem set",
+    loggedInUserId: ownerId,
+  });
+
+  const { contentId: selectId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "select",
+    parentId: sequenceId,
+  });
+  await updateContent({
+    contentId: selectId,
+    name: "A question bank",
+    loggedInUserId: ownerId,
+  });
+
+  const { contentId: docId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: selectId,
+  });
+  await updateContent({
+    contentId: docId,
+    name: "Question",
+    source: "Some content",
+    loggedInUserId: ownerId,
+  });
+
+  await assignActivity({ contentId: sequenceId, loggedInUserId: ownerId });
+
+  // cannot assign the descendants of the assignment sequenceId
+  await expect(
+    assignActivity({ contentId: docId, loggedInUserId: ownerId }),
+  ).rejects.toThrow(
+    "Activity is already assigned as a part of another activity",
+  );
+
+  await expect(
+    assignActivity({ contentId: selectId, loggedInUserId: ownerId }),
+  ).rejects.toThrow(
+    "Activity is already assigned as a part of another activity",
+  );
+
+  let content = await getContent({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
+
+  content = await getContent({
+    contentId: selectId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
+
+  content = await getContent({
+    contentId: docId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
+
+  // if unassign sequence, then can assign select
+  await unassignActivity({ contentId: sequenceId, loggedInUserId: ownerId });
+
+  content = await getContent({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Unassigned");
+
+  content = await getContent({
+    contentId: selectId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Unassigned");
+
+  content = await getContent({
+    contentId: docId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Unassigned");
+
+  await assignActivity({ contentId: selectId, loggedInUserId: ownerId });
+
+  content = await getContent({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Unassigned");
+
+  content = await getContent({
+    contentId: selectId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
+
+  content = await getContent({
+    contentId: docId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
+});
+
+test("cannot assign an ancestor of an assignment", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  const { contentId: sequenceId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "sequence",
+    parentId: null,
+  });
+  await updateContent({
+    contentId: sequenceId,
+    name: "A problem set",
+    loggedInUserId: ownerId,
+  });
+
+  const { contentId: selectId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "select",
+    parentId: sequenceId,
+  });
+  await updateContent({
+    contentId: selectId,
+    name: "A question bank",
+    loggedInUserId: ownerId,
+  });
+
+  const { contentId: docId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: selectId,
+  });
+  await updateContent({
+    contentId: docId,
+    name: "Question",
+    source: "Some content",
+    loggedInUserId: ownerId,
+  });
+
+  await assignActivity({ contentId: docId, loggedInUserId: ownerId });
+
+  // cannot assign the descendants of the assignment sequenceId
+  await expect(
+    assignActivity({ contentId: sequenceId, loggedInUserId: ownerId }),
+  ).rejects.toThrow(
+    "Cannot assign content with a descendant that is already assigned",
+  );
+
+  await expect(
+    assignActivity({ contentId: selectId, loggedInUserId: ownerId }),
+  ).rejects.toThrow(
+    "Cannot assign content with a descendant that is already assigned",
+  );
+
+  // if unassign document, then can assign sequence
+
+  await unassignActivity({ contentId: docId, loggedInUserId: ownerId });
+
+  await assignActivity({ contentId: sequenceId, loggedInUserId: ownerId });
+});
+
+test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  const { contentId: sequenceId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "sequence",
+    parentId: null,
+  });
+  await updateContent({
+    contentId: sequenceId,
+    name: "A problem set",
+    loggedInUserId: ownerId,
+  });
+
+  const { contentId: selectId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "select",
+    parentId: sequenceId,
+  });
+  await updateContent({
+    contentId: selectId,
+    name: "A question bank",
+    loggedInUserId: ownerId,
+  });
+
+  const { contentId: docId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: selectId,
+  });
+  await updateContent({
+    contentId: docId,
+    name: "Question",
+    source: "Some content",
+    loggedInUserId: ownerId,
+  });
+
+  await assignActivity({ contentId: sequenceId, loggedInUserId: ownerId });
+
+  let content = await getContent({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
+  expect(content.assignmentInfo?.codeValidUntil).eq(null);
+
+  const closeAt = DateTime.now().plus({ days: 1 });
+  const maxAttempts = 2;
+  const mode: AssignmentMode = "summative";
+
+  await expect(
+    updateAssignmentCloseAt({
+      contentId: docId,
+      loggedInUserId: ownerId,
+      closeAt,
+    }),
+  ).rejects.toThrow("not found");
+
+  await expect(
+    updateAssignmentMaxAttempts({
+      contentId: docId,
+      loggedInUserId: ownerId,
+      maxAttempts,
+    }),
+  ).rejects.toThrow(
+    "Activity is already assigned as a part of another activity",
+  );
+
+  await expect(
+    updateAssignmentMode({
+      contentId: docId,
+      loggedInUserId: ownerId,
+      mode,
+    }),
+  ).rejects.toThrow(
+    "Activity is already assigned as a part of another activity",
+  );
+
+  content = await getContent({
+    contentId: docId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
+  expect(content.assignmentInfo?.codeValidUntil).eq(null);
+  expect(content.assignmentInfo?.maxAttempts).eq(1);
+  expect(content.assignmentInfo?.mode).eq("formative");
+
+  await expect(
+    updateAssignmentCloseAt({
+      contentId: selectId,
+      loggedInUserId: ownerId,
+      closeAt,
+    }),
+  ).rejects.toThrow("not found");
+
+  await expect(
+    updateAssignmentMaxAttempts({
+      contentId: selectId,
+      loggedInUserId: ownerId,
+      maxAttempts,
+    }),
+  ).rejects.toThrow(
+    "Activity is already assigned as a part of another activity",
+  );
+
+  await expect(
+    updateAssignmentMode({
+      contentId: selectId,
+      loggedInUserId: ownerId,
+      mode,
+    }),
+  ).rejects.toThrow(
+    "Activity is already assigned as a part of another activity",
+  );
+
+  content = await getContent({
+    contentId: selectId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
+  expect(content.assignmentInfo?.codeValidUntil).eq(null);
+  expect(content.assignmentInfo?.maxAttempts).eq(1);
+  expect(content.assignmentInfo?.mode).eq("formative");
+
+  await expect(
+    updateAssignmentMode({
+      contentId: sequenceId,
+      loggedInUserId: ownerId,
+      mode,
+    }),
+  ).rejects.toThrow("Cannot update assignment mode of assigned content");
+
+  await updateAssignmentCloseAt({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    closeAt,
+  });
+
+  await updateAssignmentMaxAttempts({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    maxAttempts,
+  });
+
+  content = await getContent({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Open");
+  expect(content.assignmentInfo?.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(content.assignmentInfo?.maxAttempts).eq(2);
+  expect(content.assignmentInfo?.mode).eq("formative");
+
+  content = await getContent({
+    contentId: selectId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Open");
+  expect(content.assignmentInfo?.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(content.assignmentInfo?.maxAttempts).eq(2);
+  expect(content.assignmentInfo?.mode).eq("formative");
+
+  content = await getContent({
+    contentId: docId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Open");
+  expect(content.assignmentInfo?.codeValidUntil).eqls(closeAt.toJSDate());
+  expect(content.assignmentInfo?.maxAttempts).eq(2);
+  expect(content.assignmentInfo?.mode).eq("formative");
+
+  // When unassign assignment, then can change mode
+  await unassignActivity({ contentId: sequenceId, loggedInUserId: ownerId });
+
+  await updateAssignmentMode({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    mode,
+  });
+
+  content = await getContent({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.mode).eq("summative");
+
+  content = await getContent({
+    contentId: selectId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.mode).eq("summative");
+  expect(content.assignmentInfo?.otherRoot?.rootContentId).eqls(sequenceId);
+
+  content = await getContent({
+    contentId: docId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.mode).eq("summative");
+  expect(content.assignmentInfo?.otherRoot?.rootContentId).eqls(sequenceId);
+
+  // can now change maxAttempts and mode of descendants, and they get independent values
+  await updateAssignmentMode({
+    contentId: selectId,
+    loggedInUserId: ownerId,
+    mode: "formative",
+  });
+
+  content = await getContent({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.mode).eq("summative");
+  expect(content.assignmentInfo?.maxAttempts).eq(2);
+  expect(content.assignmentInfo?.otherRoot?.rootContentId).eq(undefined);
+
+  content = await getContent({
+    contentId: selectId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.mode).eq("formative");
+  expect(content.assignmentInfo?.maxAttempts).eq(1); // max attempts reverted to default since disconnected
+  expect(content.assignmentInfo?.otherRoot?.rootContentId).eq(undefined);
+
+  content = await getContent({
+    contentId: docId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.mode).eq("summative");
+  expect(content.assignmentInfo?.otherRoot?.rootContentId).eqls(sequenceId);
+
+  await updateAssignmentMaxAttempts({
+    contentId: docId,
+    loggedInUserId: ownerId,
+    maxAttempts: 5,
+  });
+
+  content = await getContent({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.mode).eq("summative");
+  expect(content.assignmentInfo?.maxAttempts).eq(2);
+  expect(content.assignmentInfo?.otherRoot?.rootContentId).eq(undefined);
+
+  content = await getContent({
+    contentId: selectId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.mode).eq("formative");
+  expect(content.assignmentInfo?.otherRoot?.rootContentId).eq(undefined);
+  expect(content.assignmentInfo?.maxAttempts).eq(1);
+
+  content = await getContent({
+    contentId: docId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.mode).eq("formative"); // mode reverted to default since disconnected
+  expect(content.assignmentInfo?.maxAttempts).eq(5);
+  expect(content.assignmentInfo?.otherRoot?.rootContentId).eq(undefined);
+});
+
+test("assignment settings of descendants synchronize when ancestor assigned", async () => {
+  const owner = await createTestUser();
+  const ownerId = owner.userId;
+
+  const { contentId: sequenceId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "sequence",
+    parentId: null,
+  });
+  await updateContent({
+    contentId: sequenceId,
+    name: "A problem set",
+    loggedInUserId: ownerId,
+  });
+
+  const { contentId: selectId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "select",
+    parentId: sequenceId,
+  });
+  await updateContent({
+    contentId: selectId,
+    name: "A question bank",
+    loggedInUserId: ownerId,
+  });
+
+  const { contentId: docId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: selectId,
+  });
+  await updateContent({
+    contentId: docId,
+    name: "Question",
+    source: "Some content",
+    loggedInUserId: ownerId,
+  });
+
+  let content = await getContent({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo).eq(undefined);
+  content = await getContent({
+    contentId: selectId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo).eq(undefined);
+  content = await getContent({
+    contentId: docId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo).eq(undefined);
+
+  await updateAssignmentMaxAttempts({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    maxAttempts: 2,
+  });
+  await updateAssignmentMode({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    mode: "summative",
+  });
+
+  // update in reverse order for select to make sure can change mode when start with no assignment record
+  await updateAssignmentMode({
+    contentId: selectId,
+    loggedInUserId: ownerId,
+    mode: "summative",
+  });
+  await updateAssignmentMaxAttempts({
+    contentId: selectId,
+    loggedInUserId: ownerId,
+    maxAttempts: 3,
+  });
+
+  await updateAssignmentMaxAttempts({
+    contentId: docId,
+    loggedInUserId: ownerId,
+    maxAttempts: 4,
+  });
+  await updateAssignmentMode({
+    contentId: docId,
+    loggedInUserId: ownerId,
+    mode: "formative",
+  });
+
+  content = await getContent({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Unassigned");
+  expect(content.assignmentInfo?.maxAttempts).eq(2);
+  expect(content.assignmentInfo?.mode).eq("summative");
+  expect(content.assignmentInfo?.otherRoot).eq(undefined);
+
+  content = await getContent({
+    contentId: selectId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Unassigned");
+  expect(content.assignmentInfo?.maxAttempts).eq(3);
+  expect(content.assignmentInfo?.mode).eq("summative");
+  expect(content.assignmentInfo?.otherRoot).eq(undefined);
+
+  content = await getContent({
+    contentId: docId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Unassigned");
+  expect(content.assignmentInfo?.maxAttempts).eq(4);
+  expect(content.assignmentInfo?.mode).eq("formative");
+  expect(content.assignmentInfo?.otherRoot).eq(undefined);
+
+  // when assign sequence, all settings synchronize
+  await assignActivity({ contentId: sequenceId, loggedInUserId: ownerId });
+
+  content = await getContent({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
+  expect(content.assignmentInfo?.maxAttempts).eq(2);
+  expect(content.assignmentInfo?.mode).eq("summative");
+  expect(content.assignmentInfo?.otherRoot).eq(undefined);
+
+  content = await getContent({
+    contentId: selectId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
+  expect(content.assignmentInfo?.maxAttempts).eq(2);
+  expect(content.assignmentInfo?.mode).eq("summative");
+  expect(content.assignmentInfo?.otherRoot?.rootContentId).eqls(sequenceId);
+
+  content = await getContent({
+    contentId: docId,
+    loggedInUserId: ownerId,
+    includeAssignInfo: true,
+  });
+  expect(content.assignmentInfo?.assignmentStatus).eq("Closed");
+  expect(content.assignmentInfo?.maxAttempts).eq(2);
+  expect(content.assignmentInfo?.mode).eq("summative");
+  expect(content.assignmentInfo?.otherRoot?.rootContentId).eqls(sequenceId);
 });
 
 test("get assignment data from anonymous users", async () => {
@@ -534,6 +1191,12 @@ test("get assignment data from anonymous users", async () => {
     name: "Activity 1",
     source: "Some content",
     loggedInUserId: ownerId,
+  });
+
+  await updateAssignmentMode({
+    contentId,
+    loggedInUserId: ownerId,
+    mode: "summative",
   });
 
   // open assignment generates code
@@ -559,21 +1222,19 @@ test("get assignment data from anonymous users", async () => {
 
   await saveScoreAndState({
     contentId: contentId,
+    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.5,
     state: "document state 1",
   });
 
-  let assignmentWithScores = await getAssignmentScoreData({
+  let assignmentScores = await getScoresOfAllStudents({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
 
-  expect(assignmentWithScores).eqls({
-    name: "Activity 1",
-    assignmentScores: [{ score: 0.5, user: userData1 }],
-  });
+  expect(assignmentScores.scores).eqls([{ score: 0.5, user: userData1 }]);
 
   let dataFromCode = await getAssignmentViewerDataFromCode({
     code: classCode,
@@ -583,7 +1244,6 @@ test("get assignment data from anonymous users", async () => {
   expect(dataFromCode.scoreData).eqls({
     loadedScore: true,
     score: 0.5,
-    scoreByItem: null,
   });
 
   let assignmentStudentData = await getAssignmentStudentData({
@@ -613,19 +1273,19 @@ test("get assignment data from anonymous users", async () => {
   // new lower score ignored
   await saveScoreAndState({
     contentId: contentId,
+    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.2,
     state: "document state 2",
   });
-  assignmentWithScores = await getAssignmentScoreData({
+  assignmentScores = await getScoresOfAllStudents({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  expect(assignmentWithScores).eqls({
-    name: "Activity 1",
-    assignmentScores: [{ score: 0.5, user: userData1 }],
-  });
+  expect(assignmentScores).eqls([
+    { score: 0.5, scoreByItem: null, user: userData1 },
+  ]);
 
   dataFromCode = await getAssignmentViewerDataFromCode({
     code: classCode,
@@ -665,19 +1325,19 @@ test("get assignment data from anonymous users", async () => {
   // new higher score used
   await saveScoreAndState({
     contentId: contentId,
+    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.7,
     state: "document state 3",
   });
-  assignmentWithScores = await getAssignmentScoreData({
+  assignmentScores = await getScoresOfAllStudents({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  expect(assignmentWithScores).eqls({
-    name: "Activity 1",
-    assignmentScores: [{ score: 0.7, user: userData1 }],
-  });
+  expect(assignmentScores).eqls([
+    { score: 0.7, scoreByItem: null, user: userData1 },
+  ]);
 
   dataFromCode = await getAssignmentViewerDataFromCode({
     code: classCode,
@@ -729,14 +1389,13 @@ test("get assignment data from anonymous users", async () => {
   };
 
   // assignment scores still unchanged
-  assignmentWithScores = await getAssignmentScoreData({
+  assignmentScores = await getScoresOfAllStudents({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  expect(assignmentWithScores).eqls({
-    name: "Activity 1",
-    assignmentScores: [{ score: 0.7, user: userData1 }],
-  });
+  expect(assignmentScores).eqls([
+    { score: 0.7, scoreByItem: null, user: userData1 },
+  ]);
   dataFromCode = await getAssignmentViewerDataFromCode({
     code: classCode,
     loggedInUserId: newUser1.userId,
@@ -751,6 +1410,7 @@ test("get assignment data from anonymous users", async () => {
   // save state for second user
   await saveScoreAndState({
     contentId: contentId,
+    code: classCode,
     loggedInUserId: newUser2.userId,
     attemptNumber: 1,
     score: 0.3,
@@ -758,17 +1418,14 @@ test("get assignment data from anonymous users", async () => {
   });
 
   // second user's score shows up first due to alphabetical sorting
-  assignmentWithScores = await getAssignmentScoreData({
+  assignmentScores = await getScoresOfAllStudents({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
-  expect(assignmentWithScores).eqls({
-    name: "Activity 1",
-    assignmentScores: [
-      { score: 0.3, user: userData2 },
-      { score: 0.7, user: userData1 },
-    ],
-  });
+  expect(assignmentScores).eqls([
+    { score: 0.3, scoreByItem: null, user: userData2 },
+    { score: 0.7, scoreByItem: null, user: userData1 },
+  ]);
   dataFromCode = await getAssignmentViewerDataFromCode({
     code: classCode,
     loggedInUserId: newUser2.userId,
@@ -805,6 +1462,8 @@ test("get assignment data from anonymous users", async () => {
   });
 });
 
+test.todo("get assignment data from anonymous users, problem set");
+
 test("can't get assignment data if other user, but student can get their own data", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
@@ -817,7 +1476,7 @@ test("can't get assignment data if other user, but student can get their own dat
   });
 
   const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode({
+  const { classCode } = await openAssignmentWithCode({
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
@@ -832,6 +1491,7 @@ test("can't get assignment data if other user, but student can get their own dat
 
   await saveScoreAndState({
     contentId: contentId,
+    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.5,
@@ -839,26 +1499,30 @@ test("can't get assignment data if other user, but student can get their own dat
   });
 
   // assignment owner can get score data
-  await getAssignmentScoreData({
-    contentId: contentId,
-    loggedInUserId: ownerId,
-  });
+  expect(
+    (
+      await getScoresOfAllStudents({
+        contentId: contentId,
+        loggedInUserId: ownerId,
+      })
+    ).scores.length,
+  ).eq(1);
 
   // other user cannot get score data
   await expect(
-    getAssignmentScoreData({
+    getScoresOfAllStudents({
       contentId: contentId,
       loggedInUserId: otherUserId,
     }),
-  ).rejects.toThrow(PrismaClientKnownRequestError);
+  ).rejects.toThrow("not found");
 
   // student cannot get score data on all of assignment
   await expect(
-    getAssignmentScoreData({
+    getScoresOfAllStudents({
       contentId: contentId,
       loggedInUserId: newUser1.userId,
     }),
-  ).rejects.toThrow(PrismaClientKnownRequestError);
+  ).rejects.toThrow("not found");
 
   // assignment owner can get data on student
   const studentData = await getAssignmentStudentData({
@@ -895,7 +1559,7 @@ test("can't unassign if have data", async () => {
   });
 
   const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode({
+  const { classCode } = await openAssignmentWithCode({
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
@@ -910,13 +1574,14 @@ test("can't unassign if have data", async () => {
 
   await saveScoreAndState({
     contentId: contentId,
+    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.5,
     state: "document state 1",
   });
 
-  await getAssignmentScoreData({
+  await getScoresOfAllStudents({
     contentId: contentId,
     loggedInUserId: ownerId,
   });
@@ -927,9 +1592,9 @@ test("can't unassign if have data", async () => {
     studentUserId: newUser1.userId,
   });
 
-  await expect(
-    unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
-  ).rejects.toThrow("not found");
+  expect(
+    await unassignActivity({ contentId: contentId, loggedInUserId: ownerId }),
+  ).eqls({ success: false });
 });
 
 test("list assigned and get assigned scores get student assignments and scores", async () => {
@@ -982,7 +1647,7 @@ test("list assigned and get assigned scores get student assignments and scores",
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode({
+  const { classCode } = await openAssignmentWithCode({
     contentId: contentId2,
     closeAt: closeAt,
     loggedInUserId: user2Id,
@@ -991,6 +1656,7 @@ test("list assigned and get assigned scores get student assignments and scores",
   // recording score for user1 on assignment2 adds it to user1's assignment list
   await saveScoreAndState({
     contentId: contentId2,
+    code: classCode,
     loggedInUserId: user1Id,
     attemptNumber: 1,
     score: 0.5,
@@ -1033,7 +1699,7 @@ test("get all assignment data from anonymous user", async () => {
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode({
+  const { classCode } = await openAssignmentWithCode({
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
@@ -1054,6 +1720,7 @@ test("get all assignment data from anonymous user", async () => {
 
   await saveScoreAndState({
     contentId: contentId,
+    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.5,
@@ -1083,6 +1750,7 @@ test("get all assignment data from anonymous user", async () => {
   // new lower score ignored
   await saveScoreAndState({
     contentId: contentId,
+    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.2,
@@ -1111,6 +1779,7 @@ test("get all assignment data from anonymous user", async () => {
 
   await saveScoreAndState({
     contentId: contentId,
+    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.7,
@@ -1379,42 +2048,42 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
 
   const closeAt = DateTime.now().plus({ day: 1 });
-  await openAssignmentWithCode({
+  const { classCode: classCode1a } = await openAssignmentWithCode({
     contentId: activity1aId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
   });
-  await openAssignmentWithCode({
+  const { classCode: classCode1c1 } = await openAssignmentWithCode({
     contentId: activity1c1Id,
     closeAt: closeAt,
     loggedInUserId: ownerId,
   });
-  await openAssignmentWithCode({
+  const { classCode: classCode1c2a } = await openAssignmentWithCode({
     contentId: activity1c2aId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
   });
-  await openAssignmentWithCode({
+  const { classCode: classCode1c2b } = await openAssignmentWithCode({
     contentId: activity1c2bId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
   });
-  await openAssignmentWithCode({
+  const { classCode: classCode1e } = await openAssignmentWithCode({
     contentId: activity1eId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
   });
-  await openAssignmentWithCode({
+  const { classCode: classCode2 } = await openAssignmentWithCode({
     contentId: activity2Id,
     closeAt: closeAt,
     loggedInUserId: ownerId,
   });
-  await openAssignmentWithCode({
+  const { classCode: classCode3b } = await openAssignmentWithCode({
     contentId: activity3bId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
   });
-  await openAssignmentWithCode({
+  const { classCode: classCodeRoot } = await openAssignmentWithCode({
     contentId: activityRootId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
@@ -1436,6 +2105,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
 
   await saveScoreAndState({
     contentId: activity1aId,
+    code: classCode1a,
     loggedInUserId: newUserId,
     attemptNumber: 1,
     score: 0.11,
@@ -1443,6 +2113,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await saveScoreAndState({
     contentId: activity1c1Id,
+    code: classCode1c1,
     loggedInUserId: newUserId,
     attemptNumber: 1,
     score: 0.131,
@@ -1450,6 +2121,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await saveScoreAndState({
     contentId: activity1c2aId,
+    code: classCode1c2a,
     loggedInUserId: newUserId,
     attemptNumber: 1,
     score: 0.1321,
@@ -1457,6 +2129,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await saveScoreAndState({
     contentId: activity1c2bId,
+    code: classCode1c2b,
     loggedInUserId: newUserId,
     attemptNumber: 1,
     score: 0.1322,
@@ -1464,6 +2137,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await saveScoreAndState({
     contentId: activity1eId,
+    code: classCode1e,
     loggedInUserId: newUserId,
     attemptNumber: 1,
     score: 0.15,
@@ -1471,6 +2145,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await saveScoreAndState({
     contentId: activity2Id,
+    code: classCode2,
     loggedInUserId: newUserId,
     attemptNumber: 1,
     score: 0.2,
@@ -1478,6 +2153,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await saveScoreAndState({
     contentId: activity3bId,
+    code: classCode3b,
     loggedInUserId: newUserId,
     attemptNumber: 1,
     score: 0.32,
@@ -1485,6 +2161,7 @@ test("get assignments folder structure", { timeout: 100000 }, async () => {
   });
   await saveScoreAndState({
     contentId: activityRootId,
+    code: classCodeRoot,
     loggedInUserId: newUserId,
     attemptNumber: 1,
     score: 1.0,
@@ -1741,7 +2418,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode({
+  const { classCode } = await openAssignmentWithCode({
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
@@ -1753,13 +2430,13 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
   });
 
   // no one has done the assignment yet
-  expect(convertUUID(scoreData.orderedActivities)).eqls([
+  expect(scoreData.orderedActivities).eqls([
     {
-      id: fromUUID(contentId),
+      id: contentId,
       name: "Activity 1",
     },
   ]);
-  expect(scoreData.assignmentScores).eqls([]);
+  expect(scoreData.assignmentScores).eqls([{ contentId, userScores: [] }]);
 
   let newUser1 = await createTestAnonymousUser();
   newUser1 = await updateUser({
@@ -1767,15 +2444,16 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     firstNames: "Zoe",
     lastNames: "Zaborowski",
   });
-  const newUser1Info = convertUUID({
+  const newUser1Info = {
     userId: newUser1.userId,
     email: newUser1.email,
     firstNames: newUser1.firstNames,
     lastNames: newUser1.lastNames,
-  });
+  };
 
   await saveScoreAndState({
     contentId: contentId,
+    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.5,
@@ -1787,23 +2465,28 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     parentId: null,
   });
 
-  expect(convertUUID(scoreData.orderedActivities)).eqls([
+  expect(scoreData.orderedActivities).eqls([
     {
-      id: fromUUID(contentId),
+      id: contentId,
       name: "Activity 1",
     },
   ]);
-  expect(convertUUID(scoreData.assignmentScores)).eqls([
+  expect(scoreData.assignmentScores).eqls([
     {
-      contentId: fromUUID(contentId),
-      score: 0.5,
-      user: newUser1Info,
+      contentId: contentId,
+      userScores: [
+        {
+          score: 0.5,
+          user: newUser1Info,
+        },
+      ],
     },
   ]);
 
-  // new lower score ignored
+  // new lower score does lower the resulting score
   await saveScoreAndState({
     contentId: contentId,
+    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.2,
@@ -1815,17 +2498,21 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     parentId: null,
   });
 
-  expect(convertUUID(scoreData.orderedActivities)).eqls([
+  expect(scoreData.orderedActivities).eqls([
     {
-      id: fromUUID(contentId),
+      id: contentId,
       name: "Activity 1",
     },
   ]);
-  expect(convertUUID(scoreData.assignmentScores)).eqls([
+  expect(scoreData.assignmentScores).eqls([
     {
-      contentId: fromUUID(contentId),
-      score: 0.5,
-      user: newUser1Info,
+      contentId: contentId,
+      userScores: [
+        {
+          score: 0.2,
+          user: newUser1Info,
+        },
+      ],
     },
   ]);
 
@@ -1835,15 +2522,16 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     firstNames: "Arya",
     lastNames: "Abbas",
   });
-  const newUser2Info = convertUUID({
+  const newUser2Info = {
     userId: newUser2.userId,
     email: newUser2.email,
     firstNames: newUser2.firstNames,
     lastNames: newUser2.lastNames,
-  });
+  };
 
   await saveScoreAndState({
     contentId: contentId,
+    code: classCode,
     loggedInUserId: newUser2.userId,
     attemptNumber: 1,
     score: 0.3,
@@ -1852,6 +2540,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
 
   await saveScoreAndState({
     contentId: contentId,
+    code: classCode,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.7,
@@ -1863,22 +2552,25 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     parentId: null,
   });
 
-  expect(convertUUID(scoreData.orderedActivities)).eqls([
+  expect(scoreData.orderedActivities).eqls([
     {
-      id: fromUUID(contentId),
+      id: contentId,
       name: "Activity 1",
     },
   ]);
-  expect(convertUUID(scoreData.assignmentScores)).eqls([
+  expect(scoreData.assignmentScores).eqls([
     {
-      contentId: fromUUID(contentId),
-      score: 0.7,
-      user: newUser1Info,
-    },
-    {
-      contentId: fromUUID(contentId),
-      score: 0.3,
-      user: newUser2Info,
+      contentId: contentId,
+      userScores: [
+        {
+          score: 0.3,
+          user: newUser2Info,
+        },
+        {
+          score: 0.7,
+          user: newUser1Info,
+        },
+      ],
     },
   ]);
 
@@ -1894,7 +2586,7 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     loggedInUserId: ownerId,
   });
 
-  await openAssignmentWithCode({
+  const { classCode: classCode2 } = await openAssignmentWithCode({
     contentId: activity2Id,
     closeAt: closeAt,
     loggedInUserId: ownerId,
@@ -1908,15 +2600,16 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     firstNames: "Nyla",
     lastNames: "Nyquist",
   });
-  const newUser3Info = convertUUID({
+  const newUser3Info = {
     userId: newUser3.userId,
     email: newUser3.email,
     firstNames: newUser3.firstNames,
     lastNames: newUser3.lastNames,
-  });
+  };
 
   await saveScoreAndState({
     contentId: activity2Id,
+    code: classCode2,
     loggedInUserId: newUser3.userId,
     attemptNumber: 1,
     score: 0.9,
@@ -1928,31 +2621,38 @@ test("get data for user's assignments", { timeout: 30000 }, async () => {
     parentId: null,
   });
 
-  expect(convertUUID(scoreData.orderedActivities)).eqls([
+  expect(scoreData.orderedActivities).eqls([
     {
-      id: fromUUID(contentId),
+      id: contentId,
       name: "Activity 1",
     },
     {
-      id: fromUUID(activity2Id),
+      id: activity2Id,
       name: "Activity 2",
     },
   ]);
-  expect(convertUUID(scoreData.assignmentScores)).eqls([
+  expect(scoreData.assignmentScores).eqls([
     {
-      contentId: fromUUID(contentId),
-      score: 0.7,
-      user: newUser1Info,
+      contentId: contentId,
+      userScores: [
+        {
+          score: 0.3,
+          user: newUser2Info,
+        },
+        {
+          score: 0.7,
+          user: newUser1Info,
+        },
+      ],
     },
     {
-      contentId: fromUUID(contentId),
-      score: 0.3,
-      user: newUser2Info,
-    },
-    {
-      contentId: fromUUID(activity2Id),
-      score: 0.9,
-      user: newUser3Info,
+      contentId: activity2Id,
+      userScores: [
+        {
+          score: 0.9,
+          user: newUser3Info,
+        },
+      ],
     },
   ]);
 });
@@ -1991,9 +2691,9 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   const answerId2 = "answer2";
 
   // no submitted responses at first
-  let answerWithResponses = await getAnswersThatHaveSubmittedResponses({
+  let answerWithResponses = await getAnswersWithSubmittedResponses({
     contentId,
-    ownerId,
+    loggedInUserId: ownerId,
   });
   expect(answerWithResponses).eqls([]);
 
@@ -2002,6 +2702,7 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     contentId: contentId,
     loggedInUserId: ownerId,
     answerId: answerId1,
+    itemNumber: 3,
   });
   expect(activityName).eq("My Activity");
   expect(submittedResponses).eqls([]);
@@ -2014,6 +2715,7 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     contentId: contentId,
     loggedInUserId: ownerId,
     answerId: answerId1,
+    itemNumber: 3,
     userId: newUser!.userId,
   });
   expect(activityName2).eq("My Activity");
@@ -2027,20 +2729,22 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     answerId: answerId1,
     response: "Answer result 1",
     answerNumber: 1,
-    itemNumber: 2,
-    questionNumber: 1,
-    creditAchieved: 0.4,
-    itemCreditAchieved: 0.2,
-    docCreditAchieved: 0.1,
+    componentNumber: 2,
+    itemNumber: 3,
+    shuffledItemNumber: 3,
+    answerCreditAchieved: 0.4,
+    componentCreditAchieved: 0.2,
+    itemCreditAchieved: 0.1,
   });
-  answerWithResponses = await getAnswersThatHaveSubmittedResponses({
+  answerWithResponses = await getAnswersWithSubmittedResponses({
     contentId,
-    ownerId,
+    loggedInUserId: ownerId,
   });
   expect(answerWithResponses).eqls([
     {
       answerId: answerId1,
       answerNumber: 1,
+      itemNumber: 3,
       count: 1,
       averageCredit: 0.4,
     },
@@ -2049,6 +2753,7 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     contentId: contentId,
     loggedInUserId: ownerId,
     answerId: answerId1,
+    itemNumber: 3,
   }));
   expect(submittedResponses).toMatchObject([
     {
@@ -2070,13 +2775,14 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
       contentId: contentId,
       loggedInUserId: ownerId,
       answerId: answerId1,
+      itemNumber: 3,
       userId: newUser!.userId,
     }));
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData,
       response: "Answer result 1",
-      creditAchieved: 0.4,
+      answerCreditAchieved: 0.4,
     },
   ]);
 
@@ -2088,20 +2794,22 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     answerId: answerId1,
     response: "Answer result 2",
     answerNumber: 1,
-    itemNumber: 2,
-    questionNumber: 1,
-    creditAchieved: 0.8,
-    itemCreditAchieved: 0.4,
-    docCreditAchieved: 0.2,
+    componentNumber: 2,
+    itemNumber: 3,
+    shuffledItemNumber: 3,
+    answerCreditAchieved: 0.8,
+    componentCreditAchieved: 0.4,
+    itemCreditAchieved: 0.2,
   });
-  answerWithResponses = await getAnswersThatHaveSubmittedResponses({
+  answerWithResponses = await getAnswersWithSubmittedResponses({
     contentId,
-    ownerId,
+    loggedInUserId: ownerId,
   });
   expect(answerWithResponses).eqls([
     {
       answerId: answerId1,
       answerNumber: 1,
+      itemNumber: 3,
       count: 1,
       averageCredit: 0.8,
     },
@@ -2110,6 +2818,7 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     contentId: contentId,
     loggedInUserId: ownerId,
     answerId: answerId1,
+    itemNumber: 3,
   }));
   expect(submittedResponses).toMatchObject([
     {
@@ -2131,18 +2840,19 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
       contentId: contentId,
       loggedInUserId: ownerId,
       answerId: answerId1,
+      itemNumber: 3,
       userId: newUser!.userId,
     }));
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData,
       response: "Answer result 1",
-      creditAchieved: 0.4,
+      answerCreditAchieved: 0.4,
     },
     {
       user: userData,
       response: "Answer result 2",
-      creditAchieved: 0.8,
+      answerCreditAchieved: 0.8,
     },
   ]);
 
@@ -2154,15 +2864,16 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     answerId: answerId2,
     response: "Answer result 3",
     answerNumber: 2,
-    itemNumber: 2,
-    questionNumber: 1,
-    creditAchieved: 0.2,
-    itemCreditAchieved: 0.1,
-    docCreditAchieved: 0.05,
+    componentNumber: 2,
+    itemNumber: 3,
+    shuffledItemNumber: 3,
+    answerCreditAchieved: 0.2,
+    componentCreditAchieved: 0.1,
+    itemCreditAchieved: 0.05,
   });
-  answerWithResponses = await getAnswersThatHaveSubmittedResponses({
+  answerWithResponses = await getAnswersWithSubmittedResponses({
     contentId,
-    ownerId,
+    loggedInUserId: ownerId,
   });
   // Note: use `arrayContaining` as the order of the entries isn't determined
   expect(answerWithResponses).toMatchObject(
@@ -2170,12 +2881,14 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
       {
         answerId: answerId1,
         answerNumber: 1,
+        itemNumber: 3,
         count: 1,
         averageCredit: 0.8,
       },
       {
         answerId: answerId2,
         answerNumber: 2,
+        itemNumber: 3,
         count: 1,
         averageCredit: 0.2,
       },
@@ -2185,6 +2898,7 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     contentId: contentId,
     loggedInUserId: ownerId,
     answerId: answerId1,
+    itemNumber: 3,
   }));
   expect(submittedResponses).toMatchObject([
     {
@@ -2206,18 +2920,19 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
       contentId: contentId,
       loggedInUserId: ownerId,
       answerId: answerId1,
+      itemNumber: 3,
       userId: newUser!.userId,
     }));
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData,
       response: "Answer result 1",
-      creditAchieved: 0.4,
+      answerCreditAchieved: 0.4,
     },
     {
       user: userData,
       response: "Answer result 2",
-      creditAchieved: 0.8,
+      answerCreditAchieved: 0.8,
     },
   ]);
 
@@ -2225,6 +2940,7 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     contentId: contentId,
     loggedInUserId: ownerId,
     answerId: answerId2,
+    itemNumber: 3,
   }));
   expect(submittedResponses).toMatchObject([
     {
@@ -2246,13 +2962,14 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
       contentId: contentId,
       loggedInUserId: ownerId,
       answerId: answerId2,
+      itemNumber: 3,
       userId: newUser!.userId,
     }));
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData,
       response: "Answer result 3",
-      creditAchieved: 0.2,
+      answerCreditAchieved: 0.2,
     },
   ]);
 
@@ -2270,27 +2987,30 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     answerId: answerId1,
     response: "Answer result 4",
     answerNumber: 1,
-    itemNumber: 2,
-    questionNumber: 1,
-    creditAchieved: 1,
-    itemCreditAchieved: 0.5,
-    docCreditAchieved: 0.25,
+    componentNumber: 2,
+    itemNumber: 3,
+    shuffledItemNumber: 3,
+    answerCreditAchieved: 1,
+    componentCreditAchieved: 0.5,
+    itemCreditAchieved: 0.25,
   });
-  answerWithResponses = await getAnswersThatHaveSubmittedResponses({
+  answerWithResponses = await getAnswersWithSubmittedResponses({
     contentId,
-    ownerId,
+    loggedInUserId: ownerId,
   });
   expect(answerWithResponses).toMatchObject(
     expect.arrayContaining([
       {
         answerId: answerId1,
         answerNumber: 1,
+        itemNumber: 3,
         count: 2,
         averageCredit: 0.9,
       },
       {
         answerId: answerId2,
         answerNumber: 2,
+        itemNumber: 3,
         count: 1,
         averageCredit: 0.2,
       },
@@ -2300,6 +3020,7 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     contentId: contentId,
     loggedInUserId: ownerId,
     answerId: answerId1,
+    itemNumber: 3,
   }));
 
   // For some reason, the result is sometimes missing the "Answer result 4" record.
@@ -2339,18 +3060,19 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
       contentId: contentId,
       loggedInUserId: ownerId,
       answerId: answerId1,
+      itemNumber: 3,
       userId: newUser!.userId,
     }));
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData,
       response: "Answer result 1",
-      creditAchieved: 0.4,
+      answerCreditAchieved: 0.4,
     },
     {
       user: userData,
       response: "Answer result 2",
-      creditAchieved: 0.8,
+      answerCreditAchieved: 0.8,
     },
   ]);
   ({ submittedResponses: submittedResponseHistory } =
@@ -2358,13 +3080,14 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
       contentId: contentId,
       loggedInUserId: ownerId,
       answerId: answerId1,
+      itemNumber: 3,
       userId: newUser2.userId,
     }));
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData2,
       response: "Answer result 4",
-      creditAchieved: 1,
+      answerCreditAchieved: 1,
     },
   ]);
 
@@ -2372,6 +3095,7 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     contentId: contentId,
     loggedInUserId: ownerId,
     answerId: answerId2,
+    itemNumber: 3,
   }));
   expect(submittedResponses).toMatchObject([
     {
@@ -2393,13 +3117,14 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
       contentId: contentId,
       loggedInUserId: ownerId,
       answerId: answerId2,
+      itemNumber: 3,
       userId: newUser!.userId,
     }));
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData,
       response: "Answer result 3",
-      creditAchieved: 0.2,
+      answerCreditAchieved: 0.2,
     },
   ]);
   ({ submittedResponses: submittedResponseHistory } =
@@ -2407,6 +3132,7 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
       contentId: contentId,
       loggedInUserId: ownerId,
       answerId: answerId2,
+      itemNumber: 3,
       userId: newUser2.userId,
     }));
   expect(submittedResponseHistory).eqls([]);
@@ -2419,11 +3145,12 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
     answerId: answerId1,
     response: "Answer result 5",
     answerNumber: 1,
-    itemNumber: 2,
-    questionNumber: 1,
-    creditAchieved: 0.6,
-    itemCreditAchieved: 0.3,
-    docCreditAchieved: 0.15,
+    componentNumber: 2,
+    itemNumber: 3,
+    shuffledItemNumber: 3,
+    answerCreditAchieved: 0.6,
+    componentCreditAchieved: 0.3,
+    itemCreditAchieved: 0.15,
   });
 
   ({ submittedResponses: submittedResponseHistory } =
@@ -2431,24 +3158,26 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
       contentId: contentId,
       loggedInUserId: ownerId,
       answerId: answerId1,
+      itemNumber: 3,
       userId: newUser2.userId,
     }));
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData2,
       response: "Answer result 4",
-      creditAchieved: 1,
+      answerCreditAchieved: 1,
     },
     {
       user: userData2,
       response: "Answer result 5",
-      creditAchieved: 0.6,
+      answerCreditAchieved: 0.6,
     },
   ]);
 
   ({ submittedResponses } = await getSubmittedResponses({
     contentId: contentId,
     loggedInUserId: ownerId,
+    itemNumber: 3,
     answerId: answerId1,
   }));
   expect(submittedResponses).toMatchObject([
@@ -2479,21 +3208,23 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
       numResponses: 2,
     },
   ]);
-  answerWithResponses = await getAnswersThatHaveSubmittedResponses({
+  answerWithResponses = await getAnswersWithSubmittedResponses({
     contentId,
-    ownerId,
+    loggedInUserId: ownerId,
   });
   expect(answerWithResponses).toMatchObject(
     expect.arrayContaining([
       {
         answerId: answerId1,
         answerNumber: 1,
+        itemNumber: 3,
         count: 2,
         averageCredit: 0.9,
       },
       {
         answerId: answerId2,
         answerNumber: 2,
+        itemNumber: 3,
         count: 1,
         averageCredit: 0.2,
       },
@@ -2539,20 +3270,22 @@ test("only owner can get submitted responses", async () => {
     answerId: answerId1,
     response: "Answer result 1",
     answerNumber: 1,
-    itemNumber: 2,
-    questionNumber: 1,
-    creditAchieved: 1,
-    itemCreditAchieved: 0.5,
-    docCreditAchieved: 0.25,
+    componentNumber: 2,
+    itemNumber: 1,
+    shuffledItemNumber: 1,
+    answerCreditAchieved: 1,
+    componentCreditAchieved: 0.5,
+    itemCreditAchieved: 0.25,
   });
-  let answerWithResponses = await getAnswersThatHaveSubmittedResponses({
+  let answerWithResponses = await getAnswersWithSubmittedResponses({
     contentId,
-    ownerId,
+    loggedInUserId: ownerId,
   });
   expect(answerWithResponses).eqls([
     {
       answerId: answerId1,
       answerNumber: 1,
+      itemNumber: 1,
       count: 1,
       averageCredit: 1,
     },
@@ -2561,6 +3294,7 @@ test("only owner can get submitted responses", async () => {
     contentId: contentId,
     loggedInUserId: ownerId,
     answerId: answerId1,
+    itemNumber: 1,
   });
   expect(submittedResponses).toMatchObject([
     {
@@ -2582,19 +3316,20 @@ test("only owner can get submitted responses", async () => {
       contentId: contentId,
       loggedInUserId: ownerId,
       answerId: answerId1,
+      itemNumber: 1,
       userId: newUser!.userId,
     });
   expect(submittedResponseHistory).toMatchObject([
     {
       user: userData,
       response: "Answer result 1",
-      creditAchieved: 1,
+      answerCreditAchieved: 1,
     },
   ]);
 
-  answerWithResponses = await getAnswersThatHaveSubmittedResponses({
+  answerWithResponses = await getAnswersWithSubmittedResponses({
     contentId,
-    ownerId: userId2,
+    loggedInUserId: userId2,
   });
   expect(answerWithResponses).eqls([]);
 
@@ -2604,6 +3339,7 @@ test("only owner can get submitted responses", async () => {
       contentId: contentId,
       loggedInUserId: userId2,
       answerId: answerId1,
+      itemNumber: 1,
     }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
@@ -2612,6 +3348,7 @@ test("only owner can get submitted responses", async () => {
       contentId: contentId,
       loggedInUserId: userId2,
       answerId: answerId1,
+      itemNumber: 1,
       userId: newUser!.userId,
     }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
@@ -2628,7 +3365,7 @@ test("only user and assignment owner can load document state", async () => {
 
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
-  await openAssignmentWithCode({
+  const { classCode } = await openAssignmentWithCode({
     contentId: contentId,
     closeAt: closeAt,
     loggedInUserId: ownerId,
@@ -2639,6 +3376,7 @@ test("only user and assignment owner can load document state", async () => {
 
   await saveScoreAndState({
     contentId: contentId,
+    code: classCode,
     loggedInUserId: newUser!.userId,
     attemptNumber: 1,
     score: 0.5,
@@ -2657,10 +3395,8 @@ test("only user and assignment owner can load document state", async () => {
     loadedState: true,
     state: "document state 1",
     score: 0.5,
-    scoreByItem: null,
+    items: [],
     attemptNumber: 1,
-    contentAttemptNumber: 1,
-    itemAttemptNumbers: null,
   });
 
   // assignment owner can load state
@@ -2675,10 +3411,8 @@ test("only user and assignment owner can load document state", async () => {
     loadedState: true,
     state: "document state 1",
     score: 0.5,
-    scoreByItem: null,
+    items: [],
     attemptNumber: 1,
-    contentAttemptNumber: 1,
-    itemAttemptNumbers: null,
   });
 
   // another user cannot load state
