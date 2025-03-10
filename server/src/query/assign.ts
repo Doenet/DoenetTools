@@ -256,6 +256,12 @@ export async function updateAssignmentMaxAttempts({
   // verify content exists and is not assigned as part of another root assignment
   await verifyNotAssignedAsNonRoot({ contentId, loggedInUserId });
 
+  if (maxAttempts && maxAttempts > 65535) {
+    throw new InvalidRequestError(
+      "maxAttempts must be less than or equal to 65535",
+    );
+  }
+
   await prisma.content.update({
     where: {
       id: contentId,
@@ -274,6 +280,8 @@ export async function updateAssignmentMaxAttempts({
       },
     },
   });
+
+  return { success: true, maxAttempts };
 }
 
 /**
@@ -333,6 +341,8 @@ export async function updateAssignmentMode({
       },
     },
   });
+
+  return { success: true, mode };
 }
 
 export async function closeAssignmentWithCode({

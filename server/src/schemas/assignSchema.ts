@@ -15,7 +15,7 @@ export const assignmentMaxAttemptsSchema = z.object({
   maxAttempts: z
     .number()
     .int()
-    .refine((v) => v > 0),
+    .refine((v) => v >= 0),
 });
 
 export const assignmentModeSchema = z.object({

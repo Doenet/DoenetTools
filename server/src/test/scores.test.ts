@@ -2,7 +2,11 @@ import { expect, test } from "vitest";
 import { createTestAnonymousUser, createTestUser } from "./utils";
 import { createContent } from "../query/activity";
 import { DateTime } from "luxon";
-import { openAssignmentWithCode, updateAssignmentMode } from "../query/assign";
+import {
+  openAssignmentWithCode,
+  updateAssignmentMaxAttempts,
+  updateAssignmentMode,
+} from "../query/assign";
 import {
   createNewAttempt,
   getScore,
@@ -82,6 +86,24 @@ test("Create and save responses for new attempts, no items", async () => {
     attemptNumber: 2,
   });
   expect(retrievedState.loadedState).eq(false);
+
+  // fail to create an attempt as maxAttempts defaults to 1
+  await expect(
+    createNewAttempt({
+      contentId: contentId,
+      code: classCode,
+      loggedInUserId: anonId,
+    }),
+  ).rejects.toThrow(
+    "Cannot create new attempt; maximum number of attempts exceeded",
+  );
+
+  // set max attempts to unlimited
+  await updateAssignmentMaxAttempts({
+    contentId,
+    loggedInUserId: ownerId,
+    maxAttempts: 0,
+  });
 
   // create a new attempt
   await createNewAttempt({
@@ -217,6 +239,13 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     contentId,
     loggedInUserId: ownerId,
     mode: "summative",
+  });
+
+  // set max attempts to unlimited
+  await updateAssignmentMaxAttempts({
+    contentId,
+    loggedInUserId: ownerId,
+    maxAttempts: 0,
   });
 
   // open assignment generates code
@@ -644,6 +673,13 @@ test("Create and save responses for new item attempts, two items", async () => {
     loggedInUserId: ownerId,
     contentType: "sequence",
     parentId: null,
+  });
+
+  // set max attempts to unlimited
+  await updateAssignmentMaxAttempts({
+    contentId,
+    loggedInUserId: ownerId,
+    maxAttempts: 0,
   });
 
   // Since we are doing item attempts, we are creating data in line with the formative mode.
@@ -1180,6 +1216,25 @@ test("Create attempts before responding, no items", async () => {
   const { userId: anonId } = await createTestAnonymousUser();
 
   // create a new attempt without recording any response to attempt 1
+
+  // first attempt fail as max attempts is 1
+  await expect(
+    createNewAttempt({
+      contentId: contentId,
+      loggedInUserId: anonId,
+      code: classCode,
+    }),
+  ).rejects.toThrow(
+    "Cannot create new attempt; maximum number of attempts exceeded",
+  );
+
+  // set max attempts to unlimited
+  await updateAssignmentMaxAttempts({
+    contentId,
+    loggedInUserId: ownerId,
+    maxAttempts: 0,
+  });
+
   await createNewAttempt({
     contentId: contentId,
     loggedInUserId: anonId,
@@ -1294,6 +1349,27 @@ test("Create item attempts before responding, two items", async () => {
   const { userId: anonId } = await createTestAnonymousUser();
 
   // create a new attempt for item 1 before responding
+
+  // initial attempt fails as max attempts is 1
+  await expect(
+    createNewAttempt({
+      contentId: contentId,
+      loggedInUserId: anonId,
+      code: classCode,
+      itemNumber: 1,
+      shuffledItemOrder: [1, 2],
+    }),
+  ).rejects.toThrow(
+    "Cannot create new attempt of item; maximum number of attempts exceeded",
+  );
+
+  // set max attempts to unlimited
+  await updateAssignmentMaxAttempts({
+    contentId,
+    loggedInUserId: ownerId,
+    maxAttempts: 0,
+  });
+
   await createNewAttempt({
     contentId: contentId,
     loggedInUserId: anonId,
@@ -1443,6 +1519,13 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     contentId,
     loggedInUserId: ownerId,
     mode: "formative",
+  });
+
+  // set max attempts to unlimited
+  await updateAssignmentMaxAttempts({
+    contentId,
+    loggedInUserId: ownerId,
+    maxAttempts: 0,
   });
 
   // open assignment generates code
@@ -1869,6 +1952,13 @@ test("New item attempt does not affect other item", async () => {
     mode: "formative",
   });
 
+  // set max attempts to unlimited
+  await updateAssignmentMaxAttempts({
+    contentId,
+    loggedInUserId: ownerId,
+    maxAttempts: 0,
+  });
+
   // open assignment generates code
   const closeAt = DateTime.now().plus({ days: 1 });
   const { classCode } = await openAssignmentWithCode({
@@ -2084,6 +2174,13 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     loggedInUserId: ownerId,
     contentType: "sequence",
     parentId: null,
+  });
+
+  // set max attempts to unlimited
+  await updateAssignmentMaxAttempts({
+    contentId,
+    loggedInUserId: ownerId,
+    maxAttempts: 0,
   });
 
   // Since we are doing item attempts, we are creating data in line with the formative mode.
@@ -2373,4 +2470,415 @@ test("Cannot create item attempt on summative assessment", async () => {
   ).rejects.toThrow(
     "Summative assessments do not support creating new attempts of single items",
   );
+});
+
+test("Setting maximum number of attempts, no items", async () => {
+  const { userId: ownerId } = await createTestUser();
+
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+
+  // open assignment generates code
+  const closeAt = DateTime.now().plus({ days: 1 });
+  const { classCode } = await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+
+  // create new anonymous user
+  const { userId: anonId } = await createTestAnonymousUser();
+
+  // can save state
+  await saveScoreAndState({
+    contentId: contentId,
+    code: classCode,
+    loggedInUserId: anonId,
+    attemptNumber: 1,
+    score: 0.5,
+    state: "document state 1",
+  });
+
+  // cannot create new attempt
+  await expect(
+    createNewAttempt({
+      contentId: contentId,
+      code: classCode,
+      loggedInUserId: anonId,
+    }),
+  ).rejects.toThrow(
+    "Cannot create new attempt; maximum number of attempts exceeded",
+  );
+
+  // set max attempts to 2
+  await updateAssignmentMaxAttempts({
+    contentId,
+    loggedInUserId: ownerId,
+    maxAttempts: 2,
+  });
+
+  // create a new attempt, attempt 2
+  await createNewAttempt({
+    contentId: contentId,
+    code: classCode,
+    loggedInUserId: anonId,
+  });
+
+  // can save state
+  await saveScoreAndState({
+    contentId: contentId,
+    code: classCode,
+    loggedInUserId: anonId,
+    attemptNumber: 2,
+    score: 0.6,
+    state: "document state 2",
+  });
+
+  // cannot create new attempt
+  await expect(
+    createNewAttempt({
+      contentId: contentId,
+      code: classCode,
+      loggedInUserId: anonId,
+    }),
+  ).rejects.toThrow(
+    "Cannot create new attempt; maximum number of attempts exceeded",
+  );
+
+  // set max attempts to 3
+  await updateAssignmentMaxAttempts({
+    contentId,
+    loggedInUserId: ownerId,
+    maxAttempts: 3,
+  });
+
+  // create a new attempt, attempt 3
+  await createNewAttempt({
+    contentId: contentId,
+    code: classCode,
+    loggedInUserId: anonId,
+  });
+
+  // bring max attempts back down to 2
+  await updateAssignmentMaxAttempts({
+    contentId,
+    loggedInUserId: ownerId,
+    maxAttempts: 2,
+  });
+
+  // can still save state
+  await saveScoreAndState({
+    contentId: contentId,
+    code: classCode,
+    loggedInUserId: anonId,
+    attemptNumber: 3,
+    score: 0.7,
+    state: "document state 3",
+  });
+
+  // cannot save state to attempt 2
+  await expect(
+    saveScoreAndState({
+      contentId: contentId,
+      code: classCode,
+      loggedInUserId: anonId,
+      attemptNumber: 2,
+      score: 0.8,
+      state: "document state 4",
+    }),
+  ).rejects.toThrow(
+    "Cannot save score and state to non-maximal attempt number",
+  );
+
+  // can retrieve score and state from third attempt
+  const retrievedState = await loadState({
+    contentId: contentId,
+    loggedInUserId: anonId,
+  });
+
+  expect(retrievedState).eqls({
+    loadedState: true,
+    state: "document state 3",
+    score: 0.7,
+    attemptNumber: 3,
+    items: [],
+  });
+
+  // retrieved score reflects third attempt
+  const retrievedScore = await getScore({
+    contentId: contentId,
+    loggedInUserId: anonId,
+  });
+
+  expect(retrievedScore).eqls({
+    loadedScore: true,
+    score: 0.7,
+    itemScores: [],
+  });
+});
+
+test("Setting maximum number of attempts, new item attempts", async () => {
+  const { userId: ownerId } = await createTestUser();
+
+  // Note: wouldn't get two items without adding children to the sequence,
+  // but we aren't testing that part
+  const { contentId: contentId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "sequence",
+    parentId: null,
+  });
+
+  // Since we are doing item attempts, we are creating data in line with the formative mode.
+  // (Set the mode to stress the fact even though it is the default)
+  await updateAssignmentMode({
+    contentId,
+    loggedInUserId: ownerId,
+    mode: "formative",
+  });
+
+  // open assignment generates code
+  const closeAt = DateTime.now().plus({ days: 1 });
+  const { classCode } = await openAssignmentWithCode({
+    contentId: contentId,
+    closeAt: closeAt,
+    loggedInUserId: ownerId,
+  });
+
+  // create new anonymous user
+  const { userId: anonId } = await createTestAnonymousUser();
+
+  // save state for attempt 1 of item 1
+  await saveScoreAndState({
+    contentId: contentId,
+    code: classCode,
+    loggedInUserId: anonId,
+    attemptNumber: 1,
+    score: 1000, // ignored
+    state: "assignment state 1",
+    item: {
+      itemNumber: 1,
+      shuffledItemOrder: [1, 2],
+      itemAttemptNumber: 1,
+      score: 0.6,
+      state: "Item 1 state 1",
+    },
+  });
+
+  // cannot create a new attempt for item 1 or item 2
+  await expect(
+    createNewAttempt({
+      contentId: contentId,
+      code: classCode,
+      loggedInUserId: anonId,
+      shuffledItemOrder: [1, 2],
+      itemNumber: 1,
+    }),
+  ).rejects.toThrow(
+    "Cannot create new attempt of item; maximum number of attempts exceeded",
+  );
+
+  await expect(
+    createNewAttempt({
+      contentId: contentId,
+      code: classCode,
+      loggedInUserId: anonId,
+      shuffledItemOrder: [1, 2],
+      itemNumber: 2,
+    }),
+  ).rejects.toThrow(
+    "Cannot create new attempt of item; maximum number of attempts exceeded",
+  );
+
+  // set max attempts to 2
+  await updateAssignmentMaxAttempts({
+    contentId,
+    loggedInUserId: ownerId,
+    maxAttempts: 2,
+  });
+
+  // create a new attempt for item 1, attempt 2
+  await createNewAttempt({
+    contentId: contentId,
+    code: classCode,
+    loggedInUserId: anonId,
+    shuffledItemOrder: [1, 2],
+    itemNumber: 1,
+  });
+
+  // save state for attempt 2 of item 1
+  await saveScoreAndState({
+    contentId: contentId,
+    code: classCode,
+    loggedInUserId: anonId,
+    attemptNumber: 1,
+    score: 1000, // ignored
+    state: "assignment state 1",
+    item: {
+      itemNumber: 1,
+      shuffledItemOrder: [1, 2],
+      itemAttemptNumber: 2,
+      score: 0.8,
+      state: "Item 1 state 2",
+    },
+  });
+
+  // cannot create a new attempt for item 1
+  await expect(
+    createNewAttempt({
+      contentId: contentId,
+      code: classCode,
+      loggedInUserId: anonId,
+      shuffledItemOrder: [1, 2],
+      itemNumber: 1,
+    }),
+  ).rejects.toThrow(
+    "Cannot create new attempt of item; maximum number of attempts exceeded",
+  );
+
+  // set max attempts to 3
+  await updateAssignmentMaxAttempts({
+    contentId,
+    loggedInUserId: ownerId,
+    maxAttempts: 3,
+  });
+
+  // create a new attempt for item 1, attempt 3
+  await createNewAttempt({
+    contentId: contentId,
+    code: classCode,
+    loggedInUserId: anonId,
+    shuffledItemOrder: [1, 2],
+    itemNumber: 1,
+  });
+
+  // set max attempts back down to 2
+  await updateAssignmentMaxAttempts({
+    contentId,
+    loggedInUserId: ownerId,
+    maxAttempts: 2,
+  });
+
+  // can still save state for attempt 3 of item 1
+  await saveScoreAndState({
+    contentId: contentId,
+    code: classCode,
+    loggedInUserId: anonId,
+    attemptNumber: 1,
+    score: 1000, // ignored
+    state: "assignment state 1",
+    item: {
+      itemNumber: 1,
+      shuffledItemOrder: [1, 2],
+      itemAttemptNumber: 3,
+      score: 1,
+      state: "Item 1 state 3",
+    },
+  });
+
+  // can no longer save state for attempt 2 of item 1
+  await expect(
+    saveScoreAndState({
+      contentId: contentId,
+      code: classCode,
+      loggedInUserId: anonId,
+      attemptNumber: 1,
+      score: 1000, // ignored
+      state: "assignment state 1",
+      item: {
+        itemNumber: 1,
+        shuffledItemOrder: [1, 2],
+        itemAttemptNumber: 2,
+        score: 0.2,
+        state: "Item 1 state 4",
+      },
+    }),
+  ).rejects.toThrow(
+    "Cannot save score and state to non-maximal item attempt number",
+  );
+
+  // create a new attempt for item 2, attempt 2
+  await createNewAttempt({
+    contentId: contentId,
+    code: classCode,
+    loggedInUserId: anonId,
+    shuffledItemOrder: [1, 2],
+    itemNumber: 2,
+  });
+
+  // cannot create a third attempt for item 2
+  await expect(
+    createNewAttempt({
+      contentId: contentId,
+      code: classCode,
+      loggedInUserId: anonId,
+      shuffledItemOrder: [1, 2],
+      itemNumber: 2,
+    }),
+  ).rejects.toThrow(
+    "Cannot create new attempt of item; maximum number of attempts exceeded",
+  );
+
+  // can  save state for attempt 2 of item 1
+  await saveScoreAndState({
+    contentId: contentId,
+    code: classCode,
+    loggedInUserId: anonId,
+    attemptNumber: 1,
+    score: 1000, // ignored
+    state: "assignment state 1",
+    item: {
+      itemNumber: 2,
+      shuffledItemOrder: [1, 2],
+      itemAttemptNumber: 2,
+      score: 0.4,
+      state: "Item 2 state 1",
+    },
+  });
+
+  // retrieved state reflects attempt 3 for item 1 and attempt 2 for item 2
+  const retrievedState = await loadState({
+    contentId: contentId,
+    loggedInUserId: anonId,
+  });
+
+  expect(retrievedState).eqls({
+    loadedState: true,
+    state: "assignment state 1",
+    score: (1 + 0.4) / 2,
+    attemptNumber: 1,
+    items: [
+      {
+        itemNumber: 1,
+        shuffledItemNumber: 1,
+        itemAttemptNumber: 3,
+        score: 1,
+        state: "Item 1 state 3",
+      },
+      {
+        itemNumber: 2,
+        shuffledItemNumber: 2,
+        itemAttemptNumber: 2,
+        score: 0.4,
+        state: "Item 2 state 1",
+      },
+    ],
+  });
+
+  // retrieved score reflects attempt 3 for item 1 and attempt 2 for item 2
+  const retrievedScore = await getScore({
+    contentId: contentId,
+    loggedInUserId: anonId,
+  });
+
+  expect(retrievedScore).eqls({
+    loadedScore: true,
+    score: (1 + 0.4) / 2,
+    itemScores: [
+      { itemNumber: 1, shuffledItemNumber: 1, score: 1 },
+      { itemNumber: 2, shuffledItemNumber: 2, score: 0.4 },
+    ],
+  });
 });

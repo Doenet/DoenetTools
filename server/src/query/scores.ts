@@ -220,6 +220,7 @@ export async function createNewAttempt({
     },
     select: {
       mode: true,
+      maxAttempts: true,
       rootContent: { select: { type: true } },
       contentState: {
         distinct: ["contentId", "userId"],
@@ -249,7 +250,7 @@ export async function createNewAttempt({
   let maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
 
   if (maxAttemptNumber === 0) {
-    // If not attempt made yet, create attempt 1
+    // If no attempt made yet, create attempt 1
     // optionally with related records for items (if shuffledItemOrder if given)
 
     maxAttemptNumber++;
@@ -272,6 +273,16 @@ export async function createNewAttempt({
   if (itemNumber === undefined && shuffledItemNumber === undefined) {
     // create a new attempt of the entire activity,
     // optionally with related records for items (if shuffledItemOrder if given)
+
+    if (
+      assignment.maxAttempts > 0 &&
+      maxAttemptNumber >= assignment.maxAttempts
+    ) {
+      throw new InvalidRequestError(
+        "Cannot create new attempt; maximum number of attempts exceeded",
+      );
+    }
+
     await prisma.contentState.create({
       data: {
         contentId,
@@ -316,7 +327,34 @@ export async function createNewAttempt({
         itemAttemptNumber: true,
       },
     });
-    const maxItemAttemptNumber = maxResItem._max.itemAttemptNumber ?? 0;
+
+    let maxItemAttemptNumber = maxResItem._max.itemAttemptNumber ?? 0;
+
+    if (maxItemAttemptNumber === 0) {
+      // If no attempt made yet, create item attempt 1
+
+      maxItemAttemptNumber++;
+
+      await prisma.contentItemState.create({
+        data: {
+          contentId,
+          userId: loggedInUserId,
+          contentAttemptNumber: maxAttemptNumber,
+          itemNumber,
+          itemAttemptNumber: maxItemAttemptNumber,
+          shuffledItemNumber: shuffledItemOrder[itemNumber - 1],
+        },
+      });
+    }
+
+    if (
+      assignment.maxAttempts > 0 &&
+      maxItemAttemptNumber >= assignment.maxAttempts
+    ) {
+      throw new InvalidRequestError(
+        "Cannot create new attempt of item; maximum number of attempts exceeded",
+      );
+    }
 
     await prisma.contentItemState.create({
       data: {
