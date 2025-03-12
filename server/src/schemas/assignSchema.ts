@@ -52,7 +52,12 @@ export const getSubmittedResponseHistorySchema = z.object({
 
 export const recordSubmittedEventSchema = z.object({
   contentId: uuidSchema,
-  attemptNumber: z.number().int(),
+  contentAttemptNumber: z.number().int(),
+  itemAttemptNumber: z
+    .number()
+    .int()
+    .nullish()
+    .transform((val) => val ?? null),
   answerId: z.string(),
   response: z.string(),
   answerNumber: z.number().int().optional(),

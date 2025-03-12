@@ -55,7 +55,7 @@ import {
 import {
   loader as assignmentDataLoader,
   AssignmentData,
-} from "./Tools/_framework/Paths/AssignmentData";
+} from "./Tools/_framework/Paths/AssignmentResponseOverview";
 import {
   loader as assignmentAnswerResponsesLoader,
   action as assignmentAnswerResponsesAction,

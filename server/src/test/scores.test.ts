@@ -34,7 +34,7 @@ test("Create and save responses for new attempts, no items", async () => {
   // create new anonymous user
   const { userId: anonId } = await createTestAnonymousUser();
 
-  await saveScoreAndState({
+  let retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
@@ -42,6 +42,19 @@ test("Create and save responses for new attempts, no items", async () => {
     score: 0.5,
     state: "document state 1",
   });
+
+  let expectedScore = {
+    loadedScore: true,
+    score: 0.5,
+    itemScores: [],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: 0.5,
+      itemScores: [],
+    },
+  };
+
+  expect(retrievedScore).eqls(expectedScore);
 
   let retrievedState = await loadState({
     contentId: contentId,
@@ -57,16 +70,12 @@ test("Create and save responses for new attempts, no items", async () => {
     items: [],
   });
 
-  let retrievedScore = await getScore({
+  retrievedScore = await getScore({
     contentId: contentId,
     loggedInUserId: anonId,
   });
 
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.5,
-    itemScores: [],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // cannot save state to an attempt number that doesn't exist
   await expect(
@@ -106,11 +115,24 @@ test("Create and save responses for new attempts, no items", async () => {
   });
 
   // create a new attempt
-  await createNewAttempt({
+  retrievedScore = await createNewAttempt({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
   });
+
+  expectedScore = {
+    loadedScore: true,
+    score: 0.5,
+    itemScores: [],
+    latestAttempt: {
+      attemptNumber: 2,
+      score: 0,
+      itemScores: [],
+    },
+  };
+
+  expect(retrievedScore).eqls(expectedScore);
 
   retrievedState = await loadState({
     contentId: contentId,
@@ -131,14 +153,10 @@ test("Create and save responses for new attempts, no items", async () => {
     loggedInUserId: anonId,
   });
 
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.5,
-    itemScores: [],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // now we can save state to attempt 2
-  await saveScoreAndState({
+  retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
@@ -146,6 +164,18 @@ test("Create and save responses for new attempts, no items", async () => {
     score: 0.9,
     state: "document state 3",
   });
+
+  expectedScore = {
+    loadedScore: true,
+    score: 0.9,
+    itemScores: [],
+    latestAttempt: {
+      attemptNumber: 2,
+      score: 0.9,
+      itemScores: [],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   // skip attempt number on loadState gets the latest attempt
   retrievedState = await loadState({
@@ -165,12 +195,7 @@ test("Create and save responses for new attempts, no items", async () => {
     contentId: contentId,
     loggedInUserId: anonId,
   });
-
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.9,
-    itemScores: [],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // can still load old attempt
   retrievedState = await loadState({
@@ -188,7 +213,7 @@ test("Create and save responses for new attempts, no items", async () => {
   });
 
   // if get lower score, lowers score on state and lower actual score to the higher previous attempt score
-  await saveScoreAndState({
+  retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
@@ -196,6 +221,18 @@ test("Create and save responses for new attempts, no items", async () => {
     score: 0.2,
     state: "document state 4",
   });
+
+  expectedScore = {
+    loadedScore: true,
+    score: 0.5,
+    itemScores: [],
+    latestAttempt: {
+      attemptNumber: 2,
+      score: 0.2,
+      itemScores: [],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   retrievedState = await loadState({
     contentId: contentId,
@@ -215,12 +252,7 @@ test("Create and save responses for new attempts, no items", async () => {
     contentId: contentId,
     loggedInUserId: anonId,
   });
-
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.5,
-    itemScores: [],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 });
 
 test("Create and save responses for new activity-wide attempts, two items", async () => {
@@ -259,12 +291,12 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   // create new anonymous user
   const { userId: anonId } = await createTestAnonymousUser();
 
-  await saveScoreAndState({
+  let retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 0.4,
+    score: null,
     item: {
       itemNumber: 1,
       shuffledItemOrder: [1, 2],
@@ -274,6 +306,33 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     },
     state: "assignment state 1",
   });
+
+  // no item score in summary getScore since summative,
+  // though still get item score in latestAttempt
+  let expectedScore = {
+    loadedScore: true,
+    score: 0.4,
+    latestAttempt: {
+      attemptNumber: 1,
+      score: 0.4,
+      itemScores: [
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 1,
+          score: 0.8,
+        },
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 1,
+          score: 0,
+        },
+      ],
+    },
+  };
+
+  expect(retrievedScore).eqls(expectedScore);
 
   let retrievedState = await loadState({
     contentId: contentId,
@@ -337,16 +396,12 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     state: null,
   });
 
-  let retrievedScore = await getScore({
+  retrievedScore = await getScore({
     contentId: contentId,
     loggedInUserId: anonId,
   });
 
-  // no item score in summary getScore since summative
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.4,
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // cannot save state to an attempt number that doesn't exist
   await expect(
@@ -355,7 +410,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
       code: classCode,
       loggedInUserId: anonId,
       attemptNumber: 2,
-      score: 0.7,
+      score: null,
       state: "assignment state 2",
       item: {
         itemNumber: 2,
@@ -375,12 +430,39 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   expect(retrievedState.loadedState).eq(false);
 
   // create a new attempt
-  await createNewAttempt({
+  retrievedScore = await createNewAttempt({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     shuffledItemOrder: [1, 2],
   });
+
+  // no item score in summary getScore since summative,
+  // though still get item score in latestAttempt
+  expectedScore = {
+    loadedScore: true,
+    score: 0.4,
+    latestAttempt: {
+      attemptNumber: 2,
+      score: 0,
+      itemScores: [
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 1,
+          score: 0,
+        },
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 1,
+          score: 0,
+        },
+      ],
+    },
+  };
+
+  expect(retrievedScore).eqls(expectedScore);
 
   retrievedState = await loadState({
     contentId: contentId,
@@ -416,19 +498,15 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     loggedInUserId: anonId,
   });
 
-  // no item score in summary getScore since summative
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.4,
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // now we can save state to attempt 2
-  await saveScoreAndState({
+  retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 2,
-    score: 0.3,
+    score: null,
     state: "assignment state 3",
     item: {
       itemNumber: 2,
@@ -438,6 +516,32 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
       state: "Item 2 state 2",
     },
   });
+
+  // no item score in summary getScore since summative,
+  // though still get item score in latestAttempt
+  expectedScore = {
+    loadedScore: true,
+    score: 0.4, // maximum occurred on first attempt
+    latestAttempt: {
+      attemptNumber: 2,
+      score: 0.3,
+      itemScores: [
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 1,
+          score: 0,
+        },
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 1,
+          score: 0.6,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   retrievedState = await loadState({
     contentId: contentId,
@@ -501,16 +605,11 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     state: "Item 2 state 2",
   });
 
-  // no item score in summary getScore since summative
   retrievedScore = await getScore({
     contentId: contentId,
     loggedInUserId: anonId,
   });
-
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.4, // maximum occurred on first attempt
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // can still load old attempt
   retrievedState = await loadState({
@@ -576,12 +675,12 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   });
 
   // get a lower score on problem 1 still increases score since combined with problem 2 on this attempt
-  await saveScoreAndState({
+  retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 2,
-    score: 0.5,
+    score: null,
     state: "assignment state 4",
     item: {
       itemNumber: 1,
@@ -591,6 +690,32 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
       state: "Item 1 state 2",
     },
   });
+
+  // no item score in summary getScore since summative,
+  // though still get item score in latestAttempt
+  expectedScore = {
+    loadedScore: true,
+    score: 0.5, // new higher score
+    latestAttempt: {
+      attemptNumber: 2,
+      score: 0.5,
+      itemScores: [
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 1,
+          score: 0.4,
+        },
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 1,
+          score: 0.6,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   // skip attempt number loads state from latest attempt
   retrievedState = await loadState({
@@ -657,11 +782,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     loggedInUserId: anonId,
   });
 
-  // no item score in summary getScore since summative
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.5,
-  });
+  expect(retrievedScore).eqls(expectedScore);
 });
 
 test("Create and save responses for new item attempts, two items", async () => {
@@ -701,12 +822,12 @@ test("Create and save responses for new item attempts, two items", async () => {
   // create new anonymous user
   const { userId: anonId } = await createTestAnonymousUser();
 
-  await saveScoreAndState({
+  let retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 0.3,
+    score: null,
     state: "assignment state 1",
     item: {
       itemNumber: 1,
@@ -716,6 +837,35 @@ test("Create and save responses for new item attempts, two items", async () => {
       state: "Item 1 state 1",
     },
   });
+
+  // get items scores in summary getScore since we are in formative mode
+  let expectedScore = {
+    loadedScore: true,
+    score: 0.3,
+    itemScores: [
+      { itemNumber: 1, shuffledItemNumber: 1, score: 0.6 },
+      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
+    ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: 0.3,
+      itemScores: [
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 1,
+          score: 0.6,
+        },
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 1,
+          score: 0,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   let retrievedState = await loadState({
     contentId: contentId,
@@ -746,20 +896,12 @@ test("Create and save responses for new item attempts, two items", async () => {
     ],
   });
 
-  let retrievedScore = await getScore({
+  retrievedScore = await getScore({
     contentId: contentId,
     loggedInUserId: anonId,
   });
 
-  // get items scores in summary getScore since we are in formative mode
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.3,
-    itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
-    ],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // load item one state
   let retrievedItemState = await loadItemState({
@@ -816,7 +958,7 @@ test("Create and save responses for new item attempts, two items", async () => {
       code: classCode,
       loggedInUserId: anonId,
       attemptNumber: 1,
-      score: 0.2,
+      score: null,
       state: "assignment state 1",
       item: {
         itemNumber: 1,
@@ -829,13 +971,42 @@ test("Create and save responses for new item attempts, two items", async () => {
   ).rejects.toThrow("non-maximal item attempt number");
 
   // create a new attempt for item 1
-  await createNewAttempt({
+  retrievedScore = await createNewAttempt({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     shuffledItemOrder: [1, 2],
     itemNumber: 1,
   });
+
+  // get items scores in summary getScore since we are in formative mode
+  expectedScore = {
+    loadedScore: true,
+    score: 0.3,
+    itemScores: [
+      { itemNumber: 1, shuffledItemNumber: 1, score: 0.6 },
+      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
+    ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: 0,
+      itemScores: [
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 2,
+          score: 0,
+        },
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 1,
+          score: 0,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   retrievedState = await loadState({
     contentId: contentId,
@@ -871,24 +1042,17 @@ test("Create and save responses for new item attempts, two items", async () => {
     loggedInUserId: anonId,
   });
 
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.3,
-    itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
-    ],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // now we can save state to item attempt 2
   // did worse on problem 1
 
-  await saveScoreAndState({
+  retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 0.2,
+    score: null,
     state: "assignment state 1",
     item: {
       itemNumber: 1,
@@ -898,6 +1062,35 @@ test("Create and save responses for new item attempts, two items", async () => {
       state: "Item 1 state 3",
     },
   });
+
+  // remember previous max score of 0.3 and 0.6 on item 1
+  expectedScore = {
+    loadedScore: true,
+    score: 0.3,
+    itemScores: [
+      { itemNumber: 1, shuffledItemNumber: 1, score: 0.6 },
+      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
+    ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: 0.2,
+      itemScores: [
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 2,
+          score: 0.4,
+        },
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 1,
+          score: 0,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   retrievedState = await loadState({
     contentId: contentId,
@@ -969,14 +1162,7 @@ test("Create and save responses for new item attempts, two items", async () => {
   });
 
   // remember previous max score of 0.3 and 0.6 on item 1
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.3,
-    itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
-    ],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // can still load old item attempt
   retrievedItemState = await loadItemState({
@@ -998,13 +1184,42 @@ test("Create and save responses for new item attempts, two items", async () => {
   });
 
   // create a new attempt for item 2
-  await createNewAttempt({
+  retrievedScore = await createNewAttempt({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     shuffledItemOrder: [1, 2],
     itemNumber: 2,
   });
+
+  // remember previous max score of 0.3 and 0.6 on item 1
+  expectedScore = {
+    loadedScore: true,
+    score: 0.3,
+    itemScores: [
+      { itemNumber: 1, shuffledItemNumber: 1, score: 0.6 },
+      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
+    ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: 0.2,
+      itemScores: [
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 2,
+          score: 0.4,
+        },
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 2,
+          score: 0,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   retrievedState = await loadState({
     contentId: contentId,
@@ -1072,15 +1287,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     contentId: contentId,
     loggedInUserId: anonId,
   });
-
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.3,
-    itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
-    ],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // now we can no longer save state to attempt 1 of item 2
   await expect(
@@ -1089,7 +1296,7 @@ test("Create and save responses for new item attempts, two items", async () => {
       code: classCode,
       loggedInUserId: anonId,
       attemptNumber: 1,
-      score: 0.6,
+      score: null,
       state: "assignment state 1",
       item: {
         itemNumber: 2,
@@ -1102,12 +1309,12 @@ test("Create and save responses for new item attempts, two items", async () => {
   ).rejects.toThrow("non-maximal item attempt number");
 
   // We can save state to attempt 2 of item 2
-  await saveScoreAndState({
+  retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 1000, // this is ignored since in formative mode
+    score: null,
     state: "assignment state 1",
     item: {
       itemNumber: 2,
@@ -1117,6 +1324,34 @@ test("Create and save responses for new item attempts, two items", async () => {
       state: "Item 2 state 3",
     },
   });
+
+  expectedScore = {
+    loadedScore: true,
+    score: (0.6 + 0.8) / 2,
+    itemScores: [
+      { itemNumber: 1, shuffledItemNumber: 1, score: 0.6 },
+      { itemNumber: 2, shuffledItemNumber: 2, score: 0.8 },
+    ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: (0.4 + 0.8) / 2,
+      itemScores: [
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 2,
+          score: 0.4,
+        },
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 2,
+          score: 0.8,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   retrievedState = await loadState({
     contentId: contentId,
@@ -1186,14 +1421,44 @@ test("Create and save responses for new item attempts, two items", async () => {
     loggedInUserId: anonId,
   });
 
-  expect(retrievedScore).eqls({
+  expect(retrievedScore).eqls(expectedScore);
+
+  // When create new attempt on item 2, latest attempt score is adjusted
+  retrievedScore = await createNewAttempt({
+    contentId: contentId,
+    code: classCode,
+    loggedInUserId: anonId,
+    shuffledItemOrder: [1, 2],
+    itemNumber: 2,
+  });
+
+  expectedScore = {
     loadedScore: true,
     score: (0.6 + 0.8) / 2,
     itemScores: [
       { itemNumber: 1, shuffledItemNumber: 1, score: 0.6 },
       { itemNumber: 2, shuffledItemNumber: 2, score: 0.8 },
     ],
-  });
+    latestAttempt: {
+      attemptNumber: 1,
+      score: (0.4 + 0) / 2,
+      itemScores: [
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 2,
+          score: 0.4,
+        },
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 3,
+          score: 0,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 });
 
 test("Create attempts before responding, no items", async () => {
@@ -1235,11 +1500,23 @@ test("Create attempts before responding, no items", async () => {
     maxAttempts: 0,
   });
 
-  await createNewAttempt({
+  let retrievedScore = await createNewAttempt({
     contentId: contentId,
     loggedInUserId: anonId,
     code: classCode,
   });
+
+  let expectedScore = {
+    loadedScore: true,
+    score: 0,
+    itemScores: [],
+    latestAttempt: {
+      attemptNumber: 2,
+      score: 0,
+      itemScores: [],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   let retrievedState = await loadState({
     contentId: contentId,
@@ -1255,19 +1532,14 @@ test("Create attempts before responding, no items", async () => {
     items: [],
   });
 
-  let retrievedScore = await getScore({
+  retrievedScore = await getScore({
     contentId: contentId,
     loggedInUserId: anonId,
   });
-
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0,
-    itemScores: [],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // save state to attempt 2
-  await saveScoreAndState({
+  retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
@@ -1275,6 +1547,18 @@ test("Create attempts before responding, no items", async () => {
     score: 0.9,
     state: "document state 1",
   });
+
+  expectedScore = {
+    loadedScore: true,
+    score: 0.9,
+    itemScores: [],
+    latestAttempt: {
+      attemptNumber: 2,
+      score: 0.9,
+      itemScores: [],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   retrievedState = await loadState({
     contentId: contentId,
@@ -1294,12 +1578,7 @@ test("Create attempts before responding, no items", async () => {
     contentId: contentId,
     loggedInUserId: anonId,
   });
-
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.9,
-    itemScores: [],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // attempt to load attempt 1, which was never taken
   retrievedState = await loadState({
@@ -1370,13 +1649,41 @@ test("Create item attempts before responding, two items", async () => {
     maxAttempts: 0,
   });
 
-  await createNewAttempt({
+  let retrievedScore = await createNewAttempt({
     contentId: contentId,
     loggedInUserId: anonId,
     code: classCode,
     itemNumber: 1,
     shuffledItemOrder: [1, 2],
   });
+
+  let expectedScore = {
+    loadedScore: true,
+    score: 0,
+    itemScores: [
+      { itemNumber: 1, shuffledItemNumber: 1, score: 0 },
+      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
+    ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: 0,
+      itemScores: [
+        {
+          itemNumber: 1,
+          itemAttemptNumber: 2,
+          shuffledItemNumber: 1,
+          score: 0,
+        },
+        {
+          itemNumber: 2,
+          itemAttemptNumber: 1,
+          shuffledItemNumber: 2,
+          score: 0,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   let retrievedState = await loadState({
     contentId: contentId,
@@ -1407,27 +1714,19 @@ test("Create item attempts before responding, two items", async () => {
     ],
   });
 
-  let retrievedScore = await getScore({
+  retrievedScore = await getScore({
     contentId: contentId,
     loggedInUserId: anonId,
   });
-
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0,
-    itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
-    ],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // now we can save state to attempt 2 for item 2
-  await saveScoreAndState({
+  retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 1000, // this is ignored since in formative mode
+    score: null,
     state: "assignment state 1",
     item: {
       itemNumber: 1,
@@ -1437,6 +1736,34 @@ test("Create item attempts before responding, two items", async () => {
       state: "Item 1 state 1",
     },
   });
+
+  expectedScore = {
+    loadedScore: true,
+    score: 0.2,
+    itemScores: [
+      { itemNumber: 1, shuffledItemNumber: 1, score: 0.4 },
+      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
+    ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: 0.2,
+      itemScores: [
+        {
+          itemNumber: 1,
+          itemAttemptNumber: 2,
+          shuffledItemNumber: 1,
+          score: 0.4,
+        },
+        {
+          itemNumber: 2,
+          itemAttemptNumber: 1,
+          shuffledItemNumber: 2,
+          score: 0,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   retrievedState = await loadState({
     contentId: contentId,
@@ -1471,15 +1798,7 @@ test("Create item attempts before responding, two items", async () => {
     contentId: contentId,
     loggedInUserId: anonId,
   });
-
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.2,
-    itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0.4 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
-    ],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // attempt to load attempt 1, which was never taken
   const retrievedItemState = await loadItemState({
@@ -1540,12 +1859,12 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   const { userId: anonId } = await createTestAnonymousUser();
 
   // save state for shuffled item number 1 (which is item number 2)
-  await saveScoreAndState({
+  let retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 0.3,
+    score: null,
     state: "assignment state 1",
     item: {
       shuffledItemNumber: 1,
@@ -1555,6 +1874,35 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
       state: "Item 1 state 1",
     },
   });
+
+  // get items scores in summary getScore since we are in formative mode
+  let expectedScore = {
+    loadedScore: true,
+    score: 0.3,
+    itemScores: [
+      { itemNumber: 2, shuffledItemNumber: 1, score: 0.6 },
+      { itemNumber: 1, shuffledItemNumber: 2, score: 0 },
+    ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: 0.3,
+      itemScores: [
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 1,
+          score: 0.6,
+        },
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 1,
+          score: 0,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   let retrievedState = await loadState({
     contentId: contentId,
@@ -1585,20 +1933,11 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     ],
   });
 
-  let retrievedScore = await getScore({
+  retrievedScore = await getScore({
     contentId: contentId,
     loggedInUserId: anonId,
   });
-
-  // get items scores in summary getScore since we are in formative mode
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.3,
-    itemScores: [
-      { itemNumber: 2, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 1, shuffledItemNumber: 2, score: 0 },
-    ],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // load shuffled item one state
   let retrievedItemState = await loadItemState({
@@ -1656,7 +1995,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
       code: classCode,
       loggedInUserId: anonId,
       attemptNumber: 1,
-      score: 0.2,
+      score: null,
       state: "assignment state 1",
       item: {
         shuffledItemNumber: 1,
@@ -1669,13 +2008,41 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   ).rejects.toThrow("non-maximal item attempt number");
 
   // create a new attempt for shuffled item 1
-  await createNewAttempt({
+  retrievedScore = await createNewAttempt({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     shuffledItemOrder: [2, 1],
     shuffledItemNumber: 1,
   });
+
+  expectedScore = {
+    loadedScore: true,
+    score: 0.3,
+    itemScores: [
+      { itemNumber: 2, shuffledItemNumber: 1, score: 0.6 },
+      { itemNumber: 1, shuffledItemNumber: 2, score: 0 },
+    ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: 0,
+      itemScores: [
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 2,
+          score: 0,
+        },
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 1,
+          score: 0,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   retrievedState = await loadState({
     contentId: contentId,
@@ -1710,25 +2077,17 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     contentId: contentId,
     loggedInUserId: anonId,
   });
-
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.3,
-    itemScores: [
-      { itemNumber: 2, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 1, shuffledItemNumber: 2, score: 0 },
-    ],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // now we can save state to item attempt 2 for shuffledItemNumber 1
   // did worse than on first attempt
 
-  await saveScoreAndState({
+  retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 0.2,
+    score: null,
     state: "assignment state 1",
     item: {
       shuffledItemNumber: 1,
@@ -1738,6 +2097,35 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
       state: "Item 1 state 3",
     },
   });
+
+  // remember previous max score of 0.3 and 0.6 on item 2 (shuffledItemNumber 1)
+  expectedScore = {
+    loadedScore: true,
+    score: 0.3,
+    itemScores: [
+      { itemNumber: 2, shuffledItemNumber: 1, score: 0.6 },
+      { itemNumber: 1, shuffledItemNumber: 2, score: 0 },
+    ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: 0.2,
+      itemScores: [
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 2,
+          score: 0.4,
+        },
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 1,
+          score: 0,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   retrievedState = await loadState({
     contentId: contentId,
@@ -1772,16 +2160,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     contentId: contentId,
     loggedInUserId: anonId,
   });
-
-  // remember previous max score of 0.3 and 0.6 on item 2 (shuffledItemNumber 1)
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.3,
-    itemScores: [
-      { itemNumber: 2, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 1, shuffledItemNumber: 2, score: 0 },
-    ],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // can still load old item attempt
   retrievedItemState = await loadItemState({
@@ -1803,13 +2182,41 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   });
 
   // create a new attempt for shuffled item 2
-  await createNewAttempt({
+  retrievedScore = await createNewAttempt({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     shuffledItemOrder: [2, 1],
     shuffledItemNumber: 2,
   });
+
+  expectedScore = {
+    loadedScore: true,
+    score: 0.3,
+    itemScores: [
+      { itemNumber: 2, shuffledItemNumber: 1, score: 0.6 },
+      { itemNumber: 1, shuffledItemNumber: 2, score: 0 },
+    ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: 0.2,
+      itemScores: [
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 2,
+          score: 0.4,
+        },
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 2,
+          score: 0,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   retrievedState = await loadState({
     contentId: contentId,
@@ -1844,15 +2251,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     contentId: contentId,
     loggedInUserId: anonId,
   });
-
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.3,
-    itemScores: [
-      { itemNumber: 2, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 1, shuffledItemNumber: 2, score: 0 },
-    ],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // now we can no longer save state to attempt 1 of shuffled item 2
   await expect(
@@ -1861,7 +2260,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
       code: classCode,
       loggedInUserId: anonId,
       attemptNumber: 1,
-      score: 0.6,
+      score: null,
       state: "assignment state 1",
       item: {
         shuffledItemNumber: 2,
@@ -1874,12 +2273,12 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   ).rejects.toThrow("non-maximal item attempt number");
 
   // We can save state to attempt 2 of shuffled item 2
-  await saveScoreAndState({
+  retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 1000, // this is ignored since in formative mode
+    score: null,
     state: "assignment state 1",
     item: {
       shuffledItemNumber: 2,
@@ -1889,6 +2288,34 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
       state: "Item 2 state 3",
     },
   });
+
+  expectedScore = {
+    loadedScore: true,
+    score: (0.6 + 0.8) / 2,
+    itemScores: [
+      { itemNumber: 2, shuffledItemNumber: 1, score: 0.6 },
+      { itemNumber: 1, shuffledItemNumber: 2, score: 0.8 },
+    ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: (0.4 + 0.8) / 2,
+      itemScores: [
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 2,
+          score: 0.4,
+        },
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 2,
+          score: 0.8,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   retrievedState = await loadState({
     contentId: contentId,
@@ -1922,15 +2349,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     contentId: contentId,
     loggedInUserId: anonId,
   });
-
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: (0.6 + 0.8) / 2,
-    itemScores: [
-      { itemNumber: 2, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 1, shuffledItemNumber: 2, score: 0.8 },
-    ],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 });
 
 test("New item attempt does not affect other item", async () => {
@@ -1976,7 +2395,7 @@ test("New item attempt does not affect other item", async () => {
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 1000, // ignored
+    score: null,
     state: "assignment state 1",
     item: {
       itemNumber: 1,
@@ -1987,12 +2406,12 @@ test("New item attempt does not affect other item", async () => {
     },
   });
 
-  await saveScoreAndState({
+  let retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 1000, // ignored
+    score: null,
     state: "assignment state 1",
     item: {
       itemNumber: 2,
@@ -2002,6 +2421,34 @@ test("New item attempt does not affect other item", async () => {
       state: "Item 2 state 1",
     },
   });
+
+  let expectedScore = {
+    loadedScore: true,
+    score: (0.8 + 1) / 2,
+    itemScores: [
+      { itemNumber: 1, shuffledItemNumber: 1, score: 0.8 },
+      { itemNumber: 2, shuffledItemNumber: 2, score: 1 },
+    ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: (0.8 + 1) / 2,
+      itemScores: [
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 1,
+          score: 0.8,
+        },
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 1,
+          score: 1,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   let retrievedState = await loadState({
     contentId: contentId,
@@ -2032,19 +2479,12 @@ test("New item attempt does not affect other item", async () => {
     ],
   });
 
-  let retrievedScore = await getScore({
+  retrievedScore = await getScore({
     contentId: contentId,
     loggedInUserId: anonId,
   });
 
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.9,
-    itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0.8 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 1 },
-    ],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // Creating new attempt of item 2 locks in that score,
   // but does not lock in the score of item 1
@@ -2062,7 +2502,7 @@ test("New item attempt does not affect other item", async () => {
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 1000, // ignored
+    score: null,
     state: "assignment state 1",
     item: {
       itemNumber: 1,
@@ -2073,12 +2513,12 @@ test("New item attempt does not affect other item", async () => {
     },
   });
 
-  await saveScoreAndState({
+  retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 1000, // ignored
+    score: null,
     state: "assignment state 1",
     item: {
       itemNumber: 2,
@@ -2088,6 +2528,34 @@ test("New item attempt does not affect other item", async () => {
       state: "Item 2 state 2",
     },
   });
+
+  expectedScore = {
+    loadedScore: true,
+    score: (0.4 + 1) / 2,
+    itemScores: [
+      { itemNumber: 1, shuffledItemNumber: 1, score: 0.4 },
+      { itemNumber: 2, shuffledItemNumber: 2, score: 1 },
+    ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: (0.4 + 0.2) / 2,
+      itemScores: [
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 1,
+          score: 0.4,
+        },
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 2,
+          score: 0.2,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   // loading state gets lower score for both
   retrievedState = await loadState({
@@ -2154,15 +2622,7 @@ test("New item attempt does not affect other item", async () => {
     contentId: contentId,
     loggedInUserId: anonId,
   });
-
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: 0.7,
-    itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0.4 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 1 },
-    ],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 });
 
 test("Using both itemNumber and shuffledItemNumber, two shuffled items", async () => {
@@ -2208,7 +2668,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 1000, //ignored
+    score: null,
     state: "assignment state 1",
     item: {
       itemNumber: 1,
@@ -2220,12 +2680,12 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
   });
 
   // save state for shuffled item number 1 (which is item number 2)
-  await saveScoreAndState({
+  let retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 1000, //ignored
+    score: null,
     state: "assignment state 1",
     item: {
       shuffledItemNumber: 1,
@@ -2235,6 +2695,35 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
       state: "Item 1 state 1",
     },
   });
+
+  // get items scores in summary getScore since we are in formative mode
+  const expectedScore = {
+    loadedScore: true,
+    score: (0.6 + 0.8) / 2,
+    itemScores: [
+      { itemNumber: 2, shuffledItemNumber: 1, score: 0.8 },
+      { itemNumber: 1, shuffledItemNumber: 2, score: 0.6 },
+    ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: (0.8 + 0.6) / 2,
+      itemScores: [
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 1,
+          score: 0.8,
+        },
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 1,
+          score: 0.6,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
 
   const retrievedState = await loadState({
     contentId: contentId,
@@ -2264,20 +2753,12 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     ],
   });
 
-  const retrievedScore = await getScore({
+  retrievedScore = await getScore({
     contentId: contentId,
     loggedInUserId: anonId,
   });
 
-  // get items scores in summary getScore since we are in formative mode
-  expect(retrievedScore).eqls({
-    loadedScore: true,
-    score: (0.6 + 0.8) / 2,
-    itemScores: [
-      { itemNumber: 2, shuffledItemNumber: 1, score: 0.8 },
-      { itemNumber: 1, shuffledItemNumber: 2, score: 0.6 },
-    ],
-  });
+  expect(retrievedScore).eqls(expectedScore);
 
   // specifying neither itemNumber nor shuffledItemNumber when saving state throws an error
   await expect(
@@ -2286,7 +2767,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
       code: classCode,
       loggedInUserId: anonId,
       attemptNumber: 1,
-      score: 1000, //ignored
+      score: null,
       state: "assignment state 1",
       item: {
         shuffledItemOrder: [2, 1],
@@ -2617,6 +3098,11 @@ test("Setting maximum number of attempts, no items", async () => {
     loadedScore: true,
     score: 0.7,
     itemScores: [],
+    latestAttempt: {
+      attemptNumber: 3,
+      score: 0.7,
+      itemScores: [],
+    },
   });
 });
 
@@ -2656,7 +3142,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 1000, // ignored
+    score: null,
     state: "assignment state 1",
     item: {
       itemNumber: 1,
@@ -2714,7 +3200,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 1000, // ignored
+    score: null,
     state: "assignment state 1",
     item: {
       itemNumber: 1,
@@ -2767,7 +3253,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 1000, // ignored
+    score: null,
     state: "assignment state 1",
     item: {
       itemNumber: 1,
@@ -2785,7 +3271,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
       code: classCode,
       loggedInUserId: anonId,
       attemptNumber: 1,
-      score: 1000, // ignored
+      score: null,
       state: "assignment state 1",
       item: {
         itemNumber: 1,
@@ -2827,7 +3313,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
-    score: 1000, // ignored
+    score: null,
     state: "assignment state 1",
     item: {
       itemNumber: 2,
@@ -2880,5 +3366,23 @@ test("Setting maximum number of attempts, new item attempts", async () => {
       { itemNumber: 1, shuffledItemNumber: 1, score: 1 },
       { itemNumber: 2, shuffledItemNumber: 2, score: 0.4 },
     ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: (1 + 0.4) / 2,
+      itemScores: [
+        {
+          itemNumber: 1,
+          shuffledItemNumber: 1,
+          itemAttemptNumber: 3,
+          score: 1,
+        },
+        {
+          itemNumber: 2,
+          shuffledItemNumber: 2,
+          itemAttemptNumber: 2,
+          score: 0.4,
+        },
+      ],
+    },
   });
 });

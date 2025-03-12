@@ -119,6 +119,7 @@ export type PartialContentClassification = {
 };
 
 export type ContentType = "singleDoc" | "select" | "sequence" | "folder";
+export type AssignmentMode = "formative" | "summative";
 
 export type ContentBase = {
   contentId: string;
@@ -194,9 +195,14 @@ export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
   classCode: string | null;
   codeValidUntil: string | null;
+  otherRoot?: {
+    rootContentId: string;
+    rootName: string;
+    rootType: ContentType;
+  };
   hasScoreData: boolean;
-  activityLevelAttempts: boolean;
-  itemLevelAttempts: boolean;
+  mode: AssignmentMode;
+  maxAttempts: number;
 };
 
 export type ActivityHistoryItem = {

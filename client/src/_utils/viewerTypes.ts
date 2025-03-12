@@ -187,6 +187,37 @@ export type SequenceStateNoSource = Omit<
  */
 export type RestrictToVariantSlice = { idx: number; numSlices: number };
 
+/**
+ * The activity state packaged for saving to a database.
+ *
+ * The `sourceHash` is a hash of the source (which has been removed from `state`),
+ * which will be used to verify that the state matches the current source
+ * when loading in the state.
+ */
+export type ExportedActivityState = {
+  activityState: ActivityStateNoSource;
+  doenetStates: unknown[];
+  itemAttemptNumbers: number[];
+  sourceHash: string;
+};
+
+export type ReportStateMessage = {
+  subject: "SPLICE.reportScoreAndState";
+  activityId: string;
+  score: number;
+  itemScores: {
+    id: string;
+    score: number;
+    docId?: string;
+    shuffledOrder: number;
+  }[];
+  itemUpdated?: number;
+  state: ExportedActivityState;
+  newAttempt?: boolean;
+  newAttemptForItem?: number;
+  newDoenetStateIdx?: number;
+};
+
 // type guards
 
 export function isActivitySource(obj: unknown): obj is ActivitySource {
@@ -233,5 +264,151 @@ export function isSequenceSource(obj: unknown): obj is SequenceSource {
     (typedObj.creditWeights === undefined ||
       (Array.isArray(typedObj.creditWeights) &&
         typedObj.creditWeights.every((weight) => typeof weight === "number")))
+  );
+}
+
+export function isActivityStateNoSource(
+  obj: unknown,
+): obj is ActivityStateNoSource {
+  return (
+    isSingleDocStateNoSource(obj) ||
+    isSelectStateNoSource(obj) ||
+    isSequenceStateNoSource(obj)
+  );
+}
+
+export function isSingleDocStateNoSource(
+  obj: unknown,
+): obj is SingleDocStateNoSource {
+  const typedObj = obj as SingleDocStateNoSource;
+  return (
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    typedObj !== null &&
+    typeof typedObj === "object" &&
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    typedObj.type === "singleDoc" &&
+    typeof typedObj.id === "string" &&
+    (typedObj.parentId === null || typeof typedObj.parentId === "string") &&
+    typeof typedObj.initialVariant === "number" &&
+    typeof typedObj.creditAchieved === "number" &&
+    typeof typedObj.attemptNumber === "number" &&
+    typeof typedObj.currentVariant === "number" &&
+    Array.isArray(typedObj.previousVariants) &&
+    typedObj.previousVariants.every((x) => typeof x === "number") &&
+    typeof typedObj.initialQuestionCounter === "number" &&
+    (typedObj.restrictToVariantSlice === undefined ||
+      isRestrictToVariantSlice(typedObj.restrictToVariantSlice))
+  );
+}
+
+export function isSelectStateNoSource(
+  obj: unknown,
+): obj is SelectStateNoSource {
+  const typedObj = obj as SelectStateNoSource;
+  return (
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    typedObj !== null &&
+    typeof typedObj === "object" &&
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    typedObj.type === "select" &&
+    typeof typedObj.id === "string" &&
+    (typedObj.parentId === null || typeof typedObj.parentId === "string") &&
+    typeof typedObj.initialVariant === "number" &&
+    typeof typedObj.creditAchieved === "number" &&
+    Array.isArray(typedObj.allChildren) &&
+    typedObj.allChildren.every(isActivityStateNoSource) &&
+    typeof typedObj.attemptNumber === "number" &&
+    Array.isArray(typedObj.selectedChildren) &&
+    typedObj.selectedChildren.every(isActivityStateNoSource) &&
+    Array.isArray(typedObj.previousSelections) &&
+    typedObj.previousSelections.every((x) => typeof x === "string") &&
+    typeof typedObj.initialQuestionCounter === "number" &&
+    (typedObj.restrictToVariantSlice === undefined ||
+      isRestrictToVariantSlice(typedObj.restrictToVariantSlice))
+  );
+}
+
+export function isSequenceStateNoSource(
+  obj: unknown,
+): obj is SequenceStateNoSource {
+  const typedObj = obj as SequenceStateNoSource;
+  return (
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    typedObj !== null &&
+    typeof typedObj === "object" &&
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    typedObj.type === "sequence" &&
+    typeof typedObj.id === "string" &&
+    (typedObj.parentId === null || typeof typedObj.parentId === "string") &&
+    typeof typedObj.initialVariant === "number" &&
+    typeof typedObj.creditAchieved === "number" &&
+    Array.isArray(typedObj.allChildren) &&
+    typedObj.allChildren.every(isActivityStateNoSource) &&
+    typeof typedObj.attemptNumber === "number" &&
+    Array.isArray(typedObj.orderedChildren) &&
+    typedObj.orderedChildren.every(isActivityStateNoSource) &&
+    (typedObj.restrictToVariantSlice === undefined ||
+      isRestrictToVariantSlice(typedObj.restrictToVariantSlice))
+  );
+}
+
+export function isRestrictToVariantSlice(
+  obj: unknown,
+): obj is RestrictToVariantSlice {
+  const typeObj = obj as RestrictToVariantSlice;
+
+  return (
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    typeObj !== null &&
+    typeof typeObj === "object" &&
+    typeof typeObj.idx === "number" &&
+    typeof typeObj.numSlices === "number"
+  );
+}
+
+export function isExportedActivityState(
+  obj: unknown,
+): obj is ExportedActivityState {
+  const typedObj = obj as ExportedActivityState;
+  return (
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    typedObj !== null &&
+    typeof typedObj === "object" &&
+    isActivityStateNoSource(typedObj.activityState) &&
+    Array.isArray(typedObj.doenetStates) &&
+    Array.isArray(typedObj.itemAttemptNumbers) &&
+    typedObj.itemAttemptNumbers.every((x) => Number.isInteger(x) && x > 0) &&
+    typeof typedObj.sourceHash === "string"
+  );
+}
+
+export function isReportStateMessage(obj: unknown): obj is ReportStateMessage {
+  const typedObj = obj as ReportStateMessage;
+
+  return (
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    typedObj !== null &&
+    typeof typedObj === "object" &&
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    typedObj.subject === "SPLICE.reportScoreAndState" &&
+    typeof typedObj.activityId === "string" &&
+    typeof typedObj.score === "number" &&
+    Array.isArray(typedObj.itemScores) &&
+    typedObj.itemScores.every(
+      (item) =>
+        typeof item.id === "string" &&
+        typeof item.score === "number" &&
+        (item.docId === undefined || typeof item.docId === "string") &&
+        typeof item.shuffledOrder === "number",
+    ) &&
+    (typedObj.itemUpdated === undefined ||
+      typeof typedObj.itemUpdated === "number") &&
+    isExportedActivityState(typedObj.state) &&
+    (typedObj.newAttempt === undefined ||
+      typeof typedObj.newAttempt === "boolean") &&
+    (typedObj.newAttemptForItem === undefined ||
+      typeof typedObj.newAttemptForItem === "number") &&
+    (typedObj.newDoenetStateIdx === undefined ||
+      typeof typedObj.newDoenetStateIdx === "number")
   );
 }

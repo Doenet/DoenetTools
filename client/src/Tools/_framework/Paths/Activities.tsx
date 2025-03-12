@@ -42,9 +42,9 @@ import {
   ContentSettingsDrawer,
 } from "../ToolPanels/ContentSettingsDrawer";
 import {
-  assignmentSettingsActions,
-  AssignmentSettingsDrawer,
-} from "../ToolPanels/AssignmentSettingsDrawer";
+  assignmentControlsActions,
+  AssignmentControlsDrawer,
+} from "../ToolPanels/AssignmentControlsDrawer";
 import {
   AssignmentStatus,
   ContentDescription,
@@ -96,7 +96,7 @@ export async function action({ request, params }) {
   if (resultSD) {
     return resultSD;
   }
-  const resultAS = await assignmentSettingsActions({ formObj });
+  const resultAS = await assignmentControlsActions({ formObj });
   if (resultAS) {
     return resultAS;
   }
@@ -588,7 +588,7 @@ export function Activities() {
     ) : null;
   const assignmentDrawer =
     contentData && settingsContentId ? (
-      <AssignmentSettingsDrawer
+      <AssignmentControlsDrawer
         isOpen={assignmentSettingsAreOpen}
         onClose={assignmentSettingsOnClose}
         contentId={settingsContentId}

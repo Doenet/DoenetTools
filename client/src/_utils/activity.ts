@@ -113,6 +113,7 @@ export function compileActivityFromContent(activity: Content): ActivitySource {
       return {
         id: activity.contentId,
         type: activity.type,
+        title: activity.name,
         isDescription: false,
         doenetML: activity.doenetML!,
         version: activity.doenetmlVersion.fullVersion,

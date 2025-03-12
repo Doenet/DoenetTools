@@ -38,9 +38,9 @@ import {
 import { InfoIcon } from "@chakra-ui/icons";
 import { AssignmentInvitation } from "../ToolPanels/AssignmentInvitation";
 import {
-  assignmentSettingsActions,
-  AssignmentSettingsDrawer,
-} from "../ToolPanels/AssignmentSettingsDrawer";
+  assignmentControlsActions,
+  AssignmentControlsDrawer,
+} from "../ToolPanels/AssignmentControlsDrawer";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 import {
   ContentFeature,
@@ -89,7 +89,7 @@ export async function action({ params, request }) {
     return resultSD;
   }
 
-  const resultAS = await assignmentSettingsActions({ formObj });
+  const resultAS = await assignmentControlsActions({ formObj });
   if (resultAS) {
     return resultAS;
   }
@@ -424,7 +424,7 @@ export function ActivityEditor() {
 
   const assignmentDrawers = !isLibraryActivity ? (
     <>
-      <AssignmentSettingsDrawer
+      <AssignmentControlsDrawer
         isOpen={assignmentSettingsAreOpen}
         onClose={assignmentSettingsOnClose}
         finalFocusRef={finalFocusRef}

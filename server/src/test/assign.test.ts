@@ -1244,6 +1244,11 @@ test("get assignment data from anonymous users", async () => {
   expect(dataFromCode.scoreData).eqls({
     loadedScore: true,
     score: 0.5,
+    latestAttempt: {
+      attemptNumber: 1,
+      score: 0.5,
+      itemScores: [],
+    },
   });
 
   let assignmentStudentData = await getAssignmentStudentData({
@@ -2725,7 +2730,8 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   await recordSubmittedEvent({
     contentId: contentId,
     loggedInUserId: newUser!.userId,
-    attemptNumber: 1,
+    contentAttemptNumber: 1,
+    itemAttemptNumber: null,
     answerId: answerId1,
     response: "Answer result 1",
     answerNumber: 1,
@@ -2790,7 +2796,8 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   await recordSubmittedEvent({
     contentId: contentId,
     loggedInUserId: newUser!.userId,
-    attemptNumber: 1,
+    contentAttemptNumber: 1,
+    itemAttemptNumber: null,
     answerId: answerId1,
     response: "Answer result 2",
     answerNumber: 1,
@@ -2860,7 +2867,8 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   await recordSubmittedEvent({
     contentId: contentId,
     loggedInUserId: newUser!.userId,
-    attemptNumber: 1,
+    contentAttemptNumber: 1,
+    itemAttemptNumber: null,
     answerId: answerId2,
     response: "Answer result 3",
     answerNumber: 2,
@@ -2983,7 +2991,8 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   await recordSubmittedEvent({
     contentId: contentId,
     loggedInUserId: newUser2.userId,
-    attemptNumber: 1,
+    contentAttemptNumber: 1,
+    itemAttemptNumber: null,
     answerId: answerId1,
     response: "Answer result 4",
     answerNumber: 1,
@@ -3141,7 +3150,8 @@ test("record submitted events and get responses", { retry: 5 }, async () => {
   await recordSubmittedEvent({
     contentId: contentId,
     loggedInUserId: newUser2.userId,
-    attemptNumber: 1,
+    contentAttemptNumber: 1,
+    itemAttemptNumber: null,
     answerId: answerId1,
     response: "Answer result 5",
     answerNumber: 1,
@@ -3266,7 +3276,8 @@ test("only owner can get submitted responses", async () => {
   await recordSubmittedEvent({
     contentId: contentId,
     loggedInUserId: newUser!.userId,
-    attemptNumber: 1,
+    contentAttemptNumber: 1,
+    itemAttemptNumber: null,
     answerId: answerId1,
     response: "Answer result 1",
     answerNumber: 1,

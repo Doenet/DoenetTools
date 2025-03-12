@@ -13,11 +13,20 @@ import {
 import { ChangeName, action as changeNameAction } from "./ChangeName";
 import { SiteContext } from "./SiteHeader";
 import { Content, DoenetmlVersion } from "../../../_utils/types";
-import { ActivitySource, isActivitySource } from "../../../_utils/viewerTypes";
+import {
+  ActivitySource,
+  isActivitySource,
+  isReportStateMessage,
+} from "../../../_utils/viewerTypes";
 import { compileActivityFromContent } from "../../../_utils/activity";
 import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 
-type ItemScore = { id: string; score: number; docId?: string };
+type ItemScore = {
+  id: string;
+  score: number;
+  docId?: string;
+  shuffledOrder: number;
+};
 
 function isItemScore(obj: unknown): obj is ItemScore {
   const typedObj = obj as ItemScore;
@@ -26,20 +35,21 @@ function isItemScore(obj: unknown): obj is ItemScore {
     typeof typedObj === "object" &&
     typeof typedObj.id === "string" &&
     typeof typedObj.score === "number" &&
-    (typedObj.docId === undefined || typeof typedObj.docId === "string")
+    (typedObj.docId === undefined || typeof typedObj.docId === "string") &&
+    typeof typedObj.shuffledOrder === "number"
   );
 }
 
-function createScoreByItem(obj: unknown) {
+function createItemScores(obj: unknown) {
   if (Array.isArray(obj)) {
-    const newScoreByItem: ItemScore[] = [];
+    const newItemScores: ItemScore[] = [];
     for (const item of obj) {
       if (isItemScore(item)) {
-        newScoreByItem.push(item);
+        newItemScores.push(item);
       }
     }
 
-    return newScoreByItem;
+    return newItemScores;
   }
 
   return null;
@@ -49,8 +59,8 @@ function createScoreNumberByItem(obj: unknown) {
   if (Array.isArray(obj)) {
     const newScoreNumberByItem: number[] = [];
     for (const item of obj) {
-      if (typeof item === "number") {
-        newScoreNumberByItem.push(item);
+      if (typeof item === "object" && typeof item.score === "number") {
+        newScoreNumberByItem.push(item.score);
       }
     }
 
@@ -87,20 +97,43 @@ export async function loader({ params }) {
     `/api/info/getAssignmentViewerDataFromCode/${params.classCode}`,
   );
 
+  console.log(data);
+
+  let initialScore: number = 0;
+  let initialScoreNumberByItem: number[] | null = null;
+  let latestAttemptScore: number = 0;
+  let latestAttemptScoreNumberByItem: number[] | null = null;
+  let itemAttemptNumbers: number[] = [];
+  let attemptNumber = 1;
+
   if (!data.assignmentFound) {
     return {
       assignmentFound: false,
       assignment: null,
       code: params.classCode,
+      initialScore,
+      initialScoreNumberByItem,
+      latestAttemptScore,
+      latestAttemptScoreNumberByItem,
+      itemAttemptNumbers,
+      attemptNumber,
     };
   }
 
-  const initialScore = data.scoreData.loadedScore
-    ? Number(data.scoreData.score)
-    : 0;
-  const initialScoreNumberByItem = data.scoreData.loadedScore
-    ? createScoreNumberByItem(data.scoreData.scoreByItem)
-    : null;
+  if (data.scoreData.loadedState) {
+    initialScore = Number(data.scoreData.score);
+    initialScoreNumberByItem = createScoreNumberByItem(
+      data.scoreData.itemScores,
+    );
+    latestAttemptScore = data.scoreData.latestAttempt.score;
+    latestAttemptScoreNumberByItem = createScoreNumberByItem(
+      data.scoreData.latestAttempt.itemScores,
+    );
+    itemAttemptNumbers = data.scoreData.latestAttempt.itemScores.map(
+      (x) => x.itemAttemptNumber,
+    );
+    attemptNumber = data.score.latestATtempt.attemptNumber;
+  }
 
   const assignment = data.assignment;
 
@@ -117,14 +150,18 @@ export async function loader({ params }) {
       code: params.classCode,
       initialScore,
       initialScoreNumberByItem,
+      latestAttemptScore,
+      latestAttemptScoreNumberByItem,
+      itemAttemptNumbers,
+      attemptNumber,
     };
   } else {
-    const activityJsonFromRevision = assignment.activityJson
+    const activityJsonPrelim = assignment.activityJson
       ? JSON.parse(assignment.activityJson)
       : null;
 
-    const activityJson = isActivitySource(activityJsonFromRevision)
-      ? activityJsonFromRevision
+    const activityJson = isActivitySource(activityJsonPrelim)
+      ? activityJsonPrelim
       : compileActivityFromContent(assignment);
 
     return {
@@ -135,23 +172,31 @@ export async function loader({ params }) {
       code: params.classCode,
       initialScore,
       initialScoreNumberByItem,
+      latestAttemptScore,
+      latestAttemptScoreNumberByItem,
+      itemAttemptNumbers,
+      attemptNumber,
     };
   }
 }
 
 export function AssignmentViewer() {
-  const data = useLoaderData() as
+  const data = useLoaderData() as {
+    initialScore: number;
+    initialScoreNumberByItem: number[] | null;
+    latestAttemptScore: number;
+    latestAttemptScoreNumberByItem: number[] | null;
+    itemAttemptNumbers: number[];
+    attemptNumber: number;
+    code: string;
+  } & (
     | {
         assignmentFound: false;
-        code: string;
         assignment: null;
       }
     | ({
         assignmentFound: true;
         assignment: Content;
-        code: string;
-        initialScore: number;
-        initialScoreNumberByItem: number[] | null;
       } & (
         | {
             type: "singleDoc";
@@ -162,8 +207,10 @@ export function AssignmentViewer() {
             type: "select" | "sequence";
             activityJson: ActivitySource;
           }
-      ));
+      ))
+  );
 
+  console.log(data);
   const { assignmentFound, assignment, code } = data;
 
   const assignmentName = data.assignmentFound ? data.assignment.name : "";
@@ -173,35 +220,44 @@ export function AssignmentViewer() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [attemptNumber, setAttemptNumber] = useState<number | null>(null);
+  const [attemptNumber, setAttemptNumber] = useState<number>(
+    data.attemptNumber,
+  );
+  const [itemAttemptNumbers, setItemAttemptNumbers] = useState<number[]>(
+    data.itemAttemptNumbers,
+  );
 
-  // create ref so that is updated inside callbacks
+  // create refs so that is updated inside callbacks
   const attemptNumberRef = useRef<number | null>(attemptNumber);
   attemptNumberRef.current = attemptNumber;
+  const itemAttemptNumbersRef = useRef<number[] | null>(itemAttemptNumbers);
+  itemAttemptNumbersRef.current = itemAttemptNumbers;
 
   const [scoresCurrentAttempt, setScoresCurrentAttempt] = useState<{
-    scoreByItem: ItemScore[] | null;
+    scoreNumberByItem: number[] | null;
     score: number;
-  }>({ scoreByItem: null, score: 0 });
+  }>({
+    scoreNumberByItem: data.latestAttemptScoreNumberByItem,
+    score: data.latestAttemptScore,
+  });
 
-  // create ref so that is updated inside callbacks
-  const scoresCurrentAttemptRef = useRef<{
-    scoreByItem: ItemScore[] | null;
-    score: number;
-  }>(scoresCurrentAttempt);
-  scoresCurrentAttemptRef.current = scoresCurrentAttempt;
+  // used to look up item order in callbacks
+  const currentItemScores = useRef<ItemScore[] | null>(null);
 
   const [scores, setScores] = useState<{
     scoreNumberByItem: number[] | null;
     score: number;
-  }>(
-    data.assignmentFound
-      ? {
-          scoreNumberByItem: data.initialScoreNumberByItem,
-          score: data.initialScore,
-        }
-      : { scoreNumberByItem: null, score: 0 },
-  );
+  }>({
+    scoreNumberByItem: data.initialScoreNumberByItem,
+    score: data.initialScore,
+  });
+
+  console.log({
+    scores,
+    scoresCurrentAttempt,
+    attemptNumber,
+    itemAttemptNumbers,
+  });
 
   useEffect(() => {
     if (assignmentFound) {
@@ -218,44 +274,106 @@ export function AssignmentViewer() {
 
     const messageListener = async function (event) {
       if (event.data.subject == "SPLICE.reportScoreAndState") {
-        const scoreByItem = createScoreByItem(event.data.scoreByItem);
-        const score: number =
-          typeof event.data.score === "number" ? event.data.score : 0;
-        setScoresCurrentAttempt({ scoreByItem, score });
+        console.log("record score and state", event.data);
 
-        if (event.data.newAttempt === true) {
-          await createNewAttempt({
-            newAttemptForItem: event.data.newAttemptForItem,
-            scoreByItem,
-            score,
-            state: event.data.state,
-          });
-        } else {
-          try {
-            const { data } = await axios.post("/api/score/saveScoreAndState", {
-              contentId: assignment.contentId,
-              attemptNumber: attemptNumberRef.current,
-              score,
-              scoreByItem: scoreByItem?.map((s) => s.score) ?? null,
-              state: JSON.stringify(event.data.state),
+        const data = event.data;
+
+        if (isReportStateMessage(data)) {
+          if (data.activityId !== assignment.contentId) {
+            return;
+          }
+          const itemScores = data.itemScores;
+
+          currentItemScores.current = itemScores;
+
+          const score = data.score;
+
+          if (data.newAttempt === true) {
+            await createNewAttempt({
+              newAttemptForItem: data.newAttemptForItem,
+              shuffledItemOrder: itemScores.map((s) => s.shuffledOrder),
             });
-            setScores({
-              scoreNumberByItem: createScoreNumberByItem(data.scoreByItem),
-              score: Number(data.score),
-            });
-          } catch (e) {
+          } else {
+            const { doenetStates, itemAttemptNumbers, ...otherState } =
+              data.state;
+
+            let item: {
+              shuffledItemNumber: number | undefined;
+              itemAttemptNumber: number;
+              shuffledItemOrder: number[];
+              score: number;
+              state: any;
+            } | null = null;
             if (
-              e.status === 400 &&
-              e.response?.data?.error === "Invalid request" &&
-              e.response.data.details.includes("non-maximal")
+              data.itemUpdated !== undefined &&
+              data.newDoenetStateIdx !== undefined
             ) {
-              alert(
-                "Unable to save data due to attempt number changing. Reload page to update to the current attempt.",
+              const shuffledItemOrder = itemScores.map((s) => s.shuffledOrder);
+              const shuffledItemNumber = data.itemUpdated;
+              const itemAttemptNumber =
+                itemAttemptNumbers[data.itemUpdated - 1];
+              const score = itemScores.find(
+                (s) => s.shuffledOrder === shuffledItemNumber,
+              )?.score;
+              const state = doenetStates[data.newDoenetStateIdx];
+
+              if (score !== undefined) {
+                item = {
+                  shuffledItemNumber,
+                  itemAttemptNumber,
+                  shuffledItemOrder,
+                  score,
+                  state: JSON.stringify(state),
+                };
+              }
+            }
+
+            try {
+              const { data: saveData } = await axios.post(
+                "/api/score/saveScoreAndState",
+                {
+                  contentId: assignment.contentId,
+                  attemptNumber: otherState.activityState.attemptNumber,
+                  score: item ? null : score,
+                  code,
+                  state: JSON.stringify(otherState),
+                  item: item ?? undefined,
+                },
               );
-            } else {
-              alert("Unable to save data");
+
+              setScoreInfo(saveData);
+            } catch (e) {
+              if (
+                e.status === 400 &&
+                e.response?.data?.error === "Invalid request" &&
+                e.response.data.details.includes("non-maximal")
+              ) {
+                alert(
+                  "Unable to save data due to attempt number changing. Reload page to update to the current attempt.",
+                );
+              } else {
+                alert("Unable to save data");
+              }
             }
           }
+        } else {
+          // should be single doc
+          if (data.docId !== assignment.contentId) {
+            return;
+          }
+
+          const { data: saveData } = await axios.post(
+            "/api/score/saveScoreAndState",
+            {
+              contentId: assignment.contentId,
+              attemptNumber: data.state.attemptNumber,
+              score: data.score,
+              code,
+              state: JSON.stringify(data.state),
+            },
+          );
+
+          setScoreInfo(saveData);
         }
       } else if (event.data.subject == "SPLICE.sendEvent") {
         const data = event.data.data;
@@ -263,22 +381,37 @@ export function AssignmentViewer() {
           recordSubmittedEvent({
             assignment: assignment,
             docId: event.data.docId ?? null,
-            attemptNumber: attemptNumberRef.current,
-            scores: scoresCurrentAttemptRef.current,
+            contentAttemptNumber: attemptNumberRef.current,
+            itemAttemptNumbers: itemAttemptNumbersRef.current,
+            itemScores: currentItemScores.current,
             data,
           });
         }
       } else if (event.data.subject == "SPLICE.reportScoreByItem") {
-        const scoreByItem = createScoreByItem(event.data.scoreByItem);
-        const score: number =
-          typeof event.data.score === "number" ? event.data.score : 0;
-        setScoresCurrentAttempt({ scoreByItem, score });
-        if (scoreByItem && !scores.scoreNumberByItem) {
-          setScores((was) => {
-            const obj = { ...was };
-            obj.scoreNumberByItem = scoreByItem.map((s) => s.score);
-            return obj;
-          });
+        console.log("report score by item", event.data);
+        const itemScores = createItemScores(event.data.itemScores);
+
+        currentItemScores.current = itemScores;
+
+        if (itemScores) {
+          if (scores.score === 0 && scores.scoreNumberByItem === null) {
+            setScores({
+              score: 0,
+              scoreNumberByItem: itemScores.map(() => 0),
+            });
+          }
+          if (
+            scoresCurrentAttempt.score === 0 &&
+            scoresCurrentAttempt.scoreNumberByItem === null
+          ) {
+            setScoresCurrentAttempt({
+              score: 0,
+              scoreNumberByItem: itemScores.map(() => 0),
+            });
+          }
+          if (itemAttemptNumbers.length === 0) {
+            setItemAttemptNumbers(itemScores.map(() => 1));
+          }
         }
       } else if (event.data.subject == "SPLICE.getState") {
         try {
@@ -289,12 +422,23 @@ export function AssignmentViewer() {
           });
 
           if (data.loadedState && data.state !== null) {
+            const state = JSON.parse(data.state);
+
+            if (data.items.length > 0) {
+              // add back in state from items
+              state.itemAttemptNumbers = data.items.map(
+                (x) => x.itemAttemptNumber,
+              );
+              state.doenetStates = data.items.map((x) => JSON.parse(x.state));
+            }
+
+            console.log("loaded state", state);
             window.postMessage({
               subject: "SPLICE.getState.response",
               messageId: event.data.messageId,
               success: true,
               loadedState: true,
-              state: JSON.parse(data.state),
+              state,
             });
             setAttemptNumber(data.attemptNumber);
           } else {
@@ -304,7 +448,6 @@ export function AssignmentViewer() {
               success: true,
               loadedState: false,
             });
-            setAttemptNumber(data.attemptNumber ?? 1);
           }
         } catch (e) {
           console.error("error loading state", e);
@@ -335,15 +478,20 @@ export function AssignmentViewer() {
 
   let viewer: ReactElement;
   if (data.type === "singleDoc") {
+    const maxAttempts = assignment.assignmentInfo?.maxAttempts ?? 0;
+    const attemptsLeft =
+      maxAttempts === 0 ? Infinity : maxAttempts - attemptNumber;
+
     viewer = (
       <Box>
-        {assignment.assignmentInfo?.activityLevelAttempts ? (
+        {assignment.assignmentInfo?.maxAttempts !== 1 ? (
           <Box>
             <Button
               marginLeft="20px"
-              onClick={() => createNewAttempt({ score: 0, state: null })}
+              onClick={() => createNewAttempt({})}
+              isDisabled={attemptsLeft < 1}
             >
-              New attempt
+              New attempt {maxAttempts > 0 ? `(${attemptsLeft} left)` : null}
             </Button>
           </Box>
         ) : null}
@@ -374,23 +522,22 @@ export function AssignmentViewer() {
       </Box>
     );
   } else {
+    console.log(
+      assignment.assignmentInfo?.mode === "summative",
+      assignment.assignmentInfo?.mode === "formative",
+      assignment.assignmentInfo?.maxAttempts,
+    );
     viewer = (
       <DoenetActivityViewer
         source={data.activityJson}
+        activityId={assignment.contentId}
         requestedVariantIndex={1}
         userId={user.userId}
         linkSettings={{ viewUrl: "", editURL: "" }}
         paginate={assignment.type === "sequence" ? assignment.paginate : false}
-        activityLevelAttempts={
-          assignment.type === "sequence"
-            ? assignment.assignmentInfo?.activityLevelAttempts
-            : false
-        }
-        itemLevelAttempts={
-          assignment.type === "sequence"
-            ? assignment.assignmentInfo?.itemLevelAttempts
-            : false
-        }
+        activityLevelAttempts={assignment.assignmentInfo?.mode === "summative"}
+        itemLevelAttempts={assignment.assignmentInfo?.mode === "formative"}
+        maxAttemptsAllowed={assignment.assignmentInfo?.maxAttempts}
         showTitle={false}
         flags={{
           showCorrectness: true,
@@ -503,14 +650,10 @@ export function AssignmentViewer() {
 
   async function createNewAttempt({
     newAttemptForItem,
-    scoreByItem,
-    score,
-    state,
+    shuffledItemOrder,
   }: {
     newAttemptForItem?: number;
-    scoreByItem?: ItemScore[] | null;
-    score: number;
-    state: unknown;
+    shuffledItemOrder?: number[] | null;
   }) {
     if (!assignment) {
       return;
@@ -519,71 +662,117 @@ export function AssignmentViewer() {
     const { data } = await axios.post("/api/score/createNewAttempt", {
       contentId: assignment.contentId,
       itemNumber: newAttemptForItem,
-      numItems: scoreByItem?.length,
-      score,
-      scoreByItem: scoreByItem?.map((s) => s.score) ?? null,
-      state: state ? JSON.stringify(state) : null,
+      shuffledItemOrder,
+      code,
     });
 
-    if (Number.isInteger(data.attemptNumber)) {
-      setAttemptNumber(data.attemptNumber);
-    }
+    setScoreInfo(data);
+  }
+
+  function setScoreInfo(scoreData: {
+    loadedScore: boolean;
+    score: number;
+    itemScores?: {
+      score: number;
+      itemNumber: number;
+      shuffledItemNumber: number;
+    }[];
+    latestAttempt: {
+      attemptNumber: number;
+      score: number;
+      itemScores: {
+        score: number;
+        itemAttemptNumber: number;
+        itemNumber: number;
+        shuffledItemNumber: number;
+      }[];
+    };
+  }) {
+    console.log("set score info", scoreData);
     setScores({
-      scoreNumberByItem: createScoreNumberByItem(data.scoreByItem),
-      score: Number(data.score),
+      scoreNumberByItem: createScoreNumberByItem(scoreData.itemScores),
+      score: Number(scoreData.score),
     });
+
+    setScoresCurrentAttempt({
+      scoreNumberByItem: createScoreNumberByItem(
+        scoreData.latestAttempt.itemScores,
+      ),
+      score: Number(scoreData.latestAttempt.score),
+    });
+
+    if (Number.isInteger(scoreData.latestAttempt.attemptNumber)) {
+      setAttemptNumber(scoreData.latestAttempt.attemptNumber);
+    }
+
+    if (Array.isArray(scoreData.latestAttempt.itemScores)) {
+      setItemAttemptNumbers(
+        scoreData.latestAttempt.itemScores.map((v) => v.itemAttemptNumber),
+      );
+    }
   }
 }
 
 async function recordSubmittedEvent({
   assignment,
-  attemptNumber,
+  contentAttemptNumber,
+  itemAttemptNumbers,
   docId,
-  scores,
+  itemScores,
+
   data,
 }: {
   assignment: Content;
-  attemptNumber: number | null;
+  contentAttemptNumber: number | null;
+  itemAttemptNumbers: number[] | null;
   docId: string | null;
-  scores: {
-    scoreByItem: ItemScore[] | null;
-    score: number;
-  };
+  itemScores: ItemScore[] | null;
   data: {
     object: string;
     result: string;
     context: string;
   };
 }) {
+  console.log("record submitted", data);
+
   const object = JSON.parse(data.object);
   const answerId = object.componentName;
 
   if (answerId) {
     const result = JSON.parse(data.result);
-    const creditAchieved = result.creditAchieved;
+    const answerCreditAchieved = result.creditAchieved;
     const response = JSON.stringify({
       response: result.response,
       componentTypes: result.componentTypes,
     });
     const context = JSON.parse(data.context);
-    const itemNumber = context.item;
-    const itemCreditAchieved = context.itemCreditAchieved;
-    const docCreditAchieved = context.pageCreditAchieved;
+    const componentNumber = context.componentNumber;
+    const componentCreditAchieved = context.componentCreditAchieved;
+    const itemCreditAchieved = context.docCreditAchieved;
 
-    const questionNumber =
-      (scores.scoreByItem?.findIndex((item) => item.docId === docId) ?? 0) + 1;
+    console.log(docId, itemScores);
+
+    const itemIdx = itemScores?.findIndex((v) => v.docId === docId);
+    console.log(docId, itemScores, itemIdx);
+    const itemNumber = (itemIdx ?? 0) + 1;
+    const shuffledItemNumber = itemScores?.[itemNumber - 1].shuffledOrder ?? 1;
+    const itemAttemptNumber = itemAttemptNumbers
+      ? itemAttemptNumbers[itemIdx ?? 0]
+      : null;
 
     await axios.post(`/api/assign/recordSubmittedEvent`, {
       contentId: assignment.contentId,
-      attemptNumber,
+      contentAttemptNumber,
+      itemAttemptNumber,
       answerId,
       answerNumber: object.answerNumber,
       response,
-      questionNumber,
       itemNumber,
-      creditAchieved,
+      shuffledItemNumber,
+      componentNumber,
+      answerCreditAchieved,
+      componentCreditAchieved,
       itemCreditAchieved,
-      docCreditAchieved,
     });
   }
 }

@@ -203,7 +203,7 @@ model contentState {
   contentId         Bytes              @db.Binary(16)
   userId            Bytes              @db.Binary(16)
   attemptNumber     Int                @db.UnsignedSmallInt
-  score             Float              @default(0)
+  score             Float?
   state             String?            @db.MediumText
   assignment        assignments        @relation(fields: [contentId], references: [rootContentId], onDelete: NoAction, onUpdate: NoAction)
   user              users              @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
@@ -232,7 +232,8 @@ model submittedResponses {
   id                      Int      @id @default(autoincrement())
   contentId               Bytes    @db.Binary(16)
   userId                  Bytes    @db.Binary(16)
-  attemptNumber           Int      @db.UnsignedSmallInt
+  contentAttemptNumber    Int      @db.UnsignedSmallInt
+  itemAttemptNumber       Int?     @db.UnsignedSmallInt
   answerId                String
   response                String   @db.Text
   answerNumber            Int?

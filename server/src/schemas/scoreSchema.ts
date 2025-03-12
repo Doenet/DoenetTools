@@ -8,7 +8,10 @@ export const scoreAndStateSchema = z.object({
     .number()
     .int()
     .refine((v) => v > 0),
-  score: z.number(),
+  score: z
+    .number()
+    .nullish()
+    .transform((val) => val ?? null),
   state: z.string(),
   item: z
     .object({

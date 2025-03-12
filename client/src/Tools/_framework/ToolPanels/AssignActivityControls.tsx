@@ -11,8 +11,6 @@ import {
   FormLabel,
   useDisclosure,
   FormControl,
-  HStack,
-  Text,
 } from "@chakra-ui/react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { DateTime } from "luxon";
@@ -38,7 +36,7 @@ export async function assignActivityActions({ formObj }: { [k: string]: any }) {
     return true;
   } else if (formObj._action == "update assignment close time") {
     const closeAt = DateTime.fromISO(formObj.closeAt);
-    await axios.post("/api/assign/updateAssignmentSettings", {
+    await axios.post("/api/assign/updateAssignmentCloseAt", {
       contentId: formObj.contentId,
       closeAt,
     });
@@ -59,27 +57,6 @@ export async function assignActivityActions({ formObj }: { [k: string]: any }) {
     return true;
   } else if (formObj._action == "go to data") {
     return redirect(`/assignmentData/${formObj.contentId}`);
-  } else if (formObj._action == "update attempt buttons") {
-    let activityLevelAttempts: boolean | undefined = undefined;
-    let itemLevelAttempts: boolean | undefined = undefined;
-    if (formObj.attemptButtons) {
-      if (formObj.attemptButtons === "none") {
-        activityLevelAttempts = itemLevelAttempts = false;
-      } else if (formObj.attemptButtons === "activity") {
-        activityLevelAttempts = true;
-        itemLevelAttempts = false;
-      } else if (formObj.attemptButtons === "item") {
-        itemLevelAttempts = true;
-        activityLevelAttempts = false;
-      }
-    }
-    await axios.post("/api/updateContent/updateContentSettings", {
-      contentId: formObj.contentId,
-      activityLevelAttempts,
-      itemLevelAttempts,
-    });
-
-    return true;
   }
 
   return null;
@@ -111,14 +88,6 @@ export function AssignActivityControls({
       }),
   );
   const [urlCopied, setUrlCopied] = useState(false);
-
-  const [attemptButtons, setAttemptButtons] = useState<string>(
-    activityData.assignmentInfo?.activityLevelAttempts
-      ? "activity"
-      : activityData.assignmentInfo?.itemLevelAttempts
-        ? "item"
-        : "none",
-  );
 
   useEffect(() => {
     setCloseAt(activityData.assignmentInfo?.codeValidUntil ?? "");
@@ -465,34 +434,6 @@ export function AssignActivityControls({
             </Button>
           </Box>
         ) : null}
-        <Box marginTop="20px">
-          <Heading size="sm" marginTop="20px">
-            Show new attempt buttons
-          </Heading>
-          <RadioGroup
-            marginTop="10px"
-            onChange={(v) => {
-              setAttemptButtons(v);
-              fetcher.submit(
-                {
-                  _action: "update attempt buttons",
-                  contentId: activityData.contentId,
-                  attemptButtons: v,
-                },
-                { method: "post" },
-              );
-            }}
-            value={attemptButtons}
-          >
-            <HStack>
-              <Radio value="none">None</Radio>
-              <Radio value="activity">Activity</Radio>
-              <Radio value="item" hidden={activityData.type === "singleDoc"}>
-                <Text hidden={activityData.type === "singleDoc"}>Item</Text>
-              </Radio>
-            </HStack>
-          </RadioGroup>
-        </Box>
       </Box>
     </>
   );

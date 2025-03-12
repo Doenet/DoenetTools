@@ -742,7 +742,8 @@ export async function getAssignedScores({
 export async function recordSubmittedEvent({
   contentId,
   loggedInUserId,
-  attemptNumber,
+  contentAttemptNumber,
+  itemAttemptNumber,
   answerId,
   response,
   answerNumber,
@@ -755,7 +756,8 @@ export async function recordSubmittedEvent({
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
-  attemptNumber: number;
+  contentAttemptNumber: number;
+  itemAttemptNumber: number | null;
   answerId: string;
   response: string;
   answerNumber?: number;
@@ -770,7 +772,8 @@ export async function recordSubmittedEvent({
     data: {
       contentId,
       userId: loggedInUserId,
-      attemptNumber,
+      contentAttemptNumber,
+      itemAttemptNumber,
       answerId,
       response,
       answerNumber,

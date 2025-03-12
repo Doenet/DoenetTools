@@ -156,7 +156,7 @@ CREATE TABLE `contentState` (
     `contentId` BINARY(16) NOT NULL,
     `userId` BINARY(16) NOT NULL,
     `attemptNumber` SMALLINT UNSIGNED NOT NULL,
-    `score` DOUBLE NOT NULL DEFAULT 0,
+    `score` DOUBLE NULL,
     `state` MEDIUMTEXT NULL,
 
     INDEX `contentState_userId_idx`(`userId`),
