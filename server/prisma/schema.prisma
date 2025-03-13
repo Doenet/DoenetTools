@@ -181,15 +181,16 @@ model doenetmlVersions {
 }
 
 model assignments {
-  rootContentId  Bytes          @id @db.Binary(16)
-  assigned       Boolean        @default(false)
-  mode           AssignmentMode @default(formative)
-  classCode      String         @db.VarChar(45)
-  codeValidUntil DateTime?
-  maxAttempts    Int            @default(1) @db.UnsignedSmallInt
-  rootContent    content        @relation("rootAssignment", fields: [rootContentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  nonRootContent content[]      @relation("nonRootAssignment")
-  contentState   contentState[]
+  rootContentId    Bytes              @id @db.Binary(16)
+  assigned         Boolean            @default(false)
+  mode             AssignmentMode     @default(formative)
+  classCode        String             @db.VarChar(45)
+  codeValidUntil   DateTime?
+  maxAttempts      Int                @default(1) @db.UnsignedSmallInt
+  rootContent      content            @relation("rootAssignment", fields: [rootContentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nonRootContent   content[]          @relation("nonRootAssignment")
+  contentState     contentState[]
+  assignmentScores assignmentScores[]
 
   @@index([classCode])
 }
@@ -197,6 +198,19 @@ model assignments {
 enum AssignmentMode {
   formative
   summative
+}
+
+model assignmentScores {
+  contentId           Bytes       @db.Binary(16)
+  userId              Bytes       @db.Binary(16)
+  cachedScore         Float?
+  cachedItemScores    String?     @db.Text
+  cachedLatestAttempt String?     @db.Text
+  assignment          assignments @relation(fields: [contentId], references: [rootContentId], onDelete: NoAction, onUpdate: NoAction)
+  user                users       @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([contentId, userId])
+  @@index([userId])
 }
 
 model contentState {
@@ -276,6 +290,7 @@ model users {
   sharedWithMe       contentShares[]
   recentContent      recentContent[]
   libraryEvents      libraryEvents[]
+  assignmentScores   assignmentScores[]
 
   @@fulltext([firstNames, lastNames])
 }

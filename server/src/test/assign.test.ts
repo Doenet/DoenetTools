@@ -1242,7 +1242,7 @@ test("get assignment data from anonymous users", async () => {
   });
   expect(dataFromCode.assignmentFound).eq(true);
   expect(dataFromCode.scoreData).eqls({
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.5,
     latestAttempt: {
       attemptNumber: 1,
@@ -1298,7 +1298,7 @@ test("get assignment data from anonymous users", async () => {
   });
   expect(dataFromCode.assignmentFound).eq(true);
   expect(dataFromCode.scoreData).eqls({
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.5,
     scoreByItem: null,
   });
@@ -1350,7 +1350,7 @@ test("get assignment data from anonymous users", async () => {
   });
   expect(dataFromCode.assignmentFound).eq(true);
   expect(dataFromCode.scoreData).eqls({
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.7,
     scoreByItem: null,
   });
@@ -1407,7 +1407,7 @@ test("get assignment data from anonymous users", async () => {
   });
   expect(dataFromCode.assignmentFound).eq(true);
   expect(dataFromCode.scoreData).eqls({
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.7,
     scoreByItem: null,
   });
@@ -1437,7 +1437,7 @@ test("get assignment data from anonymous users", async () => {
   });
   expect(dataFromCode.assignmentFound).eq(true);
   expect(dataFromCode.scoreData).eqls({
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.3,
     scoreByItem: null,
   });

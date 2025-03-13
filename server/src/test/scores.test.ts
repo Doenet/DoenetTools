@@ -44,7 +44,7 @@ test("Create and save responses for new attempts, no items", async () => {
   });
 
   let expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.5,
     itemScores: [],
     latestAttempt: {
@@ -122,7 +122,7 @@ test("Create and save responses for new attempts, no items", async () => {
   });
 
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.5,
     itemScores: [],
     latestAttempt: {
@@ -166,7 +166,7 @@ test("Create and save responses for new attempts, no items", async () => {
   });
 
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.9,
     itemScores: [],
     latestAttempt: {
@@ -223,7 +223,7 @@ test("Create and save responses for new attempts, no items", async () => {
   });
 
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.5,
     itemScores: [],
     latestAttempt: {
@@ -307,24 +307,30 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     state: "assignment state 1",
   });
 
-  // no item score in summary getScore since summative,
-  // though still get item score in latestAttempt
   let expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.4,
+    itemScores: [
+      {
+        itemNumber: 1,
+        score: 0.8,
+      },
+      {
+        itemNumber: 2,
+        score: 0,
+      },
+    ],
     latestAttempt: {
       attemptNumber: 1,
       score: 0.4,
       itemScores: [
         {
           itemNumber: 1,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 1,
           score: 0.8,
         },
         {
           itemNumber: 2,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 1,
           score: 0,
         },
@@ -437,24 +443,30 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     shuffledItemOrder: [1, 2],
   });
 
-  // no item score in summary getScore since summative,
-  // though still get item score in latestAttempt
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.4,
+    itemScores: [
+      {
+        itemNumber: 1,
+        score: 0.8,
+      },
+      {
+        itemNumber: 2,
+        score: 0,
+      },
+    ],
     latestAttempt: {
       attemptNumber: 2,
       score: 0,
       itemScores: [
         {
           itemNumber: 1,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 1,
           score: 0,
         },
         {
           itemNumber: 2,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 1,
           score: 0,
         },
@@ -517,24 +529,31 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     },
   });
 
-  // no item score in summary getScore since summative,
-  // though still get item score in latestAttempt
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.4, // maximum occurred on first attempt
+    // itemScores are the items that give the above maximum score
+    itemScores: [
+      {
+        itemNumber: 1,
+        score: 0.8,
+      },
+      {
+        itemNumber: 2,
+        score: 0,
+      },
+    ],
     latestAttempt: {
       attemptNumber: 2,
       score: 0.3,
       itemScores: [
         {
           itemNumber: 1,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 1,
           score: 0,
         },
         {
           itemNumber: 2,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 1,
           score: 0.6,
         },
@@ -691,24 +710,31 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     },
   });
 
-  // no item score in summary getScore since summative,
-  // though still get item score in latestAttempt
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.5, // new higher score
+    // itemScores are the items that give the new higher score
+    itemScores: [
+      {
+        itemNumber: 1,
+        score: 0.4,
+      },
+      {
+        itemNumber: 2,
+        score: 0.6,
+      },
+    ],
     latestAttempt: {
       attemptNumber: 2,
       score: 0.5,
       itemScores: [
         {
           itemNumber: 1,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 1,
           score: 0.4,
         },
         {
           itemNumber: 2,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 1,
           score: 0.6,
         },
@@ -840,11 +866,11 @@ test("Create and save responses for new item attempts, two items", async () => {
 
   // get items scores in summary getScore since we are in formative mode
   let expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.3,
     itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
+      { itemNumber: 1, score: 0.6 },
+      { itemNumber: 2, score: 0 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -852,13 +878,11 @@ test("Create and save responses for new item attempts, two items", async () => {
       itemScores: [
         {
           itemNumber: 1,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 1,
           score: 0.6,
         },
         {
           itemNumber: 2,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 1,
           score: 0,
         },
@@ -981,11 +1005,11 @@ test("Create and save responses for new item attempts, two items", async () => {
 
   // get items scores in summary getScore since we are in formative mode
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.3,
     itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
+      { itemNumber: 1, score: 0.6 },
+      { itemNumber: 2, score: 0 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -993,13 +1017,11 @@ test("Create and save responses for new item attempts, two items", async () => {
       itemScores: [
         {
           itemNumber: 1,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 2,
           score: 0,
         },
         {
           itemNumber: 2,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 1,
           score: 0,
         },
@@ -1065,11 +1087,11 @@ test("Create and save responses for new item attempts, two items", async () => {
 
   // remember previous max score of 0.3 and 0.6 on item 1
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.3,
     itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
+      { itemNumber: 1, score: 0.6 },
+      { itemNumber: 2, score: 0 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -1077,13 +1099,11 @@ test("Create and save responses for new item attempts, two items", async () => {
       itemScores: [
         {
           itemNumber: 1,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 2,
           score: 0.4,
         },
         {
           itemNumber: 2,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 1,
           score: 0,
         },
@@ -1194,11 +1214,11 @@ test("Create and save responses for new item attempts, two items", async () => {
 
   // remember previous max score of 0.3 and 0.6 on item 1
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.3,
     itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
+      { itemNumber: 1, score: 0.6 },
+      { itemNumber: 2, score: 0 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -1206,13 +1226,11 @@ test("Create and save responses for new item attempts, two items", async () => {
       itemScores: [
         {
           itemNumber: 1,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 2,
           score: 0.4,
         },
         {
           itemNumber: 2,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 2,
           score: 0,
         },
@@ -1326,11 +1344,11 @@ test("Create and save responses for new item attempts, two items", async () => {
   });
 
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: (0.6 + 0.8) / 2,
     itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 0.8 },
+      { itemNumber: 1, score: 0.6 },
+      { itemNumber: 2, score: 0.8 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -1338,13 +1356,11 @@ test("Create and save responses for new item attempts, two items", async () => {
       itemScores: [
         {
           itemNumber: 1,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 2,
           score: 0.4,
         },
         {
           itemNumber: 2,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 2,
           score: 0.8,
         },
@@ -1433,11 +1449,11 @@ test("Create and save responses for new item attempts, two items", async () => {
   });
 
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: (0.6 + 0.8) / 2,
     itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 0.8 },
+      { itemNumber: 1, score: 0.6 },
+      { itemNumber: 2, score: 0.8 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -1445,13 +1461,11 @@ test("Create and save responses for new item attempts, two items", async () => {
       itemScores: [
         {
           itemNumber: 1,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 2,
           score: 0.4,
         },
         {
           itemNumber: 2,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 3,
           score: 0,
         },
@@ -1507,7 +1521,7 @@ test("Create attempts before responding, no items", async () => {
   });
 
   let expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0,
     itemScores: [],
     latestAttempt: {
@@ -1549,7 +1563,7 @@ test("Create attempts before responding, no items", async () => {
   });
 
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.9,
     itemScores: [],
     latestAttempt: {
@@ -1658,11 +1672,11 @@ test("Create item attempts before responding, two items", async () => {
   });
 
   let expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0,
     itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
+      { itemNumber: 1, score: 0 },
+      { itemNumber: 2, score: 0 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -1671,13 +1685,11 @@ test("Create item attempts before responding, two items", async () => {
         {
           itemNumber: 1,
           itemAttemptNumber: 2,
-          shuffledItemNumber: 1,
           score: 0,
         },
         {
           itemNumber: 2,
           itemAttemptNumber: 1,
-          shuffledItemNumber: 2,
           score: 0,
         },
       ],
@@ -1738,11 +1750,11 @@ test("Create item attempts before responding, two items", async () => {
   });
 
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.2,
     itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0.4 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 0 },
+      { itemNumber: 1, score: 0.4 },
+      { itemNumber: 2, score: 0 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -1751,13 +1763,11 @@ test("Create item attempts before responding, two items", async () => {
         {
           itemNumber: 1,
           itemAttemptNumber: 2,
-          shuffledItemNumber: 1,
           score: 0.4,
         },
         {
           itemNumber: 2,
           itemAttemptNumber: 1,
-          shuffledItemNumber: 2,
           score: 0,
         },
       ],
@@ -1877,11 +1887,11 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
 
   // get items scores in summary getScore since we are in formative mode
   let expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.3,
     itemScores: [
-      { itemNumber: 2, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 1, shuffledItemNumber: 2, score: 0 },
+      { itemNumber: 2, score: 0.6 },
+      { itemNumber: 1, score: 0 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -1889,13 +1899,11 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
       itemScores: [
         {
           itemNumber: 2,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 1,
           score: 0.6,
         },
         {
           itemNumber: 1,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 1,
           score: 0,
         },
@@ -2017,11 +2025,11 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   });
 
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.3,
     itemScores: [
-      { itemNumber: 2, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 1, shuffledItemNumber: 2, score: 0 },
+      { itemNumber: 2, score: 0.6 },
+      { itemNumber: 1, score: 0 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -2029,13 +2037,11 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
       itemScores: [
         {
           itemNumber: 2,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 2,
           score: 0,
         },
         {
           itemNumber: 1,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 1,
           score: 0,
         },
@@ -2100,11 +2106,11 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
 
   // remember previous max score of 0.3 and 0.6 on item 2 (shuffledItemNumber 1)
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.3,
     itemScores: [
-      { itemNumber: 2, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 1, shuffledItemNumber: 2, score: 0 },
+      { itemNumber: 2, score: 0.6 },
+      { itemNumber: 1, score: 0 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -2112,13 +2118,11 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
       itemScores: [
         {
           itemNumber: 2,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 2,
           score: 0.4,
         },
         {
           itemNumber: 1,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 1,
           score: 0,
         },
@@ -2191,11 +2195,11 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   });
 
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.3,
     itemScores: [
-      { itemNumber: 2, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 1, shuffledItemNumber: 2, score: 0 },
+      { itemNumber: 2, score: 0.6 },
+      { itemNumber: 1, score: 0 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -2203,13 +2207,11 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
       itemScores: [
         {
           itemNumber: 2,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 2,
           score: 0.4,
         },
         {
           itemNumber: 1,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 2,
           score: 0,
         },
@@ -2290,11 +2292,11 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   });
 
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: (0.6 + 0.8) / 2,
     itemScores: [
-      { itemNumber: 2, shuffledItemNumber: 1, score: 0.6 },
-      { itemNumber: 1, shuffledItemNumber: 2, score: 0.8 },
+      { itemNumber: 2, score: 0.6 },
+      { itemNumber: 1, score: 0.8 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -2302,13 +2304,11 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
       itemScores: [
         {
           itemNumber: 2,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 2,
           score: 0.4,
         },
         {
           itemNumber: 1,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 2,
           score: 0.8,
         },
@@ -2423,11 +2423,11 @@ test("New item attempt does not affect other item", async () => {
   });
 
   let expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: (0.8 + 1) / 2,
     itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0.8 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 1 },
+      { itemNumber: 1, score: 0.8 },
+      { itemNumber: 2, score: 1 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -2435,13 +2435,11 @@ test("New item attempt does not affect other item", async () => {
       itemScores: [
         {
           itemNumber: 1,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 1,
           score: 0.8,
         },
         {
           itemNumber: 2,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 1,
           score: 1,
         },
@@ -2530,11 +2528,11 @@ test("New item attempt does not affect other item", async () => {
   });
 
   expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: (0.4 + 1) / 2,
     itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 0.4 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 1 },
+      { itemNumber: 1, score: 0.4 },
+      { itemNumber: 2, score: 1 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -2542,13 +2540,11 @@ test("New item attempt does not affect other item", async () => {
       itemScores: [
         {
           itemNumber: 1,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 1,
           score: 0.4,
         },
         {
           itemNumber: 2,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 2,
           score: 0.2,
         },
@@ -2698,11 +2694,11 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
 
   // get items scores in summary getScore since we are in formative mode
   const expectedScore = {
-    loadedScore: true,
+    calculatedScore: true,
     score: (0.6 + 0.8) / 2,
     itemScores: [
-      { itemNumber: 2, shuffledItemNumber: 1, score: 0.8 },
-      { itemNumber: 1, shuffledItemNumber: 2, score: 0.6 },
+      { itemNumber: 2, score: 0.8 },
+      { itemNumber: 1, score: 0.6 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -2710,13 +2706,11 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
       itemScores: [
         {
           itemNumber: 2,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 1,
           score: 0.8,
         },
         {
           itemNumber: 1,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 1,
           score: 0.6,
         },
@@ -3095,7 +3089,7 @@ test("Setting maximum number of attempts, no items", async () => {
   });
 
   expect(retrievedScore).eqls({
-    loadedScore: true,
+    calculatedScore: true,
     score: 0.7,
     itemScores: [],
     latestAttempt: {
@@ -3360,11 +3354,11 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   });
 
   expect(retrievedScore).eqls({
-    loadedScore: true,
+    calculatedScore: true,
     score: (1 + 0.4) / 2,
     itemScores: [
-      { itemNumber: 1, shuffledItemNumber: 1, score: 1 },
-      { itemNumber: 2, shuffledItemNumber: 2, score: 0.4 },
+      { itemNumber: 1, score: 1 },
+      { itemNumber: 2, score: 0.4 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -3372,13 +3366,11 @@ test("Setting maximum number of attempts, new item attempts", async () => {
       itemScores: [
         {
           itemNumber: 1,
-          shuffledItemNumber: 1,
           itemAttemptNumber: 3,
           score: 1,
         },
         {
           itemNumber: 2,
-          shuffledItemNumber: 2,
           itemAttemptNumber: 2,
           score: 0.4,
         },

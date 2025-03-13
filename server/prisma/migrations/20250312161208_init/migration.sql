@@ -152,6 +152,18 @@ CREATE TABLE `assignments` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `assignmentScores` (
+    `contentId` BINARY(16) NOT NULL,
+    `userId` BINARY(16) NOT NULL,
+    `cachedScore` DOUBLE NULL,
+    `cachedItemScores` TEXT NULL,
+    `cachedLatestAttempt` TEXT NULL,
+
+    INDEX `assignmentScores_userId_idx`(`userId`),
+    PRIMARY KEY (`contentId`, `userId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `contentState` (
     `contentId` BINARY(16) NOT NULL,
     `userId` BINARY(16) NOT NULL,
@@ -183,7 +195,8 @@ CREATE TABLE `submittedResponses` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `contentId` BINARY(16) NOT NULL,
     `userId` BINARY(16) NOT NULL,
-    `attemptNumber` SMALLINT UNSIGNED NOT NULL,
+    `contentAttemptNumber` SMALLINT UNSIGNED NOT NULL,
+    `itemAttemptNumber` SMALLINT UNSIGNED NULL,
     `answerId` VARCHAR(191) NOT NULL,
     `response` TEXT NOT NULL,
     `answerNumber` INTEGER NULL,
@@ -406,6 +419,12 @@ ALTER TABLE `contentShares` ADD CONSTRAINT `contentShares_userId_fkey` FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE `assignments` ADD CONSTRAINT `assignments_rootContentId_fkey` FOREIGN KEY (`rootContentId`) REFERENCES `content`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE `assignmentScores` ADD CONSTRAINT `assignmentScores_contentId_fkey` FOREIGN KEY (`contentId`) REFERENCES `assignments`(`rootContentId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE `assignmentScores` ADD CONSTRAINT `assignmentScores_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE `contentState` ADD CONSTRAINT `contentState_contentId_fkey` FOREIGN KEY (`contentId`) REFERENCES `assignments`(`rootContentId`) ON DELETE NO ACTION ON UPDATE NO ACTION;

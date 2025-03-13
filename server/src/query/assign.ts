@@ -1101,14 +1101,9 @@ export async function getAssignmentResponseOverview({
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
 }) {
-  const scores = await getScoresOfAllStudents({
+  const scoreSummary = await getScoresOfAllStudents({
     contentId,
     loggedInUserId,
-  });
-
-  const answerList = await getAnswersWithSubmittedResponses({
-    contentId,
-    loggedInUserId: loggedInUserId,
   });
 
   const content = await getContent({
@@ -1116,5 +1111,5 @@ export async function getAssignmentResponseOverview({
     loggedInUserId,
   });
 
-  return { scores, answerList, content };
+  return { scoreSummary, content };
 }
