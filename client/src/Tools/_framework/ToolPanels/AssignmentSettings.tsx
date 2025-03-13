@@ -69,8 +69,8 @@ export function AssignmentSettings({
   const [maxAttemptsString, setMaxAttemptsString] = useState<string>(
     (activityData.assignmentInfo?.maxAttempts || 1).toString(),
   );
-  const [limitAttempts, setLimitAttempts] = useState(
-    (activityData.assignmentInfo?.maxAttempts ?? 1) > 0,
+  const [unlimitedAttempts, setUnlimitedAttempts] = useState(
+    (activityData.assignmentInfo?.maxAttempts ?? 1) === 0,
   );
   const currentMaxAttempts = useRef(
     activityData.assignmentInfo?.maxAttempts ?? 1,
@@ -78,6 +78,7 @@ export function AssignmentSettings({
   currentMaxAttempts.current = activityData.assignmentInfo?.maxAttempts ?? 1;
 
   const [statusText, setStatusText] = useState("");
+  const [statusStyleIdx, setStateStyleIdx] = useState(0);
   const [encounteredError, setEncounteredError] = useState(false);
 
   const maxMaxAttempt = 65535;
@@ -92,10 +93,12 @@ export function AssignmentSettings({
       if (fetcher.data.success) {
         if ("mode" in fetcher.data) {
           setEncounteredError(false);
+          setStateStyleIdx((x) => x + 1);
           setStatusText(`Changed mode to ${fetcher.data.mode}`);
         } else if ("maxAttempts" in fetcher.data) {
           const maxAttempts = fetcher.data.maxAttempts;
           setEncounteredError(false);
+          setStateStyleIdx((x) => x + 1);
           if (maxAttempts === 0) {
             setStatusText(
               "Changed the maximum number of attempts to Unlimited",
@@ -130,7 +133,11 @@ export function AssignmentSettings({
             borderRadius="5px"
             padding="5px 10px"
             marginTop="10px"
-            backgroundColor={encounteredError ? "red.100" : "orange.100"}
+            backgroundColor={
+              encounteredError
+                ? "red.100"
+                : ["orange.100", "orange.200"][statusStyleIdx % 2]
+            }
           >
             {encounteredError ? (
               <Icon
@@ -151,7 +158,11 @@ export function AssignmentSettings({
           </Heading>
           <RadioGroup
             marginTop="10px"
-            isDisabled={activityData.type === "singleDoc"}
+            isDisabled={
+              activityData.type === "singleDoc" ||
+              (activityData.assignmentInfo?.assignmentStatus ??
+                "Unassigned") !== "Unassigned"
+            }
             onChange={(v) => {
               setAssignmentMode(v === "summative" ? "summative" : "formative");
               fetcher.submit(
@@ -187,66 +198,44 @@ export function AssignmentSettings({
               </Radio>
             </HStack>
           </RadioGroup>
-          <Text hidden={activityData.type !== "singleDoc"} marginTop="10px">
-            Note: for documents, which don't have items, there is currently no
-            functional difference between formative and summative assessments.
-          </Text>
+          {activityData.type !== "singleDoc" &&
+          (activityData.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
+            "Unassigned" ? (
+            <Text>
+              Note: Cannot modify assignment mode since activity is assigned.
+            </Text>
+          ) : null}
+          {activityData.type === "singleDoc" ? (
+            <Text marginTop="10px">
+              Note: for documents, which don't have items, there is currently no
+              functional difference between formative and summative assessments.
+            </Text>
+          ) : null}
         </Box>
         <Heading size="sm" marginTop="20px">
           Number of attempts allowed
         </Heading>
-        <Checkbox
-          marginTop="10px"
-          isChecked={limitAttempts}
-          onChange={() => {
-            setLimitAttempts(!limitAttempts);
-            if (limitAttempts) {
-              // not longer limiting attempts
-              fetcher.submit(
-                {
-                  _action: "update maximum attempts",
-                  contentId: activityData.contentId,
-                  maxAttempts: 0,
-                },
-                { method: "post" },
-              );
-            } else {
-              let maxAttempts = parseInt(maxAttemptsString);
-              if (!Number.isFinite(maxAttempts)) {
-                maxAttempts = 1;
-                setMaxAttemptsString("1");
-              }
-              fetcher.submit(
-                {
-                  _action: "update maximum attempts",
-                  contentId: activityData.contentId,
-                  maxAttempts,
-                },
-                { method: "post" },
-              );
-            }
-          }}
-        >
-          Limit attempts
-        </Checkbox>
+
         <FormLabel marginTop="10px">
           Maximum number of{" "}
           {assignmentMode === "formative" ? "item" : "assignment"} attempts
           <NumberInput
-            isDisabled={!limitAttempts}
-            width="150px"
-            value={limitAttempts ? maxAttemptsString : "Unlimited"}
+            isDisabled={unlimitedAttempts}
+            width="80px"
+            value={unlimitedAttempts ? "---" : maxAttemptsString}
             onChange={(valueString) => {
               const numValue = parseInt(valueString);
               let strValue = numValue.toString();
-              if (!Number.isInteger(numValue)) {
+              if (!Number.isInteger(numValue) || numValue === 0) {
                 strValue = "";
               }
               setMaxAttemptsString(strValue);
             }}
             onKeyDown={(e) => {
               if (e.key == "Enter") {
-                submitMaxAttempt((e.target as HTMLInputElement).value);
+                const target = e.target as HTMLInputElement;
+                submitMaxAttempt(target.value);
+                target.blur();
               }
             }}
             min={1}
@@ -263,6 +252,41 @@ export function AssignmentSettings({
             </NumberInputStepper>
           </NumberInput>
         </FormLabel>
+        <Checkbox
+          marginTop="10px"
+          isChecked={unlimitedAttempts}
+          onChange={() => {
+            setUnlimitedAttempts(!unlimitedAttempts);
+            if (unlimitedAttempts) {
+              // now unlimited attempts will be false
+              let maxAttempts = parseInt(maxAttemptsString);
+              if (!Number.isFinite(maxAttempts)) {
+                maxAttempts = 1;
+                setMaxAttemptsString("1");
+              }
+              fetcher.submit(
+                {
+                  _action: "update maximum attempts",
+                  contentId: activityData.contentId,
+                  maxAttempts,
+                },
+                { method: "post" },
+              );
+            } else {
+              // no longer limiting attempts
+              fetcher.submit(
+                {
+                  _action: "update maximum attempts",
+                  contentId: activityData.contentId,
+                  maxAttempts: 0,
+                },
+                { method: "post" },
+              );
+            }
+          }}
+        >
+          Unlimited attempts
+        </Checkbox>
       </Box>
     </>
   );

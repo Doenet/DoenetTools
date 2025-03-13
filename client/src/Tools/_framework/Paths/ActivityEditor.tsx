@@ -304,6 +304,9 @@ export function ActivityEditor() {
 
   const assignmentInfo = activityData.assignmentInfo;
   const assignmentStatus = assignmentInfo?.assignmentStatus ?? "Unassigned";
+  const isSubAssignment =
+    assignmentStatus !== "Unassigned" &&
+    assignmentInfo?.otherRoot !== undefined;
 
   const readOnly = assignmentStatus !== "Unassigned";
   const readOnlyRef = useRef(readOnly);
@@ -565,29 +568,31 @@ export function ActivityEditor() {
                     </Tooltip>
                   ) : (
                     <>
-                      <Tooltip
-                        hasArrow
-                        label={
-                          assignmentStatus === "Unassigned"
-                            ? "Assign Activity"
-                            : "Manage Assignment"
-                        }
-                        placement="bottom-end"
-                      >
-                        <Button
-                          data-test="Assign Activity Button"
-                          size="sm"
-                          pr={{ base: "0px", md: "10px" }}
-                          leftIcon={<MdOutlineAssignment />}
-                          onClick={() => {
-                            finalFocusRef.current = assignBtnRef.current;
-                            assignmentSettingsOnOpen();
-                          }}
-                          ref={assignBtnRef}
+                      {isSubAssignment ? null : (
+                        <Tooltip
+                          hasArrow
+                          label={
+                            assignmentStatus === "Unassigned"
+                              ? "Assign Activity"
+                              : "Manage Assignment"
+                          }
+                          placement="bottom-end"
                         >
-                          <Show above="md">Assign</Show>
-                        </Button>
-                      </Tooltip>
+                          <Button
+                            data-test="Assign Activity Button"
+                            size="sm"
+                            pr={{ base: "0px", md: "10px" }}
+                            leftIcon={<MdOutlineAssignment />}
+                            onClick={() => {
+                              finalFocusRef.current = assignBtnRef.current;
+                              assignmentSettingsOnOpen();
+                            }}
+                            ref={assignBtnRef}
+                          >
+                            <Show above="md">Assign</Show>
+                          </Button>
+                        </Tooltip>
+                      )}
 
                       <Tooltip
                         hasArrow
@@ -651,23 +656,30 @@ export function ActivityEditor() {
                 <InfoIcon color="orange.500" mr="6px" />
 
                 {assignmentInfo?.assignmentStatus === "Open" ? (
-                  <>
+                  isSubAssignment ? (
                     <Text size="xs">
-                      {` Assignment is open with code ${assignmentInfo.classCode}. ${mode == "Edit" ? "It cannot be edited." : ""}`}
+                      {`Activity is part of an open assignment. ${mode == "Edit" ? "It cannot be edited." : ""}`}
                     </Text>
-                    <Button
-                      onClick={invitationOnOpen}
-                      colorScheme="blue"
-                      mt="4px"
-                      ml="4px"
-                      size="xs"
-                    >
-                      Activity Invitation
-                    </Button>
-                  </>
+                  ) : (
+                    <>
+                      <Text size="xs">
+                        {`Assignment is open with code ${assignmentInfo.classCode}. ${mode == "Edit" ? "It cannot be edited." : ""}`}
+                      </Text>
+
+                      <Button
+                        onClick={invitationOnOpen}
+                        colorScheme="blue"
+                        mt="4px"
+                        ml="4px"
+                        size="xs"
+                      >
+                        Activity Invitation
+                      </Button>
+                    </>
+                  )
                 ) : (
                   <Text size="xs">
-                    {`Activity is a closed assignment${mode == "Edit" ? " and cannot be edited." : "."}`}
+                    {`Activity is ${isSubAssignment ? "part of " : ""}a closed assignment${mode == "Edit" ? " and cannot be edited." : "."}`}
                   </Text>
                 )}
                 {assignmentInfo?.hasScoreData ? (

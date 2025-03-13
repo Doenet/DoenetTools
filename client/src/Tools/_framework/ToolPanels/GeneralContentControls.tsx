@@ -428,51 +428,54 @@ export function GeneralContentControls({
       ) : null}
 
       {contentData.type === "singleDoc" ? (
-        <FormControl>
-          <FormLabel mt="16px">DoenetML version</FormLabel>
-          <Select
-            value={doenetmlVersion?.id}
-            disabled={
-              (contentData.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
-              "Unassigned"
-            }
-            onChange={(e) => {
-              // TODO: do we worry about this pattern?
-              // If saveDataToServer is unsuccessful, the client doenetmlVersion
-              // will no match what's on the server.
-              // (See TODO from near where doenetmlVersion is defined)
-              const nextDoenetmlVersionId = Number(e.target.value);
-              const nextDoenetmlVersion = allDoenetmlVersions.find(
-                (v) => v.id == nextDoenetmlVersionId,
-              );
-              if (nextDoenetmlVersion) {
-                setDoenetmlVersion(nextDoenetmlVersion);
-                saveDataToServer({ nextDoenetmlVersionId });
+        <>
+          <FormControl>
+            <FormLabel mt="16px">DoenetML version</FormLabel>
+            <Select
+              value={doenetmlVersion?.id}
+              isDisabled={
+                (contentData.assignmentInfo?.assignmentStatus ??
+                  "Unassigned") !== "Unassigned"
               }
-            }}
-          >
-            {allDoenetmlVersions.map((version) => (
-              <option value={version.id} key={version.id}>
-                {version.displayedVersion}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
+              onChange={(e) => {
+                // TODO: do we worry about this pattern?
+                // If saveDataToServer is unsuccessful, the client doenetmlVersion
+                // will no match what's on the server.
+                // (See TODO from near where doenetmlVersion is defined)
+                const nextDoenetmlVersionId = Number(e.target.value);
+                const nextDoenetmlVersion = allDoenetmlVersions.find(
+                  (v) => v.id == nextDoenetmlVersionId,
+                );
+                if (nextDoenetmlVersion) {
+                  setDoenetmlVersion(nextDoenetmlVersion);
+                  saveDataToServer({ nextDoenetmlVersionId });
+                }
+              }}
+            >
+              {allDoenetmlVersions.map((version) => (
+                <option value={version.id} key={version.id}>
+                  {version.displayedVersion}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+
+          {(contentData.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
+          "Unassigned" ? (
+            <p>
+              <strong>Note</strong>: Cannot modify DoenetML version since
+              activity is assigned.
+            </p>
+          ) : null}
+          {doenetmlVersion?.deprecated && (
+            <p>
+              <strong>Warning</strong>: DoenetML version{" "}
+              {doenetmlVersion.displayedVersion} is deprecated.{" "}
+              {doenetmlVersion.deprecationMessage}
+            </p>
+          )}
+        </>
       ) : null}
-      {(contentData.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
-      "Unassigned" ? (
-        <p>
-          <strong>Note</strong>: Cannot modify DoenetML version since activity
-          is assigned.
-        </p>
-      ) : null}
-      {doenetmlVersion?.deprecated && (
-        <p>
-          <strong>Warning</strong>: DoenetML version{" "}
-          {doenetmlVersion.displayedVersion} is deprecated.{" "}
-          {doenetmlVersion.deprecationMessage}
-        </p>
-      )}
 
       {contentData.type === "singleDoc" && contentData.numVariants > 1 ? (
         <Box marginTop="20px">
@@ -488,6 +491,10 @@ export function GeneralContentControls({
             <Checkbox
               marginTop="10px"
               isChecked={shuffle}
+              isDisabled={
+                (contentData.assignmentInfo?.assignmentStatus ??
+                  "Unassigned") !== "Unassigned"
+              }
               data-test={`Shuffle Checkbox`}
               onChange={() => {
                 setShuffle(!shuffle);
@@ -509,6 +516,10 @@ export function GeneralContentControls({
               marginTop="10px"
               isChecked={paginate}
               data-test={`Paginate Checkbox`}
+              isDisabled={
+                (contentData.assignmentInfo?.assignmentStatus ??
+                  "Unassigned") !== "Unassigned"
+              }
               onChange={() => {
                 setPaginate(!paginate);
 
@@ -541,6 +552,10 @@ export function GeneralContentControls({
                 size="sm"
                 width="50px"
                 data-test="Number To Select"
+                isDisabled={
+                  (contentData.assignmentInfo?.assignmentStatus ??
+                    "Unassigned") !== "Unassigned"
+                }
                 value={numToSelectText}
                 onChange={(e) => {
                   setNumToSelectText(e.target.value);
@@ -558,6 +573,10 @@ export function GeneralContentControls({
               marginTop="10px"
               isChecked={selectByVariant}
               data-test={`Select By Variant Checkbox`}
+              isDisabled={
+                (contentData.assignmentInfo?.assignmentStatus ??
+                  "Unassigned") !== "Unassigned"
+              }
               onChange={() => {
                 setSelectByVariant(!selectByVariant);
 
@@ -575,6 +594,14 @@ export function GeneralContentControls({
             </Checkbox>
           </VStack>
         </Box>
+      ) : null}
+      {contentData.type !== "singleDoc" &&
+      (contentData.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
+        "Unassigned" ? (
+        <Text marginTop="10px">
+          <strong>Note</strong>: Cannot modify settings since activity is
+          assigned.
+        </Text>
       ) : null}
     </>
   );

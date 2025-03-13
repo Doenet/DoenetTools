@@ -670,7 +670,7 @@ export function AssignmentViewer() {
   }
 
   function setScoreInfo(scoreData: {
-    loadedScore: boolean;
+    calculatedScore: boolean;
     score: number;
     itemScores?: {
       score: number;

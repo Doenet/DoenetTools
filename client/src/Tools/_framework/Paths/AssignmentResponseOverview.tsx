@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { useLoaderData } from "react-router";
 import me from "math-expressions";
 
@@ -10,29 +10,26 @@ import {
   Th,
   Tbody,
   Td,
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
-  SimpleGrid,
-  VStack,
   Box,
-  LinkBox,
-  LinkOverlay,
   Link as ChakraLink,
   Flex,
   List,
   ListItem,
+  HStack,
+  Tooltip,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "../../../Widgets/Heading";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Label } from "recharts";
-import AssignmentPreview from "../ToolPanels/AssignmentPreview";
 import { Link as ReactRouterLink, useNavigate } from "react-router";
 import { createFullName } from "../../../_utils/names";
-import { Content, DoenetmlVersion, UserInfo } from "../../../_utils/types";
+import {
+  AssignmentMode,
+  Content,
+  DoenetmlVersion,
+  UserInfo,
+} from "../../../_utils/types";
 import { isActivitySource } from "@doenet/assignment-viewer";
 import { compileActivityFromContent } from "../../../_utils/activity";
 import { ActivitySource } from "../../../_utils/viewerTypes";
@@ -42,27 +39,38 @@ export async function loader({ params }) {
     `/api/assign/getAssignmentResponseOverview/${params.contentId}`,
   );
 
-  console.log(data);
   const contentId = params.contentId;
 
-  const assignment = data.content;
-  const scores = data.scores as {
+  const assignment = data.content as Content;
+  const mode = data.scoreSummary.mode;
+  const scores = data.scoreSummary.scores.map((s) => ({
+    score: s.score,
+    itemScores: s.itemScores
+      ? s.itemScores.sort((a, b) => a.itemNumber - b.itemNumber)
+      : null,
+    numContentAttempts: s.latestAttempt?.attemptNumber ?? 1,
+    numItemAttempts:
+      s.latestAttempt?.itemScores.map((x) => x.itemAttemptNumber) ?? null,
+    user: s.user,
+  })) as {
     score: number;
-    scoreByItem: number[] | null;
+    itemScores: { itemNumber: number; score: number }[] | null;
+    numContentAttempts: number;
+    numItemAttempts: number[] | null;
     user: UserInfo;
   }[];
 
-  const numItems = scores[0]?.scoreByItem?.length ?? 1;
+  const numItems = scores[0]?.itemScores?.length ?? 1;
 
   const numStudents = scores.length;
   const scoreNumbers = scores.map((s) => s.score);
-  const averageScore = me.math.mean(...scoreNumbers);
-  const medianScore = me.math.median(...scoreNumbers);
-  const stdScores = me.math.std(...scoreNumbers);
+
+  const averageScore = numStudents > 0 ? me.math.mean(...scoreNumbers) : 0;
+  const medianScore = numStudents > 0 ? me.math.median(...scoreNumbers) : 0;
+  const stdScores = numStudents > 0 ? me.math.std(...scoreNumbers) : 0;
 
   const baseData = {
     assignment,
-    answerList: data.answerList,
     scores,
     numItems,
     numStudents,
@@ -71,6 +79,7 @@ export async function loader({ params }) {
       medianScore,
       stdScores,
     },
+    mode,
     contentId,
   };
 
@@ -84,7 +93,7 @@ export async function loader({ params }) {
       doenetML,
       doenetmlVersion,
     };
-  } else {
+  } else if (assignment.type !== "folder") {
     const activityJsonPrelim = assignment.activityJson
       ? JSON.parse(assignment.activityJson)
       : null;
@@ -93,11 +102,29 @@ export async function loader({ params }) {
       ? activityJsonPrelim
       : compileActivityFromContent(assignment);
 
+    const itemNames: string[] = [];
+
+    if (assignment.type === "sequence") {
+      for (const child of assignment.children) {
+        if (child.type === "singleDoc") {
+          itemNames.push(child.name);
+        } else if (child.type === "select") {
+          if (child.numToSelect === 1) {
+            itemNames.push(child.name);
+          } else {
+            for (let i = 0; i < child.numToSelect; i++) {
+              itemNames.push(`${child.name} (${i})`);
+            }
+          }
+        }
+      }
+    }
+
     return {
       type: assignment.type,
       ...baseData,
-      answerList: data.answerList,
       activityJson,
+      itemNames,
     };
   }
 }
@@ -106,16 +133,11 @@ export function AssignmentData() {
   const data = useLoaderData() as {
     contentId: string;
     assignment: Content;
-    answerList: {
-      answerId: string;
-      answerNumber: number | null;
-      itemNumber: number;
-      count: number;
-      averageCredit: number;
-    }[];
     scores: {
       score: number;
-      scoreByItem: number[] | null;
+      itemScores?: { itemNumber: number; score: number }[] | null;
+      numContentAttempts: number;
+      numItemAttempts: number[] | null;
       user: UserInfo;
     }[];
     numItems: number;
@@ -125,6 +147,7 @@ export function AssignmentData() {
       medianScore: number;
       stdScores: number;
     };
+    mode: AssignmentMode;
   } & (
     | {
         type: "singleDoc";
@@ -134,17 +157,18 @@ export function AssignmentData() {
     | {
         type: "select" | "sequence";
         activityJson: ActivitySource;
+        itemNames: string[];
       }
   );
 
   const {
     contentId,
     assignment,
-    answerList,
     scores,
     numItems,
     numStudents,
     scoreStats,
+    mode,
   } = data;
 
   useEffect(() => {
@@ -156,12 +180,6 @@ export function AssignmentData() {
   const [scoreData, setScoreData] = useState<
     { count: number; score: number }[]
   >([]);
-
-  const [activatePreview, setActivatePreview] = useState(false);
-
-  const [itemNumber, setItemNumber] = useState(1);
-
-  const lastTabIndex = useRef(0);
 
   useEffect(() => {
     const minScore = 0;
@@ -177,6 +195,134 @@ export function AssignmentData() {
       hist.map((v, i) => ({ count: v, score: Math.round(i * size * 10) / 10 })),
     );
   }, [scores]);
+
+  let scoresChart: ReactElement;
+
+  if (data.type !== "singleDoc" && numItems > 1) {
+    const itemNames = data.itemNames;
+
+    scoresChart = (
+      <TableContainer>
+        <Table>
+          <Thead>
+            <Tr>
+              <Th textTransform={"none"} fontSize="large">
+                Name
+              </Th>
+              {itemNames.map((name, i) => {
+                return (
+                  <Th textTransform={"none"} fontSize="large" key={i}>
+                    {name}
+                  </Th>
+                );
+              })}
+              <Th textTransform={"none"} fontSize="large">
+                Total
+              </Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {scores.map((assignmentScore) => {
+              const linkURL =
+                "/assignmentData/" +
+                contentId +
+                "/" +
+                assignmentScore.user.userId;
+              const numAttempts = assignmentScore.numContentAttempts;
+              const studentName = createFullName(assignmentScore.user);
+              return (
+                <Tr key={`user${assignmentScore.user.userId}`}>
+                  <Td>
+                    <HStack>
+                      <ChakraLink
+                        as={ReactRouterLink}
+                        to={linkURL}
+                        textDecoration="underline"
+                      >
+                        {studentName}
+                      </ChakraLink>
+                      {mode === "summative" && numAttempts > 1 ? (
+                        <Tooltip
+                          label={`${studentName} took ${numAttempts} attempts on the assignment`}
+                        >
+                          ({numAttempts}x)
+                        </Tooltip>
+                      ) : null}
+                    </HStack>
+                  </Td>
+                  {assignmentScore.itemScores?.map((item, i) => {
+                    const numItemAttempts =
+                      assignmentScore.numItemAttempts?.[i] ?? 1;
+                    return (
+                      <Td key={i}>
+                        <HStack>
+                          <ChakraLink
+                            as={ReactRouterLink}
+                            to={linkURL}
+                            textDecoration="underline"
+                          >
+                            {Math.round(item.score * 100) / 100}
+                          </ChakraLink>
+                          {mode === "formative" && numItemAttempts > 1 ? (
+                            <Tooltip
+                              label={`${studentName} took ${numItemAttempts} attempts on item: ${itemNames[i]}`}
+                            >
+                              ({numItemAttempts}x)
+                            </Tooltip>
+                          ) : null}
+                        </HStack>
+                      </Td>
+                    );
+                  })}
+                  <Td>{Math.round(assignmentScore.score * 100) / 100}</Td>
+                </Tr>
+              );
+            })}
+          </Tbody>
+        </Table>
+      </TableContainer>
+    );
+  } else {
+    scoresChart = (
+      <TableContainer>
+        <Table>
+          <Thead>
+            <Tr>
+              <Th textTransform={"none"} fontSize="large">
+                Name
+              </Th>
+              <Th textTransform={"none"} fontSize="large">
+                Score
+              </Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {scores.map((assignmentScore) => {
+              const linkURL =
+                "/assignmentData/" +
+                contentId +
+                "/" +
+                assignmentScore.user.userId;
+              return (
+                <Tr key={`user${assignmentScore.user.userId}`}>
+                  <Td>
+                    <ChakraLink
+                      as={ReactRouterLink}
+                      to={linkURL}
+                      textDecoration="underline"
+                    >
+                      {createFullName(assignmentScore.user)}
+                    </ChakraLink>
+                  </Td>
+                  <Td>{Math.round(assignmentScore.score * 100) / 100}</Td>
+                </Tr>
+              );
+            })}
+          </Tbody>
+        </Table>
+      </TableContainer>
+    );
+  }
 
   return (
     <>
@@ -227,7 +373,7 @@ export function AssignmentData() {
         </BarChart>
         <Box>
           <List>
-            <ListItem>Number of students: {numItems}</ListItem>
+            <ListItem>Number of students: {numStudents}</ListItem>
             <ListItem>
               Average score: {Math.round(scoreStats.averageScore * 100) / 100}
             </ListItem>
@@ -241,142 +387,11 @@ export function AssignmentData() {
           </List>
         </Box>
       </Flex>
-      <Tabs defaultIndex={lastTabIndex.current}>
-        <TabList>
-          <Tab
-            onClick={() => {
-              lastTabIndex.current = 0;
-            }}
-          >
-            Individual scores
-          </Tab>
-          <Tab
-            onClick={() => {
-              setActivatePreview(true);
-              lastTabIndex.current = 1;
-            }}
-          >
-            Item summary
-          </Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel>
-            <Heading subheading="Individual scores" />
-            <TableContainer>
-              <Table>
-                <Thead>
-                  <Tr>
-                    <Th textTransform={"none"} fontSize="large">
-                      Name
-                    </Th>
-                    <Th textTransform={"none"} fontSize="large">
-                      Score
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {scores.map((assignmentScore) => {
-                    const linkURL =
-                      "/assignmentData/" +
-                      contentId +
-                      "/" +
-                      assignmentScore.user.userId;
-                    return (
-                      <LinkBox
-                        as={Tr}
-                        key={`user${assignmentScore.user.userId}`}
-                        _hover={{ backgroundColor: "#eeeeee" }}
-                      >
-                        <Td>
-                          <LinkOverlay as={ReactRouterLink} to={linkURL}>
-                            {createFullName(assignmentScore.user)}
-                          </LinkOverlay>
-                        </Td>
-                        <Td>{Math.round(assignmentScore.score * 100) / 100}</Td>
-                      </LinkBox>
-                    );
-                  })}
-                </Tbody>
-              </Table>
-            </TableContainer>
-          </TabPanel>
-          <TabPanel>
-            <Heading subheading="Item summary" />
+      <Box marginTop="20px">
+        <Heading subheading="Best scores per student" />
 
-            <SimpleGrid columns={2} spacing="20px" margin="20px">
-              <VStack>
-                {/* <Heading subheading="Assignment Preview" /> */}
-
-                <p>
-                  Note: hover over an answer submit button to reveal answer
-                  name.
-                </p>
-                <AssignmentPreview
-                  data={data}
-                  active={activatePreview}
-                  itemNumber={itemNumber}
-                />
-              </VStack>
-              <Box>
-                <TableContainer>
-                  <Table>
-                    <Thead>
-                      <Tr>
-                        <Th textTransform={"none"} fontSize="large">
-                          Answer name
-                        </Th>
-                        <Th textTransform={"none"} fontSize="large">
-                          Number of
-                          <br />
-                          students
-                          <br />
-                          responded
-                        </Th>
-                        <Th textTransform={"none"} fontSize="large">
-                          Average
-                          <br />
-                          correct
-                        </Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody>
-                      {answerList
-                        .filter(
-                          (answerObj) => answerObj.itemNumber === itemNumber,
-                        )
-                        .map((answerObj) => {
-                          const key = `/assignmentAnswerResponses/${contentId}/${answerObj.itemNumber}/${answerObj.answerNumber}/${answerObj.answerId}`;
-                          const linkURL = `/assignmentAnswerResponses/${contentId}/${
-                            answerObj.itemNumber
-                          }?answerId=${encodeURIComponent(answerObj.answerId)}`;
-                          return (
-                            <LinkBox
-                              as={Tr}
-                              key={key}
-                              _hover={{ backgroundColor: "#eeeeee" }}
-                            >
-                              <Td>
-                                <LinkOverlay as={ReactRouterLink} to={linkURL}>
-                                  {answerObj.answerId}
-                                </LinkOverlay>
-                              </Td>
-                              <Td>{answerObj.count}</Td>
-                              <Td>
-                                {Math.round(answerObj.averageCredit * 1000) /
-                                  10}
-                                %
-                              </Td>
-                            </LinkBox>
-                          );
-                        })}
-                    </Tbody>
-                  </Table>
-                </TableContainer>
-              </Box>
-            </SimpleGrid>
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+        {scoresChart}
+      </Box>
     </>
   );
 }
