@@ -23,11 +23,6 @@ export const assignmentModeSchema = z.object({
   mode: z.enum(["formative", "summative"]),
 });
 
-export const assignmentStudentSchema = z.object({
-  contentId: uuidSchema,
-  studentUserId: uuidSchema.optional(),
-});
-
 export const assignmentParentSchema = z.object({
   parentId: uuidSchema.nullable(),
 });
@@ -70,3 +65,18 @@ export const recordSubmittedEventSchema = z.object({
 });
 
 export const codeSchema = z.object({ code: z.string() });
+
+export const getAssignmentResponseStudentSchema = z.object({
+  contentId: uuidSchema,
+  studentUserId: uuidSchema,
+  itemNumber: z
+    .string()
+    .transform((val) => parseInt(val))
+    .refine((v) => v > 0)
+    .optional(),
+  attemptNumber: z
+    .string()
+    .transform((val) => parseInt(val))
+    .refine((v) => v > 0)
+    .optional(),
+});

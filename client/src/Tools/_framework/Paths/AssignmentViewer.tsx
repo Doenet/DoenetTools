@@ -291,7 +291,10 @@ export function AssignmentViewer() {
           if (data.newAttempt === true) {
             await createNewAttempt({
               newAttemptForItem: data.newAttemptForItem,
-              shuffledItemOrder: itemScores.map((s) => s.shuffledOrder),
+              shuffledItemOrder: itemScores.map((s) => ({
+                shuffledItemNumber: s.shuffledOrder,
+                docId: s.docId,
+              })),
             });
           } else {
             const { doenetStates, itemAttemptNumbers, ...otherState } =
@@ -300,7 +303,10 @@ export function AssignmentViewer() {
             let item: {
               shuffledItemNumber: number | undefined;
               itemAttemptNumber: number;
-              shuffledItemOrder: number[];
+              shuffledItemOrder: {
+                shuffledItemNumber: number;
+                docId: string;
+              }[];
               score: number;
               state: any;
             } | null = null;
@@ -308,7 +314,10 @@ export function AssignmentViewer() {
               data.itemUpdated !== undefined &&
               data.newDoenetStateIdx !== undefined
             ) {
-              const shuffledItemOrder = itemScores.map((s) => s.shuffledOrder);
+              const shuffledItemOrder = itemScores.map((s) => ({
+                shuffledItemNumber: s.shuffledOrder,
+                docId: s.docId,
+              }));
               const shuffledItemNumber = data.itemUpdated;
               const itemAttemptNumber =
                 itemAttemptNumbers[data.itemUpdated - 1];
@@ -653,7 +662,12 @@ export function AssignmentViewer() {
     shuffledItemOrder,
   }: {
     newAttemptForItem?: number;
-    shuffledItemOrder?: number[] | null;
+    shuffledItemOrder?:
+      | {
+          shuffledItemNumber: number;
+          docId: string;
+        }[]
+      | null;
   }) {
     if (!assignment) {
       return;

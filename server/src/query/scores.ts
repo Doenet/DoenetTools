@@ -18,7 +18,9 @@ import { UserInfo } from "../types";
  * throwing an `itemAttemptNumber` if neither specified.
  * The specified `itemAttemptNumber` must be the latest attempt of `loggedInUserId`
  * (otherwise an `InvalidRequestError` is thrown).
- * The `shuffledItemNumber` is the possibly reordered number for `itemNumber`.
+ * The `shuffledItemNumber` is the possibly reordered list number for `itemNumber`.
+ * `shuffledItemOrder` is the array of all items, in original order, of `{shuffledItemNumber, docId}` of that item,
+ * where `docId` is the contentId of the document rendered for the item.
  *
  * Calculates new resulting scores, caches them, and returns them.
  * See the return of {@link calculateScoreAndCacheResults}
@@ -42,7 +44,7 @@ export async function saveScoreAndState({
     itemNumber?: number;
     shuffledItemNumber?: number;
     itemAttemptNumber: number;
-    shuffledItemOrder: number[];
+    shuffledItemOrder: { shuffledItemNumber: number; docId: Uint8Array }[];
     score: number;
     state: string;
   };
@@ -52,7 +54,9 @@ export async function saveScoreAndState({
     // check item number first to throw error before any database changes are made
     itemNumber =
       item.itemNumber ??
-      item.shuffledItemOrder.indexOf(item.shuffledItemNumber ?? 0) + 1;
+      item.shuffledItemOrder.findIndex(
+        (x) => x.shuffledItemNumber === item.shuffledItemNumber,
+      ) + 1;
 
     if (itemNumber === 0) {
       throw new InvalidRequestError(
@@ -107,14 +111,17 @@ export async function saveScoreAndState({
       // if this is the first time that state was saved,
       // create a record in contentItemState for each item
       await prisma.contentItemState.createMany({
-        data: item.shuffledItemOrder.map((shuffledNum, idx) => ({
-          contentId,
-          userId: loggedInUserId,
-          contentAttemptNumber: 1,
-          itemNumber: idx + 1,
-          itemAttemptNumber: 1,
-          shuffledItemNumber: shuffledNum,
-        })),
+        data: item.shuffledItemOrder.map(
+          ({ shuffledItemNumber, docId }, idx) => ({
+            contentId,
+            userId: loggedInUserId,
+            contentAttemptNumber: 1,
+            itemNumber: idx + 1,
+            itemAttemptNumber: 1,
+            shuffledItemNumber,
+            docId,
+          }),
+        ),
       });
     }
 
@@ -134,11 +141,13 @@ export async function saveScoreAndState({
       contentId,
       userId: loggedInUserId,
       cachedScore: null,
+      cachedBestAttemptNumber: 1,
       cachedItemScores: null,
       cachedLatestAttempt: null,
     },
     update: {
       cachedScore: null,
+      cachedBestAttemptNumber: 1,
       cachedItemScores: null,
       cachedLatestAttempt: null,
     },
@@ -169,7 +178,8 @@ export async function saveScoreAndState({
       );
     }
 
-    const shuffledItemNumber = item.shuffledItemOrder[itemNumber - 1];
+    const { shuffledItemNumber, docId } =
+      item.shuffledItemOrder[itemNumber - 1];
 
     // perform all score/state updates for activity and item in a single transaction
     await prisma.contentState.update({
@@ -199,6 +209,7 @@ export async function saveScoreAndState({
               score: item.score,
               state: item.state,
               shuffledItemNumber,
+              docId,
             },
             create: {
               itemNumber,
@@ -206,6 +217,7 @@ export async function saveScoreAndState({
               score: item.score,
               state: item.state,
               shuffledItemNumber,
+              docId,
             },
           },
         },
@@ -269,7 +281,7 @@ export async function createNewAttempt({
   loggedInUserId: Uint8Array;
   itemNumber?: number;
   shuffledItemNumber?: number;
-  shuffledItemOrder?: number[];
+  shuffledItemOrder?: { shuffledItemNumber: number; docId: Uint8Array }[];
 }) {
   const assignment = await prisma.assignments.findUniqueOrThrow({
     where: {
@@ -320,11 +332,14 @@ export async function createNewAttempt({
         attemptNumber: 1,
         score: shuffledItemOrder ? null : 0,
         contentItemStates: {
-          create: shuffledItemOrder?.map((shuffledNum, idx) => ({
-            itemNumber: idx + 1,
-            itemAttemptNumber: 1,
-            shuffledItemNumber: shuffledNum,
-          })),
+          create: shuffledItemOrder?.map(
+            ({ shuffledItemNumber, docId }, idx) => ({
+              itemNumber: idx + 1,
+              itemAttemptNumber: 1,
+              shuffledItemNumber,
+              docId,
+            }),
+          ),
         },
       },
     });
@@ -339,11 +354,13 @@ export async function createNewAttempt({
       contentId,
       userId: loggedInUserId,
       cachedScore: null,
+      cachedBestAttemptNumber: 1,
       cachedItemScores: null,
       cachedLatestAttempt: null,
     },
     update: {
       cachedScore: null,
+      cachedBestAttemptNumber: 1,
       cachedItemScores: null,
       cachedLatestAttempt: null,
     },
@@ -369,11 +386,14 @@ export async function createNewAttempt({
         attemptNumber: maxAttemptNumber + 1,
         score: shuffledItemOrder ? null : 0,
         contentItemStates: {
-          create: shuffledItemOrder?.map((shuffledNum, idx) => ({
-            itemNumber: idx + 1,
-            itemAttemptNumber: 1,
-            shuffledItemNumber: shuffledNum,
-          })),
+          create: shuffledItemOrder?.map(
+            ({ shuffledItemNumber, docId }, idx) => ({
+              itemNumber: idx + 1,
+              itemAttemptNumber: 1,
+              shuffledItemNumber,
+              docId,
+            }),
+          ),
         },
       },
     });
@@ -387,7 +407,10 @@ export async function createNewAttempt({
     }
 
     if (itemNumber === undefined) {
-      itemNumber = shuffledItemOrder.indexOf(shuffledItemNumber!) + 1;
+      itemNumber =
+        shuffledItemOrder.findIndex(
+          (x) => x.shuffledItemNumber === shuffledItemNumber,
+        ) + 1;
 
       if (itemNumber === 0) {
         throw new InvalidRequestError(
@@ -432,7 +455,7 @@ export async function createNewAttempt({
         contentAttemptNumber: maxAttemptNumber,
         itemNumber,
         itemAttemptNumber: maxItemAttemptNumber + 1,
-        shuffledItemNumber: shuffledItemOrder[itemNumber - 1],
+        ...shuffledItemOrder[itemNumber - 1],
       },
     });
   }
@@ -756,6 +779,7 @@ export async function loadItemState({
  * - calculatedScore: `true` if the scores were successfully calculated
  * If `calculatedSore` is `true`, then also returns the fields:
  * - score: the total score of the user on the assignment.
+ * - bestAttemptNumber: the content attempt number where `score` was achieved
  * - itemScores: if the assignment has items, then the scores of the items that lead to `score`.
  *   `itemScores` is an array of the item's `score` and its `itemNumber`, ordered by `shuffledItemNumber`.
  * - latestAttempt: an object giving the scores for the latest attempt
@@ -849,24 +873,19 @@ async function calculateScoreAndCacheResults({
   // In most cases, the score is the maximum over all attempts.
   // (We'll change it for a formative assessment with items, below.)
   let score = Math.max(...scoreByAttempt.map((sba) => sba.score));
+  // break ties by selecting the latest attempt number
+  const bestAttemptNumber =
+    scoreByAttempt.map((sba) => sba.score).lastIndexOf(score) + 1;
 
   // The array itemScores represents the items that lead to the actual score.
   // For summative, it is the scores from the attempt that gave the maximum score.
   // For formative, it is the maximum score for that item over all attempts.
-  let itemScores: {
-    score: number;
-    itemNumber: number;
-  }[] = [];
+  let itemScores: ItemScores = [];
 
   if (scoreByAttempt[0].contentItemStates.length > 0) {
     if (mode === "summative") {
-      // For summative, find the attempt that gave the maximum score
-      const bestAttemptIdx = scoreByAttempt
-        .map((sba) => sba.score)
-        .lastIndexOf(score);
-      itemScores = scoreByAttempt[bestAttemptIdx].contentItemStates.map(
-        (sba) => ({ score: sba.score, itemNumber: sba.itemNumber }),
-      );
+      // For summative, find the items from the attempt that gave the maximum score
+      itemScores = scoreByAttempt[bestAttemptNumber - 1].contentItemStates;
     } else {
       // For formative, determine the maximum score on each item over all attempts.
 
@@ -880,14 +899,14 @@ async function calculateScoreAndCacheResults({
         where: { contentId, userId: scoreUserId },
         distinct: ["contentId", "userId", "itemNumber"],
         orderBy: [
-          mode == "formative"
-            ? { shuffledItemNumber: "asc" }
-            : { itemNumber: "asc" },
+          { shuffledItemNumber: "asc" },
           { score: "desc" },
+          { itemAttemptNumber: "desc" }, // break ties by selecting the latest item attempt number
         ],
         select: {
           itemNumber: true,
           score: true,
+          itemAttemptNumber: true,
         },
       });
 
@@ -920,6 +939,7 @@ async function calculateScoreAndCacheResults({
     where: { contentId_userId: { contentId, userId: scoreUserId } },
     data: {
       cachedScore: score,
+      cachedBestAttemptNumber: bestAttemptNumber,
       cachedItemScores:
         itemScores.length > 0 ? JSON.stringify(itemScores) : null,
       cachedLatestAttempt: JSON.stringify(latestAttempt),
@@ -929,6 +949,7 @@ async function calculateScoreAndCacheResults({
   return {
     calculatedScore: true as const,
     score,
+    bestAttemptNumber,
     itemScores,
     latestAttempt,
   };
@@ -937,16 +958,13 @@ async function calculateScoreAndCacheResults({
 type ItemScores = {
   score: number;
   itemNumber: number;
+  itemAttemptNumber: number;
 }[];
 
 type LatestAttempt = {
   attemptNumber: number;
   score: number;
-  itemScores: {
-    score: number;
-    itemNumber: number;
-    itemAttemptNumber: number;
-  }[];
+  itemScores: ItemScores;
 };
 
 function isItemScores(obj: unknown): obj is ItemScores {
@@ -958,7 +976,8 @@ function isItemScores(obj: unknown): obj is ItemScores {
         item !== null &&
         typeof item === "object" &&
         typeof item.score === "number" &&
-        typeof item.itemNumber === "number"
+        typeof item.itemNumber === "number" &&
+        typeof item.itemAttemptNumber === "number"
       );
     })
   );
@@ -971,16 +990,7 @@ function isCachedLatestAttempt(obj: unknown): obj is LatestAttempt {
     typeof typedObj === "object" &&
     typeof typedObj.attemptNumber === "number" &&
     typeof typedObj.score === "number" &&
-    Array.isArray(typedObj.itemScores) &&
-    typedObj.itemScores.every((item) => {
-      return (
-        item !== null &&
-        typeof item === "object" &&
-        typeof item.score === "number" &&
-        typeof item.itemNumber === "number" &&
-        typeof item.itemAttemptNumber === "number"
-      );
-    })
+    isItemScores(typedObj.itemScores)
   );
 }
 
@@ -1025,6 +1035,7 @@ export async function getScore({
     where: { contentId_userId: { contentId, userId: scoreUserId } },
     select: {
       cachedScore: true,
+      cachedBestAttemptNumber: true,
       cachedItemScores: true,
       cachedLatestAttempt: true,
     },
@@ -1047,6 +1058,7 @@ export async function getScore({
         return {
           calculatedScore: true as const,
           score: cachedData.cachedScore,
+          bestAttemptNumber: cachedData.cachedBestAttemptNumber,
           itemScores,
           latestAttempt: cachedLatest,
         };
@@ -1054,26 +1066,15 @@ export async function getScore({
     }
   }
 
-  const calcResults = await calculateScoreAndCacheResults({
+  return await calculateScoreAndCacheResults({
     contentId,
     requestedUserId,
     loggedInUserId,
   });
-
-  if (calcResults.calculatedScore) {
-    return {
-      calculatedScore: true as const,
-      score: calcResults.score,
-      itemScores: calcResults.itemScores,
-      latestAttempt: calcResults.latestAttempt,
-    };
-  } else {
-    return { calculatedScore: false as const };
-  }
 }
 
 /**
- * Given that `contentId` is owned by `loggedInUserId`,
+ * Given that `contentId` is an assignment owned by `loggedInUserId`,
  * return all the scores that students have achieved on `contentId`.
  *
  * Uses cached values, if they exist, otherwise calculates the values.
@@ -1085,6 +1086,7 @@ export async function getScore({
  * Each element of the scores array is an object with fields
  * - user: a `UserInfo` object for the student
  * - score: the total score of the user on the assignment.
+ * - bestAttemptNumber: the content attempt number where `score` was achieved
  * - itemScores: if the assignment has items, then the scores of the items that lead to `score`.
  *   `itemScores` is an array of the item's `score` and its `itemNumber`, ordered by `shuffledItemNumber`.
  * - latestAttempt: an object giving the scores for the latest attempt
@@ -1101,6 +1103,7 @@ export async function getScoresOfAllStudents({
   const { mode } = await prisma.assignments.findUniqueOrThrow({
     where: {
       rootContentId: contentId,
+      assigned: true,
       rootContent: filterEditableActivity(loggedInUserId),
     },
     select: { mode: true },
@@ -1120,6 +1123,7 @@ export async function getScoresOfAllStudents({
         },
       },
       cachedScore: true,
+      cachedBestAttemptNumber: true,
       cachedItemScores: true,
       cachedLatestAttempt: true,
     },
@@ -1127,6 +1131,7 @@ export async function getScoresOfAllStudents({
 
   const scores: {
     score: number;
+    bestAttemptNumber: number;
     itemScores: ItemScores | null;
     latestAttempt: LatestAttempt | null;
     user: UserInfo;
@@ -1143,6 +1148,7 @@ export async function getScoresOfAllStudents({
       if (calcResults.calculatedScore) {
         scores.push({
           score: calcResults.score,
+          bestAttemptNumber: calcResults.bestAttemptNumber,
           itemScores: calcResults.itemScores,
           latestAttempt: calcResults.latestAttempt,
           user: scoreObj.user,
@@ -1170,6 +1176,7 @@ export async function getScoresOfAllStudents({
 
       scores.push({
         score: scoreObj.cachedScore,
+        bestAttemptNumber: scoreObj.cachedBestAttemptNumber,
         itemScores,
         latestAttempt,
         user: scoreObj.user,

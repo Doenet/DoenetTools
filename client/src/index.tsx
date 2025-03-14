@@ -53,8 +53,8 @@ import {
   Assigned,
 } from "./Tools/_framework/Paths/Assigned";
 import {
-  loader as assignmentDataLoader,
-  AssignmentData,
+  loader as assignmentResponseOverviewLoader,
+  AssignmentData as AssignmentResponseOverview,
 } from "./Tools/_framework/Paths/AssignmentResponseOverview";
 import {
   loader as assignmentAnswerResponsesLoader,
@@ -67,11 +67,11 @@ import {
   AssignmentAnswerResponseHistory,
 } from "./Tools/_framework/Paths/AssignmentAnswerResponseHistory";
 import {
-  loader as assignmentStudentDataLoader,
-  action as assignmentStudentDataAction,
-  AssignmentStudentData,
-  assignedAssignmentDataloader,
-} from "./Tools/_framework/Paths/AssignmentStudentData";
+  loader as assignmentResponseStudentLoader,
+  action as assignmentResponseStudentAction,
+  AssignmentResponseStudent,
+  // assignedAssignmentDataloader,
+} from "./Tools/_framework/Paths/AssignmentResponseStudent";
 import {
   loader as enterClassCodeLoader,
   action as enterClassCodeAction,
@@ -329,17 +329,24 @@ const router = createBrowserRouter([
         element: <StudentData />,
         errorElement: <ErrorPage />,
       },
+      // {
+      //   path: "assignedData/:contentId",
+      //   action: assignmentResponseStudentAction,
+      //   loader: assignedAssignmentDataloader,
+      //   element: <AssignmentResponseStudent />,
+      //   errorElement: <ErrorPage />,
+      // },
       {
-        path: "assignedData/:contentId",
-        action: assignmentStudentDataAction,
-        loader: assignedAssignmentDataloader,
-        element: <AssignmentStudentData />,
+        path: "assignmentData/:contentId",
+        loader: assignmentResponseOverviewLoader,
+        element: <AssignmentResponseOverview />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "assignmentData/:contentId",
-        loader: assignmentDataLoader,
-        element: <AssignmentData />,
+        path: "assignmentData/:contentId/:studentUserId",
+        action: assignmentResponseStudentAction,
+        loader: assignmentResponseStudentLoader,
+        element: <AssignmentResponseStudent />,
         errorElement: <ErrorPage />,
       },
       {
@@ -354,13 +361,6 @@ const router = createBrowserRouter([
         loader: assignmentAnswerResponseHistoryLoader,
         action: assignmentAnswerResponseHistoryAction,
         element: <AssignmentAnswerResponseHistory />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "assignmentData/:contentId/:userId",
-        action: assignmentStudentDataAction,
-        loader: assignmentStudentDataLoader,
-        element: <AssignmentStudentData />,
         errorElement: <ErrorPage />,
       },
       {

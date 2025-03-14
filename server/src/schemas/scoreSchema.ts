@@ -30,10 +30,13 @@ export const scoreAndStateSchema = z.object({
         .int()
         .refine((v) => v > 0),
       shuffledItemOrder: z.array(
-        z
-          .number()
-          .int()
-          .refine((v) => v > 0),
+        z.object({
+          shuffledItemNumber: z
+            .number()
+            .int()
+            .refine((v) => v > 0),
+          docId: uuidSchema,
+        }),
       ),
       score: z.number(),
       state: z.string(),
@@ -56,10 +59,13 @@ export const createNewAttemptSchema = z.object({
     .optional(),
   shuffledItemOrder: z
     .array(
-      z
-        .number()
-        .int()
-        .refine((v) => v > 0),
+      z.object({
+        shuffledItemNumber: z
+          .number()
+          .int()
+          .refine((v) => v > 0),
+        docId: uuidSchema,
+      }),
     )
     .optional(),
 });

@@ -201,13 +201,14 @@ enum AssignmentMode {
 }
 
 model assignmentScores {
-  contentId           Bytes       @db.Binary(16)
-  userId              Bytes       @db.Binary(16)
-  cachedScore         Float?
-  cachedItemScores    String?     @db.Text
-  cachedLatestAttempt String?     @db.Text
-  assignment          assignments @relation(fields: [contentId], references: [rootContentId], onDelete: NoAction, onUpdate: NoAction)
-  user                users       @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+  contentId               Bytes       @db.Binary(16)
+  userId                  Bytes       @db.Binary(16)
+  cachedScore             Float?
+  cachedBestAttemptNumber Int         @db.UnsignedSmallInt
+  cachedItemScores        String?     @db.Text
+  cachedLatestAttempt     String?     @db.Text
+  assignment              assignments @relation(fields: [contentId], references: [rootContentId], onDelete: NoAction, onUpdate: NoAction)
+  user                    users       @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([contentId, userId])
   @@index([userId])
@@ -234,6 +235,7 @@ model contentItemState {
   itemNumber           Int
   shuffledItemNumber   Int
   itemAttemptNumber    Int
+  docId                Bytes        @db.Binary(16)
   score                Float        @default(0)
   state                String?      @db.MediumText
   contentState         contentState @relation(fields: [contentId, userId, contentAttemptNumber], references: [contentId, userId, attemptNumber], onDelete: NoAction, onUpdate: NoAction)

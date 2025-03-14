@@ -16,6 +16,7 @@ import {
   List,
   ListItem,
   HStack,
+  Text,
   Tooltip,
 } from "@chakra-ui/react";
 import axios from "axios";
@@ -45,6 +46,7 @@ export async function loader({ params }) {
   const mode = data.scoreSummary.mode;
   const scores = data.scoreSummary.scores.map((s) => ({
     score: s.score,
+    bestAttemptNumber: s.bestAttemptNumber,
     itemScores: s.itemScores
       ? s.itemScores.sort((a, b) => a.itemNumber - b.itemNumber)
       : null,
@@ -54,6 +56,7 @@ export async function loader({ params }) {
     user: s.user,
   })) as {
     score: number;
+    bestAttemptNumber: number;
     itemScores: { itemNumber: number; score: number }[] | null;
     numContentAttempts: number;
     numItemAttempts: number[] | null;
@@ -135,7 +138,10 @@ export function AssignmentData() {
     assignment: Content;
     scores: {
       score: number;
-      itemScores?: { itemNumber: number; score: number }[] | null;
+      bestAttemptNumber: number;
+      itemScores?:
+        | { itemNumber: number; score: number; itemAttemptNumber: number }[]
+        | null;
       numContentAttempts: number;
       numItemAttempts: number[] | null;
       user: UserInfo;
@@ -211,8 +217,17 @@ export function AssignmentData() {
               </Th>
               {itemNames.map((name, i) => {
                 return (
-                  <Th textTransform={"none"} fontSize="large" key={i}>
-                    {name}
+                  <Th
+                    textTransform={"none"}
+                    fontSize="large"
+                    key={i}
+                    maxWidth="100px"
+                  >
+                    <Tooltip label={`${i + 1}. ${name}`} openDelay={500}>
+                      <Text noOfLines={1}>
+                        {i + 1}. {name}
+                      </Text>
+                    </Tooltip>
                   </Th>
                 );
               })}
@@ -230,13 +245,19 @@ export function AssignmentData() {
                 assignmentScore.user.userId;
               const numAttempts = assignmentScore.numContentAttempts;
               const studentName = createFullName(assignmentScore.user);
+              const bestAttemptNumber = assignmentScore.bestAttemptNumber;
+              const nameLinkUrl =
+                linkURL +
+                (mode === "summative"
+                  ? `?attemptNumber=${bestAttemptNumber}`
+                  : "");
               return (
                 <Tr key={`user${assignmentScore.user.userId}`}>
                   <Td>
                     <HStack>
                       <ChakraLink
                         as={ReactRouterLink}
-                        to={linkURL}
+                        to={nameLinkUrl}
                         textDecoration="underline"
                       >
                         {studentName}
@@ -253,16 +274,20 @@ export function AssignmentData() {
                   {assignmentScore.itemScores?.map((item, i) => {
                     const numItemAttempts =
                       assignmentScore.numItemAttempts?.[i] ?? 1;
+                    const attemptNumberForScore =
+                      mode === "summative"
+                        ? bestAttemptNumber
+                        : item.itemAttemptNumber;
                     return (
                       <Td key={i}>
-                        <HStack>
-                          <ChakraLink
-                            as={ReactRouterLink}
-                            to={linkURL}
-                            textDecoration="underline"
-                          >
-                            {Math.round(item.score * 100) / 100}
-                          </ChakraLink>
+                        <ChakraLink
+                          as={ReactRouterLink}
+                          to={`${linkURL}?itemNumber=${i + 1}&attemptNumber=${attemptNumberForScore}`}
+                          textDecoration="underline"
+                        >
+                          &nbsp;
+                          {Math.round(item.score * 100) / 100}
+                          &nbsp;
                           {mode === "formative" && numItemAttempts > 1 ? (
                             <Tooltip
                               label={`${studentName} took ${numItemAttempts} attempts on item: ${itemNames[i]}`}
@@ -270,7 +295,7 @@ export function AssignmentData() {
                               ({numItemAttempts}x)
                             </Tooltip>
                           ) : null}
-                        </HStack>
+                        </ChakraLink>
                       </Td>
                     );
                   })}

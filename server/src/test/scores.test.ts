@@ -46,6 +46,7 @@ test("Create and save responses for new attempts, no items", async () => {
   let expectedScore = {
     calculatedScore: true,
     score: 0.5,
+    bestAttemptNumber: 1,
     itemScores: [],
     latestAttempt: {
       attemptNumber: 1,
@@ -124,6 +125,7 @@ test("Create and save responses for new attempts, no items", async () => {
   expectedScore = {
     calculatedScore: true,
     score: 0.5,
+    bestAttemptNumber: 1,
     itemScores: [],
     latestAttempt: {
       attemptNumber: 2,
@@ -168,6 +170,7 @@ test("Create and save responses for new attempts, no items", async () => {
   expectedScore = {
     calculatedScore: true,
     score: 0.9,
+    bestAttemptNumber: 2,
     itemScores: [],
     latestAttempt: {
       attemptNumber: 2,
@@ -225,6 +228,7 @@ test("Create and save responses for new attempts, no items", async () => {
   expectedScore = {
     calculatedScore: true,
     score: 0.5,
+    bestAttemptNumber: 1,
     itemScores: [],
     latestAttempt: {
       attemptNumber: 2,
@@ -258,13 +262,34 @@ test("Create and save responses for new attempts, no items", async () => {
 test("Create and save responses for new activity-wide attempts, two items", async () => {
   const { userId: ownerId } = await createTestUser();
 
-  // Note: wouldn't get two items for just a singleDoc (would need a sequence),
-  // but we aren't testing that part
-  const { contentId: contentId } = await createContent({
+  // create sequence of two items
+  const { contentId } = await createContent({
     loggedInUserId: ownerId,
-    contentType: "singleDoc",
+    contentType: "sequence",
     parentId: null,
   });
+  const { contentId: docId1 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: contentId,
+  });
+  const { contentId: docId2 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: contentId,
+  });
+
+  // The information we'll need about the two items
+  const shuffledItemOrder = [
+    {
+      shuffledItemNumber: 1,
+      docId: docId1,
+    },
+    {
+      shuffledItemNumber: 2,
+      docId: docId2,
+    },
+  ];
 
   // since we are doing activity-wide attempts, we are creating data in line with the summative mode
   await updateAssignmentMode({
@@ -299,7 +324,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     score: null,
     item: {
       itemNumber: 1,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.8,
       state: "Item 1 state 1",
@@ -310,15 +335,10 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   let expectedScore = {
     calculatedScore: true,
     score: 0.4,
+    bestAttemptNumber: 1,
     itemScores: [
-      {
-        itemNumber: 1,
-        score: 0.8,
-      },
-      {
-        itemNumber: 2,
-        score: 0,
-      },
+      { itemNumber: 1, score: 0.8, itemAttemptNumber: 1 },
+      { itemNumber: 2, score: 0, itemAttemptNumber: 1 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -420,7 +440,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
       state: "assignment state 2",
       item: {
         itemNumber: 2,
-        shuffledItemOrder: [1, 2],
+        shuffledItemOrder,
         itemAttemptNumber: 1,
         score: 0.6,
         state: "Item 2 state 1",
@@ -440,21 +460,16 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
-    shuffledItemOrder: [1, 2],
+    shuffledItemOrder,
   });
 
   expectedScore = {
     calculatedScore: true,
     score: 0.4,
+    bestAttemptNumber: 1,
     itemScores: [
-      {
-        itemNumber: 1,
-        score: 0.8,
-      },
-      {
-        itemNumber: 2,
-        score: 0,
-      },
+      { itemNumber: 1, score: 0.8, itemAttemptNumber: 1 },
+      { itemNumber: 2, score: 0, itemAttemptNumber: 1 },
     ],
     latestAttempt: {
       attemptNumber: 2,
@@ -522,7 +537,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     state: "assignment state 3",
     item: {
       itemNumber: 2,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.6,
       state: "Item 2 state 2",
@@ -532,16 +547,11 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   expectedScore = {
     calculatedScore: true,
     score: 0.4, // maximum occurred on first attempt
+    bestAttemptNumber: 1,
     // itemScores are the items that give the above maximum score
     itemScores: [
-      {
-        itemNumber: 1,
-        score: 0.8,
-      },
-      {
-        itemNumber: 2,
-        score: 0,
-      },
+      { itemNumber: 1, score: 0.8, itemAttemptNumber: 1 },
+      { itemNumber: 2, score: 0, itemAttemptNumber: 1 },
     ],
     latestAttempt: {
       attemptNumber: 2,
@@ -703,7 +713,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     state: "assignment state 4",
     item: {
       itemNumber: 1,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.4,
       state: "Item 1 state 2",
@@ -713,16 +723,11 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   expectedScore = {
     calculatedScore: true,
     score: 0.5, // new higher score
+    bestAttemptNumber: 2,
     // itemScores are the items that give the new higher score
     itemScores: [
-      {
-        itemNumber: 1,
-        score: 0.4,
-      },
-      {
-        itemNumber: 2,
-        score: 0.6,
-      },
+      { itemNumber: 1, score: 0.4, itemAttemptNumber: 1 },
+      { itemNumber: 2, score: 0.6, itemAttemptNumber: 1 },
     ],
     latestAttempt: {
       attemptNumber: 2,
@@ -814,13 +819,34 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
 test("Create and save responses for new item attempts, two items", async () => {
   const { userId: ownerId } = await createTestUser();
 
-  // Note: wouldn't get two items without adding children to the sequence,
-  // but we aren't testing that part
-  const { contentId: contentId } = await createContent({
+  // create sequence of two items
+  const { contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "sequence",
     parentId: null,
   });
+  const { contentId: docId1 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: contentId,
+  });
+  const { contentId: docId2 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: contentId,
+  });
+
+  // The information we'll need about the two items
+  const shuffledItemOrder = [
+    {
+      shuffledItemNumber: 1,
+      docId: docId1,
+    },
+    {
+      shuffledItemNumber: 2,
+      docId: docId2,
+    },
+  ];
 
   // set max attempts to unlimited
   await updateAssignmentMaxAttempts({
@@ -857,7 +883,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     state: "assignment state 1",
     item: {
       itemNumber: 1,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.6,
       state: "Item 1 state 1",
@@ -868,9 +894,10 @@ test("Create and save responses for new item attempts, two items", async () => {
   let expectedScore = {
     calculatedScore: true,
     score: 0.3,
+    bestAttemptNumber: 1,
     itemScores: [
-      { itemNumber: 1, score: 0.6 },
-      { itemNumber: 2, score: 0 },
+      { itemNumber: 1, score: 0.6, itemAttemptNumber: 1 },
+      { itemNumber: 2, score: 0, itemAttemptNumber: 1 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -986,7 +1013,7 @@ test("Create and save responses for new item attempts, two items", async () => {
       state: "assignment state 1",
       item: {
         itemNumber: 1,
-        shuffledItemOrder: [1, 2],
+        shuffledItemOrder,
         itemAttemptNumber: 2,
         score: 0.4,
         state: "Item 1 state 2",
@@ -999,7 +1026,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
-    shuffledItemOrder: [1, 2],
+    shuffledItemOrder,
     itemNumber: 1,
   });
 
@@ -1007,9 +1034,10 @@ test("Create and save responses for new item attempts, two items", async () => {
   expectedScore = {
     calculatedScore: true,
     score: 0.3,
+    bestAttemptNumber: 1,
     itemScores: [
-      { itemNumber: 1, score: 0.6 },
-      { itemNumber: 2, score: 0 },
+      { itemNumber: 1, score: 0.6, itemAttemptNumber: 1 },
+      { itemNumber: 2, score: 0, itemAttemptNumber: 1 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -1078,7 +1106,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     state: "assignment state 1",
     item: {
       itemNumber: 1,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemAttemptNumber: 2,
       score: 0.4,
       state: "Item 1 state 3",
@@ -1089,9 +1117,10 @@ test("Create and save responses for new item attempts, two items", async () => {
   expectedScore = {
     calculatedScore: true,
     score: 0.3,
+    bestAttemptNumber: 1,
     itemScores: [
-      { itemNumber: 1, score: 0.6 },
-      { itemNumber: 2, score: 0 },
+      { itemNumber: 1, score: 0.6, itemAttemptNumber: 1 },
+      { itemNumber: 2, score: 0, itemAttemptNumber: 1 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -1208,7 +1237,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
-    shuffledItemOrder: [1, 2],
+    shuffledItemOrder,
     itemNumber: 2,
   });
 
@@ -1216,9 +1245,10 @@ test("Create and save responses for new item attempts, two items", async () => {
   expectedScore = {
     calculatedScore: true,
     score: 0.3,
+    bestAttemptNumber: 1,
     itemScores: [
-      { itemNumber: 1, score: 0.6 },
-      { itemNumber: 2, score: 0 },
+      { itemNumber: 1, score: 0.6, itemAttemptNumber: 1 },
+      { itemNumber: 2, score: 0, itemAttemptNumber: 2 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -1318,7 +1348,7 @@ test("Create and save responses for new item attempts, two items", async () => {
       state: "assignment state 1",
       item: {
         itemNumber: 2,
-        shuffledItemOrder: [1, 2],
+        shuffledItemOrder,
         itemAttemptNumber: 1,
         score: 0.8,
         state: "Item 2 state 2",
@@ -1336,7 +1366,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     state: "assignment state 1",
     item: {
       itemNumber: 2,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemAttemptNumber: 2,
       score: 0.8,
       state: "Item 2 state 3",
@@ -1346,9 +1376,10 @@ test("Create and save responses for new item attempts, two items", async () => {
   expectedScore = {
     calculatedScore: true,
     score: (0.6 + 0.8) / 2,
+    bestAttemptNumber: 1,
     itemScores: [
-      { itemNumber: 1, score: 0.6 },
-      { itemNumber: 2, score: 0.8 },
+      { itemNumber: 1, score: 0.6, itemAttemptNumber: 1 },
+      { itemNumber: 2, score: 0.8, itemAttemptNumber: 2 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -1444,16 +1475,17 @@ test("Create and save responses for new item attempts, two items", async () => {
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
-    shuffledItemOrder: [1, 2],
+    shuffledItemOrder,
     itemNumber: 2,
   });
 
   expectedScore = {
     calculatedScore: true,
     score: (0.6 + 0.8) / 2,
+    bestAttemptNumber: 1,
     itemScores: [
-      { itemNumber: 1, score: 0.6 },
-      { itemNumber: 2, score: 0.8 },
+      { itemNumber: 1, score: 0.6, itemAttemptNumber: 1 },
+      { itemNumber: 2, score: 0.8, itemAttemptNumber: 2 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -1523,6 +1555,7 @@ test("Create attempts before responding, no items", async () => {
   let expectedScore = {
     calculatedScore: true,
     score: 0,
+    bestAttemptNumber: 2,
     itemScores: [],
     latestAttempt: {
       attemptNumber: 2,
@@ -1565,6 +1598,7 @@ test("Create attempts before responding, no items", async () => {
   expectedScore = {
     calculatedScore: true,
     score: 0.9,
+    bestAttemptNumber: 2,
     itemScores: [],
     latestAttempt: {
       attemptNumber: 2,
@@ -1614,13 +1648,34 @@ test("Create attempts before responding, no items", async () => {
 test("Create item attempts before responding, two items", async () => {
   const { userId: ownerId } = await createTestUser();
 
-  // Note: wouldn't get two items without adding children to the sequence,
-  // but we aren't testing that part
-  const { contentId: contentId } = await createContent({
+  // create sequence of two items
+  const { contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "sequence",
     parentId: null,
   });
+  const { contentId: docId1 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: contentId,
+  });
+  const { contentId: docId2 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: contentId,
+  });
+
+  // The information we'll need about the two items
+  const shuffledItemOrder = [
+    {
+      shuffledItemNumber: 1,
+      docId: docId1,
+    },
+    {
+      shuffledItemNumber: 2,
+      docId: docId2,
+    },
+  ];
 
   // Since we are doing item attempts, we are creating data in line with the formative mode.
   // (Set the mode to stress the fact even though it is the default)
@@ -1650,7 +1705,7 @@ test("Create item attempts before responding, two items", async () => {
       loggedInUserId: anonId,
       code: classCode,
       itemNumber: 1,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
     }),
   ).rejects.toThrow(
     "Cannot create new attempt of item; maximum number of attempts exceeded",
@@ -1668,15 +1723,16 @@ test("Create item attempts before responding, two items", async () => {
     loggedInUserId: anonId,
     code: classCode,
     itemNumber: 1,
-    shuffledItemOrder: [1, 2],
+    shuffledItemOrder,
   });
 
   let expectedScore = {
     calculatedScore: true,
     score: 0,
+    bestAttemptNumber: 1,
     itemScores: [
-      { itemNumber: 1, score: 0 },
-      { itemNumber: 2, score: 0 },
+      { itemNumber: 1, score: 0, itemAttemptNumber: 2 },
+      { itemNumber: 2, score: 0, itemAttemptNumber: 1 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -1742,7 +1798,7 @@ test("Create item attempts before responding, two items", async () => {
     state: "assignment state 1",
     item: {
       itemNumber: 1,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemAttemptNumber: 2,
       score: 0.4,
       state: "Item 1 state 1",
@@ -1752,9 +1808,10 @@ test("Create item attempts before responding, two items", async () => {
   expectedScore = {
     calculatedScore: true,
     score: 0.2,
+    bestAttemptNumber: 1,
     itemScores: [
-      { itemNumber: 1, score: 0.4 },
-      { itemNumber: 2, score: 0 },
+      { itemNumber: 1, score: 0.4, itemAttemptNumber: 2 },
+      { itemNumber: 2, score: 0, itemAttemptNumber: 1 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -1834,13 +1891,34 @@ test("Create item attempts before responding, two items", async () => {
 test("Create and save responses for new item attempts, two shuffled items", async () => {
   const { userId: ownerId } = await createTestUser();
 
-  // Note: wouldn't get two items without adding children to the sequence,
-  // but we aren't testing that part
-  const { contentId: contentId } = await createContent({
+  // create sequence of two items
+  const { contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "sequence",
     parentId: null,
   });
+  const { contentId: docId1 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: contentId,
+  });
+  const { contentId: docId2 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: contentId,
+  });
+
+  // The information we'll need about the two items, imagine they were shuffled
+  const shuffledItemOrder = [
+    {
+      shuffledItemNumber: 2,
+      docId: docId1,
+    },
+    {
+      shuffledItemNumber: 1,
+      docId: docId2,
+    },
+  ];
 
   // Since we are doing item attempts, we are creating data in line with the formative mode.
   // (Set the mode to stress the fact even though it is the default)
@@ -1878,7 +1956,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     state: "assignment state 1",
     item: {
       shuffledItemNumber: 1,
-      shuffledItemOrder: [2, 1],
+      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.6,
       state: "Item 1 state 1",
@@ -1889,9 +1967,10 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   let expectedScore = {
     calculatedScore: true,
     score: 0.3,
+    bestAttemptNumber: 1,
     itemScores: [
-      { itemNumber: 2, score: 0.6 },
-      { itemNumber: 1, score: 0 },
+      { itemNumber: 2, score: 0.6, itemAttemptNumber: 1 },
+      { itemNumber: 1, score: 0, itemAttemptNumber: 1 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -2007,7 +2086,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
       state: "assignment state 1",
       item: {
         shuffledItemNumber: 1,
-        shuffledItemOrder: [2, 1],
+        shuffledItemOrder,
         itemAttemptNumber: 2,
         score: 0.4,
         state: "Item 1 state 2",
@@ -2020,16 +2099,17 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
-    shuffledItemOrder: [2, 1],
+    shuffledItemOrder,
     shuffledItemNumber: 1,
   });
 
   expectedScore = {
     calculatedScore: true,
     score: 0.3,
+    bestAttemptNumber: 1,
     itemScores: [
-      { itemNumber: 2, score: 0.6 },
-      { itemNumber: 1, score: 0 },
+      { itemNumber: 2, score: 0.6, itemAttemptNumber: 1 },
+      { itemNumber: 1, score: 0, itemAttemptNumber: 1 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -2097,7 +2177,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     state: "assignment state 1",
     item: {
       shuffledItemNumber: 1,
-      shuffledItemOrder: [2, 1],
+      shuffledItemOrder,
       itemAttemptNumber: 2,
       score: 0.4,
       state: "Item 1 state 3",
@@ -2108,9 +2188,10 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   expectedScore = {
     calculatedScore: true,
     score: 0.3,
+    bestAttemptNumber: 1,
     itemScores: [
-      { itemNumber: 2, score: 0.6 },
-      { itemNumber: 1, score: 0 },
+      { itemNumber: 2, score: 0.6, itemAttemptNumber: 1 },
+      { itemNumber: 1, score: 0, itemAttemptNumber: 1 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -2190,16 +2271,17 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
-    shuffledItemOrder: [2, 1],
+    shuffledItemOrder,
     shuffledItemNumber: 2,
   });
 
   expectedScore = {
     calculatedScore: true,
     score: 0.3,
+    bestAttemptNumber: 1,
     itemScores: [
-      { itemNumber: 2, score: 0.6 },
-      { itemNumber: 1, score: 0 },
+      { itemNumber: 2, score: 0.6, itemAttemptNumber: 1 },
+      { itemNumber: 1, score: 0, itemAttemptNumber: 2 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -2266,7 +2348,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
       state: "assignment state 1",
       item: {
         shuffledItemNumber: 2,
-        shuffledItemOrder: [2, 1],
+        shuffledItemOrder,
         itemAttemptNumber: 1,
         score: 0.8,
         state: "Item 2 state 2",
@@ -2284,7 +2366,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     state: "assignment state 1",
     item: {
       shuffledItemNumber: 2,
-      shuffledItemOrder: [2, 1],
+      shuffledItemOrder,
       itemAttemptNumber: 2,
       score: 0.8,
       state: "Item 2 state 3",
@@ -2294,9 +2376,10 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   expectedScore = {
     calculatedScore: true,
     score: (0.6 + 0.8) / 2,
+    bestAttemptNumber: 1,
     itemScores: [
-      { itemNumber: 2, score: 0.6 },
-      { itemNumber: 1, score: 0.8 },
+      { itemNumber: 2, score: 0.6, itemAttemptNumber: 1 },
+      { itemNumber: 1, score: 0.8, itemAttemptNumber: 2 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -2355,13 +2438,34 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
 test("New item attempt does not affect other item", async () => {
   const { userId: ownerId } = await createTestUser();
 
-  // Note: wouldn't get two items without adding children to the sequence,
-  // but we aren't testing that part
-  const { contentId: contentId } = await createContent({
+  // create sequence of two items
+  const { contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "sequence",
     parentId: null,
   });
+  const { contentId: docId1 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: contentId,
+  });
+  const { contentId: docId2 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: contentId,
+  });
+
+  // The information we'll need about the two items
+  const shuffledItemOrder = [
+    {
+      shuffledItemNumber: 1,
+      docId: docId1,
+    },
+    {
+      shuffledItemNumber: 2,
+      docId: docId2,
+    },
+  ];
 
   // Since we are doing item attempts, we are creating data in line with the formative mode.
   // (Set the mode to stress the fact even though it is the default)
@@ -2399,7 +2503,7 @@ test("New item attempt does not affect other item", async () => {
     state: "assignment state 1",
     item: {
       itemNumber: 1,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.8,
       state: "Item 1 state 1",
@@ -2415,7 +2519,7 @@ test("New item attempt does not affect other item", async () => {
     state: "assignment state 1",
     item: {
       itemNumber: 2,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 1,
       state: "Item 2 state 1",
@@ -2425,9 +2529,10 @@ test("New item attempt does not affect other item", async () => {
   let expectedScore = {
     calculatedScore: true,
     score: (0.8 + 1) / 2,
+    bestAttemptNumber: 1,
     itemScores: [
-      { itemNumber: 1, score: 0.8 },
-      { itemNumber: 2, score: 1 },
+      { itemNumber: 1, score: 0.8, itemAttemptNumber: 1 },
+      { itemNumber: 2, score: 1, itemAttemptNumber: 1 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -2490,7 +2595,7 @@ test("New item attempt does not affect other item", async () => {
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
-    shuffledItemOrder: [1, 2],
+    shuffledItemOrder,
     itemNumber: 2,
   });
 
@@ -2504,7 +2609,7 @@ test("New item attempt does not affect other item", async () => {
     state: "assignment state 1",
     item: {
       itemNumber: 1,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.4,
       state: "Item 1 state 2",
@@ -2520,7 +2625,7 @@ test("New item attempt does not affect other item", async () => {
     state: "assignment state 1",
     item: {
       itemNumber: 2,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemAttemptNumber: 2,
       score: 0.2,
       state: "Item 2 state 2",
@@ -2530,9 +2635,10 @@ test("New item attempt does not affect other item", async () => {
   expectedScore = {
     calculatedScore: true,
     score: (0.4 + 1) / 2,
+    bestAttemptNumber: 1,
     itemScores: [
-      { itemNumber: 1, score: 0.4 },
-      { itemNumber: 2, score: 1 },
+      { itemNumber: 1, score: 0.4, itemAttemptNumber: 1 },
+      { itemNumber: 2, score: 1, itemAttemptNumber: 1 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -2624,13 +2730,34 @@ test("New item attempt does not affect other item", async () => {
 test("Using both itemNumber and shuffledItemNumber, two shuffled items", async () => {
   const { userId: ownerId } = await createTestUser();
 
-  // Note: wouldn't get two items without adding children to the sequence,
-  // but we aren't testing that part
-  const { contentId: contentId } = await createContent({
+  // create sequence of two items
+  const { contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "sequence",
     parentId: null,
   });
+  const { contentId: docId1 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: contentId,
+  });
+  const { contentId: docId2 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: contentId,
+  });
+
+  // The information we'll need about the two items, imagine they were shuffled
+  const shuffledItemOrder = [
+    {
+      shuffledItemNumber: 2,
+      docId: docId1,
+    },
+    {
+      shuffledItemNumber: 1,
+      docId: docId2,
+    },
+  ];
 
   // set max attempts to unlimited
   await updateAssignmentMaxAttempts({
@@ -2668,7 +2795,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     state: "assignment state 1",
     item: {
       itemNumber: 1,
-      shuffledItemOrder: [2, 1],
+      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.6,
       state: "Item 2 state 1",
@@ -2685,20 +2812,20 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     state: "assignment state 1",
     item: {
       shuffledItemNumber: 1,
-      shuffledItemOrder: [2, 1],
+      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.8,
       state: "Item 1 state 1",
     },
   });
 
-  // get items scores in summary getScore since we are in formative mode
   const expectedScore = {
     calculatedScore: true,
     score: (0.6 + 0.8) / 2,
+    bestAttemptNumber: 1,
     itemScores: [
-      { itemNumber: 2, score: 0.8 },
-      { itemNumber: 1, score: 0.6 },
+      { itemNumber: 2, score: 0.8, itemAttemptNumber: 1 },
+      { itemNumber: 1, score: 0.6, itemAttemptNumber: 1 },
     ],
     latestAttempt: {
       attemptNumber: 1,
@@ -2764,7 +2891,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
       score: null,
       state: "assignment state 1",
       item: {
-        shuffledItemOrder: [2, 1],
+        shuffledItemOrder,
         itemAttemptNumber: 1,
         score: 1,
         state: "Which item?",
@@ -2801,7 +2928,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
-    shuffledItemOrder: [2, 1],
+    shuffledItemOrder,
     shuffledItemNumber: 2,
   });
 
@@ -2810,7 +2937,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
-    shuffledItemOrder: [2, 1],
+    shuffledItemOrder,
     itemNumber: 2,
   });
 
@@ -2907,13 +3034,34 @@ test("Cannot create activity-wide attempt on formative assessment", async () => 
 test("Cannot create item attempt on summative assessment", async () => {
   const { userId: ownerId } = await createTestUser();
 
-  // Note: wouldn't get two items without adding children to the sequence,
-  // but we aren't testing that part
-  const { contentId: contentId } = await createContent({
+  // create sequence of two items
+  const { contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "sequence",
     parentId: null,
   });
+  const { contentId: docId1 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: contentId,
+  });
+  const { contentId: docId2 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: contentId,
+  });
+
+  // The information we'll need about the two items
+  const shuffledItemOrder = [
+    {
+      shuffledItemNumber: 1,
+      docId: docId1,
+    },
+    {
+      shuffledItemNumber: 2,
+      docId: docId2,
+    },
+  ];
 
   // Since we are doing item attempts, we are creating data in line with the formative mode.
   // (Set the mode to stress the fact even though it is the default)
@@ -2940,7 +3088,7 @@ test("Cannot create item attempt on summative assessment", async () => {
       code: classCode,
       loggedInUserId: anonId,
       itemNumber: 1,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
     }),
   ).rejects.toThrow(
     "Summative assessments do not support creating new attempts of single items",
@@ -3091,6 +3239,7 @@ test("Setting maximum number of attempts, no items", async () => {
   expect(retrievedScore).eqls({
     calculatedScore: true,
     score: 0.7,
+    bestAttemptNumber: 3,
     itemScores: [],
     latestAttempt: {
       attemptNumber: 3,
@@ -3103,13 +3252,34 @@ test("Setting maximum number of attempts, no items", async () => {
 test("Setting maximum number of attempts, new item attempts", async () => {
   const { userId: ownerId } = await createTestUser();
 
-  // Note: wouldn't get two items without adding children to the sequence,
-  // but we aren't testing that part
-  const { contentId: contentId } = await createContent({
+  // create sequence of two items
+  const { contentId } = await createContent({
     loggedInUserId: ownerId,
     contentType: "sequence",
     parentId: null,
   });
+  const { contentId: docId1 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: contentId,
+  });
+  const { contentId: docId2 } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: contentId,
+  });
+
+  // The information we'll need about the two items
+  const shuffledItemOrder = [
+    {
+      shuffledItemNumber: 1,
+      docId: docId1,
+    },
+    {
+      shuffledItemNumber: 2,
+      docId: docId2,
+    },
+  ];
 
   // Since we are doing item attempts, we are creating data in line with the formative mode.
   // (Set the mode to stress the fact even though it is the default)
@@ -3140,7 +3310,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     state: "assignment state 1",
     item: {
       itemNumber: 1,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemAttemptNumber: 1,
       score: 0.6,
       state: "Item 1 state 1",
@@ -3153,7 +3323,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
       contentId: contentId,
       code: classCode,
       loggedInUserId: anonId,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemNumber: 1,
     }),
   ).rejects.toThrow(
@@ -3165,7 +3335,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
       contentId: contentId,
       code: classCode,
       loggedInUserId: anonId,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemNumber: 2,
     }),
   ).rejects.toThrow(
@@ -3184,7 +3354,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
-    shuffledItemOrder: [1, 2],
+    shuffledItemOrder,
     itemNumber: 1,
   });
 
@@ -3198,7 +3368,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     state: "assignment state 1",
     item: {
       itemNumber: 1,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemAttemptNumber: 2,
       score: 0.8,
       state: "Item 1 state 2",
@@ -3211,7 +3381,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
       contentId: contentId,
       code: classCode,
       loggedInUserId: anonId,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemNumber: 1,
     }),
   ).rejects.toThrow(
@@ -3230,7 +3400,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
-    shuffledItemOrder: [1, 2],
+    shuffledItemOrder,
     itemNumber: 1,
   });
 
@@ -3251,7 +3421,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     state: "assignment state 1",
     item: {
       itemNumber: 1,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemAttemptNumber: 3,
       score: 1,
       state: "Item 1 state 3",
@@ -3269,7 +3439,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
       state: "assignment state 1",
       item: {
         itemNumber: 1,
-        shuffledItemOrder: [1, 2],
+        shuffledItemOrder,
         itemAttemptNumber: 2,
         score: 0.2,
         state: "Item 1 state 4",
@@ -3284,7 +3454,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
-    shuffledItemOrder: [1, 2],
+    shuffledItemOrder,
     itemNumber: 2,
   });
 
@@ -3294,7 +3464,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
       contentId: contentId,
       code: classCode,
       loggedInUserId: anonId,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemNumber: 2,
     }),
   ).rejects.toThrow(
@@ -3311,7 +3481,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     state: "assignment state 1",
     item: {
       itemNumber: 2,
-      shuffledItemOrder: [1, 2],
+      shuffledItemOrder,
       itemAttemptNumber: 2,
       score: 0.4,
       state: "Item 2 state 1",
@@ -3355,10 +3525,11 @@ test("Setting maximum number of attempts, new item attempts", async () => {
 
   expect(retrievedScore).eqls({
     calculatedScore: true,
+    bestAttemptNumber: 1,
     score: (1 + 0.4) / 2,
     itemScores: [
-      { itemNumber: 1, score: 1 },
-      { itemNumber: 2, score: 0.4 },
+      { itemNumber: 1, score: 1, itemAttemptNumber: 3 },
+      { itemNumber: 2, score: 0.4, itemAttemptNumber: 2 },
     ],
     latestAttempt: {
       attemptNumber: 1,
