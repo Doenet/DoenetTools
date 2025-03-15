@@ -304,9 +304,7 @@ export function ActivityEditor() {
 
   const assignmentInfo = activityData.assignmentInfo;
   const assignmentStatus = assignmentInfo?.assignmentStatus ?? "Unassigned";
-  const isSubAssignment =
-    assignmentStatus !== "Unassigned" &&
-    assignmentInfo?.otherRoot !== undefined;
+  const isSubActivity = activityData.parent?.type ?? "folder" !== "folder";
 
   const readOnly = assignmentStatus !== "Unassigned";
   const readOnlyRef = useRef(readOnly);
@@ -568,7 +566,7 @@ export function ActivityEditor() {
                     </Tooltip>
                   ) : (
                     <>
-                      {isSubAssignment ? null : (
+                      {isSubActivity ? null : (
                         <Tooltip
                           hasArrow
                           label={
@@ -656,7 +654,7 @@ export function ActivityEditor() {
                 <InfoIcon color="orange.500" mr="6px" />
 
                 {assignmentInfo?.assignmentStatus === "Open" ? (
-                  isSubAssignment ? (
+                  isSubActivity ? (
                     <Text size="xs">
                       {`Activity is part of an open assignment. ${mode == "Edit" ? "It cannot be edited." : ""}`}
                     </Text>
@@ -679,7 +677,7 @@ export function ActivityEditor() {
                   )
                 ) : (
                   <Text size="xs">
-                    {`Activity is ${isSubAssignment ? "part of " : ""}a closed assignment${mode == "Edit" ? " and cannot be edited." : "."}`}
+                    {`Activity is ${isSubActivity ? "part of " : ""}a closed assignment${mode == "Edit" ? " and cannot be edited." : "."}`}
                   </Text>
                 )}
                 {assignmentInfo?.hasScoreData ? (
