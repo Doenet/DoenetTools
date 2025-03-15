@@ -152,73 +152,73 @@ export function AssignmentSettings({
           </Box>
         ) : null}
 
-        <Box marginTop="20px">
-          <Heading size="sm" marginTop="20px">
-            Assignment mode
-          </Heading>
-          <RadioGroup
-            marginTop="10px"
-            isDisabled={
-              activityData.type === "singleDoc" ||
-              (activityData.assignmentInfo?.assignmentStatus ??
-                "Unassigned") !== "Unassigned"
-            }
-            onChange={(v) => {
-              setAssignmentMode(v === "summative" ? "summative" : "formative");
-              fetcher.submit(
-                {
-                  _action: "update assignment mode",
-                  contentId: activityData.contentId,
-                  mode: v,
-                },
-                { method: "post" },
-              );
-            }}
-            value={assignmentMode}
-          >
-            <HStack>
-              <Radio value="formative">
-                <Tooltip
-                  label="In a formative assessment, students can create new attempts of individual items.
+        {activityData.type !== "singleDoc" ? (
+          <Box marginTop="20px">
+            <Heading size="sm" marginTop="20px">
+              Assignment mode
+            </Heading>
+            <RadioGroup
+              marginTop="10px"
+              isDisabled={
+                (activityData.assignmentInfo?.assignmentStatus ??
+                  "Unassigned") !== "Unassigned"
+              }
+              onChange={(v) => {
+                setAssignmentMode(
+                  v === "summative" ? "summative" : "formative",
+                );
+                fetcher.submit(
+                  {
+                    _action: "update assignment mode",
+                    contentId: activityData.contentId,
+                    mode: v,
+                  },
+                  { method: "post" },
+                );
+              }}
+              value={assignmentMode}
+            >
+              <HStack>
+                <Radio value="formative">
+                  <Tooltip
+                    label="In a formative assessment, students can create new attempts of individual items.
                   Their overall score is the average of their best attempt for each item."
-                >
-                  Formative
-                </Tooltip>
-              </Radio>
+                  >
+                    Formative
+                  </Tooltip>
+                </Radio>
 
-              <Radio value="summative">
-                <Tooltip
-                  label="In a summative assessment, students can create new attempts of the entire assignment.
+                <Radio value="summative">
+                  <Tooltip
+                    label="In a summative assessment, students can create new attempts of the entire assignment.
                 Their score for an attempt is the average of their scores for each item.
                 Their overall score is their best attempt score.
                 "
-                >
-                  Summative
-                </Tooltip>
-              </Radio>
-            </HStack>
-          </RadioGroup>
-          {activityData.type !== "singleDoc" &&
-          (activityData.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
+                  >
+                    Summative
+                  </Tooltip>
+                </Radio>
+              </HStack>
+            </RadioGroup>
+            {(activityData.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
             "Unassigned" ? (
-            <Text>
-              Note: Cannot modify assignment mode since activity is assigned.
-            </Text>
-          ) : null}
-          {activityData.type === "singleDoc" ? (
-            <Text marginTop="10px">
-              Note: for documents, which don't have items, there is currently no
-              functional difference between formative and summative assessments.
-            </Text>
-          ) : null}
-        </Box>
+              <Text>
+                Note: Cannot modify assignment mode since activity is assigned.
+              </Text>
+            ) : null}
+          </Box>
+        ) : null}
+
         <Heading size="sm" marginTop="20px">
           Number of attempts allowed
         </Heading>
 
         <FormLabel marginTop="10px">
           Maximum number of{" "}
-          {assignmentMode === "formative" ? "item" : "assignment"} attempts
+          {assignmentMode === "formative" && activityData.type !== "singleDoc"
+            ? "item"
+            : "assignment"}{" "}
+          attempts
           <NumberInput
             isDisabled={unlimitedAttempts}
             width="80px"

@@ -74,5 +74,8 @@ export const getStudentSubmittedResponsesSchema = z.object({
   answerId: z.string(),
   itemNumber: z.string().transform((val) => parseInt(val)),
   contentAttemptNumber: z.string().transform((val) => parseInt(val)),
-  itemAttemptNumber: z.string().transform((val) => parseInt(val)),
+  itemAttemptNumber: z
+    .string()
+    .transform((val) => parseInt(val))
+    .optional(),
 });

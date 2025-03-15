@@ -52,7 +52,7 @@ export function AnswerResponseDrawer({
   answerId: string;
   itemNumber: number;
   contentAttemptNumber: number;
-  itemAttemptNumber: number;
+  itemAttemptNumber: number | null;
 }) {
   const [responses, setResponses] = useState<
     { response: ReactElement; creditAchieved: number; submittedAt: string }[]
@@ -60,8 +60,12 @@ export function AnswerResponseDrawer({
 
   useEffect(() => {
     async function getAnswerResponses() {
+      const itemAttemptQuery =
+        itemAttemptNumber === null
+          ? ""
+          : `&itemAttemptNumber=${itemAttemptNumber}`;
       const { data } = await axios.get(
-        `/api/assign//getStudentSubmittedResponses/${assignment.contentId}/${student.userId}?itemNumber=${itemNumber}&answerId=${answerId}&contentAttemptNumber=${contentAttemptNumber}&itemAttemptNumber=${itemAttemptNumber}`,
+        `/api/assign//getStudentSubmittedResponses/${assignment.contentId}/${student.userId}?itemNumber=${itemNumber}&answerId=${answerId}&contentAttemptNumber=${contentAttemptNumber}${itemAttemptQuery}`,
       );
 
       const responseData = data.responses.map((obj) => ({

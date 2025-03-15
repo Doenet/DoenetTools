@@ -1051,9 +1051,7 @@ export async function getAssignmentResponseStudent({
 
   const itemNames: string[] = [];
   const content = assignment.rootContent;
-  if (content.type === "singleDoc") {
-    itemNames.push(content.name);
-  } else if (content.type === "select") {
+  if (content.type === "select") {
     if (content.numToSelect === 1) {
       itemNames.push(content.name);
     } else {
@@ -1061,7 +1059,7 @@ export async function getAssignmentResponseStudent({
         itemNames.push(`${content.name} (${i})`);
       }
     }
-  } else {
+  } else if (content.type === "sequence") {
     for (const child of content.children) {
       if (child.type === "singleDoc") {
         itemNames.push(child.name);
@@ -1112,7 +1110,11 @@ export async function getAssignmentResponseStudent({
   }
 
   const [contentAttemptNumber, itemAttemptNumber] =
-    mode === "formative" ? [1, attemptNumber] : [attemptNumber, 1];
+    assignment.rootContent.type === "singleDoc"
+      ? [attemptNumber, null]
+      : mode === "formative"
+        ? [1, attemptNumber]
+        : [attemptNumber, 1];
 
   const responseCountsPrelim = await prisma.submittedResponses.groupBy({
     where: {
@@ -1154,7 +1156,7 @@ export async function getStudentSubmittedResponses({
   itemNumber,
   answerId,
   contentAttemptNumber,
-  itemAttemptNumber,
+  itemAttemptNumber = null,
 }: {
   contentId: Uint8Array;
   studentUserId?: Uint8Array;
@@ -1162,7 +1164,7 @@ export async function getStudentSubmittedResponses({
   itemNumber: number;
   answerId: string;
   contentAttemptNumber: number;
-  itemAttemptNumber: number;
+  itemAttemptNumber?: number | null;
 }) {
   const responseUserId = studentUserId ?? loggedInUserId;
 
