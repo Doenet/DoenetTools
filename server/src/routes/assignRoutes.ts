@@ -24,7 +24,7 @@ import {
   getStudentDataSchema,
   recordSubmittedEventSchema,
   assignmentMaxAttemptsSchema,
-  assignmentModeSchema,
+  assignmentSettingsSchema,
   getAssignmentResponseStudentSchema,
   getStudentSubmittedResponsesSchema,
 } from "../schemas/assignSchema";
@@ -59,7 +59,7 @@ assignRouter.post(
 
 assignRouter.post(
   "/updateAssignmentSettings",
-  queryLoggedIn(updateAssignmentSettings, assignmentModeSchema),
+  queryLoggedIn(updateAssignmentSettings, assignmentSettingsSchema),
 );
 
 assignRouter.post(

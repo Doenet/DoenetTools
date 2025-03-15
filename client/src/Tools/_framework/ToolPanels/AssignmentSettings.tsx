@@ -26,13 +26,16 @@ export async function assignmentSettingsActions({
 }: {
   [k: string]: any;
 }) {
-  if (formObj._action == "update assignment mode") {
+  if (formObj._action == "update assignment settings") {
     try {
       const { data } = await axios.post(
         "/api/assign/updateAssignmentSettings",
         {
           contentId: formObj.contentId,
           mode: formObj.mode,
+          individualizeByStudent: formObj.individualizeByStudent
+            ? formObj.individualizeByStudent === "true"
+            : undefined,
         },
       );
       return data;
@@ -86,6 +89,10 @@ export function AssignmentSettings({
 
   const maxMaxAttempt = 65535;
 
+  const [individualizeByStudent, setIndividualizeByStudent] = useState<boolean>(
+    activityData.assignmentInfo?.individualizeByStudent ?? false,
+  );
+
   useEffect(() => {
     setEncounteredError(false);
     setStatusText("");
@@ -111,6 +118,12 @@ export function AssignmentSettings({
               `Changed the maximum number of attempts to ${maxAttempts}`,
             );
           }
+        } else if ("individualizeByStudent" in fetcher.data) {
+          setEncounteredError(false);
+          setStateStyleIdx((x) => x + 1);
+          setStatusText(
+            `Changed individualize by student to ${fetcher.data.individualizeByStudent}`,
+          );
         }
       } else {
         if ("mode" in fetcher.data) {
@@ -172,7 +185,7 @@ export function AssignmentSettings({
                 );
                 fetcher.submit(
                   {
-                    _action: "update assignment mode",
+                    _action: "update assignment settings",
                     contentId: activityData.contentId,
                     mode: v,
                   },
@@ -212,84 +225,110 @@ export function AssignmentSettings({
           </Box>
         ) : null}
 
-        <Heading size="sm" marginTop="20px">
-          Number of attempts allowed
-        </Heading>
+        <Box>
+          <Heading size="sm" marginTop="20px">
+            Number of attempts allowed
+          </Heading>
 
-        <FormLabel marginTop="10px">
-          Maximum number of{" "}
-          {assignmentMode === "formative" && activityData.type !== "singleDoc"
-            ? "item"
-            : "assignment"}{" "}
-          attempts
-          <NumberInput
-            isDisabled={unlimitedAttempts}
-            width="80px"
-            value={unlimitedAttempts ? "---" : maxAttemptsString}
-            onChange={(valueString) => {
-              const numValue = parseInt(valueString);
-              let strValue = numValue.toString();
-              if (!Number.isInteger(numValue) || numValue === 0) {
-                strValue = "";
+          <FormLabel marginTop="10px">
+            Maximum number of{" "}
+            {assignmentMode === "formative" && activityData.type !== "singleDoc"
+              ? "item"
+              : "assignment"}{" "}
+            attempts
+            <NumberInput
+              isDisabled={unlimitedAttempts}
+              width="80px"
+              value={unlimitedAttempts ? "---" : maxAttemptsString}
+              onChange={(valueString) => {
+                const numValue = parseInt(valueString);
+                let strValue = numValue.toString();
+                if (!Number.isInteger(numValue) || numValue === 0) {
+                  strValue = "";
+                }
+                setMaxAttemptsString(strValue);
+              }}
+              onKeyDown={(e) => {
+                if (e.key == "Enter") {
+                  const target = e.target as HTMLInputElement;
+                  submitMaxAttempt(target.value);
+                  target.blur();
+                }
+              }}
+              min={1}
+              max={maxMaxAttempt}
+              onBlur={(e) => {
+                const valueString = e.target.value;
+                submitMaxAttempt(valueString);
+              }}
+            >
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+          </FormLabel>
+          <Checkbox
+            marginTop="10px"
+            isChecked={unlimitedAttempts}
+            onChange={() => {
+              setUnlimitedAttempts(!unlimitedAttempts);
+              if (unlimitedAttempts) {
+                // now unlimited attempts will be false
+                let maxAttempts = parseInt(maxAttemptsString);
+                if (!Number.isFinite(maxAttempts)) {
+                  maxAttempts = 1;
+                  setMaxAttemptsString("1");
+                }
+                fetcher.submit(
+                  {
+                    _action: "update maximum attempts",
+                    contentId: activityData.contentId,
+                    maxAttempts,
+                  },
+                  { method: "post" },
+                );
+              } else {
+                // no longer limiting attempts
+                fetcher.submit(
+                  {
+                    _action: "update maximum attempts",
+                    contentId: activityData.contentId,
+                    maxAttempts: 0,
+                  },
+                  { method: "post" },
+                );
               }
-              setMaxAttemptsString(strValue);
-            }}
-            onKeyDown={(e) => {
-              if (e.key == "Enter") {
-                const target = e.target as HTMLInputElement;
-                submitMaxAttempt(target.value);
-                target.blur();
-              }
-            }}
-            min={1}
-            max={maxMaxAttempt}
-            onBlur={(e) => {
-              const valueString = e.target.value;
-              submitMaxAttempt(valueString);
             }}
           >
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-        </FormLabel>
-        <Checkbox
-          marginTop="10px"
-          isChecked={unlimitedAttempts}
-          onChange={() => {
-            setUnlimitedAttempts(!unlimitedAttempts);
-            if (unlimitedAttempts) {
-              // now unlimited attempts will be false
-              let maxAttempts = parseInt(maxAttemptsString);
-              if (!Number.isFinite(maxAttempts)) {
-                maxAttempts = 1;
-                setMaxAttemptsString("1");
-              }
+            Unlimited attempts
+          </Checkbox>
+        </Box>
+
+        <Box>
+          <Heading size="sm" marginTop="20px">
+            Variant selection
+          </Heading>
+
+          <Checkbox
+            marginTop="10px"
+            isChecked={individualizeByStudent}
+            onChange={() => {
+              setIndividualizeByStudent(!individualizeByStudent);
               fetcher.submit(
                 {
-                  _action: "update maximum attempts",
+                  _action: "update assignment settings",
                   contentId: activityData.contentId,
-                  maxAttempts,
+                  individualizeByStudent: !individualizeByStudent,
                 },
                 { method: "post" },
               );
-            } else {
-              // no longer limiting attempts
-              fetcher.submit(
-                {
-                  _action: "update maximum attempts",
-                  contentId: activityData.contentId,
-                  maxAttempts: 0,
-                },
-                { method: "post" },
-              );
-            }
-          }}
-        >
-          Unlimited attempts
-        </Checkbox>
+            }}
+          >
+            Individualize by student
+          </Checkbox>
+        </Box>
       </Box>
     </>
   );

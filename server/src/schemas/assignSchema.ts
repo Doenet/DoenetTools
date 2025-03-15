@@ -20,9 +20,10 @@ export const assignmentMaxAttemptsSchema = z.object({
     }),
 });
 
-export const assignmentModeSchema = z.object({
+export const assignmentSettingsSchema = z.object({
   contentId: uuidSchema,
-  mode: z.enum(["formative", "summative"]),
+  mode: z.enum(["formative", "summative"]).optional(),
+  individualizeByStudent: z.boolean().optional(),
 });
 
 export const assignmentParentSchema = z.object({
