@@ -1,7 +1,6 @@
 import { DateTime } from "luxon";
 import { prisma } from "../model";
 import {
-  editableContentWhere,
   filterEditableActivity,
   filterEditableContent,
 } from "../utils/permissions";
@@ -691,209 +690,6 @@ export async function recordSubmittedEvent({
   });
 }
 
-/**
- * Return an array of the answers from `contentId` for which at least one student has submitted a response.
- * `contentId` must be owned by `loggedInUserId`.
- *
- * Returns an array of the answers. Each element has the fields:
- * - `answerId`: the DoenetML name of the answer submitted
- * - `answerNumber`: the (1-based) index of the answer in the document, if available
- * - `itemNumber`: in problem sets/question banks, the item number of the document
- * - `count`: the number of students who submitted a response to the answer
- * - `averageCredit`: the average (maximum) credit that students were awarded on the answer
- */
-export async function getAnswersWithSubmittedResponses({
-  contentId,
-  loggedInUserId,
-}: {
-  contentId: Uint8Array;
-  loggedInUserId: Uint8Array;
-}) {
-  // Using raw query as it seems prisma does not support distinct in count.
-  // https://github.com/prisma/prisma/issues/4228
-
-  let answerList = await prisma.$queryRaw<
-    {
-      answerId: string;
-      answerNumber: number | null;
-      itemNumber: number;
-      count: number;
-      averageCredit: number;
-    }[]
-  >(Prisma.sql`
-    SELECT answerId, answerNumber, itemNumber,
-    COUNT(userId) as count, AVG(maxCredit) as averageCredit
-    FROM (
-      SELECT contentId, answerId, answerNumber, itemNumber, userId, MAX(answerCreditAchieved) as maxCredit
-      FROM submittedResponses
-      WHERE contentId = ${contentId}
-      GROUP BY contentId, answerId, answerNumber, itemNumber, userId 
-    ) as sr
-    INNER JOIN content on sr.contentId = content.id 
-    WHERE content.id=${contentId}
-      AND ${editableContentWhere(loggedInUserId)}
-      AND EXISTS(SELECT * FROM assignments WHERE rootContentId=content.id)
-      AND type != "folder"
-    GROUP BY answerId, answerNumber, itemNumber
-    ORDER BY itemNumber, answerNumber
-    `);
-
-  // The query returns a BigInt for count, which TypeScript doesn't know how to serialize,
-  // so we convert into a Number.
-  answerList = answerList.map((row) => {
-    row.count = Number(row.count);
-    return row;
-  });
-
-  return answerList;
-}
-
-export async function getSubmittedResponses({
-  contentId,
-  loggedInUserId,
-  answerId,
-  itemNumber,
-}: {
-  contentId: Uint8Array;
-  loggedInUserId: Uint8Array;
-  answerId: string;
-  itemNumber: number;
-}) {
-  // get activity name and make sure that loggedInUserId is the owner
-  const activityName = (
-    await prisma.content.findUniqueOrThrow({
-      where: {
-        id: contentId,
-        ...filterEditableActivity(loggedInUserId),
-      },
-      select: { name: true },
-    })
-  ).name;
-
-  // TODO: gave up figuring out to do find the best response and the latest response in a SQL query,
-  // so just create in via JS based on this one query.
-  // Can we come up with a better solution?
-  const rawResponses = await prisma.$queryRaw<
-    {
-      userId: Uint8Array;
-      firstNames: string | null;
-      lastNames: string;
-      email: string;
-      response: string;
-      answerCreditAchieved: number;
-      submittedAt: DateTime;
-      maxCredit: number;
-      numResponses: bigint;
-    }[]
-  >(Prisma.sql`
-select sr.userId, users.firstNames, users.lastNames, users.email, response, answerCreditAchieved, submittedAt,
-        MAX(answerCreditAchieved) over (partition by sr.userId) as maxCredit,
-        COUNT(answerCreditAchieved) over (partition by sr.userId) as numResponses
-        from submittedResponses as sr
-      INNER JOIN content on sr.contentId = content.id 
-      INNER JOIN users on sr.userId = users.userId 
-      WHERE content.id=${contentId} and ownerId = ${loggedInUserId} 
-        and EXISTS(SELECT * FROM assignments WHERE rootContentId=content.id) and type != "folder"
-        and contentId = ${contentId} and answerId = ${answerId} and itemNumber = ${itemNumber}
-        order by sr.userId asc, submittedAt desc
-  `);
-
-  const submittedResponses = [];
-  let newResponse;
-  let lastUserId = new Uint8Array(16);
-
-  for (const respObj of rawResponses) {
-    if (respObj.userId > lastUserId) {
-      lastUserId = respObj.userId;
-      if (newResponse) {
-        submittedResponses.push(newResponse);
-      }
-      newResponse = {
-        user: {
-          userId: respObj.userId,
-          firstNames: respObj.firstNames,
-          lastNames: respObj.lastNames,
-          email: respObj.email,
-        },
-        latestResponse: respObj.response,
-        latestCreditAchieved: respObj.answerCreditAchieved,
-        bestCreditAchieved: respObj.maxCredit,
-        numResponses: Number(respObj.numResponses),
-        bestResponse: "",
-      };
-    }
-    if (
-      newResponse?.bestResponse === "" &&
-      respObj.answerCreditAchieved === newResponse.bestCreditAchieved
-    ) {
-      newResponse.bestResponse = respObj.response;
-    }
-  }
-
-  if (newResponse) {
-    submittedResponses.push(newResponse);
-  }
-
-  return { activityName, submittedResponses };
-}
-
-export async function getSubmittedResponseHistory({
-  contentId,
-  loggedInUserId,
-  answerId,
-  itemNumber,
-  userId,
-}: {
-  contentId: Uint8Array;
-  loggedInUserId: Uint8Array;
-  answerId: string;
-  itemNumber: number;
-  userId: Uint8Array;
-}) {
-  // get activity name and make sure that owner is the owner
-  const activityName = (
-    await prisma.content.findUniqueOrThrow({
-      where: {
-        id: contentId,
-        ...filterEditableActivity(loggedInUserId),
-      },
-      select: { name: true },
-    })
-  ).name;
-
-  // for this combination of ["contentId", "answerId", "itemNumber", "userId"],
-  // find all submitted responses
-  const submittedResponses = await prisma.submittedResponses.findMany({
-    where: {
-      contentId,
-      answerId,
-      itemNumber,
-      userId,
-      content: {
-        ownerId: loggedInUserId,
-      },
-    },
-    select: {
-      user: {
-        select: {
-          userId: true,
-          firstNames: true,
-          lastNames: true,
-          email: true,
-        },
-      },
-      response: true,
-      answerCreditAchieved: true,
-      submittedAt: true,
-    },
-    orderBy: {
-      submittedAt: "asc",
-    },
-  });
-
-  return { activityName, submittedResponses };
-}
-
 export async function getAssignmentViewerDataFromCode({
   code,
   loggedInUserId,
@@ -1142,7 +938,7 @@ export async function getAssignmentResponseStudent({
     } else {
       const maxScore = attemptScores.reduce((a, c) => Math.max(a, c.score), 0);
       const maxIndex = attemptScores.map((v) => v.score).lastIndexOf(maxScore);
-      attemptNumber = attemptScores[maxIndex].attemptNumber;
+      attemptNumber = attemptScores[maxIndex]?.attemptNumber ?? 1;
     }
 
     thisAttemptState = await prisma.contentItemState.findUniqueOrThrow({
@@ -1315,10 +1111,30 @@ export async function getAssignmentResponseStudent({
     allStudents.push(...allStudentsPrelim.map((asp) => asp.user));
   }
 
+  const [contentAttemptNumber, itemAttemptNumber] =
+    mode === "formative" ? [1, attemptNumber] : [attemptNumber, 1];
+
+  const responseCountsPrelim = await prisma.submittedResponses.groupBy({
+    where: {
+      contentId,
+      itemNumber,
+      contentAttemptNumber,
+      itemAttemptNumber,
+      userId: responseUserId,
+    },
+    by: ["answerId"],
+    _count: { response: true },
+  });
+
+  const responseCounts = responseCountsPrelim.map((r) => [
+    r.answerId,
+    r._count.response,
+  ]);
+
   return {
     mode,
     user,
-    assignment: { name: content.name, type: content.type },
+    assignment: { name: content.name, type: content.type, contentId },
     attemptNumber,
     itemNumber,
     overallScores,
@@ -1327,5 +1143,48 @@ export async function getAssignmentResponseStudent({
     doc,
     itemNames,
     allStudents,
+    responseCounts,
   };
+}
+
+export async function getStudentSubmittedResponses({
+  contentId,
+  studentUserId,
+  loggedInUserId,
+  itemNumber,
+  answerId,
+  contentAttemptNumber,
+  itemAttemptNumber,
+}: {
+  contentId: Uint8Array;
+  studentUserId?: Uint8Array;
+  loggedInUserId: Uint8Array;
+  itemNumber: number;
+  answerId: string;
+  contentAttemptNumber: number;
+  itemAttemptNumber: number;
+}) {
+  const responseUserId = studentUserId ?? loggedInUserId;
+
+  // verify have access, get info
+  const responses = await prisma.submittedResponses.findMany({
+    where: {
+      contentId,
+      content: {
+        // if getting data for other person, you must be the owner
+        ownerId: isEqualUUID(responseUserId, loggedInUserId)
+          ? undefined
+          : loggedInUserId,
+        isDeleted: false,
+      },
+      userId: responseUserId,
+      itemNumber,
+      answerId,
+      contentAttemptNumber,
+      itemAttemptNumber,
+    },
+    select: { response: true, answerCreditAchieved: true, submittedAt: true },
+  });
+
+  return { responses };
 }

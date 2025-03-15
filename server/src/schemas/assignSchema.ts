@@ -32,19 +32,6 @@ export const getStudentDataSchema = z.object({
   parentId: uuidSchema.nullish().transform((val) => val ?? null),
 });
 
-export const getSubmittedResponsesSchema = z.object({
-  contentId: uuidSchema,
-  answerId: z.string(),
-  itemNumber: z.number().int(),
-});
-
-export const getSubmittedResponseHistorySchema = z.object({
-  contentId: uuidSchema,
-  answerId: z.string(),
-  itemNumber: z.number().int(),
-  userId: uuidSchema,
-});
-
 export const recordSubmittedEventSchema = z.object({
   contentId: uuidSchema,
   contentAttemptNumber: z.number().int(),
@@ -79,4 +66,13 @@ export const getAssignmentResponseStudentSchema = z.object({
     .transform((val) => parseInt(val))
     .refine((v) => v > 0)
     .optional(),
+});
+
+export const getStudentSubmittedResponsesSchema = z.object({
+  contentId: uuidSchema,
+  studentUserId: uuidSchema.optional(),
+  answerId: z.string(),
+  itemNumber: z.string().transform((val) => parseInt(val)),
+  contentAttemptNumber: z.string().transform((val) => parseInt(val)),
+  itemAttemptNumber: z.string().transform((val) => parseInt(val)),
 });

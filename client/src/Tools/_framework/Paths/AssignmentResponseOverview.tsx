@@ -121,6 +121,14 @@ export async function loader({ params }) {
           }
         }
       }
+    } else if (assignment.type === "select") {
+      if (assignment.numToSelect === 1) {
+        itemNames.push(assignment.name);
+      } else {
+        for (let i = 0; i < assignment.numToSelect; i++) {
+          itemNames.push(`${assignment.name} (${i})`);
+        }
+      }
     }
 
     return {

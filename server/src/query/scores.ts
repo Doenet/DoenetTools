@@ -1157,7 +1157,7 @@ export async function getScoresOfAllStudents({
         throw Error("Invalid data. Could not calculate score for student");
       }
     } else {
-      let itemScores: ItemScores | null = null;
+      let itemScores: ItemScores = [];
 
       if (scoreObj.cachedItemScores !== null) {
         const cachedItems = JSON.parse(scoreObj.cachedItemScores);

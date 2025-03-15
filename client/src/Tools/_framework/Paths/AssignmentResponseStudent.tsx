@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
 import {
@@ -16,6 +16,7 @@ import {
   Tooltip,
   Flex,
   Select,
+  useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading } from "../../../Widgets/Heading";
@@ -33,13 +34,7 @@ import {
   UserInfo,
 } from "../../../_utils/types";
 import { clearQueryParameter } from "../../../_utils/explore";
-
-export async function action({ request }) {
-  const formData = await request.formData();
-  const formObj = Object.fromEntries(formData);
-
-  return null;
-}
+import { AnswerResponseDrawer } from "../ToolPanels/AnswerResponseDrawer";
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);
@@ -79,9 +74,12 @@ export async function loader({ params, request }) {
       overall.latestAttempt?.itemScores.map((x) => x.itemAttemptNumber) ?? null,
   };
 
+  const responseCounts = Object.fromEntries(data.responseCounts);
+
   return {
     ...data,
     overallScores,
+    responseCounts,
   };
 }
 
@@ -98,8 +96,9 @@ export function AssignmentResponseStudent() {
     itemNumber,
     attemptNumber,
     allStudents,
+    responseCounts,
   } = useLoaderData() as {
-    assignment: { name: string; type: ContentType };
+    assignment: { name: string; type: ContentType; contentId: string };
     doc: Doc;
     mode: AssignmentMode;
     user: UserInfo;
@@ -124,6 +123,7 @@ export function AssignmentResponseStudent() {
       firstNames: string | null;
       lastNames: string;
     }[];
+    responseCounts: Record<string, number>;
   };
 
   useEffect(() => {
@@ -132,6 +132,8 @@ export function AssignmentResponseStudent() {
 
   const { search } = useLocation();
   const navigate = useNavigate();
+
+  const [responseAnswerId, setResponseAnswerId] = useState<string | null>(null);
 
   useEffect(() => {
     const messageListener = async function (event) {
@@ -152,6 +154,12 @@ export function AssignmentResponseStudent() {
             loadedState: false,
           });
         }
+      } else if (event.data.subject === "requestAnswerResponses") {
+        console.log("requested responses:", event.data);
+        if (typeof event.data.answerId === "string") {
+          setResponseAnswerId(event.data.answerId);
+          answerResponsesOnOpen();
+        }
       }
     };
 
@@ -162,11 +170,36 @@ export function AssignmentResponseStudent() {
     };
   }, [user.userId, thisAttemptState, itemNumber, attemptNumber]);
 
+  const {
+    isOpen: answerResponsesAreOpen,
+    onOpen: answerResponsesOnOpen,
+    onClose: answerResponsesOnClose,
+  } = useDisclosure();
+
+  const [contentAttemptNumber, itemAttemptNumber] =
+    mode === "formative" ? [1, attemptNumber] : [attemptNumber, 1];
+
+  const answerResponseDrawer =
+    typeof responseAnswerId === "string" ? (
+      <AnswerResponseDrawer
+        isOpen={answerResponsesAreOpen}
+        onClose={answerResponsesOnClose}
+        doc={doc}
+        assignment={assignment}
+        student={user}
+        answerId={responseAnswerId}
+        itemNumber={itemNumber}
+        contentAttemptNumber={contentAttemptNumber}
+        itemAttemptNumber={itemAttemptNumber}
+      />
+    ) : null;
+
   const numAttempts = overallScores.numContentAttempts;
   const studentName = createFullName(user);
 
   return (
     <>
+      {answerResponseDrawer}
       <Box style={{ marginTop: 15, marginLeft: 15 }}>
         <ChakraLink
           as={ReactRouterLink}
@@ -250,7 +283,7 @@ export function AssignmentResponseStudent() {
                   const numItemAttempts =
                     overallScores.numItemAttempts?.[i] ?? 1;
                   return (
-                    <Td>
+                    <Td key={i}>
                       <ChakraLink
                         as={ReactRouterLink}
                         to={`.?itemNumber=${i + 1}`}
@@ -295,7 +328,7 @@ export function AssignmentResponseStudent() {
           <Flex alignItems="center">
             <label htmlFor="item-select">Select item:</label>{" "}
             <Select
-              width="100px"
+              width="180px"
               marginLeft="5px"
               id="item-select"
               size="sm"
@@ -351,7 +384,7 @@ export function AssignmentResponseStudent() {
         </Heading>
         <DoenetViewer
           doenetML={doc.doenetML}
-          key={`item ${itemNumber} attempt ${attemptNumber}`}
+          key={`${user.userId}|${itemNumber}|${attemptNumber}`}
           doenetmlVersion={doc.doenetmlVersion.fullVersion}
           flags={{
             showCorrectness: true,
@@ -374,6 +407,8 @@ export function AssignmentResponseStudent() {
             viewURL: "/activityViewer",
             editURL: "/codeViewer",
           }}
+          showAnswerResponseMenu={true}
+          answerResponseCounts={responseCounts}
         />
       </Box>
     </>

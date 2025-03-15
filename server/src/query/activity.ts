@@ -224,6 +224,7 @@ export async function updateContent({
       baseComponentCounts,
       imagePath,
       shuffle,
+      numToSelect,
       selectByVariant,
       paginate,
     ].every((x) => x === undefined)
@@ -262,6 +263,7 @@ export async function updateContent({
         baseComponentCounts,
         // imagePath,
         shuffle,
+        numToSelect,
         selectByVariant,
         paginate,
       ].some((x) => x !== undefined)

@@ -8,8 +8,7 @@ import {
   getAssignmentResponseOverview,
   getAssignmentResponseStudent,
   getStudentData,
-  getSubmittedResponseHistory,
-  getSubmittedResponses,
+  getStudentSubmittedResponses,
   listUserAssigned,
   openAssignmentWithCode,
   recordSubmittedEvent,
@@ -23,12 +22,11 @@ import {
   assignmentParentSchema,
   assignmentCloseAtSchema,
   getStudentDataSchema,
-  getSubmittedResponseHistorySchema,
-  getSubmittedResponsesSchema,
   recordSubmittedEventSchema,
   assignmentMaxAttemptsSchema,
   assignmentModeSchema,
   getAssignmentResponseStudentSchema,
+  getStudentSubmittedResponsesSchema,
 } from "../schemas/assignSchema";
 import {
   queryLoggedIn,
@@ -96,16 +94,6 @@ assignRouter.get(
   queryLoggedIn(getStudentData, getStudentDataSchema),
 );
 
-assignRouter.get(
-  "/getSubmittedResponses/:contentId",
-  queryLoggedIn(getSubmittedResponses, getSubmittedResponsesSchema),
-);
-
-assignRouter.get(
-  "/getSubmittedResponseHistory/:contentId/:userId",
-  queryLoggedIn(getSubmittedResponseHistory, getSubmittedResponseHistorySchema),
-);
-
 assignRouter.post(
   "/recordSubmittedEvent",
   queryLoggedIn(recordSubmittedEvent, recordSubmittedEventSchema),
@@ -121,5 +109,13 @@ assignRouter.get(
   queryLoggedIn(
     getAssignmentResponseStudent,
     getAssignmentResponseStudentSchema,
+  ),
+);
+
+assignRouter.get(
+  "/getStudentSubmittedResponses/:contentId/:studentUserId",
+  queryLoggedIn(
+    getStudentSubmittedResponses,
+    getStudentSubmittedResponsesSchema,
   ),
 );

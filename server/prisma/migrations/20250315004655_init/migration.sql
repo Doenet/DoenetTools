@@ -156,6 +156,7 @@ CREATE TABLE `assignmentScores` (
     `contentId` BINARY(16) NOT NULL,
     `userId` BINARY(16) NOT NULL,
     `cachedScore` DOUBLE NULL,
+    `cachedBestAttemptNumber` SMALLINT UNSIGNED NOT NULL,
     `cachedItemScores` TEXT NULL,
     `cachedLatestAttempt` TEXT NULL,
 
@@ -183,6 +184,7 @@ CREATE TABLE `contentItemState` (
     `itemNumber` INTEGER NOT NULL,
     `shuffledItemNumber` INTEGER NOT NULL,
     `itemAttemptNumber` INTEGER NOT NULL,
+    `docId` BINARY(16) NOT NULL,
     `score` DOUBLE NOT NULL DEFAULT 0,
     `state` MEDIUMTEXT NULL,
 
@@ -208,8 +210,7 @@ CREATE TABLE `submittedResponses` (
     `itemCreditAchieved` DOUBLE NOT NULL,
     `submittedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    INDEX `submittedResponses_contentId_answerId_idx`(`contentId`, `answerId`),
-    INDEX `submittedResponses_userId_idx`(`userId`),
+    INDEX `submittedResponses_contentId_contentAttemptNumber_itemAttemp_idx`(`contentId`, `contentAttemptNumber`, `itemAttemptNumber`, `userId`, `answerId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

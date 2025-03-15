@@ -263,8 +263,7 @@ model submittedResponses {
   content                 content  @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user                    users    @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
 
-  @@index([contentId, answerId])
-  @@index([userId])
+  @@index([contentId, contentAttemptNumber, itemAttemptNumber, userId, answerId])
 }
 
 model contentViews {

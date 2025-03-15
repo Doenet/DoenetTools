@@ -57,18 +57,7 @@ import {
   AssignmentData as AssignmentResponseOverview,
 } from "./Tools/_framework/Paths/AssignmentResponseOverview";
 import {
-  loader as assignmentAnswerResponsesLoader,
-  action as assignmentAnswerResponsesAction,
-  AssignmentAnswerResponses,
-} from "./Tools/_framework/Paths/AssignmentAnswerResponses";
-import {
-  loader as assignmentAnswerResponseHistoryLoader,
-  action as assignmentAnswerResponseHistoryAction,
-  AssignmentAnswerResponseHistory,
-} from "./Tools/_framework/Paths/AssignmentAnswerResponseHistory";
-import {
   loader as assignmentResponseStudentLoader,
-  action as assignmentResponseStudentAction,
   AssignmentResponseStudent,
   // assignedAssignmentDataloader,
 } from "./Tools/_framework/Paths/AssignmentResponseStudent";
@@ -331,7 +320,6 @@ const router = createBrowserRouter([
       },
       // {
       //   path: "assignedData/:contentId",
-      //   action: assignmentResponseStudentAction,
       //   loader: assignedAssignmentDataloader,
       //   element: <AssignmentResponseStudent />,
       //   errorElement: <ErrorPage />,
@@ -344,23 +332,8 @@ const router = createBrowserRouter([
       },
       {
         path: "assignmentData/:contentId/:studentUserId",
-        action: assignmentResponseStudentAction,
         loader: assignmentResponseStudentLoader,
         element: <AssignmentResponseStudent />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "assignmentAnswerResponses/:contentId/:docId/:docVersionNum",
-        loader: assignmentAnswerResponsesLoader,
-        action: assignmentAnswerResponsesAction,
-        element: <AssignmentAnswerResponses />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "assignmentAnswerResponseHistory/:contentId/:docId/:docVersionNum/:userId",
-        loader: assignmentAnswerResponseHistoryLoader,
-        action: assignmentAnswerResponseHistoryAction,
-        element: <AssignmentAnswerResponseHistory />,
         errorElement: <ErrorPage />,
       },
       {

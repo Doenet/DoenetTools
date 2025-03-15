@@ -12,13 +12,9 @@ import {
   assignActivity,
   closeAssignmentWithCode,
   getAllAssignmentScores,
-  getAnswersWithSubmittedResponses,
   getAssignedScores,
   getAssignmentViewerDataFromCode,
-  getAssignmentStudentData,
   getStudentData,
-  getSubmittedResponseHistory,
-  getSubmittedResponses,
   listUserAssigned,
   openAssignmentWithCode,
   recordSubmittedEvent,
@@ -1234,7 +1230,15 @@ test("get assignment data from anonymous users", async () => {
     loggedInUserId: ownerId,
   });
 
-  expect(assignmentScores.scores).eqls([{ score: 0.5, user: userData1 }]);
+  expect(assignmentScores.scores).eqls([
+    {
+      score: 0.5,
+      bestAttemptNumber: 1,
+      itemScores: [],
+      latestAttempt: { attemptNumber: 1, itemScores: [], score: 0.5 },
+      user: userData1,
+    },
+  ]);
 
   let dataFromCode = await getAssignmentViewerDataFromCode({
     code: classCode,
@@ -1244,6 +1248,8 @@ test("get assignment data from anonymous users", async () => {
   expect(dataFromCode.scoreData).eqls({
     calculatedScore: true,
     score: 0.5,
+    bestAttemptNumber: 1,
+    itemScores: [],
     latestAttempt: {
       attemptNumber: 1,
       score: 0.5,

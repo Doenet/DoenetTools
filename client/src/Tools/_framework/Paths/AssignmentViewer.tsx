@@ -293,7 +293,7 @@ export function AssignmentViewer() {
               newAttemptForItem: data.newAttemptForItem,
               shuffledItemOrder: itemScores.map((s) => ({
                 shuffledItemNumber: s.shuffledOrder,
-                docId: s.docId,
+                docId: s.docId.split("|")[0], // remove any suffix from selecting multiple by variant
               })),
             });
           } else {
@@ -316,7 +316,7 @@ export function AssignmentViewer() {
             ) {
               const shuffledItemOrder = itemScores.map((s) => ({
                 shuffledItemNumber: s.shuffledOrder,
-                docId: s.docId,
+                docId: s.docId.split("|")[0], // remove any suffix from selecting multiple by variant,
               }));
               const shuffledItemNumber = data.itemUpdated;
               const itemAttemptNumber =
