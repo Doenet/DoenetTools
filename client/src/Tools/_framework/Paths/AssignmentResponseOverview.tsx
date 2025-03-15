@@ -116,7 +116,7 @@ export async function loader({ params }) {
             itemNames.push(child.name);
           } else {
             for (let i = 0; i < child.numToSelect; i++) {
-              itemNames.push(`${child.name} (${i})`);
+              itemNames.push(`${child.name} (${i + 1})`);
             }
           }
         }
@@ -126,7 +126,7 @@ export async function loader({ params }) {
         itemNames.push(assignment.name);
       } else {
         for (let i = 0; i < assignment.numToSelect; i++) {
-          itemNames.push(`${assignment.name} (${i})`);
+          itemNames.push(`${assignment.name} (${i + 1})`);
         }
       }
     }

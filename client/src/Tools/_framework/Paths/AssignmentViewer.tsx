@@ -702,7 +702,6 @@ export function AssignmentViewer() {
       }[];
     };
   }) {
-    console.log("set score info", scoreData);
     setScores({
       scoreNumberByItem: createScoreNumberByItem(scoreData.itemScores),
       score: Number(scoreData.score),
@@ -747,8 +746,6 @@ async function recordSubmittedEvent({
     context: string;
   };
 }) {
-  console.log("record submitted", data);
-
   const object = JSON.parse(data.object);
   const answerId = object.componentName;
 
@@ -764,10 +761,9 @@ async function recordSubmittedEvent({
     const componentCreditAchieved = context.componentCreditAchieved;
     const itemCreditAchieved = context.docCreditAchieved;
 
-    console.log(docId, itemScores);
+    console.log(docId, itemScores, assignment.contentId);
 
     const itemIdx = itemScores?.findIndex((v) => v.docId === docId);
-    console.log(docId, itemScores, itemIdx);
     const itemNumber = (itemIdx ?? 0) + 1;
     const shuffledItemNumber = itemScores?.[itemNumber - 1].shuffledOrder ?? 1;
     const itemAttemptNumber = itemAttemptNumbers

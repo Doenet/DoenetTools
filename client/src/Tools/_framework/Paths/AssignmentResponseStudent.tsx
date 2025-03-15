@@ -17,6 +17,8 @@ import {
   Flex,
   Select,
   useDisclosure,
+  Grid,
+  GridItem,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading } from "../../../Widgets/Heading";
@@ -177,7 +179,11 @@ export function AssignmentResponseStudent() {
   } = useDisclosure();
 
   const [contentAttemptNumber, itemAttemptNumber] =
-    mode === "formative" ? [1, attemptNumber] : [attemptNumber, 1];
+    assignment.type === "singleDoc"
+      ? [attemptNumber, null]
+      : mode === "formative"
+        ? [1, attemptNumber]
+        : [attemptNumber, 1];
 
   const answerResponseDrawer =
     typeof responseAnswerId === "string" ? (
@@ -248,110 +254,126 @@ export function AssignmentResponseStudent() {
 
       <Box marginLeft="20px" marginTop="20px">
         <Heading as="h3" size="md">
-          Score summary
+          {assignment.type === "singleDoc" ? (
+            <>Total score: {Math.round(overallScores.score * 100) / 100}</>
+          ) : (
+            <>Score summary</>
+          )}
         </Heading>
 
-        <TableContainer marginTop="10px">
-          <Table>
-            <Thead>
-              <Tr>
-                {itemNames.map((name, i) => {
-                  return (
-                    <Th
-                      textTransform={"none"}
-                      fontSize="large"
-                      key={i}
-                      maxWidth="100px"
-                    >
-                      <Tooltip label={`${i + 1}. ${name}`} openDelay={500}>
-                        <Text noOfLines={1}>
-                          {i + 1}. {name}
-                        </Text>
-                      </Tooltip>
-                    </Th>
-                  );
-                })}
-
-                <Th textTransform={"none"} fontSize="large">
-                  <strong>Total</strong>
-                </Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              <Tr>
-                {overallScores.itemScores?.map((item, i) => {
-                  const numItemAttempts =
-                    overallScores.numItemAttempts?.[i] ?? 1;
-                  return (
-                    <Td key={i}>
-                      <ChakraLink
-                        as={ReactRouterLink}
-                        to={`.?itemNumber=${i + 1}`}
-                        textDecoration="underline"
-                        replace={true}
+        {assignment.type === "singleDoc" ? (
+          <Text marginTop="10px">
+            (based on {numAttempts} attempt{numAttempts === 1 ? "" : "s"})
+          </Text>
+        ) : (
+          <TableContainer marginTop="10px">
+            <Table>
+              <Thead>
+                <Tr>
+                  {itemNames.map((name, i) => {
+                    return (
+                      <Th
+                        textTransform={"none"}
+                        fontSize="medium"
+                        key={i}
+                        maxWidth="100px"
                       >
-                        &nbsp;
-                        {Math.round(item.score * 100) / 100}
-                        &nbsp;
-                        {mode === "formative" && numItemAttempts > 1 ? (
-                          <Tooltip
-                            label={`${studentName} took ${numItemAttempts} attempts on item: ${itemNames[i]}`}
-                          >
-                            ({numItemAttempts}x)
-                          </Tooltip>
-                        ) : null}
-                      </ChakraLink>
-                    </Td>
-                  );
-                })}
-                <Td>
-                  {Math.round(overallScores.score * 100) / 100}{" "}
-                  {mode === "summative" && numAttempts > 1 ? (
-                    <Tooltip
-                      label={`${studentName} took ${numAttempts} attempts on the assignment`}
-                    >
-                      ({numAttempts}x)
-                    </Tooltip>
-                  ) : null}
-                </Td>
-              </Tr>
-            </Tbody>
-          </Table>
-        </TableContainer>
+                        <Tooltip label={`${i + 1}. ${name}`} openDelay={500}>
+                          <Text noOfLines={1}>
+                            {i + 1}. {name}
+                          </Text>
+                        </Tooltip>
+                      </Th>
+                    );
+                  })}
+
+                  <Th textTransform={"none"} fontSize="medium">
+                    <strong>Total</strong>
+                  </Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                <Tr>
+                  {overallScores.itemScores?.map((item, i) => {
+                    const numItemAttempts =
+                      overallScores.numItemAttempts?.[i] ?? 1;
+                    return (
+                      <Td key={i}>
+                        <ChakraLink
+                          as={ReactRouterLink}
+                          to={`.?itemNumber=${i + 1}`}
+                          textDecoration="underline"
+                          replace={true}
+                        >
+                          &nbsp;
+                          {Math.round(item.score * 100) / 100}
+                          &nbsp;
+                          {mode === "formative" && numItemAttempts > 1 ? (
+                            <Tooltip
+                              label={`${studentName} took ${numItemAttempts} attempts on item: ${itemNames[i]}`}
+                            >
+                              ({numItemAttempts}x)
+                            </Tooltip>
+                          ) : null}
+                        </ChakraLink>
+                      </Td>
+                    );
+                  })}
+                  <Td>
+                    {Math.round(overallScores.score * 100) / 100}{" "}
+                    {mode === "summative" && numAttempts > 1 ? (
+                      <Tooltip
+                        label={`${studentName} took ${numAttempts} attempts on the assignment`}
+                      >
+                        ({numAttempts}x)
+                      </Tooltip>
+                    ) : null}
+                  </Td>
+                </Tr>
+              </Tbody>
+            </Table>
+          </TableContainer>
+        )}
       </Box>
 
       <Box marginLeft="20px" marginTop="40px">
         <Heading as="h3" size="md">
           Item details
         </Heading>
-        <Flex alignItems="center" marginTop="20px">
-          <Flex alignItems="center">
-            <label htmlFor="item-select">Select item:</label>{" "}
-            <Select
-              width="180px"
-              marginLeft="5px"
-              id="item-select"
-              size="sm"
-              value={itemNumber}
-              onChange={(e) => {
-                const newSearch = `?itemNumber=${e.target.value}`;
-                navigate(`.${newSearch}`, { replace: true });
-              }}
-            >
-              {itemNames.map((name, i) => (
-                <option value={i + 1} key={i}>
-                  {i + 1}. {name}
-                </option>
-              ))}
-            </Select>
-          </Flex>
+        <Flex alignItems="center" marginTop="20px" justifyContent="center">
+          {assignment.type !== "singleDoc" ? (
+            <Flex alignItems="center">
+              <label htmlFor="item-select" style={{ fontSize: "large" }}>
+                Select item:
+              </label>{" "}
+              <Select
+                width="250px"
+                marginLeft="5px"
+                id="item-select"
+                size="lg"
+                value={itemNumber}
+                onChange={(e) => {
+                  const newSearch = `?itemNumber=${e.target.value}`;
+                  navigate(`.${newSearch}`, { replace: true });
+                }}
+              >
+                {itemNames.map((name, i) => (
+                  <option value={i + 1} key={i}>
+                    {i + 1}. {name}
+                  </option>
+                ))}
+              </Select>
+            </Flex>
+          ) : null}
           <Flex alignItems="center" marginLeft="10px">
-            <label htmlFor="attempt-select">Select attempt:</label>{" "}
+            <label htmlFor="attempt-select" style={{ fontSize: "large" }}>
+              Select attempt:
+            </label>{" "}
             <Select
-              width="180px"
+              width="250px"
               marginLeft="5px"
               id="attempt-select"
-              size="sm"
+              size="lg"
               value={attemptNumber}
               onChange={(e) => {
                 let newSearch = clearQueryParameter("attemptNumber", search);
@@ -378,38 +400,80 @@ export function AssignmentResponseStudent() {
         </Flex>
       </Box>
 
-      <Box marginTop="20px">
-        <Heading as="h4" size="sm" marginLeft="20px">
-          {itemNumber}. {itemNames[itemNumber - 1]}
-        </Heading>
-        <DoenetViewer
-          doenetML={doc.doenetML}
-          key={`${user.userId}|${itemNumber}|${attemptNumber}`}
-          doenetmlVersion={doc.doenetmlVersion.fullVersion}
-          flags={{
-            showCorrectness: true,
-            solutionDisplayMode: "button",
-            showFeedback: true,
-            showHints: true,
-            autoSubmit: false,
-            readOnly: true,
-            allowLoadState: true,
-            allowSaveState: false,
-            allowLocalState: false,
-            allowSaveEvents: false,
-          }}
-          forceDisable={true}
-          //   forceShowCorrectness={true}
-          forceShowSolution={true}
-          forceUnsuppressCheckwork={true}
-          attemptNumber={1}
-          linkSettings={{
-            viewURL: "/activityViewer",
-            editURL: "/codeViewer",
-          }}
-          showAnswerResponseMenu={true}
-          answerResponseCounts={responseCounts}
-        />
+      <Box marginTop="20px" borderTop="4px" borderColor="doenet.mediumGray">
+        <Grid
+          width="100%"
+          //   height="calc(100vh - 80px)"
+          background="doenet.lightBlue"
+          templateAreas={`"leftGutter viewer rightGutter"`}
+          templateColumns={`1fr minmax(340px,850px) 1fr`}
+          overflow="hidden"
+        >
+          <GridItem
+            area="leftGutter"
+            background="doenet.lightBlue"
+            width="100%"
+            paddingTop="10px"
+            alignSelf="start"
+          />
+          <GridItem
+            area="rightGutter"
+            background="doenet.lightBlue"
+            width="100%"
+            paddingTop="10px"
+            alignSelf="start"
+          />
+          <GridItem
+            area="viewer"
+            width="100%"
+            placeSelf="center"
+            minHeight="100%"
+            maxWidth="850px"
+            overflow="hidden"
+          >
+            <Box
+              //   h="calc(100vh - 80px)"
+              background="var(--canvas)"
+              borderWidth="1px"
+              borderStyle="solid"
+              borderColor="doenet.mediumGray"
+              padding="20px 5px 50vh 5px"
+              flexGrow={1}
+              //   overflow="scroll"
+              w="100%"
+              id="viewer-container"
+            >
+              <DoenetViewer
+                doenetML={doc.doenetML}
+                key={`${user.userId}|${itemNumber}|${attemptNumber}`}
+                doenetmlVersion={doc.doenetmlVersion.fullVersion}
+                flags={{
+                  showCorrectness: true,
+                  solutionDisplayMode: "button",
+                  showFeedback: true,
+                  showHints: true,
+                  autoSubmit: false,
+                  readOnly: true,
+                  allowLoadState: true,
+                  allowSaveState: false,
+                  allowLocalState: false,
+                  allowSaveEvents: false,
+                }}
+                forceDisable={true}
+                //   forceShowCorrectness={true}
+                forceShowSolution={true}
+                forceUnsuppressCheckwork={true}
+                attemptNumber={1}
+                linkSettings={{
+                  viewURL: "/activityViewer",
+                  editURL: "/codeViewer",
+                }}
+                showAnswerResponseMenu={true}
+                answerResponseCounts={responseCounts}
+              />
+            </Box>
+          </GridItem>
+        </Grid>
       </Box>
     </>
   );
