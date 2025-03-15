@@ -21,7 +21,7 @@ import {
   unassignActivity,
   updateAssignmentCloseAt,
   updateAssignmentMaxAttempts,
-  updateAssignmentMode,
+  updateAssignmentSettings,
 } from "../query/assign";
 import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import {
@@ -233,6 +233,7 @@ test("open and close assignment with code", async () => {
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: ownerId,
     attemptNumber: 1,
     score: 0.3,
@@ -742,7 +743,7 @@ test("cannot assign an ancestor of an assignment", async () => {
   await assignActivity({ contentId: sequenceId, loggedInUserId: ownerId });
 });
 
-test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity", async () => {
+test("cannot change closeAt, maxAttempts, mode, individualizeByStudent of a non-root assignment activity", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
 
@@ -793,6 +794,7 @@ test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity
   const closeAt = DateTime.now().plus({ days: 1 });
   const maxAttempts = 2;
   const mode: AssignmentMode = "summative";
+  const individualizeByStudent = true;
 
   await expect(
     updateAssignmentCloseAt({
@@ -813,10 +815,20 @@ test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity
   );
 
   await expect(
-    updateAssignmentMode({
+    updateAssignmentSettings({
       contentId: docId,
       loggedInUserId: ownerId,
       mode,
+    }),
+  ).rejects.toThrow(
+    "Activity is already assigned as a part of another activity",
+  );
+
+  await expect(
+    updateAssignmentSettings({
+      contentId: docId,
+      loggedInUserId: ownerId,
+      individualizeByStudent,
     }),
   ).rejects.toThrow(
     "Activity is already assigned as a part of another activity",
@@ -831,6 +843,7 @@ test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity
   expect(content.assignmentInfo?.codeValidUntil).eq(null);
   expect(content.assignmentInfo?.maxAttempts).eq(1);
   expect(content.assignmentInfo?.mode).eq("formative");
+  expect(content.assignmentInfo?.individualizeByStudent).eq(false);
 
   await expect(
     updateAssignmentCloseAt({
@@ -851,10 +864,20 @@ test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity
   );
 
   await expect(
-    updateAssignmentMode({
+    updateAssignmentSettings({
       contentId: selectId,
       loggedInUserId: ownerId,
       mode,
+    }),
+  ).rejects.toThrow(
+    "Activity is already assigned as a part of another activity",
+  );
+
+  await expect(
+    updateAssignmentSettings({
+      contentId: selectId,
+      loggedInUserId: ownerId,
+      individualizeByStudent,
     }),
   ).rejects.toThrow(
     "Activity is already assigned as a part of another activity",
@@ -869,14 +892,27 @@ test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity
   expect(content.assignmentInfo?.codeValidUntil).eq(null);
   expect(content.assignmentInfo?.maxAttempts).eq(1);
   expect(content.assignmentInfo?.mode).eq("formative");
+  expect(content.assignmentInfo?.individualizeByStudent).eq(false);
 
   await expect(
-    updateAssignmentMode({
+    updateAssignmentSettings({
       contentId: sequenceId,
       loggedInUserId: ownerId,
       mode,
     }),
-  ).rejects.toThrow("Cannot update assignment mode of assigned content");
+  ).rejects.toThrow(
+    "Cannot update assignment mode or individualizeByStudent of assigned content",
+  );
+
+  await expect(
+    updateAssignmentSettings({
+      contentId: sequenceId,
+      loggedInUserId: ownerId,
+      individualizeByStudent,
+    }),
+  ).rejects.toThrow(
+    "Cannot update assignment mode or individualizeByStudent of assigned content",
+  );
 
   await updateAssignmentCloseAt({
     contentId: sequenceId,
@@ -899,6 +935,7 @@ test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity
   expect(content.assignmentInfo?.codeValidUntil).eqls(closeAt.toJSDate());
   expect(content.assignmentInfo?.maxAttempts).eq(2);
   expect(content.assignmentInfo?.mode).eq("formative");
+  expect(content.assignmentInfo?.individualizeByStudent).eq(false);
 
   content = await getContent({
     contentId: selectId,
@@ -909,6 +946,7 @@ test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity
   expect(content.assignmentInfo?.codeValidUntil).eqls(closeAt.toJSDate());
   expect(content.assignmentInfo?.maxAttempts).eq(2);
   expect(content.assignmentInfo?.mode).eq("formative");
+  expect(content.assignmentInfo?.individualizeByStudent).eq(false);
 
   content = await getContent({
     contentId: docId,
@@ -919,15 +957,21 @@ test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity
   expect(content.assignmentInfo?.codeValidUntil).eqls(closeAt.toJSDate());
   expect(content.assignmentInfo?.maxAttempts).eq(2);
   expect(content.assignmentInfo?.mode).eq("formative");
+  expect(content.assignmentInfo?.individualizeByStudent).eq(false);
 
-  // When unassign assignment, then can change mode
+  // When unassign assignment, then can change mode and individualize by student
   await unassignActivity({ contentId: sequenceId, loggedInUserId: ownerId });
 
-  await updateAssignmentMode({
+  await updateAssignmentSettings({
     contentId: sequenceId,
     loggedInUserId: ownerId,
     mode,
   });
+  await updateAssignmentSettings({
+    contentId: sequenceId,
+    loggedInUserId: ownerId,
+    individualizeByStudent,
+  });
 
   content = await getContent({
     contentId: sequenceId,
@@ -935,6 +979,7 @@ test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity
     includeAssignInfo: true,
   });
   expect(content.assignmentInfo?.mode).eq("summative");
+  expect(content.assignmentInfo?.individualizeByStudent).eq(true);
 
   content = await getContent({
     contentId: selectId,
@@ -942,6 +987,7 @@ test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity
     includeAssignInfo: true,
   });
   expect(content.assignmentInfo?.mode).eq("summative");
+  expect(content.assignmentInfo?.individualizeByStudent).eq(true);
   expect(content.assignmentInfo?.otherRoot?.rootContentId).eqls(sequenceId);
 
   content = await getContent({
@@ -950,13 +996,19 @@ test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity
     includeAssignInfo: true,
   });
   expect(content.assignmentInfo?.mode).eq("summative");
+  expect(content.assignmentInfo?.individualizeByStudent).eq(true);
   expect(content.assignmentInfo?.otherRoot?.rootContentId).eqls(sequenceId);
 
-  // can now change maxAttempts and mode of descendants, and they get independent values
-  await updateAssignmentMode({
+  // can now change maxAttempt, mode, and individualizeByStudent of descendants, and they get independent values
+  await updateAssignmentSettings({
     contentId: selectId,
     loggedInUserId: ownerId,
     mode: "formative",
+  });
+  await updateAssignmentSettings({
+    contentId: selectId,
+    loggedInUserId: ownerId,
+    individualizeByStudent: false,
   });
 
   content = await getContent({
@@ -965,6 +1017,7 @@ test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity
     includeAssignInfo: true,
   });
   expect(content.assignmentInfo?.mode).eq("summative");
+  expect(content.assignmentInfo?.individualizeByStudent).eq(true);
   expect(content.assignmentInfo?.maxAttempts).eq(2);
   expect(content.assignmentInfo?.otherRoot?.rootContentId).eq(undefined);
 
@@ -974,6 +1027,7 @@ test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity
     includeAssignInfo: true,
   });
   expect(content.assignmentInfo?.mode).eq("formative");
+  expect(content.assignmentInfo?.individualizeByStudent).eq(false);
   expect(content.assignmentInfo?.maxAttempts).eq(1); // max attempts reverted to default since disconnected
   expect(content.assignmentInfo?.otherRoot?.rootContentId).eq(undefined);
 
@@ -983,6 +1037,7 @@ test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity
     includeAssignInfo: true,
   });
   expect(content.assignmentInfo?.mode).eq("summative");
+  expect(content.assignmentInfo?.individualizeByStudent).eq(true);
   expect(content.assignmentInfo?.otherRoot?.rootContentId).eqls(sequenceId);
 
   await updateAssignmentMaxAttempts({
@@ -997,6 +1052,7 @@ test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity
     includeAssignInfo: true,
   });
   expect(content.assignmentInfo?.mode).eq("summative");
+  expect(content.assignmentInfo?.individualizeByStudent).eq(true);
   expect(content.assignmentInfo?.maxAttempts).eq(2);
   expect(content.assignmentInfo?.otherRoot?.rootContentId).eq(undefined);
 
@@ -1006,6 +1062,7 @@ test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity
     includeAssignInfo: true,
   });
   expect(content.assignmentInfo?.mode).eq("formative");
+  expect(content.assignmentInfo?.individualizeByStudent).eq(false);
   expect(content.assignmentInfo?.otherRoot?.rootContentId).eq(undefined);
   expect(content.assignmentInfo?.maxAttempts).eq(1);
 
@@ -1015,6 +1072,7 @@ test("cannot change closeAt, maxAttempts, mode of a non-root assignment activity
     includeAssignInfo: true,
   });
   expect(content.assignmentInfo?.mode).eq("formative"); // mode reverted to default since disconnected
+  expect(content.assignmentInfo?.individualizeByStudent).eq(false); // individualizeByStudent reverted to default since disconnected
   expect(content.assignmentInfo?.maxAttempts).eq(5);
   expect(content.assignmentInfo?.otherRoot?.rootContentId).eq(undefined);
 });
@@ -1081,14 +1139,14 @@ test("assignment settings of descendants synchronize when ancestor assigned", as
     loggedInUserId: ownerId,
     maxAttempts: 2,
   });
-  await updateAssignmentMode({
+  await updateAssignmentSettings({
     contentId: sequenceId,
     loggedInUserId: ownerId,
     mode: "summative",
   });
 
   // update in reverse order for select to make sure can change mode when start with no assignment record
-  await updateAssignmentMode({
+  await updateAssignmentSettings({
     contentId: selectId,
     loggedInUserId: ownerId,
     mode: "summative",
@@ -1104,7 +1162,7 @@ test("assignment settings of descendants synchronize when ancestor assigned", as
     loggedInUserId: ownerId,
     maxAttempts: 4,
   });
-  await updateAssignmentMode({
+  await updateAssignmentSettings({
     contentId: docId,
     loggedInUserId: ownerId,
     mode: "formative",
@@ -1174,7 +1232,7 @@ test("assignment settings of descendants synchronize when ancestor assigned", as
   expect(content.assignmentInfo?.otherRoot?.rootContentId).eqls(sequenceId);
 });
 
-test("get assignment data from anonymous users", async () => {
+test.only("get assignment data from anonymous users", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const { contentId: contentId } = await createContent({
@@ -1189,7 +1247,7 @@ test("get assignment data from anonymous users", async () => {
     loggedInUserId: ownerId,
   });
 
-  await updateAssignmentMode({
+  await updateAssignmentSettings({
     contentId,
     loggedInUserId: ownerId,
     mode: "summative",
@@ -1219,6 +1277,7 @@ test("get assignment data from anonymous users", async () => {
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.5,

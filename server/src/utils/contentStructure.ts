@@ -252,6 +252,7 @@ export function returnContentSelect({
           classCode: true,
           codeValidUntil: true,
           mode: true,
+          individualizeByStudent: true,
           maxAttempts: true,
           _count: { select: { contentState: true } },
         },
@@ -265,6 +266,7 @@ export function returnContentSelect({
           classCode: true,
           codeValidUntil: true,
           mode: true,
+          individualizeByStudent: true,
           maxAttempts: true,
           rootContent: {
             select: {
@@ -380,6 +382,7 @@ type PreliminaryContent = {
     classCode: string;
     codeValidUntil: Date | null;
     mode: AssignmentMode;
+    individualizeByStudent: boolean;
     maxAttempts: number;
     _count?: {
       contentState: number;
@@ -390,6 +393,7 @@ type PreliminaryContent = {
     classCode: string;
     codeValidUntil: Date | null;
     mode: AssignmentMode;
+    individualizeByStudent: boolean;
     maxAttempts: number;
     rootContent: {
       name: string;
@@ -460,8 +464,15 @@ export function processContent(
   const assignmentInfoObj: { assignmentInfo?: AssignmentInfo } = {};
 
   if (rootAssignment) {
-    const { codeValidUntil, classCode, assigned, maxAttempts, mode, _count } =
-      rootAssignment;
+    const {
+      codeValidUntil,
+      classCode,
+      assigned,
+      maxAttempts,
+      mode,
+      individualizeByStudent,
+      _count,
+    } = rootAssignment;
     const isOpen = codeValidUntil
       ? DateTime.now() <= DateTime.fromJSDate(codeValidUntil)
       : false;
@@ -475,6 +486,7 @@ export function processContent(
       classCode,
       codeValidUntil,
       mode,
+      individualizeByStudent,
       maxAttempts,
       hasScoreData: _count ? _count.contentState > 0 : false,
     };
@@ -485,6 +497,7 @@ export function processContent(
       assigned,
       maxAttempts,
       mode,
+      individualizeByStudent,
       rootContent,
     } = nonRootAssignment;
     const isOpen = codeValidUntil
@@ -500,6 +513,7 @@ export function processContent(
       classCode,
       codeValidUntil,
       mode,
+      individualizeByStudent,
       maxAttempts,
       otherRoot: {
         rootContentId: rootContent.id,

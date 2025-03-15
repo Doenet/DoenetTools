@@ -5,7 +5,7 @@ import { DateTime } from "luxon";
 import {
   openAssignmentWithCode,
   updateAssignmentMaxAttempts,
-  updateAssignmentMode,
+  updateAssignmentSettings,
 } from "../query/assign";
 import {
   createNewAttempt,
@@ -38,6 +38,7 @@ test("Create and save responses for new attempts, no items", async () => {
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
+    variant: 1,
     attemptNumber: 1,
     score: 0.5,
     state: "document state 1",
@@ -83,6 +84,7 @@ test("Create and save responses for new attempts, no items", async () => {
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
+      variant: 1,
       loggedInUserId: anonId,
       attemptNumber: 2,
       score: 0.9,
@@ -102,6 +104,7 @@ test("Create and save responses for new attempts, no items", async () => {
     createNewAttempt({
       contentId: contentId,
       code: classCode,
+      variant: 1,
       loggedInUserId: anonId,
     }),
   ).rejects.toThrow(
@@ -119,6 +122,7 @@ test("Create and save responses for new attempts, no items", async () => {
   retrievedScore = await createNewAttempt({
     contentId: contentId,
     code: classCode,
+    variant: 2,
     loggedInUserId: anonId,
   });
 
@@ -161,6 +165,7 @@ test("Create and save responses for new attempts, no items", async () => {
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 2,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: 0.9,
@@ -219,6 +224,7 @@ test("Create and save responses for new attempts, no items", async () => {
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 2,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: 0.2,
@@ -284,15 +290,17 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     {
       shuffledItemNumber: 1,
       docId: docId1,
+      variant: 11,
     },
     {
       shuffledItemNumber: 2,
       docId: docId2,
+      variant: 21,
     },
   ];
 
   // since we are doing activity-wide attempts, we are creating data in line with the summative mode
-  await updateAssignmentMode({
+  await updateAssignmentSettings({
     contentId,
     loggedInUserId: ownerId,
     mode: "summative",
@@ -319,6 +327,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   let retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -434,6 +443,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
+      variant: 2,
       loggedInUserId: anonId,
       attemptNumber: 2,
       score: null,
@@ -459,6 +469,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   retrievedScore = await createNewAttempt({
     contentId: contentId,
     code: classCode,
+    variant: 2,
     loggedInUserId: anonId,
     shuffledItemOrder,
   });
@@ -531,6 +542,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 2,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: null,
@@ -707,6 +719,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 2,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: null,
@@ -841,10 +854,12 @@ test("Create and save responses for new item attempts, two items", async () => {
     {
       shuffledItemNumber: 1,
       docId: docId1,
+      variant: 11,
     },
     {
       shuffledItemNumber: 2,
       docId: docId2,
+      variant: 21,
     },
   ];
 
@@ -857,7 +872,7 @@ test("Create and save responses for new item attempts, two items", async () => {
 
   // Since we are doing item attempts, we are creating data in line with the formative mode.
   // (Set the mode to stress the fact even though it is the default)
-  await updateAssignmentMode({
+  await updateAssignmentSettings({
     contentId,
     loggedInUserId: ownerId,
     mode: "formative",
@@ -877,6 +892,7 @@ test("Create and save responses for new item attempts, two items", async () => {
   let retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -1007,6 +1023,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
+      variant: 1,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
@@ -1025,6 +1042,7 @@ test("Create and save responses for new item attempts, two items", async () => {
   retrievedScore = await createNewAttempt({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
     itemNumber: 1,
@@ -1100,6 +1118,7 @@ test("Create and save responses for new item attempts, two items", async () => {
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -1236,6 +1255,7 @@ test("Create and save responses for new item attempts, two items", async () => {
   retrievedScore = await createNewAttempt({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
     itemNumber: 2,
@@ -1342,6 +1362,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
+      variant: 1,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
@@ -1360,6 +1381,7 @@ test("Create and save responses for new item attempts, two items", async () => {
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -1474,6 +1496,7 @@ test("Create and save responses for new item attempts, two items", async () => {
   retrievedScore = await createNewAttempt({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
     itemNumber: 2,
@@ -1532,8 +1555,12 @@ test("Create attempts before responding, no items", async () => {
   await expect(
     createNewAttempt({
       contentId: contentId,
+      variant: 2,
       loggedInUserId: anonId,
       code: classCode,
+      initialAttemptInfo: {
+        variant: 1,
+      },
     }),
   ).rejects.toThrow(
     "Cannot create new attempt; maximum number of attempts exceeded",
@@ -1546,8 +1573,11 @@ test("Create attempts before responding, no items", async () => {
     maxAttempts: 0,
   });
 
+  // Note: we don't need `initialAttemptInfo` here, as the failed attempt above,
+  // added information about attempt 1 before failing
   let retrievedScore = await createNewAttempt({
     contentId: contentId,
+    variant: 2,
     loggedInUserId: anonId,
     code: classCode,
   });
@@ -1589,6 +1619,7 @@ test("Create attempts before responding, no items", async () => {
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 2,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: 0.9,
@@ -1670,16 +1701,18 @@ test("Create item attempts before responding, two items", async () => {
     {
       shuffledItemNumber: 1,
       docId: docId1,
+      variant: 11,
     },
     {
       shuffledItemNumber: 2,
       docId: docId2,
+      variant: 21,
     },
   ];
 
   // Since we are doing item attempts, we are creating data in line with the formative mode.
   // (Set the mode to stress the fact even though it is the default)
-  await updateAssignmentMode({
+  await updateAssignmentSettings({
     contentId,
     loggedInUserId: ownerId,
     mode: "formative",
@@ -1704,8 +1737,13 @@ test("Create item attempts before responding, two items", async () => {
       contentId: contentId,
       loggedInUserId: anonId,
       code: classCode,
+      variant: 1,
       itemNumber: 1,
       shuffledItemOrder,
+      initialAttemptInfo: {
+        variant: 1,
+        shuffledItemOrder,
+      },
     }),
   ).rejects.toThrow(
     "Cannot create new attempt of item; maximum number of attempts exceeded",
@@ -1721,6 +1759,7 @@ test("Create item attempts before responding, two items", async () => {
   let retrievedScore = await createNewAttempt({
     contentId: contentId,
     loggedInUserId: anonId,
+    variant: 1,
     code: classCode,
     itemNumber: 1,
     shuffledItemOrder,
@@ -1792,6 +1831,7 @@ test("Create item attempts before responding, two items", async () => {
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -1913,16 +1953,18 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     {
       shuffledItemNumber: 2,
       docId: docId1,
+      variant: 11,
     },
     {
       shuffledItemNumber: 1,
       docId: docId2,
+      variant: 21,
     },
   ];
 
   // Since we are doing item attempts, we are creating data in line with the formative mode.
   // (Set the mode to stress the fact even though it is the default)
-  await updateAssignmentMode({
+  await updateAssignmentSettings({
     contentId,
     loggedInUserId: ownerId,
     mode: "formative",
@@ -1950,6 +1992,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   let retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2080,6 +2123,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
+      variant: 1,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
@@ -2098,6 +2142,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   retrievedScore = await createNewAttempt({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
     shuffledItemNumber: 1,
@@ -2171,6 +2216,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2270,6 +2316,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   retrievedScore = await createNewAttempt({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
     shuffledItemNumber: 2,
@@ -2342,6 +2389,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
+      variant: 1,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
@@ -2360,6 +2408,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2460,16 +2509,18 @@ test("New item attempt does not affect other item", async () => {
     {
       shuffledItemNumber: 1,
       docId: docId1,
+      variant: 11,
     },
     {
       shuffledItemNumber: 2,
       docId: docId2,
+      variant: 21,
     },
   ];
 
   // Since we are doing item attempts, we are creating data in line with the formative mode.
   // (Set the mode to stress the fact even though it is the default)
-  await updateAssignmentMode({
+  await updateAssignmentSettings({
     contentId,
     loggedInUserId: ownerId,
     mode: "formative",
@@ -2497,6 +2548,7 @@ test("New item attempt does not affect other item", async () => {
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2513,6 +2565,7 @@ test("New item attempt does not affect other item", async () => {
   let retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2594,6 +2647,7 @@ test("New item attempt does not affect other item", async () => {
   await createNewAttempt({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
     itemNumber: 2,
@@ -2603,6 +2657,7 @@ test("New item attempt does not affect other item", async () => {
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2619,6 +2674,7 @@ test("New item attempt does not affect other item", async () => {
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2752,10 +2808,12 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     {
       shuffledItemNumber: 2,
       docId: docId1,
+      variant: 11,
     },
     {
       shuffledItemNumber: 1,
       docId: docId2,
+      variant: 21,
     },
   ];
 
@@ -2768,7 +2826,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
 
   // Since we are doing item attempts, we are creating data in line with the formative mode.
   // (Set the mode to stress the fact even though it is the default)
-  await updateAssignmentMode({
+  await updateAssignmentSettings({
     contentId,
     loggedInUserId: ownerId,
     mode: "formative",
@@ -2789,6 +2847,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2806,6 +2865,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
   let retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2886,6 +2946,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
+      variant: 1,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
@@ -2906,6 +2967,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     createNewAttempt({
       contentId: contentId,
       code: classCode,
+      variant: 1,
       loggedInUserId: anonId,
       shuffledItemNumber: 2,
     }),
@@ -2915,6 +2977,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
   await expect(
     createNewAttempt({
       contentId: contentId,
+      variant: 1,
       code: classCode,
       loggedInUserId: anonId,
       itemNumber: 2,
@@ -2927,6 +2990,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
   await createNewAttempt({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
     shuffledItemNumber: 2,
@@ -2936,6 +3000,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
   await createNewAttempt({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
     itemNumber: 2,
@@ -3003,7 +3068,7 @@ test("Cannot create activity-wide attempt on formative assessment", async () => 
 
   // Since we are doing item attempts, we are creating data in line with the formative mode.
   // (Set the mode to stress the fact even though it is the default)
-  await updateAssignmentMode({
+  await updateAssignmentSettings({
     contentId,
     loggedInUserId: ownerId,
     mode: "formative",
@@ -3023,6 +3088,7 @@ test("Cannot create activity-wide attempt on formative assessment", async () => 
   await expect(
     createNewAttempt({
       contentId: contentId,
+      variant: 1,
       code: classCode,
       loggedInUserId: anonId,
     }),
@@ -3056,16 +3122,18 @@ test("Cannot create item attempt on summative assessment", async () => {
     {
       shuffledItemNumber: 1,
       docId: docId1,
+      variant: 11,
     },
     {
       shuffledItemNumber: 2,
       docId: docId2,
+      variant: 21,
     },
   ];
 
   // Since we are doing item attempts, we are creating data in line with the formative mode.
   // (Set the mode to stress the fact even though it is the default)
-  await updateAssignmentMode({
+  await updateAssignmentSettings({
     contentId,
     loggedInUserId: ownerId,
     mode: "summative",
@@ -3085,13 +3153,14 @@ test("Cannot create item attempt on summative assessment", async () => {
   await expect(
     createNewAttempt({
       contentId: contentId,
+      variant: 1,
       code: classCode,
       loggedInUserId: anonId,
       itemNumber: 1,
       shuffledItemOrder,
     }),
   ).rejects.toThrow(
-    "Summative assessments do not support creating new attempts of single items",
+    "Summative assessments and single documents do not support creating new attempts of single items",
   );
 });
 
@@ -3119,6 +3188,7 @@ test("Setting maximum number of attempts, no items", async () => {
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: 0.5,
@@ -3130,6 +3200,7 @@ test("Setting maximum number of attempts, no items", async () => {
     createNewAttempt({
       contentId: contentId,
       code: classCode,
+      variant: 2,
       loggedInUserId: anonId,
     }),
   ).rejects.toThrow(
@@ -3147,6 +3218,7 @@ test("Setting maximum number of attempts, no items", async () => {
   await createNewAttempt({
     contentId: contentId,
     code: classCode,
+    variant: 2,
     loggedInUserId: anonId,
   });
 
@@ -3154,6 +3226,7 @@ test("Setting maximum number of attempts, no items", async () => {
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 2,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: 0.6,
@@ -3164,6 +3237,7 @@ test("Setting maximum number of attempts, no items", async () => {
   await expect(
     createNewAttempt({
       contentId: contentId,
+      variant: 3,
       code: classCode,
       loggedInUserId: anonId,
     }),
@@ -3182,6 +3256,7 @@ test("Setting maximum number of attempts, no items", async () => {
   await createNewAttempt({
     contentId: contentId,
     code: classCode,
+    variant: 3,
     loggedInUserId: anonId,
   });
 
@@ -3196,6 +3271,7 @@ test("Setting maximum number of attempts, no items", async () => {
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 3,
     loggedInUserId: anonId,
     attemptNumber: 3,
     score: 0.7,
@@ -3207,6 +3283,7 @@ test("Setting maximum number of attempts, no items", async () => {
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
+      variant: 2,
       loggedInUserId: anonId,
       attemptNumber: 2,
       score: 0.8,
@@ -3274,16 +3351,18 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     {
       shuffledItemNumber: 1,
       docId: docId1,
+      variant: 11,
     },
     {
       shuffledItemNumber: 2,
       docId: docId2,
+      variant: 21,
     },
   ];
 
   // Since we are doing item attempts, we are creating data in line with the formative mode.
   // (Set the mode to stress the fact even though it is the default)
-  await updateAssignmentMode({
+  await updateAssignmentSettings({
     contentId,
     loggedInUserId: ownerId,
     mode: "formative",
@@ -3304,6 +3383,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -3322,6 +3402,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     createNewAttempt({
       contentId: contentId,
       code: classCode,
+      variant: 1,
       loggedInUserId: anonId,
       shuffledItemOrder,
       itemNumber: 1,
@@ -3334,6 +3415,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     createNewAttempt({
       contentId: contentId,
       code: classCode,
+      variant: 1,
       loggedInUserId: anonId,
       shuffledItemOrder,
       itemNumber: 2,
@@ -3353,6 +3435,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   await createNewAttempt({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
     itemNumber: 1,
@@ -3362,6 +3445,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -3380,6 +3464,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     createNewAttempt({
       contentId: contentId,
       code: classCode,
+      variant: 1,
       loggedInUserId: anonId,
       shuffledItemOrder,
       itemNumber: 1,
@@ -3399,6 +3484,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   await createNewAttempt({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
     itemNumber: 1,
@@ -3415,6 +3501,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -3433,6 +3520,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
+      variant: 1,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
@@ -3453,6 +3541,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   await createNewAttempt({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     shuffledItemOrder,
     itemNumber: 2,
@@ -3463,6 +3552,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     createNewAttempt({
       contentId: contentId,
       code: classCode,
+      variant: 1,
       loggedInUserId: anonId,
       shuffledItemOrder,
       itemNumber: 2,
@@ -3475,6 +3565,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
+    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,

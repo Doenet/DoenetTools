@@ -203,6 +203,7 @@ export type AssignmentInfo = {
   };
   hasScoreData: boolean;
   mode: AssignmentMode;
+  individualizeByStudent: boolean;
   maxAttempts: number;
 };
 

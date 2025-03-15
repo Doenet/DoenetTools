@@ -28,10 +28,13 @@ export async function assignmentSettingsActions({
 }) {
   if (formObj._action == "update assignment mode") {
     try {
-      const { data } = await axios.post("/api/assign/updateAssignmentMode", {
-        contentId: formObj.contentId,
-        mode: formObj.mode,
-      });
+      const { data } = await axios.post(
+        "/api/assign/updateAssignmentSettings",
+        {
+          contentId: formObj.contentId,
+          mode: formObj.mode,
+        },
+      );
       return data;
     } catch (_e) {
       return { success: false, mode: formObj.mode };

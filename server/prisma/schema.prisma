@@ -181,16 +181,17 @@ model doenetmlVersions {
 }
 
 model assignments {
-  rootContentId    Bytes              @id @db.Binary(16)
-  assigned         Boolean            @default(false)
-  mode             AssignmentMode     @default(formative)
-  classCode        String             @db.VarChar(45)
-  codeValidUntil   DateTime?
-  maxAttempts      Int                @default(1) @db.UnsignedSmallInt
-  rootContent      content            @relation("rootAssignment", fields: [rootContentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  nonRootContent   content[]          @relation("nonRootAssignment")
-  contentState     contentState[]
-  assignmentScores assignmentScores[]
+  rootContentId          Bytes              @id @db.Binary(16)
+  assigned               Boolean            @default(false)
+  mode                   AssignmentMode     @default(formative)
+  classCode              String             @db.VarChar(45)
+  codeValidUntil         DateTime?
+  maxAttempts            Int                @default(1) @db.UnsignedSmallInt
+  individualizeByStudent Boolean            @default(false)
+  rootContent            content            @relation("rootAssignment", fields: [rootContentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nonRootContent         content[]          @relation("nonRootAssignment")
+  contentState           contentState[]
+  assignmentScores       assignmentScores[]
 
   @@index([classCode])
 }
@@ -217,6 +218,7 @@ model assignmentScores {
 model contentState {
   contentId         Bytes              @db.Binary(16)
   userId            Bytes              @db.Binary(16)
+  variant           Int                @db.UnsignedMediumInt
   attemptNumber     Int                @db.UnsignedSmallInt
   score             Float?
   state             String?            @db.MediumText
@@ -231,10 +233,11 @@ model contentState {
 model contentItemState {
   contentId            Bytes        @db.Binary(16)
   userId               Bytes        @db.Binary(16)
+  variant              Int          @db.UnsignedMediumInt
   contentAttemptNumber Int          @db.UnsignedSmallInt
-  itemNumber           Int
-  shuffledItemNumber   Int
-  itemAttemptNumber    Int
+  itemNumber           Int          @db.UnsignedSmallInt
+  shuffledItemNumber   Int          @db.UnsignedSmallInt
+  itemAttemptNumber    Int          @db.UnsignedSmallInt
   docId                Bytes        @db.Binary(16)
   score                Float        @default(0)
   state                String?      @db.MediumText
@@ -252,10 +255,10 @@ model submittedResponses {
   itemAttemptNumber       Int?     @db.UnsignedSmallInt
   answerId                String
   response                String   @db.Text
-  answerNumber            Int?
-  componentNumber         Int
-  itemNumber              Int
-  shuffledItemNumber      Int
+  answerNumber            Int?     @db.UnsignedSmallInt
+  componentNumber         Int      @db.UnsignedSmallInt
+  itemNumber              Int      @db.UnsignedSmallInt
+  shuffledItemNumber      Int      @db.UnsignedSmallInt
   answerCreditAchieved    Float
   componentCreditAchieved Float
   itemCreditAchieved      Float

@@ -15,7 +15,7 @@ import {
   unassignActivity,
   updateAssignmentCloseAt,
   updateAssignmentMaxAttempts,
-  updateAssignmentMode,
+  updateAssignmentSettings,
 } from "../query/assign";
 import { contentIdSchema } from "../schemas/contentSchema";
 import {
@@ -58,8 +58,8 @@ assignRouter.post(
 );
 
 assignRouter.post(
-  "/updateAssignmentMode",
-  queryLoggedIn(updateAssignmentMode, assignmentModeSchema),
+  "/updateAssignmentSettings",
+  queryLoggedIn(updateAssignmentSettings, assignmentModeSchema),
 );
 
 assignRouter.post(

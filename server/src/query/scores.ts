@@ -29,6 +29,7 @@ export async function saveScoreAndState({
   contentId,
   code,
   loggedInUserId,
+  variant,
   attemptNumber,
   score,
   state,
@@ -37,6 +38,7 @@ export async function saveScoreAndState({
   contentId: Uint8Array;
   code: string;
   loggedInUserId: Uint8Array;
+  variant: number;
   attemptNumber: number;
   score: number | null;
   state: string;
@@ -44,7 +46,11 @@ export async function saveScoreAndState({
     itemNumber?: number;
     shuffledItemNumber?: number;
     itemAttemptNumber: number;
-    shuffledItemOrder: { shuffledItemNumber: number; docId: Uint8Array }[];
+    shuffledItemOrder: {
+      shuffledItemNumber: number;
+      docId: Uint8Array;
+      variant: number;
+    }[];
     score: number;
     state: string;
   };
@@ -95,35 +101,14 @@ export async function saveScoreAndState({
   let maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
 
   if (maxAttemptNumber === 0 && attemptNumber == 1) {
-    // Perform queries to create the first attempt records.
-    // If later queries fail, it's OK that these records were created,
-    // as we're not saving score or state
-
-    await prisma.contentState.create({
-      data: {
-        contentId,
-        userId: loggedInUserId,
-        attemptNumber: 1,
-      },
+    // Note: it is OK if later queries fail after this initial attempt query succeeds,
+    // as creating attempt 1 doesn't change the actual behavior
+    await createBlankInitialAttempt({
+      contentId,
+      loggedInUserId,
+      variant,
+      shuffledItemOrder: item?.shuffledItemOrder,
     });
-
-    if (item) {
-      // if this is the first time that state was saved,
-      // create a record in contentItemState for each item
-      await prisma.contentItemState.createMany({
-        data: item.shuffledItemOrder.map(
-          ({ shuffledItemNumber, docId }, idx) => ({
-            contentId,
-            userId: loggedInUserId,
-            contentAttemptNumber: 1,
-            itemNumber: idx + 1,
-            itemAttemptNumber: 1,
-            shuffledItemNumber,
-            docId,
-          }),
-        ),
-      });
-    }
 
     maxAttemptNumber = 1;
   }
@@ -178,8 +163,11 @@ export async function saveScoreAndState({
       );
     }
 
-    const { shuffledItemNumber, docId } =
-      item.shuffledItemOrder[itemNumber - 1];
+    const {
+      shuffledItemNumber,
+      docId,
+      variant: itemVariant,
+    } = item.shuffledItemOrder[itemNumber - 1];
 
     // perform all score/state updates for activity and item in a single transaction
     await prisma.contentState.update({
@@ -193,6 +181,7 @@ export async function saveScoreAndState({
       data: {
         score,
         state,
+        variant,
         contentItemStates: {
           upsert: {
             where: {
@@ -210,6 +199,7 @@ export async function saveScoreAndState({
               state: item.state,
               shuffledItemNumber,
               docId,
+              variant: itemVariant,
             },
             create: {
               itemNumber,
@@ -218,6 +208,7 @@ export async function saveScoreAndState({
               state: item.state,
               shuffledItemNumber,
               docId,
+              variant: itemVariant,
             },
           },
         },
@@ -236,6 +227,7 @@ export async function saveScoreAndState({
       data: {
         score,
         state,
+        variant,
       },
     });
   }
@@ -271,17 +263,32 @@ export async function saveScoreAndState({
 export async function createNewAttempt({
   contentId,
   code,
+  variant,
   loggedInUserId,
   itemNumber,
   shuffledItemNumber,
   shuffledItemOrder,
+  initialAttemptInfo,
 }: {
   contentId: Uint8Array;
   code: string;
+  variant: number;
   loggedInUserId: Uint8Array;
   itemNumber?: number;
   shuffledItemNumber?: number;
-  shuffledItemOrder?: { shuffledItemNumber: number; docId: Uint8Array }[];
+  shuffledItemOrder?: {
+    shuffledItemNumber: number;
+    docId: Uint8Array;
+    variant: number;
+  }[];
+  initialAttemptInfo?: {
+    variant: number;
+    shuffledItemOrder?: {
+      shuffledItemNumber: number;
+      docId: Uint8Array;
+      variant: number;
+    }[];
+  };
 }) {
   const assignment = await prisma.assignments.findUniqueOrThrow({
     where: {
@@ -302,46 +309,68 @@ export async function createNewAttempt({
     },
   });
 
-  if (assignment.mode === "formative") {
-    if (
-      itemNumber === undefined &&
-      shuffledItemNumber === undefined &&
-      assignment.rootContent.type !== "singleDoc"
-    ) {
+  if (
+    assignment.mode === "formative" &&
+    assignment.rootContent.type !== "singleDoc"
+  ) {
+    if (itemNumber === undefined && shuffledItemNumber === undefined) {
       throw new InvalidRequestError(
         "Formative assessments do not support creating new attempts of entire activity",
       );
     }
+
+    // We are creating a new attempt of just one item for a formative assessment
+    if (shuffledItemOrder === undefined) {
+      throw new InvalidRequestError(
+        "Cannot create a new item attempt without specifying shuffledItemOrder",
+      );
+    }
+
+    if (itemNumber === undefined) {
+      // We specified the item with shuffledItemNumber rather than item number.
+      // Determine the item number from shuffledItemOrder
+      itemNumber =
+        shuffledItemOrder.findIndex(
+          (x) => x.shuffledItemNumber === shuffledItemNumber,
+        ) + 1;
+
+      if (itemNumber === 0) {
+        throw new InvalidRequestError(
+          "An invalid shuffledItemNumber was supplied",
+        );
+      }
+    }
+
+    if (itemNumber > shuffledItemOrder.length) {
+      throw new InvalidRequestError("An invalid itemNumber was supplied");
+    }
   } else if (itemNumber !== undefined || shuffledItemNumber !== undefined) {
     throw new InvalidRequestError(
-      "Summative assessments do not support creating new attempts of single items",
+      "Summative assessments and single documents do not support creating new attempts of single items",
     );
   }
 
   let maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
 
   if (maxAttemptNumber === 0) {
-    // If no attempt made yet, create attempt 1
-    // optionally with related records for items (if shuffledItemOrder if given).
-    // It's OK if this query runs and later this function fails, as having attempt number 1 doesn't change the actual behavior.
+    if (initialAttemptInfo === undefined) {
+      throw new InvalidRequestError(
+        "Must supply initialAttemptInfo if attempt 1 has not yet been saved",
+      );
+    }
 
-    await prisma.contentState.create({
-      data: {
-        contentId,
-        userId: loggedInUserId,
-        attemptNumber: 1,
-        score: shuffledItemOrder ? null : 0,
-        contentItemStates: {
-          create: shuffledItemOrder?.map(
-            ({ shuffledItemNumber, docId }, idx) => ({
-              itemNumber: idx + 1,
-              itemAttemptNumber: 1,
-              shuffledItemNumber,
-              docId,
-            }),
-          ),
-        },
-      },
+    if (shuffledItemOrder && !initialAttemptInfo.shuffledItemOrder) {
+      throw new InvalidRequestError(
+        "For an assessment with items, must supply shuffledItemOrder in initialAttemptInfo if attempt 1 has not yet been saved",
+      );
+    }
+
+    // Note: it is OK if later queries fail after this initial attempt query succeeds,
+    // as creating attempt 1 doesn't change the actual behavior
+    await createBlankInitialAttempt({
+      contentId,
+      loggedInUserId,
+      ...initialAttemptInfo,
     });
 
     maxAttemptNumber++;
@@ -366,7 +395,7 @@ export async function createNewAttempt({
     },
   });
 
-  if (itemNumber === undefined && shuffledItemNumber === undefined) {
+  if (itemNumber === undefined) {
     // create a new attempt of the entire activity,
     // optionally with related records for items (if shuffledItemOrder if given)
 
@@ -383,15 +412,17 @@ export async function createNewAttempt({
       data: {
         contentId,
         userId: loggedInUserId,
+        variant,
         attemptNumber: maxAttemptNumber + 1,
         score: shuffledItemOrder ? null : 0,
         contentItemStates: {
           create: shuffledItemOrder?.map(
-            ({ shuffledItemNumber, docId }, idx) => ({
+            ({ shuffledItemNumber, docId, variant }, idx) => ({
               itemNumber: idx + 1,
               itemAttemptNumber: 1,
               shuffledItemNumber,
               docId,
+              variant,
             }),
           ),
         },
@@ -399,25 +430,6 @@ export async function createNewAttempt({
     });
   } else {
     // create a new attempt of just item `itemNumber` or `shuffleItemNumber`
-
-    if (shuffledItemOrder === undefined) {
-      throw new InvalidRequestError(
-        "Cannot create a new item attempt without specifying shuffledItemOrder",
-      );
-    }
-
-    if (itemNumber === undefined) {
-      itemNumber =
-        shuffledItemOrder.findIndex(
-          (x) => x.shuffledItemNumber === shuffledItemNumber,
-        ) + 1;
-
-      if (itemNumber === 0) {
-        throw new InvalidRequestError(
-          "An invalid shuffledItemNumber was supplied",
-        );
-      }
-    }
 
     const maxResItem = await prisma.contentItemState.aggregate({
       where: {
@@ -455,7 +467,7 @@ export async function createNewAttempt({
         contentAttemptNumber: maxAttemptNumber,
         itemNumber,
         itemAttemptNumber: maxItemAttemptNumber + 1,
-        ...shuffledItemOrder[itemNumber - 1],
+        ...shuffledItemOrder![itemNumber - 1],
       },
     });
   }
@@ -463,6 +475,47 @@ export async function createNewAttempt({
   return await calculateScoreAndCacheResults({
     contentId,
     loggedInUserId,
+  });
+}
+
+/**
+ * Create an initial attempt with `variant` and no state  for `loggedInUserId` on assignment `contentId`.
+ * If `shuffledItemOrder` is supplied, also create initial attempts for those items.
+ */
+async function createBlankInitialAttempt({
+  contentId,
+  variant,
+  loggedInUserId,
+  shuffledItemOrder,
+}: {
+  contentId: Uint8Array;
+  variant: number;
+  loggedInUserId: Uint8Array;
+  shuffledItemOrder?: {
+    shuffledItemNumber: number;
+    docId: Uint8Array;
+    variant: number;
+  }[];
+}) {
+  await prisma.contentState.create({
+    data: {
+      contentId,
+      userId: loggedInUserId,
+      variant,
+      attemptNumber: 1,
+      score: shuffledItemOrder ? null : 0,
+      contentItemStates: {
+        create: shuffledItemOrder?.map(
+          ({ shuffledItemNumber, docId, variant }, idx) => ({
+            itemNumber: idx + 1,
+            itemAttemptNumber: 1,
+            shuffledItemNumber,
+            docId,
+            variant,
+          }),
+        ),
+      },
+    },
   });
 }
 

@@ -284,7 +284,7 @@ export async function updateAssignmentMaxAttempts({
 }
 
 /**
- * Updates the `mode` field of the assignment `contentId` that is owned by `loggedInUserId`.
+ * Updates the `mode` and/or `individualizeByStudent` field of the assignment `contentId` that is owned by `loggedInUserId`.
  *
  * Verifies that `contentId` is not assigned as a part of another root assignment,
  * throwing an `InvalidRequestError` in that case.
@@ -293,13 +293,15 @@ export async function updateAssignmentMaxAttempts({
  *
  * The mode can be updated only if the content is not assigned.
  */
-export async function updateAssignmentMode({
+export async function updateAssignmentSettings({
   contentId,
   mode,
+  individualizeByStudent,
   loggedInUserId,
 }: {
   contentId: Uint8Array;
-  mode: AssignmentMode;
+  mode?: AssignmentMode;
+  individualizeByStudent?: boolean;
   loggedInUserId: Uint8Array;
 }) {
   // verify content exists and is not assigned as part of another root assignment
@@ -318,7 +320,7 @@ export async function updateAssignmentMode({
 
   if (assignment?.assigned) {
     throw new InvalidRequestError(
-      "Cannot update assignment mode of assigned content",
+      "Cannot update assignment mode or individualizeByStudent of assigned content",
     );
   }
 
@@ -333,15 +335,16 @@ export async function updateAssignmentMode({
           where: { rootContentId: contentId },
           create: {
             mode,
+            individualizeByStudent,
             classCode: generateClassCode(),
           },
-          update: { mode },
+          update: { mode, individualizeByStudent },
         },
       },
     },
   });
 
-  return { success: true, mode };
+  return { success: true, mode, individualizeByStudent };
 }
 
 export async function closeAssignmentWithCode({
@@ -904,6 +907,7 @@ export async function getAssignmentResponseStudent({
     state: string | null;
     score: number;
     docId: Uint8Array<ArrayBufferLike>;
+    variant: number;
   };
 
   let attemptScores: { attemptNumber: number; score: number }[];
@@ -952,7 +956,7 @@ export async function getAssignmentResponseStudent({
           itemAttemptNumber: attemptNumber,
         },
       },
-      select: { state: true, score: true, docId: true },
+      select: { state: true, score: true, docId: true, variant: true },
     });
   } else {
     // get score on all content attempts
@@ -1008,7 +1012,7 @@ export async function getAssignmentResponseStudent({
             itemAttemptNumber: 1,
           },
         },
-        select: { state: true, score: true, docId: true },
+        select: { state: true, score: true, docId: true, variant: true },
       });
     } else {
       // no items, so single document
@@ -1031,20 +1035,22 @@ export async function getAssignmentResponseStudent({
         attemptNumber = attemptScores[maxIndex].attemptNumber;
       }
 
-      const { state, score } = await prisma.contentState.findUniqueOrThrow({
-        where: {
-          contentId_userId_attemptNumber: {
-            contentId,
-            userId: responseUserId,
-            attemptNumber,
+      const { state, score, variant } =
+        await prisma.contentState.findUniqueOrThrow({
+          where: {
+            contentId_userId_attemptNumber: {
+              contentId,
+              userId: responseUserId,
+              attemptNumber,
+            },
           },
-        },
-        select: { state: true, score: true },
-      });
+          select: { state: true, score: true, variant: true },
+        });
       thisAttemptState = {
         state,
         score: score ?? 0,
         docId: contentId,
+        variant,
       };
     }
   }
