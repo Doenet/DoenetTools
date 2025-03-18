@@ -4,12 +4,6 @@ import { uuidSchema } from "./uuid";
 export const scoreAndStateSchema = z.object({
   contentId: uuidSchema,
   code: z.string(),
-  variant: z
-    .number()
-    .int()
-    .refine((v) => v >= 0 && v <= 16777215, {
-      message: "variant must be between 0 and 16777215",
-    }),
   attemptNumber: z
     .number()
     .int()
@@ -52,12 +46,6 @@ export const scoreAndStateSchema = z.object({
               message: "shuffledItemNumber must be between 1 and 65535",
             }),
           docId: uuidSchema,
-          variant: z
-            .number()
-            .int()
-            .refine((v) => v >= 0 && v <= 16777215, {
-              message: "variant must be between 0 and 16777215",
-            }),
         }),
       ),
       score: z.number(),
@@ -75,6 +63,7 @@ export const createNewAttemptSchema = z.object({
     .refine((v) => v >= 0 && v <= 16777215, {
       message: "variant must be between 0 and 16777215",
     }),
+  state: z.string().nullable(),
   itemNumber: z
     .number()
     .int()

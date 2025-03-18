@@ -52,7 +52,9 @@ export async function loader({ params }) {
       : null,
     numContentAttempts: s.latestAttempt?.attemptNumber ?? 1,
     numItemAttempts:
-      s.latestAttempt?.itemScores.map((x) => x.itemAttemptNumber) ?? null,
+      s.latestAttempt?.itemScores
+        .sort((a, b) => a.itemNumber - b.itemNumber)
+        .map((x) => x.itemAttemptNumber) ?? null,
     user: s.user,
   })) as {
     score: number;
@@ -105,31 +107,7 @@ export async function loader({ params }) {
       ? activityJsonPrelim
       : compileActivityFromContent(assignment);
 
-    const itemNames: string[] = [];
-
-    if (assignment.type === "sequence") {
-      for (const child of assignment.children) {
-        if (child.type === "singleDoc") {
-          itemNames.push(child.name);
-        } else if (child.type === "select") {
-          if (child.numToSelect === 1) {
-            itemNames.push(child.name);
-          } else {
-            for (let i = 0; i < child.numToSelect; i++) {
-              itemNames.push(`${child.name} (${i + 1})`);
-            }
-          }
-        }
-      }
-    } else if (assignment.type === "select") {
-      if (assignment.numToSelect === 1) {
-        itemNames.push(assignment.name);
-      } else {
-        for (let i = 0; i < assignment.numToSelect; i++) {
-          itemNames.push(`${assignment.name} (${i + 1})`);
-        }
-      }
-    }
+    const itemNames = data.itemNames;
 
     return {
       type: assignment.type,

@@ -29,7 +29,6 @@ export async function saveScoreAndState({
   contentId,
   code,
   loggedInUserId,
-  variant,
   attemptNumber,
   score,
   state,
@@ -38,7 +37,6 @@ export async function saveScoreAndState({
   contentId: Uint8Array;
   code: string;
   loggedInUserId: Uint8Array;
-  variant: number;
   attemptNumber: number;
   score: number | null;
   state: string;
@@ -49,7 +47,6 @@ export async function saveScoreAndState({
     shuffledItemOrder: {
       shuffledItemNumber: number;
       docId: Uint8Array;
-      variant: number;
     }[];
     score: number;
     state: string;
@@ -98,19 +95,12 @@ export async function saveScoreAndState({
     },
   });
 
-  let maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
+  const maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
 
-  if (maxAttemptNumber === 0 && attemptNumber == 1) {
-    // Note: it is OK if later queries fail after this initial attempt query succeeds,
-    // as creating attempt 1 doesn't change the actual behavior
-    await createBlankInitialAttempt({
-      contentId,
-      loggedInUserId,
-      variant,
-      shuffledItemOrder: item?.shuffledItemOrder,
-    });
-
-    maxAttemptNumber = 1;
+  if (maxAttemptNumber === 0) {
+    throw new InvalidRequestError(
+      "Cannot save state before an attempt has begun",
+    );
   }
 
   if (attemptNumber !== maxAttemptNumber) {
@@ -163,11 +153,8 @@ export async function saveScoreAndState({
       );
     }
 
-    const {
-      shuffledItemNumber,
-      docId,
-      variant: itemVariant,
-    } = item.shuffledItemOrder[itemNumber - 1];
+    const { shuffledItemNumber, docId } =
+      item.shuffledItemOrder[itemNumber - 1];
 
     // perform all score/state updates for activity and item in a single transaction
     await prisma.contentState.update({
@@ -181,9 +168,8 @@ export async function saveScoreAndState({
       data: {
         score,
         state,
-        variant,
         contentItemStates: {
-          upsert: {
+          update: {
             where: {
               contentId_userId_contentAttemptNumber_itemNumber_itemAttemptNumber:
                 {
@@ -194,21 +180,11 @@ export async function saveScoreAndState({
                   itemAttemptNumber: item!.itemAttemptNumber,
                 },
             },
-            update: {
+            data: {
               score: item.score,
               state: item.state,
               shuffledItemNumber,
               docId,
-              variant: itemVariant,
-            },
-            create: {
-              itemNumber,
-              itemAttemptNumber: item.itemAttemptNumber,
-              score: item.score,
-              state: item.state,
-              shuffledItemNumber,
-              docId,
-              variant: itemVariant,
             },
           },
         },
@@ -227,7 +203,6 @@ export async function saveScoreAndState({
       data: {
         score,
         state,
-        variant,
       },
     });
   }
@@ -241,19 +216,21 @@ export async function saveScoreAndState({
 /**
  * Create a new attempt of assignment `contentId` for `loggedInUserId`, assuming `code` matches.
  *
- * The behavior depends on whether or not `itemNumber` is specified and it must correspond to the assignment mode as follows:
- * - If the assignment mode is "formative", then `itemNumber` must be supplied,
+ * The behavior depends on whether or not `itemNumber` is specified and it must correspond to the assignment mode and type as follows:
+ * - If the assignment mode is "formative" and the type is not "singleDoc", then `itemNumber` must be supplied,
  *   and the result will be to create a new attempt of just that item.
- * - If the assignment mode is "summative", then `itemNumber` must not be supplied,
- *   and the result will bee to create an new attempt of the entire activity.
+ * - If the assignment mode is "summative" or the type is "singleDoc", then `itemNumber` must not be supplied,
+ *   and the result will bee to create an new attempt of the entire activity from the given `variant` and `state`.
+ *   (`state` is needed only for non-singleDocs, as it contains information about the item attempt numbers.)
  *
- * If the presence of `itemNumber` does not match the assignment mode, then an `InvalidRequestError` is thrown,
- * with the exception that singleDoc assignments don't require `itemNumber` even if the assignment mode is "formative".
+ * If the presence of `itemNumber` does not match the assignment mode/type, then an `InvalidRequestError` is thrown.
  *
  * If `shuffledItemOrder` is specified, then:
- * - if `itemNumber` is not specified, create new item attempts for all items with `shuffledItemNumber`
+ * - if `itemNumber` is not specified, create new item attempts for all items using the fields `shuffledItemNumber`, `docId`, and `variant`
+ *   the `shuffledItemOrder`  array.
  *   as given by `shuffledItemOrder`.
- * - if `itemNumber` is specified, then use its `shuffledItemNumber` determined by `shuffledItemOrder`
+ * - if `itemNumber` is specified, then look on values of `shuffledItemNumber`, `docId`, and `variant`
+ *   from the `shuffledItemOrder` to create the new item attempt just for that item.
  *
  * If `itemNumber` is specified but not `shuffledItemOrder`, then an `InvalidRequestError` is thrown.
  *
@@ -264,15 +241,16 @@ export async function createNewAttempt({
   contentId,
   code,
   variant,
+  state,
   loggedInUserId,
   itemNumber,
   shuffledItemNumber,
   shuffledItemOrder,
-  initialAttemptInfo,
 }: {
   contentId: Uint8Array;
   code: string;
   variant: number;
+  state: string | null;
   loggedInUserId: Uint8Array;
   itemNumber?: number;
   shuffledItemNumber?: number;
@@ -281,14 +259,6 @@ export async function createNewAttempt({
     docId: Uint8Array;
     variant: number;
   }[];
-  initialAttemptInfo?: {
-    variant: number;
-    shuffledItemOrder?: {
-      shuffledItemNumber: number;
-      docId: Uint8Array;
-      variant: number;
-    }[];
-  };
 }) {
   const assignment = await prisma.assignments.findUniqueOrThrow({
     where: {
@@ -309,71 +279,56 @@ export async function createNewAttempt({
     },
   });
 
+  const maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
+
   if (
     assignment.mode === "formative" &&
     assignment.rootContent.type !== "singleDoc"
   ) {
-    if (itemNumber === undefined && shuffledItemNumber === undefined) {
-      throw new InvalidRequestError(
-        "Formative assessments do not support creating new attempts of entire activity",
-      );
-    }
-
-    // We are creating a new attempt of just one item for a formative assessment
     if (shuffledItemOrder === undefined) {
       throw new InvalidRequestError(
-        "Cannot create a new item attempt without specifying shuffledItemOrder",
+        "Cannot create attempts of formative assessments without specifying shuffledItemOrder",
       );
     }
 
-    if (itemNumber === undefined) {
-      // We specified the item with shuffledItemNumber rather than item number.
-      // Determine the item number from shuffledItemOrder
-      itemNumber =
-        shuffledItemOrder.findIndex(
-          (x) => x.shuffledItemNumber === shuffledItemNumber,
-        ) + 1;
-
-      if (itemNumber === 0) {
+    if (itemNumber === undefined && shuffledItemNumber === undefined) {
+      if (maxAttemptNumber > 0) {
         throw new InvalidRequestError(
-          "An invalid shuffledItemNumber was supplied",
+          "Formative assessments do not support creating new attempts of entire activity",
         );
       }
-    }
+    } else {
+      // We are creating a new attempt of just one item for a formative assessment
 
-    if (itemNumber > shuffledItemOrder.length) {
-      throw new InvalidRequestError("An invalid itemNumber was supplied");
+      if (maxAttemptNumber === 0) {
+        throw new InvalidRequestError(
+          "Cannot create a new attempt of an item when the initial attempt has not yet been created",
+        );
+      }
+
+      if (itemNumber === undefined) {
+        // We specified the item with shuffledItemNumber rather than item number.
+        // Determine the item number from shuffledItemOrder
+        itemNumber =
+          shuffledItemOrder.findIndex(
+            (x) => x.shuffledItemNumber === shuffledItemNumber,
+          ) + 1;
+
+        if (itemNumber === 0) {
+          throw new InvalidRequestError(
+            "An invalid shuffledItemNumber was supplied",
+          );
+        }
+      }
+
+      if (itemNumber > shuffledItemOrder.length) {
+        throw new InvalidRequestError("An invalid itemNumber was supplied");
+      }
     }
   } else if (itemNumber !== undefined || shuffledItemNumber !== undefined) {
     throw new InvalidRequestError(
       "Summative assessments and single documents do not support creating new attempts of single items",
     );
-  }
-
-  let maxAttemptNumber = assignment.contentState[0]?.attemptNumber ?? 0;
-
-  if (maxAttemptNumber === 0) {
-    if (initialAttemptInfo === undefined) {
-      throw new InvalidRequestError(
-        "Must supply initialAttemptInfo if attempt 1 has not yet been saved",
-      );
-    }
-
-    if (shuffledItemOrder && !initialAttemptInfo.shuffledItemOrder) {
-      throw new InvalidRequestError(
-        "For an assessment with items, must supply shuffledItemOrder in initialAttemptInfo if attempt 1 has not yet been saved",
-      );
-    }
-
-    // Note: it is OK if later queries fail after this initial attempt query succeeds,
-    // as creating attempt 1 doesn't change the actual behavior
-    await createBlankInitialAttempt({
-      contentId,
-      loggedInUserId,
-      ...initialAttemptInfo,
-    });
-
-    maxAttemptNumber++;
   }
 
   // invalidate cached score
@@ -415,6 +370,7 @@ export async function createNewAttempt({
         variant,
         attemptNumber: maxAttemptNumber + 1,
         score: shuffledItemOrder ? null : 0,
+        state,
         contentItemStates: {
           create: shuffledItemOrder?.map(
             ({ shuffledItemNumber, docId, variant }, idx) => ({
@@ -460,14 +416,23 @@ export async function createNewAttempt({
       );
     }
 
-    await prisma.contentItemState.create({
+    await prisma.contentState.update({
+      where: {
+        contentId_userId_attemptNumber: {
+          contentId,
+          userId: loggedInUserId,
+          attemptNumber: maxAttemptNumber,
+        },
+      },
       data: {
-        contentId,
-        userId: loggedInUserId,
-        contentAttemptNumber: maxAttemptNumber,
-        itemNumber,
-        itemAttemptNumber: maxItemAttemptNumber + 1,
-        ...shuffledItemOrder![itemNumber - 1],
+        state,
+        contentItemStates: {
+          create: {
+            itemNumber,
+            itemAttemptNumber: maxItemAttemptNumber + 1,
+            ...shuffledItemOrder![itemNumber - 1],
+          },
+        },
       },
     });
   }
@@ -475,47 +440,6 @@ export async function createNewAttempt({
   return await calculateScoreAndCacheResults({
     contentId,
     loggedInUserId,
-  });
-}
-
-/**
- * Create an initial attempt with `variant` and no state  for `loggedInUserId` on assignment `contentId`.
- * If `shuffledItemOrder` is supplied, also create initial attempts for those items.
- */
-async function createBlankInitialAttempt({
-  contentId,
-  variant,
-  loggedInUserId,
-  shuffledItemOrder,
-}: {
-  contentId: Uint8Array;
-  variant: number;
-  loggedInUserId: Uint8Array;
-  shuffledItemOrder?: {
-    shuffledItemNumber: number;
-    docId: Uint8Array;
-    variant: number;
-  }[];
-}) {
-  await prisma.contentState.create({
-    data: {
-      contentId,
-      userId: loggedInUserId,
-      variant,
-      attemptNumber: 1,
-      score: shuffledItemOrder ? null : 0,
-      contentItemStates: {
-        create: shuffledItemOrder?.map(
-          ({ shuffledItemNumber, docId, variant }, idx) => ({
-            itemNumber: idx + 1,
-            itemAttemptNumber: 1,
-            shuffledItemNumber,
-            docId,
-            variant,
-          }),
-        ),
-      },
-    },
   });
 }
 
@@ -591,6 +515,7 @@ export async function loadState({
           attemptNumber: true,
           state: true,
           score: true,
+          variant: true,
         },
       });
     } catch (e) {
@@ -614,6 +539,7 @@ export async function loadState({
         attemptNumber: true,
         state: true,
         score: true,
+        variant: true,
       },
     });
 
@@ -638,6 +564,8 @@ export async function loadState({
       shuffledItemNumber: true,
       state: true,
       score: true,
+      variant: true,
+      docId: true,
     },
   });
 
@@ -743,6 +671,8 @@ export async function loadItemState({
     shuffledItemNumber: true,
     state: true,
     score: true,
+    variant: true,
+    docId: true,
   };
 
   let itemState;

@@ -5,15 +5,16 @@ import {
   filterEditableContent,
 } from "../utils/permissions";
 import { getRandomValues } from "crypto";
-import { AssignmentMode, Prisma } from "@prisma/client";
-import { UserInfo } from "../types";
+import { AssignmentMode, ContentType, Prisma } from "@prisma/client";
+import { Content, UserInfo } from "../types";
 import { isEqualUUID } from "../utils/uuid";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { recordContentView } from "./stats";
 import { InvalidRequestError } from "../utils/error";
 import { getContent } from "./activity_edit_view";
-import { getScore, getScoresOfAllStudents } from "./scores";
+import { getScore, getScoresOfAllStudents, loadState } from "./scores";
 import { getUserInfo } from "./user";
+import { StatusCodes } from "http-status-codes";
 
 /**
  * Assigned the content `contentId` owned by `loggedInUserId`
@@ -814,7 +815,9 @@ export async function getAssignmentResponseOverview({
     loggedInUserId,
   });
 
-  return { scoreSummary, content };
+  const itemNames = getItemNames(content);
+
+  return { scoreSummary, content, itemNames };
 }
 
 /**
@@ -827,12 +830,14 @@ export async function getAssignmentResponseStudent({
   loggedInUserId,
   studentUserId,
   attemptNumber: requestedAttemptNumber,
+  shuffledOrder,
   itemNumber = 1,
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
   studentUserId?: Uint8Array;
   attemptNumber?: number;
+  shuffledOrder: boolean;
   itemNumber?: number;
 }) {
   const responseUserId = studentUserId ?? loggedInUserId;
@@ -859,6 +864,7 @@ export async function getAssignmentResponseStudent({
           type: true,
           ownerId: true,
           numToSelect: true,
+          shuffle: true,
           children: {
             where: { isDeleted: false },
             orderBy: { sortIndex: "asc" },
@@ -866,24 +872,6 @@ export async function getAssignmentResponseStudent({
           },
         },
       },
-    },
-  });
-
-  const { mode } = await prisma.assignments.findUniqueOrThrow({
-    where: {
-      rootContentId: contentId,
-      rootContent: {
-        // if getting data for other person, you must be the owner
-        ownerId: isEqualUUID(responseUserId, loggedInUserId)
-          ? undefined
-          : loggedInUserId,
-        isDeleted: false,
-        type: { not: "folder" },
-      },
-    },
-    select: {
-      mode: true,
-      rootContent: { select: { ownerId: true } },
     },
   });
 
@@ -900,20 +888,33 @@ export async function getAssignmentResponseStudent({
     loggedInUserId,
   });
 
+  if (!overallScores.calculatedScore) {
+    throw new InvalidRequestError("Responses not found", StatusCodes.NOT_FOUND);
+  }
+
   const haveItems =
     overallScores.itemScores && overallScores.itemScores.length > 0;
 
   let thisAttemptState: {
     state: string | null;
     score: number;
-    docId: Uint8Array<ArrayBufferLike>;
     variant: number;
+    docId?: Uint8Array;
+    items?: {
+      score: number;
+      state: string | null;
+      itemNumber: number;
+      shuffledItemNumber: number;
+      itemAttemptNumber: number;
+      variant: number;
+      docId: Uint8Array;
+    }[];
   };
 
   let attemptScores: { attemptNumber: number; score: number }[];
   let attemptNumber;
 
-  if (haveItems && mode === "formative") {
+  if (haveItems && assignment.mode === "formative") {
     // for a formative attempt with items, get scores on all items for contentAttemptNumber 1
 
     const allAttemptData = await prisma.contentItemState.findMany({
@@ -922,11 +923,11 @@ export async function getAssignmentResponseStudent({
         contentId,
         userId: responseUserId,
         contentAttemptNumber: 1,
-        itemNumber,
+        itemNumber: shuffledOrder ? undefined : itemNumber,
+        shuffledItemNumber: shuffledOrder ? itemNumber : undefined,
       },
       orderBy: { itemAttemptNumber: "asc" },
       select: {
-        itemNumber: true,
         itemAttemptNumber: true,
         score: true,
       },
@@ -945,17 +946,30 @@ export async function getAssignmentResponseStudent({
       attemptNumber = attemptScores[maxIndex]?.attemptNumber ?? 1;
     }
 
+    // Note: don't use loadState() as not getting a root assignment
     thisAttemptState = await prisma.contentItemState.findUniqueOrThrow({
       // don't need to check user permissions since first query did that
-      where: {
-        contentId_userId_contentAttemptNumber_itemNumber_itemAttemptNumber: {
-          contentId,
-          userId: responseUserId,
-          contentAttemptNumber: 1,
-          itemNumber,
-          itemAttemptNumber: attemptNumber,
-        },
-      },
+      where: shuffledOrder
+        ? {
+            contentId_userId_contentAttemptNumber_shuffledItemNumber_itemAttemptNumber:
+              {
+                contentId,
+                userId: responseUserId,
+                contentAttemptNumber: 1,
+                shuffledItemNumber: itemNumber,
+                itemAttemptNumber: attemptNumber,
+              },
+          }
+        : {
+            contentId_userId_contentAttemptNumber_itemNumber_itemAttemptNumber:
+              {
+                contentId,
+                userId: responseUserId,
+                contentAttemptNumber: 1,
+                itemNumber,
+                itemAttemptNumber: attemptNumber,
+              },
+          },
       select: { state: true, score: true, docId: true, variant: true },
     });
   } else {
@@ -1002,18 +1016,27 @@ export async function getAssignmentResponseStudent({
         attemptNumber = attemptScores[maxIndex].attemptNumber;
       }
 
-      thisAttemptState = await prisma.contentItemState.findUniqueOrThrow({
-        where: {
-          contentId_userId_contentAttemptNumber_itemNumber_itemAttemptNumber: {
-            contentId,
-            userId: responseUserId,
-            contentAttemptNumber: attemptNumber,
-            itemNumber,
-            itemAttemptNumber: 1,
-          },
-        },
-        select: { state: true, score: true, docId: true, variant: true },
+      const loadResults = await loadState({
+        contentId,
+        requestedUserId: responseUserId,
+        loggedInUserId,
+        attemptNumber,
       });
+
+      if (!loadResults.loadedState) {
+        throw new InvalidRequestError(
+          "Responses not found",
+          StatusCodes.NOT_FOUND,
+        );
+      }
+
+      thisAttemptState = {
+        ...loadResults,
+        score:
+          loadResults.score ??
+          loadResults.items.reduce((a, c) => a + c.score, 0) /
+            loadResults.items.length,
+      };
     } else {
       // no items, so single document
       // use score from the contentState table
@@ -1055,34 +1078,11 @@ export async function getAssignmentResponseStudent({
     }
   }
 
-  const itemNames: string[] = [];
-  const content = assignment.rootContent;
-  if (content.type === "select") {
-    if (content.numToSelect === 1) {
-      itemNames.push(content.name);
-    } else {
-      for (let i = 1; i <= content.numToSelect; i++) {
-        itemNames.push(`${content.name} (${i})`);
-      }
-    }
-  } else if (content.type === "sequence") {
-    for (const child of content.children) {
-      if (child.type === "singleDoc") {
-        itemNames.push(child.name);
-      } else if (child.type === "select") {
-        if (child.numToSelect === 1) {
-          itemNames.push(child.name);
-        } else {
-          for (let i = 1; i <= child.numToSelect; i++) {
-            itemNames.push(`${child.name} (${i})`);
-          }
-        }
-      }
-    }
-  }
+  const rootContent = assignment.rootContent;
+  const itemNames = getItemNames(rootContent);
 
-  const doc = await getContent({
-    contentId: thisAttemptState.docId,
+  const content = await getContent({
+    contentId: thisAttemptState.docId ?? contentId,
     loggedInUserId,
     includeAssignInfo: true,
     skipPermissionCheck: true,
@@ -1118,41 +1118,102 @@ export async function getAssignmentResponseStudent({
   const [contentAttemptNumber, itemAttemptNumber] =
     assignment.rootContent.type === "singleDoc"
       ? [attemptNumber, null]
-      : mode === "formative"
+      : assignment.mode === "formative"
         ? [1, attemptNumber]
         : [attemptNumber, 1];
 
   const responseCountsPrelim = await prisma.submittedResponses.groupBy({
     where: {
       contentId,
-      itemNumber,
+      itemNumber:
+        assignment.mode === "formative"
+          ? shuffledOrder
+            ? undefined
+            : itemNumber
+          : undefined,
+      shuffledItemNumber:
+        assignment.mode === "formative"
+          ? shuffledOrder
+            ? itemNumber
+            : undefined
+          : undefined,
       contentAttemptNumber,
       itemAttemptNumber,
       userId: responseUserId,
     },
-    by: ["answerId"],
+    by: ["answerId", "shuffledItemNumber"],
+    orderBy: { shuffledItemNumber: "asc" },
     _count: { response: true },
   });
 
   const responseCounts = responseCountsPrelim.map((r) => [
+    r.shuffledItemNumber,
     r.answerId,
     r._count.response,
   ]);
 
   return {
-    mode,
+    mode: assignment.mode,
     user,
-    assignment: { name: content.name, type: content.type, contentId },
+    assignment: {
+      name: rootContent.name,
+      type: rootContent.type,
+      contentId,
+      shuffledOrder: rootContent.type == "sequence" && rootContent.shuffle,
+    },
     attemptNumber,
     itemNumber,
     overallScores,
     thisAttemptState,
     attemptScores,
-    doc,
+    content,
     itemNames,
     allStudents,
     responseCounts,
   };
+}
+
+function getItemNames(
+  content:
+    | Content
+    | {
+        name: string;
+        type: ContentType;
+        numToSelect: number;
+        children: {
+          name: string;
+          type: ContentType;
+          numToSelect: number;
+        }[];
+      },
+) {
+  const itemNames: string[] = [];
+
+  if (content.type === "select") {
+    if (content.numToSelect === 1) {
+      itemNames.push(content.name);
+    } else {
+      for (let i = 1; i <= content.numToSelect; i++) {
+        itemNames.push(`${content.name} (${i})`);
+      }
+    }
+  } else if (content.type === "sequence") {
+    for (const child of content.children) {
+      if (child.type === "singleDoc") {
+        itemNames.push(child.name);
+      } else if (child.type === "select") {
+        if (child.numToSelect === 1) {
+          itemNames.push(child.name);
+        } else {
+          for (let i = 1; i <= child.numToSelect; i++) {
+            itemNames.push(`${child.name} (${i})`);
+          }
+        }
+      }
+    }
+  }
+
+  return itemNames;
 }
 
 export async function getStudentSubmittedResponses({
@@ -1160,6 +1221,7 @@ export async function getStudentSubmittedResponses({
   studentUserId,
   loggedInUserId,
   itemNumber,
+  shuffledOrder,
   answerId,
   contentAttemptNumber,
   itemAttemptNumber = null,
@@ -1167,7 +1229,8 @@ export async function getStudentSubmittedResponses({
   contentId: Uint8Array;
   studentUserId?: Uint8Array;
   loggedInUserId: Uint8Array;
-  itemNumber: number;
+  itemNumber?: number;
+  shuffledOrder: boolean;
   answerId: string;
   contentAttemptNumber: number;
   itemAttemptNumber?: number | null;
@@ -1186,7 +1249,8 @@ export async function getStudentSubmittedResponses({
         isDeleted: false,
       },
       userId: responseUserId,
-      itemNumber,
+      itemNumber: shuffledOrder ? undefined : itemNumber,
+      shuffledItemNumber: shuffledOrder ? itemNumber : undefined,
       answerId,
       contentAttemptNumber,
       itemAttemptNumber,

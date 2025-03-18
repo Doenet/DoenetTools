@@ -1,4 +1,10 @@
-import React, { ReactElement, useEffect, useRef, useState } from "react";
+import React, {
+  ReactElement,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useLoaderData, useOutletContext } from "react-router";
 
 import { DoenetViewer } from "@doenet/doenetml-iframe";
@@ -24,8 +30,9 @@ import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewe
 type ItemScore = {
   id: string;
   score: number;
-  docId?: string;
+  docId: string;
   shuffledOrder: number;
+  variant: number;
 };
 
 function isItemScore(obj: unknown): obj is ItemScore {
@@ -35,8 +42,9 @@ function isItemScore(obj: unknown): obj is ItemScore {
     typeof typedObj === "object" &&
     typeof typedObj.id === "string" &&
     typeof typedObj.score === "number" &&
-    (typedObj.docId === undefined || typeof typedObj.docId === "string") &&
-    typeof typedObj.shuffledOrder === "number"
+    typeof typedObj.docId === "string" &&
+    typeof typedObj.shuffledOrder === "number" &&
+    typeof typedObj.variant === "number"
   );
 }
 
@@ -97,14 +105,13 @@ export async function loader({ params }) {
     `/api/info/getAssignmentViewerDataFromCode/${params.classCode}`,
   );
 
-  console.log(data);
-
   let initialScore: number = 0;
   let initialScoreNumberByItem: number[] | null = null;
   let latestAttemptScore: number = 0;
   let latestAttemptScoreNumberByItem: number[] | null = null;
   let itemAttemptNumbers: number[] = [];
   let attemptNumber = 1;
+  let loadedScore = false;
 
   if (!data.assignmentFound) {
     return {
@@ -117,10 +124,12 @@ export async function loader({ params }) {
       latestAttemptScoreNumberByItem,
       itemAttemptNumbers,
       attemptNumber,
+      loadedScore,
     };
   }
 
-  if (data.scoreData.loadedState) {
+  if (data.scoreData.calculatedScore) {
+    loadedScore = true;
     initialScore = Number(data.scoreData.score);
     initialScoreNumberByItem = createScoreNumberByItem(
       data.scoreData.itemScores,
@@ -132,7 +141,7 @@ export async function loader({ params }) {
     itemAttemptNumbers = data.scoreData.latestAttempt.itemScores.map(
       (x) => x.itemAttemptNumber,
     );
-    attemptNumber = data.score.latestATtempt.attemptNumber;
+    attemptNumber = data.scoreData.latestAttempt.attemptNumber;
   }
 
   const assignment = data.assignment;
@@ -154,6 +163,7 @@ export async function loader({ params }) {
       latestAttemptScoreNumberByItem,
       itemAttemptNumbers,
       attemptNumber,
+      loadedScore,
     };
   } else {
     const activityJsonPrelim = assignment.activityJson
@@ -176,12 +186,13 @@ export async function loader({ params }) {
       latestAttemptScoreNumberByItem,
       itemAttemptNumbers,
       attemptNumber,
+      loadedScore,
     };
   }
 }
 
 export function AssignmentViewer() {
-  const data = useLoaderData() as {
+  const loaderData = useLoaderData() as {
     initialScore: number;
     initialScoreNumberByItem: number[] | null;
     latestAttemptScore: number;
@@ -189,6 +200,7 @@ export function AssignmentViewer() {
     itemAttemptNumbers: number[];
     attemptNumber: number;
     code: string;
+    loadedScore: boolean;
   } & (
     | {
         assignmentFound: false;
@@ -210,10 +222,11 @@ export function AssignmentViewer() {
       ))
   );
 
-  console.log(data);
-  const { assignmentFound, assignment, code } = data;
+  const { assignmentFound, assignment, code } = loaderData;
 
-  const assignmentName = data.assignmentFound ? data.assignment.name : "";
+  const assignmentName = loaderData.assignmentFound
+    ? loaderData.assignment.name
+    : "";
 
   const { user } = useOutletContext<SiteContext>();
 
@@ -221,11 +234,35 @@ export function AssignmentViewer() {
   const location = useLocation();
 
   const [attemptNumber, setAttemptNumber] = useState<number>(
-    data.attemptNumber,
+    loaderData.attemptNumber,
   );
   const [itemAttemptNumbers, setItemAttemptNumbers] = useState<number[]>(
-    data.itemAttemptNumbers,
+    loaderData.itemAttemptNumbers,
   );
+
+  const firstAttemptCreated = useRef(loaderData.loadedScore);
+
+  // create initial variant from the assignment `contentId`
+  // plus `userId` (if individualizeByStudent)
+  const initialVariant = useMemo(() => {
+    const individualizeByStudent = Boolean(
+      assignment?.assignmentInfo?.individualizeByStudent,
+    );
+
+    const codeToHash =
+      (assignment?.contentId ?? "") +
+      (individualizeByStudent ? (user?.userId ?? "") : "");
+
+    let hash = 0;
+    for (let i = 0; i < codeToHash.length; i++) {
+      const char = codeToHash.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash |= 0; // Convert to 32bit integer
+    }
+
+    // variant is a 24 bit unsigned integer
+    return Math.abs(hash) % 2 ** 24;
+  }, [assignment, user]);
 
   // create refs so that is updated inside callbacks
   const attemptNumberRef = useRef<number | null>(attemptNumber);
@@ -237,8 +274,8 @@ export function AssignmentViewer() {
     scoreNumberByItem: number[] | null;
     score: number;
   }>({
-    scoreNumberByItem: data.latestAttemptScoreNumberByItem,
-    score: data.latestAttemptScore,
+    scoreNumberByItem: loaderData.latestAttemptScoreNumberByItem,
+    score: loaderData.latestAttemptScore,
   });
 
   // used to look up item order in callbacks
@@ -248,15 +285,8 @@ export function AssignmentViewer() {
     scoreNumberByItem: number[] | null;
     score: number;
   }>({
-    scoreNumberByItem: data.initialScoreNumberByItem,
-    score: data.initialScore,
-  });
-
-  console.log({
-    scores,
-    scoresCurrentAttempt,
-    attemptNumber,
-    itemAttemptNumbers,
+    scoreNumberByItem: loaderData.initialScoreNumberByItem,
+    score: loaderData.initialScore,
   });
 
   useEffect(() => {
@@ -288,24 +318,28 @@ export function AssignmentViewer() {
 
           const score = data.score;
 
+          const { doenetStates, itemAttemptNumbers, ...otherState } =
+            data.state;
+
           if (data.newAttempt === true) {
             await createNewAttempt({
+              variant: otherState.activityState.initialVariant,
               newAttemptForItem: data.newAttemptForItem,
+              state: JSON.stringify(otherState),
               shuffledItemOrder: itemScores.map((s) => ({
                 shuffledItemNumber: s.shuffledOrder,
                 docId: s.docId.split("|")[0], // remove any suffix from selecting multiple by variant
+                variant: s.variant,
               })),
             });
           } else {
-            const { doenetStates, itemAttemptNumbers, ...otherState } =
-              data.state;
-
             let item: {
               shuffledItemNumber: number | undefined;
               itemAttemptNumber: number;
               shuffledItemOrder: {
                 shuffledItemNumber: number;
                 docId: string;
+                variant: number;
               }[];
               score: number;
               state: any;
@@ -317,6 +351,7 @@ export function AssignmentViewer() {
               const shuffledItemOrder = itemScores.map((s) => ({
                 shuffledItemNumber: s.shuffledOrder,
                 docId: s.docId.split("|")[0], // remove any suffix from selecting multiple by variant,
+                variant: s.variant,
               }));
               const shuffledItemNumber = data.itemUpdated;
               const itemAttemptNumber =
@@ -371,18 +406,26 @@ export function AssignmentViewer() {
             return;
           }
 
-          const { data: saveData } = await axios.post(
-            "/api/score/saveScoreAndState",
-            {
-              contentId: assignment.contentId,
-              attemptNumber: data.state.attemptNumber,
-              score: data.score,
-              code,
+          if (!firstAttemptCreated.current) {
+            firstAttemptCreated.current = true;
+            await createNewAttempt({
+              variant: initialVariant + attemptNumber,
               state: JSON.stringify(data.state),
-            },
-          );
+            });
+          } else {
+            const { data: saveData } = await axios.post(
+              "/api/score/saveScoreAndState",
+              {
+                contentId: assignment.contentId,
+                attemptNumber: data.state.attemptNumber,
+                score: data.score,
+                code,
+                state: JSON.stringify(data.state),
+              },
+            );
 
-          setScoreInfo(saveData);
+            setScoreInfo(saveData);
+          }
         }
       } else if (event.data.subject == "SPLICE.sendEvent") {
         const data = event.data.data;
@@ -441,7 +484,6 @@ export function AssignmentViewer() {
               state.doenetStates = data.items.map((x) => JSON.parse(x.state));
             }
 
-            console.log("loaded state", state);
             window.postMessage({
               subject: "SPLICE.getState.response",
               messageId: event.data.messageId,
@@ -477,7 +519,7 @@ export function AssignmentViewer() {
     };
   }, [assignment]);
 
-  if (!data.assignmentFound || !assignment) {
+  if (!loaderData.assignmentFound || !assignment) {
     return <EnterClassCode />;
   }
 
@@ -486,18 +528,22 @@ export function AssignmentViewer() {
   }
 
   let viewer: ReactElement;
-  if (data.type === "singleDoc") {
+  if (loaderData.type === "singleDoc") {
     const maxAttempts = assignment.assignmentInfo?.maxAttempts ?? 0;
     const attemptsLeft =
       maxAttempts === 0 ? Infinity : maxAttempts - attemptNumber;
 
     viewer = (
-      <Box>
+      <Box paddingBottom="50vh">
         {assignment.assignmentInfo?.maxAttempts !== 1 ? (
           <Box>
             <Button
               marginLeft="20px"
-              onClick={() => createNewAttempt({})}
+              onClick={() =>
+                createNewAttempt({
+                  variant: initialVariant + attemptNumber + 1,
+                })
+              }
               isDisabled={attemptsLeft < 1}
             >
               New attempt {maxAttempts > 0 ? `(${attemptsLeft} left)` : null}
@@ -505,8 +551,10 @@ export function AssignmentViewer() {
           </Box>
         ) : null}
         <DoenetViewer
-          doenetML={data.doenetML}
-          doenetmlVersion={data.doenetmlVersion.fullVersion}
+          doenetML={loaderData.doenetML}
+          doenetmlVersion={loaderData.doenetmlVersion.fullVersion}
+          // Since DoenetViewer does not adjust variant by attemptNumber, add attemptNumber to the initial variant
+          requestedVariantIndex={initialVariant + attemptNumber}
           docId={assignment.contentId}
           userId={user.userId}
           flags={{
@@ -520,7 +568,7 @@ export function AssignmentViewer() {
             allowLocalState: false,
             allowSaveEvents: true,
           }}
-          attemptNumber={attemptNumber ?? undefined}
+          attemptNumber={attemptNumber}
           location={location}
           navigate={navigate}
           linkSettings={{
@@ -531,36 +579,38 @@ export function AssignmentViewer() {
       </Box>
     );
   } else {
-    console.log(
-      assignment.assignmentInfo?.mode === "summative",
-      assignment.assignmentInfo?.mode === "formative",
-      assignment.assignmentInfo?.maxAttempts,
-    );
     viewer = (
-      <DoenetActivityViewer
-        source={data.activityJson}
-        activityId={assignment.contentId}
-        requestedVariantIndex={1}
-        userId={user.userId}
-        linkSettings={{ viewUrl: "", editURL: "" }}
-        paginate={assignment.type === "sequence" ? assignment.paginate : false}
-        activityLevelAttempts={assignment.assignmentInfo?.mode === "summative"}
-        itemLevelAttempts={assignment.assignmentInfo?.mode === "formative"}
-        maxAttemptsAllowed={assignment.assignmentInfo?.maxAttempts}
-        showTitle={false}
-        flags={{
-          showCorrectness: true,
-          solutionDisplayMode: "button",
-          showFeedback: true,
-          showHints: true,
-          autoSubmit: false,
-          allowLoadState: true,
-          allowSaveState: true,
-          allowLocalState: false,
-          allowSaveSubmissions: true,
-          allowSaveEvents: true,
-        }}
-      />
+      <Box paddingBottom="50vh">
+        <DoenetActivityViewer
+          source={loaderData.activityJson}
+          activityId={assignment.contentId}
+          // DoenetActivityViewer adjusts variant based on attempt number, so we don't need to add it to initial variant
+          requestedVariantIndex={initialVariant}
+          userId={user.userId}
+          linkSettings={{ viewUrl: "", editURL: "" }}
+          paginate={
+            assignment.type === "sequence" ? assignment.paginate : false
+          }
+          activityLevelAttempts={
+            assignment.assignmentInfo?.mode === "summative"
+          }
+          itemLevelAttempts={assignment.assignmentInfo?.mode === "formative"}
+          maxAttemptsAllowed={assignment.assignmentInfo?.maxAttempts}
+          showTitle={false}
+          flags={{
+            showCorrectness: true,
+            solutionDisplayMode: "button",
+            showFeedback: true,
+            showHints: true,
+            autoSubmit: false,
+            allowLoadState: true,
+            allowSaveState: true,
+            allowLocalState: false,
+            allowSaveSubmissions: true,
+            allowSaveEvents: true,
+          }}
+        />
+      </Box>
     );
   }
 
@@ -596,7 +646,7 @@ export function AssignmentViewer() {
               display="flex"
               fontSize={20}
             >
-              {data.assignment.name} ({code})
+              {loaderData.assignment.name} ({code})
             </GridItem>
             <GridItem
               area="rightControls"
@@ -658,14 +708,19 @@ export function AssignmentViewer() {
   );
 
   async function createNewAttempt({
+    variant,
+    state = null,
     newAttemptForItem,
     shuffledItemOrder,
   }: {
+    variant: number;
+    state?: string | null;
     newAttemptForItem?: number;
     shuffledItemOrder?:
       | {
           shuffledItemNumber: number;
           docId: string;
+          variant: number;
         }[]
       | null;
   }) {
@@ -674,6 +729,8 @@ export function AssignmentViewer() {
     }
 
     const { data } = await axios.post("/api/score/createNewAttempt", {
+      variant,
+      state,
       contentId: assignment.contentId,
       itemNumber: newAttemptForItem,
       shuffledItemOrder,
@@ -688,8 +745,8 @@ export function AssignmentViewer() {
     score: number;
     itemScores?: {
       score: number;
+      itemAttemptNumber: number;
       itemNumber: number;
-      shuffledItemNumber: number;
     }[];
     latestAttempt: {
       attemptNumber: number;
@@ -698,7 +755,6 @@ export function AssignmentViewer() {
         score: number;
         itemAttemptNumber: number;
         itemNumber: number;
-        shuffledItemNumber: number;
       }[];
     };
   }) {
@@ -732,7 +788,6 @@ async function recordSubmittedEvent({
   itemAttemptNumbers,
   docId,
   itemScores,
-
   data,
 }: {
   assignment: Content;
@@ -761,13 +816,11 @@ async function recordSubmittedEvent({
     const componentCreditAchieved = context.componentCreditAchieved;
     const itemCreditAchieved = context.docCreditAchieved;
 
-    console.log(docId, itemScores, assignment.contentId);
-
     const itemIdx = itemScores?.findIndex((v) => v.docId === docId);
     const itemNumber = (itemIdx ?? 0) + 1;
     const shuffledItemNumber = itemScores?.[itemNumber - 1].shuffledOrder ?? 1;
     const itemAttemptNumber = itemAttemptNumbers
-      ? itemAttemptNumbers[itemIdx ?? 0]
+      ? itemAttemptNumbers[shuffledItemNumber - 1]
       : null;
 
     await axios.post(`/api/assign/recordSubmittedEvent`, {

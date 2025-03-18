@@ -210,6 +210,7 @@ export type ReportStateMessage = {
     score: number;
     docId: string;
     shuffledOrder: number;
+    variant: number;
   }[];
   itemUpdated?: number;
   state: ExportedActivityState;
@@ -399,7 +400,8 @@ export function isReportStateMessage(obj: unknown): obj is ReportStateMessage {
         typeof item.id === "string" &&
         typeof item.score === "number" &&
         typeof item.docId === "string" &&
-        typeof item.shuffledOrder === "number",
+        typeof item.shuffledOrder === "number" &&
+        typeof item.variant === "number",
     ) &&
     (typedObj.itemUpdated === undefined ||
       typeof typedObj.itemUpdated === "number") &&

@@ -16,7 +16,7 @@ import {
   Tooltip,
   Tr,
 } from "@chakra-ui/react";
-import { ContentType, Doc, UserInfo } from "../../../_utils/types";
+import { ContentType, UserInfo } from "../../../_utils/types";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
 import { DateTime } from "luxon";
@@ -35,22 +35,24 @@ export function AnswerResponseDrawer({
   isOpen,
   onClose,
   finalFocusRef,
-  doc,
+  itemName,
   assignment,
   student,
   answerId,
   itemNumber,
+  shuffledOrder,
   contentAttemptNumber,
   itemAttemptNumber,
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
-  doc: Doc;
+  itemName: string | null;
   assignment: { name: string; type: ContentType; contentId: string };
   student: UserInfo;
   answerId: string;
-  itemNumber: number;
+  itemNumber: number | null;
+  shuffledOrder: boolean;
   contentAttemptNumber: number;
   itemAttemptNumber: number | null;
 }) {
@@ -60,12 +62,14 @@ export function AnswerResponseDrawer({
 
   useEffect(() => {
     async function getAnswerResponses() {
-      const itemAttemptQuery =
-        itemAttemptNumber === null
+      const itemQuery =
+        (itemNumber === null ? "" : `&itemNumber=${itemNumber}`) +
+        (itemAttemptNumber === null
           ? ""
-          : `&itemAttemptNumber=${itemAttemptNumber}`;
+          : `&itemAttemptNumber=${itemAttemptNumber}`);
+
       const { data } = await axios.get(
-        `/api/assign//getStudentSubmittedResponses/${assignment.contentId}/${student.userId}?itemNumber=${itemNumber}&answerId=${answerId}&contentAttemptNumber=${contentAttemptNumber}${itemAttemptQuery}`,
+        `/api/assign/getStudentSubmittedResponses/${assignment.contentId}/${student.userId}?answerId=${answerId}&contentAttemptNumber=${contentAttemptNumber}${itemQuery}&shuffledOrder=${shuffledOrder.toString()}`,
       );
 
       const responseData = data.responses.map((obj) => ({
@@ -88,7 +92,7 @@ export function AnswerResponseDrawer({
     itemAttemptNumber,
   ]);
 
-  const attemptNumber = Math.max(contentAttemptNumber, itemAttemptNumber);
+  const attemptNumber = Math.max(contentAttemptNumber, itemAttemptNumber ?? 1);
 
   return (
     <Drawer
@@ -108,11 +112,13 @@ export function AnswerResponseDrawer({
               Assignment: {assignment.name}
             </Text>
           </Tooltip>
-          <Tooltip label={doc.name} openDelay={1000}>
-            <Text fontSize="smaller" noOfLines={1}>
-              Item: {itemNumber}. {doc.name}
-            </Text>
-          </Tooltip>
+          {itemNumber !== null ? (
+            <Tooltip label={itemName} openDelay={1000}>
+              <Text fontSize="smaller" noOfLines={1}>
+                Item: {itemNumber}. {itemName}
+              </Text>
+            </Tooltip>
+          ) : null}
           <Text fontSize="smaller">Attempt: {attemptNumber}</Text>
         </DrawerHeader>
 

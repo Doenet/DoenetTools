@@ -10,7 +10,7 @@ export function parseAndFormatResponse(response: string): React.JSX.Element {
     if (componentType === "math" || componentType === "point") {
       const expr = me.fromAst(v);
       return (
-        <div>
+        <div key={i}>
           <MathJax hideUntilTypeset={"first"} inline dynamic key={i}>
             {
               //@ts-ignore

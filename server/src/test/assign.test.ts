@@ -1329,7 +1329,7 @@ test.only("get assignment data from anonymous users", async () => {
       id: contentId,
       name: "Activity 1",
       source: "Some content",
-      doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
+      doenetmlVersion: { fullVersion: "0.7.0-alpha32" },
     },
     user: userData1,
     activityScores: [
@@ -1381,7 +1381,7 @@ test.only("get assignment data from anonymous users", async () => {
       id: contentId,
       name: "Activity 1",
       source: "Some content",
-      doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
+      doenetmlVersion: { fullVersion: "0.7.0-alpha32" },
     },
     user: userData1,
     activityScores: [
@@ -1433,7 +1433,7 @@ test.only("get assignment data from anonymous users", async () => {
       id: contentId,
       name: "Activity 1",
       source: "Some content",
-      doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
+      doenetmlVersion: { fullVersion: "0.7.0-alpha32" },
     },
     user: userData1,
     activityScores: [
@@ -1520,7 +1520,7 @@ test.only("get assignment data from anonymous users", async () => {
       id: contentId,
       name: "Activity 1",
       source: "Some content",
-      doenetmlVersion: { fullVersion: "0.7.0-alpha31" },
+      doenetmlVersion: { fullVersion: "0.7.0-alpha32" },
     },
     user: userData2,
     activityScores: [
