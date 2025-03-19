@@ -13,13 +13,11 @@ import {
   Flex,
   Grid,
   GridItem,
-  Hide,
   HStack,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
-  Show,
   Spacer,
   Spinner,
   Text,
@@ -28,7 +26,6 @@ import {
 import { CardContent } from "../../../Widgets/Card";
 import {
   FetcherWithComponents,
-  Link,
   redirect,
   useNavigate,
   useOutletContext,
@@ -678,30 +675,12 @@ export function CompoundActivityEditor({
       userId={"hi"}
       linkSettings={{ viewUrl: "", editURL: "" }}
       paginate={activity.type === "sequence" ? activity.paginate : false}
-      activityLevelAttempts={
-        activity.type === "sequence" ? activity.activityLevelAttempts : false
-      }
-      itemLevelAttempts={
-        activity.type === "sequence" ? activity.itemLevelAttempts : false
-      }
+      activityLevelAttempts={activity.assignmentInfo?.mode === "summative"}
+      itemLevelAttempts={activity.assignmentInfo?.mode === "formative"}
+      maxAttemptsAllowed={activity.assignmentInfo?.maxAttempts}
       showTitle={false}
     />
   );
-
-  let parentLink: string;
-
-  if (activity.parent) {
-    if (activity.parent.type === "folder") {
-      parentLink = `/activities/${user?.userId}/${activity.parent.contentId}`;
-    } else {
-      parentLink = `/activityEditor/${activity.parent.contentId}`;
-    }
-  } else {
-    parentLink = `/activities/${user?.userId}`;
-  }
-
-  const addToURLParams = addTo ? `?addTo=${addTo.contentId}` : "";
-  parentLink += addToURLParams;
 
   const heading = (
     <Flex
@@ -713,23 +692,6 @@ export function CompoundActivityEditor({
       paddingX="10px"
       alignItems="center"
     >
-      <Box hidden={asViewer}>
-        <Link
-          data-test="Back Link"
-          to={parentLink}
-          style={{
-            color: "var(--mainBlue)",
-          }}
-        >
-          <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
-            <Show above="sm">
-              &lt; Back to{" "}
-              {activity.parent ? activity.parent.name : `My Activities`}
-            </Show>
-            <Hide above="sm">&lt; Back</Hide>
-          </Text>
-        </Link>
-      </Box>
       <Spacer />
 
       <Flex

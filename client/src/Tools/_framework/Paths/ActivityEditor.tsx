@@ -14,6 +14,7 @@ import {
   GridItem,
   HStack,
   Icon,
+  Link as ChakraLink,
   Show,
   Text,
   Tooltip,
@@ -29,7 +30,7 @@ import {
   MdOutlineGroup,
 } from "react-icons/md";
 import { FaCog } from "react-icons/fa";
-import { useFetcher } from "react-router";
+import { useFetcher, Link as ReactRouterLink, useNavigate } from "react-router";
 import axios from "axios";
 import {
   contentSettingsActions,
@@ -236,7 +237,7 @@ function EditableName({ dataTest }) {
       </Tooltip>
       <EditableInput
         maxLength={191}
-        width={{ base: "100%", md: "350px", lg: "450px" }}
+        width={{ base: "100%", lg: "450px" }}
         data-test="Editable Input"
       />
     </Editable>
@@ -331,6 +332,7 @@ export function ActivityEditor() {
   const [highlightRename, setHighlightRename] = useState(false);
 
   const fetcher = useFetcher();
+  const navigate = useNavigate();
 
   const [editLabel, editTooltip, editIcon] =
     assignmentStatus === "Unassigned"
@@ -492,13 +494,31 @@ export function ActivityEditor() {
             templateColumns={{
               base: "82px calc(100% - 197px) 115px",
               sm: "87px calc(100% - 217px) 120px",
-              md: "1fr 350px 1fr",
+              md: "270px calc(100% - 555px) 285px",
               lg: "1fr 450px 1fr",
             }}
             width="100%"
           >
             <GridItem area="leftControls">
               <HStack ml={{ base: "5px", sm: "10px" }} mt="4px">
+                <Show above="md">
+                  <Box width="50px" marginLeft="5px">
+                    <ChakraLink
+                      as={ReactRouterLink}
+                      to={".."}
+                      style={{
+                        color: "var(--mainBlue)",
+                      }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate(-1);
+                      }}
+                    >
+                      {" "}
+                      &lt; Back
+                    </ChakraLink>
+                  </Box>
+                </Show>
                 <ButtonGroup size="sm" isAttached variant="outline">
                   <Tooltip hasArrow label="View Activity">
                     <Button

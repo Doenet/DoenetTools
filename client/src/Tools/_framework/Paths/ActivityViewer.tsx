@@ -433,6 +433,24 @@ export function ActivityViewer() {
             >
               <GridItem area="leftControls">
                 <HStack ml={{ base: "5px", sm: "10px" }} mt="4px">
+                  <Show above="md">
+                    <Box width="50px" marginLeft="5px">
+                      <ChakraLink
+                        as={ReactRouterLink}
+                        to={".."}
+                        style={{
+                          color: "var(--mainBlue)",
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          navigate(-1);
+                        }}
+                      >
+                        {" "}
+                        &lt; Back
+                      </ChakraLink>
+                    </Box>
+                  </Show>
                   <ButtonGroup size="sm" isAttached variant="outline">
                     <Tooltip hasArrow label="View Activity">
                       <Button
