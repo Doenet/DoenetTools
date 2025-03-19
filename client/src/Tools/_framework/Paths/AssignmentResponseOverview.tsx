@@ -18,13 +18,21 @@ import {
   HStack,
   Text,
   Tooltip,
+  Icon,
+  Grid,
+  GridItem,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "../../../Widgets/Heading";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Label } from "recharts";
 import { Link as ReactRouterLink, useNavigate } from "react-router";
-import { createFullName } from "../../../_utils/names";
+import { createFullName, lastNameFirst } from "../../../_utils/names";
 import {
   AssignmentMode,
   Content,
@@ -32,38 +40,87 @@ import {
   UserInfo,
 } from "../../../_utils/types";
 import { isActivitySource } from "@doenet/assignment-viewer";
-import { compileActivityFromContent } from "../../../_utils/activity";
+import {
+  compileActivityFromContent,
+  contentTypeToName,
+  getIconInfo,
+} from "../../../_utils/activity";
 import { ActivitySource } from "../../../_utils/viewerTypes";
+import { BiDownArrowAlt, BiUpArrowAlt } from "react-icons/bi";
 
-export async function loader({ params }) {
+type ScoreItem = {
+  score: number;
+  bestAttemptNumber: number;
+  itemScores?:
+    | { itemNumber: number; score: number; itemAttemptNumber: number }[]
+    | null;
+  numContentAttempts: number;
+  numItemAttempts: number[] | null;
+  user: UserInfo;
+};
+
+export async function loader({ params, request }) {
   const { data } = await axios.get(
     `/api/assign/getAssignmentResponseOverview/${params.contentId}`,
   );
+
+  const url = new URL(request.url);
+  let sort = (url.searchParams.get("sort") ?? "name").trim();
+  let sortDir: "asc" | "desc" = "asc";
+  if (sort.slice(-1) === "-") {
+    sort = sort.slice(0, -1);
+    sortDir = "desc";
+  }
+
+  if (!(Number.isInteger(Number(sort)) || ["name", "total"].includes(sort))) {
+    sort = "name";
+  }
+
+  function sortFunction(a: ScoreItem, b: ScoreItem) {
+    let res;
+
+    if (sort === "name") {
+      const nameA = lastNameFirst(a.user).toLowerCase();
+      const nameB = lastNameFirst(b.user).toLowerCase();
+      if (nameA < nameB) {
+        res = -1;
+      } else if (nameA > nameB) {
+        res = 1;
+      } else {
+        res = 0;
+      }
+    } else if (sort === "total") {
+      res = a.score - b.score;
+    } else {
+      const idx = Number(sort) - 1;
+      res = (a.itemScores?.[idx].score ?? 0) - (b.itemScores?.[idx].score ?? 0);
+    }
+    if (sortDir === "desc") {
+      return -res;
+    } else {
+      return res;
+    }
+  }
 
   const contentId = params.contentId;
 
   const assignment = data.content as Content;
   const mode = data.scoreSummary.mode;
-  const scores = data.scoreSummary.scores.map((s) => ({
-    score: s.score,
-    bestAttemptNumber: s.bestAttemptNumber,
-    itemScores: s.itemScores
-      ? s.itemScores.sort((a, b) => a.itemNumber - b.itemNumber)
-      : null,
-    numContentAttempts: s.latestAttempt?.attemptNumber ?? 1,
-    numItemAttempts:
-      s.latestAttempt?.itemScores
-        .sort((a, b) => a.itemNumber - b.itemNumber)
-        .map((x) => x.itemAttemptNumber) ?? null,
-    user: s.user,
-  })) as {
-    score: number;
-    bestAttemptNumber: number;
-    itemScores: { itemNumber: number; score: number }[] | null;
-    numContentAttempts: number;
-    numItemAttempts: number[] | null;
-    user: UserInfo;
-  }[];
+  const scores = data.scoreSummary.scores
+    .map((s) => ({
+      score: s.score,
+      bestAttemptNumber: s.bestAttemptNumber,
+      itemScores: s.itemScores
+        ? s.itemScores.sort((a, b) => a.itemNumber - b.itemNumber)
+        : null,
+      numContentAttempts: s.latestAttempt?.attemptNumber ?? 1,
+      numItemAttempts:
+        s.latestAttempt?.itemScores
+          .sort((a, b) => a.itemNumber - b.itemNumber)
+          .map((x) => x.itemAttemptNumber) ?? null,
+      user: s.user,
+    }))
+    .sort(sortFunction) as ScoreItem[];
 
   const numItems = scores[0]?.itemScores?.length ?? 1;
 
@@ -114,6 +171,8 @@ export async function loader({ params }) {
       ...baseData,
       activityJson,
       itemNames,
+      sort,
+      sortDir,
     };
   }
 }
@@ -122,16 +181,7 @@ export function AssignmentData() {
   const data = useLoaderData() as {
     contentId: string;
     assignment: Content;
-    scores: {
-      score: number;
-      bestAttemptNumber: number;
-      itemScores?:
-        | { itemNumber: number; score: number; itemAttemptNumber: number }[]
-        | null;
-      numContentAttempts: number;
-      numItemAttempts: number[] | null;
-      user: UserInfo;
-    }[];
+    scores: ScoreItem[];
     numItems: number;
     numStudents: number;
     scoreStats: {
@@ -140,6 +190,8 @@ export function AssignmentData() {
       stdScores: number;
     };
     mode: AssignmentMode;
+    sort: string;
+    sortDir: "asc" | "desc";
   } & (
     | {
         type: "singleDoc";
@@ -161,6 +213,8 @@ export function AssignmentData() {
     numStudents,
     scoreStats,
     mode,
+    sort,
+    sortDir,
   } = data;
 
   useEffect(() => {
@@ -188,6 +242,21 @@ export function AssignmentData() {
     );
   }, [scores]);
 
+  const sortArrow = (
+    <Tooltip
+      label="Reverse sort direction"
+      openDelay={500}
+      placement="bottom-end"
+    >
+      <Text>
+        <Icon as={sortDir === "asc" ? BiDownArrowAlt : BiUpArrowAlt} />
+      </Text>
+    </Tooltip>
+  );
+
+  const sortLink = (text: string) =>
+    `.?sort=${text}${sort === `${text}` && sortDir === "asc" ? "-" : ""}`;
+
   let scoresChart: ReactElement;
 
   if (data.type !== "singleDoc" && numItems > 1) {
@@ -195,11 +264,26 @@ export function AssignmentData() {
 
     scoresChart = (
       <TableContainer>
-        <Table>
+        <Table size="sm">
           <Thead>
             <Tr>
               <Th textTransform={"none"} fontSize="large">
-                Name
+                <Box>
+                  <ChakraLink
+                    as={ReactRouterLink}
+                    to={sortLink("name")}
+                    replace={true}
+                    _hover={{
+                      textDecoration: "none",
+                      color: "gray.400",
+                    }}
+                  >
+                    <HStack gap={0}>
+                      <Text>Name</Text>
+                      {sort === "name" ? sortArrow : null}
+                    </HStack>
+                  </ChakraLink>
+                </Box>
               </Th>
               {itemNames.map((name, i) => {
                 return (
@@ -208,17 +292,48 @@ export function AssignmentData() {
                     fontSize="large"
                     key={i}
                     maxWidth="100px"
+                    justifyItems="center"
                   >
-                    <Tooltip label={`${i + 1}. ${name}`} openDelay={500}>
-                      <Text noOfLines={1}>
-                        {i + 1}. {name}
-                      </Text>
-                    </Tooltip>
+                    <Box>
+                      <ChakraLink
+                        as={ReactRouterLink}
+                        to={sortLink(`${i + 1}`)}
+                        replace={true}
+                        _hover={{
+                          textDecoration: "none",
+                          color: "gray.400",
+                        }}
+                      >
+                        <HStack gap={0}>
+                          <Tooltip label={`${i + 1}. ${name}`} openDelay={500}>
+                            <Text>{i + 1}</Text>
+                          </Tooltip>
+                          {sort === `${i + 1}` ? sortArrow : null}
+                        </HStack>
+                      </ChakraLink>
+                    </Box>
                   </Th>
                 );
               })}
-              <Th textTransform={"none"} fontSize="large">
-                Total
+              <Th textTransform={"none"} fontSize="large" justifyItems="center">
+                <Box width="64px" justifyItems="center">
+                  <Box>
+                    <ChakraLink
+                      as={ReactRouterLink}
+                      to={sortLink("total")}
+                      replace={true}
+                      _hover={{
+                        textDecoration: "none",
+                        color: "gray.400",
+                      }}
+                    >
+                      <HStack gap={0}>
+                        <Text>Total</Text>
+                        {sort === "total" ? sortArrow : null}
+                      </HStack>
+                    </ChakraLink>
+                  </Box>
+                </Box>
               </Th>
             </Tr>
           </Thead>
@@ -229,7 +344,6 @@ export function AssignmentData() {
                 contentId +
                 "/" +
                 assignmentScore.user.userId;
-              const numAttempts = assignmentScore.numContentAttempts;
               const studentName = createFullName(assignmentScore.user);
               const bestAttemptNumber = assignmentScore.bestAttemptNumber;
               const nameLinkUrl =
@@ -248,44 +362,32 @@ export function AssignmentData() {
                       >
                         {studentName}
                       </ChakraLink>
-                      {mode === "summative" && numAttempts > 1 ? (
-                        <Tooltip
-                          label={`${studentName} took ${numAttempts} attempts on the assignment`}
-                        >
-                          ({numAttempts}x)
-                        </Tooltip>
-                      ) : null}
                     </HStack>
                   </Td>
                   {assignmentScore.itemScores?.map((item, i) => {
-                    const numItemAttempts =
-                      assignmentScore.numItemAttempts?.[i] ?? 1;
                     const attemptNumberForScore =
                       mode === "summative"
                         ? bestAttemptNumber
                         : item.itemAttemptNumber;
                     return (
-                      <Td key={i}>
-                        <ChakraLink
-                          as={ReactRouterLink}
-                          to={`${linkURL}?itemNumber=${i + 1}&attemptNumber=${attemptNumberForScore}`}
-                          textDecoration="underline"
-                        >
-                          &nbsp;
-                          {Math.round(item.score * 100) / 100}
-                          &nbsp;
-                          {mode === "formative" && numItemAttempts > 1 ? (
-                            <Tooltip
-                              label={`${studentName} took ${numItemAttempts} attempts on item: ${itemNames[i]}`}
-                            >
-                              ({numItemAttempts}x)
-                            </Tooltip>
-                          ) : null}
-                        </ChakraLink>
+                      <Td key={i} justifyItems="center">
+                        <Text>
+                          <ChakraLink
+                            as={ReactRouterLink}
+                            to={`${linkURL}?itemNumber=${i + 1}&attemptNumber=${attemptNumberForScore}`}
+                            textDecoration="underline"
+                          >
+                            &nbsp;
+                            {Math.round(item.score * 1000) / 10}
+                            &nbsp;
+                          </ChakraLink>
+                        </Text>
                       </Td>
                     );
                   })}
-                  <Td>{Math.round(assignmentScore.score * 100) / 100}</Td>
+                  <Td justifyItems="center">
+                    <Text>{Math.round(assignmentScore.score * 1000) / 10}</Text>
+                  </Td>
                 </Tr>
               );
             })}
@@ -335,74 +437,122 @@ export function AssignmentData() {
     );
   }
 
+  const contentTypeName = contentTypeToName[data.type];
+  const { iconImage, iconColor } = getIconInfo(data.type);
+
+  const typeIcon = (
+    <Tooltip label={contentTypeName}>
+      <Box>
+        <Icon
+          as={iconImage}
+          color={iconColor}
+          boxSizing="content-box"
+          width="24px"
+          height="24px"
+          paddingRight="10px"
+          verticalAlign="middle"
+          aria-label={contentTypeName}
+        />
+      </Box>
+    </Tooltip>
+  );
+
   return (
     <>
-      <Box style={{ marginTop: 15, marginLeft: 15 }}>
-        <ChakraLink
-          as={ReactRouterLink}
-          to={".."}
-          style={{
-            color: "var(--mainBlue)",
-          }}
-          onClick={(e) => {
-            e.preventDefault();
-            navigate(-1);
-          }}
-        >
-          {" "}
-          &lt; Back
-        </ChakraLink>
-      </Box>
-      <Heading heading={assignment.name} />
+      <Grid
+        height="40px"
+        background="doenet.canvas"
+        width="100%"
+        borderBottom={"1px solid"}
+        borderColor="doenet.mediumGray"
+        templateAreas={`"leftControls label rightControls"`}
+        templateColumns={{
+          base: "82px calc(100% - 197px) 115px",
+          sm: "87px calc(100% - 217px) 120px",
+          md: "1fr 350px 1fr",
+          lg: "1fr 450px 1fr",
+        }}
+        alignContent="center"
+      >
+        <GridItem area="leftControls" marginLeft="15px">
+          <ChakraLink
+            as={ReactRouterLink}
+            to={".."}
+            style={{
+              color: "var(--mainBlue)",
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(-1);
+            }}
+          >
+            {" "}
+            &lt; Back
+          </ChakraLink>
+        </GridItem>
+        <GridItem area="label">
+          <Flex justifyContent="center" alignItems="center">
+            {typeIcon}
+            {assignment.name} &mdash; Data
+          </Flex>
+        </GridItem>
+      </Grid>
+      <Tabs>
+        <TabList>
+          <Tab>Scores</Tab>
+          <Tab>Statistics</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <Heading subheading="Scores" />
 
-      <Heading subheading="Score summary" />
-
-      <Flex>
-        <BarChart
-          width={600}
-          height={300}
-          data={scoreData}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="score">
-            <Label value="Maximum Score" offset={0} position="insideBottom" />
-          </XAxis>
-          <YAxis>
-            <Label
-              value="Number of students"
-              angle={-90}
-              position="insideLeft"
-            />
-          </YAxis>
-          <Bar dataKey="count" fill="#8884d8" />
-        </BarChart>
-        <Box>
-          <List>
-            <ListItem>Number of students: {numStudents}</ListItem>
-            <ListItem>
-              Average score: {Math.round(scoreStats.averageScore * 100) / 100}
-            </ListItem>
-            <ListItem>
-              Median score: {Math.round(scoreStats.medianScore * 100) / 100}
-            </ListItem>
-            <ListItem>
-              Score standard deviation:{" "}
-              {Math.round(scoreStats.stdScores * 100) / 100}
-            </ListItem>
-          </List>
-        </Box>
-      </Flex>
-      <Box marginTop="20px">
-        <Heading subheading="Best scores per student" />
-
-        {scoresChart}
-      </Box>
+            {scoresChart}
+          </TabPanel>
+          <TabPanel>
+            <Heading subheading="Score summary" />
+            <BarChart
+              width={600}
+              height={300}
+              data={scoreData}
+              margin={{
+                top: 5,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="score">
+                <Label value="Score" offset={0} position="insideBottom" />
+              </XAxis>
+              <YAxis>
+                <Label
+                  value="Number of students"
+                  angle={-90}
+                  position="insideLeft"
+                />
+              </YAxis>
+              <Bar dataKey="count" fill="#8884d8" />
+            </BarChart>
+            <Box>
+              <List>
+                <ListItem>Number of students: {numStudents}</ListItem>
+                <ListItem>
+                  Average score:{" "}
+                  {Math.round(scoreStats.averageScore * 100) / 100}
+                </ListItem>
+                <ListItem>
+                  Median score: {Math.round(scoreStats.medianScore * 100) / 100}
+                </ListItem>
+                <ListItem>
+                  Score standard deviation:{" "}
+                  {Math.round(scoreStats.stdScores * 100) / 100}
+                </ListItem>
+              </List>
+            </Box>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </>
   );
 }

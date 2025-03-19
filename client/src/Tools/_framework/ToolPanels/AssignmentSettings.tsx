@@ -40,7 +40,16 @@ export async function assignmentSettingsActions({
       );
       return data;
     } catch (_e) {
-      return { success: false, mode: formObj.mode };
+      if (formObj.mode !== undefined) {
+        return { success: false, mode: formObj.mode };
+      } else {
+        return {
+          success: false,
+          individualizeByStudent: formObj.individualizeByStudent
+            ? formObj.individualizeByStudent === "true"
+            : undefined,
+        };
+      }
     }
   } else if (formObj._action == "update maximum attempts") {
     try {
@@ -126,9 +135,13 @@ export function AssignmentSettings({
           );
         }
       } else {
+        console.log(fetcher.data);
         if ("mode" in fetcher.data) {
           setEncounteredError(true);
           setStatusText(`Error attempting to change assignment mode`);
+        } else if ("individualizeByStudent" in fetcher.data) {
+          setEncounteredError(true);
+          setStatusText(`Error attempting to change individualize by student`);
         } else if ("maxAttempts" in fetcher.data) {
           setEncounteredError(true);
           setStatusText(
@@ -314,6 +327,10 @@ export function AssignmentSettings({
           <Checkbox
             marginTop="10px"
             isChecked={individualizeByStudent}
+            isDisabled={
+              (activityData.assignmentInfo?.assignmentStatus ??
+                "Unassigned") !== "Unassigned"
+            }
             onChange={() => {
               setIndividualizeByStudent(!individualizeByStudent);
               fetcher.submit(
@@ -326,8 +343,17 @@ export function AssignmentSettings({
               );
             }}
           >
-            Individualize by student
+            <Tooltip label="If Individualize by Student is set, then each student receives a different variant of the assignment. Otherwise, every student receives the same variant.">
+              Individualize by student
+            </Tooltip>
           </Checkbox>
+          {(activityData.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
+          "Unassigned" ? (
+            <Text>
+              Note: Cannot modify Individualize by Student since activity is
+              assigned.
+            </Text>
+          ) : null}
         </Box>
       </Box>
     </>

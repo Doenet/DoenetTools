@@ -615,96 +615,94 @@ export function AssignmentViewer() {
   }
 
   return (
-    <>
-      <Grid
-        background="doenet.lightBlue"
-        minHeight="calc(100vh - 40px)" //40px header height
-        templateAreas={`"header"
+    <Grid
+      background="doenet.lightBlue"
+      minHeight="calc(100vh - 40px)" //40px header height
+      templateAreas={`"header"
       "centerContent"
       `}
-        templateRows="40px auto"
-        position="relative"
+      templateRows="40px auto"
+      position="relative"
+    >
+      <GridItem
+        area="header"
+        position="fixed"
+        height="40px"
+        background="doenet.canvas"
+        width="100%"
+        zIndex="500"
+        alignContent="center"
       >
-        <GridItem
-          area="header"
-          position="fixed"
-          height="40px"
-          background="doenet.canvas"
+        <Grid
+          templateAreas={`"leftControls label rightControls"`}
+          templateColumns="1fr 400px 1fr"
           width="100%"
-          zIndex="500"
-          alignContent="center"
         >
-          <Grid
-            templateAreas={`"leftControls label rightControls"`}
-            templateColumns="1fr 400px 1fr"
-            width="100%"
+          <GridItem area="leftControls"></GridItem>
+          <GridItem
+            area="label"
+            justifyContent="center"
+            display="flex"
+            fontSize={20}
           >
-            <GridItem area="leftControls"></GridItem>
-            <GridItem
-              area="label"
-              justifyContent="center"
-              display="flex"
-              fontSize={20}
-            >
-              {loaderData.assignment.name} ({code})
-            </GridItem>
-            <GridItem
-              area="rightControls"
-              display="flex"
-              justifyContent="flex-end"
-            ></GridItem>
-          </Grid>
-        </GridItem>
+            {loaderData.assignment.name} ({code})
+          </GridItem>
+          <GridItem
+            area="rightControls"
+            display="flex"
+            justifyContent="flex-end"
+          ></GridItem>
+        </Grid>
+      </GridItem>
 
-        <GridItem area="centerContent">
-          <Grid
+      <GridItem area="centerContent">
+        <Grid
+          width="100%"
+          height="calc(100vh - 80px)"
+          templateAreas={`"leftGutter viewer rightGutter"`}
+          templateColumns={`1fr minmax(340px,850px) 1fr`}
+          overflow="hidden"
+        >
+          <GridItem
+            area="leftGutter"
+            background="doenet.lightBlue"
             width="100%"
-            height="calc(100vh - 80px)"
-            templateAreas={`"leftGutter viewer rightGutter"`}
-            templateColumns={`1fr minmax(340px,850px) 1fr`}
+            paddingTop="10px"
+            alignSelf="start"
+          />
+          <GridItem
+            area="rightGutter"
+            background="doenet.lightBlue"
+            width="100%"
+            paddingTop="10px"
+            alignSelf="start"
+          />
+          <GridItem
+            area="viewer"
+            width="100%"
+            placeSelf="center"
+            minHeight="100%"
+            maxWidth="850px"
             overflow="hidden"
           >
-            <GridItem
-              area="leftGutter"
-              background="doenet.lightBlue"
-              width="100%"
-              paddingTop="10px"
-              alignSelf="start"
-            />
-            <GridItem
-              area="rightGutter"
-              background="doenet.lightBlue"
-              width="100%"
-              paddingTop="10px"
-              alignSelf="start"
-            />
-            <GridItem
-              area="viewer"
-              width="100%"
-              placeSelf="center"
-              minHeight="100%"
-              maxWidth="850px"
-              overflow="hidden"
+            <Box
+              h="calc(100vh - 80px)"
+              background="var(--canvas)"
+              borderWidth="1px"
+              borderStyle="solid"
+              borderColor="doenet.mediumGray"
+              padding="20px 5px 20px 5px"
+              flexGrow={1}
+              overflow="scroll"
+              w="100%"
+              id="viewer-container"
             >
-              <Box
-                h="calc(100vh - 80px)"
-                background="var(--canvas)"
-                borderWidth="1px"
-                borderStyle="solid"
-                borderColor="doenet.mediumGray"
-                padding="20px 5px 20px 5px"
-                flexGrow={1}
-                overflow="scroll"
-                w="100%"
-                id="viewer-container"
-              >
-                {viewer}
-              </Box>
-            </GridItem>
-          </Grid>
-        </GridItem>
-      </Grid>
-    </>
+              {viewer}
+            </Box>
+          </GridItem>
+        </Grid>
+      </GridItem>
+    </Grid>
   );
 
   async function createNewAttempt({
