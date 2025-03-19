@@ -90,7 +90,7 @@ export async function loader({ params, request }) {
   };
 
   const responseCounts: Record<string, number> = Object.fromEntries(
-    data.responseCounts.map(([_a, b, c]) => [b, c]),
+    data.responseCounts,
   );
 
   const doenetML = content.doenetML;

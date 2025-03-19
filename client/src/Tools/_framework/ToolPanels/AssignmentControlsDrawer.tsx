@@ -20,10 +20,6 @@ import {
   assignActivityActions,
   AssignActivityControls,
 } from "./AssignActivityControls";
-import {
-  AssignmentSettings,
-  assignmentSettingsActions,
-} from "./AssignmentSettings";
 import { Content } from "../../../_utils/types";
 
 export async function assignmentControlsActions({
@@ -34,11 +30,6 @@ export async function assignmentControlsActions({
   const resultAA = await assignActivityActions({ formObj });
   if (resultAA) {
     return resultAA;
-  }
-
-  const resultAS = await assignmentSettingsActions({ formObj });
-  if (resultAS) {
-    return resultAS;
   }
 
   return null;
@@ -107,7 +98,6 @@ export function AssignmentControlsDrawer({
                   ? "Assign Activity"
                   : "Manage Assignment"}
               </Tab>
-              <Tab data-test="Assignment Settings">Assignment Settings</Tab>
             </TabList>
             <Box overflowY="auto" height="calc(100vh - 130px)">
               <TabPanels>
@@ -115,13 +105,6 @@ export function AssignmentControlsDrawer({
                   <AssignActivityControls
                     fetcher={fetcher}
                     contentId={contentId}
-                    activityData={contentData}
-                    openTabIndex={tabIndex}
-                  />
-                </TabPanel>
-                <TabPanel>
-                  <AssignmentSettings
-                    fetcher={fetcher}
                     activityData={contentData}
                     openTabIndex={tabIndex}
                   />

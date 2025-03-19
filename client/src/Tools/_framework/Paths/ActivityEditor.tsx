@@ -587,7 +587,11 @@ export function ActivityEditor() {
                             }}
                             ref={assignBtnRef}
                           >
-                            <Show above="md">Assign</Show>
+                            <Show above="md">
+                              {assignmentStatus === "Unassigned"
+                                ? "Assign"
+                                : "Assigned"}
+                            </Show>
                           </Button>
                         </Tooltip>
                       )}
