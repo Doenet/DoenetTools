@@ -938,7 +938,7 @@ async function calculateScoreAndCacheResults({
   };
 }
 
-type ItemScores = {
+export type ItemScores = {
   score: number;
   itemNumber: number;
   itemAttemptNumber: number;

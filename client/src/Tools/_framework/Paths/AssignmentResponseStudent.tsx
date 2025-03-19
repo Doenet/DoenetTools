@@ -1,6 +1,5 @@
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
-import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 
 import {
   Box,
@@ -26,28 +25,23 @@ import { createFullName } from "../../../_utils/names";
 import {
   AssignmentMode,
   ContentType,
-  Content,
+  Doc,
   UserInfo,
   DoenetmlVersion,
 } from "../../../_utils/types";
 import { clearQueryParameter } from "../../../_utils/explore";
 import { AnswerResponseDrawer } from "../ToolPanels/AnswerResponseDrawer";
-import { ActivitySource, isActivitySource } from "../../../_utils/viewerTypes";
-import {
-  compileActivityFromContent,
-  contentTypeToName,
-  getIconInfo,
-} from "../../../_utils/activity";
+import { contentTypeToName, getIconInfo } from "../../../_utils/activity";
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);
 
-  const requestedShuffledOrder =
+  const shuffledOrder =
     (url.searchParams.get("shuffledOrder") ?? "false") !== "false";
   const requestedItemNumber = url.searchParams.get("itemNumber");
   const requestedAttemptNumber = url.searchParams.get("attemptNumber");
 
-  let search = `?shuffledOrder=${requestedShuffledOrder}`;
+  let search = `?shuffledOrder=${shuffledOrder}`;
 
   if (requestedItemNumber !== null) {
     search += `&itemNumber=${requestedItemNumber}`;
@@ -63,109 +57,56 @@ export async function loader({ params, request }) {
   const overall = data.overallScores;
   const content = data.content;
 
-  const shuffledOrder =
-    data.mode === "summative" ? true : requestedShuffledOrder;
-
-  const itemScores = overall.itemScores;
+  const overallItemScores = overall.itemScores;
   const latestItemScores = overall.latestAttempt.itemScores;
   let itemNames = data.itemNames;
+  const itemScores = data.itemScores;
 
   // Get itemNames, itemScores, and latestItemScores in the correct order.
   // TODO: this is now quite confusing with the different modes.
   // Find a better approach, presumably by just creating them in the desired order
   // (and explaining the desired order) in the first place
-  if (data.mode === "summative") {
+  if (shuffledOrder) {
     const itemNames2 = itemNames.map((name, i) => ({
       name,
       shuffledItemNumber:
-        data.thisAttemptState.items?.findIndex((x) => x.itemNumber === i + 1) +
-        1,
-    }));
-    itemNames = itemNames2
-      .sort((a, b) => a.shuffledItemNumber - b.shuffledItemNumber)
-      .map((x) => x.name);
-  } else if (shuffledOrder) {
-    const itemNames2 = itemNames.map((name, i) => ({
-      name,
-      shuffledItemNumber:
-        itemScores.findIndex((x) => x.itemNumber === i + 1) + 1,
+        overallItemScores.findIndex((x) => x.itemNumber === i + 1) + 1,
     }));
     itemNames = itemNames2
       .sort((a, b) => a.shuffledItemNumber - b.shuffledItemNumber)
       .map((x) => x.name);
   } else {
-    itemScores.sort((a, b) => a.itemNumber - b.itemNumber);
+    overallItemScores.sort((a, b) => a.itemNumber - b.itemNumber);
     latestItemScores.sort((a, b) => a.itemNumber - b.itemNumber);
+    itemScores.sort((a, b) => a.itemNumber - b.itemNumber);
   }
 
   const overallScores = {
     score: overall.score,
     bestAttemptNumber: overall.bestAttemptNumber,
-    itemScores,
+    itemScores: overallItemScores,
     numContentAttempts: overall.latestAttempt.attemptNumber,
     numItemAttempts: latestItemScores.map((x) => x.itemAttemptNumber),
   };
 
-  let responseCounts: Record<string, number> = {};
-  const responseCountsByItem: Record<string, number>[] = [];
-  if (data.mode === "formative" || data.assignment.type === "singleDoc") {
-    responseCounts = Object.fromEntries(
-      data.responseCounts.map(([_a, b, c]) => [b, c]),
-    );
-  } else {
-    // TODO: put data.responseCounts in a better format so this isn't so opaque
-    let lastNum = null;
-    let lastCounts = {};
-    for (const item of data.responseCounts) {
-      if (item[0] !== lastNum) {
-        if (lastNum !== null) {
-          responseCountsByItem[lastNum - 1] = lastCounts;
-        }
-        lastCounts = {};
-        lastNum = item[0];
-      }
-      Object.assign(lastCounts, { [item[1]]: item[2] });
-    }
-    if (lastNum !== null) {
-      responseCountsByItem[lastNum - 1] = lastCounts;
-    }
-  }
+  const responseCounts: Record<string, number> = Object.fromEntries(
+    data.responseCounts.map(([_a, b, c]) => [b, c]),
+  );
 
-  const baseData = {
+  const doenetML = content.doenetML;
+  const doenetmlVersion: DoenetmlVersion = content.doenetmlVersion;
+
+  return {
     ...data,
     itemNames,
+    itemScores,
     overallScores,
     responseCounts,
-    responseCountsByItem,
     shuffledOrder,
     content,
+    doenetML,
+    doenetmlVersion,
   };
-
-  if (content.type === "singleDoc") {
-    const doenetML = content.doenetML;
-    const doenetmlVersion: DoenetmlVersion = content.doenetmlVersion;
-
-    return {
-      ...baseData,
-      type: content.type,
-      doenetML,
-      doenetmlVersion,
-    };
-  } else {
-    const activityJsonPrelim = content.activityJson
-      ? JSON.parse(content.activityJson)
-      : null;
-
-    const activityJson = isActivitySource(activityJsonPrelim)
-      ? activityJsonPrelim
-      : compileActivityFromContent(content);
-
-    return {
-      ...baseData,
-      type: content.type,
-      activityJson,
-    };
-  }
 }
 
 export function AssignmentResponseStudent() {
@@ -174,14 +115,14 @@ export function AssignmentResponseStudent() {
     content,
     mode,
     user,
-    thisAttemptState,
+    itemAttemptState,
     attemptScores,
     overallScores,
     itemNames,
+    itemScores,
     attemptNumber,
     allStudents,
     responseCounts,
-    responseCountsByItem,
     shuffledOrder,
     ...data
   } = useLoaderData() as {
@@ -191,24 +132,15 @@ export function AssignmentResponseStudent() {
       contentId: string;
       shuffledOrder: boolean;
     };
-    content: Content;
+    content: Doc;
     mode: AssignmentMode;
     user: UserInfo;
-    thisAttemptState: {
+    itemAttemptState: {
       state: string | null;
       score: number;
       variant: number;
       itemNumber?: number;
       shuffledItemNumber?: number;
-      items?: {
-        score: number;
-        state: string | null;
-        itemNumber: number;
-        shuffledItemNumber: number;
-        itemAttemptNumber: number;
-        variant: number;
-        docId: string;
-      }[];
     };
     attemptScores: { attemptNumber: number; score: number }[];
     overallScores: {
@@ -219,6 +151,7 @@ export function AssignmentResponseStudent() {
       numItemAttempts: number[] | null;
     };
     itemNames: string[];
+    itemScores: { itemNumber: number; score: number }[];
     attemptNumber: number;
     allStudents: {
       userId: string;
@@ -226,12 +159,10 @@ export function AssignmentResponseStudent() {
       lastNames: string;
     }[];
     responseCounts: Record<string, number>;
-    responseCountsByItem: Record<string, number>[];
     shuffledOrder: boolean;
-  } & (
-    | { type: "singleDoc"; doenetML: string; doenetmlVersion: DoenetmlVersion }
-    | { type: "sequence" | "select"; activityJson: ActivitySource }
-  );
+    doenetML: string;
+    doenetmlVersion: DoenetmlVersion;
+  };
 
   useEffect(() => {
     document.title = `${assignment?.name} - Doenet`;
@@ -241,25 +172,12 @@ export function AssignmentResponseStudent() {
   const navigate = useNavigate();
 
   const [responseAnswerId, setResponseAnswerId] = useState<string | null>(null);
-  const [responseItem, setResponseItem] = useState(
-    thisAttemptState.itemNumber ?? null,
-  );
 
   useEffect(() => {
     const messageListener = async function (event) {
       if (event.data.subject == "SPLICE.getState") {
-        if (thisAttemptState.state) {
-          const state = JSON.parse(thisAttemptState.state);
-
-          if (thisAttemptState.items && thisAttemptState.items.length > 0) {
-            // add back in state from items
-            state.itemAttemptNumbers = thisAttemptState.items.map(
-              (x) => x.itemAttemptNumber,
-            );
-            state.doenetStates = thisAttemptState.items.map((x) =>
-              x.state ? JSON.parse(x.state) : null,
-            );
-          }
+        if (itemAttemptState.state) {
+          const state = JSON.parse(itemAttemptState.state);
           window.postMessage({
             subject: "SPLICE.getState.response",
             messageId: event.data.messageId,
@@ -277,26 +195,6 @@ export function AssignmentResponseStudent() {
         }
       } else if (event.data.subject === "requestAnswerResponses") {
         if (typeof event.data.answerId === "string") {
-          const [id, suffix] = event.data.docId.split("|");
-          if (
-            thisAttemptState.items &&
-            thisAttemptState.itemNumber === undefined
-          ) {
-            const matchedItem = thisAttemptState.items.find(
-              (v) =>
-                v.docId === id &&
-                (suffix === undefined || v.variant === Number(suffix)),
-            );
-            if (matchedItem) {
-              setResponseItem(
-                shuffledOrder
-                  ? matchedItem.shuffledItemNumber
-                  : matchedItem.itemNumber,
-              );
-            }
-          } else {
-            setResponseItem(thisAttemptState.itemNumber ?? null);
-          }
           setResponseAnswerId(event.data.answerId);
           answerResponsesOnOpen();
         }
@@ -308,7 +206,7 @@ export function AssignmentResponseStudent() {
     return () => {
       removeEventListener("message", messageListener);
     };
-  }, [user.userId, thisAttemptState, attemptNumber]);
+  }, [user.userId, itemAttemptState, attemptNumber]);
 
   const {
     isOpen: answerResponsesAreOpen,
@@ -328,81 +226,51 @@ export function AssignmentResponseStudent() {
       <AnswerResponseDrawer
         isOpen={answerResponsesAreOpen}
         onClose={answerResponsesOnClose}
-        itemName={responseItem ? itemNames[responseItem - 1] : null}
+        itemName={
+          itemAttemptState.itemNumber
+            ? itemNames[itemAttemptState.itemNumber - 1]
+            : null
+        }
         assignment={assignment}
         student={user}
         answerId={responseAnswerId}
-        itemNumber={responseItem}
+        itemNumber={itemAttemptState.itemNumber ?? null}
         shuffledOrder={shuffledOrder}
         contentAttemptNumber={contentAttemptNumber}
         itemAttemptNumber={itemAttemptNumber}
       />
     ) : null;
 
-  let viewer: ReactElement;
-
-  if (data.type === "singleDoc") {
-    viewer = (
-      <DoenetViewer
-        doenetML={data.doenetML}
-        key={`${user.userId}|${thisAttemptState.itemNumber ?? ""}|${attemptNumber}`}
-        doenetmlVersion={data.doenetmlVersion.fullVersion}
-        requestedVariantIndex={thisAttemptState.variant}
-        flags={{
-          showCorrectness: true,
-          solutionDisplayMode: "button",
-          showFeedback: true,
-          showHints: true,
-          autoSubmit: false,
-          readOnly: true,
-          allowLoadState: true,
-          allowSaveState: false,
-          allowLocalState: false,
-          allowSaveEvents: false,
-        }}
-        forceDisable={true}
-        //   forceShowCorrectness={true}
-        forceShowSolution={true}
-        forceUnsuppressCheckwork={true}
-        linkSettings={{
-          viewURL: "/activityViewer",
-          editURL: "/codeViewer",
-        }}
-        showAnswerResponseMenu={true}
-        answerResponseCounts={responseCounts}
-      />
-    );
-  } else {
-    viewer = (
-      <DoenetActivityViewer
-        source={data.activityJson}
-        activityId={assignment.contentId}
-        requestedVariantIndex={thisAttemptState.variant}
-        userId={user.userId}
-        linkSettings={{ viewUrl: "", editURL: "" }}
-        paginate={content.type === "sequence" ? content.paginate : false}
-        showTitle={false}
-        flags={{
-          showCorrectness: true,
-          solutionDisplayMode: "button",
-          showFeedback: true,
-          showHints: true,
-          autoSubmit: false,
-          readOnly: true,
-          allowLoadState: true,
-          allowSaveState: false,
-          allowLocalState: false,
-          allowSaveEvents: false,
-        }}
-        forceDisable={true}
-        //   forceShowCorrectness={true}
-        forceShowSolution={true}
-        forceUnsuppressCheckwork={true}
-        showAnswerResponseMenu={true}
-        answerResponseCountsByItem={responseCountsByItem}
-      />
-    );
-  }
+  const viewer = (
+    <DoenetViewer
+      doenetML={data.doenetML}
+      key={`${user.userId}|${itemAttemptState.itemNumber ?? ""}|${attemptNumber}`}
+      doenetmlVersion={data.doenetmlVersion.fullVersion}
+      requestedVariantIndex={itemAttemptState.variant}
+      flags={{
+        showCorrectness: true,
+        solutionDisplayMode: "button",
+        showFeedback: true,
+        showHints: true,
+        autoSubmit: false,
+        readOnly: true,
+        allowLoadState: true,
+        allowSaveState: false,
+        allowLocalState: false,
+        allowSaveEvents: false,
+      }}
+      forceDisable={true}
+      //   forceShowCorrectness={true}
+      forceShowSolution={true}
+      forceUnsuppressCheckwork={true}
+      linkSettings={{
+        viewURL: "/activityViewer",
+        editURL: "/codeViewer",
+      }}
+      showAnswerResponseMenu={true}
+      answerResponseCounts={responseCounts}
+    />
+  );
 
   const contentTypeName = contentTypeToName[assignment.type];
   const { iconImage, iconColor } = getIconInfo(assignment.type);
@@ -422,6 +290,45 @@ export function AssignmentResponseStudent() {
         />
       </Box>
     </Tooltip>
+  );
+
+  const itemSelect = (
+    <Flex alignItems="center" marginLeft="10px">
+      <label htmlFor="item-select" style={{ fontSize: "large" }}>
+        Item:
+      </label>{" "}
+      <Select
+        maxWidth="350px"
+        marginLeft="5px"
+        id="item-select"
+        size="lg"
+        value={
+          shuffledOrder
+            ? itemAttemptState.shuffledItemNumber
+            : (itemAttemptState.itemNumber ?? 1)
+        }
+        onChange={(e) => {
+          let newSearch = clearQueryParameter(
+            "itemNumber",
+            clearQueryParameter("attemptNumber", search),
+          );
+          if (newSearch === "") {
+            newSearch = "?";
+          } else {
+            newSearch += "&";
+          }
+          newSearch += `itemNumber=${e.target.value}`;
+          navigate(`.${newSearch}`, { replace: true });
+        }}
+      >
+        {itemNames.map((name, i) => (
+          <option value={i + 1} key={i}>
+            {i + 1} (score: {Math.round(itemScores[i].score * 1000) / 10}):{" "}
+            {name}
+          </option>
+        ))}
+      </Select>
+    </Flex>
   );
 
   return (
@@ -518,43 +425,9 @@ export function AssignmentResponseStudent() {
                   </Select>
                 </Flex>
               ) : null}
-              {assignment.type !== "singleDoc" && mode === "formative" ? (
-                <Flex alignItems="center" marginLeft="10px">
-                  <label htmlFor="item-select" style={{ fontSize: "large" }}>
-                    Item:
-                  </label>{" "}
-                  <Select
-                    maxWidth="350px"
-                    marginLeft="5px"
-                    id="item-select"
-                    size="lg"
-                    value={
-                      shuffledOrder
-                        ? thisAttemptState.shuffledItemNumber
-                        : (thisAttemptState.itemNumber ?? 1)
-                    }
-                    onChange={(e) => {
-                      let newSearch = clearQueryParameter(
-                        "itemNumber",
-                        clearQueryParameter("attemptNumber", search),
-                      );
-                      if (newSearch === "") {
-                        newSearch = "?";
-                      } else {
-                        newSearch += "&";
-                      }
-                      newSearch += `itemNumber=${e.target.value}`;
-                      navigate(`.${newSearch}`, { replace: true });
-                    }}
-                  >
-                    {itemNames.map((name, i) => (
-                      <option value={i + 1} key={i}>
-                        {i + 1}. {name}
-                      </option>
-                    ))}
-                  </Select>
-                </Flex>
-              ) : null}
+              {assignment.type !== "singleDoc" && mode === "formative"
+                ? itemSelect
+                : null}
               <Flex alignItems="center" marginLeft="10px">
                 <label htmlFor="attempt-select" style={{ fontSize: "large" }}>
                   Attempt:
@@ -584,19 +457,22 @@ export function AssignmentResponseStudent() {
                       value={attempt.attemptNumber}
                       key={attempt.attemptNumber}
                     >
-                      Attempt {attempt.attemptNumber} (score:{" "}
-                      {Math.round(attempt.score * 100) / 100})
+                      {attempt.attemptNumber} (score:{" "}
+                      {Math.round(attempt.score * 1000) / 10})
                     </option>
                   ))}
                 </Select>
               </Flex>
+              {assignment.type !== "singleDoc" && mode === "summative"
+                ? itemSelect
+                : null}
             </Flex>
 
-            {assignment.shuffledOrder && mode === "formative" ? (
+            {assignment.shuffledOrder && assignment.type !== "singleDoc" ? (
               <Flex marginLeft="10px" marginTop="10px" alignItems="center">
-                <Box>Original item number: {thisAttemptState.itemNumber}</Box>
+                <Box>Original item number: {itemAttemptState.itemNumber}</Box>
                 <Box marginLeft="10px">
-                  Student's item number: {thisAttemptState.shuffledItemNumber}{" "}
+                  Student's item number: {itemAttemptState.shuffledItemNumber}{" "}
                 </Box>
                 <Spacer />
 

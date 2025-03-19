@@ -12,7 +12,7 @@ import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { recordContentView } from "./stats";
 import { InvalidRequestError } from "../utils/error";
 import { getContent } from "./activity_edit_view";
-import { getScore, getScoresOfAllStudents, loadState } from "./scores";
+import { getScore, getScoresOfAllStudents, ItemScores } from "./scores";
 import { getUserInfo } from "./user";
 import { StatusCodes } from "http-status-codes";
 
@@ -831,7 +831,7 @@ export async function getAssignmentResponseStudent({
   studentUserId,
   attemptNumber: requestedAttemptNumber,
   shuffledOrder,
-  itemNumber: requestedItemNumber = 1,
+  itemNumber: requestedItemNumber = 1, // is either shuffledItemNumber or itemNumber, depending on `shuffledOrder`
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
@@ -890,14 +890,46 @@ export async function getAssignmentResponseStudent({
   const haveItems =
     overallScores.itemScores && overallScores.itemScores.length > 0;
 
-  const { attemptNumber, attemptScores, thisAttemptState } =
-    await getAttemptScoresAndState();
+  const { attemptNumber, attemptScores, itemAttemptState } =
+    await getAttemptScoresAndState({
+      contentId,
+      mode: assignment.mode,
+      haveItems,
+      userId: responseUserId,
+      shuffledOrder,
+      requestedItemNumber,
+      requestedAttemptNumber,
+    });
+
+  let itemScores: ItemScores = [];
+  if (haveItems) {
+    if (assignment.mode === "formative") {
+      // items scores for formative are just the overall item scores
+      itemScores = overallScores.itemScores;
+    } else {
+      // item scores for summative are the scores on the current attempt number
+      itemScores = await prisma.contentItemState.findMany({
+        where: {
+          contentId,
+          userId: responseUserId,
+          contentAttemptNumber: attemptNumber,
+          itemAttemptNumber: 1,
+        },
+        orderBy: [{ shuffledItemNumber: "asc" }],
+        select: {
+          itemNumber: true,
+          itemAttemptNumber: true,
+          score: true,
+        },
+      });
+    }
+  }
 
   const rootContent = assignment.rootContent;
   const itemNames = getItemNames(rootContent);
 
   const content = await getContent({
-    contentId: thisAttemptState.docId ?? contentId,
+    contentId: itemAttemptState.docId,
     loggedInUserId,
     includeAssignInfo: true,
     skipPermissionCheck: true,
@@ -931,7 +963,15 @@ export async function getAssignmentResponseStudent({
     allStudents.push(...allStudentsPrelim.map((asp) => asp.user));
   }
 
-  const responseCounts = await getResponseCounts();
+  const responseCounts = await getResponseCounts({
+    contentId,
+    mode: assignment.mode,
+    contentType: rootContent.type,
+    requestedItemNumber,
+    attemptNumber,
+    shuffledOrder,
+    userId: responseUserId,
+  });
 
   return {
     mode: assignment.mode,
@@ -944,133 +984,171 @@ export async function getAssignmentResponseStudent({
     },
     attemptNumber,
     overallScores,
-    thisAttemptState,
+    itemAttemptState,
     attemptScores,
+    itemScores,
     content,
     itemNames,
     allStudents,
     responseCounts,
   };
+}
 
-  async function getResponseCounts() {
-    const [contentAttemptNumber, itemAttemptNumber] =
-      assignment.rootContent.type === "singleDoc"
-        ? [attemptNumber, null]
-        : assignment.mode === "formative"
-          ? [1, attemptNumber]
-          : [attemptNumber, 1];
+async function getAttemptScoresAndState({
+  contentId,
+  mode,
+  haveItems,
+  userId,
+  shuffledOrder,
+  requestedItemNumber,
+  requestedAttemptNumber,
+}: {
+  contentId: Uint8Array;
+  mode: AssignmentMode;
+  haveItems: boolean;
+  userId: Uint8Array;
+  shuffledOrder: boolean;
+  requestedItemNumber: number;
+  requestedAttemptNumber?: number;
+}) {
+  let attemptScores: { attemptNumber: number; score: number }[];
+  let attemptNumber: number;
+  let itemAttemptState: {
+    state: string | null;
+    score: number;
+    variant: number;
+    docId: Uint8Array;
+    itemNumber?: number;
+    shuffledItemNumber?: number;
+  };
 
-    const responseCountsPrelim = await prisma.submittedResponses.groupBy({
+  if (haveItems && mode === "formative") {
+    // A formative attempt with items.
+    // Get scores for requestedItemNumber on all item attempts for contentAttemptNumber 1.
+    const allAttemptData = await prisma.contentItemState.findMany({
+      // don't need to check user permissions since first query did that
       where: {
         contentId,
-        itemNumber:
-          assignment.mode === "formative"
-            ? shuffledOrder
-              ? undefined
-              : requestedItemNumber
-            : undefined,
-        shuffledItemNumber:
-          assignment.mode === "formative"
-            ? shuffledOrder
-              ? requestedItemNumber
-              : undefined
-            : undefined,
-        contentAttemptNumber,
-        itemAttemptNumber,
-        userId: responseUserId,
+        userId,
+        contentAttemptNumber: 1,
+        itemNumber: shuffledOrder ? undefined : requestedItemNumber,
+        shuffledItemNumber: shuffledOrder ? requestedItemNumber : undefined,
       },
-      by: ["answerId", "shuffledItemNumber"],
-      orderBy: { shuffledItemNumber: "asc" },
-      _count: { response: true },
+      orderBy: { itemAttemptNumber: "asc" },
+      select: {
+        itemAttemptNumber: true,
+        score: true,
+      },
     });
 
-    const responseCounts = responseCountsPrelim.map((r) => [
-      r.shuffledItemNumber,
-      r.answerId,
-      r._count.response,
-    ]);
-    return responseCounts;
-  }
+    attemptScores = allAttemptData.map((a) => ({
+      attemptNumber: a.itemAttemptNumber,
+      score: a.score,
+    }));
 
-  async function getAttemptScoresAndState() {
-    let attemptScores: { attemptNumber: number; score: number }[];
-    let attemptNumber: number;
-    let thisAttemptState: {
-      state: string | null;
-      score: number;
-      variant: number;
-      docId?: Uint8Array;
-      itemNumber?: number;
-      shuffledItemNumber?: number;
-      items?: {
-        score: number;
-        state: string | null;
-        itemNumber: number;
-        shuffledItemNumber: number;
-        itemAttemptNumber: number;
-        variant: number;
-        docId: Uint8Array;
-      }[];
-    };
+    if (requestedAttemptNumber !== undefined) {
+      attemptNumber = requestedAttemptNumber;
+    } else {
+      const maxScore = attemptScores.reduce((a, c) => Math.max(a, c.score), 0);
+      const maxIndex = attemptScores.map((v) => v.score).lastIndexOf(maxScore);
+      attemptNumber = attemptScores[maxIndex]?.attemptNumber ?? 1;
+    }
 
-    if (haveItems && assignment.mode === "formative") {
-      // for a formative attempt with items, get scores on all items for contentAttemptNumber 1
-      const allAttemptData = await prisma.contentItemState.findMany({
-        // don't need to check user permissions since first query did that
-        where: {
-          contentId,
-          userId: responseUserId,
-          contentAttemptNumber: 1,
-          itemNumber: shuffledOrder ? undefined : requestedItemNumber,
-          shuffledItemNumber: shuffledOrder ? requestedItemNumber : undefined,
-        },
-        orderBy: { itemAttemptNumber: "asc" },
-        select: {
-          itemAttemptNumber: true,
-          score: true,
-        },
-      });
+    // Note: don't use loadState() as not getting a root assignment
+    itemAttemptState = await prisma.contentItemState.findUniqueOrThrow({
+      // don't need to check user permissions since first query did that
+      where: shuffledOrder
+        ? {
+            contentId_userId_contentAttemptNumber_shuffledItemNumber_itemAttemptNumber:
+              {
+                contentId,
+                userId,
+                contentAttemptNumber: 1,
+                shuffledItemNumber: requestedItemNumber,
+                itemAttemptNumber: attemptNumber,
+              },
+          }
+        : {
+            contentId_userId_contentAttemptNumber_itemNumber_itemAttemptNumber:
+              {
+                contentId,
+                userId,
+                contentAttemptNumber: 1,
+                itemNumber: requestedItemNumber,
+                itemAttemptNumber: attemptNumber,
+              },
+          },
+      select: {
+        state: true,
+        score: true,
+        docId: true,
+        variant: true,
+        itemNumber: true,
+        shuffledItemNumber: true,
+      },
+    });
+  } else {
+    // Have either a single doc (no items) or a summative assessment.
+    // Get score on all content attempts.
+    const allAttemptData = await prisma.contentState.findMany({
+      // don't need to check user permissions since first query did that
+      where: {
+        contentId,
+        userId,
+      },
+      orderBy: { attemptNumber: "asc" },
+      select: {
+        attemptNumber: true,
+        score: true,
+        contentItemStates: haveItems
+          ? {
+              where: { itemAttemptNumber: 1 },
+              select: { score: true },
+            }
+          : false,
+      },
+    });
 
-      attemptScores = allAttemptData.map((a) => ({
-        attemptNumber: a.itemAttemptNumber,
-        score: a.score,
-      }));
+    attemptScores = allAttemptData.map((attempt) => {
+      // if have items, score is the average over all items
+      const score = haveItems
+        ? attempt.contentItemStates.reduce((a, c) => a + c.score, 0) /
+          attempt.contentItemStates.length
+        : (attempt.score ?? 0);
+      return { attemptNumber: attempt.attemptNumber, score };
+    });
 
-      if (requestedAttemptNumber !== undefined) {
-        attemptNumber = requestedAttemptNumber;
-      } else {
-        const maxScore = attemptScores.reduce(
-          (a, c) => Math.max(a, c.score),
-          0,
-        );
-        const maxIndex = attemptScores
-          .map((v) => v.score)
-          .lastIndexOf(maxScore);
-        attemptNumber = attemptScores[maxIndex]?.attemptNumber ?? 1;
-      }
+    if (requestedAttemptNumber !== undefined) {
+      attemptNumber = requestedAttemptNumber;
+    } else {
+      const maxScore = attemptScores.reduce((a, c) => Math.max(a, c.score), 0);
+      const maxIndex = attemptScores.map((v) => v.score).lastIndexOf(maxScore);
+      attemptNumber = attemptScores[maxIndex].attemptNumber;
+    }
 
+    if (haveItems) {
       // Note: don't use loadState() as not getting a root assignment
-      thisAttemptState = await prisma.contentItemState.findUniqueOrThrow({
+      itemAttemptState = await prisma.contentItemState.findUniqueOrThrow({
         // don't need to check user permissions since first query did that
         where: shuffledOrder
           ? {
               contentId_userId_contentAttemptNumber_shuffledItemNumber_itemAttemptNumber:
                 {
                   contentId,
-                  userId: responseUserId,
-                  contentAttemptNumber: 1,
+                  userId,
+                  contentAttemptNumber: attemptNumber,
                   shuffledItemNumber: requestedItemNumber,
-                  itemAttemptNumber: attemptNumber,
+                  itemAttemptNumber: 1,
                 },
             }
           : {
               contentId_userId_contentAttemptNumber_itemNumber_itemAttemptNumber:
                 {
                   contentId,
-                  userId: responseUserId,
-                  contentAttemptNumber: 1,
+                  userId,
+                  contentAttemptNumber: attemptNumber,
                   itemNumber: requestedItemNumber,
-                  itemAttemptNumber: attemptNumber,
+                  itemAttemptNumber: 1,
                 },
             },
         select: {
@@ -1083,111 +1161,74 @@ export async function getAssignmentResponseStudent({
         },
       });
     } else {
-      // get score on all content attempts
-      const allAttemptData = await prisma.contentState.findMany({
-        // don't need to check user permissions since first query did that
-        where: {
-          contentId,
-          userId: responseUserId,
-        },
-        orderBy: { attemptNumber: "asc" },
-        select: {
-          attemptNumber: true,
-          score: true,
-          contentItemStates: haveItems
-            ? {
-                where: { itemAttemptNumber: 1 },
-                select: { score: true },
-              }
-            : false,
-        },
-      });
+      // no items, so single document
+      // use score from the contentState table
 
-      if (haveItems) {
-        attemptScores = allAttemptData.map((attempt) => {
-          // score is the average over all items
-          const score =
-            attempt.contentItemStates.reduce((a, c) => a + c.score, 0) /
-            attempt.contentItemStates.length;
-          return { attemptNumber: attempt.attemptNumber, score };
-        });
-
-        if (requestedAttemptNumber !== undefined) {
-          attemptNumber = requestedAttemptNumber;
-        } else {
-          const maxScore = attemptScores.reduce(
-            (a, c) => Math.max(a, c.score),
-            0,
-          );
-          const maxIndex = attemptScores
-            .map((v) => v.score)
-            .lastIndexOf(maxScore);
-          attemptNumber = attemptScores[maxIndex].attemptNumber;
-        }
-
-        const loadResults = await loadState({
-          contentId,
-          requestedUserId: responseUserId,
-          loggedInUserId,
-          attemptNumber,
-        });
-
-        if (!loadResults.loadedState) {
-          throw new InvalidRequestError(
-            "Responses not found",
-            StatusCodes.NOT_FOUND,
-          );
-        }
-
-        thisAttemptState = {
-          ...loadResults,
-          score:
-            loadResults.score ??
-            loadResults.items.reduce((a, c) => a + c.score, 0) /
-              loadResults.items.length,
-        };
-      } else {
-        // no items, so single document
-        // use score from the contentState table
-        attemptScores = allAttemptData.map((attempt) => ({
-          attemptNumber: attempt.attemptNumber,
-          score: attempt.score ?? 0,
-        }));
-
-        if (requestedAttemptNumber !== undefined) {
-          attemptNumber = requestedAttemptNumber;
-        } else {
-          const maxScore = attemptScores.reduce(
-            (a, c) => Math.max(a, c.score),
-            0,
-          );
-          const maxIndex = attemptScores
-            .map((v) => v.score)
-            .lastIndexOf(maxScore);
-          attemptNumber = attemptScores[maxIndex].attemptNumber;
-        }
-
-        const { state, score, variant } =
-          await prisma.contentState.findUniqueOrThrow({
-            where: {
-              contentId_userId_attemptNumber: {
-                contentId,
-                userId: responseUserId,
-                attemptNumber,
-              },
+      const { state, score, variant } =
+        await prisma.contentState.findUniqueOrThrow({
+          where: {
+            contentId_userId_attemptNumber: {
+              contentId,
+              userId,
+              attemptNumber,
             },
-            select: { state: true, score: true, variant: true },
-          });
-        thisAttemptState = {
-          state,
-          score: score ?? 0,
-          docId: contentId,
-          variant,
-        };
-      }
+          },
+          select: { state: true, score: true, variant: true },
+        });
+      itemAttemptState = {
+        state,
+        score: score ?? 0,
+        docId: contentId,
+        variant,
+      };
     }
-    return { attemptNumber, attemptScores, thisAttemptState };
   }
+  return { attemptNumber, attemptScores, itemAttemptState };
+}
+
+async function getResponseCounts({
+  contentId,
+  mode,
+  contentType,
+  requestedItemNumber,
+  attemptNumber,
+  shuffledOrder,
+  userId,
+}: {
+  contentId: Uint8Array;
+  mode: AssignmentMode;
+  contentType: ContentType;
+  requestedItemNumber: number;
+  attemptNumber: number;
+  shuffledOrder: boolean;
+  userId: Uint8Array;
+}) {
+  const [contentAttemptNumber, itemAttemptNumber] =
+    contentType === "singleDoc"
+      ? [attemptNumber, null]
+      : mode === "formative"
+        ? [1, attemptNumber]
+        : [attemptNumber, 1];
+
+  const responseCountsPrelim = await prisma.submittedResponses.groupBy({
+    where: {
+      contentId,
+      itemNumber: shuffledOrder ? undefined : requestedItemNumber,
+      shuffledItemNumber: shuffledOrder ? requestedItemNumber : undefined,
+      contentAttemptNumber,
+      itemAttemptNumber,
+      userId,
+    },
+    by: ["answerId", "shuffledItemNumber"],
+    orderBy: { shuffledItemNumber: "asc" },
+    _count: { response: true },
+  });
+
+  const responseCounts = responseCountsPrelim.map((r) => [
+    r.answerId,
+    r._count.response,
+  ]);
+  return responseCounts;
 }
 
 function getItemNames(
