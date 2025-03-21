@@ -520,7 +520,7 @@ export function AssignmentViewer() {
   }, [assignment]);
 
   if (!loaderData.assignmentFound || !assignment) {
-    return <EnterClassCode />;
+    return <EnterClassCode invalidCode={code} />;
   }
 
   if (!user?.lastNames) {

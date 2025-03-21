@@ -62,7 +62,6 @@ import {
   // assignedAssignmentDataloader,
 } from "./Tools/_framework/Paths/AssignmentResponseStudent";
 import {
-  loader as enterClassCodeLoader,
   action as enterClassCodeAction,
   EnterClassCode,
 } from "./Tools/_framework/Paths/EnterClassCode";
@@ -362,7 +361,6 @@ const router = createBrowserRouter([
       },
       {
         path: "code",
-        loader: enterClassCodeLoader,
         action: enterClassCodeAction,
         element: <EnterClassCode />,
         errorElement: <ErrorPage />,
