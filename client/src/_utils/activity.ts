@@ -118,9 +118,6 @@ export function compileActivityFromContent(activity: Content): ActivitySource {
         doenetML: activity.doenetML!,
         version: activity.doenetmlVersion.fullVersion,
         numVariants: activity.numVariants,
-        baseComponentCounts: activity.baseComponentCounts
-          ? JSON.parse(activity.baseComponentCounts)
-          : undefined,
       };
     }
     case "select": {

@@ -116,7 +116,6 @@ export async function createContent({
       source: contentType === "singleDoc" ? "" : null,
       doenetmlVersionId:
         contentType === "singleDoc" ? defaultDoenetmlVersion.id : null,
-      baseComponentCounts: contentType === "singleDoc" ? "{}" : null,
       sharedWith: {
         createMany: { data: sharedWith.map((userId) => ({ userId })) },
       },
@@ -180,7 +179,7 @@ export function deleteContentNoCheck(
 
 /**
  * Update the content with `id`, changing any of the parameters that are given:
- * `name`, `source`, `doenetmlVersionId`, `numVariants`, `baseComponentCounts`,
+ * `name`, `source`, `doenetmlVersionId`, `numVariants`,
  * `imagePath`, `shuffle`, `numToSelect`, `selectByVariant`,
  * `paginate`, `activityLevelAttempts`, and/or `itemLevelAttempts`.
  *
@@ -194,7 +193,6 @@ export async function updateContent({
   source,
   doenetmlVersionId,
   numVariants,
-  baseComponentCounts,
   imagePath,
   shuffle,
   numToSelect,
@@ -207,7 +205,6 @@ export async function updateContent({
   source?: string;
   doenetmlVersionId?: number;
   numVariants?: number;
-  baseComponentCounts?: string;
   imagePath?: string;
   shuffle?: boolean;
   numToSelect?: number;
@@ -221,7 +218,6 @@ export async function updateContent({
       source,
       doenetmlVersionId,
       numVariants,
-      baseComponentCounts,
       imagePath,
       shuffle,
       numToSelect,
@@ -260,7 +256,6 @@ export async function updateContent({
         source,
         doenetmlVersionId,
         numVariants,
-        baseComponentCounts,
         // imagePath,
         shuffle,
         numToSelect,
@@ -279,7 +274,6 @@ export async function updateContent({
       source,
       doenetmlVersionId,
       numVariants,
-      baseComponentCounts,
       imagePath,
       shuffle,
       numToSelect,
@@ -389,14 +383,12 @@ export async function createActivityRevision(
   let source: string | null = null;
   let numVariants = 1;
   let doenetmlVersionId: number | null = null;
-  let baseComponentCounts: string | null = null;
   let cid: string;
 
   if (content.type === "singleDoc") {
     source = content.doenetML;
     numVariants = content.numVariants;
     doenetmlVersionId = content.doenetmlVersion.id;
-    baseComponentCounts = content.baseComponentCounts;
     cid = await cidFromText(content.doenetmlVersion.fullVersion + "|" + source);
   } else {
     source = JSON.stringify(compileActivityFromContent(content));
@@ -427,7 +419,6 @@ export async function createActivityRevision(
         doenetmlVersionId,
         source,
         numVariants,
-        baseComponentCounts,
       },
     });
   }

@@ -29,8 +29,6 @@ export type SingleDocSource = {
   version: string;
   /** The number of variants present in `doenetML` */
   numVariants?: number;
-  /** The number each component type among the base level children (direct children of document) in `doenetML` */
-  baseComponentCounts?: Record<string, number | undefined>;
 };
 
 /** The current state of a single doc activity */

@@ -33,7 +33,6 @@ model content {
   source                String?                  @db.MediumText
   doenetmlVersionId     Int?
   numVariants           Int                      @default(1)
-  baseComponentCounts   String?                  @db.Text
   // Specific to sequence type
   shuffle               Boolean                  @default(false)
   paginate              Boolean                  @default(false)
@@ -94,17 +93,16 @@ enum RecentMode {
 }
 
 model contentRevisions {
-  contentId           Bytes                @db.Binary(16)
-  revisionNum         Int
-  cid                 String
-  source              String               @db.MediumText
-  createdAt           DateTime             @default(now())
-  numVariants         Int                  @default(1)
-  baseComponentCounts String?              @db.Text
-  doenetmlVersionId   Int?
-  content             content              @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  doenetmlVersion     doenetmlVersions?    @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  contributorHistory  contributorHistory[]
+  contentId          Bytes                @db.Binary(16)
+  revisionNum        Int
+  cid                String
+  source             String               @db.MediumText
+  createdAt          DateTime             @default(now())
+  numVariants        Int                  @default(1)
+  doenetmlVersionId  Int?
+  content            content              @relation(fields: [contentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  doenetmlVersion    doenetmlVersions?    @relation(fields: [doenetmlVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  contributorHistory contributorHistory[]
 
   @@id([contentId, revisionNum])
   @@unique([contentId, cid])

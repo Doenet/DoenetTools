@@ -156,7 +156,6 @@ export type ContentBase = {
 export type Doc = ContentBase & {
   type: "singleDoc";
   numVariants: number;
-  baseComponentCounts: string;
   revisionNum?: number;
   doenetML: string;
   doenetmlVersion: DoenetmlVersion;

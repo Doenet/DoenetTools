@@ -281,7 +281,6 @@ export function returnContentSelect({
 
   const docSelect = {
     numVariants: true,
-    baseComponentCounts: true,
     source: true,
     doenetmlVersion: true,
   };
@@ -414,7 +413,6 @@ type PreliminaryContent = {
     deprecationMessage: string;
   } | null;
   numVariants?: number;
-  baseComponentCounts?: string | null;
 
   // from question bank select
   numToSelect: number;
@@ -447,7 +445,6 @@ export function processContent(
     // from doc select
     source: sourceOrig,
     numVariants: numVariantsOrig,
-    baseComponentCounts: baseComponentCountsOrig,
     doenetmlVersion: doenetmlVersionOrig,
 
     // from question bank select
@@ -561,7 +558,6 @@ export function processContent(
       let docInfo: {
         doenetML: string;
         numVariants: number;
-        baseComponentCounts: string;
         doenetmlVersion: DoenetmlVersion;
         revisionNum?: number;
       };
@@ -569,13 +565,11 @@ export function processContent(
       if (
         sourceOrig != null &&
         numVariantsOrig !== undefined &&
-        baseComponentCountsOrig != null &&
         doenetmlVersionOrig != null
       ) {
         docInfo = {
           doenetML: sourceOrig,
           numVariants: numVariantsOrig,
-          baseComponentCounts: baseComponentCountsOrig,
           doenetmlVersion: doenetmlVersionOrig,
         };
       } else {
@@ -670,9 +664,6 @@ export function compileActivityFromContent(activity: Content): ActivitySource {
         doenetML: activity.doenetML!,
         version: activity.doenetmlVersion.fullVersion,
         numVariants: activity.numVariants,
-        baseComponentCounts: activity.baseComponentCounts
-          ? JSON.parse(activity.baseComponentCounts)
-          : undefined,
       };
     }
     case "select": {
