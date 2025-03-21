@@ -13,6 +13,8 @@ import {
   closeAssignmentWithCode,
   getAllAssignmentScores,
   getAssignedScores,
+  getAssignmentResponseOverview,
+  getAssignmentResponseStudent,
   getAssignmentViewerDataFromCode,
   getStudentData,
   listUserAssigned,
@@ -25,7 +27,9 @@ import {
 } from "../query/assign";
 import { modifyContentSharedWith, setContentIsPublic } from "../query/share";
 import {
+  createNewAttempt,
   getScoresOfAllStudents,
+  ItemScores,
   loadState,
   saveScoreAndState,
 } from "../query/scores";
@@ -33,6 +37,7 @@ import { updateUser } from "../query/user";
 import { moveContent } from "../query/copy_move";
 import { getContent } from "../query/activity_edit_view";
 import { AssignmentMode } from "@prisma/client";
+import { UserInfo } from "../types";
 
 test("assign an activity", async () => {
   const owner = await createTestUser();
@@ -229,11 +234,18 @@ test("open and close assignment with code", async () => {
   expect(assignment.rootAssignment!.classCode).eq(classCode);
   expect(assignment.rootAssignment!.codeValidUntil).eqls(closeAt.toJSDate());
 
+  await createNewAttempt({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+    variant: 1,
+    code: classCode,
+    state: null,
+  });
+
   // add some data
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: ownerId,
     attemptNumber: 1,
     score: 0.3,
@@ -1232,7 +1244,144 @@ test("assignment settings of descendants synchronize when ancestor assigned", as
   expect(content.assignmentInfo?.otherRoot?.rootContentId).eqls(sequenceId);
 });
 
-test.only("get assignment data from anonymous users", async () => {
+function scoreFromStudentAttempts(
+  attempts: {
+    attemptNumber: number;
+    score: number;
+    itemScores: ItemScores[];
+  }[],
+) {
+  const topScore = attempts.reduce((a, c) => Math.max(a, c.score), 0);
+  const maxIdx = attempts.map((a) => a.score).lastIndexOf(topScore);
+  const lastIdx = attempts.length - 1;
+  return {
+    score: topScore,
+    bestAttemptNumber: maxIdx + 1,
+    itemScores: attempts[maxIdx].itemScores,
+    latestAttempt: attempts[lastIdx],
+  };
+}
+
+async function testSingleDocResponses({
+  contentId,
+  ownerId,
+  dataByStudent,
+  classCode,
+  source,
+}: {
+  contentId: Uint8Array;
+  ownerId: Uint8Array;
+  dataByStudent: {
+    user: UserInfo;
+    attempts: {
+      attemptNumber: number;
+      score: number;
+      itemScores: ItemScores[];
+    }[];
+    lastState: {
+      state: string;
+      variant: number;
+    };
+  }[];
+  classCode: string;
+  source: {
+    doenetML: string;
+    name: string;
+    doenetmlVersion: { fullVersion: string };
+  };
+}) {
+  const assignmentScores = await getScoresOfAllStudents({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+  });
+
+  const expectedScoreSummary = dataByStudent.map((data) => {
+    return {
+      ...scoreFromStudentAttempts(data.attempts),
+      user: data.user,
+    };
+  });
+
+  expect(assignmentScores.scores).eqls(expectedScoreSummary);
+
+  const overviewData = await getAssignmentResponseOverview({
+    contentId,
+    loggedInUserId: ownerId,
+  });
+
+  expect(overviewData.scoreSummary.scores).eqls(expectedScoreSummary);
+
+  for (const studentData of dataByStudent) {
+    const scoreFromAttempts = scoreFromStudentAttempts(studentData.attempts);
+
+    const dataFromCode = await getAssignmentViewerDataFromCode({
+      code: classCode,
+      loggedInUserId: studentData.user.userId,
+    });
+    expect(dataFromCode.assignmentFound).eq(true);
+    expect(dataFromCode.scoreData).eqls({
+      calculatedScore: true,
+      ...scoreFromAttempts,
+    });
+
+    const assignmentResponseStudentData = await getAssignmentResponseStudent({
+      contentId,
+      loggedInUserId: ownerId,
+      studentUserId: studentData.user.userId,
+      shuffledOrder: false,
+    });
+
+    expect(assignmentResponseStudentData.overallScores).eqls({
+      calculatedScore: true,
+      ...scoreFromAttempts,
+    });
+
+    if (assignmentResponseStudentData.singleItemAttempt) {
+      throw Error("Shouldn't happen");
+    }
+
+    if (assignmentResponseStudentData.allAttemptScores.byItem) {
+      throw Error("Shouldn't happen");
+    }
+
+    expect(assignmentResponseStudentData.allAttemptScores.attemptScores).eqls(
+      studentData.attempts.map((attempt) => ({
+        attemptNumber: attempt.attemptNumber,
+        score: attempt.score,
+        items: attempt.itemScores,
+      })),
+    );
+
+    const assignmentItemResponseStudentData =
+      await getAssignmentResponseStudent({
+        contentId,
+        loggedInUserId: ownerId,
+        studentUserId: studentData.user.userId,
+        shuffledOrder: false,
+        attemptNumber: studentData.attempts.length,
+      });
+
+    if (!assignmentItemResponseStudentData.singleItemAttempt) {
+      throw Error("Shouldn't happen");
+    }
+
+    expect(assignmentItemResponseStudentData.itemAttemptState).eqls({
+      docId: contentId,
+      score: scoreFromAttempts.score,
+      state: studentData.lastState.state,
+      variant: studentData.lastState.variant,
+    });
+
+    expect(assignmentItemResponseStudentData.content).toMatchObject({
+      contentId,
+      name: source.name,
+      doenetML: source.doenetML,
+      doenetmlVersion: source.doenetmlVersion,
+    });
+  }
+}
+
+test("get assignment data from anonymous users", async () => {
   const owner = await createTestUser();
   const ownerId = owner.userId;
   const { contentId: contentId } = await createContent({
@@ -1274,73 +1423,51 @@ test.only("get assignment data from anonymous users", async () => {
     lastNames: newUser1.lastNames,
   };
 
+  await createNewAttempt({
+    contentId: contentId,
+    loggedInUserId: newUser1.userId,
+    variant: 1,
+    code: classCode,
+    state: null,
+  });
+
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: newUser1.userId,
     attemptNumber: 1,
     score: 0.5,
     state: "document state 1",
   });
 
-  let assignmentScores = await getScoresOfAllStudents({
-    contentId: contentId,
-    loggedInUserId: ownerId,
-  });
-
-  expect(assignmentScores.scores).eqls([
-    {
-      score: 0.5,
-      bestAttemptNumber: 1,
-      itemScores: [],
-      latestAttempt: { attemptNumber: 1, itemScores: [], score: 0.5 },
-      user: userData1,
-    },
-  ]);
-
-  let dataFromCode = await getAssignmentViewerDataFromCode({
-    code: classCode,
-    loggedInUserId: newUser1.userId,
-  });
-  expect(dataFromCode.assignmentFound).eq(true);
-  expect(dataFromCode.scoreData).eqls({
-    calculatedScore: true,
-    score: 0.5,
-    bestAttemptNumber: 1,
-    itemScores: [],
-    latestAttempt: {
-      attemptNumber: 1,
-      score: 0.5,
-      itemScores: [],
-    },
-  });
-
-  let assignmentStudentData = await getAssignmentStudentData({
-    contentId: contentId,
-    loggedInUserId: ownerId,
-    studentUserId: newUser1.userId,
-  });
-
-  expect(assignmentStudentData).eqls({
-    score: 0.5,
-    scoreByItem: null,
-    content: {
-      id: contentId,
-      name: "Activity 1",
-      source: "Some content",
-      doenetmlVersion: { fullVersion: "0.7.0-alpha32" },
-    },
-    user: userData1,
-    activityScores: [
+  await testSingleDocResponses({
+    contentId,
+    ownerId,
+    dataByStudent: [
       {
-        score: 0.5,
-        scoreByItem: null,
+        user: userData1,
+        attempts: [
+          {
+            attemptNumber: 1,
+            score: 0.5,
+            itemScores: [],
+          },
+        ],
+        lastState: {
+          state: "document state 1",
+          variant: 1,
+        },
       },
     ],
+    classCode,
+    source: {
+      name: "Activity 1",
+      doenetML: "Some content",
+      doenetmlVersion: { fullVersion: "0.7.0-alpha32" },
+    },
   });
 
-  // new lower score ignored
+  // new lower score decreases score
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
@@ -1349,47 +1476,32 @@ test.only("get assignment data from anonymous users", async () => {
     score: 0.2,
     state: "document state 2",
   });
-  assignmentScores = await getScoresOfAllStudents({
-    contentId: contentId,
-    loggedInUserId: ownerId,
-  });
-  expect(assignmentScores).eqls([
-    { score: 0.5, scoreByItem: null, user: userData1 },
-  ]);
 
-  dataFromCode = await getAssignmentViewerDataFromCode({
-    code: classCode,
-    loggedInUserId: newUser1.userId,
-  });
-  expect(dataFromCode.assignmentFound).eq(true);
-  expect(dataFromCode.scoreData).eqls({
-    calculatedScore: true,
-    score: 0.5,
-    scoreByItem: null,
-  });
-
-  assignmentStudentData = await getAssignmentStudentData({
-    contentId: contentId,
-    loggedInUserId: ownerId,
-    studentUserId: newUser1.userId,
-  });
-
-  expect(assignmentStudentData).eqls({
-    score: 0.5,
-    scoreByItem: null,
-    content: {
-      id: contentId,
-      name: "Activity 1",
-      source: "Some content",
-      doenetmlVersion: { fullVersion: "0.7.0-alpha32" },
-    },
-    user: userData1,
-    activityScores: [
+  await testSingleDocResponses({
+    contentId,
+    ownerId,
+    dataByStudent: [
       {
-        score: 0.2,
-        scoreByItem: null,
+        user: userData1,
+        attempts: [
+          {
+            attemptNumber: 1,
+            score: 0.2,
+            itemScores: [],
+          },
+        ],
+        lastState: {
+          state: "document state 2",
+          variant: 1,
+        },
       },
     ],
+    classCode,
+    source: {
+      name: "Activity 1",
+      doenetML: "Some content",
+      doenetmlVersion: { fullVersion: "0.7.0-alpha32" },
+    },
   });
 
   // new higher score used
@@ -1401,47 +1513,32 @@ test.only("get assignment data from anonymous users", async () => {
     score: 0.7,
     state: "document state 3",
   });
-  assignmentScores = await getScoresOfAllStudents({
-    contentId: contentId,
-    loggedInUserId: ownerId,
-  });
-  expect(assignmentScores).eqls([
-    { score: 0.7, scoreByItem: null, user: userData1 },
-  ]);
 
-  dataFromCode = await getAssignmentViewerDataFromCode({
-    code: classCode,
-    loggedInUserId: newUser1.userId,
-  });
-  expect(dataFromCode.assignmentFound).eq(true);
-  expect(dataFromCode.scoreData).eqls({
-    calculatedScore: true,
-    score: 0.7,
-    scoreByItem: null,
-  });
-
-  assignmentStudentData = await getAssignmentStudentData({
-    contentId: contentId,
-    loggedInUserId: ownerId,
-    studentUserId: newUser1.userId,
-  });
-
-  expect(assignmentStudentData).eqls({
-    score: 0.7,
-    scoreByItem: null,
-    content: {
-      id: contentId,
-      name: "Activity 1",
-      source: "Some content",
-      doenetmlVersion: { fullVersion: "0.7.0-alpha32" },
-    },
-    user: userData1,
-    activityScores: [
+  await testSingleDocResponses({
+    contentId,
+    ownerId,
+    dataByStudent: [
       {
-        score: 0.7,
-        scoreByItem: null,
+        user: userData1,
+        attempts: [
+          {
+            attemptNumber: 1,
+            score: 0.7,
+            itemScores: [],
+          },
+        ],
+        lastState: {
+          state: "document state 3",
+          variant: 1,
+        },
       },
     ],
+    classCode,
+    source: {
+      name: "Activity 1",
+      doenetML: "Some content",
+      doenetmlVersion: { fullVersion: "0.7.0-alpha32" },
+    },
   });
 
   // second user opens assignment
@@ -1458,26 +1555,15 @@ test.only("get assignment data from anonymous users", async () => {
     lastNames: newUser2.lastNames,
   };
 
-  // assignment scores still unchanged
-  assignmentScores = await getScoresOfAllStudents({
+  // save state for second user
+  await createNewAttempt({
     contentId: contentId,
-    loggedInUserId: ownerId,
-  });
-  expect(assignmentScores).eqls([
-    { score: 0.7, scoreByItem: null, user: userData1 },
-  ]);
-  dataFromCode = await getAssignmentViewerDataFromCode({
+    loggedInUserId: newUser2.userId,
+    variant: 1,
     code: classCode,
-    loggedInUserId: newUser1.userId,
-  });
-  expect(dataFromCode.assignmentFound).eq(true);
-  expect(dataFromCode.scoreData).eqls({
-    calculatedScore: true,
-    score: 0.7,
-    scoreByItem: null,
+    state: null,
   });
 
-  // save state for second user
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
@@ -1488,47 +1574,46 @@ test.only("get assignment data from anonymous users", async () => {
   });
 
   // second user's score shows up first due to alphabetical sorting
-  assignmentScores = await getScoresOfAllStudents({
-    contentId: contentId,
-    loggedInUserId: ownerId,
-  });
-  expect(assignmentScores).eqls([
-    { score: 0.3, scoreByItem: null, user: userData2 },
-    { score: 0.7, scoreByItem: null, user: userData1 },
-  ]);
-  dataFromCode = await getAssignmentViewerDataFromCode({
-    code: classCode,
-    loggedInUserId: newUser2.userId,
-  });
-  expect(dataFromCode.assignmentFound).eq(true);
-  expect(dataFromCode.scoreData).eqls({
-    calculatedScore: true,
-    score: 0.3,
-    scoreByItem: null,
-  });
 
-  assignmentStudentData = await getAssignmentStudentData({
-    contentId: contentId,
-    loggedInUserId: ownerId,
-    studentUserId: newUser2.userId,
-  });
-
-  expect(assignmentStudentData).eqls({
-    score: 0.3,
-    scoreByItem: null,
-    content: {
-      id: contentId,
-      name: "Activity 1",
-      source: "Some content",
-      doenetmlVersion: { fullVersion: "0.7.0-alpha32" },
-    },
-    user: userData2,
-    activityScores: [
+  await testSingleDocResponses({
+    contentId,
+    ownerId,
+    dataByStudent: [
       {
-        score: 0.3,
-        scoreByItem: null,
+        user: userData2,
+        attempts: [
+          {
+            attemptNumber: 1,
+            score: 0.3,
+            itemScores: [],
+          },
+        ],
+        lastState: {
+          state: "document state 4",
+          variant: 1,
+        },
+      },
+      {
+        user: userData1,
+        attempts: [
+          {
+            attemptNumber: 1,
+            score: 0.7,
+            itemScores: [],
+          },
+        ],
+        lastState: {
+          state: "document state 3",
+          variant: 1,
+        },
       },
     ],
+    classCode,
+    source: {
+      name: "Activity 1",
+      doenetML: "Some content",
+      doenetmlVersion: { fullVersion: "0.7.0-alpha32" },
+    },
   });
 });
 
@@ -1557,6 +1642,14 @@ test("can't get assignment data if other user, but student can get their own dat
     loggedInUserId: newUser1.userId,
     firstNames: "Zoe",
     lastNames: "Zaborowski",
+  });
+
+  await createNewAttempt({
+    contentId: contentId,
+    loggedInUserId: newUser1.userId,
+    variant: 1,
+    code: classCode,
+    state: null,
   });
 
   await saveScoreAndState({
@@ -1595,26 +1688,30 @@ test("can't get assignment data if other user, but student can get their own dat
   ).rejects.toThrow("not found");
 
   // assignment owner can get data on student
-  const studentData = await getAssignmentStudentData({
+  const studentData = await getAssignmentResponseStudent({
     contentId: contentId,
     loggedInUserId: ownerId,
     studentUserId: newUser1.userId,
+    shuffledOrder: false,
   });
 
   // another user cannot get data on student
   await expect(
-    getAssignmentStudentData({
+    getAssignmentResponseStudent({
       contentId: contentId,
       loggedInUserId: otherUserId,
       studentUserId: newUser1.userId,
+      shuffledOrder: false,
     }),
   ).rejects.toThrow(PrismaClientKnownRequestError);
 
-  // student can get own data
+  // student can get own data, except don't get allStudents
+  studentData.allStudents = [];
   expect(
-    await getAssignmentStudentData({
+    await getAssignmentResponseStudent({
       contentId: contentId,
       loggedInUserId: newUser1.userId,
+      shuffledOrder: false,
     }),
   ).eqls(studentData);
 });
@@ -1642,13 +1739,12 @@ test("can't unassign if have data", async () => {
     lastNames: "Zaborowski",
   });
 
-  await saveScoreAndState({
+  await createNewAttempt({
     contentId: contentId,
-    code: classCode,
     loggedInUserId: newUser1.userId,
-    attemptNumber: 1,
-    score: 0.5,
-    state: "document state 1",
+    variant: 1,
+    code: classCode,
+    state: null,
   });
 
   await getScoresOfAllStudents({
@@ -1656,10 +1752,11 @@ test("can't unassign if have data", async () => {
     loggedInUserId: ownerId,
   });
 
-  await getAssignmentStudentData({
+  await getAssignmentResponseStudent({
     contentId: contentId,
     loggedInUserId: ownerId,
     studentUserId: newUser1.userId,
+    shuffledOrder: false,
   });
 
   expect(

@@ -30,7 +30,7 @@ import {
   openAssignmentWithCode,
   unassignActivity,
 } from "../query/assign";
-import { saveScoreAndState } from "../query/scores";
+import { createNewAttempt, saveScoreAndState } from "../query/scores";
 import { moveContent } from "../query/copy_move";
 import { prisma } from "../model";
 
@@ -73,7 +73,6 @@ test("New activity starts out private, then delete it", async () => {
     isShared: false,
     contentFeatures: [],
     sharedWith: [],
-    baseComponentCounts: "{}",
     numVariants: 1,
     license: null,
     type: "singleDoc",
@@ -484,7 +483,6 @@ test("activity editor data and my folder contents before and after assigned", as
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
-    baseComponentCounts: "{}",
     numVariants: 1,
     license: null,
     type: "singleDoc",
@@ -532,7 +530,6 @@ test("activity editor data and my folder contents before and after assigned", as
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
-    baseComponentCounts: "{}",
     numVariants: 1,
     license: null,
     type: "singleDoc",
@@ -547,6 +544,7 @@ test("activity editor data and my folder contents before and after assigned", as
       hasScoreData: false,
       maxAttempts: 1,
       mode: "formative",
+      individualizeByStudent: false,
     },
   };
 
@@ -587,7 +585,6 @@ test("activity editor data and my folder contents before and after assigned", as
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
-    baseComponentCounts: "{}",
     numVariants: 1,
     license: null,
     type: "singleDoc",
@@ -602,6 +599,7 @@ test("activity editor data and my folder contents before and after assigned", as
       hasScoreData: false,
       maxAttempts: 1,
       mode: "formative",
+      individualizeByStudent: false,
     },
   };
   if (closedData === undefined) {
@@ -645,7 +643,6 @@ test("activity editor data and my folder contents before and after assigned", as
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
-    baseComponentCounts: "{}",
     numVariants: 1,
     license: null,
     type: "singleDoc",
@@ -660,6 +657,7 @@ test("activity editor data and my folder contents before and after assigned", as
       hasScoreData: false,
       maxAttempts: 1,
       mode: "formative",
+      individualizeByStudent: false,
     },
   };
 
@@ -682,6 +680,15 @@ test("activity editor data and my folder contents before and after assigned", as
   folderData.content[0].license = null; // skip trying to check big license object
   expect(folderData.content).eqls([expectedData]);
 
+  // create initial attempt
+  await createNewAttempt({
+    contentId: contentId,
+    loggedInUserId: ownerId,
+    code: classCode,
+    variant: 1,
+    state: null,
+  });
+
   // just add some data (doesn't matter that it is owner themselves)
   await saveScoreAndState({
     contentId,
@@ -689,6 +696,7 @@ test("activity editor data and my folder contents before and after assigned", as
     attemptNumber: 1,
     score: 0.5,
     state: "document state 1",
+    code: classCode,
   });
 
   const { activity: openedData3 } = await getActivityEditorData({
@@ -704,7 +712,6 @@ test("activity editor data and my folder contents before and after assigned", as
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
-    baseComponentCounts: "{}",
     numVariants: 1,
     license: null,
     type: "singleDoc",
@@ -719,6 +726,7 @@ test("activity editor data and my folder contents before and after assigned", as
       hasScoreData: true,
       maxAttempts: 1,
       mode: "formative",
+      individualizeByStudent: false,
     },
   };
   if (openedData3 === undefined) {
@@ -758,7 +766,6 @@ test("activity editor data and my folder contents before and after assigned", as
     contentFeatures: [],
     isShared: false,
     sharedWith: [],
-    baseComponentCounts: "{}",
     numVariants: 1,
     license: null,
     type: "singleDoc",
@@ -773,6 +780,7 @@ test("activity editor data and my folder contents before and after assigned", as
       hasScoreData: true,
       maxAttempts: 1,
       mode: "formative",
+      individualizeByStudent: false,
     },
   };
 

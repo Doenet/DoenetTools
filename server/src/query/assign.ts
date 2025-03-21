@@ -1035,7 +1035,7 @@ export async function getAssignmentResponseStudent({
     });
 
     return {
-      singleItemAttempt: true,
+      singleItemAttempt: true as const,
       attemptNumber,
       itemAttemptState,
       attemptScores,
@@ -1056,7 +1056,7 @@ export async function getAssignmentResponseStudent({
       shuffledOrder,
     });
     return {
-      singleItemAttempt: false,
+      singleItemAttempt: false as const,
       allAttemptScores,
       ...baseData,
     };

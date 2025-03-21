@@ -34,17 +34,38 @@ test("Create and save responses for new attempts, no items", async () => {
   // create new anonymous user
   const { userId: anonId } = await createTestAnonymousUser();
 
-  let retrievedScore = await saveScoreAndState({
+  let retrievedScore = await createNewAttempt({
+    contentId: contentId,
+    code: classCode,
+    variant: 1,
+    loggedInUserId: anonId,
+    state: "document state 1",
+  });
+
+  let expectedScore = {
+    calculatedScore: true,
+    score: 0,
+    bestAttemptNumber: 1,
+    itemScores: [],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: 0,
+      itemScores: [],
+    },
+  };
+
+  expect(retrievedScore).eqls(expectedScore);
+
+  retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
     loggedInUserId: anonId,
-    variant: 1,
     attemptNumber: 1,
     score: 0.5,
     state: "document state 1",
   });
 
-  let expectedScore = {
+  expectedScore = {
     calculatedScore: true,
     score: 0.5,
     bestAttemptNumber: 1,
@@ -70,6 +91,7 @@ test("Create and save responses for new attempts, no items", async () => {
     score: 0.5,
     attemptNumber: 1,
     items: [],
+    variant: 1,
   });
 
   retrievedScore = await getScore({
@@ -84,7 +106,6 @@ test("Create and save responses for new attempts, no items", async () => {
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
-      variant: 1,
       loggedInUserId: anonId,
       attemptNumber: 2,
       score: 0.9,
@@ -104,8 +125,9 @@ test("Create and save responses for new attempts, no items", async () => {
     createNewAttempt({
       contentId: contentId,
       code: classCode,
-      variant: 1,
+      variant: 2,
       loggedInUserId: anonId,
+      state: null,
     }),
   ).rejects.toThrow(
     "Cannot create new attempt; maximum number of attempts exceeded",
@@ -124,6 +146,7 @@ test("Create and save responses for new attempts, no items", async () => {
     code: classCode,
     variant: 2,
     loggedInUserId: anonId,
+    state: null,
   });
 
   expectedScore = {
@@ -152,6 +175,7 @@ test("Create and save responses for new attempts, no items", async () => {
     score: 0,
     attemptNumber: 2,
     items: [],
+    variant: 2,
   });
 
   retrievedScore = await getScore({
@@ -165,7 +189,6 @@ test("Create and save responses for new attempts, no items", async () => {
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 2,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: 0.9,
@@ -197,6 +220,7 @@ test("Create and save responses for new attempts, no items", async () => {
     score: 0.9,
     items: [],
     attemptNumber: 2,
+    variant: 2,
   });
 
   retrievedScore = await getScore({
@@ -218,13 +242,13 @@ test("Create and save responses for new attempts, no items", async () => {
     score: 0.5,
     items: [],
     attemptNumber: 1,
+    variant: 1,
   });
 
   // if get lower score, lowers score on state and lower actual score to the higher previous attempt score
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 2,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: 0.2,
@@ -256,6 +280,7 @@ test("Create and save responses for new attempts, no items", async () => {
     score: 0.2,
     items: [],
     attemptNumber: 2,
+    variant: 2,
   });
 
   retrievedScore = await getScore({
@@ -324,10 +349,46 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   // create new anonymous user
   const { userId: anonId } = await createTestAnonymousUser();
 
-  let retrievedScore = await saveScoreAndState({
+  let retrievedScore = await createNewAttempt({
     contentId: contentId,
     code: classCode,
-    variant: 1,
+    variant: 2,
+    loggedInUserId: anonId,
+    shuffledItemOrder,
+    state: null,
+  });
+
+  let expectedScore = {
+    calculatedScore: true,
+    score: 0,
+    bestAttemptNumber: 1,
+    itemScores: [
+      { itemNumber: 1, score: 0, itemAttemptNumber: 1 },
+      { itemNumber: 2, score: 0, itemAttemptNumber: 1 },
+    ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: 0,
+      itemScores: [
+        {
+          itemNumber: 1,
+          itemAttemptNumber: 1,
+          score: 0,
+        },
+        {
+          itemNumber: 2,
+          itemAttemptNumber: 1,
+          score: 0,
+        },
+      ],
+    },
+  };
+
+  expect(retrievedScore).eqls(expectedScore);
+
+  retrievedScore = await saveScoreAndState({
+    contentId: contentId,
+    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -341,7 +402,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     state: "assignment state 1",
   });
 
-  let expectedScore = {
+  expectedScore = {
     calculatedScore: true,
     score: 0.4,
     bestAttemptNumber: 1,
@@ -375,6 +436,10 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     attemptNumber: 1,
   });
 
+  if (!retrievedState.loadedState) {
+    throw Error("Shouldn't happen");
+  }
+
   expect(retrievedState).eqls({
     loadedState: true,
     state: "assignment state 1",
@@ -387,6 +452,8 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
         itemAttemptNumber: 1,
         score: 0.8,
         state: "Item 1 state 1",
+        docId: retrievedState.items[0].docId,
+        variant: retrievedState.items[0].variant,
       },
       {
         itemNumber: 2,
@@ -394,8 +461,11 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
         itemAttemptNumber: 1,
         score: 0,
         state: null,
+        docId: retrievedState.items[1].docId,
+        variant: retrievedState.items[1].variant,
       },
     ],
+    variant: 2,
   });
 
   // load item states separately
@@ -405,6 +475,11 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     contentAttemptNumber: 1,
     itemNumber: 1,
   });
+
+  if (!retrievedItemState.loadedState) {
+    throw Error("Shouldn't happen");
+  }
+
   expect(retrievedItemState).eqls({
     loadedState: true,
     itemNumber: 1,
@@ -413,6 +488,8 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     itemAttemptNumber: 1,
     score: 0.8,
     state: "Item 1 state 1",
+    variant: retrievedItemState.variant,
+    docId: retrievedItemState.docId,
   });
 
   retrievedItemState = await loadItemState({
@@ -421,7 +498,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     contentAttemptNumber: 1,
     itemNumber: 2,
   });
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 2,
     shuffledItemNumber: 2,
@@ -443,7 +520,6 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
-      variant: 2,
       loggedInUserId: anonId,
       attemptNumber: 2,
       score: null,
@@ -472,6 +548,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     variant: 2,
     loggedInUserId: anonId,
     shuffledItemOrder,
+    state: null,
   });
 
   expectedScore = {
@@ -508,7 +585,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     attemptNumber: 2,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
     state: null,
     score: 0,
@@ -542,7 +619,6 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 2,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: null,
@@ -590,7 +666,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     attemptNumber: 2,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
     state: "assignment state 3",
     score: 0.3,
@@ -620,7 +696,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     contentAttemptNumber: 2,
     itemNumber: 1,
   });
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 1,
     shuffledItemNumber: 1,
@@ -636,7 +712,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     contentAttemptNumber: 2,
     itemNumber: 2,
   });
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 2,
     shuffledItemNumber: 2,
@@ -659,7 +735,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     attemptNumber: 1,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
     state: "assignment state 1",
     score: 0.4,
@@ -689,7 +765,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     contentAttemptNumber: 1,
     itemNumber: 1,
   });
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 1,
     shuffledItemNumber: 1,
@@ -705,7 +781,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     contentAttemptNumber: 1,
     itemNumber: 2,
   });
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 2,
     shuffledItemNumber: 2,
@@ -719,7 +795,6 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 2,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: null,
@@ -767,7 +842,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     loggedInUserId: anonId,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
     state: "assignment state 4",
     score: 0.5,
@@ -796,7 +871,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     loggedInUserId: anonId,
     itemNumber: 1,
   });
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 1,
     shuffledItemNumber: 1,
@@ -811,7 +886,7 @@ test("Create and save responses for new activity-wide attempts, two items", asyn
     loggedInUserId: anonId,
     itemNumber: 2,
   });
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 2,
     shuffledItemNumber: 2,
@@ -889,10 +964,45 @@ test("Create and save responses for new item attempts, two items", async () => {
   // create new anonymous user
   const { userId: anonId } = await createTestAnonymousUser();
 
-  let retrievedScore = await saveScoreAndState({
+  let retrievedScore = await createNewAttempt({
     contentId: contentId,
     code: classCode,
     variant: 1,
+    loggedInUserId: anonId,
+    shuffledItemOrder,
+    state: null,
+  });
+
+  let expectedScore = {
+    calculatedScore: true,
+    score: 0,
+    bestAttemptNumber: 1,
+    itemScores: [
+      { itemNumber: 1, score: 0, itemAttemptNumber: 1 },
+      { itemNumber: 2, score: 0, itemAttemptNumber: 1 },
+    ],
+    latestAttempt: {
+      attemptNumber: 1,
+      score: 0,
+      itemScores: [
+        {
+          itemNumber: 1,
+          itemAttemptNumber: 1,
+          score: 0,
+        },
+        {
+          itemNumber: 2,
+          itemAttemptNumber: 1,
+          score: 0,
+        },
+      ],
+    },
+  };
+  expect(retrievedScore).eqls(expectedScore);
+
+  retrievedScore = await saveScoreAndState({
+    contentId: contentId,
+    code: classCode,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -906,8 +1016,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     },
   });
 
-  // get items scores in summary getScore since we are in formative mode
-  let expectedScore = {
+  expectedScore = {
     calculatedScore: true,
     score: 0.3,
     bestAttemptNumber: 1,
@@ -940,7 +1049,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     attemptNumber: 1,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
     state: "assignment state 1",
     score: 0.3,
@@ -979,7 +1088,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     itemAttemptNumber: 1,
   });
 
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 1,
     shuffledItemNumber: 1,
@@ -997,7 +1106,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     itemAttemptNumber: 1,
   });
 
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 2,
     shuffledItemNumber: 2,
@@ -1023,7 +1132,6 @@ test("Create and save responses for new item attempts, two items", async () => {
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
-      variant: 1,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
@@ -1046,9 +1154,9 @@ test("Create and save responses for new item attempts, two items", async () => {
     loggedInUserId: anonId,
     shuffledItemOrder,
     itemNumber: 1,
+    state: "assignment state 2",
   });
 
-  // get items scores in summary getScore since we are in formative mode
   expectedScore = {
     calculatedScore: true,
     score: 0.3,
@@ -1082,9 +1190,9 @@ test("Create and save responses for new item attempts, two items", async () => {
     attemptNumber: 1,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
-    state: "assignment state 1",
+    state: "assignment state 2",
     score: 0.0,
     attemptNumber: 1,
     items: [
@@ -1118,11 +1226,10 @@ test("Create and save responses for new item attempts, two items", async () => {
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
-    state: "assignment state 1",
+    state: "assignment state 2",
     item: {
       itemNumber: 1,
       shuffledItemOrder,
@@ -1166,9 +1273,9 @@ test("Create and save responses for new item attempts, two items", async () => {
     attemptNumber: 1,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
-    state: "assignment state 1",
+    state: "assignment state 2",
     score: 0.2,
     attemptNumber: 1,
     items: [
@@ -1197,7 +1304,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     itemAttemptNumber: 2,
   });
 
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 1,
     shuffledItemNumber: 1,
@@ -1214,7 +1321,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     itemAttemptNumber: 1,
   });
 
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 2,
     shuffledItemNumber: 2,
@@ -1241,7 +1348,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     itemAttemptNumber: 1,
   });
 
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 1,
     shuffledItemNumber: 1,
@@ -1259,6 +1366,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     loggedInUserId: anonId,
     shuffledItemOrder,
     itemNumber: 2,
+    state: "assignment state 3",
   });
 
   // remember previous max score of 0.3 and 0.6 on item 1
@@ -1295,9 +1403,9 @@ test("Create and save responses for new item attempts, two items", async () => {
     attemptNumber: 1,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
-    state: "assignment state 1",
+    state: "assignment state 3",
     score: 0.2,
     attemptNumber: 1,
     items: [
@@ -1325,7 +1433,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     itemNumber: 1,
   });
 
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 1,
     shuffledItemNumber: 1,
@@ -1341,7 +1449,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     itemNumber: 2,
   });
 
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 2,
     shuffledItemNumber: 2,
@@ -1362,11 +1470,10 @@ test("Create and save responses for new item attempts, two items", async () => {
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
-      variant: 1,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
-      state: "assignment state 1",
+      state: "assignment state 2",
       item: {
         itemNumber: 2,
         shuffledItemOrder,
@@ -1381,11 +1488,10 @@ test("Create and save responses for new item attempts, two items", async () => {
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
-    state: "assignment state 1",
+    state: "assignment state 3",
     item: {
       itemNumber: 2,
       shuffledItemOrder,
@@ -1427,9 +1533,9 @@ test("Create and save responses for new item attempts, two items", async () => {
     loggedInUserId: anonId,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
-    state: "assignment state 1",
+    state: "assignment state 3",
     score: (0.4 + 0.8) / 2,
     attemptNumber: 1,
     items: [
@@ -1458,7 +1564,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     itemNumber: 1,
   });
 
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 1,
     shuffledItemNumber: 1,
@@ -1475,7 +1581,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     itemNumber: 2,
   });
 
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 2,
     shuffledItemNumber: 2,
@@ -1500,6 +1606,7 @@ test("Create and save responses for new item attempts, two items", async () => {
     loggedInUserId: anonId,
     shuffledItemOrder,
     itemNumber: 2,
+    state: "assignment state 4",
   });
 
   expectedScore = {
@@ -1551,16 +1658,23 @@ test("Create attempts before responding, no items", async () => {
 
   // create a new attempt without recording any response to attempt 1
 
-  // first attempt fail as max attempts is 1
+  // create initial attempt
+  await createNewAttempt({
+    contentId: contentId,
+    variant: 1,
+    loggedInUserId: anonId,
+    code: classCode,
+    state: null,
+  });
+
+  // first attempt to create new attempt fails as max attempts is 1
   await expect(
     createNewAttempt({
       contentId: contentId,
       variant: 2,
       loggedInUserId: anonId,
       code: classCode,
-      initialAttemptInfo: {
-        variant: 1,
-      },
+      state: null,
     }),
   ).rejects.toThrow(
     "Cannot create new attempt; maximum number of attempts exceeded",
@@ -1573,13 +1687,12 @@ test("Create attempts before responding, no items", async () => {
     maxAttempts: 0,
   });
 
-  // Note: we don't need `initialAttemptInfo` here, as the failed attempt above,
-  // added information about attempt 1 before failing
   let retrievedScore = await createNewAttempt({
     contentId: contentId,
     variant: 2,
     loggedInUserId: anonId,
     code: classCode,
+    state: null,
   });
 
   let expectedScore = {
@@ -1607,6 +1720,7 @@ test("Create attempts before responding, no items", async () => {
     score: 0,
     attemptNumber: 2,
     items: [],
+    variant: 2,
   });
 
   retrievedScore = await getScore({
@@ -1619,7 +1733,6 @@ test("Create attempts before responding, no items", async () => {
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 2,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: 0.9,
@@ -1651,6 +1764,7 @@ test("Create attempts before responding, no items", async () => {
     score: 0.9,
     items: [],
     attemptNumber: 2,
+    variant: 2,
   });
 
   retrievedScore = await getScore({
@@ -1673,6 +1787,7 @@ test("Create attempts before responding, no items", async () => {
     score: 0,
     attemptNumber: 1,
     items: [],
+    variant: 1,
   });
 });
 
@@ -1729,6 +1844,16 @@ test("Create item attempts before responding, two items", async () => {
   // create new anonymous user
   const { userId: anonId } = await createTestAnonymousUser();
 
+  // create initial attempt
+  await createNewAttempt({
+    contentId: contentId,
+    loggedInUserId: anonId,
+    code: classCode,
+    variant: 1,
+    shuffledItemOrder,
+    state: null,
+  });
+
   // create a new attempt for item 1 before responding
 
   // initial attempt fails as max attempts is 1
@@ -1740,10 +1865,7 @@ test("Create item attempts before responding, two items", async () => {
       variant: 1,
       itemNumber: 1,
       shuffledItemOrder,
-      initialAttemptInfo: {
-        variant: 1,
-        shuffledItemOrder,
-      },
+      state: null,
     }),
   ).rejects.toThrow(
     "Cannot create new attempt of item; maximum number of attempts exceeded",
@@ -1763,6 +1885,7 @@ test("Create item attempts before responding, two items", async () => {
     code: classCode,
     itemNumber: 1,
     shuffledItemOrder,
+    state: null,
   });
 
   let expectedScore = {
@@ -1798,7 +1921,7 @@ test("Create item attempts before responding, two items", async () => {
     attemptNumber: 1,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
     state: null,
     score: 0,
@@ -1819,6 +1942,7 @@ test("Create item attempts before responding, two items", async () => {
         state: null,
       },
     ],
+    variant: 1,
   });
 
   retrievedScore = await getScore({
@@ -1831,7 +1955,6 @@ test("Create item attempts before responding, two items", async () => {
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -1878,7 +2001,7 @@ test("Create item attempts before responding, two items", async () => {
     attemptNumber: 1,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
     state: "assignment state 1",
     score: 0.2,
@@ -1899,6 +2022,7 @@ test("Create item attempts before responding, two items", async () => {
         state: null,
       },
     ],
+    variant: 1,
   });
 
   retrievedScore = await getScore({
@@ -1917,7 +2041,7 @@ test("Create item attempts before responding, two items", async () => {
   });
 
   // get a scores of 0 and a state of null
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     state: null,
     score: 0,
@@ -1988,11 +2112,19 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   // create new anonymous user
   const { userId: anonId } = await createTestAnonymousUser();
 
+  await createNewAttempt({
+    contentId: contentId,
+    loggedInUserId: anonId,
+    variant: 1,
+    code: classCode,
+    shuffledItemOrder,
+    state: null,
+  });
+
   // save state for shuffled item number 1 (which is item number 2)
   let retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2006,7 +2138,6 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     },
   });
 
-  // get items scores in summary getScore since we are in formative mode
   let expectedScore = {
     calculatedScore: true,
     score: 0.3,
@@ -2040,7 +2171,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     attemptNumber: 1,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
     state: "assignment state 1",
     score: 0.3,
@@ -2078,7 +2209,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     itemAttemptNumber: 1,
   });
 
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 2,
     shuffledItemNumber: 1,
@@ -2097,7 +2228,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     itemAttemptNumber: 1,
   });
 
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 1,
     shuffledItemNumber: 2,
@@ -2123,7 +2254,6 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
-      variant: 1,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
@@ -2146,6 +2276,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     loggedInUserId: anonId,
     shuffledItemOrder,
     shuffledItemNumber: 1,
+    state: "assignment state 2",
   });
 
   expectedScore = {
@@ -2181,9 +2312,9 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     attemptNumber: 1,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
-    state: "assignment state 1",
+    state: "assignment state 2",
     score: 0.0,
     attemptNumber: 1,
     items: [
@@ -2216,11 +2347,10 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
-    state: "assignment state 1",
+    state: "assignment state 3",
     item: {
       shuffledItemNumber: 1,
       shuffledItemOrder,
@@ -2264,9 +2394,9 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     attemptNumber: 1,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
-    state: "assignment state 1",
+    state: "assignment state 3",
     score: 0.2,
     attemptNumber: 1,
     items: [
@@ -2302,7 +2432,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     itemAttemptNumber: 1,
   });
 
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 2,
     shuffledItemNumber: 1,
@@ -2320,6 +2450,7 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     loggedInUserId: anonId,
     shuffledItemOrder,
     shuffledItemNumber: 2,
+    state: "assignment state 4",
   });
 
   expectedScore = {
@@ -2355,9 +2486,9 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     attemptNumber: 1,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
-    state: "assignment state 1",
+    state: "assignment state 4",
     score: 0.2,
     attemptNumber: 1,
     items: [
@@ -2389,11 +2520,10 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
-      variant: 1,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
-      state: "assignment state 1",
+      state: "assignment state 5",
       item: {
         shuffledItemNumber: 2,
         shuffledItemOrder,
@@ -2408,11 +2538,10 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
-    state: "assignment state 1",
+    state: "assignment state 6",
     item: {
       shuffledItemNumber: 2,
       shuffledItemOrder,
@@ -2454,9 +2583,9 @@ test("Create and save responses for new item attempts, two shuffled items", asyn
     loggedInUserId: anonId,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
-    state: "assignment state 1",
+    state: "assignment state 6",
     score: (0.4 + 0.8) / 2,
     attemptNumber: 1,
     items: [
@@ -2544,11 +2673,19 @@ test("New item attempt does not affect other item", async () => {
   // create new anonymous user
   const { userId: anonId } = await createTestAnonymousUser();
 
+  await createNewAttempt({
+    contentId: contentId,
+    loggedInUserId: anonId,
+    variant: 1,
+    code: classCode,
+    shuffledItemOrder,
+    state: null,
+  });
+
   // save state for items 1 amd 2
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2565,7 +2702,6 @@ test("New item attempt does not affect other item", async () => {
   let retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2612,7 +2748,7 @@ test("New item attempt does not affect other item", async () => {
     attemptNumber: 1,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
     state: "assignment state 1",
     score: 0.9,
@@ -2651,17 +2787,17 @@ test("New item attempt does not affect other item", async () => {
     loggedInUserId: anonId,
     shuffledItemOrder,
     itemNumber: 2,
+    state: "assignment state 2",
   });
 
   // save state with lower scores for items 1 amd 2
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
-    state: "assignment state 1",
+    state: "assignment state 2",
     item: {
       itemNumber: 1,
       shuffledItemOrder,
@@ -2674,11 +2810,10 @@ test("New item attempt does not affect other item", async () => {
   retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
-    state: "assignment state 1",
+    state: "assignment state 2",
     item: {
       itemNumber: 2,
       shuffledItemOrder,
@@ -2721,9 +2856,9 @@ test("New item attempt does not affect other item", async () => {
     loggedInUserId: anonId,
     attemptNumber: 1,
   });
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
-    state: "assignment state 1",
+    state: "assignment state 2",
     score: (0.4 + 0.2) / 2,
     attemptNumber: 1,
     items: [
@@ -2750,7 +2885,7 @@ test("New item attempt does not affect other item", async () => {
     loggedInUserId: anonId,
     itemNumber: 1,
   });
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 1,
     shuffledItemNumber: 1,
@@ -2765,7 +2900,7 @@ test("New item attempt does not affect other item", async () => {
     loggedInUserId: anonId,
     itemNumber: 2,
   });
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 2,
     shuffledItemNumber: 2,
@@ -2843,11 +2978,19 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
   // create new anonymous user
   const { userId: anonId } = await createTestAnonymousUser();
 
+  await createNewAttempt({
+    contentId: contentId,
+    loggedInUserId: anonId,
+    variant: 1,
+    code: classCode,
+    shuffledItemOrder,
+    state: null,
+  });
+
   // save state for item number 1 (which is shuffled item number 2)
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2865,7 +3008,6 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
   let retrievedScore = await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
@@ -2911,7 +3053,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     loggedInUserId: anonId,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
     state: "assignment state 1",
     score: (0.6 + 0.8) / 2,
@@ -2946,7 +3088,6 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
-      variant: 1,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
@@ -2970,9 +3111,10 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
       variant: 1,
       loggedInUserId: anonId,
       shuffledItemNumber: 2,
+      state: "assignment state 2",
     }),
   ).rejects.toThrow(
-    "Cannot create a new item attempt without specifying shuffledItemOrder",
+    "Cannot create attempts of formative assessments without specifying shuffledItemOrder",
   );
   await expect(
     createNewAttempt({
@@ -2981,9 +3123,10 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
       code: classCode,
       loggedInUserId: anonId,
       itemNumber: 2,
+      state: "assignment state 3",
     }),
   ).rejects.toThrow(
-    "Cannot create a new item attempt without specifying shuffledItemOrder",
+    "Cannot create attempts of formative assessments without specifying shuffledItemOrder",
   );
 
   // create a new attempt for shuffled item 2 (item number 1)
@@ -2994,6 +3137,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     loggedInUserId: anonId,
     shuffledItemOrder,
     shuffledItemNumber: 2,
+    state: "assignment state 4",
   });
 
   // create a new attempt for item 2 (shuffled item number 1)
@@ -3004,6 +3148,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     loggedInUserId: anonId,
     shuffledItemOrder,
     itemNumber: 2,
+    state: "assignment state 5",
   });
 
   // load shuffled item one state, specifying no item number, gives first item number
@@ -3012,7 +3157,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     loggedInUserId: anonId,
   });
 
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 1,
     shuffledItemNumber: 2,
@@ -3028,7 +3173,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     loggedInUserId: anonId,
     shuffledItemNumber: 2,
   });
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 1,
     shuffledItemNumber: 2,
@@ -3044,7 +3189,7 @@ test("Using both itemNumber and shuffledItemNumber, two shuffled items", async (
     loggedInUserId: anonId,
     itemNumber: 2,
   });
-  expect(retrievedItemState).eqls({
+  expect(retrievedItemState).toMatchObject({
     loadedState: true,
     itemNumber: 2,
     shuffledItemNumber: 1,
@@ -3085,12 +3230,38 @@ test("Cannot create activity-wide attempt on formative assessment", async () => 
   // create new anonymous user
   const { userId: anonId } = await createTestAnonymousUser();
 
+  const shuffledItemOrder = [
+    {
+      shuffledItemNumber: 2,
+      docId: new Uint8Array(16),
+      variant: 11,
+    },
+    {
+      shuffledItemNumber: 1,
+      docId: new Uint8Array(16),
+      variant: 21,
+    },
+  ];
+
+  // create initial attempt
+  await createNewAttempt({
+    contentId: contentId,
+    variant: 1,
+    code: classCode,
+    loggedInUserId: anonId,
+    state: "assignment state 1",
+    shuffledItemOrder,
+  });
+
+  // cannot create another attempt of whole activity
   await expect(
     createNewAttempt({
       contentId: contentId,
       variant: 1,
       code: classCode,
       loggedInUserId: anonId,
+      state: "assignment state 2",
+      shuffledItemOrder,
     }),
   ).rejects.toThrow(
     "Formative assessments do not support creating new attempts of entire activity",
@@ -3150,6 +3321,16 @@ test("Cannot create item attempt on summative assessment", async () => {
   // create new anonymous user
   const { userId: anonId } = await createTestAnonymousUser();
 
+  // create initial attempt
+  await createNewAttempt({
+    contentId: contentId,
+    variant: 1,
+    code: classCode,
+    loggedInUserId: anonId,
+    state: "assignment state 1",
+    shuffledItemOrder,
+  });
+
   await expect(
     createNewAttempt({
       contentId: contentId,
@@ -3158,6 +3339,7 @@ test("Cannot create item attempt on summative assessment", async () => {
       loggedInUserId: anonId,
       itemNumber: 1,
       shuffledItemOrder,
+      state: "assignment state 2",
     }),
   ).rejects.toThrow(
     "Summative assessments and single documents do not support creating new attempts of single items",
@@ -3184,15 +3366,23 @@ test("Setting maximum number of attempts, no items", async () => {
   // create new anonymous user
   const { userId: anonId } = await createTestAnonymousUser();
 
-  // can save state
-  await saveScoreAndState({
+  // create initial attempt
+  await createNewAttempt({
     contentId: contentId,
     code: classCode,
     variant: 1,
     loggedInUserId: anonId,
+    state: "document state 1",
+  });
+
+  // can save state
+  await saveScoreAndState({
+    contentId: contentId,
+    code: classCode,
+    loggedInUserId: anonId,
     attemptNumber: 1,
     score: 0.5,
-    state: "document state 1",
+    state: "document state 2",
   });
 
   // cannot create new attempt
@@ -3202,6 +3392,7 @@ test("Setting maximum number of attempts, no items", async () => {
       code: classCode,
       variant: 2,
       loggedInUserId: anonId,
+      state: "document state 3",
     }),
   ).rejects.toThrow(
     "Cannot create new attempt; maximum number of attempts exceeded",
@@ -3220,17 +3411,17 @@ test("Setting maximum number of attempts, no items", async () => {
     code: classCode,
     variant: 2,
     loggedInUserId: anonId,
+    state: "document state 4",
   });
 
   // can save state
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 2,
     loggedInUserId: anonId,
     attemptNumber: 2,
     score: 0.6,
-    state: "document state 2",
+    state: "document state 5",
   });
 
   // cannot create new attempt
@@ -3240,6 +3431,7 @@ test("Setting maximum number of attempts, no items", async () => {
       variant: 3,
       code: classCode,
       loggedInUserId: anonId,
+      state: "document state 6",
     }),
   ).rejects.toThrow(
     "Cannot create new attempt; maximum number of attempts exceeded",
@@ -3258,6 +3450,7 @@ test("Setting maximum number of attempts, no items", async () => {
     code: classCode,
     variant: 3,
     loggedInUserId: anonId,
+    state: "document state 7",
   });
 
   // bring max attempts back down to 2
@@ -3271,11 +3464,10 @@ test("Setting maximum number of attempts, no items", async () => {
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 3,
     loggedInUserId: anonId,
     attemptNumber: 3,
     score: 0.7,
-    state: "document state 3",
+    state: "document state 8",
   });
 
   // cannot save state to attempt 2
@@ -3283,11 +3475,10 @@ test("Setting maximum number of attempts, no items", async () => {
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
-      variant: 2,
       loggedInUserId: anonId,
       attemptNumber: 2,
       score: 0.8,
-      state: "document state 4",
+      state: "document state 9",
     }),
   ).rejects.toThrow(
     "Cannot save score and state to non-maximal attempt number",
@@ -3301,9 +3492,10 @@ test("Setting maximum number of attempts, no items", async () => {
 
   expect(retrievedState).eqls({
     loadedState: true,
-    state: "document state 3",
+    state: "document state 8",
     score: 0.7,
     attemptNumber: 3,
+    variant: 3,
     items: [],
   });
 
@@ -3379,15 +3571,24 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   // create new anonymous user
   const { userId: anonId } = await createTestAnonymousUser();
 
+  // create initial attempt
+  await createNewAttempt({
+    contentId: contentId,
+    variant: 1,
+    code: classCode,
+    loggedInUserId: anonId,
+    state: "assignment state 1",
+    shuffledItemOrder,
+  });
+
   // save state for attempt 1 of item 1
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
-    state: "assignment state 1",
+    state: "assignment state 2",
     item: {
       itemNumber: 1,
       shuffledItemOrder,
@@ -3406,6 +3607,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
       loggedInUserId: anonId,
       shuffledItemOrder,
       itemNumber: 1,
+      state: "assignment state 3",
     }),
   ).rejects.toThrow(
     "Cannot create new attempt of item; maximum number of attempts exceeded",
@@ -3419,6 +3621,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
       loggedInUserId: anonId,
       shuffledItemOrder,
       itemNumber: 2,
+      state: "assignment state 4",
     }),
   ).rejects.toThrow(
     "Cannot create new attempt of item; maximum number of attempts exceeded",
@@ -3439,17 +3642,17 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     loggedInUserId: anonId,
     shuffledItemOrder,
     itemNumber: 1,
+    state: "assignment state 5",
   });
 
   // save state for attempt 2 of item 1
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
-    state: "assignment state 1",
+    state: "assignment state 6",
     item: {
       itemNumber: 1,
       shuffledItemOrder,
@@ -3468,6 +3671,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
       loggedInUserId: anonId,
       shuffledItemOrder,
       itemNumber: 1,
+      state: "assignment state 7",
     }),
   ).rejects.toThrow(
     "Cannot create new attempt of item; maximum number of attempts exceeded",
@@ -3488,6 +3692,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     loggedInUserId: anonId,
     shuffledItemOrder,
     itemNumber: 1,
+    state: "assignment state 8",
   });
 
   // set max attempts back down to 2
@@ -3501,11 +3706,10 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
-    state: "assignment state 1",
+    state: "assignment state 9",
     item: {
       itemNumber: 1,
       shuffledItemOrder,
@@ -3520,11 +3724,10 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     saveScoreAndState({
       contentId: contentId,
       code: classCode,
-      variant: 1,
       loggedInUserId: anonId,
       attemptNumber: 1,
       score: null,
-      state: "assignment state 1",
+      state: "assignment state 10",
       item: {
         itemNumber: 1,
         shuffledItemOrder,
@@ -3545,6 +3748,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     loggedInUserId: anonId,
     shuffledItemOrder,
     itemNumber: 2,
+    state: "assignment state 11",
   });
 
   // cannot create a third attempt for item 2
@@ -3556,6 +3760,7 @@ test("Setting maximum number of attempts, new item attempts", async () => {
       loggedInUserId: anonId,
       shuffledItemOrder,
       itemNumber: 2,
+      state: "assignment state 12",
     }),
   ).rejects.toThrow(
     "Cannot create new attempt of item; maximum number of attempts exceeded",
@@ -3565,11 +3770,10 @@ test("Setting maximum number of attempts, new item attempts", async () => {
   await saveScoreAndState({
     contentId: contentId,
     code: classCode,
-    variant: 1,
     loggedInUserId: anonId,
     attemptNumber: 1,
     score: null,
-    state: "assignment state 1",
+    state: "assignment state 13",
     item: {
       itemNumber: 2,
       shuffledItemOrder,
@@ -3585,9 +3789,9 @@ test("Setting maximum number of attempts, new item attempts", async () => {
     loggedInUserId: anonId,
   });
 
-  expect(retrievedState).eqls({
+  expect(retrievedState).toMatchObject({
     loadedState: true,
-    state: "assignment state 1",
+    state: "assignment state 13",
     score: (1 + 0.4) / 2,
     attemptNumber: 1,
     items: [
