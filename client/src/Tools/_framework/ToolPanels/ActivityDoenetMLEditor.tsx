@@ -29,7 +29,6 @@ export function ActivityDoenetMLEditor({
   const savedDoenetML = useRef(doenetML);
 
   const numVariants = useRef(1);
-  const baseComponentCounts = useRef<string>("{}");
   const documentStructureChanged = useRef(false);
 
   const readOnly = asViewer || assignmentStatus !== "Unassigned";
@@ -75,7 +74,6 @@ export function ActivityDoenetMLEditor({
           doenetML: newDoenetML,
           contentId,
           numVariants: numVariants.current,
-          baseComponentCounts: baseComponentCounts.current,
         };
         await axios.post("/api/updateContent/saveDoenetML", params);
         savedDoenetML.current = newDoenetML;
@@ -117,11 +115,6 @@ export function ActivityDoenetMLEditor({
           documentStructureCallback={(x: any) => {
             if (Array.isArray(x.args?.allPossibleVariants)) {
               numVariants.current = x.args.allPossibleVariants.length;
-            }
-            if (typeof x.args?.baseComponentCounts === "object") {
-              baseComponentCounts.current = JSON.stringify(
-                x.args.baseComponentCounts,
-              );
             }
             documentStructureChanged.current = true;
           }}

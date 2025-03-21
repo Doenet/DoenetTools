@@ -110,11 +110,11 @@ export const getStudentSubmittedResponsesSchema = z.object({
   studentUserId: uuidSchema.optional(),
   answerId: z.string(),
   shuffledOrder: z.string().transform((val) => val === "true"),
-  itemNumber: z
+  requestedItemNumber: z
     .string()
     .transform((val) => parseInt(val))
     .refine((v) => v >= 1 && v <= 65535, {
-      message: "itemNumber must be between 1 and 65535",
+      message: "requestedItemNumber must be between 1 and 65535",
     })
     .optional(),
   contentAttemptNumber: z

@@ -63,7 +63,7 @@ export function AnswerResponseDrawer({
   useEffect(() => {
     async function getAnswerResponses() {
       const itemQuery =
-        (itemNumber === null ? "" : `&itemNumber=${itemNumber}`) +
+        (itemNumber === null ? "" : `&requestedItemNumber=${itemNumber}`) +
         (itemAttemptNumber === null
           ? ""
           : `&itemAttemptNumber=${itemAttemptNumber}`);
@@ -123,7 +123,10 @@ export function AnswerResponseDrawer({
         </DrawerHeader>
 
         <DrawerBody>
-          <Text>Responses to answer: {answerId}</Text>
+          <Text>
+            Responses to answer:{" "}
+            {answerId[0] === "/" ? answerId.substring(1) : answerId}
+          </Text>
           <TableContainer marginTop="10px">
             <Table>
               <Thead>

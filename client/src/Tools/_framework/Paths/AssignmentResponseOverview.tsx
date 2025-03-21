@@ -29,6 +29,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { DoenetHeading as Heading } from "../../../Widgets/Heading";
+import "../../../_utils/score-table.css";
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Label } from "recharts";
 import { Link as ReactRouterLink, useNavigate } from "react-router";
@@ -143,6 +144,8 @@ export async function loader({ params, request }) {
     },
     mode,
     contentId,
+    sort,
+    sortDir,
   };
 
   if (assignment.type === "singleDoc") {
@@ -171,8 +174,6 @@ export async function loader({ params, request }) {
       ...baseData,
       activityJson,
       itemNames,
-      sort,
-      sortDir,
     };
   }
 }
@@ -258,16 +259,31 @@ export function AssignmentData() {
     `.?sort=${text}${sort === `${text}` && sortDir === "asc" ? "-" : ""}`;
 
   let scoresChart: ReactElement;
+  const nameWidth = 150;
+  const totalWidth = 70;
 
   if (data.type !== "singleDoc" && numItems > 1) {
     const itemNames = data.itemNames;
 
+    const itemWidth = 50;
+
     scoresChart = (
       <TableContainer>
-        <Table size="sm">
+        <Table
+          size="sm"
+          className="score-table"
+          layout="fixed"
+          width={`${nameWidth + itemWidth * numItems + totalWidth}px`}
+        >
           <Thead>
             <Tr>
-              <Th textTransform={"none"} fontSize="large">
+              <Th
+                textTransform={"none"}
+                fontSize="large"
+                rowSpan={2}
+                alignContent="end"
+                width={`${nameWidth}px`}
+              >
                 <Box>
                   <ChakraLink
                     as={ReactRouterLink}
@@ -279,12 +295,51 @@ export function AssignmentData() {
                     }}
                   >
                     <HStack gap={0}>
-                      <Text>Name</Text>
+                      <Text height="21px">Name</Text>
                       {sort === "name" ? sortArrow : null}
                     </HStack>
                   </ChakraLink>
                 </Box>
               </Th>
+              <Th
+                textTransform={"none"}
+                fontSize="large"
+                colSpan={itemNames.length}
+                textAlign="center"
+                borderBottom="none"
+              >
+                Item
+              </Th>
+
+              <Th
+                textTransform={"none"}
+                fontSize="large"
+                justifyItems="center"
+                rowSpan={2}
+                alignContent="end"
+                width={`${totalWidth}px`}
+              >
+                <Box width="64px" justifyItems="center">
+                  <Box>
+                    <ChakraLink
+                      as={ReactRouterLink}
+                      to={sortLink("total")}
+                      replace={true}
+                      _hover={{
+                        textDecoration: "none",
+                        color: "gray.400",
+                      }}
+                    >
+                      <HStack gap={0}>
+                        <Text height="21px">Total</Text>
+                        {sort === "total" ? sortArrow : null}
+                      </HStack>
+                    </ChakraLink>
+                  </Box>
+                </Box>
+              </Th>
+            </Tr>
+            <Tr>
               {itemNames.map((name, i) => {
                 return (
                   <Th
@@ -306,7 +361,7 @@ export function AssignmentData() {
                       >
                         <HStack gap={0}>
                           <Tooltip label={`${i + 1}. ${name}`} openDelay={500}>
-                            <Text>{i + 1}</Text>
+                            <Text height="21px">{i + 1}</Text>
                           </Tooltip>
                           {sort === `${i + 1}` ? sortArrow : null}
                         </HStack>
@@ -315,7 +370,124 @@ export function AssignmentData() {
                   </Th>
                 );
               })}
-              <Th textTransform={"none"} fontSize="large" justifyItems="center">
+            </Tr>
+          </Thead>
+          <Tbody>
+            {scores.map((assignmentScore) => {
+              const linkURL =
+                "/assignmentData/" +
+                contentId +
+                "/" +
+                assignmentScore.user.userId;
+              const studentName = createFullName(assignmentScore.user);
+              const bestAttemptNumber = assignmentScore.bestAttemptNumber;
+              return (
+                <Tr key={`user${assignmentScore.user.userId}`}>
+                  <Td>
+                    <HStack>
+                      <ChakraLink
+                        as={ReactRouterLink}
+                        to={linkURL}
+                        textDecoration="underline"
+                      >
+                        {studentName}
+                      </ChakraLink>
+                    </HStack>
+                  </Td>
+                  {assignmentScore.itemScores?.map((item, i) => {
+                    const attemptNumberForScore =
+                      mode === "summative"
+                        ? bestAttemptNumber
+                        : item.itemAttemptNumber;
+                    return (
+                      <Td key={i} justifyItems="center">
+                        <Text>
+                          <Tooltip
+                            label={`Item ${i + 1} for ${studentName}`}
+                            openDelay={500}
+                          >
+                            <ChakraLink
+                              as={ReactRouterLink}
+                              to={`${linkURL}?itemNumber=${i + 1}&attemptNumber=${attemptNumberForScore}`}
+                              textDecoration="underline"
+                            >
+                              &nbsp;
+                              {Math.round(item.score * 1000) / 10}
+                              &nbsp;
+                            </ChakraLink>
+                          </Tooltip>
+                        </Text>
+                      </Td>
+                    );
+                  })}
+                  <Td justifyItems="center">
+                    <Text>
+                      <Tooltip
+                        label={`Total for ${studentName}`}
+                        openDelay={500}
+                      >
+                        <ChakraLink
+                          as={ReactRouterLink}
+                          to={linkURL}
+                          textDecoration="underline"
+                        >
+                          &nbsp;
+                          {Math.round(assignmentScore.score * 1000) / 10}
+                          &nbsp;
+                        </ChakraLink>
+                      </Tooltip>
+                    </Text>
+                  </Td>
+                </Tr>
+              );
+            })}
+          </Tbody>
+        </Table>
+      </TableContainer>
+    );
+  } else {
+    scoresChart = (
+      <TableContainer>
+        <Table
+          size="sm"
+          className="score-table"
+          layout="fixed"
+          width={`${nameWidth + totalWidth}px`}
+        >
+          <Thead>
+            <Tr>
+              <Th
+                textTransform={"none"}
+                fontSize="large"
+                rowSpan={2}
+                alignContent="end"
+                width={`${nameWidth}px`}
+              >
+                <Box>
+                  <ChakraLink
+                    as={ReactRouterLink}
+                    to={sortLink("name")}
+                    replace={true}
+                    _hover={{
+                      textDecoration: "none",
+                      color: "gray.400",
+                    }}
+                  >
+                    <HStack gap={0}>
+                      <Text height="21px">Name</Text>
+                      {sort === "name" ? sortArrow : null}
+                    </HStack>
+                  </ChakraLink>
+                </Box>
+              </Th>
+              <Th
+                textTransform={"none"}
+                fontSize="large"
+                justifyItems="center"
+                rowSpan={2}
+                alignContent="end"
+                width={`${totalWidth}px`}
+              >
                 <Box width="64px" justifyItems="center">
                   <Box>
                     <ChakraLink
@@ -328,7 +500,7 @@ export function AssignmentData() {
                       }}
                     >
                       <HStack gap={0}>
-                        <Text>Total</Text>
+                        <Text height="21px">Score</Text>
                         {sort === "total" ? sortArrow : null}
                       </HStack>
                     </ChakraLink>
@@ -345,77 +517,6 @@ export function AssignmentData() {
                 "/" +
                 assignmentScore.user.userId;
               const studentName = createFullName(assignmentScore.user);
-              const bestAttemptNumber = assignmentScore.bestAttemptNumber;
-              const nameLinkUrl =
-                linkURL +
-                (mode === "summative"
-                  ? `?attemptNumber=${bestAttemptNumber}`
-                  : "");
-              return (
-                <Tr key={`user${assignmentScore.user.userId}`}>
-                  <Td>
-                    <HStack>
-                      <ChakraLink
-                        as={ReactRouterLink}
-                        to={nameLinkUrl}
-                        textDecoration="underline"
-                      >
-                        {studentName}
-                      </ChakraLink>
-                    </HStack>
-                  </Td>
-                  {assignmentScore.itemScores?.map((item, i) => {
-                    const attemptNumberForScore =
-                      mode === "summative"
-                        ? bestAttemptNumber
-                        : item.itemAttemptNumber;
-                    return (
-                      <Td key={i} justifyItems="center">
-                        <Text>
-                          <ChakraLink
-                            as={ReactRouterLink}
-                            to={`${linkURL}?itemNumber=${i + 1}&attemptNumber=${attemptNumberForScore}`}
-                            textDecoration="underline"
-                          >
-                            &nbsp;
-                            {Math.round(item.score * 1000) / 10}
-                            &nbsp;
-                          </ChakraLink>
-                        </Text>
-                      </Td>
-                    );
-                  })}
-                  <Td justifyItems="center">
-                    <Text>{Math.round(assignmentScore.score * 1000) / 10}</Text>
-                  </Td>
-                </Tr>
-              );
-            })}
-          </Tbody>
-        </Table>
-      </TableContainer>
-    );
-  } else {
-    scoresChart = (
-      <TableContainer>
-        <Table>
-          <Thead>
-            <Tr>
-              <Th textTransform={"none"} fontSize="large">
-                Name
-              </Th>
-              <Th textTransform={"none"} fontSize="large">
-                Score
-              </Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {scores.map((assignmentScore) => {
-              const linkURL =
-                "/assignmentData/" +
-                contentId +
-                "/" +
-                assignmentScore.user.userId;
               return (
                 <Tr key={`user${assignmentScore.user.userId}`}>
                   <Td>
@@ -424,10 +525,27 @@ export function AssignmentData() {
                       to={linkURL}
                       textDecoration="underline"
                     >
-                      {createFullName(assignmentScore.user)}
+                      {studentName}
                     </ChakraLink>
                   </Td>
-                  <Td>{Math.round(assignmentScore.score * 100) / 100}</Td>
+                  <Td justifyItems="center">
+                    <Text>
+                      <Tooltip
+                        label={`Total for ${studentName}`}
+                        openDelay={500}
+                      >
+                        <ChakraLink
+                          as={ReactRouterLink}
+                          to={`${linkURL}?itemNumber=1`}
+                          textDecoration="underline"
+                        >
+                          &nbsp;
+                          {Math.round(assignmentScore.score * 1000) / 10}
+                          &nbsp;
+                        </ChakraLink>
+                      </Tooltip>
+                    </Text>
+                  </Td>
                 </Tr>
               );
             })}
@@ -493,7 +611,8 @@ export function AssignmentData() {
         <GridItem area="label">
           <Flex justifyContent="center" alignItems="center">
             {typeIcon}
-            {assignment.name} &mdash; Data
+            {assignment.name} &mdash; Data (
+            {assignment.assignmentInfo?.classCode})
           </Flex>
         </GridItem>
       </Grid>
@@ -503,11 +622,7 @@ export function AssignmentData() {
           <Tab>Statistics</Tab>
         </TabList>
         <TabPanels>
-          <TabPanel>
-            <Heading subheading="Scores" />
-
-            {scoresChart}
-          </TabPanel>
+          <TabPanel>{scoresChart}</TabPanel>
           <TabPanel>
             <Heading subheading="Score summary" />
             <BarChart

@@ -694,6 +694,19 @@ export async function recordSubmittedEvent({
   });
 }
 
+/**
+ * Get the data needed for `loggedInUserId` to take the assignment with `code`.
+ *
+ * If an open assignment with `code` is not found return:
+ * - assignmentFound: `false`
+ * - assignment: null
+ *
+ * Else, return
+ * - assignmentFound: `true`
+ * - assignment: the `Content` describing the found assignment
+ * - scoreData: the scores that `loggedInUserId` has achieved so far on the assignment.
+ *   See {@link getScore}.
+ */
 export async function getAssignmentViewerDataFromCode({
   code,
   loggedInUserId,
@@ -813,6 +826,7 @@ export async function getAssignmentResponseOverview({
   const content = await getContent({
     contentId,
     loggedInUserId,
+    includeAssignInfo: true,
   });
 
   const itemNames = getItemNames(content);
@@ -823,7 +837,33 @@ export async function getAssignmentResponseOverview({
 /**
  * Get the data for the view of the response of a single student on an assignment
  *
- * TODO: fill out this docstring once we have settled on the data needed
+ * The data returned depends on whether or `attemptNumber` or `itemNumber` are specified.
+ *
+ * In all cases, returns the base data:
+ * - mode: `formative` or `summative`
+ * - user: the `UserInfo` for the student
+ * - assignment: `name`, `type`, `contentId`, and `shuffledOrder` of the assignment, where `shuffledOrder`
+ *   is `true` if the assignment is a sequence with `shuffle` set to `true`.
+ * - overallScores: the return value of {@link getScores} for this student and assignment
+ * - itemNames: list of item names (in original order) for the assignment
+ * - allStudents: all students who have taken the assignment
+ *
+ * If `attemptNumber` or `itemNumber` are specified, then return information about the requested
+ * attempt of the items. If `attemptNumber` is not specified, then use the attemptNumber with the best score.
+ * If `itemNumber` is not specified, then use item number 1. Return, in addition to the base data:
+ * - singleItemAttempt: `true`
+ * - attemptNumber: the attempt number for which information is returned
+ * - itemAttemptState: the state and score for the attempt of the item. See {@link getAttemptScoresAndState}.
+ * - attemptScores: scores for all attempts. See {@link getAttemptScoresAndState}.
+ * - itemScores: the overall items scores (for `formative`) or the scores for all items on the current attempt (for `summative`)
+ * - content: information about the document specified in `itemAttemptState`
+ * - responseCounts: on array of `[answerId, count]` pairs giving the number of responses submitted for `answerId`
+ *   for the item attempt of `itemAttemptState`
+ *
+ * If neither `attemptNumber` or `itemNumber` are specified, then return summary information about
+ * the student's responses to the assignment. Return, in addition to the base data:
+ * - singleItemAttempt: `false`
+ * - allAttemptScore: See the return of {@link getAllAttemptScores}.
  */
 export async function getAssignmentResponseStudent({
   contentId,
@@ -831,7 +871,7 @@ export async function getAssignmentResponseStudent({
   studentUserId,
   attemptNumber: requestedAttemptNumber,
   shuffledOrder,
-  itemNumber: requestedItemNumber = 1, // is either shuffledItemNumber or itemNumber, depending on `shuffledOrder`
+  itemNumber: requestedItemNumber, // is either shuffledItemNumber or itemNumber, depending on `shuffledOrder`
 }: {
   contentId: Uint8Array;
   loggedInUserId: Uint8Array;
@@ -890,50 +930,8 @@ export async function getAssignmentResponseStudent({
   const haveItems =
     overallScores.itemScores && overallScores.itemScores.length > 0;
 
-  const { attemptNumber, attemptScores, itemAttemptState } =
-    await getAttemptScoresAndState({
-      contentId,
-      mode: assignment.mode,
-      haveItems,
-      userId: responseUserId,
-      shuffledOrder,
-      requestedItemNumber,
-      requestedAttemptNumber,
-    });
-
-  let itemScores: ItemScores = [];
-  if (haveItems) {
-    if (assignment.mode === "formative") {
-      // items scores for formative are just the overall item scores
-      itemScores = overallScores.itemScores;
-    } else {
-      // item scores for summative are the scores on the current attempt number
-      itemScores = await prisma.contentItemState.findMany({
-        where: {
-          contentId,
-          userId: responseUserId,
-          contentAttemptNumber: attemptNumber,
-          itemAttemptNumber: 1,
-        },
-        orderBy: [{ shuffledItemNumber: "asc" }],
-        select: {
-          itemNumber: true,
-          itemAttemptNumber: true,
-          score: true,
-        },
-      });
-    }
-  }
-
   const rootContent = assignment.rootContent;
   const itemNames = getItemNames(rootContent);
-
-  const content = await getContent({
-    contentId: itemAttemptState.docId,
-    loggedInUserId,
-    includeAssignInfo: true,
-    skipPermissionCheck: true,
-  });
 
   const allStudents: {
     userId: Uint8Array<ArrayBufferLike>;
@@ -963,17 +961,7 @@ export async function getAssignmentResponseStudent({
     allStudents.push(...allStudentsPrelim.map((asp) => asp.user));
   }
 
-  const responseCounts = await getResponseCounts({
-    contentId,
-    mode: assignment.mode,
-    contentType: rootContent.type,
-    requestedItemNumber,
-    attemptNumber,
-    shuffledOrder,
-    userId: responseUserId,
-  });
-
-  return {
+  const baseData = {
     mode: assignment.mode,
     user,
     assignment: {
@@ -982,25 +970,123 @@ export async function getAssignmentResponseStudent({
       contentId,
       shuffledOrder: rootContent.type == "sequence" && rootContent.shuffle,
     },
-    attemptNumber,
     overallScores,
-    itemAttemptState,
-    attemptScores,
-    itemScores,
-    content,
     itemNames,
     allStudents,
-    responseCounts,
   };
+
+  if (
+    requestedItemNumber !== undefined ||
+    requestedAttemptNumber !== undefined
+  ) {
+    const { attemptNumber, attemptScores, itemAttemptState } =
+      await getAttemptScoresAndState({
+        contentId,
+        mode: assignment.mode,
+        haveItems,
+        userId: responseUserId,
+        shuffledOrder,
+        requestedItemNumber,
+        requestedAttemptNumber,
+      });
+
+    let itemScores: ItemScores = [];
+    if (haveItems) {
+      if (assignment.mode === "formative") {
+        // items scores for formative are just the overall item scores
+        itemScores = overallScores.itemScores;
+      } else {
+        // item scores for summative are the scores for all items on the current attempt number
+        itemScores = await prisma.contentItemState.findMany({
+          where: {
+            contentId,
+            userId: responseUserId,
+            contentAttemptNumber: attemptNumber,
+            itemAttemptNumber: 1,
+          },
+          orderBy: shuffledOrder
+            ? { shuffledItemNumber: "asc" }
+            : { itemNumber: "asc" },
+          select: {
+            itemNumber: true,
+            shuffledItemNumber: true,
+            itemAttemptNumber: true,
+            score: true,
+          },
+        });
+      }
+    }
+
+    const content = await getContent({
+      contentId: itemAttemptState.docId,
+      loggedInUserId,
+      includeAssignInfo: true,
+      skipPermissionCheck: true,
+    });
+
+    const responseCounts = await getResponseCounts({
+      contentId,
+      mode: assignment.mode,
+      contentType: rootContent.type,
+      requestedItemNumber,
+      attemptNumber,
+      shuffledOrder,
+      userId: responseUserId,
+    });
+
+    return {
+      singleItemAttempt: true,
+      attemptNumber,
+      itemAttemptState,
+      attemptScores,
+      itemScores,
+      content,
+      responseCounts,
+      ...baseData,
+    };
+  } else {
+    // No item number or attempt number requested.
+    // Get overview data for the student
+
+    const allAttemptScores = await getAllAttemptScores({
+      contentId,
+      mode: assignment.mode,
+      haveItems,
+      userId: responseUserId,
+      shuffledOrder,
+    });
+    return {
+      singleItemAttempt: false,
+      allAttemptScores,
+      ...baseData,
+    };
+  }
 }
 
+/**
+ * Get the scores and state of user `userId` on assignment `contentId` of item `requestedItemNumber` and attempt `requestedAttemptNumber.
+ * The assignment's mode is given by `mode` and `shuffledOrder` is true if it is a `sequence` with `shuffle` set to `true`.
+ * If 'haveItems` is `true`, the assignment has items.
+ *
+ * If `shuffledOrder` is true, then `requestedItemNumber` specifies the `shuffledItemNumber`; otherwise it specifies the `itemNumber`.
+ *
+ * If `requestedAttemptNumber` is not given, then find the attempt with the maximum score.
+ *
+ * Returns the fields
+ * - attemptNumber: `requestedAttemptNumber` if specified, else the attempt with the maximum score
+ * - itemAttemptState: the `state`, `score`, `variant`, and `docId` for the requested item attempt.
+ *   If `contentId` is not a single doc, then it also includes the `itemNumber` and `shuffledItemNumber` of the item.
+ * - attemptScores: the `attemptNumber` and `score` for each attempt. The score is computed differently depending on assignment `mode`.
+ *   For `formative` assignments with items, the attempt's `score` is the item's score for that attempt.
+ *   Otherwise, the attempt's `score` is the overall score for the attempt (averaging over items if they exist).
+ */
 async function getAttemptScoresAndState({
   contentId,
   mode,
   haveItems,
   userId,
   shuffledOrder,
-  requestedItemNumber,
+  requestedItemNumber = 1,
   requestedAttemptNumber,
 }: {
   contentId: Uint8Array;
@@ -1008,7 +1094,7 @@ async function getAttemptScoresAndState({
   haveItems: boolean;
   userId: Uint8Array;
   shuffledOrder: boolean;
-  requestedItemNumber: number;
+  requestedItemNumber?: number;
   requestedAttemptNumber?: number;
 }) {
   let attemptScores: { attemptNumber: number; score: number }[];
@@ -1186,11 +1272,22 @@ async function getAttemptScoresAndState({
   return { attemptNumber, attemptScores, itemAttemptState };
 }
 
+/**
+ * Get the number of responses student `userId` submitted to all answers blanks of attempt `attemptNumber` of item `requestedItemNumber`
+ * of assignment `contentId`. The assignment's mode and type are given by `mode` and `contentType`;
+ * `shuffledOrder` is true if it is a `sequence` with `shuffle` set to `true`.
+ *
+ * If `formative` with items, then `attemptNumber` refers to the item attempt number; otherwise it refers to the content attempt number.
+ *
+ * If `shuffledOrder` is `true`, then `requestedItemNumber` refers to `shuffledItemNumber`; other it refers to `itemNumber`.
+ *
+ * Returns: an array with entries `[answerCode,count]` that gives the number of responses submitted to `answerCode`.
+ */
 async function getResponseCounts({
   contentId,
   mode,
   contentType,
-  requestedItemNumber,
+  requestedItemNumber = 1,
   attemptNumber,
   shuffledOrder,
   userId,
@@ -1198,7 +1295,7 @@ async function getResponseCounts({
   contentId: Uint8Array;
   mode: AssignmentMode;
   contentType: ContentType;
-  requestedItemNumber: number;
+  requestedItemNumber?: number;
   attemptNumber: number;
   shuffledOrder: boolean;
   userId: Uint8Array;
@@ -1231,6 +1328,131 @@ async function getResponseCounts({
   return responseCounts;
 }
 
+/**
+ * Returns information about all attempts of user `userId` on assignment `contentId`. The assignment's mode is given by `mode`
+ * and `shuffledOrder` is true if it is a `sequence` with `shuffle` set to `true`.
+ *
+ * Returns an object whose fields depend on the assessment mode and type as follows.
+ *
+ * For `formative` assessments with items, `getAllAttemptScores` summarizes the score for each item. It has `byItem` set to `true`
+ * and has `itemAttemptScores`, which is an array for each item, sorted by `shuffledItemNumber` if `shuffledOrder` is `true`,
+ * otherwise sorted by `itemNumber`. Each entry of the `itemAttemptScores` array has these fields
+ * - itemNumber: the original item number
+ * - shuffledItemNumber: the shuffled item number
+ * - attempts: an array giving information (`itemAttemptNumber` and `score`) about each attempt of the item.
+ *
+ * For `summative` assessments or assessments without items, `getAllAttemptScores` summarizes the score for each attempt.
+ * It has `byItem` set to `false` and has `attemptScores`, which is an array with an entry for each attempt. Each entry has the fields:
+ * - attemptNumber
+ * - score: score for the attempt number (averaged over items, if they exist)
+ * - items: an array for each item, sorted by `shuffledItemNumber` if `shuffledOrder` is `true`, otherwise sorted by `itemNumber`.
+ *   Each entry of `items` has the fields `score`, `itemNumber`, and `shuffledItemNumber`.
+ */
+async function getAllAttemptScores({
+  contentId,
+  mode,
+  haveItems,
+  userId,
+  shuffledOrder,
+}: {
+  contentId: Uint8Array;
+  mode: AssignmentMode;
+  haveItems: boolean;
+  userId: Uint8Array;
+  shuffledOrder: boolean;
+}) {
+  if (haveItems && mode === "formative") {
+    // A formative attempt with items.
+    // Get scores for all items and all item attempt numbers, with contentAttemptNumber = 1
+    const allAttemptData = await prisma.contentItemState.findMany({
+      // don't need to check user permissions since first query did that
+      where: {
+        contentId,
+        userId,
+        contentAttemptNumber: 1,
+      },
+      orderBy: [
+        shuffledOrder ? { shuffledItemNumber: "asc" } : { itemNumber: "asc" },
+        { itemAttemptNumber: "asc" },
+      ],
+      select: {
+        itemNumber: true,
+        shuffledItemNumber: true,
+        itemAttemptNumber: true,
+        score: true,
+      },
+    });
+
+    const itemAttemptScores: {
+      itemNumber: number;
+      shuffledItemNumber: number;
+      attempts: { itemAttemptNumber: number; score: number }[];
+    }[] = [];
+
+    for (const itemAttempt of allAttemptData) {
+      const itemIdx =
+        (shuffledOrder
+          ? itemAttempt.shuffledItemNumber
+          : itemAttempt.itemNumber) - 1;
+      if (itemAttemptScores[itemIdx] === undefined) {
+        itemAttemptScores[itemIdx] = {
+          itemNumber: itemAttempt.itemNumber,
+          shuffledItemNumber: itemAttempt.shuffledItemNumber,
+          attempts: [],
+        };
+      }
+      itemAttemptScores[itemIdx].attempts.push({
+        itemAttemptNumber: itemAttempt.itemAttemptNumber,
+        score: itemAttempt.score,
+      });
+    }
+
+    return { byItem: true as const, itemAttemptScores };
+  } else {
+    // Have either a single doc (no items) or a summative assessment.
+    // Get score on all content attempts.
+    const allAttemptData = await prisma.contentState.findMany({
+      // don't need to check user permissions since first query did that
+      where: {
+        contentId,
+        userId,
+      },
+      orderBy: { attemptNumber: "asc" },
+      select: {
+        attemptNumber: true,
+        score: true,
+        contentItemStates: {
+          where: { itemAttemptNumber: 1 },
+          orderBy: shuffledOrder
+            ? { shuffledItemNumber: "asc" }
+            : { itemNumber: "asc" },
+          select: {
+            itemNumber: true,
+            shuffledItemNumber: true,
+            score: true,
+          },
+        },
+      },
+    });
+
+    const attemptScores = allAttemptData.map((attempt) => {
+      // if have items, score is the average over all items
+      const score = haveItems
+        ? attempt.contentItemStates.reduce((a, c) => a + c.score, 0) /
+          attempt.contentItemStates.length
+        : (attempt.score ?? 0);
+      return {
+        attemptNumber: attempt.attemptNumber,
+        score,
+        items: attempt.contentItemStates,
+      };
+    });
+
+    return { byItem: false as const, attemptScores };
+  }
+}
+
+/** Get a list of the names of the documents/selects in `content`, in original order. */
 function getItemNames(
   content:
     | Content
@@ -1274,11 +1496,21 @@ function getItemNames(
   return itemNames;
 }
 
+/**
+ * Get the list of responses that student `studentUserId` submitted to `answerId` of `contentAttemptNumber` of assignment `contentId`.
+ * If `requestedItemNumber` and `itemAttemptNumber` are provided, then filter with those parameters,
+ * where `requestedItemNumber` refers to `shuffledItemNumber` if `shuffledOrder` is `true`, else it refers to `itemNumber`.
+ *
+ * If `loggedInUserId` is not `studentUserId`, then return results only if `loggedInUserId` is the owner of `contentId`.
+ *
+ * Returns:
+ * - responses: an array `response`, `creditAchieved` and `submittedAt`, with one entry per response.
+ */
 export async function getStudentSubmittedResponses({
   contentId,
   studentUserId,
   loggedInUserId,
-  itemNumber,
+  requestedItemNumber,
   shuffledOrder,
   answerId,
   contentAttemptNumber,
@@ -1287,7 +1519,7 @@ export async function getStudentSubmittedResponses({
   contentId: Uint8Array;
   studentUserId?: Uint8Array;
   loggedInUserId: Uint8Array;
-  itemNumber?: number;
+  requestedItemNumber?: number;
   shuffledOrder: boolean;
   answerId: string;
   contentAttemptNumber: number;
@@ -1307,8 +1539,8 @@ export async function getStudentSubmittedResponses({
         isDeleted: false,
       },
       userId: responseUserId,
-      itemNumber: shuffledOrder ? undefined : itemNumber,
-      shuffledItemNumber: shuffledOrder ? itemNumber : undefined,
+      itemNumber: shuffledOrder ? undefined : requestedItemNumber,
+      shuffledItemNumber: shuffledOrder ? requestedItemNumber : undefined,
       answerId,
       contentAttemptNumber,
       itemAttemptNumber,

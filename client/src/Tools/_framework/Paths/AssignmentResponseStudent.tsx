@@ -1,17 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { DoenetViewer } from "@doenet/doenetml-iframe";
+import React, { ReactElement, useEffect } from "react";
 
 import {
   Box,
   Link as ChakraLink,
   Tooltip,
   Flex,
-  Select,
-  useDisclosure,
   Grid,
   GridItem,
-  Spacer,
-  Checkbox,
   Icon,
 } from "@chakra-ui/react";
 import axios from "axios";
@@ -19,9 +14,7 @@ import {
   Link as ReactRouterLink,
   useNavigate,
   useLoaderData,
-  useLocation,
 } from "react-router";
-import { createFullName } from "../../../_utils/names";
 import {
   AssignmentMode,
   ContentType,
@@ -29,9 +22,9 @@ import {
   UserInfo,
   DoenetmlVersion,
 } from "../../../_utils/types";
-import { clearQueryParameter } from "../../../_utils/explore";
-import { AnswerResponseDrawer } from "../ToolPanels/AnswerResponseDrawer";
 import { contentTypeToName, getIconInfo } from "../../../_utils/activity";
+import { AssignmentItemResponseStudent } from "../ToolPanels/AssignmentItemResponseStudent";
+import { AssignmentStudentResponseSummary } from "./AssignmentStudentResponseSummary";
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);
@@ -55,7 +48,6 @@ export async function loader({ params, request }) {
   );
 
   const overall = data.overallScores;
-  const content = data.content;
 
   const overallItemScores = overall.itemScores;
   const latestItemScores = overall.latestAttempt.itemScores;
@@ -78,7 +70,9 @@ export async function loader({ params, request }) {
   } else {
     overallItemScores.sort((a, b) => a.itemNumber - b.itemNumber);
     latestItemScores.sort((a, b) => a.itemNumber - b.itemNumber);
-    itemScores.sort((a, b) => a.itemNumber - b.itemNumber);
+    if (itemScores) {
+      itemScores.sort((a, b) => a.itemNumber - b.itemNumber);
+    }
   }
 
   const overallScores = {
@@ -89,40 +83,43 @@ export async function loader({ params, request }) {
     numItemAttempts: latestItemScores.map((x) => x.itemAttemptNumber),
   };
 
-  const responseCounts: Record<string, number> = Object.fromEntries(
-    data.responseCounts,
-  );
+  if (data.singleItemAttempt) {
+    const responseCounts: Record<string, number> = Object.fromEntries(
+      data.responseCounts,
+    );
+    const doenetML = data.content.doenetML;
+    const doenetmlVersion: DoenetmlVersion = data.content.doenetmlVersion;
 
-  const doenetML = content.doenetML;
-  const doenetmlVersion: DoenetmlVersion = content.doenetmlVersion;
-
-  return {
-    ...data,
-    itemNames,
-    itemScores,
-    overallScores,
-    responseCounts,
-    shuffledOrder,
-    content,
-    doenetML,
-    doenetmlVersion,
-  };
+    return {
+      ...data,
+      requestedItemNumber,
+      itemNames,
+      itemScores,
+      overallScores,
+      responseCounts,
+      shuffledOrder,
+      doenetML,
+      doenetmlVersion,
+    };
+  } else {
+    return {
+      ...data,
+      itemNames,
+      itemScores,
+      overallScores,
+      shuffledOrder,
+    };
+  }
 }
 
 export function AssignmentResponseStudent() {
   const {
     assignment,
-    content,
+    itemNames,
     mode,
     user,
-    itemAttemptState,
-    attemptScores,
     overallScores,
-    itemNames,
-    itemScores,
-    attemptNumber,
     allStudents,
-    responseCounts,
     shuffledOrder,
     ...data
   } = useLoaderData() as {
@@ -132,17 +129,8 @@ export function AssignmentResponseStudent() {
       contentId: string;
       shuffledOrder: boolean;
     };
-    content: Doc;
     mode: AssignmentMode;
     user: UserInfo;
-    itemAttemptState: {
-      state: string | null;
-      score: number;
-      variant: number;
-      itemNumber?: number;
-      shuffledItemNumber?: number;
-    };
-    attemptScores: { attemptNumber: number; score: number }[];
     overallScores: {
       score: number;
       bestAttemptNumber: number;
@@ -151,126 +139,65 @@ export function AssignmentResponseStudent() {
       numItemAttempts: number[] | null;
     };
     itemNames: string[];
-    itemScores: { itemNumber: number; score: number }[];
-    attemptNumber: number;
+    shuffledOrder: boolean;
     allStudents: {
       userId: string;
       firstNames: string | null;
       lastNames: string;
     }[];
-    responseCounts: Record<string, number>;
-    shuffledOrder: boolean;
-    doenetML: string;
-    doenetmlVersion: DoenetmlVersion;
-  };
+  } & (
+    | {
+        singleItemAttempt: true;
+        requestedItemNumber: number;
+        content: Doc;
+        itemAttemptState: {
+          state: string | null;
+          score: number;
+          variant: number;
+          itemNumber?: number;
+          shuffledItemNumber?: number;
+        };
+        attemptScores: { attemptNumber: number; score: number }[];
+        itemScores: { itemNumber: number; score: number }[];
+        attemptNumber: number;
+        responseCounts: Record<string, number>;
+        doenetML: string;
+        doenetmlVersion: DoenetmlVersion;
+      }
+    | {
+        singleItemAttempt: false;
+        allAttemptScores:
+          | {
+              byItem: true;
+              itemAttemptScores: {
+                itemNumber: number;
+                shuffledItemNumber: number;
+                attempts: {
+                  itemAttemptNumber: number;
+                  score: number;
+                }[];
+              }[];
+            }
+          | {
+              byItem: false;
+              attemptScores: {
+                attemptNumber: number;
+                score: number;
+                items: {
+                  itemNumber: number;
+                  shuffledItemNumber: number;
+                  score: number;
+                }[];
+              }[];
+            };
+      }
+  );
 
   useEffect(() => {
     document.title = `${assignment?.name} - Doenet`;
   }, [assignment?.name]);
 
-  const { search } = useLocation();
   const navigate = useNavigate();
-
-  const [responseAnswerId, setResponseAnswerId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const messageListener = async function (event) {
-      if (event.data.subject == "SPLICE.getState") {
-        if (itemAttemptState.state) {
-          const state = JSON.parse(itemAttemptState.state);
-          window.postMessage({
-            subject: "SPLICE.getState.response",
-            messageId: event.data.messageId,
-            success: true,
-            loadedState: true,
-            state,
-          });
-        } else {
-          window.postMessage({
-            subject: "SPLICE.getState.response",
-            messageId: event.data.messageId,
-            success: true,
-            loadedState: false,
-          });
-        }
-      } else if (event.data.subject === "requestAnswerResponses") {
-        if (typeof event.data.answerId === "string") {
-          setResponseAnswerId(event.data.answerId);
-          answerResponsesOnOpen();
-        }
-      }
-    };
-
-    addEventListener("message", messageListener);
-
-    return () => {
-      removeEventListener("message", messageListener);
-    };
-  }, [user.userId, itemAttemptState, attemptNumber]);
-
-  const {
-    isOpen: answerResponsesAreOpen,
-    onOpen: answerResponsesOnOpen,
-    onClose: answerResponsesOnClose,
-  } = useDisclosure();
-
-  const [contentAttemptNumber, itemAttemptNumber] =
-    assignment.type === "singleDoc"
-      ? [attemptNumber, null]
-      : mode === "formative"
-        ? [1, attemptNumber]
-        : [attemptNumber, 1];
-
-  const answerResponseDrawer =
-    typeof responseAnswerId === "string" ? (
-      <AnswerResponseDrawer
-        isOpen={answerResponsesAreOpen}
-        onClose={answerResponsesOnClose}
-        itemName={
-          itemAttemptState.itemNumber
-            ? itemNames[itemAttemptState.itemNumber - 1]
-            : null
-        }
-        assignment={assignment}
-        student={user}
-        answerId={responseAnswerId}
-        itemNumber={itemAttemptState.itemNumber ?? null}
-        shuffledOrder={shuffledOrder}
-        contentAttemptNumber={contentAttemptNumber}
-        itemAttemptNumber={itemAttemptNumber}
-      />
-    ) : null;
-
-  const viewer = (
-    <DoenetViewer
-      doenetML={data.doenetML}
-      key={`${user.userId}|${itemAttemptState.itemNumber ?? ""}|${attemptNumber}`}
-      doenetmlVersion={data.doenetmlVersion.fullVersion}
-      requestedVariantIndex={itemAttemptState.variant}
-      flags={{
-        showCorrectness: true,
-        solutionDisplayMode: "button",
-        showFeedback: true,
-        showHints: true,
-        autoSubmit: false,
-        readOnly: true,
-        allowLoadState: true,
-        allowSaveState: false,
-        allowLocalState: false,
-        allowSaveEvents: false,
-      }}
-      forceDisable={true}
-      //   forceShowCorrectness={true}
-      forceShowSolution={true}
-      forceUnsuppressCheckwork={true}
-      linkSettings={{
-        viewURL: "/activityViewer",
-        editURL: "/codeViewer",
-      }}
-      showAnswerResponseMenu={true}
-      answerResponseCounts={responseCounts}
-    />
-  );
 
   const contentTypeName = contentTypeToName[assignment.type];
   const { iconImage, iconColor } = getIconInfo(assignment.type);
@@ -292,49 +219,43 @@ export function AssignmentResponseStudent() {
     </Tooltip>
   );
 
-  const itemSelect = (
-    <Flex alignItems="center" marginLeft="10px">
-      <label htmlFor="item-select" style={{ fontSize: "large" }}>
-        Item:
-      </label>{" "}
-      <Select
-        maxWidth="350px"
-        marginLeft="5px"
-        id="item-select"
-        size="lg"
-        value={
-          shuffledOrder
-            ? itemAttemptState.shuffledItemNumber
-            : (itemAttemptState.itemNumber ?? 1)
-        }
-        onChange={(e) => {
-          let newSearch = clearQueryParameter(
-            "itemNumber",
-            clearQueryParameter("attemptNumber", search),
-          );
-          if (newSearch === "") {
-            newSearch = "?";
-          } else {
-            newSearch += "&";
-          }
-          newSearch += `itemNumber=${e.target.value}`;
-          navigate(`.${newSearch}`, { replace: true });
-        }}
-      >
-        {itemNames.map((name, i) => (
-          <option value={i + 1} key={i}>
-            {i + 1} (score: {Math.round(itemScores[i].score * 1000) / 10}):{" "}
-            {name}
-          </option>
-        ))}
-      </Select>
-    </Flex>
-  );
+  let mainPanel: ReactElement;
+
+  if (data.singleItemAttempt) {
+    mainPanel = (
+      <AssignmentItemResponseStudent
+        assignment={assignment}
+        mode={mode}
+        user={user}
+        itemNames={itemNames}
+        shuffledOrder={shuffledOrder}
+        allStudents={allStudents}
+        itemAttemptState={data.itemAttemptState}
+        attemptScores={data.attemptScores}
+        itemScores={data.itemScores}
+        requestedItemNumber={data.requestedItemNumber}
+        attemptNumber={data.attemptNumber}
+        responseCounts={data.responseCounts}
+        doenetML={data.doenetML}
+        doenetmlVersion={data.doenetmlVersion}
+      />
+    );
+  } else {
+    mainPanel = (
+      <AssignmentStudentResponseSummary
+        assignment={assignment}
+        user={user}
+        shuffledOrder={shuffledOrder}
+        itemNames={itemNames}
+        allStudents={allStudents}
+        overallScores={overallScores}
+        allAttemptScores={data.allAttemptScores}
+      />
+    );
+  }
 
   return (
     <>
-      {answerResponseDrawer}
-
       <Grid
         height="calc(100vh - 40px)" //40px header height
         templateAreas={`"header"
@@ -387,176 +308,13 @@ export function AssignmentResponseStudent() {
             <GridItem area="label">
               <Flex justifyContent="center" alignItems="center">
                 {typeIcon}
-                {assignment.name} &mdash; Item Details
+                {assignment.name} &mdash;{" "}
+                {data.singleItemAttempt ? "Item Details" : "Student Summary"}
               </Flex>
             </GridItem>
           </Grid>
         </GridItem>
-        <GridItem area="centerContent">
-          <Box marginLeft="10px" marginTop="10px" marginRight="20px">
-            <Flex alignItems="center" marginTop="20px" justifyContent="center">
-              {allStudents.length > 1 ? (
-                <Flex alignItems="center" marginLeft="10px">
-                  <label htmlFor="student-select" style={{ fontSize: "large" }}>
-                    Student:
-                  </label>{" "}
-                  <Select
-                    maxWidth="350px"
-                    marginLeft="5px"
-                    id="student-select"
-                    size="lg"
-                    value={user.userId}
-                    onChange={(e) => {
-                      const newSearch = clearQueryParameter(
-                        "attemptNumber",
-                        search,
-                      );
-                      navigate(`../${e.target.value}${newSearch}`, {
-                        replace: true,
-                        relative: "path",
-                      });
-                    }}
-                  >
-                    {allStudents.map((user) => (
-                      <option value={user.userId} key={user.userId}>
-                        {createFullName(user)}
-                      </option>
-                    ))}
-                  </Select>
-                </Flex>
-              ) : null}
-              {assignment.type !== "singleDoc" && mode === "formative"
-                ? itemSelect
-                : null}
-              <Flex alignItems="center" marginLeft="10px">
-                <label htmlFor="attempt-select" style={{ fontSize: "large" }}>
-                  Attempt:
-                </label>{" "}
-                <Select
-                  maxWidth="350px"
-                  marginLeft="5px"
-                  id="attempt-select"
-                  size="lg"
-                  value={attemptNumber}
-                  onChange={(e) => {
-                    let newSearch = clearQueryParameter(
-                      "attemptNumber",
-                      search,
-                    );
-                    if (newSearch === "") {
-                      newSearch = "?";
-                    } else {
-                      newSearch += "&";
-                    }
-                    newSearch += `attemptNumber=${e.target.value}`;
-                    navigate(`.${newSearch}`, { replace: true });
-                  }}
-                >
-                  {attemptScores.map((attempt) => (
-                    <option
-                      value={attempt.attemptNumber}
-                      key={attempt.attemptNumber}
-                    >
-                      {attempt.attemptNumber} (score:{" "}
-                      {Math.round(attempt.score * 1000) / 10})
-                    </option>
-                  ))}
-                </Select>
-              </Flex>
-              {assignment.type !== "singleDoc" && mode === "summative"
-                ? itemSelect
-                : null}
-            </Flex>
-
-            {assignment.shuffledOrder && assignment.type !== "singleDoc" ? (
-              <Flex marginLeft="10px" marginTop="10px" alignItems="center">
-                <Box>Original item number: {itemAttemptState.itemNumber}</Box>
-                <Box marginLeft="10px">
-                  Student's item number: {itemAttemptState.shuffledItemNumber}{" "}
-                </Box>
-                <Spacer />
-
-                <Flex>
-                  <Tooltip
-                    label="Display items in the shuffled order seen by the student"
-                    openDelay={500}
-                    placement="bottom-end"
-                  >
-                    <label htmlFor="shuffle-checkbox">
-                      Display in student order
-                    </label>
-                  </Tooltip>{" "}
-                  <Checkbox
-                    id="shuffle-checkbox"
-                    marginLeft="5px"
-                    isChecked={shuffledOrder}
-                    onChange={() => {
-                      let newSearch = clearQueryParameter(
-                        "shuffledOrder",
-                        clearQueryParameter("attemptNumber", search),
-                      );
-                      if (!shuffledOrder) {
-                        if (newSearch === "") {
-                          newSearch = "?";
-                        } else {
-                          newSearch += "&";
-                        }
-                        newSearch += `shuffledOrder`;
-                      }
-                      navigate(`.${newSearch}`, { replace: true });
-                    }}
-                  />
-                </Flex>
-              </Flex>
-            ) : null}
-          </Box>
-
-          <Box marginTop="10px" borderTop="1px" borderColor="doenet.mediumGray">
-            <Grid
-              width="100%"
-              background="doenet.lightBlue"
-              templateAreas={`"leftGutter viewer rightGutter"`}
-              templateColumns={`1fr minmax(340px,850px) 1fr`}
-              overflow="hidden"
-            >
-              <GridItem
-                area="leftGutter"
-                background="doenet.lightBlue"
-                width="100%"
-                paddingTop="10px"
-                alignSelf="start"
-              />
-              <GridItem
-                area="rightGutter"
-                background="doenet.lightBlue"
-                width="100%"
-                paddingTop="10px"
-                alignSelf="start"
-              />
-              <GridItem
-                area="viewer"
-                width="100%"
-                placeSelf="center"
-                maxWidth="850px"
-                overflow="hidden"
-              >
-                <Box
-                  minHeight="calc(100vh - 80px)"
-                  background="var(--canvas)"
-                  borderWidth="1px"
-                  borderStyle="solid"
-                  borderColor="doenet.mediumGray"
-                  padding="20px 5px 50vh 5px"
-                  flexGrow={1}
-                  w="100%"
-                  id="viewer-container"
-                >
-                  {viewer}
-                </Box>
-              </GridItem>
-            </Grid>
-          </Box>
-        </GridItem>
+        <GridItem area="centerContent">{mainPanel}</GridItem>
       </Grid>
     </>
   );
