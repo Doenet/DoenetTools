@@ -118,7 +118,7 @@ export async function loader({ params, request }) {
   );
 
   if (!editableByMe) {
-    return redirect(`/codeViewer/${params.contentId}`);
+    return redirect(`/activityViewer/${params.contentId}`);
   }
 
   const contentId = params.contentId;
