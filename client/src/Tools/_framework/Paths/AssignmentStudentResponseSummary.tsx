@@ -106,13 +106,23 @@ export function AssignmentStudentResponseSummary({
           className="score-table"
         >
           <Thead>
+            <Tr className="no-bottom-padding">
+              <Th width={`${itemWidth}px`} borderBottom="none"></Th>
+              <Th width={`${totalWidth}px`} borderBottom="none"></Th>
+              <Th
+                colSpan={maxAttempts}
+                textTransform={"none"}
+                fontSize="large"
+                borderBottom="none"
+              >
+                Attempt
+              </Th>
+            </Tr>
             <Tr>
               <Th
                 textTransform={"none"}
                 fontSize="large"
                 width={`${itemWidth}px`}
-                rowSpan={2}
-                alignContent="end"
               >
                 Item
               </Th>
@@ -121,22 +131,9 @@ export function AssignmentStudentResponseSummary({
                 fontSize="large"
                 textAlign="center"
                 width={`${totalWidth}px`}
-                rowSpan={2}
-                alignContent="end"
               >
                 Total
               </Th>
-              <Th
-                colSpan={maxAttempts}
-                textTransform={"none"}
-                fontSize="large"
-                textAlign="center"
-                borderBottom="none"
-              >
-                Attempt
-              </Th>
-            </Tr>
-            <Tr>
               {[...Array<number>(maxAttempts).keys()].map((i) => (
                 <Th
                   textTransform={"none"}
@@ -232,13 +229,27 @@ export function AssignmentStudentResponseSummary({
           className="score-table"
         >
           <Thead>
+            {assignment.type !== "singleDoc" ? (
+              <Tr className="no-bottom-padding">
+                <Th width={`${attemptWidth}px`} borderBottom="none"></Th>
+
+                <Th width={`${totalWidth}px`} borderBottom="none"></Th>
+
+                <Th
+                  colSpan={numItems}
+                  textTransform={"none"}
+                  fontSize="large"
+                  borderBottom="none"
+                >
+                  Item
+                </Th>
+              </Tr>
+            ) : null}
             <Tr>
               <Th
                 textTransform={"none"}
                 fontSize="large"
                 width={`${attemptWidth}px`}
-                rowSpan={2}
-                alignContent="end"
               >
                 Attempt
               </Th>
@@ -248,24 +259,9 @@ export function AssignmentStudentResponseSummary({
                 fontSize="large"
                 textAlign="center"
                 width={`${totalWidth}px`}
-                rowSpan={2}
-                alignContent="end"
               >
                 {assignment.type === "singleDoc" ? "Score" : "Total"}
               </Th>
-              {assignment.type !== "singleDoc" ? (
-                <Th
-                  colSpan={numItems}
-                  textTransform={"none"}
-                  fontSize="large"
-                  textAlign="center"
-                  borderBottom="none"
-                >
-                  Item
-                </Th>
-              ) : null}
-            </Tr>
-            <Tr>
               {[...Array<number>(numItems).keys()].map((i) => (
                 <Th
                   textTransform={"none"}

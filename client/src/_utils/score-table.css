@@ -5,3 +5,6 @@
   padding-top: 6px;
   padding-bottom: 6px;
 }
+.score-table tr.no-bottom-padding th {
+  padding-bottom: 0px;
+}

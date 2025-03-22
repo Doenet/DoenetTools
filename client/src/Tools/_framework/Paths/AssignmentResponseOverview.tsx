@@ -276,7 +276,7 @@ export function AssignmentData() {
           width={`${nameWidth + itemWidth * numItems + totalWidth}px`}
         >
           <Thead>
-            <Tr>
+            <Tr className="no-bottom-padding">
               <Th
                 textTransform={"none"}
                 fontSize="large"
@@ -300,15 +300,6 @@ export function AssignmentData() {
                     </HStack>
                   </ChakraLink>
                 </Box>
-              </Th>
-              <Th
-                textTransform={"none"}
-                fontSize="large"
-                colSpan={itemNames.length}
-                textAlign="center"
-                borderBottom="none"
-              >
-                Item
               </Th>
 
               <Th
@@ -338,8 +329,16 @@ export function AssignmentData() {
                   </Box>
                 </Box>
               </Th>
+              <Th
+                textTransform={"none"}
+                fontSize="large"
+                colSpan={itemNames.length}
+                borderBottom="none"
+              >
+                Item
+              </Th>
             </Tr>
-            <Tr>
+            <Tr className="no-bottom-padding">
               {itemNames.map((name, i) => {
                 return (
                   <Th
@@ -394,6 +393,24 @@ export function AssignmentData() {
                       </ChakraLink>
                     </HStack>
                   </Td>
+                  <Td justifyItems="center">
+                    <Text>
+                      <Tooltip
+                        label={`Total for ${studentName}`}
+                        openDelay={500}
+                      >
+                        <ChakraLink
+                          as={ReactRouterLink}
+                          to={linkURL}
+                          textDecoration="underline"
+                        >
+                          &nbsp;
+                          {Math.round(assignmentScore.score * 1000) / 10}
+                          &nbsp;
+                        </ChakraLink>
+                      </Tooltip>
+                    </Text>
+                  </Td>
                   {assignmentScore.itemScores?.map((item, i) => {
                     const attemptNumberForScore =
                       mode === "summative"
@@ -420,24 +437,6 @@ export function AssignmentData() {
                       </Td>
                     );
                   })}
-                  <Td justifyItems="center">
-                    <Text>
-                      <Tooltip
-                        label={`Total for ${studentName}`}
-                        openDelay={500}
-                      >
-                        <ChakraLink
-                          as={ReactRouterLink}
-                          to={linkURL}
-                          textDecoration="underline"
-                        >
-                          &nbsp;
-                          {Math.round(assignmentScore.score * 1000) / 10}
-                          &nbsp;
-                        </ChakraLink>
-                      </Tooltip>
-                    </Text>
-                  </Td>
                 </Tr>
               );
             })}
