@@ -26,6 +26,7 @@ import {
   setContentLicense,
 } from "../query/share";
 import {
+  assignActivity,
   closeAssignmentWithCode,
   openAssignmentWithCode,
   unassignActivity,
@@ -121,6 +122,31 @@ test("New activity starts out private, then delete it", async () => {
   expect(dataAfterDelete.content.length).toBe(0);
 });
 
+test("Cannot create new content inside assigned content", async () => {
+  const { userId } = await createTestUser();
+  const { contentId: sequenceId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "sequence",
+    parentId: null,
+  });
+
+  await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: sequenceId,
+  });
+
+  await assignActivity({ contentId: sequenceId, loggedInUserId: userId });
+
+  await expect(
+    createContent({
+      loggedInUserId: userId,
+      contentType: "singleDoc",
+      parentId: sequenceId,
+    }),
+  ).rejects.toThrow("Cannot add content to an assigned activity");
+});
+
 test("Test updating various activity properties", async () => {
   const user = await createTestUser();
   const userId = user.userId;
@@ -210,7 +236,36 @@ test("only owner can delete an activity", async () => {
   await deleteContent({ contentId: contentId, loggedInUserId: ownerId });
 });
 
-test("updateDoc updates document properties", async () => {
+test("Cannot delete content from inside assigned content", async () => {
+  const { userId } = await createTestUser();
+  const { contentId: sequenceId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "sequence",
+    parentId: null,
+  });
+
+  const { contentId: doc1Id } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: sequenceId,
+  });
+
+  const { contentId: doc2Id } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: sequenceId,
+  });
+
+  await deleteContent({ contentId: doc1Id, loggedInUserId: userId });
+
+  await assignActivity({ contentId: sequenceId, loggedInUserId: userId });
+
+  await expect(
+    deleteContent({ contentId: doc2Id, loggedInUserId: userId }),
+  ).rejects.toThrow("Cannot delete content from an assigned activity");
+});
+
+test("updateContent updates document properties", async () => {
   const user = await createTestUser();
   const userId = user.userId;
   const { contentId: contentId } = await createContent({
@@ -265,6 +320,127 @@ test("updateContent does not update properties when passed undefined values", as
     where: { id: contentId },
   });
   expect(updatedActivity).toEqual(originalActivity);
+});
+
+test("Cannot update most content settings when assigned", async () => {
+  const { userId } = await createTestUser();
+  const { contentId: sequenceId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "sequence",
+    parentId: null,
+  });
+
+  const { contentId: selectId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "select",
+    parentId: sequenceId,
+  });
+
+  const { contentId: docId } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: selectId,
+  });
+
+  const { allDoenetmlVersions: allVersions } = await getAllDoenetmlVersions();
+  const oldVersion = allVersions.find((v) => v.displayedVersion === "0.6")!.id;
+
+  await updateContent({
+    contentId: docId,
+    loggedInUserId: userId,
+    name: "Doc 1",
+    source: "Doc source",
+    doenetmlVersionId: oldVersion,
+    numVariants: 3,
+  });
+
+  await updateContent({
+    contentId: selectId,
+    loggedInUserId: userId,
+    name: "Select 1",
+    numToSelect: 2,
+    selectByVariant: true,
+  });
+
+  await updateContent({
+    contentId: sequenceId,
+    loggedInUserId: userId,
+    name: "Sequence 1",
+    shuffle: true,
+    paginate: true,
+  });
+
+  await assignActivity({ contentId: sequenceId, loggedInUserId: userId });
+
+  // can change name
+  await updateContent({
+    contentId: docId,
+    loggedInUserId: userId,
+    name: "Doc 2",
+  });
+
+  // cannot change source
+  await expect(
+    updateContent({
+      contentId: docId,
+      loggedInUserId: userId,
+      source: "Doc source 2",
+    }),
+  ).rejects.toThrow("Cannot change assigned content");
+
+  // cannot change doenetMLVersion
+  await expect(
+    updateContent({
+      contentId: docId,
+      loggedInUserId: userId,
+      doenetmlVersionId: currentDoenetmlVersion.id,
+    }),
+  ).rejects.toThrow("Cannot change assigned content");
+
+  // cannot change number of variants
+  await expect(
+    updateContent({
+      contentId: docId,
+      loggedInUserId: userId,
+      numVariants: 5,
+    }),
+  ).rejects.toThrow("Cannot change assigned content");
+
+  // cannot change number to select
+  await expect(
+    updateContent({
+      contentId: selectId,
+      loggedInUserId: userId,
+      numToSelect: 3,
+    }),
+  ).rejects.toThrow("Cannot change assigned content");
+
+  // cannot change select by variant
+  await expect(
+    updateContent({
+      contentId: selectId,
+      loggedInUserId: userId,
+      name: "Select 1",
+      numToSelect: 2,
+      selectByVariant: false,
+    }),
+  ).rejects.toThrow("Cannot change assigned content");
+
+  // can change paginate
+  await updateContent({
+    contentId: sequenceId,
+    loggedInUserId: userId,
+    paginate: false,
+  });
+
+  // cannot change shuffle
+  await expect(
+    updateContent({
+      contentId: sequenceId,
+      loggedInUserId: userId,
+      shuffle: false,
+    }),
+  ).rejects.toThrow("Cannot change assigned content");
 });
 
 test("get activity/document data only if owner or limited data for public/shared", async () => {

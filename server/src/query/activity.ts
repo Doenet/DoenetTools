@@ -49,7 +49,8 @@ export async function createContent({
   let licenseCode = undefined;
   let sharedWith: Uint8Array[] = [];
 
-  // If parent isn't `null`, check if it is shared and get its license
+  // If parent isn't `null`, check if it is shared and get its license,
+  // and make sure it isn't assigned
   if (parentId !== null) {
     const parent = await prisma.content.findUniqueOrThrow({
       where: {
@@ -62,8 +63,17 @@ export async function createContent({
         isPublic: true,
         licenseCode: true,
         sharedWith: { select: { userId: true } },
+        rootAssignment: { select: { assigned: true } },
+        nonRootAssignment: { select: { assigned: true } },
       },
     });
+
+    if (parent.rootAssignment?.assigned || parent.nonRootAssignment?.assigned) {
+      throw new InvalidRequestError(
+        "Cannot add content to an assigned activity",
+      );
+    }
+
     if (parent.isPublic) {
       isPublic = true;
       if (parent.licenseCode) {
@@ -139,14 +149,31 @@ export async function deleteContent({
 }) {
   // TODO: Figure out how to delete folder in library (some contents may be published)
 
-  // throw error if content does not exist or isn't visible
-  await prisma.content.findUniqueOrThrow({
+  // throw error if content does not exist or isn't visible or has parent that is assigned
+  const content = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
       ...filterEditableContent(loggedInUserId),
     },
-    select: { id: true },
+    select: {
+      id: true,
+      parent: {
+        select: {
+          rootAssignment: { select: { assigned: true } },
+          nonRootAssignment: { select: { assigned: true } },
+        },
+      },
+    },
   });
+
+  if (
+    content.parent?.rootAssignment?.assigned ||
+    content.parent?.nonRootAssignment?.assigned
+  ) {
+    throw new InvalidRequestError(
+      "Cannot delete content from an assigned activity",
+    );
+  }
 
   await deleteContentNoCheck(contentId, loggedInUserId);
 }
@@ -178,7 +205,7 @@ export function deleteContentNoCheck(
 }
 
 /**
- * Update the content with `id`, changing any of the parameters that are given:
+ * Update the content with `contentId`, changing any of the parameters that are given:
  * `name`, `source`, `doenetmlVersionId`, `numVariants`,
  * `imagePath`, `shuffle`, `numToSelect`, `selectByVariant`,
  * `paginate`, `activityLevelAttempts`, and/or `itemLevelAttempts`.
@@ -186,6 +213,8 @@ export function deleteContentNoCheck(
  * For the change to succeed, either
  * - the content must be owned by `loggedInUserId`, or
  * - the content must be in the library and `loggedInUserId` must be an admin.
+ * In addition, if the content is assigned, then the change will succeed
+ * only if just modifying `name`, `paginate`, and/or `imagePath`.
  */
 export async function updateContent({
   contentId,
@@ -225,7 +254,7 @@ export async function updateContent({
       paginate,
     ].every((x) => x === undefined)
   ) {
-    // if not information passed in, don't update anything, including `lastEdited`.
+    // if no information passed in, don't update anything, including `lastEdited`.
     return;
   }
 
@@ -260,7 +289,7 @@ export async function updateContent({
         shuffle,
         numToSelect,
         selectByVariant,
-        paginate,
+        // paginate,
       ].some((x) => x !== undefined)
     ) {
       throw new InvalidRequestError("Cannot change assigned content");
