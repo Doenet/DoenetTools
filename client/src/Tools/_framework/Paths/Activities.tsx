@@ -63,11 +63,7 @@ import {
   ToggleViewButtonGroup,
   toggleViewButtonGroupActions,
 } from "../ToolPanels/ToggleViewButtonGroup";
-import {
-  contentTypeToName,
-  getAllowedParentTypes,
-  menuIcons,
-} from "../../../_utils/activity";
+import { getAllowedParentTypes, menuIcons } from "../../../_utils/activity";
 import {
   CreateLocalContentModal,
   createLocalContentModalActions,
@@ -383,8 +379,6 @@ export function Activities() {
     licenseCode: LicenseCode | null;
     parentId: string | null;
   }) {
-    const contentTypeName = contentTypeToName[contentType];
-
     return (
       <>
         <MenuItem
@@ -411,7 +405,16 @@ export function Activities() {
             );
           }}
         >
-          Duplicate {contentTypeName}
+          Make a copy
+        </MenuItem>
+        <MenuItem
+          data-test="Delete Menu Item"
+          onClick={() => {
+            setSettingsContentId(contentId);
+            deleteContentOnOpen();
+          }}
+        >
+          Delete
         </MenuItem>
         {position > 0 && !haveQuery ? (
           <MenuItem
@@ -428,7 +431,7 @@ export function Activities() {
               );
             }}
           >
-            {listView ? "Move Up" : "Move Left"}
+            {listView ? "Move up" : "Move left"}
           </MenuItem>
         ) : null}
         {position < numCards - 1 && !haveQuery ? (
@@ -446,7 +449,7 @@ export function Activities() {
               );
             }}
           >
-            {listView ? "Move Down" : "Move Right"}
+            {listView ? "Move down" : "Move right"}
           </MenuItem>
         ) : null}
         {haveQuery ? null : (
@@ -468,15 +471,6 @@ export function Activities() {
             Move&hellip;
           </MenuItem>
         )}
-        <MenuItem
-          data-test="Delete Menu Item"
-          onClick={() => {
-            setSettingsContentId(contentId);
-            deleteContentOnOpen();
-          }}
-        >
-          Delete
-        </MenuItem>
         {contentType !== "folder" ? (
           <MenuItem
             data-test="Assign Activity Menu Item"
@@ -486,8 +480,8 @@ export function Activities() {
             }}
           >
             {assignmentStatus === "Unassigned"
-              ? "Assign Activity"
-              : "Manage Assignment"}
+              ? "Assign activity"
+              : "Manage assignment"}
           </MenuItem>
         ) : null}
         <MenuItem

@@ -311,17 +311,9 @@ export function ActivityEditor() {
   const readOnlyRef = useRef(readOnly);
   readOnlyRef.current = readOnly;
 
-  const [mode, setMode] = useState<"Edit" | "View">(readOnly ? "View" : "Edit");
+  const [mode, setMode] = useState<"Edit" | "View">("Edit");
 
   const isLibraryActivity = Boolean(activityData.libraryActivityInfo);
-
-  useEffect(() => {
-    if (readOnly) {
-      setMode("View");
-    } else {
-      setMode("Edit");
-    }
-  }, [readOnly, contentId]);
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
