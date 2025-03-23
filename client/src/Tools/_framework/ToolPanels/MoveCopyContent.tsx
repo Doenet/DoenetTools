@@ -76,9 +76,16 @@ export async function moveCopyContentActions({
       }
       return { success: true, numItems };
     } catch (e) {
+      let message = "An error occurred";
+      if (e.response?.data?.error) {
+        message += `: ${e.response.data.error}`;
+        if (e.response.data.details) {
+          message += `: ${e.response.data.details}`;
+        }
+      }
       return {
         success: false,
-        message: "An error occurred" + ("message" in e ? `: ${e.message}` : ""),
+        message,
       };
     }
   }
@@ -184,10 +191,17 @@ export function MoveCopyContent({
     for (const item of contentFromApi) {
       let canOpen = false;
       if (allowedParentTypes.includes(item.type)) {
-        canOpen = true;
+        if (
+          (item.assignmentInfo?.assignmentStatus ?? "Unassigned") ===
+          "Unassigned"
+        ) {
+          canOpen = true;
+        }
       } else if (
-        item.type === "folder" ||
-        (item.type === "sequence" && allowedParentTypes.includes("select"))
+        (item.type === "folder" ||
+          (item.type === "sequence" &&
+            allowedParentTypes.includes("select"))) &&
+        (item.assignmentInfo?.assignmentStatus ?? "Unassigned") === "Unassigned"
       ) {
         // if items is a folder or item is a sequence and we are looking for a select,
         // then it is possible that a descendant is of allowed parent type.
