@@ -24,8 +24,10 @@ import {
 import { BsPlayBtnFill } from "react-icons/bs";
 import {
   MdDataset,
+  MdInfoOutline,
   MdModeEditOutline,
   MdOutlineAssignment,
+  MdOutlineContentCopy,
   MdOutlineEditOff,
   MdOutlineGroup,
 } from "react-icons/md";
@@ -61,23 +63,26 @@ import {
   getIconInfo,
 } from "../../../_utils/activity";
 import { ActivitySource } from "../../../_utils/viewerTypes";
+import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
-  //Don't let name be blank
-  let name = formObj?.name?.trim();
-  if (name == "") {
-    name = "Untitled";
-  }
-
   if (formObj._action == "update name") {
+    //Don't let name be blank
+    let name = formObj?.name?.trim();
+    if (name === "") {
+      name = "Untitled";
+    }
+
     await axios.post(`/api/updateContent/updateContentSettings`, {
       contentId: params.contentId,
       name,
     });
     return true;
+  } else if (formObj._action === "go to data") {
+    return redirect(`/assignmentData/${params.contentId}`);
   }
 
   const resultCS = await contentSettingsActions({ formObj });
@@ -101,10 +106,6 @@ export async function action({ params, request }) {
   );
   if (resultNAE) {
     return resultNAE;
-  }
-
-  if (formObj._action == "go to data") {
-    return redirect(`/assignmentData/${params.contentId}`);
   }
 
   return null;
@@ -303,9 +304,15 @@ export function ActivityEditor() {
     onClose: invitationOnClose,
   } = useDisclosure();
 
+  const {
+    isOpen: copyDialogIsOpen,
+    onOpen: copyDialogOnOpen,
+    onClose: copyDialogOnClose,
+  } = useDisclosure();
+
   const assignmentInfo = activityData.assignmentInfo;
   const assignmentStatus = assignmentInfo?.assignmentStatus ?? "Unassigned";
-  const isSubActivity = activityData.parent?.type ?? "folder" !== "folder";
+  const isSubActivity = (activityData.parent?.type ?? "folder") !== "folder";
 
   const readOnly = assignmentStatus !== "Unassigned";
   const readOnlyRef = useRef(readOnly);
@@ -435,6 +442,20 @@ export function ActivityEditor() {
     </>
   ) : null;
 
+  const copyContentModal = (
+    <CopyContentAndReportFinish
+      fetcher={fetcher}
+      isOpen={copyDialogIsOpen}
+      onClose={copyDialogOnClose}
+      contentIds={[activityData.contentId]}
+      desiredParent={
+        activityData.parent ? { parent: null, ...activityData.parent } : null
+      }
+      action="Copy"
+      prependCopy={true}
+    />
+  );
+
   const contentTypeName = contentTypeToName[data.type];
 
   const { iconImage, iconColor } = getIconInfo(data.type);
@@ -461,6 +482,7 @@ export function ActivityEditor() {
       {settingsDrawer}
       {shareDrawer}
       {assignmentDrawers}
+      {copyContentModal}
 
       <Grid
         background="doenet.lightBlue"
@@ -663,7 +685,7 @@ export function ActivityEditor() {
               <Center
                 background="orange.100"
                 width="100%"
-                height="40px"
+                height={{ base: "60px", sm: "40px" }}
                 pl="4px"
                 pr="4px"
               >
@@ -677,29 +699,33 @@ export function ActivityEditor() {
                   ) : (
                     <>
                       <Text size="xs">
-                        {`Assignment is open with code ${assignmentInfo.classCode}. ${mode == "Edit" ? "It cannot be edited." : ""}`}
+                        {`Assignment is open with code ${assignmentInfo.classCode}. ${mode == "Edit" ? "Make a copy to create an editable version." : ""}`}
                       </Text>
 
-                      <Button
-                        onClick={invitationOnOpen}
-                        colorScheme="blue"
-                        mt="4px"
-                        ml="4px"
-                        size="xs"
-                      >
-                        Activity Invitation
-                      </Button>
+                      <Tooltip label="Activity Invitation">
+                        <Button
+                          onClick={invitationOnOpen}
+                          colorScheme="blue"
+                          mt="4px"
+                          ml="4px"
+                          size="xs"
+                          leftIcon={<MdInfoOutline />}
+                          pr={{ base: "0px", md: "10px" }}
+                        >
+                          <Show above="md">Activity Invitation</Show>
+                        </Button>
+                      </Tooltip>
                     </>
                   )
                 ) : (
                   <Text size="xs">
-                    {`Activity is ${isSubActivity ? "part of " : ""}a closed assignment${mode == "Edit" ? " and cannot be edited." : "."}`}
+                    {`Activity is ${isSubActivity ? "part of " : ""}a closed assignment. ${mode == "Edit" ? "Make a copy to create an editable version." : "."}`}
                   </Text>
                 )}
                 {assignmentInfo?.hasScoreData ? (
                   <Tooltip label="View data">
                     <Button
-                      data-test="Assignment Setting Button"
+                      data-test="View Data Button"
                       colorScheme="blue"
                       mt="4px"
                       ml="4px"
@@ -717,6 +743,24 @@ export function ActivityEditor() {
                     </Button>
                   </Tooltip>
                 ) : null}
+                {isSubActivity ? null : (
+                  <Tooltip label="Make a copy">
+                    <Button
+                      data-test="Make Copy Button"
+                      colorScheme="blue"
+                      mt="4px"
+                      ml="4px"
+                      size="xs"
+                      leftIcon={<MdOutlineContentCopy />}
+                      pr={{ base: "0px", md: "10px" }}
+                      onClick={() => {
+                        copyDialogOnOpen();
+                      }}
+                    >
+                      <Show above="md">Make a copy</Show>
+                    </Button>
+                  </Tooltip>
+                )}
               </Center>
             ) : null}
             {editor}
