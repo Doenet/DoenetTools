@@ -10,12 +10,14 @@ export default function CardList({
   showAssignmentStatus = false,
   showPublicStatus = false,
   showActivityFeatures = false,
+  showAddButton = false,
   emptyMessage,
   listView,
   selectedCards,
   setSelectedCards,
   disableSelectFor,
   disableAsSelectedFor,
+  addDocumentCallback,
 }: {
   content: (
     | CardContent
@@ -30,12 +32,14 @@ export default function CardList({
   showAssignmentStatus?: boolean;
   showPublicStatus?: boolean;
   showActivityFeatures?: boolean;
+  showAddButton?: boolean;
   emptyMessage: string;
   listView: boolean;
   selectedCards?: ContentDescription[];
   setSelectedCards?: React.Dispatch<React.SetStateAction<ContentDescription[]>>;
   disableSelectFor?: string[];
   disableAsSelectedFor?: string[];
+  addDocumentCallback?: (contentId: string) => void;
 }) {
   const selectedCardsFiltered = selectedCards?.filter((s) => s);
 
@@ -133,6 +137,7 @@ export default function CardList({
           showAssignmentStatus={showAssignmentStatus}
           showPublicStatus={showPublicStatus}
           showActivityFeatures={showActivityFeatures}
+          showAddButton={showAddButton}
           listView={listView}
           indentLevel={cardContent.indentLevel}
           selectedCards={
@@ -141,6 +146,7 @@ export default function CardList({
               : undefined
           }
           selectCallback={selectCallback}
+          addDocumentCallback={addDocumentCallback}
           disableSelect={disableSelectFor?.includes(
             cardContent.content.contentId,
           )}

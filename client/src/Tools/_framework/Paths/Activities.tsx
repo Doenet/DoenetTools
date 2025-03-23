@@ -685,7 +685,7 @@ export function Activities() {
                   data-test="Stop Adding Items"
                   size="sm"
                   onClick={() => {
-                    navigate(`.`);
+                    navigate(`.`, { replace: true });
                   }}
                 />{" "}
                 <Text noOfLines={1} data-test="Adding Items Message">

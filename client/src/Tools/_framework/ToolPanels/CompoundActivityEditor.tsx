@@ -26,7 +26,7 @@ import {
 import { CardContent } from "../../../Widgets/Card";
 import {
   FetcherWithComponents,
-  redirect,
+  Link as ReactRouterLink,
   useNavigate,
   useOutletContext,
 } from "react-router";
@@ -56,18 +56,11 @@ import {
   createLocalContentModalActions,
 } from "./CreateLocalContentModal";
 
-export async function compoundActivityEditorActions(
-  {
-    formObj,
-  }: {
-    [k: string]: any;
-  },
-  {
-    params,
-  }: {
-    [k: string]: any;
-  },
-) {
+export async function compoundActivityEditorActions({
+  formObj,
+}: {
+  [k: string]: any;
+}) {
   const resultMC = await moveCopyContentActions({ formObj });
   if (resultMC) {
     return resultMC;
@@ -93,17 +86,22 @@ export async function compoundActivityEditorActions(
     return resultCF;
   }
 
-  if (formObj?._action == "Add Activity") {
+  if (formObj?._action == "Add Document") {
+    console.log({ formObj });
     //Create an activity and redirect to the editor for it
     const { data } = await axios.post(`/api/updateContent/createContent`, {
       contentType: formObj.type,
-      parentId: params.contentId,
+      parentId: formObj.parentId,
     });
 
     const { contentId } = data;
 
     if (formObj.type === "singleDoc") {
-      return redirect(`/activityEditor/${contentId}`);
+      return { createdDoc: contentId };
+
+      // Note: do not know why this redirect does not work when the action is call from a Card inside a CardList.
+      // Returning the above {createdDoc} is a workaround
+      // redirect(`/activityEditor/${contentId}`);
     } else {
       return true;
     }
@@ -183,6 +181,18 @@ export function CompoundActivityEditor({
   useEffect(() => {
     setHaveContentSpinner(false);
   }, [activity]);
+
+  // Note: this is a workaround for the the `redirect` inside the action, above,
+  // not working when called from a Card inside a CardList
+  const [creatingDoc, setCreatingDoc] = useState(false);
+  useEffect(() => {
+    if (typeof fetcher.data === "object") {
+      if (fetcher.data.createdDoc && creatingDoc) {
+        setCreatingDoc(false);
+        navigate(`/activityEditor/${fetcher.data.createdDoc}`);
+      }
+    }
+  }, [fetcher.data, creatingDoc]);
 
   const [moveCopyData, setMoveCopyData] = useState<{
     contentId: string;
@@ -652,12 +662,26 @@ export function CompoundActivityEditor({
     );
   }
 
+  function addDocumentCallback(contentId: string) {
+    setHaveContentSpinner(true);
+    setCreatingDoc(true);
+    fetcher.submit(
+      {
+        _action: "Add Document",
+        type: "singleDoc",
+        parentId: contentId,
+      },
+      { method: "post" },
+    );
+  }
+
   const cardList = (
     <CardList
       showOwnerName={false}
       showAssignmentStatus={false}
       showPublicStatus={true}
       showActivityFeatures={true}
+      showAddButton={true}
       emptyMessage={`${contentTypeName} is empty. Add or move documents ${activity.type === "sequence" ? "or question banks " : ""}here to begin.`}
       listView={true}
       content={cardContent}
@@ -665,6 +689,7 @@ export function CompoundActivityEditor({
       setSelectedCards={setSelectedCards}
       disableSelectFor={addTo ? [addTo.contentId] : undefined}
       disableAsSelectedFor={disableAsSelected}
+      addDocumentCallback={addDocumentCallback}
     />
   );
 
@@ -707,7 +732,7 @@ export function CompoundActivityEditor({
             <CloseButton
               size="sm"
               onClick={() => {
-                navigate(`.`);
+                navigate(`.`, { replace: true });
               }}
             />{" "}
             <Text noOfLines={1}>
@@ -769,10 +794,15 @@ export function CompoundActivityEditor({
         <MenuList>
           <MenuItem
             data-test="Add Document Button"
-            onClick={async () => {
+            onClick={() => {
+              setCreatingDoc(true);
               setHaveContentSpinner(true);
               fetcher.submit(
-                { _action: "Add Activity", type: "singleDoc" },
+                {
+                  _action: "Add Document",
+                  type: "singleDoc",
+                  parentId: activity.contentId,
+                },
                 { method: "post" },
               );
             }}
@@ -782,7 +812,7 @@ export function CompoundActivityEditor({
           {activity.type === "sequence" ? (
             <MenuItem
               data-test="Add Question Bank Button"
-              onClick={async () => {
+              onClick={() => {
                 createQuestionBankOnOpen();
               }}
             >
@@ -790,20 +820,16 @@ export function CompoundActivityEditor({
             </MenuItem>
           ) : null}
           <MenuItem
+            as={ReactRouterLink}
             data-test="Add Explore Items"
-            onClick={async () => {
-              navigate(`/explore?addTo=${activity.contentId}`);
-            }}
+            to={`/explore?addTo=${activity.contentId}`}
           >
             Items from Explore
           </MenuItem>
           <MenuItem
+            as={ReactRouterLink}
             data-test="Add My Activities Items"
-            onClick={async () => {
-              navigate(
-                `/activities/${user!.userId}?addTo=${activity.contentId}`,
-              );
-            }}
+            to={`/activities/${user!.userId}?addTo=${activity.contentId}`}
           >
             Items from My Activities
           </MenuItem>

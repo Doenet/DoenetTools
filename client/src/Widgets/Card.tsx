@@ -18,8 +18,10 @@ import {
   Show,
   Badge,
   Checkbox,
+  Button,
+  MenuItem,
 } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router";
+import { Link as ReactRouterLink, useOutletContext } from "react-router";
 import { Content, ContentDescription } from "../_utils/types";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { BsPeople } from "react-icons/bs";
@@ -30,6 +32,7 @@ import {
 } from "../_utils/activity";
 import { SmallLicenseBadges } from "./Licenses";
 import { IoDiceOutline } from "react-icons/io5";
+import { SiteContext } from "../Tools/_framework/Paths/SiteHeader";
 
 export type CardContent = {
   menuRef?: (arg: HTMLButtonElement) => void;
@@ -47,10 +50,12 @@ export default function Card({
   showAssignmentStatus = false,
   showPublicStatus = false,
   showActivityFeatures = false,
+  showAddButton = false,
   listView = false,
   indentLevel = 0,
   selectedCards,
   selectCallback,
+  addDocumentCallback,
   disableSelect = false,
   disableAsSelected = false,
   idx = 1,
@@ -60,6 +65,7 @@ export default function Card({
   showAssignmentStatus?: boolean;
   showPublicStatus?: boolean;
   showActivityFeatures?: boolean;
+  showAddButton?: boolean;
   listView?: boolean;
   indentLevel?: number;
   selectedCards?: string[];
@@ -69,6 +75,7 @@ export default function Card({
       idx: number;
     },
   ) => void;
+  addDocumentCallback?: (contentId: string) => void;
   disableSelect?: boolean;
   disableAsSelected?: boolean;
   idx?: number;
@@ -87,6 +94,8 @@ export default function Card({
   const { menuItems, closeTime, cardLink, ownerName } = cardContent;
 
   const contentTypeName = contentTypeToName[contentType];
+
+  const { user } = useOutletContext<SiteContext>();
 
   let numVariants = 1;
   if (cardContent.content.type === "singleDoc") {
@@ -374,28 +383,72 @@ export default function Card({
       </Show>
     );
 
-    const variantsDisplay = (
-      <Show above="lg">
-        <Flex height={cardHeight} width="60px" alignContent="center">
-          {(numVariants ?? 1) > 1 ? (
-            <Box alignContent="center">
-              <Tooltip label={`This document has ${numVariants} variants`}>
-                <Badge>
-                  {" "}
-                  <Icon
-                    as={IoDiceOutline}
-                    color="#666699"
-                    boxSize={5}
-                    verticalAlign="middle"
-                  />
-                  {numVariants}
-                </Badge>
-              </Tooltip>
-            </Box>
-          ) : null}
+    const variantsDisplay =
+      contentType !== "select" || !showAddButton ? (
+        <Show above="lg">
+          <Flex height={cardHeight} width="60px" alignContent="center">
+            {(numVariants ?? 1) > 1 ? (
+              <Box alignContent="center">
+                <Tooltip label={`This document has ${numVariants} variants`}>
+                  <Badge>
+                    {" "}
+                    <Icon
+                      as={IoDiceOutline}
+                      color="#666699"
+                      boxSize={5}
+                      verticalAlign="middle"
+                    />
+                    {numVariants}
+                  </Badge>
+                </Tooltip>
+              </Box>
+            ) : null}
+          </Flex>
+        </Show>
+      ) : null;
+
+    const addMenu =
+      contentType === "select" && showAddButton ? (
+        <Flex
+          height={cardHeight}
+          width="60px"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Menu>
+            <MenuButton
+              as={Button}
+              size="xs"
+              colorScheme="blue"
+              data-test="New Button"
+            >
+              Add
+            </MenuButton>
+            <MenuList>
+              <MenuItem
+                data-test="Add Document Button"
+                onClick={() => addDocumentCallback?.(contentId)}
+              >
+                Blank Document
+              </MenuItem>
+              <MenuItem
+                as={ReactRouterLink}
+                data-test="Add Explore Items"
+                to={`/explore?addTo=${contentId}`}
+              >
+                Items from Explore
+              </MenuItem>
+              <MenuItem
+                as={ReactRouterLink}
+                data-test="Add My Activities Items"
+                to={`/activities/${user!.userId}?addTo=${contentId}`}
+              >
+                Items from My Activities
+              </MenuItem>
+            </MenuList>
+          </Menu>
         </Flex>
-      </Show>
-    );
+      ) : null;
 
     card = (
       <ChakraCard
@@ -456,8 +509,9 @@ export default function Card({
                   {assignmentStatusDisplay}
                   {ownerNameWithAvatar}
                 </Box>
-                {variantsDisplay}
                 {licenseBadges}
+                {variantsDisplay}
+                {addMenu}
               </Flex>
             </ChakraLink>
             {menuDisplay}
