@@ -318,7 +318,7 @@ export function Activities() {
     });
   }, [content]);
 
-  const [moveToParentData, setMoveToParentData] = useState<{
+  const [moveCopyData, setMoveCopyData] = useState<{
     contentId: string;
     name: string;
     type: ContentType;
@@ -454,9 +454,9 @@ export function Activities() {
         ) : null}
         {haveQuery ? null : (
           <MenuItem
-            data-test="Move to Parent"
+            data-test="Move to"
             onClick={() => {
-              setMoveToParentData({
+              setMoveCopyData({
                 contentId,
                 name,
                 type: contentType,
@@ -468,7 +468,7 @@ export function Activities() {
               moveCopyContentOnOpen();
             }}
           >
-            Move&hellip;
+            Move to&hellip;
           </MenuItem>
         )}
         {contentType !== "folder" ? (
@@ -596,11 +596,11 @@ export function Activities() {
     <MoveCopyContent
       isOpen={moveCopyContentIsOpen}
       onClose={moveCopyContentOnClose}
-      sourceContent={[moveToParentData]}
+      sourceContent={[moveCopyData]}
       userId={userId}
       currentParentId={parentId}
       finalFocusRef={finalFocusRef}
-      allowedParentTypes={getAllowedParentTypes([moveToParentData.type])}
+      allowedParentTypes={getAllowedParentTypes([moveCopyData.type])}
       action="Move"
     />
   );

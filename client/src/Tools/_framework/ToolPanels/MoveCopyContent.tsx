@@ -57,13 +57,7 @@ export async function moveCopyContentActions({
     try {
       const contentIds = JSON.parse(formObj.contentIds);
       let numItems = contentIds.length;
-      if (formObj.action === "Add") {
-        const { data } = await axios.post(`/api/copyMove/copyContent`, {
-          contentIds,
-          parentId: formObj.parentId === "null" ? null : formObj.parentId,
-        });
-        numItems = data.newContentIds?.length;
-      } else {
+      if (formObj.action === "Move") {
         if (contentIds.length === 1) {
           await axios.post(`/api/copyMove/moveContent`, {
             contentId: contentIds[0],
@@ -73,6 +67,12 @@ export async function moveCopyContentActions({
         } else {
           throw Error("Have not implemented moving more than one content");
         }
+      } else {
+        const { data } = await axios.post(`/api/copyMove/copyContent`, {
+          contentIds,
+          parentId: formObj.parentId === "null" ? null : formObj.parentId,
+        });
+        numItems = data.newContentIds?.length;
       }
       return { success: true, numItems };
     } catch (e) {
@@ -118,7 +118,7 @@ export function MoveCopyContent({
   currentParentId: string | null;
   finalFocusRef?: RefObject<HTMLElement>;
   allowedParentTypes: ContentType[];
-  action: "Move" | "Add";
+  action: "Move" | "Add" | "Copy";
   inCurationLibrary?: boolean;
 }) {
   // Set when the modal opens
@@ -128,7 +128,8 @@ export function MoveCopyContent({
   const [actionFinished, setActionFinished] = useState(false);
   const [numItems, setNumItems] = useState(0);
   const [errMsg, setErrMsg] = useState("");
-  const actionPastWord = action === "Add" ? "added" : "moved";
+  const actionPastWord =
+    action === "Add" ? "added" : action === "Move" ? "moved" : "copied";
 
   const {
     isOpen: sharedAlertIsOpen,
@@ -360,6 +361,8 @@ export function MoveCopyContent({
                     ),
                   ))))
           ) {
+            // moving non-public content into a public parent
+            // or moving moving content into a parent that is shared with additional users
             sharedAlertOnOpen();
           } else {
             performAction();

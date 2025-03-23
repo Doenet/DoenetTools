@@ -114,6 +114,8 @@ export function ContentSettingsDrawer({
 
   const contentTypeName = contentTypeToName[contentData.type];
 
+  const isSubActivity = (contentData.parent?.type ?? "folder") !== "folder";
+
   return (
     <Drawer
       isOpen={isOpen}
@@ -152,7 +154,7 @@ export function ContentSettingsDrawer({
                   Classifications ({contentData.classifications.length})
                 </Tab>
               ) : null}
-              {contentData.type !== "folder" ? (
+              {contentData.type !== "folder" && !isSubActivity ? (
                 <Tab data-test="Assignment Settings">Assignment Settings</Tab>
               ) : null}
               {haveSupportingFiles ? (
@@ -185,7 +187,7 @@ export function ContentSettingsDrawer({
                 ) : null}
 
                 <TabPanel>
-                  {contentData.type !== "folder" ? (
+                  {contentData.type !== "folder" && !isSubActivity ? (
                     <AssignmentSettings
                       fetcher={fetcher}
                       activityData={contentData}

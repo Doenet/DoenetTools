@@ -184,7 +184,7 @@ export function CompoundActivityEditor({
     setHaveContentSpinner(false);
   }, [activity]);
 
-  const [moveToParentData, setMoveToParentData] = useState<{
+  const [moveCopyData, setMoveCopyData] = useState<{
     contentId: string;
     name: string;
     type: ContentType;
@@ -202,22 +202,24 @@ export function CompoundActivityEditor({
     licenseCode: null,
   });
 
+  const [moveCopyAction, setMoveCopyAction] = useState<"Move" | "Copy">("Move");
+
   const {
-    isOpen: moveToParentIsOpen,
-    onOpen: moveToParentOnOpen,
-    onClose: moveToParentOnClose,
+    isOpen: moveCopyContentIsOpen,
+    onOpen: moveCopyContentOnOpen,
+    onClose: moveCopyContentOnClose,
   } = useDisclosure();
 
   const moveContentModal = user ? (
     <MoveCopyContent
-      isOpen={moveToParentIsOpen}
-      onClose={moveToParentOnClose}
-      sourceContent={[moveToParentData]}
+      isOpen={moveCopyContentIsOpen}
+      onClose={moveCopyContentOnClose}
+      sourceContent={[moveCopyData]}
       userId={user.userId}
       currentParentId={activity.contentId}
       finalFocusRef={finalFocusRef}
-      allowedParentTypes={getAllowedParentTypes([moveToParentData.type])}
-      action="Move"
+      allowedParentTypes={getAllowedParentTypes([moveCopyData.type])}
+      action={moveCopyAction}
     />
   ) : null;
 
@@ -557,7 +559,17 @@ export function CompoundActivityEditor({
             );
           }}
         >
-          Duplicate {contentTypeToName[content.type]}
+          Make a copy
+        </MenuItem>
+        <MenuItem
+          hidden={readOnly}
+          data-test="Delete Menu Item"
+          onClick={() => {
+            setContentToDelete(content);
+            deleteContentOnOpen();
+          }}
+        >
+          Delete
         </MenuItem>
         {nextPositionUp ? (
           <MenuItem
@@ -598,10 +610,10 @@ export function CompoundActivityEditor({
           </MenuItem>
         ) : null}
         <MenuItem
-          hidden={readOnly}
-          data-test="Move to Parent"
+          data-test="MoveCopy"
           onClick={() => {
-            setMoveToParentData({
+            setMoveCopyAction(readOnly ? "Copy" : "Move");
+            setMoveCopyData({
               contentId,
               name: content.name,
               type: content.type,
@@ -610,20 +622,10 @@ export function CompoundActivityEditor({
               sharedWith: content.sharedWith,
               licenseCode: content.license?.code ?? null,
             });
-            moveToParentOnOpen();
+            moveCopyContentOnOpen();
           }}
         >
-          Move&hellip;
-        </MenuItem>
-        <MenuItem
-          hidden={readOnly}
-          data-test="Delete Menu Item"
-          onClick={() => {
-            setContentToDelete(content);
-            deleteContentOnOpen();
-          }}
-        >
-          Delete
+          {readOnly ? "Copy to" : "Move to"}&hellip;
         </MenuItem>
         <MenuItem
           hidden={readOnly}
@@ -644,9 +646,7 @@ export function CompoundActivityEditor({
             settingsOnOpen?.();
           }}
         >
-          {readOnly
-            ? contentTypeToName[content.type] + " Information"
-            : "Settings"}
+          Settings
         </MenuItem>
       </>
     );

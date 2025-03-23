@@ -487,6 +487,26 @@ export function GeneralContentControls({
         <Box marginTop="20px">
           <Heading size="sm">Problem set settings</Heading>
 
+          <Checkbox
+            marginTop="10px"
+            isChecked={paginate}
+            data-test={`Paginate Checkbox`}
+            onChange={() => {
+              setPaginate(!paginate);
+
+              fetcher.submit(
+                {
+                  _action: "update general",
+                  contentId: contentData.contentId,
+                  paginate: !paginate,
+                },
+                { method: "post" },
+              );
+            }}
+          >
+            Paginate
+          </Checkbox>
+
           <VStack alignItems="flex-start" gap={0}>
             <Checkbox
               marginTop="10px"
@@ -509,31 +529,7 @@ export function GeneralContentControls({
                 );
               }}
             >
-              shuffle items
-            </Checkbox>
-
-            <Checkbox
-              marginTop="10px"
-              isChecked={paginate}
-              data-test={`Paginate Checkbox`}
-              isDisabled={
-                (contentData.assignmentInfo?.assignmentStatus ??
-                  "Unassigned") !== "Unassigned"
-              }
-              onChange={() => {
-                setPaginate(!paginate);
-
-                fetcher.submit(
-                  {
-                    _action: "update general",
-                    contentId: contentData.contentId,
-                    paginate: !paginate,
-                  },
-                  { method: "post" },
-                );
-              }}
-            >
-              Paginate
+              Shuffle items
             </Checkbox>
           </VStack>
         </Box>
@@ -599,7 +595,7 @@ export function GeneralContentControls({
       (contentData.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
         "Unassigned" ? (
         <Text marginTop="10px">
-          <strong>Note</strong>: Cannot modify settings since activity is
+          <strong>Note</strong>: Cannot modify some settings since activity is
           assigned.
         </Text>
       ) : null}
