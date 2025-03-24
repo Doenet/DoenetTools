@@ -124,7 +124,7 @@ export default function CardList({
           color="GrayText"
         >
           {cardContent.empty
-            ? "(Above question bank is empty. Move documents to this slot to fill it.)"
+            ? "(Add documents to above empty question bank. Or, move documents up or down to this slot.)"
             : null}
         </Box>
       );
