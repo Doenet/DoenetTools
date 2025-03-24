@@ -87,7 +87,7 @@ export const codeSchema = z.object({ code: z.string() });
 
 export const getAssignmentResponseStudentSchema = z.object({
   contentId: uuidSchema,
-  studentUserId: uuidSchema,
+  studentUserId: uuidSchema.optional(),
   shuffledOrder: z.string().transform((val) => val === "true"),
   itemNumber: z
     .string()

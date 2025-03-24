@@ -118,6 +118,14 @@ assignRouter.get(
 );
 
 assignRouter.get(
+  "/getAssignmentResponseStudent/:contentId",
+  queryLoggedIn(
+    getAssignmentResponseStudent,
+    getAssignmentResponseStudentSchema,
+  ),
+);
+
+assignRouter.get(
   "/getStudentSubmittedResponses/:contentId/:studentUserId",
   queryLoggedIn(
     getStudentSubmittedResponses,

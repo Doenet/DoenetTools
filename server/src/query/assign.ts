@@ -693,17 +693,18 @@ export async function getAssignedScores({
 }: {
   loggedInUserId: Uint8Array;
 }) {
-  const scores = await prisma.contentState.findMany({
+  const scores = await prisma.assignmentScores.findMany({
     where: {
       userId: loggedInUserId,
       assignment: { rootContent: { isDeleted: false } },
     },
     select: {
-      score: true,
+      contentId: true,
+      cachedScore: true,
       assignment: {
         select: {
           rootContent: {
-            select: { id: true, name: true },
+            select: { name: true },
           },
         },
       },
@@ -711,11 +712,33 @@ export async function getAssignedScores({
     orderBy: { assignment: { rootContent: { createdAt: "asc" } } },
   });
 
-  const orderedActivityScores = scores.map((obj) => ({
-    contentId: obj.assignment.rootContent.id,
-    activityName: obj.assignment.rootContent.name,
-    score: obj.score,
-  }));
+  const orderedActivityScores: {
+    contentId: Uint8Array;
+    activityName: string;
+    score: number;
+  }[] = [];
+
+  for (const scoreObj of scores) {
+    let score = scoreObj.cachedScore;
+    if (score === null) {
+      const calcResults = await calculateScoreAndCacheResults({
+        contentId: scoreObj.contentId,
+        loggedInUserId,
+      });
+
+      if (calcResults.calculatedScore) {
+        score = calcResults.score;
+      } else {
+        throw Error("Invalid data. Could not calculate score for student");
+      }
+    }
+
+    orderedActivityScores.push({
+      contentId: scoreObj.contentId,
+      activityName: scoreObj.assignment.rootContent.name,
+      score,
+    });
+  }
 
   const userData: UserInfo = await prisma.users.findUniqueOrThrow({
     where: { userId: loggedInUserId },

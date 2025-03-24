@@ -119,7 +119,7 @@ export function StudentAssignmentScores() {
                         as={ReactRouterLink}
                         to={
                           isAssignedData
-                            ? `/assignedData/${score.contentId}`
+                            ? `/assignedData/${score.contentId}?shuffledOrder`
                             : `/assignmentData/${score.contentId}/${userData.userId}`
                         }
                         textDecoration="underline"

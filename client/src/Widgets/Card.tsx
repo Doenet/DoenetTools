@@ -389,7 +389,10 @@ export default function Card({
           <Flex height={cardHeight} width="60px" alignContent="center">
             {(numVariants ?? 1) > 1 ? (
               <Box alignContent="center">
-                <Tooltip label={`This document has ${numVariants} variants`}>
+                <Tooltip
+                  label={`This document has ${numVariants} variants`}
+                  placement="bottom-end"
+                >
                   <Badge>
                     {" "}
                     <Icon

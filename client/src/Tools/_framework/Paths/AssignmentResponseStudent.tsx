@@ -44,7 +44,7 @@ export async function loader({ params, request }) {
   }
 
   const { data } = await axios.get(
-    `/api/assign/getAssignmentResponseStudent/${params.contentId}/${params.studentUserId}${search}`,
+    `/api/assign/getAssignmentResponseStudent/${params.contentId}/${params.studentUserId ? params.studentUserId : ""}${search}`,
   );
 
   const overall = data.overallScores;

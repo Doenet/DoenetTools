@@ -111,7 +111,7 @@ export function AllAssignmentScores() {
     };
 
   useEffect(() => {
-    document.title = "My Assignments";
+    document.title = "Assignment Scores";
   });
 
   const navigate = useNavigate();
@@ -145,8 +145,8 @@ export function AllAssignmentScores() {
           </>
         ) : (
           <>
-            <Heading heading={"My Assignments"} />
-            <Heading subheading="Score summary" />
+            <Heading heading={"Assignment Scores"} />
+            <Heading subheading="My Activities" />
           </>
         )}
       </Box>

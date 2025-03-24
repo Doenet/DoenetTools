@@ -317,12 +317,12 @@ const router = createBrowserRouter([
         element: <StudentAssignmentScores />,
         errorElement: <ErrorPage />,
       },
-      // {
-      //   path: "assignedData/:contentId",
-      //   loader: assignedAssignmentDataloader,
-      //   element: <AssignmentResponseStudent />,
-      //   errorElement: <ErrorPage />,
-      // },
+      {
+        path: "assignedData/:contentId",
+        loader: assignmentResponseStudentLoader,
+        element: <AssignmentResponseStudent />,
+        errorElement: <ErrorPage />,
+      },
       {
         path: "assignmentData/:contentId",
         loader: assignmentResponseOverviewLoader,
