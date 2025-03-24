@@ -12,7 +12,12 @@ import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { recordContentView } from "./stats";
 import { InvalidRequestError } from "../utils/error";
 import { getContent } from "./activity_edit_view";
-import { getScore, getScoresOfAllStudents, ItemScores } from "./scores";
+import {
+  calculateScoreAndCacheResults,
+  getScore,
+  getScoresOfAllStudents,
+  ItemScores,
+} from "./scores";
 import { getUserInfo } from "./user";
 import { StatusCodes } from "http-status-codes";
 
@@ -450,7 +455,7 @@ export async function getAllAssignmentScores({
 }) {
   const orderedActivities = await prisma.$queryRaw<
     {
-      id: Uint8Array;
+      contentId: Uint8Array;
       name: string;
     }[]
   >(Prisma.sql`
@@ -467,19 +472,19 @@ export async function getAllAssignmentScores({
       WHERE (EXISTS(SELECT * FROM assignments WHERE rootContentId=c.id) or c.type = "folder") AND c.isDeleted = false
     )
     
-    SELECT c.id, c.name FROM content AS c
+    SELECT c.id as contentId, c.name FROM content AS c
     INNER JOIN content_tree AS ct
     ON ct.id = c.id
     WHERE ct.type != "folder" ORDER BY path
   `);
 
   let folder: {
-    id: Uint8Array;
+    contentId: Uint8Array;
     name: string;
   } | null = null;
 
   if (parentId !== null) {
-    folder = await prisma.content.findUniqueOrThrow({
+    const folderPrelim = await prisma.content.findUniqueOrThrow({
       where: {
         id: parentId,
         type: "folder",
@@ -487,23 +492,24 @@ export async function getAllAssignmentScores({
       },
       select: { id: true, name: true },
     });
+    folder = folderPrelim
+      ? { contentId: folderPrelim.id, name: folderPrelim.name }
+      : null;
   }
 
   const assignmentScoresPrelim = await prisma.assignments.findMany({
     where: {
-      rootContentId: { in: orderedActivities.map((a) => a.id) },
+      rootContentId: { in: orderedActivities.map((a) => a.contentId) },
     },
     select: {
       rootContentId: true,
-      contentState: {
-        distinct: ["contentId", "userId"],
+      assignmentScores: {
         orderBy: [
           { user: { lastNames: "asc" } },
           { user: { firstNames: "asc" } },
-          { score: "desc" },
         ],
         select: {
-          score: true,
+          cachedScore: true,
           user: {
             select: {
               firstNames: true,
@@ -517,10 +523,54 @@ export async function getAllAssignmentScores({
     },
   });
 
-  const assignmentScores = assignmentScoresPrelim.map((assignment) => ({
-    contentId: assignment.rootContentId,
-    userScores: assignment.contentState,
-  }));
+  const assignmentScores: {
+    contentId: Uint8Array;
+    userScores: {
+      score: number;
+      user: {
+        userId: Uint8Array<ArrayBufferLike>;
+        email: string;
+        firstNames: string | null;
+        lastNames: string;
+      };
+    }[];
+  }[] = [];
+
+  for (const assignment of assignmentScoresPrelim) {
+    const userScores: {
+      score: number;
+      user: {
+        userId: Uint8Array<ArrayBufferLike>;
+        email: string;
+        firstNames: string | null;
+        lastNames: string;
+      };
+    }[] = [];
+    for (const scoreObj of assignment.assignmentScores) {
+      let score = scoreObj.cachedScore;
+      if (score === null) {
+        const calcResults = await calculateScoreAndCacheResults({
+          contentId: assignment.rootContentId,
+          requestedUserId: scoreObj.user.userId,
+          loggedInUserId,
+        });
+
+        if (calcResults.calculatedScore) {
+          score = calcResults.score;
+        } else {
+          throw Error("Invalid data. Could not calculate score for student");
+        }
+      }
+      userScores.push({
+        score,
+        user: scoreObj.user,
+      });
+    }
+    assignmentScores.push({
+      contentId: assignment.rootContentId,
+      userScores,
+    });
+  }
 
   return { orderedActivities, assignmentScores, folder };
 }
@@ -533,11 +583,11 @@ export async function getAllAssignmentScores({
  * and items within a folder are ordered by `sortIndex`
  *
  * @returns A Promise that resolves to an object with
- * - studentData: information on the student
+ * - studentAssignmentScores: information on the student
  * - orderedActivities: the ordered list of all activities in the folder (and subfolders)
  *   along with the student's score, if it exists
  */
-export async function getStudentData({
+export async function getStudentAssignmentScores({
   studentUserId,
   loggedInUserId,
   parentId,
@@ -558,11 +608,11 @@ export async function getStudentData({
     },
   });
 
-  const orderedActivityScores = await prisma.$queryRaw<
+  const orderedCachedScores = await prisma.$queryRaw<
     {
       contentId: Uint8Array;
       activityName: string;
-      score: number | null;
+      cachedScore: number | null;
     }[]
   >(Prisma.sql`
     WITH RECURSIVE content_tree(id, parentId, type, path) AS (
@@ -578,7 +628,7 @@ export async function getStudentData({
       WHERE (EXISTS(SELECT * FROM assignments WHERE rootContentId=c.id) or c.type = "folder") AND c.isDeleted = false
     )
     
-    SELECT c.id AS contentId, c.name AS activityName, s.score FROM content AS c
+    SELECT c.id AS contentId, c.name AS activityName, s.cachedScore FROM content AS c
     INNER JOIN content_tree AS ct
     ON ct.id = c.id
     LEFT JOIN (
@@ -588,13 +638,41 @@ export async function getStudentData({
     WHERE ct.type != "folder" ORDER BY path
   `);
 
+  const orderedActivityScores: {
+    contentId: Uint8Array;
+    activityName: string;
+    score: number | null;
+  }[] = [];
+
+  for (const scoreObj of orderedCachedScores) {
+    let score = scoreObj.cachedScore;
+    if (score === null) {
+      const calcResults = await calculateScoreAndCacheResults({
+        contentId: scoreObj.contentId,
+        requestedUserId: studentUserId,
+        loggedInUserId,
+      });
+
+      if (calcResults.calculatedScore) {
+        score = calcResults.score;
+      } else {
+        // don't have a score for student on this assessment
+      }
+    }
+    orderedActivityScores.push({
+      contentId: scoreObj.contentId,
+      activityName: scoreObj.activityName,
+      score,
+    });
+  }
+
   let folder: {
-    id: Uint8Array;
+    contentId: Uint8Array;
     name: string;
   } | null = null;
 
   if (parentId !== null) {
-    folder = await prisma.content.findUniqueOrThrow({
+    const preliminaryFolder = await prisma.content.findUniqueOrThrow({
       where: {
         id: parentId,
         type: "folder",
@@ -602,6 +680,9 @@ export async function getStudentData({
       },
       select: { id: true, name: true },
     });
+    folder = preliminaryFolder
+      ? { contentId: preliminaryFolder.id, name: preliminaryFolder.name }
+      : null;
   }
 
   return { studentData, orderedActivityScores, folder };
@@ -1528,25 +1609,32 @@ export async function getStudentSubmittedResponses({
   const responseUserId = studentUserId ?? loggedInUserId;
 
   // verify have access, get info
-  const responses = await prisma.submittedResponses.findMany({
+  const responses = await prisma.content.findUniqueOrThrow({
     where: {
-      contentId,
-      content: {
-        // if getting data for other person, you must be the owner
-        ownerId: isEqualUUID(responseUserId, loggedInUserId)
-          ? undefined
-          : loggedInUserId,
-        isDeleted: false,
-      },
-      userId: responseUserId,
-      itemNumber: shuffledOrder ? undefined : requestedItemNumber,
-      shuffledItemNumber: shuffledOrder ? requestedItemNumber : undefined,
-      answerId,
-      contentAttemptNumber,
-      itemAttemptNumber,
+      id: contentId,
+      ownerId: isEqualUUID(responseUserId, loggedInUserId)
+        ? undefined
+        : loggedInUserId,
+      isDeleted: false,
     },
-    select: { response: true, answerCreditAchieved: true, submittedAt: true },
+    select: {
+      submittedResponses: {
+        where: {
+          userId: responseUserId,
+          itemNumber: shuffledOrder ? undefined : requestedItemNumber,
+          shuffledItemNumber: shuffledOrder ? requestedItemNumber : undefined,
+          answerId,
+          contentAttemptNumber,
+          itemAttemptNumber,
+        },
+        select: {
+          response: true,
+          answerCreditAchieved: true,
+          submittedAt: true,
+        },
+      },
+    },
   });
 
-  return { responses };
+  return { responses: responses.submittedResponses };
 }

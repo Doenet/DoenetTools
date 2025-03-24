@@ -610,7 +610,7 @@ export function AssignmentData() {
         <GridItem area="label">
           <Flex justifyContent="center" alignItems="center">
             {typeIcon}
-            {assignment.name} &mdash; Data (
+            <Text noOfLines={1}>{assignment.name}</Text> &mdash; Data (
             {assignment.assignmentInfo?.classCode})
           </Flex>
         </GridItem>

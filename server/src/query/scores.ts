@@ -773,7 +773,7 @@ export async function loadItemState({
  * - itemScores: if the assignment has items, then this array has each item's `score`, `itemNumber`, and `itemAttemptNumber`,
  *   for the last attempt on the item, ordered by `shuffledItemNumber`
  */
-async function calculateScoreAndCacheResults({
+export async function calculateScoreAndCacheResults({
   contentId,
   requestedUserId,
   loggedInUserId,

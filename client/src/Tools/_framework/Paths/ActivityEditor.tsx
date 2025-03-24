@@ -50,7 +50,6 @@ import {
   Content,
   DoenetmlVersion,
   License,
-  ContentDescription,
 } from "../../../_utils/types";
 import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
 import {

@@ -7,7 +7,7 @@ import {
   getAssignedScores,
   getAssignmentResponseOverview,
   getAssignmentResponseStudent,
-  getStudentData,
+  getStudentAssignmentScores,
   getStudentSubmittedResponses,
   listUserAssigned,
   openAssignmentWithCode,
@@ -21,7 +21,7 @@ import { contentIdSchema } from "../schemas/contentSchema";
 import {
   assignmentParentSchema,
   assignmentCloseAtSchema,
-  getStudentDataSchema,
+  getStudentAssignmentScoresSchema,
   recordSubmittedEventSchema,
   assignmentMaxAttemptsSchema,
   assignmentSettingsSchema,
@@ -85,13 +85,18 @@ assignRouter.get(
 );
 
 assignRouter.get(
-  "/getStudentData/:studentUserId",
-  queryLoggedIn(getStudentData, getStudentDataSchema),
+  "/getAllAssignmentScores/:parentId",
+  queryLoggedIn(getAllAssignmentScores, assignmentParentSchema),
 );
 
 assignRouter.get(
-  "/getStudentData/:studentUserId/:parentId",
-  queryLoggedIn(getStudentData, getStudentDataSchema),
+  "/getStudentAssignmentScores/:studentUserId",
+  queryLoggedIn(getStudentAssignmentScores, getStudentAssignmentScoresSchema),
+);
+
+assignRouter.get(
+  "/getStudentAssignmentScores/:studentUserId/:parentId",
+  queryLoggedIn(getStudentAssignmentScores, getStudentAssignmentScoresSchema),
 );
 
 assignRouter.post(

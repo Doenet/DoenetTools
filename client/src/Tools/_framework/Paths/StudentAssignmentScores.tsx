@@ -11,8 +11,6 @@ import {
   Td,
   Text,
   Box,
-  LinkBox,
-  LinkOverlay,
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import axios from "axios";
@@ -31,17 +29,17 @@ type OrderedActivityScore = {
 };
 
 type Folder = {
-  id: string;
+  contentId: string;
   name: string;
 };
 
 // loader for when an instructor gets data about a student
 export async function loader({ params }) {
   const { data } = await axios.get(
-    `/api/assign/getStudentData/${params.userId}/${params.folderId ?? ""}`,
+    `/api/assign/getStudentAssignmentScores/${params.userId}/${params.parentId ?? ""}`,
   );
 
-  const userData = data.userData;
+  const userData = data.studentData;
   const scores = data.orderedActivityScores;
   const folder = data.folder;
 
@@ -59,7 +57,7 @@ export async function assignedDataloader() {
   return { userData, scores, folder, isAssignedData: true };
 }
 
-export function StudentData() {
+export function StudentAssignmentScores() {
   const { userData, scores, folder, isAssignedData } = useLoaderData() as {
     userData: UserData;
     scores: OrderedActivityScore[];
@@ -114,31 +112,44 @@ export function StudentData() {
           <Tbody>
             {scores.map((score) => {
               return (
-                <LinkBox
-                  as={Tr}
-                  key={`assignment${score.contentId}`}
-                  _hover={{ backgroundColor: "#eeeeee" }}
-                >
+                <Tr key={`assignment${score.contentId}`}>
                   <Td key={`assignment_title${score.contentId}`}>
-                    {score.activityName}
-                  </Td>
-                  <Td key={`score${score.contentId}`}>
                     {score.score !== null ? (
-                      <LinkOverlay
+                      <ChakraLink
                         as={ReactRouterLink}
                         to={
                           isAssignedData
                             ? `/assignedData/${score.contentId}`
                             : `/assignmentData/${score.contentId}/${userData.userId}`
                         }
+                        textDecoration="underline"
                       >
-                        {score.score}
-                      </LinkOverlay>
+                        {score.activityName}
+                      </ChakraLink>
+                    ) : (
+                      score.activityName
+                    )}
+                  </Td>
+                  <Td key={`score${score.contentId}`}>
+                    {score.score !== null ? (
+                      <ChakraLink
+                        as={ReactRouterLink}
+                        to={
+                          isAssignedData
+                            ? `/assignedData/${score.contentId}`
+                            : `/assignmentData/${score.contentId}/${userData.userId}`
+                        }
+                        textDecoration="underline"
+                      >
+                        &nbsp;
+                        {Math.round(score.score * 1000) / 10}
+                        &nbsp;
+                      </ChakraLink>
                     ) : (
                       <Text>&#8212;</Text>
                     )}
                   </Td>
-                </LinkBox>
+                </Tr>
               );
             })}
           </Tbody>

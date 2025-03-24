@@ -27,10 +27,10 @@ export const assignmentSettingsSchema = z.object({
 });
 
 export const assignmentParentSchema = z.object({
-  parentId: uuidSchema.nullable(),
+  parentId: uuidSchema.nullish().transform((val) => val ?? null),
 });
 
-export const getStudentDataSchema = z.object({
+export const getStudentAssignmentScoresSchema = z.object({
   studentUserId: uuidSchema,
   parentId: uuidSchema.nullish().transform((val) => val ?? null),
 });
