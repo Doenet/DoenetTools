@@ -29,6 +29,7 @@ import RouterLogo from "../RouterLogo";
 import { ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { createFullName } from "../../../_utils/names";
+import { ContentDescription } from "../../../_utils/types";
 
 export type User =
   | {
@@ -45,6 +46,8 @@ export type SiteContext = {
   user?: User;
   exploreTab: number | null;
   setExploreTab: (arg: number | null) => void;
+  addTo: ContentDescription | null;
+  setAddTo: (arg: ContentDescription | null) => void;
 };
 
 export async function loader() {
@@ -132,7 +135,15 @@ export function SiteHeader() {
 
   const [exploreTab, setExploreTab] = useState<number | null>(null);
 
-  const siteContext: SiteContext = { user, exploreTab, setExploreTab };
+  const [addTo, setAddTo] = useState<ContentDescription | null>(null);
+
+  const siteContext: SiteContext = {
+    user,
+    exploreTab,
+    setExploreTab,
+    addTo,
+    setAddTo,
+  };
 
   const helpMenuShouldFocusFirst = useBreakpointValue(
     { base: false, md: true },

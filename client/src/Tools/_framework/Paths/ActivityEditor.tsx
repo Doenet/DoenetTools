@@ -100,10 +100,7 @@ export async function action({ params, request }) {
     return resultAS;
   }
 
-  const resultNAE = await compoundActivityEditorActions(
-    { formObj },
-    { params },
-  );
+  const resultNAE = await compoundActivityEditorActions({ formObj });
   if (resultNAE) {
     return resultNAE;
   }
@@ -111,7 +108,7 @@ export async function action({ params, request }) {
   return null;
 }
 
-export async function loader({ params, request }) {
+export async function loader({ params }) {
   const {
     data: { editableByMe, activity: activityData, availableFeatures },
   } = await axios.get(
@@ -123,21 +120,6 @@ export async function loader({ params, request }) {
   }
 
   const contentId = params.contentId;
-
-  const url = new URL(request.url);
-  const addToId = url.searchParams.get("addTo");
-  let addTo: ContentDescription | undefined = undefined;
-
-  if (addToId) {
-    try {
-      const { data } = await axios.get(
-        `/api/info/getContentDescription/${addToId}`,
-      );
-      addTo = data;
-    } catch (_e) {
-      console.error(`Could not get description of ${addToId}`);
-    }
-  }
 
   // const supportingFileResp = await axios.get(
   //   `/api/loadSupportingFileInfo/${contentId}`,
@@ -176,7 +158,6 @@ export async function loader({ params, request }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
-      addTo,
     };
   } else {
     const activityJson = compileActivityFromContent(activityData);
@@ -191,7 +172,6 @@ export async function loader({ params, request }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
-      addTo,
     };
   }
 }
@@ -252,7 +232,6 @@ export function ActivityEditor() {
     allLicenses: License[];
     availableFeatures: ContentFeature[];
     activityData: Content;
-    addTo: ContentDescription | undefined;
   } & (
     | {
         type: "singleDoc";
@@ -271,7 +250,6 @@ export function ActivityEditor() {
     allDoenetmlVersions,
     allLicenses,
     availableFeatures,
-    addTo,
   } = data;
 
   const finalFocusRef = useRef<HTMLElement | null>(null);
@@ -393,7 +371,6 @@ export function ActivityEditor() {
         setSettingsDisplayTab={setSettingsDisplayTab}
         setHighlightRename={setHighlightRename}
         headerHeight={`${readOnly ? 120 : 80}px`}
-        addTo={addTo}
       />
     );
   }

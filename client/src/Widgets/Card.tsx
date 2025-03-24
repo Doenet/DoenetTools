@@ -95,7 +95,7 @@ export default function Card({
 
   const contentTypeName = contentTypeToName[contentType];
 
-  const { user } = useOutletContext<SiteContext>();
+  const { user, setAddTo } = useOutletContext<SiteContext>();
 
   let numVariants = 1;
   if (cardContent.content.type === "singleDoc") {
@@ -434,14 +434,20 @@ export default function Card({
               <MenuItem
                 as={ReactRouterLink}
                 data-test="Add Explore Items"
-                to={`/explore?addTo=${contentId}`}
+                to={`/explore`}
+                onClick={() => {
+                  setAddTo(cardContent.content);
+                }}
               >
                 Items from Explore
               </MenuItem>
               <MenuItem
                 as={ReactRouterLink}
                 data-test="Add My Activities Items"
-                to={`/activities/${user!.userId}?addTo=${contentId}`}
+                to={`/activities/${user!.userId}`}
+                onClick={() => {
+                  setAddTo(cardContent.content);
+                }}
               >
                 Items from My Activities
               </MenuItem>

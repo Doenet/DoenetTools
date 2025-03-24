@@ -44,7 +44,6 @@ import { useFetcher } from "react-router";
 import axios from "axios";
 import {} from "../ToolPanels/ContentSettingsDrawer";
 import {
-  ContentDescription,
   Content,
   DoenetmlVersion,
   ActivityHistoryItem,
@@ -95,7 +94,7 @@ export async function action({ request }) {
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
-export async function loader({ params, request }) {
+export async function loader({ params }) {
   const {
     data: { activity: activityData, activityHistory },
   } = await axios.get(
@@ -103,21 +102,6 @@ export async function loader({ params, request }) {
   );
 
   const contentId = params.contentId;
-
-  const url = new URL(request.url);
-  const addToId = url.searchParams.get("addTo");
-  let addTo: ContentDescription | undefined = undefined;
-
-  if (addToId) {
-    try {
-      const { data } = await axios.get(
-        `/api/info/getContentDescription/${addToId}`,
-      );
-      addTo = data;
-    } catch (_e) {
-      console.error(`Could not get description of ${addToId}`);
-    }
-  }
 
   if (activityData.type === "singleDoc") {
     const doenetML = activityData.doenetML;
@@ -132,7 +116,6 @@ export async function loader({ params, request }) {
       doenetmlVersion,
       contentId,
       contributorHistory,
-      addTo,
     };
   } else {
     const activityJsonFromRevision = activityData.activityJson
@@ -149,7 +132,6 @@ export async function loader({ params, request }) {
       activityJson,
       contentId,
       contributorHistory: [],
-      addTo,
     };
   }
 }
@@ -159,7 +141,6 @@ export function ActivityViewer() {
     contentId: string;
     activityData: Content;
     contributorHistory: ActivityHistoryItem[];
-    addTo?: ContentDescription;
   } & (
     | {
         type: "singleDoc";
@@ -177,10 +158,9 @@ export function ActivityViewer() {
     type: contentType,
     activityData,
     contributorHistory,
-    addTo,
   } = data;
 
-  const { user } = useOutletContext<SiteContext>();
+  const { user, addTo, setAddTo } = useOutletContext<SiteContext>();
   const navigate = useNavigate();
 
   const infoBtnRef = useRef<HTMLButtonElement>(null);
@@ -257,13 +237,13 @@ export function ActivityViewer() {
   } = useDisclosure();
 
   const copyContentModal =
-    addTo !== undefined ? (
+    addTo !== null ? (
       <CopyContentAndReportFinish
         fetcher={fetcher}
         isOpen={copyDialogIsOpen}
         onClose={copyDialogOnClose}
         contentIds={[activityData.contentId]}
-        desiredParent={addTo ?? null}
+        desiredParent={addTo}
         action="Add"
       />
     ) : null;
@@ -301,7 +281,6 @@ export function ActivityViewer() {
         setSettingsContentId={setSettingsContentId}
         settingsOnOpen={infoOnOpen}
         setSettingsDisplayTab={setDisplayInfoTab}
-        addTo={addTo}
       />
     );
   }
@@ -369,7 +348,7 @@ export function ActivityViewer() {
           </MenuItem>
           <MenuItem
             onClick={() => {
-              navigate(".");
+              setAddTo(null);
             }}
           >
             <CloseIcon marginRight="10px" />

@@ -18,7 +18,6 @@ import {
   useFetcher,
   Link,
   useOutletContext,
-  useNavigate,
 } from "react-router";
 
 import { CardContent } from "../../../Widgets/Card";
@@ -74,7 +73,7 @@ export async function action({ request }) {
   throw Error(`Action "${formObj?._action}" not defined or not handled.`);
 }
 
-export async function loader({ params, request }) {
+export async function loader({ params }) {
   const { data } = await axios.get(
     `/api/contentList/getSharedContent/${params.ownerId}/${params.parentId ?? ""}`,
   );
@@ -82,48 +81,28 @@ export async function loader({ params, request }) {
   const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
   const listViewPref = !prefData.data.cardView;
 
-  const url = new URL(request.url);
-  const addToId = url.searchParams.get("addTo");
-  let addTo: ContentDescription | undefined = undefined;
-
-  if (addToId) {
-    try {
-      const { data } = await axios.get(
-        `/api/info/getContentDescription/${addToId}`,
-      );
-      addTo = data;
-    } catch (_e) {
-      console.error(`Could not get description of ${addToId}`);
-    }
-  }
-
   return {
     content: data.content,
     ownerId: params.ownerId,
     owner: data.owner,
     parent: data.parent,
     listViewPref,
-    addTo,
   };
 }
 
 export function SharedActivities() {
-  const { content, ownerId, owner, parent, listViewPref, addTo } =
-    useLoaderData() as {
-      content: Content[];
-      ownerId: string;
-      owner: {
-        firstNames: string | null;
-        lastNames: string;
-      };
-      parent: Content | null;
-      listViewPref: boolean;
-      addTo?: ContentDescription;
+  const { content, ownerId, owner, parent, listViewPref } = useLoaderData() as {
+    content: Content[];
+    ownerId: string;
+    owner: {
+      firstNames: string | null;
+      lastNames: string;
     };
+    parent: Content | null;
+    listViewPref: boolean;
+  };
 
-  const { user } = useOutletContext<SiteContext>();
-
-  const navigate = useNavigate();
+  const { user, addTo, setAddTo } = useOutletContext<SiteContext>();
 
   const [listView, setListView] = useState(listViewPref);
 
@@ -156,8 +135,6 @@ export function SharedActivities() {
   }, [parent]);
 
   const fetcher = useFetcher();
-
-  const addToURLParams = addTo ? `?addTo=${addTo.contentId}` : "";
 
   const [infoContentId, setInfoContentId] = useState<string | null>(null);
 
@@ -193,7 +170,7 @@ export function SharedActivities() {
   } = useDisclosure();
 
   const copyContentModal =
-    addTo !== undefined ? (
+    addTo !== null ? (
       <CopyContentAndReportFinish
         fetcher={fetcher}
         isOpen={copyDialogIsOpen}
@@ -245,12 +222,12 @@ export function SharedActivities() {
           backgroundColor="gray.100"
           justifyContent="center"
         >
-          {addTo !== undefined ? (
+          {addTo !== null ? (
             <HStack hidden={numSelected > 0}>
               <CloseButton
                 size="sm"
                 onClick={() => {
-                  navigate(`.`);
+                  setAddTo(null);
                 }}
               />{" "}
               <Text noOfLines={1}>
@@ -262,7 +239,7 @@ export function SharedActivities() {
           <HStack hidden={numSelected === 0}>
             <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
             <Text>{numSelected} selected</Text>
-            <HStack hidden={addTo !== undefined}>
+            <HStack hidden={addTo !== null}>
               <AddContentToMenu
                 fetcher={fetcher}
                 sourceContent={selectedCardsFiltered}
@@ -278,10 +255,9 @@ export function SharedActivities() {
                 label="Create from selected"
               />
             </HStack>
-            {addTo !== undefined ? (
+            {addTo !== null ? (
               <Button
                 data-test="Add Selected To Button"
-                hidden={addTo === undefined}
                 size="xs"
                 colorScheme="blue"
                 onClick={() => {
@@ -302,7 +278,7 @@ export function SharedActivities() {
       <Flex marginRight=".5em" alignItems="center" paddingLeft="15px">
         {parent ? (
           <Link
-            to={`/sharedActivities/${ownerId}${parent.parent ? "/" + parent.parent.contentId : ""}${addToURLParams}`}
+            to={`/sharedActivities/${ownerId}${parent.parent ? "/" + parent.parent.contentId : ""}`}
             style={{
               color: "var(--mainBlue)",
             }}
@@ -343,8 +319,8 @@ export function SharedActivities() {
       content: activity,
       cardLink:
         activity.type == "folder"
-          ? `/sharedActivities/${activity.ownerId}/${activity.contentId}${addToURLParams}`
-          : `/activityViewer/${activity.contentId}${addToURLParams}`,
+          ? `/sharedActivities/${activity.ownerId}/${activity.contentId}`
+          : `/activityViewer/${activity.contentId}`,
       menuItems,
     };
   });

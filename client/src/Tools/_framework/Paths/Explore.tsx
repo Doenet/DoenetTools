@@ -134,20 +134,6 @@ export async function loader({ params, request }) {
 
   const authorId = url.searchParams.get("author") ?? undefined;
 
-  const addToId = url.searchParams.get("addTo");
-  let addTo: ContentDescription | undefined = undefined;
-
-  if (addToId) {
-    try {
-      const { data } = await axios.get(
-        `/api/info/getContentDescription/${addToId}`,
-      );
-      addTo = data;
-    } catch (_e) {
-      console.error(`Could not get description of ${addToId}`);
-    }
-  }
-
   const q = url.searchParams.get("q");
 
   if (q) {
@@ -172,7 +158,6 @@ export async function loader({ params, request }) {
       features,
       availableFeatures,
       listViewPref,
-      addTo,
     };
   } else {
     const { data: browseData } = await axios.post(
@@ -194,7 +179,6 @@ export async function loader({ params, request }) {
       features,
       availableFeatures,
       listViewPref,
-      addTo,
     };
   }
 }
@@ -221,7 +205,6 @@ export function Explore() {
     features,
     availableFeatures,
     listViewPref,
-    addTo,
   } = useLoaderData() as {
     q?: string;
     topAuthors: UserInfo[] | null;
@@ -246,13 +229,14 @@ export function Explore() {
     features: Set<string>;
     availableFeatures: ContentFeature[];
     listViewPref: boolean;
-    addTo?: ContentDescription;
   };
 
   const {
     user,
     exploreTab: currentTab,
     setExploreTab: setCurrentTab,
+    addTo,
+    setAddTo,
   } = useOutletContext<SiteContext>();
 
   const [searchString, setSearchString] = useState(q || "");
@@ -327,7 +311,7 @@ export function Explore() {
   } = useDisclosure();
 
   const copyContentModal =
-    addTo !== undefined ? (
+    addTo !== null ? (
       <CopyContentAndReportFinish
         fetcher={fetcher}
         isOpen={copyDialogIsOpen}
@@ -386,13 +370,12 @@ export function Explore() {
     matches: Content[],
     minHeight?: string | { base: string; lg: string },
   ) {
-    const addToURLParams = addTo ? `?addTo=${addTo.contentId}` : "";
     const cardContent: CardContent[] = matches.map((itemObj) => {
       const { contentId, owner, type: contentType } = itemObj;
       const cardLink =
         contentType === "folder" && owner != undefined
-          ? `/sharedActivities/${owner.userId}/${contentId}${addToURLParams}`
-          : `/activityViewer/${contentId}${addToURLParams}`;
+          ? `/sharedActivities/${owner.userId}/${contentId}`
+          : `/activityViewer/${contentId}`;
 
       const menuItems = (
         <MenuItem
@@ -824,13 +807,12 @@ export function Explore() {
             backgroundColor="gray.100"
             justifyContent="center"
           >
-            {addTo !== undefined ? (
+            {addTo !== null ? (
               <HStack hidden={numSelected > 0}>
                 <CloseButton
                   size="sm"
                   onClick={() => {
-                    const newSearch = clearQueryParameter("addTo", search);
-                    navigate(`.${newSearch}`);
+                    setAddTo(null);
                   }}
                 />{" "}
                 <Text noOfLines={1}>
@@ -842,7 +824,7 @@ export function Explore() {
             <HStack hidden={numSelected === 0}>
               <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
               <Text>{numSelected} selected</Text>
-              <HStack hidden={addTo !== undefined}>
+              <HStack hidden={addTo !== null}>
                 <AddContentToMenu
                   fetcher={fetcher}
                   sourceContent={selectedCardsFiltered}
@@ -858,10 +840,9 @@ export function Explore() {
                   label="Create from selected"
                 />
               </HStack>
-              {addTo !== undefined ? (
+              {addTo !== null ? (
                 <Button
                   data-test="Add Selected To Button"
-                  hidden={addTo === undefined}
                   size="xs"
                   colorScheme="blue"
                   onClick={() => {
