@@ -51,7 +51,7 @@ export function AnswerResponseDrawer({
   assignment: { name: string; type: ContentType; contentId: string };
   student: UserInfo;
   answerId: string;
-  itemNumber: number | null;
+  itemNumber: number;
   shuffledOrder: boolean;
   contentAttemptNumber: number;
   itemAttemptNumber: number | null;
@@ -112,7 +112,7 @@ export function AnswerResponseDrawer({
               Assignment: {assignment.name}
             </Text>
           </Tooltip>
-          {itemNumber !== null ? (
+          {assignment.type !== "singleDoc" ? (
             <Tooltip label={itemName} openDelay={1000}>
               <Text fontSize="smaller" noOfLines={1}>
                 Item: {itemNumber}. {itemName}

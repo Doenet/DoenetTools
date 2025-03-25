@@ -147,7 +147,7 @@ passport.use(
 
       sendEmail();
     },
-    async (user: { email: string; fromAnonymous: string }) => {
+    async (user: { email: string; fromAnonymous: string | number }) => {
       return {
         provider: "magiclink",
         email: user.email as string,
