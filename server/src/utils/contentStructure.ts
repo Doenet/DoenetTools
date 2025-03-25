@@ -1,4 +1,4 @@
-import { ContentType } from "@prisma/client";
+import { AssignmentMode, ContentType } from "@prisma/client";
 import {
   AssignmentStatus,
   ContentClassification,
@@ -143,7 +143,6 @@ export function processLicense(
 
 export function returnContentSelect({
   includeAssignInfo = false,
-  countAssignmentScores = false,
   includeLibraryInfo = false,
   includeClassifications = false,
   includeShareDetails = false,
@@ -214,10 +213,6 @@ export function returnContentSelect({
       }
     : false;
 
-  const _count = countAssignmentScores
-    ? { select: { assignmentScores: true } }
-    : false;
-
   const baseSelect = {
     id: true,
     name: true,
@@ -248,21 +243,44 @@ export function returnContentSelect({
     librarySourceInfo,
     libraryActivityInfo,
     ...classificationsObj,
-    _count,
   };
 
-  const assignment = includeAssignInfo
+  const rootAssignment = includeAssignInfo
     ? {
         select: {
+          assigned: true,
           classCode: true,
           codeValidUntil: true,
+          mode: true,
+          individualizeByStudent: true,
+          maxAttempts: true,
+          _count: { select: { contentState: true } },
+        },
+      }
+    : false;
+
+  const nonRootAssignment = includeAssignInfo
+    ? {
+        select: {
+          assigned: true,
+          classCode: true,
+          codeValidUntil: true,
+          mode: true,
+          individualizeByStudent: true,
+          maxAttempts: true,
+          rootContent: {
+            select: {
+              name: true,
+              id: true,
+              type: true,
+            },
+          },
         },
       }
     : false;
 
   const docSelect = {
     numVariants: true,
-    baseComponentCounts: true,
     source: true,
     doenetmlVersion: true,
   };
@@ -275,12 +293,11 @@ export function returnContentSelect({
   const problemSetSelect = {
     shuffle: true,
     paginate: true,
-    activityLevelAttempts: true,
-    itemLevelAttempts: true,
   };
 
   return {
-    assignment,
+    rootAssignment,
+    nonRootAssignment,
     ...baseSelect,
     ...docSelect,
     ...questionBankSelect,
@@ -355,14 +372,33 @@ type PreliminaryContent = {
   classifications?: {
     classification: ContentClassification;
   }[];
-  _count?: {
-    assignmentScores: number;
-  };
+  activityLevelAttempts: boolean;
+  itemLevelAttempts: boolean;
 
-  // if `includeAssignedRevision` specified
-  assignment?: {
+  // if `includeAssignInfo` is specified
+  rootAssignment?: {
+    assigned: boolean;
     classCode: string;
     codeValidUntil: Date | null;
+    mode: AssignmentMode;
+    individualizeByStudent: boolean;
+    maxAttempts: number;
+    _count?: {
+      contentState: number;
+    };
+  } | null;
+  nonRootAssignment?: {
+    assigned: boolean;
+    classCode: string;
+    codeValidUntil: Date | null;
+    mode: AssignmentMode;
+    individualizeByStudent: boolean;
+    maxAttempts: number;
+    rootContent: {
+      name: string;
+      id: Uint8Array;
+      type: ContentType;
+    };
   } | null;
 
   // from document select
@@ -377,7 +413,6 @@ type PreliminaryContent = {
     deprecationMessage: string;
   } | null;
   numVariants?: number;
-  baseComponentCounts?: string | null;
 
   // from question bank select
   numToSelect: number;
@@ -386,8 +421,6 @@ type PreliminaryContent = {
   // from problem bank select
   shuffle: boolean;
   paginate: boolean;
-  activityLevelAttempts: boolean;
-  itemLevelAttempts: boolean;
 };
 
 export function processContent(
@@ -398,19 +431,20 @@ export function processContent(
   const {
     id,
     type,
-    _count,
+    activityLevelAttempts,
+    itemLevelAttempts,
     sharedWith: sharedWithOrig,
     license,
     parent,
     classifications,
     libraryActivityInfo,
     librarySourceInfo,
-    assignment,
+    rootAssignment,
+    nonRootAssignment,
 
     // from doc select
     source: sourceOrig,
     numVariants: numVariantsOrig,
-    baseComponentCounts: baseComponentCountsOrig,
     doenetmlVersion: doenetmlVersionOrig,
 
     // from question bank select
@@ -420,25 +454,70 @@ export function processContent(
     // from problem set select
     shuffle,
     paginate,
-    activityLevelAttempts,
-    itemLevelAttempts,
 
     ...preliminaryContent2
   } = preliminaryContent;
 
   const assignmentInfoObj: { assignmentInfo?: AssignmentInfo } = {};
 
-  if (assignment) {
-    const { codeValidUntil, classCode } = assignment;
+  if (rootAssignment) {
+    const {
+      codeValidUntil,
+      classCode,
+      assigned,
+      maxAttempts,
+      mode,
+      individualizeByStudent,
+      _count,
+    } = rootAssignment;
     const isOpen = codeValidUntil
       ? DateTime.now() <= DateTime.fromJSDate(codeValidUntil)
       : false;
-    const assignmentStatus: AssignmentStatus = isOpen ? "Open" : "Closed";
+    const assignmentStatus: AssignmentStatus = assigned
+      ? isOpen
+        ? "Open"
+        : "Closed"
+      : "Unassigned";
     assignmentInfoObj.assignmentInfo = {
       assignmentStatus,
       classCode,
       codeValidUntil,
-      hasScoreData: _count ? _count.assignmentScores > 0 : false,
+      mode,
+      individualizeByStudent,
+      maxAttempts,
+      hasScoreData: _count ? _count.contentState > 0 : false,
+    };
+  } else if (nonRootAssignment) {
+    const {
+      codeValidUntil,
+      classCode,
+      assigned,
+      maxAttempts,
+      mode,
+      individualizeByStudent,
+      rootContent,
+    } = nonRootAssignment;
+    const isOpen = codeValidUntil
+      ? DateTime.now() <= DateTime.fromJSDate(codeValidUntil)
+      : false;
+    const assignmentStatus: AssignmentStatus = assigned
+      ? isOpen
+        ? "Open"
+        : "Closed"
+      : "Unassigned";
+    assignmentInfoObj.assignmentInfo = {
+      assignmentStatus,
+      classCode,
+      codeValidUntil,
+      mode,
+      individualizeByStudent,
+      maxAttempts,
+      otherRoot: {
+        rootContentId: rootContent.id,
+        rootName: rootContent.name,
+        rootType: rootContent.type,
+      },
+      hasScoreData: false,
     };
   }
 
@@ -479,7 +558,6 @@ export function processContent(
       let docInfo: {
         doenetML: string;
         numVariants: number;
-        baseComponentCounts: string;
         doenetmlVersion: DoenetmlVersion;
         revisionNum?: number;
       };
@@ -487,13 +565,11 @@ export function processContent(
       if (
         sourceOrig != null &&
         numVariantsOrig !== undefined &&
-        baseComponentCountsOrig != null &&
         doenetmlVersionOrig != null
       ) {
         docInfo = {
           doenetML: sourceOrig,
           numVariants: numVariantsOrig,
-          baseComponentCounts: baseComponentCountsOrig,
           doenetmlVersion: doenetmlVersionOrig,
         };
       } else {
@@ -520,8 +596,6 @@ export function processContent(
         type: "sequence",
         shuffle,
         paginate,
-        activityLevelAttempts,
-        itemLevelAttempts,
         children: [],
         ...baseContent,
       };
@@ -590,9 +664,6 @@ export function compileActivityFromContent(activity: Content): ActivitySource {
         doenetML: activity.doenetML!,
         version: activity.doenetmlVersion.fullVersion,
         numVariants: activity.numVariants,
-        baseComponentCounts: activity.baseComponentCounts
-          ? JSON.parse(activity.baseComponentCounts)
-          : undefined,
       };
     }
     case "select": {

@@ -1,11 +1,16 @@
 import { expect, test } from "vitest";
 import { createTestUser } from "./utils";
 import { createContent, updateContent } from "../query/activity";
-import { copyContent, createContentCopyInChildren } from "../query/copy_move";
+import {
+  copyContent,
+  createContentCopyInChildren,
+  moveContent,
+} from "../query/copy_move";
 import { setContentIsPublic } from "../query/share";
 import { getMyContent } from "../query/content_list";
 import { getContent } from "../query/activity_edit_view";
 import { isEqualUUID } from "../utils/uuid";
+import { assignActivity } from "../query/assign";
 
 test("copy folder", async () => {
   const { userId: ownerId } = await createTestUser();
@@ -764,4 +769,221 @@ test("create content copy in children", async () => {
   expect(newActivity.children[2].name).eq("Question 2B");
   expect(newActivity.children[3].name).eq("Question 3A");
   expect(newActivity.children[4].name).eq("Question 3B");
+});
+
+test("cannot copy/move into assigned problem set or question bank or move out", async () => {
+  const { userId: ownerId } = await createTestUser();
+
+  const { contentId: sequenceId } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "sequence",
+    parentId: null,
+  });
+
+  const { contentId: select1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "select",
+    parentId: sequenceId,
+  });
+
+  const { contentId: select2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "select",
+    parentId: null,
+  });
+
+  const { contentId: doc1Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+
+  const { contentId: doc2Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+
+  const { contentId: doc3Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+
+  const { contentId: doc4Id } = await createContent({
+    loggedInUserId: ownerId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+
+  // can copy doc1Id into selects and sequences
+  const {
+    newContentIds: [doc1aId],
+  } = await copyContent({
+    contentIds: [doc1Id],
+    loggedInUserId: ownerId,
+    parentId: sequenceId,
+  });
+  const {
+    newContentIds: [doc1bId],
+  } = await copyContent({
+    contentIds: [doc1Id],
+    loggedInUserId: ownerId,
+    parentId: select1Id,
+  });
+  const {
+    newContentIds: [doc1cId],
+  } = await copyContent({
+    contentIds: [doc1Id],
+    loggedInUserId: ownerId,
+    parentId: select2Id,
+  });
+
+  // can move docs 2-4 into selects and sequences
+  await moveContent({
+    contentId: doc2Id,
+    parentId: sequenceId,
+    loggedInUserId: ownerId,
+    desiredPosition: 0,
+  });
+  await moveContent({
+    contentId: doc3Id,
+    parentId: select1Id,
+    loggedInUserId: ownerId,
+    desiredPosition: 0,
+  });
+  await moveContent({
+    contentId: doc4Id,
+    parentId: select2Id,
+    loggedInUserId: ownerId,
+    desiredPosition: 0,
+  });
+
+  // check that copies and moves worked
+  let contentList = await getMyContent({
+    ownerId,
+    parentId: null,
+    loggedInUserId: ownerId,
+  });
+  if (contentList.notMe) {
+    throw Error("Shouldn't happen");
+  }
+  expect(contentList.content.map((c) => c.contentId)).eqls([
+    sequenceId,
+    select2Id,
+    doc1Id,
+  ]);
+
+  contentList = await getMyContent({
+    ownerId,
+    parentId: sequenceId,
+    loggedInUserId: ownerId,
+  });
+  if (contentList.notMe) {
+    throw Error("Shouldn't happen");
+  }
+  expect(contentList.content.map((c) => c.contentId)).eqls([
+    doc2Id,
+    select1Id,
+    doc1aId,
+  ]);
+
+  contentList = await getMyContent({
+    ownerId,
+    parentId: select1Id,
+    loggedInUserId: ownerId,
+  });
+  if (contentList.notMe) {
+    throw Error("Shouldn't happen");
+  }
+  expect(contentList.content.map((c) => c.contentId)).eqls([doc3Id, doc1bId]);
+
+  contentList = await getMyContent({
+    ownerId,
+    parentId: select2Id,
+    loggedInUserId: ownerId,
+  });
+  if (contentList.notMe) {
+    throw Error("Shouldn't happen");
+  }
+  expect(contentList.content.map((c) => c.contentId)).eqls([doc4Id, doc1cId]);
+
+  // assigned sequence and select2
+  await assignActivity({ contentId: sequenceId, loggedInUserId: ownerId });
+  await assignActivity({ contentId: select2Id, loggedInUserId: ownerId });
+
+  // cannot copy doc1 into sequence, select1, or select2
+  await expect(
+    copyContent({
+      contentIds: [doc1Id],
+      loggedInUserId: ownerId,
+      parentId: sequenceId,
+    }),
+  ).rejects.toThrow("Cannot copy content into an assigned activity");
+  await expect(
+    copyContent({
+      contentIds: [doc1Id],
+      loggedInUserId: ownerId,
+      parentId: select1Id,
+    }),
+  ).rejects.toThrow("Cannot copy content into an assigned activity");
+  await expect(
+    copyContent({
+      contentIds: [doc1Id],
+      loggedInUserId: ownerId,
+      parentId: select2Id,
+    }),
+  ).rejects.toThrow("Cannot copy content into an assigned activity");
+
+  // cannot move doc1 into sequence, select1 or select2
+  await expect(
+    moveContent({
+      contentId: doc1Id,
+      parentId: sequenceId,
+      desiredPosition: 0,
+      loggedInUserId: ownerId,
+    }),
+  ).rejects.toThrow("Cannot move content into an assigned activity");
+  await expect(
+    moveContent({
+      contentId: doc1Id,
+      parentId: select1Id,
+      desiredPosition: 0,
+      loggedInUserId: ownerId,
+    }),
+  ).rejects.toThrow("Cannot move content into an assigned activity");
+  await expect(
+    moveContent({
+      contentId: doc1Id,
+      parentId: select2Id,
+      desiredPosition: 0,
+      loggedInUserId: ownerId,
+    }),
+  ).rejects.toThrow("Cannot move content into an assigned activity");
+
+  // cannot move content out of sequence, select1 or select2
+  await expect(
+    moveContent({
+      contentId: doc2Id,
+      parentId: null,
+      desiredPosition: 0,
+      loggedInUserId: ownerId,
+    }),
+  ).rejects.toThrow("Cannot move content in an assigned activity");
+  await expect(
+    moveContent({
+      contentId: doc3Id,
+      parentId: null,
+      desiredPosition: 0,
+      loggedInUserId: ownerId,
+    }),
+  ).rejects.toThrow("Cannot move content in an assigned activity");
+  await expect(
+    moveContent({
+      contentId: doc4Id,
+      parentId: null,
+      desiredPosition: 0,
+      loggedInUserId: ownerId,
+    }),
+  ).rejects.toThrow("Cannot move content in an assigned activity");
 });

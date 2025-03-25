@@ -1,0 +1,10 @@
+.score-table th,
+.score-table td {
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+.score-table tr.no-bottom-padding th {
+  padding-bottom: 0px;
+}

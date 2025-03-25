@@ -1,13 +1,32 @@
-import React, { useState } from "react";
+import React, { ReactElement, useState } from "react";
 import { Box } from "@chakra-ui/react";
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 import { useLocation, useNavigate } from "react-router";
+import { DoenetmlVersion } from "../../../_utils/types";
+import { ActivitySource } from "../../../_utils/viewerTypes";
+import { ActivityViewer as DoenetActivityViewer } from "@doenet/assignment-viewer";
 
 export default function AssignmentPreview({
-  doenetML,
-  doenetmlVersion,
+  data,
+  itemNumber,
   active = true,
   maxHeight = 600,
+  disableShuffle = true,
+}: {
+  data:
+    | {
+        type: "singleDoc";
+        doenetML: string;
+        doenetmlVersion: DoenetmlVersion;
+      }
+    | {
+        type: "select" | "sequence";
+        activityJson: ActivitySource;
+      };
+  itemNumber: number;
+  active?: boolean;
+  maxHeight?: number;
+  disableShuffle?: boolean;
 }) {
   const [variants, setVariants] = useState({
     index: 1,
@@ -17,6 +36,68 @@ export default function AssignmentPreview({
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  let viewer: ReactElement | null = null;
+
+  if (active) {
+    if (data.type === "singleDoc") {
+      viewer = (
+        <DoenetViewer
+          doenetML={data.doenetML}
+          doenetmlVersion={data.doenetmlVersion.fullVersion}
+          flags={{
+            showCorrectness: true,
+            solutionDisplayMode: "button",
+            showFeedback: true,
+            showHints: true,
+            autoSubmit: false,
+            allowLoadState: false,
+            allowSaveState: false,
+            allowLocalState: false,
+            allowSaveEvents: false,
+          }}
+          attemptNumber={1}
+          generatedVariantCallback={setVariants}
+          requestedVariantIndex={variants.index}
+          location={location}
+          navigate={navigate}
+          linkSettings={{
+            viewURL: "/activityViewer",
+            editURL: "/codeViewer",
+          }}
+          showAnswerTitles={true}
+        />
+      );
+    } else {
+      const source =
+        disableShuffle && data.activityJson.type === "sequence"
+          ? { ...data.activityJson, shuffle: false }
+          : data.activityJson;
+
+      viewer = (
+        <DoenetActivityViewer
+          source={source}
+          requestedVariantIndex={1}
+          linkSettings={{ viewUrl: "", editURL: "" }}
+          paginate={false}
+          showTitle={false}
+          flags={{
+            showCorrectness: true,
+            solutionDisplayMode: "button",
+            showFeedback: true,
+            showHints: true,
+            autoSubmit: false,
+            allowLoadState: false,
+            allowSaveState: false,
+            allowLocalState: false,
+            allowSaveEvents: false,
+          }}
+          showAnswerTitles={true}
+          renderOnlyItem={itemNumber}
+        />
+      );
+    }
+  }
 
   return (
     <Box
@@ -28,36 +109,7 @@ export default function AssignmentPreview({
       overflow="scroll"
       maxHeight={maxHeight}
     >
-      {active ? (
-        <DoenetViewer
-          doenetML={doenetML}
-          doenetmlVersion={doenetmlVersion}
-          flags={{
-            showCorrectness: true,
-            solutionDisplayMode: "button",
-            showFeedback: true,
-            showHints: true,
-            autoSubmit: false,
-            allowLoadState: false,
-            allowSaveState: false,
-            allowLocalState: false,
-            allowSaveSubmissions: false,
-            allowSaveEvents: false,
-          }}
-          attemptNumber={1}
-          generatedVariantCallback={setVariants}
-          requestedVariantIndex={variants.index}
-          idsIncludeContentId={false}
-          paginate={true}
-          location={location}
-          navigate={navigate}
-          linkSettings={{
-            viewURL: "/activityViewer",
-            editURL: "/codeViewer",
-          }}
-          showAnswerTitles={true}
-        />
-      ) : null}
+      {viewer}
     </Box>
   );
 }

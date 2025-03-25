@@ -196,7 +196,6 @@ Cypress.Commands.add(
             contentId,
             doenetML,
             numVariants: 1,
-            baseComponentCounts: "{}",
           },
         });
       }

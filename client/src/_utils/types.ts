@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import { ActivitySource } from "./viewerTypes";
 
 export type DoenetmlVersion = {
   id: number;
@@ -119,6 +118,7 @@ export type PartialContentClassification = {
 };
 
 export type ContentType = "singleDoc" | "select" | "sequence" | "folder";
+export type AssignmentMode = "formative" | "summative";
 
 export type ContentBase = {
   contentId: string;
@@ -156,7 +156,6 @@ export type ContentBase = {
 export type Doc = ContentBase & {
   type: "singleDoc";
   numVariants: number;
-  baseComponentCounts: string;
   revisionNum?: number;
   doenetML: string;
   doenetmlVersion: DoenetmlVersion;
@@ -164,7 +163,7 @@ export type Doc = ContentBase & {
 
 export type QuestionBank = ContentBase & {
   type: "select";
-  activityJson?: ActivitySource;
+  activityJson?: string;
   revisionNum?: number;
   numToSelect: number;
   selectByVariant: boolean;
@@ -173,12 +172,10 @@ export type QuestionBank = ContentBase & {
 
 export type ProblemSet = ContentBase & {
   type: "sequence";
-  activityJson?: ActivitySource;
+  activityJson?: string;
   revisionNum?: number;
   shuffle: boolean;
   paginate: boolean;
-  activityLevelAttempts: boolean;
-  itemLevelAttempts: boolean;
   children: Content[];
 };
 
@@ -196,7 +193,15 @@ export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
   classCode: string | null;
   codeValidUntil: string | null;
+  otherRoot?: {
+    rootContentId: string;
+    rootName: string;
+    rootType: ContentType;
+  };
   hasScoreData: boolean;
+  mode: AssignmentMode;
+  individualizeByStudent: boolean;
+  maxAttempts: number;
 };
 
 export type ActivityHistoryItem = {
@@ -204,8 +209,8 @@ export type ActivityHistoryItem = {
   prevContentId: Uint8Array;
   prevRevisionNum: number;
   withLicenseCode: LicenseCode | null;
-  timestampActivity: DateTime;
-  timestampPrevActivity: DateTime;
+  timestampContent: DateTime;
+  timestampPrevContent: DateTime;
   prevName: string;
   prevOwner: UserInfo;
   prevCidAtRemix: string;
@@ -219,8 +224,8 @@ export type ActivityRemixItem = {
   contentId: Uint8Array;
   name: string;
   owner: UserInfo;
-  timestampActivity: DateTime;
-  timestampPrevActivity: DateTime;
+  timestampContent: DateTime;
+  timestampPrevContent: DateTime;
   directCopy: boolean;
 };
 

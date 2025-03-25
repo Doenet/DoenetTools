@@ -119,7 +119,7 @@ export function filterEditableActivity(
  *
  * For content to be editable, one of these conditions must be true:
  * 1. `loggedInUserId` is the owner
- * 4. `loggedInUserId` is an admin and the content is in the library.
+ * 2. `loggedInUserId` is an admin and the content is in the library.
  *
  * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
  */
@@ -139,6 +139,40 @@ export function filterEditableContent(
     isDeleted: false,
     OR: editabilityOptions,
   };
+}
+
+/**
+ * Return a MySQL cause to be added to a WHERE statement, filtering to content editable by `loggedInUserId`.
+ *
+ * For content to be viewable, one of these conditions must be true:
+ * 1. `loggedInUserId` is the owner
+ * 2. `loggedInUserId` is an admin and the content is in the library.
+ *
+ * NOTE: This function does not verify admin privileges. You must pass in the correct `isAdmin` flag.
+ */
+export function editableContentWhere(
+  loggedInUserId: Uint8Array,
+  isAdmin: boolean = false,
+) {
+  let visibilityOptions = Prisma.sql`
+      content.ownerId = ${loggedInUserId}
+  `;
+
+  if (isAdmin) {
+    visibilityOptions = Prisma.sql`
+        ${visibilityOptions}
+        OR (SELECT isLibrary FROM users WHERE userId = content.ownerId) = TRUE
+        `;
+  }
+
+  const whereStatement = Prisma.sql`
+    content.isDeleted = FALSE
+    AND (
+      ${visibilityOptions}
+    )
+  `;
+
+  return whereStatement;
 }
 
 /**

@@ -5,26 +5,28 @@ import {
   closeAssignmentWithCode,
   getAllAssignmentScores,
   getAssignedScores,
-  getAssignmentData,
-  getAssignmentStudentData,
-  getStudentData,
-  getSubmittedResponseHistory,
-  getSubmittedResponses,
+  getAssignmentResponseOverview,
+  getAssignmentResponseStudent,
+  getStudentAssignmentScores,
+  getStudentSubmittedResponses,
   listUserAssigned,
   openAssignmentWithCode,
   recordSubmittedEvent,
   unassignActivity,
+  updateAssignmentCloseAt,
+  updateAssignmentMaxAttempts,
   updateAssignmentSettings,
 } from "../query/assign";
 import { contentIdSchema } from "../schemas/contentSchema";
 import {
   assignmentParentSchema,
-  assignmentSettingsSchema,
-  assignmentStudentSchema,
-  getStudentDataSchema,
-  getSubmittedResponseHistorySchema,
-  getSubmittedResponsesSchema,
+  assignmentCloseAtSchema,
+  getStudentAssignmentScoresSchema,
   recordSubmittedEventSchema,
+  assignmentMaxAttemptsSchema,
+  assignmentSettingsSchema,
+  getAssignmentResponseStudentSchema,
+  getStudentSubmittedResponsesSchema,
 } from "../schemas/assignSchema";
 import {
   queryLoggedIn,
@@ -35,13 +37,6 @@ export const assignRouter = express.Router();
 
 assignRouter.use(requireLoggedIn);
 
-assignRouter.get("/getAssigned", queryLoggedInNoArguments(listUserAssigned));
-
-assignRouter.get(
-  "/getAssignedScores",
-  queryLoggedInNoArguments(getAssignedScores),
-);
-
 assignRouter.post(
   "/assignActivity",
   queryLoggedIn(assignActivity, contentIdSchema),
@@ -49,7 +44,17 @@ assignRouter.post(
 
 assignRouter.post(
   "/openAssignmentWithCode",
-  queryLoggedIn(openAssignmentWithCode, assignmentSettingsSchema),
+  queryLoggedIn(openAssignmentWithCode, assignmentCloseAtSchema),
+);
+
+assignRouter.post(
+  "/updateAssignmentCloseAt",
+  queryLoggedIn(updateAssignmentCloseAt, assignmentCloseAtSchema),
+);
+
+assignRouter.post(
+  "/updateAssignmentMaxAttempts",
+  queryLoggedIn(updateAssignmentMaxAttempts, assignmentMaxAttemptsSchema),
 );
 
 assignRouter.post(
@@ -67,9 +72,11 @@ assignRouter.post(
   queryLoggedIn(unassignActivity, contentIdSchema),
 );
 
+assignRouter.get("/getAssigned", queryLoggedInNoArguments(listUserAssigned));
+
 assignRouter.get(
-  "/getAssignmentStudentData",
-  queryLoggedIn(getAssignmentStudentData, assignmentStudentSchema),
+  "/getAssignedScores",
+  queryLoggedInNoArguments(getAssignedScores),
 );
 
 assignRouter.get(
@@ -78,18 +85,18 @@ assignRouter.get(
 );
 
 assignRouter.get(
-  "/getStudentData",
-  queryLoggedIn(getStudentData, getStudentDataSchema),
+  "/getAllAssignmentScores/:parentId",
+  queryLoggedIn(getAllAssignmentScores, assignmentParentSchema),
 );
 
 assignRouter.get(
-  "/getSubmittedResponses",
-  queryLoggedIn(getSubmittedResponses, getSubmittedResponsesSchema),
+  "/getStudentAssignmentScores/:studentUserId",
+  queryLoggedIn(getStudentAssignmentScores, getStudentAssignmentScoresSchema),
 );
 
 assignRouter.get(
-  "/getSubmittedResponseHistory",
-  queryLoggedIn(getSubmittedResponseHistory, getSubmittedResponseHistorySchema),
+  "/getStudentAssignmentScores/:studentUserId/:parentId",
+  queryLoggedIn(getStudentAssignmentScores, getStudentAssignmentScoresSchema),
 );
 
 assignRouter.post(
@@ -98,6 +105,30 @@ assignRouter.post(
 );
 
 assignRouter.get(
-  "/getAssignmentData",
-  queryLoggedIn(getAssignmentData, contentIdSchema),
+  "/getAssignmentResponseOverview/:contentId",
+  queryLoggedIn(getAssignmentResponseOverview, contentIdSchema),
+);
+
+assignRouter.get(
+  "/getAssignmentResponseStudent/:contentId/:studentUserId",
+  queryLoggedIn(
+    getAssignmentResponseStudent,
+    getAssignmentResponseStudentSchema,
+  ),
+);
+
+assignRouter.get(
+  "/getAssignmentResponseStudent/:contentId",
+  queryLoggedIn(
+    getAssignmentResponseStudent,
+    getAssignmentResponseStudentSchema,
+  ),
+);
+
+assignRouter.get(
+  "/getStudentSubmittedResponses/:contentId/:studentUserId",
+  queryLoggedIn(
+    getStudentSubmittedResponses,
+    getStudentSubmittedResponsesSchema,
+  ),
 );

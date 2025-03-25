@@ -1,4 +1,4 @@
-import { ContentType } from "@prisma/client";
+import { AssignmentMode, ContentType } from "@prisma/client";
 import { prisma } from "./model";
 
 export type DoenetmlVersion = {
@@ -158,7 +158,6 @@ export type ContentBase = {
 export type Doc = ContentBase & {
   type: "singleDoc";
   numVariants: number;
-  baseComponentCounts: string;
   revisionNum?: number;
   doenetML: string;
   doenetmlVersion: DoenetmlVersion;
@@ -179,8 +178,6 @@ export type ProblemSet = ContentBase & {
   revisionNum?: number;
   shuffle: boolean;
   paginate: boolean;
-  activityLevelAttempts: boolean;
-  itemLevelAttempts: boolean;
   children: Content[];
 };
 
@@ -198,7 +195,15 @@ export type AssignmentInfo = {
   assignmentStatus: AssignmentStatus;
   classCode: string;
   codeValidUntil: Date | null;
+  otherRoot?: {
+    rootContentId: Uint8Array;
+    rootName: string;
+    rootType: ContentType;
+  };
   hasScoreData: boolean;
+  mode: AssignmentMode;
+  individualizeByStudent: boolean;
+  maxAttempts: number;
 };
 
 export async function createContentInfo({
@@ -233,7 +238,6 @@ export async function createContentInfo({
       return {
         type: "singleDoc",
         numVariants: 1,
-        baseComponentCounts: "{}",
         doenetML: "",
         doenetmlVersion: defaultDoenetmlVersion,
         ...contentBase,
@@ -253,8 +257,6 @@ export async function createContentInfo({
         type: "sequence",
         shuffle: false,
         paginate: false,
-        activityLevelAttempts: false,
-        itemLevelAttempts: false,
         children: [],
         ...contentBase,
       };
@@ -294,8 +296,8 @@ export type ActivityHistoryItem = {
   prevContentId: Uint8Array;
   prevRevisionNum: number;
   withLicenseCode: LicenseCode | null;
-  timestampActivity: Date;
-  timestampPrevActivity: Date;
+  timestampContent: Date;
+  timestampPrevContent: Date;
   prevName: string;
   prevOwner: UserInfo;
   prevCidAtRemix: string;
@@ -309,8 +311,8 @@ export type ActivityRemixItem = {
   contentId: Uint8Array;
   name: string;
   owner: UserInfo;
-  timestampActivity: Date;
-  timestampPrevActivity: Date;
+  timestampContent: Date;
+  timestampPrevContent: Date;
   directCopy: boolean;
 };
 

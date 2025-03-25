@@ -147,7 +147,7 @@ passport.use(
 
       sendEmail();
     },
-    async (user: { email: string; fromAnonymous: string | number }) => {
+    async (user: { email: string; fromAnonymous: string }) => {
       return {
         provider: "magiclink",
         email: user.email as string,
@@ -278,7 +278,7 @@ app.use("/api/oldAdmin", oldAdminRouter);
 app.use("/api/assign", assignRouter);
 app.use("/api/updateContent", updateContentRouter);
 app.use("/api/share", shareRouter);
-app.use("/api/scores", scoreRouter);
+app.use("/api/score", scoreRouter);
 app.use("/api/classifications", classificationRouter);
 app.use("/api/activityEditView", activityEditViewRouter);
 app.use("/api/explore", exploreRouter);
@@ -298,10 +298,10 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server" + JSON.stringify(req?.user));
 });
 
-app.get(
-  "/api/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] }),
-);
+// app.get(
+//   "/api/auth/google",
+//   passport.authenticate("google", { scope: ["profile", "email"] }),
+// );
 
 app.post(
   "/api/auth/magiclink",

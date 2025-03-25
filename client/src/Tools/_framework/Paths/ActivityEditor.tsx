@@ -14,6 +14,7 @@ import {
   GridItem,
   HStack,
   Icon,
+  Link as ChakraLink,
   Show,
   Text,
   Tooltip,
@@ -23,13 +24,15 @@ import {
 import { BsPlayBtnFill } from "react-icons/bs";
 import {
   MdDataset,
+  MdInfoOutline,
   MdModeEditOutline,
   MdOutlineAssignment,
+  MdOutlineContentCopy,
   MdOutlineEditOff,
   MdOutlineGroup,
 } from "react-icons/md";
 import { FaCog } from "react-icons/fa";
-import { useFetcher } from "react-router";
+import { useFetcher, Link as ReactRouterLink, useNavigate } from "react-router";
 import axios from "axios";
 import {
   contentSettingsActions,
@@ -38,16 +41,15 @@ import {
 import { InfoIcon } from "@chakra-ui/icons";
 import { AssignmentInvitation } from "../ToolPanels/AssignmentInvitation";
 import {
-  assignmentSettingsActions,
-  AssignmentSettingsDrawer,
-} from "../ToolPanels/AssignmentSettingsDrawer";
+  assignmentControlsActions,
+  AssignmentControlsDrawer,
+} from "../ToolPanels/AssignmentControlsDrawer";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 import {
   ContentFeature,
   Content,
   DoenetmlVersion,
   License,
-  ContentDescription,
 } from "../../../_utils/types";
 import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
 import {
@@ -60,23 +62,26 @@ import {
   getIconInfo,
 } from "../../../_utils/activity";
 import { ActivitySource } from "../../../_utils/viewerTypes";
+import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
-  //Don't let name be blank
-  let name = formObj?.name?.trim();
-  if (name == "") {
-    name = "Untitled";
-  }
-
   if (formObj._action == "update name") {
+    //Don't let name be blank
+    let name = formObj?.name?.trim();
+    if (name === "") {
+      name = "Untitled";
+    }
+
     await axios.post(`/api/updateContent/updateContentSettings`, {
       contentId: params.contentId,
       name,
     });
     return true;
+  } else if (formObj._action === "go to data") {
+    return redirect(`/assignmentData/${params.contentId}`);
   }
 
   const resultCS = await contentSettingsActions({ formObj });
@@ -89,27 +94,20 @@ export async function action({ params, request }) {
     return resultSD;
   }
 
-  const resultAS = await assignmentSettingsActions({ formObj });
+  const resultAS = await assignmentControlsActions({ formObj });
   if (resultAS) {
     return resultAS;
   }
 
-  const resultNAE = await compoundActivityEditorActions(
-    { formObj },
-    { params },
-  );
+  const resultNAE = await compoundActivityEditorActions({ formObj });
   if (resultNAE) {
     return resultNAE;
-  }
-
-  if (formObj._action == "go to data") {
-    return redirect(`/assignmentData/${params.contentId}`);
   }
 
   return null;
 }
 
-export async function loader({ params, request }) {
+export async function loader({ params }) {
   const {
     data: { editableByMe, activity: activityData, availableFeatures },
   } = await axios.get(
@@ -117,25 +115,10 @@ export async function loader({ params, request }) {
   );
 
   if (!editableByMe) {
-    return redirect(`/codeViewer/${params.contentId}`);
+    return redirect(`/activityViewer/${params.contentId}`);
   }
 
   const contentId = params.contentId;
-
-  const url = new URL(request.url);
-  const addToId = url.searchParams.get("addTo");
-  let addTo: ContentDescription | undefined = undefined;
-
-  if (addToId) {
-    try {
-      const { data } = await axios.get(
-        `/api/info/getContentDescription/${addToId}`,
-      );
-      addTo = data;
-    } catch (_e) {
-      console.error(`Could not get description of ${addToId}`);
-    }
-  }
 
   // const supportingFileResp = await axios.get(
   //   `/api/loadSupportingFileInfo/${contentId}`,
@@ -174,7 +157,6 @@ export async function loader({ params, request }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
-      addTo,
     };
   } else {
     const activityJson = compileActivityFromContent(activityData);
@@ -189,7 +171,6 @@ export async function loader({ params, request }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
-      addTo,
     };
   }
 }
@@ -236,7 +217,7 @@ function EditableName({ dataTest }) {
       </Tooltip>
       <EditableInput
         maxLength={191}
-        width={{ base: "100%", md: "350px", lg: "450px" }}
+        width={{ base: "100%", lg: "450px" }}
         data-test="Editable Input"
       />
     </Editable>
@@ -250,7 +231,6 @@ export function ActivityEditor() {
     allLicenses: License[];
     availableFeatures: ContentFeature[];
     activityData: Content;
-    addTo: ContentDescription | undefined;
   } & (
     | {
         type: "singleDoc";
@@ -269,7 +249,6 @@ export function ActivityEditor() {
     allDoenetmlVersions,
     allLicenses,
     availableFeatures,
-    addTo,
   } = data;
 
   const finalFocusRef = useRef<HTMLElement | null>(null);
@@ -302,24 +281,23 @@ export function ActivityEditor() {
     onClose: invitationOnClose,
   } = useDisclosure();
 
+  const {
+    isOpen: copyDialogIsOpen,
+    onOpen: copyDialogOnOpen,
+    onClose: copyDialogOnClose,
+  } = useDisclosure();
+
   const assignmentInfo = activityData.assignmentInfo;
   const assignmentStatus = assignmentInfo?.assignmentStatus ?? "Unassigned";
+  const isSubActivity = (activityData.parent?.type ?? "folder") !== "folder";
 
   const readOnly = assignmentStatus !== "Unassigned";
   const readOnlyRef = useRef(readOnly);
   readOnlyRef.current = readOnly;
 
-  const [mode, setMode] = useState<"Edit" | "View">(readOnly ? "View" : "Edit");
+  const [mode, setMode] = useState<"Edit" | "View">("Edit");
 
   const isLibraryActivity = Boolean(activityData.libraryActivityInfo);
-
-  useEffect(() => {
-    if (readOnly) {
-      setMode("View");
-    } else {
-      setMode("Edit");
-    }
-  }, [readOnly, contentId]);
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
@@ -330,6 +308,7 @@ export function ActivityEditor() {
   const [highlightRename, setHighlightRename] = useState(false);
 
   const fetcher = useFetcher();
+  const navigate = useNavigate();
 
   const [editLabel, editTooltip, editIcon] =
     assignmentStatus === "Unassigned"
@@ -391,7 +370,6 @@ export function ActivityEditor() {
         setSettingsDisplayTab={setSettingsDisplayTab}
         setHighlightRename={setHighlightRename}
         headerHeight={`${readOnly ? 120 : 80}px`}
-        addTo={addTo}
       />
     );
   }
@@ -424,7 +402,7 @@ export function ActivityEditor() {
 
   const assignmentDrawers = !isLibraryActivity ? (
     <>
-      <AssignmentSettingsDrawer
+      <AssignmentControlsDrawer
         isOpen={assignmentSettingsAreOpen}
         onClose={assignmentSettingsOnClose}
         finalFocusRef={finalFocusRef}
@@ -439,6 +417,20 @@ export function ActivityEditor() {
       />
     </>
   ) : null;
+
+  const copyContentModal = (
+    <CopyContentAndReportFinish
+      fetcher={fetcher}
+      isOpen={copyDialogIsOpen}
+      onClose={copyDialogOnClose}
+      contentIds={[activityData.contentId]}
+      desiredParent={
+        activityData.parent ? { parent: null, ...activityData.parent } : null
+      }
+      action="Copy"
+      prependCopy={true}
+    />
+  );
 
   const contentTypeName = contentTypeToName[data.type];
 
@@ -466,6 +458,7 @@ export function ActivityEditor() {
       {settingsDrawer}
       {shareDrawer}
       {assignmentDrawers}
+      {copyContentModal}
 
       <Grid
         background="doenet.lightBlue"
@@ -491,13 +484,31 @@ export function ActivityEditor() {
             templateColumns={{
               base: "82px calc(100% - 197px) 115px",
               sm: "87px calc(100% - 217px) 120px",
-              md: "1fr 350px 1fr",
+              md: "270px calc(100% - 555px) 285px",
               lg: "1fr 450px 1fr",
             }}
             width="100%"
           >
             <GridItem area="leftControls">
               <HStack ml={{ base: "5px", sm: "10px" }} mt="4px">
+                <Show above="md">
+                  <Box width="50px" marginLeft="5px">
+                    <ChakraLink
+                      as={ReactRouterLink}
+                      to={".."}
+                      style={{
+                        color: "var(--mainBlue)",
+                      }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate(-1);
+                      }}
+                    >
+                      {" "}
+                      &lt; Back
+                    </ChakraLink>
+                  </Box>
+                </Show>
                 <ButtonGroup size="sm" isAttached variant="outline">
                   <Tooltip hasArrow label="View Activity">
                     <Button
@@ -565,29 +576,35 @@ export function ActivityEditor() {
                     </Tooltip>
                   ) : (
                     <>
-                      <Tooltip
-                        hasArrow
-                        label={
-                          assignmentStatus === "Unassigned"
-                            ? "Assign Activity"
-                            : "Manage Assignment"
-                        }
-                        placement="bottom-end"
-                      >
-                        <Button
-                          data-test="Assign Activity Button"
-                          size="sm"
-                          pr={{ base: "0px", md: "10px" }}
-                          leftIcon={<MdOutlineAssignment />}
-                          onClick={() => {
-                            finalFocusRef.current = assignBtnRef.current;
-                            assignmentSettingsOnOpen();
-                          }}
-                          ref={assignBtnRef}
+                      {isSubActivity ? null : (
+                        <Tooltip
+                          hasArrow
+                          label={
+                            assignmentStatus === "Unassigned"
+                              ? "Assign Activity"
+                              : "Manage Assignment"
+                          }
+                          placement="bottom-end"
                         >
-                          <Show above="md">Assign</Show>
-                        </Button>
-                      </Tooltip>
+                          <Button
+                            data-test="Assign Activity Button"
+                            size="sm"
+                            pr={{ base: "0px", md: "10px" }}
+                            leftIcon={<MdOutlineAssignment />}
+                            onClick={() => {
+                              finalFocusRef.current = assignBtnRef.current;
+                              assignmentSettingsOnOpen();
+                            }}
+                            ref={assignBtnRef}
+                          >
+                            <Show above="md">
+                              {assignmentStatus === "Unassigned"
+                                ? "Assign"
+                                : "Assigned"}
+                            </Show>
+                          </Button>
+                        </Tooltip>
+                      )}
 
                       <Tooltip
                         hasArrow
@@ -644,36 +661,47 @@ export function ActivityEditor() {
               <Center
                 background="orange.100"
                 width="100%"
-                height="40px"
+                height={{ base: "60px", sm: "40px" }}
                 pl="4px"
                 pr="4px"
               >
                 <InfoIcon color="orange.500" mr="6px" />
 
                 {assignmentInfo?.assignmentStatus === "Open" ? (
-                  <>
+                  isSubActivity ? (
                     <Text size="xs">
-                      {` Assignment is open with code ${assignmentInfo.classCode}. ${mode == "Edit" ? "It cannot be edited." : ""}`}
+                      {`Activity is part of an open assignment. ${mode == "Edit" ? "It cannot be edited." : ""}`}
                     </Text>
-                    <Button
-                      onClick={invitationOnOpen}
-                      colorScheme="blue"
-                      mt="4px"
-                      ml="4px"
-                      size="xs"
-                    >
-                      Activity Invitation
-                    </Button>
-                  </>
+                  ) : (
+                    <>
+                      <Text size="xs">
+                        {`Assignment is open with code ${assignmentInfo.classCode}. ${mode == "Edit" ? "Make a copy to create an editable version." : ""}`}
+                      </Text>
+
+                      <Tooltip label="Activity Invitation">
+                        <Button
+                          onClick={invitationOnOpen}
+                          colorScheme="blue"
+                          mt="4px"
+                          ml="4px"
+                          size="xs"
+                          leftIcon={<MdInfoOutline />}
+                          pr={{ base: "0px", md: "10px" }}
+                        >
+                          <Show above="md">Activity Invitation</Show>
+                        </Button>
+                      </Tooltip>
+                    </>
+                  )
                 ) : (
                   <Text size="xs">
-                    {`Activity is a closed assignment${mode == "Edit" ? " and cannot be edited." : "."}`}
+                    {`Activity is ${isSubActivity ? "part of " : ""}a closed assignment. ${mode == "Edit" ? "Make a copy to create an editable version." : "."}`}
                   </Text>
                 )}
                 {assignmentInfo?.hasScoreData ? (
                   <Tooltip label="View data">
                     <Button
-                      data-test="Assignment Setting Button"
+                      data-test="View Data Button"
                       colorScheme="blue"
                       mt="4px"
                       ml="4px"
@@ -691,6 +719,24 @@ export function ActivityEditor() {
                     </Button>
                   </Tooltip>
                 ) : null}
+                {isSubActivity ? null : (
+                  <Tooltip label="Make a copy">
+                    <Button
+                      data-test="Make Copy Button"
+                      colorScheme="blue"
+                      mt="4px"
+                      ml="4px"
+                      size="xs"
+                      leftIcon={<MdOutlineContentCopy />}
+                      pr={{ base: "0px", md: "10px" }}
+                      onClick={() => {
+                        copyDialogOnOpen();
+                      }}
+                    >
+                      <Show above="md">Make a copy</Show>
+                    </Button>
+                  </Tooltip>
+                )}
               </Center>
             ) : null}
             {editor}

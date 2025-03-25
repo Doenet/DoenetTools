@@ -28,6 +28,7 @@ import {
   useFetcher,
   Link,
   Form,
+  useOutletContext,
 } from "react-router";
 
 import { CardContent } from "../../../Widgets/Card";
@@ -42,9 +43,9 @@ import {
   ContentSettingsDrawer,
 } from "../ToolPanels/ContentSettingsDrawer";
 import {
-  assignmentSettingsActions,
-  AssignmentSettingsDrawer,
-} from "../ToolPanels/AssignmentSettingsDrawer";
+  assignmentControlsActions,
+  AssignmentControlsDrawer,
+} from "../ToolPanels/AssignmentControlsDrawer";
 import {
   AssignmentStatus,
   ContentDescription,
@@ -63,11 +64,7 @@ import {
   ToggleViewButtonGroup,
   toggleViewButtonGroupActions,
 } from "../ToolPanels/ToggleViewButtonGroup";
-import {
-  contentTypeToName,
-  getAllowedParentTypes,
-  menuIcons,
-} from "../../../_utils/activity";
+import { getAllowedParentTypes, menuIcons } from "../../../_utils/activity";
 import {
   CreateLocalContentModal,
   createLocalContentModalActions,
@@ -82,6 +79,7 @@ import {
   createContentMenuActions,
 } from "../ToolPanels/CreateContentMenu";
 import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
+import { SiteContext } from "./SiteHeader";
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -96,7 +94,7 @@ export async function action({ request, params }) {
   if (resultSD) {
     return resultSD;
   }
-  const resultAS = await assignmentSettingsActions({ formObj });
+  const resultAS = await assignmentControlsActions({ formObj });
   if (resultAS) {
     return resultAS;
   }
@@ -185,20 +183,6 @@ export async function loader({ params, request }) {
   const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
   const listViewPref = !prefData.data.cardView;
 
-  const addToId = url.searchParams.get("addTo");
-  let addTo: ContentDescription | undefined = undefined;
-
-  if (addToId) {
-    try {
-      const { data } = await axios.get(
-        `/api/info/getContentDescription/${addToId}`,
-      );
-      addTo = data;
-    } catch (_e) {
-      console.error(`Could not get description of ${addToId}`);
-    }
-  }
-
   return {
     parentId: params.parentId ? params.parentId : null,
     content: data.content,
@@ -209,7 +193,6 @@ export async function loader({ params, request }) {
     parent: data.parent,
     listViewPref,
     query: q,
-    addTo,
   };
 }
 
@@ -224,7 +207,6 @@ export function Activities() {
     parent,
     listViewPref,
     query,
-    addTo,
   } = useLoaderData() as {
     parentId: string | null;
     content: Content[];
@@ -235,7 +217,6 @@ export function Activities() {
     parent: Content | null;
     listViewPref: boolean;
     query: string | null;
-    addTo: ContentDescription | undefined;
   };
   const [settingsContentId, setSettingsContentId] = useState<string | null>(
     null,
@@ -269,6 +250,8 @@ export function Activities() {
     onOpen: deleteContentOnOpen,
     onClose: deleteContentOnClose,
   } = useDisclosure();
+
+  const { addTo, setAddTo } = useOutletContext<SiteContext>();
 
   // refs to the menu button of each content card,
   // which should be given focus when drawers are closed
@@ -322,7 +305,7 @@ export function Activities() {
     });
   }, [content]);
 
-  const [moveToParentData, setMoveToParentData] = useState<{
+  const [moveCopyData, setMoveCopyData] = useState<{
     contentId: string;
     name: string;
     type: ContentType;
@@ -356,8 +339,6 @@ export function Activities() {
 
   const fetcher = useFetcher();
 
-  const addToURLParams = addTo ? `?addTo=${addTo.contentId}` : "";
-
   function getCardMenuList({
     contentId,
     name,
@@ -383,8 +364,6 @@ export function Activities() {
     licenseCode: LicenseCode | null;
     parentId: string | null;
   }) {
-    const contentTypeName = contentTypeToName[contentType];
-
     return (
       <>
         <MenuItem
@@ -411,7 +390,16 @@ export function Activities() {
             );
           }}
         >
-          Duplicate {contentTypeName}
+          Make a copy
+        </MenuItem>
+        <MenuItem
+          data-test="Delete Menu Item"
+          onClick={() => {
+            setSettingsContentId(contentId);
+            deleteContentOnOpen();
+          }}
+        >
+          Delete
         </MenuItem>
         {position > 0 && !haveQuery ? (
           <MenuItem
@@ -428,7 +416,7 @@ export function Activities() {
               );
             }}
           >
-            {listView ? "Move Up" : "Move Left"}
+            {listView ? "Move up" : "Move left"}
           </MenuItem>
         ) : null}
         {position < numCards - 1 && !haveQuery ? (
@@ -446,14 +434,14 @@ export function Activities() {
               );
             }}
           >
-            {listView ? "Move Down" : "Move Right"}
+            {listView ? "Move down" : "Move right"}
           </MenuItem>
         ) : null}
         {haveQuery ? null : (
           <MenuItem
-            data-test="Move to Parent"
+            data-test="Move to"
             onClick={() => {
-              setMoveToParentData({
+              setMoveCopyData({
                 contentId,
                 name,
                 type: contentType,
@@ -465,18 +453,9 @@ export function Activities() {
               moveCopyContentOnOpen();
             }}
           >
-            Move&hellip;
+            Move to&hellip;
           </MenuItem>
         )}
-        <MenuItem
-          data-test="Delete Menu Item"
-          onClick={() => {
-            setSettingsContentId(contentId);
-            deleteContentOnOpen();
-          }}
-        >
-          Delete
-        </MenuItem>
         {contentType !== "folder" ? (
           <MenuItem
             data-test="Assign Activity Menu Item"
@@ -486,8 +465,8 @@ export function Activities() {
             }}
           >
             {assignmentStatus === "Unassigned"
-              ? "Assign Activity"
-              : "Manage Assignment"}
+              ? "Assign activity"
+              : "Manage assignment"}
           </MenuItem>
         ) : null}
         <MenuItem
@@ -588,7 +567,7 @@ export function Activities() {
     ) : null;
   const assignmentDrawer =
     contentData && settingsContentId ? (
-      <AssignmentSettingsDrawer
+      <AssignmentControlsDrawer
         isOpen={assignmentSettingsAreOpen}
         onClose={assignmentSettingsOnClose}
         contentId={settingsContentId}
@@ -602,11 +581,11 @@ export function Activities() {
     <MoveCopyContent
       isOpen={moveCopyContentIsOpen}
       onClose={moveCopyContentOnClose}
-      sourceContent={[moveToParentData]}
+      sourceContent={[moveCopyData]}
       userId={userId}
       currentParentId={parentId}
       finalFocusRef={finalFocusRef}
-      allowedParentTypes={getAllowedParentTypes([moveToParentData.type])}
+      allowedParentTypes={getAllowedParentTypes([moveCopyData.type])}
       action="Move"
     />
   );
@@ -640,7 +619,7 @@ export function Activities() {
   } = useDisclosure();
 
   const copyContentModal =
-    addTo !== undefined ? (
+    addTo !== null ? (
       <CopyContentAndReportFinish
         fetcher={fetcher}
         isOpen={copyDialogIsOpen}
@@ -681,17 +660,17 @@ export function Activities() {
             height="30px"
             width="100%"
             alignContent="center"
-            hidden={numSelected === 0 && addTo === undefined}
+            hidden={numSelected === 0 && addTo === null}
             backgroundColor="gray.100"
             justifyContent="center"
           >
-            {addTo !== undefined ? (
+            {addTo !== null ? (
               <HStack hidden={numSelected > 0}>
                 <CloseButton
                   data-test="Stop Adding Items"
                   size="sm"
                   onClick={() => {
-                    navigate(`.`);
+                    setAddTo(null);
                   }}
                 />{" "}
                 <Text noOfLines={1} data-test="Adding Items Message">
@@ -707,7 +686,7 @@ export function Activities() {
                 onClick={() => setSelectedCards([])}
               />{" "}
               <Text>{numSelected} selected</Text>
-              <HStack hidden={addTo !== undefined}>
+              <HStack hidden={addTo !== null}>
                 <AddContentToMenu
                   fetcher={fetcher}
                   sourceContent={selectedCardsFiltered}
@@ -723,10 +702,9 @@ export function Activities() {
                   label="Create from selected"
                 />
               </HStack>
-              {addTo !== undefined ? (
+              {addTo !== null ? (
                 <Button
                   data-test="Add Selected To Button"
-                  hidden={addTo === undefined}
                   size="xs"
                   colorScheme="blue"
                   onClick={() => {
@@ -893,7 +871,7 @@ export function Activities() {
             <Box>
               <Link
                 data-test="Back Link"
-                to={`/activities/${userId}${parent.parent ? "/" + parent.parent.contentId : ""}${addToURLParams}`}
+                to={`/activities/${userId}${parent.parent ? "/" + parent.parent.contentId : ""}`}
                 style={{
                   color: "var(--mainBlue)",
                 }}
@@ -973,8 +951,8 @@ export function Activities() {
       }),
       cardLink:
         activity.type === "folder"
-          ? `/activities/${activity.ownerId}/${activity.contentId}${addToURLParams}`
-          : `/activityEditor/${activity.contentId}${addToURLParams}`,
+          ? `/activities/${activity.ownerId}/${activity.contentId}`
+          : `/activityEditor/${activity.contentId}`,
     };
   });
 

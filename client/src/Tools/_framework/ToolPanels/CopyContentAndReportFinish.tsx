@@ -43,6 +43,7 @@ export async function copyContentAndReportFinishActions({
         const { data } = await axios.post(`/api/copyMove/copyContent`, {
           contentIds,
           parentId: formObj.parentId === "null" ? null : formObj.parentId,
+          prependCopy: formObj.prependCopy === "true",
         });
 
         newContentIds.push(...data.newContentIds);
@@ -76,6 +77,7 @@ export function CopyContentAndReportFinish({
   desiredParent,
   action,
   copyToLibrary = false,
+  prependCopy = false,
 }: {
   fetcher: FetcherWithComponents<any>;
   isOpen: boolean;
@@ -85,6 +87,7 @@ export function CopyContentAndReportFinish({
   desiredParent: ContentDescription | null;
   action: "Copy" | "Add";
   copyToLibrary?: boolean;
+  prependCopy?: boolean;
 }) {
   const [newContentIds, setNewContentIds] = useState<string[] | null>(null);
 
@@ -94,7 +97,7 @@ export function CopyContentAndReportFinish({
   const actionPastWord = action === "Add" ? "added" : "copied";
   const actionProgressiveWord = action === "Add" ? "Adding" : "Copying";
 
-  const { user } = useOutletContext<SiteContext>();
+  const { user, setAddTo } = useOutletContext<SiteContext>();
 
   useEffect(() => {
     if (fetcher.data?.action === "copiedContent") {
@@ -121,6 +124,7 @@ export function CopyContentAndReportFinish({
             contentIds: JSON.stringify(contentIds),
             parentId: desiredParent ? desiredParent.contentId : null,
             copyToLibrary,
+            prependCopy,
           },
           { method: "post" },
         );
@@ -214,6 +218,7 @@ export function CopyContentAndReportFinish({
             marginRight="4px"
             onClick={() => {
               onClose();
+              setAddTo(null);
               navigate(destinationUrl);
             }}
             isDisabled={newContentIds === null && errMsg === ""}

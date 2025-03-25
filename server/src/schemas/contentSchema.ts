@@ -41,11 +41,9 @@ export const updateContentDoenetMLSchema = z
     contentId: uuidSchema,
     doenetML: z.string(),
     numVariants: z.number().int(),
-    baseComponentCounts: z.string(),
   })
-  .transform(({ contentId, doenetML, numVariants, baseComponentCounts }) => ({
+  .transform(({ contentId, doenetML, numVariants }) => ({
     contentId,
     source: doenetML,
     numVariants,
-    baseComponentCounts,
   }));

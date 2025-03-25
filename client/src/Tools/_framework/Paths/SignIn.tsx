@@ -24,7 +24,7 @@ export async function action({ request }) {
   axios.post("/api/auth/magiclink", {
     email: formObj.email,
     // stay: formObj.stay !== undefined,
-    fromAnonymous: formObj.fromAnonymous ?? 0,
+    fromAnonymous: formObj.fromAnonymous ?? "",
   });
 
   return null;
@@ -119,7 +119,7 @@ export function SignIn() {
                 <input
                   type="hidden"
                   name="fromAnonymous"
-                  value={user?.isAnonymous ? user.userId : 0}
+                  value={user?.isAnonymous ? user.userId : ""}
                 />
               </Form>
 

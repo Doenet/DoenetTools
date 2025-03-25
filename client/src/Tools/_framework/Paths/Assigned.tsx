@@ -102,7 +102,7 @@ export function Assigned() {
       cardLink:
         assignment.assignmentInfo?.assignmentStatus === "Open"
           ? `/code/${assignment.assignmentInfo?.classCode}`
-          : `/assignedData/${assignment.contentId}`,
+          : `/assignedData/${assignment.contentId}?shuffledOrder`,
       closeTime: formatTime(assignment.assignmentInfo!.codeValidUntil),
     };
   });

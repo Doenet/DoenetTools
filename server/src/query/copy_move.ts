@@ -60,15 +60,31 @@ export async function moveContent({
         },
       },
       isPublic: true,
+      parent: {
+        select: {
+          rootAssignment: { select: { assigned: true } },
+          nonRootAssignment: { select: { assigned: true } },
+        },
+      },
     },
   });
+
+  if (
+    content.parent?.rootAssignment?.assigned ||
+    content.parent?.nonRootAssignment?.assigned
+  ) {
+    throw new InvalidRequestError(
+      "Cannot move content in an assigned activity",
+    );
+  }
 
   let desiredParentIsPublic = false;
   let desiredParentLicenseCode: LicenseCode = "CCDUAL";
   let desiredParentShares: Uint8Array[] = [];
 
   if (parentId !== null) {
-    // if desired parent is specified, make sure it exists and is owned by the same owner as the content
+    // if desired parent is specified, make sure it exists, is owned by the same owner as the content,
+    // and isn't assigned
     const parent = await prisma.content.findUniqueOrThrow({
       where: {
         id: parentId,
@@ -82,8 +98,16 @@ export async function moveContent({
         isPublic: true,
         licenseCode: true,
         sharedWith: { select: { userId: true } },
+        rootAssignment: { select: { assigned: true } },
+        nonRootAssignment: { select: { assigned: true } },
       },
     });
+
+    if (parent.rootAssignment?.assigned || parent.nonRootAssignment?.assigned) {
+      throw new InvalidRequestError(
+        "Cannot move content into an assigned activity",
+      );
+    }
 
     // If the parent is shared, then we'll need to share the resulting content, as well.
     if (parent.isPublic) {
@@ -278,7 +302,8 @@ export async function copyContent({
   let desiredParentType: ContentType = "folder";
 
   if (parentId !== null) {
-    // if desired parent is specified, make sure it exists and is editable by `loggedInUserId`
+    // if desired parent is specified, make sure it exists, is editable by `loggedInUserId`
+    // and isn't assigned
     const parent = await prisma.content.findUniqueOrThrow({
       where: {
         id: parentId,
@@ -290,8 +315,16 @@ export async function copyContent({
         type: true,
         licenseCode: true,
         sharedWith: { select: { userId: true } },
+        rootAssignment: { select: { assigned: true } },
+        nonRootAssignment: { select: { assigned: true } },
       },
     });
+
+    if (parent.rootAssignment?.assigned || parent.nonRootAssignment?.assigned) {
+      throw new InvalidRequestError(
+        "Cannot copy content into an assigned activity",
+      );
+    }
 
     desiredParentType = parent.type;
 
@@ -404,7 +437,7 @@ async function copySingleContent({
       createdAt: true,
       sortIndex: true,
       lastEdited: true,
-      assignmentId: true,
+      nonRootAssignmentId: true,
     },
     include: {
       classifications: true,
@@ -581,7 +614,7 @@ async function createContributorHistory(
     data: {
       contentId: copiedId,
       prevContentId: originalId,
-      prevActivityRevisionNum: originalActivityRevision.revisionNum,
+      prevContentRevisionNum: originalActivityRevision.revisionNum,
       withLicenseCode: licenseCode,
       directCopy: true,
     },
@@ -589,7 +622,7 @@ async function createContributorHistory(
 
   // we'll need the timestamp from this new record
   // to copy to additional records created
-  const timestampActivity = contribHistoryInfo.timestampActivity;
+  const timestampContent = contribHistoryInfo.timestampContent;
 
   // Next, we grab all records from the history of `originalId`.
   // We will create records showing that these activities
@@ -605,21 +638,21 @@ async function createContributorHistory(
   });
 
   // Note: contributorHistory has two timestamps:
-  // - timestampPrevActivity: the time when prevContentId was remixed into a new activity
-  // - timestampActivity: this time when contentId was created by remixing
+  // - timestampPrevContent: the time when prevContentId was remixed into a new activity
+  // - timestampContent: this time when contentId was created by remixing
   // Each record we create below corresponds to an indirect path from prevContentId to contentId
   // so the two timestamps will be different:
-  // - timestampPrevActivity is copied from the original source to get the original remix time from prevContentId
-  // - timestampActivity is copied from the above create query (so is essentially now)
+  // - timestampPrevContent is copied from the original source to get the original remix time from prevContentId
+  // - timestampContent is copied from the above create query (so is essentially now)
 
   await prisma.contributorHistory.createMany({
     data: previousHistory.map((hist) => ({
       contentId: copiedId,
       prevContentId: hist.prevContentId,
-      prevActivityRevisionNum: hist.prevActivityRevisionNum,
+      prevContentRevisionNum: hist.prevContentRevisionNum,
       withLicenseCode: hist.withLicenseCode,
-      timestampPrevActivity: hist.timestampPrevActivity,
-      timestampActivity: timestampActivity,
+      timestampPrevContent: hist.timestampPrevContent,
+      timestampContent: timestampContent,
       directCopy: false,
     })),
   });
@@ -627,24 +660,45 @@ async function createContributorHistory(
 
 /**
  * Check if `contentId` has any descendants of type `contentType`.
+ * Unless `countAssigned` is `true`, ignore any assigned descendants.
  */
 export async function checkIfContentContains({
   contentId,
   contentType,
   loggedInUserId,
+  countAssigned = false,
 }: {
   contentId: Uint8Array | null;
   contentType: ContentType;
   loggedInUserId: Uint8Array;
+  countAssigned?: boolean;
 }) {
   // Note: not sure how to perform this calculation efficiently. Do we need to cache these values instead?
   // Would it be better to do a single recursive query rather than recurse will individual queries
   // even though we may be able to short circuit with an early return?
 
+  const filterOutAssigned = countAssigned
+    ? []
+    : [
+        {
+          OR: [
+            { rootAssignment: { is: null } },
+            { rootAssignment: { assigned: false } },
+          ],
+        },
+        {
+          OR: [
+            { nonRootAssignment: { is: null } },
+            { nonRootAssignment: { assigned: false } },
+          ],
+        },
+      ];
+
   const children = await prisma.content.findMany({
     where: {
       parentId: contentId,
       ...filterEditableContent(loggedInUserId),
+      AND: filterOutAssigned,
     },
     select: {
       id: true,
@@ -664,6 +718,7 @@ export async function checkIfContentContains({
             contentId: child.id,
             contentType,
             loggedInUserId,
+            countAssigned,
           })
         ).containsType
       ) {

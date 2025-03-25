@@ -34,6 +34,10 @@ import {
   classificationSettingsActions,
 } from "./ClassificationSettings";
 import { contentTypeToName } from "../../../_utils/activity";
+import {
+  AssignmentSettings,
+  assignmentSettingsActions,
+} from "./AssignmentSettings";
 
 export async function contentSettingsActions({
   formObj,
@@ -53,6 +57,11 @@ export async function contentSettingsActions({
   const result4 = await supportFilesActions({ formObj });
   if (result4) {
     return result4;
+  }
+
+  const resultAS = await assignmentSettingsActions({ formObj });
+  if (resultAS) {
+    return resultAS;
   }
 
   return null;
@@ -105,6 +114,8 @@ export function ContentSettingsDrawer({
 
   const contentTypeName = contentTypeToName[contentData.type];
 
+  const isSubActivity = (contentData.parent?.type ?? "folder") !== "folder";
+
   return (
     <Drawer
       isOpen={isOpen}
@@ -143,6 +154,9 @@ export function ContentSettingsDrawer({
                   Classifications ({contentData.classifications.length})
                 </Tab>
               ) : null}
+              {contentData.type !== "folder" && !isSubActivity ? (
+                <Tab data-test="Assignment Settings">Assignment Settings</Tab>
+              ) : null}
               {haveSupportingFiles ? (
                 <Tab data-test="Files Tab">Support Files</Tab>
               ) : null}
@@ -171,6 +185,16 @@ export function ContentSettingsDrawer({
                     />
                   </TabPanel>
                 ) : null}
+
+                <TabPanel>
+                  {contentData.type !== "folder" && !isSubActivity ? (
+                    <AssignmentSettings
+                      fetcher={fetcher}
+                      activityData={contentData}
+                      openTabIndex={tabIndex}
+                    />
+                  ) : null}
+                </TabPanel>
                 {haveSupportingFiles ? (
                   <TabPanel>
                     <SupportFilesControls

@@ -13,13 +13,11 @@ import {
   Flex,
   Grid,
   GridItem,
-  Hide,
   HStack,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
-  Show,
   Spacer,
   Spinner,
   Text,
@@ -28,8 +26,7 @@ import {
 import { CardContent } from "../../../Widgets/Card";
 import {
   FetcherWithComponents,
-  Link,
-  redirect,
+  Link as ReactRouterLink,
   useNavigate,
   useOutletContext,
 } from "react-router";
@@ -59,18 +56,11 @@ import {
   createLocalContentModalActions,
 } from "./CreateLocalContentModal";
 
-export async function compoundActivityEditorActions(
-  {
-    formObj,
-  }: {
-    [k: string]: any;
-  },
-  {
-    params,
-  }: {
-    [k: string]: any;
-  },
-) {
+export async function compoundActivityEditorActions({
+  formObj,
+}: {
+  [k: string]: any;
+}) {
   const resultMC = await moveCopyContentActions({ formObj });
   if (resultMC) {
     return resultMC;
@@ -96,17 +86,22 @@ export async function compoundActivityEditorActions(
     return resultCF;
   }
 
-  if (formObj?._action == "Add Activity") {
+  if (formObj?._action == "Add Document") {
+    console.log({ formObj });
     //Create an activity and redirect to the editor for it
     const { data } = await axios.post(`/api/updateContent/createContent`, {
       contentType: formObj.type,
-      parentId: params.contentId,
+      parentId: formObj.parentId,
     });
 
     const { contentId } = data;
 
     if (formObj.type === "singleDoc") {
-      return redirect(`/activityEditor/${contentId}`);
+      return { createdDoc: contentId };
+
+      // Note: do not know why this redirect does not work when the action is call from a Card inside a CardList.
+      // Returning the above {createdDoc} is a workaround
+      // redirect(`/activityEditor/${contentId}`);
     } else {
       return true;
     }
@@ -142,7 +137,6 @@ export function CompoundActivityEditor({
   setSettingsDisplayTab,
   setHighlightRename,
   headerHeight,
-  addTo,
 }: {
   activity: Content;
   activityJson: ActivitySource;
@@ -156,7 +150,6 @@ export function CompoundActivityEditor({
   setSettingsDisplayTab?: (arg: "general") => void;
   setHighlightRename?: (arg: boolean) => void;
   headerHeight: string;
-  addTo?: ContentDescription;
 }) {
   const contentTypeName = contentTypeToName[activity.type];
 
@@ -166,10 +159,10 @@ export function CompoundActivityEditor({
 
   const readOnly =
     asViewer ||
-    (activity.assignmentInfo?.assignmentStatus ??
-      "Unassigned" !== "Unassigned");
+    (activity.assignmentInfo?.assignmentStatus ?? "Unassigned") !==
+      "Unassigned";
 
-  const { user } = useOutletContext<SiteContext>();
+  const { user, addTo, setAddTo } = useOutletContext<SiteContext>();
   const navigate = useNavigate();
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
@@ -187,7 +180,19 @@ export function CompoundActivityEditor({
     setHaveContentSpinner(false);
   }, [activity]);
 
-  const [moveToParentData, setMoveToParentData] = useState<{
+  // Note: this is a workaround for the the `redirect` inside the action, above,
+  // not working when called from a Card inside a CardList
+  const [creatingDoc, setCreatingDoc] = useState(false);
+  useEffect(() => {
+    if (typeof fetcher.data === "object") {
+      if (fetcher.data.createdDoc && creatingDoc) {
+        setCreatingDoc(false);
+        navigate(`/activityEditor/${fetcher.data.createdDoc}`);
+      }
+    }
+  }, [fetcher.data, creatingDoc]);
+
+  const [moveCopyData, setMoveCopyData] = useState<{
     contentId: string;
     name: string;
     type: ContentType;
@@ -205,22 +210,24 @@ export function CompoundActivityEditor({
     licenseCode: null,
   });
 
+  const [moveCopyAction, setMoveCopyAction] = useState<"Move" | "Copy">("Move");
+
   const {
-    isOpen: moveToParentIsOpen,
-    onOpen: moveToParentOnOpen,
-    onClose: moveToParentOnClose,
+    isOpen: moveCopyContentIsOpen,
+    onOpen: moveCopyContentOnOpen,
+    onClose: moveCopyContentOnClose,
   } = useDisclosure();
 
   const moveContentModal = user ? (
     <MoveCopyContent
-      isOpen={moveToParentIsOpen}
-      onClose={moveToParentOnClose}
-      sourceContent={[moveToParentData]}
+      isOpen={moveCopyContentIsOpen}
+      onClose={moveCopyContentOnClose}
+      sourceContent={[moveCopyData]}
       userId={user.userId}
       currentParentId={activity.contentId}
       finalFocusRef={finalFocusRef}
-      allowedParentTypes={getAllowedParentTypes([moveToParentData.type])}
-      action="Move"
+      allowedParentTypes={getAllowedParentTypes([moveCopyData.type])}
+      action={moveCopyAction}
     />
   ) : null;
 
@@ -231,7 +238,7 @@ export function CompoundActivityEditor({
   } = useDisclosure();
 
   const copyContentModal =
-    addTo !== undefined ? (
+    addTo !== null ? (
       <CopyContentAndReportFinish
         fetcher={fetcher}
         isOpen={copyDialogIsOpen}
@@ -560,7 +567,17 @@ export function CompoundActivityEditor({
             );
           }}
         >
-          Duplicate {contentTypeToName[content.type]}
+          Make a copy
+        </MenuItem>
+        <MenuItem
+          hidden={readOnly}
+          data-test="Delete Menu Item"
+          onClick={() => {
+            setContentToDelete(content);
+            deleteContentOnOpen();
+          }}
+        >
+          Delete
         </MenuItem>
         {nextPositionUp ? (
           <MenuItem
@@ -601,10 +618,10 @@ export function CompoundActivityEditor({
           </MenuItem>
         ) : null}
         <MenuItem
-          hidden={readOnly}
-          data-test="Move to Parent"
+          data-test="MoveCopy"
           onClick={() => {
-            setMoveToParentData({
+            setMoveCopyAction(readOnly ? "Copy" : "Move");
+            setMoveCopyData({
               contentId,
               name: content.name,
               type: content.type,
@@ -613,20 +630,10 @@ export function CompoundActivityEditor({
               sharedWith: content.sharedWith,
               licenseCode: content.license?.code ?? null,
             });
-            moveToParentOnOpen();
+            moveCopyContentOnOpen();
           }}
         >
-          Move&hellip;
-        </MenuItem>
-        <MenuItem
-          hidden={readOnly}
-          data-test="Delete Menu Item"
-          onClick={() => {
-            setContentToDelete(content);
-            deleteContentOnOpen();
-          }}
-        >
-          Delete
+          {readOnly ? "Copy to" : "Move to"}&hellip;
         </MenuItem>
         <MenuItem
           hidden={readOnly}
@@ -647,11 +654,22 @@ export function CompoundActivityEditor({
             settingsOnOpen?.();
           }}
         >
-          {readOnly
-            ? contentTypeToName[content.type] + " Information"
-            : "Settings"}
+          Settings
         </MenuItem>
       </>
+    );
+  }
+
+  function addDocumentCallback(contentId: string) {
+    setHaveContentSpinner(true);
+    setCreatingDoc(true);
+    fetcher.submit(
+      {
+        _action: "Add Document",
+        type: "singleDoc",
+        parentId: contentId,
+      },
+      { method: "post" },
     );
   }
 
@@ -661,6 +679,7 @@ export function CompoundActivityEditor({
       showAssignmentStatus={false}
       showPublicStatus={true}
       showActivityFeatures={true}
+      showAddButton={true}
       emptyMessage={`${contentTypeName} is empty. Add or move documents ${activity.type === "sequence" ? "or question banks " : ""}here to begin.`}
       listView={true}
       content={cardContent}
@@ -668,6 +687,7 @@ export function CompoundActivityEditor({
       setSelectedCards={setSelectedCards}
       disableSelectFor={addTo ? [addTo.contentId] : undefined}
       disableAsSelectedFor={disableAsSelected}
+      addDocumentCallback={addDocumentCallback}
     />
   );
 
@@ -678,30 +698,12 @@ export function CompoundActivityEditor({
       userId={"hi"}
       linkSettings={{ viewUrl: "", editURL: "" }}
       paginate={activity.type === "sequence" ? activity.paginate : false}
-      activityLevelAttempts={
-        activity.type === "sequence" ? activity.activityLevelAttempts : false
-      }
-      itemLevelAttempts={
-        activity.type === "sequence" ? activity.itemLevelAttempts : false
-      }
+      activityLevelAttempts={activity.assignmentInfo?.mode === "summative"}
+      itemLevelAttempts={activity.assignmentInfo?.mode === "formative"}
+      maxAttemptsAllowed={activity.assignmentInfo?.maxAttempts}
       showTitle={false}
     />
   );
-
-  let parentLink: string;
-
-  if (activity.parent) {
-    if (activity.parent.type === "folder") {
-      parentLink = `/activities/${user?.userId}/${activity.parent.contentId}`;
-    } else {
-      parentLink = `/activityEditor/${activity.parent.contentId}`;
-    }
-  } else {
-    parentLink = `/activities/${user?.userId}`;
-  }
-
-  const addToURLParams = addTo ? `?addTo=${addTo.contentId}` : "";
-  parentLink += addToURLParams;
 
   const heading = (
     <Flex
@@ -713,39 +715,22 @@ export function CompoundActivityEditor({
       paddingX="10px"
       alignItems="center"
     >
-      <Box hidden={asViewer}>
-        <Link
-          data-test="Back Link"
-          to={parentLink}
-          style={{
-            color: "var(--mainBlue)",
-          }}
-        >
-          <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
-            <Show above="sm">
-              &lt; Back to{" "}
-              {activity.parent ? activity.parent.name : `My Activities`}
-            </Show>
-            <Hide above="sm">&lt; Back</Hide>
-          </Text>
-        </Link>
-      </Box>
       <Spacer />
 
       <Flex
         height="30px"
         width="100%"
         alignContent="center"
-        hidden={numSelected === 0 && addTo === undefined}
+        hidden={numSelected === 0 && addTo === null}
         backgroundColor="gray.100"
         justifyContent="center"
       >
-        {addTo !== undefined ? (
+        {addTo !== null ? (
           <HStack hidden={numSelected > 0}>
             <CloseButton
               size="sm"
               onClick={() => {
-                navigate(`.`);
+                setAddTo(null);
               }}
             />{" "}
             <Text noOfLines={1}>
@@ -757,7 +742,7 @@ export function CompoundActivityEditor({
         <HStack hidden={numSelected === 0}>
           <CloseButton size="sm" onClick={() => setSelectedCards([])} />{" "}
           <Text>{numSelected} selected</Text>
-          <HStack hidden={addTo !== undefined}>
+          <HStack hidden={addTo !== null}>
             <AddContentToMenu
               fetcher={fetcher}
               sourceContent={selectedCardsFiltered}
@@ -773,10 +758,9 @@ export function CompoundActivityEditor({
               label="Create from selected"
             />
           </HStack>
-          {addTo !== undefined ? (
+          {addTo !== null ? (
             <Button
               data-test="Add Selected To Button"
-              hidden={addTo === undefined}
               size="xs"
               colorScheme="blue"
               onClick={() => {
@@ -807,10 +791,15 @@ export function CompoundActivityEditor({
         <MenuList>
           <MenuItem
             data-test="Add Document Button"
-            onClick={async () => {
+            onClick={() => {
+              setCreatingDoc(true);
               setHaveContentSpinner(true);
               fetcher.submit(
-                { _action: "Add Activity", type: "singleDoc" },
+                {
+                  _action: "Add Document",
+                  type: "singleDoc",
+                  parentId: activity.contentId,
+                },
                 { method: "post" },
               );
             }}
@@ -820,7 +809,7 @@ export function CompoundActivityEditor({
           {activity.type === "sequence" ? (
             <MenuItem
               data-test="Add Question Bank Button"
-              onClick={async () => {
+              onClick={() => {
                 createQuestionBankOnOpen();
               }}
             >
@@ -828,19 +817,21 @@ export function CompoundActivityEditor({
             </MenuItem>
           ) : null}
           <MenuItem
+            as={ReactRouterLink}
             data-test="Add Explore Items"
-            onClick={async () => {
-              navigate(`/explore?addTo=${activity.contentId}`);
+            to={`/explore`}
+            onClick={() => {
+              setAddTo(activity);
             }}
           >
             Items from Explore
           </MenuItem>
           <MenuItem
+            as={ReactRouterLink}
             data-test="Add My Activities Items"
-            onClick={async () => {
-              navigate(
-                `/activities/${user!.userId}?addTo=${activity.contentId}`,
-              );
+            to={`/activities/${user!.userId}`}
+            onClick={() => {
+              setAddTo(activity);
             }}
           >
             Items from My Activities

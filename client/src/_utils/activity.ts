@@ -113,13 +113,11 @@ export function compileActivityFromContent(activity: Content): ActivitySource {
       return {
         id: activity.contentId,
         type: activity.type,
+        title: activity.name,
         isDescription: false,
         doenetML: activity.doenetML!,
         version: activity.doenetmlVersion.fullVersion,
         numVariants: activity.numVariants,
-        baseComponentCounts: activity.baseComponentCounts
-          ? JSON.parse(activity.baseComponentCounts)
-          : undefined,
       };
     }
     case "select": {

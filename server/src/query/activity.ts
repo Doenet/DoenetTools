@@ -49,7 +49,8 @@ export async function createContent({
   let licenseCode = undefined;
   let sharedWith: Uint8Array[] = [];
 
-  // If parent isn't `null`, check if it is shared and get its license
+  // If parent isn't `null`, check if it is shared and get its license,
+  // and make sure it isn't assigned
   if (parentId !== null) {
     const parent = await prisma.content.findUniqueOrThrow({
       where: {
@@ -62,8 +63,17 @@ export async function createContent({
         isPublic: true,
         licenseCode: true,
         sharedWith: { select: { userId: true } },
+        rootAssignment: { select: { assigned: true } },
+        nonRootAssignment: { select: { assigned: true } },
       },
     });
+
+    if (parent.rootAssignment?.assigned || parent.nonRootAssignment?.assigned) {
+      throw new InvalidRequestError(
+        "Cannot add content to an assigned activity",
+      );
+    }
+
     if (parent.isPublic) {
       isPublic = true;
       if (parent.licenseCode) {
@@ -116,7 +126,6 @@ export async function createContent({
       source: contentType === "singleDoc" ? "" : null,
       doenetmlVersionId:
         contentType === "singleDoc" ? defaultDoenetmlVersion.id : null,
-      baseComponentCounts: contentType === "singleDoc" ? "{}" : null,
       sharedWith: {
         createMany: { data: sharedWith.map((userId) => ({ userId })) },
       },
@@ -140,14 +149,31 @@ export async function deleteContent({
 }) {
   // TODO: Figure out how to delete folder in library (some contents may be published)
 
-  // throw error if content does not exist or isn't visible
-  await prisma.content.findUniqueOrThrow({
+  // throw error if content does not exist or isn't visible or has parent that is assigned
+  const content = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
       ...filterEditableContent(loggedInUserId),
     },
-    select: { id: true },
+    select: {
+      id: true,
+      parent: {
+        select: {
+          rootAssignment: { select: { assigned: true } },
+          nonRootAssignment: { select: { assigned: true } },
+        },
+      },
+    },
   });
+
+  if (
+    content.parent?.rootAssignment?.assigned ||
+    content.parent?.nonRootAssignment?.assigned
+  ) {
+    throw new InvalidRequestError(
+      "Cannot delete content from an assigned activity",
+    );
+  }
 
   await deleteContentNoCheck(contentId, loggedInUserId);
 }
@@ -179,14 +205,16 @@ export function deleteContentNoCheck(
 }
 
 /**
- * Update the content with `id`, changing any of the parameters that are given:
- * `name`, `source`, `doenetmlVersionId`, `numVariants`, `baseComponentCounts`,
+ * Update the content with `contentId`, changing any of the parameters that are given:
+ * `name`, `source`, `doenetmlVersionId`, `numVariants`,
  * `imagePath`, `shuffle`, `numToSelect`, `selectByVariant`,
  * `paginate`, `activityLevelAttempts`, and/or `itemLevelAttempts`.
  *
  * For the change to succeed, either
  * - the content must be owned by `loggedInUserId`, or
  * - the content must be in the library and `loggedInUserId` must be an admin.
+ * In addition, if the content is assigned, then the change will succeed
+ * only if just modifying `name`, `paginate`, and/or `imagePath`.
  */
 export async function updateContent({
   contentId,
@@ -194,14 +222,11 @@ export async function updateContent({
   source,
   doenetmlVersionId,
   numVariants,
-  baseComponentCounts,
   imagePath,
   shuffle,
   numToSelect,
   selectByVariant,
   paginate,
-  activityLevelAttempts,
-  itemLevelAttempts,
   loggedInUserId,
 }: {
   contentId: Uint8Array;
@@ -209,14 +234,11 @@ export async function updateContent({
   source?: string;
   doenetmlVersionId?: number;
   numVariants?: number;
-  baseComponentCounts?: string;
   imagePath?: string;
   shuffle?: boolean;
   numToSelect?: number;
   selectByVariant?: boolean;
   paginate?: boolean;
-  activityLevelAttempts?: boolean;
-  itemLevelAttempts?: boolean;
   loggedInUserId: Uint8Array;
 }) {
   if (
@@ -225,36 +247,53 @@ export async function updateContent({
       source,
       doenetmlVersionId,
       numVariants,
-      baseComponentCounts,
       imagePath,
       shuffle,
+      numToSelect,
       selectByVariant,
       paginate,
-      activityLevelAttempts,
-      itemLevelAttempts,
     ].every((x) => x === undefined)
   ) {
-    // if not information passed in, don't update anything, including `lastEdited`.
+    // if no information passed in, don't update anything, including `lastEdited`.
     return;
   }
 
   const isAdmin = await getIsAdmin(loggedInUserId);
 
   // check if content is assigned
-  const assignmentId = (
-    await prisma.content.findFirstOrThrow({
-      where: {
-        id: contentId,
-        ...filterEditableContent(loggedInUserId, isAdmin),
-      },
-    })
-  ).assignmentId;
+  const content = await prisma.content.findFirstOrThrow({
+    where: {
+      id: contentId,
+      ...filterEditableContent(loggedInUserId, isAdmin),
+    },
+    select: {
+      rootAssignment: { select: { assigned: true } },
+      nonRootAssignment: { select: { assigned: true } },
+    },
+  });
 
-  if (
-    assignmentId !== null &&
-    (source !== undefined || doenetmlVersionId !== undefined)
-  ) {
-    throw new InvalidRequestError("Cannot change assigned content");
+  const isAssigned = Boolean(
+    content.rootAssignment?.assigned || content.nonRootAssignment?.assigned,
+  );
+
+  if (isAssigned) {
+    // If assigned, the only items you can change are name, paginate, or imagePath.
+    // If attempting to change any of the others, throw an error
+    if (
+      [
+        // name,
+        source,
+        doenetmlVersionId,
+        numVariants,
+        // imagePath,
+        shuffle,
+        numToSelect,
+        selectByVariant,
+        // paginate,
+      ].some((x) => x !== undefined)
+    ) {
+      throw new InvalidRequestError("Cannot change assigned content");
+    }
   }
 
   await prisma.content.update({
@@ -264,14 +303,11 @@ export async function updateContent({
       source,
       doenetmlVersionId,
       numVariants,
-      baseComponentCounts,
       imagePath,
       shuffle,
       numToSelect,
       selectByVariant,
       paginate,
-      activityLevelAttempts,
-      itemLevelAttempts,
       lastEdited: DateTime.now().toJSDate(),
     },
   });
@@ -360,7 +396,7 @@ export async function getAllDoenetmlVersions() {
 }
 
 /**
- * Create a new record in `activityRevisions` corresponding to the current state of
+ * Create a new record in `contentRevisions` corresponding to the current state of
  * `contentId`.
  *
  * For documents, it stores the source and resulting cid.
@@ -376,21 +412,19 @@ export async function createActivityRevision(
   let source: string | null = null;
   let numVariants = 1;
   let doenetmlVersionId: number | null = null;
-  let baseComponentCounts: string | null = null;
   let cid: string;
 
   if (content.type === "singleDoc") {
     source = content.doenetML;
     numVariants = content.numVariants;
     doenetmlVersionId = content.doenetmlVersion.id;
-    baseComponentCounts = content.baseComponentCounts;
     cid = await cidFromText(content.doenetmlVersion.fullVersion + "|" + source);
   } else {
     source = JSON.stringify(compileActivityFromContent(content));
     cid = await cidFromText(source);
   }
 
-  let activityRevision = await prisma.activityRevisions.findUnique({
+  let activityRevision = await prisma.contentRevisions.findUnique({
     where: { contentId_cid: { contentId: contentId, cid } },
     select: { revisionNum: true },
   });
@@ -399,14 +433,14 @@ export async function createActivityRevision(
     // TODO: not sure how to make an atomic operation of this with the ORM.
     // Should we write a raw SQL query to accomplish this in one query?
 
-    const aggregations = await prisma.activityRevisions.aggregate({
+    const aggregations = await prisma.contentRevisions.aggregate({
       _max: { revisionNum: true },
       where: { contentId },
     });
     const lastRevisionNum = aggregations._max.revisionNum;
     const newRevisionNum = lastRevisionNum ? lastRevisionNum + 1 : 1;
 
-    activityRevision = await prisma.activityRevisions.create({
+    activityRevision = await prisma.contentRevisions.create({
       data: {
         revisionNum: newRevisionNum,
         contentId,
@@ -414,7 +448,6 @@ export async function createActivityRevision(
         doenetmlVersionId,
         source,
         numVariants,
-        baseComponentCounts,
       },
     });
   }

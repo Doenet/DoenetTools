@@ -57,13 +57,7 @@ export async function moveCopyContentActions({
     try {
       const contentIds = JSON.parse(formObj.contentIds);
       let numItems = contentIds.length;
-      if (formObj.action === "Add") {
-        const { data } = await axios.post(`/api/copyMove/copyContent`, {
-          contentIds,
-          parentId: formObj.parentId === "null" ? null : formObj.parentId,
-        });
-        numItems = data.newContentIds?.length;
-      } else {
+      if (formObj.action === "Move") {
         if (contentIds.length === 1) {
           await axios.post(`/api/copyMove/moveContent`, {
             contentId: contentIds[0],
@@ -73,12 +67,25 @@ export async function moveCopyContentActions({
         } else {
           throw Error("Have not implemented moving more than one content");
         }
+      } else {
+        const { data } = await axios.post(`/api/copyMove/copyContent`, {
+          contentIds,
+          parentId: formObj.parentId === "null" ? null : formObj.parentId,
+        });
+        numItems = data.newContentIds?.length;
       }
       return { success: true, numItems };
     } catch (e) {
+      let message = "An error occurred";
+      if (e.response?.data?.error) {
+        message += `: ${e.response.data.error}`;
+        if (e.response.data.details) {
+          message += `: ${e.response.data.details}`;
+        }
+      }
       return {
         success: false,
-        message: "An error occurred" + ("message" in e ? `: ${e.message}` : ""),
+        message,
       };
     }
   }
@@ -111,7 +118,7 @@ export function MoveCopyContent({
   currentParentId: string | null;
   finalFocusRef?: RefObject<HTMLElement>;
   allowedParentTypes: ContentType[];
-  action: "Move" | "Add";
+  action: "Move" | "Add" | "Copy";
   inCurationLibrary?: boolean;
 }) {
   // Set when the modal opens
@@ -121,7 +128,8 @@ export function MoveCopyContent({
   const [actionFinished, setActionFinished] = useState(false);
   const [numItems, setNumItems] = useState(0);
   const [errMsg, setErrMsg] = useState("");
-  const actionPastWord = action === "Add" ? "added" : "moved";
+  const actionPastWord =
+    action === "Add" ? "added" : action === "Move" ? "moved" : "copied";
 
   const {
     isOpen: sharedAlertIsOpen,
@@ -184,10 +192,17 @@ export function MoveCopyContent({
     for (const item of contentFromApi) {
       let canOpen = false;
       if (allowedParentTypes.includes(item.type)) {
-        canOpen = true;
+        if (
+          (item.assignmentInfo?.assignmentStatus ?? "Unassigned") ===
+          "Unassigned"
+        ) {
+          canOpen = true;
+        }
       } else if (
-        item.type === "folder" ||
-        (item.type === "sequence" && allowedParentTypes.includes("select"))
+        (item.type === "folder" ||
+          (item.type === "sequence" &&
+            allowedParentTypes.includes("select"))) &&
+        (item.assignmentInfo?.assignmentStatus ?? "Unassigned") === "Unassigned"
       ) {
         // if items is a folder or item is a sequence and we are looking for a select,
         // then it is possible that a descendant is of allowed parent type.
@@ -346,6 +361,8 @@ export function MoveCopyContent({
                     ),
                   ))))
           ) {
+            // moving non-public content into a public parent
+            // or moving moving content into a parent that is shared with additional users
             sharedAlertOnOpen();
           } else {
             performAction();
