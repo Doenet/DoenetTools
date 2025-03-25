@@ -34,7 +34,7 @@
     "@fontsource/jost": "^5.1.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
-    "axios": "^1.7.9",
+    "axios": "^1.8.2",
     "better-react-mathjax": "^2.0.3",
     "browser-image-resizer": "^2.4.1",
     "copy-to-clipboard": "^3.3.3",
