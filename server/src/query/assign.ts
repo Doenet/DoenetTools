@@ -820,20 +820,36 @@ export async function getAssignmentViewerDataFromCode({
 }) {
   let preliminaryAssignment;
 
-  // make sure that content is assigned as is open
+  // make sure that content is assigned and is either open or has data from `loggedInUserId`
   try {
     preliminaryAssignment = await prisma.content.findFirstOrThrow({
       where: {
         rootAssignment: {
           classCode: code,
-          codeValidUntil: {
-            gte: DateTime.now().toISO(), // TODO - confirm this works with timezone stuff
-          },
+          assigned: true,
+          OR: [
+            {
+              codeValidUntil: {
+                gte: DateTime.now().toISO(), // TODO - confirm this works with timezone stuff
+              },
+            },
+            {
+              assignmentScores: {
+                some: {
+                  userId: loggedInUserId,
+                },
+              },
+            },
+          ],
         },
         isDeleted: false,
         type: { not: "folder" },
       },
-      select: { id: true, ownerId: true },
+      select: {
+        id: true,
+        ownerId: true,
+        rootAssignment: { select: { codeValidUntil: true } },
+      },
     });
   } catch (e) {
     if (
@@ -856,6 +872,14 @@ export async function getAssignmentViewerDataFromCode({
     skipPermissionCheck: true,
   });
 
+  if (assignment.assignmentInfo?.assignmentStatus === "Closed") {
+    return {
+      assignmentFound: true,
+      assignmentOpen: false,
+      assignment: assignment,
+    };
+  }
+
   if (!isEqualUUID(loggedInUserId, preliminaryAssignment.ownerId)) {
     await recordContentView(assignment.contentId, loggedInUserId);
   }
@@ -867,6 +891,7 @@ export async function getAssignmentViewerDataFromCode({
 
   return {
     assignmentFound: true,
+    assignmentOpen: true,
     assignment,
     scoreData,
   };
@@ -1002,6 +1027,7 @@ export async function getAssignmentResponseStudent({
     },
     select: {
       mode: true,
+      codeValidUntil: true,
       rootContent: {
         select: {
           name: true,
@@ -1018,6 +1044,10 @@ export async function getAssignmentResponseStudent({
       },
     },
   });
+
+  const isOpen = assignment.codeValidUntil
+    ? DateTime.now() <= DateTime.fromJSDate(assignment.codeValidUntil)
+    : false;
 
   const { user } = await getUserInfo({ loggedInUserId: responseUserId });
 
@@ -1073,6 +1103,7 @@ export async function getAssignmentResponseStudent({
       type: rootContent.type,
       contentId,
       shuffledOrder: rootContent.type == "sequence" && rootContent.shuffle,
+      isOpen,
     },
     overallScores,
     itemNames,

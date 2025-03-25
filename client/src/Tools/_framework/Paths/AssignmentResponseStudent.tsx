@@ -8,6 +8,7 @@ import {
   Grid,
   GridItem,
   Icon,
+  Text,
 } from "@chakra-ui/react";
 import axios from "axios";
 import {
@@ -24,7 +25,7 @@ import {
 } from "../../../_utils/types";
 import { contentTypeToName, getIconInfo } from "../../../_utils/activity";
 import { AssignmentItemResponseStudent } from "../ToolPanels/AssignmentItemResponseStudent";
-import { AssignmentStudentResponseSummary } from "./AssignmentStudentResponseSummary";
+import { AssignmentStudentResponseSummary } from "../ToolPanels/AssignmentStudentResponseSummary";
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);
@@ -128,6 +129,7 @@ export function AssignmentResponseStudent() {
       type: ContentType;
       contentId: string;
       shuffledOrder: boolean;
+      isOpen: boolean;
     };
     mode: AssignmentMode;
     user: UserInfo;
@@ -289,7 +291,11 @@ export function AssignmentResponseStudent() {
             }}
             alignContent="center"
           >
-            <GridItem area="leftControls" marginLeft="15px">
+            <GridItem
+              area="leftControls"
+              marginLeft="15px"
+              alignContent="center"
+            >
               <ChakraLink
                 as={ReactRouterLink}
                 to={".."}
@@ -308,7 +314,7 @@ export function AssignmentResponseStudent() {
             <GridItem area="label">
               <Flex justifyContent="center" alignItems="center">
                 {typeIcon}
-                {assignment.name} &mdash;{" "}
+                <Text noOfLines={1}>{assignment.name}</Text> &mdash;{" "}
                 {data.singleItemAttempt ? "Item Details" : "Student Summary"}
               </Flex>
             </GridItem>

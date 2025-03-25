@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useLoaderData, useOutletContext } from "react-router";
+import { redirect, useLoaderData, useOutletContext } from "react-router";
 
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
@@ -126,6 +126,10 @@ export async function loader({ params }) {
       attemptNumber,
       loadedScore,
     };
+  }
+
+  if (!data.assignmentOpen) {
+    return redirect(`/assignedData/${data.assignment.contentId}?shuffledOrder`);
   }
 
   if (data.scoreData.calculatedScore) {

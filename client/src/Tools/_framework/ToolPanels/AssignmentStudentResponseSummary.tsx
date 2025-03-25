@@ -40,6 +40,7 @@ export function AssignmentStudentResponseSummary({
     type: ContentType;
     contentId: string;
     shuffledOrder: boolean;
+    isOpen: boolean;
   };
   user: UserInfo;
   shuffledOrder: boolean;
@@ -360,6 +361,8 @@ export function AssignmentStudentResponseSummary({
               ))}
             </Select>
           </Flex>
+        ) : !assignment.isOpen ? (
+          <Text fontStyle="italic">Assignment is closed</Text>
         ) : null}
 
         <Spacer />
