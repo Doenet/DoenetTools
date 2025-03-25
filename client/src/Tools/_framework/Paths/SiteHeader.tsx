@@ -292,7 +292,9 @@ export function SiteHeader() {
                           Update name
                         </MenuItem>
                         <MenuItem as="a" href="/api/login/logout">
-                          Log Out
+                          {user.isAnonymous
+                            ? "Clear anonymous data"
+                            : "Log Out"}
                         </MenuItem>
                       </MenuList>
                     </Menu>

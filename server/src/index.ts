@@ -147,7 +147,7 @@ passport.use(
 
       sendEmail();
     },
-    async (user: { email: string; fromAnonymous: string | number }) => {
+    async (user: { email: string; fromAnonymous: string }) => {
       return {
         provider: "magiclink",
         email: user.email as string,
@@ -298,10 +298,10 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server" + JSON.stringify(req?.user));
 });
 
-app.get(
-  "/api/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] }),
-);
+// app.get(
+//   "/api/auth/google",
+//   passport.authenticate("google", { scope: ["profile", "email"] }),
+// );
 
 app.post(
   "/api/auth/magiclink",
