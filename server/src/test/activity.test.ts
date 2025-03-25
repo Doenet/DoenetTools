@@ -41,7 +41,7 @@ import { prisma } from "../model";
 const currentDoenetmlVersion = {
   id: 2,
   displayedVersion: "0.7",
-  fullVersion: "0.7.0-alpha32",
+  fullVersion: "0.7.0-alpha33",
   default: true,
   deprecated: false,
   removed: false,

@@ -29,8 +29,8 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "^2.10.5",
-    "@doenet/assignment-viewer": "^0.1.0-alpha5",
-    "@doenet/doenetml-iframe": "^0.7.0-alpha32",
+    "@doenet/assignment-viewer": "^0.1.0-alpha6",
+    "@doenet/doenetml-iframe": "^0.7.0-alpha33",
     "@fontsource/jost": "^5.1.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
