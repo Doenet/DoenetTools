@@ -30,7 +30,7 @@
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "^2.10.7",
     "@doenet/assignment-viewer": "^0.1.0-alpha6",
-    "@doenet/doenetml-iframe": "^0.7.0-alpha36",
+    "@doenet/doenetml-iframe": "^0.7.0-alpha37",
     "@fontsource/jost": "^5.2.5",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
