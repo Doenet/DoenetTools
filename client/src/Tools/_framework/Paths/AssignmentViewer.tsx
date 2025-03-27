@@ -9,7 +9,7 @@ import { redirect, useLoaderData, useOutletContext } from "react-router";
 
 import { DoenetViewer } from "@doenet/doenetml-iframe";
 
-import { Box, Button, Grid, GridItem } from "@chakra-ui/react";
+import { Box, Button, Grid, GridItem, Text, Tooltip } from "@chakra-ui/react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router";
 import {
@@ -639,7 +639,7 @@ export function AssignmentViewer() {
       >
         <Grid
           templateAreas={`"leftControls label rightControls"`}
-          templateColumns="1fr 400px 1fr"
+          templateColumns="10px 1fr 10px"
           width="100%"
         >
           <GridItem area="leftControls"></GridItem>
@@ -649,7 +649,12 @@ export function AssignmentViewer() {
             display="flex"
             fontSize={20}
           >
-            {loaderData.assignment.name} ({code})
+            <Tooltip label={loaderData.assignment.name} openDelay={500}>
+              <Text noOfLines={1} marginRight="10px">
+                {loaderData.assignment.name}
+              </Text>
+            </Tooltip>
+            ({code})
           </GridItem>
           <GridItem
             area="rightControls"

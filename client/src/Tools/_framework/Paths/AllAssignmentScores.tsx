@@ -291,7 +291,7 @@ export function AllAssignmentScores() {
           </TableContainer>
         </Box>
         {studentIdsOrdered.length === 0 ? (
-          <Box marginTop="20px">No student have taken assignments yet</Box>
+          <Box marginTop="20px">No students have taken assignments yet</Box>
         ) : null}
       </Box>
     </>

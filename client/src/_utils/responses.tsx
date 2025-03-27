@@ -21,8 +21,8 @@ export function parseAndFormatResponse(response: string): React.JSX.Element {
 
   return parsedResp.response.map((v, i) => {
     const componentType = parsedResp.componentTypes[i];
-    if (componentType === "math" || componentType === "point") {
-      const expr = me.fromAst(v);
+    if (["math", "point", "matrix", "vector"].includes(componentType)) {
+      const expr = me.fromAst(v).round_numbers_to_precision_plus_decimals(6, 2);
       return (
         <div key={i}>
           <MathJax hideUntilTypeset={"first"} inline dynamic key={i}>
