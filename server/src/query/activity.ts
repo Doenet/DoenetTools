@@ -403,10 +403,17 @@ export async function getAllDoenetmlVersions() {
  * For other activities, it compiles the activity json
  * and uses the stringified json for the source and resulting cid.
  */
-export async function createActivityRevision(
-  contentId: Uint8Array,
-  loggedInUserId: Uint8Array,
-): Promise<{ revisionNum: number }> {
+export async function createActivityRevision({
+  contentId,
+  loggedInUserId,
+  revisionName,
+  note,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+  revisionName?: string;
+  note?: string;
+}): Promise<{ revisionNum: number }> {
   const content = await getContent({ contentId, loggedInUserId });
 
   let source: string | null = null;
@@ -418,10 +425,17 @@ export async function createActivityRevision(
     source = content.doenetML;
     numVariants = content.numVariants;
     doenetmlVersionId = content.doenetmlVersion.id;
-    cid = await cidFromText(content.doenetmlVersion.fullVersion + "|" + source);
+    // use doenetmlVersionId for cid so that cid doesn't change if we upgrade the minor version for all documents
+    cid = await cidFromText(
+      content.doenetmlVersion.id.toString() + "|" + source,
+    );
   } else {
     source = JSON.stringify(compileActivityFromContent(content));
-    cid = await cidFromText(source);
+    // use doenetmlVersionId for cid so that cid doesn't change if we upgrade the minor version for all documents
+    const sourceForCid = JSON.stringify(
+      compileActivityFromContent(content, true),
+    );
+    cid = await cidFromText(sourceForCid);
   }
 
   let activityRevision = await prisma.contentRevisions.findUnique({
@@ -448,6 +462,8 @@ export async function createActivityRevision(
         doenetmlVersionId,
         source,
         numVariants,
+        revisionName,
+        note,
       },
     });
   }
@@ -459,14 +475,24 @@ export async function createActivityRevision(
  * Get the source from the content with `contentId`. For Docs, return the `source` database field.
  * Otherwise compile the activity json and stringify that for the source
  *
+ * For Docs, also return the full doenetml version, unless `useVersionId` is `true`,
+ * in which case, return the doenetmlVersionId.
+ *
+ * If not a Doc and `useVersionId` is `true`, then compile the activity json where use doenetmlVersionId
+ * rather than the full doenetml version. Useful for generating a cid from the source
+ * that won't change if we upgrade the minor version for all documents (though it does not
+ * produce a valid source for viewing the activity).
+ *
  * Throws an error if not viewable by `loggedInUserId`.
  */
 export async function getContentSource({
   contentId,
   loggedInUserId = new Uint8Array(16),
+  useVersionIds = false,
 }: {
   contentId: Uint8Array;
   loggedInUserId?: Uint8Array;
+  useVersionIds?: boolean;
 }) {
   const isAdmin = await getIsAdmin(loggedInUserId);
   const content = await getContent({ contentId, loggedInUserId, isAdmin });
@@ -476,9 +502,11 @@ export async function getContentSource({
 
   if (content.type === "singleDoc") {
     source = content.doenetML;
-    doenetMLVersion = content.doenetmlVersion.fullVersion;
+    doenetMLVersion = useVersionIds
+      ? content.doenetmlVersion.id.toString()
+      : content.doenetmlVersion.fullVersion;
   } else {
-    source = JSON.stringify(compileActivityFromContent(content));
+    source = JSON.stringify(compileActivityFromContent(content, useVersionIds));
   }
 
   return { source, doenetMLVersion };

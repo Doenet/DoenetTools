@@ -1,11 +1,11 @@
 import { prisma } from "../model";
-import { ActivityHistoryItem, ActivityRemixItem, LicenseCode } from "../types";
+import { ActivityRemixItem, LicenseCode, RemixContent } from "../types";
 import { cidFromText } from "../utils/cid";
 import { filterViewableActivity } from "../utils/permissions";
 import { getContentSource } from "./activity";
 import { getIsAdmin } from "./curate";
 
-export async function getContributorHistory({
+export async function getRemixedFrom({
   contentId,
   loggedInUserId = new Uint8Array(16),
   isAdmin,
@@ -13,41 +13,61 @@ export async function getContributorHistory({
   contentId: Uint8Array;
   loggedInUserId?: Uint8Array;
   isAdmin?: boolean;
-}): Promise<{ history: ActivityHistoryItem[] }> {
+}): Promise<{ remixedFrom: ActivityRemixItem[] }> {
   if (isAdmin === undefined) {
     isAdmin = await getIsAdmin(loggedInUserId);
   }
 
-  const prelimActivityHistory = await prisma.content.findUniqueOrThrow({
+  const prelimRemixedFrom = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
       ...filterViewableActivity(loggedInUserId, isAdmin),
     },
     select: {
       id: true,
-      contributorHistory: {
-        where: {
-          prevContent: {
-            content: {
-              ...filterViewableActivity(loggedInUserId, isAdmin),
-            },
-          },
+      name: true,
+      owner: {
+        select: {
+          userId: true,
+          email: true,
+          firstNames: true,
+          lastNames: true,
         },
-        orderBy: { timestampPrevContent: "desc" },
-        include: {
-          prevContent: {
+      },
+      contentRevisions: {
+        select: {
+          revisionNum: true,
+          cid: true,
+          contributorHistoryAsRemix: {
+            where: {
+              originContent: {
+                content: {
+                  ...filterViewableActivity(loggedInUserId, isAdmin),
+                },
+              },
+            },
+            orderBy: { timestampOriginContent: "desc" },
             select: {
-              cid: true,
-              content: {
+              withLicenseCode: true,
+              timestampRemixContent: true,
+              timestampOriginContent: true,
+              directCopy: true,
+              originContent: {
                 select: {
-                  id: true,
-                  name: true,
-                  owner: {
+                  revisionNum: true,
+                  cid: true,
+                  content: {
                     select: {
-                      userId: true,
-                      email: true,
-                      firstNames: true,
-                      lastNames: true,
+                      id: true,
+                      name: true,
+                      owner: {
+                        select: {
+                          userId: true,
+                          email: true,
+                          firstNames: true,
+                          lastNames: true,
+                        },
+                      },
                     },
                   },
                 },
@@ -59,98 +79,155 @@ export async function getContributorHistory({
     },
   });
 
-  const history: ActivityHistoryItem[] = [];
+  const remixedFrom: ActivityRemixItem[] = [];
 
-  for (const historyItem of prelimActivityHistory.contributorHistory) {
-    const prevContent = historyItem.prevContent;
+  const remixBaseInfo = {
+    contentId: prelimRemixedFrom.id,
+    name: prelimRemixedFrom.name,
+    owner: prelimRemixedFrom.owner,
+  };
 
-    const prevCidAtRemix = prevContent.cid;
+  const remixCurrentSource = await getContentSource({
+    contentId: prelimRemixedFrom.id,
+    loggedInUserId,
+    useVersionIds: true,
+  });
 
-    const prevCurrent = await getContentSource({
-      contentId: prevContent.content.id,
-      loggedInUserId,
-    });
-
-    let currentCid;
-    if (prevCurrent.doenetMLVersion) {
-      currentCid = await cidFromText(
-        prevCurrent.doenetMLVersion + "|" + prevCurrent.source,
-      );
-    } else {
-      currentCid = await cidFromText(prevCurrent.source);
-    }
-
-    const prevChanged = currentCid !== prevCidAtRemix;
-
-    history.push({
-      contentId,
-      prevContentId: prevContent.content.id,
-      prevRevisionNum: historyItem.prevContentRevisionNum,
-      withLicenseCode: historyItem.withLicenseCode
-        ? (historyItem.withLicenseCode as LicenseCode)
-        : null,
-      timestampContent: historyItem.timestampContent,
-      timestampPrevContent: historyItem.timestampPrevContent,
-      prevName: prevContent.content.name,
-      prevOwner: prevContent.content.owner,
-      prevCidAtRemix,
-      prevChanged,
-    });
+  let remixCurrentCid;
+  if (remixCurrentSource.doenetMLVersion) {
+    remixCurrentCid = await cidFromText(
+      remixCurrentSource.doenetMLVersion + "|" + remixCurrentSource.source,
+    );
+  } else {
+    remixCurrentCid = await cidFromText(remixCurrentSource.source);
   }
 
-  return { history };
+  for (const revision of prelimRemixedFrom.contentRevisions) {
+    const remixRevisionInfo = {
+      ...remixBaseInfo,
+      revisionNumber: revision.revisionNum,
+      cidAtRemix: revision.cid,
+      changedSinceRemix: remixCurrentCid != revision.cid,
+    };
+    for (const historyItem of revision.contributorHistoryAsRemix) {
+      const remixContent: RemixContent = {
+        ...remixRevisionInfo,
+        timestamp: historyItem.timestampRemixContent,
+      };
+
+      const originRevisionContent = historyItem.originContent;
+
+      const originCidAtRemix = originRevisionContent.cid;
+
+      const originCurrentSource = await getContentSource({
+        contentId: originRevisionContent.content.id,
+        loggedInUserId,
+        useVersionIds: true,
+      });
+
+      let originCurrentCid;
+      if (originCurrentSource.doenetMLVersion) {
+        originCurrentCid = await cidFromText(
+          originCurrentSource.doenetMLVersion +
+            "|" +
+            originCurrentSource.source,
+        );
+      } else {
+        originCurrentCid = await cidFromText(originCurrentSource.source);
+      }
+
+      const originContent: RemixContent = {
+        contentId: originRevisionContent.content.id,
+        revisionNumber: originRevisionContent.revisionNum,
+        timestamp: historyItem.timestampRemixContent,
+        name: originRevisionContent.content.name,
+        owner: originRevisionContent.content.owner,
+        cidAtRemix: originCidAtRemix,
+        changedSinceRemix: originCurrentCid !== originCidAtRemix,
+      };
+
+      remixedFrom.push({
+        originContent,
+        remixContent,
+        withLicenseCode: historyItem.withLicenseCode
+          ? (historyItem.withLicenseCode as LicenseCode)
+          : null,
+        directCopy: historyItem.directCopy,
+      });
+    }
+  }
+
+  return { remixedFrom };
 }
 
 export async function getRemixes({
   contentId,
   loggedInUserId = new Uint8Array(16),
-  directRemixesOnly = false,
+  // directRemixesOnly = false,
 }: {
   contentId: Uint8Array;
   loggedInUserId?: Uint8Array;
-  directRemixesOnly?: boolean;
+  // directRemixesOnly?: boolean;
 }): Promise<{ remixes: ActivityRemixItem[] }> {
   const isAdmin = await getIsAdmin(loggedInUserId);
 
-  const directFilter = directRemixesOnly
-    ? {
-        directCopy: true,
-      }
-    : {};
+  // const directFilter = directRemixesOnly
+  //   ? {
+  //       directCopy: true,
+  //     }
+  //   : {};
 
-  const activityRemixes = await prisma.content.findUniqueOrThrow({
+  const prelimRemixes = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
       ...filterViewableActivity(loggedInUserId, isAdmin),
     },
     select: {
       id: true,
+      name: true,
+      owner: {
+        select: {
+          userId: true,
+          email: true,
+          firstNames: true,
+          lastNames: true,
+        },
+      },
       contentRevisions: {
         select: {
           revisionNum: true,
-          contributorHistory: {
+          cid: true,
+          contributorHistoryAsOrigin: {
             where: {
-              content: {
-                ...filterViewableActivity(loggedInUserId, isAdmin),
+              remixContent: {
+                content: {
+                  ...filterViewableActivity(loggedInUserId, isAdmin),
+                },
               },
-              ...directFilter,
+              // ...directFilter,
             },
-            orderBy: { timestampContent: "desc" },
+            orderBy: { timestampRemixContent: "desc" },
             select: {
-              contentId: true,
               withLicenseCode: true,
-              timestampContent: true,
-              timestampPrevContent: true,
+              timestampRemixContent: true,
+              timestampOriginContent: true,
               directCopy: true,
-              content: {
+              remixContent: {
                 select: {
-                  name: true,
-                  owner: {
+                  revisionNum: true,
+                  cid: true,
+                  content: {
                     select: {
-                      userId: true,
-                      email: true,
-                      firstNames: true,
-                      lastNames: true,
+                      id: true,
+                      name: true,
+                      owner: {
+                        select: {
+                          userId: true,
+                          email: true,
+                          firstNames: true,
+                          lastNames: true,
+                        },
+                      },
                     },
                   },
                 },
@@ -164,19 +241,75 @@ export async function getRemixes({
 
   const remixes: ActivityRemixItem[] = [];
 
-  for (const revision of activityRemixes.contentRevisions) {
-    for (const historyItem of revision.contributorHistory) {
+  const originBaseInfo = {
+    contentId: prelimRemixes.id,
+    name: prelimRemixes.name,
+    owner: prelimRemixes.owner,
+  };
+
+  const originCurrentSource = await getContentSource({
+    contentId: prelimRemixes.id,
+    loggedInUserId,
+    useVersionIds: true,
+  });
+
+  let originCurrentCid;
+  if (originCurrentSource.doenetMLVersion) {
+    originCurrentCid = await cidFromText(
+      originCurrentSource.doenetMLVersion + "|" + originCurrentSource.source,
+    );
+  } else {
+    originCurrentCid = await cidFromText(originCurrentSource.source);
+  }
+
+  for (const revision of prelimRemixes.contentRevisions) {
+    const originRevisionInfo = {
+      ...originBaseInfo,
+      revisionNumber: revision.revisionNum,
+      cidAtRemix: revision.cid,
+      changedSinceRemix: originCurrentCid != revision.cid,
+    };
+    for (const historyItem of revision.contributorHistoryAsOrigin) {
+      const originContent: RemixContent = {
+        ...originRevisionInfo,
+        timestamp: historyItem.timestampOriginContent,
+      };
+
+      const remixRevisionContent = historyItem.remixContent;
+
+      const remixCidAtRemix = remixRevisionContent.cid;
+
+      const remixCurrentSource = await getContentSource({
+        contentId: remixRevisionContent.content.id,
+        loggedInUserId,
+        useVersionIds: true,
+      });
+
+      let remixCurrentCid;
+      if (remixCurrentSource.doenetMLVersion) {
+        remixCurrentCid = await cidFromText(
+          remixCurrentSource.doenetMLVersion + "|" + remixCurrentSource.source,
+        );
+      } else {
+        remixCurrentCid = await cidFromText(remixCurrentSource.source);
+      }
+
+      const remixContent: RemixContent = {
+        contentId: remixRevisionContent.content.id,
+        revisionNumber: remixRevisionContent.revisionNum,
+        timestamp: historyItem.timestampRemixContent,
+        name: remixRevisionContent.content.name,
+        owner: remixRevisionContent.content.owner,
+        cidAtRemix: remixCidAtRemix,
+        changedSinceRemix: remixCurrentCid !== remixCidAtRemix,
+      };
+
       remixes.push({
-        prevContentId: contentId,
-        prevRevisionNum: revision.revisionNum,
+        originContent,
+        remixContent,
         withLicenseCode: historyItem.withLicenseCode
           ? (historyItem.withLicenseCode as LicenseCode)
           : null,
-        contentId: historyItem.contentId,
-        name: historyItem.content.name,
-        owner: historyItem.content.owner,
-        timestampContent: historyItem.timestampContent,
-        timestampPrevContent: historyItem.timestampPrevContent,
         directCopy: historyItem.directCopy,
       });
     }

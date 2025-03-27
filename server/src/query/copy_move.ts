@@ -1,6 +1,6 @@
 import { ContentType, Prisma } from "@prisma/client";
 import { prisma } from "../model";
-import { LicenseCode } from "../types";
+import { LicenseCode, UserInfo } from "../types";
 import {
   filterEditableContent,
   filterViewableContent,
@@ -440,6 +440,7 @@ async function copySingleContent({
       nonRootAssignmentId: true,
     },
     include: {
+      owner: true,
       classifications: true,
       contentFeatures: true,
       children: {
@@ -488,6 +489,7 @@ async function copySingleContent({
       contentFeatures,
       classifications,
       licenseCode: originalLicenseCode,
+      owner,
       ...originalFieldsToCopy
     } = originalContent;
     originalFieldsToCopy.name =
@@ -518,12 +520,14 @@ async function copySingleContent({
     });
 
     if (originalContent.type !== "folder") {
-      await createContributorHistory(
-        contentId,
-        newContent.id,
+      await createContributorHistory({
+        originContentId: contentId,
+        remixContentId: newContent.id,
         licenseCode,
         loggedInUserId,
-      );
+        originalName: originalContent.name,
+        originalOwner: originalContent.owner,
+      });
     }
 
     for (const child of children) {
@@ -590,31 +594,49 @@ export async function createContentCopyInChildren({
 
 /**
  * Create entries in the `contributorHistory` table that record the fact that
- * `copiedId` was copied from `originalId` using `licenseCode`.
+ * `remixContentId` was copied from `originContentId` using `licenseCode`.
  *
- * An activity revision snapshot of `originalId` is taken, if it doesn't already exist,
- * and that revision is used to record which revision of `originalId` was copied.
+ * An activity revision snapshot of `originContentId` is taken, if it doesn't already exist,
+ * and that revision is used to record which revision of `originContentId` was copied.
  *
- * The contributor history of `originalId` is added to the contributor history of `copiedId`.
+ * The contributor history of `originContentId` is added to the contributor history of `remixContentId`.
  */
-async function createContributorHistory(
-  originalId: Uint8Array,
-  copiedId: Uint8Array,
-  licenseCode: string,
-  loggedInUserId: Uint8Array,
-) {
-  const originalActivityRevision = await createActivityRevision(
-    originalId,
+async function createContributorHistory({
+  originContentId,
+  remixContentId,
+  licenseCode,
+  loggedInUserId,
+  originalName,
+  originalOwner,
+}: {
+  originContentId: Uint8Array;
+  remixContentId: Uint8Array;
+  licenseCode: string;
+  loggedInUserId: Uint8Array;
+  originalName: string;
+  originalOwner: UserInfo;
+}) {
+  const originActivityRevision = await createActivityRevision({
+    contentId: originContentId,
     loggedInUserId,
-  );
+    revisionName: "Created due to being remixed",
+  });
+  const remixActivityRevision = await createActivityRevision({
+    contentId: remixContentId,
+    loggedInUserId,
+    revisionName: "Original revision",
+    note: `Remixed from: ${originalName} by ${(originalOwner.firstNames ? originalOwner.firstNames + " " : "") + originalOwner.lastNames}`,
+  });
 
-  // First, create the record of `copiedId` being copied from
-  // `originalId`, with revision given by `originalActivityRevision`
+  // First, create the record of `remixContentId` with revision `remixActivityRevision`
+  // being copied from `originContentId` with revision `originalActivityRevision`.
+  // Since this is a new remix, both timestamps are set to the current time
   const contribHistoryInfo = await prisma.contributorHistory.create({
     data: {
-      contentId: copiedId,
-      prevContentId: originalId,
-      prevContentRevisionNum: originalActivityRevision.revisionNum,
+      remixContentId,
+      remixContentRevisionNum: remixActivityRevision.revisionNum,
+      originContentId,
+      originContentRevisionNum: originActivityRevision.revisionNum,
       withLicenseCode: licenseCode,
       directCopy: true,
     },
@@ -622,37 +644,38 @@ async function createContributorHistory(
 
   // we'll need the timestamp from this new record
   // to copy to additional records created
-  const timestampContent = contribHistoryInfo.timestampContent;
+  const timestampRemixContent = contribHistoryInfo.timestampRemixContent;
 
-  // Next, we grab all records from the history of `originalId`.
+  // Next, we grab all records from the history of `originContentId`.
   // We will create records showing that these activities
-  // are now in the history of `copiedId`.
+  // are now in the history of `remixContentId`.
   // We will create new records in the database
-  // (rather than just linking to the records from `originalId`)
-  // so that this history is fixed even if `originalId`
+  // (rather than just linking to the records from `originContentId`)
+  // so that this history is fixed even if `originContentId`
   // (or its predecessors) are modified to change their history
   const previousHistory = await prisma.contributorHistory.findMany({
     where: {
-      contentId: originalId,
+      remixContentId: originContentId,
     },
   });
 
   // Note: contributorHistory has two timestamps:
-  // - timestampPrevContent: the time when prevContentId was remixed into a new activity
-  // - timestampContent: this time when contentId was created by remixing
-  // Each record we create below corresponds to an indirect path from prevContentId to contentId
+  // - timestampOriginContent: the time when originContentId was remixed into a new activity
+  // - timestampRemixContent: this time when remixContentId was created by remixing
+  // Each record we create below corresponds to an indirect path from originContentId to remixContentId
   // so the two timestamps will be different:
-  // - timestampPrevContent is copied from the original source to get the original remix time from prevContentId
-  // - timestampContent is copied from the above create query (so is essentially now)
+  // - timestampOriginContent is copied from the original source to get the original remix time from originContentId
+  // - timestampRemixContent is copied from the above create query (so is essentially now)
 
   await prisma.contributorHistory.createMany({
     data: previousHistory.map((hist) => ({
-      contentId: copiedId,
-      prevContentId: hist.prevContentId,
-      prevContentRevisionNum: hist.prevContentRevisionNum,
+      remixContentId,
+      remixContentRevisionNum: remixActivityRevision.revisionNum,
+      originContentId: hist.originContentId,
+      originContentRevisionNum: hist.originContentRevisionNum,
       withLicenseCode: hist.withLicenseCode,
-      timestampPrevContent: hist.timestampPrevContent,
-      timestampContent: timestampContent,
+      timestampOriginContent: hist.timestampOriginContent,
+      timestampRemixContent: timestampRemixContent,
       directCopy: false,
     })),
   });

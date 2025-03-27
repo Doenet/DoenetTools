@@ -11,7 +11,7 @@ import { getAvailableContentFeatures } from "./classification";
 import { processContent, returnContentSelect } from "../utils/contentStructure";
 import { getIsAdmin } from "./curate";
 import { isEqualUUID } from "../utils/uuid";
-import { getContributorHistory } from "./remix";
+import { getRemixedFrom } from "./remix";
 import { recordContentView, recordRecentContent } from "./stats";
 
 /**
@@ -102,7 +102,7 @@ export async function getActivityViewerData({
     await recordContentView(contentId, loggedInUserId);
   }
 
-  const activityHistory = await getContributorHistory({
+  const { remixedFrom } = await getRemixedFrom({
     contentId,
     loggedInUserId,
     isAdmin,
@@ -110,7 +110,7 @@ export async function getActivityViewerData({
 
   return {
     activity,
-    activityHistory,
+    remixedFrom,
   };
 }
 

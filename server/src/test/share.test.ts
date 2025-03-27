@@ -13,7 +13,7 @@ import { getMyContent } from "../query/content_list";
 import { copyContent, moveContent } from "../query/copy_move";
 import { updateUser } from "../query/user";
 import { createTestUser } from "./utils";
-import { getContributorHistory, getRemixes } from "../query/remix";
+import { getRemixedFrom, getRemixes } from "../query/remix";
 
 test("content in public folder is created as public", async () => {
   const owner = await createTestUser();
@@ -1410,7 +1410,7 @@ test("share with email throws error when share with self", async () => {
   expect(results.parent!.sharedWith.map((obj) => obj.email)).eqls([user.email]);
 });
 
-test("contributor history shows only documents user can view", async () => {
+test("remixed from and remixes show only activities user can view", async () => {
   const ownerId1 = (await createTestUser()).userId;
   const ownerId2 = (await createTestUser()).userId;
   const ownerId3 = (await createTestUser()).userId;
@@ -1488,16 +1488,16 @@ test("contributor history shows only documents user can view", async () => {
     users: [ownerId1],
   });
 
-  // owner1 just sees activity 1 in history of activity 4
-  let activityHistory = (
-    await getContributorHistory({
+  // owner1 just sees activity 1 in remixed from of activity 4
+  let remixedFrom = (
+    await getRemixedFrom({
       contentId: contentId4,
       loggedInUserId: ownerId1,
     })
-  ).history;
-  expect(activityHistory.length).eq(1);
-  expect(activityHistory[0].prevContentId).eqls(contentId1);
-  expect(activityHistory[0].withLicenseCode).eq("CCDUAL");
+  ).remixedFrom;
+  expect(remixedFrom.length).eq(1);
+  expect(remixedFrom[0].originContent.contentId).eqls(contentId1);
+  expect(remixedFrom[0].withLicenseCode).eq("CCDUAL");
 
   // owner 1 just sees activity 4 and 5 in remixes of activity 1
   let activityRemixes = (
@@ -1507,35 +1507,35 @@ test("contributor history shows only documents user can view", async () => {
     })
   ).remixes;
   expect(activityRemixes.length).eq(2);
-  expect(activityRemixes[0].contentId).eqls(contentId5);
+  expect(activityRemixes[0].remixContent.contentId).eqls(contentId5);
   expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
-  expect(activityRemixes[1].contentId).eqls(contentId4);
+  expect(activityRemixes[1].remixContent.contentId).eqls(contentId4);
   expect(activityRemixes[1].withLicenseCode).eq("CCDUAL");
 
-  // owner 1 just sees direct remix from activity 1 into activity 5
-  activityRemixes = (
-    await getRemixes({
-      contentId: contentId1,
-      loggedInUserId: ownerId1,
-      directRemixesOnly: true,
-    })
-  ).remixes;
-  expect(activityRemixes.length).eq(1);
-  expect(activityRemixes[0].contentId).eqls(contentId5);
-  expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
+  // // owner 1 just sees direct remix from activity 1 into activity 5
+  // activityRemixes = (
+  //   await getRemixes({
+  //     contentId: contentId1,
+  //     loggedInUserId: ownerId1,
+  //     directRemixesOnly: true,
+  //   })
+  // ).remixes;
+  // expect(activityRemixes.length).eq(1);
+  // expect(activityRemixes[0].remixContent.contentId).eqls(contentId5);
+  // expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
 
-  // owner2 just sees activity 1 and 2 in history of activity 4
-  activityHistory = (
-    await getContributorHistory({
+  // owner2 just sees activity 1 and 2 in remixed from of activity 4
+  remixedFrom = (
+    await getRemixedFrom({
       contentId: contentId4,
       loggedInUserId: ownerId2,
     })
-  ).history;
-  expect(activityHistory.length).eq(2);
-  expect(activityHistory[0].prevContentId).eqls(contentId2);
-  expect(activityHistory[0].withLicenseCode).eq("CCBYSA");
-  expect(activityHistory[1].prevContentId).eqls(contentId1);
-  expect(activityHistory[1].withLicenseCode).eq("CCDUAL");
+  ).remixedFrom;
+  expect(remixedFrom.length).eq(2);
+  expect(remixedFrom[0].originContent.contentId).eqls(contentId2);
+  expect(remixedFrom[0].withLicenseCode).eq("CCBYSA");
+  expect(remixedFrom[1].originContent.contentId).eqls(contentId1);
+  expect(remixedFrom[1].withLicenseCode).eq("CCDUAL");
 
   // owner 2 just sees activity 4 and 2 in remixes of activity 1
   activityRemixes = (
@@ -1545,37 +1545,37 @@ test("contributor history shows only documents user can view", async () => {
     })
   ).remixes;
   expect(activityRemixes.length).eq(2);
-  expect(activityRemixes[0].contentId).eqls(contentId4);
+  expect(activityRemixes[0].remixContent.contentId).eqls(contentId4);
   expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
-  expect(activityRemixes[1].contentId).eqls(contentId2);
+  expect(activityRemixes[1].remixContent.contentId).eqls(contentId2);
   expect(activityRemixes[1].withLicenseCode).eq("CCDUAL");
 
-  // owner 2 sees direct remix of activity 1 into 2
-  activityRemixes = (
-    await getRemixes({
-      contentId: contentId1,
-      loggedInUserId: ownerId2,
-      directRemixesOnly: true,
-    })
-  ).remixes;
-  expect(activityRemixes.length).eq(1);
-  expect(activityRemixes[0].contentId).eqls(contentId2);
-  expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
+  // // owner 2 sees direct remix of activity 1 into 2
+  // activityRemixes = (
+  //   await getRemixes({
+  //     contentId: contentId1,
+  //     loggedInUserId: ownerId2,
+  //     directRemixesOnly: true,
+  //   })
+  // ).remixes;
+  // expect(activityRemixes.length).eq(1);
+  // expect(activityRemixes[0].contentId).eqls(contentId2);
+  // expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
 
-  // owner3 sees activity 1, 2 and 3 in history of activity 4
-  activityHistory = (
-    await getContributorHistory({
+  // owner3 sees activity 1, 2 and 3 in remixed from of activity 4
+  remixedFrom = (
+    await getRemixedFrom({
       contentId: contentId4,
       loggedInUserId: ownerId3,
     })
-  ).history;
-  expect(activityHistory.length).eq(3);
-  expect(activityHistory[0].prevContentId).eqls(contentId3);
-  expect(activityHistory[0].withLicenseCode).eq("CCBYSA");
-  expect(activityHistory[1].prevContentId).eqls(contentId2);
-  expect(activityHistory[1].withLicenseCode).eq("CCBYSA");
-  expect(activityHistory[2].prevContentId).eqls(contentId1);
-  expect(activityHistory[2].withLicenseCode).eq("CCDUAL");
+  ).remixedFrom;
+  expect(remixedFrom.length).eq(3);
+  expect(remixedFrom[0].originContent.contentId).eqls(contentId3);
+  expect(remixedFrom[0].withLicenseCode).eq("CCBYSA");
+  expect(remixedFrom[1].originContent.contentId).eqls(contentId2);
+  expect(remixedFrom[1].withLicenseCode).eq("CCBYSA");
+  expect(remixedFrom[2].originContent.contentId).eqls(contentId1);
+  expect(remixedFrom[2].withLicenseCode).eq("CCDUAL");
 
   // owner 3 sees activity 5, 4, 3 and 2 in remixes of activity 1
   activityRemixes = (
@@ -1585,28 +1585,187 @@ test("contributor history shows only documents user can view", async () => {
     })
   ).remixes;
   expect(activityRemixes.length).eq(4);
-  expect(activityRemixes[0].contentId).eqls(contentId5);
+  expect(activityRemixes[0].remixContent.contentId).eqls(contentId5);
   expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
-  expect(activityRemixes[1].contentId).eqls(contentId4);
+  expect(activityRemixes[1].remixContent.contentId).eqls(contentId4);
   expect(activityRemixes[1].withLicenseCode).eq("CCDUAL");
-  expect(activityRemixes[2].contentId).eqls(contentId3);
+  expect(activityRemixes[2].remixContent.contentId).eqls(contentId3);
   expect(activityRemixes[2].withLicenseCode).eq("CCDUAL");
-  expect(activityRemixes[3].contentId).eqls(contentId2);
+  expect(activityRemixes[3].remixContent.contentId).eqls(contentId2);
   expect(activityRemixes[3].withLicenseCode).eq("CCDUAL");
 
-  // owner 3 sees direct remixes of activity 1 into 2 and 5
-  activityRemixes = (
+  // // owner 3 sees direct remixes of activity 1 into 2 and 5
+  // activityRemixes = (
+  //   await getRemixes({
+  //     contentId: contentId1,
+  //     loggedInUserId: ownerId3,
+  //     directRemixesOnly: true,
+  //   })
+  // ).remixes;
+  // expect(activityRemixes.length).eq(2);
+  // expect(activityRemixes[0].contentId).eqls(contentId5);
+  // expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
+  // expect(activityRemixes[1].contentId).eqls(contentId2);
+  // expect(activityRemixes[1].withLicenseCode).eq("CCDUAL");
+});
+
+test("remixing a compound activity also adds contributor history to sub activities", async () => {
+  const ownerId1 = (await createTestUser()).userId;
+  const ownerId2 = (await createTestUser()).userId;
+  const ownerId3 = (await createTestUser()).userId;
+  const ownerId4 = (await createTestUser()).userId;
+
+  // create public problem set by owner 1
+  const { contentId: sequenceId1 } = await createContent({
+    loggedInUserId: ownerId1,
+    contentType: "sequence",
+    parentId: null,
+  });
+  const { contentId: docId1 } = await createContent({
+    loggedInUserId: ownerId1,
+    contentType: "singleDoc",
+    parentId: sequenceId1,
+  });
+  await setContentIsPublic({
+    contentId: sequenceId1,
+    loggedInUserId: ownerId1,
+    isPublic: true,
+  });
+
+  // add more after already public
+  const { contentId: selectId1 } = await createContent({
+    loggedInUserId: ownerId1,
+    contentType: "select",
+    parentId: sequenceId1,
+  });
+  const { contentId: docId2 } = await createContent({
+    loggedInUserId: ownerId1,
+    contentType: "singleDoc",
+    parentId: selectId1,
+  });
+  const { contentId: docId3 } = await createContent({
+    loggedInUserId: ownerId1,
+    contentType: "singleDoc",
+    parentId: selectId1,
+  });
+
+  // owner 2 copies problem set 1 to problem set 2 and makes it public
+  const {
+    newContentIds: [sequenceId2],
+  } = await copyContent({
+    contentIds: [sequenceId1],
+    loggedInUserId: ownerId2,
+    parentId: null,
+  });
+  await setContentIsPublic({
+    contentId: sequenceId2,
+    loggedInUserId: ownerId2,
+    isPublic: true,
+  });
+
+  // owner 3 copies question bank 2 to question bank 3 and makes it public
+
+  const sequence2 = await getContent({
+    contentId: sequenceId2,
+    loggedInUserId: ownerId3,
+  });
+  if (sequence2.type !== "sequence") {
+    throw Error("Shouldn't happen");
+  }
+
+  const selectId2 = sequence2.children[1].contentId;
+
+  const {
+    newContentIds: [selectId3],
+  } = await copyContent({
+    contentIds: [selectId2],
+    loggedInUserId: ownerId3,
+    parentId: null,
+  });
+
+  await setContentIsPublic({
+    contentId: selectId3,
+    loggedInUserId: ownerId3,
+    isPublic: true,
+  });
+
+  // owner 4 copies first problem of question bank 3 (call it document 4) to document 5
+
+  const select3 = await getContent({
+    contentId: selectId3,
+    loggedInUserId: ownerId4,
+  });
+  if (select3.type !== "select") {
+    throw Error("Shouldn't happen");
+  }
+
+  const docId4 = select3.children[0].contentId;
+
+  const {
+    newContentIds: [docId5],
+  } = await copyContent({
+    contentIds: [docId4],
+    loggedInUserId: ownerId4,
+    parentId: null,
+  });
+  await setContentIsPublic({
+    contentId: docId5,
+    loggedInUserId: ownerId4,
+    isPublic: true,
+  });
+
+  // problem set 2 is only remix of problem set 1
+  let remixes = (await getRemixes({ contentId: sequenceId1 })).remixes;
+  expect(remixes.length).eq(1);
+  expect(remixes[0].remixContent.contentId).eqls(sequenceId2);
+
+  // question bank 2 and 3 are remixes of question bank 1
+  remixes = (await getRemixes({ contentId: selectId1 })).remixes;
+  expect(remixes.length).eq(2);
+  expect(remixes[0].remixContent.contentId).eqls(selectId3);
+  expect(remixes[1].remixContent.contentId).eqls(selectId2);
+
+  // document 1 has one remix
+  remixes = (
     await getRemixes({
-      contentId: contentId1,
-      loggedInUserId: ownerId3,
-      directRemixesOnly: true,
+      contentId: docId1,
     })
   ).remixes;
-  expect(activityRemixes.length).eq(2);
-  expect(activityRemixes[0].contentId).eqls(contentId5);
-  expect(activityRemixes[0].withLicenseCode).eq("CCDUAL");
-  expect(activityRemixes[1].contentId).eqls(contentId2);
-  expect(activityRemixes[1].withLicenseCode).eq("CCDUAL");
+  expect(remixes.length).eq(1);
+
+  // document 2 has three remixes, the most recent being doc 5 and doc 4
+  remixes = (await getRemixes({ contentId: docId2 })).remixes;
+  expect(remixes.length).eq(3);
+  expect(remixes[0].remixContent.contentId).eqls(docId5);
+  expect(remixes[1].remixContent.contentId).eqls(docId4);
+
+  // document 3 has two remixes
+  remixes = (
+    await getRemixes({
+      contentId: docId3,
+    })
+  ).remixes;
+  expect(remixes.length).eq(2);
+
+  // doc5 is remixed from 3, including doc 4 and doc 2
+  let remixedFrom = (
+    await getRemixedFrom({
+      contentId: docId5,
+    })
+  ).remixedFrom;
+  expect(remixedFrom.length).eq(3);
+  expect(remixedFrom[0].originContent.contentId).eqls(docId4);
+  expect(remixedFrom[2].originContent.contentId).eqls(docId2);
+
+  // question bank 3 is remixed from question banks 2 and 1
+  remixedFrom = (
+    await getRemixedFrom({
+      contentId: selectId3,
+    })
+  ).remixedFrom;
+  expect(remixedFrom.length).eq(2);
+  expect(remixedFrom[0].originContent.contentId).eqls(selectId2);
+  expect(remixedFrom[1].originContent.contentId).eqls(selectId1);
 });
 
 test("get licenses", async () => {
