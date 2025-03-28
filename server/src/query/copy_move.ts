@@ -13,7 +13,7 @@ import {
   ShiftIndicesCallbackFunction,
 } from "../utils/sort";
 import { modifyContentSharedWith, setContentIsPublic } from "./share";
-import { createActivityRevision, createContent } from "./activity";
+import { createContentRevision, createContent } from "./activity";
 import { InvalidRequestError } from "../utils/error";
 import { recordRecentContent } from "./stats";
 import { createFullName } from "../utils/names";
@@ -617,27 +617,27 @@ async function createContributorHistory({
   originalName: string;
   originalOwner: UserInfo;
 }) {
-  const originActivityRevision = await createActivityRevision({
+  const originContentRevision = await createContentRevision({
     contentId: originContentId,
     loggedInUserId,
     revisionName: "Created due to being remixed",
   });
-  const remixActivityRevision = await createActivityRevision({
+  const remixContentRevision = await createContentRevision({
     contentId: remixContentId,
     loggedInUserId,
     revisionName: "Original revision",
     note: `Remixed from: ${originalName} by ${createFullName(originalOwner)}`,
   });
 
-  // First, create the record of `remixContentId` with revision `remixActivityRevision`
-  // being copied from `originContentId` with revision `originalActivityRevision`.
+  // First, create the record of `remixContentId` with revision `remixContentRevision`
+  // being copied from `originContentId` with revision `originalContentRevision`.
   // Since this is a new remix, both timestamps are set to the current time
   const contribHistoryInfo = await prisma.contributorHistory.create({
     data: {
       remixContentId,
-      remixContentRevisionNum: remixActivityRevision.revisionNum,
+      remixContentRevisionNum: remixContentRevision.revisionNum,
       originContentId,
-      originContentRevisionNum: originActivityRevision.revisionNum,
+      originContentRevisionNum: originContentRevision.revisionNum,
       withLicenseCode: licenseCode,
       directCopy: true,
     },
@@ -671,7 +671,7 @@ async function createContributorHistory({
   await prisma.contributorHistory.createMany({
     data: previousHistory.map((hist) => ({
       remixContentId,
-      remixContentRevisionNum: remixActivityRevision.revisionNum,
+      remixContentRevisionNum: remixContentRevision.revisionNum,
       originContentId: hist.originContentId,
       originContentRevisionNum: hist.originContentRevisionNum,
       withLicenseCode: hist.withLicenseCode,

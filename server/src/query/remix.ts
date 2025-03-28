@@ -6,7 +6,7 @@ import {
   filterEditableActivity,
   filterViewableActivity,
 } from "../utils/permissions";
-import { createActivityRevision, getContentSource } from "./activity";
+import { createContentRevision, getContentSource } from "./activity";
 import { getIsAdmin } from "./curate";
 
 export async function getRemixedFrom({
@@ -392,12 +392,12 @@ export async function updateRemixedContentToOrigin({
   // if originRevisionNum is not supplied, it means update from the current content,
   // so create (or find) a revision corresponding to the current content
   if (originRevisionNum === undefined) {
-    const originActivityRevision = await createActivityRevision({
+    const originContentRevision = await createContentRevision({
       contentId: originContentId,
       loggedInUserId,
       revisionName: "Created due to being remixed",
     });
-    originRevisionNum = originActivityRevision.revisionNum;
+    originRevisionNum = originContentRevision.revisionNum;
   }
 
   const revisionToCopy = await prisma.contentRevisions.findUniqueOrThrow({
@@ -430,7 +430,7 @@ export async function updateRemixedContentToOrigin({
   if (!onlyMarkUnchanged) {
     // if remixed content has changed since it was originally remixed,
     // create a revision as a save point
-    await createActivityRevision({
+    await createContentRevision({
       contentId: remixContentId,
       loggedInUserId,
       revisionName: "Before update",
@@ -443,7 +443,7 @@ export async function updateRemixedContentToOrigin({
       data: { source: newSource, doenetmlVersionId: newDoenetmlVersionId },
     });
 
-    ({ revisionNum: remixRevisionNum } = await createActivityRevision({
+    ({ revisionNum: remixRevisionNum } = await createContentRevision({
       contentId: remixContentId,
       loggedInUserId,
       revisionName: "After update",
@@ -530,12 +530,12 @@ export async function updateOriginContentToRemix({
   // if remixRevisionNum is not supplied, it means update from the current content,
   // so create (or find) a revision corresponding to the current content
   if (remixRevisionNum === undefined) {
-    const remixActivityRevision = await createActivityRevision({
+    const remixContentRevision = await createContentRevision({
       contentId: remixContentId,
       loggedInUserId,
       revisionName: "Created due to being remixed",
     });
-    remixRevisionNum = remixActivityRevision.revisionNum;
+    remixRevisionNum = remixContentRevision.revisionNum;
   }
 
   const revisionToCopy = await prisma.contentRevisions.findUniqueOrThrow({
@@ -568,7 +568,7 @@ export async function updateOriginContentToRemix({
   if (!onlyMarkUnchanged) {
     // if origin content has changed since it was originally remixed,
     // create a revision as a save point
-    await createActivityRevision({
+    await createContentRevision({
       contentId: originContentId,
       loggedInUserId,
       revisionName: "Before update",
@@ -581,7 +581,7 @@ export async function updateOriginContentToRemix({
       data: { source: newSource, doenetmlVersionId: newDoenetmlVersionId },
     });
 
-    ({ revisionNum: originRevisionNum } = await createActivityRevision({
+    ({ revisionNum: originRevisionNum } = await createContentRevision({
       contentId: originContentId,
       loggedInUserId,
       revisionName: "After update",

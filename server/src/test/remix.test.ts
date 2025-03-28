@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
-  createActivityRevision,
+  createContentRevision,
   createContent,
   getAllDoenetmlVersions,
   getContentSource,
@@ -703,7 +703,7 @@ describe("Remix tests", () => {
       loggedInUserId: ownerIds[0],
     });
 
-    await createActivityRevision({
+    await createContentRevision({
       contentId: contentIds[0],
       loggedInUserId: ownerIds[0],
     });
@@ -849,7 +849,7 @@ describe("Remix tests", () => {
       loggedInUserId: ownerIds[1],
     });
 
-    await createActivityRevision({
+    await createContentRevision({
       contentId: contentIds[1],
       loggedInUserId: ownerIds[1],
     });
