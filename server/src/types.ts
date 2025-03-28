@@ -300,12 +300,12 @@ export type ActivityRemixItem = {
 
 export type RemixContent = {
   contentId: Uint8Array;
-  revisionNumber: number;
+  revisionNum: number;
   timestamp: Date;
   name: string;
   owner: UserInfo;
   cidAtRemix: string;
-  changedSinceRemix: boolean;
+  changed: boolean;
 };
 
 export type ClassificationCategoryTree = {

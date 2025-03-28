@@ -16,6 +16,7 @@ import { modifyContentSharedWith, setContentIsPublic } from "./share";
 import { createActivityRevision, createContent } from "./activity";
 import { InvalidRequestError } from "../utils/error";
 import { recordRecentContent } from "./stats";
+import { createFullName } from "../utils/names";
 
 /**
  * Move the content with `id` to position `desiredPosition` in the folder `parentId`
@@ -625,7 +626,7 @@ async function createContributorHistory({
     contentId: remixContentId,
     loggedInUserId,
     revisionName: "Original revision",
-    note: `Remixed from: ${originalName} by ${(originalOwner.firstNames ? originalOwner.firstNames + " " : "") + originalOwner.lastNames}`,
+    note: `Remixed from: ${originalName} by ${createFullName(originalOwner)}`,
   });
 
   // First, create the record of `remixContentId` with revision `remixActivityRevision`

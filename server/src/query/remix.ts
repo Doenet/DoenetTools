@@ -1,8 +1,12 @@
 import { prisma } from "../model";
 import { ActivityRemixItem, LicenseCode, RemixContent } from "../types";
 import { cidFromText } from "../utils/cid";
-import { filterViewableActivity } from "../utils/permissions";
-import { getContentSource } from "./activity";
+import { createFullName } from "../utils/names";
+import {
+  filterEditableActivity,
+  filterViewableActivity,
+} from "../utils/permissions";
+import { createActivityRevision, getContentSource } from "./activity";
 import { getIsAdmin } from "./curate";
 
 export async function getRemixedFrom({
@@ -105,9 +109,9 @@ export async function getRemixedFrom({
   for (const revision of prelimRemixedFrom.contentRevisions) {
     const remixRevisionInfo = {
       ...remixBaseInfo,
-      revisionNumber: revision.revisionNum,
+      revisionNum: revision.revisionNum,
       cidAtRemix: revision.cid,
-      changedSinceRemix: remixCurrentCid != revision.cid,
+      changed: remixCurrentCid != revision.cid,
     };
     for (const historyItem of revision.contributorHistoryAsRemix) {
       const remixContent: RemixContent = {
@@ -138,12 +142,12 @@ export async function getRemixedFrom({
 
       const originContent: RemixContent = {
         contentId: originRevisionContent.content.id,
-        revisionNumber: originRevisionContent.revisionNum,
-        timestamp: historyItem.timestampRemixContent,
+        revisionNum: originRevisionContent.revisionNum,
+        timestamp: historyItem.timestampOriginContent,
         name: originRevisionContent.content.name,
         owner: originRevisionContent.content.owner,
         cidAtRemix: originCidAtRemix,
-        changedSinceRemix: originCurrentCid !== originCidAtRemix,
+        changed: originCurrentCid !== originCidAtRemix,
       };
 
       remixedFrom.push({
@@ -156,6 +160,13 @@ export async function getRemixedFrom({
       });
     }
   }
+
+  // re-sort according to originContent.timestamp, descending,
+  // since could have different revision numbers
+  remixedFrom.sort(
+    (a, b) =>
+      b.originContent.timestamp.getTime() - a.originContent.timestamp.getTime(),
+  );
 
   return { remixedFrom };
 }
@@ -265,9 +276,9 @@ export async function getRemixes({
   for (const revision of prelimRemixes.contentRevisions) {
     const originRevisionInfo = {
       ...originBaseInfo,
-      revisionNumber: revision.revisionNum,
+      revisionNum: revision.revisionNum,
       cidAtRemix: revision.cid,
-      changedSinceRemix: originCurrentCid != revision.cid,
+      changed: originCurrentCid != revision.cid,
     };
     for (const historyItem of revision.contributorHistoryAsOrigin) {
       const originContent: RemixContent = {
@@ -296,12 +307,12 @@ export async function getRemixes({
 
       const remixContent: RemixContent = {
         contentId: remixRevisionContent.content.id,
-        revisionNumber: remixRevisionContent.revisionNum,
+        revisionNum: remixRevisionContent.revisionNum,
         timestamp: historyItem.timestampRemixContent,
         name: remixRevisionContent.content.name,
         owner: remixRevisionContent.content.owner,
         cidAtRemix: remixCidAtRemix,
-        changedSinceRemix: remixCurrentCid !== remixCidAtRemix,
+        changed: remixCurrentCid !== remixCidAtRemix,
       };
 
       remixes.push({
@@ -315,5 +326,330 @@ export async function getRemixes({
     }
   }
 
+  // re-sort according to remixContent.timestamp, descending,
+  // since could have different revision numbers
+  remixes.sort(
+    (a, b) =>
+      b.remixContent.timestamp.getTime() - a.remixContent.timestamp.getTime(),
+  );
+
   return { remixes };
+}
+
+export async function updateRemixedContentToOrigin({
+  originContentId,
+  originRevisionNum,
+  remixContentId,
+  loggedInUserId,
+}: {
+  originContentId: Uint8Array;
+  originRevisionNum?: number;
+  remixContentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
+  // verify relation exists and logged in userId has edit access to the remix and view access to the origin
+  await prisma.contributorHistory.findUniqueOrThrow({
+    where: {
+      remixContentId_originContentId: { originContentId, remixContentId },
+      originContent: {
+        content: {
+          ...filterViewableActivity(loggedInUserId),
+          type: "singleDoc",
+        },
+      },
+      remixContent: {
+        content: {
+          ...filterEditableActivity(loggedInUserId),
+          type: "singleDoc",
+        },
+      },
+    },
+  });
+
+  // if originRevisionNum is not supplied, it means update from the current content,
+  // so create (or find) a revision corresponding to the current content
+  if (originRevisionNum === undefined) {
+    const originActivityRevision = await createActivityRevision({
+      contentId: originContentId,
+      loggedInUserId,
+      revisionName: "Created due to being remixed",
+    });
+    originRevisionNum = originActivityRevision.revisionNum;
+  }
+
+  const revisionToCopy = await prisma.contentRevisions.findUniqueOrThrow({
+    where: {
+      contentId_revisionNum: {
+        contentId: originContentId,
+        revisionNum: originRevisionNum,
+      },
+    },
+    select: {
+      source: true,
+      doenetmlVersionId: true,
+      cid: true,
+      content: {
+        select: {
+          name: true,
+          owner: true,
+        },
+      },
+    },
+  });
+
+  const newSource = revisionToCopy.source;
+  const newDoenetmlVersionId = revisionToCopy.doenetmlVersionId;
+
+  const originContent = revisionToCopy.content;
+
+  // if remixed content has changed since it was originally remixed,
+  // create a revision as a save point
+  await createActivityRevision({
+    contentId: remixContentId,
+    loggedInUserId,
+    revisionName: "Before update",
+    note: `Save point before updating to: ${originContent.name} by ${createFullName(originContent.owner)}`,
+  });
+
+  // update remixed content (already checked permissions)
+  await prisma.content.update({
+    where: { id: remixContentId },
+    data: { source: newSource, doenetmlVersionId: newDoenetmlVersionId },
+  });
+
+  const { revisionNum: remixRevisionNum } = await createActivityRevision({
+    contentId: remixContentId,
+    loggedInUserId,
+    revisionName: "After update",
+    note: `Updated to: ${originContent.name} by ${createFullName(originContent.owner)}`,
+  });
+
+  // Update content history to show that remixed from originRevisionNum to remixRevisionNum.
+  // Note: we currently don't update timestamps so they show the original remix time.
+  // Should we have another update timestamp?
+  await prisma.contributorHistory.update({
+    where: {
+      remixContentId_originContentId: { remixContentId, originContentId },
+    },
+    data: {
+      remixContentRevisionNum: remixRevisionNum,
+      originContentRevisionNum: originRevisionNum,
+    },
+  });
+
+  await updateOtherMatchingContributorHistory({
+    copiedContentId: originContentId,
+    updatedContentId: remixContentId,
+    updatedRevisionNum: remixRevisionNum,
+    newCid: revisionToCopy.cid,
+  });
+}
+
+export async function updateOriginContentToRemix({
+  remixRevisionNum,
+  remixContentId,
+  originContentId,
+  loggedInUserId,
+}: {
+  remixRevisionNum?: number;
+  remixContentId: Uint8Array;
+  originContentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
+  // verify relation exists and logged in userId has edit access to the origin and view access to the remix
+  await prisma.contributorHistory.findUniqueOrThrow({
+    where: {
+      remixContentId_originContentId: { originContentId, remixContentId },
+      originContent: {
+        content: {
+          ...filterEditableActivity(loggedInUserId),
+          type: "singleDoc",
+        },
+      },
+      remixContent: {
+        content: {
+          ...filterViewableActivity(loggedInUserId),
+          type: "singleDoc",
+        },
+      },
+    },
+  });
+
+  // if remixRevisionNum is not supplied, it means update from the current content,
+  // so create (or find) a revision corresponding to the current content
+  if (remixRevisionNum === undefined) {
+    const remixActivityRevision = await createActivityRevision({
+      contentId: remixContentId,
+      loggedInUserId,
+      revisionName: "Created due to being remixed",
+    });
+    remixRevisionNum = remixActivityRevision.revisionNum;
+  }
+
+  const revisionToCopy = await prisma.contentRevisions.findUniqueOrThrow({
+    where: {
+      contentId_revisionNum: {
+        contentId: remixContentId,
+        revisionNum: remixRevisionNum,
+      },
+    },
+    select: {
+      source: true,
+      doenetmlVersionId: true,
+      cid: true,
+      content: {
+        select: {
+          name: true,
+          owner: true,
+        },
+      },
+    },
+  });
+
+  const newSource = revisionToCopy.source;
+  const newDoenetmlVersionId = revisionToCopy.doenetmlVersionId;
+
+  const remixContent = revisionToCopy.content;
+
+  // if origin content has changed since it was originally remixed,
+  // create a revision as a save point
+  await createActivityRevision({
+    contentId: originContentId,
+    loggedInUserId,
+    revisionName: "Before update",
+    note: `Save point before updating to: ${remixContent.name} by ${createFullName(remixContent.owner)}`,
+  });
+
+  // update remixed content (already checked permissions)
+  await prisma.content.update({
+    where: { id: originContentId },
+    data: { source: newSource, doenetmlVersionId: newDoenetmlVersionId },
+  });
+
+  const { revisionNum: originRevisionNum } = await createActivityRevision({
+    contentId: originContentId,
+    loggedInUserId,
+    revisionName: "After update",
+    note: `Updated to: ${remixContent.name} by ${createFullName(remixContent.owner)}`,
+  });
+
+  // Update content history to show that remixed from originRevisionNum to remixRevisionNum.
+  // Note: we currently don't update timestamps so they show the original remix time.
+  // Should we have another update timestamp?
+  await prisma.contributorHistory.update({
+    where: {
+      remixContentId_originContentId: { remixContentId, originContentId },
+    },
+    data: {
+      remixContentRevisionNum: remixRevisionNum,
+      originContentRevisionNum: originRevisionNum,
+    },
+  });
+
+  await updateOtherMatchingContributorHistory({
+    copiedContentId: remixContentId,
+    updatedContentId: originContentId,
+    updatedRevisionNum: originRevisionNum,
+    newCid: revisionToCopy.cid,
+  });
+}
+
+/**
+ * Call this function after updating `updatedContentId` to revision `updatedRevisionNum` to match a revision of `copiedContent` with cid `newCid`.
+ *
+ * This function looks for other content that `updatedContentId` was remixed from or that was remixed from `updatedContentId`,
+ * where that other content has a revision with cid matching `newCid`. If found, updated the contributor history
+ * so that it links `updatedRevisionNum` of `updatedContentId` with that found revision of the other content.
+ *
+ * Note: we don't worry if logged in user has view access of those activities (or even if they are deleted).
+ * We still update the data to keep it current.
+ */
+async function updateOtherMatchingContributorHistory({
+  copiedContentId,
+  updatedContentId,
+  updatedRevisionNum,
+  newCid,
+}: {
+  copiedContentId: Uint8Array;
+  updatedContentId: Uint8Array;
+  updatedRevisionNum: number;
+  newCid: string;
+}) {
+  const originContentAtNewCid = await prisma.content.findMany({
+    where: {
+      id: { not: copiedContentId },
+      contentRevisions: {
+        some: {
+          contributorHistoryAsOrigin: {
+            some: { remixContentId: updatedContentId },
+          },
+        },
+      },
+    },
+    select: {
+      contentRevisions: {
+        distinct: ["cid"],
+        where: { cid: newCid },
+        orderBy: { createdAt: "desc" },
+        select: { contentId: true, revisionNum: true },
+      },
+    },
+  });
+
+  for (const originObj of originContentAtNewCid) {
+    if (originObj.contentRevisions.length === 1) {
+      const originInfo = originObj.contentRevisions[0];
+      await prisma.contributorHistory.update({
+        where: {
+          remixContentId_originContentId: {
+            remixContentId: updatedContentId,
+            originContentId: originInfo.contentId,
+          },
+        },
+        data: {
+          originContentRevisionNum: originInfo.revisionNum,
+          remixContentRevisionNum: updatedRevisionNum,
+        },
+      });
+    }
+  }
+
+  const remixContentAtNewCid = await prisma.content.findMany({
+    where: {
+      id: { not: copiedContentId },
+      contentRevisions: {
+        some: {
+          contributorHistoryAsRemix: {
+            some: { originContentId: updatedContentId },
+          },
+        },
+      },
+    },
+    select: {
+      contentRevisions: {
+        distinct: ["cid"],
+        where: { cid: newCid },
+        orderBy: { createdAt: "desc" },
+        select: { contentId: true, revisionNum: true },
+      },
+    },
+  });
+
+  for (const remixObj of remixContentAtNewCid) {
+    if (remixObj.contentRevisions.length === 1) {
+      const remixInfo = remixObj.contentRevisions[0];
+      await prisma.contributorHistory.update({
+        where: {
+          remixContentId_originContentId: {
+            remixContentId: remixInfo.contentId,
+            originContentId: updatedContentId,
+          },
+        },
+        data: {
+          originContentRevisionNum: updatedRevisionNum,
+          remixContentRevisionNum: remixInfo.revisionNum,
+        },
+      });
+    }
+  }
 }
