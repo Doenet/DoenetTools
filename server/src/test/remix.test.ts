@@ -696,7 +696,7 @@ describe("Remix tests", () => {
 
     const contentIds = await createRemixChainOfThree(ownerIds);
 
-    // change activity 1 source, create revision, then change again
+    // change activity 0 source, create revision, then change again
     await updateContent({
       contentId: contentIds[0],
       source: "Changed content 1",
@@ -776,6 +776,13 @@ describe("Remix tests", () => {
     expect(remixedFrom[1].remixContent.changed).eq(false);
     expect(remixedFrom[1].remixContent.revisionNum).eq(1);
 
+    // 1 content at first update
+    let newContent = await getContentSource({
+      contentId: contentIds[1],
+      loggedInUserId: ownerIds[1],
+    });
+    expect(newContent.source).eq("Changed content 1");
+
     // update 2 to 1
     await updateRemixedContentToOrigin({
       originContentId: contentIds[1],
@@ -810,6 +817,20 @@ describe("Remix tests", () => {
     expect(remixedFrom[1].remixContent.contentId).eqls(contentIds[2]);
     expect(remixedFrom[1].remixContent.changed).eq(false);
     expect(remixedFrom[1].remixContent.revisionNum).eq(2);
+
+    // 2 is also at first update
+    newContent = await getContentSource({
+      contentId: contentIds[2],
+      loggedInUserId: ownerIds[2],
+    });
+    expect(newContent.source).eq("Changed content 1");
+
+    // 0 is at second update
+    newContent = await getContentSource({
+      contentId: contentIds[0],
+      loggedInUserId: ownerIds[0],
+    });
+    expect(newContent.source).eq("Changed content 2");
   });
 
   test("Update origin to previous revision of remixed", async () => {
@@ -821,7 +842,7 @@ describe("Remix tests", () => {
 
     const contentIds = await createRemixChainOfThree(ownerIds);
 
-    // change activity 2 source, create revision, then change again
+    // change activity 1 source, create revision, then change again
     await updateContent({
       contentId: contentIds[1],
       source: "Changed content 1",
@@ -901,6 +922,13 @@ describe("Remix tests", () => {
     expect(remixedFrom[1].remixContent.changed).eq(false);
     expect(remixedFrom[1].remixContent.revisionNum).eq(1);
 
+    // 9 content at first update
+    let newContent = await getContentSource({
+      contentId: contentIds[0],
+      loggedInUserId: ownerIds[0],
+    });
+    expect(newContent.source).eq("Changed content 1");
+
     // update 2 to 0
     await updateRemixedContentToOrigin({
       originContentId: contentIds[0],
@@ -935,5 +963,285 @@ describe("Remix tests", () => {
     expect(remixedFrom[1].remixContent.contentId).eqls(contentIds[2]);
     expect(remixedFrom[1].remixContent.changed).eq(false);
     expect(remixedFrom[1].remixContent.revisionNum).eq(2);
+
+    // 2 is also at first update
+    newContent = await getContentSource({
+      contentId: contentIds[2],
+      loggedInUserId: ownerIds[2],
+    });
+    expect(newContent.source).eq("Changed content 1");
+
+    // 1 is at second update
+    newContent = await getContentSource({
+      contentId: contentIds[1],
+      loggedInUserId: ownerIds[1],
+    });
+    expect(newContent.source).eq("Changed content 2");
+  });
+
+  test("Remixed/origin ignores updates to origin/remix", async () => {
+    const ownerIds = [
+      (await createTestUser()).userId,
+      (await createTestUser()).userId,
+      (await createTestUser()).userId,
+    ];
+
+    const contentIds = await createRemixChainOfThree(ownerIds);
+
+    // change activity 1 source
+    await updateContent({
+      contentId: contentIds[1],
+      source: "Changed content",
+      loggedInUserId: ownerIds[1],
+    });
+
+    // show we have a change in 1
+    let remixedFrom = (await getRemixedFrom({ contentId: contentIds[1] }))
+      .remixedFrom;
+    expect(remixedFrom.length).eq(1);
+    expect(remixedFrom[0].originContent.contentId).eqls(contentIds[0]);
+    expect(remixedFrom[0].originContent.changed).eq(false);
+    expect(remixedFrom[0].originContent.revisionNum).eq(1);
+    expect(remixedFrom[0].remixContent.contentId).eqls(contentIds[1]);
+    expect(remixedFrom[0].remixContent.changed).eq(true);
+    expect(remixedFrom[0].remixContent.revisionNum).eq(1);
+    remixedFrom = (await getRemixedFrom({ contentId: contentIds[2] }))
+      .remixedFrom;
+    expect(remixedFrom.length).eq(2);
+    expect(remixedFrom[0].originContent.contentId).eqls(contentIds[1]);
+    expect(remixedFrom[0].originContent.changed).eq(true);
+    expect(remixedFrom[0].originContent.revisionNum).eq(1);
+    expect(remixedFrom[0].remixContent.contentId).eqls(contentIds[2]);
+    expect(remixedFrom[0].remixContent.changed).eq(false);
+    expect(remixedFrom[0].remixContent.revisionNum).eq(1);
+    expect(remixedFrom[1].originContent.contentId).eqls(contentIds[0]);
+    expect(remixedFrom[1].originContent.changed).eq(false);
+    expect(remixedFrom[1].originContent.revisionNum).eq(1);
+    expect(remixedFrom[1].remixContent.contentId).eqls(contentIds[2]);
+    expect(remixedFrom[1].remixContent.changed).eq(false);
+    expect(remixedFrom[1].remixContent.revisionNum).eq(1);
+
+    // 0 ignores that update in 1
+    await updateOriginContentToRemix({
+      originContentId: contentIds[0],
+      remixContentId: contentIds[1],
+      loggedInUserId: ownerIds[0],
+      onlyMarkUnchanged: true,
+    });
+
+    // remixedFrom now shows no change from 0 to 1, updating only the revision of 1
+    remixedFrom = (await getRemixedFrom({ contentId: contentIds[1] }))
+      .remixedFrom;
+    expect(remixedFrom.length).eq(1);
+    expect(remixedFrom[0].originContent.contentId).eqls(contentIds[0]);
+    expect(remixedFrom[0].originContent.changed).eq(false);
+    expect(remixedFrom[0].originContent.revisionNum).eq(1);
+    expect(remixedFrom[0].remixContent.contentId).eqls(contentIds[1]);
+    expect(remixedFrom[0].remixContent.changed).eq(false);
+    expect(remixedFrom[0].remixContent.revisionNum).eq(2);
+
+    // 2 sees only that 1 changed
+    remixedFrom = (await getRemixedFrom({ contentId: contentIds[2] }))
+      .remixedFrom;
+    expect(remixedFrom.length).eq(2);
+    expect(remixedFrom[0].originContent.contentId).eqls(contentIds[1]);
+    expect(remixedFrom[0].originContent.changed).eq(true);
+    expect(remixedFrom[0].originContent.revisionNum).eq(1);
+    expect(remixedFrom[0].remixContent.contentId).eqls(contentIds[2]);
+    expect(remixedFrom[0].remixContent.changed).eq(false);
+    expect(remixedFrom[0].remixContent.revisionNum).eq(1);
+    expect(remixedFrom[1].originContent.contentId).eqls(contentIds[0]);
+    expect(remixedFrom[1].originContent.changed).eq(false);
+    expect(remixedFrom[1].originContent.revisionNum).eq(1);
+    expect(remixedFrom[1].remixContent.contentId).eqls(contentIds[2]);
+    expect(remixedFrom[1].remixContent.changed).eq(false);
+    expect(remixedFrom[1].remixContent.revisionNum).eq(1);
+
+    // 2 ignores change to 1
+    await updateRemixedContentToOrigin({
+      originContentId: contentIds[1],
+      remixContentId: contentIds[2],
+      loggedInUserId: ownerIds[2],
+      onlyMarkUnchanged: true,
+    });
+
+    // same as before for 1
+    remixedFrom = (await getRemixedFrom({ contentId: contentIds[1] }))
+      .remixedFrom;
+    expect(remixedFrom.length).eq(1);
+    expect(remixedFrom[0].originContent.contentId).eqls(contentIds[0]);
+    expect(remixedFrom[0].originContent.changed).eq(false);
+    expect(remixedFrom[0].originContent.revisionNum).eq(1);
+    expect(remixedFrom[0].remixContent.contentId).eqls(contentIds[1]);
+    expect(remixedFrom[0].remixContent.changed).eq(false);
+    expect(remixedFrom[0].remixContent.revisionNum).eq(2);
+
+    // now show no changes, even though only 1 is updated to revision 2
+    remixedFrom = (await getRemixedFrom({ contentId: contentIds[2] }))
+      .remixedFrom;
+    expect(remixedFrom.length).eq(2);
+    expect(remixedFrom[0].originContent.contentId).eqls(contentIds[1]);
+    expect(remixedFrom[0].originContent.changed).eq(false);
+    expect(remixedFrom[0].originContent.revisionNum).eq(2);
+    expect(remixedFrom[0].remixContent.contentId).eqls(contentIds[2]);
+    expect(remixedFrom[0].remixContent.changed).eq(false);
+    expect(remixedFrom[0].remixContent.revisionNum).eq(1);
+    expect(remixedFrom[1].originContent.contentId).eqls(contentIds[0]);
+    expect(remixedFrom[1].originContent.changed).eq(false);
+    expect(remixedFrom[1].originContent.revisionNum).eq(1);
+    expect(remixedFrom[1].remixContent.contentId).eqls(contentIds[2]);
+    expect(remixedFrom[1].remixContent.changed).eq(false);
+    expect(remixedFrom[1].remixContent.revisionNum).eq(1);
+
+    // 0 and 2 are at original content
+    let newContent = await getContentSource({
+      contentId: contentIds[0],
+      loggedInUserId: ownerIds[0],
+    });
+    expect(newContent.source).eq("Initial content");
+    newContent = await getContentSource({
+      contentId: contentIds[2],
+      loggedInUserId: ownerIds[2],
+    });
+    expect(newContent.source).eq("Initial content");
+
+    // 1 is updated
+    newContent = await getContentSource({
+      contentId: contentIds[1],
+      loggedInUserId: ownerIds[1],
+    });
+    expect(newContent.source).eq("Changed content");
+  });
+
+  test("When ignore change to origin also ignore matched change to remix", async () => {
+    const ownerIds = [
+      (await createTestUser()).userId,
+      (await createTestUser()).userId,
+      (await createTestUser()).userId,
+    ];
+
+    const contentIds = await createRemixChainOfThree(ownerIds);
+
+    // change activity 0 source
+    await updateContent({
+      contentId: contentIds[0],
+      source: "Changed content",
+      loggedInUserId: ownerIds[0],
+    });
+
+    // show we have a change in 0
+    let remixedFrom = (await getRemixedFrom({ contentId: contentIds[1] }))
+      .remixedFrom;
+    expect(remixedFrom.length).eq(1);
+    expect(remixedFrom[0].originContent.contentId).eqls(contentIds[0]);
+    expect(remixedFrom[0].originContent.changed).eq(true);
+    expect(remixedFrom[0].originContent.revisionNum).eq(1);
+    expect(remixedFrom[0].remixContent.contentId).eqls(contentIds[1]);
+    expect(remixedFrom[0].remixContent.changed).eq(false);
+    expect(remixedFrom[0].remixContent.revisionNum).eq(1);
+    remixedFrom = (await getRemixedFrom({ contentId: contentIds[2] }))
+      .remixedFrom;
+    expect(remixedFrom.length).eq(2);
+    expect(remixedFrom[0].originContent.contentId).eqls(contentIds[1]);
+    expect(remixedFrom[0].originContent.changed).eq(false);
+    expect(remixedFrom[0].originContent.revisionNum).eq(1);
+    expect(remixedFrom[0].remixContent.contentId).eqls(contentIds[2]);
+    expect(remixedFrom[0].remixContent.changed).eq(false);
+    expect(remixedFrom[0].remixContent.revisionNum).eq(1);
+    expect(remixedFrom[1].originContent.contentId).eqls(contentIds[0]);
+    expect(remixedFrom[1].originContent.changed).eq(true);
+    expect(remixedFrom[1].originContent.revisionNum).eq(1);
+    expect(remixedFrom[1].remixContent.contentId).eqls(contentIds[2]);
+    expect(remixedFrom[1].remixContent.changed).eq(false);
+    expect(remixedFrom[1].remixContent.revisionNum).eq(1);
+
+    // 2 updates to the change to 0
+    await updateRemixedContentToOrigin({
+      originContentId: contentIds[0],
+      remixContentId: contentIds[2],
+      loggedInUserId: ownerIds[2],
+    });
+
+    // same as before for 1-0 relationship
+    remixedFrom = (await getRemixedFrom({ contentId: contentIds[1] }))
+      .remixedFrom;
+    expect(remixedFrom.length).eq(1);
+    expect(remixedFrom[0].originContent.contentId).eqls(contentIds[0]);
+    expect(remixedFrom[0].originContent.changed).eq(true);
+    expect(remixedFrom[0].originContent.revisionNum).eq(1);
+    expect(remixedFrom[0].remixContent.contentId).eqls(contentIds[1]);
+    expect(remixedFrom[0].remixContent.changed).eq(false);
+    expect(remixedFrom[0].remixContent.revisionNum).eq(1);
+
+    // 2 matched to 0, both at revision 2
+    remixedFrom = (await getRemixedFrom({ contentId: contentIds[2] }))
+      .remixedFrom;
+    expect(remixedFrom.length).eq(2);
+    expect(remixedFrom[0].originContent.contentId).eqls(contentIds[1]);
+    expect(remixedFrom[0].originContent.changed).eq(false);
+    expect(remixedFrom[0].originContent.revisionNum).eq(1);
+    expect(remixedFrom[0].remixContent.contentId).eqls(contentIds[2]);
+    expect(remixedFrom[0].remixContent.changed).eq(true);
+    expect(remixedFrom[0].remixContent.revisionNum).eq(1);
+    expect(remixedFrom[1].originContent.contentId).eqls(contentIds[0]);
+    expect(remixedFrom[1].originContent.changed).eq(false);
+    expect(remixedFrom[1].originContent.revisionNum).eq(2);
+    expect(remixedFrom[1].remixContent.contentId).eqls(contentIds[2]);
+    expect(remixedFrom[1].remixContent.changed).eq(false);
+    expect(remixedFrom[1].remixContent.revisionNum).eq(2);
+
+    // 1 ignores change to 0
+    await updateRemixedContentToOrigin({
+      originContentId: contentIds[0],
+      remixContentId: contentIds[1],
+      loggedInUserId: ownerIds[1],
+      onlyMarkUnchanged: true,
+    });
+
+    // no changes, everyone to revision 2 except 1
+    remixedFrom = (await getRemixedFrom({ contentId: contentIds[1] }))
+      .remixedFrom;
+    expect(remixedFrom.length).eq(1);
+    expect(remixedFrom[0].originContent.contentId).eqls(contentIds[0]);
+    expect(remixedFrom[0].originContent.changed).eq(false);
+    expect(remixedFrom[0].originContent.revisionNum).eq(2);
+    expect(remixedFrom[0].remixContent.contentId).eqls(contentIds[1]);
+    expect(remixedFrom[0].remixContent.changed).eq(false);
+    expect(remixedFrom[0].remixContent.revisionNum).eq(1);
+
+    remixedFrom = (await getRemixedFrom({ contentId: contentIds[2] }))
+      .remixedFrom;
+    expect(remixedFrom.length).eq(2);
+    expect(remixedFrom[0].originContent.contentId).eqls(contentIds[1]);
+    expect(remixedFrom[0].originContent.changed).eq(false);
+    expect(remixedFrom[0].originContent.revisionNum).eq(1);
+    expect(remixedFrom[0].remixContent.contentId).eqls(contentIds[2]);
+    expect(remixedFrom[0].remixContent.changed).eq(false);
+    expect(remixedFrom[0].remixContent.revisionNum).eq(2);
+    expect(remixedFrom[1].originContent.contentId).eqls(contentIds[0]);
+    expect(remixedFrom[1].originContent.changed).eq(false);
+    expect(remixedFrom[1].originContent.revisionNum).eq(2);
+    expect(remixedFrom[1].remixContent.contentId).eqls(contentIds[2]);
+    expect(remixedFrom[1].remixContent.changed).eq(false);
+    expect(remixedFrom[1].remixContent.revisionNum).eq(2);
+
+    // 1 is at original content
+    let newContent = await getContentSource({
+      contentId: contentIds[1],
+      loggedInUserId: ownerIds[1],
+    });
+    expect(newContent.source).eq("Initial content");
+
+    // 0 and 2 are updated
+    newContent = await getContentSource({
+      contentId: contentIds[0],
+      loggedInUserId: ownerIds[0],
+    });
+    expect(newContent.source).eq("Changed content");
+    newContent = await getContentSource({
+      contentId: contentIds[2],
+      loggedInUserId: ownerIds[2],
+    });
+    expect(newContent.source).eq("Changed content");
   });
 });
