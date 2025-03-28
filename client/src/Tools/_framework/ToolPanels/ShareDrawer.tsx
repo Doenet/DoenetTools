@@ -20,17 +20,13 @@ import {
 } from "@chakra-ui/react";
 import { Remixes } from "./Remixes";
 import {
-  ActivityHistoryItem,
   ActivityRemixItem,
   Content,
   License,
   LicenseCode,
 } from "../../../_utils/types";
 import axios from "axios";
-import {
-  processContributorHistory,
-  processRemixes,
-} from "../../../_utils/processRemixes";
+import { processRemixes } from "../../../_utils/processRemixes";
 import { curateActions, CurateSettings } from "./CurateSettings";
 
 export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
@@ -79,7 +75,7 @@ export function ShareDrawer({
   inCurationLibrary?: boolean;
 }) {
   const [contributorHistory, setContributorHistory] = useState<
-    ActivityHistoryItem[]
+    ActivityRemixItem[]
   >([]);
   const [haveChangedHistoryItem, setHaveChangedHistoryItem] = useState(false);
   const [remixes, setRemixes] = useState<ActivityRemixItem[]>([]);
@@ -89,13 +85,13 @@ export function ShareDrawer({
   useEffect(() => {
     async function getHistoryAndRemixes() {
       const { data } = await axios.get(
-        `/api/remix/getContributorHistory/${contentData.contentId}`,
+        `/api/remix/getRemixedFrom/${contentData.contentId}`,
       );
 
-      const hist = await processContributorHistory(data);
+      const hist = processRemixes(data.remixedFrom);
       setContributorHistory(hist);
 
-      const haveChanged = hist.some((dhi) => dhi.prevChanged);
+      const haveChanged = hist.some((dhi) => dhi.originContent.changed);
 
       setHaveChangedHistoryItem(haveChanged);
 
@@ -105,7 +101,7 @@ export function ShareDrawer({
         `/api/remix/getRemixes/${contentData.contentId}`,
       );
 
-      const remixes = processRemixes(data2);
+      const remixes = processRemixes(data2.remixes);
       setRemixes(remixes);
     }
 

@@ -18,7 +18,7 @@ import {
 import { Link as ReactRouterLink } from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { DateTime } from "luxon";
-import { ActivityHistoryItem } from "../../../_utils/types";
+import { ActivityRemixItem } from "../../../_utils/types";
 
 export async function remixedFromActions({
   formObj: _formObj,
@@ -31,7 +31,7 @@ export async function remixedFromActions({
 export function RemixedFrom({
   contributorHistory,
 }: {
-  contributorHistory: ActivityHistoryItem[];
+  contributorHistory: ActivityRemixItem[];
 }) {
   if (contributorHistory === null) {
     return (
@@ -79,7 +79,7 @@ export function RemixedFrom({
         <Tbody>
           {contributorHistory.map((ch, i) => {
             let changeText = "";
-            if (ch.prevChanged) {
+            if (ch.originContent.changed) {
               // The previous doc changed since it was remixed.
               changeText = "*Changed since copied";
 
@@ -95,24 +95,24 @@ export function RemixedFrom({
                   <Td>
                     <ChakraLink
                       as={ReactRouterLink}
-                      to={`/activityViewer/${ch.prevContentId}`}
+                      to={`/activityViewer/${ch.originContent.contentId}`}
                     >
                       <Text wordBreak="break-word" whiteSpace="normal">
-                        {ch.prevName}
+                        {ch.originContent.name}
                       </Text>
                     </ChakraLink>
                   </Td>
                   <Td>
                     <ChakraLink
                       as={ReactRouterLink}
-                      to={`/sharedActivities/${ch.prevOwner.userId}`}
+                      to={`/sharedActivities/${ch.originContent.owner.userId}`}
                     >
                       <Text
                         wordBreak="break-word"
                         whiteSpace="normal"
                         minWidth="50px"
                       >
-                        {createFullName(ch.prevOwner)}
+                        {createFullName(ch.originContent.owner)}
                       </Text>
                     </ChakraLink>
                   </Td>
@@ -121,19 +121,21 @@ export function RemixedFrom({
                   <Td>
                     <VStack alignItems="left">
                       <Text wordBreak="break-word" whiteSpace="normal">
-                        {ch.prevName}
+                        {ch.originContent.name}
                       </Text>
                       <Text wordBreak="break-word" whiteSpace="normal">
-                        {createFullName(ch.prevOwner)}
+                        {createFullName(ch.originContent.owner)}
                       </Text>
                     </VStack>
                   </Td>
                 </Hide>
                 <Td>{ch.withLicenseCode}</Td>
                 <Show above="sm">
-                  {/* Note: use timestampPrevContent as what the timestamp from when the previous was mixed, not when this doc was created */}
+                  {/* Note: use timestampOriginContent as what the timestamp from when the previous was mixed, not when this doc was created */}
                   <Td>
-                    {ch.timestampPrevContent.toLocaleString(DateTime.DATE_MED)}
+                    {ch.originContent.timestamp.toLocaleString(
+                      DateTime.DATE_MED,
+                    )}
                   </Td>
                 </Show>
                 <Td>

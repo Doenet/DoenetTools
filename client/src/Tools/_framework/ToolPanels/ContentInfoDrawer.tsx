@@ -15,18 +15,11 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import {
-  ActivityHistoryItem,
-  ActivityRemixItem,
-  Content,
-} from "../../../_utils/types";
+import { ActivityRemixItem, Content } from "../../../_utils/types";
 import { GeneralContentInfo } from "./GeneralContentInfo";
 import { ClassificationInfo } from "./ClassificationInfo";
 import axios from "axios";
-import {
-  processContributorHistory,
-  processRemixes,
-} from "../../../_utils/processRemixes";
+import { processRemixes } from "../../../_utils/processRemixes";
 import { RemixedFrom } from "./RemixedFrom";
 import { Remixes } from "./Remixes";
 
@@ -65,7 +58,7 @@ export function ContentInfoDrawer({
   // Refactor to avoid code duplication
 
   const [contributorHistory, setContributorHistory] = useState<
-    ActivityHistoryItem[]
+    ActivityRemixItem[]
   >([]);
   const [haveChangedHistoryItem, setHaveChangedHistoryItem] = useState(false);
   const [remixes, setRemixes] = useState<ActivityRemixItem[]>([]);
@@ -73,13 +66,13 @@ export function ContentInfoDrawer({
   useEffect(() => {
     async function getHistoryAndRemixes() {
       const { data } = await axios.get(
-        `/api/remix/getContributorHistory/${contentData.contentId}`,
+        `/api/remix/getRemixedFrom/${contentData.contentId}`,
       );
 
-      const hist = await processContributorHistory(data);
+      const hist = processRemixes(data.remixedFrom);
       setContributorHistory(hist);
 
-      const haveChanged = hist.some((dhi) => dhi.prevChanged);
+      const haveChanged = hist.some((dhi) => dhi.originContent.changed);
 
       setHaveChangedHistoryItem(haveChanged);
 
@@ -87,7 +80,7 @@ export function ContentInfoDrawer({
         `/api/remix/getRemixes/${contentData.contentId}`,
       );
 
-      const remixes = processRemixes(data2);
+      const remixes = processRemixes(data2.remixes);
       setRemixes(remixes);
     }
 

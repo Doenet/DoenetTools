@@ -46,7 +46,7 @@ import {} from "../ToolPanels/ContentSettingsDrawer";
 import {
   Content,
   DoenetmlVersion,
-  ActivityHistoryItem,
+  ActivityRemixItem,
 } from "../../../_utils/types";
 import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
 import { CompoundActivityEditor } from "../ToolPanels/CompoundActivityEditor";
@@ -59,7 +59,7 @@ import {
   menuIcons,
 } from "../../../_utils/activity";
 import { ActivitySource, isActivitySource } from "../../../_utils/viewerTypes";
-import { processContributorHistory } from "../../../_utils/processRemixes";
+import { processRemixes } from "../../../_utils/processRemixes";
 import ContributorsMenu from "../ToolPanels/ContributorsMenu";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import { createFullName } from "../../../_utils/names";
@@ -96,7 +96,7 @@ export async function action({ request }) {
 
 export async function loader({ params }) {
   const {
-    data: { activity: activityData, activityHistory },
+    data: { activity: activityData, remixedFrom },
   } = await axios.get(
     `/api/activityEditView/getActivityViewerData/${params.contentId}`,
   );
@@ -107,7 +107,7 @@ export async function loader({ params }) {
     const doenetML = activityData.doenetML;
     const doenetmlVersion: DoenetmlVersion = activityData.doenetmlVersion;
 
-    const contributorHistory = await processContributorHistory(activityHistory);
+    const contributorHistory = processRemixes(remixedFrom);
 
     return {
       type: activityData.type,
@@ -140,7 +140,7 @@ export function ActivityViewer() {
   const data = useLoaderData() as {
     contentId: string;
     activityData: Content;
-    contributorHistory: ActivityHistoryItem[];
+    contributorHistory: ActivityRemixItem[];
   } & (
     | {
         type: "singleDoc";

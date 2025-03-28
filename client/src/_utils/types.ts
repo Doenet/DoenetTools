@@ -204,29 +204,21 @@ export type AssignmentInfo = {
   maxAttempts: number;
 };
 
-export type ActivityHistoryItem = {
-  contentId: Uint8Array;
-  prevContentId: Uint8Array;
-  prevRevisionNum: number;
+export type ActivityRemixItem = {
+  originContent: RemixContent;
+  remixContent: RemixContent;
   withLicenseCode: LicenseCode | null;
-  timestampContent: DateTime;
-  timestampPrevContent: DateTime;
-  prevName: string;
-  prevOwner: UserInfo;
-  prevCidAtRemix: string;
-  prevChanged: boolean;
+  directCopy: boolean;
 };
 
-export type ActivityRemixItem = {
-  prevContentId: Uint8Array;
-  prevRevisionNum: number;
-  withLicenseCode: LicenseCode | null;
-  contentId: Uint8Array;
+export type RemixContent = {
+  contentId: string;
+  revisionNum: number;
+  timestamp: DateTime;
   name: string;
   owner: UserInfo;
-  timestampContent: DateTime;
-  timestampPrevContent: DateTime;
-  directCopy: boolean;
+  cidAtRemix: string;
+  changed: boolean;
 };
 
 export type ClassificationCategoryTree = {

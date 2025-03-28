@@ -82,24 +82,24 @@ export function Remixes({ remixes }: { remixes: ActivityRemixItem[] }) {
                   <Td>
                     <ChakraLink
                       as={ReactRouterLink}
-                      to={`/activityViewer/${ch.contentId}`}
+                      to={`/activityViewer/${ch.remixContent.contentId}`}
                     >
                       <Text wordBreak="break-word" whiteSpace="normal">
-                        {ch.name}
+                        {ch.remixContent.name}
                       </Text>
                     </ChakraLink>
                   </Td>
                   <Td>
                     <ChakraLink
                       as={ReactRouterLink}
-                      to={`/sharedActivities/${ch.owner.userId}`}
+                      to={`/sharedActivities/${ch.remixContent.owner.userId}`}
                     >
                       <Text
                         wordBreak="break-word"
                         whiteSpace="normal"
                         minWidth="50px"
                       >
-                        {createFullName(ch.owner)}
+                        {createFullName(ch.remixContent.owner)}
                       </Text>
                     </ChakraLink>
                   </Td>
@@ -108,19 +108,21 @@ export function Remixes({ remixes }: { remixes: ActivityRemixItem[] }) {
                   <Td>
                     <VStack alignItems="left">
                       <Text wordBreak="break-word" whiteSpace="normal">
-                        {ch.name}
+                        {ch.remixContent.name}
                       </Text>
                       <Text wordBreak="break-word" whiteSpace="normal">
-                        {createFullName(ch.owner)}
+                        {createFullName(ch.remixContent.owner)}
                       </Text>
                     </VStack>
                   </Td>
                 </Hide>
                 <Td>{ch.withLicenseCode}</Td>
                 <Show above="sm">
-                  {/* Note: use timestampPrevContent as what the timestamp from when the previous was mixed, not when this doc was created */}
+                  {/* Note: use timestampOriginContent as what the timestamp from when the previous was mixed, not when this doc was created */}
                   <Td>
-                    {ch.timestampPrevContent.toLocaleString(DateTime.DATE_MED)}
+                    {ch.originContent.timestamp.toLocaleString(
+                      DateTime.DATE_MED,
+                    )}
                   </Td>
                   <Td>{ch.directCopy ? "direct copy" : ""}</Td>
                 </Show>
