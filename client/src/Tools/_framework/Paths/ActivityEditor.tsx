@@ -22,7 +22,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { BsPlayBtnFill } from "react-icons/bs";
-import { GrDocumentUpdate } from "react-icons/gr";
+import { IoGitCompareOutline } from "react-icons/io5";
 import {
   MdDataset,
   MdInfoOutline,
@@ -314,7 +314,7 @@ export function ActivityEditor() {
   const readOnlyRef = useRef(readOnly);
   readOnlyRef.current = readOnly;
 
-  const [mode, setMode] = useState<"Edit" | "View" | "Update">("Edit");
+  const [mode, setMode] = useState<"Edit" | "View" | "Compare">("Edit");
 
   const isLibraryActivity = Boolean(activityData.libraryActivityInfo);
 
@@ -362,7 +362,7 @@ export function ActivityEditor() {
     }
   }
 
-  let editor: ReactElement;
+  let editor: ReactElement | null;
 
   if (data.type === "singleDoc") {
     editor = (
@@ -379,21 +379,22 @@ export function ActivityEditor() {
       />
     );
   } else {
-    editor = (
-      <CompoundActivityEditor
-        activity={data.activityData}
-        activityJson={data.activityJson}
-        mode={mode}
-        fetcher={fetcher}
-        setSettingsContentId={setSettingsContentId}
-        settingsOnOpen={settingsOnOpen}
-        sharingOnOpen={sharingOnOpen}
-        finalFocusRef={finalFocusRef}
-        setSettingsDisplayTab={setSettingsDisplayTab}
-        setHighlightRename={setHighlightRename}
-        headerHeight={`${readOnly ? 120 : 80}px`}
-      />
-    );
+    editor =
+      mode !== "Compare" ? (
+        <CompoundActivityEditor
+          activity={data.activityData}
+          activityJson={data.activityJson}
+          mode={mode}
+          fetcher={fetcher}
+          setSettingsContentId={setSettingsContentId}
+          settingsOnOpen={settingsOnOpen}
+          sharingOnOpen={sharingOnOpen}
+          finalFocusRef={finalFocusRef}
+          setSettingsDisplayTab={setSettingsDisplayTab}
+          setHighlightRename={setHighlightRename}
+          headerHeight={`${readOnly ? 120 : 80}px`}
+        />
+      ) : null;
   }
 
   const settingsDrawer = contentData ? (
@@ -560,20 +561,25 @@ export function ActivityEditor() {
                       <Show above="lg">{editLabel}</Show>
                     </Button>
                   </Tooltip>
-                  <Tooltip hasArrow label="Manage updates and revisions">
-                    <Button
-                      data-test="Manage Revisions Button"
-                      isActive={mode == "Update"}
-                      size="sm"
-                      pr={{ base: "0px", lg: "10px" }}
-                      leftIcon={<GrDocumentUpdate />}
-                      onClick={() => {
-                        setMode("Update");
-                      }}
+                  {data.type === "singleDoc" && (
+                    <Tooltip
+                      hasArrow
+                      label="Compare with revisions and remixes"
                     >
-                      <Show above="lg">Revisions</Show>
-                    </Button>
-                  </Tooltip>
+                      <Button
+                        data-test="Compare with revisions and remixes"
+                        isActive={mode == "Compare"}
+                        size="sm"
+                        pr={{ base: "0px", lg: "10px" }}
+                        leftIcon={<IoGitCompareOutline />}
+                        onClick={() => {
+                          setMode("Compare");
+                        }}
+                      >
+                        <Show above="lg">Compare</Show>
+                      </Button>
+                    </Tooltip>
+                  )}
                 </ButtonGroup>
               </HStack>
             </GridItem>

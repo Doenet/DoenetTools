@@ -304,8 +304,11 @@ export type RemixContent = {
   timestamp: Date;
   name: string;
   owner: UserInfo;
-  cidAtRemix: string;
+  cidAtLastUpdate: string;
+  currentCid: string;
   changed: boolean;
+  source?: string;
+  doenetmlVersion?: string;
 };
 
 export type ClassificationCategoryTree = {

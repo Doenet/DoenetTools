@@ -45,7 +45,7 @@ export function ActivityDoenetMLEditor({
   asViewer?: boolean;
   contentId: string;
   activityName?: string;
-  mode: "Edit" | "View" | "Update";
+  mode: "Edit" | "View" | "Compare";
   headerHeight: string;
   fetcher: FetcherWithComponents<any>;
 }) {
@@ -213,7 +213,7 @@ export function ActivityDoenetMLEditor({
           </GridItem>
         </Grid>
       )}
-      {mode === "Update" && (
+      {mode === "Compare" && (
         <DoenetMLComparison
           doenetML={textEditorDoenetML.current}
           doenetmlChangeCallback={handleSaveDoc}

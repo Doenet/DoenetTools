@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 import { PanelPair } from "../../../Widgets/PanelPair";
-import { ContentRevision, DoenetmlVersion } from "../../../_utils/types";
+import {
+  ActivityRemixItem,
+  ContentRevision,
+  DoenetmlVersion,
+} from "../../../_utils/types";
 import {
   Box,
   Button,
@@ -17,18 +21,22 @@ import {
 } from "@chakra-ui/react";
 import { MdOutlineCameraAlt, MdOutlineInfo } from "react-icons/md";
 import { FetcherWithComponents } from "react-router";
+import axios from "axios";
+
 import {
   TakeSnapshotModel,
   takeSnapshotModelActions,
 } from "./DoenetMLComparisonModals/TakeSnapshotModal";
-import { RevisionInfoModal } from "./DoenetMLComparisonModals/RevisionInfoModal";
+import { RevisionRemixInfoModal } from "./DoenetMLComparisonModals/RevisionRemixInfoModal";
 import { ScratchpadInfoModal } from "./DoenetMLComparisonModals/ScratchpadInfoModal";
 import { DateTime } from "luxon";
 import { cidFromText } from "../../../_utils/cid";
 import {
-  RevertToRevisionModal,
-  revertToRevisionModalActions,
-} from "./DoenetMLComparisonModals/RevertToRevisionModal";
+  SetToRevisionRemixModal,
+  setToRevisionRemixModalActions,
+} from "./DoenetMLComparisonModals/SetToRevisionRemixModal";
+import { processRemixes } from "../../../_utils/processRemixes";
+import { createFullName } from "../../../_utils/names";
 
 export async function doenetMLComparisonActions({
   formObj,
@@ -40,7 +48,7 @@ export async function doenetMLComparisonActions({
     return resultTSM;
   }
 
-  const resultRM = await revertToRevisionModalActions({ formObj });
+  const resultRM = await setToRevisionRemixModalActions({ formObj });
   if (resultRM) {
     return resultRM;
   }
@@ -74,15 +82,15 @@ export function DoenetMLComparison({
   fetcher: FetcherWithComponents<any>;
 }) {
   const [listType, setListType] = useState<
-    "revisions" | "remixedFrom" | "remixes"
-  >("revisions");
-  const [selectedRevision, setSelectRevision] =
+    "revisions" | "remixedFrom" | "remixes" | ""
+  >("");
+  const [selectedRevision, setSelectedRevision] =
     useState<ContentRevision | null>(null);
 
   const [currentDoenetML, setCurrentDoenetML] = useState(doenetML);
   const [atLastRevision, setAtLastRevision] = useState(false);
-  const [atSelectedRevision, setAtSelectedRevision] = useState(false);
   const [currentCid, setCurrentCid] = useState("");
+  const [atSelectedRevision, setAtSelectedRevision] = useState(false);
 
   useEffect(() => {
     setCurrentDoenetML(doenetML);
@@ -101,10 +109,6 @@ export function DoenetMLComparison({
 
   useEffect(() => {
     async function checkIfAtLastRevision() {
-      // Check to see if last revision has the same cid as the current activity.
-      // If so, preload the take snapshot modal with information about that revision,
-      // as it will be modifying that revision.
-
       if (revisions.length > 0) {
         const lastRevision = revisions[0];
         const lastCid = lastRevision.cid;
@@ -120,10 +124,6 @@ export function DoenetMLComparison({
 
   useEffect(() => {
     async function checkIfAtSelectedRevision() {
-      // Check to see if last revision has the same cid as the current activity.
-      // If so, preload the take snapshot modal with information about that revision,
-      // as it will be modifying that revision.
-
       if (selectedRevision) {
         const selectedCid = selectedRevision.cid;
 
@@ -135,6 +135,96 @@ export function DoenetMLComparison({
 
     checkIfAtSelectedRevision();
   }, [currentCid, selectedRevision]);
+
+  const [remixedFrom, setRemixedFrom] = useState<ActivityRemixItem[] | null>(
+    null,
+  );
+  const [remixes, setRemixes] = useState<ActivityRemixItem[] | null>(null);
+  const [selectedRemix, setSelectedRemix] = useState<ActivityRemixItem | null>(
+    null,
+  );
+  const [atSelectedRemix, setAtSelectedRemix] = useState(false);
+  const [ignoreRemixUpdate, setIgnoreRemixUpdate] = useState(false);
+
+  useEffect(() => {
+    setRemixedFrom(null);
+    setRemixes(null);
+  }, [contentId]);
+
+  async function getRemixedFrom() {
+    const { data } = await axios.get(
+      `/api/remix/getRemixedFrom/${contentId}?includeSource=true`,
+    );
+
+    const newRemixedFrom = processRemixes(data.remixedFrom);
+    setRemixedFrom(newRemixedFrom);
+    return newRemixedFrom;
+  }
+
+  async function getRemixes() {
+    const { data } = await axios.get(
+      `/api/remix/getRemixes/${contentId}?includeSource=true`,
+    );
+
+    const newRemixes = processRemixes(data.remixes);
+    setRemixes(newRemixes);
+    return newRemixes;
+  }
+
+  async function remixesChangedCallback() {
+    const newRemixedFrom = await getRemixedFrom();
+    const newRemixes = await getRemixes();
+
+    // update selectedRemix to include any new information about the remix
+    // that was just retrieved
+    if (selectedRemix) {
+      let newSelectedRemix: ActivityRemixItem | undefined = undefined;
+      if (listType === "remixedFrom") {
+        newSelectedRemix = newRemixedFrom.find(
+          (rem) =>
+            rem.originContent.contentId ===
+            selectedRemix.originContent.contentId,
+        );
+      } else if (listType === "remixes") {
+        newSelectedRemix = newRemixes.find(
+          (rem) =>
+            rem.remixContent.contentId === selectedRemix.remixContent.contentId,
+        );
+      }
+      if (newSelectedRemix) {
+        setSelectedRemix(newSelectedRemix);
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (listType === "remixedFrom") {
+      if (remixedFrom === null) {
+        getRemixedFrom();
+      }
+    } else if (listType === "remixes") {
+      if (remixes === null) {
+        getRemixes();
+      }
+    }
+  }, [listType]);
+
+  useEffect(() => {
+    async function checkIfAtSelectedRemix() {
+      if (selectedRemix) {
+        const selectedCid =
+          listType === "remixedFrom"
+            ? selectedRemix.originContent.currentCid
+            : selectedRemix.remixContent.currentCid;
+
+        setAtSelectedRemix(selectedCid === currentCid);
+      } else {
+        setAtSelectedRemix(false);
+      }
+    }
+
+    checkIfAtSelectedRemix();
+  }, [currentCid, selectedRemix]);
 
   const {
     isOpen: snapshotIsOpen,
@@ -154,35 +244,41 @@ export function DoenetMLComparison({
   );
 
   const {
-    isOpen: revisionInfoIsOpen,
-    onOpen: revisionInfoOnOpen,
-    onClose: revisionInfoOnClose,
+    isOpen: revisionRemixInfoIsOpen,
+    onOpen: revisionRemixInfoOnOpen,
+    onClose: revisionRemixInfoOnClose,
   } = useDisclosure();
 
-  const revisionInfoModal = selectedRevision && (
-    <RevisionInfoModal
-      isOpen={revisionInfoIsOpen}
-      onClose={revisionInfoOnClose}
+  const revisionRemixInfoModal = (selectedRevision || selectedRemix) && (
+    <RevisionRemixInfoModal
+      isOpen={revisionRemixInfoIsOpen}
+      onClose={revisionRemixInfoOnClose}
       revision={selectedRevision}
+      remix={selectedRemix}
+      wasRemixedFrom={listType === "remixedFrom"}
     />
   );
 
   const {
-    isOpen: revertToRevisionIsOpen,
-    onOpen: revertToRevisionOnOpen,
-    onClose: revertToRevisionOnClose,
+    isOpen: setToRevisionRemixIsOpen,
+    onOpen: setToRevisionRemixOnOpen,
+    onClose: setToRevisionRemixOnClose,
   } = useDisclosure();
 
-  const revertToRevisionModal = selectedRevision && (
-    <RevertToRevisionModal
-      isOpen={revertToRevisionIsOpen}
-      onClose={revertToRevisionOnClose}
+  const setToRevisionRemixModal = (selectedRevision || selectedRemix) && (
+    <SetToRevisionRemixModal
+      isOpen={setToRevisionRemixIsOpen}
+      onClose={setToRevisionRemixOnClose}
       contentId={contentId}
       activityName={activityName}
       revision={selectedRevision}
+      remix={selectedRemix}
+      wasRemixedFrom={listType === "remixedFrom"}
+      ignoreRemixUpdate={ignoreRemixUpdate}
       fetcher={fetcher}
       doenetmlChangeCallback={doenetmlChangeCallback}
       immediateDoenetmlChangeCallback={immediateDoenetmlChangeCallback}
+      remixesChangedCallback={remixesChangedCallback}
     />
   );
 
@@ -192,12 +288,90 @@ export function DoenetMLComparison({
     onClose: scratchpadInfoOnClose,
   } = useDisclosure();
 
-  const scratchpadInfoModal = selectedRevision && (
+  const scratchpadInfoModal = (
     <ScratchpadInfoModal
       isOpen={scratchpadInfoIsOpen}
       onClose={scratchpadInfoOnClose}
     />
   );
+
+  let updateButtons: ReactElement | null = null;
+  if (selectedRevision) {
+    const message =
+      (atSelectedRevision ? `Already at` : `Revert to`) + ` revision`;
+    const extendedMessage = message + ": " + selectedRevision.revisionName;
+
+    updateButtons = (
+      <Tooltip label={extendedMessage} openDelay={500}>
+        <Button
+          size="xs"
+          marginLeft="10px"
+          aria-label={extendedMessage}
+          isDisabled={atSelectedRevision}
+          onClick={() => {
+            setToRevisionRemixOnOpen();
+          }}
+        >
+          {message}
+        </Button>
+      </Tooltip>
+    );
+  } else if (selectedRemix) {
+    const selectedHasUpdates =
+      (listType === "remixedFrom" && selectedRemix.originContent.changed) ||
+      (listType === "remixes" && selectedRemix.remixContent.changed);
+
+    if (selectedHasUpdates) {
+      const updateMessage =
+        (atSelectedRemix ? `Already at` : `Update to`) +
+        " current state of " +
+        (listType === "remixedFrom"
+          ? "activity that you remixed from."
+          : "remixed activity");
+
+      const ignoreMessage =
+        "Ignore change in " +
+        (listType === "remixedFrom"
+          ? "activity that you remixed from."
+          : "remixed activity");
+
+      updateButtons = (
+        <>
+          <Tooltip label={updateMessage} openDelay={500}>
+            <Button
+              size="xs"
+              marginLeft="10px"
+              aria-label={updateMessage}
+              isDisabled={atSelectedRemix}
+              onClick={() => {
+                setIgnoreRemixUpdate(false);
+                setToRevisionRemixOnOpen();
+              }}
+            >
+              {atSelectedRemix ? (
+                <>Already up-to-date with &#x1f534;</>
+              ) : (
+                <>Update to &#x1f534;</>
+              )}
+            </Button>
+          </Tooltip>
+          <Tooltip label={ignoreMessage} openDelay={500}>
+            <Button
+              size="xs"
+              marginLeft="10px"
+              aria-label={ignoreMessage}
+              onClick={() => {
+                setIgnoreRemixUpdate(true);
+                setToRevisionRemixOnOpen();
+              }}
+            >
+              Ignore change &#x1f534;
+            </Button>
+          </Tooltip>
+        </>
+      );
+    }
+  }
 
   const currentEditor = (
     <Box height="100%">
@@ -227,32 +401,7 @@ export function DoenetMLComparison({
             Snapshot
           </Button>
         </Tooltip>
-        {selectedRevision && (
-          <Tooltip
-            label={
-              (atSelectedRevision ? `Already at` : `Revert to`) +
-              ` revision: ${selectedRevision.revisionName}`
-            }
-            openDelay={500}
-          >
-            <Button
-              size="xs"
-              marginLeft="10px"
-              aria-label={
-                (atSelectedRevision ? `Already at` : `Revert to`) +
-                ` revision: ${selectedRevision.revisionName}`
-              }
-              isDisabled={atSelectedRevision}
-              onClick={() => {
-                revertToRevisionOnOpen();
-              }}
-            >
-              {atSelectedRevision
-                ? "Already at revision"
-                : "Revert to revision"}
-            </Button>
-          </Tooltip>
-        )}
+        {updateButtons}
       </Flex>
 
       <DoenetEditor
@@ -285,6 +434,18 @@ export function DoenetMLComparison({
       otherDoenetmlVersion = selectedRevision.doenetmlVersion ?? "";
       haveOtherDoc = true;
     }
+  } else if (listType === "remixedFrom") {
+    if (selectedRemix) {
+      otherDoenetML = selectedRemix.originContent.source ?? "";
+      otherDoenetmlVersion = selectedRemix.originContent.doenetmlVersion ?? "";
+      haveOtherDoc = true;
+    }
+  } else if (listType === "remixes") {
+    if (selectedRemix) {
+      otherDoenetML = selectedRemix.remixContent.source ?? "";
+      otherDoenetmlVersion = selectedRemix.remixContent.doenetmlVersion ?? "";
+      haveOtherDoc = true;
+    }
   }
 
   const revisionsSelector = (
@@ -300,7 +461,7 @@ export function DoenetMLComparison({
         width="200px"
         value={selectedRevision?.revisionNum ?? 0}
         onChange={(e) => {
-          setSelectRevision(
+          setSelectedRevision(
             revisions.find(
               (rev) => rev.revisionNum.toString() === e.target.value,
             ) ?? null,
@@ -323,10 +484,105 @@ export function DoenetMLComparison({
           marginLeft="5px"
           aria-label="Information on selected revision"
           onClick={() => {
-            revisionInfoOnOpen();
+            revisionRemixInfoOnOpen();
           }}
         >
           Revision info
+        </Button>
+      )}
+    </>
+  );
+
+  const remixedFromSelector = remixedFrom && (
+    <>
+      <Select
+        placeholder={
+          remixedFrom.length > 0
+            ? "Select activity"
+            : "Not remixed from other activities"
+        }
+        size="sm"
+        variant="filled"
+        height="25px"
+        marginLeft="5px"
+        width="200px"
+        value={
+          selectedRemix
+            ? remixedFrom.findIndex(
+                (rem) =>
+                  rem.originContent.contentId ===
+                  selectedRemix.originContent.contentId,
+              )
+            : -1
+        }
+        onChange={(e) => {
+          setSelectedRemix(remixedFrom[e.target.value]);
+        }}
+      >
+        {remixedFrom.map((rem, i) => (
+          <option key={i.toString()} value={i}>
+            {rem.originContent.changed && <>&#x1f534; </>}
+            {rem.originContent.name} by{" "}
+            {createFullName(rem.originContent.owner)}{" "}
+          </option>
+        ))}
+      </Select>
+      {selectedRemix && (
+        <Button
+          size="xs"
+          marginLeft="5px"
+          aria-label="Information on activity"
+          onClick={() => {
+            revisionRemixInfoOnOpen();
+          }}
+        >
+          Activity info
+        </Button>
+      )}
+    </>
+  );
+
+  const remixesSelector = remixes && (
+    <>
+      <Select
+        placeholder={
+          remixes.length > 0 ? "Select activity" : "No visible remixes (yet!)"
+        }
+        size="sm"
+        variant="filled"
+        height="25px"
+        marginLeft="5px"
+        width="200px"
+        value={
+          selectedRemix
+            ? remixes.findIndex(
+                (rem) =>
+                  rem.remixContent.contentId ===
+                  selectedRemix.remixContent.contentId,
+              )
+            : -1
+        }
+        onChange={(e) => {
+          setSelectedRemix(remixes[e.target.value]);
+        }}
+      >
+        {remixes.map((rem, i) => (
+          <option key={i.toString()} value={i}>
+            {rem.remixContent.changed && <>&#x1f534; </>}
+            {rem.remixContent.name} by {createFullName(rem.remixContent.owner)}{" "}
+          </option>
+        ))}
+      </Select>
+      {selectedRemix && (
+        <Button
+          size="xs"
+          marginLeft="5px"
+          aria-label="Information on activity"
+          onClick={() => {
+            revisionRemixInfoOnOpen();
+          }}
+        >
+          Activity info
         </Button>
       )}
     </>
@@ -340,15 +596,18 @@ export function DoenetMLComparison({
       alignItems="center"
     >
       <Select
-        width="140px"
+        width="160px"
         size="sm"
         variant="filled"
         height="25px"
         value={listType}
+        placeholder="Select comparison"
         onChange={(e) => {
           setListType(
             e.target.value as "revisions" | "remixedFrom" | "remixes",
           );
+          setSelectedRevision(null);
+          setSelectedRemix(null);
         }}
       >
         <option value="revisions">Revisions</option>
@@ -356,6 +615,8 @@ export function DoenetMLComparison({
         <option value="remixes">Remixes</option>
       </Select>
       {listType === "revisions" && revisionsSelector}
+      {listType === "remixedFrom" && remixedFromSelector}
+      {listType === "remixes" && remixesSelector}
     </Flex>
   );
 
@@ -420,9 +681,9 @@ export function DoenetMLComparison({
   return (
     <>
       {takeSnapshotModal}
-      {revisionInfoModal}
+      {revisionRemixInfoModal}
       {scratchpadInfoModal}
-      {revertToRevisionModal}
+      {setToRevisionRemixModal}
       <PanelPair
         panelA={currentEditor}
         panelB={otherEditor}

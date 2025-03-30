@@ -13,10 +13,12 @@ export async function getRemixedFrom({
   contentId,
   loggedInUserId = new Uint8Array(16),
   isAdmin,
+  includeSource = false,
 }: {
   contentId: Uint8Array;
   loggedInUserId?: Uint8Array;
   isAdmin?: boolean;
+  includeSource?: boolean;
 }): Promise<{ remixedFrom: ActivityRemixItem[] }> {
   if (isAdmin === undefined) {
     isAdmin = await getIsAdmin(loggedInUserId);
@@ -110,7 +112,8 @@ export async function getRemixedFrom({
     const remixRevisionInfo = {
       ...remixBaseInfo,
       revisionNum: revision.revisionNum,
-      cidAtRemix: revision.cid,
+      cidAtLastUpdate: revision.cid,
+      currentCid: remixCurrentCid,
       changed: remixCurrentCid != revision.cid,
     };
     for (const historyItem of revision.contributorHistoryAsRemix) {
@@ -121,7 +124,7 @@ export async function getRemixedFrom({
 
       const originRevisionContent = historyItem.originContent;
 
-      const originCidAtRemix = originRevisionContent.cid;
+      const originCidAtLastUpdate = originRevisionContent.cid;
 
       const originCurrentSource = await getContentSource({
         contentId: originRevisionContent.content.id,
@@ -146,9 +149,21 @@ export async function getRemixedFrom({
         timestamp: historyItem.timestampOriginContent,
         name: originRevisionContent.content.name,
         owner: originRevisionContent.content.owner,
-        cidAtRemix: originCidAtRemix,
-        changed: originCurrentCid !== originCidAtRemix,
+        cidAtLastUpdate: originCidAtLastUpdate,
+        currentCid: originCurrentCid,
+        changed: originCurrentCid !== originCidAtLastUpdate,
       };
+
+      if (includeSource) {
+        // get source again, this time without using versionIds
+        const originCurrentSource2 = await getContentSource({
+          contentId: originRevisionContent.content.id,
+          loggedInUserId,
+        });
+        originContent.source = originCurrentSource2.source;
+        originContent.doenetmlVersion =
+          originCurrentSource2.doenetMLVersion ?? undefined;
+      }
 
       remixedFrom.push({
         originContent,
@@ -174,10 +189,12 @@ export async function getRemixedFrom({
 export async function getRemixes({
   contentId,
   loggedInUserId = new Uint8Array(16),
+  includeSource = false,
   // directRemixesOnly = false,
 }: {
   contentId: Uint8Array;
   loggedInUserId?: Uint8Array;
+  includeSource?: boolean;
   // directRemixesOnly?: boolean;
 }): Promise<{ remixes: ActivityRemixItem[] }> {
   const isAdmin = await getIsAdmin(loggedInUserId);
@@ -277,7 +294,8 @@ export async function getRemixes({
     const originRevisionInfo = {
       ...originBaseInfo,
       revisionNum: revision.revisionNum,
-      cidAtRemix: revision.cid,
+      cidAtLastUpdate: revision.cid,
+      currentCid: originCurrentCid,
       changed: originCurrentCid != revision.cid,
     };
     for (const historyItem of revision.contributorHistoryAsOrigin) {
@@ -311,9 +329,21 @@ export async function getRemixes({
         timestamp: historyItem.timestampRemixContent,
         name: remixRevisionContent.content.name,
         owner: remixRevisionContent.content.owner,
-        cidAtRemix: remixCidAtRemix,
+        cidAtLastUpdate: remixCidAtRemix,
+        currentCid: remixCurrentCid,
         changed: remixCurrentCid !== remixCidAtRemix,
       };
+
+      if (includeSource) {
+        // get source again, this time without using versionIds
+        const remixCurrentSource2 = await getContentSource({
+          contentId: remixRevisionContent.content.id,
+          loggedInUserId,
+        });
+        remixContent.source = remixCurrentSource2.source;
+        remixContent.doenetmlVersion =
+          remixCurrentSource2.doenetMLVersion ?? undefined;
+      }
 
       remixes.push({
         originContent,
@@ -355,7 +385,7 @@ export async function getRemixes({
  * then also update the contributor history between `remixContentId` and that activity
  * (updating the revision number of `remixContentId` only if `onlyMarkedChange` is `false`.)
  *
- * Note: currently implemented only from Docs.
+ * Note: currently implemented only for Docs.
  */
 export async function updateRemixedContentToOrigin({
   originContentId,
@@ -479,6 +509,12 @@ export async function updateRemixedContentToOrigin({
     updatedRevisionNum: remixRevisionNum,
     newCid: revisionToCopy.cid,
   });
+
+  if (onlyMarkUnchanged) {
+    return { updated: false };
+  } else {
+    return { updated: true, newSource };
+  }
 }
 
 /**
@@ -503,14 +539,14 @@ export async function updateRemixedContentToOrigin({
  * Note: currently implemented only from Docs.
  */
 export async function updateOriginContentToRemix({
-  remixRevisionNum,
   remixContentId,
+  remixRevisionNum,
   originContentId,
   loggedInUserId,
   onlyMarkUnchanged = false,
 }: {
-  remixRevisionNum?: number;
   remixContentId: Uint8Array;
+  remixRevisionNum?: number;
   originContentId: Uint8Array;
   loggedInUserId: Uint8Array;
   onlyMarkUnchanged?: boolean;
@@ -624,6 +660,12 @@ export async function updateOriginContentToRemix({
     updatedRevisionNum: originRevisionNum,
     newCid: revisionToCopy.cid,
   });
+
+  if (onlyMarkUnchanged) {
+    return { updated: false };
+  } else {
+    return { updated: true, newSource };
+  }
 }
 
 /**
