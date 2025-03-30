@@ -265,3 +265,13 @@ export function isContentDescription(obj: unknown): obj is ContentDescription {
         )))
   );
 }
+
+export type ContentRevision = {
+  revisionNum: number;
+  revisionName: string;
+  note: string;
+  source: string;
+  doenetmlVersion: string | null;
+  cid: string;
+  createdAt: string;
+};

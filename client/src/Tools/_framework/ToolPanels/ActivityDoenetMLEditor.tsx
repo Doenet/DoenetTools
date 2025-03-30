@@ -1,26 +1,53 @@
 import { Box, Grid, GridItem } from "@chakra-ui/react";
 import { DoenetEditor, DoenetViewer } from "@doenet/doenetml-iframe";
 import React, { useCallback, useEffect, useRef } from "react";
-import { AssignmentStatus, DoenetmlVersion } from "../../../_utils/types";
-import { useLocation, useNavigate } from "react-router";
+import {
+  AssignmentStatus,
+  ContentRevision,
+  DoenetmlVersion,
+} from "../../../_utils/types";
+import { FetcherWithComponents, useLocation, useNavigate } from "react-router";
 import axios from "axios";
+import {
+  DoenetMLComparison,
+  doenetMLComparisonActions,
+} from "./DoenetMLComparison";
+
+export async function activityDoenetMLEditorActions({
+  formObj,
+}: {
+  [k: string]: any;
+}) {
+  const resultDMLC = await doenetMLComparisonActions({ formObj });
+  if (resultDMLC) {
+    return resultDMLC;
+  }
+
+  return null;
+}
 
 export function ActivityDoenetMLEditor({
   doenetML,
   doenetmlVersion,
   assignmentStatus = "Unassigned",
+  revisions = [],
   asViewer,
   contentId,
+  activityName,
   mode,
   headerHeight,
+  fetcher,
 }: {
   doenetML: string;
   doenetmlVersion: DoenetmlVersion;
   assignmentStatus?: AssignmentStatus;
+  revisions?: ContentRevision[];
   asViewer?: boolean;
   contentId: string;
-  mode: "Edit" | "View";
+  activityName?: string;
+  mode: "Edit" | "View" | "Update";
   headerHeight: string;
+  fetcher: FetcherWithComponents<any>;
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -185,6 +212,28 @@ export function ActivityDoenetMLEditor({
             </Box>
           </GridItem>
         </Grid>
+      )}
+      {mode === "Update" && (
+        <DoenetMLComparison
+          doenetML={textEditorDoenetML.current}
+          doenetmlChangeCallback={handleSaveDoc}
+          immediateDoenetmlChangeCallback={(newDoenetML: string) => {
+            textEditorDoenetML.current = newDoenetML;
+          }}
+          documentStructureCallback={(x: any) => {
+            if (Array.isArray(x.args?.allPossibleVariants)) {
+              numVariants.current = x.args.allPossibleVariants.length;
+            }
+            documentStructureChanged.current = true;
+          }}
+          doenetmlVersion={doenetmlVersion}
+          readOnly={readOnly}
+          revisions={revisions}
+          contentId={contentId}
+          activityName={activityName}
+          headerHeight={headerHeight}
+          fetcher={fetcher}
+        />
       )}
     </>
   );

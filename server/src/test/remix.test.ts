@@ -5,6 +5,7 @@ import {
   getAllDoenetmlVersions,
   getContentSource,
   updateContent,
+  getContentRevisions,
 } from "../query/activity";
 import {
   modifyContentSharedWith,
@@ -706,6 +707,7 @@ describe("Remix tests", () => {
     await createContentRevision({
       contentId: contentIds[0],
       loggedInUserId: ownerIds[0],
+      revisionName: "a revision",
     });
 
     await updateContent({
@@ -831,6 +833,28 @@ describe("Remix tests", () => {
       loggedInUserId: ownerIds[0],
     });
     expect(newContent.source).eq("Changed content 2");
+
+    // content 1 and 2 should have revisions before and after updating
+    for (let idx = 1; idx <= 2; idx++) {
+      const allManualRevisions = await getContentRevisions({
+        contentId: contentIds[idx],
+        loggedInUserId: ownerIds[idx],
+      });
+
+      expect(allManualRevisions).toMatchObject([
+        {
+          revisionNum: 2,
+          revisionName: "After update",
+          source: "Changed content 1",
+        },
+        {
+          revisionNum: 1,
+          // Note: both activities 1 and 2 had manual revisions "Original revision" when created from remixing, which weren't overwritten
+          revisionName: "Original revision",
+          source: "Initial content",
+        },
+      ]);
+    }
   });
 
   test("Update origin to previous revision of remixed", async () => {
@@ -852,6 +876,7 @@ describe("Remix tests", () => {
     await createContentRevision({
       contentId: contentIds[1],
       loggedInUserId: ownerIds[1],
+      revisionName: "a revision",
     });
 
     await updateContent({
@@ -977,6 +1002,29 @@ describe("Remix tests", () => {
       loggedInUserId: ownerIds[1],
     });
     expect(newContent.source).eq("Changed content 2");
+
+    // content 0 and 2 should have revisions before and after updating
+    for (let idx = 0; idx <= 2; idx += 2) {
+      const allManualRevisions = await getContentRevisions({
+        contentId: contentIds[idx],
+        loggedInUserId: ownerIds[idx],
+      });
+
+      expect(allManualRevisions).toMatchObject([
+        {
+          revisionNum: 2,
+          revisionName: "After update",
+          source: "Changed content 1",
+        },
+        {
+          revisionNum: 1,
+          // Note: activity 0 did not have any manual revisions before the update, so its revision is named from the update.
+          // Activity 1, however, had a manual revision "Original revision", when it was created by remixing, which doesn't get overwritten.
+          revisionName: idx === 0 ? "Before update" : "Original revision",
+          source: "Initial content",
+        },
+      ]);
+    }
   });
 
   test("Remixed/origin ignores updates to origin/remix", async () => {

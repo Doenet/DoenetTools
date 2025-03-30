@@ -22,6 +22,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { BsPlayBtnFill } from "react-icons/bs";
+import { GrDocumentUpdate } from "react-icons/gr";
 import {
   MdDataset,
   MdInfoOutline,
@@ -50,8 +51,12 @@ import {
   Content,
   DoenetmlVersion,
   License,
+  ContentRevision,
 } from "../../../_utils/types";
-import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
+import {
+  ActivityDoenetMLEditor,
+  activityDoenetMLEditorActions,
+} from "../ToolPanels/ActivityDoenetMLEditor";
 import {
   CompoundActivityEditor,
   compoundActivityEditorActions,
@@ -104,12 +109,22 @@ export async function action({ params, request }) {
     return resultNAE;
   }
 
+  const resultADE = await activityDoenetMLEditorActions({ formObj });
+  if (resultADE) {
+    return resultADE;
+  }
+
   return null;
 }
 
 export async function loader({ params }) {
   const {
-    data: { editableByMe, activity: activityData, availableFeatures },
+    data: {
+      editableByMe,
+      activity: activityData,
+      availableFeatures,
+      revisions,
+    },
   } = await axios.get(
     `/api/activityEditView/getActivityEditorData/${params.contentId}`,
   );
@@ -157,6 +172,7 @@ export async function loader({ params }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
+      revisions,
     };
   } else {
     const activityJson = compileActivityFromContent(activityData);
@@ -171,6 +187,7 @@ export async function loader({ params }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
+      revisions,
     };
   }
 }
@@ -231,6 +248,7 @@ export function ActivityEditor() {
     allLicenses: License[];
     availableFeatures: ContentFeature[];
     activityData: Content;
+    revisions: ContentRevision[];
   } & (
     | {
         type: "singleDoc";
@@ -249,6 +267,7 @@ export function ActivityEditor() {
     allDoenetmlVersions,
     allLicenses,
     availableFeatures,
+    revisions,
   } = data;
 
   const finalFocusRef = useRef<HTMLElement | null>(null);
@@ -295,7 +314,7 @@ export function ActivityEditor() {
   const readOnlyRef = useRef(readOnly);
   readOnlyRef.current = readOnly;
 
-  const [mode, setMode] = useState<"Edit" | "View">("Edit");
+  const [mode, setMode] = useState<"Edit" | "View" | "Update">("Edit");
 
   const isLibraryActivity = Boolean(activityData.libraryActivityInfo);
 
@@ -351,9 +370,12 @@ export function ActivityEditor() {
         doenetML={data.doenetML}
         doenetmlVersion={data.doenetmlVersion}
         assignmentStatus={assignmentStatus}
+        revisions={revisions}
         mode={mode}
         contentId={contentId}
+        activityName={activityData.name}
         headerHeight={`${readOnly ? 120 : 80}px`}
+        fetcher={fetcher}
       />
     );
   } else {
@@ -482,10 +504,10 @@ export function ActivityEditor() {
           <Grid
             templateAreas={`"leftControls label rightControls"`}
             templateColumns={{
-              base: "82px calc(100% - 197px) 115px",
-              sm: "87px calc(100% - 217px) 120px",
-              md: "270px calc(100% - 555px) 285px",
-              lg: "1fr 450px 1fr",
+              base: "115px 1fr 115px",
+              sm: "120px 1fr 120px",
+              md: "200px 1fr 200px",
+              lg: "325px 1fr 325px",
             }}
             width="100%"
           >
@@ -515,13 +537,13 @@ export function ActivityEditor() {
                       data-test="View Mode Button"
                       isActive={mode == "View"}
                       size="sm"
-                      pr={{ base: "0px", md: "10px" }}
+                      pr={{ base: "0px", lg: "10px" }}
                       leftIcon={<BsPlayBtnFill />}
                       onClick={() => {
                         setMode("View");
                       }}
                     >
-                      <Show above="md">View</Show>
+                      <Show above="lg">View</Show>
                     </Button>
                   </Tooltip>
                   <Tooltip hasArrow label={editTooltip}>
@@ -529,13 +551,27 @@ export function ActivityEditor() {
                       isActive={mode == "Edit"}
                       data-test="Edit Mode Button"
                       size="sm"
-                      pr={{ base: "0px", md: "10px" }}
+                      pr={{ base: "0px", lg: "10px" }}
                       leftIcon={editIcon}
                       onClick={() => {
                         setMode("Edit");
                       }}
                     >
-                      <Show above="md">{editLabel}</Show>
+                      <Show above="lg">{editLabel}</Show>
+                    </Button>
+                  </Tooltip>
+                  <Tooltip hasArrow label="Manage updates and revisions">
+                    <Button
+                      data-test="Manage Revisions Button"
+                      isActive={mode == "Update"}
+                      size="sm"
+                      pr={{ base: "0px", lg: "10px" }}
+                      leftIcon={<GrDocumentUpdate />}
+                      onClick={() => {
+                        setMode("Update");
+                      }}
+                    >
+                      <Show above="lg">Revisions</Show>
                     </Button>
                   </Tooltip>
                 </ButtonGroup>
@@ -563,7 +599,7 @@ export function ActivityEditor() {
                       <Button
                         data-test="Curate Button"
                         size="sm"
-                        pr={{ base: "0px", md: "10px" }}
+                        pr={{ base: "0px", lg: "10px" }}
                         leftIcon={<MdOutlineGroup />}
                         onClick={() => {
                           finalFocusRef.current = curateBtnRef.current;
@@ -571,7 +607,7 @@ export function ActivityEditor() {
                         }}
                         ref={curateBtnRef}
                       >
-                        <Show above="md">Curate</Show>
+                        <Show above="lg">Curate</Show>
                       </Button>
                     </Tooltip>
                   ) : (
@@ -589,7 +625,7 @@ export function ActivityEditor() {
                           <Button
                             data-test="Assign Activity Button"
                             size="sm"
-                            pr={{ base: "0px", md: "10px" }}
+                            pr={{ base: "0px", lg: "10px" }}
                             leftIcon={<MdOutlineAssignment />}
                             onClick={() => {
                               finalFocusRef.current = assignBtnRef.current;
@@ -597,7 +633,7 @@ export function ActivityEditor() {
                             }}
                             ref={assignBtnRef}
                           >
-                            <Show above="md">
+                            <Show above="lg">
                               {assignmentStatus === "Unassigned"
                                 ? "Assign"
                                 : "Assigned"}
@@ -614,7 +650,7 @@ export function ActivityEditor() {
                         <Button
                           data-test="Sharing Button"
                           size="sm"
-                          pr={{ base: "0px", md: "10px" }}
+                          pr={{ base: "0px", lg: "10px" }}
                           leftIcon={<MdOutlineGroup />}
                           onClick={() => {
                             finalFocusRef.current = sharingBtnRef.current;
@@ -623,7 +659,7 @@ export function ActivityEditor() {
                           }}
                           ref={sharingBtnRef}
                         >
-                          <Show above="md">Share</Show>
+                          <Show above="lg">Share</Show>
                         </Button>
                       </Tooltip>
                     </>
@@ -636,7 +672,7 @@ export function ActivityEditor() {
                     <Button
                       data-test="Settings Button"
                       size="sm"
-                      pr={{ base: "0px", md: "10px" }}
+                      pr={{ base: "0px", lg: "10px" }}
                       leftIcon={<FaCog />}
                       onClick={() => {
                         finalFocusRef.current = settingsBtnRef.current;
@@ -646,7 +682,7 @@ export function ActivityEditor() {
                       }}
                       ref={settingsBtnRef}
                     >
-                      <Show above="md">Settings</Show>
+                      <Show above="lg">Settings</Show>
                     </Button>
                   </Tooltip>
                 </ButtonGroup>
@@ -741,7 +777,7 @@ export function ActivityEditor() {
             ) : null}
             {editor}
             <Box
-              hidden={mode === "Edit"}
+              hidden={mode !== "View"}
               maxWidth="850px"
               width="100%"
               height="30vh"

@@ -184,7 +184,7 @@ export function CompoundActivityEditor({
   // not working when called from a Card inside a CardList
   const [creatingDoc, setCreatingDoc] = useState(false);
   useEffect(() => {
-    if (typeof fetcher.data === "object") {
+    if (typeof fetcher.data === "object" && fetcher.data !== null) {
       if (fetcher.data.createdDoc && creatingDoc) {
         setCreatingDoc(false);
         navigate(`/activityEditor/${fetcher.data.createdDoc}`);

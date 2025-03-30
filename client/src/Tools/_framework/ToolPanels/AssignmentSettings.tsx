@@ -93,7 +93,7 @@ export function AssignmentSettings({
   currentMaxAttempts.current = activityData.assignmentInfo?.maxAttempts ?? 1;
 
   const [statusText, setStatusText] = useState("");
-  const [statusStyleIdx, setStateStyleIdx] = useState(0);
+  const [statusStyleIdx, setStatusStyleIdx] = useState(0);
   const [encounteredError, setEncounteredError] = useState(false);
 
   const maxMaxAttempt = 65535;
@@ -108,16 +108,16 @@ export function AssignmentSettings({
   }, [openTabIndex]);
 
   useEffect(() => {
-    if (typeof fetcher.data === "object") {
+    if (typeof fetcher.data === "object" && fetcher.data !== null) {
       if (fetcher.data.success) {
         if ("mode" in fetcher.data) {
           setEncounteredError(false);
-          setStateStyleIdx((x) => x + 1);
+          setStatusStyleIdx((x) => x + 1);
           setStatusText(`Changed mode to ${fetcher.data.mode}`);
         } else if ("maxAttempts" in fetcher.data) {
           const maxAttempts = fetcher.data.maxAttempts;
           setEncounteredError(false);
-          setStateStyleIdx((x) => x + 1);
+          setStatusStyleIdx((x) => x + 1);
           if (maxAttempts === 0) {
             setStatusText(
               "Changed the maximum number of attempts to Unlimited",
@@ -129,13 +129,12 @@ export function AssignmentSettings({
           }
         } else if ("individualizeByStudent" in fetcher.data) {
           setEncounteredError(false);
-          setStateStyleIdx((x) => x + 1);
+          setStatusStyleIdx((x) => x + 1);
           setStatusText(
             `Changed individualize by student to ${fetcher.data.individualizeByStudent}`,
           );
         }
       } else {
-        console.log(fetcher.data);
         if ("mode" in fetcher.data) {
           setEncounteredError(true);
           setStatusText(`Error attempting to change assignment mode`);
