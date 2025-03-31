@@ -30,8 +30,12 @@ export async function remixedFromActions({
 
 export function RemixedFrom({
   contributorHistory,
+  onClose,
+  haveChangedHistoryItem,
 }: {
   contributorHistory: ActivityRemixItem[];
+  onClose: () => void;
+  haveChangedHistoryItem: boolean;
 }) {
   if (contributorHistory === null) {
     return (
@@ -49,7 +53,7 @@ export function RemixedFrom({
 
   const historyTable = (
     <TableContainer
-      maxHeight="200px"
+      maxHeight="calc(100% - 32px)"
       overflowY="auto"
       marginBottom="20px"
       marginTop="20px"
@@ -78,17 +82,6 @@ export function RemixedFrom({
         </Thead>
         <Tbody>
           {contributorHistory.map((ch, i) => {
-            let changeText = "";
-            if (ch.originContent.changed) {
-              // The previous doc changed since it was remixed.
-              changeText = "*Changed since copied";
-
-              // TODO: do we want want to prompt to copy over changes if this activity's doc
-              // has not changed since remixing?
-              // I.e., if thisCid === ch.prevCid;
-            } else {
-              changeText = "";
-            }
             return (
               <Tr key={`ch${i}`} data-test={`Remixed from ${i + 1}`}>
                 <Show above="sm">
@@ -96,6 +89,7 @@ export function RemixedFrom({
                     <ChakraLink
                       as={ReactRouterLink}
                       to={`/activityViewer/${ch.originContent.contentId}`}
+                      textDecoration="underline"
                     >
                       <Text wordBreak="break-word" whiteSpace="normal">
                         {ch.originContent.name}
@@ -106,6 +100,7 @@ export function RemixedFrom({
                     <ChakraLink
                       as={ReactRouterLink}
                       to={`/sharedActivities/${ch.originContent.owner.userId}`}
+                      textDecoration="underline"
                     >
                       <Text
                         wordBreak="break-word"
@@ -139,17 +134,30 @@ export function RemixedFrom({
                   </Td>
                 </Show>
                 <Td>
-                  <Text
-                    width="100px"
-                    wordBreak="break-word"
-                    whiteSpace="normal"
+                  {ch.originContent.changed && (
+                    <Text fontSize="small" marginRight="5px" as="span">
+                      &#x1f534;
+                    </Text>
+                  )}
+                  <ChakraLink
+                    as={ReactRouterLink}
+                    to={`/activityEditor/${ch.remixContent.contentId}?mode=Compare&compare=remixedFrom&remix=${ch.originContent.contentId}`}
+                    textDecoration="underline"
+                    onClick={onClose}
                   >
-                    {changeText}
-                  </Text>
+                    Compare
+                  </ChakraLink>
                 </Td>
               </Tr>
             );
           })}
+          {haveChangedHistoryItem && (
+            <Tr>
+              <Td colSpan={5} borderBottom="none" paddingTop="20px">
+                &#x1f534; Indicates activity has changed since remixed
+              </Td>
+            </Tr>
+          )}
         </Tbody>
       </Table>
     </TableContainer>

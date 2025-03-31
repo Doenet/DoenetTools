@@ -131,8 +131,16 @@ export function ShareDrawer({
   const contributorHistoryAddon = contributorHistory
     ? `(${contributorHistory.length})`
     : "";
-  const changedHistoryAddon = haveChangedHistoryItem ? "*" : "";
-  const remixedFromTabTitle = `Remixed From ${contributorHistoryAddon}${changedHistoryAddon}`;
+  const changedHistoryAddon = haveChangedHistoryItem ? (
+    <Text fontSize="small" marginRight="5px">
+      &#x1f534;
+    </Text>
+  ) : null;
+  const remixedFromTabTitle = (
+    <>
+      {changedHistoryAddon} Remixed From {contributorHistoryAddon}
+    </>
+  );
 
   // Remixed Tab
   const remixesTabTitle = remixes ? `Remixes (${remixes.length})` : "Remixes";
@@ -169,16 +177,20 @@ export function ShareDrawer({
               )}
             </TabList>
             <Box overflowY="auto" height="calc(100vh - 130px)">
-              <TabPanels>
+              <TabPanels height="100%">
                 <TabPanel>{shareOrCurateTabPanel}</TabPanel>
                 {contentData.type === "folder" ? null : (
-                  <TabPanel>
-                    <RemixedFrom contributorHistory={contributorHistory} />
+                  <TabPanel height="100%">
+                    <RemixedFrom
+                      contributorHistory={contributorHistory}
+                      onClose={onClose}
+                      haveChangedHistoryItem={haveChangedHistoryItem}
+                    />
                   </TabPanel>
                 )}
                 {contentData.type === "folder" ? null : (
-                  <TabPanel>
-                    <Remixes remixes={remixes} />
+                  <TabPanel height="100%">
+                    <Remixes remixes={remixes} onClose={onClose} />
                   </TabPanel>
                 )}
               </TabPanels>
