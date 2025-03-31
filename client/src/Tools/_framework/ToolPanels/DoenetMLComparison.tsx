@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useMemo, useState } from "react";
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 import { PanelPair } from "../../../Widgets/PanelPair";
 import {
@@ -20,7 +20,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { MdOutlineCameraAlt, MdOutlineInfo } from "react-icons/md";
-import { FetcherWithComponents } from "react-router";
+import { FetcherWithComponents, useNavigate } from "react-router";
 import axios from "axios";
 
 import {
@@ -68,6 +68,9 @@ export function DoenetMLComparison({
   activityName = "",
   headerHeight,
   fetcher,
+  compare,
+  revNum,
+  remixId,
 }: {
   doenetML: string;
   doenetmlChangeCallback: () => Promise<void>;
@@ -80,12 +83,18 @@ export function DoenetMLComparison({
   activityName?: string;
   headerHeight: string;
   fetcher: FetcherWithComponents<any>;
+  compare: "revisions" | "remixedFrom" | "remixes" | "";
+  revNum: number;
+  remixId: string;
 }) {
-  const [listType, setListType] = useState<
-    "revisions" | "remixedFrom" | "remixes" | ""
-  >("");
-  const [selectedRevision, setSelectedRevision] =
-    useState<ContentRevision | null>(null);
+  const navigate = useNavigate();
+
+  const selectedRevision = useMemo(() => {
+    if (compare === "revisions") {
+      return revisions.find((rev) => rev.revisionNum === revNum) ?? null;
+    }
+    return null;
+  }, [compare, revisions, revNum]);
 
   const [currentDoenetML, setCurrentDoenetML] = useState(doenetML);
   const [atLastRevision, setAtLastRevision] = useState(false);
@@ -140,11 +149,6 @@ export function DoenetMLComparison({
     null,
   );
   const [remixes, setRemixes] = useState<ActivityRemixItem[] | null>(null);
-  const [selectedRemix, setSelectedRemix] = useState<ActivityRemixItem | null>(
-    null,
-  );
-  const [atSelectedRemix, setAtSelectedRemix] = useState(false);
-  const [ignoreRemixUpdate, setIgnoreRemixUpdate] = useState(false);
 
   useEffect(() => {
     setRemixedFrom(null);
@@ -172,48 +176,44 @@ export function DoenetMLComparison({
   }
 
   async function remixesChangedCallback() {
-    const newRemixedFrom = await getRemixedFrom();
-    const newRemixes = await getRemixes();
-
-    // update selectedRemix to include any new information about the remix
-    // that was just retrieved
-    if (selectedRemix) {
-      let newSelectedRemix: ActivityRemixItem | undefined = undefined;
-      if (listType === "remixedFrom") {
-        newSelectedRemix = newRemixedFrom.find(
-          (rem) =>
-            rem.originContent.contentId ===
-            selectedRemix.originContent.contentId,
-        );
-      } else if (listType === "remixes") {
-        newSelectedRemix = newRemixes.find(
-          (rem) =>
-            rem.remixContent.contentId === selectedRemix.remixContent.contentId,
-        );
-      }
-      if (newSelectedRemix) {
-        setSelectedRemix(newSelectedRemix);
-      }
-    }
+    await getRemixedFrom();
+    await getRemixes();
   }
 
   useEffect(() => {
-    if (listType === "remixedFrom") {
+    if (compare === "remixedFrom") {
       if (remixedFrom === null) {
         getRemixedFrom();
       }
-    } else if (listType === "remixes") {
+    } else if (compare === "remixes") {
       if (remixes === null) {
         getRemixes();
       }
     }
-  }, [listType]);
+  }, [compare]);
+
+  const selectedRemix = useMemo(() => {
+    if (compare === "remixedFrom") {
+      return (
+        remixedFrom?.find((rem) => rem.originContent.contentId === remixId) ??
+        null
+      );
+    } else if (compare === "remixes") {
+      return (
+        remixes?.find((rem) => rem.remixContent.contentId === remixId) ?? null
+      );
+    }
+    return null;
+  }, [compare, remixedFrom, remixes, remixId]);
+
+  const [atSelectedRemix, setAtSelectedRemix] = useState(false);
+  const [ignoreRemixUpdate, setIgnoreRemixUpdate] = useState(false);
 
   useEffect(() => {
     async function checkIfAtSelectedRemix() {
       if (selectedRemix) {
         const selectedCid =
-          listType === "remixedFrom"
+          compare === "remixedFrom"
             ? selectedRemix.originContent.currentCid
             : selectedRemix.remixContent.currentCid;
 
@@ -255,7 +255,7 @@ export function DoenetMLComparison({
       onClose={revisionRemixInfoOnClose}
       revision={selectedRevision}
       remix={selectedRemix}
-      wasRemixedFrom={listType === "remixedFrom"}
+      wasRemixedFrom={compare === "remixedFrom"}
     />
   );
 
@@ -273,7 +273,7 @@ export function DoenetMLComparison({
       activityName={activityName}
       revision={selectedRevision}
       remix={selectedRemix}
-      wasRemixedFrom={listType === "remixedFrom"}
+      wasRemixedFrom={compare === "remixedFrom"}
       ignoreRemixUpdate={ignoreRemixUpdate}
       fetcher={fetcher}
       doenetmlChangeCallback={doenetmlChangeCallback}
@@ -318,20 +318,20 @@ export function DoenetMLComparison({
     );
   } else if (selectedRemix) {
     const selectedHasUpdates =
-      (listType === "remixedFrom" && selectedRemix.originContent.changed) ||
-      (listType === "remixes" && selectedRemix.remixContent.changed);
+      (compare === "remixedFrom" && selectedRemix.originContent.changed) ||
+      (compare === "remixes" && selectedRemix.remixContent.changed);
 
     if (selectedHasUpdates) {
       const updateMessage =
         (atSelectedRemix ? `Already at` : `Update to`) +
         " current state of " +
-        (listType === "remixedFrom"
+        (compare === "remixedFrom"
           ? "activity that you remixed from."
           : "remixed activity");
 
       const ignoreMessage =
         "Ignore change in " +
-        (listType === "remixedFrom"
+        (compare === "remixedFrom"
           ? "activity that you remixed from."
           : "remixed activity");
 
@@ -428,19 +428,19 @@ export function DoenetMLComparison({
   let otherDoenetmlVersion = "";
   let haveOtherDoc = false;
 
-  if (listType === "revisions") {
+  if (compare === "revisions") {
     if (selectedRevision) {
       otherDoenetML = selectedRevision.source;
       otherDoenetmlVersion = selectedRevision.doenetmlVersion ?? "";
       haveOtherDoc = true;
     }
-  } else if (listType === "remixedFrom") {
+  } else if (compare === "remixedFrom") {
     if (selectedRemix) {
       otherDoenetML = selectedRemix.originContent.source ?? "";
       otherDoenetmlVersion = selectedRemix.originContent.doenetmlVersion ?? "";
       haveOtherDoc = true;
     }
-  } else if (listType === "remixes") {
+  } else if (compare === "remixes") {
     if (selectedRemix) {
       otherDoenetML = selectedRemix.remixContent.source ?? "";
       otherDoenetmlVersion = selectedRemix.remixContent.doenetmlVersion ?? "";
@@ -459,12 +459,13 @@ export function DoenetMLComparison({
         height="25px"
         marginLeft="5px"
         width="200px"
-        value={selectedRevision?.revisionNum ?? 0}
+        value={revNum}
         onChange={(e) => {
-          setSelectedRevision(
-            revisions.find(
-              (rev) => rev.revisionNum.toString() === e.target.value,
-            ) ?? null,
+          navigate(
+            `.?mode=Compare&compare=${compare}&revNum=${e.target.value}`,
+            {
+              replace: true,
+            },
           );
         }}
       >
@@ -506,21 +507,21 @@ export function DoenetMLComparison({
         height="25px"
         marginLeft="5px"
         width="200px"
-        value={
-          selectedRemix
-            ? remixedFrom.findIndex(
-                (rem) =>
-                  rem.originContent.contentId ===
-                  selectedRemix.originContent.contentId,
-              )
-            : -1
-        }
+        value={remixId}
         onChange={(e) => {
-          setSelectedRemix(remixedFrom[e.target.value]);
+          navigate(
+            `.?mode=Compare&compare=${compare}&remix=${e.target.value}`,
+            {
+              replace: true,
+            },
+          );
         }}
       >
-        {remixedFrom.map((rem, i) => (
-          <option key={i.toString()} value={i}>
+        {remixedFrom.map((rem) => (
+          <option
+            key={rem.originContent.contentId}
+            value={rem.originContent.contentId}
+          >
             {rem.originContent.changed && <>&#x1f534; </>}
             {rem.originContent.name} by{" "}
             {createFullName(rem.originContent.owner)}{" "}
@@ -553,21 +554,21 @@ export function DoenetMLComparison({
         height="25px"
         marginLeft="5px"
         width="200px"
-        value={
-          selectedRemix
-            ? remixes.findIndex(
-                (rem) =>
-                  rem.remixContent.contentId ===
-                  selectedRemix.remixContent.contentId,
-              )
-            : -1
-        }
+        value={remixId}
         onChange={(e) => {
-          setSelectedRemix(remixes[e.target.value]);
+          navigate(
+            `.?mode=Compare&compare=${compare}&remix=${e.target.value}`,
+            {
+              replace: true,
+            },
+          );
         }}
       >
-        {remixes.map((rem, i) => (
-          <option key={i.toString()} value={i}>
+        {remixes.map((rem) => (
+          <option
+            key={rem.remixContent.contentId}
+            value={rem.remixContent.contentId}
+          >
             {rem.remixContent.changed && <>&#x1f534; </>}
             {rem.remixContent.name} by {createFullName(rem.remixContent.owner)}{" "}
           </option>
@@ -600,23 +601,21 @@ export function DoenetMLComparison({
         size="sm"
         variant="filled"
         height="25px"
-        value={listType}
+        value={compare}
         placeholder="Select comparison"
         onChange={(e) => {
-          setListType(
-            e.target.value as "revisions" | "remixedFrom" | "remixes",
-          );
-          setSelectedRevision(null);
-          setSelectedRemix(null);
+          navigate(`.?mode=Compare&compare=${e.target.value}`, {
+            replace: true,
+          });
         }}
       >
         <option value="revisions">Revisions</option>
         <option value="remixedFrom">Remixed From</option>
         <option value="remixes">Remixes</option>
       </Select>
-      {listType === "revisions" && revisionsSelector}
-      {listType === "remixedFrom" && remixedFromSelector}
-      {listType === "remixes" && remixesSelector}
+      {compare === "revisions" && revisionsSelector}
+      {compare === "remixedFrom" && remixedFromSelector}
+      {compare === "remixes" && remixesSelector}
     </Flex>
   );
 
@@ -651,7 +650,7 @@ export function DoenetMLComparison({
                 }}
               />
             </Tooltip>
-            {listType === "revisions" && selectedRevision && (
+            {compare === "revisions" && selectedRevision && (
               <Text marginLeft="10px">
                 (Prepopulated with revision: {selectedRevision.revisionName})
               </Text>

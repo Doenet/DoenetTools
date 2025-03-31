@@ -117,7 +117,7 @@ export async function action({ params, request }) {
   return null;
 }
 
-export async function loader({ params }) {
+export async function loader({ params, request }) {
   const {
     data: {
       editableByMe,
@@ -157,6 +157,34 @@ export async function loader({ params }) {
     data: { allDoenetmlVersions },
   } = await axios.get("/api/info/getAllDoenetmlVersions");
 
+  const url = new URL(request.url);
+  const modePar = url.searchParams.get("mode")?.toLowerCase();
+  const mode =
+    modePar === "view" ? "View" : modePar === "compare" ? "Compare" : "Edit";
+
+  const comparePar = url.searchParams.get("compare")?.toLowerCase();
+  const compare =
+    comparePar === "revisions"
+      ? "revisions"
+      : comparePar === "remixedfrom"
+        ? "remixedFrom"
+        : comparePar === "remixes"
+          ? "remixes"
+          : "";
+
+  const remixId = url.searchParams.get("remix") ?? "";
+
+  let revNum = 0;
+  if (remixId === "") {
+    const revNumPar = url.searchParams.get("revNum");
+    if (revNumPar) {
+      revNum = Number(revNumPar);
+      if (!Number.isInteger(revNum) || revNum <= 0) {
+        revNum = 0;
+      }
+    }
+  }
+
   if (activityData.type === "singleDoc") {
     const doenetML = activityData.doenetML;
     const doenetmlVersion: DoenetmlVersion = activityData.doenetmlVersion;
@@ -173,6 +201,10 @@ export async function loader({ params }) {
       allLicenses,
       availableFeatures,
       revisions,
+      mode,
+      compare,
+      revNum,
+      remixId,
     };
   } else {
     const activityJson = compileActivityFromContent(activityData);
@@ -188,6 +220,10 @@ export async function loader({ params }) {
       allLicenses,
       availableFeatures,
       revisions,
+      mode,
+      compare,
+      revNum,
+      remixId,
     };
   }
 }
@@ -249,6 +285,10 @@ export function ActivityEditor() {
     availableFeatures: ContentFeature[];
     activityData: Content;
     revisions: ContentRevision[];
+    mode: "Edit" | "View" | "Compare";
+    compare: "revisions" | "remixedFrom" | "remixes" | "";
+    revNum: number;
+    remixId: string;
   } & (
     | {
         type: "singleDoc";
@@ -268,6 +308,10 @@ export function ActivityEditor() {
     allLicenses,
     availableFeatures,
     revisions,
+    mode,
+    compare,
+    revNum,
+    remixId,
   } = data;
 
   const finalFocusRef = useRef<HTMLElement | null>(null);
@@ -314,7 +358,13 @@ export function ActivityEditor() {
   const readOnlyRef = useRef(readOnly);
   readOnlyRef.current = readOnly;
 
-  const [mode, setMode] = useState<"Edit" | "View" | "Compare">("Edit");
+  const fetcher = useFetcher();
+  const navigate = useNavigate();
+
+  function setMode(newMode: "Edit" | "View" | "Compare") {
+    const newSearch = `?mode=${newMode}`;
+    navigate(`.${newSearch}`, { replace: true });
+  }
 
   const isLibraryActivity = Boolean(activityData.libraryActivityInfo);
 
@@ -325,9 +375,6 @@ export function ActivityEditor() {
   const [displaySettingsTab, setSettingsDisplayTab] =
     useState<"general">("general");
   const [highlightRename, setHighlightRename] = useState(false);
-
-  const fetcher = useFetcher();
-  const navigate = useNavigate();
 
   const [editLabel, editTooltip, editIcon] =
     assignmentStatus === "Unassigned"
@@ -376,6 +423,9 @@ export function ActivityEditor() {
         activityName={activityData.name}
         headerHeight={`${readOnly ? 120 : 80}px`}
         fetcher={fetcher}
+        compare={compare}
+        revNum={revNum}
+        remixId={remixId}
       />
     );
   } else {

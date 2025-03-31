@@ -37,6 +37,9 @@ export function ActivityDoenetMLEditor({
   mode,
   headerHeight,
   fetcher,
+  compare,
+  revNum,
+  remixId,
 }: {
   doenetML: string;
   doenetmlVersion: DoenetmlVersion;
@@ -48,6 +51,9 @@ export function ActivityDoenetMLEditor({
   mode: "Edit" | "View" | "Compare";
   headerHeight: string;
   fetcher: FetcherWithComponents<any>;
+  compare: "revisions" | "remixedFrom" | "remixes" | "";
+  revNum: number;
+  remixId: string;
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -233,6 +239,9 @@ export function ActivityDoenetMLEditor({
           activityName={activityName}
           headerHeight={headerHeight}
           fetcher={fetcher}
+          compare={compare}
+          revNum={revNum}
+          remixId={remixId}
         />
       )}
     </>
