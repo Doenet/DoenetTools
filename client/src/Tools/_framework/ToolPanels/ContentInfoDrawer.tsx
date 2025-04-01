@@ -20,7 +20,7 @@ import { GeneralContentInfo } from "./GeneralContentInfo";
 import { ClassificationInfo } from "./ClassificationInfo";
 import axios from "axios";
 import { processRemixes } from "../../../_utils/processRemixes";
-import { RemixedFrom } from "./RemixedFrom";
+import { RemixSources } from "./RemixSources";
 import { Remixes } from "./Remixes";
 
 export function ContentInfoDrawer({
@@ -66,10 +66,10 @@ export function ContentInfoDrawer({
   useEffect(() => {
     async function getHistoryAndRemixes() {
       const { data } = await axios.get(
-        `/api/remix/getRemixedFrom/${contentData.contentId}`,
+        `/api/remix/getRemixSources/${contentData.contentId}`,
       );
 
-      const hist = processRemixes(data.remixedFrom);
+      const hist = processRemixes(data.remixSources);
       setContributorHistory(hist);
 
       const haveChanged = hist.some((dhi) => dhi.originContent.changed);
@@ -121,8 +121,8 @@ export function ContentInfoDrawer({
               ) : null}
               {contentData.type !== "folder" ? (
                 <>
-                  <Tab data-test="Remixed From Tab">
-                    Remixed From{" "}
+                  <Tab data-test="Remix Sources Tab">
+                    Remix Sources{" "}
                     {contributorHistory !== null
                       ? `(${contributorHistory.length})`
                       : null}
@@ -146,7 +146,7 @@ export function ContentInfoDrawer({
                 ) : null}
                 {contentData.type !== "folder" ? (
                   <TabPanel>
-                    <RemixedFrom contributorHistory={contributorHistory} />
+                    <RemixSources contributorHistory={contributorHistory} />
                   </TabPanel>
                 ) : null}
                 {contentData.type !== "folder" ? (

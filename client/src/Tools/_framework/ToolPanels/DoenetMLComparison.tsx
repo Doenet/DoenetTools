@@ -83,7 +83,7 @@ export function DoenetMLComparison({
   activityName?: string;
   headerHeight: string;
   fetcher: FetcherWithComponents<any>;
-  compare: "revisions" | "remixedFrom" | "remixes" | "";
+  compare: "revisions" | "remixSources" | "remixes" | "";
   revNum: number;
   remixId: string;
 }) {
@@ -145,24 +145,24 @@ export function DoenetMLComparison({
     checkIfAtSelectedRevision();
   }, [currentCid, selectedRevision]);
 
-  const [remixedFrom, setRemixedFrom] = useState<ActivityRemixItem[] | null>(
+  const [remixSources, setRemixSources] = useState<ActivityRemixItem[] | null>(
     null,
   );
   const [remixes, setRemixes] = useState<ActivityRemixItem[] | null>(null);
 
   useEffect(() => {
-    setRemixedFrom(null);
+    setRemixSources(null);
     setRemixes(null);
   }, [contentId]);
 
-  async function getRemixedFrom() {
+  async function getRemixSources() {
     const { data } = await axios.get(
-      `/api/remix/getRemixedFrom/${contentId}?includeSource=true`,
+      `/api/remix/getRemixSources/${contentId}?includeSource=true`,
     );
 
-    const newRemixedFrom = processRemixes(data.remixedFrom);
-    setRemixedFrom(newRemixedFrom);
-    return newRemixedFrom;
+    const newRemixSources = processRemixes(data.remixSources);
+    setRemixSources(newRemixSources);
+    return newRemixSources;
   }
 
   async function getRemixes() {
@@ -176,14 +176,14 @@ export function DoenetMLComparison({
   }
 
   async function remixesChangedCallback() {
-    await getRemixedFrom();
+    await getRemixSources();
     await getRemixes();
   }
 
   useEffect(() => {
-    if (compare === "remixedFrom") {
-      if (remixedFrom === null) {
-        getRemixedFrom();
+    if (compare === "remixSources") {
+      if (remixSources === null) {
+        getRemixSources();
       }
     } else if (compare === "remixes") {
       if (remixes === null) {
@@ -193,9 +193,9 @@ export function DoenetMLComparison({
   }, [compare]);
 
   const selectedRemix = useMemo(() => {
-    if (compare === "remixedFrom") {
+    if (compare === "remixSources") {
       return (
-        remixedFrom?.find((rem) => rem.originContent.contentId === remixId) ??
+        remixSources?.find((rem) => rem.originContent.contentId === remixId) ??
         null
       );
     } else if (compare === "remixes") {
@@ -204,7 +204,7 @@ export function DoenetMLComparison({
       );
     }
     return null;
-  }, [compare, remixedFrom, remixes, remixId]);
+  }, [compare, remixSources, remixes, remixId]);
 
   const [atSelectedRemix, setAtSelectedRemix] = useState(false);
   const [ignoreRemixUpdate, setIgnoreRemixUpdate] = useState(false);
@@ -213,7 +213,7 @@ export function DoenetMLComparison({
     async function checkIfAtSelectedRemix() {
       if (selectedRemix) {
         const selectedCid =
-          compare === "remixedFrom"
+          compare === "remixSources"
             ? selectedRemix.originContent.currentCid
             : selectedRemix.remixContent.currentCid;
 
@@ -255,7 +255,7 @@ export function DoenetMLComparison({
       onClose={revisionRemixInfoOnClose}
       revision={selectedRevision}
       remix={selectedRemix}
-      wasRemixedFrom={compare === "remixedFrom"}
+      isRemixSource={compare === "remixSources"}
     />
   );
 
@@ -273,7 +273,7 @@ export function DoenetMLComparison({
       activityName={activityName}
       revision={selectedRevision}
       remix={selectedRemix}
-      wasRemixedFrom={compare === "remixedFrom"}
+      isRemixSource={compare === "remixSources"}
       ignoreRemixUpdate={ignoreRemixUpdate}
       fetcher={fetcher}
       doenetmlChangeCallback={doenetmlChangeCallback}
@@ -318,20 +318,20 @@ export function DoenetMLComparison({
     );
   } else if (selectedRemix) {
     const selectedHasUpdates =
-      (compare === "remixedFrom" && selectedRemix.originContent.changed) ||
+      (compare === "remixSources" && selectedRemix.originContent.changed) ||
       (compare === "remixes" && selectedRemix.remixContent.changed);
 
     if (selectedHasUpdates) {
       const updateMessage =
         (atSelectedRemix ? `Already at` : `Update to`) +
         " current state of " +
-        (compare === "remixedFrom"
+        (compare === "remixSources"
           ? "activity that you remixed from."
           : "remixed activity");
 
       const ignoreMessage =
         "Ignore change in " +
-        (compare === "remixedFrom"
+        (compare === "remixSources"
           ? "activity that you remixed from."
           : "remixed activity");
 
@@ -434,7 +434,7 @@ export function DoenetMLComparison({
       otherDoenetmlVersion = selectedRevision.doenetmlVersion ?? "";
       haveOtherDoc = true;
     }
-  } else if (compare === "remixedFrom") {
+  } else if (compare === "remixSources") {
     if (selectedRemix) {
       otherDoenetML = selectedRemix.originContent.source ?? "";
       otherDoenetmlVersion = selectedRemix.originContent.doenetmlVersion ?? "";
@@ -494,11 +494,11 @@ export function DoenetMLComparison({
     </>
   );
 
-  const remixedFromSelector = remixedFrom && (
+  const remixSourcesSelector = remixSources && (
     <>
       <Select
         placeholder={
-          remixedFrom.length > 0
+          remixSources.length > 0
             ? "Select activity"
             : "Not remixed from other activities"
         }
@@ -517,7 +517,7 @@ export function DoenetMLComparison({
           );
         }}
       >
-        {remixedFrom.map((rem) => (
+        {remixSources.map((rem) => (
           <option
             key={rem.originContent.contentId}
             value={rem.originContent.contentId}
@@ -532,12 +532,12 @@ export function DoenetMLComparison({
         <Button
           size="xs"
           marginLeft="5px"
-          aria-label="Information on activity"
+          aria-label="Information on remix source"
           onClick={() => {
             revisionRemixInfoOnOpen();
           }}
         >
-          Activity info
+          Remix source info
         </Button>
       )}
     </>
@@ -570,8 +570,7 @@ export function DoenetMLComparison({
             value={rem.remixContent.contentId}
           >
             {rem.remixContent.changed && <>&#x1f534; </>}
-            {rem.remixContent.name} by{" "}
-            {createFullName(rem.remixContent.owner)}{" "}
+            {rem.remixContent.name} by {createFullName(rem.remixContent.owner)}{" "}
           </option>
         ))}
       </Select>
@@ -579,12 +578,12 @@ export function DoenetMLComparison({
         <Button
           size="xs"
           marginLeft="5px"
-          aria-label="Information on activity"
+          aria-label="Information on remixed activity"
           onClick={() => {
             revisionRemixInfoOnOpen();
           }}
         >
-          Activity info
+          Remixed activity info
         </Button>
       )}
     </>
@@ -611,11 +610,11 @@ export function DoenetMLComparison({
         }}
       >
         <option value="revisions">Revisions</option>
-        <option value="remixedFrom">Remixed From</option>
+        <option value="remixSources">Remix Sources</option>
         <option value="remixes">Remixes</option>
       </Select>
       {compare === "revisions" && revisionsSelector}
-      {compare === "remixedFrom" && remixedFromSelector}
+      {compare === "remixSources" && remixSourcesSelector}
       {compare === "remixes" && remixesSelector}
     </Flex>
   );

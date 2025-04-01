@@ -199,7 +199,7 @@ describe("Share panel tests", function () {
         "shared publicly",
       );
 
-      cy.get('[data-test="Remixed From Tab"]').click();
+      cy.get('[data-test="Remix Sources Tab"]').click();
       cy.get('[data-test="Not Remixed"]').should("contain.text", "Not remixed");
 
       cy.get('[data-test="Remixes Tab"]').click();
@@ -237,9 +237,9 @@ describe("Share panel tests", function () {
         "changed license",
       );
 
-      cy.get('[data-test="Remixed From Tab"]').click();
+      cy.get('[data-test="Remix Sources Tab"]').click();
 
-      cy.get('[data-test="Remixed from 1"]').should(
+      cy.get('[data-test="Remix source 1"]').should(
         "contain.text",
         "Original activity",
       );

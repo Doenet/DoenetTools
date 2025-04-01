@@ -9,7 +9,7 @@ import {
 import { createContentRevision, getContentSource } from "./activity";
 import { getIsAdmin } from "./curate";
 
-export async function getRemixedFrom({
+export async function getRemixSources({
   contentId,
   loggedInUserId = new Uint8Array(16),
   isAdmin,
@@ -19,12 +19,12 @@ export async function getRemixedFrom({
   loggedInUserId?: Uint8Array;
   isAdmin?: boolean;
   includeSource?: boolean;
-}): Promise<{ remixedFrom: ActivityRemixItem[] }> {
+}): Promise<{ remixSources: ActivityRemixItem[] }> {
   if (isAdmin === undefined) {
     isAdmin = await getIsAdmin(loggedInUserId);
   }
 
-  const prelimRemixedFrom = await prisma.content.findUniqueOrThrow({
+  const prelimRemixSources = await prisma.content.findUniqueOrThrow({
     where: {
       id: contentId,
       ...filterViewableActivity(loggedInUserId, isAdmin),
@@ -85,16 +85,16 @@ export async function getRemixedFrom({
     },
   });
 
-  const remixedFrom: ActivityRemixItem[] = [];
+  const remixSources: ActivityRemixItem[] = [];
 
   const remixBaseInfo = {
-    contentId: prelimRemixedFrom.id,
-    name: prelimRemixedFrom.name,
-    owner: prelimRemixedFrom.owner,
+    contentId: prelimRemixSources.id,
+    name: prelimRemixSources.name,
+    owner: prelimRemixSources.owner,
   };
 
   const remixCurrentSource = await getContentSource({
-    contentId: prelimRemixedFrom.id,
+    contentId: prelimRemixSources.id,
     loggedInUserId,
     useVersionIds: true,
   });
@@ -108,7 +108,7 @@ export async function getRemixedFrom({
     remixCurrentCid = await cidFromText(remixCurrentSource.source);
   }
 
-  for (const revision of prelimRemixedFrom.contentRevisions) {
+  for (const revision of prelimRemixSources.contentRevisions) {
     const remixRevisionInfo = {
       ...remixBaseInfo,
       revisionNum: revision.revisionNum,
@@ -165,7 +165,7 @@ export async function getRemixedFrom({
           originCurrentSource2.doenetMLVersion ?? undefined;
       }
 
-      remixedFrom.push({
+      remixSources.push({
         originContent,
         remixContent,
         withLicenseCode: historyItem.withLicenseCode
@@ -178,12 +178,12 @@ export async function getRemixedFrom({
 
   // re-sort according to originContent.timestamp, descending,
   // since could have different revision numbers
-  remixedFrom.sort(
+  remixSources.sort(
     (a, b) =>
       b.originContent.timestamp.getTime() - a.originContent.timestamp.getTime(),
   );
 
-  return { remixedFrom };
+  return { remixSources };
 }
 
 export async function getRemixes({
@@ -530,13 +530,13 @@ export async function updateRemixedContentToOrigin({
  * If `remixRevisionNum` is not specified, then create a new revision of `remixContentId`
  * from its current content and use that revision number.
  *
- * In addition look for other content that `originContentId` was remixed from
+ * In addition, look for other content that `originContentId` was remixed from
  * or that were remixed from `originContentId`.
  * If any of them have already incorporated that change of `remixRevisionNum` of `remixContentId`,
  * then also update the contributor history between `originContentId` and that activity
  * (updating the revision number of `originContentId` only if `onlyMarkedChange` is `false`.)
  *
- * Note: currently implemented only from Docs.
+ * Note: currently implemented only for Docs.
  */
 export async function updateOriginContentToRemix({
   remixContentId,

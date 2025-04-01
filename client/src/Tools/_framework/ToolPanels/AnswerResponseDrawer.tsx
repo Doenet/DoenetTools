@@ -24,8 +24,8 @@ import { parseAndFormatResponse } from "../../../_utils/responses";
 
 /**
  * A side menu drawer that controls sharing settings for a content item.
- * Includes up to three tabs: `Share`, `Remixed From`, and `Remixes`.
- * The `Remixed From` and `Remixes` tabs are only shown for non-folder content.
+ * Includes up to three tabs: `Share`, `Remix Sources`, and `Remixes`.
+ * The `Remix Sources` and `Remixes` tabs are only shown for non-folder content.
  *
  * Additionally, you can set the `inCurationLibrary` prop to `true` to show controls for library content. This will replace the `Share` tab with a `Curate` tab.
  *

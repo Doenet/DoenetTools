@@ -15,6 +15,7 @@ import {
   Tr,
   VStack,
   Heading,
+  Tooltip,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
 import { createFullName } from "../../../_utils/names";
@@ -32,9 +33,11 @@ export async function remixesActions({
 export function Remixes({
   remixes,
   onClose,
+  haveChangedRemix = false,
 }: {
   remixes: ActivityRemixItem[];
-  onClose: () => void;
+  onClose?: () => void;
+  haveChangedRemix?: boolean;
 }) {
   const [directRemixes, otherRemixes] = useMemo(() => {
     if (remixes === null || remixes.length === 0) {
@@ -59,6 +62,11 @@ export function Remixes({
     return (
       <>
         {items.map((ch, i) => {
+          const compareLabel =
+            `Compare activity with remix` +
+            (ch.originContent.changed
+              ? `, update activity to match remix, or ignore change in remix.`
+              : ".");
           return (
             <Tr key={`ch${i}`} data-test={`Remix ${i + 1}`}>
               <Show above="sm">
@@ -108,16 +116,30 @@ export function Remixes({
                   {ch.originContent.timestamp.toLocaleString(DateTime.DATE_MED)}
                 </Td>
               </Show>
-              <Td>
-                <ChakraLink
-                  as={ReactRouterLink}
-                  to={`/activityEditor/${ch.originContent.contentId}?mode=Compare&compare=remixes&remix=${ch.remixContent.contentId}`}
-                  textDecoration="underline"
-                  onClick={onClose}
-                >
-                  Compare
-                </ChakraLink>
-              </Td>
+              {onClose && (
+                <Td>
+                  {ch.remixContent.changed && (
+                    <Text fontSize="small" marginRight="5px" as="span">
+                      &#x1f534;
+                    </Text>
+                  )}
+                  <Tooltip
+                    label={compareLabel}
+                    openDelay={500}
+                    placement="bottom-end"
+                  >
+                    <ChakraLink
+                      as={ReactRouterLink}
+                      to={`/activityEditor/${ch.originContent.contentId}?mode=Compare&compare=remixes&remix=${ch.remixContent.contentId}`}
+                      textDecoration="underline"
+                      onClick={onClose}
+                      aria-label={compareLabel}
+                    >
+                      Compare
+                    </ChakraLink>
+                  </Tooltip>
+                </Td>
+              )}
             </Tr>
           );
         })}
@@ -192,6 +214,13 @@ export function Remixes({
               </Tr>
               {createTableRows(otherRemixes)}
             </>
+          )}
+          {haveChangedRemix && (
+            <Tr>
+              <Td colSpan={5} borderBottom="none" paddingTop="20px">
+                &#x1f534; Indicates remix has changed
+              </Td>
+            </Tr>
           )}
         </Tbody>
       </Table>

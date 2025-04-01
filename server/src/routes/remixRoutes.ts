@@ -4,7 +4,7 @@ import {
   queryOptionalLoggedIn,
 } from "../middleware/queryMiddleware";
 import {
-  getRemixedFrom,
+  getRemixSources,
   getRemixes,
   updateOriginContentToRemix,
   updateRemixedContentToOrigin,
@@ -18,8 +18,8 @@ import {
 export const remixRouter = express.Router();
 
 remixRouter.get(
-  "/getRemixedFrom/:contentId",
-  queryOptionalLoggedIn(getRemixedFrom, remixSchema),
+  "/getRemixSources/:contentId",
+  queryOptionalLoggedIn(getRemixSources, remixSchema),
 );
 
 remixRouter.get(

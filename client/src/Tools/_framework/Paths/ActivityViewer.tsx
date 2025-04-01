@@ -96,7 +96,7 @@ export async function action({ request }) {
 
 export async function loader({ params }) {
   const {
-    data: { activity: activityData, remixedFrom },
+    data: { activity: activityData, remixSources },
   } = await axios.get(
     `/api/activityEditView/getActivityViewerData/${params.contentId}`,
   );
@@ -107,7 +107,7 @@ export async function loader({ params }) {
     const doenetML = activityData.doenetML;
     const doenetmlVersion: DoenetmlVersion = activityData.doenetmlVersion;
 
-    const contributorHistory = processRemixes(remixedFrom);
+    const contributorHistory = processRemixes(remixSources);
 
     return {
       type: activityData.type,

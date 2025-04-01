@@ -51,7 +51,7 @@ export function ActivityDoenetMLEditor({
   mode: "Edit" | "View" | "Compare";
   headerHeight: string;
   fetcher: FetcherWithComponents<any>;
-  compare: "revisions" | "remixedFrom" | "remixes" | "";
+  compare: "revisions" | "remixSources" | "remixes" | "";
   revNum: number;
   remixId: string;
 }) {

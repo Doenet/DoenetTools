@@ -37,7 +37,7 @@ export async function setToRevisionRemixModalActions({
     }
   } else if (formObj?._action === "update to") {
     try {
-      if (formObj.wasRemixedFrom === "true") {
+      if (formObj.isRemixSource === "true") {
         const { data } = await axios.post(
           "/api/remix/updateRemixedContentToOrigin",
           {
@@ -71,7 +71,7 @@ export function SetToRevisionRemixModal({
   onClose,
   revision,
   remix,
-  wasRemixedFrom,
+  isRemixSource,
   ignoreRemixUpdate,
   contentId,
   activityName,
@@ -85,7 +85,7 @@ export function SetToRevisionRemixModal({
   onClose: () => void;
   revision: ContentRevision | null;
   remix: ActivityRemixItem | null;
-  wasRemixedFrom: boolean;
+  isRemixSource: boolean;
   ignoreRemixUpdate: boolean;
   contentId: string;
   activityName: string;
@@ -131,7 +131,7 @@ export function SetToRevisionRemixModal({
   const remixItem =
     !revision &&
     remix &&
-    (wasRemixedFrom ? remix.originContent : remix.remixContent);
+    (isRemixSource ? remix.originContent : remix.remixContent);
 
   let title: string = "";
   if (revision) {
@@ -145,13 +145,13 @@ export function SetToRevisionRemixModal({
       if (updated) {
         title = "Successfully ignored update";
       } else {
-        title = `Ignore update of ${wasRemixedFrom ? "activity that you remixed from" : "remixed activity"}`;
+        title = `Ignore update of ${isRemixSource ? "remix source" : "remixed activity"}`;
       }
     } else {
       if (updated) {
         title = "Successfully updated";
       } else {
-        title = `Update to ${wasRemixedFrom ? "activity that you remixed from" : "remixed activity"}`;
+        title = `Update to ${isRemixSource ? "remix source" : "remixed activity"}`;
       }
     }
   }
@@ -177,7 +177,7 @@ export function SetToRevisionRemixModal({
       </UnorderedList>
 
       <Text marginTop="10px">
-        <b>Note:</b> any changes made in the scratchpad are ignored.
+        <b>Note:</b> Any changes made in the scratchpad are ignored.
       </Text>
     </>
   );
@@ -186,15 +186,12 @@ export function SetToRevisionRemixModal({
     <>
       <Text>
         Update the current activity, {activityName}, to the current state of the
-        following activity{" "}
-        {wasRemixedFrom
-          ? "that the current activity was remixed from"
-          : "that remixed the current activity"}
-        :
+        following {isRemixSource ? "remix source" : "remixed activity"}:
       </Text>
       <UnorderedList>
         <ListItem marginTop="5px">
-          <label>Activity name:</label> {remixItem.name}
+          <label>Remix {isRemixSource ? "source" : ""} name:</label>{" "}
+          {remixItem.name}
         </ListItem>
         <ListItem>
           <label>By:</label> {createFullName(remixItem.owner)}
@@ -202,12 +199,13 @@ export function SetToRevisionRemixModal({
       </UnorderedList>
 
       <Text marginTop="10px">
-        <b>Note 1:</b> updating will <b>overwrite</b> any changes to the current
-        activity so that will match the above activity.
+        <b>Note 1:</b> Updating will <b>overwrite</b> any changes to the current
+        activity so that it will match the above remix
+        {isRemixSource ? " source" : ""}.
       </Text>
 
       <Text marginTop="10px">
-        <b>Note 2:</b> any changes made in the scratchpad are ignored.
+        <b>Note 2:</b> Any changes made in the scratchpad are ignored.
       </Text>
     </>
   );
@@ -215,15 +213,13 @@ export function SetToRevisionRemixModal({
   const ignoreRemixInfo = remixItem && !updated && ignoreRemixUpdate && (
     <>
       <Text>
-        Ignore the update to the following activity{" "}
-        {wasRemixedFrom
-          ? "that the current activity was remixed from"
-          : "that remixed the current activity"}
-        :
+        Ignore the update to the following{" "}
+        {isRemixSource ? "remix source" : "remixed activity"}
       </Text>
       <UnorderedList>
         <ListItem marginTop="5px">
-          <label>Activity name:</label> {remixItem.name}
+          <label>Remix {isRemixSource ? "source" : ""} name:</label>{" "}
+          {remixItem.name}
         </ListItem>
         <ListItem>
           <label>By:</label> {createFullName(remixItem.owner)}
@@ -232,7 +228,8 @@ export function SetToRevisionRemixModal({
 
       <Text marginTop="10px">
         <b>Note:</b> ignoring the update will simply remove the prompt &#x1f534;
-        to update until the activity is changed again.
+        to update until the{" "}
+        {isRemixSource ? "remix source" : "remixed activity"} is changed again.
       </Text>
     </>
   );
@@ -281,9 +278,7 @@ export function SetToRevisionRemixModal({
                 (updated
                   ? `Successfully ${ignoreRemixUpdate ? "ignored update" : "updated"} to `
                   : `Error occurred attempting to ${ignoreRemixUpdate ? "ignore update" : "update"} to `) +
-                  (wasRemixedFrom
-                    ? "activity that remixed from"
-                    : "remixed activity")}
+                  (isRemixSource ? "remix source" : "remixed activity")}
             </Box>
           ) : null}
         </ModalBody>
@@ -309,10 +304,10 @@ export function SetToRevisionRemixModal({
                     {
                       _action: "update to",
                       contentId,
-                      otherId: wasRemixedFrom
+                      otherId: isRemixSource
                         ? remix.originContent.contentId
                         : remix.remixContent.contentId,
-                      wasRemixedFrom: wasRemixedFrom ?? false,
+                      isRemixSource: isRemixSource ?? false,
                       ignoreRemixUpdate,
                     },
                     { method: "post" },

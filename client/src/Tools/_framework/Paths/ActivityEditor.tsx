@@ -166,8 +166,8 @@ export async function loader({ params, request }) {
   const compare =
     comparePar === "revisions"
       ? "revisions"
-      : comparePar === "remixedfrom"
-        ? "remixedFrom"
+      : comparePar === "remixsources"
+        ? "remixSources"
         : comparePar === "remixes"
           ? "remixes"
           : "";
@@ -286,7 +286,7 @@ export function ActivityEditor() {
     activityData: Content;
     revisions: ContentRevision[];
     mode: "Edit" | "View" | "Compare";
-    compare: "revisions" | "remixedFrom" | "remixes" | "";
+    compare: "revisions" | "remixSources" | "remixes" | "";
     revNum: number;
     remixId: string;
   } & (

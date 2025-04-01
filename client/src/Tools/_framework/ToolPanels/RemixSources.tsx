@@ -14,13 +14,14 @@ import {
   Thead,
   Tr,
   VStack,
+  Tooltip,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
 import { createFullName } from "../../../_utils/names";
 import { DateTime } from "luxon";
 import { ActivityRemixItem } from "../../../_utils/types";
 
-export async function remixedFromActions({
+export async function remixSourcesActions({
   formObj: _formObj,
 }: {
   [k: string]: any;
@@ -28,14 +29,14 @@ export async function remixedFromActions({
   return null;
 }
 
-export function RemixedFrom({
+export function RemixSources({
   contributorHistory,
   onClose,
-  haveChangedHistoryItem,
+  haveChangedSource = false,
 }: {
   contributorHistory: ActivityRemixItem[];
-  onClose: () => void;
-  haveChangedHistoryItem: boolean;
+  onClose?: () => void;
+  haveChangedSource?: boolean;
 }) {
   if (contributorHistory === null) {
     return (
@@ -82,8 +83,13 @@ export function RemixedFrom({
         </Thead>
         <Tbody>
           {contributorHistory.map((ch, i) => {
+            const compareLabel =
+              `Compare activity with remix source` +
+              (ch.originContent.changed
+                ? `, update activity to match source, or ignore change in source.`
+                : ".");
             return (
-              <Tr key={`ch${i}`} data-test={`Remixed from ${i + 1}`}>
+              <Tr key={`ch${i}`} data-test={`Remix source ${i + 1}`}>
                 <Show above="sm">
                   <Td>
                     <ChakraLink
@@ -133,28 +139,37 @@ export function RemixedFrom({
                     )}
                   </Td>
                 </Show>
-                <Td>
-                  {ch.originContent.changed && (
-                    <Text fontSize="small" marginRight="5px" as="span">
-                      &#x1f534;
-                    </Text>
-                  )}
-                  <ChakraLink
-                    as={ReactRouterLink}
-                    to={`/activityEditor/${ch.remixContent.contentId}?mode=Compare&compare=remixedFrom&remix=${ch.originContent.contentId}`}
-                    textDecoration="underline"
-                    onClick={onClose}
-                  >
-                    Compare
-                  </ChakraLink>
-                </Td>
+                {onClose && (
+                  <Td>
+                    {ch.originContent.changed && (
+                      <Text fontSize="small" marginRight="5px" as="span">
+                        &#x1f534;
+                      </Text>
+                    )}
+                    <Tooltip
+                      label={compareLabel}
+                      openDelay={500}
+                      placement="bottom-end"
+                    >
+                      <ChakraLink
+                        as={ReactRouterLink}
+                        to={`/activityEditor/${ch.remixContent.contentId}?mode=Compare&compare=remixSources&remix=${ch.originContent.contentId}`}
+                        textDecoration="underline"
+                        onClick={onClose}
+                        aria-label={compareLabel}
+                      >
+                        Compare
+                      </ChakraLink>
+                    </Tooltip>
+                  </Td>
+                )}
               </Tr>
             );
           })}
-          {haveChangedHistoryItem && (
+          {haveChangedSource && (
             <Tr>
               <Td colSpan={5} borderBottom="none" paddingTop="20px">
-                &#x1f534; Indicates activity has changed since remixed
+                &#x1f534; Indicates remix source has changed
               </Td>
             </Tr>
           )}

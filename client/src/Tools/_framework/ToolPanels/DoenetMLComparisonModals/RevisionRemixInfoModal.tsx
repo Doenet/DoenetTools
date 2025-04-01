@@ -20,14 +20,14 @@ export function RevisionRemixInfoModal({
   onClose,
   revision,
   remix,
-  wasRemixedFrom,
+  isRemixSource,
   finalFocusRef,
 }: {
   isOpen: boolean;
   onClose: () => void;
   revision: ContentRevision | null;
   remix: ActivityRemixItem | null;
-  wasRemixedFrom?: boolean;
+  isRemixSource?: boolean;
   finalFocusRef?: RefObject<HTMLElement>;
 }) {
   const revisionInfo = revision && (
@@ -57,19 +57,19 @@ export function RevisionRemixInfoModal({
   const remixItem =
     !revision &&
     remix &&
-    (wasRemixedFrom ? remix.originContent : remix.remixContent);
+    (isRemixSource ? remix.originContent : remix.remixContent);
 
   const remixInfo = remixItem && (
     <>
       <Text>
-        The scratchpad has been prepopulated with an activity that{" "}
-        {wasRemixedFrom
-          ? "the current activity was remixed from."
-          : "remixed the current activity."}
+        The scratchpad has been prepopulated with a remix{" "}
+        {isRemixSource ? "source " : ""} of the current activity.
       </Text>
       <List>
         <ListItem marginTop="20px">
-          <label style={{ fontWeight: "bold" }}>Activity name:</label>{" "}
+          <label style={{ fontWeight: "bold" }}>
+            Remix {isRemixSource ? "source " : ""} name:
+          </label>{" "}
           {remixItem.name}
         </ListItem>
         <ListItem marginTop="20px">
@@ -80,14 +80,14 @@ export function RevisionRemixInfoModal({
           <label style={{ fontWeight: "bold" }}>Direct remix:</label>{" "}
           {remix.directCopy.toString()}
           <Text marginTop="5px">
-            {wasRemixedFrom
+            {isRemixSource
               ? `Your activity was
             ${
               remix.directCopy
-                ? "directly remixed from this activity."
-                : "remixed through other activities that were remixed from this activity."
+                ? "directly remixed from this source."
+                : "remixed through other activities that were remixed from this source."
             }`
-              : `The activity
+              : `The remix
             ${
               remix.directCopy
                 ? "directly remixed your activity."
@@ -99,8 +99,9 @@ export function RevisionRemixInfoModal({
           <label style={{ fontWeight: "bold" }}>Updated:</label>{" "}
           {remixItem.changed.toString()} {remixItem.changed && <>&#x1f534; </>}
           <Text marginTop="5px">
-            The activity has {!remixItem.changed && "not"} been updated since{" "}
-            {wasRemixedFrom
+            The remix {isRemixSource ? "source " : ""} has{" "}
+            {!remixItem.changed && "not"} been updated since{" "}
+            {isRemixSource
               ? remix.directCopy
                 ? "you remixed it"
                 : "you remixed"
@@ -125,10 +126,8 @@ export function RevisionRemixInfoModal({
       <ModalContent>
         <ModalHeader textAlign="center">
           {revision && <>Details on revision: {revision.revisionName}</>}
-          {remixItem && wasRemixedFrom && (
-            <>Details on activity that you remixed from</>
-          )}
-          {remixItem && !wasRemixedFrom && <>Details on remixed activity</>}
+          {remixItem && isRemixSource && <>Details on remix source</>}
+          {remixItem && !isRemixSource && <>Details on remixed activity</>}
         </ModalHeader>
         <ModalBody>
           {revisionInfo}

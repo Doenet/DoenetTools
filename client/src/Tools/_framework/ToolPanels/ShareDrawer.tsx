@@ -1,6 +1,6 @@
 import React, { RefObject, useEffect, useState } from "react";
 import { sharingActions, ShareSettings } from "./ShareSettings";
-import { remixedFromActions, RemixedFrom } from "./RemixedFrom";
+import { remixSourcesActions, RemixSources } from "./RemixSources";
 import { FetcherWithComponents } from "react-router";
 import {
   Box,
@@ -40,9 +40,9 @@ export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
     return curateDrawerActionsResult;
   }
 
-  const remixedFromResult = await remixedFromActions({ formObj });
-  if (remixedFromResult) {
-    return remixedFromResult;
+  const remixSourcesResult = await remixSourcesActions({ formObj });
+  if (remixSourcesResult) {
+    return remixSourcesResult;
   }
 
   return null;
@@ -50,8 +50,8 @@ export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
 
 /**
  * A side menu drawer that controls sharing settings for a content item.
- * Includes up to three tabs: `Share`, `Remixed From`, and `Remixes`.
- * The `Remixed From` and `Remixes` tabs are only shown for non-folder content.
+ * Includes up to three tabs: `Share`, `Remix Sources`, and `Remixes`.
+ * The `Remix Sources` and `Remixes` tabs are only shown for non-folder content.
  *
  * Additionally, you can set the `inCurationLibrary` prop to `true` to show controls for library content. This will replace the `Share` tab with a `Curate` tab.
  *
@@ -74,28 +74,27 @@ export function ShareDrawer({
   allLicenses: License[];
   inCurationLibrary?: boolean;
 }) {
-  const [contributorHistory, setContributorHistory] = useState<
-    ActivityRemixItem[]
-  >([]);
-  const [haveChangedHistoryItem, setHaveChangedHistoryItem] = useState(false);
+  const [remixSources, setRemixSources] = useState<ActivityRemixItem[]>([]);
+  const [haveChangedSource, setHaveChangedSource] = useState(false);
   const [remixes, setRemixes] = useState<ActivityRemixItem[]>([]);
+  const [haveChangedRemix, setHaveChangedRemix] = useState(false);
   const [remixedWithLicense, setRemixedWithLicense] =
     useState<LicenseCode | null>(null);
 
   useEffect(() => {
-    async function getHistoryAndRemixes() {
+    async function getRemixesAndSources() {
       const { data } = await axios.get(
-        `/api/remix/getRemixedFrom/${contentData.contentId}`,
+        `/api/remix/getRemixSources/${contentData.contentId}`,
       );
 
-      const hist = processRemixes(data.remixedFrom);
-      setContributorHistory(hist);
+      const sources = processRemixes(data.remixSources);
+      setRemixSources(sources);
 
-      const haveChanged = hist.some((dhi) => dhi.originContent.changed);
+      setHaveChangedSource(
+        sources.some((source) => source.originContent.changed),
+      );
 
-      setHaveChangedHistoryItem(haveChanged);
-
-      setRemixedWithLicense(hist[0]?.withLicenseCode || null);
+      setRemixedWithLicense(sources[0]?.withLicenseCode || null);
 
       const { data: data2 } = await axios.get(
         `/api/remix/getRemixes/${contentData.contentId}`,
@@ -103,10 +102,12 @@ export function ShareDrawer({
 
       const remixes = processRemixes(data2.remixes);
       setRemixes(remixes);
+
+      setHaveChangedRemix(remixes.some((remix) => remix.remixContent.changed));
     }
 
     if (contentData.type !== "folder") {
-      getHistoryAndRemixes();
+      getRemixesAndSources();
     }
   }, [contentData]);
 
@@ -127,24 +128,31 @@ export function ShareDrawer({
     />
   );
 
-  // Remixed From Tab
-  const contributorHistoryAddon = contributorHistory
-    ? `(${contributorHistory.length})`
-    : "";
-  const changedHistoryAddon = haveChangedHistoryItem ? (
+  // Remix Sources Tab
+  const sourceCounter = remixSources ? `(${remixSources.length})` : "";
+  const changedSourceBadge = haveChangedSource ? (
     <Text fontSize="small" marginRight="5px">
       &#x1f534;
     </Text>
   ) : null;
-  const remixedFromTabTitle = (
+  const remixSourcesTabTitle = (
     <>
-      {changedHistoryAddon} Remixed From {contributorHistoryAddon}
+      {changedSourceBadge} Remix Sources {sourceCounter}
     </>
   );
 
   // Remixed Tab
-  const remixesTabTitle = remixes ? `Remixes (${remixes.length})` : "Remixes";
-
+  const remixCounter = remixes ? `(${remixes.length})` : "";
+  const changedRemixBadge = haveChangedRemix ? (
+    <Text fontSize="small" marginRight="5px">
+      &#x1f534;
+    </Text>
+  ) : null;
+  const remixesTabTitle = (
+    <>
+      {changedRemixBadge} Remixes {remixCounter}
+    </>
+  );
   return (
     <Drawer
       isOpen={isOpen}
@@ -170,7 +178,7 @@ export function ShareDrawer({
             <TabList>
               <Tab data-test="Share Tab">{shareOrCurateTabTitle}</Tab>
               {contentData.type === "folder" ? null : (
-                <Tab data-test="Remixed From Tab">{remixedFromTabTitle}</Tab>
+                <Tab data-test="Remix Sources Tab">{remixSourcesTabTitle}</Tab>
               )}
               {contentData.type === "folder" ? null : (
                 <Tab data-test="Remixes Tab">{remixesTabTitle}</Tab>
@@ -181,16 +189,20 @@ export function ShareDrawer({
                 <TabPanel>{shareOrCurateTabPanel}</TabPanel>
                 {contentData.type === "folder" ? null : (
                   <TabPanel height="100%">
-                    <RemixedFrom
-                      contributorHistory={contributorHistory}
+                    <RemixSources
+                      contributorHistory={remixSources}
                       onClose={onClose}
-                      haveChangedHistoryItem={haveChangedHistoryItem}
+                      haveChangedSource={haveChangedSource}
                     />
                   </TabPanel>
                 )}
                 {contentData.type === "folder" ? null : (
                   <TabPanel height="100%">
-                    <Remixes remixes={remixes} onClose={onClose} />
+                    <Remixes
+                      remixes={remixes}
+                      onClose={onClose}
+                      haveChangedRemix={haveChangedRemix}
+                    />
                   </TabPanel>
                 )}
               </TabPanels>
