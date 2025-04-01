@@ -50,24 +50,19 @@ export async function recordRecentContent(
 export async function getRecentContent({
   loggedInUserId,
   mode,
-  restrictToTypes = [],
+  restrictToTypes,
 }: {
   loggedInUserId: Uint8Array;
   mode: "edit" | "view";
   restrictToTypes?: ContentType[];
 }) {
   const results = await prisma.recentContent.findMany({
-    where:
-      restrictToTypes.length > 0
-        ? {
-            userId: loggedInUserId,
-            mode,
-            OR: restrictToTypes.map((t) => ({ content: { type: t } })),
-          }
-        : {
-            userId: loggedInUserId,
-            mode,
-          },
+    where: {
+      userId: loggedInUserId,
+      mode,
+      content: { isDeleted: false },
+      OR: restrictToTypes?.map((t) => ({ content: { type: t } })),
+    },
     select: {
       content: {
         select: {

@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import { createTestUser } from "./utils";
 import { ContentType } from "@prisma/client";
-import { createContent } from "../query/activity";
+import { createContent, deleteContent } from "../query/activity";
 import { prisma } from "../model";
 import {
   getRecentContent,
@@ -41,7 +41,7 @@ test("add and check recent content", async () => {
     contentIds.push(contentId);
   }
 
-  // get the most recent 10
+  // get the most recent 5
   recent = await getRecentContent({ loggedInUserId: userId, mode: "edit" });
   expect(recent.map((r) => r.contentId)).eqls(
     [...contentIds].reverse().slice(0, 5),
@@ -172,6 +172,36 @@ test("add and check recent content, different types", async () => {
         .slice(0, 5),
     );
   }
+});
+
+test("recent content excludes deleted", async () => {
+  const user = await createTestUser();
+  const userId = user.userId;
+
+  // add a couple activities
+  const { contentId: contentId1 } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  await recordRecentContent(userId, "edit", contentId1);
+  const { contentId: contentId2 } = await createContent({
+    loggedInUserId: userId,
+    contentType: "singleDoc",
+    parentId: null,
+  });
+  await recordRecentContent(userId, "edit", contentId2);
+
+  // get recent should get both
+  let recent = await getRecentContent({ loggedInUserId: userId, mode: "edit" });
+  expect(recent.map((r) => r.contentId)).eqls([contentId2, contentId1]);
+
+  // delete one
+  await deleteContent({ contentId: contentId1, loggedInUserId: userId });
+
+  // list excludes deleted
+  recent = await getRecentContent({ loggedInUserId: userId, mode: "edit" });
+  expect(recent.map((r) => r.contentId)).eqls([contentId2]);
 });
 
 test("purge recent content", async () => {
