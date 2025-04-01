@@ -570,7 +570,8 @@ export function DoenetMLComparison({
             value={rem.remixContent.contentId}
           >
             {rem.remixContent.changed && <>&#x1f534; </>}
-            {rem.remixContent.name} by {createFullName(rem.remixContent.owner)}{" "}
+            {rem.remixContent.name} by{" "}
+            {createFullName(rem.remixContent.owner)}{" "}
           </option>
         ))}
       </Select>
