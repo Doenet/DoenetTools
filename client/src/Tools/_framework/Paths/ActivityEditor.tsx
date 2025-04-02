@@ -297,9 +297,6 @@ export function ActivityEditor() {
   const readOnlyRef = useRef(readOnly);
   readOnlyRef.current = readOnly;
 
-  const fetcher = useFetcher();
-  const navigate = useNavigate();
-
   const [mode, setMode] = useState<"Edit" | "View">("Edit");
 
   const isLibraryActivity = Boolean(activityData.libraryActivityInfo);
@@ -311,6 +308,9 @@ export function ActivityEditor() {
   const [displaySettingsTab, setSettingsDisplayTab] =
     useState<"general">("general");
   const [highlightRename, setHighlightRename] = useState(false);
+
+  const fetcher = useFetcher();
+  const navigate = useNavigate();
 
   const [editLabel, editTooltip, editIcon] =
     assignmentStatus === "Unassigned"
@@ -345,7 +345,7 @@ export function ActivityEditor() {
     }
   }
 
-  let editor: ReactElement | null;
+  let editor: ReactElement;
 
   if (data.type === "singleDoc") {
     editor = (
