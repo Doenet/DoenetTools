@@ -11,7 +11,7 @@ import axios from "axios";
 import {
   DoenetMLComparison,
   doenetMLComparisonActions,
-} from "./DoenetMLComparison";
+} from "./DoenetMLComparisonOld";
 
 export async function activityDoenetMLEditorActions({
   formObj,

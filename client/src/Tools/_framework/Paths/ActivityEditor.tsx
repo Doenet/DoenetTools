@@ -611,7 +611,7 @@ export function ActivityEditor() {
                       <Show above="lg">{editLabel}</Show>
                     </Button>
                   </Tooltip>
-                  {data.type === "singleDoc" && (
+                  {false && (
                     <Tooltip
                       hasArrow
                       label="Compare with revisions and remixes"

@@ -153,7 +153,7 @@ export function RemixSources({
                     >
                       <ChakraLink
                         as={ReactRouterLink}
-                        to={`/activityEditor/${ch.remixContent.contentId}?mode=Compare&compare=remixSources&remix=${ch.originContent.contentId}`}
+                        to={`/activityCompare/${ch.remixContent.contentId}/${ch.originContent.contentId}`}
                         textDecoration="underline"
                         onClick={onClose}
                         aria-label={compareLabel}

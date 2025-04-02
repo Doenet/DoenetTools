@@ -721,18 +721,55 @@ async function updateOtherMatchingContributorHistory({
   for (const originObj of originContentAtNewCid) {
     if (originObj.contentRevisions.length === 1) {
       const originInfo = originObj.contentRevisions[0];
-      await prisma.contributorHistory.update({
+
+      // check if they are currently marked changed
+      const currentHistory = await prisma.contributorHistory.findUniqueOrThrow({
         where: {
           remixContentId_originContentId: {
             remixContentId: updatedContentId,
             originContentId: originInfo.contentId,
           },
         },
-        data: {
-          originContentRevisionNum: originInfo.revisionNum,
-          remixContentRevisionNum: updatedRevisionNum,
+        select: {
+          originContent: {
+            select: {
+              cid: true,
+              content: {
+                select: {
+                  source: true,
+                  doenetmlVersionId: true,
+                },
+              },
+            },
+          },
         },
       });
+
+      const currentOrigin = currentHistory.originContent.content;
+
+      const currentCid = await cidFromText(
+        currentOrigin.doenetmlVersionId?.toString() +
+          "|" +
+          currentOrigin.source,
+      );
+
+      const currentlyMarkedAsChanged =
+        currentCid !== currentHistory.originContent.cid;
+
+      if (currentlyMarkedAsChanged) {
+        await prisma.contributorHistory.update({
+          where: {
+            remixContentId_originContentId: {
+              remixContentId: updatedContentId,
+              originContentId: originInfo.contentId,
+            },
+          },
+          data: {
+            originContentRevisionNum: originInfo.revisionNum,
+            remixContentRevisionNum: updatedRevisionNum,
+          },
+        });
+      }
     }
   }
 
@@ -760,18 +797,53 @@ async function updateOtherMatchingContributorHistory({
   for (const remixObj of remixContentAtNewCid) {
     if (remixObj.contentRevisions.length === 1) {
       const remixInfo = remixObj.contentRevisions[0];
-      await prisma.contributorHistory.update({
+
+      // check if they are currently marked changed
+      const currentHistory = await prisma.contributorHistory.findUniqueOrThrow({
         where: {
           remixContentId_originContentId: {
             remixContentId: remixInfo.contentId,
             originContentId: updatedContentId,
           },
         },
-        data: {
-          originContentRevisionNum: updatedRevisionNum,
-          remixContentRevisionNum: remixInfo.revisionNum,
+        select: {
+          remixContent: {
+            select: {
+              cid: true,
+              content: {
+                select: {
+                  source: true,
+                  doenetmlVersionId: true,
+                },
+              },
+            },
+          },
         },
       });
+
+      const currentRemix = currentHistory.remixContent.content;
+
+      const currentCid = await cidFromText(
+        currentRemix.doenetmlVersionId?.toString() + "|" + currentRemix.source,
+      );
+
+      const currentlyMarkedAsChanged =
+        currentCid !== currentHistory.remixContent.cid;
+
+      if (currentlyMarkedAsChanged) {
+        await prisma.contributorHistory.update({
+          where: {
+            remixContentId_originContentId: {
+              remixContentId: remixInfo.contentId,
+              originContentId: updatedContentId,
+            },
+          },
+          data: {
+            originContentRevisionNum: updatedRevisionNum,
+            remixContentRevisionNum: remixInfo.revisionNum,
+          },
+        });
+      }
     }
   }
 }
