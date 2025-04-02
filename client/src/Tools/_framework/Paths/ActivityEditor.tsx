@@ -314,8 +314,12 @@ export function ActivityEditor() {
 
   const [editLabel, editTooltip, editIcon] =
     assignmentStatus === "Unassigned"
-      ? ["Edit", "Edit activity", <MdModeEditOutline />]
-      : ["See Inside", "See read-only view of source", <MdOutlineEditOff />];
+      ? ["Edit", "Edit activity", <MdModeEditOutline size={20} />]
+      : [
+          "See Source",
+          "See read-only view of source",
+          <MdOutlineEditOff size={20} />,
+        ];
 
   const [settingsContentId, setSettingsContentId] = useState<string | null>(
     null,
@@ -439,20 +443,22 @@ export function ActivityEditor() {
   const { iconImage, iconColor } = getIconInfo(data.type);
 
   const typeIcon = (
-    <Tooltip label={contentTypeName}>
-      <Box>
-        <Icon
-          as={iconImage}
-          color={iconColor}
-          boxSizing="content-box"
-          width="24px"
-          height="24px"
-          paddingRight="10px"
-          verticalAlign="middle"
-          aria-label={contentTypeName}
-        />
-      </Box>
-    </Tooltip>
+    <Show above="sm">
+      <Tooltip label={contentTypeName}>
+        <Box>
+          <Icon
+            as={iconImage}
+            color={iconColor}
+            boxSizing="content-box"
+            width="24px"
+            height="24px"
+            paddingRight="10px"
+            verticalAlign="middle"
+            aria-label={contentTypeName}
+          />
+        </Box>
+      </Tooltip>
+    </Show>
   );
 
   return (
@@ -484,8 +490,8 @@ export function ActivityEditor() {
           <Grid
             templateAreas={`"leftControls label rightControls"`}
             templateColumns={{
-              base: "115px 1fr 115px",
-              sm: "120px 1fr 120px",
+              base: "95px 1fr 155px",
+              sm: "100px 1fr 165px",
               md: "200px 1fr 200px",
               lg: "325px 1fr 325px",
             }}
@@ -518,7 +524,7 @@ export function ActivityEditor() {
                       isActive={mode == "View"}
                       size="sm"
                       pr={{ base: "0px", lg: "10px" }}
-                      leftIcon={<BsPlayBtnFill />}
+                      leftIcon={<BsPlayBtnFill size={18} />}
                       onClick={() => {
                         setMode("View");
                       }}
@@ -556,20 +562,18 @@ export function ActivityEditor() {
             >
               <HStack mr={{ base: "5px", sm: "10px" }} gap={0}>
                 {data.type === "singleDoc" && (
-                  <Show above="md">
-                    <Tooltip label="Open document history">
-                      <IconButton
-                        isRound={true}
-                        icon={<MdHistory size={25} />}
-                        size="md"
-                        variant="ghost"
-                        aria-label="Open document history"
-                        onClick={() => {
-                          navigate(`/activityHistory/${contentId}`);
-                        }}
-                      />
-                    </Tooltip>
-                  </Show>
+                  <Tooltip label="Open document history">
+                    <IconButton
+                      isRound={true}
+                      icon={<MdHistory size={20} />}
+                      size="md"
+                      variant="ghost"
+                      aria-label="Open document history"
+                      onClick={() => {
+                        navigate(`/activityHistory/${contentId}`);
+                      }}
+                    />
+                  </Tooltip>
                 )}
                 <ButtonGroup size="sm" isAttached variant="outline">
                   {isLibraryActivity ? (
@@ -582,7 +586,7 @@ export function ActivityEditor() {
                         data-test="Curate Button"
                         size="sm"
                         pr={{ base: "0px", lg: "10px" }}
-                        leftIcon={<MdOutlineGroup />}
+                        leftIcon={<MdOutlineGroup size={20} />}
                         onClick={() => {
                           finalFocusRef.current = curateBtnRef.current;
                           sharingOnOpen();
@@ -608,7 +612,7 @@ export function ActivityEditor() {
                             data-test="Assign Activity Button"
                             size="sm"
                             pr={{ base: "0px", lg: "10px" }}
-                            leftIcon={<MdOutlineAssignment />}
+                            leftIcon={<MdOutlineAssignment size={20} />}
                             onClick={() => {
                               finalFocusRef.current = assignBtnRef.current;
                               assignmentSettingsOnOpen();
@@ -633,7 +637,7 @@ export function ActivityEditor() {
                           data-test="Sharing Button"
                           size="sm"
                           pr={{ base: "0px", lg: "10px" }}
-                          leftIcon={<MdOutlineGroup />}
+                          leftIcon={<MdOutlineGroup size={20} />}
                           onClick={() => {
                             finalFocusRef.current = sharingBtnRef.current;
                             setSettingsContentId(activityData.contentId);
@@ -655,7 +659,7 @@ export function ActivityEditor() {
                       data-test="Settings Button"
                       size="sm"
                       pr={{ base: "0px", lg: "10px" }}
-                      leftIcon={<FaCog />}
+                      leftIcon={<FaCog size={16} />}
                       onClick={() => {
                         finalFocusRef.current = settingsBtnRef.current;
                         setSettingsDisplayTab("general");

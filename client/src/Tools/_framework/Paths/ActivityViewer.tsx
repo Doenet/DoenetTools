@@ -249,9 +249,9 @@ export function ActivityViewer() {
     ) : null;
 
   const [editLabel, editTooltip, editIcon] = [
-    "See Inside",
+    "See Source",
     "See read-only view of source",
-    <MdOutlineEditOff />,
+    <MdOutlineEditOff size={20} />,
   ];
 
   const haveClassifications = activityData.classifications.length > 0;
@@ -329,7 +329,7 @@ export function ActivityViewer() {
           as={Button}
           size="sm"
           colorScheme="blue"
-          leftIcon={<MdOutlineAdd />}
+          leftIcon={<MdOutlineAdd size={20} />}
           paddingRight={{ base: "0px", md: "10px" }}
           data-test="Add To"
         >
@@ -369,7 +369,7 @@ export function ActivityViewer() {
         addRightPadding={true}
         colorScheme="blue"
         toolTip={`Add ${contentTypeName.toLowerCase()} to ${allowedParentsPhrase}`}
-        leftIcon={<MdOutlineAdd />}
+        leftIcon={<MdOutlineAdd size={20} />}
         addCopyToLibraryOption={
           user?.isAdmin &&
           !activityData.librarySourceInfo?.contentId &&
@@ -438,7 +438,7 @@ export function ActivityViewer() {
                         size="sm"
                         pr={{ base: "0px", md: "10px" }}
                         colorScheme="blue"
-                        leftIcon={<BsPlayBtnFill />}
+                        leftIcon={<BsPlayBtnFill size={18} />}
                         onClick={() => {
                           setMode("View");
                         }}
@@ -574,7 +574,7 @@ export function ActivityViewer() {
                         size="sm"
                         pr={{ base: "0px", md: "10px" }}
                         colorScheme="blue"
-                        leftIcon={<MdOutlineInfo />}
+                        leftIcon={<MdOutlineInfo size={20} />}
                         onClick={() => {
                           setDisplayInfoTab("general");
                           setSettingsContentId(activityData.contentId);
