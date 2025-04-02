@@ -102,7 +102,14 @@ export async function setContentIsPublic({
     }
   }
 
-  await prisma.$executeRaw(Prisma.sql`
+  // Note: switched from an update recursive query to a select recursive query,
+  // followed by an update query,
+  // as were frequently getting deadlocks from update recursive queries.
+  const ids = await prisma.$queryRaw<
+    {
+      id: Uint8Array;
+    }[]
+  >(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
       WHERE id = ${contentId} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
@@ -113,10 +120,13 @@ export async function setContentIsPublic({
       WHERE content.isDeleted = FALSE
     )
 
-    UPDATE content
-      SET content.isPublic = ${isPublic}
-      WHERE content.id IN (SELECT id from content_tree);
+    SELECT id from content_tree;
     `);
+
+  await prisma.content.updateMany({
+    where: { id: { in: ids.map((x) => x.id) } },
+    data: { isPublic },
+  });
 }
 
 export function unshareContent({

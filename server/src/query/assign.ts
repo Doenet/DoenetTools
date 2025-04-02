@@ -116,7 +116,14 @@ export async function assignActivity({
   });
 
   if (updatedContent.type !== "singleDoc") {
-    await prisma.$executeRaw(Prisma.sql`
+    // Note: switched from an update recursive query to a select recursive query,
+    // followed by an update query,
+    // as were frequently getting deadlocks from update recursive queries.
+    const ids = await prisma.$queryRaw<
+      {
+        id: Uint8Array;
+      }[]
+    >(Prisma.sql`
         WITH RECURSIVE content_tree(id) AS (
           SELECT id FROM content
           WHERE parentId = ${contentId}
@@ -126,11 +133,13 @@ export async function assignActivity({
           ON content.parentId = ct.id
           WHERE content.isDeleted = FALSE
         )
-    
-        UPDATE content
-          SET content.nonRootAssignmentId = ${contentId}
-          WHERE content.id IN (SELECT id from content_tree);
+        SELECT id from content_tree;
         `);
+
+    await prisma.content.updateMany({
+      where: { id: { in: ids.map((x) => x.id) } },
+      data: { nonRootAssignmentId: contentId },
+    });
   }
 
   return { classCode: updatedContent.rootAssignment!.classCode };
