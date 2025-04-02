@@ -87,7 +87,6 @@ export async function compoundActivityEditorActions({
   }
 
   if (formObj?._action == "Add Document") {
-    console.log({ formObj });
     //Create an activity and redirect to the editor for it
     const { data } = await axios.post(`/api/updateContent/createContent`, {
       contentType: formObj.type,

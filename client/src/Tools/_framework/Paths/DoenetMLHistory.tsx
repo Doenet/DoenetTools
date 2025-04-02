@@ -72,8 +72,6 @@ export async function loader({ params, request }) {
     }
   }
 
-  console.log({ content, revisions });
-
   if (content.type !== "singleDoc") {
     throw Error("DoenetMLHistory implemented only for documents");
   }

@@ -54,11 +54,9 @@ export async function sharingActions({ formObj }: { [k: string]: any }) {
         email: formObj.email,
       });
     } catch (e) {
-      console.log(e.response);
       if (e.response?.data?.error) {
         const error = e.response?.data?.error;
         const details = e.response?.data?.details;
-        console.log({ error, details });
         if (
           error === "Invalid data" &&
           details[0]?.message === "Invalid email"
