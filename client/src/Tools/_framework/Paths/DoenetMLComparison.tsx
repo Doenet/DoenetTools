@@ -32,7 +32,7 @@ import {
   basicUpdateActionsModalActions,
 } from "../ToolPanels/DoenetMLComparisonModals/BasicUpdateActionsModal";
 
-export async function action({ params, request }) {
+export async function action({ request }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
@@ -44,7 +44,7 @@ export async function action({ params, request }) {
   return null;
 }
 
-export async function loader({ params, request }) {
+export async function loader({ params }) {
   const { data } = await axios.get(
     `/api/compare/getDoenetMLComparison/${params.contentId}/${params.compareId}`,
   );

@@ -20,11 +20,12 @@ import {
   Tooltip,
   VStack,
   useDisclosure,
+  IconButton,
 } from "@chakra-ui/react";
 import { BsPlayBtnFill } from "react-icons/bs";
-import { IoGitCompareOutline } from "react-icons/io5";
 import {
   MdDataset,
+  MdHistory,
   MdInfoOutline,
   MdModeEditOutline,
   MdOutlineAssignment,
@@ -51,12 +52,8 @@ import {
   Content,
   DoenetmlVersion,
   License,
-  ContentRevision,
 } from "../../../_utils/types";
-import {
-  ActivityDoenetMLEditor,
-  activityDoenetMLEditorActions,
-} from "../ToolPanels/ActivityDoenetMLEditor";
+import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
 import {
   CompoundActivityEditor,
   compoundActivityEditorActions,
@@ -109,22 +106,12 @@ export async function action({ params, request }) {
     return resultNAE;
   }
 
-  const resultADE = await activityDoenetMLEditorActions({ formObj });
-  if (resultADE) {
-    return resultADE;
-  }
-
   return null;
 }
 
-export async function loader({ params, request }) {
+export async function loader({ params }) {
   const {
-    data: {
-      editableByMe,
-      activity: activityData,
-      availableFeatures,
-      revisions,
-    },
+    data: { editableByMe, activity: activityData, availableFeatures },
   } = await axios.get(
     `/api/activityEditView/getActivityEditorData/${params.contentId}`,
   );
@@ -157,34 +144,6 @@ export async function loader({ params, request }) {
     data: { allDoenetmlVersions },
   } = await axios.get("/api/info/getAllDoenetmlVersions");
 
-  const url = new URL(request.url);
-  const modePar = url.searchParams.get("mode")?.toLowerCase();
-  const mode =
-    modePar === "view" ? "View" : modePar === "compare" ? "Compare" : "Edit";
-
-  const comparePar = url.searchParams.get("compare")?.toLowerCase();
-  const compare =
-    comparePar === "revisions"
-      ? "revisions"
-      : comparePar === "remixsources"
-        ? "remixSources"
-        : comparePar === "remixes"
-          ? "remixes"
-          : "";
-
-  const remixId = url.searchParams.get("remix") ?? "";
-
-  let revNum = 0;
-  if (remixId === "") {
-    const revNumPar = url.searchParams.get("revNum");
-    if (revNumPar) {
-      revNum = Number(revNumPar);
-      if (!Number.isInteger(revNum) || revNum <= 0) {
-        revNum = 0;
-      }
-    }
-  }
-
   if (activityData.type === "singleDoc") {
     const doenetML = activityData.doenetML;
     const doenetmlVersion: DoenetmlVersion = activityData.doenetmlVersion;
@@ -200,11 +159,6 @@ export async function loader({ params, request }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
-      revisions,
-      mode,
-      compare,
-      revNum,
-      remixId,
     };
   } else {
     const activityJson = compileActivityFromContent(activityData);
@@ -219,11 +173,6 @@ export async function loader({ params, request }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
-      revisions,
-      mode,
-      compare,
-      revNum,
-      remixId,
     };
   }
 }
@@ -284,11 +233,6 @@ export function ActivityEditor() {
     allLicenses: License[];
     availableFeatures: ContentFeature[];
     activityData: Content;
-    revisions: ContentRevision[];
-    mode: "Edit" | "View" | "Compare";
-    compare: "revisions" | "remixSources" | "remixes" | "";
-    revNum: number;
-    remixId: string;
   } & (
     | {
         type: "singleDoc";
@@ -307,11 +251,6 @@ export function ActivityEditor() {
     allDoenetmlVersions,
     allLicenses,
     availableFeatures,
-    revisions,
-    mode,
-    compare,
-    revNum,
-    remixId,
   } = data;
 
   const finalFocusRef = useRef<HTMLElement | null>(null);
@@ -361,10 +300,7 @@ export function ActivityEditor() {
   const fetcher = useFetcher();
   const navigate = useNavigate();
 
-  function setMode(newMode: "Edit" | "View" | "Compare") {
-    const newSearch = `?mode=${newMode}`;
-    navigate(`.${newSearch}`, { replace: true });
-  }
+  const [mode, setMode] = useState<"Edit" | "View">("Edit");
 
   const isLibraryActivity = Boolean(activityData.libraryActivityInfo);
 
@@ -417,34 +353,27 @@ export function ActivityEditor() {
         doenetML={data.doenetML}
         doenetmlVersion={data.doenetmlVersion}
         assignmentStatus={assignmentStatus}
-        revisions={revisions}
         mode={mode}
         contentId={contentId}
-        activityName={activityData.name}
         headerHeight={`${readOnly ? 120 : 80}px`}
-        fetcher={fetcher}
-        compare={compare}
-        revNum={revNum}
-        remixId={remixId}
       />
     );
   } else {
-    editor =
-      mode !== "Compare" ? (
-        <CompoundActivityEditor
-          activity={data.activityData}
-          activityJson={data.activityJson}
-          mode={mode}
-          fetcher={fetcher}
-          setSettingsContentId={setSettingsContentId}
-          settingsOnOpen={settingsOnOpen}
-          sharingOnOpen={sharingOnOpen}
-          finalFocusRef={finalFocusRef}
-          setSettingsDisplayTab={setSettingsDisplayTab}
-          setHighlightRename={setHighlightRename}
-          headerHeight={`${readOnly ? 120 : 80}px`}
-        />
-      ) : null;
+    editor = (
+      <CompoundActivityEditor
+        activity={data.activityData}
+        activityJson={data.activityJson}
+        mode={mode}
+        fetcher={fetcher}
+        setSettingsContentId={setSettingsContentId}
+        settingsOnOpen={settingsOnOpen}
+        sharingOnOpen={sharingOnOpen}
+        finalFocusRef={finalFocusRef}
+        setSettingsDisplayTab={setSettingsDisplayTab}
+        setHighlightRename={setHighlightRename}
+        headerHeight={`${readOnly ? 120 : 80}px`}
+      />
+    );
   }
 
   const settingsDrawer = contentData ? (
@@ -611,25 +540,6 @@ export function ActivityEditor() {
                       <Show above="lg">{editLabel}</Show>
                     </Button>
                   </Tooltip>
-                  {false && (
-                    <Tooltip
-                      hasArrow
-                      label="Compare with revisions and remixes"
-                    >
-                      <Button
-                        data-test="Compare with revisions and remixes"
-                        isActive={mode == "Compare"}
-                        size="sm"
-                        pr={{ base: "0px", lg: "10px" }}
-                        leftIcon={<IoGitCompareOutline />}
-                        onClick={() => {
-                          setMode("Compare");
-                        }}
-                      >
-                        <Show above="lg">Compare</Show>
-                      </Button>
-                    </Tooltip>
-                  )}
                 </ButtonGroup>
               </HStack>
             </GridItem>
@@ -644,7 +554,23 @@ export function ActivityEditor() {
               display="flex"
               justifyContent="flex-end"
             >
-              <HStack mr={{ base: "5px", sm: "10px" }}>
+              <HStack mr={{ base: "5px", sm: "10px" }} gap={0}>
+                {data.type === "singleDoc" && (
+                  <Show above="md">
+                    <Tooltip label="Open document history">
+                      <IconButton
+                        isRound={true}
+                        icon={<MdHistory size={25} />}
+                        size="md"
+                        variant="ghost"
+                        aria-label="Open document history"
+                        onClick={() => {
+                          navigate(`/activityHistory/${contentId}`);
+                        }}
+                      />
+                    </Tooltip>
+                  </Show>
+                )}
                 <ButtonGroup size="sm" isAttached variant="outline">
                   {isLibraryActivity ? (
                     <Tooltip

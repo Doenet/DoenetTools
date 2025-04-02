@@ -267,7 +267,6 @@ export function ActivityViewer() {
         mode={mode}
         contentId={contentId}
         headerHeight="140px"
-        fetcher={fetcher}
       />
     );
   } else {

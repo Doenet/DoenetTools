@@ -670,6 +670,20 @@ export async function getContentRevisions({
   }));
 }
 
+export async function getContentHistory({
+  contentId,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
+  const content = await getContent({ contentId, loggedInUserId });
+
+  const revisions = await getContentRevisions({ contentId, loggedInUserId });
+
+  return { content, revisions };
+}
+
 /**
  * Revert activity `contentId` owned by `loggedInUserId` to a previous revision of number `revisionNum`.
  *
