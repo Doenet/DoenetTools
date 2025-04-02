@@ -20,10 +20,12 @@ import {
   Tooltip,
   VStack,
   useDisclosure,
+  IconButton,
 } from "@chakra-ui/react";
 import { BsPlayBtnFill } from "react-icons/bs";
 import {
   MdDataset,
+  MdHistory,
   MdInfoOutline,
   MdModeEditOutline,
   MdOutlineAssignment,
@@ -312,8 +314,12 @@ export function ActivityEditor() {
 
   const [editLabel, editTooltip, editIcon] =
     assignmentStatus === "Unassigned"
-      ? ["Edit", "Edit activity", <MdModeEditOutline />]
-      : ["See Inside", "See read-only view of source", <MdOutlineEditOff />];
+      ? ["Edit", "Edit activity", <MdModeEditOutline size={20} />]
+      : [
+          "See Source",
+          "See read-only view of source",
+          <MdOutlineEditOff size={20} />,
+        ];
 
   const [settingsContentId, setSettingsContentId] = useState<string | null>(
     null,
@@ -437,20 +443,22 @@ export function ActivityEditor() {
   const { iconImage, iconColor } = getIconInfo(data.type);
 
   const typeIcon = (
-    <Tooltip label={contentTypeName}>
-      <Box>
-        <Icon
-          as={iconImage}
-          color={iconColor}
-          boxSizing="content-box"
-          width="24px"
-          height="24px"
-          paddingRight="10px"
-          verticalAlign="middle"
-          aria-label={contentTypeName}
-        />
-      </Box>
-    </Tooltip>
+    <Show above="sm">
+      <Tooltip label={contentTypeName}>
+        <Box>
+          <Icon
+            as={iconImage}
+            color={iconColor}
+            boxSizing="content-box"
+            width="24px"
+            height="24px"
+            paddingRight="10px"
+            verticalAlign="middle"
+            aria-label={contentTypeName}
+          />
+        </Box>
+      </Tooltip>
+    </Show>
   );
 
   return (
@@ -482,10 +490,10 @@ export function ActivityEditor() {
           <Grid
             templateAreas={`"leftControls label rightControls"`}
             templateColumns={{
-              base: "82px calc(100% - 197px) 115px",
-              sm: "87px calc(100% - 217px) 120px",
-              md: "270px calc(100% - 555px) 285px",
-              lg: "1fr 450px 1fr",
+              base: "95px 1fr 155px",
+              sm: "100px 1fr 165px",
+              md: "200px 1fr 200px",
+              lg: "325px 1fr 325px",
             }}
             width="100%"
           >
@@ -515,13 +523,13 @@ export function ActivityEditor() {
                       data-test="View Mode Button"
                       isActive={mode == "View"}
                       size="sm"
-                      pr={{ base: "0px", md: "10px" }}
-                      leftIcon={<BsPlayBtnFill />}
+                      pr={{ base: "0px", lg: "10px" }}
+                      leftIcon={<BsPlayBtnFill size={18} />}
                       onClick={() => {
                         setMode("View");
                       }}
                     >
-                      <Show above="md">View</Show>
+                      <Show above="lg">View</Show>
                     </Button>
                   </Tooltip>
                   <Tooltip hasArrow label={editTooltip}>
@@ -529,13 +537,13 @@ export function ActivityEditor() {
                       isActive={mode == "Edit"}
                       data-test="Edit Mode Button"
                       size="sm"
-                      pr={{ base: "0px", md: "10px" }}
+                      pr={{ base: "0px", lg: "10px" }}
                       leftIcon={editIcon}
                       onClick={() => {
                         setMode("Edit");
                       }}
                     >
-                      <Show above="md">{editLabel}</Show>
+                      <Show above="lg">{editLabel}</Show>
                     </Button>
                   </Tooltip>
                 </ButtonGroup>
@@ -552,7 +560,21 @@ export function ActivityEditor() {
               display="flex"
               justifyContent="flex-end"
             >
-              <HStack mr={{ base: "5px", sm: "10px" }}>
+              <HStack mr={{ base: "5px", sm: "10px" }} gap={0}>
+                {data.type === "singleDoc" && (
+                  <Tooltip label="Open document history">
+                    <IconButton
+                      isRound={true}
+                      icon={<MdHistory size={20} />}
+                      size="md"
+                      variant="ghost"
+                      aria-label="Open document history"
+                      onClick={() => {
+                        navigate(`/activityHistory/${contentId}`);
+                      }}
+                    />
+                  </Tooltip>
+                )}
                 <ButtonGroup size="sm" isAttached variant="outline">
                   {isLibraryActivity ? (
                     <Tooltip
@@ -563,15 +585,15 @@ export function ActivityEditor() {
                       <Button
                         data-test="Curate Button"
                         size="sm"
-                        pr={{ base: "0px", md: "10px" }}
-                        leftIcon={<MdOutlineGroup />}
+                        pr={{ base: "0px", lg: "10px" }}
+                        leftIcon={<MdOutlineGroup size={20} />}
                         onClick={() => {
                           finalFocusRef.current = curateBtnRef.current;
                           sharingOnOpen();
                         }}
                         ref={curateBtnRef}
                       >
-                        <Show above="md">Curate</Show>
+                        <Show above="lg">Curate</Show>
                       </Button>
                     </Tooltip>
                   ) : (
@@ -589,15 +611,15 @@ export function ActivityEditor() {
                           <Button
                             data-test="Assign Activity Button"
                             size="sm"
-                            pr={{ base: "0px", md: "10px" }}
-                            leftIcon={<MdOutlineAssignment />}
+                            pr={{ base: "0px", lg: "10px" }}
+                            leftIcon={<MdOutlineAssignment size={20} />}
                             onClick={() => {
                               finalFocusRef.current = assignBtnRef.current;
                               assignmentSettingsOnOpen();
                             }}
                             ref={assignBtnRef}
                           >
-                            <Show above="md">
+                            <Show above="lg">
                               {assignmentStatus === "Unassigned"
                                 ? "Assign"
                                 : "Assigned"}
@@ -614,8 +636,8 @@ export function ActivityEditor() {
                         <Button
                           data-test="Sharing Button"
                           size="sm"
-                          pr={{ base: "0px", md: "10px" }}
-                          leftIcon={<MdOutlineGroup />}
+                          pr={{ base: "0px", lg: "10px" }}
+                          leftIcon={<MdOutlineGroup size={20} />}
                           onClick={() => {
                             finalFocusRef.current = sharingBtnRef.current;
                             setSettingsContentId(activityData.contentId);
@@ -623,7 +645,7 @@ export function ActivityEditor() {
                           }}
                           ref={sharingBtnRef}
                         >
-                          <Show above="md">Share</Show>
+                          <Show above="lg">Share</Show>
                         </Button>
                       </Tooltip>
                     </>
@@ -636,8 +658,8 @@ export function ActivityEditor() {
                     <Button
                       data-test="Settings Button"
                       size="sm"
-                      pr={{ base: "0px", md: "10px" }}
-                      leftIcon={<FaCog />}
+                      pr={{ base: "0px", lg: "10px" }}
+                      leftIcon={<FaCog size={16} />}
                       onClick={() => {
                         finalFocusRef.current = settingsBtnRef.current;
                         setSettingsDisplayTab("general");
@@ -646,7 +668,7 @@ export function ActivityEditor() {
                       }}
                       ref={settingsBtnRef}
                     >
-                      <Show above="md">Settings</Show>
+                      <Show above="lg">Settings</Show>
                     </Button>
                   </Tooltip>
                 </ButtonGroup>
@@ -741,7 +763,7 @@ export function ActivityEditor() {
             ) : null}
             {editor}
             <Box
-              hidden={mode === "Edit"}
+              hidden={mode !== "View"}
               maxWidth="850px"
               width="100%"
               height="30vh"

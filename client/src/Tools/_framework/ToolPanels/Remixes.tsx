@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   Flex,
   Hide,
@@ -14,6 +14,8 @@ import {
   Thead,
   Tr,
   VStack,
+  Heading,
+  Tooltip,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
 import { createFullName } from "../../../_utils/names";
@@ -28,7 +30,123 @@ export async function remixesActions({
   return null;
 }
 
-export function Remixes({ remixes }: { remixes: ActivityRemixItem[] }) {
+export function Remixes({
+  remixes,
+  onClose,
+  haveChangedRemix = false,
+}: {
+  remixes: ActivityRemixItem[];
+  onClose?: () => void;
+  haveChangedRemix?: boolean;
+}) {
+  const [directRemixes, otherRemixes] = useMemo(() => {
+    if (remixes === null || remixes.length === 0) {
+      return [[], []];
+    }
+
+    const direct: ActivityRemixItem[] = [];
+    const other: ActivityRemixItem[] = [];
+
+    for (const r of remixes) {
+      if (r.directCopy) {
+        direct.push(r);
+      } else {
+        other.push(r);
+      }
+    }
+
+    return [direct, other];
+  }, [remixes]);
+
+  const createTableRows = useCallback((items: ActivityRemixItem[]) => {
+    return (
+      <>
+        {items.map((ch, i) => {
+          const compareLabel =
+            `Compare activity with remix` +
+            (ch.originContent.changed
+              ? `, update activity to match remix, or ignore change in remix.`
+              : ".");
+          return (
+            <Tr key={`ch${i}`} data-test={`Remix ${i + 1}`}>
+              <Show above="sm">
+                <Td>
+                  <ChakraLink
+                    as={ReactRouterLink}
+                    to={`/activityViewer/${ch.remixContent.contentId}`}
+                    textDecoration="underline"
+                  >
+                    <Text wordBreak="break-word" whiteSpace="normal">
+                      {ch.remixContent.name}
+                    </Text>
+                  </ChakraLink>
+                </Td>
+                <Td>
+                  <ChakraLink
+                    as={ReactRouterLink}
+                    to={`/sharedActivities/${ch.remixContent.owner.userId}`}
+                    textDecoration="underline"
+                  >
+                    <Text
+                      wordBreak="break-word"
+                      whiteSpace="normal"
+                      minWidth="50px"
+                    >
+                      {createFullName(ch.remixContent.owner)}
+                    </Text>
+                  </ChakraLink>
+                </Td>
+              </Show>
+              <Hide above="sm">
+                <Td>
+                  <VStack alignItems="left">
+                    <Text wordBreak="break-word" whiteSpace="normal">
+                      {ch.remixContent.name}
+                    </Text>
+                    <Text wordBreak="break-word" whiteSpace="normal">
+                      {createFullName(ch.remixContent.owner)}
+                    </Text>
+                  </VStack>
+                </Td>
+              </Hide>
+              <Td>{ch.withLicenseCode}</Td>
+              <Show above="sm">
+                {/* Note: use timestampOriginContent as what the timestamp from when the previous was mixed, not when this doc was created */}
+                <Td>
+                  {ch.originContent.timestamp.toLocaleString(DateTime.DATE_MED)}
+                </Td>
+              </Show>
+              {onClose && (
+                <Td>
+                  {ch.remixContent.changed && (
+                    <Text fontSize="small" marginRight="5px" as="span">
+                      &#x1f534;
+                    </Text>
+                  )}
+                  <Tooltip
+                    label={compareLabel}
+                    openDelay={500}
+                    placement="bottom-end"
+                  >
+                    <ChakraLink
+                      as={ReactRouterLink}
+                      to={`/activityCompare/${ch.originContent.contentId}/${ch.remixContent.contentId}`}
+                      textDecoration="underline"
+                      onClick={onClose}
+                      aria-label={compareLabel}
+                    >
+                      Compare
+                    </ChakraLink>
+                  </Tooltip>
+                </Td>
+              )}
+            </Tr>
+          );
+        })}
+      </>
+    );
+  }, []);
+
   if (remixes === null) {
     return (
       <Flex>
@@ -47,7 +165,7 @@ export function Remixes({ remixes }: { remixes: ActivityRemixItem[] }) {
 
   const remixTable = (
     <TableContainer
-      maxHeight="200px"
+      maxHeight="calc(100% - 32px)"
       overflowY="auto"
       marginBottom="20px"
       marginTop="20px"
@@ -75,58 +193,35 @@ export function Remixes({ remixes }: { remixes: ActivityRemixItem[] }) {
           </Tr>
         </Thead>
         <Tbody>
-          {remixes.map((ch, i) => {
-            return (
-              <Tr key={`ch${i}`} data-test={`Remix ${i + 1}`}>
-                <Show above="sm">
-                  <Td>
-                    <ChakraLink
-                      as={ReactRouterLink}
-                      to={`/activityViewer/${ch.contentId}`}
-                    >
-                      <Text wordBreak="break-word" whiteSpace="normal">
-                        {ch.name}
-                      </Text>
-                    </ChakraLink>
-                  </Td>
-                  <Td>
-                    <ChakraLink
-                      as={ReactRouterLink}
-                      to={`/sharedActivities/${ch.owner.userId}`}
-                    >
-                      <Text
-                        wordBreak="break-word"
-                        whiteSpace="normal"
-                        minWidth="50px"
-                      >
-                        {createFullName(ch.owner)}
-                      </Text>
-                    </ChakraLink>
-                  </Td>
-                </Show>
-                <Hide above="sm">
-                  <Td>
-                    <VStack alignItems="left">
-                      <Text wordBreak="break-word" whiteSpace="normal">
-                        {ch.name}
-                      </Text>
-                      <Text wordBreak="break-word" whiteSpace="normal">
-                        {createFullName(ch.owner)}
-                      </Text>
-                    </VStack>
-                  </Td>
-                </Hide>
-                <Td>{ch.withLicenseCode}</Td>
-                <Show above="sm">
-                  {/* Note: use timestampPrevContent as what the timestamp from when the previous was mixed, not when this doc was created */}
-                  <Td>
-                    {ch.timestampPrevContent.toLocaleString(DateTime.DATE_MED)}
-                  </Td>
-                  <Td>{ch.directCopy ? "direct copy" : ""}</Td>
-                </Show>
+          {otherRemixes.length > 0 && (
+            <Tr>
+              <Td colSpan={5}>
+                <Heading as="h4" size="xs">
+                  Direct remixes
+                </Heading>
+              </Td>
+            </Tr>
+          )}
+          {createTableRows(directRemixes)}
+          {otherRemixes.length > 0 && (
+            <>
+              <Tr>
+                <Td colSpan={5}>
+                  <Heading as="h4" size="xs">
+                    Other remixes
+                  </Heading>
+                </Td>
               </Tr>
-            );
-          })}
+              {createTableRows(otherRemixes)}
+            </>
+          )}
+          {haveChangedRemix && (
+            <Tr>
+              <Td colSpan={5} borderBottom="none" paddingTop="20px">
+                &#x1f534; Indicates remix has changed
+              </Td>
+            </Tr>
+          )}
         </Tbody>
       </Table>
     </TableContainer>

@@ -40,6 +40,7 @@ import { infoRouter } from "./routes/infoRoutes";
 import { copyMoveRouter } from "./routes/copyMoveRoutes";
 import { testRouter } from "./test/testRoutes";
 import { curateRouter } from "./routes/curateRoutes";
+import { compareRouter } from "./routes/compareRoutes";
 
 const client = new SESClient({ region: "us-east-2" });
 
@@ -287,6 +288,7 @@ app.use("/api/contentList", contentListRouter);
 app.use("/api/info", infoRouter);
 app.use("/api/copyMove", copyMoveRouter);
 app.use("/api/curate", curateRouter);
+app.use("/api/compare", compareRouter);
 
 if (
   process.env.ADD_TEST_APIS &&

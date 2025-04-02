@@ -47,3 +47,14 @@ export const updateContentDoenetMLSchema = z
     source: doenetML,
     numVariants,
   }));
+
+export const createContentRevisionScheme = z.object({
+  contentId: uuidSchema,
+  revisionName: z.string(),
+  note: z.string(),
+});
+
+export const revertToRevisionScheme = z.object({
+  contentId: uuidSchema,
+  revisionNum: z.number().int(),
+});

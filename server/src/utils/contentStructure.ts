@@ -654,7 +654,18 @@ export function returnClassificationListSelect() {
   };
 }
 
-export function compileActivityFromContent(activity: Content): ActivitySource {
+/**
+ * Compile an `activity` into the activity json used for viewing composite activities.
+ *
+ * If `useVersionId` is `true`, then compile the activity json where use doenetmlVersionId
+ * rather than the full doenetml version. Useful for generating a cid from the source
+ * that won't change if we upgrade the minor version for all documents (though it does not
+ * produce a valid source for viewing the activity).
+ */
+export function compileActivityFromContent(
+  activity: Content,
+  useVersionIds = false,
+): ActivitySource {
   switch (activity.type) {
     case "singleDoc": {
       return {
@@ -662,7 +673,9 @@ export function compileActivityFromContent(activity: Content): ActivitySource {
         type: activity.type,
         isDescription: false,
         doenetML: activity.doenetML!,
-        version: activity.doenetmlVersion.fullVersion,
+        version: useVersionIds
+          ? activity.doenetmlVersion.id.toString()
+          : activity.doenetmlVersion.fullVersion,
         numVariants: activity.numVariants,
       };
     }
@@ -673,7 +686,9 @@ export function compileActivityFromContent(activity: Content): ActivitySource {
         title: activity.name,
         numToSelect: activity.numToSelect,
         selectByVariant: activity.selectByVariant,
-        items: activity.children.map(compileActivityFromContent),
+        items: activity.children.map((child) =>
+          compileActivityFromContent(child, useVersionIds),
+        ),
       };
     }
     case "sequence": {
@@ -682,7 +697,9 @@ export function compileActivityFromContent(activity: Content): ActivitySource {
         type: activity.type,
         title: activity.name,
         shuffle: activity.shuffle,
-        items: activity.children.map(compileActivityFromContent),
+        items: activity.children.map((child) =>
+          compileActivityFromContent(child, useVersionIds),
+        ),
       };
     }
     case "folder": {

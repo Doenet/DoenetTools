@@ -291,29 +291,24 @@ export type License = {
   }[];
 };
 
-export type ActivityHistoryItem = {
-  contentId: Uint8Array;
-  prevContentId: Uint8Array;
-  prevRevisionNum: number;
+export type ActivityRemixItem = {
+  originContent: RemixContent;
+  remixContent: RemixContent;
   withLicenseCode: LicenseCode | null;
-  timestampContent: Date;
-  timestampPrevContent: Date;
-  prevName: string;
-  prevOwner: UserInfo;
-  prevCidAtRemix: string;
-  prevChanged: boolean;
+  directCopy: boolean;
 };
 
-export type ActivityRemixItem = {
-  prevContentId: Uint8Array;
-  prevRevisionNum: number;
-  withLicenseCode: LicenseCode | null;
+export type RemixContent = {
   contentId: Uint8Array;
+  revisionNum: number;
+  timestamp: Date;
   name: string;
   owner: UserInfo;
-  timestampContent: Date;
-  timestampPrevContent: Date;
-  directCopy: boolean;
+  cidAtLastUpdate: string;
+  currentCid: string;
+  changed: boolean;
+  source?: string;
+  doenetmlVersion?: string;
 };
 
 export type ClassificationCategoryTree = {

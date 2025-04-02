@@ -88,12 +88,13 @@ export async function setContentIsPublic({
   loggedInUserId: Uint8Array;
   isPublic: boolean;
 }) {
-  if (!isPublic) {
-    const content = await prisma.content.findUniqueOrThrow({
-      where: { id: contentId, ...filterEditableContent(loggedInUserId) },
-      select: { parent: { select: { isPublic: true } } },
-    });
+  // select content to make sure it is exists and is editable by loggedInUserId
+  const content = await prisma.content.findUniqueOrThrow({
+    where: { id: contentId, ...filterEditableContent(loggedInUserId) },
+    select: { parent: { select: { isPublic: true } } },
+  });
 
+  if (!isPublic) {
     if (content.parent !== null && content.parent.isPublic) {
       throw new InvalidRequestError(
         "Content has a public parent -- cannot make it private.",

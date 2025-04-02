@@ -1,30 +1,18 @@
 import { DateTime } from "luxon";
-import { ActivityHistoryItem, ActivityRemixItem } from "./types";
+import { ActivityRemixItem } from "./types";
 
-export async function processContributorHistory({
-  history,
-}: {
-  history: any[];
-}) {
-  const historyItems: ActivityHistoryItem[] = history.map((historyItem) => ({
-    ...historyItem,
-    timestampContent: DateTime.fromISO(historyItem.timestampContent),
-    timestampPrevContent: DateTime.fromISO(historyItem.timestampPrevContent),
-  }));
-
-  return historyItems;
-}
-
-export function processRemixes({
-  remixes,
-}: {
-  remixes: any[];
-}): ActivityRemixItem[] {
+export function processRemixes(remixes: any[]) {
   const items: ActivityRemixItem[] = remixes
     .map((remix) => ({
       ...remix,
-      timestampContent: DateTime.fromISO(remix.timestampContent),
-      timestampPrevContent: DateTime.fromISO(remix.timestampPrevContent),
+      originContent: {
+        ...remix.originContent,
+        timestamp: DateTime.fromISO(remix.originContent.timestamp),
+      },
+      remixContent: {
+        ...remix.remixContent,
+        timestamp: DateTime.fromISO(remix.remixContent.timestamp),
+      },
     }))
     .sort((a, b) =>
       a.directCopy === b.directCopy ? 0 : a.directCopy ? -1 : 1,

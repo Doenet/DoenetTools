@@ -3,6 +3,7 @@ import { getAvailableContentFeatures } from "../query/classification";
 import {
   getAllDoenetmlVersions,
   getContentDescription,
+  getContentHistory,
 } from "../query/activity";
 import { getAllLicenses } from "../query/share";
 import { getAssignmentViewerDataFromCode } from "../query/assign";
@@ -59,4 +60,10 @@ infoRouter.get(
   "/getRecentContent",
   requireLoggedIn,
   queryLoggedIn(getRecentContent, getRecentContentSchema),
+);
+
+infoRouter.get(
+  "/getContentHistory/:contentId",
+  requireLoggedIn,
+  queryLoggedIn(getContentHistory, contentIdSchema),
 );

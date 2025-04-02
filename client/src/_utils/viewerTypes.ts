@@ -281,10 +281,8 @@ export function isSingleDocStateNoSource(
 ): obj is SingleDocStateNoSource {
   const typedObj = obj as SingleDocStateNoSource;
   return (
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     typedObj !== null &&
     typeof typedObj === "object" &&
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     typedObj.type === "singleDoc" &&
     typeof typedObj.id === "string" &&
     (typedObj.parentId === null || typeof typedObj.parentId === "string") &&
@@ -305,10 +303,8 @@ export function isSelectStateNoSource(
 ): obj is SelectStateNoSource {
   const typedObj = obj as SelectStateNoSource;
   return (
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     typedObj !== null &&
     typeof typedObj === "object" &&
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     typedObj.type === "select" &&
     typeof typedObj.id === "string" &&
     (typedObj.parentId === null || typeof typedObj.parentId === "string") &&
@@ -332,10 +328,8 @@ export function isSequenceStateNoSource(
 ): obj is SequenceStateNoSource {
   const typedObj = obj as SequenceStateNoSource;
   return (
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     typedObj !== null &&
     typeof typedObj === "object" &&
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     typedObj.type === "sequence" &&
     typeof typedObj.id === "string" &&
     (typedObj.parentId === null || typeof typedObj.parentId === "string") &&
@@ -357,7 +351,6 @@ export function isRestrictToVariantSlice(
   const typeObj = obj as RestrictToVariantSlice;
 
   return (
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     typeObj !== null &&
     typeof typeObj === "object" &&
     typeof typeObj.idx === "number" &&
@@ -370,7 +363,6 @@ export function isExportedActivityState(
 ): obj is ExportedActivityState {
   const typedObj = obj as ExportedActivityState;
   return (
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     typedObj !== null &&
     typeof typedObj === "object" &&
     isActivityStateNoSource(typedObj.activityState) &&
@@ -385,10 +377,8 @@ export function isReportStateMessage(obj: unknown): obj is ReportStateMessage {
   const typedObj = obj as ReportStateMessage;
 
   return (
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     typedObj !== null &&
     typeof typedObj === "object" &&
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     typedObj.subject === "SPLICE.reportScoreAndState" &&
     typeof typedObj.activityId === "string" &&
     typeof typedObj.score === "number" &&
