@@ -7,6 +7,7 @@ import {
   revertToRevisionScheme,
   updateContentDoenetMLSchema,
   updateContentFeaturesSchema,
+  updateContentRevisionScheme,
   updateContentSettingsSchema,
 } from "../schemas/contentSchema";
 import {
@@ -16,6 +17,7 @@ import {
   revertToRevision,
   updateContent,
   updateContentFeatures,
+  updateContentRevision,
 } from "../query/activity";
 import { queryLoggedIn } from "../middleware/queryMiddleware";
 
@@ -51,6 +53,11 @@ updateContentRouter.post(
 updateContentRouter.post(
   "/createContentRevision",
   queryLoggedIn(createContentRevision, createContentRevisionScheme),
+);
+
+updateContentRouter.post(
+  "/updateContentRevision",
+  queryLoggedIn(updateContentRevision, updateContentRevisionScheme),
 );
 
 updateContentRouter.post(

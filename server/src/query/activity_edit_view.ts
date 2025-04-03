@@ -13,6 +13,7 @@ import { getIsAdmin } from "./curate";
 import { isEqualUUID } from "../utils/uuid";
 import { getRemixSources } from "./remix";
 import { recordContentView, recordRecentContent } from "./stats";
+import { getContentRevisions } from "./activity";
 
 /**
  * Get the data needed to edit `contentId` of `ownerId`.
@@ -56,9 +57,11 @@ export async function getActivityEditorData({
     isAdmin,
   });
 
+  const revisions = await getContentRevisions({ contentId, loggedInUserId });
+
   await recordRecentContent(loggedInUserId, "edit", contentId);
 
-  return { editableByMe: true, activity, availableFeatures };
+  return { editableByMe: true, activity, availableFeatures, revisions };
 }
 
 /**

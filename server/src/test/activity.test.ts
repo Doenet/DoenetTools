@@ -1731,7 +1731,7 @@ test("revert to revision", async () => {
   const createResult = await createContentRevision({
     contentId,
     loggedInUserId: ownerId,
-    revisionName: "Initial revision",
+    revisionName: "Initial save point",
     note: "Got to start somewhere",
   });
 
@@ -1778,8 +1778,8 @@ test("revert to revision", async () => {
     source: "Updated content",
     doenetMLVersion: currentVersion,
     revisionNum: 2,
-    revisionName: "Save point",
-    note: "Save point before reverting to revision: Initial revision",
+    revisionName: "Before changing to save point",
+    note: "Before using the save point: Initial save point",
   });
   contentSource = await getContentSource({
     contentId,
@@ -1790,8 +1790,8 @@ test("revert to revision", async () => {
     source: "Initial content",
     doenetMLVersion: currentVersion,
     revisionNum: 3,
-    revisionName: "Reverted to revision",
-    note: "Reverted to revision: Initial revision",
+    revisionName: "Changed to save point",
+    note: "Used the save point: Initial save point",
   });
 
   // revert back to updated content
@@ -1819,8 +1819,8 @@ test("revert to revision", async () => {
     source: "Initial content",
     doenetMLVersion: currentVersion,
     revisionNum: 3,
-    revisionName: "Reverted to revision",
-    note: "Reverted to revision: Initial revision",
+    revisionName: "Changed to save point",
+    note: "Used the save point: Initial save point",
   });
   contentSource = await getContentSource({
     contentId,
@@ -1831,7 +1831,7 @@ test("revert to revision", async () => {
     source: "Updated content",
     doenetMLVersion: currentVersion,
     revisionNum: 4,
-    revisionName: "Reverted to revision",
-    note: "Reverted to revision: Save point",
+    revisionName: "Changed to save point",
+    note: "Used the save point: Before changing to save point",
   });
 });

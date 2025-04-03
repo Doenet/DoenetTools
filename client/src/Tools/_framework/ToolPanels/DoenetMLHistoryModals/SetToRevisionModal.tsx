@@ -44,27 +44,37 @@ export function SetToRevisionModal({
   onClose,
   revision,
   contentId,
-  activityName,
   finalFocusRef,
   fetcher,
+  doenetmlChangeCallback,
+  immediateDoenetmlChangeCallback,
+  setRevNum,
 }: {
   isOpen: boolean;
   onClose: () => void;
   revision: ContentRevision;
   contentId: string;
-  activityName: string;
   finalFocusRef?: RefObject<HTMLElement>;
   fetcher: FetcherWithComponents<any>;
+  doenetmlChangeCallback: () => Promise<void>;
+  immediateDoenetmlChangeCallback: (arg: string) => void;
+  setRevNum: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [updated, setUpdated] = useState(false);
   const [encounteredError, setEncounteredError] = useState(false);
   const [statusStyleIdx, setStatusStyleIdx] = useState(0);
+
+  const [newRevNum, setNewRevNum] = useState<number | null>(null);
 
   useEffect(() => {
     if (typeof fetcher.data === "object" && fetcher.data !== null) {
       if (fetcher.data.revertedRevision === true) {
         setStatusStyleIdx((x) => x + 1);
         setUpdated(true);
+        const revertedRevision: ContentRevision & { newRevisionNum: number } =
+          fetcher.data.revision;
+        immediateDoenetmlChangeCallback(revertedRevision.source);
+        setNewRevNum(revertedRevision.newRevisionNum);
       } else if (fetcher.data.revertedRevision === false) {
         setEncounteredError(true);
       }
@@ -79,20 +89,17 @@ export function SetToRevisionModal({
   let title: string = "";
 
   if (updated) {
-    title = "Successfully reverted";
+    title = "Successfully change to save point";
   } else {
-    title = `Revert current activity to revision: ${revision.revisionName}`;
+    title = `Use the save point: ${revision.revisionName}`;
   }
 
   const revisionInfo = !updated && (
     <>
-      <Text>
-        Revert the current activity, <em>{activityName}</em>, to the following
-        revision:
-      </Text>
+      <Text>Use the following save point?</Text>
       <List>
         <ListItem marginTop="10px">
-          <label>Revision name:</label> {revision.revisionName}
+          <label>Save point name:</label> {revision.revisionName}
         </ListItem>
         <ListItem marginTop="5px">
           <label>Note:</label> {revision.note}
@@ -142,8 +149,8 @@ export function SetToRevisionModal({
                 />
               ) : null}
               {updated
-                ? `Successfully reverted to revision: ${revision.revisionName}`
-                : `Error occurred attempting to revert to revision`}
+                ? `Successfully used the save point: ${revision.revisionName}`
+                : `Error occurred attempting to use the save point`}
             </Box>
           ) : null}
         </ModalBody>
@@ -154,6 +161,7 @@ export function SetToRevisionModal({
               marginRight="4px"
               onClick={async () => {
                 // make sure any changes are saved
+                await doenetmlChangeCallback();
                 fetcher.submit(
                   {
                     _action: "revert to revision",
@@ -164,12 +172,15 @@ export function SetToRevisionModal({
                 );
               }}
             >
-              Revert to revision
+              Use save point
             </Button>
           )}
           <Button
             data-test="Cancel Button"
             onClick={() => {
+              if (newRevNum !== null) {
+                setRevNum(newRevNum);
+              }
               onClose();
             }}
           >

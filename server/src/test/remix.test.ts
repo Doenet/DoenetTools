@@ -849,8 +849,8 @@ describe("Remix tests", () => {
         },
         {
           revisionNum: 1,
-          // Note: both activities 1 and 2 had manual revisions "Original revision" when created from remixing, which weren't overwritten
-          revisionName: "Original revision",
+          // Note: both activities 1 and 2 had manual revisions "Initial save point" when created from remixing, which weren't overwritten
+          revisionName: "Initial save point",
           source: "Initial content",
         },
       ]);
@@ -1019,8 +1019,8 @@ describe("Remix tests", () => {
         {
           revisionNum: 1,
           // Note: activity 0 did not have any manual revisions before the update, so its revision is named from the update.
-          // Activity 1, however, had a manual revision "Original revision", when it was created by remixing, which doesn't get overwritten.
-          revisionName: idx === 0 ? "Before update" : "Original revision",
+          // Activity 1, however, had a manual revision "Initial save point", when it was created by remixing, which doesn't get overwritten.
+          revisionName: idx === 0 ? "Before update" : "Initial save point",
           source: "Initial content",
         },
       ]);

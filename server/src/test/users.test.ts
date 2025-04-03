@@ -87,7 +87,7 @@ test("upgrade anonymous user", async () => {
   expect(upgraded.email).eq(realEmail);
 });
 
-test("turn developer mode on and off", async () => {
+test("turn author mode on and off", async () => {
   const { userId } = await createTestUser();
 
   let userInfo = await getUserInfo({ loggedInUserId: userId });
