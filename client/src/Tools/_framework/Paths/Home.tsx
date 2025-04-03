@@ -180,7 +180,7 @@ export function Home() {
   return (
     <>
       {infoDrawer}
-      <Center w="100%" bg={"#fefa78"} pl="10px" pr="10px">
+      {/* <Center w="100%" bg={"#fefa78"} pl="10px" pr="10px">
         <Text
           fontSize={["18px", "18px", "18px", "24px"]}
           // fontSize="60px"
@@ -193,7 +193,7 @@ export function Home() {
             More Info
           </Link>
         </Text>
-      </Center>
+      </Center> */}
       <Flex
         alignItems="center"
         justifyContent="center"
@@ -233,7 +233,7 @@ export function Home() {
           </SimpleGrid>
         </Hide>
       </Flex>
-      <Center w="100%" bg={grayColor} pl="10px" pr="10px">
+      {/* <Center w="100%" bg={grayColor} pl="10px" pr="10px">
         <VStack maxWidth="900px" w="100%" spacing={4} marginBottom={"30px"}>
           <HStack>
             <Box
@@ -348,7 +348,7 @@ export function Home() {
             .
           </Text>
         </VStack>
-      </Center>
+      </Center> */}
 
       <Center w="100%" bg={grayColor} pl="10px" pr="10px">
         <VStack
