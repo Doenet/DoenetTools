@@ -28,7 +28,6 @@ export const updateContentSettingsSchema = z.object({
   paginate: z.boolean().optional(),
   activityLevelAttempts: z.boolean().optional(),
   itemLevelAttempts: z.boolean().optional(),
-  imagePath: z.string().optional(),
 });
 
 export const updateContentFeaturesSchema = z.object({

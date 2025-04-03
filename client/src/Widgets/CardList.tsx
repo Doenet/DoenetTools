@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { Text, Icon, Box, Flex, Wrap } from "@chakra-ui/react";
+import { Text, Icon, Box, Flex } from "@chakra-ui/react";
 import Card, { CardContent } from "./Card";
 import { MdInfoOutline } from "react-icons/md";
 import { ContentDescription } from "../_utils/types";
@@ -12,7 +12,6 @@ export default function CardList({
   showActivityFeatures = false,
   showAddButton = false,
   emptyMessage,
-  listView,
   selectedCards,
   setSelectedCards,
   disableSelectFor,
@@ -34,7 +33,6 @@ export default function CardList({
   showActivityFeatures?: boolean;
   showAddButton?: boolean;
   emptyMessage: string;
-  listView: boolean;
   selectedCards?: ContentDescription[];
   setSelectedCards?: React.Dispatch<React.SetStateAction<ContentDescription[]>>;
   disableSelectFor?: string[];
@@ -56,6 +54,7 @@ export default function CardList({
         width="100%"
         backgroundColor="transparent"
         textAlign="center"
+        borderTop="2px solid gray"
       >
         <Icon fontSize="48pt" as={MdInfoOutline} />
         <Text fontSize="36pt">{emptyMessage}</Text>
@@ -65,7 +64,6 @@ export default function CardList({
 
   // let headerRow: ReactElement | null = null;
 
-  // if (listView) {
   //   headerRow = (
   //     <Flex>
   //       <Box width="100%"></Box>
@@ -82,7 +80,6 @@ export default function CardList({
   //       <Box width="100%"></Box>
   //     </Flex>
   //   );
-  // }
 
   const selectCallback = setSelectedCards
     ? function ({
@@ -138,7 +135,6 @@ export default function CardList({
           showPublicStatus={showPublicStatus}
           showActivityFeatures={showActivityFeatures}
           showAddButton={showAddButton}
-          listView={listView}
           indentLevel={cardContent.indentLevel}
           selectedCards={
             selectedCardsFiltered
@@ -159,27 +155,17 @@ export default function CardList({
     }
   });
 
-  if (listView) {
-    cards = (
-      <Box width="100%" borderTop={listView ? "2px solid gray" : "none"}>
-        {cards}
-      </Box>
-    );
-  } else {
-    cards = (
-      <Wrap p="10px" overflow="visible">
-        {cards}
-      </Wrap>
-    );
-  }
-
-  const flexDirection: "column" | "row" = listView ? "column" : "row";
+  cards = (
+    <Box width="100%" borderTop={"2px solid gray"}>
+      {cards}
+    </Box>
+  );
 
   const panel = (
     <Flex
       paddingLeft={[".1em", "1em"]}
       paddingRight={[".1em", "1em"]}
-      flexDirection={flexDirection}
+      flexDirection="column"
       justifyContent="center"
       alignItems="center"
       alignContent="center"

@@ -111,16 +111,12 @@ export async function createContent({
     }
   }
 
-  const imagePath =
-    contentType === "folder" ? "/folder_default.jpg" : "/activity_default.jpg";
-
   const content = await prisma.content.create({
     data: {
       ownerId,
       type: contentType,
       parentId,
       name,
-      imagePath,
       isPublic,
       licenseCode,
       sortIndex,
@@ -218,14 +214,14 @@ export async function getDescendantIds(contentId: Uint8Array) {
 /**
  * Update the content with `contentId`, changing any of the parameters that are given:
  * `name`, `source`, `doenetmlVersionId`, `numVariants`,
- * `imagePath`, `shuffle`, `numToSelect`, `selectByVariant`,
+ * `shuffle`, `numToSelect`, `selectByVariant`,
  * `paginate`, `activityLevelAttempts`, and/or `itemLevelAttempts`.
  *
  * For the change to succeed, either
  * - the content must be owned by `loggedInUserId`, or
  * - the content must be in the library and `loggedInUserId` must be an admin.
  * In addition, if the content is assigned, then the change will succeed
- * only if just modifying `name`, `paginate`, and/or `imagePath`.
+ * only if just modifying `name`, and/or `paginate`.
  */
 export async function updateContent({
   contentId,
@@ -233,7 +229,6 @@ export async function updateContent({
   source,
   doenetmlVersionId,
   numVariants,
-  imagePath,
   shuffle,
   numToSelect,
   selectByVariant,
@@ -245,7 +240,6 @@ export async function updateContent({
   source?: string;
   doenetmlVersionId?: number;
   numVariants?: number;
-  imagePath?: string;
   shuffle?: boolean;
   numToSelect?: number;
   selectByVariant?: boolean;
@@ -258,7 +252,6 @@ export async function updateContent({
       source,
       doenetmlVersionId,
       numVariants,
-      imagePath,
       shuffle,
       numToSelect,
       selectByVariant,
@@ -288,7 +281,7 @@ export async function updateContent({
   );
 
   if (isAssigned) {
-    // If assigned, the only items you can change are name, paginate, or imagePath.
+    // If assigned, the only items you can change are name or paginate.
     // If attempting to change any of the others, throw an error
     if (
       [
@@ -296,7 +289,6 @@ export async function updateContent({
         source,
         doenetmlVersionId,
         numVariants,
-        // imagePath,
         shuffle,
         numToSelect,
         selectByVariant,
@@ -314,7 +306,6 @@ export async function updateContent({
       source,
       doenetmlVersionId,
       numVariants,
-      imagePath,
       shuffle,
       numToSelect,
       selectByVariant,

@@ -125,7 +125,6 @@ export type ContentBase = {
   ownerId: string;
   owner?: UserInfo;
   name: string;
-  imagePath: string | null;
   isPublic: boolean;
   isShared: boolean;
   sharedWith: UserInfo[];

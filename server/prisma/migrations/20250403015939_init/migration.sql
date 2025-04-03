@@ -21,7 +21,6 @@ CREATE TABLE `content` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `sortIndex` BIGINT NOT NULL,
     `licenseCode` VARCHAR(10) NULL DEFAULT 'CCDUAL',
-    `imagePath` VARCHAR(191) NULL,
     `lastEdited` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `source` MEDIUMTEXT NULL,
     `doenetmlVersionId` INTEGER NULL,
@@ -241,7 +240,6 @@ CREATE TABLE `users` (
     `isAdmin` BOOLEAN NOT NULL DEFAULT false,
     `isLibrary` BOOLEAN NOT NULL DEFAULT false,
     `isAnonymous` BOOLEAN NOT NULL DEFAULT false,
-    `cardView` BOOLEAN NOT NULL DEFAULT false,
 
     UNIQUE INDEX `users_email_key`(`email`),
     FULLTEXT INDEX `users_firstNames_lastNames_idx`(`firstNames`, `lastNames`),

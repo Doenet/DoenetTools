@@ -1,7 +1,5 @@
 import axios from "axios";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { Alert, AlertQueue } from "./AlertQueue";
+import React, { useEffect, useRef, useState } from "react";
 import { FetcherWithComponents, Form } from "react-router";
 import {
   Box,
@@ -10,8 +8,6 @@ import {
   Icon,
   VStack,
   Text,
-  Card,
-  Image,
   Input,
   FormErrorMessage,
   Select,
@@ -19,8 +15,6 @@ import {
   Heading,
   Tooltip,
 } from "@chakra-ui/react";
-import { FaFileImage } from "react-icons/fa";
-import { readAndCompressImage } from "browser-image-resizer";
 import {
   ContentFeature,
   Content,
@@ -45,7 +39,6 @@ export async function generalContentActions({ formObj }: { [k: string]: any }) {
     }
     await axios.post("/api/updateContent/updateContentSettings", {
       name: formObj.name,
-      imagePath: formObj.imagePath,
       contentId: formObj.contentId,
       doenetmlVersionId: formObj.doenetmlVersionId
         ? Number(formObj.doenetmlVersionId)
@@ -101,11 +94,7 @@ export function GeneralContentControls({
   availableFeatures: ContentFeature[];
   highlightRename?: boolean;
 }) {
-  const { name, imagePath: dataImagePath } = contentData;
-
-  const numberOfFilesUploading = useRef(0);
-  const [imagePath, setImagePath] = useState(dataImagePath);
-  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const { name } = contentData;
 
   // TODO: if saveDataToServer is unsuccessful, then doenetmlVersion from the server
   // will not match doenetmlVersion on the client and the client will not be notified.
@@ -199,86 +188,6 @@ export function GeneralContentControls({
     );
   }
 
-  const onDrop = useCallback(
-    async (files: File[]) => {
-      let success = true;
-      const file = files[0];
-      if (files.length > 1) {
-        success = false;
-        //Should we just grab the first one and ignore the rest
-        console.log("Only one file upload allowed!");
-      }
-
-      //Only upload one batch at a time
-      if (numberOfFilesUploading.current > 0) {
-        console.log(
-          "Already uploading files.  Please wait before sending more.",
-        );
-        success = false;
-      }
-
-      //If any settings aren't right then abort
-      if (!success) {
-        return;
-      }
-
-      numberOfFilesUploading.current = 1;
-
-      const image = await readAndCompressImage(file, {
-        quality: 0.9,
-        maxWidth: 350,
-        maxHeight: 234,
-        debug: true,
-      });
-
-      //Upload files
-      const reader = new FileReader();
-      reader.readAsDataURL(image); //This one could be used with image source to preview image
-
-      reader.onabort = () => {};
-      reader.onerror = () => {};
-      reader.onload = () => {
-        const uploadData = new FormData();
-        // uploadData.append('file',file);
-        uploadData.append("file", image);
-        uploadData.append("contentId", contentData.contentId.toString());
-
-        axios.post("/api/activityThumbnailUpload", uploadData).then((resp) => {
-          const { data } = resp;
-
-          //uploads are finished clear it out
-          numberOfFilesUploading.current = 0;
-          const { success, cid, msg } = data;
-          if (success) {
-            setImagePath(`/media/${cid}.jpg`);
-            //Refresh images in activities
-            fetcher.submit(
-              {
-                _action: "noop",
-              },
-              { method: "post" },
-            );
-            setAlerts([
-              {
-                type: "success",
-                id: cid,
-                title: "Activity thumbnail updated!",
-                description: "",
-              },
-            ]);
-          } else {
-            setAlerts([
-              { type: "error", id: cid, title: msg, description: "" },
-            ]);
-          }
-        });
-      };
-    },
-    [contentData.contentId],
-  );
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
   function saveNumToSelect(text: string) {
     let num = Math.round(Number(text));
     if (!Number.isInteger(num) && num >= 1) {
@@ -297,53 +206,7 @@ export function GeneralContentControls({
 
   return (
     <>
-      <AlertQueue alerts={alerts} />
       <Form method="post">
-        {contentData.type === "singleDoc" ? (
-          <FormControl>
-            <FormLabel>Thumbnail</FormLabel>
-            <Box>
-              {isDragActive ? (
-                <VStack
-                  spacing={4}
-                  p="24px"
-                  border="2px dashed #949494"
-                  borderRadius="lg"
-                  width="90%"
-                  {...getRootProps()}
-                >
-                  <input {...getInputProps()} />
-
-                  <Icon fontSize="24pt" color="#949494" as={FaFileImage} />
-                  <Text color="#949494" fontSize="24pt">
-                    Drop Image Here
-                  </Text>
-                </VStack>
-              ) : (
-                <Card
-                  width="180px"
-                  height="120px"
-                  p="0"
-                  m="0"
-                  cursor="pointer"
-                  {...getRootProps()}
-                >
-                  <input {...getInputProps()} />
-
-                  <Image
-                    height="120px"
-                    maxWidth="180px"
-                    src={imagePath ?? ""}
-                    alt="Content Card Image"
-                    borderTopRadius="md"
-                    objectFit="cover"
-                  />
-                </Card>
-              )}
-            </Box>
-          </FormControl>
-        ) : null}
-
         <FormControl isInvalid={nameIsInvalid}>
           <FormLabel mt="16px">Name</FormLabel>
 
@@ -372,7 +235,6 @@ export function GeneralContentControls({
           </FormErrorMessage>
         </FormControl>
 
-        <input type="hidden" name="imagePath" value={imagePath ?? undefined} />
         <input type="hidden" name="_action" value="update general" />
         <input type="hidden" name="contentId" value={contentData.contentId} />
       </Form>

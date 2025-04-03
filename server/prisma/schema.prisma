@@ -27,7 +27,6 @@ model content {
   createdAt             DateTime                 @default(now())
   sortIndex             BigInt
   licenseCode           String?                  @default("CCDUAL") @db.VarChar(10)
-  imagePath             String?
   lastEdited            DateTime                 @default(now())
   // Specific to document type
   source                String?                  @db.MediumText
@@ -291,7 +290,6 @@ model users {
   isAdmin            Boolean              @default(false)
   isLibrary          Boolean              @default(false)
   isAnonymous        Boolean              @default(false)
-  cardView           Boolean              @default(false)
   content            content[]
   contentState       contentState[]
   submittedResponses submittedResponses[]

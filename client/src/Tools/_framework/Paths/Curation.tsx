@@ -46,10 +46,6 @@ import {
   License,
 } from "./../../../_utils/types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
-import {
-  ToggleViewButtonGroup,
-  toggleViewButtonGroupActions,
-} from "../ToolPanels/ToggleViewButtonGroup";
 import { getAllowedParentTypes } from "../../../_utils/activity";
 import {
   CreateLocalContentModal,
@@ -74,11 +70,6 @@ export async function action({ request }) {
   const resultMC = await moveCopyContentActions({ formObj });
   if (resultMC) {
     return resultMC;
-  }
-
-  const resultTLV = await toggleViewButtonGroupActions({ formObj });
-  if (resultTLV) {
-    return resultTLV;
   }
 
   const resultCF = await createLocalContentModalActions({ formObj });
@@ -130,9 +121,6 @@ export async function loader({ params, request }) {
     data = results.data;
   }
 
-  const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
-  const listViewPref = !prefData.data.cardView;
-
   return {
     folderId: params.parentId ?? null,
     content: data.content,
@@ -141,7 +129,6 @@ export async function loader({ params, request }) {
     availableFeatures: data.availableFeatures,
     userId: params.userId,
     parent: data.parent,
-    listViewPref,
     query: q,
   };
 }
@@ -155,7 +142,6 @@ export function Curation() {
     availableFeatures,
     userId,
     parent,
-    listViewPref,
     query,
   } = useLoaderData() as {
     folderId: string | null;
@@ -165,7 +151,6 @@ export function Curation() {
     availableFeatures: ContentFeature[];
     userId: string;
     parent: Content | null;
-    listViewPref: boolean;
     query: string | null;
   };
 
@@ -217,8 +202,6 @@ export function Curation() {
   }, [content]);
 
   const navigate = useNavigate();
-
-  const [listView, setListView] = useState(listViewPref);
 
   const [moveToParentData, setMoveToParentData] = useState<{
     contentId: string;
@@ -308,7 +291,7 @@ export function Curation() {
               );
             }}
           >
-            {listView ? "Move Up" : "Move Left"}
+            Move Up
           </MenuItem>
         ) : null}
         {position < numCards - 1 && !haveQuery ? (
@@ -326,7 +309,7 @@ export function Curation() {
               );
             }}
           >
-            {listView ? "Move Down" : "Move Right"}
+            Move Down
           </MenuItem>
         ) : null}
         {haveQuery ? null : (
@@ -497,10 +480,39 @@ export function Curation() {
       width="100%"
       textAlign="center"
     >
+      <Flex
+        width="100%"
+        paddingRight="0.5em"
+        paddingLeft="1em"
+        alignItems="middle"
+      >
+        <Box marginTop="5px" height="24px">
+          {parent && !haveQuery ? (
+            <Link
+              to={`/curation${parent.parent ? "/" + parent.parent.contentId : ""}`}
+              style={{
+                color: "var(--mainBlue)",
+              }}
+            >
+              <Text
+                noOfLines={1}
+                maxWidth={{ sm: "200px", md: "400px" }}
+                textAlign="left"
+              >
+                <Show above="sm">
+                  &lt; Back to {parent.parent ? parent.parent.name : `Curation`}
+                </Show>
+                <Hide above="sm">&lt; Back</Hide>
+              </Text>
+            </Link>
+          ) : null}
+        </Box>
+      </Flex>
+
       <Heading
         as="h2"
         size="lg"
-        margin=".5em"
+        marginBottom=".5em"
         noOfLines={1}
         maxHeight="1.5em"
         lineHeight="normal"
@@ -572,38 +584,6 @@ export function Curation() {
             </Button>
           </HStack>
         </Flex>
-
-        <Flex
-          width="100%"
-          paddingRight="0.5em"
-          paddingLeft="1em"
-          alignItems="middle"
-        >
-          {parent && !haveQuery ? (
-            <Box>
-              <Link
-                to={`/curation${parent.parent ? "/" + parent.parent.contentId : ""}`}
-                style={{
-                  color: "var(--mainBlue)",
-                }}
-              >
-                <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
-                  <Show above="sm">
-                    &lt; Back to{" "}
-                    {parent.parent ? parent.parent.name : `Curation`}
-                  </Show>
-                  <Hide above="sm">&lt; Back</Hide>
-                </Text>
-              </Link>
-            </Box>
-          ) : null}
-          <Spacer />
-          <ToggleViewButtonGroup
-            listView={listView}
-            setListView={setListView}
-            fetcher={fetcher}
-          />
-        </Flex>
       </VStack>
     </Box>
   );
@@ -672,7 +652,6 @@ export function Curation() {
       showPublicStatus={true}
       showActivityFeatures={true}
       emptyMessage={emptyMessage}
-      listView={listView}
       content={cardContent}
     />
   );
@@ -693,9 +672,7 @@ export function Curation() {
         padding="0 10px"
         margin="0px"
         width="100%"
-        background={
-          listView && content.length > 0 ? "white" : "var(--lightBlue)"
-        }
+        background={"white"}
         minHeight="calc(100vh - 189px)"
         direction="column"
       >

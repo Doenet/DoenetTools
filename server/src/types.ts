@@ -127,7 +127,6 @@ export type ContentBase = {
   ownerId: Uint8Array;
   owner?: UserInfo;
   name: string;
-  imagePath: string | null;
   isPublic: boolean;
   isShared: boolean;
   sharedWith: UserInfo[];
@@ -219,7 +218,6 @@ export async function createContentInfo({
     contentId: contentId,
     name: "",
     ownerId: ownerId,
-    imagePath: null,
     isPublic: false,
     isShared: false,
     sharedWith: [],
