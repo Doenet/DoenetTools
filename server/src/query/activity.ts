@@ -188,7 +188,7 @@ export async function deleteContent({
  * Return the content ids of the descendants on `contentId`. (No permission checks are performed.)
  *
  * Returns a promise resulting to an array of content ids,
- * or an empty array is `contentId` doesn't exist or isn't owned by `loggedInUserId`.
+ * or an empty array if `contentId` doesn't exist or isn't owned by `loggedInUserId`.
  *
  * One use is to avoid deadlocks from recursive update queries that update all the descendants.
  * Instead, one can get all the ids with this function and then run an update query using the ids.
