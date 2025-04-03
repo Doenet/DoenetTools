@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
-import { redirect, useLoaderData } from "react-router";
+import { redirect, useLoaderData, useOutletContext } from "react-router";
 
 import {
   Box,
@@ -65,6 +65,11 @@ import {
 } from "../../../_utils/activity";
 import { ActivitySource } from "../../../_utils/viewerTypes";
 import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
+import { SiteContext } from "./SiteHeader";
+import {
+  DeveloperModeModal,
+  developerModeModalActions,
+} from "../ToolPanels/DeveloperModeModal";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -104,6 +109,11 @@ export async function action({ params, request }) {
   const resultNAE = await compoundActivityEditorActions({ formObj });
   if (resultNAE) {
     return resultNAE;
+  }
+
+  const resultDM = await developerModeModalActions({ formObj });
+  if (resultDM) {
+    return resultDM;
   }
 
   return null;
@@ -289,6 +299,14 @@ export function ActivityEditor() {
     onClose: copyDialogOnClose,
   } = useDisclosure();
 
+  const {
+    isOpen: developerModePromptIsOpen,
+    onOpen: developerModePromptOnOpen,
+    onClose: developerModePromptOnClose,
+  } = useDisclosure();
+
+  const { user } = useOutletContext<SiteContext>();
+
   const assignmentInfo = activityData.assignmentInfo;
   const assignmentStatus = assignmentInfo?.assignmentStatus ?? "Unassigned";
   const isSubActivity = (activityData.parent?.type ?? "folder") !== "folder";
@@ -297,7 +315,9 @@ export function ActivityEditor() {
   const readOnlyRef = useRef(readOnly);
   readOnlyRef.current = readOnly;
 
-  const [mode, setMode] = useState<"Edit" | "View">("Edit");
+  const [mode, setMode] = useState<"Edit" | "View">(
+    user?.isDeveloper || data.type !== "singleDoc" ? "Edit" : "View",
+  );
 
   const isLibraryActivity = Boolean(activityData.libraryActivityInfo);
 
@@ -312,14 +332,29 @@ export function ActivityEditor() {
   const fetcher = useFetcher();
   const navigate = useNavigate();
 
-  const [editLabel, editTooltip, editIcon] =
-    assignmentStatus === "Unassigned"
-      ? ["Edit", "Edit activity", <MdModeEditOutline size={20} />]
-      : [
-          "See Source",
-          "See read-only view of source",
-          <MdOutlineEditOff size={20} />,
-        ];
+  let editLabel: string;
+  let editTooltip: string;
+  let editIcon: ReactElement;
+
+  if (assignmentStatus === "Unassigned") {
+    editIcon = <MdModeEditOutline size={20} />;
+    if (user?.isDeveloper) {
+      editLabel = "Edit";
+      editTooltip = "Edit activity";
+    } else {
+      editLabel = "Develop";
+      editTooltip = "Turn on developer mode to edit";
+    }
+  } else {
+    editIcon = <MdOutlineEditOff size={20} />;
+    if (user?.isDeveloper) {
+      editLabel = "See code";
+      editTooltip = "See read-only view of code";
+    } else {
+      editLabel = "Developer view";
+      editTooltip = "Turn on developer mode to see read-only view of code";
+    }
+  }
 
   const [settingsContentId, setSettingsContentId] = useState<string | null>(
     null,
@@ -438,6 +473,21 @@ export function ActivityEditor() {
     />
   );
 
+  const developerModeModal = (
+    <DeveloperModeModal
+      isOpen={developerModePromptIsOpen}
+      onClose={developerModePromptOnClose}
+      desiredAction="edit"
+      assignmentStatus={assignmentStatus}
+      user={user!}
+      proceedCallback={() => {
+        setMode("Edit");
+      }}
+      allowNo={true}
+      fetcher={fetcher}
+    />
+  );
+
   const contentTypeName = contentTypeToName[data.type];
 
   const { iconImage, iconColor } = getIconInfo(data.type);
@@ -467,6 +517,7 @@ export function ActivityEditor() {
       {shareDrawer}
       {assignmentDrawers}
       {copyContentModal}
+      {developerModeModal}
 
       <Grid
         background="doenet.lightBlue"
@@ -540,7 +591,13 @@ export function ActivityEditor() {
                       pr={{ base: "0px", lg: "10px" }}
                       leftIcon={editIcon}
                       onClick={() => {
-                        setMode("Edit");
+                        if (mode !== "Edit") {
+                          if (user?.isDeveloper) {
+                            setMode("Edit");
+                          } else {
+                            developerModePromptOnOpen();
+                          }
+                        }
                       }}
                     >
                       <Show above="lg">{editLabel}</Show>

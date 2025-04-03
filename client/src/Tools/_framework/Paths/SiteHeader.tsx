@@ -20,10 +20,12 @@ import {
   SkipNavLink,
   SkipNavContent,
   Hide,
+  Checkbox,
+  Box,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsDiscord } from "react-icons/bs";
-import { Outlet, useLoaderData } from "react-router";
+import { Outlet, useFetcher, useLoaderData } from "react-router";
 import { NavLink } from "react-router";
 import RouterLogo from "../RouterLogo";
 import { ExternalLinkIcon, HamburgerIcon } from "@chakra-ui/icons";
@@ -39,6 +41,7 @@ export type User =
       lastNames: string;
       isAnonymous: boolean;
       isAdmin: boolean;
+      isDeveloper: boolean;
     }
   | undefined;
 
@@ -49,6 +52,19 @@ export type SiteContext = {
   addTo: ContentDescription | null;
   setAddTo: (arg: ContentDescription | null) => void;
 };
+
+export async function action({ request }) {
+  const formData = await request.formData();
+  const formObj = Object.fromEntries(formData);
+
+  if (formObj?._action == "set is developer") {
+    await axios.post("/api/user/setIsDeveloper", {
+      isDeveloper: formObj.isDeveloper === "true",
+    });
+  }
+
+  return null;
+}
 
 export async function loader() {
   const {
@@ -149,6 +165,8 @@ export function SiteHeader() {
     { base: false, md: true },
     { ssr: false },
   );
+
+  const fetcher = useFetcher();
 
   return (
     <>
@@ -286,6 +304,31 @@ export function SiteHeader() {
                           </Text>
                           {user.isAnonymous ? (
                             <Link href={`/signIn`}>Sign in to save work</Link>
+                          ) : null}
+                          {!user.isAnonymous ? (
+                            <Box
+                              height="30px"
+                              alignContent="center"
+                              marginTop="20px"
+                            >
+                              <label>
+                                Developer mode:{" "}
+                                <Checkbox
+                                  marginTop="3px"
+                                  isChecked={user.isDeveloper}
+                                  onChange={() => {
+                                    fetcher.submit(
+                                      {
+                                        _action: "set is developer",
+                                        userId: user.userId,
+                                        isDeveloper: !user.isDeveloper,
+                                      },
+                                      { method: "post" },
+                                    );
+                                  }}
+                                />
+                              </label>
+                            </Box>
                           ) : null}
                         </VStack>
                         <MenuItem as={Link} href="/changeName">

@@ -76,6 +76,10 @@ import {
 } from "../ToolPanels/CreateContentMenu";
 import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
 import { SiteContext } from "./SiteHeader";
+import {
+  DeveloperModeModal,
+  developerModeModalActions,
+} from "../ToolPanels/DeveloperModeModal";
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -118,6 +122,11 @@ export async function action({ request, params }) {
   const resultCCM = await createContentMenuActions({ formObj });
   if (resultCCM) {
     return resultCCM;
+  }
+
+  const resultDMM = await developerModeModalActions({ formObj });
+  if (resultDMM) {
+    return resultDMM;
   }
 
   if (formObj?._action == "Add Activity") {
@@ -236,7 +245,7 @@ export function Activities() {
     onClose: deleteContentOnClose,
   } = useDisclosure();
 
-  const { addTo, setAddTo } = useOutletContext<SiteContext>();
+  const { addTo, setAddTo, user } = useOutletContext<SiteContext>();
 
   // refs to the menu button of each content card,
   // which should be given focus when drawers are closed
@@ -613,6 +622,29 @@ export function Activities() {
       />
     ) : null;
 
+  const {
+    isOpen: developerModePromptIsOpen,
+    onOpen: developerModePromptOnOpen,
+    onClose: developerModePromptOnClose,
+  } = useDisclosure();
+
+  const developerModeModal = (
+    <DeveloperModeModal
+      isOpen={developerModePromptIsOpen}
+      onClose={developerModePromptOnClose}
+      desiredAction="create doc"
+      user={user!}
+      proceedCallback={() => {
+        setHaveContentSpinner(true);
+        fetcher.submit(
+          { _action: "Add Activity", type: "singleDoc" },
+          { method: "post" },
+        );
+      }}
+      fetcher={fetcher}
+    />
+  );
+
   const heading = (
     <Box
       backgroundColor="#fff"
@@ -800,18 +832,6 @@ export function Activities() {
               </MenuButton>
               <MenuList>
                 <MenuItem
-                  data-test="Add Document Button"
-                  onClick={async () => {
-                    setHaveContentSpinner(true);
-                    fetcher.submit(
-                      { _action: "Add Activity", type: "singleDoc" },
-                      { method: "post" },
-                    );
-                  }}
-                >
-                  Document
-                </MenuItem>
-                <MenuItem
                   data-test="Add Problem Set Button"
                   onClick={async () => {
                     setHaveContentSpinner(true);
@@ -842,6 +862,22 @@ export function Activities() {
                   }}
                 >
                   Question Bank
+                </MenuItem>
+                <MenuItem
+                  data-test="Add Document Button"
+                  onClick={async () => {
+                    if (user?.isDeveloper) {
+                      setHaveContentSpinner(true);
+                      fetcher.submit(
+                        { _action: "Add Activity", type: "singleDoc" },
+                        { method: "post" },
+                      );
+                    } else {
+                      developerModePromptOnOpen();
+                    }
+                  }}
+                >
+                  Document {!user?.isDeveloper && <>(Code)</>}
                 </MenuItem>
               </MenuList>
             </Menu>
@@ -962,6 +998,7 @@ export function Activities() {
       {createFolderModal}
       {deleteModal}
       {copyContentModal}
+      {developerModeModal}
 
       {heading}
 

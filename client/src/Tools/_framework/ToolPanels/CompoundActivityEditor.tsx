@@ -55,6 +55,10 @@ import {
   CreateLocalContentModal,
   createLocalContentModalActions,
 } from "./CreateLocalContentModal";
+import {
+  DeveloperModeModal,
+  developerModeModalActions,
+} from "./DeveloperModeModal";
 
 export async function compoundActivityEditorActions({
   formObj,
@@ -84,6 +88,11 @@ export async function compoundActivityEditorActions({
   const resultCF = await createLocalContentModalActions({ formObj });
   if (resultCF) {
     return resultCF;
+  }
+
+  const resultDMM = await developerModeModalActions({ formObj });
+  if (resultDMM) {
+    return resultDMM;
   }
 
   if (formObj?._action == "Add Document") {
@@ -278,6 +287,34 @@ export function CompoundActivityEditor({
       parentId={activity.contentId}
       fetcher={fetcher}
       finalFocusRef={finalFocusRef}
+    />
+  );
+
+  const {
+    isOpen: developerModePromptIsOpen,
+    onOpen: developerModePromptOnOpen,
+    onClose: developerModePromptOnClose,
+  } = useDisclosure();
+
+  const developerModeModal = (
+    <DeveloperModeModal
+      isOpen={developerModePromptIsOpen}
+      onClose={developerModePromptOnClose}
+      desiredAction="create doc"
+      user={user!}
+      proceedCallback={() => {
+        setCreatingDoc(true);
+        setHaveContentSpinner(true);
+        fetcher.submit(
+          {
+            _action: "Add Document",
+            type: "singleDoc",
+            parentId: activity.contentId,
+          },
+          { method: "post" },
+        );
+      }}
+      fetcher={fetcher}
     />
   );
 
@@ -680,7 +717,6 @@ export function CompoundActivityEditor({
       showActivityFeatures={true}
       showAddButton={true}
       emptyMessage={`${contentTypeName} is empty. Add or move documents ${activity.type === "sequence" ? "or question banks " : ""}here to begin.`}
-      listView={true}
       content={cardContent}
       selectedCards={user ? selectedCards : undefined}
       setSelectedCards={setSelectedCards}
@@ -789,33 +825,6 @@ export function CompoundActivityEditor({
         </MenuButton>
         <MenuList>
           <MenuItem
-            data-test="Add Document Button"
-            onClick={() => {
-              setCreatingDoc(true);
-              setHaveContentSpinner(true);
-              fetcher.submit(
-                {
-                  _action: "Add Document",
-                  type: "singleDoc",
-                  parentId: activity.contentId,
-                },
-                { method: "post" },
-              );
-            }}
-          >
-            Blank Document
-          </MenuItem>
-          {activity.type === "sequence" ? (
-            <MenuItem
-              data-test="Add Question Bank Button"
-              onClick={() => {
-                createQuestionBankOnOpen();
-              }}
-            >
-              Empty Question Bank
-            </MenuItem>
-          ) : null}
-          <MenuItem
             as={ReactRouterLink}
             data-test="Add Explore Items"
             to={`/explore`}
@@ -835,6 +844,37 @@ export function CompoundActivityEditor({
           >
             Items from My Activities
           </MenuItem>
+          {activity.type === "sequence" ? (
+            <MenuItem
+              data-test="Add Question Bank Button"
+              onClick={() => {
+                createQuestionBankOnOpen();
+              }}
+            >
+              Empty Question Bank
+            </MenuItem>
+          ) : null}
+          <MenuItem
+            data-test="Add Document Button"
+            onClick={() => {
+              if (user?.isDeveloper) {
+                setCreatingDoc(true);
+                setHaveContentSpinner(true);
+                fetcher.submit(
+                  {
+                    _action: "Add Document",
+                    type: "singleDoc",
+                    parentId: activity.contentId,
+                  },
+                  { method: "post" },
+                );
+              } else {
+                developerModePromptOnOpen();
+              }
+            }}
+          >
+            Blank Document {!user?.isDeveloper && <>(Code)</>}
+          </MenuItem>
         </MenuList>
       </Menu>
     </Flex>
@@ -846,6 +886,7 @@ export function CompoundActivityEditor({
       {copyContentModal}
       {deleteModal}
       {createQuestionBankModal}
+      {developerModeModal}
       {mode === "Edit" ? (
         <>
           {heading}

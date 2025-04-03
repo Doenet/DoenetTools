@@ -249,8 +249,8 @@ export function ActivityViewer() {
     ) : null;
 
   const [editLabel, editTooltip, editIcon] = [
-    "See Source",
-    "See read-only view of source",
+    "See code",
+    "See read-only view of code",
     <MdOutlineEditOff size={20} />,
   ];
 

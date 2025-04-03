@@ -379,6 +379,7 @@ test(
     const {
       isAdmin: _isAdmin1,
       isAnonymous: _isAnonymous1,
+      isDeveloper: _isDeveloper1,
       ...userFields1
     } = user1;
     let user2 = await createTestUser();
@@ -391,6 +392,7 @@ test(
     const {
       isAdmin: _isAdmin2,
       isAnonymous: _isAnonymous2,
+      isDeveloper: _isDeveloper2,
       ...userFields2
     } = user2;
     const user3 = await createTestUser();

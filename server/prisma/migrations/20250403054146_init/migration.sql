@@ -240,6 +240,7 @@ CREATE TABLE `users` (
     `isAdmin` BOOLEAN NOT NULL DEFAULT false,
     `isLibrary` BOOLEAN NOT NULL DEFAULT false,
     `isAnonymous` BOOLEAN NOT NULL DEFAULT false,
+    `isDeveloper` BOOLEAN NOT NULL DEFAULT false,
 
     UNIQUE INDEX `users_email_key`(`email`),
     FULLTEXT INDEX `users_firstNames_lastNames_idx`(`firstNames`, `lastNames`),
