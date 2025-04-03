@@ -257,7 +257,7 @@ export function SiteHeader() {
                     </Link>
 
                     <Link
-                      href="https://www.doenet.org/activityViewer/_7KL7tiBBS2MhM6k1OrPt4"
+                      href="https://docs.doenet.org"
                       isExternal
                       data-test="Documentation Link"
                     >
@@ -302,7 +302,7 @@ export function SiteHeader() {
                 ) : (
                   <Center h="40px" mr="10px">
                     <NavLinkTab to="/signIn" dataTest="signIn">
-                      Log In
+                      Sign up/Log In
                     </NavLinkTab>
                   </Center>
                 )}
