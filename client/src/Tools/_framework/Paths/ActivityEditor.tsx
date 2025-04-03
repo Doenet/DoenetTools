@@ -315,9 +315,15 @@ export function ActivityEditor() {
   const readOnlyRef = useRef(readOnly);
   readOnlyRef.current = readOnly;
 
+  const developerMode = user?.isDeveloper || data.type !== "singleDoc";
+
   const [mode, setMode] = useState<"Edit" | "View">(
-    user?.isDeveloper || data.type !== "singleDoc" ? "Edit" : "View",
+    developerMode ? "Edit" : "View",
   );
+
+  useEffect(() => {
+    setMode(developerMode ? "Edit" : "View");
+  }, [contentId]);
 
   const isLibraryActivity = Boolean(activityData.libraryActivityInfo);
 
@@ -338,7 +344,7 @@ export function ActivityEditor() {
 
   if (assignmentStatus === "Unassigned") {
     editIcon = <MdModeEditOutline size={20} />;
-    if (user?.isDeveloper) {
+    if (developerMode) {
       editLabel = "Edit";
       editTooltip = "Edit activity";
     } else {
@@ -347,9 +353,14 @@ export function ActivityEditor() {
     }
   } else {
     editIcon = <MdOutlineEditOff size={20} />;
-    if (user?.isDeveloper) {
-      editLabel = "See code";
-      editTooltip = "See read-only view of code";
+    if (developerMode) {
+      if (data.type === "singleDoc") {
+        editLabel = "See code";
+        editTooltip = "See read-only view of code";
+      } else {
+        editLabel = "See list";
+        editTooltip = `See read-only view of documents ${data.type === "sequence" ? "and question banks in the problem set" : "in the question bank"}`;
+      }
     } else {
       editLabel = "Developer view";
       editTooltip = "Turn on developer mode to see read-only view of code";
@@ -592,7 +603,7 @@ export function ActivityEditor() {
                       leftIcon={editIcon}
                       onClick={() => {
                         if (mode !== "Edit") {
-                          if (user?.isDeveloper) {
+                          if (developerMode) {
                             setMode("Edit");
                           } else {
                             developerModePromptOnOpen();

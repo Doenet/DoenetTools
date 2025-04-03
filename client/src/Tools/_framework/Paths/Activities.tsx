@@ -531,6 +531,14 @@ export function Activities() {
     }
   }
 
+  function createNewDocument() {
+    setHaveContentSpinner(true);
+    fetcher.submit(
+      { _action: "Add Activity", type: "singleDoc" },
+      { method: "post" },
+    );
+  }
+
   const settingsDrawer =
     contentData && settingsContentId ? (
       <ContentSettingsDrawer
@@ -634,13 +642,7 @@ export function Activities() {
       onClose={developerModePromptOnClose}
       desiredAction="create doc"
       user={user!}
-      proceedCallback={() => {
-        setHaveContentSpinner(true);
-        fetcher.submit(
-          { _action: "Add Activity", type: "singleDoc" },
-          { method: "post" },
-        );
-      }}
+      proceedCallback={createNewDocument}
       fetcher={fetcher}
     />
   );
@@ -833,7 +835,7 @@ export function Activities() {
               <MenuList>
                 <MenuItem
                   data-test="Add Problem Set Button"
-                  onClick={async () => {
+                  onClick={() => {
                     setHaveContentSpinner(true);
                     fetcher.submit(
                       { _action: "Add Activity", type: "sequence" },
@@ -853,7 +855,7 @@ export function Activities() {
                 </MenuItem>
                 <MenuItem
                   data-test="Add Question Bank Button"
-                  onClick={async () => {
+                  onClick={() => {
                     setHaveContentSpinner(true);
                     fetcher.submit(
                       { _action: "Add Activity", type: "select" },
@@ -865,13 +867,9 @@ export function Activities() {
                 </MenuItem>
                 <MenuItem
                   data-test="Add Document Button"
-                  onClick={async () => {
+                  onClick={() => {
                     if (user?.isDeveloper) {
-                      setHaveContentSpinner(true);
-                      fetcher.submit(
-                        { _action: "Add Activity", type: "singleDoc" },
-                        { method: "post" },
-                      );
+                      createNewDocument();
                     } else {
                       developerModePromptOnOpen();
                     }
