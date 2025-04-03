@@ -176,33 +176,43 @@ export async function deleteContent({
     );
   }
 
-  await deleteContentNoCheck(contentId, loggedInUserId);
+  const ids = await getDescendantIds(contentId);
+
+  return prisma.content.updateMany({
+    where: { id: { in: [contentId, ...ids] } },
+    data: { isDeleted: true },
+  });
 }
 
 /**
- * Delete the content `id` along with all the content inside it,
- * recursing to its children
+ * Return the content ids of the descendants on `contentId`. (No permission checks are performed.)
  *
- * WARNING: This function fails silently if content `id` does not exist. Use {@link deleteContent} instead if you would like the function to throw an error.
+ * Returns a promise resulting to an array of content ids,
+ * or an empty array is `contentId` doesn't exist or isn't owned by `loggedInUserId`.
+ *
+ * One use is to avoid deadlocks from recursive update queries that update all the descendants.
+ * Instead, one can get all the ids with this function and then run an update query using the ids.
  */
-export function deleteContentNoCheck(
-  id: Uint8Array,
-  loggedInUserId: Uint8Array,
-) {
-  return prisma.$executeRaw(Prisma.sql`
+export async function getDescendantIds(contentId: Uint8Array) {
+  const ids = await prisma.$queryRaw<
+    {
+      id: Uint8Array;
+    }[]
+  >(Prisma.sql`
     WITH RECURSIVE content_tree(id) AS (
       SELECT id FROM content
-      WHERE id = ${id} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
+      WHERE parentId = ${contentId} AND isDeleted = FALSE
       UNION ALL
       SELECT content.id FROM content
-      INNER JOIN content_tree AS ft
-      ON content.parentId = ft.id
+      INNER JOIN content_tree AS ct
+      ON content.parentId = ct.id
+      WHERE content.isDeleted = FALSE
     )
 
-    UPDATE content
-      SET content.isDeleted = TRUE
-      WHERE content.id IN (SELECT id from content_tree);
-    `);
+    SELECT id from content_tree;
+  `);
+
+  return ids.map((x) => x.id);
 }
 
 /**

@@ -20,6 +20,7 @@ import {
 } from "./scores";
 import { getUserInfo } from "./user";
 import { StatusCodes } from "http-status-codes";
+import { getDescendantIds } from "./activity";
 
 /**
  * Assigned the content `contentId` owned by `loggedInUserId`
@@ -116,28 +117,9 @@ export async function assignActivity({
   });
 
   if (updatedContent.type !== "singleDoc") {
-    // Note: switched from an update recursive query to a select recursive query,
-    // followed by an update query,
-    // as were frequently getting deadlocks from update recursive queries.
-    const ids = await prisma.$queryRaw<
-      {
-        id: Uint8Array;
-      }[]
-    >(Prisma.sql`
-        WITH RECURSIVE content_tree(id) AS (
-          SELECT id FROM content
-          WHERE parentId = ${contentId}
-          UNION ALL
-          SELECT content.id FROM content
-          INNER JOIN content_tree AS ct
-          ON content.parentId = ct.id
-          WHERE content.isDeleted = FALSE
-        )
-        SELECT id from content_tree;
-        `);
-
+    const descendantIds = await getDescendantIds(contentId);
     await prisma.content.updateMany({
-      where: { id: { in: ids.map((x) => x.id) } },
+      where: { id: { in: descendantIds } },
       data: { nonRootAssignmentId: contentId },
     });
   }

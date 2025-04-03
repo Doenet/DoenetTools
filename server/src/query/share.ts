@@ -6,6 +6,7 @@ import { filterEditableContent } from "../utils/permissions";
 import { getIsAdmin } from "./curate";
 import { isEqualUUID } from "../utils/uuid";
 import { InvalidRequestError } from "../utils/error";
+import { getDescendantIds } from "./activity";
 
 export async function getLicense(code: string) {
   const preliminary_license = await prisma.licenses.findUniqueOrThrow({
@@ -102,29 +103,9 @@ export async function setContentIsPublic({
     }
   }
 
-  // Note: switched from an update recursive query to a select recursive query,
-  // followed by an update query,
-  // as were frequently getting deadlocks from update recursive queries.
-  const ids = await prisma.$queryRaw<
-    {
-      id: Uint8Array;
-    }[]
-  >(Prisma.sql`
-    WITH RECURSIVE content_tree(id) AS (
-      SELECT id FROM content
-      WHERE id = ${contentId} AND ownerId = ${loggedInUserId} AND isDeleted = FALSE
-      UNION ALL
-      SELECT content.id FROM content
-      INNER JOIN content_tree AS ct
-      ON content.parentId = ct.id
-      WHERE content.isDeleted = FALSE
-    )
-
-    SELECT id from content_tree;
-    `);
-
+  const descendantIds = await getDescendantIds(contentId);
   await prisma.content.updateMany({
-    where: { id: { in: ids.map((x) => x.id) } },
+    where: { id: { in: [contentId, ...descendantIds] } },
     data: { isPublic },
   });
 }
