@@ -1,12 +1,7 @@
 import { expect, test } from "vitest";
 import { createTestUser } from "./utils";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import {
-  getMyContent,
-  getPreferredFolderView,
-  getSharedContent,
-  setPreferredFolderView,
-} from "../query/content_list";
+import { getMyContent, getSharedContent } from "../query/content_list";
 import {
   createContent,
   deleteContent,
@@ -384,7 +379,6 @@ test(
     const {
       isAdmin: _isAdmin1,
       isAnonymous: _isAnonymous1,
-      cardView: _cardView1,
       ...userFields1
     } = user1;
     let user2 = await createTestUser();
@@ -397,7 +391,6 @@ test(
     const {
       isAdmin: _isAdmin2,
       isAnonymous: _isAnonymous2,
-      cardView: _cardView2,
       ...userFields2
     } = user2;
     const user3 = await createTestUser();
@@ -1906,23 +1899,6 @@ test("copyContent copies content features", async () => {
   expect(activityData2.activity!.contentFeatures).toHaveLength(2);
   expect(activityData2.activity!.contentFeatures[0].code).eq("isInteractive");
   expect(activityData2.activity!.contentFeatures[1].code).eq("containsVideo");
-});
-
-test("set and get preferred folder view", async () => {
-  const user = await createTestUser();
-  const userId = user.userId;
-
-  let result = await getPreferredFolderView({ loggedInUserId: userId });
-  expect(result).eqls({ cardView: false });
-
-  result = await setPreferredFolderView({
-    loggedInUserId: userId,
-    cardView: true,
-  });
-  expect(result).eqls({ cardView: true });
-
-  result = await getPreferredFolderView({ loggedInUserId: userId });
-  expect(result).eqls({ cardView: true });
 });
 
 test("check if content contains content type", async () => {

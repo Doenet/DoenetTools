@@ -19,7 +19,6 @@ import {
   VStack,
   Grid,
   GridItem,
-  Spacer,
   Button,
   Input,
   Show,
@@ -47,10 +46,6 @@ import {
 } from "../../../_utils/types";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import CardList from "../../../Widgets/CardList";
-import {
-  ToggleViewButtonGroup,
-  toggleViewButtonGroupActions,
-} from "../ToolPanels/ToggleViewButtonGroup";
 import { intWithCommas } from "../../../_utils/formatting";
 import { MdFilterAlt, MdFilterAltOff } from "react-icons/md";
 import { clearQueryParameter } from "../../../_utils/explore";
@@ -74,11 +69,6 @@ import {
 export async function action({ request }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
-
-  const resultTLV = await toggleViewButtonGroupActions({ formObj });
-  if (resultTLV) {
-    return resultTLV;
-  }
 
   const resultACM = await addContentToMenuActions({ formObj });
   if (resultACM) {
@@ -113,9 +103,6 @@ export async function loader({ params, request }) {
     systemId = undefined;
     isUnclassified = true;
   }
-
-  const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
-  const listViewPref = !prefData.data.cardView;
 
   const {
     data: { availableFeatures },
@@ -157,7 +144,6 @@ export async function loader({ params, request }) {
       ...searchData,
       features,
       availableFeatures,
-      listViewPref,
     };
   } else {
     const { data: browseData } = await axios.post(
@@ -178,7 +164,6 @@ export async function loader({ params, request }) {
       content: browseData.recentContent,
       features,
       availableFeatures,
-      listViewPref,
     };
   }
 }
@@ -204,7 +189,6 @@ export function Explore() {
     countByFeature,
     features,
     availableFeatures,
-    listViewPref,
   } = useLoaderData() as {
     q?: string;
     topAuthors: UserInfo[] | null;
@@ -228,7 +212,6 @@ export function Explore() {
     >;
     features: Set<string>;
     availableFeatures: ContentFeature[];
-    listViewPref: boolean;
   };
 
   const {
@@ -242,8 +225,6 @@ export function Explore() {
   const [searchString, setSearchString] = useState(q || "");
 
   const fetcher = useFetcher();
-
-  const [listView, setListView] = useState(listViewPref);
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
   const selectedCardsFiltered = selectedCards.filter((c) => c);
@@ -349,12 +330,12 @@ export function Explore() {
         base: `calc(100vh - ${q ? "250" : "210"}px)`,
         lg: `calc(100vh - ${q ? "210" : "170"}px)`,
       }),
-    [curatedContent, selectedCards, addTo, listView],
+    [curatedContent, selectedCards, addTo],
   );
 
   const trendingContentDisplay = useMemo(
     () => (trendingContent ? displayMatchingContent(trendingContent) : null),
-    [trendingContent, selectedCards, addTo, listView],
+    [trendingContent, selectedCards, addTo],
   );
 
   const contentDisplay = useMemo(
@@ -363,7 +344,7 @@ export function Explore() {
         base: `calc(100vh - ${q ? "250" : "210"}px)`,
         lg: `calc(100vh - ${q ? "210" : "170"}px)`,
       }),
-    [content, selectedCards, addTo, listView],
+    [content, selectedCards, addTo],
   );
 
   function displayMatchingContent(
@@ -400,9 +381,7 @@ export function Explore() {
 
     return (
       <Box
-        background={
-          listView && cardContent.length > 0 ? "white" : "var(--lightBlue)"
-        }
+        background={"white"}
         paddingTop="16px"
         paddingBottom="16px"
         minHeight={minHeight}
@@ -414,7 +393,6 @@ export function Explore() {
           showOwnerName={true}
           content={cardContent}
           emptyMessage={"No Matches Found!"}
-          listView={listView}
           selectedCards={user ? selectedCards : undefined}
           setSelectedCards={setSelectedCards}
           disableSelectFor={addTo ? [addTo.contentId] : undefined}
@@ -871,14 +849,6 @@ export function Explore() {
               Filter results {numActiveFiltersInfo}
             </Button>
           </Show>
-          <Spacer />
-          <Box marginRight=".5em">
-            <ToggleViewButtonGroup
-              listView={listView}
-              setListView={setListView}
-              fetcher={fetcher}
-            />
-          </Box>
         </Flex>
       </Box>
     </>

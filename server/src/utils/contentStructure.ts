@@ -219,7 +219,6 @@ export function returnContentSelect({
     type: true,
     ownerId: true,
     owner,
-    imagePath: true,
     isPublic: true,
     contentFeatures: true,
     sharedWith,
@@ -349,7 +348,6 @@ type PreliminaryContent = {
   name: string;
   ownerId: Uint8Array;
   owner?: UserInfo;
-  imagePath: string | null;
   isPublic: boolean;
   contentFeatures: {
     id: number;

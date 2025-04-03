@@ -356,37 +356,3 @@ export async function getSharedContent({
     parent,
   };
 }
-
-export async function setPreferredFolderView({
-  loggedInUserId,
-  cardView,
-}: {
-  loggedInUserId?: Uint8Array;
-  cardView: boolean;
-}) {
-  if (!loggedInUserId) {
-    // if not signed in, then don't set anything and report back their choice
-    return { cardView };
-  }
-  return await prisma.users.update({
-    where: { userId: loggedInUserId },
-    data: { cardView },
-    select: { cardView: true },
-  });
-}
-
-export async function getPreferredFolderView({
-  loggedInUserId,
-}: {
-  loggedInUserId?: Uint8Array;
-}) {
-  if (!loggedInUserId) {
-    // if not signed in, just have the default behavior
-    return { cardView: false };
-  }
-
-  return await prisma.users.findUniqueOrThrow({
-    where: { userId: loggedInUserId },
-    select: { cardView: true },
-  });
-}

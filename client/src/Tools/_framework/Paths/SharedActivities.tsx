@@ -4,7 +4,6 @@ import {
   Heading,
   Tooltip,
   List,
-  Spacer,
   MenuItem,
   useDisclosure,
   HStack,
@@ -27,10 +26,6 @@ import { ContentDescription, Content } from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 import { ContentInfoDrawer } from "../ToolPanels/ContentInfoDrawer";
 import CardList from "../../../Widgets/CardList";
-import {
-  ToggleViewButtonGroup,
-  toggleViewButtonGroupActions,
-} from "../ToolPanels/ToggleViewButtonGroup";
 import { menuIcons } from "../../../_utils/activity";
 import { SiteContext } from "./SiteHeader";
 import {
@@ -49,11 +44,6 @@ import {
 export async function action({ request }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
-
-  const resultTLV = await toggleViewButtonGroupActions({ formObj });
-  if (resultTLV) {
-    return resultTLV;
-  }
 
   const resultACM = await addContentToMenuActions({ formObj });
   if (resultACM) {
@@ -78,20 +68,16 @@ export async function loader({ params }) {
     `/api/contentList/getSharedContent/${params.ownerId}/${params.parentId ?? ""}`,
   );
 
-  const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
-  const listViewPref = !prefData.data.cardView;
-
   return {
     content: data.content,
     ownerId: params.ownerId,
     owner: data.owner,
     parent: data.parent,
-    listViewPref,
   };
 }
 
 export function SharedActivities() {
-  const { content, ownerId, owner, parent, listViewPref } = useLoaderData() as {
+  const { content, ownerId, owner, parent } = useLoaderData() as {
     content: Content[];
     ownerId: string;
     owner: {
@@ -99,12 +85,9 @@ export function SharedActivities() {
       lastNames: string;
     };
     parent: Content | null;
-    listViewPref: boolean;
   };
 
   const { user, addTo, setAddTo } = useOutletContext<SiteContext>();
-
-  const [listView, setListView] = useState(listViewPref);
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
   const selectedCardsFiltered = selectedCards.filter((c) => c);
@@ -290,12 +273,6 @@ export function SharedActivities() {
               : `Shared Activities of ${createFullName(owner)}`}
           </Link>
         ) : null}
-        <Spacer />
-        <ToggleViewButtonGroup
-          listView={listView}
-          setListView={setListView}
-          fetcher={fetcher}
-        />
       </Flex>
     </Box>
   );
@@ -332,7 +309,6 @@ export function SharedActivities() {
       showPublicStatus={false}
       showActivityFeatures={true}
       emptyMessage={"No Activities Yet"}
-      listView={listView}
       content={cardContent}
       selectedCards={user ? selectedCards : undefined}
       setSelectedCards={setSelectedCards}
@@ -350,9 +326,7 @@ export function SharedActivities() {
         padding=".5em 10px"
         margin="0"
         width="100%"
-        background={
-          listView && content.length > 0 ? "white" : "var(--lightBlue)"
-        }
+        background={"white"}
         minHeight="calc(80vh - 130px)"
         flexDirection="column"
       >

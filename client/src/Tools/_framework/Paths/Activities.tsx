@@ -60,10 +60,6 @@ import {
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { ShareDrawer, shareDrawerActions } from "../ToolPanels/ShareDrawer";
 import { formatTime } from "../../../_utils/dateUtilityFunction";
-import {
-  ToggleViewButtonGroup,
-  toggleViewButtonGroupActions,
-} from "../ToolPanels/ToggleViewButtonGroup";
 import { getAllowedParentTypes, menuIcons } from "../../../_utils/activity";
 import {
   CreateLocalContentModal,
@@ -102,11 +98,6 @@ export async function action({ request, params }) {
   const resultMC = await moveCopyContentActions({ formObj });
   if (resultMC) {
     return resultMC;
-  }
-
-  const resultTLV = await toggleViewButtonGroupActions({ formObj });
-  if (resultTLV) {
-    return resultTLV;
   }
 
   const resultCF = await createLocalContentModalActions({ formObj });
@@ -180,9 +171,6 @@ export async function loader({ params, request }) {
     );
   }
 
-  const prefData = await axios.get(`/api/contentList/getPreferredFolderView`);
-  const listViewPref = !prefData.data.cardView;
-
   return {
     parentId: params.parentId ? params.parentId : null,
     content: data.content,
@@ -191,7 +179,6 @@ export async function loader({ params, request }) {
     availableFeatures: data.availableFeatures,
     userId: params.userId,
     parent: data.parent,
-    listViewPref,
     query: q,
   };
 }
@@ -205,7 +192,6 @@ export function Activities() {
     availableFeatures,
     userId,
     parent,
-    listViewPref,
     query,
   } = useLoaderData() as {
     parentId: string | null;
@@ -215,7 +201,6 @@ export function Activities() {
     availableFeatures: ContentFeature[];
     userId: string;
     parent: Content | null;
-    listViewPref: boolean;
     query: string | null;
   };
   const [settingsContentId, setSettingsContentId] = useState<string | null>(
@@ -280,8 +265,6 @@ export function Activities() {
   }, [content]);
 
   const navigate = useNavigate();
-
-  const [listView, setListView] = useState(listViewPref);
 
   const [selectedCards, setSelectedCards] = useState<ContentDescription[]>([]);
   const selectedCardsFiltered = selectedCards.filter((c) => c);
@@ -416,7 +399,7 @@ export function Activities() {
               );
             }}
           >
-            {listView ? "Move up" : "Move left"}
+            Move up
           </MenuItem>
         ) : null}
         {position < numCards - 1 && !haveQuery ? (
@@ -434,7 +417,7 @@ export function Activities() {
               );
             }}
           >
-            {listView ? "Move down" : "Move right"}
+            Move down
           </MenuItem>
         ) : null}
         {haveQuery ? null : (
@@ -638,10 +621,41 @@ export function Activities() {
       width="100%"
       textAlign="center"
     >
+      <Flex
+        width="100%"
+        paddingRight="0.5em"
+        paddingLeft="1em"
+        alignItems="middle"
+      >
+        <Box marginTop="5px" height="24px">
+          {parent && !haveQuery ? (
+            <Link
+              data-test="Back Link"
+              to={`/activities/${userId}${parent.parent ? "/" + parent.parent.contentId : ""}`}
+              style={{
+                color: "var(--mainBlue)",
+              }}
+            >
+              <Text
+                noOfLines={1}
+                maxWidth={{ sm: "200px", md: "300px" }}
+                textAlign="left"
+              >
+                <Show above="sm">
+                  &lt; Back to:{" "}
+                  {parent.parent ? parent.parent.name : `My Activities`}
+                </Show>
+                <Hide above="sm">&lt; Back</Hide>
+              </Text>
+            </Link>
+          ) : null}
+        </Box>
+      </Flex>
+
       <Heading
         as="h2"
         size="lg"
-        margin=".5em"
+        marginBottom=".5em"
         noOfLines={1}
         maxHeight="1.5em"
         lineHeight="normal"
@@ -721,7 +735,7 @@ export function Activities() {
             </HStack>
           </Flex>
         </Flex>
-        <Flex marginRight="1em" width="100%">
+        <Flex paddingRight="26px" width="100%">
           <Spacer />
           <HStack>
             <Flex>
@@ -860,39 +874,6 @@ export function Activities() {
             </Button>
           </HStack>
         </Flex>
-
-        <Flex
-          width="100%"
-          paddingRight="0.5em"
-          paddingLeft="1em"
-          alignItems="middle"
-        >
-          {parent && !haveQuery ? (
-            <Box>
-              <Link
-                data-test="Back Link"
-                to={`/activities/${userId}${parent.parent ? "/" + parent.parent.contentId : ""}`}
-                style={{
-                  color: "var(--mainBlue)",
-                }}
-              >
-                <Text noOfLines={1} maxWidth={{ sm: "200px", md: "400px" }}>
-                  <Show above="sm">
-                    &lt; Back to{" "}
-                    {parent.parent ? parent.parent.name : `My Activities`}
-                  </Show>
-                  <Hide above="sm">&lt; Back</Hide>
-                </Text>
-              </Link>
-            </Box>
-          ) : null}
-          <Spacer />
-          <ToggleViewButtonGroup
-            listView={listView}
-            setListView={setListView}
-            fetcher={fetcher}
-          />
-        </Flex>
       </VStack>
     </Box>
   );
@@ -924,7 +905,9 @@ export function Activities() {
     </Flex>
   ) : null;
 
-  const emptyMessage = haveQuery ? "No Results Found" : "No Activities Yet";
+  const emptyMessage = haveQuery
+    ? "No Results Found"
+    : "Find activities from the Explore tab or create your own with the New button";
 
   const cardContent: CardContent[] = content.map((activity, position) => {
     const getCardMenuRef = (element: HTMLButtonElement) => {
@@ -963,7 +946,6 @@ export function Activities() {
       showPublicStatus={true}
       showActivityFeatures={true}
       emptyMessage={emptyMessage}
-      listView={listView}
       content={cardContent}
       selectedCards={selectedCards}
       setSelectedCards={setSelectedCards}
@@ -990,9 +972,7 @@ export function Activities() {
         padding="0 10px"
         margin="0px"
         width="100%"
-        background={
-          listView && content.length > 0 ? "white" : "var(--lightBlue)"
-        }
+        background={"white"}
         minHeight={{ base: "calc(100vh - 225px)", md: "calc(100vh - 235px)" }}
         direction="column"
       >
