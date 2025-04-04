@@ -240,7 +240,7 @@ export function GeneralContentControls({
       </Form>
 
       {contentData.type !== "folder" ? (
-        <Box backgroundColor="#F5F5F5" padding="10px" marginTop="20px">
+        <Box padding="10px" marginTop="20px">
           <Heading size="sm">Activity features</Heading>
           <VStack alignItems="flex-start" gap={0}>
             {availableFeatures.map((feature) => {
