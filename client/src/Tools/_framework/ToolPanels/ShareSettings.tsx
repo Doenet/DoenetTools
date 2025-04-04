@@ -269,70 +269,6 @@ export function ShareSettings({
   return (
     <>
       <Box>
-        <Box
-          marginTop="10px"
-          border="2px solid lightgray"
-          background="lightgray"
-          padding="10px"
-        >
-          {!(contentData.isPublic || contentData.isShared) ? (
-            contentData.type === "folder" ? (
-              <p>
-                Folder is private. However, shared items within the folder can
-                still be found.
-              </p>
-            ) : contentData.type === "singleDoc" ? (
-              <p>Activity is private.</p>
-            ) : (
-              <p>
-                This {contentTypeNameLower} is private. However, shared items
-                within the {contentTypeNameLower} can still be found.
-              </p>
-            )
-          ) : license === null ? (
-            <Box
-              marginTop="10px"
-              border="2px solid black"
-              background="orange.100"
-              padding="5px"
-            >
-              <InfoIcon color="orange.500" mr="2px" /> This{" "}
-              {contentTypeNameLower} is shared without specifying a license.
-              Please select a license below to inform other how they can use
-              your content.
-            </Box>
-          ) : (
-            <>
-              {license.isComposition ? (
-                <>
-                  <p>
-                    This {contentTypeNameLower} is shared with these licenses:
-                  </p>
-                  <List spacing="20px" marginTop="10px">
-                    {license.composedOf.map((comp) => (
-                      <DisplayLicenseItem licenseItem={comp} key={comp.code} />
-                    ))}
-                  </List>
-                  <p style={{ marginTop: "10px" }}>
-                    (You authorize reuse under any of these licenses.)
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p>
-                    This {contentTypeNameLower} is shared using the license:
-                  </p>
-                  <List marginTop="10px">
-                    <DisplayLicenseItem licenseItem={license} />
-                  </List>
-                </>
-              )}
-            </>
-          )}
-        </Box>
-      </Box>
-
-      <Box>
         {contentData.parent?.isPublic || contentData.parent?.isShared ? (
           <p style={{ marginTop: "10px" }}>
             This {contentTypeNameLower} is inside a shared{" "}
@@ -341,18 +277,62 @@ export function ShareSettings({
           </p>
         ) : null}
 
-        {statusText !== "" ? (
-          <Box
-            data-test="Status message"
-            border="solid 1px lightgray"
-            borderRadius="5px"
-            padding="5px 10px"
-            marginTop="10px"
-            backgroundColor="orange.100"
-          >
-            {statusText}
-          </Box>
-        ) : null}
+        <Box height="35px">
+          {statusText !== "" ? (
+            <Box
+              data-test="Status message"
+              border="solid 1px lightgray"
+              borderRadius="5px"
+              padding="5px 10px"
+              backgroundColor="orange.100"
+            >
+              {statusText}
+            </Box>
+          ) : null}
+        </Box>
+
+        {contentData.parent?.isPublic ? null : (
+          <>
+            <HStack gap={5}>
+              <Checkbox
+                marginTop="10px"
+                isChecked={selectedIsPublic}
+                data-test="Public Checkbox"
+                onChange={() => {
+                  setShowSpinner({ type: "public" });
+                  if (contentData.isPublic) {
+                    nextStatusText.current = "Stopped sharing publicly.";
+                    fetcher.submit(
+                      {
+                        _action: "make content private",
+                        contentId: contentData.contentId,
+                      },
+                      { method: "post" },
+                    );
+                    setSelectedIsPublic(false);
+                  } else {
+                    nextStatusText.current = "Successfully shared publicly.";
+                    fetcher.submit(
+                      {
+                        _action: "make content public",
+                        contentId: contentData.contentId,
+                        licenseCode: selectedLicenseCode ?? "CCDUAL",
+                      },
+                      { method: "post" },
+                    );
+                    setSelectedIsPublic(true);
+                  }
+                }}
+              >
+                Share publicly
+              </Checkbox>
+              <Spinner
+                hidden={showSpinner?.type !== "public"}
+                marginTop="10px"
+              />
+            </HStack>
+          </>
+        )}
 
         {contentData.isShared || contentData.isPublic ? (
           <>
@@ -409,7 +389,7 @@ export function ShareSettings({
                               aria-label={`Stop sharing publicly`}
                               onClick={() => {
                                 nextStatusText.current =
-                                  "Stopped sharing publicly";
+                                  "Stopped sharing publicly.";
                                 setShowSpinner({
                                   type: "unpublic",
                                 });
@@ -464,7 +444,7 @@ export function ShareSettings({
                                       type: "unshare",
                                       id: user.userId,
                                     });
-                                    nextStatusText.current = `Stopped sharing with ${createFullName(user)}`;
+                                    nextStatusText.current = `Stopped sharing with ${createFullName(user)}.`;
                                   }}
                                 />
                               </Tooltip>
@@ -553,51 +533,72 @@ export function ShareSettings({
           </FormControl>
         </Form>
 
-        {contentData.parent?.isPublic ? null : (
-          <>
-            <HStack gap={5}>
-              <Checkbox
-                marginTop="20px"
-                isChecked={selectedIsPublic}
-                data-test="Public Checkbox"
-                onChange={() => {
-                  setShowSpinner({ type: "public" });
-                  if (contentData.isPublic) {
-                    nextStatusText.current = "Stopped sharing publicly";
-                    fetcher.submit(
-                      {
-                        _action: "make content private",
-                        contentId: contentData.contentId,
-                      },
-                      { method: "post" },
-                    );
-                    setSelectedIsPublic(false);
-                  } else {
-                    nextStatusText.current = "Successfully shared publicly.";
-                    fetcher.submit(
-                      {
-                        _action: "make content public",
-                        contentId: contentData.contentId,
-                        licenseCode: selectedLicenseCode ?? "CCDUAL",
-                      },
-                      { method: "post" },
-                    );
-                    setSelectedIsPublic(true);
-                  }
-                }}
-              >
-                Share publicly
-              </Checkbox>
-              <Spinner
-                hidden={showSpinner?.type !== "public"}
-                marginTop="20px"
-              />
-            </HStack>
-          </>
-        )}
-
         {chooseLicenseForm}
         {licenseWarning}
+      </Box>
+
+      <Box>
+        <Box
+          marginTop="20px"
+          border="2px solid lightgray"
+          background="lightgray"
+          padding="10px"
+        >
+          {!(contentData.isPublic || contentData.isShared) ? (
+            contentData.type === "folder" ? (
+              <p>
+                Folder is private. However, shared items within the folder can
+                still be found.
+              </p>
+            ) : contentData.type === "singleDoc" ? (
+              <p>Activity is private.</p>
+            ) : (
+              <p>
+                This {contentTypeNameLower} is private. However, shared items
+                within the {contentTypeNameLower} can still be found.
+              </p>
+            )
+          ) : license === null ? (
+            <Box
+              marginTop="10px"
+              border="2px solid black"
+              background="orange.100"
+              padding="5px"
+            >
+              <InfoIcon color="orange.500" mr="2px" /> This{" "}
+              {contentTypeNameLower} is shared without specifying a license.
+              Please select a license below to inform other how they can use
+              your content.
+            </Box>
+          ) : (
+            <>
+              {license.isComposition ? (
+                <>
+                  <p>
+                    This {contentTypeNameLower} is shared with these licenses:
+                  </p>
+                  <List spacing="20px" marginTop="10px">
+                    {license.composedOf.map((comp) => (
+                      <DisplayLicenseItem licenseItem={comp} key={comp.code} />
+                    ))}
+                  </List>
+                  <p style={{ marginTop: "10px" }}>
+                    (You authorize reuse under any of these licenses.)
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p>
+                    This {contentTypeNameLower} is shared using the license:
+                  </p>
+                  <List marginTop="10px">
+                    <DisplayLicenseItem licenseItem={license} />
+                  </List>
+                </>
+              )}
+            </>
+          )}
+        </Box>
       </Box>
     </>
   );
