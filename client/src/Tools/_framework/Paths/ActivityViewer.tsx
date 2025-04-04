@@ -153,31 +153,24 @@ export function ActivityViewer() {
       }
   );
 
-  const {
-    contentId,
-    type: contentType,
-    activityData,
-    contributorHistory,
-  } = data;
+  const { contentId, activityData, contributorHistory } = data;
 
   const { user, addTo, setAddTo } = useOutletContext<SiteContext>();
   const navigate = useNavigate();
 
   const infoBtnRef = useRef<HTMLButtonElement>(null);
 
+  const authorMode = user?.isAuthor || data.type === "select";
+
   const [mode, setMode] = useState<"Edit" | "View">(
-    contentType === "select" ? "Edit" : "View",
+    authorMode ? "Edit" : "View",
   );
 
-  const fetcher = useFetcher();
-
   useEffect(() => {
-    if (contentType === "select") {
-      setMode("Edit");
-    } else {
-      setMode("View");
-    }
-  }, [contentType, contentId]);
+    setMode(authorMode ? "Edit" : "View");
+  }, [contentId]);
+
+  const fetcher = useFetcher();
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
@@ -248,11 +241,22 @@ export function ActivityViewer() {
       />
     ) : null;
 
-  const [editLabel, editTooltip, editIcon] = [
-    "See Source",
-    "See read-only view of source",
-    <MdOutlineEditOff size={20} />,
-  ];
+  let editLabel: string;
+  let editTooltip: string;
+
+  const editIcon = <MdOutlineEditOff size={20} />;
+  if (authorMode) {
+    if (data.type === "singleDoc") {
+      editLabel = "See source code";
+      editTooltip = "See read-only view of source code";
+    } else {
+      editLabel = "See list";
+      editTooltip = `See read-only view of documents ${data.type === "sequence" ? "and question banks in the problem set" : "in the question bank"}`;
+    }
+  } else {
+    editLabel = "See source code";
+    editTooltip = "Turn on author mode to see read-only view of source code";
+  }
 
   const haveClassifications = activityData.classifications.length > 0;
 

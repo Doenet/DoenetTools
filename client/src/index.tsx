@@ -24,6 +24,7 @@ import {
 
 import {
   loader as siteLoader,
+  action as siteAction,
   SiteHeader,
 } from "./Tools/_framework/Paths/SiteHeader";
 import {
@@ -195,6 +196,7 @@ const router = createBrowserRouter([
       {
         path: "/",
         loader: carouselLoader,
+        action: siteAction,
         // action: homeAction,
         errorElement: <ErrorPage />,
         element: <Home />,

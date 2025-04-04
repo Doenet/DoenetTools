@@ -76,6 +76,10 @@ import {
 } from "../ToolPanels/CreateContentMenu";
 import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
 import { SiteContext } from "./SiteHeader";
+import {
+  AuthorModeModal,
+  authorModeModalActions,
+} from "../ToolPanels/AuthorModeModal";
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -118,6 +122,11 @@ export async function action({ request, params }) {
   const resultCCM = await createContentMenuActions({ formObj });
   if (resultCCM) {
     return resultCCM;
+  }
+
+  const resultDMM = await authorModeModalActions({ formObj });
+  if (resultDMM) {
+    return resultDMM;
   }
 
   if (formObj?._action == "Add Activity") {
@@ -236,7 +245,7 @@ export function Activities() {
     onClose: deleteContentOnClose,
   } = useDisclosure();
 
-  const { addTo, setAddTo } = useOutletContext<SiteContext>();
+  const { addTo, setAddTo, user } = useOutletContext<SiteContext>();
 
   // refs to the menu button of each content card,
   // which should be given focus when drawers are closed
@@ -522,6 +531,14 @@ export function Activities() {
     }
   }
 
+  function createNewDocument() {
+    setHaveContentSpinner(true);
+    fetcher.submit(
+      { _action: "Add Activity", type: "singleDoc" },
+      { method: "post" },
+    );
+  }
+
   const settingsDrawer =
     contentData && settingsContentId ? (
       <ContentSettingsDrawer
@@ -612,6 +629,23 @@ export function Activities() {
         action="Add"
       />
     ) : null;
+
+  const {
+    isOpen: developerModePromptIsOpen,
+    onOpen: developerModePromptOnOpen,
+    onClose: developerModePromptOnClose,
+  } = useDisclosure();
+
+  const developerModeModal = (
+    <AuthorModeModal
+      isOpen={developerModePromptIsOpen}
+      onClose={developerModePromptOnClose}
+      desiredAction="create doc"
+      user={user!}
+      proceedCallback={createNewDocument}
+      fetcher={fetcher}
+    />
+  );
 
   const heading = (
     <Box
@@ -800,20 +834,8 @@ export function Activities() {
               </MenuButton>
               <MenuList>
                 <MenuItem
-                  data-test="Add Document Button"
-                  onClick={async () => {
-                    setHaveContentSpinner(true);
-                    fetcher.submit(
-                      { _action: "Add Activity", type: "singleDoc" },
-                      { method: "post" },
-                    );
-                  }}
-                >
-                  Document
-                </MenuItem>
-                <MenuItem
                   data-test="Add Problem Set Button"
-                  onClick={async () => {
+                  onClick={() => {
                     setHaveContentSpinner(true);
                     fetcher.submit(
                       { _action: "Add Activity", type: "sequence" },
@@ -833,7 +855,7 @@ export function Activities() {
                 </MenuItem>
                 <MenuItem
                   data-test="Add Question Bank Button"
-                  onClick={async () => {
+                  onClick={() => {
                     setHaveContentSpinner(true);
                     fetcher.submit(
                       { _action: "Add Activity", type: "select" },
@@ -842,6 +864,18 @@ export function Activities() {
                   }}
                 >
                   Question Bank
+                </MenuItem>
+                <MenuItem
+                  data-test="Add Document Button"
+                  onClick={() => {
+                    if (user?.isAuthor) {
+                      createNewDocument();
+                    } else {
+                      developerModePromptOnOpen();
+                    }
+                  }}
+                >
+                  Document {!user?.isAuthor && <>(with source code)</>}
                 </MenuItem>
               </MenuList>
             </Menu>
@@ -962,6 +996,7 @@ export function Activities() {
       {createFolderModal}
       {deleteModal}
       {copyContentModal}
+      {developerModeModal}
 
       {heading}
 

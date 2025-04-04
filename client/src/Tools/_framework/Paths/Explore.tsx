@@ -781,7 +781,7 @@ export function Explore() {
             height="30px"
             width="100%"
             alignContent="center"
-            hidden={numSelected === 0 && addTo === undefined}
+            hidden={numSelected === 0 && addTo === null}
             backgroundColor="gray.100"
             justifyContent="center"
           >

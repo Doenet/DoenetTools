@@ -52,6 +52,7 @@ export default function Card({
   indentLevel = 0,
   selectedCards,
   selectCallback,
+  isAuthor = false,
   addDocumentCallback,
   disableSelect = false,
   disableAsSelected = false,
@@ -71,6 +72,7 @@ export default function Card({
       idx: number;
     },
   ) => void;
+  isAuthor?: boolean;
   addDocumentCallback?: (contentId: string) => void;
   disableSelect?: boolean;
   disableAsSelected?: boolean;
@@ -384,12 +386,6 @@ export default function Card({
           </MenuButton>
           <MenuList>
             <MenuItem
-              data-test="Add Document Button"
-              onClick={() => addDocumentCallback?.(contentId)}
-            >
-              Blank Document
-            </MenuItem>
-            <MenuItem
               as={ReactRouterLink}
               data-test="Add Explore Items"
               to={`/explore`}
@@ -408,6 +404,12 @@ export default function Card({
               }}
             >
               Items from My Activities
+            </MenuItem>
+            <MenuItem
+              data-test="Add Document Button"
+              onClick={() => addDocumentCallback?.(contentId)}
+            >
+              Blank Document {!isAuthor && "(with source code)"}
             </MenuItem>
           </MenuList>
         </Menu>

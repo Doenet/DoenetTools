@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
-import { redirect, useLoaderData } from "react-router";
+import { redirect, useLoaderData, useOutletContext } from "react-router";
 
 import {
   Box,
@@ -65,6 +65,11 @@ import {
 } from "../../../_utils/activity";
 import { ActivitySource } from "../../../_utils/viewerTypes";
 import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
+import { SiteContext } from "./SiteHeader";
+import {
+  AuthorModeModal,
+  authorModeModalActions,
+} from "../ToolPanels/AuthorModeModal";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -104,6 +109,11 @@ export async function action({ params, request }) {
   const resultNAE = await compoundActivityEditorActions({ formObj });
   if (resultNAE) {
     return resultNAE;
+  }
+
+  const resultDM = await authorModeModalActions({ formObj });
+  if (resultDM) {
+    return resultDM;
   }
 
   return null;
@@ -289,6 +299,14 @@ export function ActivityEditor() {
     onClose: copyDialogOnClose,
   } = useDisclosure();
 
+  const {
+    isOpen: authorModePromptIsOpen,
+    onOpen: authorModePromptOnOpen,
+    onClose: authorModePromptOnClose,
+  } = useDisclosure();
+
+  const { user } = useOutletContext<SiteContext>();
+
   const assignmentInfo = activityData.assignmentInfo;
   const assignmentStatus = assignmentInfo?.assignmentStatus ?? "Unassigned";
   const isSubActivity = (activityData.parent?.type ?? "folder") !== "folder";
@@ -297,7 +315,15 @@ export function ActivityEditor() {
   const readOnlyRef = useRef(readOnly);
   readOnlyRef.current = readOnly;
 
-  const [mode, setMode] = useState<"Edit" | "View">("Edit");
+  const authorMode = user?.isAuthor || data.type !== "singleDoc";
+
+  const [mode, setMode] = useState<"Edit" | "View">(
+    authorMode ? "Edit" : "View",
+  );
+
+  useEffect(() => {
+    setMode(authorMode ? "Edit" : "View");
+  }, [contentId]);
 
   const isLibraryActivity = Boolean(activityData.libraryActivityInfo);
 
@@ -312,14 +338,33 @@ export function ActivityEditor() {
   const fetcher = useFetcher();
   const navigate = useNavigate();
 
-  const [editLabel, editTooltip, editIcon] =
-    assignmentStatus === "Unassigned"
-      ? ["Edit", "Edit activity", <MdModeEditOutline size={20} />]
-      : [
-          "See Source",
-          "See read-only view of source",
-          <MdOutlineEditOff size={20} />,
-        ];
+  let editLabel: string;
+  let editTooltip: string;
+  let editIcon: ReactElement;
+
+  if (assignmentStatus === "Unassigned") {
+    editIcon = <MdModeEditOutline size={20} />;
+    editLabel = "Edit";
+    if (authorMode) {
+      editTooltip = "Edit activity";
+    } else {
+      editTooltip = "Turn on author mode to edit";
+    }
+  } else {
+    editIcon = <MdOutlineEditOff size={20} />;
+    if (authorMode) {
+      if (data.type === "singleDoc") {
+        editLabel = "See source code";
+        editTooltip = "See read-only view of source code";
+      } else {
+        editLabel = "See list";
+        editTooltip = `See read-only view of documents ${data.type === "sequence" ? "and question banks in the problem set" : "in the question bank"}`;
+      }
+    } else {
+      editLabel = "See source code";
+      editTooltip = "Turn on author mode to see read-only view of source code";
+    }
+  }
 
   const [settingsContentId, setSettingsContentId] = useState<string | null>(
     null,
@@ -438,6 +483,21 @@ export function ActivityEditor() {
     />
   );
 
+  const authorModeModal = (
+    <AuthorModeModal
+      isOpen={authorModePromptIsOpen}
+      onClose={authorModePromptOnClose}
+      desiredAction="edit"
+      assignmentStatus={assignmentStatus}
+      user={user!}
+      proceedCallback={() => {
+        setMode("Edit");
+      }}
+      allowNo={true}
+      fetcher={fetcher}
+    />
+  );
+
   const contentTypeName = contentTypeToName[data.type];
 
   const { iconImage, iconColor } = getIconInfo(data.type);
@@ -467,6 +527,7 @@ export function ActivityEditor() {
       {shareDrawer}
       {assignmentDrawers}
       {copyContentModal}
+      {authorModeModal}
 
       <Grid
         background="doenet.lightBlue"
@@ -540,7 +601,13 @@ export function ActivityEditor() {
                       pr={{ base: "0px", lg: "10px" }}
                       leftIcon={editIcon}
                       onClick={() => {
-                        setMode("Edit");
+                        if (mode !== "Edit") {
+                          if (authorMode) {
+                            setMode("Edit");
+                          } else {
+                            authorModePromptOnOpen();
+                          }
+                        }
                       }}
                     >
                       <Show above="lg">{editLabel}</Show>

@@ -178,11 +178,34 @@ export function SharedActivities() {
       width="100%"
       textAlign="center"
     >
+      <Flex
+        width="100%"
+        paddingRight="0.5em"
+        paddingLeft="1em"
+        alignItems="middle"
+      >
+        <Box marginTop="5px" height="24px">
+          {parent ? (
+            <Link
+              to={`/sharedActivities/${ownerId}${parent.parent ? "/" + parent.parent.contentId : ""}`}
+              style={{
+                color: "var(--mainBlue)",
+              }}
+            >
+              {" "}
+              &lt; Back to{" "}
+              {parent.parent
+                ? parent.parent.name
+                : `Shared Activities of ${createFullName(owner)}`}
+            </Link>
+          ) : null}
+        </Box>
+      </Flex>
+
       <Tooltip label={headingText}>
         <Heading
           as="h2"
           size="lg"
-          paddingTop="10px"
           noOfLines={1}
           height="46px"
           data-test="Folder Heading"
@@ -256,23 +279,6 @@ export function SharedActivities() {
             ) : null}
           </HStack>
         </Flex>
-      </Flex>
-
-      <Flex marginRight=".5em" alignItems="center" paddingLeft="15px">
-        {parent ? (
-          <Link
-            to={`/sharedActivities/${ownerId}${parent.parent ? "/" + parent.parent.contentId : ""}`}
-            style={{
-              color: "var(--mainBlue)",
-            }}
-          >
-            {" "}
-            &lt; Back to{" "}
-            {parent.parent
-              ? parent.parent.name
-              : `Shared Activities of ${createFullName(owner)}`}
-          </Link>
-        ) : null}
       </Flex>
     </Box>
   );

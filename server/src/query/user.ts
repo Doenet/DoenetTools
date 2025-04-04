@@ -57,6 +57,7 @@ export async function getUserInfo({
       lastNames: true,
       isAnonymous: true,
       isAdmin: true,
+      isAuthor: true,
     },
   });
   return { user };
@@ -119,4 +120,17 @@ export async function updateUser({
   });
   const { isLibrary: _isLibrary, ...userNoLibrary } = user;
   return userNoLibrary;
+}
+
+export async function setIsAuthor({
+  loggedInUserId,
+  isAuthor,
+}: {
+  loggedInUserId: Uint8Array;
+  isAuthor: boolean;
+}) {
+  await prisma.users.update({
+    where: { userId: loggedInUserId },
+    data: { isAuthor },
+  });
 }

@@ -496,7 +496,7 @@ export function Home() {
                   textDecoration={"underline"}
                   href="https://www.doenet.org/public?tool=editor&doenetId=_4hcncjV6Ffabz5lhD47aL"
                 >
-                  See source
+                  See source code
                 </Link>
                 )
               </Text>

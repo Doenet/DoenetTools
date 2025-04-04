@@ -50,6 +50,7 @@ export type UserInfo = {
   firstNames: string | null;
   lastNames: string;
   email: string;
+  isAuthor?: boolean;
   numLibrary?: number;
   numCommunity?: number;
 };
