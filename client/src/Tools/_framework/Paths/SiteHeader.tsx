@@ -22,6 +22,7 @@ import {
   Hide,
   Checkbox,
   Box,
+  Tooltip,
 } from "@chakra-ui/react";
 import { HiOutlineMail } from "react-icons/hi";
 import { BsDiscord } from "react-icons/bs";
@@ -41,7 +42,7 @@ export type User =
       lastNames: string;
       isAnonymous: boolean;
       isAdmin: boolean;
-      isDeveloper: boolean;
+      isAuthor: boolean;
     }
   | undefined;
 
@@ -57,9 +58,9 @@ export async function action({ request }) {
   const formData = await request.formData();
   const formObj = Object.fromEntries(formData);
 
-  if (formObj?._action == "set is developer") {
-    await axios.post("/api/user/setIsDeveloper", {
-      isDeveloper: formObj.isDeveloper === "true",
+  if (formObj?._action == "set is author") {
+    await axios.post("/api/user/setIsAuthor", {
+      isAuthor: formObj.isAuthor === "true",
     });
   }
 
@@ -311,23 +312,29 @@ export function SiteHeader() {
                               alignContent="center"
                               marginTop="20px"
                             >
-                              <label>
-                                Developer mode:{" "}
-                                <Checkbox
-                                  marginTop="3px"
-                                  isChecked={user.isDeveloper}
-                                  onChange={() => {
-                                    fetcher.submit(
-                                      {
-                                        _action: "set is developer",
-                                        userId: user.userId,
-                                        isDeveloper: !user.isDeveloper,
-                                      },
-                                      { method: "post" },
-                                    );
-                                  }}
-                                />
-                              </label>
+                              <Tooltip
+                                label="In author mode, activities default to displaying with their source code"
+                                openDelay={500}
+                                placement="bottom-end"
+                              >
+                                <label>
+                                  Author mode:{" "}
+                                  <Checkbox
+                                    marginTop="3px"
+                                    isChecked={user.isAuthor}
+                                    onChange={() => {
+                                      fetcher.submit(
+                                        {
+                                          _action: "set is author",
+                                          userId: user.userId,
+                                          isAuthor: !user.isAuthor,
+                                        },
+                                        { method: "post" },
+                                      );
+                                    }}
+                                  />
+                                </label>
+                              </Tooltip>
                             </Box>
                           ) : null}
                         </VStack>

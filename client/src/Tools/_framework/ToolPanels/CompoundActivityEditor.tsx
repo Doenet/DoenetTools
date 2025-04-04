@@ -61,10 +61,7 @@ import {
   CreateLocalContentModal,
   createLocalContentModalActions,
 } from "./CreateLocalContentModal";
-import {
-  DeveloperModeModal,
-  developerModeModalActions,
-} from "./DeveloperModeModal";
+import { AuthorModeModal, authorModeModalActions } from "./AuthorModeModal";
 
 export async function compoundActivityEditorActions({
   formObj,
@@ -96,7 +93,7 @@ export async function compoundActivityEditorActions({
     return resultCF;
   }
 
-  const resultDMM = await developerModeModalActions({ formObj });
+  const resultDMM = await authorModeModalActions({ formObj });
   if (resultDMM) {
     return resultDMM;
   }
@@ -317,7 +314,7 @@ export function CompoundActivityEditor({
   } = useDisclosure();
 
   const developerModeModal = (
-    <DeveloperModeModal
+    <AuthorModeModal
       isOpen={developerModePromptIsOpen}
       onClose={developerModePromptOnClose}
       desiredAction="create doc"
@@ -744,9 +741,9 @@ export function CompoundActivityEditor({
       setSelectedCards={setSelectedCards}
       disableSelectFor={addTo ? [addTo.contentId] : undefined}
       disableAsSelectedFor={disableAsSelected}
-      isDeveloper={user?.isDeveloper}
+      isAuthor={user?.isAuthor}
       addDocumentCallback={(contentId) => {
-        if (user?.isDeveloper) {
+        if (user?.isAuthor) {
           createNewDocument(contentId);
         } else {
           setCreateDocumentParentId(contentId);
@@ -887,7 +884,7 @@ export function CompoundActivityEditor({
           <MenuItem
             data-test="Add Document Button"
             onClick={() => {
-              if (user?.isDeveloper) {
+              if (user?.isAuthor) {
                 createNewDocument();
               } else {
                 setCreateDocumentParentId(activity.contentId);
@@ -895,7 +892,7 @@ export function CompoundActivityEditor({
               }
             }}
           >
-            Blank Document {!user?.isDeveloper && <>(Code)</>}
+            Blank Document {!user?.isAuthor && <>(with source code)</>}
           </MenuItem>
         </MenuList>
       </Menu>

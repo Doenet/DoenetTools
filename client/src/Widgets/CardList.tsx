@@ -16,7 +16,7 @@ export default function CardList({
   setSelectedCards,
   disableSelectFor,
   disableAsSelectedFor,
-  isDeveloper = false,
+  isAuthor = false,
   addDocumentCallback,
 }: {
   content: (
@@ -38,7 +38,7 @@ export default function CardList({
   setSelectedCards?: React.Dispatch<React.SetStateAction<ContentDescription[]>>;
   disableSelectFor?: string[];
   disableAsSelectedFor?: string[];
-  isDeveloper?: boolean;
+  isAuthor?: boolean;
   addDocumentCallback?: (contentId: string) => void;
 }) {
   const selectedCardsFiltered = selectedCards?.filter((s) => s);
@@ -144,7 +144,7 @@ export default function CardList({
               : undefined
           }
           selectCallback={selectCallback}
-          isDeveloper={isDeveloper}
+          isAuthor={isAuthor}
           addDocumentCallback={addDocumentCallback}
           disableSelect={disableSelectFor?.includes(
             cardContent.content.contentId,

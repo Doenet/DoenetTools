@@ -77,9 +77,9 @@ import {
 import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
 import { SiteContext } from "./SiteHeader";
 import {
-  DeveloperModeModal,
-  developerModeModalActions,
-} from "../ToolPanels/DeveloperModeModal";
+  AuthorModeModal,
+  authorModeModalActions,
+} from "../ToolPanels/AuthorModeModal";
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -124,7 +124,7 @@ export async function action({ request, params }) {
     return resultCCM;
   }
 
-  const resultDMM = await developerModeModalActions({ formObj });
+  const resultDMM = await authorModeModalActions({ formObj });
   if (resultDMM) {
     return resultDMM;
   }
@@ -637,7 +637,7 @@ export function Activities() {
   } = useDisclosure();
 
   const developerModeModal = (
-    <DeveloperModeModal
+    <AuthorModeModal
       isOpen={developerModePromptIsOpen}
       onClose={developerModePromptOnClose}
       desiredAction="create doc"
@@ -868,14 +868,14 @@ export function Activities() {
                 <MenuItem
                   data-test="Add Document Button"
                   onClick={() => {
-                    if (user?.isDeveloper) {
+                    if (user?.isAuthor) {
                       createNewDocument();
                     } else {
                       developerModePromptOnOpen();
                     }
                   }}
                 >
-                  Document {!user?.isDeveloper && <>(Code)</>}
+                  Document {!user?.isAuthor && <>(with source code)</>}
                 </MenuItem>
               </MenuList>
             </Menu>

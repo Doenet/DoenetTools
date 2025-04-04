@@ -8,26 +8,26 @@ import {
   ModalOverlay,
   Text,
 } from "@chakra-ui/react";
-import React, { RefObject } from "react";
+import React, { RefObject, useRef } from "react";
 import { FetcherWithComponents } from "react-router";
 import axios from "axios";
 import { AssignmentStatus, UserInfo } from "../../../_utils/types";
 
-export async function developerModeModalActions({
+export async function authorModeModalActions({
   formObj,
 }: {
   [k: string]: any;
 }) {
-  if (formObj?._action == "set is developer") {
-    await axios.post("/api/user/setIsDeveloper", {
-      isDeveloper: formObj.isDeveloper === "true",
+  if (formObj?._action == "set is author") {
+    await axios.post("/api/user/setIsAuthor", {
+      isAuthor: formObj.isAuthor === "true",
     });
   }
 
   return null;
 }
 
-export function DeveloperModeModal({
+export function AuthorModeModal({
   isOpen,
   onClose,
   desiredAction,
@@ -50,17 +50,18 @@ export function DeveloperModeModal({
 }) {
   let promptText: string;
 
+  const editVerb =
+    (assignmentStatus ?? "Unassigned") === "Unassigned" ? "edit" : "view";
+
   if (desiredAction === "edit") {
-    promptText = `You are about to ${
-      (assignmentStatus ?? "Unassigned") === "Unassigned"
-        ? "edit the source code"
-        : "view the source code"
-    }
-        of this document.  Would you like to turn on developer mode?`;
+    promptText = `You are about to ${editVerb} the source code
+        of this document.  Would you like to turn on author mode?`;
   } else {
-    promptText = `Writing document code requires developer mode.
-    Would you like to turn on developer mode?`;
+    promptText = `Writing document source code requires author mode.
+    Would you like to turn on author mode?`;
   }
+
+  const cancelRef = useRef<HTMLButtonElement>(null);
 
   return (
     <Modal
@@ -69,19 +70,21 @@ export function DeveloperModeModal({
       finalFocusRef={finalFocusRef}
       size="md"
       returnFocusOnClose={false}
+      initialFocusRef={cancelRef}
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader textAlign="center">Turn on developer mode?</ModalHeader>
+        <ModalHeader textAlign="center">Turn on author mode?</ModalHeader>
         <ModalBody>
           <Text>{promptText}</Text>
 
           <Text marginTop="20px">
-            Developer mode will make the code view be the default for documents.
+            Author mode will make the source code view be the default for
+            documents.
           </Text>
 
           <Text marginTop="20px">
-            You can turn developer mode on and off using the account menu in the
+            You can turn author mode on and off using the account menu in the
             upper right corner.
           </Text>
         </ModalBody>
@@ -92,9 +95,9 @@ export function DeveloperModeModal({
             onClick={() => {
               fetcher.submit(
                 {
-                  _action: "set is developer",
+                  _action: "set is author",
                   userId: user.userId,
-                  isDeveloper: !user.isDeveloper,
+                  isAuthor: !user.isAuthor,
                 },
                 { method: "post" },
               );
@@ -112,7 +115,7 @@ export function DeveloperModeModal({
                 onClose();
               }}
             >
-              No
+              No, {editVerb} the source code anyway
             </Button>
           )}
           <Button
@@ -120,6 +123,7 @@ export function DeveloperModeModal({
             onClick={() => {
               onClose();
             }}
+            ref={cancelRef}
           >
             Cancel
           </Button>

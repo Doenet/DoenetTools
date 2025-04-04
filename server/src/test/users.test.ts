@@ -4,7 +4,7 @@ import { fromUUID } from "../utils/uuid";
 import {
   findOrCreateUser,
   getUserInfo,
-  setIsDeveloper,
+  setIsAuthor,
   updateUser,
   upgradeAnonymousUser,
 } from "../query/user";
@@ -91,13 +91,13 @@ test("turn developer mode on and off", async () => {
   const { userId } = await createTestUser();
 
   let userInfo = await getUserInfo({ loggedInUserId: userId });
-  expect(userInfo.user.isDeveloper).eq(false);
+  expect(userInfo.user.isAuthor).eq(false);
 
-  await setIsDeveloper({ loggedInUserId: userId, isDeveloper: true });
+  await setIsAuthor({ loggedInUserId: userId, isAuthor: true });
   userInfo = await getUserInfo({ loggedInUserId: userId });
-  expect(userInfo.user.isDeveloper).eq(true);
+  expect(userInfo.user.isAuthor).eq(true);
 
-  await setIsDeveloper({ loggedInUserId: userId, isDeveloper: false });
+  await setIsAuthor({ loggedInUserId: userId, isAuthor: false });
   userInfo = await getUserInfo({ loggedInUserId: userId });
-  expect(userInfo.user.isDeveloper).eq(false);
+  expect(userInfo.user.isAuthor).eq(false);
 });

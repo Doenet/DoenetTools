@@ -5,6 +5,6 @@ export const userNamesSchema = z.object({
   lastNames: z.string(),
 });
 
-export const setIsDeveloperSchema = z.object({
-  isDeveloper: z.boolean(),
+export const setIsAuthorSchema = z.object({
+  isAuthor: z.boolean(),
 });

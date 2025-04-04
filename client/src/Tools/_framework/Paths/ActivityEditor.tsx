@@ -67,9 +67,9 @@ import { ActivitySource } from "../../../_utils/viewerTypes";
 import { CopyContentAndReportFinish } from "../ToolPanels/CopyContentAndReportFinish";
 import { SiteContext } from "./SiteHeader";
 import {
-  DeveloperModeModal,
-  developerModeModalActions,
-} from "../ToolPanels/DeveloperModeModal";
+  AuthorModeModal,
+  authorModeModalActions,
+} from "../ToolPanels/AuthorModeModal";
 
 export async function action({ params, request }) {
   const formData = await request.formData();
@@ -111,7 +111,7 @@ export async function action({ params, request }) {
     return resultNAE;
   }
 
-  const resultDM = await developerModeModalActions({ formObj });
+  const resultDM = await authorModeModalActions({ formObj });
   if (resultDM) {
     return resultDM;
   }
@@ -300,9 +300,9 @@ export function ActivityEditor() {
   } = useDisclosure();
 
   const {
-    isOpen: developerModePromptIsOpen,
-    onOpen: developerModePromptOnOpen,
-    onClose: developerModePromptOnClose,
+    isOpen: authorModePromptIsOpen,
+    onOpen: authorModePromptOnOpen,
+    onClose: authorModePromptOnClose,
   } = useDisclosure();
 
   const { user } = useOutletContext<SiteContext>();
@@ -315,14 +315,14 @@ export function ActivityEditor() {
   const readOnlyRef = useRef(readOnly);
   readOnlyRef.current = readOnly;
 
-  const developerMode = user?.isDeveloper || data.type !== "singleDoc";
+  const authorMode = user?.isAuthor || data.type !== "singleDoc";
 
   const [mode, setMode] = useState<"Edit" | "View">(
-    developerMode ? "Edit" : "View",
+    authorMode ? "Edit" : "View",
   );
 
   useEffect(() => {
-    setMode(developerMode ? "Edit" : "View");
+    setMode(authorMode ? "Edit" : "View");
   }, [contentId]);
 
   const isLibraryActivity = Boolean(activityData.libraryActivityInfo);
@@ -344,16 +344,15 @@ export function ActivityEditor() {
 
   if (assignmentStatus === "Unassigned") {
     editIcon = <MdModeEditOutline size={20} />;
-    if (developerMode) {
-      editLabel = "Edit";
+    editLabel = "Edit";
+    if (authorMode) {
       editTooltip = "Edit activity";
     } else {
-      editLabel = "Develop";
-      editTooltip = "Turn on developer mode to edit";
+      editTooltip = "Turn on author mode to edit";
     }
   } else {
     editIcon = <MdOutlineEditOff size={20} />;
-    if (developerMode) {
+    if (authorMode) {
       if (data.type === "singleDoc") {
         editLabel = "See code";
         editTooltip = "See read-only view of code";
@@ -362,8 +361,8 @@ export function ActivityEditor() {
         editTooltip = `See read-only view of documents ${data.type === "sequence" ? "and question banks in the problem set" : "in the question bank"}`;
       }
     } else {
-      editLabel = "Developer view";
-      editTooltip = "Turn on developer mode to see read-only view of code";
+      editLabel = "Author view";
+      editTooltip = "Turn on author mode to see read-only view of code";
     }
   }
 
@@ -484,10 +483,10 @@ export function ActivityEditor() {
     />
   );
 
-  const developerModeModal = (
-    <DeveloperModeModal
-      isOpen={developerModePromptIsOpen}
-      onClose={developerModePromptOnClose}
+  const authorModeModal = (
+    <AuthorModeModal
+      isOpen={authorModePromptIsOpen}
+      onClose={authorModePromptOnClose}
       desiredAction="edit"
       assignmentStatus={assignmentStatus}
       user={user!}
@@ -528,7 +527,7 @@ export function ActivityEditor() {
       {shareDrawer}
       {assignmentDrawers}
       {copyContentModal}
-      {developerModeModal}
+      {authorModeModal}
 
       <Grid
         background="doenet.lightBlue"
@@ -603,10 +602,10 @@ export function ActivityEditor() {
                       leftIcon={editIcon}
                       onClick={() => {
                         if (mode !== "Edit") {
-                          if (developerMode) {
+                          if (authorMode) {
                             setMode("Edit");
                           } else {
-                            developerModePromptOnOpen();
+                            authorModePromptOnOpen();
                           }
                         }
                       }}

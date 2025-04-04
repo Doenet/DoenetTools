@@ -52,7 +52,7 @@ export default function Card({
   indentLevel = 0,
   selectedCards,
   selectCallback,
-  isDeveloper = false,
+  isAuthor = false,
   addDocumentCallback,
   disableSelect = false,
   disableAsSelected = false,
@@ -72,7 +72,7 @@ export default function Card({
       idx: number;
     },
   ) => void;
-  isDeveloper?: boolean;
+  isAuthor?: boolean;
   addDocumentCallback?: (contentId: string) => void;
   disableSelect?: boolean;
   disableAsSelected?: boolean;
@@ -409,7 +409,7 @@ export default function Card({
               data-test="Add Document Button"
               onClick={() => addDocumentCallback?.(contentId)}
             >
-              Blank Document {!isDeveloper && "(Code)"}
+              Blank Document {!isAuthor && "(with source code)"}
             </MenuItem>
           </MenuList>
         </Menu>

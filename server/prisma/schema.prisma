@@ -290,7 +290,7 @@ model users {
   isAdmin            Boolean              @default(false)
   isLibrary          Boolean              @default(false)
   isAnonymous        Boolean              @default(false)
-  isDeveloper        Boolean              @default(false)
+  isAuthor           Boolean              @default(false)
   content            content[]
   contentState       contentState[]
   submittedResponses submittedResponses[]
