@@ -74,6 +74,7 @@ export async function sharingActions({ formObj }: { [k: string]: any }) {
           return { status: "No self share" };
         }
       }
+      throw e;
     }
 
     return { status: "Added", email: formObj.email };
@@ -284,7 +285,7 @@ export function ShareSettings({
               border="solid 1px lightgray"
               borderRadius="5px"
               padding="5px 10px"
-              backgroundColor="orange.100"
+              backgroundColor="green.100"
             >
               {statusText}
             </Box>

@@ -163,13 +163,14 @@ export function ContentSettingsDrawer({
             </TabList>
             <Box height="calc(100vh - 130px)">
               <TabPanels height="100%">
-                <TabPanel overflowY="auto" height="100%">
+                <TabPanel overflowY="auto" height="100%" paddingTop="5px">
                   <GeneralContentControls
                     fetcher={fetcher}
                     contentData={contentData}
                     allDoenetmlVersions={allDoenetmlVersions}
                     availableFeatures={availableFeatures}
                     highlightRename={highlightRename}
+                    isOpen={isOpen}
                   />
                 </TabPanel>
                 {contentData.type !== "folder" ? (
@@ -186,7 +187,7 @@ export function ContentSettingsDrawer({
                   </TabPanel>
                 ) : null}
 
-                <TabPanel>
+                <TabPanel paddingTop="5px">
                   {contentData.type !== "folder" && !isSubActivity ? (
                     <AssignmentSettings
                       fetcher={fetcher}

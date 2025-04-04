@@ -10,7 +10,7 @@ async function main() {
       displayedVersion: "0.6",
       fullVersion: "0.6.7",
       deprecated: true,
-      deprecationMessage: "It will be removed after June 2025.",
+      deprecationMessage: "It will be removed after June 2026.",
     },
   });
   await prisma.doenetmlVersions.upsert({
