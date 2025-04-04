@@ -354,15 +354,15 @@ export function ActivityEditor() {
     editIcon = <MdOutlineEditOff size={20} />;
     if (authorMode) {
       if (data.type === "singleDoc") {
-        editLabel = "See code";
-        editTooltip = "See read-only view of code";
+        editLabel = "See source code";
+        editTooltip = "See read-only view of source code";
       } else {
         editLabel = "See list";
         editTooltip = `See read-only view of documents ${data.type === "sequence" ? "and question banks in the problem set" : "in the question bank"}`;
       }
     } else {
-      editLabel = "Author view";
-      editTooltip = "Turn on author mode to see read-only view of code";
+      editLabel = "See source code";
+      editTooltip = "Turn on author mode to see read-only view of source code";
     }
   }
 
