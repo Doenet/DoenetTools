@@ -122,7 +122,7 @@ passport.use(
         },
         Message: {
           Subject: {
-            Data: "Finish log into Doenet",
+            Data: "Finish logging into Doenet",
           },
           Body: {
             Text: {
