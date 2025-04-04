@@ -20,7 +20,6 @@ import {
   Tooltip,
   VStack,
   useDisclosure,
-  IconButton,
 } from "@chakra-ui/react";
 import { BsPlayBtnFill } from "react-icons/bs";
 import {
@@ -52,8 +51,12 @@ import {
   Content,
   DoenetmlVersion,
   License,
+  ContentRevision,
 } from "../../../_utils/types";
-import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
+import {
+  ActivityDoenetMLEditor,
+  activityDoenetMLEditorActions,
+} from "../ToolPanels/ActivityDoenetMLEditor";
 import {
   CompoundActivityEditor,
   compoundActivityEditorActions,
@@ -116,12 +119,22 @@ export async function action({ params, request }) {
     return resultDM;
   }
 
+  const resultADE = await activityDoenetMLEditorActions({ formObj });
+  if (resultADE) {
+    return resultADE;
+  }
+
   return null;
 }
 
 export async function loader({ params }) {
   const {
-    data: { editableByMe, activity: activityData, availableFeatures },
+    data: {
+      editableByMe,
+      activity: activityData,
+      availableFeatures,
+      revisions,
+    },
   } = await axios.get(
     `/api/activityEditView/getActivityEditorData/${params.contentId}`,
   );
@@ -169,6 +182,7 @@ export async function loader({ params }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
+      revisions,
     };
   } else {
     const activityJson = compileActivityFromContent(activityData);
@@ -183,6 +197,7 @@ export async function loader({ params }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
+      revisions,
     };
   }
 }
@@ -243,6 +258,7 @@ export function ActivityEditor() {
     allLicenses: License[];
     availableFeatures: ContentFeature[];
     activityData: Content;
+    revisions: ContentRevision[];
   } & (
     | {
         type: "singleDoc";
@@ -261,6 +277,7 @@ export function ActivityEditor() {
     allDoenetmlVersions,
     allLicenses,
     availableFeatures,
+    revisions,
   } = data;
 
   const finalFocusRef = useRef<HTMLElement | null>(null);
@@ -303,6 +320,12 @@ export function ActivityEditor() {
     isOpen: authorModePromptIsOpen,
     onOpen: authorModePromptOnOpen,
     onClose: authorModePromptOnClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: historyIsOpen,
+    onOpen: historyOnOpen,
+    onClose: historyOnClose,
   } = useDisclosure();
 
   const { user } = useOutletContext<SiteContext>();
@@ -405,6 +428,11 @@ export function ActivityEditor() {
         mode={mode}
         contentId={contentId}
         headerHeight={`${readOnly ? 120 : 80}px`}
+        historyIsOpen={historyIsOpen}
+        historyOnClose={historyOnClose}
+        fetcher={fetcher}
+        activityName={activityData.name}
+        revisions={revisions}
       />
     );
   } else {
@@ -551,10 +579,10 @@ export function ActivityEditor() {
           <Grid
             templateAreas={`"leftControls label rightControls"`}
             templateColumns={{
-              base: "95px 1fr 155px",
-              sm: "100px 1fr 165px",
-              md: "200px 1fr 200px",
-              lg: "325px 1fr 325px",
+              base: "95px 1fr 165px",
+              sm: "100px 1fr 170px",
+              md: "170px 1fr 170px",
+              lg: "370px 1fr 370px",
             }}
             width="100%"
           >
@@ -627,119 +655,129 @@ export function ActivityEditor() {
               display="flex"
               justifyContent="flex-end"
             >
-              <HStack mr={{ base: "5px", sm: "10px" }} gap={0}>
-                {data.type === "singleDoc" && (
-                  <Tooltip label="Open document history">
-                    <IconButton
-                      isRound={true}
-                      icon={<MdHistory size={20} />}
-                      size="md"
-                      variant="ghost"
-                      aria-label="Open document history"
-                      onClick={() => {
-                        navigate(`/activityHistory/${contentId}`);
-                      }}
-                    />
-                  </Tooltip>
-                )}
-                <ButtonGroup size="sm" isAttached variant="outline">
-                  {isLibraryActivity ? (
-                    <Tooltip
-                      hasArrow
-                      label="Open Curation Controls"
-                      placement="bottom-end"
-                    >
-                      <Button
-                        data-test="Curate Button"
-                        size="sm"
-                        pr={{ base: "0px", lg: "10px" }}
-                        leftIcon={<MdOutlineGroup size={20} />}
-                        onClick={() => {
-                          finalFocusRef.current = curateBtnRef.current;
-                          sharingOnOpen();
-                        }}
-                        ref={curateBtnRef}
-                      >
-                        <Show above="lg">Curate</Show>
-                      </Button>
-                    </Tooltip>
-                  ) : (
-                    <>
-                      {isSubActivity ? null : (
-                        <Tooltip
-                          hasArrow
-                          label={
-                            assignmentStatus === "Unassigned"
-                              ? "Assign Activity"
-                              : "Manage Assignment"
-                          }
-                          placement="bottom-end"
-                        >
-                          <Button
-                            data-test="Assign Activity Button"
-                            size="sm"
-                            pr={{ base: "0px", lg: "10px" }}
-                            leftIcon={<MdOutlineAssignment size={20} />}
-                            onClick={() => {
-                              finalFocusRef.current = assignBtnRef.current;
-                              assignmentSettingsOnOpen();
-                            }}
-                            ref={assignBtnRef}
-                          >
-                            <Show above="lg">
-                              {assignmentStatus === "Unassigned"
-                                ? "Assign"
-                                : "Assigned"}
-                            </Show>
-                          </Button>
-                        </Tooltip>
-                      )}
-
-                      <Tooltip
-                        hasArrow
-                        label="Open Sharing Controls"
-                        placement="bottom-end"
-                      >
-                        <Button
-                          data-test="Sharing Button"
-                          size="sm"
-                          pr={{ base: "0px", lg: "10px" }}
-                          leftIcon={<MdOutlineGroup size={20} />}
-                          onClick={() => {
-                            finalFocusRef.current = sharingBtnRef.current;
-                            setSettingsContentId(activityData.contentId);
-                            sharingOnOpen();
-                          }}
-                          ref={sharingBtnRef}
-                        >
-                          <Show above="lg">Share</Show>
-                        </Button>
-                      </Tooltip>
-                    </>
-                  )}
+              <ButtonGroup
+                size="sm"
+                isAttached
+                variant="outline"
+                mt="4px"
+                mr={{ base: "5px", sm: "10px" }}
+              >
+                {isLibraryActivity ? (
                   <Tooltip
                     hasArrow
-                    label="Open Settings"
+                    label="Open Curation Controls"
                     placement="bottom-end"
                   >
                     <Button
-                      data-test="Settings Button"
+                      data-test="Curate Button"
                       size="sm"
                       pr={{ base: "0px", lg: "10px" }}
-                      leftIcon={<FaCog size={16} />}
+                      leftIcon={<MdOutlineGroup size={20} />}
+                      aria-label="open curation controls"
                       onClick={() => {
-                        finalFocusRef.current = settingsBtnRef.current;
-                        setSettingsDisplayTab("general");
-                        setSettingsContentId(activityData.contentId);
-                        settingsOnOpen();
+                        finalFocusRef.current = curateBtnRef.current;
+                        sharingOnOpen();
                       }}
-                      ref={settingsBtnRef}
+                      ref={curateBtnRef}
                     >
-                      <Show above="lg">Settings</Show>
+                      <Show above="lg">Curate</Show>
                     </Button>
                   </Tooltip>
-                </ButtonGroup>
-              </HStack>
+                ) : (
+                  <>
+                    {isSubActivity ? null : (
+                      <Tooltip
+                        hasArrow
+                        label={
+                          assignmentStatus === "Unassigned"
+                            ? "Assign Activity"
+                            : "Manage Assignment"
+                        }
+                        placement="bottom-end"
+                      >
+                        <Button
+                          data-test="Assign Activity Button"
+                          size="sm"
+                          pr={{ base: "0px", lg: "10px" }}
+                          leftIcon={<MdOutlineAssignment size={20} />}
+                          aria-label="assign activity"
+                          onClick={() => {
+                            finalFocusRef.current = assignBtnRef.current;
+                            assignmentSettingsOnOpen();
+                          }}
+                          ref={assignBtnRef}
+                        >
+                          <Show above="lg">
+                            {assignmentStatus === "Unassigned"
+                              ? "Assign"
+                              : "Assigned"}
+                          </Show>
+                        </Button>
+                      </Tooltip>
+                    )}
+
+                    <Tooltip
+                      hasArrow
+                      label="Open Sharing Controls"
+                      placement="bottom-end"
+                    >
+                      <Button
+                        data-test="Sharing Button"
+                        size="sm"
+                        pr={{ base: "0px", lg: "10px" }}
+                        leftIcon={<MdOutlineGroup size={20} />}
+                        aria-label="Open sharing controls"
+                        onClick={() => {
+                          finalFocusRef.current = sharingBtnRef.current;
+                          setSettingsContentId(activityData.contentId);
+                          sharingOnOpen();
+                        }}
+                        ref={sharingBtnRef}
+                      >
+                        <Show above="lg">Share</Show>
+                      </Button>
+                    </Tooltip>
+                  </>
+                )}
+                {data.type === "singleDoc" && authorMode && (
+                  <Tooltip
+                    hasArrow
+                    label="Open document history"
+                    placement="bottom-end"
+                  >
+                    <Button
+                      data-test="History Button"
+                      size="sm"
+                      pr={{ base: "0px", lg: "10px" }}
+                      leftIcon={<MdHistory size={20} />}
+                      aria-label="Open document history"
+                      onClick={() => {
+                        historyOnOpen();
+                      }}
+                    >
+                      <Show above="lg">History</Show>
+                    </Button>
+                  </Tooltip>
+                )}
+                <Tooltip hasArrow label="Open Settings" placement="bottom-end">
+                  <Button
+                    data-test="Settings Button"
+                    size="sm"
+                    pr={{ base: "0px", lg: "10px" }}
+                    leftIcon={<FaCog size={16} />}
+                    aria-label="Open setting"
+                    onClick={() => {
+                      finalFocusRef.current = settingsBtnRef.current;
+                      setSettingsDisplayTab("general");
+                      setSettingsContentId(activityData.contentId);
+                      settingsOnOpen();
+                    }}
+                    ref={settingsBtnRef}
+                  >
+                    <Show above="lg">Settings</Show>
+                  </Button>
+                </Tooltip>
+              </ButtonGroup>
             </GridItem>
           </Grid>
         </GridItem>

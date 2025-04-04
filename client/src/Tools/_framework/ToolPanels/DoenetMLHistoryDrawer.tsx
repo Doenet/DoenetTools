@@ -1,49 +1,55 @@
-import React, { ReactElement, useEffect, useMemo, useState } from "react";
+import React, {
+  ReactElement,
+  RefObject,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { DoenetEditor } from "@doenet/doenetml-iframe";
 import { PanelPair } from "../../../Widgets/PanelPair";
-import { ContentRevision, Doc, DoenetmlVersion } from "../../../_utils/types";
+import { ContentRevision, DoenetmlVersion } from "../../../_utils/types";
 import {
   Box,
   Button,
   Flex,
-  Grid,
-  GridItem,
   Heading,
   Hide,
-  Link as ChakraLink,
   Select,
   Show,
   Text,
   Tooltip,
   useDisclosure,
-  Icon,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  DrawerHeader,
+  DrawerBody,
+  DrawerFooter,
 } from "@chakra-ui/react";
 import { MdOutlineCameraAlt } from "react-icons/md";
-import {
-  useFetcher,
-  useLoaderData,
-  useNavigate,
-  Link as ReactRouterLink,
-} from "react-router";
-import axios from "axios";
+import { FetcherWithComponents } from "react-router";
 
 import {
   CreateRevisionModel,
   createRevisionModelActions,
-} from "../ToolPanels/DoenetMLHistoryModals/CreateRevisionModal";
-import { RevisionInfoModal } from "../ToolPanels/DoenetMLHistoryModals/RevisionInfoModal";
+} from "./DoenetMLHistoryModals/CreateRevisionModal";
+import {
+  RevisionInfoModal,
+  revisionInfoModalActions,
+} from "./DoenetMLHistoryModals/RevisionInfoModal";
 import { DateTime } from "luxon";
 import { cidFromText } from "../../../_utils/cid";
 import {
   SetToRevisionModal,
   setToRevisionModalActions,
-} from "../ToolPanels/DoenetMLHistoryModals/SetToRevisionModal";
-import { contentTypeToName, getIconInfo } from "../../../_utils/activity";
+} from "./DoenetMLHistoryModals/SetToRevisionModal";
 
-export async function action({ request }) {
-  const formData = await request.formData();
-  const formObj = Object.fromEntries(formData);
-
+export async function doenetMLHistoryActions({
+  formObj,
+}: {
+  [k: string]: any;
+}) {
   const resultTSM = await createRevisionModelActions({ formObj });
   if (resultTSM) {
     return resultTSM;
@@ -54,48 +60,42 @@ export async function action({ request }) {
     return resultRM;
   }
 
+  const resultRIM = await revisionInfoModalActions({ formObj });
+  if (resultRIM) {
+    return resultRIM;
+  }
+
   return null;
 }
 
-export async function loader({ params, request }) {
-  const {
-    data: { content, revisions },
-  } = await axios.get(`/api/info/getContentHistory/${params.contentId}`);
-
-  const url = new URL(request.url);
-  let revNum = 0;
-  const revNumPar = url.searchParams.get("revNum");
-  if (revNumPar) {
-    revNum = Number(revNumPar);
-    if (!Number.isInteger(revNum) || revNum <= 0) {
-      revNum = 0;
-    }
-  }
-
-  if (content.type !== "singleDoc") {
-    throw Error("DoenetMLHistory implemented only for documents");
-  }
-
-  return {
-    content,
-    revisions,
-    revNum,
-    doenetML: content.doenetML,
-    doenetmlVersion: content.doenetmlVersion,
-  };
-}
-
-export function DoenetMLHistory() {
-  const { content, doenetML, doenetmlVersion, revisions, revNum } =
-    useLoaderData() as {
-      content: Doc;
-      doenetML: string;
-      doenetmlVersion: DoenetmlVersion;
-      revisions: ContentRevision[];
-      revNum: number;
-    };
-  const navigate = useNavigate();
-  const fetcher = useFetcher();
+export function DoenetMLHistoryDrawer({
+  doenetML,
+  doenetmlChangeCallback,
+  immediateDoenetmlChangeCallback,
+  documentStructureCallback: _documentStructureCallback, /// TODO: how to handle document structure changes
+  doenetmlVersion,
+  isOpen,
+  onClose,
+  finalFocusRef,
+  fetcher,
+  contentId,
+  activityName = "",
+  revisions,
+}: {
+  doenetML: string;
+  doenetmlChangeCallback: () => Promise<void>;
+  immediateDoenetmlChangeCallback: (arg: string) => void;
+  documentStructureCallback: (arg: any) => void;
+  doenetmlVersion: DoenetmlVersion;
+  isOpen: boolean;
+  onClose: () => void;
+  finalFocusRef?: RefObject<HTMLElement>;
+  fetcher: FetcherWithComponents<any>;
+  contentId: string;
+  activityName?: string;
+  revisions: ContentRevision[];
+}) {
+  const [revNum, setRevNum] = useState(0);
 
   const selectedRevision = useMemo(() => {
     return revisions.find((rev) => rev.revisionNum === revNum) ?? null;
@@ -161,7 +161,7 @@ export function DoenetMLHistory() {
       isOpen={createRevisionIsOpen}
       onClose={createRevisionOnClose}
       revisions={revisions}
-      contentId={content.contentId}
+      contentId={contentId}
       atLastRevision={atLastRevision}
       fetcher={fetcher}
     />
@@ -178,41 +178,45 @@ export function DoenetMLHistory() {
       isOpen={revisionRemixInfoIsOpen}
       onClose={revisionRemixInfoOnClose}
       revision={selectedRevision}
+      fetcher={fetcher}
+      contentId={contentId}
     />
   );
 
   const {
-    isOpen: setToRevisionRemixIsOpen,
-    onOpen: setToRevisionRemixOnOpen,
-    onClose: setToRevisionRemixOnClose,
+    isOpen: setToRevisionIsOpen,
+    onOpen: setToRevisionOnOpen,
+    onClose: setToRevisionOnClose,
   } = useDisclosure();
 
-  const setToRevisionRemixModal = selectedRevision && (
+  const setToRevisionModal = selectedRevision && (
     <SetToRevisionModal
-      isOpen={setToRevisionRemixIsOpen}
-      onClose={setToRevisionRemixOnClose}
-      contentId={content.contentId}
-      activityName={content.name}
+      isOpen={setToRevisionIsOpen}
+      onClose={setToRevisionOnClose}
+      contentId={contentId}
       revision={selectedRevision}
       fetcher={fetcher}
+      doenetmlChangeCallback={doenetmlChangeCallback}
+      immediateDoenetmlChangeCallback={immediateDoenetmlChangeCallback}
+      setRevNum={setRevNum}
     />
   );
 
-  let updateButtons: ReactElement | null = null;
+  let updateButton: ReactElement | null = null;
   if (selectedRevision) {
     const message =
-      (atSelectedRevision ? `Already at` : `Revert to`) + ` revision`;
+      (atSelectedRevision ? `Already at` : `Use`) + ` this save point`;
     const extendedMessage = message + ": " + selectedRevision.revisionName;
 
-    updateButtons = (
-      <Tooltip label={extendedMessage} openDelay={500}>
+    updateButton = (
+      <Tooltip label={extendedMessage} openDelay={500} placement="bottom-end">
         <Button
           size="xs"
           marginLeft="10px"
           aria-label={extendedMessage}
           isDisabled={atSelectedRevision}
           onClick={() => {
-            setToRevisionRemixOnOpen();
+            setToRevisionOnOpen();
           }}
         >
           {message}
@@ -221,30 +225,9 @@ export function DoenetMLHistory() {
     );
   }
 
-  const contentTypeName = contentTypeToName["singleDoc"];
-
-  const { iconImage, iconColor } = getIconInfo("singleDoc");
-
-  const typeIcon = (
-    <Tooltip label={contentTypeName}>
-      <Box>
-        <Icon
-          as={iconImage}
-          color={iconColor}
-          boxSizing="content-box"
-          width="24px"
-          height="24px"
-          paddingRight="10px"
-          verticalAlign="middle"
-          aria-label={contentTypeName}
-        />
-      </Box>
-    </Tooltip>
-  );
-
   const revisionLabel = atLastRevision
-    ? "Update details on the last revision"
-    : "Create a new revision from the current state of the activity";
+    ? "Save point already created"
+    : "Create a new save point from the current state of the activity";
 
   const currentEditor = (
     <Box height="100%">
@@ -263,15 +246,15 @@ export function DoenetMLHistory() {
             size="xs"
             marginLeft="10px"
             aria-label={revisionLabel}
+            isDisabled={atLastRevision}
             leftIcon={<MdOutlineCameraAlt />}
             onClick={() => {
               createRevisionOnOpen();
             }}
           >
-            {atLastRevision ? "Update current revision" : "Create new revision"}
+            Create save point
           </Button>
         </Tooltip>
-        {updateButtons}
       </Flex>
 
       <DoenetEditor
@@ -302,7 +285,7 @@ export function DoenetMLHistory() {
     <>
       <Select
         placeholder={
-          revisions.length > 0 ? "Select revision" : "No revisions available"
+          revisions.length > 0 ? "Select save point" : "No save point available"
         }
         size="sm"
         variant="filled"
@@ -311,9 +294,7 @@ export function DoenetMLHistory() {
         width="200px"
         value={revNum}
         onChange={(e) => {
-          navigate(`.?mode=History&revNum=${e.target.value}`, {
-            replace: true,
-          });
+          setRevNum(Number(e.target.value));
         }}
       >
         {revisions.map((rev) => (
@@ -329,13 +310,13 @@ export function DoenetMLHistory() {
       {selectedRevision && (
         <Button
           size="xs"
-          marginLeft="5px"
-          aria-label="Information on selected revision"
+          marginLeft="10px"
+          aria-label="Information on selected save point"
           onClick={() => {
             revisionRemixInfoOnOpen();
           }}
         >
-          Revision info
+          Save point info
         </Button>
       )}
     </>
@@ -349,6 +330,7 @@ export function DoenetMLHistory() {
       alignItems="center"
     >
       {revisionsSelector}
+      {updateButton}
     </Flex>
   );
 
@@ -373,7 +355,7 @@ export function DoenetMLHistory() {
         <Box margin="20px">
           The current state of the activity is shown{" "}
           <Show above="sm">at left</Show>
-          <Hide above="sm">above</Hide>. Select a revision to see its history.
+          <Hide above="sm">above</Hide>. Select a save point to see its history.
         </Box>
       )}
     </Box>
@@ -383,81 +365,40 @@ export function DoenetMLHistory() {
     <>
       {createRevisionModel}
       {revisionRemixInfoModal}
-      {setToRevisionRemixModal}
-      <Grid
-        background="doenet.lightBlue"
-        minHeight="calc(100vh - 40px)" //40px header height
-        templateAreas={`"header"
-      "centerContent"
-      `}
-        templateRows="40px auto"
-        position="relative"
+      {setToRevisionModal}
+      <Drawer
+        isOpen={isOpen}
+        placement="right"
+        onClose={onClose}
+        finalFocusRef={finalFocusRef}
+        size="full"
       >
-        <GridItem
-          area="header"
-          position="fixed"
-          height="40px"
-          background="doenet.canvas"
-          width="100%"
-          zIndex="500"
-        >
-          <Grid
-            templateAreas={`"leftControls label rightControls"`}
-            templateColumns={{
-              base: "5px 1fr 160px",
-              sm: "10px 1fr 165px",
-              md: "165px 1fr 165px",
-            }}
-            width="100%"
-          >
-            <GridItem area="leftControls" height="40px" alignContent="center">
-              <Show above="md">
-                <Box width="50px" marginLeft="15px">
-                  <ChakraLink
-                    as={ReactRouterLink}
-                    to={".."}
-                    style={{
-                      color: "var(--mainBlue)",
-                    }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      navigate(-1);
-                    }}
-                  >
-                    {" "}
-                    &lt; Back
-                  </ChakraLink>
-                </Box>
-              </Show>
-            </GridItem>
-            <GridItem area="label">
-              <Flex justifyContent="center" alignItems="center" height="40px">
-                <Text marginRight="5px" fontWeight="bold">
-                  Document history:
-                </Text>{" "}
-                {typeIcon}
-                <Tooltip label={content.name} openDelay={500}>
-                  <Text noOfLines={1}>{content.name}</Text>
-                </Tooltip>
-              </Flex>
-            </GridItem>
-            <GridItem
-              area="rightControls"
-              display="flex"
-              justifyContent="flex-end"
-              alignItems="center"
-            ></GridItem>
-          </Grid>
-        </GridItem>
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton data-test="Close History Drawer Button" />
+          <DrawerHeader textAlign="center" height="70px">
+            Document history
+            <Tooltip label={activityName} openDelay={1000}>
+              <Text fontSize="smaller" noOfLines={1}>
+                {activityName}
+              </Text>
+            </Tooltip>
+          </DrawerHeader>
 
-        <GridItem area="centerContent">
-          <PanelPair
-            panelA={currentEditor}
-            panelB={otherEditor}
-            height={`calc(100vh - 80px)`}
-          />
-        </GridItem>
-      </Grid>
+          <DrawerBody pb="0">
+            <PanelPair
+              panelA={currentEditor}
+              panelB={otherEditor}
+              height={`calc(100vh - 138px)`}
+            />
+          </DrawerBody>
+          <DrawerFooter height="60px">
+            <Button variant="outline" mr={3} onClick={onClose}>
+              Close
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }

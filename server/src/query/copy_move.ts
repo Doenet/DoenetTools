@@ -631,7 +631,7 @@ async function createContributorHistory({
   const remixContentRevision = await createContentRevision({
     contentId: remixContentId,
     loggedInUserId,
-    revisionName: "Original revision",
+    revisionName: "Initial save point",
     note: `Remixed from: ${originalName} by ${createFullName(originalOwner)}`,
     renameMatching: false,
   });

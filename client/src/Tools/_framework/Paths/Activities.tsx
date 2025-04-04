@@ -631,15 +631,15 @@ export function Activities() {
     ) : null;
 
   const {
-    isOpen: developerModePromptIsOpen,
-    onOpen: developerModePromptOnOpen,
-    onClose: developerModePromptOnClose,
+    isOpen: authorModePromptIsOpen,
+    onOpen: authorModePromptOnOpen,
+    onClose: authorModePromptOnClose,
   } = useDisclosure();
 
-  const developerModeModal = (
+  const authorModeModal = (
     <AuthorModeModal
-      isOpen={developerModePromptIsOpen}
-      onClose={developerModePromptOnClose}
+      isOpen={authorModePromptIsOpen}
+      onClose={authorModePromptOnClose}
       desiredAction="create doc"
       user={user!}
       proceedCallback={createNewDocument}
@@ -871,7 +871,7 @@ export function Activities() {
                     if (user?.isAuthor) {
                       createNewDocument();
                     } else {
-                      developerModePromptOnOpen();
+                      authorModePromptOnOpen();
                     }
                   }}
                 >
@@ -996,7 +996,7 @@ export function Activities() {
       {createFolderModal}
       {deleteModal}
       {copyContentModal}
-      {developerModeModal}
+      {authorModeModal}
 
       {heading}
 

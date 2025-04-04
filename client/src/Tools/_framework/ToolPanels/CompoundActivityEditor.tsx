@@ -308,15 +308,15 @@ export function CompoundActivityEditor({
   );
 
   const {
-    isOpen: developerModePromptIsOpen,
-    onOpen: developerModePromptOnOpen,
-    onClose: developerModePromptOnClose,
+    isOpen: authorModePromptIsOpen,
+    onOpen: authorModePromptOnOpen,
+    onClose: authorModePromptOnClose,
   } = useDisclosure();
 
-  const developerModeModal = (
+  const authorModeModal = (
     <AuthorModeModal
-      isOpen={developerModePromptIsOpen}
-      onClose={developerModePromptOnClose}
+      isOpen={authorModePromptIsOpen}
+      onClose={authorModePromptOnClose}
       desiredAction="create doc"
       user={user!}
       proceedCallback={() => {
@@ -747,7 +747,7 @@ export function CompoundActivityEditor({
           createNewDocument(contentId);
         } else {
           setCreateDocumentParentId(contentId);
-          developerModePromptOnOpen();
+          authorModePromptOnOpen();
         }
       }}
     />
@@ -888,7 +888,7 @@ export function CompoundActivityEditor({
                 createNewDocument();
               } else {
                 setCreateDocumentParentId(activity.contentId);
-                developerModePromptOnOpen();
+                authorModePromptOnOpen();
               }
             }}
           >
@@ -905,7 +905,7 @@ export function CompoundActivityEditor({
       {copyContentModal}
       {deleteModal}
       {createQuestionBankModal}
-      {developerModeModal}
+      {authorModeModal}
       {mode === "Edit" ? (
         <>
           {heading}

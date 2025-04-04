@@ -53,6 +53,13 @@ export const createContentRevisionScheme = z.object({
   note: z.string(),
 });
 
+export const updateContentRevisionScheme = z.object({
+  contentId: uuidSchema,
+  revisionNum: z.number().int(),
+  revisionName: z.string(),
+  note: z.string(),
+});
+
 export const revertToRevisionScheme = z.object({
   contentId: uuidSchema,
   revisionNum: z.number().int(),

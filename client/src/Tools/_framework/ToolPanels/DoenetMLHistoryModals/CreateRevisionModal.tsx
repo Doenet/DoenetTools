@@ -67,9 +67,9 @@ export function CreateRevisionModel({
         setStatusStyleIdx((x) => x + 1);
         setUpdateRevision(true);
         if (fetcher.data.createdNew) {
-          setRevisionMessage("Created new revision");
+          setRevisionMessage("Created new save point");
         } else {
-          setRevisionMessage("Updated revision");
+          setRevisionMessage("Updated save point");
         }
       }
     }
@@ -116,14 +116,14 @@ export function CreateRevisionModel({
       <ModalContent>
         <ModalHeader textAlign="center">
           {updateRevision
-            ? "Update info on current revision"
-            : "Create a revision of current activity"}
+            ? "Update info on current save point"
+            : "Create a save point of current activity"}
         </ModalHeader>
         <ModalBody>
           <Text>
             {updateRevision
-              ? `${!revisionMessage ? "A revision of current state of the activity already exists." : ""} You can update the description of the revision.`
-              : "Create a revision of the activity to keep a record of its current state."}
+              ? `${!revisionMessage ? "A save point of current state of the activity already exists." : ""} You can update the description of the save point.`
+              : "Create a save point of the activity to keep a record of its current state."}
           </Text>
 
           {revisionMessage !== "" ? (
@@ -140,7 +140,7 @@ export function CreateRevisionModel({
           ) : null}
 
           <FormControl isInvalid={revisionName === ""} marginTop="10px">
-            <FormLabel>Revision name</FormLabel>
+            <FormLabel>Save point name</FormLabel>
             <Input
               type="text"
               value={revisionName}
@@ -149,7 +149,7 @@ export function CreateRevisionModel({
               }}
             />
             {revisionName === "" ? (
-              <FormErrorMessage>Revision name is required.</FormErrorMessage>
+              <FormErrorMessage>Save point name is required.</FormErrorMessage>
             ) : null}
           </FormControl>
           <FormControl marginTop="10px">
@@ -175,7 +175,7 @@ export function CreateRevisionModel({
               );
             }}
           >
-            {updateRevision ? "Update" : "Save"} revision
+            {updateRevision ? "Update" : "Save"} save point
           </Button>
           <Button
             data-test="Cancel Button"

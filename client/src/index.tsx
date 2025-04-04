@@ -96,11 +96,6 @@ import {
   action as doenetMLComparisonAction,
 } from "./Tools/_framework/Paths/DoenetMLComparison";
 import {
-  DoenetMLHistory,
-  loader as doenetMLHistoryLoader,
-  action as doenetMLHistoryAction,
-} from "./Tools/_framework/Paths/DoenetMLHistory";
-import {
   CodeViewer,
   loader as codeViewerLoader,
 } from "./Tools/_framework/Paths/CodeViewer";
@@ -309,13 +304,6 @@ const router = createBrowserRouter([
         loader: doenetMLComparisonLoader,
         action: doenetMLComparisonAction,
         element: <DoenetMLComparison />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "activityHistory/:contentId",
-        loader: doenetMLHistoryLoader,
-        action: doenetMLHistoryAction,
-        element: <DoenetMLHistory />,
         errorElement: <ErrorPage />,
       },
       {
