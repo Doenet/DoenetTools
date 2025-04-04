@@ -154,31 +154,32 @@ export function AssignmentSettings({
   return (
     <>
       <Box>
-        {statusText !== "" ? (
-          <Box
-            data-test="Status message"
-            border="solid 1px lightgray"
-            borderRadius="5px"
-            padding="5px 10px"
-            marginTop="10px"
-            backgroundColor={
-              encounteredError
-                ? "red.100"
-                : ["orange.100", "orange.200"][statusStyleIdx % 2]
-            }
-          >
-            {encounteredError ? (
-              <Icon
-                fontSize="24pt"
-                color="red.800"
-                as={MdError}
-                verticalAlign="middle"
-                marginRight="5px"
-              />
-            ) : null}
-            {statusText}
-          </Box>
-        ) : null}
+        <Box height="35px">
+          {statusText !== "" ? (
+            <Box
+              data-test="Status message"
+              border="solid 1px lightgray"
+              borderRadius="5px"
+              padding="5px 10px"
+              backgroundColor={
+                encounteredError
+                  ? "red.100"
+                  : ["green.100", "green.200"][statusStyleIdx % 2]
+              }
+            >
+              {encounteredError ? (
+                <Icon
+                  fontSize="24pt"
+                  color="red.800"
+                  as={MdError}
+                  verticalAlign="middle"
+                  marginRight="5px"
+                />
+              ) : null}
+              {statusText}
+            </Box>
+          ) : null}
+        </Box>
 
         {activityData.type !== "singleDoc" ? (
           <Box marginTop="20px">
@@ -264,7 +265,6 @@ export function AssignmentSettings({
                 if (e.key == "Enter") {
                   const target = e.target as HTMLInputElement;
                   submitMaxAttempt(target.value);
-                  target.blur();
                 }
               }}
               min={1}

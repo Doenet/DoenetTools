@@ -186,7 +186,7 @@ export function ShareDrawer({
             </TabList>
             <Box overflowY="auto" height="calc(100vh - 130px)">
               <TabPanels height="100%">
-                <TabPanel>{shareOrCurateTabPanel}</TabPanel>
+                <TabPanel paddingTop="5px">{shareOrCurateTabPanel}</TabPanel>
                 {contentData.type === "folder" ? null : (
                   <TabPanel height="100%">
                     <RemixSources
