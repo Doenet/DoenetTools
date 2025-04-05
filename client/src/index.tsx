@@ -114,6 +114,10 @@ import {
   loader as changeNameLoader,
   action as changeNameAction,
 } from "./Tools/_framework/Paths/ChangeName";
+import {
+  CurationRequests,
+  loader as curationRequestsLoader,
+} from "./Tools/_framework/Paths/CurationRequests";
 
 const theme = extendTheme({
   fonts: {
@@ -255,6 +259,12 @@ const router = createBrowserRouter([
         loader: curationLoader,
         action: curationAction,
         element: <Curation />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "curationRequests",
+        loader: curationRequestsLoader,
+        element: <CurationRequests />,
         errorElement: <ErrorPage />,
       },
       {

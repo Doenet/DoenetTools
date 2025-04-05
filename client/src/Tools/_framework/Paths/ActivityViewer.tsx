@@ -46,6 +46,7 @@ import {} from "../ToolPanels/ContentSettingsDrawer";
 import {
   Content,
   DoenetmlVersion,
+  LibraryRelations,
   ActivityRemixItem,
 } from "../../../_utils/types";
 import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
@@ -103,6 +104,10 @@ export async function loader({ params }) {
 
   const contentId = params.contentId;
 
+  const { data: libraryRelations } = await axios.get(
+    `/api/curate/getLibraryRelations/${params.contentId}`,
+  );
+
   if (activityData.type === "singleDoc") {
     const doenetML = activityData.doenetML;
     const doenetmlVersion: DoenetmlVersion = activityData.doenetmlVersion;
@@ -116,6 +121,7 @@ export async function loader({ params }) {
       doenetmlVersion,
       contentId,
       contributorHistory,
+      libraryRelations,
     };
   } else {
     const activityJsonFromRevision = activityData.activityJson
@@ -132,6 +138,7 @@ export async function loader({ params }) {
       activityJson,
       contentId,
       contributorHistory: [],
+      libraryRelations,
     };
   }
 }
@@ -140,6 +147,7 @@ export function ActivityViewer() {
   const data = useLoaderData() as {
     contentId: string;
     activityData: Content;
+    libraryRelations: LibraryRelations;
     contributorHistory: ActivityRemixItem[];
   } & (
     | {
@@ -153,7 +161,8 @@ export function ActivityViewer() {
       }
   );
 
-  const { contentId, activityData, contributorHistory } = data;
+  const { contentId, activityData, contributorHistory, libraryRelations } =
+    data;
 
   const { user, addTo, setAddTo } = useOutletContext<SiteContext>();
   const navigate = useNavigate();
@@ -375,9 +384,7 @@ export function ActivityViewer() {
         toolTip={`Add ${contentTypeName.toLowerCase()} to ${allowedParentsPhrase}`}
         leftIcon={<MdOutlineAdd size={20} />}
         addCopyToLibraryOption={
-          user?.isAdmin &&
-          !activityData.librarySourceInfo?.contentId &&
-          !activityData.libraryActivityInfo
+          user?.isAdmin && !libraryRelations.activity?.activityContentId
         }
       />
     );
@@ -480,7 +487,7 @@ export function ActivityViewer() {
                     {activityData.name}
                   </Text>
 
-                  {activityData.libraryActivityInfo?.status === "PUBLISHED" ? (
+                  {libraryRelations.source?.status === "PUBLISHED" ? (
                     <>
                       <Tooltip label="This activity is curated.">
                         <Box marginLeft="5px">
@@ -489,7 +496,7 @@ export function ActivityViewer() {
                       </Tooltip>
                     </>
                   ) : null}
-                  {activityData.librarySourceInfo?.status === "PUBLISHED" ? (
+                  {libraryRelations.activity?.status === "PUBLISHED" ? (
                     <Popover>
                       <PopoverTrigger>
                         <IconButton
@@ -514,7 +521,7 @@ export function ActivityViewer() {
                           A{" "}
                           <ChakraLink
                             as={ReactRouterLink}
-                            to={`/activityViewer/${activityData.librarySourceInfo.contentId}`}
+                            to={`/activityViewer/${libraryRelations.activity.activityContentId}`}
                             style={{ color: "var(--mainBlue)" }}
                           >
                             peer-reviewed
@@ -527,15 +534,15 @@ export function ActivityViewer() {
                     <></>
                   )}
                   {user?.isAdmin &&
-                  activityData.librarySourceInfo?.contentId &&
-                  activityData.librarySourceInfo?.status !== "PUBLISHED" ? (
+                  libraryRelations.activity?.activityContentId &&
+                  libraryRelations.activity?.status !== "PUBLISHED" ? (
                     <Button
                       marginLeft="10px"
                       data-test="Go to curated draft"
                       size="sm"
                       colorScheme="blue"
                       as={ReactRouterLink}
-                      to={`/activityViewer/${activityData.librarySourceInfo.contentId}`}
+                      to={`/activityViewer/${libraryRelations.activity.activityContentId}`}
 
                       // style={{ color: "var(--mainBlue)" }}
                     >

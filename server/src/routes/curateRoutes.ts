@@ -1,23 +1,28 @@
 import express from "express";
 import { requireLoggedIn } from "../middleware/validationMiddleware";
-import { queryLoggedIn } from "../middleware/queryMiddleware";
+import {
+  queryLoggedIn,
+  queryLoggedInNoArguments,
+} from "../middleware/queryMiddleware";
 import {
   addDraftToLibrary,
+  cancelLibraryRequest,
   createCurationFolder,
   deleteDraftFromLibrary,
   getCurationFolderContent,
-  getLibraryStatus,
+  getPendingCurationRequests,
+  getSingleLibraryRelations,
   markLibraryRequestNeedsRevision,
   modifyCommentsOfLibraryRequest,
   publishActivityToLibrary,
   searchCurationFolderContent,
+  submitLibraryRequest,
   unpublishActivityFromLibrary,
 } from "../query/curate";
 import {
   updateLibraryInfoSchema,
   publishSchema,
   searchCurationFolderContentSchema,
-  sourceIdSchema,
   createCurationFolderSchema,
   curationParentIdSchema,
 } from "../schemas/curateSchema";
@@ -26,6 +31,11 @@ import { contentIdSchema } from "../schemas/contentSchema";
 export const curateRouter = express.Router();
 
 curateRouter.use(requireLoggedIn);
+
+curateRouter.get(
+  "/getCurationPendingRequests",
+  queryLoggedInNoArguments(getPendingCurationRequests),
+);
 
 curateRouter.get(
   "/getCurationFolderContent",
@@ -48,8 +58,18 @@ curateRouter.get(
 );
 
 curateRouter.get(
-  "/getLibraryStatus",
-  queryLoggedIn(getLibraryStatus, sourceIdSchema),
+  "/getLibraryRelations/:contentId",
+  queryLoggedIn(getSingleLibraryRelations, contentIdSchema),
+);
+
+curateRouter.post(
+  "/submitLibraryRequest",
+  queryLoggedIn(submitLibraryRequest, contentIdSchema),
+);
+
+curateRouter.post(
+  "/cancelLibraryRequest",
+  queryLoggedIn(cancelLibraryRequest, contentIdSchema),
 );
 
 curateRouter.post(

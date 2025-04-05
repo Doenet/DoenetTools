@@ -51,6 +51,8 @@ import {
   Content,
   DoenetmlVersion,
   License,
+  ContentDescription,
+  LibraryRelations,
   ContentRevision,
 } from "../../../_utils/types";
 import {
@@ -139,6 +141,10 @@ export async function loader({ params }) {
     `/api/activityEditView/getActivityEditorData/${params.contentId}`,
   );
 
+  const { data: libraryRelations } = await axios.get(
+    `/api/curate/getLibraryRelations/${params.contentId}`,
+  );
+
   if (!editableByMe) {
     return redirect(`/activityViewer/${params.contentId}`);
   }
@@ -182,6 +188,7 @@ export async function loader({ params }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
+      libraryRelations,
       revisions,
     };
   } else {
@@ -197,6 +204,7 @@ export async function loader({ params }) {
       allDoenetmlVersions,
       allLicenses,
       availableFeatures,
+      libraryRelations,
       revisions,
     };
   }
@@ -258,6 +266,8 @@ export function ActivityEditor() {
     allLicenses: License[];
     availableFeatures: ContentFeature[];
     activityData: Content;
+    addTo: ContentDescription | undefined;
+    libraryRelations: LibraryRelations;
     revisions: ContentRevision[];
   } & (
     | {
@@ -277,6 +287,7 @@ export function ActivityEditor() {
     allDoenetmlVersions,
     allLicenses,
     availableFeatures,
+    libraryRelations,
     revisions,
   } = data;
 
@@ -340,6 +351,8 @@ export function ActivityEditor() {
 
   const authorMode = user?.isAuthor || data.type !== "singleDoc";
 
+  const isLibraryActivity = Boolean(libraryRelations.source);
+
   const [mode, setMode] = useState<"Edit" | "View">(
     authorMode ? "Edit" : "View",
   );
@@ -347,8 +360,6 @@ export function ActivityEditor() {
   useEffect(() => {
     setMode(authorMode ? "Edit" : "View");
   }, [contentId]);
-
-  const isLibraryActivity = Boolean(activityData.libraryActivityInfo);
 
   useEffect(() => {
     document.title = `${activityData.name} - Doenet`;
@@ -469,13 +480,13 @@ export function ActivityEditor() {
 
   const shareDrawer = contentData ? (
     <ShareDrawer
-      inCurationLibrary={isLibraryActivity}
       isOpen={sharingIsOpen}
       onClose={sharingOnClose}
       finalFocusRef={finalFocusRef}
       fetcher={fetcher}
       contentData={contentData}
       allLicenses={allLicenses}
+      libraryRelations={libraryRelations}
     />
   ) : null;
 
@@ -676,6 +687,7 @@ export function ActivityEditor() {
                       aria-label="open curation controls"
                       onClick={() => {
                         finalFocusRef.current = curateBtnRef.current;
+                        setSettingsContentId(activityData.contentId);
                         sharingOnOpen();
                       }}
                       ref={curateBtnRef}
