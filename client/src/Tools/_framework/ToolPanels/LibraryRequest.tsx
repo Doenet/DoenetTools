@@ -1,6 +1,6 @@
 import React from "react";
 import { FetcherWithComponents } from "react-router";
-import { Box, Button, Text } from "@chakra-ui/react";
+import { Box, Button, Heading, Text, VStack } from "@chakra-ui/react";
 import axios from "axios";
 import { Content, LibraryRelations } from "../../../_utils/types";
 
@@ -42,69 +42,142 @@ export function LibraryRequest({
 
   if (!libraryRelations.activity) {
     return (
-      <>
-        <Box>
-          <Text>
-            The <Text as="b">Doenet Library</Text> is a curated selection of
-            excellent DoenetML activities covering a multitude of subjects.
-            Activities in the library are <Text as="em">peer-reviewed</Text> and{" "}
-            <Text as="em">appear prominently in search results</Text>. It's a
-            great opportunity to share your work with a wider audience and
-            contribute to the e-learning ecosystem.
-          </Text>
-        </Box>
-
-        <Box>
-          <Text>
-            Would you like to submit this activity for review? Any publicly
-            shared activity is eligible.
-          </Text>
-          <Button
-            data-test="Submit Library Request"
-            colorScheme="blue"
-            onClick={submitLibraryRequest}
-          >
-            Submit for review
-          </Button>
-        </Box>
-      </>
+      <VStack spacing={4}>
+        <Text>
+          The <Text as="b">Doenet Library</Text> is a curated selection of
+          excellent DoenetML activities covering a multitude of subjects.
+          Activities in the library are <Text as="em">peer-reviewed</Text> and{" "}
+          <Text as="em">appear prominently in search results</Text>. It's a
+          great opportunity to share your work with a wider audience and
+          contribute to the e-learning ecosystem.
+        </Text>
+        <Text>
+          Would you like to submit this activity for review? Any publicly shared
+          activity is eligible.
+        </Text>
+        <Button
+          data-test="Submit Library Request"
+          colorScheme="blue"
+          onClick={submitLibraryRequest}
+        >
+          Submit for review
+        </Button>
+      </VStack>
     );
   } else {
+    function getStatusText() {
+      switch (libraryRelations.activity?.status) {
+        case "PENDING_REVIEW":
+          return (
+            <Text fontWeight="bold" as="span" color="purple">
+              pending review
+            </Text>
+          );
+        case "NEEDS_REVISION":
+          return (
+            <Text fontWeight="bold" as="span" color="orange">
+              needs revision
+            </Text>
+          );
+        case "REQUEST_REMOVED":
+          return (
+            <Text fontWeight="bold" as="span" color="gray">
+              cancelled by you
+            </Text>
+          );
+        case "PUBLISHED":
+          return (
+            <Text fontWeight="bold" as="span" color="green">
+              published
+            </Text>
+          );
+        default:
+          return null;
+      }
+    }
+
+    function getStatusExplanation() {
+      switch (libraryRelations.activity?.status) {
+        case "PENDING_REVIEW":
+          return (
+            <Text>
+              Your request is pending review by the Doenet editors. You will be
+              notified when the review is complete.
+            </Text>
+          );
+        case "NEEDS_REVISION":
+          return (
+            <Text>
+              Your request needs revision. Please address the comments provided
+              by the reviewers and resubmit your request.
+            </Text>
+          );
+        case "REQUEST_REMOVED":
+          return (
+            <Text>
+              You cancelled your request. You can submit a new request at any
+              time.
+            </Text>
+          );
+        case "PUBLISHED":
+          return (
+            <Text>
+              Congratulations, your activity has been published in the Doenet
+              Library! It will now appear in the <Text as="em">Curated</Text>{" "}
+              tab on Explore.
+            </Text>
+          );
+        default:
+          return null;
+      }
+    }
+
     return (
       <>
-        <Box>Status: {libraryRelations.activity.status}</Box>
+        <VStack align={"left"} spacing={4}>
+          <Text>Current status of your request: {getStatusText()}</Text>
 
-        {libraryRelations.activity.comments ? (
-          <Box>Comments: {libraryRelations.activity.comments}</Box>
-        ) : null}
+          {getStatusExplanation()}
+
+          {libraryRelations.activity.comments ? (
+            <Text>
+              Comments from an editor:{" "}
+              <Text as="em">{libraryRelations.activity.comments}</Text>
+            </Text>
+          ) : null}
+        </VStack>
 
         {libraryRelations.activity.status === "NEEDS_REVISION" ||
         libraryRelations.activity.status === "REQUEST_REMOVED" ? (
-          <Button
-            data-test="Resubmit Library Request"
-            colorScheme="blue"
-            onClick={submitLibraryRequest}
-          >
-            Resubmit for review
-          </Button>
+          <Box mt={4}>
+            <Button
+              data-test="Resubmit Library Request"
+              colorScheme="blue"
+              onClick={submitLibraryRequest}
+            >
+              Resubmit for review
+            </Button>
+          </Box>
         ) : null}
 
         {libraryRelations.activity.status === "PENDING_REVIEW" ? (
-          <Button
-            data-test="Cancel Library Request"
-            colorScheme="blue"
-            onClick={() => {
-              fetcher.submit(
-                {
-                  _action: "cancel library request",
-                  contentId: contentData.contentId,
-                },
-                { method: "post" },
-              );
-            }}
-          >
-            Cancel review request
-          </Button>
+          <Box mt={4}>
+            <Button
+              data-test="Cancel Library Request"
+              colorScheme="blue"
+              onClick={() => {
+                fetcher.submit(
+                  {
+                    _action: "cancel library request",
+                    contentId: contentData.contentId,
+                  },
+                  { method: "post" },
+                );
+              }}
+            >
+              Cancel review request
+            </Button>
+          </Box>
         ) : null}
       </>
     );
