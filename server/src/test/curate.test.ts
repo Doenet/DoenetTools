@@ -84,8 +84,6 @@ test("user privileges for library", async () => {
   await expectStatusIs(sourceId, statusNone, adminId);
   await expectStatusIs(sourceId, statusNone, randomUserId);
 
-  // await setContentLicense({contentId, loggedInUserId: ownerId, licenseCode: "CCDUAL"});
-
   await setContentIsPublic({
     contentId: sourceId,
     loggedInUserId: ownerId,
@@ -136,9 +134,22 @@ test("user privileges for library", async () => {
     },
   };
 
+  const draftStatusPending: LibraryRelations = {
+    source: {
+      status: "PENDING_REVIEW",
+      comments: "",
+      sourceContentId: sourceId,
+      ownerRequested: true,
+    },
+  };
+
   await expectStatusIs(sourceId, statusNone, randomUserId);
   await expectStatusIs(sourceId, statusPending, ownerId);
   await expectStatusIs(sourceId, statusPendingWithDraft, adminId);
+
+  await expectStatusIs(draftId, statusNone, randomUserId);
+  await expectStatusIs(draftId, statusNone, ownerId);
+  await expectStatusIs(draftId, draftStatusPending, adminId);
 
   // Only owner can cancel review request
   async function expectCancelRequestFails(userId: Uint8Array) {
@@ -149,6 +160,8 @@ test("user privileges for library", async () => {
 
   await expectCancelRequestFails(randomUserId);
   await expectCancelRequestFails(adminId);
+
+  await cancelLibraryRequest({ contentId: sourceId, loggedInUserId: ownerId });
 
   const statusCancelled: LibraryRelations = {
     activity: {
@@ -164,7 +177,6 @@ test("user privileges for library", async () => {
       activityContentId: draftId,
     },
   };
-  await cancelLibraryRequest({ contentId: sourceId, loggedInUserId: ownerId });
   await expectStatusIs(sourceId, statusNone, randomUserId);
   await expectStatusIs(sourceId, statusCancelled, ownerId);
   await expectStatusIs(sourceId, statusCancelledWithDraft, adminId);
@@ -277,6 +289,22 @@ test("user privileges for library", async () => {
       reviewRequestDate: approximateReviewRequestDate,
     },
   };
+
+  const draftPublishedPublic: LibraryRelations = {
+    source: {
+      status: "PUBLISHED",
+      sourceContentId: sourceId,
+    },
+  };
+
+  const draftPublishedAdmin: LibraryRelations = {
+    source: {
+      ...draftPublishedPublic.source!,
+      comments: "Awesome problem set!",
+      ownerRequested: true,
+    },
+  };
+
   await publishActivityToLibrary({
     draftId,
     loggedInUserId: adminId,
@@ -285,6 +313,10 @@ test("user privileges for library", async () => {
   await expectStatusIs(sourceId, publicStatusPublished, randomUserId);
   await expectStatusIs(sourceId, privateStatusPublished, ownerId);
   await expectStatusIs(sourceId, privateStatusPublished, adminId);
+
+  await expectStatusIs(draftId, draftPublishedPublic, randomUserId);
+  await expectStatusIs(draftId, draftPublishedPublic, ownerId);
+  await expectStatusIs(draftId, draftPublishedAdmin, adminId);
 
   // Only admin can unpublish
   async function expectUnpublishFails(userId: Uint8Array) {
@@ -396,6 +428,7 @@ test("owner requests library review, admin publishes", async () => {
       reviewRequestDate: approximateReviewRequestDate,
     },
   };
+
   await submitLibraryRequest({ loggedInUserId: ownerId, contentId });
   await expectStatusIs(contentId, statusPending, ownerId);
 
@@ -404,6 +437,17 @@ test("owner requests library review, admin publishes", async () => {
     loggedInUserId: adminId,
   });
   await expectStatusIs(contentId, statusPending, ownerId);
+
+  // Admin can see that activity was owner requested
+  const sourceStatusPending: LibraryRelations = {
+    source: {
+      sourceContentId: contentId,
+      status: "PENDING_REVIEW",
+      comments: "",
+      ownerRequested: true,
+    },
+  };
+  await expectStatusIs(draftId, sourceStatusPending, adminId);
 
   await publishActivityToLibrary({
     draftId,
@@ -461,6 +505,7 @@ test("admin publishes to library without owner request", async () => {
       status: "PENDING_REVIEW",
       comments: "",
       sourceContentId: contentId,
+      ownerRequested: false,
     },
   };
 
@@ -488,14 +533,15 @@ test("admin publishes to library without owner request", async () => {
       sourceContentId: contentId,
     },
   };
-  const draftStatusPublishedWithComments: LibraryRelations = {
+  const draftStatusPublishedAdmin: LibraryRelations = {
     source: {
       ...draftStatusPublished.source!,
       comments: "some feedback",
+      ownerRequested: false,
     },
   };
 
-  await expectStatusIs(draftId, draftStatusPublishedWithComments, adminId);
+  await expectStatusIs(draftId, draftStatusPublishedAdmin, adminId);
   await expectStatusIs(draftId, draftStatusPublished, ownerId);
 });
 
@@ -543,6 +589,7 @@ test("published activity in library with unavailable source activity", async () 
     source: {
       ...statusSourceOwner.source!,
       comments: "some feedback",
+      ownerRequested: false,
     },
   };
 
@@ -564,6 +611,7 @@ test("published activity in library with unavailable source activity", async () 
       status: "PUBLISHED",
       comments: "some feedback",
       sourceContentId: null,
+      ownerRequested: false,
     },
   };
 
@@ -653,7 +701,7 @@ test("Cannot add draft of curated activity", async () => {
   ).rejects.toThrowError();
 });
 
-test.only("List of pending requests updates", async () => {
+test("List of pending requests updates", async () => {
   // We will test that the submit date is within 5 minutes after test start
   // aka a ~generally~ reasonable time
   const startTestTimestamp = Date.now();

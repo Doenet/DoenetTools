@@ -13,6 +13,17 @@ export type DoenetmlVersion = {
 
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
+/**
+ * This type represents the library status of a provided content id in both directions.
+ * The `activity` field contains info about an activity revised from provided content .
+ * The `source` fields refers an activity that uses the provied content as a source.
+ *
+ * Optional fields are only included for certain users:
+ * - `activity.comments` - must be owner or admin
+ * - `activity.reviewRequestDate` - must be owner or admin
+ * - `source.comments` - must be admin
+ * - `source.ownerRequested` - must be admin
+ */
 export type LibraryRelations = {
   activity?: {
     status: LibraryStatus;
@@ -24,6 +35,7 @@ export type LibraryRelations = {
     status: LibraryStatus;
     sourceContentId: Uint8Array | null;
     comments?: string;
+    ownerRequested?: boolean;
   };
 };
 

@@ -170,6 +170,7 @@ export async function getLibraryRelations({
       status: LibraryStatus;
       sourceContentId: Uint8Array | null;
       comments?: string;
+      ownerRequested?: boolean;
     };
   } = {};
 
@@ -184,6 +185,7 @@ export async function getLibraryRelations({
       status: true,
       comments: true,
       sourceId: true,
+      ownerRequested: true,
     },
   });
 
@@ -203,6 +205,8 @@ export async function getLibraryRelations({
         // Only admins see comments. Owners of original activity must look up comments using their own source id
         sourceRelations[fromUUID(contentIds[i])].comments =
           sourceInfos[i].comments;
+        // Only admins can see if owner requested review
+        sourceRelations[fromUUID(contentIds[i])].ownerRequested = sourceInfos[i].ownerRequested;
       }
     }
   }
