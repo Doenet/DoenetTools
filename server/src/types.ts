@@ -1,4 +1,4 @@
-import { ContentType } from "@prisma/client";
+import { ContentType, LibraryStatus } from "@prisma/client";
 import { prisma } from "./model";
 
 export type DoenetmlVersion = {
@@ -13,26 +13,19 @@ export type DoenetmlVersion = {
 
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
-export type LibraryInfo = {
-  sourceId: Uint8Array;
-  contentId: Uint8Array | null;
-  ownerRequested?: boolean;
-  status:
-    | "none"
-    | "PENDING_REVIEW"
-    | "REQUEST_REMOVED"
-    | "PUBLISHED"
-    | "NEEDS_REVISION";
-  comments?: string;
-};
-
-export function blankLibraryInfo(sourceId: Uint8Array): LibraryInfo {
-  return {
-    sourceId,
-    contentId: null,
-    status: "none",
+export type LibraryRelations = {
+  activity?: {
+    status: LibraryStatus;
+    activityContentId: Uint8Array | null;
+    comments?: string;
+    reviewRequestDate?: Date;
   };
-}
+  source?: {
+    status: LibraryStatus;
+    sourceContentId: Uint8Array | null;
+    comments?: string;
+  };
+};
 
 export type UserInfo = {
   userId: Uint8Array;
@@ -142,8 +135,6 @@ export type ContentBase = {
     sortIndex: number;
   }[];
   classifications: ContentClassification[];
-  librarySourceInfo?: LibraryInfo;
-  libraryActivityInfo?: LibraryInfo;
   parent: {
     contentId: Uint8Array;
     name: string;

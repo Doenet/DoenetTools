@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FetcherWithComponents } from "react-router";
 import { Box, List, Button, Text, Textarea, Heading } from "@chakra-ui/react";
 import axios from "axios";
-import { Content } from "../../../_utils/types";
+import { Content, LibraryRelations } from "../../../_utils/types";
 import { DisplayLicenseItem } from "../../../Widgets/Licenses";
 
 export async function curateActions({ formObj }: { [k: string]: any }) {
@@ -34,21 +34,27 @@ export async function curateActions({ formObj }: { [k: string]: any }) {
   return null;
 }
 
+/**
+ * This component is used to display the curation settings for an activity in the library.
+ * It is the library's equivalent of the `ShareSettings` component panel.
+ */
 export function CurateSettings({
   fetcher,
   contentData,
+  libraryRelations,
 }: {
   fetcher: FetcherWithComponents<any>;
   contentData: Content;
+  libraryRelations: LibraryRelations;
 }) {
   const license = contentData.license!;
-  const sourceId = contentData.libraryActivityInfo!.sourceId;
-  const contentId = contentData.contentId;
-  const existingComments = contentData.libraryActivityInfo?.comments ?? "";
-  const status = contentData.libraryActivityInfo!.status;
-  // const userRequested = contentData;
 
-  const [comments, setComments] = useState<string>(existingComments);
+  // Must have library source if in library
+  const librarySource = libraryRelations.source!;
+
+  const [comments, setComments] = useState<string>(
+    librarySource.comments || "",
+  );
   const [unsavedComments, setUnsavedComments] = useState<boolean>(false);
 
   return (
@@ -116,13 +122,13 @@ export function CurateSettings({
         />
       </Box>
 
-      {status === "PUBLISHED" ? (
+      {librarySource.status === "PUBLISHED" ? (
         <Button
           onClick={() => {
             fetcher.submit(
               {
                 _action: "unpublish",
-                id: contentId,
+                id: contentData.contentId,
               },
               { method: "post" },
             );
@@ -138,7 +144,7 @@ export function CurateSettings({
               fetcher.submit(
                 {
                   _action: "publish",
-                  id: contentId,
+                  id: contentData.contentId,
                   comments,
                 },
                 { method: "post" },
@@ -176,7 +182,7 @@ export function CurateSettings({
           fetcher.submit(
             {
               _action: "modify comments",
-              sourceId,
+              sourceId: librarySource.sourceContentId,
               comments,
             },
             { method: "post" },

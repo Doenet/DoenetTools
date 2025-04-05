@@ -48,6 +48,7 @@ import {
   DoenetmlVersion,
   License,
   ContentDescription,
+  LibraryRelations,
 } from "../../../_utils/types";
 import { ActivityDoenetMLEditor } from "../ToolPanels/ActivityDoenetMLEditor";
 import {
@@ -116,6 +117,10 @@ export async function loader({ params, request }) {
     `/api/activityEditView/getActivityEditorData/${params.contentId}`,
   );
 
+  const { data: libraryRelations } = await axios.get(
+    `/api/curate/getLibraryRelations/${params.contentId}`,
+  );
+
   if (!editableByMe) {
     return redirect(`/codeViewer/${params.contentId}`);
   }
@@ -175,6 +180,7 @@ export async function loader({ params, request }) {
       allLicenses,
       availableFeatures,
       addTo,
+      libraryRelations,
     };
   } else {
     const activityJson = compileActivityFromContent(activityData);
@@ -190,6 +196,7 @@ export async function loader({ params, request }) {
       allLicenses,
       availableFeatures,
       addTo,
+      libraryRelations,
     };
   }
 }
@@ -251,6 +258,7 @@ export function ActivityEditor() {
     availableFeatures: ContentFeature[];
     activityData: Content;
     addTo: ContentDescription | undefined;
+    libraryRelations: LibraryRelations;
   } & (
     | {
         type: "singleDoc";
@@ -270,6 +278,7 @@ export function ActivityEditor() {
     allLicenses,
     availableFeatures,
     addTo,
+    libraryRelations,
   } = data;
 
   const finalFocusRef = useRef<HTMLElement | null>(null);
@@ -311,7 +320,7 @@ export function ActivityEditor() {
 
   const [mode, setMode] = useState<"Edit" | "View">(readOnly ? "View" : "Edit");
 
-  const isLibraryActivity = Boolean(activityData.libraryActivityInfo);
+  const isLibraryActivity = Boolean(libraryRelations.source);
 
   useEffect(() => {
     if (readOnly) {
@@ -412,13 +421,13 @@ export function ActivityEditor() {
 
   const shareDrawer = contentData ? (
     <ShareDrawer
-      inCurationLibrary={isLibraryActivity}
       isOpen={sharingIsOpen}
       onClose={sharingOnClose}
       finalFocusRef={finalFocusRef}
       fetcher={fetcher}
       contentData={contentData}
       allLicenses={allLicenses}
+      libraryRelations={libraryRelations}
     />
   ) : null;
 
@@ -556,6 +565,7 @@ export function ActivityEditor() {
                         leftIcon={<MdOutlineGroup />}
                         onClick={() => {
                           finalFocusRef.current = curateBtnRef.current;
+                          setSettingsContentId(activityData.contentId);
                           sharingOnOpen();
                         }}
                         ref={curateBtnRef}

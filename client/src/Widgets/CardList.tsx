@@ -2,7 +2,7 @@ import React, { ReactElement } from "react";
 import { Text, Icon, Box, Flex, Wrap } from "@chakra-ui/react";
 import Card, { CardContent } from "./Card";
 import { MdInfoOutline } from "react-icons/md";
-import { ContentDescription } from "../_utils/types";
+import { ContentDescription, LibraryRelations } from "../_utils/types";
 
 export default function CardList({
   content,
@@ -16,6 +16,7 @@ export default function CardList({
   setSelectedCards,
   disableSelectFor,
   disableAsSelectedFor,
+  libraryRelations = [],
 }: {
   content: (
     | CardContent
@@ -36,6 +37,7 @@ export default function CardList({
   setSelectedCards?: React.Dispatch<React.SetStateAction<ContentDescription[]>>;
   disableSelectFor?: string[];
   disableAsSelectedFor?: string[];
+  libraryRelations?: LibraryRelations[];
 }) {
   const selectedCardsFiltered = selectedCards?.filter((s) => s);
 
@@ -147,6 +149,7 @@ export default function CardList({
           disableAsSelected={disableAsSelectedFor?.includes(
             cardContent.content.contentId,
           )}
+          libraryRelations={libraryRelations[idx]}
           idx={idx}
         />
       );

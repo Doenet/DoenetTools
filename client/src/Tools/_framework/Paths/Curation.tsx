@@ -570,6 +570,16 @@ export function Curation() {
             >
               {haveContentSpinner ? <Spinner size="sm" /> : "New Folder"}
             </Button>
+            <Button
+              as={Link}
+              size="sm"
+              colorScheme="blue"
+              // hidden={searchOpen}
+              data-test="Pending Requests Button"
+              to="/curationRequests"
+            >
+              See Pending Requests
+            </Button>
           </HStack>
         </Flex>
 

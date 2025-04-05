@@ -1,15 +1,20 @@
 import { ContentType, LibraryEventType, LibraryStatus } from "@prisma/client";
 import { prisma } from "../model";
-import { blankLibraryInfo, LibraryInfo } from "../types";
+import { Content, LibraryRelations } from "../types";
 import { InvalidRequestError } from "../utils/error";
 import { fromUUID } from "../utils/uuid";
 import { createContent, deleteContentNoCheck } from "./activity";
 import { copyContent } from "./copy_move";
-import { filterEditableActivity } from "../utils/permissions";
+import {
+  filterEditableActivity,
+  filterViewableActivity,
+  filterViewableContent,
+} from "../utils/permissions";
 import {
   getMyContentOrLibraryContent,
   searchMyContentOrLibraryContent,
 } from "./content_list";
+import { processContent, returnContentSelect } from "../utils/contentStructure";
 
 export async function mustBeAdmin(
   userId: Uint8Array,
@@ -31,6 +36,41 @@ export async function getIsAdmin(userId: Uint8Array) {
 }
 
 /**
+ * Convert content ids that the given user cannot see into `null`. Does not affect visible ids.
+ *
+ * Three cases:
+ * 1. `contentId` is null --> return id is null
+ * 2. `contentId` is non-null but invisible --> return id is null
+ * 3. `contentId` is non-null and visible --> return id equals `contentId`
+ */
+async function redactInvisibleContentIds({
+  contentIds: contentIds,
+  loggedInUserId,
+  isAdmin,
+}: {
+  contentIds: (Uint8Array | null)[];
+  loggedInUserId: Uint8Array;
+  isAdmin: boolean;
+}) {
+  const nonnullContentIds = contentIds.filter((id) => id !== null);
+
+  const visibleIdsList = (
+    await prisma.content.findMany({
+      where: {
+        id: { in: nonnullContentIds },
+        ...filterViewableActivity(loggedInUserId, isAdmin),
+      },
+      select: { id: true },
+    })
+  ).map((v) => fromUUID(v.id));
+  const visibleIds = new Set(visibleIdsList);
+
+  return contentIds.map((id) =>
+    id !== null && visibleIds.has(fromUUID(id)) ? id : null,
+  );
+}
+
+/**
  *
  * Depending on user's access privileges, this function will hide some information.
  * - Admins see everything
@@ -38,61 +78,162 @@ export async function getIsAdmin(userId: Uint8Array) {
  * - All other users do not see admin comments, pending requests, or unpublished drafts
  * @param id - must be existing public activity
  */
-export async function getLibraryStatus({
-  sourceId,
+export async function getLibraryRelations({
+  contentIds,
   loggedInUserId,
 }: {
-  sourceId: Uint8Array;
+  contentIds: Uint8Array[];
   loggedInUserId: Uint8Array;
-}): Promise<LibraryInfo> {
-  const info = await prisma.libraryActivityInfos.findUnique({
+}): Promise<LibraryRelations[]> {
+  const isAdmin = await getIsAdmin(loggedInUserId);
+
+  // ======== Relation: Me to Revised =========
+
+  const meRelations: {
+    [index: string]: {
+      status: LibraryStatus;
+      activityContentId: Uint8Array | null;
+      comments?: string;
+      reviewRequestDate?: Date;
+    };
+  } = {};
+
+  const infos = await prisma.libraryActivityInfos.findMany({
     where: {
-      sourceId: sourceId,
+      sourceId: { in: contentIds },
+      source: {
+        ...filterViewableActivity(loggedInUserId, isAdmin),
+      },
+    },
+    select: {
+      status: true,
+      comments: true,
+      contentId: true,
+      source: {
+        select: {
+          librarySourceEvents: {
+            // Date of most recent submission
+            take: 1,
+            orderBy: { dateTime: "desc" as const },
+            where: {
+              eventType: LibraryEventType.SUBMIT_REQUEST,
+            },
+            select: {
+              dateTime: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (infos) {
+    const revisedIds = await redactInvisibleContentIds({
+      contentIds: infos.map((v) => v.contentId),
+      loggedInUserId,
+      isAdmin,
+    });
+
+    const isOwnerList = await prisma.content.findMany({
+      where: {
+        id: { in: contentIds },
+        ownerId: loggedInUserId,
+      },
+      select: { id: true },
+    });
+    const isOwner = new Set(isOwnerList.map((v) => fromUUID(v.id)));
+
+    for (let i = 0; i < infos.length; i++) {
+      const isAdminOrOwner = isAdmin || isOwner.has(fromUUID(contentIds[i]));
+      const sourceEvents = infos[i].source.librarySourceEvents;
+
+      if (isAdminOrOwner || infos[i].status === LibraryStatus.PUBLISHED) {
+        meRelations[fromUUID(contentIds[i])] = {
+          activityContentId: revisedIds[i],
+          status: infos[i].status,
+        };
+        if (isAdminOrOwner) {
+          meRelations[fromUUID(contentIds[i])].comments = infos[i].comments;
+          if (sourceEvents.length > 0) {
+            meRelations[fromUUID(contentIds[i])].reviewRequestDate =
+              sourceEvents[0].dateTime;
+          }
+        }
+      }
+    }
+  }
+
+  // ======== Relation: Source to Me =========
+
+  const sourceRelations: {
+    [index: string]: {
+      status: LibraryStatus;
+      sourceContentId: Uint8Array | null;
+      comments?: string;
+    };
+  } = {};
+
+  const sourceInfos = await prisma.libraryActivityInfos.findMany({
+    where: {
+      contentId: { in: contentIds },
+      activity: {
+        ...filterViewableActivity(loggedInUserId, isAdmin),
+      },
     },
     select: {
       status: true,
       comments: true,
       sourceId: true,
-      contentId: true,
     },
   });
 
-  // No info in database
-  if (!info) {
-    return blankLibraryInfo(sourceId);
+  if (sourceInfos) {
+    const sourceIds = await redactInvisibleContentIds({
+      contentIds: sourceInfos.map((v) => v.sourceId),
+      loggedInUserId,
+      isAdmin,
+    });
+
+    for (let i = 0; i < sourceInfos.length; i++) {
+      sourceRelations[fromUUID(contentIds[i])] = {
+        sourceContentId: sourceIds[i],
+        status: sourceInfos[i].status,
+      };
+      if (isAdmin) {
+        // Only admins see comments. Owners of original activity must look up comments using their own source id
+        sourceRelations[fromUUID(contentIds[i])].comments =
+          sourceInfos[i].comments;
+      }
+    }
   }
 
-  const { contentId, comments, ...basicInfo } = info;
-  const isPublished = info.status === LibraryStatus.PUBLISHED;
+  const libraryRelations: LibraryRelations[] = contentIds.map((id) => {
+    const source = sourceRelations[fromUUID(id)];
+    const me = meRelations[fromUUID(id)];
 
-  // Admin
-  const isAdmin = await getIsAdmin(loggedInUserId);
-  if (isAdmin) {
-    return info;
-  }
-
-  //Owner
-  const isOwner = await prisma.content.findUnique({
-    where: { id: sourceId, ownerId: loggedInUserId },
-    select: { ownerId: true },
+    const thisRelation: LibraryRelations = {};
+    if (source) {
+      thisRelation.source = source;
+    }
+    if (me) {
+      thisRelation.activity = me;
+    }
+    return thisRelation;
   });
-  if (isOwner) {
-    return {
-      contentId: isPublished ? contentId : null,
-      comments,
-      ...basicInfo,
-    };
-  }
 
-  // All other users
-  if (isPublished) {
-    return {
-      contentId,
-      ...basicInfo,
-    };
-  }
+  return libraryRelations;
+}
 
-  return blankLibraryInfo(sourceId);
+export async function getSingleLibraryRelations({
+  contentId,
+  loggedInUserId,
+}: {
+  contentId: Uint8Array;
+  loggedInUserId: Uint8Array;
+}) {
+  return (
+    await getLibraryRelations({ contentIds: [contentId], loggedInUserId })
+  )[0];
 }
 
 /**
@@ -661,49 +802,59 @@ export async function createCurationFolder({
   });
 }
 
+/**
+ * Get all pending curation requests, sorted by submission date oldest to newest.
+ * Must be admin to call function.
+ */
 export async function getPendingCurationRequests({
   loggedInUserId,
 }: {
   loggedInUserId: Uint8Array;
 }) {
   await mustBeAdmin(loggedInUserId);
-  const requests = await prisma.libraryActivityInfos.findMany({
+
+  const preliminaryContent = await prisma.content.findMany({
     where: {
-      ownerRequested: true,
-      status: LibraryStatus.PENDING_REVIEW,
-    },
-    select: {
-      sourceId: true,
-      contentId: true,
-      source: {
-        select: {
-          librarySourceEvents: {
-            take: 1,
-            where: {
-              eventType: LibraryEventType.SUBMIT_REQUEST,
-            },
-            select: {
-              dateTime: true,
-            },
-            orderBy: {
-              dateTime: "desc",
-            },
-          },
-        },
+      ...filterViewableContent(loggedInUserId, true),
+      librarySourceInfo: {
+        ownerRequested: true,
+        status: LibraryStatus.PENDING_REVIEW,
       },
     },
+    select: returnContentSelect({
+      includeOwnerDetails: true,
+      includeClassifications: true,
+    }),
   });
 
-  const requestsWithDate = requests
-    .map((request) => {
-      return {
-        sourceId: request.sourceId,
-        contentId: request.contentId,
-        submitDate: request.source.librarySourceEvents[0].dateTime,
-      };
-    })
-    // Sort in ascending order by submit date
-    .sort((a, b) => a.submitDate.getTime() - b.submitDate.getTime());
+  //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
+  const unsortedContent: Content[] = preliminaryContent.map(processContent);
 
-  return requestsWithDate;
+  const unsortedLibraryRelations = await getLibraryRelations({
+    contentIds: unsortedContent.map((c) => c.contentId),
+    loggedInUserId,
+  });
+
+  if (unsortedContent.length !== unsortedLibraryRelations.length) {
+    throw new Error("Content and library relations do not match in length.");
+  }
+
+  // Zip and sort in ascending order by submit date
+  const contentAndLibrary = unsortedContent.map((c, i) => {
+    return { content: c, library: unsortedLibraryRelations[i] };
+  });
+  contentAndLibrary.sort(
+    (a, b) =>
+      a.library.activity!.reviewRequestDate!.getTime() -
+      b.library.activity!.reviewRequestDate!.getTime(),
+  );
+
+  // Unzip
+  const content = contentAndLibrary.map((v) => v.content);
+  const libraryRelations = contentAndLibrary.map((v) => v.library);
+
+  return {
+    content,
+    libraryRelations,
+  };
 }

@@ -33,17 +33,26 @@ export type License = {
 
 export type AssignmentStatus = "Unassigned" | "Closed" | "Open";
 
-export type LibraryInfo = {
-  sourceId: string;
-  contentId: string | null;
-  onwerRequested?: boolean;
-  status:
-    | "none"
-    | "PENDING_REVIEW"
-    | "REQUEST_REMOVED"
-    | "PUBLISHED"
-    | "NEEDS_REVISION";
-  comments?: string;
+/** This type must match the Prisma-defined enum `LibraryStatus` */
+type LibraryStatus =
+  | "PENDING_REVIEW"
+  | "REQUEST_REMOVED"
+  | "PUBLISHED"
+  | "NEEDS_REVISION";
+
+export type LibraryRelations = {
+  activity?: {
+    status: LibraryStatus;
+    activityContentId: string | null;
+    comments?: string;
+    // This field is a Date in the server code but a string in the client code.
+    reviewRequestDate?: string;
+  };
+  source?: {
+    status: LibraryStatus;
+    sourceContentId: string | null;
+    comments?: string;
+  };
 };
 
 export type UserInfo = {
@@ -140,8 +149,6 @@ export type ContentBase = {
     sortIndex: number;
   }[];
   classifications: ContentClassification[];
-  librarySourceInfo?: LibraryInfo;
-  libraryActivityInfo?: LibraryInfo;
   parent: {
     contentId: string;
     name: string;

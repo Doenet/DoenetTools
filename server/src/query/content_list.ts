@@ -75,7 +75,6 @@ export async function getMyContentOrLibraryContent({
       countAssignmentScores: true,
       includeShareDetails: true,
       includeClassifications: true,
-      includeLibraryInfo: isLibrary,
     }),
     orderBy: { sortIndex: "asc" },
   });

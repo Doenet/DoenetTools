@@ -3,7 +3,6 @@ import {
   AssignmentStatus,
   ContentClassification,
   Content,
-  LibraryInfo,
   License,
   LicenseCode,
   UserInfo,
@@ -144,11 +143,10 @@ export function processLicense(
 export function returnContentSelect({
   includeAssignInfo = false,
   countAssignmentScores = false,
-  includeLibraryInfo = false,
+  // includeLibraryInfo = false,
   includeClassifications = false,
   includeShareDetails = false,
   includeOwnerDetails = false,
-  isAdmin = false,
 }) {
   const sharedWith = {
     select: includeShareDetails
@@ -166,30 +164,6 @@ export function returnContentSelect({
           userId: true,
         },
   };
-
-  const librarySourceInfo = includeLibraryInfo
-    ? {
-        select: {
-          status: true,
-          sourceId: true,
-          contentId: true,
-          comments: isAdmin,
-          ownerRequested: isAdmin,
-        },
-      }
-    : false;
-
-  const libraryActivityInfo = includeLibraryInfo
-    ? {
-        select: {
-          status: true,
-          sourceId: true,
-          contentId: true,
-          comments: isAdmin,
-          ownerRequested: isAdmin,
-        },
-      }
-    : false;
 
   const classificationsObj = includeClassifications
     ? {
@@ -245,8 +219,6 @@ export function returnContentSelect({
         sharedWith,
       },
     },
-    librarySourceInfo,
-    libraryActivityInfo,
     ...classificationsObj,
     _count,
   };
@@ -350,8 +322,6 @@ type PreliminaryContent = {
     isPublic: boolean;
     sharedWith: { userId: Uint8Array }[] | { user: UserInfo }[];
   } | null;
-  libraryActivityInfo: LibraryInfo | null;
-  librarySourceInfo: LibraryInfo | null;
   classifications?: {
     classification: ContentClassification;
   }[];
@@ -393,7 +363,6 @@ type PreliminaryContent = {
 export function processContent(
   preliminaryContent: PreliminaryContent,
   forUserId?: Uint8Array,
-  isAdmin?: boolean,
 ): Content {
   const {
     id,
@@ -403,8 +372,6 @@ export function processContent(
     license,
     parent,
     classifications,
-    libraryActivityInfo,
-    librarySourceInfo,
     assignment,
 
     // from doc select
@@ -444,26 +411,9 @@ export function processContent(
 
   const { isShared, sharedWith } = processSharedWith(sharedWithOrig, forUserId);
 
-  // Don't include library fields if the values are null
-  const libraryInfos: {
-    libraryActivityInfo?: LibraryInfo;
-    librarySourceInfo?: LibraryInfo;
-  } = {};
-  if (libraryActivityInfo) {
-    libraryInfos.libraryActivityInfo = libraryActivityInfo;
-  }
-  if (librarySourceInfo) {
-    if (librarySourceInfo.status !== "PUBLISHED" && !isAdmin) {
-      // Owner cannot see library draft for their activity
-      librarySourceInfo.contentId = null;
-    }
-    libraryInfos.librarySourceInfo = librarySourceInfo;
-  }
-
   const baseContent: ContentBase = {
     contentId: id,
     ...preliminaryContent2,
-    ...libraryInfos,
     ...assignmentInfoObj,
     isShared,
     sharedWith,
@@ -579,6 +529,96 @@ export function returnClassificationListSelect() {
     },
   };
 }
+
+// /**
+//  * Assumes that source info's `reviewRequestDate` field is undefined. This field is filled in during {@link processLibraryRelations}
+//  */
+// type PreliminaryLibraryRelations = {
+//   librarySourceInfo: LibraryInfo | null;
+//   libraryActivityInfo: LibraryInfo | null;
+//   librarySourceEvents?: { dateTime: Date }[];
+// };
+
+// export function returnLibraryRelationsSelect({
+//   isAdmin,
+// }: {
+//   isAdmin: boolean;
+// }) {
+//   const librarySourceInfo = {
+//     select: {
+//       status: true,
+//       sourceId: true,
+//       contentId: true,
+//       comments: isAdmin,
+//       ownerRequested: isAdmin,
+//     },
+//   };
+
+//   const librarySourceEvents = isAdmin
+//     ? {
+//         // Admins can see date of most recent submission request
+//         take: 1,
+//         orderBy: { dateTime: "desc" as const },
+//         where: {
+//           eventType: LibraryEventType.SUBMIT_REQUEST,
+//         },
+//         select: {
+//           dateTime: true,
+//         },
+//       }
+//     : false;
+
+//   const libraryActivityInfo = {
+//     select: {
+//       status: true,
+//       sourceId: true,
+//       contentId: true,
+//       comments: isAdmin,
+//       ownerRequested: isAdmin,
+//     },
+//   };
+
+//   return {
+//     librarySourceInfo,
+//     librarySourceEvents,
+//     libraryActivityInfo,
+//   };
+// }
+
+// export function processLibraryRelations({
+//   preliminaryLibraryRelations,
+//   isAdmin,
+// }: {
+//   preliminaryLibraryRelations: PreliminaryLibraryRelations;
+//   isAdmin: boolean;
+// }): LibraryRelations {
+//   const {
+//     libraryActivityInfo: activityInfo,
+//     librarySourceInfo: sourceInfo,
+//     librarySourceEvents: sourceEvents,
+//   } = preliminaryLibraryRelations;
+
+//   if (sourceInfo) {
+//     let reviewRequestDate: Date | undefined = undefined;
+//     if (sourceEvents) {
+//       reviewRequestDate = sourceEvents[0].dateTime;
+//     }
+//     sourceInfo.reviewRequestDate = reviewRequestDate;
+
+//     // Owner cannot see library draft for their activity
+//     if (sourceInfo.status !== "PUBLISHED" && !isAdmin) {
+//       sourceInfo.contentId = null;
+//     }
+//   }
+
+//   // TODO: check elsewhere to make sure that a source content id is not passed on
+//   // if it is not public anymore
+
+//   return {
+//     sourceInfo,
+//     activityInfo,
+//   };
+// }
 
 export function compileActivityFromContent(activity: Content): ActivitySource {
   switch (activity.type) {

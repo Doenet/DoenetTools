@@ -20,7 +20,7 @@ import {
   Checkbox,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router";
-import { Content, ContentDescription } from "../_utils/types";
+import { Content, ContentDescription, LibraryRelations } from "../_utils/types";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { BsPeople } from "react-icons/bs";
 import {
@@ -30,6 +30,7 @@ import {
 } from "../_utils/activity";
 import { SmallLicenseBadges } from "./Licenses";
 import { IoDiceOutline } from "react-icons/io5";
+import { DateTime } from "luxon";
 
 export type CardContent = {
   menuRef?: (arg: HTMLButtonElement) => void;
@@ -53,6 +54,8 @@ export default function Card({
   selectCallback,
   disableSelect = false,
   disableAsSelected = false,
+  // Library relations will only appear if this is non-null
+  libraryRelations = null,
   idx = 1,
 }: {
   cardContent: CardContent;
@@ -71,6 +74,7 @@ export default function Card({
   ) => void;
   disableSelect?: boolean;
   disableAsSelected?: boolean;
+  libraryRelations?: LibraryRelations | null;
   idx?: number;
 }) {
   const {
@@ -359,6 +363,19 @@ export default function Card({
       activityWidth += 20;
     }
 
+    const libraryRequestDateRaw = libraryRelations?.activity?.reviewRequestDate;
+    const libraryRequestDateFormatted = libraryRequestDateRaw
+      ? DateTime.fromISO(libraryRequestDateRaw).toLocaleString(
+          DateTime.DATE_MED,
+        )
+      : null;
+
+    const libraryRequestDate = libraryRequestDateFormatted ? (
+      <Box flexGrow={1} alignContent="center">
+        <Text>Pending since {libraryRequestDateFormatted}</Text>
+      </Box>
+    ) : null;
+
     const licenseBadges = (
       <Show above="xl">
         <Box
@@ -446,6 +463,7 @@ export default function Card({
                 >
                   {titleDisplay}
                 </Box>
+                {libraryRequestDate}
                 <Box
                   width={
                     showAssignmentStatus || showOwnerName

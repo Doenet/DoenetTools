@@ -1,12 +1,8 @@
 import React from "react";
 import { FetcherWithComponents } from "react-router";
-import {
-  Box,
-  Button,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, Text } from "@chakra-ui/react";
 import axios from "axios";
-import { Content } from "../../../_utils/types";
+import { Content, LibraryRelations } from "../../../_utils/types";
 
 export async function libraryRequestActions({ formObj }: { [k: string]: any }) {
   if (formObj._action == "submit library request") {
@@ -26,11 +22,13 @@ export async function libraryRequestActions({ formObj }: { [k: string]: any }) {
 export function LibraryRequest({
   fetcher,
   contentData,
+  libraryRelations,
 }: {
   fetcher: FetcherWithComponents<any>;
   contentData: Content;
+  libraryRelations: LibraryRelations;
 }) {
-  const info = contentData.librarySourceInfo;
+  // const info = contentData.librarySourceInfo;
 
   const submitLibraryRequest = () => {
     fetcher.submit(
@@ -42,7 +40,7 @@ export function LibraryRequest({
     );
   };
 
-  if (!info || info.status === "none") {
+  if (!libraryRelations.activity) {
     return (
       <>
         <Box>
@@ -74,12 +72,14 @@ export function LibraryRequest({
   } else {
     return (
       <>
-        <Box>Status: {info.status}</Box>
+        <Box>Status: {libraryRelations.activity.status}</Box>
 
-        {info.comments ? <Box>Comments: {info.comments}</Box> : null}
+        {libraryRelations.activity.comments ? (
+          <Box>Comments: {libraryRelations.activity.comments}</Box>
+        ) : null}
 
-        {info.status === "NEEDS_REVISION" ||
-        info.status === "REQUEST_REMOVED" ? (
+        {libraryRelations.activity.status === "NEEDS_REVISION" ||
+        libraryRelations.activity.status === "REQUEST_REMOVED" ? (
           <Button
             data-test="Resubmit Library Request"
             colorScheme="blue"
@@ -89,7 +89,7 @@ export function LibraryRequest({
           </Button>
         ) : null}
 
-        {info.status === "PENDING_REVIEW" ? (
+        {libraryRelations.activity.status === "PENDING_REVIEW" ? (
           <Button
             data-test="Cancel Library Request"
             colorScheme="blue"

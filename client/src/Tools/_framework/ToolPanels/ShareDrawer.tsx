@@ -23,6 +23,7 @@ import {
   ActivityHistoryItem,
   ActivityRemixItem,
   Content,
+  LibraryRelations,
   License,
   LicenseCode,
 } from "../../../_utils/types";
@@ -60,10 +61,10 @@ export async function shareDrawerActions({ formObj }: { [k: string]: any }) {
 
 /**
  * A side menu drawer that controls sharing settings for a content item.
- * Includes up to three tabs: `Share`, `Remixed From`, and `Remixes`.
+ * Includes up to four tabs: `Share`, `Remixed From`, `Remixes`, and `Library`.
  * The `Remixed From` and `Remixes` tabs are only shown for non-folder content.
- *
- * Additionally, you can set the `inCurationLibrary` prop to `true` to show controls for library content. This will replace the `Share` tab with a `Curate` tab.
+ * The `Library` tab is only shown if the content is public.
+ * Additionally, if the activity belongs to the library, this component will replace the `Share` tab with a `Curate` tab.
  *
  * Make sure to include {@link shareDrawerActions} in the page's actions.
  */
@@ -73,16 +74,16 @@ export function ShareDrawer({
   finalFocusRef,
   fetcher,
   contentData,
+  libraryRelations,
   allLicenses,
-  inCurationLibrary = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
   finalFocusRef?: RefObject<HTMLElement>;
   fetcher: FetcherWithComponents<any>;
   contentData: Content;
+  libraryRelations: LibraryRelations;
   allLicenses: License[];
-  inCurationLibrary?: boolean;
 }) {
   const [contributorHistory, setContributorHistory] = useState<
     ActivityHistoryItem[]
@@ -120,6 +121,8 @@ export function ShareDrawer({
     }
   }, [contentData]);
 
+  const inCurationLibrary = libraryRelations.source;
+
   const drawerTitle = inCurationLibrary
     ? "Curation Controls"
     : "Sharing Controls";
@@ -127,7 +130,11 @@ export function ShareDrawer({
   // Share Tab (becomes Curate Tab in Library)
   const shareOrCurateTabTitle = inCurationLibrary ? "Curate" : "Share";
   const shareOrCurateTabPanel = inCurationLibrary ? (
-    <CurateSettings fetcher={fetcher} contentData={contentData} />
+    <CurateSettings
+      fetcher={fetcher}
+      contentData={contentData}
+      libraryRelations={libraryRelations}
+    />
   ) : (
     <ShareSettings
       fetcher={fetcher}
@@ -198,6 +205,7 @@ export function ShareDrawer({
                   <TabPanel data-test="Library Tab">
                     <LibraryRequest
                       contentData={contentData}
+                      libraryRelations={libraryRelations}
                       fetcher={fetcher}
                     ></LibraryRequest>
                   </TabPanel>
