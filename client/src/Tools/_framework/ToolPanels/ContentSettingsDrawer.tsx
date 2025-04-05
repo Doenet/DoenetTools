@@ -78,6 +78,7 @@ export function ContentSettingsDrawer({
   fetcher,
   displayTab = "general",
   highlightRename = false,
+  isInLibrary = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -89,6 +90,7 @@ export function ContentSettingsDrawer({
   fetcher: FetcherWithComponents<any>;
   displayTab?: "general" | "files";
   highlightRename?: boolean;
+  isInLibrary?: boolean;
 }) {
   const haveSupportingFiles = Boolean(supportingFileData);
   const numTabs = haveSupportingFiles ? 4 : 3;
@@ -154,7 +156,9 @@ export function ContentSettingsDrawer({
                   Classifications ({contentData.classifications.length})
                 </Tab>
               ) : null}
-              {contentData.type !== "folder" && !isSubActivity ? (
+              {contentData.type !== "folder" &&
+              !isSubActivity &&
+              !isInLibrary ? (
                 <Tab data-test="Assignment Settings">Assignment Settings</Tab>
               ) : null}
               {haveSupportingFiles ? (
@@ -187,15 +191,18 @@ export function ContentSettingsDrawer({
                   </TabPanel>
                 ) : null}
 
-                <TabPanel paddingTop="5px">
-                  {contentData.type !== "folder" && !isSubActivity ? (
+                {contentData.type !== "folder" &&
+                !isSubActivity &&
+                !isInLibrary ? (
+                  <TabPanel paddingTop="5px">
                     <AssignmentSettings
                       fetcher={fetcher}
                       activityData={contentData}
                       openTabIndex={tabIndex}
                     />
-                  ) : null}
-                </TabPanel>
+                  </TabPanel>
+                ) : null}
+
                 {haveSupportingFiles ? (
                   <TabPanel>
                     <SupportFilesControls

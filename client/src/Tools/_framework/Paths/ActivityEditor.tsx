@@ -475,6 +475,7 @@ export function ActivityEditor() {
       availableFeatures={availableFeatures}
       displayTab={displaySettingsTab}
       highlightRename={highlightRename}
+      isInLibrary={libraryRelations.source !== undefined}
     />
   ) : null;
 
@@ -754,7 +755,7 @@ export function ActivityEditor() {
                 {data.type === "singleDoc" && authorMode && (
                   <Tooltip
                     hasArrow
-                    label="Open document history"
+                    label="Open Document History"
                     placement="bottom-end"
                   >
                     <Button
@@ -762,7 +763,7 @@ export function ActivityEditor() {
                       size="sm"
                       pr={{ base: "0px", lg: "10px" }}
                       leftIcon={<MdHistory size={20} />}
-                      aria-label="Open document history"
+                      aria-label="Open Document History"
                       onClick={() => {
                         historyOnOpen();
                       }}

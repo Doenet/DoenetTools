@@ -71,14 +71,9 @@ async function redactInvisibleContentIds({
 }
 
 /**
- *
- * Depending on user's access privileges, this function will hide some information.
- * - Admins see everything
- * - Owner of original activity does not see unpublished drafts
- * - All other users do not see admin comments, pending requests, or unpublished drafts
- * @param id - must be existing public activity
+ * Depending on user's access privileges, this function will hide some information. See type `LibraryRelations` for details.
  */
-export async function getLibraryRelations({
+export async function getMultipleLibraryRelations({
   contentIds,
   loggedInUserId,
 }: {
@@ -206,7 +201,8 @@ export async function getLibraryRelations({
         sourceRelations[fromUUID(contentIds[i])].comments =
           sourceInfos[i].comments;
         // Only admins can see if owner requested review
-        sourceRelations[fromUUID(contentIds[i])].ownerRequested = sourceInfos[i].ownerRequested;
+        sourceRelations[fromUUID(contentIds[i])].ownerRequested =
+          sourceInfos[i].ownerRequested;
       }
     }
   }
@@ -236,7 +232,10 @@ export async function getSingleLibraryRelations({
   loggedInUserId: Uint8Array;
 }) {
   return (
-    await getLibraryRelations({ contentIds: [contentId], loggedInUserId })
+    await getMultipleLibraryRelations({
+      contentIds: [contentId],
+      loggedInUserId,
+    })
   )[0];
 }
 
@@ -834,7 +833,7 @@ export async function getPendingCurationRequests({
   //@ts-expect-error: Prisma is incorrectly generating types (https://github.com/prisma/prisma/issues/26370)
   const unsortedContent: Content[] = preliminaryContent.map(processContent);
 
-  const unsortedLibraryRelations = await getLibraryRelations({
+  const unsortedLibraryRelations = await getMultipleLibraryRelations({
     contentIds: unsortedContent.map((c) => c.contentId),
     loggedInUserId,
   });

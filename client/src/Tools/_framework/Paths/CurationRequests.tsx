@@ -128,7 +128,6 @@ export function CurationRequests() {
       showPublicStatus={true}
       showActivityFeatures={true}
       emptyMessage={"No Pending Requests"}
-      listView={true} // hard-coded for now
       content={cardContent}
       libraryRelations={libraryRelations}
     />

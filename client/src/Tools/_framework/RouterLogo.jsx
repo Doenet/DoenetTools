@@ -3,8 +3,7 @@ import { useNavigate } from "react-router";
 import styled from "styled-components";
 
 const LogoButton = styled.button`
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
     url("/Doenet_Logo_Frontpage_color_small_text.png");
   background-position: center;
   background-repeat: no-repeat;

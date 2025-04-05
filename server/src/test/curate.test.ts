@@ -11,7 +11,7 @@ import {
   unpublishActivityFromLibrary,
   deleteDraftFromLibrary,
   getPendingCurationRequests,
-  getLibraryRelations,
+  getMultipleLibraryRelations,
 } from "../query/curate";
 import { createContent, deleteContent } from "../query/activity";
 import { setContentIsPublic } from "../query/share";
@@ -23,7 +23,7 @@ async function expectStatusIs(
   desiredStatus: LibraryRelations,
   loggedInUserId: Uint8Array,
 ) {
-  const actualStatus = await getLibraryRelations({
+  const actualStatus = await getMultipleLibraryRelations({
     contentIds: [sourceId],
     loggedInUserId,
   });

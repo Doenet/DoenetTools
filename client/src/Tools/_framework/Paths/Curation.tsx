@@ -44,6 +44,7 @@ import {
   UserInfo,
   ContentType,
   License,
+  LibraryRelations,
 } from "./../../../_utils/types";
 import { MdClose, MdOutlineSearch } from "react-icons/md";
 import { getAllowedParentTypes } from "../../../_utils/activity";
@@ -124,6 +125,7 @@ export async function loader({ params, request }) {
   return {
     folderId: params.parentId ?? null,
     content: data.content,
+    libraryRelations: data.libraryRelations,
     allDoenetmlVersions: data.allDoenetmlVersions,
     allLicenses: data.allLicenses,
     availableFeatures: data.availableFeatures,
@@ -137,6 +139,7 @@ export function Curation() {
   const {
     folderId,
     content,
+    libraryRelations,
     allDoenetmlVersions,
     allLicenses,
     availableFeatures,
@@ -146,6 +149,7 @@ export function Curation() {
   } = useLoaderData() as {
     folderId: string | null;
     content: Content[];
+    libraryRelations: LibraryRelations[];
     allDoenetmlVersions: DoenetmlVersion[];
     allLicenses: License[];
     availableFeatures: ContentFeature[];
@@ -179,7 +183,6 @@ export function Curation() {
   // which should be given focus when drawers are closed
   const cardMenuRefs = useRef<HTMLButtonElement[]>([]);
 
-  const folderSettingsRef = useRef(null);
   const finalFocusRef = useRef<HTMLElement | null>(null);
 
   const [haveContentSpinner, setHaveContentSpinner] = useState(false);
@@ -401,20 +404,18 @@ export function Curation() {
   );
 
   let contentData: Content | undefined;
+  let activeLibraryRelations: LibraryRelations = {};
+
   if (settingsContentId) {
-    if (parent && settingsContentId === folderId) {
-      contentData = parent;
-      finalFocusRef.current = folderSettingsRef.current;
+    const index = content.findIndex(
+      (obj) => obj.contentId == settingsContentId,
+    );
+    if (index != -1) {
+      contentData = content[index];
+      activeLibraryRelations = libraryRelations[index];
+      finalFocusRef.current = cardMenuRefs.current[index];
     } else {
-      const index = content.findIndex(
-        (obj) => obj.contentId == settingsContentId,
-      );
-      if (index != -1) {
-        contentData = content[index];
-        finalFocusRef.current = cardMenuRefs.current[index];
-      } else {
-        //Throw error not found
-      }
+      //Throw error not found
     }
   }
 
@@ -430,16 +431,17 @@ export function Curation() {
         fetcher={fetcher}
         displayTab={displaySettingsTab}
         highlightRename={highlightRename}
+        isInLibrary={activeLibraryRelations.source !== undefined}
       />
     ) : null;
 
   const curateDrawer =
     contentData && settingsContentId ? (
       <ShareDrawer
-        inCurationLibrary={true}
         isOpen={curateIsOpen}
         onClose={curateOnClose}
         contentData={contentData}
+        libraryRelations={activeLibraryRelations}
         finalFocusRef={finalFocusRef}
         fetcher={fetcher}
         allLicenses={allLicenses}

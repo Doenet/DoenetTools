@@ -10,6 +10,7 @@ import {
   createCurationFolder,
   deleteDraftFromLibrary,
   getCurationFolderContent,
+  getMultipleLibraryRelations,
   getPendingCurationRequests,
   getSingleLibraryRelations,
   markLibraryRequestNeedsRevision,
@@ -25,6 +26,7 @@ import {
   searchCurationFolderContentSchema,
   createCurationFolderSchema,
   curationParentIdSchema,
+  contentIdArraySchema,
 } from "../schemas/curateSchema";
 import { contentIdSchema } from "../schemas/contentSchema";
 
@@ -60,6 +62,11 @@ curateRouter.get(
 curateRouter.get(
   "/getLibraryRelations/:contentId",
   queryLoggedIn(getSingleLibraryRelations, contentIdSchema),
+);
+
+curateRouter.get(
+  "/getMultipleLibraryRelations",
+  queryLoggedIn(getMultipleLibraryRelations, contentIdArraySchema),
 );
 
 curateRouter.post(

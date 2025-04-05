@@ -28,3 +28,7 @@ export const createCurationFolderSchema = z.object({
   name: z.string(),
   parentId: uuidSchema.nullish().transform((val) => val ?? null),
 });
+
+export const contentIdArraySchema = z.object({
+  contentIds: z.array(uuidSchema),
+});

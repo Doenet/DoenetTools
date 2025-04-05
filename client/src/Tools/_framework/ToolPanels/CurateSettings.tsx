@@ -156,15 +156,15 @@ export function CurateSettings({
         </>
       )}
 
-      {/* {status === "PENDING_REVIEW" &&
-      contentData.libraryActivityInfo!.onwerRequested ? (
+      {librarySource.status === "PENDING_REVIEW" &&
+      librarySource.ownerRequested ? (
         <Button
           onClick={() => {
             setUnsavedComments(false);
             fetcher.submit(
               {
                 _action: "return for revision",
-                sourceId: sourceId,
+                sourceId: librarySource.sourceContentId,
                 comments,
               },
               { method: "post" },
@@ -173,7 +173,7 @@ export function CurateSettings({
         >
           Return for revision
         </Button>
-      ) : null} */}
+      ) : null}
 
       <Button
         isDisabled={!unsavedComments}
